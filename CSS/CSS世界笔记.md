@@ -20,12 +20,16 @@ url('css-world.png')、 attr('href')和 scale(-1)
 选择器是用来瞄准目标元素的东西，例如，上面的.vocabulary 就是一个选择器。
 
 - 类选择器： 指以“.”这个点号开头的选择器。很多元素可以应用同一个类选择器。“类”，天生就是被公用的命。
+
 - ID 选择器：“#”打头，权重相当高。 ID 一般指向唯一元素。但是，在 CSS 中， ID 样式出现在多个不同的元素上并不会只渲染第一个，而是雨露均沾。但显然不推荐这么做。
+
 - 属性选择器： 指含有[]的选择器，形如[title]{}、 [title= "css-world"]{}、[title~="css-world"]{}、 [title^= "css-world"]{}和[title$="cssworld"]{}等。
+
 - 伪类选择器： 一般指前面有个英文冒号（:）的选择器，如:first-child 或:lastchild 等。
+
 - 伪元素选择器 ： 就是有连续两个冒号的选择器 ，如::first-line::firstletter、 ::before 和::after。
 
-	 第3章　流、元素与基本尺寸	
+  第3章　流、元素与基本尺寸	
 
 “块级元素”对应的英文是 block-level element，常见的块级元素有<div>、 <li>和<table> 等。  由于“块级元素”具有换行特性，因此理论上它都可以配合 clear 属性来清除浮动带来的影响。  实际开发时，我们要么使用 block，要么使用 table，并不会使用 list-item 。
 
@@ -72,15 +76,10 @@ height 和 width 还有一个比较明显的区别就是对百分比单位的支
 在实际项目中， content 属性几乎都是用在::before/::after 这两个伪元素中， 因此， “ content 内容生成技术”有时候也称为“ ::before/::after 伪元素技术”。  
 
 1. content 辅助元素生成 。通常，我们会把 content 的属性值设置为空字符串。然后，利用其他 CSS 代码来生成辅助元素，或实现图形效果，或实现特定布局。与使用显 式的 HTML 标签元素相比，这样做的好处是 HTML 代码会显得更加干净和精简。  
-
 2. content 字符内容生成。content 字符内容生成就是直接写入字符内容，中英文都可以，比较常见的应用就是配合 @font-face 规则实现图标字体效果。除常规字符之外，我们还可以插入 Unicode 字符，比较经典 的就是插入换行符来实现某些布局或者效果。  
-
 3. content 图片生成，指的是直接用 url 功能符显示图片。url 功能符中的图片地址不仅可以是常见的 png、 jpg 格式，还可以是 ico 图片、 svg 文件以及 base64URL 地址，但不支持 CSS3 渐变背景图。虽然支持的图片格式多种多样，但是实际项目中， content 图片生成用得并不多，主要原 因在于图片的尺寸不好控制，我们设置宽高无法改变图片的固有尺寸。所以，伪元素中的图片更多的是使用 background-image 模拟。
-
 4. 了解 content 开启闭合符号生成。content 支持的属性值中有一对不常用的 open-quote 和 close-quote 关键字，顾名 思义，就是“开启的引号”和“闭合的引号”，使用纯正的中文解释就是“上引号”和“下引号”。  CSS 中还有 no-open-quote 和 no-close-quote 关键字  。
-
 5. content attr 属性值内容生成。除了原生的 HTML 属性，自定义的 HTML 属性也是可以生产的。需要注意的是， attr 功能符中的属性值名称千万不要 自以为是地在外面加个引号。  
-
 6. 深入理解 content 计数器。使用CSS计数器之前，必须重置一个值，默认是0。使用counter()函数来给元素增加计数器。 下面的CSS给每个h3元素的前面增加了 "Section <计算器值>:"。
    CSS计数器对创建有序列表特别有用，因为在子元素中会自动创建一个CSS计数器的实例。使用 `counters()` 函数，在不同级别的嵌套计数器之间可以插入字符串。比如这个CSS例子：
 
@@ -105,7 +104,7 @@ li:before {
 }
 ```
 
-7. content 内容生成的混合特性。所谓“content 内容生成的混合特性”指的是各种 content 内容生成语法是可以混合在 一起使用的。
+1. content 内容生成的混合特性。所谓“content 内容生成的混合特性”指的是各种 content 内容生成语法是可以混合在 一起使用的。
 
 ## 4.2 温和的padding属性
 
@@ -268,7 +267,6 @@ float 属性的种种归根结底还是由于自身各种特性导致的。 floa
 - 破坏文档流。为了实现文字环绕的效果而进行破坏文档流，而“文字环绕效果” 是由两个特性（即“父级高度塌陷”和“行框盒子区域限制”）共同作用的结果。行框盒子如果和浮动元素的垂直高度有重叠，则行框盒子在正常定位状态下只会跟随浮动元素，而不会发生重叠。注意，这里说的是“行框盒子”，也就是每行内联元素所在的那个盒子，而非外部的块状盒子。实际上，由于浮动元素的塌陷，块状盒子是和图片完全重叠的。
 - 没有任何 margin 合并； 如果一个元素具有 BFC，内部子元素再怎么翻江倒海、翻云覆雨，都不会影响外部的元素。所以， BFC 元素是不可能发生 margin 重叠的，因为 margin 重叠是会影响外面的元素的。
 
-
 我们需要了解两个和 float 相关的术语， 一是“浮动锚点”（ float anchor ），二是“浮动参考”（ float reference ）。
 
 - 浮动参考指的是浮动元素对齐参考的实体。在 CSS 世界中， float 元素的“浮动参考”是“行框盒子”，也就是 float 元素在当前 “行框盒子”内定位。  
@@ -300,9 +298,7 @@ float 属性的种种归根结底还是由于自身各种特性导致的。 floa
 官方对 clear 属性的解释是：“元素盒子的边不能和前面的浮动元素相邻。”  clear 属性指定一个元素是否可以在它之前的浮动元素旁边，或者必须向下移动(清除浮动) 到这些浮动元素的下面。clear 属性适用于浮动和非浮动元素。
 
 - 当应用于非浮动块时，它将非浮动块的边框边界移动到所有相关浮动元素外边界的下方。这个非浮动块的垂直外边距会折叠。
-
 - 另一方面，两个浮动元素的垂直外边距将不会折叠。当应用于浮动元素时，它将元素的外边界移动到所有相关的浮动元素外边界的下方。这会影响后面浮动元素的布局，后面的浮动元素的位置无法高于它之前的元素。
-
 
 注释:如果你想要一个元素将所有浮动元素包含在内（解决浮动元素float使其父元素高度塌陷），你既可以将这个容器设置为浮动，又可以通过 ::after 伪元素设置clear属性作为替代。还有三种方法是，给父元素一个固定高度；添加一个块级元素，并给此元素设置`clear:both;`清除浮动；给父元素添加 `overflow：hidden；`。
 
@@ -323,7 +319,7 @@ BFC 全称为 block formatting context，中文为“块级格式化上下文”
 - float 的值不为 none；
 - overflow 的值为 auto、 scroll 或 hidden；
 - display 的值为 table-cell、 table-caption 和 inline-block 中的任何一个；
--  position 的值不为 relative 和 static。 
+- position 的值不为 relative 和 static。 
 
 换言之，只要元素符合上面任意一个条件，就无须使用 clear:both 属性去清除浮动的影响了。  
 
@@ -577,7 +573,6 @@ background/border 为装饰属性，浮动和块状元素一般用作布局，�
 - 正统派： z-index 值为数值的定位元素的传统“层叠上下文”。
 - 扩招派：其他 CSS3 属性。  
 
-
 根层叠上下文指的是页面根元素，可以看成是<html>元素。因此，页面中所有的元素一 定处于至少一个“层叠结界”中。  
 
 对于 position 值为 relative/absolute 以及 Firefox/IE 浏览器（不包括 Chrome 浏览器）下含有 position:fixed 声明的定位元素，当其 z-index 值不是 auto 的时候，会创建层叠上下文。z-index: auto 所在的元素是一个普通定位元素，而 z-index 一旦变成数值，哪怕是 0，就会创建一个层叠上下文。此时，层叠规则就可能发生了变化。层叠上下文的特性里面最后一条是自成体系。有时候，我们在网页重构的时候会发现 z-index 嵌套错乱，这时要看看是不是受父级的层叠上下文元素干扰了，可能就豁然开朗了。  
@@ -696,7 +691,7 @@ font-variant 是一个从 IE6 时代就过来的 CSS 属性，对于我们大中
 
 可以缩写在 font 属性中的属性非常多，包括 font-style、 font-variant、 font-weight、 font-size、 line-height、 font-family 等。完整语法为： 
 
->  [ [ font-style || font-variant || font-weight ]? font-size [ / line-height ]? font-family ]  
+> [ [ font-style || font-variant || font-weight ]? font-size [ / line-height ]? font-family ]  
 >
 > ||表示或， ?和正则表达式中的?的含义一致，表示 0 个或 1 个。仔细观察上面的语法，会发现 font-size 和font-family 后面没有问号，也就是说是必需的，是不可以省略的。这和background 属性不一样， background 属性虽然也支持缩写，但是并没有需要两个属性值同时存在的限制。  
 >
@@ -806,12 +801,16 @@ text-transform 也是为英文字符设计的，要么全大写 text-transform:u
 :first-line 选择器用于选取指定选择器的首行。利用了::first-line 伪元素，于是标签上的颜色实际上是设置给 background-color的，而按钮真正呈现的颜色已经被::first-line伪元素牢牢设置好了， 就完全不用担心文字颜色和背景色混在一起了。  
 
 - :first-line 和:first-letter 伪元素一样， IE9 及以上版本浏览器支持双冒号::first-line{}写法， IE8 浏览器只认识单冒号写法。 
+
 - :first-line 和:first-letter 伪元素一样，只能作用在块级元素上，也就是 display 为 block、 inline-block、 list-item、 table-cell 或者 tablecaption 的元素设置:first-line 才有效， table、 flex 之类都是无效的。 
+
 - :first-line 和:first-letter 伪元素一样，仅支持部分 CSS 属性，例如： • 所有字体相关属性； • color 属性； • 所有背景相关属性； • text-decoration、 text-transfor、 letter-spacing、 word-spacing、 line-height 和 vertical-align 等属性。
+
 - :first-line 和:first-letter 伪元素一样， color 等继承属性的权重总是多了 一层，毕竟称为“伪元素”，就好像里面还有个子元素。如果:first-line 和:first-letter 同时设置颜色， :first-letter 级别比:first-line 高，即使:first-line 写在后面，甚至加!important（如果浏览器支持）也是如此。
+
 - :first-line 和:first-letter 伪元素一样，也支持标签嵌套，但是具体细则 和:first-letter 出入较大，例如，它不支持 table 相关属性等。  
 
-	 第9章 元素的装饰与美化	
+  第9章 元素的装饰与美化	
 
 ## 9.1 CSS 世界的 color 很单调  
 
@@ -849,10 +848,12 @@ CSS 世界中的 background 大部分有意思的内容都是在 CSS3 新世界�
 如果是 IE9+浏览器，则还包括： 
 
 - background-size: auto auto 
+
 - background-origin: padding-box 
+
 - background-clip: border-box  
 
-	 第10章 元素的显示与隐藏	
+  第10章 元素的显示与隐藏	
 
 如果希望元素不可见，同时不占据空间，辅助设备无法访问，同时不渲染，可以使用 <script>标签隐藏。  <script>标签是不支持嵌套的，因此，如果希望在<script>标签中再放置其他不渲染的模板内容，可以试试使用<textarea>元素。另外， <script>标签隐藏内容获取使用 script.innerHTML， <textarea>使用 textarea.value。  
 
