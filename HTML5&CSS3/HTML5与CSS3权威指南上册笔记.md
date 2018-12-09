@@ -673,20 +673,94 @@ otherWindow.postMessage(message,tragetOrigin);
 
 ## 11.2 WebSockets通信 
 
-11.2.1　WebSockets通信的基本知识 
-11.2.2　使用WebSockets API 
-11.2.3　WebSockets API使用示例 
-11.2.4　发送对象 
-11.2.5　发送与接收原始二进制数据 
-11.2.6　实现WebSockets API的开发框架 
-11.2.7　WebSocket协议 
-11.2.8　WebSockets API的适用场景 
+11.2.1 WebSockets通信的基本知识 
+
+WebSockets 是HTML5 提供的在 Web 应用程序中客户端与服务端之间进行的非 HTTP 的通信机制，它实现了用 HTTP 不容易实现的服务器端的数据推送等智能通信技术。
+
+使用 WebSockets API 可以在服务器与客户端之间建立一个非 HTTP 的双向连接，这个连接是实时的，也是永久的，除非被显式关闭。同时可以使用跨域通信技术。
+
+11.2.2 使用WebSockets API 
+
+WebSockets 的 API 本身非常简单，首先将 URL 字符串作为参数，然后调用 WebSocket 对象的构造器来建立与非服务器之间的通信连接。URL 字符串必须以“ws”或“wss”文字作为开头，这个url设定之后可以通过访问 Websocket 对象的 url 属性来重新获取。
+
+```javascript
+var websocket = new WebSocket('wss://echo.websocket.org');
+
+// 使用对象的 send 方法对服务器发送文本数据
+websocket.send("data");
+
+// 通过获取 onmessage 事件句柄来接收服务器传过来的数据
+websocket.onmessage = function(event) {
+   var data = event.data;
+}
+
+// 通过获取 onopen 事件句柄来监听 socket 的打开事件
+websocket.onopen = function(event) {
+    // 开始通信时的处理
+}
+
+// 通过获取 onclose 事件句柄来监听 socket 的关闭事件
+websocket.onclose = function(event) {
+    // 通信结束时的处理
+}
+
+// 通过 close 方法来关闭 socket，切断通信连接
+websocket.close();
+
+```
+
+
+
+另外，可以通过读取 readyState 的属性值来获取 WebSocket 对象的状态，该属性值有如下几种。
+
+- CONNECTING(数字值为0)， 表示正在连接。 
+- OPEN(数字值为1)，表示已建立连接。 
+- CLOSING(数字值为2)，表示正在关闭连接。 
+- CLOSED(数字值为3)，表示已关闭链接。
+
+11.2.3 WebSockets API使用示例 
+
+11.2.4 发送对象 
+
+使用 WebSocs API，不仅可以发送文本数据，还可以使用 JSON 对象来发送一切 JavaScript 中的对象，使用该对象的关键在于它的两个方法，分别是 JSON.parse 方法和 JSON.stringify 方法，前者把文本数据转换为 JavaScript 对象，后者则把 JavaScript 对象转换为文本数据。
+
+11.2.5 发送与接收原始二进制数据 
+
+在 HTML5 中，除了可以使用 WebSockets API 发送文本数据及 JavaScript 对象之外，同时可以使用 WebSockets API 来发送 ArrayBuffer 对象及 Blob 对象。
+
+11.2.6 实现WebSockets API的开发框架 
+
+当服务器端需要同时处理大量来自客户端的请求，并且需要确保服务器端只需花费较少的性能成本来处理这些请求时，可以使用这种新型的使用 WebSockets API 的应用程序架构，因为这种应用程序架构通常使用“非阻塞型IO”技术。这些开发框架包括
+
+- 使用 Node.js 开发语言的Socket.IO/WebSocket-Node/ws
+- 使用 Java 开发语言的 Jetty
+- 使用 Ruby 开发语言的 EventMachine
+- 使用 Python 开发语言的 Pywebsocket/Tornado
+- 使用 Erlang 开发语言的 Shirasu
+- 使用 C++ 开发语言的 Libwebsockets
+- 使用 .NET 开发语言的 Superwebsocket
+
+11.2.7 WebSocket协议 
+
+在 WebSockets API 内部，通过使用 WebSockets 协议来实现多个客户端与服务器之间的双向协议。该协议定义客户端与服务器如何通过握手来建立通信管道，实现数据（包括原始二进制数据）的传送。现在，国际上标准的 WebSocket 协议为 RFC6455 协议。
+
+11.2.8 WebSockets API的适用场景 
+
+WebSockets API 适用于当多个客户端与同一个服务器需要实现实时通信的场合。例如多人在线游戏网站、聊天室、实时体育或新闻评论网站、实时交互用户信息的社交网站。
 
 ## 11.3 Server-Sent Events API 
 
 11.3.1　Server-Sent Events API的基本概念 
+
+所谓 Server-Sent Events ，就是指由服务器发送一些事件，由客户端接收这些事件。该 API 与 Websockets 不同之处在于它实现的是一种从服务器端发送到客户端的单向通信机制，而后者实现的是服务器端与客户端之间的双向通信机制。
+
+从现实意义上来说，Server-Sent Events API 可以被应用于一下场合：在取票软件中实时显示股票的在线数据、在新闻网站中实时显示最近刚刚发生的重大新闻、在在线聊天软件中实时显示当前聊天室中的用户名及用户人数、在其它任何需要实时显示服务器数据的场合。
+
 11.3.2　Server-Sent Events API的实现方法 
+
 11.3.3　事件ID的使用示例 
+
+在服务器端，我们可以将每次发送的事件 ID 值自动加1，当客户端接收到该事件 ID 后，下次与服务器建立连接后再请求的头部信息中将同时提交该事件ID，服务器端可以检查该事件 ID 是否为上次发送的事件 ID，如果与上次发送的事件 ID 不一致则说明客户端与服务器建立连接失败的情况，本次需要同时发送前几次已经发送的数据。
 
 # 第12章 WebRTC通信 
 
