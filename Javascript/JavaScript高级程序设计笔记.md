@@ -1195,7 +1195,7 @@ Ajax，是对 Asynchronous Javascript+XML 的简写，这个技术能够向服�
 
 ### 21.1　XMLHttpRequest对象　
 
-在一般的浏览器中创建 XHR 对象，直接使用 XMLHttpRequest 构造函数，这便是原生的XHR实现。
+在一般的浏览器中创建 XHR 对象，直接使用 XMLHttpRequest 构造函数，这便是原生的XHR实现。如果还要支持 IE 的早期版本，那么则可以在这个`createXHR()`函数中加入对原生 XHR 对象的支持。
 
 ```javascript
 var xhr = new XMLHttpRequest();
@@ -1220,7 +1220,7 @@ xhr.send(null);
 - status：响应的 HTTP 状态。 
 - statusText： HTTP 状态的说明。  
 
-在收到响应后，第一步是检查status属性（HTTP状态代码200为成功的标志），以确定响应已经成功返回。状态代码为304表示请求的资源并没有被修改，可以直接使用浏览器中缓存的版本。如果responseText属性的内容已经就绪，而且在内容类型正确的情况下，responseXML也应该能够访问了。
+在收到响应后，第一步是检查 status 属性（HTTP状态代码200为成功的标志），以确定响应已经成功返回。状态代码为304表示请求的资源并没有被修改，可以直接使用浏览器中缓存的版本。如果responseText属性的内容已经就绪，而且在内容类型正确的情况下，responseXML也应该能够访问了。
 
 ```javascript
 xhr.open("get", "example.txt", false);
@@ -1232,7 +1232,9 @@ alert("Request was unsuccessful: " + xhr.status);
 }
 ```
 
-发送异步请求，可以检测XHR对象的 readyState 属性，该属性表示请求/响应过程的当前活动阶段，属性值0代表未初始化，1代表启动，2代表发送，3代表接收，4代表完成。只要该属性值变化，都会触发一次 readyStatechange 事件。另外，在接收到响应之前还可以调用 abort () 方法取消异步请求。调用这个方法后， XHR 对象会停止触发事件，而且也不再允许访问任何与响应有关的对象属性。  
+发送异步请求，可以检测XHR对象的 readyState 属性，该属性表示请求/响应过程的当前活动阶段，属性值0代表未初始化，1代表启动，2代表发送，3代表接收，4代表完成。只要该属性值变化，都会触发一次 readyStatechange 事件。
+
+另外，在接收到响应之前还可以调用 abort () 方法取消异步请求。调用这个方法后， XHR 对象会停止触发事件，而且也不再允许访问任何与响应有关的对象属性。  
 
 ```javascript
 var xhr = createXHR();	// createXHR () 是兼容性创建 XMLHttpRequest 的方法
@@ -1446,7 +1448,7 @@ IndexedDB全称是Indexed Database API，是在浏览器中保存结构化数据
 附录B　严格模式　717
 附录C　JavaScript库　723
 附录D　JavaScript工具　727 [1] 
-	
-	
-	
+​	
+​	
+​	
 
