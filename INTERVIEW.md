@@ -1,6 +1,6 @@
 # 一、YNKG
 
-**link和@import的区别。**
+## **link和@import的区别。**
 
 从属关系区别。@import是 CSS 提供的语法规则，只有导入样式表的作用；link是HTML提供的标签，不仅可以加载 CSS 文件，还可以定义 RSS、rel 连接属性等。
 
@@ -14,7 +14,7 @@ DOM可控性区别。可以通过 JS 操作 DOM ，插入link标签来改变样�
 
 
 
-**HTML5有哪些新特性，移除了哪些元素？如何处理HTML5新标签的浏览器兼容问题？如何区分HTML和HTML5?**
+## **HTML5有哪些新特性，移除了哪些元素？如何处理HTML5新标签的浏览器兼容问题？如何区分HTML和HTML5?**
 
 语义化标签、增强型表单、视频和音频标准、Canvas绘图、拖放API、Web Worker、Web Storage、WebSocket。
 
@@ -32,7 +32,7 @@ HTML5文档类型声明：<!doctype html>。DOCTYPE声明的方式是区分HTML�
 
 
 
-**position为relative和为absolute的相对定位元素。**
+## **position为relative和为absolute的相对定位元素。**
 
 对于其他元素，如果该元素的 position 是 relative 或者 static，则“包含块” 由其最近的块容器祖先盒的 content box 边界形成。
 
@@ -42,7 +42,7 @@ HTML5文档类型声明：<!doctype html>。DOCTYPE声明的方式是区分HTML�
 
 
 
-**离线存储的方式和原理。**
+## **离线存储的方式和原理。**
 
 HTML5 提供了两种在客户端存储数据的新方法：
 
@@ -51,7 +51,7 @@ HTML5 提供了两种在客户端存储数据的新方法：
 
 
 
-**创建Ajax的步骤。**
+## **创建Ajax的步骤。**
 
 step1. 创建XMLHttpRequest对象，也就是创建一个异步调用对象；  
 
@@ -110,7 +110,7 @@ step6. 使用javascript和DOM实现局部刷新；
 
 
 
-**GET请求和POST请求。**
+## **GET请求和POST请求。**
 
 （1）使用Get请求时,参数在URL中显示,而使用Post请求,则不会显示出来； 
 
@@ -126,7 +126,7 @@ step6. 使用javascript和DOM实现局部刷新；
 
 
 
-**angular和react使用的TypeScript语法**
+## **angular和react使用的TypeScript语法**
 
 简单笼统地说，TypeScript是JavaScript的超集，是微软开发的一种脚本语言。和JavaScript一样，是现在项目开发中热门的脚本语言。
 
