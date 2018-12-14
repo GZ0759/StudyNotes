@@ -99,14 +99,118 @@ $.post() 方法的结构和使用方式都相同，不过它们之间仍然有�
 
 常规的表单提交方法使使表单提交到另一个页面，整个浏览器都会被刷新，而使用 Ajax 技术能够异步提交表单，并将服务区返回的数据显示在当前页面中。
 
-serialize() 方法也是作用于一个 jQuery 对象 ，它能够将 DOM 元素内容序列化为字符串，用于 Ajax 请求。
+serialize() 方法也是作用于一个 jQuery 对象 ，它能够将 DOM 元素内容序列化为字符串，用于 Ajax 请求。需要注意的是，`$.get()`方法中 data 参数不仅可以使用映射方式，也可以使用字符串方式。用字符串方式时，需要注意对字符编码（中问问题），如果不希望编码带来麻烦，可以使用 serialize() 方法，它会自动编码。
+
+serializeArray() 方法不是返回字符串，而是将 DOM 元素序列化后，返回 JSON 格式的数据。既然是一个对象，那么就可以使用`$.each()`函数对数据进行迭代输出。
+
+```javascript
+$(function(){
+		 var fields = $(":checkbox,:radio").serializeArray();
+		 console.log(fields);// Firebug输出
+		 $.each( fields, function(i, field){
+		    $("#results").append(field.value + " , ");
+		}); 
+   })
+```
 
 
 
+`$.param()`方法用来对一个数组或对象按照 key/value 进行序列化，比如将一个普通的对象序列化。
+
+```javascript
+var obj = {a:1, b:2,c:3};
+var k = $.param(obj);
+alert(k);  // 输出a=1&b=2&c=3
+```
 
 
 
+## 6.7 jQuery中的 Ajax 全局事件
 
+jQuery 简化 Ajax 操作不仅体现在调用 Ajax 方法和处理相应方面，而且还体现在对调用 Ajax 方法的过程中的 HTTP 请求的控制。通过 jQuery 提供了一些自定义全局函数，能够与各种与 Ajax 相关的事件注册回调函数。例如当 Ajax 请求开始时，会触发 ajaxStart() 方法的回调函数；当 Ajax 请求结束时，会触发 ajaxStop() 方法的回调函数。这些方法都是全局的方法，因此无论创建它们的代码位于何处，只要有 Ajax 请求发生时，就会触发它们。
 
+- ajaxStart：ajax请求开始前
+- ajaxSend：ajax请求时
+- ajaxSuccess：ajax获取数据后
+- ajaxComplete：ajax请求完成时
+- ajaxError：ajax请求发生错误后
+- ajaxStop：ajax请求停止后
+
+如果想使某个 Ajax 请求不受全局方法的影响，那么可以在使用`$.ajax(options)`方法时，将参数中的 global 设置为 false。
+
+## 6.8 基于 jQuery 的Ajax 聊天室程序
+
+设计数据库。首先构建一个聊天信息表，有4个字段，即消息编号（id），姓名（user），内容（msg）以及一个数字事件戳（timestamp）。
+
+服务器端处理。服务器端主要用来处理用户提交的信息以及输出返回。
+
+- 首先需要在服务器端链接数据库。
+- 其次如果有用户提交新信息，则把信息插入数据库，同时删除旧的的数据信息（保持数据库中只有10条信息）。
+- 最后从数据库中获取新的信息并以 XML 格式输出返回。
+
+客户端处理。客户端需要做两项工作。
+
+- 首先提交用户聊天信息，然后处理服务器端返回的聊天信息，将信息实时呈现出来。
+- 每隔一定时间发起查询数据库中聊天记录的请求，然后处理服务器端返回的聊天信息，将信息实时呈现出来。
+
+客户端代码。
+
+设置当前消息的时间戳为0，并且调用函数来加载数据库已有的聊天信息。
+
+```javascript
+timestamp = 0;   
+updateMsg();
+```
+
+表单提交的代码。在 submit 事件函数中，可以使用 jQuery 的`$.post()`方法来发送一个 POST 请求，把要传递的数据都放入第2个参数中，用 {} 包裹。
+
+```javascript
+$("#chatform").submit(function(){
+    $.post("backend.php",{
+        message: $("#msd").val(),
+        name: $("#author").val(),
+        action: "postmsg",
+        time: timestamp
+    },function(xml){
+        $("#msg").val("");
+        addMessages(xml)
+    });
+    return false;  // 阻止表单提交
+})
+```
 
  
+
+再看 addMessage() 函数，它是用来处理 XML 相应信息的。
+
+```javascript
+function addMessages(xml) {   
+  if($("status",xml).text() == "2") return;   
+  timestamp = $("time",xml).text();   
+  $("message",xml).each(function(id) {   
+    message = $("message",xml).get(id);   
+    $("#messagewindow").prepend("<b>"+$("author",message).text()+   
+              "</b>: "+$("text",message).text()+   
+              "<br />");   
+  });   
+}
+```
+
+
+
+updateMsg() 函数的功能是到服务器查询新信息，并且调用 addMessage() 函数来响应返回的 XML 文档，同时需要设置一个间隔时间，让聊天窗口自动更新。
+
+```javascript
+ function updateMsg() {   
+      $.post("backend.php",{ time: timestamp }, function(xml) {   
+        $("#loading").remove();   
+        addMessages(xml);   
+      });   
+      setTimeout('updateMsg()', 4000);   
+    }   
+```
+
+
+
+
+
