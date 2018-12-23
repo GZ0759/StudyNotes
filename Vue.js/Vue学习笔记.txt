@@ -10,17 +10,71 @@ Vue.js 的官方文档中是这样介绍它的。 简单小巧的核心，渐进
 - 状态管理 
 -  虚拟 DOM ( Virtual DOM) 
 
-MVVM 模式是由经典的软件架构 MVC 衍生来的 。当 View （视图层）变化时，会自动更新到 ViewModel （视图模型），反之亦然。 View 和 ViewModel 之间通过双向绑定（tdata-binding）建立联系。Vue.js 通过 MVVM 的模式拆分为视图与数据两部分，并将其分离。因此，你只需要关心你的数据即可， DOM 的事情 Vue 会帮你自动搞定。
+MVVM（Model-VIew-ViewModel）模式是由经典的软件架构 MVC 衍生来的 。当 View （视图层）变化时，会自动更新到 ViewModel （视图模型），反之亦然。 View 和 ViewModel 之间通过双向绑定（tdata-binding）建立联系。Vue.js 通过 MVVM 的模式拆分为视图与数据两部分，并将其分离。因此，你只需要关心你的数据即可， DOM 的事情 Vue 会帮你自动搞定。
+
+Vue.js 是一个渐进式的 JavaScript 框架，根据项目需求，可以选择从不同的维度来使用它。如果只是简单开发， 可以直接通过 script 加载 CDN 文件。引入 Vue.js 框架后，在 body 底部使用 new Vue() 的方式创建一个实例，这就是 Vue.js 最基本的开发模式。
+
+```html
+`<!-- 开发环境版本，包含了有帮助的命令行警告 --><script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>`
+```
 
 # 第二章 数据绑定和第一个Vue应用
 
-Vue.js 应用的创建很简单，通过构造函数 Vue 就可以创建一个 Vue 的根实例，并启动 Vue 应用。
+Vue.js 应用的创建很简单，通过构造函数 Vue 就可以创建一个 Vue 的根实例，并启动 Vue 应用。变量 app 就代表了这个 Vue 实例，基本上所以的代码都是一个对象，写入 Vue 实例的选项内。
 
-Vue实例对象的一个必不可少的选项就是el，用于指定一个页面中已存在的DOM元素来挂载Vue实例，它可以是HTMLElement，也可以是CSS选择器。
+```javascript
+var app = new Vue({
+  // 选项
+})
+```
+
+
+
+Vue 实例对象的一个必不可少的选项就是 el ，用于指定一个页面中已存在的 DOM 元素来挂载 Vue 实例，它可以是 HTMLElement ，也可以是 CSS 选择器。挂载成功后，我们可以通过 app.$el 来访问该元素。Vue 提供了很多常见的实例属性和方法，都以`$`开头。
+
+```javascript
+// <div id='app'></div>
+var app = new Vue({
+    el:"#app" /* 或者是 document.getElementById('app') */
+}）
+```
+
+
 
 通过 Vue 实例的 data 选项，可以声明应用内需要双向绑定的数据。建议所有会用到的数据都预先在 data 内声明，这样不至于将数据散落在业务逻辑中，难以维护。Vue 实例本身也代理了 data 对象里的所有属性。
 
-每个 Vue 实例创建时，都会经历一系列的初始化过程，同时也会调用相应的生命周期钩子， 我们可以利用这些钩子，在合适的时机执行我们的业务逻辑。
+```javascript
+var data = { a: 1 }
+
+// 直接创建一个实例
+var vm = new Vue({
+  data: data
+})
+vm.a // => 1
+vm.$data === data // => true
+```
+
+
+
+每个 Vue 实例创建时，都会经历一系列的初始化过程，同时也会调用相应的生命周期钩子， 我们可以利用这些钩子，在合适的时机执行我们的业务逻辑。这些钩子与 el 和 data 类似，也是作为选项写入 Vue 实例内，并且钩子的 this 指向的是调用它的 Vue 实例。
+
+```javascript
+new Vue({
+  el: '#app',
+  data: {
+    a: 1
+  },
+  created: function () {
+    // `this` 指向 vm 实例
+    console.log('a is: ' + this.a)
+  },
+    mounted: function () {
+    console.log(this.$el); // <div id="app"><div>    
+  }
+})
+```
+
+
 
 比较常用的生命周期钩子有，created（实例创建完成后调用）、mounted（el挂载到实例上后调用）、beforeDestroy（实例销毁之前调用）。这些钩子与 el 和 data 类似，也是作为选项写入 Vue 实例内，并且钩子的 this 指向的是调用它的 Vue 实例。
 
