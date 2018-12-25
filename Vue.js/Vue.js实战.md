@@ -1,5 +1,7 @@
 # 第一章 初识Vue.js
 
+## 1.1 Vue.js是什么
+
 Vue.js 的官方文档中是这样介绍它的。 简单小巧的核心，渐进式技术栈，足以应付任何规模的应用。 简单小巧是指 Vue.js 压缩后大小仅有17KB。所谓渐进式（Progressive），就是你可以一步一 步、有阶段性地来使用 Vue.js，不必一开始就使用所有的东西。
 
 使用 Vue.js 可以让 Web 开发变得简单，同时也颠覆了传统前端开发模式。它提供了现代 Web 开发中常见的高级功能，比如 ：
@@ -8,17 +10,22 @@ Vue.js 的官方文档中是这样介绍它的。 简单小巧的核心，渐进
 - 可复用的组件
 - 前端路由
 - 状态管理 
--  虚拟 DOM ( Virtual DOM) 
+- 虚拟 DOM ( Virtual DOM) 
 
 MVVM（Model-VIew-ViewModel）模式是由经典的软件架构 MVC 衍生来的 。当 View （视图层）变化时，会自动更新到 ViewModel （视图模型），反之亦然。 View 和 ViewModel 之间通过双向绑定（tdata-binding）建立联系。Vue.js 通过 MVVM 的模式拆分为视图与数据两部分，并将其分离。因此，你只需要关心你的数据即可， DOM 的事情 Vue 会帮你自动搞定。
+
+## 1.2 如何使用Vue.js
 
 Vue.js 是一个渐进式的 JavaScript 框架，根据项目需求，可以选择从不同的维度来使用它。如果只是简单开发， 可以直接通过 script 加载 CDN 文件。引入 Vue.js 框架后，在 body 底部使用 new Vue() 的方式创建一个实例，这就是 Vue.js 最基本的开发模式。
 
 ```html
-`<!-- 开发环境版本，包含了有帮助的命令行警告 --><script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>`
+`<!-- 开发环境版本，包含了有帮助的命令行警告 -->
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>`
 ```
 
 # 第二章 数据绑定和第一个Vue应用
+
+## 2.1 Vue实例与数据绑定
 
 Vue.js 应用的创建很简单，通过构造函数 Vue 就可以创建一个 Vue 的根实例，并启动 Vue 应用。变量 app 就代表了这个 Vue 实例，基本上所以的代码都是一个对象，写入 Vue 实例的选项内。
 
@@ -78,50 +85,207 @@ new Vue({
 
 比较常用的生命周期钩子有，created（实例创建完成后调用）、mounted（el挂载到实例上后调用）、beforeDestroy（实例销毁之前调用）。这些钩子与 el 和 data 类似，也是作为选项写入 Vue 实例内，并且钩子的 this 指向的是调用它的 Vue 实例。
 
-使用双大括号（Mustache语法）`"{{}}"`是最基本的文本插值方法，它会自动将我们双向绑定的数值实时显示出来，可以v-text代替。
+使用双大括号（Mustache语法）`"{{}}"`是最基本的文本插值方法，它会自动将我们双向绑定的数值实时显示出来，可以 v-text 代替。通过任何方法修改数据，大括号的内容都会被实时替换。
 
-v-html指令用于输出 html 代码，而不是将数据解释后的纯文本。v-pre指令用于输入纯文本。
+```html
+<span v-text="msg"></span>
+<!-- 和下面的一样 -->
+<span>{{msg}}</span>
+```
+
+
 
 ```html
 <p>Using mustaches: {{ rawHtml }}</p>   
 <!-- 显示 rawHtml 表示的内容，文本形式 -->
+
 <p>Using v-html directive: <span v-html="rawHtml"></span></p>
 <!-- 显示rawHtml 表示的内容，如是 html 则解析再显示 -->
+
 <span v-pre>{{ this will not be compiled }}</span>
 <!-- 跳过这个元素及子元素的编译过程。可用来显示原始 Mustache 标签 -->
 ```
 
 
 
-在`{{}}`中，除了简单的绑定属性值外，还可以使用 JavaScript 表达式进行简单的运算 、三元运算等。Vue.js只支持单个表达式，不支持语句和流控制。
+在`{{}}`中，除了简单的绑定属性值外，还可以使用 JavaScript 表达式进行简单的运算 、三元运算等。Vue.js只支持单个表达式，不支持语句和流控制。另外在表达式中，不能使用用户自定义的全局变量，只能使用 Vue 白名单内的全局变量，例如 Math 和 Date。
 
-Vue.js支持在`{{}}`插值的尾部添加一个管道符 “ | ” 对数据进行过滤，过滤的规则是自定义的，通过给Vue实例添加选项 filters 来设置，过滤器可以串联，也可以接受参数。
+Vue.js 支持在`{{}}`插值的尾部添加一个管道符 “ | ” 对数据进行过滤，经常用于格式化文本。过滤的规则是自定义的，通过给 Vue 实例添加选项 filters 来设置，过滤器可以串联，也可以接受参数。过滤器可以用在两个地方：双花括号插值和 v-bind 表达式。
 
-v-bind的基本用途是动态更新HTML元素上的属性，可用语法糖“：”代替；v-on指令用来绑定事件监听器，可用语法糖“@”代替。
+```html
+<!-- 在双花括号中 -->
+{{ message | capitalize }}
+
+<!-- 在 `v-bind` 中 -->
+<div v-bind:id="rawId | formatId"></div>
+```
+
+
+
+## 2.2 指令与事件
+
+指令是 Vue.js 模板中最常用的一项功能，它带有前缀 v-，指令的主要职责就是当起表达式的值改变时，相应地将某些行为应用到 DOM 上。
+
+数据驱动 DOM 是Vue.js 的核心理念，所以不到万不得已时不要主动操作 DOM，只需要维护好数据，DOM 的事 Vue 会帮忙优雅处理。
+
+Vue.js 内置了很多指令，帮助快速完成常见的 DOM 操作，比如循环渲染、显示与隐藏等，其中有两个比较重要的指令是 v-bind 和 v-on。
+
+v-bind 的基本用途是动态更新HTML元素上的属性，比如 id、class 等。
+
+v-on 指令用来绑定事件监听器。在普通元素上，v-on 可以监听原生的 DOM 事件，表达式可以是一个方法名，这些方法都写在 Vue 实例的 methods 属性内，并且是函数的形式，函数内的 this 指向的是当前 Vue 实例本身，因此可以直接使用 this.xxx 的形式来访问或修改数据。表达式除了方法名，也可以直接是一个内联语句。
+
+## 2.3 语法糖
+
+语法糖是指在不影响功能的情况下，添加某种方法实现同样的效果，从而方便程序开发。
+
+Vue.js 的 v-bind 和 v-on 指令都提供了语法糖，也可以说是缩写，比如 v-bind 可以省略，直接写一个冒号”:”；v-on 可以直接用"@"来缩写。
 
 # 第三章 计算属性
+
+## 3.1 什么是计算属性
+
+模板内的表达式非常便利，但是设计它们的初衷是用于简单运算的。在模板中放入太多的逻辑会让模板过重且难以维护。
+
+所有的计算属性都以函数的形式写在 Vue 实例内的 computed 选项内，最终返回计算后的结果。
+
+## 3.2 计算属性用法
 
 在一个计算属性里可以完成各种复杂的逻辑，包括运算、函数调用等，只要最终返回一个结果就可以。除了简单的用法，计算属性还可以依赖多个 Vue 实例的数据，只要其中任一数据变化，计算属性就会重新执行，视图也会更新。  
 
 每一个计算属性都包含一个 getter 和一个 setter，默认只是利用了 getter 来读取。在需要时，也可以提供一个 setter 函数 ， 当手动修改计算属性的值就像修改一个普通数据那样时，就会触发 setter 函数，执行一些自定义的操作。
 
+```javascript
+computed: {
+  fullName: {
+    // getter
+    get: function () {
+      return this.firstName + ' ' + this.lastName
+    },
+    // setter
+    set: function (newValue) {
+      var names = newValue.split(' ')
+      this.firstName = names[0]
+      this.lastName = names[names.length - 1]
+    }
+  }
+}
+vm.fullName = 'John Doe'
+```
+
+
+
 计算属性除了简单的文本插值外，还经常用于动态地设置元素的样式名称 class 和内联样式 style 。当使用组件时，计算属性也经常用来动态传递 props 。
 
 计算属性还有两个很实用的小技巧，一是计算属性可以依赖其他计算属性，二是计算属性不仅可以依赖当前Vue实例的数据，还可以依赖其它实例的数据。
 
-计算属性是基于它的依赖缓存的。 一个计算属性所依赖的数据发生变化时，它才会重新取值，所以 text 只要不改变，计算属性也就不更新。但是 methods 则不同，只要重新渲染，它就会被调用，因此函数也会被执行 。使用计算属性还是 methods 取决于你是否需要缓存，当遍历大数组和做大量计算时，应当使用计算属性，除非你不希望得到缓存。  
+## 3.3 计算属性缓存
+
+调用 methods 里的方法也可以与计算属性起到同样的作用。
+
+```html
+<p>Reversed message: "{{ reversedMessage() }}"</p>
+```
+
+
+
+```javascript
+// 在组件中
+methods: {
+  reversedMessage: function () {
+    return this.message.split('').reverse().join('')
+  }
+}
+```
+
+
+
+计算属性是基于它的依赖缓存的。 一个计算属性所依赖的数据发生变化时，它才会重新取值，所以依赖数据只要不改变，计算属性也就不更新。但是 methods 则不同，只要重新渲染，它就会被调用，因此函数也会被执行 。
+
+使用计算属性还是 methods 取决于你是否需要缓存，当遍历大数组和做大量计算时，应当使用计算属性，除非你不希望得到缓存。  
 
 # 第四章 v-bind及class与style绑定
 
-绑定class的几种方式，对象语法、数组语法和在组件上使用。
+## 4.1 了解b-bind指令
 
-- 给v-bind:class设置一个对象，可以动态地切换class。该设置能够与普通class共存。当 :class 的表达式过长或逻辑复杂时，还可以绑定一个计算属性。
-- 当需要应用多个 class 时， 可以使用数组语法 ， 给 :class 绑定一个数组，应用一个 class 列表。支持使用三元表达式来根据条件切换class。
-- 如果直接在自定义组件上使用class或:class，样式规则会直接应用到这个组件的根元素上。但只适合于自定义组件的最外层是一个根元素。
+v-bind 的的主要用法是动态更新 HTML 元素上的属性。
+
+在数据绑定中，最常见的两个需求就是元素的样式名称 class 和内联样式 style 的动态绑定，它们也是 HTML 的属性，因此可以使用 v-bind 指令。我们只需要用 v-bind 计算出表达式最终的字符串就可以，不过有时候表达式的逻辑较复杂，使用字符串拼接方法较难阅读和维护，所以 Vue.js 增强了对 class 和 style 的绑定。
+
+## 4.2 绑定class的几种方式
+
+绑定 class 的几种方式，包括对象语法、数组语法和在组件上使用。
+
+给 v-bind:class 设置一个对象，可以动态地切换 class。对象中也可以传入多个属性，来动态切换 class，表达式中项为真时对应的类名就会加载。另外，该设置能够与普通 class 共存。
+
+当 :class 的表达式过长或逻辑复杂时，还可以绑定一个计算属性。
+
+```html
+<div class="static"
+     v-bind:class="{ active: isActive, 'text-danger': hasError }">
+</div>
+```
+
+
+
+当需要应用多个 class 时， 可以使用数组语法，给 :class 绑定一个数组，应用一个 class 列表。也可以使用三元表达式来根据条件切换 class。如果 class 有多个条件时，可以在数组语法中使用对象语法。
+
+```html
+<div v-bind:class="[activeClass, errorClass]"></div>
+<!--  
+data: {
+  activeClass: 'active',
+  errorClass: 'text-danger'
+} 
+-->
+
+<div v-bind:class="[isActive ? activeClass : '', errorClass]"></div>
+
+```
+
+
+
+如果直接在自定义组件上使用 class 或 :class，样式规则会直接应用到这个组件的根元素上。但只适合于自定义组件的最外层是一个根元素。当不满足这种条件或需要给具体的子元素设置类名时，应当使用组件的 props 来传递。
+
+```html
+<my-component class="baz boo"></my-component>
+<!--  
+渲染后的结果为
+<p class="foo bar baz boo">Hi</p>  
+-->
+<script>
+  Vue.component('my-component', {
+    template: '<p class="foo bar">Hi</p>'
+  })
+</script>
+```
+
+
+
+## 4.3 绑定内联样式
 
 绑定内联样式，使用v-bind:style可以给元素绑定内联样式，方法与:class类似，也有对象语法和数组语法，看起来很像直接在元素上写CSS。
 
-CSS属性名称使用驼峰命名或短横分割命名，一般以对象写在data或computed，也可以使用数组语法。大多数情况下 ， 直接写一长串的样式不便于阅读和维护，所以一般写在 data 或 computed 里。同时，Vue.js会自动给特殊的CSS属性名称增加前缀，比如 transform。
+CSS属性名称使用驼峰命名或短横分割命名。大多数情况下直接写一长串的样式不便于阅读和维护，一般以对象写在data或computed，也可以使用数组语法。大多数情况下 ， 直接写一长串的样式不便于阅读和维护，所以一般写在 data 或 computed 里。
+
+```html
+<div v-bind:style="styleObject"></div>
+
+<script>
+    var app = new Vue({
+      el: '#app',
+      data: {
+        styleObject: {
+          color: 'red',
+          fontSize: '13px'
+        }
+      }
+    })
+</script>
+```
+
+
+
+另外，Vue.js会自动给特殊的CSS属性名称增加前缀，比如 transform。
 
 # 第五章 内置指令
 
