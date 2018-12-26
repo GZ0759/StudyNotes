@@ -289,17 +289,156 @@ CSS属性名称使用驼峰命名或短横分割命名。大多数情况下直�
 
 # 第五章 内置指令
 
-v-cloak不需要表达式，在Vue实例结束编译时从从绑定的HTML元素上移除，经常和CSS的display:none配合使用。
+## 5.1 基本指令
 
-v-once定义它的元素或组件只渲染一次，包括元素或组件的所有子节点。
+v-cloak 不需要表达式，在 Vue 实例结束编译时从从绑定的HTML元素上移除，经常和 CSS 的 display:none 配合使用。在一般情况下，v-cloak 是一个解决初始化慢导致页面闪动的最佳实践。对于简单的项目很实用，但是在具有工程化的项目里，剩下的内容都是由路由去挂载不同组件完成的，所以不再需要 v-cloak。
 
-v-if、v-else-if、v-else是条件渲染指令，利用key属性，可以决定是否要复用元素。
+```html
+<div v-cloak>
+  {{ message }}
+</div>
+```
 
-v-show改变元素的CSS属性display，但不能再<template>上使用。
 
-v-for是列表渲染指令，可将一个数组遍历或枚举一个对象循环显示。也支持用of来代替in作为分隔符，前者是当前数组元素的别名，后者是数组。遍历数组时，v-for的表达式支持一个可选参数作为当前项的索引。与v-if一样，v-for也可以用在内置标签<template>上，将多个元素进行渲染。遍历对象属性时，有两个可选参数，分别是键名和索引。v-for可以迭代整数和字符串。数组更新，Vue包含了一组观察数组变异的方法，使用它们改变数组也会触发视图更新，例如push()、pop()、shift()、unshift()、splice()、sort()、reverse()。但非变异方法不会更新视图，例如filter()、concat()、slice()，或者通过索引直接设置项、修改数组长度，也是不会触发视图更新的。
 
-事件指令v-on的基本内容。@click调用的方法名后可以不跟括号"()"，如果该方法有参数，默认会将原生事件对象event传入。Vue提供了一个特殊变量$event，用于访问原生DOM事件。事件可以用修饰符来实现特定功能，在绑定的事件后加小圆点，再跟一个后缀来使用修饰符。修饰符有stop、prevent、captu、self、once，也可以自己配置具体按键，全局定义后即可使用keycode和快键名称，甚至组合使用。
+```css
+[v-cloak] {
+  display: none;
+}
+```
+
+
+
+v-once 也是一个不需要表达式的指令，作用是定义它的元素或组件只渲染一次，包括元素或组件的所有子节点。首次渲染后，不再随数据的变化重新渲染，将被视为静态内容。v-once 在业务中很少使用，只有需要进一步优化性能时才会用得上。
+
+## 5.2 条件渲染指令
+
+与 JavaScript 的条件语句 if、else、else if 类似，Vue.js 的条件指令可以根据表达式的值在 DOM 中渲染或销毁元素/组件。可以在 Vue.js 内置的`<template>`元素上使用条件指令，最终渲染的结果不会包含该元素。
+
+Vue 在渲染元素时，出于效率考虑，会尽可能地复用已有的元素而非重新渲染。v-if、v-else-if、v-else 是条件渲染指令，利用 key 属性，可以决定是否要复用元素，key 的值必须是唯一的。
+
+v-show 改变元素的 CSS 属性 display，当 v-show 表达式的值为 false 时，元素会隐藏，查看 DOM 结构会看到元素上加载了内联样式`display: none;`。但该指令不能在`<template>`上使用。
+
+v-if 是真正的条件渲染，它会根据表达式适当地销毁或重建元素及绑定的事件或子组件，如果表达式的初始值为 false，则一开始元素/组件并不会渲染，只有当条件第一次变为真时才开始变异。而 v-show 只是简单的 CSS 属性切换，无论条件真与否，都会被编译。相比之下，v-if 更适合条件不经常改变的场景，因为它切换开销相对较大，而 v-show 适用于频繁切换条件。
+
+## 5.3 列表渲染指令v-for
+
+v-for 是列表渲染指令，可将一个数组遍历或枚举一个对象循环显示。也支持用 of 来代替 in 作为分隔符，前者是当前数组元素的别名，后者是数组。遍历数组时，v-for 的表达式支持一个可选参数作为当前项的索引。与 v-if 一样，v-for也可以用在内置标签`<template>`上，将多个元素进行渲染。
+
+除了数组外，对象的属性也是可以遍历的。遍历对象属性时，有两个可选参数，分别是键名和索引。v-for 也可以迭代整数和字符串。
+
+```html
+<div v-for="(value, key, index) in object">
+  {{ index }}. {{ key }}: {{ value }}
+</div>
+```
+
+
+
+数组更新，Vue 包含了一组观察数组变异的方法，使用它们改变数组也会触发视图更新，例如 push()、pop()、shift()、unshift()、splice()、sort()、reverse()。但非变异方法不会更新视图，例如 filter()、concat()、slice()，它们返回的是一个新数组，在使用这些非变异方法时，可以用新数组来替换原数组。Vue 在检测到数组变化时，并不是直接重新渲染整个列表，而是最大化地复用 DOM 元素，因此可以大胆地用新数组来替换旧数组，不用担心性能问题。
+
+需要注意的是，通过索引直接设置项、修改数组长度，也是不会触发视图更新的。解决第一个问题的方法可以使用 Vue内置的 set 方法，如果是在 webpack 中使用组件化的方式，默认是没有导入 Vue 的，这是可以使用`$set`。另一种方法时直接使用 splice 来解决。
+
+```javascript
+var vm = new Vue({
+  data: {
+    items: ['a', 'b', 'c']
+  }
+})
+vm.items[1] = 'x' // 不是响应性的
+vm.items.length = 2 // 不是响应性的
+
+// Vue.set
+Vue.set(vm.items, indexOfItem, newValue)
+// Array.prototype.splice
+vm.items.splice(indexOfItem, 1, newValue)
+```
+
+
+
+过滤与排序。当不想改变原数组，想通过一个数组的副本来做过滤或排序的显示时，可以使用计算属性来返回过滤或排序后的数组。
+
+```html
+<li v-for="n in evenNumbers">{{ n }}</li>
+```
+
+
+
+```javascript
+data: {
+  numbers: [ 1, 2, 3, 4, 5 ]
+},
+computed: {
+  evenNumbers: function () {
+    return this.numbers.filter(function (number) {
+      return number % 2 === 0
+    })
+  }
+}
+```
+
+
+
+在计算属性不适用的情况下 (例如，在嵌套 v-for 循环中) 你可以使用一个 method 方法。
+
+```html
+<li v-for="n in even(numbers)">{{ n }}</li>
+```
+
+
+
+```javascript
+data: {
+  numbers: [ 1, 2, 3, 4, 5 ]
+},
+methods: {
+  even: function (numbers) {
+    return numbers.filter(function (number) {
+      return number % 2 === 0
+    })
+  }
+}
+```
+
+
+
+## 5.4 方法与事件
+
+在事件绑定上，类似原生 JavaScript 的 onclick 等写法，也是在 HTML 上进行监听的。`@click`的表达式可以直接使用 JavaScript语句，也可以是一个在 Vue 实例中 methods 选项内的函数名。
+
+`@click`调用的方法名后可以不跟括号"()"，如果该方法有参数，默认会将原生事件对象 event 传入。
+
+这种在 HTML 元素上监听事件的设计看似将 DOM 与 JavaScript 紧耦合，违背分离的原理，实则刚好相反。因为通过 HTML 就可以知道调用的是哪个方法，将逻辑与 DOM 解耦，便于维护。最重要的是，当 ViewModel 销毁时，所有的事件处理器都会自动删除，无需自己清理。
+
+Vue 提供了一个特殊变量`$event`，用于访问原生 DOM 事件。
+
+事件可以用修饰符来实现特定功能，例如`event.preventDefault()`，可以用 Vue 事件的修饰符来实现。在绑定的事件后加小圆点“.”，再跟一个后缀来使用修饰符。
+
+- `.stop` - 调用 `event.stopPropagation()`。
+- `.prevent` - 调用 `event.preventDefault()`。
+- `.capture` - 添加事件侦听器时使用 capture 模式。
+- `.self` - 只当事件是从侦听器绑定的元素本身触发时才触发回调。
+- `.{keyCode | keyAlias}` - 只当事件是从特定键触发时才触发回调。
+- `.native` - 监听组件根元素的原生事件。
+- `.once` - 只触发一次回调。
+- `.left` - (2.2.0) 只当点击鼠标左键时触发。
+- `.right` - (2.2.0) 只当点击鼠标右键时触发。
+- `.middle` - (2.2.0) 只当点击鼠标中键时触发。
+- `.passive` - (2.3.0) 以 `{ passive: true }` 模式添加侦听器
+
+在表单元素上监听键盘事件时，还可以使用按键修饰符，比如按下具体某个键时才调用方法。也可以自己配置具体按键，全局定义后即可使用 keycode 和快键名称，甚至组合使用。除了具体的某个 keyCode 外，Vue 还提供了一些快捷名称。这些按键修饰符也可以组合使用，或和鼠标一起配合使用。
+
+## 5.5 实战：利用计算属性、指令等知识开发购物车
+
+购物侧需要展示一个已加入购物车的商品列表，包含商品名称、商品单价、购买数量和操作等信息，还需要实时显示购买的总价。其中购买数量可以增加或减少，每类购买数量还可以从购物车中移除。
+
+注意，将 vue.min.js 和 index.js 文件写在`<body>`的最底部，如果写在`<head>`里，Vue 实例将无法创建，因为此时 DOM 还没有被解析完成，除非通过异步或在事件 DOMContentLoaded（IE是onreadystatechange）触发时再创建 vue 实例，这有点像 jQuery的`$(document).ready()`方法。
+
+练习1：在当前示例基础上扩展商品列表，新增一项是否选中该商品的功能，总价变为只计算选中商品的总价，同时提供一个全选的按钮。
+
+练习2：将商品列表 list 改为一个二维数组来实现商品的分类，比如可分为“电子产品”、“生活用品”和“果蔬”，同类商品聚合在一起。提示，你可能会用到两次 v-for。
+
+
 
 # 第六章 表单与v-model
 
