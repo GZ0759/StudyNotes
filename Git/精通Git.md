@@ -58,7 +58,7 @@ Git 有多种使用方式。可以使用原生的命令行模式，也可以使�
 
 如果你想在 Linux 上用二进制安装程序来安装 Git，可以使用发行版包含的基础软件包管理工具来安装。 
 
-```powershell
+```shell
 # 如果以 Fedora 上为例，你可以使用 yum：
 $ sudo yum install git 
 
@@ -92,7 +92,7 @@ Git 自带一个 `git config` 的工具来帮助设置控制 Git 外观和行为
 
 当安装完 Git 应该做的第一件事就是设置你的用户名称与邮件地址。 这样做很重要，因为每一个 Git 的提交都会使用这些信息，并且它会写入到每一次提交中，不可更改：
 
-```powershell
+```shell
 $ git config --global user.name "John Doe"
 $ git config --global user.email johndoe@example.com
 ```
@@ -109,7 +109,7 @@ $ git config --global user.email johndoe@example.com
 
 若使用 Git 时需要获取帮助，有三种方法可以找到 Git 命令的使用手册：
 
-```powershell
+```shell
 $ git help <verb>
 $ git <verb> --help
 $ man git-<verb>
@@ -119,7 +119,7 @@ $ man git-<verb>
 
 例如，要想获得 config 命令的手册，执行
 
-```powershell
+```shell
 $ git help config
 ```
 
@@ -135,7 +135,7 @@ $ git help config
 
 如果打算使用 Git 来对现有的项目进行管理，只需要进入该项目目录并输入以下命令。该命令将创建一个名为 `.git` 的子目录，这个子目录含有你初始化的 Git 仓库中所有的必须文件，这些文件是 Git 仓库的骨干。 此时，项目里的文件还没有被跟踪。可通过 `git add` 命令来实现对指定文件的跟踪，然后执行 `git commit` 提交。
 
-```powershell
+```shell
 $ git init 
 
 $ git add *.c
@@ -147,7 +147,7 @@ $ git commit -m 'initial project version'
 
 克隆现有的仓库。Git 克隆的是该 Git 仓库服务器上的几乎所有数据，而不是仅仅复制完成你的工作所需要文件。 当执行 `git clone` 命令的时候，默认配置下远程 Git 仓库中的每一个文件的每一个版本都将被拉取下来。如下命令，会在当前目录下创建一个名为 “libgit2” 的目录，并在这个目录下初始化一个 `.git` 文件夹，从远程仓库拉取下所有数据放入 `.git` 文件夹，然后从中读取最新版本的文件的拷贝。同时可以在克隆远程仓库的时候，自定义本地仓库的名字。
 
-```powershell
+```shell
 $ git clone https://github.com/libgit2/libgit2
 
 $ git clone https://github.com/libgit2/libgit2 mylibgit
@@ -201,7 +201,7 @@ Git 提供了一个跳过使用暂存区域的方式， 只要在提交的时候
 
 不像其它的 VCS 系统，Git 并不显式跟踪文件移动操作。 如果在 Git 中重命名了某个文件，仓库中存储的元数据并不会体现出这是一次改名操作。不过 Git 非常聪明，它会推断出究竟发生了什么。要在 Git 中对文件改名，可以直接运行 `git mv` 就行了。其实，运行 `git mv` 就相当于运行了下面三条命令
 
-```powershell
+```shell
 $ git mv file_from file_to
 
 $ mv README.md README
@@ -249,7 +249,7 @@ $ git add README
 
 另一个非常有用的筛选选项是 `-S`，可以列出那些添加或移除了某些字符串的提交。 比如说，你想找出添加或移除了某一个特定函数的引用的提交，你可以这样使用：
 
-```powershell
+```shell
 $ git log -Sfunction_name
 ```
 
@@ -271,7 +271,7 @@ $ git log -Sfunction_name
 
 查看远程仓库。如果想查看你已经配置的远程仓库服务器，可以运用`git remote` 命令，它会列出你指定的每一个远程服务器的简写。如果已经克隆了自己的仓库，那么至少应该能看到 origin，这是 Git 给克隆的仓库服务器的默认名字。可以指定选项`-v`，会显示需要读写远程仓库使用的 Git 保存的简写与其对应的 URL。如果远程仓库不止一个，该命令会将它们全部列出。
 
-```powershell
+```shell
 $ git remote
 origin
 
@@ -284,7 +284,7 @@ origin	https://github.com/schacon/ticgit (push)
 
 添加远程仓库。运行 `git remote add <shortname> <url>` 添加一个新的远程 Git 仓库，同时指定一个可以轻松引用的简写。
 
-```powershell
+```shell
 $ git remote add pb https://github.com/paulboone/ticgit
 $ git remote -v
 origin	https://github.com/schacon/ticgit (fetch)
@@ -303,7 +303,7 @@ pb	https://github.com/paulboone/ticgit (push)
 
 如果有一个分支设置为跟踪一个远程分支，可以使用 `git pull`命令来自动的抓取然后合并远程分支到当前分支。 这可能是一个更简单或更舒服的工作流程；默认情况下，`git clone` 命令会自动设置本地 master 分支跟踪克隆的远程仓库的 master 分支， 运行 `git pull` 通常会从最初克隆的服务器上抓取数据并自动尝试合并到当前所在的分支。
 
-```powershell
+```shell
 $ git fetch pb
 remote: Counting objects: 43, done.
 remote: Compressing objects: 100% (36/36), done.
@@ -320,7 +320,7 @@ From https://github.com/paulboone/ticgit
 
 只有当有克隆服务器的写入权限，并且之前没有人推送过时，这条命令才能生效。 当和其他人在同一时间克隆，他们先推送到上游然后你再推送到上游，你的推送就会毫无疑问地被拒绝。 你必须先将他们的工作拉取下来并将其合并进你的工作后才能推送。
 
-```powershell
+```shell
 $ git push origin master
 ```
 
@@ -328,7 +328,7 @@ $ git push origin master
 
 查看远程仓库。如果想查看某一个远程仓库的更多信息，可以使用 `git remote show [remote-name]` 命令。还可以告诉你运行推送和拉取命令时，所有引用抓取和分支合并的情况。
 
-```powershell
+```shell
 $ git remote show origin
 * remote origin
   Fetch URL: https://github.com/schacon/ticgit
@@ -347,7 +347,7 @@ $ git remote show origin
 
 远程仓库的移除与重命名。如果想要重命名引用的名字可以运行 `git remote rename` 去修改一个远程仓库的简写名。例如，想要将 `pb` 重命名为 `paul`， 就可以使用`git remote rename pb paul`命令。值得注意的是这同样也会修改远程分支的名字。如果因为一些原因想要移除一个远程仓库，又或者某一个贡献者不再贡献了，可以使用 `git remote rm` 。
 
-```powershell
+```shell
 $ git remote rename pb paul
 $ git remote
 origin
@@ -386,7 +386,7 @@ origin
 
 Git 并不会在输入部分命令时自动推断出想要的命令。 如果不想每次都输入完整的 Git 命令，可以通过 `git config` 文件来轻松地为每一个命令设置一个别名。如果想要执行外部命令，而不是一个 Git 子命令。 如果是那样的话，可以在命令前面加入 `!` 符号。
 
-```powershell
+```shell
 $ git config --global alias.co checkout
 $ git config --global alias.br branch
 $ git config --global alias.ci commit
@@ -417,7 +417,7 @@ Git 可以使用四种主要的协议来传输资料：本地协议（Local）�
 
 要增加一个本地版本库到现有的 Git 项目，可以执行 `git remote add`命令，这样就可以像在网络上一样从远端版本库推送和拉取更新了。
 
-```powershell
+```shell
 $ git clone /opt/git/project.git
 
 $ git clone file:///opt/git/project.git
@@ -449,7 +449,7 @@ SSH 协议。
 
 通过 SSH 协议克隆版本库，你可以指定一个 `ssh://` 的 URL ，或者使用一个简短的 scp 式的写法。你也可以不指定用户，Git 会使用当前登录的用户名。
 
-```powershell
+```shell
 $ git clone ssh://user@server/project.git
 
 $ git clone user@server:project.git
@@ -468,4 +468,59 @@ Git 协议。
 目前，Git 协议是 Git 使用的网络传输协议里最快的。 如果你的项目有很大的访问量，或者你的项目很庞大并且不需要为写进行用户授权，架设 Git 守护进程来提供服务是不错的选择。 它使用与 SSH 相同的数据传输机制，但是省去了加密和授权的开销。
 
 Git 协议缺点是缺乏授权机制。 把 Git 协议作为访问项目版本库的唯一手段是不可取的。 一般的做法里，会同时提供 SSH 或者 HTTPS 协议的访问服务，只让少数几个开发者有推送（写）权限，其他人通过 `git://` 访问只有读权限。 Git 协议也许也是最难架设的。 它要求有自己的守护进程，这就要配置 `xinetd`或者其他的程序，这些工作并不简单。 它还要求防火墙开放 9418 端口，但是企业防火墙一般不会开放这个非标准端口。 而大型的企业防火墙通常会封锁这个端口。
+
+## 4.2 在服务器上搭建Git
+
+在开始架设 GIt 服务器前，需要把现有仓库导出为裸仓库——即一个不包含当前工作目录的仓库。为了通过克隆的仓库来创建一个新的裸仓库，在克隆命令后加上`--bare`选项，按照惯例，裸仓库目录以`.git`结尾。
+
+```shell
+$ git clone --bare my_project my_project.git
+Cloning into bare repository 'my_project.git'...
+done.
+
+# 整体上效果大致相当于
+$ cp -Rf my_project/.git my_project.git
+```
+
+
+
+把裸仓库放到服务器上。有了裸仓库的副本，剩下要做的是把裸仓库放到服务器上并设置协议。假设一个域名为`git.example.com` 的服务器已经架设好，并可以通过 SSH 链接，希望将所有的 Git 仓库放在 `/opt/git` 目录下。 假设服务器上存在 `/opt/git/` 目录，可以通过以下命令复制裸仓库来创建一个新仓库。
+
+```shell
+$ scp -r my_project.git user@git.example.com:/opt/git
+```
+
+
+
+此时，其他通过 SSH 连接这台服务器并对`/opt/git` 目录拥有可读权限的使用者，通过运行以下命令就可以克隆仓库。
+
+```shell
+$ git clone user@git.example.com:/opt/git/my_project.git
+```
+
+
+
+如果一个用户，通过使用 SSH 连接到一个服务器，并且其对 `/opt/git/my_project.git` 目录拥有可写权限，那么他将自动拥有推送权限。
+
+如果到该项目目录中运行 `git init` 命令，并加上 `--shared` 选项，那么 Git 会自动修改该仓库目录的组权限为可写。
+
+```shell
+$ ssh user@git.example.com
+$ cd /opt/git/my_project.git
+$ git init --bare --shared
+```
+
+
+
+小型安装。如果设备较少或者你只想在小型开发团队里尝试 Git ，那么一切都很简单。架设 Git 服务最复杂的地方在于用户管理。 如果需要仓库对特定的用户可读，而给另一部分用户读写权限，那么访问和许可安排就会比较困难。
+
+SSH 连接。如果需要团队里的每个人都对仓库有写权限，又不能给每个人在服务器上建立账户，那么提供 SSH 连接就是唯一的选择了。 我们假设用来共享仓库的服务器已经安装了 SSH 服务，而且你通过它访问服务器。
+
+有几个方法可以使你给团队每个成员提供访问权。 
+
+第一个就是给团队里的每个人创建账号，这种方法很直接但也很麻烦。 或许你不会想要为每个人运行一次 `adduser` 并且设置临时密码。
+
+第二个办法是在主机上建立一个 *git* 账户，让每个需要写权限的人发送一个 SSH 公钥，然后将其加入 git 账户的 `~/.ssh/authorized_keys` 文件。 这样一来，所有人都将通过 *git* 账户访问主机。 这一点也不会影响提交的数据——访问主机用的身份不会影响提交对象的提交者信息。
+
+另一个办法是让 SSH 服务器通过某个 LDAP 服务，或者其他已经设定好的集中授权机制，来进行授权。 只要每个用户可以获得主机的 shell 访问权限，任何 SSH 授权机制你都可视为是有效的。
 
