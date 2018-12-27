@@ -166,21 +166,202 @@ console.log("ncz" in window);           // false
 
 ## 3.1 函数形参的默认值
 
+JavaScript 函数有一个特别的地方，无论在函数定义中声明了多少形参，都可以传入任意数量的参数。这可以在定义函数时添加针对不同参数的处理逻辑，当已定义的形参无对应的传入参数时为其指定一个默认值。
+
+在 ES5 中模拟默认参数。对于函数的命名参数，如果不显式传值，则其默认值为 undefined。因此我们经常使用逻辑或操作符为缺失的参数提供默认值。在 ECMAScript 5 和早期版本中，可以通过以下模式创建函数并未参数赋予默认值。然而这种方法也有缺陷，如果我们想给函数的形参传入值0，即使这个值是合法的，也会被视为一个 false 值。在这种情况下，更安全的选择是通过 typeof 检查参数类型。
+
+```javascript
+function makeRequest(url, timeout, callback) {
+    timeout = timeout || 2000;
+    callback = callback || function() {};
+    // the rest of the function
+}
+
+function makeRequest(url, timeout, callback) {
+    timeout = (typeof timeout !== "undefined") ? timeout : 2000;
+    callback = (typeof callback !== "undefined") ? callback : function() {};
+    // the rest of the function
+}
+```
+
+
+
+ECMAScript 6 中的默认参数值。ES6 简化了为形参提供默认值的过程，如果没为参数传入值则为其提供一个初始值，而且不需要添加任何校验值是否缺失的代码，所以函数体会更加地小。对于默认参数值，null 是一个合法值，而如果是 undefined 则会使用默认值。
+
+```javascript
+function makeRequest(url, timeout = 2000, callback = function() {}) {
+    // the rest of the function
+}
+```
+
+
+
+默认参数值对 arguments 对象的影响。在 ECMAScript 5 非严格模式下，函数命名参数的变化会体现在 arguments 对象中，而在严格模式下，无论参数如何变化，arguments 对象不再随之改变。在 ES6 中，如果一个函数使用了默认参数值，则无论是否显式定义了严格模式，arguments 对象的行为都将与 ES5 严格模式下保持一致。默认参数值的存在使得 arguments 对象保持与命名参数分离。
+
+```javascript
+// not in strict mode
+function mixArgs(first, second = "b") {
+    console.log(arguments.length);
+    console.log(first === arguments[0]);
+    console.log(second === arguments[1]);
+    first = "c";
+    second = "d"
+    console.log(first === arguments[0]);
+    console.log(second === arguments[1]);
+}
+
+mixArgs("a");
+// 1
+// true
+// false
+// false
+// false
+```
+
+
+
+默认参数表达式。可以通过函数执行来得到默认参数的值，如果不主动传入参数，那么就会调用方法（表达式）来得到正确的默认值。初次解析函数声明时不会调用该方法，只有当调用函数且不传入参数时才会调用。
+
+```javascript
+let value = 5;
+
+function getValue() {
+    return value++;
+}
+
+function add(first, second = getValue()) {
+    return first + second;
+}
+
+console.log(add(1, 1));     // 2
+console.log(add(1));        // 6
+console.log(add(1));        // 7
+```
+
+
+
+正因为默认参数时在函数调用时求值，所以可以使用自定义的参数作为后定义参数的默认值。更进一步，可以将前面的参数传入一个函数来获得后面参数的默认值。但是，在引用参数默认值的时候，只允许引用前面参数的值，即先定义的参数不能访问后定义的参数。
+
+```javascript
+function add(first, second = first) {
+    return first + second;
+}
+console.log(add(1, 1));     // 2
+console.log(add(1));        // 2
+
+
+function getValue(value) {
+    return value + 5;
+}
+function add(first, second = getValue(first)) {
+    return first + second;
+}
+console.log(add(1, 1));     // 2
+console.log(add(1));        // 7
+```
+
+
+
+默认参数的临时死区。默认参数也同样有临死死区，在这里的参数不可访问。与 let 声明类似，定义参数时会为每个参数创建一个新的标识符绑定，该绑定在初始化之前不可被引用，如果试图访问会导致程序抛出错误。当调用函数时，会通过传入的值或参数的默认值初始化该参数。
+
+```javascript
+function add(first = second, second) {
+    return first + second;
+}
+
+console.log(add(1, 1));         // 2
+console.log(add(undefined, 1)); // throws error
+
+// JavaScript representation of call to add(1, 1)
+let first = 1;
+let second = 1;
+
+// JavaScript representation of call to add(undefined, 1)
+let first = second;
+let second = 1;
+```
+
+
+
 ## 3.2 处理无命名参数
+
+JavaScript 的函数语法规定，无论函数已定义的命名参数有多少，都不限制调用时传入的实际参数数量，调用时总是可以传入任意数量的参数。当传入更少的数量的参数时，默认参数值的特性可以有效简化函数声明的代码；当传入更多数量的参数时，ES6 同样也提供了更好的方案。
+
+ES5 中的无命名参数。早先，JavaScript 提供arguments 对象来检查函数的所有参数，从而不必定义每一个要用的参数。但实际使用起来该对象缺有些笨重。下面的函数返回一个给定对象的副本，包含原始对象属性的特定子集。该函数只定义了一个参数，作为被复制属性的源对象，其他参数为被复制属性的名称。出现的情况，不容易发现这个函数可以接受任意数量的参数，需要从索引1而不是索引0开始遍历 arguments 对象。
+
+```javascript
+function pick(object) {
+    let result = Object.create(null);
+
+    // start at the second parameter
+    for (let i = 1, len = arguments.length; i < len; i++) {
+        result[arguments[i]] = object[arguments[i]];
+    }
+
+    return result;
+}
+
+let book = {
+    title: "Understanding ECMAScript 6",
+    author: "Nicholas C. Zakas",
+    year: 2015
+};
+
+let bookData = pick(book, "author", "year");
+
+console.log(bookData.author);   // "Nicholas C. Zakas"
+console.log(bookData.year);     // 2015
+```
+
+
+
+不定参数。在 ES6 中，通过引入不定参数的特性可以解决这些问题。在函数的命名参数前添加三个点（...）就表明这是一个不定参数，该参数为一个数组，包含着自它之后传入的所有参数，通过这个数组名即可逐一访问里面的参数。
+
+```javascript
+function pick(object, ...keys) {
+    let result = Object.create(null);
+
+    for (let i = 0, len = keys.length; i < len; i++) {
+        result[keys[i]] = object[keys[i]];
+    }
+
+    return result;
+}
+```
+
+
+
+不定参数有两条使用限制。首先，每个函数最多只能声明一个不定参数，而且一定要放在所有参数的末尾。其次，不定参数不能用于对象字面量 setter 之中。之所以存在这条限制，是因为对象字面量 setter 的参数有且只能有一个，所以在当前上下文不允许使用不定参数。
 
 ## 3.3 增强的Function构造函数
 
+Function 构造函数时 JavaScript 语法中很少被用到的一部分，通常我们由它来动态创建新的函数。这种构造函数接受字符串形式的参数，分别为函数的参数及函数体。
+
+ES6 增强了 Function 构造函数的功能，支持在创建函数时定义默认参数和不定参数。唯一需要做的是在参数名后添加一个等号及一个默认值。对于 Function 构造函数，新增的默认参数和不定参数这两个特性使其具备了与声明式创建函数相同的能力。
+
 ## 3.4展开运算符
+
+
 
 ## 3.5 name属性
 
+
+
 ## 3.6 明确函数的多重用途
+
+
 
 ## 3.7块级函数
 
+
+
 ## 3.8 箭头函数
 
+
+
 ## 3.9 尾调用优化
+
+
 
 
 
