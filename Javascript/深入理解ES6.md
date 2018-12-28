@@ -341,13 +341,143 @@ ES6 增强了 Function 构造函数的功能，支持在创建函数时定义默
 
 ## 3.4展开运算符
 
+展开运算符可以让你指定一个数组，将它们打算后作为各自独立的参数传入函数。
+
+JavaScript 内建的 Math.max() 方法可以接受任意数量的参数并返回值最大的哪一个，如果希望从数组中挑选出最大的值则不能直接用该方法，需要手动遍历数组或使用 apply() 方法。
+
+```javascript
+let values = [25, 50, 75, 100]
+
+console.log(Math.max.apply(Math, values));  // 100
+```
+
+
+
+使用 ES6 的展开运算符可以简化上述示例，向 Math.max() 方法传入一个数组，再在数组前添加不定参数中使用`...`符号，就无须再调用 apply() 方法了。JavaScript 引擎读取这段程序后悔将参数数组分割为各自独立的参数并依次传入。
+
+```javascript
+let values = [25, 50, 75, 100]
+
+// equivalent to
+// console.log(Math.max(25, 50, 75, 100));
+console.log(Math.max(...values));           // 100
+```
+
+
+
+可以将展开运算符与其他正常传入的参数混合使用。假设想限定返回的最小值为0，防止负数偷偷溜进数组中，可以单独传入限定值。
+
+```javascript
+let values = [-25, -50, -75, -100]
+
+console.log(Math.max(...values, 0));        // 0
+```
+
 
 
 ## 3.5 name属性
 
+ES6 程序中所有的函数的 name 属性都有一个合适的值，一般对应着生命是的函数名称或该匿名函数的变量的名称。
 
+```javascript
+function doSomething() {
+    // ...
+}
+
+var doAnotherThing = function() {
+    // ...
+};
+
+console.log(doSomething.name);          // "doSomething"
+console.log(doAnotherThing.name);       // "doAnotherThing"
+```
+
+
+
+ES6 做了更多的改进来确保所有函数都有适合的名称。另外还有两个有关函数名称的特例，通过 bind() 函数创建的函数，其名称将带有“bound”前缀，通过 Function 构造函数创建的函数，其名称将带有前缀“anonymous”。
+
+```javascript
+var doSomething = function doSomethingElse() {
+    // ...
+};
+
+var person = {
+    get firstName() {
+        return "Nicholas"
+    },
+    sayName: function() {
+        console.log(this.name);
+    }
+}
+
+console.log(doSomething.name);      // "doSomethingElse"
+console.log(person.sayName.name);   // "sayName"
+
+var descriptor = Object.getOwnPropertyDescriptor(person, "firstName");
+console.log(descriptor.get.name); // "get firstName"
+```
+
+
+
+切记，函数 name 属性的值不一定引用同名变量，它只是协助调试用的额外信息，所以不能使用 name 属性的值来获取对于函数的引用。
 
 ## 3.6 明确函数的多重用途
+
+ES5 及早期版本中的函数具有多重功能，可以结合 new 使用，函数内的 this 值将指向一个新对象，函数最终会返回这个新对象。
+
+```java
+function Person(name) {
+    this.name = name;
+}
+
+var person = new Person("Nicholas");
+var notAPerson = Person("Nicholas");
+
+console.log(person);        // "[Object object]"
+console.log(notAPerson);    // "undefined"
+```
+
+
+
+JavaScript 函数有两个不同的内部方法：`[[Call]]`和`[[Construct]]`。当通过 new 关键字调用函数时，执行的是`[[Construct]]`函数，它负责创建一个通常被称作实例的新对象，然后再执行函数体，将 this 绑定到实例上；如果不通过 new 关键字调用函数，则执行`[[Call]]`函数，从而直接执行代码中的函数体。具有`[[Construct]]`方法的函数被统称为构造函数。
+
+切记，不说所有函数都有`[[Construct]]`方法，因此不是所有函数都可以通过 new 来调用，比如箭头函数就没有这个方法。
+
+在 ES5 中，如果想确定一个函数是否通过 new 关键字被调用，或者是判断该函数是否作为构造函数被调用，最流行的方式时使用 instanceof。
+
+```javascript
+function Person(name) {
+    if (this instanceof Person) {
+        this.name = name;   // using new
+    } else {
+        throw new Error("You must use new with Person.")
+    }
+}
+
+var person = new Person("Nicholas");
+var notAPerson = Person("Nicholas");  // throws error
+
+var notAPerson = Person.call(person, "Michael");    // works!
+```
+
+
+
+为了解决判断函数是否通过 new 关键字调用的问题，ES6 引入了 new.target 这个元属性。元属性是指非对象的属性，其可以提供非对象目标的补充信息。当调用函数的`[[Construct]]`方法时，new.target 被赋值为 new 操作符的目标，通常是新创建对象实例，也就是函数体内的 this 的构造函数；如果调用`[[Call]]`方法，则 new.target 的值为 undefined。
+
+有了这个元属性，可以通过检查 new.target 是否被定义过来安全第检测一个函数是否通过 new 关键字调用。
+
+```javascript
+function Person(name) {
+    if (typeof new.target !== "undefined") {
+        this.name = name;   // using new
+    } else {
+        throw new Error("You must use new with Person.")
+    }
+}
+
+var person = new Person("Nicholas");
+var notAPerson = Person.call(person, "Michael");    // error!
+```
 
 
 
