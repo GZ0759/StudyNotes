@@ -483,13 +483,367 @@ var notAPerson = Person.call(person, "Michael");    // error!
 
 ## 3.7块级函数
 
+在 ES3 和早期版本中，在代码块中声明一个块级函数严格来说是一个语法错误，但是所有的浏览器仍然支持这个特性，但兼容程度不一样。为了遏制这种互相不兼容的行为，ES5 的严格模式引入一个错误提示，当在代码块内部声明函数时程序会抛出错误。
+
+```javascript
+"use strict";
+
+if (true) {
+
+    // Throws a syntax error in ES5, not so in ES6
+    function doSomething() {
+        // ...
+    }
+}
+
+```
+
+
+
+在 ES6 中，会将函数视为一个块级声明，从而可以在定义该函数的代码块内访问和调用它。
+
+```javascript
+"use strict";
+
+if (true) {
+
+    console.log(typeof doSomething);        // "function"
+
+    function doSomething() {
+        // ...
+    }
+
+    doSomething();
+}
+
+console.log(typeof doSomething);            // "undefined"
+```
+
+
+
+块级函数与 let 函数表达式类似，一旦执行过程流出了代码块，函数定义立即被移除。二者的却别是，在该代码块中，块级函数会被提升至块的顶部，而用 let 定义的函数表达式不会被提升。
+
+```javascript
+"use strict";
+
+if (true) {
+
+    console.log(typeof doSomething);        // throws error
+
+    let doSomething = function () {
+        // ...
+    }
+
+    doSomething();
+}
+
+console.log(typeof doSomething);        // undefined
+```
+
+
+
+非严格模式下的块级函数。在 ES6 中，即使处于非严格模式下，也可以声明块级函数，但其行为与严格模式下稍有不同。这些函数不再提升至代码块的顶部，而是提升至外围函数或全局作用域的顶部。
+
+```javascript
+// ECMAScript 6 behavior
+if (true) {
+
+    console.log(typeof doSomething);        // "function"
+
+    function doSomething() {
+        // ...
+    }
+
+    doSomething();
+}
+
+console.log(typeof doSomething);            // "function"
+```
+
 
 
 ## 3.8 箭头函数
 
+箭头函数时一种使用箭头（=>）定义函数的新语法，它与传统的 JavaScript 函数有些许不同，主要集中在以下方面：
 
++ 没有 this、super、argumetns 和 new.target 绑定
++ 不能通过 new 关键字调用
++ 没有原型，即不存在 prototype 这个属性
++ 不可以改变 this 的绑定
++ 不支持 arguments 对象
++ 不支持重复的命名参数
+
+箭头函数的语法多变，根据实际的使用场景有多重形式。所有变种都由函数参数、箭头、函数体组成，根据使用的需要，参数和函数体可以分别采取多种不同的形式。
+
+当箭头函数只有一个参数时，可以直接写参数名，箭头紧随其后，箭头右侧的表达式被求值后便立即返回。即使没有显式的返回语句，这个箭头函数也可以返回传入的第一个参数，不需要更多的语法铺垫。
+
+```javascript
+var reflect = value => value;
+
+// effectively equivalent to:
+
+var reflect = function(value) {
+    return value;
+};
+```
+
+
+
+如果要传入两个或两个以上的参数，要在参数的两侧添加一堆小括号。
+
+```javascript
+var sum = (num1, num2) => num1 + num2;
+
+// effectively equivalent to:
+
+var sum = function(num1, num2) {
+    return num1 + num2;
+};
+```
+
+
+
+如果函数没有参数，也要在声明的时候写一组没有内容的小括号。
+
+```javascript
+var getName = () => "Nicholas";
+
+// effectively equivalent to:
+
+var getName = function() {
+    return "Nicholas";
+};
+```
+
+
+
+如果希望为函数编写由多个表达式组成的更传统的函数体，那么需要用花括号包括函数体，并显式定义一个返回值。
+
+```javascript
+var sum = (num1, num2) => {
+    return num1 + num2;
+};
+
+// effectively equivalent to:
+
+var sum = function(num1, num2) {
+    return num1 + num2;
+};
+```
+
+
+
+如果想要创建一个空函数，需要写一堆没有内容的花括号。或括号代表函数体的部分。
+
+```javascript
+var doNothing = () => {};
+
+// effectively equivalent to:
+
+var doNothing = function() {};
+```
+
+
+
+如果想要在箭头函数外返回一个对象字面量，则需要将该字面量包括在小括号里。
+
+```javascript
+var getTempItem = id => ({ id: id, name: "Temp" });
+
+// effectively equivalent to:
+
+var getTempItem = function(id) {
+
+    return {
+        id: id,
+        name: "Temp"
+    };
+};
+```
+
+
+
+创建立即执行函数表达式。JavaScript 函数的一个流行的使用方式时创建立即执行函数表达式（IIFE），可以定义一个匿名函数并立即调用，自始至终不保存对该函数的引用。当希望创建一个与其他程序隔离的作用域时，这种模式非常方便。
+
+```javascript
+let person = function(name) {
+
+    return {
+        getName: function() {
+            return name;
+        }
+    };
+
+}("Nicholas");
+
+console.log(person.getName());      // "Nicholas"
+```
+
+
+
+在代码中立即执行函数表达式通过 getName() 方法创建了一个新对象，将参数 name 作为该对象的一个私有成员返回给函数的调用者。只要将箭头函数包裹在小括号里，就可以用它实现相同的功能。注意，小括号只包括箭头函数定义，没有包含（“Nicholas”），这一点与正常函数有所不同，由正产函数定义的立即执行函数表达式既可以用小括号包括函数体，也可以额外包裹函数调用的部分。
+
+```javascript
+let person = ((name) => {
+
+    return {
+        getName: function() {
+            return name;
+        }
+    };
+
+})("Nicholas");
+
+console.log(person.getName());      // "Nicholas"
+```
+
+
+
+箭头函数没有 this 绑定。函数内的 this 绑定时 JavaScript 中最常出现错误的因素，函数内的 this 值可以根据函数调用上下文而改变，这有可能错误地影响其他对象。
+
+```javascript
+var PageHandler = {
+
+    id: "123456",
+
+    init: function() {
+        document.addEventListener("click", function(event) {
+            this.doSomething(event.type);     // error
+        }, false);
+    },
+
+    doSomething: function(type) {
+        console.log("Handling " + type  + " for " + this.id);
+    }
+};
+```
+
+
+
+可以使用 bind() 方法显式地将 this 绑定到 PageHandler 函数上来修正这个问题。
+
+```javascript
+var PageHandler = {
+
+    id: "123456",
+
+    init: function() {
+        document.addEventListener("click", (function(event) {
+            this.doSomething(event.type);     // no error
+        }).bind(this), false);
+    },
+
+    doSomething: function(type) {
+        console.log("Handling " + type  + " for " + this.id);
+    }
+};
+```
+
+
+
+但是调用 bind(this) 后事实上创建了一个额外的函数，可以通过一个更好的方式来修正这段代码，使用箭头函数。箭头函数没有 this 绑定，必须通过查找作用域链来决定其值。如果箭头函数被非箭头函数包含，则 this 绑定的是最近一层非箭头函数的 this；否则，this 的值会被设置为 undefined。
+
+```javascript
+var PageHandler = {
+
+    id: "123456",
+
+    init: function() {
+        document.addEventListener("click",
+                event => this.doSomething(event.type), false);
+    },
+
+    doSomething: function(type) {
+        console.log("Handling " + type  + " for " + this.id);
+    }
+};
+```
+
+
+
+箭头函数缺少正常函数所拥有的 prototype 属性，它的设计初衷是“即用即弃”，所以不能用它来定义新的类型。如果尝试通过 new 关键字调用一个箭头函数，会导致程序抛出错误。同时，箭头函数中的 this 值取决于该函数外部非箭头函数的 this 值，且不能通过 call()、apply() 或 bind() 方法来改变 this 的值。
+
+箭头函数和数组。箭头函数的语法简洁，非常适用于数组处理。
+
+```javascript
+var result = values.sort(function(a, b) {
+    return a - b;
+});
+
+var result = values.sort((a, b) => a - b);
+```
+
+
+
+箭头函数没有 arguments 绑定。箭头函数没有自己的 arguments 对象，且未来无论函数在哪个上下文中执行，箭头函数始终可以访问外围函数的 arguments 对象。
+
+```javascript
+function createArrowFunctionReturningFirstArg() {
+    return () => arguments[0];
+}
+
+var arrowFunction = createArrowFunctionReturningFirstArg(5);
+
+console.log(arrowFunction());       // 5
+```
+
+
+
+箭头函数的辨识方法。尽管箭头函数与传统函数的语法不同，但它同样可以被识别出来。
+
+```javascript
+var comparator = (a, b) => a - b;
+
+console.log(typeof comparator);                 // "function"
+console.log(comparator instanceof Function);    // true
+```
+
+
+
+同样，仍然可以在箭头函数上调用 call()、apply() 及 bind() 方法，但与其他函数不同的是，箭头函数的 this 值不会受这些方法的影响。
 
 ## 3.9 尾调用优化
+
+尾调用指的是函数作为另一个函数的最后一条语句被调用。在 ES5 的引擎中，尾调用的实现与其他函数调用的实现类似：创建一个新的栈帧，将其推入栈来表示函数调用。也就是说，在循环调用中，每一个未用完的栈帧都会被保存在内存中，当调用栈变得过大时会造成程序问题。
+
+ES6 缩减了严格模式下尾调用栈的大小，在非严格模式下不受影响，如果满足以下条件，尾调用不再创建新的栈帧，而是清除并重用当前栈帧。
+
++ 尾调用不访问当前栈帧的变量，也就是说函数不是一个闭包
++ 在函数内部，尾调用是最后一条语句
++ 尾调用的结果作为函数值返回
+
+实际上，尾调用的优化发生在引擎背后，除非尝试优化一个函数，否则无需思考此类问题。递归函数时其最主要的应用场景，此时尾调用优化的结果最显著。
+
+```javascript
+function factorial(n) {
+
+    if (n <= 1) {
+        return 1;
+    } else {
+
+        // not optimized - must multiply after returning
+        return n * factorial(n - 1);
+    }
+}
+```
+
+
+
+```javascript
+function factorial(n, p = 1) {
+
+    if (n <= 1) {
+        return 1 * p;
+    } else {
+        let result = n * p;
+
+        // optimized
+        return factorial(n - 1, result);
+    }
+}
+```
+
+
 
 
 
