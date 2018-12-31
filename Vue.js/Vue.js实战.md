@@ -442,7 +442,141 @@ Vue 提供了一个特殊变量`$event`，用于访问原生 DOM 事件。
 
 # 第六章 表单与v-model
 
-使用v-model后，表单控件显示的值只依赖所绑定的数据，不再关心初始化时的value属性。如果实时更新中文数据，可以用@input来替代v-model。v-model修饰符有lazy转变在change时间中同步数据、number将输入内容转换成Numbe类型、trim可以自动过滤输入的首尾空格
+## 6.1 基本用法
+
+Vue.js 提供了 v-model 指令，用于在表单类元素上双向绑定数据。例如在输入框上使用时，输入的内容会实时映射到绑定的数据上。使用 v-model 后，表单控件显示的值只依赖所绑定的数据，不再关心初始化时的 value 属性。
+
+使用 v-model 时，如果是用中文输入法输入中文，一般在没有选定词语前，也就是在拼音阶段，Vue 是不会更新数据的。如果希望实时更新中文数据，可以用`@input`来替代 v-model。事实上，v-model 也是一个特殊的语法糖，只不过它会在不同的表单上智能处理。
+
+```html
+<body>
+	<div id="app">
+		<input type="text" @input="handleInput" placeholder="输入"> 
+		<p>输入的内容是：{{ message }}</p>
+	</div>
+	<script>
+		var app = new Vue({
+			el:'#app',
+			data:{
+				message:''
+			},
+			methods:{
+				handleInput:function(e){
+					this.message = e.target.value
+				}
+			}
+		})
+	</script>
+</body>
+```
+
+
+
+单选按钮在单独使用时，不需要 v-model，直接使用 v-bind 绑定一个布尔类型的值，为真时选中，为否时不选。如果是组合使用来实现互斥选择的效果，就需要 v-model 配合 value 来使用。
+
+```html
+<body>
+	<div id="app">
+		<input type="radio" name="a" id="html" v-model="picked" value="html">
+		<label for="html">html</label>
+
+		<input type="radio" name="a" id="css" v-model="picked" value="css">
+		<label for="css">css</label>
+
+		<input type="radio" name="a" id="js" v-model="picked" value="js">
+		<label for="js">js</label>
+	</div>
+	<script>
+		var app = new Vue({
+			el:'#app',
+			data:{
+				picked:'js',
+			}
+		})
+	</script>
+</body>
+```
+
+
+
+复选框也分单独使用和组合使用，不过用法稍与单选不同。复选框单独使用时，也是用 v-model 来绑定一个布尔值。组合使用时，也是 v-model 与 value 一起，多个勾选框都绑定到同一个数组类型的数据，value 的值在数组当中，就会选中这一项。这一过程也是双向的，在勾选时，value 的值也会自动 push 到这个数字中。
+
+```html
+<body>
+	<div id="app">
+		<input type="checkbox" name="" id="football" value="football" v-model="checked">
+		<label for="football">football</label>
+
+		<input type="checkbox" name="" id="basketball" value="basketball" v-model="checked">
+		<label for="basketball">basketball</label>
+		
+		<input type="checkbox" name="" id="volleyball" value="volleyball" v-model="checked">
+		<label for="volleyball">volleyball</label>
+	</div>
+	<script>
+		var app = new Vue({
+			el:'#app',
+			data:{
+				checked:['football','volleyball']
+			}
+		})
+	</script>
+</body>
+```
+
+
+
+选择列表就是下拉选择器，也是常见的表单控件，同样也分为单选和多选两种方式。`<option>`是备选项，如果含有 value 属性，v-model 就会优先匹配 value 的值；如果没有，就会直接匹配`<option>`的 text。给`<selected>`添加属性 multiple 就可以多选，此时 v-model 绑定的是一个数组，与复选框用法类似。在业务中，`<option>`经常用 v-for 动态输出，value 和 text 也是用 v-bind 来动态输出的。
+
+6.2 
+
+
+
+## 6.2 绑定值
+
+单选框按钮、复选框和选择列表在单独使用或组合的模式下，v-model 绑定的值是一个动态字符串或布尔值，但在业务中，有时需要绑定一个动态的数据，这时可以用 v-bind 来实现。
+
+单选按钮，通过 data 里面的 a 的值的改变，来动态绑定按钮。
+
+```html
+<input type="radio" v-model="pick" v-bind:value="a">
+```
+
+
+
+复选框，选中时和未勾选时有两种类型，如果再使用 v-bind 则可以在实现动态绑定。
+
+```html
+<input
+  type="checkbox"
+  v-model="toggle"
+  true-value="yes"
+  false-value="no"
+>
+```
+
+
+
+选择列表，当选中时，app.selected 是一个 Object，所以 app.selected.number === 123。
+
+```html
+<select v-model="selected">
+    <!-- 内联对象字面量 -->
+  <option v-bind:value="{ number: 123 }">123</option>
+</select>
+```
+
+
+
+## 6.3 修饰符
+
+与事件的修饰符类似，v-model 也有修饰符，用于控制数据同步的时机。
+
+lazy 修饰符。在输入框中，v-model 默认是在 input 时间中同步输入框的数据（除了提示中介绍的中文输入法情况外），使用修饰符 .lazy 会转变为在 change 事件中同步。
+
+number 修饰符。使用修饰符 .number 可以将输入转换为 Number 类型，否则虽然输入的是数字，但类型还是 String，在数字输入框中比较有用。
+
+trim 修饰符。使用修饰符 .trim 可以自动过滤输入的首尾空格。
 
 # 第七章 组件详解
 
@@ -450,53 +584,588 @@ Vue 提供了一个特殊变量`$event`，用于访问原生 DOM 事件。
 
 Vue.js 的组件就是提高复用性，让代码可复用。那些没见过的自定义标签就是组件，每个标签代表一个组件，在任何使用 Vue 的地方都可以直接使用。
 
-组件注册有全局注册和局部注册两种方式，注册的组件标签名称推荐使用小写加“-”分割的形式。组件中的选项data必须是函数，然后将数据 return 出去。
+定义组件名的方式有两种：
+
+当使用 kebab-case (短横线分隔命名) 定义一个组件时，你也必须在引用这个自定义元素时使用 kebab-case，例如 `<my-component-name>`。
+
+```
+Vue.component('my-component-name', { /* ... */ })
+```
+
+
+
+当使用 PascalCase (首字母大写命名) 定义一个组件时，你在引用这个自定义元素时两种命名法都可以使用。也就是说 `<my-component-name>` 和 `<MyComponentName>` 都是可接受的。注意，尽管如此，直接在 DOM (即非字符串的模板) 中使用时只有 kebab-case 是有效的。
+
+```
+Vue.component('MyComponentName', { /* ... */ })
+```
+
+
+
+组件与创建 Vue 实例类似，需要注册后才可以使用。注册有全局注册和局部注册两种方式。全局注册后，任何 Vue 实例都可以使用。template 的 DOM 结构必须被一个元素包含。
 
 ```javascript
-`Vue.component('my-component-name', { /* ... */ })`
+Vue.component('component-a', { /* ... */ })
+Vue.component('component-b', { /* ... */ })
+Vue.component('component-c', { /* ... */ })
+
+new Vue({ el: '#app' })
+```
+
+
+
+```html
+<div id="app">
+  <component-a></component-a>
+  <component-b></component-b>
+  <component-c></component-c>
+</div>
+```
+
+
+
+在 Vue 实例中，使用 components 选项可以局部注册组件，注册后的组件只有在该实例作用域下有效，组件中也可以使用 components 选项来注册组件，使组件可以嵌套。
+
+```javascript
+var ComponentA = { /* ... */ }
+var ComponentB = { /* ... */ }
+var ComponentC = { /* ... */ }
+
+new Vue({
+  el: '#app',
+  components: {
+    'component-a': ComponentA,
+    'component-b': ComponentB
+  }
+})
+```
+
+
+
+Vue 组件的模板在某些情况下会收到 HTML 的限制，比如`<table>`内规定只允许时`<tr>`、`<td>`、`<th>`等这些表格元素，所以在`<table>`内直接使用组件时无效的。这种情况下，可以使用特殊的 is 属性来挂载组件。
+
+除了 template 选项外，组件中还可以像 Vue 实例那样使用其他的选项，比如 data、computed、methods 等。但是在使用 data 时，和实例稍有区别，data 必须是函数，然后将数据 return 出去。一个组件的 data 选项必须是一个函数，因此每个实例可以维护一份被返回对象的独立的拷贝。如果 return 出的对象引用了外部的一个对象，那这么这个对象就是共享的，任何一方修改都会同步。
+
+```javascript
+Vue.component('my-component',{
+	template:'<button @click="counter++">{{ counter }}</button>',
+	data:function(){ 
+		return { 
+			counter: 0
+		}
+	}
+})
 ```
 
 
 
 ## 7.2 使用props传递数据
 
-使用选项 props 来声明需要从父级接受的数据，props 的值有字符串数组类型和对象类型。由于HTML特性不区分大小写，当使用DOM模板时，驼峰命名的 prop 名称要转为短横分割命名。
+组件不仅仅是要把模板的内容进行复用，更重要的是组件间要进行通信。通常父组件的模板中包含子组件，父组件要正向地向子组件传递数据或参数，子组件接收到后根据参数的不同来渲染不同的内容或执行操作。这个正向传递数据的过程就是通过 props 来实现的。
 
-父组件传递初值进来，子组件保存并进行修改渲染。第一种方法，在子组件的data内声明数据，并且引用父组件的 prop 。第二种方法是使用组件内的计算属性。
+在组件中，使用选项 props 来声明需要从父级接受的数据，props 的值有字符串数组类型和对象类型。由于HTML特性不区分大小写，当使用DOM模板时，驼峰命名的 prop 名称要转为短横分割命名。
+
+```javascript
+Vue.component('blog-post', {
+  // 在 JavaScript 中是 camelCase 的
+  props: ['postTitle'],
+  template: '<h3>{{ postTitle }}</h3>'
+})
+```
+
+
+
+```html
+<!-- 在 HTML 中是 kebab-case 的 -->
+<blog-post post-title="hello!"></blog-post>
+```
+
+
+
+props 中声明的数据与组件 data 函数 return 的数据主要区别是 props 的来自父级，而 data 中的是组件自己的数据，作用域是组件本身，这两种数据都可以在模板 template 及计算属性 computed 和方法 methods 中使用。
+
+有时候，传递的数据并不是直接写死的，而是来自父级的动态数据，这时可以使用指令 v-bind 来动态绑定 props 的值，党父组件的数据变化时，也会传递给子组件。
+
+```html
+<body>
+	<div id="app">
+		<input type="text" v-model="parentMessage">
+		<my-component :message="parentMessage"></my-component>
+	</div>
+	<script>
+		Vue.component('my-component',{
+			props:['message'],
+			template:'<div>{{ message }}</div>'
+		});
+		var app = new Vue({
+			el:'#app',
+			data:{
+				parentMessage:''
+			}
+		})
+	</script>
+</body>
+```
+
+
+
+注意，如果只是传递数字、布尔值、数组、对象，而没有使用 v-bind，传递的仅仅是字符串。
+
+单向数据流。Vue 2.x 与  Vue 1.x 比较大的一个改变就是，前者通过 props 传递数据是单向的了，也就是父组件数据变化时会传递给子组件，但是反过来不行。而在 Vue 1.x 里提供了 .sync 修饰符来支持双向绑定。之所以这样设计，是尽可能将父子组件解耦，避免子组件无意中修改了父组件的状态。
+
+业务中会经常遇到两种需要改变 prop 的情况，一种是父组件传递初始值进来，子组件将它作为初始值保存起来，在自己的作用域下可以随意使用和修改。这种情况可以在组件 data 内再声明一个数据，引用父组件的 prop。通过这样，就可以避免直接操作 prop 数据。
+
+```javascript
+props: ['initialCounter'],
+data: function () {
+  return {
+    counter: this.initialCounter
+  }
+}
+```
+
+
+
+另一种情况就是 prop 作为需要被转变的原始值传入。这种情况用计算属性就可以了。
+
+```javascript
+props: ['size'],
+computed: {
+  normalizedSize: function () {
+    return this.size.trim().toLowerCase()
+  }
+}
+```
+
+
+
+注意，在 JavaScript 中对象和数组时引用类型，指向同一个内存空间，所以 props 是对象和数组时，在子组件内改变是会影响父组件的。
+
+数据验证。props 选项的值除了一个数组，也可以是对象，当 prop 需要验证时，就需要对象写法。一般组件需要提供给别人使用时，推荐都进行数据验证，比如某个数据必须是数字类型，如果传入字符串，就会在控制台弹出警告。
+
+```javascript
+Vue.component('my-component', {
+  props: {
+    // 基础的类型检查 (`null` 匹配任何类型)
+    propA: Number,
+    // 多个可能的类型
+    propB: [String, Number],
+    // 必填的字符串
+    propC: {
+      type: String,
+      required: true
+    },
+    // 带有默认值的数字
+    propD: {
+      type: Number,
+      default: 100
+    },
+    // 带有默认值的对象
+    propE: {
+      type: Object,
+      // 对象或数组默认值必须从一个工厂函数获取
+      default: function () {
+        return { message: 'hello' }
+      }
+    },
+    // 自定义验证函数
+    propF: {
+      validator: function (value) {
+        // 这个值必须匹配下列字符串中的一个
+        return ['success', 'warning', 'danger'].indexOf(value) !== -1
+      }
+    }
+  }
+})
+```
+
+
+
+验证的 type 类型可以是 String、Number、Boolean、Object、Array、Function，type也可以是一个自定义构造器，使用 instanceof 检测。当 prop 验证失败时，在开发版本下会在控制台抛出警告。
 
 ## 7.3 组件通信
 
-子组件需要向父组件传递数据，则用到自定义事件。子组件用`$emit()`来触发事件，父组件用`$on()`来监听子组件的事件，父组件也可以直接在子组件的自定义标签上使用 v-on 来监听子组件触发的自定义事件。
+从父组件向子组件通信，通过 props 传递数据就可以了，但 Vue 组件通信的场景不止这一种。
 
-一个组件上的 v-model 默认会利用名为 value 的 prop 和名为 input 的事件，但是像单选框、复选框等类型的输入控件可能会将 value 特性用于不同的目的。
+自定义事件。子组件需要向父组件传递数据，则用到自定义事件。v-on 除了监听 DOM 事件外，还可以用于组件之间的自定义事件。
 
-在Vue.js 1.x中，除了`$emit()`方法外，还提供`$dispatch()`和`$broadcast()`这两个方法。前者用于向上级派发时间，后者是由上级向下级广播时间。
+子组件用`$emit()`来触发事件，父组件用`$on()`来监听子组件的事件，父组件也可以直接在子组件的自定义标签上使用 v-on 来监听子组件触发的自定义事件。`$emit()`方法的第一个参数是自定义事件的名称，后面的参数是要传递的数据，可以不填或填写多个。除了用 v-on 在组件上监听自定义事件外，也可以监听 DOM 事件，这时可以用 .native 修饰符表示监听的是一个原生事件，监听的是该组件的根元素。
 
-在Vue.js 2.x中，使用中央事件总线(bus)。首先创建名为bus的空Vue实例，在生命周期mounted钩子函数里监控来自bus事件的方法，在组件中通过bus把事件发送出去。
+```javascript
+Vue.component('welcome-button', {
+  template: `
+    <button v-on:click="$emit('welcome')">
+      Click me to be welcomed
+    </button>
+  `
+})
+```
 
-在子组件中，使用`this.$parent`可以直接访问该组件的父实例或组件，父组件也可以通过`this.$children`访问它所有的子组件。
 
-Vue提供了子组件索引的方法，用特殊的属性ref来为子组件指定一个索引名称。在父组件模板中，子组件标签上使用ref指定一个名称，并在父组件内通过this.$refs来访问指定名称的子组件。
+
+```html
+<div id="emit-example-simple">
+  <welcome-button v-on:welcome="sayHi"></welcome-button>
+</div>
+```
+
+
+
+```javascript
+new Vue({
+  el: '#emit-example-simple',
+  methods: {
+    sayHi: function () {
+      alert('Hi!')
+    }
+  }
+})
+```
+
+
+
+使用 v-model。Vue 2.x 可以在自定义组件上使用 v-model 指令。
+
+如下面的例子，并没有在`<my-component>`上使用`@input=handler`，而是直接用了 v-model 绑定的一个数据 total，着也可以称为语法糖。也可以间接地用自定义事件来实现。
+
+```javascript
+Vue.component('my-component',{
+	template:'<button @click="handleClick">1</button>',
+	data: function () {
+	  return { counter: 1}
+	},
+	methods:{
+		handleClick: function(){
+			this.$emit('input',this.counter)
+		}
+	}
+});
+```
+
+
+
+```html
+<div id="app">
+  <p>总数：{{ total }}</p>
+  <my-component v-model="total"></my-component>
+  <!--<my-component @input="handleGetCounter"></my-component> -->
+</div>
+```
+
+
+
+```javascript
+var app = new Vue({
+	el:'#app',
+	data:{
+		total:0
+	},
+    /* methods:{
+      handleGetCounter(counter) {
+      this.total = counter
+      }
+    } */
+})
+```
+
+
+
+一个组件上的 v-model 默认会利用名为 value 的 prop 和名为 input 的事件，但是像单选框、复选框等类型的输入控件可能会将 value 特性用于不同的目的。实现一个具有双向绑定的 v-model 组件要满足两个条件：接收一个 value 属性和在有新的 value 时触发 input 事件。因此，v-model 可以用来创建自定义的表单输入组件，进行数据双向绑定。
+
+非父子组件通信。在实际业务中，除了父子组件通信外，还有很多非父子组件通信的场景，非父子组件一般有两种，兄弟组件和跨多级组件。
+
+在Vue.js 1.x中，除了`$emit()`方法外，还提供`$dispatch()`和`$broadcast()`这两个方法。前者用于向上级派发时间，后者是由上级向下级广播时间。这两种方法一旦发出事件后，任何组件都是可以接收到的，就近原则，而且会在第一次接收到后停止冒泡，除非返回 true。
+
+在Vue.js 2.x中，推荐使用中央事件总线 (bus)，也就是一个中介。首先创建名为 bus 的空 Vue 实例，在生命周期 mounted 钩子函数里监控来自 bus 事件的方法，在组件中通过 bus 把事件发送出去。这种方法巧妙而轻量地实现了任何组件间的通信。
+
+除了中央事件总线 bus 外，还有两种方法可以实现组件间的通信：父链和子组件索引。
+
+父链。在子组件中，使用`this.$parent`可以直接访问该组件的父实例或组件，父组件也可以通过`this.$children`访问它所有的子组件，而且可以递归向上或向下无限访问，直到根实例或最内层的组件。在业务中，子组件应该尽可能地避免依赖父组件的数据，更不应该去主动修改它的数据。
+
+子组件索引。当子组件较多时，通过`this.$children`来一一遍历出我们需要的一个组件实例是比较困难的，尤其是组件动态渲染时，它们的序列是不固定的。Vue提供了子组件索引的方法，用特殊的属性 ref 来为子组件指定一个索引名称。在父组件模板中，子组件标签上使用 ref 指定一个名称，并在父组件内通过`this.$refs`来访问指定名称的子组件。
+
+```html
+<!-- `vm.$refs.p` will be the DOM node -->
+<p ref="p">hello</p>
+
+<!-- `vm.$refs.child` will be the child component instance -->
+<child-component ref="child"></child-component>
+```
+
+
+
+注意，`$refs`只在组件渲染完成后才填充，并且它是非响应式的，它仅仅作为一个直接访问于组件的应急方案，应当避免在模板或计算属性中使用`$refs`。
 
 ## 7.4 使用slot分发内容
 
-子组件模板内定义`<slot>`元素，并且有`<p>`作为默认内容，如果父组件没有使用 slot 时，默认渲染这段默认内容，否则，父组件的内容进行分发，替换整个`<slot>`插槽。如果没有使用name特性，它将作为默认slot出现，父组件没有使用slot的元素与内容都将出现在这里。如果没有指定默认的匿名slot，父组件内多余的内容片段都将被抛弃，除非父组件的组件标签使用inline-template特性，将它们作为内联模板。
+当需要让组件组合使用，混合父组件的内容与子组件的模板时，就会用到 slot，这个过程叫做内容分发。
 
-作用域插槽的使用场景就是父组件既可以复用子组件的slot，又可以使slot内容不一致。
+props 传递数据、events 触发事件和 slot 内容分发就构成了 Vue 组件的3个 API 来源，再复杂的组件也是由着3部分构成的。
 
-`$slots`用来访问被插槽分发的内容。每个具名插槽有其相应的属性 (例如：slot="foo"中的内容将会在`vm.$slots.foo`中被找到)。default属性包括了所有没有被包含在具名插槽中的节点。
+父组件模板的内容是在父组件作用域内编译，子组件的内容是在子组件作用域内编译。因此，slot 分发的内容，作用域是在父组件上的。
 
-组件在它的模板内可以递归地调用自己，只要给组件设置name的选项就可以。
+单个 slot。在子组件内使用特殊的`<slot>`元素就可以为这个子组件开启一个 slot（插槽），在父组件模板里，插入在子组件标签内的所有内容将替代子组件的`<slot>`标签及它的内容。
 
-动态组件component是特殊的元素，使用:is特性可以用来动态的挂载不同的组件。
+子组件模板内定义`<slot>`元素，如果父组件没有使用 slot 时，默认渲染这段默认内容，否则，父组件的内容进行分发，替换整个`<slot>`插槽。
 
-异步组件，将组件定义为一个工厂函数，动态地解析组件。Vue.js只在组件需要渲染时触发工厂函数，同时将结果缓存起来，用于后面的再次渲染。
+具名 slot。给`slot`元素指定一个 name 后可以分发多个内容，具名 slot 可以与单个 slot 共存。
 
-`$nextTick`将回调延迟到下次DOM更新循环之后执行。在修改数据之后立即使用它，然后等待DOM更新。
+如果`<slot>`没有使用 name 特性，它将作为默认 slot 出现，父组件没有使用 slot 的元素与内容都将出现在这里。如果没有指定默认的匿名 slot，父组件内多余的内容片段都将被抛弃，除非父组件的组件标签使用 inline-template 特性，将它们作为内联模板。另一种 `slot` 特性的用法是直接用在一个普通的元素上。
 
-除了内联模板，另一个定义模板的方式是在一个`<script>`元素中，并为其带上text/x-template的类型，然后通过一个id将模板引用过去。
+```html
+<div class="container">
+  <header>
+    <slot name="header"></slot>
+  </header>
+  <main>
+    <slot></slot>
+  </main>
+  <footer>
+    <slot name="footer"></slot>
+  </footer>
+</div>
+```
 
-手动挂载实例的方法，Vue.extend创建子类，参数是包含组件选项的对象，如果Vue实例在实例化时没有收到el选项，它就处于“未挂载”状态，没有关联的DOM元素，可以使用`$mount()`手动挂载一个未挂载的实例。
+
+
+```html
+<base-layout>
+  <template slot="header">
+    <h1>Here might be a page title</h1>
+  </template>
+
+  <p>A paragraph for the main content.</p>
+  <p>And another one.</p>
+
+  <template slot="footer">
+    <p>Here's some contact info</p>
+  </template>
+</base-layout>
+```
+
+
+
+作用域插槽。作用域插槽是一种特殊的 slot，使用一个可以复用的模板替换已渲染元素。作用域插槽的使用场景就是父组件既可以复用子组件的 slot，又可以使 slot 内容不一致。
+
+```html
+<body>
+	<div id="app">
+		<child-component>
+			<template slot-scope="props">
+			<p>来自父组件的内容</p>
+			<p>{{ props.msg }}</p>	
+			</template>
+		</child-component>
+	</div>
+	<script>
+		Vue.component('child-component',{
+			template:'<div class="container"><slot msg="来自子组件的内容"></slot></div>'
+		});
+		var app = new Vue({
+			el:'#app'
+		})
+	</script>
+</body>
+```
+
+
+
+作用域插槽更具代表性的用例是列表组件，允许组件自定义应该如何渲染列表每一项。
+
+```html
+<child-component :books="bk">
+	<!-- 作用域插槽也可以是具名的slot -->
+	<template slot="sn" slot-scope="props">
+		<li>{{ props.bookName }}</li>
+	</template>
+</child-component>
+```
+
+
+
+```javascript
+Vue.component('child-component',{
+	props:{
+		books:{
+			type:Array,
+			default:function(){
+				return [];
+			}
+		}
+	},
+	template:'<ul><slot name="sn" v-for="b in books" :book-name="b.name"></slot></ul>'
+});
+var app = new Vue({
+	el:'#app',
+	data:{
+		bk:[
+			{name:'《Vue.js实战》'},
+			{name:'javascript高级程序设计'},
+			{name:'javascrip语言精粹'}
+		]
+	}
+})
+```
+
+
+
+访问 slot。Vue.js 2.x 提供了用来访问被 slot 分发的内容的方法`$slots`。每个具名插槽有其相应的属性 (例如：slot="foo"中的内容将会在`vm.$slots.foo`中被找到)。default属性包括了所有没有被包含在具名插槽中的节点。
+
+## 7.5 组件高级用法
+
+递归组件。组件在它的模板内可以递归地调用自己，只要给组件设置name的选项就可以。设置 name 后，在组件模板内就可以递归使用了。不过需要注意的是，必须给一个条件来限制递归数量，否则会抛出错误：max stack size exceeded。
+
+```html
+<div id="app">
+	<child-component :count="1"></child-component>
+</div>
+```
+
+
+
+```javascript
+Vue.component('child-component',{
+	name:'child-component',
+	props:{
+		count:{
+			type:Number,
+			default:1
+		}
+	},
+	template:'<div class="child"><child-component :count="count+1" v-if="count<6"></child-component></div>'
+})
+```
+
+
+
+内联模板。组件的模板一般都是在 template 选项内定义的，Vue 提供了一个内联模板功能，在使用组件时，给组件标签使用 inline-tempate 特性，组件就会把它的内容当作模板，而不是把它当作内容分发，这让模板更灵活。但是，在父组件声明的数据和在子组件中声明的数据，都可以渲染，如果同名优先使用子组件的数据，这就是内联模板的缺点， 它让作用域比较难理解。
+
+```html
+<my-component inline-template>
+  <div>
+    <p>These are compiled as the component's own template.</p>
+    <p>Not parent's transclusion content.</p>
+  </div>
+</my-component>
+```
+
+
+
+动态组件。Vue.js 提供了一个特殊的元素`<component>`用来动态地挂载不同的组件，使用 :is 特性来选择要挂载的组件。动态地改变 currentView 的值就可以动态挂载组件了，也可以直接绑定在组件对象上。
+
+```html
+<component :is="currentView"></component>
+<button @click="handleChangeView('A')">切换到A</button>
+<button @click="handleChangeView('B')">切换到B</button>
+<button @click="handleChangeView('C')">切换到C</button>
+```
+
+
+
+```javascript
+components:{
+	comA:{template:'<div>组件A</div>'},
+	comB:{template:'<div>组件B</div>'},
+	comC:{template:'<div>组件C</div>'}
+},
+data:{
+	currentView:'comA'
+},
+methods:{
+	handleChangeView:function(com){
+		this.currentView = 'com' + com
+	}
+}
+})
+	</script>
+```
+
+
+
+异步组件。当工程足够大，使用组件足够多时，是时候考虑下性能问题了。Vue.js 允许将组件定义为一个工厂函数，动态地解析组件 Vue.js 只在组件需要渲染时触发工厂函数，并且把结果缓存起来，用于后面的再次渲染。
+
+工厂函数接收一个 resolve 回调，在收到从服务器下载的组件定义时调用，也可以调用 reject(reson) 提示加载失败。
+
+```javascript
+Vue.component('async-example', function (resolve, reject) {
+  setTimeout(function () {
+    // 向 `resolve` 回调传递组件定义
+    resolve({
+      template: '<div>I am async!</div>'
+    })
+  }, 1000)
+})
+```
+
+
+
+## 7.6 其它
+
+Vue 在观察到数据变化时并不是直接更新 DOM，而是开启一个队列，并缓冲在同一事件循环中发生的所有数据改变。在缓冲时会去除重复数据，从而避免不必要的计算和 DOM 操作。然后，在下一个事件循环 tick 中，Vue 刷新队列并执行实际（已去重的）工作。所以如果用一个 for 循环来动态改变数据100次，其实只会应用最后一次改变，如果没有这种机制，DOM 就要重绘 100次，这固然是一个很大的开销。
+
+Vue 会根据当前浏览器环境优先使用原生的 Promise then 和 MutationObserver，如果都不支持就会采用 setTimeout 代替。
+
+`$nextTick`就是用来指导什么时候 DOM 更新完成的。`$nextTick`将回调延迟到下次DOM更新循环之后执行。在修改数据之后立即使用它，然后等待DOM更新。
+
+理论上，我们应该不用去主动操作 DOM，因为 Vue 的核心思想就是数据驱动 DOM，但在很多业务里，我们避免不了会使用一些第三方库，这些机遇原生 JavaScript 的库都有创建和更新及销毁的完整生命周期，与 Vue 配合使用，就要利用好`$nextTick`。
+
+```javascript
+// 修改数据
+vm.msg = 'Hello'
+// DOM 还没有更新
+Vue.nextTick(function () {
+  // DOM 更新了
+})
+```
+
+
+
+X-Templates。Vue 提供了另一种定义模板的方式，在一个`<script>`标签里使用 text/x-template 类型，并且指定一个 id，将这个 id 赋给 template。在`<script>`标签里，可以愉快地写 HTML 代码，不用考虑换行问题。不过，Vue 的初衷并不是滥用它，因为它将模板和组件的其他定义隔离了。
+
+```html
+<script type="text/x-template" id="hello-world-template">
+  <p>Hello hello hello</p>
+</script>
+```
+
+
+
+```javascript
+Vue.component('hello-world', {
+  template: '#hello-world-template'
+})
+```
+
+
+
+手动挂载实例的方法。创建的实例可以通过 new Vue() 的形式创建出来。在一些非常特殊的情况下，我们需要动态地区创建 Vue 实例。Vue 提供了 Vue.extend 和`$mount`两个方法来手动挂载一个实例。
+
+Vue.extend 是基础 Vue 构造器，创建一个“子类”，参数是包含组件选项的对象。
+
+如果 Vue 实例在实例化时没有收到 el 选项，它就处于“未挂载”状态，没有关联的 DOM 元素，可以使用`$mount()`手动挂载一个未挂载的实例。这个方法返回实例自身，因而可以链式调用其他实例方法。
+
+```html
+<div id="mount-div"></div>
+<script>
+	var MyComponent = Vue.extend({ //Vue.extend是基础构造器，参数是一个包含组件选项的对象
+		template:'<div>hello:{{ name }}</div>',
+		// 没el:'' 表示没挂载
+		data:function(){
+			return { name : 'Aresn'}
+		}
+	})
+	new MyComponent().$mount('#mount-div')  //用$mount()手动挂载一个未挂载的实例
+	// 还可以这么写：
+	// new MyComponent({
+	// 	el:'#mount-div'
+	// })
+	// 或者在文档之外渲染并且随后挂载
+	// var com = new MyComponent().$mount();
+	// document.getElementById('mount-div').appendChild(com.$el)
+</script>
+```
+
+
 
 # 第八章 自定义指令
 
