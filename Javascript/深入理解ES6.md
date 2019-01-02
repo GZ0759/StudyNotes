@@ -1144,5 +1144,3 @@ console.log(localStart.column); // 1
 5.4 混合解构
 
 5.5 解构参数
-
-
