@@ -730,13 +730,13 @@ unicode-range 的作用是可以让特定的字符或者特定范围的字符使
 
 CSS 有很多属性专门用来对文本进行控制，由于这些属性的作用机制往往是基于内联盒模型的，因此对于内联块状元素同样也是有效果的，这就使得这些 CSS 属性作用范围更广了，甚 至可以影响布局。  
 
-text-indent 就是对文本进行缩进控制，用得比较多的是 text-indent 负值隐藏文本内容。另外， text-indent 负值缩进在部分浏览器下会影响元素的 outline 区域，通常需要再设置 overflow:hidden。 与文本控制相关的 CSS 属性支持百分比值的并不多，text-indent 支持百分比值其实算是比较“有个性的”，但设置百分比值会有隐患。从理论上讲，我们可以使用 text-indent 与百分值实现宽度已知内联元素的居中效果。  
+text-indent 就是对文本进行缩进控制，用得比较多的是 text-indent 负值隐藏文本内容。另外， text-indent 负值缩进在部分浏览器下会影响元素的 outline 区域，通常需要再设置 `overflow: hidden`。 与文本控制相关的 CSS 属性支持百分比值的并不多，text-indent 支持百分比值其实算是比较“有个性的”，但设置百分比值会有隐患。从理论上讲，我们可以使用 text-indent 与百分值实现宽度已知内联元素的居中效果。  
 
 - text-indent 仅对第一行内联盒子内容有效。 
 - 非替换元素以外的 display 计算值为 inline 的内联元素设置 text-indent 值无效，如果计算值是 inline-block/inline-table 则会生效。因此，如果父级块状元素设置 了 text-indent 属性值，子 inline-block/inline-table 需要设置 text-indent:0 重置。 
-- <input>标签按钮 text-indent 值无效。 
-- <button>标签按钮 text-indent 值有效，但是存在兼容性差异， IE 浏览器理解为单标签，百分比值按照容器计算，而 Chrome 和 Firefox 浏览器标签内还有其他 Shadow DOM 元 素，因此百分比值是按照自身的尺寸计算的。
-- <input>和<textarea>输入框的 text-indent 在低版本 IE 浏览器下有兼容问题。  
+- `<input>`标签按钮 text-indent 值无效。 
+- `<button>`标签按钮 text-indent 值有效，但是存在兼容性差异， IE 浏览器理解为单标签，百分比值按照容器计算，而 Chrome 和 Firefox 浏览器标签内还有其他 Shadow DOM 元 素，因此百分比值是按照自身的尺寸计算的。
+- `<input>`和`<textarea>`输入框的 text-indent 在低版本 IE 浏览器下有兼容问题。  
 
 letter-spacing 可以用来控制字符之间的间距，这里说的“字符”包括英文字母、汉字以及空格等，letter-spocing 具有以下一些特性。  
 
@@ -747,9 +747,9 @@ letter-spacing 可以用来控制字符之间的间距，这里说的“字符�
 - 支持小数值，即使 0.1px 也是支持的，但并不总能看到效果，这与屏幕的密度有关。  
 - 暂不支持百分比值。
 
-word-spacing 和 letter-spacing 名称类似，其特性也有很多共通之处：都具有继承性；默认值都是 normal 而不是 0。通常情况下，两者表现并无差异；都支持负值，都可以让字符重叠；都支持小数值，如 word-spacing:0.5px；在目前的 CSS2.1 规范中，并不支持百分比值，但新的草案中新增了对百分值的支持，这是是根据相对于字符的“步进宽度”（ advance width）计算的；间隔算法都会受到 text-align:justify 两端对齐的影响。
+word-spacing 和 letter-spacing 名称类似，其特性也有很多共通之处：都具有继承性；默认值都是 normal 而不是 0。通常情况下，两者表现并无差异；都支持负值，都可以让字符重叠；都支持小数值，如 `word-spacing: 0.5px`；在目前的 CSS2.1 规范中，并不支持百分比值，但新的草案中新增了对百分值的支持，这是是根据相对于字符的“步进宽度”（ advance width）计算的；间隔算法都会受到 `text-align: justify` 两端对齐的影响。
 
-当然也有差异。 letter-spacing 作用于所有字符，但 word-spacing 仅作用于空格字 符。注意，是作用在“空格” 上，而不是字面意义上的“单词”。换句话说， word-spacing 的作用就是增加空格的间隙宽度。有空格就有效。在命名上， word-spacing 之所以称为 word-spacing 而不是 blank-spacing 之类的，主要原因是此属性当初主要为英文类排版设计， 而英文单词和单词之间是以空格分隔的，要想控制单词之间的间距，自然就向“空格”开刀了。  
+当然也有差异。 letter-spacing 作用于所有字符，但 word-spacing 仅作用于空格字符。注意，是作用在“空格” 上，而不是字面意义上的“单词”。换句话说， word-spacing 的作用就是增加空格的间隙宽度。有空格就有效。在命名上， word-spacing 之所以称为 word-spacing 而不是 blank-spacing 之类的，主要原因是此属性当初主要为英文类排版设计， 而英文单词和单词之间是以空格分隔的，要想控制单词之间的间距，自然就向“空格”开刀了。  
 
 word-break 属性规定自动换行的处理方法。语法如下： 
 
@@ -762,7 +762,7 @@ word-wrap 属性允许长单词或 URL 地址换行到下一行。在 CSS3 规�
 - word-wrap: normal  就是大家平常见得最多的正常的换行规则。
 - word-wrap: break-word  一行单词中实在没有其他靠谱的换行点的时候换行。  
 
-顾名思义， word-break:break-all 的作用是所有的都换行，毫不留情，一点儿空隙都不放过，而 word-wrap:break-word 则带有怜悯之心，如果这一行文字有可以换行的点，如空格或 CJK（中文/日文/韩文）之类的，就不打英文单词或字符的主意了，在这些换行点换行，至于对不对齐、好不好看则不关心，因此，很容易出现一片一片空白区域的情况。  
+顾名思义， `word-break: break-all` 的作用是所有的都换行，毫不留情，一点儿空隙都不放过，而 `word-wrap: break-word` 则带有怜悯之心，如果这一行文字有可以换行的点，如空格或 CJK（中文/日文/韩文）之类的，就不打英文单词或字符的主意了，在这些换行点换行，至于对不对齐、好不好看则不关心，因此，很容易出现一片一片空白区域的情况。  
 
 white-space 属性声明了如何处理元素内的空白字符，这类空白字符包括 Space（空格） 键、 Enter（回车）键、 Tab（制表符）键产生的空白。因此， white-space 可以决定图文内容是否在一行显示（回车空格是否生效），是否显示大段连续空白（空格是否生效）等。  其属性值包括下面这些。
 
@@ -780,7 +780,7 @@ white-space 属性声明了如何处理元素内的空白字符，这类空白�
 
 IE 浏览器（至少 到 IE11）到目前为止使用 text-align:justify 都无法让中文两端对齐，而 Chrome、 Firefox 和 Safari 等浏览器都是可以的。  不过，好在 IE 有一个私有的 CSS 属性 text-justify（目前也写入规范草案了）可以实 现中文两端对齐的。text-align:justify 除了实现文本的两端对齐，还可以实现容错性更强的两端对齐布局效果。  在默认设置下， text-align:justify 要想有两端对齐的效果，需要满足两点：一是有分隔点，如空格；二是要超过一行，此时非最后一行内容会两端对齐。
 
-CSS 的 text-decoration:underline 可以给内联文本增加下划线，但是，如果对细 节要求较高，就会发现，下划线经常会和中文文字的下边缘粘连在一起，英 文的话甚至直接穿过。最好的处理方法就是使用看似普通却功勋卓越的 border 属性。对于纯内联元素，垂直方向的 padding 属性和 border 属性对原来的布局定位等没有任何影 响。 也就是说， 就算 border-bottom 宽度设为 100px，上下行文字的垂直位置依旧纹丝不动。 再加上 border 兼容性很好，天然使用 color 颜色作为边框色，可谓下划线重叠问题解决办法 的不二之选。另外，配合 padding，我们就可以很有效地调节下边框和文字下边缘的距离，实 现我们最想要的效果。  
+CSS 的 `text-decoration: underline` 可以给内联文本增加下划线，但是，如果对细节要求较高，就会发现，下划线经常会和中文文字的下边缘粘连在一起，英 文的话甚至直接穿过。最好的处理方法就是使用看似普通却功勋卓越的 border 属性。对于纯内联元素，垂直方向的 padding 属性和 border 属性对原来的布局定位等没有任何影 响。 也就是说， 就算 border-bottom 宽度设为 100px，上下行文字的垂直位置依旧纹丝不动。 再加上 border 兼容性很好，天然使用 color 颜色作为边框色，可谓下划线重叠问题解决办法 的不二之选。另外，配合 padding，我们就可以很有效地调节下边框和文字下边缘的距离，实 现我们最想要的效果。  
 
 text-transform 也是为英文字符设计的，要么全大写 text-transform:uppercase， 要么全小写 text-transform:lowercase 。
 
