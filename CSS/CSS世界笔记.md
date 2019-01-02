@@ -29,14 +29,14 @@ url('css-world.png')、 attr('href')和 scale(-1)
 
 - 伪元素选择器 ： 就是有连续两个冒号的选择器 ，如::first-line::firstletter、 ::before 和::after。
 
-  第3章　流、元素与基本尺寸	
+  第3章　流、元素与基本尺寸
 
 “块级元素”对应的英文是 block-level element，常见的块级元素有<div>、 <li>和<table> 等。  由于“块级元素”具有换行特性，因此理论上它都可以配合 clear 属性来清除浮动带来的影响。  实际开发时，我们要么使用 block，要么使用 table，并不会使用 list-item 。
 
 所谓“宽度分离原则”，就是 CSS 中的 width 属性不与影响宽度的 padding/border（有 时候包括 margin）属性共存 。分离， width 独立占用一层标签，而 padding、 border、 margin 利用流动性在内部自适应呈现。 在前端领域，一提到分离，作用一定是便于维护。  由于盒尺寸中的 4 个盒子都能影响宽度， 自然页面元素的最终宽度就很容易发生变化而导致意想不到的布局发生。  
 
 ```css
-.father { width: 180px; } 
+.father { width: 180px; }
 .son { margin: 0 20px; padding: 20px; border: 1px solid; }  
 ```
 
@@ -44,7 +44,7 @@ height 和 width 还有一个比较明显的区别就是对百分比单位的支
 
 如何让元素支持 height:100%效果？ 第一是设定显式的高度值。 ，第二是使用绝对定位。  需要注意的是，绝对定位元素的百分比计算和非绝对定位元素的百分比计算是有区别的，区别在于绝对定位的宽高百分比计算是相对于 padding box 的，也就是说会把 padding 大小值计算在内，但是，非绝对定位元素则是相对于 content box 计算的  
 
-# 第4章 盒尺寸大家族	
+# 第4章 盒尺寸大家族
 
 盒尺寸中的 4 个盒子 content box、 padding box、 border box 和 margin box 分别对应 CSS 世界中的 content、 padding、 border 和 margin 属性，我把这 4 个属性称为“盒尺寸四大家 族” 。
 
@@ -173,7 +173,7 @@ margin+padding 可以实现等高布局，同样， border 属性也可以实现
 
 ```css
 /* 导航背景区border创建 */
-.box { 
+.box {
   border-left: 150px solid #333;
   background-color: #f0f3f9;
 }
@@ -188,7 +188,7 @@ margin+padding 可以实现等高布局，同样， border 属性也可以实现
 }
 ```
 
-# 第5章 内联元素与流	
+# 第5章 内联元素与流
 
 块级元素负责结构，内联元素接管内容，而 CSS 世界是面向图文混排，也就是内联元素设计的 。
 
@@ -254,9 +254,9 @@ vertial- align:middle 近似垂直居中的原因与定义有关。内联元素�
 
 vertical-align:text-top： 盒子的顶部和父级内容区域的顶部对齐。vertical-align:text-bottom：盒子的底部和父级内容区域的底部对齐。  
 
-# 第6章 流的破坏与保护	
+# 第6章 流的破坏与保护
 
-## 6.1 魔鬼属性 float 
+## 6.1 魔鬼属性 float
 
 浮动的本质就是为了实现文字环绕效果。 而这种文字环绕，主要指的就是文字环绕图片显示的效果。  
 
@@ -304,7 +304,7 @@ float 属性的种种归根结底还是由于自身各种特性导致的。 floa
 
 clear 属性只有块级元素才有效的，而::after 等伪元素默认都是内联水平，这就是借助伪元素清除浮动影响时需要设置 display 属性值的原因。  只是利用伪元素或设置拥有清除属性的空div元素，并不是真正意义的清除浮动， float 元素一些不好的特性依然存在，于是，会有类似下面的现象。  
 
-- 如果 clear:both 元素前面的元素就是 float 元素，则 margin-top 负值即使设 成-9999px，也不见任何效果。 
+- 如果 clear:both 元素前面的元素就是 float 元素，则 margin-top 负值即使设 成-9999px，也不见任何效果。
 - clear:both 后面的元素依旧可能会发生文字环绕的现象。  
 
 ## 6.3 CSS 世界的结界——BFC  
@@ -319,7 +319,7 @@ BFC 全称为 block formatting context，中文为“块级格式化上下文”
 - float 的值不为 none；
 - overflow 的值为 auto、 scroll 或 hidden；
 - display 的值为 table-cell、 table-caption 和 inline-block 中的任何一个；
-- position 的值不为 relative 和 static。 
+- position 的值不为 relative 和 static。
 
 换言之，只要元素符合上面任意一个条件，就无须使用 clear:both 属性去清除浮动的影响了。  
 
@@ -336,7 +336,7 @@ BFC 的结界特性最重要的用途其实不是去 margin 重叠或者是清�
 
 - float:left。浮动元素本身 BFC 化，然而浮动元素有破坏性和包裹性，失去了元素本身的流体自适应性，因此，无法用来实现自动填满容器的自适应布局。  
 - overflow:hidden。其本身还是一个很普通的元素，因此，块状元素的流体特性保存得相当完好，不仅有着 BFC 的独立区域特性，而且 overflow:hidden 的 BFC 特性从 IE7 浏览器开始就支持， 兼容性也很不错。唯一的问题就是容器盒子外的元素可能会被隐藏掉，一定程度上限制了这种特性的大规模使用。
-- display:inline-block。其会让元素尺寸包裹收缩，完全就不是我们想要的 block 水平的流动特性。但是在 IE6 和 IE7 浏览器下， block 水平的元素设置 display:inline-block 元素还是 block 水平，也就是还是会自适应容器的可用宽度显示。于是，对于 IE6 和 IE7 浏览器，我们会阴差阳错得到一个比 overflow:hidden 更强大的声明，既 BFC 特性加身，又流体特性保留。  当然， *zoom: 1 也是类似效果，不过只适用于低级的 IE 浏览器，如 IE7 。
+- display:inline-block。其会让元素尺寸包裹收缩，完全就不是我们想要的 block 水平的流动特性。但是在 IE6 和 IE7 浏览器下， block 水平的元素设置 display:inline-block 元素还是 block 水平，也就是还是会自适应容器的可用宽度显示。于是，对于 IE6 和 IE7 浏览器，我们会阴差阳错得到一个比 overflow:hidden 更强大的声明，既 BFC 特性加身，又流体特性保留。  当然， `*zoom: 1` 也是类似效果，不过只适用于低级的 IE 浏览器，如 IE7 。
 - display:table-cell。其让元素表现得像单元格一样， IE8 及以上版本浏览器才支持。跟 display:inline-block 一样，它会跟随内部元素的宽度显示，但是，单元格有 一个非常神奇的特性，就是宽度值设置得再大，实际宽度也不会超过表格容器的宽度。如果我们把 display:table-cell 这个 BFC 元素宽度设置得很大，那其实就跟 block 水平元素自动适应容器空间效果一模一样了。
 
 ## 6.4 最佳结界 overflow  
@@ -518,15 +518,15 @@ position:fixed 固定定位元素的“包含块”是根元素，我们可以�
 
 如果是移动端项目，阻止 touchmove 事件的默认行为可以防止滚动；如果是桌面端项目， 可以让根元素直接overflow:hidden。但是， Windows 操作系统下的浏览器的滚动条都是占据一定宽度的，滚动条的消失必然会导致页面的可用宽度变化，页面会产生体验更糟糕的晃动问题，那怎么办呢？很简单，我们只需要找个东西填补消失的滚动条就好了。那该找什么东西充呢？这时候就轮到功勋卓越的 border 属性出马了—消失的滚动条使用同等宽度的透明边框填充！  
 
-# 第7章 CSS世界的层叠规则	
+# 第7章 CSS世界的层叠规则
 
 所谓“层叠规则”，指的是当网页中的元素发生层叠时的表现规则。默认情况下，网页内容是没有偏移角的垂直视觉呈现，当内容发生层叠的时候，一定会有 一个前后的层叠顺序产生，有点儿类似于真实世界中“论资排辈”的感觉。  
 
-## 7.1 z-index 只是 CSS 层叠规则中的一叶小舟 
+## 7.1 z-index 只是 CSS 层叠规则中的一叶小舟
 
 在 CSS 世界中， z-index 属性只有和定位元素（position 不为 static 的元素）在一 起的时候才有作用，可以是正数也可以是负数。理论上说，数值越大层级越高，但实际上其规则要复杂很多。但随着 CSS3 新世界的到来， z-index 已经并非只对定位元素有效， flex 盒子的子元素也可以设置 z-index 属性。
 
-## 7.2 理解 CSS 世界的层叠上下文和层叠水平 
+## 7.2 理解 CSS 世界的层叠上下文和层叠水平
 
 层叠上下文，英文称作 stacking context，是 HTML 中的一个三维的概念。如果一个元素含有层叠上下文，我们可以理解为这个元素在 z 轴上就“高人一等”。我们可以把层叠上下文理 解为一种“层叠结界”，自成一个小世界。这个小世 界中可能有其他的“层叠结界”，而自身也可能处于其他“层叠结界”中。  
 
@@ -553,7 +553,7 @@ background/border 为装饰属性，浮动和块状元素一般用作布局，�
 下面这两条是层叠领域的黄金准则。当元素发生层叠的时候，其覆盖关系遵循下面两条准则：
 
 - 谁大谁上： 当具有明显的层叠水平标识的时候，如生效的 z-index 属性值，在同一 个层叠上下文领域，层叠水平值大的那一个覆盖小的那一个。
-- 后来居上： 当元素的层叠水平一致、层叠顺序相同的时候，在 DOM 流中处于后面的元素会覆盖前面的元素。 
+- 后来居上： 当元素的层叠水平一致、层叠顺序相同的时候，在 DOM 流中处于后面的元素会覆盖前面的元素。
 
 在 CSS 和 HTML 领域，只要元素发生了重叠，都离不开上面这两条黄金准则。  
 
@@ -561,7 +561,7 @@ background/border 为装饰属性，浮动和块状元素一般用作布局，�
 
 层叠上下文元素有如下特性。
 
-- 层叠上下文的层叠水平要比普通元素高。 
+- 层叠上下文的层叠水平要比普通元素高。
 - 层叠上下文可以阻断元素的混合模式。
 - 层叠上下文可以嵌套，内部层叠上下文及其所有子元素均受制于外部的“层叠上下文”。
 - 每个层叠上下文和兄弟元素独立，也就是说，当进行层叠变化或渲染的时候，只需要考虑后代元素。
@@ -577,20 +577,20 @@ background/border 为装饰属性，浮动和块状元素一般用作布局，�
 
 对于 position 值为 relative/absolute 以及 Firefox/IE 浏览器（不包括 Chrome 浏览器）下含有 position:fixed 声明的定位元素，当其 z-index 值不是 auto 的时候，会创建层叠上下文。z-index: auto 所在的元素是一个普通定位元素，而 z-index 一旦变成数值，哪怕是 0，就会创建一个层叠上下文。此时，层叠规则就可能发生了变化。层叠上下文的特性里面最后一条是自成体系。有时候，我们在网页重构的时候会发现 z-index 嵌套错乱，这时要看看是不是受父级的层叠上下文元素干扰了，可能就豁然开朗了。  
 
-CSS3 新世界的出现除了带来了新属性，还对过去的很多规则发出了挑战，其中对层叠上下文规则的影响显得特别突出。 
+CSS3 新世界的出现除了带来了新属性，还对过去的很多规则发出了挑战，其中对层叠上下文规则的影响显得特别突出。
 
 - 元素为 flex 布局元素（父元素 display:flex|inline-flex），同时 z-index 值不是 auto。
 - 元素的 opacity 值不是 1。
-- 元素的 transform 值不是 none。 
-- 元素 mix-blend-mode 值不是 normal。 
-- 元素的 filter 值不是 none。 
+- 元素的 transform 值不是 none。
+- 元素 mix-blend-mode 值不是 normal。
+- 元素的 filter 值不是 none。
 - 元素的 isolation 值是 isolate。
 - 元素的 will-change 属性值为上面 2～6 的任意一个（如 will-change:opacity、 will-chang:transform 等）。
 - 元素的-webkit-overflow-scrolling 设为 touch。  
 
 定位元素会层叠在普通元素的上面，其根本原因就是：元素 一旦成为定位元素，其 z-index 就会自动生效，此时其 z-index 就是默认的 auto，也就是 0 级别，根据上面的层叠顺序表，就会覆盖inline或block或float元素。而不支持z-index 的层叠上下文元素天然是 z-index:auto 级别，也就意味着，层叠上下文元素和定位元素是一个层叠顺序的，于是当它们发生层叠的时候，遵循的是“后来居上”准则。  
 
-## 7.6 z-index 负值深入理解 
+## 7.6 z-index 负值深入理解
 
 z-index 负值的最终表现并不是单一的，而是与“层叠上下文”和“层叠顺序”密切相关。z-index 负值元素的层级是在层叠上下文元素上面、 block 元素的下面，也就是 z-index 虽然名为负数层级，但依然无法突破当前层叠上下文所包裹的小世界。可以这么说， z-index 负值渲染的过程就是一个寻找第一个层叠上下文元素的过程，然后层叠顺序止步于这个层叠上下文元素。  
 
@@ -598,7 +598,7 @@ z-index 负值的最终表现并不是单一的，而是与“层叠上下文”
 - IE8 下的多背景模拟。  
 - 定位在元素的后面。  
 
-## 7.7 z-index“不犯二”准则 
+## 7.7 z-index“不犯二”准则
 
 定位元素一旦设置了 z-index 值，就从普通定位元素变成了层叠上下文元素，相互间的层叠顺序就发生了根本的变化，很容易出现设置了巨大的 z-index 值也无法覆盖其他元素的问题。  
 
@@ -606,9 +606,9 @@ z-index 负值的最终表现并不是单一的，而是与“层叠上下文”
 
 页面上主体元素遵循 z-index“不犯二”准则，浮层元素使用 z-index“层级计数器” 。
 
-# 第8章 强大的文本处理能力	
+# 第8章 强大的文本处理能力
 
-## 8.1 line-height 的另外一个朋友 font-size 
+## 8.1 line-height 的另外一个朋友 font-size
 
 line-height 的部分类别属性值是相对于 font-size 计算的， vertical-align 百分比值属性值又是相对于 line-height 计算的，于是font-size 和 vertical-align 也有着关系。
 
@@ -629,7 +629,7 @@ font-size 的关键字属性值分以下两类。
 - larger：大一点，是<big>元素的默认 font-size 属性值。
 - smaller：小一点，是<small>元素的默认 font-size 属性值。
 
-绝对尺寸关键字。与当前元素 font-size 无关，仅受浏览器设置的字号影响。注意这里的措辞，是“浏览器设置”，而非“根元素”，两者是有区别的。 
+绝对尺寸关键字。与当前元素 font-size 无关，仅受浏览器设置的字号影响。注意这里的措辞，是“浏览器设置”，而非“根元素”，两者是有区别的。
 
 - xx-large：好大好大，和<h1>元素计算值一样。
 - x-large：好大，和<h2>元素计算值一样。
@@ -641,7 +641,7 @@ font-size 的关键字属性值分以下两类。
 
 桌面 Chrome 浏览器下有个 12px 的字号限制，就是文字的 font-size 计算值不能小于 12px 。如果 font-size:0 的字号表现就是 0，那么文字会直接被隐藏掉，并且只能是 font-size:0，哪怕设置成 font-size:0.0000001px， 都还是会被当作 12px 处理的。
 
-## 8.2 字体属性家族的大家长 font-family 
+## 8.2 字体属性家族的大家长 font-family
 
 CSS 世界中的有很多属性都是以 font-开头的，如 font-style、 font-weight 和这里要介绍的 font-family，把所有这些以 font-开头的 CSS 属性统称为“字体属性家族”。顾名思义， font-family 就是“字体家族”的意思。font-family 默认值由操作系统和浏览器共同决定。
 
@@ -649,7 +649,7 @@ font-family 支持两类属性值，一类是“字体名”，一类是“字�
 
 > 字体名”就是使用的对应字体的名称。  如果字体名包含空格，需要使用引号包起来。  根据实践，可以不用区分大小写。如果有多个字体设定，从左往右依次寻找本地是否有对应的字体即可。
 >
-> “字体族”分为很多类， MDN 上文档分类如下： 
+> “字体族”分为很多类， MDN 上文档分类如下：
 >
 > - font-family: serif（衬线字体）
 > - font-family: sans-serif（无衬线字体）
@@ -672,7 +672,7 @@ ch 和 em、 rem、 ex 一样，是 CSS 中和字符相关的相对单位。和 
 
 微软正黑体是一款全面支持 ClearType 技术的 TrueType 无衬线字体，用于繁体中文系统。相对应地，中国大陆地区用的是微软雅黑。我们平常所说的“宋体”，指的都是“中易宋体”，英文名称 SimSun，“黑体”类似的是“中易黑体”。所有英文名称大小写都经过一定的考量，并不是随便设定的，虽然说 CSS font-family 对名称的大小写不怎么敏感，但是根据经验，最好至少首字母要大写，否则在使用 CSS unicode-range 的时候可能会遇到一些麻烦。  
 
-## 8.3 字体家族其他成员 
+## 8.3 字体家族其他成员
 
 font-weight 表示“字重”，通俗点讲，就是表示文字的粗细程度。
 
@@ -687,9 +687,9 @@ font-style 表示文字造型是斜还是正，与 font-weight 相比，其属�
 
 font-variant 是一个从 IE6 时代就过来的 CSS 属性，对于我们大中华用户，其支持的属性值和作用让我们这些汉字用户觉得有些头疼，实现小体型大写字母，两个属性值要么 normal， 要么 small-caps， font-variant:small-caps 就是可以让英文字符表现为小体型大写字母。  
 
-## 8.4 font 属性 
+## 8.4 font 属性
 
-可以缩写在 font 属性中的属性非常多，包括 font-style、 font-variant、 font-weight、 font-size、 line-height、 font-family 等。完整语法为： 
+可以缩写在 font 属性中的属性非常多，包括 font-style、 font-variant、 font-weight、 font-size、 line-height、 font-family 等。完整语法为：
 
 > [ [ font-style || font-variant || font-weight ]? font-size [ / line-height ]? font-family ]  
 >
@@ -703,14 +703,14 @@ font 属性除了缩写用法，还支持关键字属性值，其语法如下。
 >
 > 如果将 font 属性设置为上面的一个值，就等同于设置 font 为操作系统该部件对应的 font，也就是说直接使用系统字体。  
 >
-> - caption：活动窗口标题栏使用的字体。 
+> - caption：活动窗口标题栏使用的字体。
 > - icon：包含图标内容所使用的字体，如所有文件夹名称、文件名称、磁盘名称，甚至浏览器窗口标题所使用的字体。
 > - menu：菜单使用的字体，如文件夹菜单。
 > - message-box：消息盒里面使用的字体。
 > - small-caption：调色板标题所使用的字体。
 > - status-bar：窗体状态栏使用的字体。  
 
-## 8.5 真正了解@font face 规则 
+## 8.5 真正了解@font face 规则
 
 @font face 本质上就是一个定义字体或字体集的变量，这个变量不仅仅是简单地自定义字体，还包括字体重命名、默认字体样式设置等。@font face 规则支持的 CSS 属性有 font-family、 src、 font-style、 font-weigh、 unicode-range、 font-variant、 font-stretch 和 font-feature-settings。  
 
@@ -726,15 +726,15 @@ unicode-range 的作用是可以让特定的字符或者特定范围的字符使
 
 从面向未来的角度讲，字体图标技术的使用会越来越边缘化，因为和 SVG 图标技术相比， 其唯一的优势就是兼容一些老的 IE 浏览器。  SVG 图标同样是矢量的，同样颜色可控，但资源占用更少，加载体验更好，呈现效果更佳， 更加符合语义。
 
-## 8.6 文本的控制 
+## 8.6 文本的控制
 
 CSS 有很多属性专门用来对文本进行控制，由于这些属性的作用机制往往是基于内联盒模型的，因此对于内联块状元素同样也是有效果的，这就使得这些 CSS 属性作用范围更广了，甚 至可以影响布局。  
 
 text-indent 就是对文本进行缩进控制，用得比较多的是 text-indent 负值隐藏文本内容。另外， text-indent 负值缩进在部分浏览器下会影响元素的 outline 区域，通常需要再设置 `overflow: hidden`。 与文本控制相关的 CSS 属性支持百分比值的并不多，text-indent 支持百分比值其实算是比较“有个性的”，但设置百分比值会有隐患。从理论上讲，我们可以使用 text-indent 与百分值实现宽度已知内联元素的居中效果。  
 
-- text-indent 仅对第一行内联盒子内容有效。 
-- 非替换元素以外的 display 计算值为 inline 的内联元素设置 text-indent 值无效，如果计算值是 inline-block/inline-table 则会生效。因此，如果父级块状元素设置 了 text-indent 属性值，子 inline-block/inline-table 需要设置 text-indent:0 重置。 
-- `<input>`标签按钮 text-indent 值无效。 
+- text-indent 仅对第一行内联盒子内容有效。
+- 非替换元素以外的 display 计算值为 inline 的内联元素设置 text-indent 值无效，如果计算值是 inline-block/inline-table 则会生效。因此，如果父级块状元素设置 了 text-indent 属性值，子 inline-block/inline-table 需要设置 text-indent:0 重置。
+- `<input>`标签按钮 text-indent 值无效。
 - `<button>`标签按钮 text-indent 值有效，但是存在兼容性差异， IE 浏览器理解为单标签，百分比值按照容器计算，而 Chrome 和 Firefox 浏览器标签内还有其他 Shadow DOM 元 素，因此百分比值是按照自身的尺寸计算的。
 - `<input>`和`<textarea>`输入框的 text-indent 在低版本 IE 浏览器下有兼容问题。  
 
@@ -751,7 +751,7 @@ word-spacing 和 letter-spacing 名称类似，其特性也有很多共通之处
 
 当然也有差异。 letter-spacing 作用于所有字符，但 word-spacing 仅作用于空格字符。注意，是作用在“空格” 上，而不是字面意义上的“单词”。换句话说， word-spacing 的作用就是增加空格的间隙宽度。有空格就有效。在命名上， word-spacing 之所以称为 word-spacing 而不是 blank-spacing 之类的，主要原因是此属性当初主要为英文类排版设计， 而英文单词和单词之间是以空格分隔的，要想控制单词之间的间距，自然就向“空格”开刀了。  
 
-word-break 属性规定自动换行的处理方法。语法如下： 
+word-break 属性规定自动换行的处理方法。语法如下：
 
 - word-break: normal  使用默认的换行规则。
 - word-break: break-all  允许任意非 CJK（ Chinese/Japanese/Korean）文本间的单词断行，这个值所有浏览器都支持。
@@ -767,7 +767,7 @@ word-wrap 属性允许长单词或 URL 地址换行到下一行。在 CSS3 规�
 white-space 属性声明了如何处理元素内的空白字符，这类空白字符包括 Space（空格） 键、 Enter（回车）键、 Tab（制表符）键产生的空白。因此， white-space 可以决定图文内容是否在一行显示（回车空格是否生效），是否显示大段连续空白（空格是否生效）等。  其属性值包括下面这些。
 
 - normal：合并空白字符和换行符。
-- pre：空白字符不合并，并且内容只在有换行符的地方换行。 
+- pre：空白字符不合并，并且内容只在有换行符的地方换行。
 - nowrap：该值和 normal 一样会合并空白字符，但不允许文本环绕。
 - pre-wrap：空白字符不合并，并且内容只在有换行符的地方换行，同时允许文本环绕。
 - pre-line：合并空白字符，但只在有换行符的地方换行，允许文本环绕。  
@@ -784,13 +784,13 @@ CSS 的 `text-decoration: underline` 可以给内联文本增加下划线，但�
 
 text-transform 也是为英文字符设计的，要么全大写 text-transform:uppercase， 要么全小写 text-transform:lowercase 。
 
-## 8.7 了解:first-letter/:first-line 伪元素 
+## 8.7 了解:first-letter/:first-line 伪元素
 
 很多年前， Chrome 浏览器和 IE9 浏览器还未出现， 那时候 first-letter 叫伪类选择器， 写法是前面加一个冒号，如:first-letter。那时候的语义要更直白一些，选择第一个字符， 然后设置一些样式。后来，伪类和伪元素被划分得更加明确和规范了， ::after、 ::before、 ::backdrop、 ::first-letter、 ::first-line、 ::selection 等是伪元素， :active、 :focus、 :checked 等被称为伪类，这就导致::first-letter 的语义发生了一些变化— 首字符作为元素的假想子元素。  
 
 要想让::first-letter(:first-letter)伪元素生效，是需要满足一定条件的
 
-- 元素的 display 计算值必须是 block、 inline-block、 list-item、 table-cell 或者 table-caption，其他所有 display 计算值都没有用，包括 display:table 和 display:flex 等。 
+- 元素的 display 计算值必须是 block、 inline-block、 list-item、 table-cell 或者 table-caption，其他所有 display 计算值都没有用，包括 display:table 和 display:flex 等。
 - 此外，不是所有的字符都能单独作为::first-letter 伪元素存在的。常见的标点符号、各类括号和引号 在::first-letter 伪元素眼中全部都是“辅助类”字符。正常情况下可以直接作为伪元素的字符就是数字、英文字母、中文、 $、一些运算符，以 及非常容易被忽视的空格等。  
 - 字符前面不能有图片或者 inline-block/inline-table 之类的元素存在。  
 - 一般来讲， ::before 伪元素和普通元素之间没有多少瓜葛，例如:first-child 和:empty 之类的选择器都不受影响。但是::before 伪元素也参 与::first-letter 伪元素  
@@ -800,9 +800,9 @@ text-transform 也是为英文字符设计的，要么全大写 text-transform:u
 
 :first-line 选择器用于选取指定选择器的首行。利用了::first-line 伪元素，于是标签上的颜色实际上是设置给 background-color的，而按钮真正呈现的颜色已经被::first-line伪元素牢牢设置好了， 就完全不用担心文字颜色和背景色混在一起了。  
 
-- :first-line 和:first-letter 伪元素一样， IE9 及以上版本浏览器支持双冒号::first-line{}写法， IE8 浏览器只认识单冒号写法。 
+- :first-line 和:first-letter 伪元素一样， IE9 及以上版本浏览器支持双冒号::first-line{}写法， IE8 浏览器只认识单冒号写法。
 
-- :first-line 和:first-letter 伪元素一样，只能作用在块级元素上，也就是 display 为 block、 inline-block、 list-item、 table-cell 或者 tablecaption 的元素设置:first-line 才有效， table、 flex 之类都是无效的。 
+- :first-line 和:first-letter 伪元素一样，只能作用在块级元素上，也就是 display 为 block、 inline-block、 list-item、 table-cell 或者 tablecaption 的元素设置:first-line 才有效， table、 flex 之类都是无效的。
 
 - :first-line 和:first-letter 伪元素一样，仅支持部分 CSS 属性，例如： • 所有字体相关属性； • color 属性； • 所有背景相关属性； • text-decoration、 text-transfor、 letter-spacing、 word-spacing、 line-height 和 vertical-align 等属性。
 
@@ -810,7 +810,7 @@ text-transform 也是为英文字符设计的，要么全大写 text-transform:u
 
 - :first-line 和:first-letter 伪元素一样，也支持标签嵌套，但是具体细则 和:first-letter 出入较大，例如，它不支持 table 相关属性等。  
 
-  第9章 元素的装饰与美化	
+  第9章 元素的装饰与美化
 
 ## 9.1 CSS 世界的 color 很单调  
 
@@ -834,26 +834,26 @@ CSS 世界中的 background 大部分有意思的内容都是在 CSS3 新世界�
 
 当我们使用 background 属性的时候，实际上使用的是一系列 background 相关属性的集合，包括：
 
-- background-image: none 
+- background-image: none
   规定要使用的背景图像。一个元素如果 display 计算值为 none，在 IE 浏览器下（ IE8～IE11，更 高版本不确定）依然会发送图片请求， Firefox 浏览器不会，至于 Chrome 和 Safari 浏览器如果隐藏元素同时又设置了 background-image，则图片依然会去加载； 如果是父元素的 display 计算值为 none，则背景图不会请求，此时浏览器或许放心地认为这个背景图暂时是不会使用的。
-- background-position: 0% 0% 
-  规定背景图像的位置。CSS 中有一类属性值被称作<position>值，表示一种 CSS 数据类型、二维坐标空间，用于设置相对盒子的坐标。 <position>值支持 1～4 个值，可以是具体数值，也可以是百分比值，还可以是 left、 top、 right、 center 和 bottom 等关键字。  如果缺省偏移关键字，则会认为是 center， 因此 background-position:top center 可以直接写成 background-position:top。 <position>值也支持百分比值，不过其表现与 CSS 中其他的百分比单位表现都不一样。  第一个值是水平位置，第二个值是垂直位置。左上角是 0% 0%。右下角是 100% 100%。如果您仅规定了一个值，另一个值将是 50%。 
-- background-repeat: repeat 
+- background-position: 0% 0%
+  规定背景图像的位置。CSS 中有一类属性值被称作<position>值，表示一种 CSS 数据类型、二维坐标空间，用于设置相对盒子的坐标。 <position>值支持 1～4 个值，可以是具体数值，也可以是百分比值，还可以是 left、 top、 right、 center 和 bottom 等关键字。  如果缺省偏移关键字，则会认为是 center， 因此 background-position:top center 可以直接写成 background-position:top。 <position>值也支持百分比值，不过其表现与 CSS 中其他的百分比单位表现都不一样。  第一个值是水平位置，第二个值是垂直位置。左上角是 0% 0%。右下角是 100% 100%。如果您仅规定了一个值，另一个值将是 50%。
+- background-repeat: repeat
   规定如何重复背景图像。background-repeat 支持 repeat、 repeat-x、 repeat-y 这几个值，语义清晰，兼容性好。
 - background-attachment: scroll
-  CSS 世界中， background-attachment 支持 scroll 和 fixed 两个属性值，其中 scroll 是默认值，就是平常使用背景图的效果表现； fixed 表示背景相对于 当前文档视区定位，也就是页面再怎么滚动背景图片位置依旧纹丝 不动，稳若泰山。 
-- background-color: transparent 
+  CSS 世界中， background-attachment 支持 scroll 和 fixed 两个属性值，其中 scroll 是默认值，就是平常使用背景图的效果表现； fixed 表示背景相对于 当前文档视区定位，也就是页面再怎么滚动背景图片位置依旧纹丝 不动，稳若泰山。
+- background-color: transparent
   规定要使用的背景颜色。background 无论是单背景图还是多背景图，背景色一定是在最底下的位置。    
 
-如果是 IE9+浏览器，则还包括： 
+如果是 IE9+浏览器，则还包括：
 
-- background-size: auto auto 
+- background-size: auto auto
 
-- background-origin: padding-box 
+- background-origin: padding-box
 
 - background-clip: border-box  
 
-  第10章 元素的显示与隐藏	
+  第10章 元素的显示与隐藏
 
 如果希望元素不可见，同时不占据空间，辅助设备无法访问，同时不渲染，可以使用 <script>标签隐藏。  <script>标签是不支持嵌套的，因此，如果希望在<script>标签中再放置其他不渲染的模板内容，可以试试使用<textarea>元素。另外， <script>标签隐藏内容获取使用 script.innerHTML， <textarea>使用 textarea.value。  
 
@@ -885,7 +885,7 @@ visibility:hidden 不会影响计数器的计数，这和 display:none 完全不
 
 因为 CSS3 transition 支持的 CSS 属性中有 visibility，transition 可以延时执行，因此，和 visibility 配合可以使用纯 CSS 实现 hover 延时显示效果，由此提升我们的交互体验。  
 
-# 第11章 用户界面样式	
+# 第11章 用户界面样式
 
 用户界面样式指的是 CSS 世界中用来帮助用户进行界面交互的一些 CSS 样式，主要有 outline 和 cursor 等属性。  
 
@@ -901,7 +901,7 @@ outline 是本书介绍到现在出现的第一个真正意义上的不占据任
 
 cursor 属性值几乎可以认为是当下支持的关键字属性值最多的 CSS 属性，没有之一。下 面就是按照功能特性对其进行的分类以及具体解释描述。  
 
-常规 
+常规
 
 - cursor:auto： cursor 默认值。 auto 表示光标形状根据内容类别浏览器自动进行处理。  
 - cursor:default：系统默认光标形状。虽然有“默认”之意，但却不是 cursor 属 性的默认值。
@@ -953,7 +953,7 @@ cursor 属性值几乎可以认为是当下支持的关键字属性值最多的 
 
 从 IE6 开始，我们就可以自定义网页中的光标样式，因此，对于 cursor 属性，兼容性都 不是问题。对于 Chrome 等浏览器，可以直接使用 PNG 图片作为光标，但是 IE 浏览器不行。 IE 仅支 持专门的.cur 格式的光标文件，需要使用工具进行格式转换。
 
-# 第12章 流向的改变	
+# 第12章 流向的改变
 
 ## 12.1 改变水平流向的 direction  
 
@@ -972,7 +972,7 @@ direction 属性似乎只能改变图片或者按钮的呈现顺序，但 对纯
 writing-mode 的语法学习要求比其他 CSS 属性要高一些，因 为我们需要记住两套不同的语法：一个是 IE 私有属性，一个是 CSS3 规范属性。  
 
 - 默认值 horizontal-tb 表 示文本流是水平方向（horizontal）的，元素是从上往下（top-bottom）堆叠的。  
-- vertical-rl 表示文本是垂直方向（ vertical）展示，然后阅读的顺序是从右往左 （right-left），和我们阅读古诗的顺序一致。 
+- vertical-rl 表示文本是垂直方向（ vertical）展示，然后阅读的顺序是从右往左 （right-left），和我们阅读古诗的顺序一致。
 - vertical-lr 表示文本是垂直方向（vertical）展示，然后阅读的顺序还是默认的从左往右（left-right），即仅仅是水平变垂直。   
 - IE 浏览器下的关键字值多达 11 个。如果项目需要兼容 IE7，则只要关注两个就可以了，即初始值 lr-tb 和 tb-rl，对应于 CSS3 规范中的 horizontal-tb 和 vertical-rl。如果项目只需要兼容 IE8 及以上版本浏览器，恭喜你，你可以和 CSS3 规范属性完全对应上了，而且 IE8 下的 writing-mode 要比 IE7 强大得多。我们需要关注初始值 lr-tb、 tb-rl 和 tb-lr，分别对应于 CSS3 中的 horizontal-tb、 vertical-rl 和 vertical-lr。  
 
@@ -984,5 +984,4 @@ writing-mode 的语法学习要求比其他 CSS 属性要高一些，因 为我�
 
 在 CSS3 中，由于 writing-mode 的存在，对垂直流方向的 margin 值会发生合并。换句话说，如果元素是默认的水平流，则垂直 margin 会合并；如果元素是垂直流，则水平 margin 会合并。  普通块元素可以使用 margin:auto 实现垂直居中。可以使用 text-align:center 实现图片垂直居中。可以使用 text-indent 实现文字下沉效果。可以实现全兼容的 icon fonts 图标的旋转效果。充分利用高度的高度自适应布局。
 
-writing-mode、 direction 和 unicode-bidi 是 CSS 世界中三大可以改变文本布局 流向的属性，其中 direction 和 unicode-bidi 属于近亲，经常一起使用，也是仅有的两个不受 CSS3 的 all 属性影响的 CSS 属性，基本上就是和内联元素一起使用。它貌似是为阿拉伯 文字设计的。 
-
+writing-mode、 direction 和 unicode-bidi 是 CSS 世界中三大可以改变文本布局 流向的属性，其中 direction 和 unicode-bidi 属于近亲，经常一起使用，也是仅有的两个不受 CSS3 的 all 属性影响的 CSS 属性，基本上就是和内联元素一起使用。它貌似是为阿拉伯 文字设计的。
