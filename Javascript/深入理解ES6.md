@@ -1139,8 +1139,138 @@ console.log(localStart.column); // 1
 
 
 
-5.3 数组解构
+## 5.3 数组解构
 
-5.4 混合解构
+与对象解构的语法相比，数组解构就简单多了，它使用的是数组字面量，且解构操作全部在数组内完成，而不是像对象字面量语法一样使用对象的命名属性。在这个过程中，数组本身不会发生任何变化。
 
-5.5 解构参数
+```javascript
+let colors = [ "red", "green", "blue" ];
+
+let [ firstColor, secondColor ] = colors;
+
+console.log(firstColor);        // "red"
+console.log(secondColor);       // "green"
+```
+
+
+
+在解构模式中，也可以直接省略元素，只为感兴趣的元素提供变量名。
+
+```javascript
+let colors = [ "red", "green", "blue" ];
+
+let [ , , thirdColor ] = colors;
+
+console.log(thirdColor);        // "blue"
+```
+
+
+
+解构赋值。数组解构也可用于赋值上下文，但不需要用小括号包裹表达式，这一点与数组解构的约定不同。
+
+```javascript
+let colors = [ "red", "green", "blue" ],
+    firstColor = "black",
+    secondColor = "purple";
+
+[ firstColor, secondColor ] = colors;
+
+console.log(firstColor);        // "red"
+console.log(secondColor);       // "green"
+```
+
+
+
+数组解构还有一个独特的用例：交换两个变量的值，并且不需要额外的变量。右侧是一个为交换过程创建的临时数组字面量。代码执行过程中，先解构临时数组，将b和a的值赋值到左侧数组的前两个位置，最终结果是变量交换了它们的值。
+
+```javascript
+// Swapping variables in ECMAScript 6
+let a = 1,
+    b = 2;
+
+[ a, b ] = [ b, a ];
+
+console.log(a);     // 2
+console.log(b);     // 1
+```
+
+
+
+默认值。也可以在数组解构赋值表达式中为数组中的任意位置添加默认值，当指定位置的属性不存在或其值为 undefined 时使用默认值。
+
+嵌套数组解构。嵌套数组解构与嵌套对象解构的语法类似，在原有的数组模式中插入另一个数组模式，即可将解构过程深入到下一个层级。
+
+不定元素。在数组中，通过通过“...”语法将数组中的其余元素赋值给一个特定的变量。
+
+```javascript
+let colors = [ "red", "green", "blue" ];
+
+let [ firstColor, ...restColors ] = colors;
+
+console.log(firstColor);        // "red"
+console.log(restColors.length); // 2
+console.log(restColors[0]);     // "green"
+console.log(restColors[1]);     // "blue"
+```
+
+
+
+补丁元素语法有助于从数组中提取特定元素并保证其余元素可用，它还有数组复制的功能。concat() 方法的设计初衷是连接两个数组，如果调用时不传递参数就会返回当前函数的副本。在 ES6 中，可以通过不定元素的语法来实现相同的目标。
+
+```javascript
+// cloning an array in ECMAScript 6
+let colors = [ "red", "green", "blue" ];
+let [ ...clonedColors ] = colors;
+
+console.log(clonedColors);      //"[red,green,blue]"
+```
+
+
+
+## 5.4 混合解构
+
+可以混合使用对象解构和数组解构来创建更多复杂的表达式，如此一来，可以从任何混杂着对象和数组的数据解构中提取想要的信息。
+
+## 5.5 解构参数
+
+当定义一个接受大量可选参数的 JavaScript 函数时，通常会创建一个可选对象，将额外的参数定义为这个对象的属性。
+
+````javascript
+// properties on options represent additional parameters
+function setCookie(name, value, options) {
+
+    options = options || {};
+
+    let secure = options.secure,
+        path = options.path,
+        domain = options.domain,
+        expires = options.expires;
+
+    // code to set the cookie
+}
+
+// 可以简化为这样
+function setCookie(name, value, { secure, path, domain, expires }) {
+
+    // code to set the cookie
+}
+
+
+// third argument maps to options
+setCookie("type", "js", {
+    secure: true,
+    expires: 60000
+});
+````
+
+
+
+必须传值的结构参数。解构参数有一个奇怪的地方，默认情况下，如果调用函数时不提供被解构的参数会导致程序抛出错误。如果解构赋值表达式的右值为 null 或 undefined，则程序也会报错。如果希望将解构参数定义为可选的，那么久必须为其提供默认值来解决这个问题。也可以为解构参数指定默认值，就像在解构赋值语句中做的那样，只需在参数后添加等号并且指定一个默认值即可。
+
+```javascript
+function setCookie(name, value, { secure, path, domain, expires } = {}) {
+
+    // ...
+}
+```
+
