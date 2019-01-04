@@ -9,8 +9,8 @@ Vue.js 的官方文档中是这样介绍它的。 简单小巧的核心，渐进
 - 解耦视图与数据
 - 可复用的组件
 - 前端路由
-- 状态管理 
-- 虚拟 DOM ( Virtual DOM) 
+- 状态管理
+- 虚拟 DOM ( Virtual DOM)
 
 MVVM（Model-VIew-ViewModel）模式是由经典的软件架构 MVC 衍生来的 。当 View （视图层）变化时，会自动更新到 ViewModel （视图模型），反之亦然。 View 和 ViewModel 之间通过双向绑定（tdata-binding）建立联系。Vue.js 通过 MVVM 的模式拆分为视图与数据两部分，并将其分离。因此，你只需要关心你的数据即可， DOM 的事情 Vue 会帮你自动搞定。
 
@@ -31,7 +31,7 @@ Vue.js 应用的创建很简单，通过构造函数 Vue 就可以创建一个 V
 
 ```javascript
 var app = new Vue({
-  // 选项
+	// 选项
 })
 ```
 
@@ -42,7 +42,7 @@ Vue 实例对象的一个必不可少的选项就是 el ，用于指定一个页
 ```javascript
 // <div id='app'></div>
 var app = new Vue({
-    el:"#app" /* 或者是 document.getElementById('app') */
+		el:"#app" /* 或者是 document.getElementById('app') */
 }）
 ```
 
@@ -55,7 +55,7 @@ var data = { a: 1 }
 
 // 直接创建一个实例
 var vm = new Vue({
-  data: data
+	data: data
 })
 vm.a // => 1
 vm.$data === data // => true
@@ -67,17 +67,17 @@ vm.$data === data // => true
 
 ```javascript
 new Vue({
-  el: '#app',
-  data: {
-    a: 1
-  },
-  created: function () {
-    // `this` 指向 vm 实例
-    console.log('a is: ' + this.a)
-  },
-    mounted: function () {
-    console.log(this.$el); // <div id="app"><div>    
-  }
+	el: '#app',
+	data: {
+		a: 1
+	},
+	created: function () {
+		// `this` 指向 vm 实例
+		console.log('a is: ' + this.a)
+	},
+		mounted: function () {
+		console.log(this.$el); // <div id="app"><div>    
+	}
 })
 ```
 
@@ -156,18 +156,18 @@ Vue.js 的 v-bind 和 v-on 指令都提供了语法糖，也可以说是缩写�
 
 ```javascript
 computed: {
-  fullName: {
-    // getter
-    get: function () {
-      return this.firstName + ' ' + this.lastName
-    },
-    // setter
-    set: function (newValue) {
-      var names = newValue.split(' ')
-      this.firstName = names[0]
-      this.lastName = names[names.length - 1]
-    }
-  }
+	fullName: {
+		// getter
+		get: function () {
+			return this.firstName + ' ' + this.lastName
+		},
+		// setter
+		set: function (newValue) {
+			var names = newValue.split(' ')
+			this.firstName = names[0]
+			this.lastName = names[names.length - 1]
+		}
+	}
 }
 vm.fullName = 'John Doe'
 ```
@@ -191,9 +191,9 @@ vm.fullName = 'John Doe'
 ```javascript
 // 在组件中
 methods: {
-  reversedMessage: function () {
-    return this.message.split('').reverse().join('')
-  }
+	reversedMessage: function () {
+		return this.message.split('').reverse().join('')
+	}
 }
 ```
 
@@ -221,7 +221,7 @@ v-bind 的的主要用法是动态更新 HTML 元素上的属性。
 
 ```html
 <div class="static"
-     v-bind:class="{ active: isActive, 'text-danger': hasError }">
+		 v-bind:class="{ active: isActive, 'text-danger': hasError }">
 </div>
 ```
 
@@ -233,9 +233,9 @@ v-bind 的的主要用法是动态更新 HTML 元素上的属性。
 <div v-bind:class="[activeClass, errorClass]"></div>
 <!--  
 data: {
-  activeClass: 'active',
-  errorClass: 'text-danger'
-} 
+	activeClass: 'active',
+	errorClass: 'text-danger'
+}
 -->
 
 <div v-bind:class="[isActive ? activeClass : '', errorClass]"></div>
@@ -253,9 +253,9 @@ data: {
 <p class="foo bar baz boo">Hi</p>  
 -->
 <script>
-  Vue.component('my-component', {
-    template: '<p class="foo bar">Hi</p>'
-  })
+	Vue.component('my-component', {
+		template: '<p class="foo bar">Hi</p>'
+	})
 </script>
 ```
 
@@ -271,15 +271,15 @@ CSS属性名称使用驼峰命名或短横分割命名。大多数情况下直�
 <div v-bind:style="styleObject"></div>
 
 <script>
-    var app = new Vue({
-      el: '#app',
-      data: {
-        styleObject: {
-          color: 'red',
-          fontSize: '13px'
-        }
-      }
-    })
+		var app = new Vue({
+			el: '#app',
+			data: {
+				styleObject: {
+					color: 'red',
+					fontSize: '13px'
+				}
+			}
+		})
 </script>
 ```
 
@@ -295,7 +295,7 @@ v-cloak 不需要表达式，在 Vue 实例结束编译时从从绑定的HTML元
 
 ```html
 <div v-cloak>
-  {{ message }}
+	{{ message }}
 </div>
 ```
 
@@ -303,7 +303,7 @@ v-cloak 不需要表达式，在 Vue 实例结束编译时从从绑定的HTML元
 
 ```css
 [v-cloak] {
-  display: none;
+	display: none;
 }
 ```
 
@@ -329,7 +329,7 @@ v-for 是列表渲染指令，可将一个数组遍历或枚举一个对象循�
 
 ```html
 <div v-for="(value, key, index) in object">
-  {{ index }}. {{ key }}: {{ value }}
+	{{ index }}. {{ key }}: {{ value }}
 </div>
 ```
 
@@ -341,9 +341,9 @@ v-for 是列表渲染指令，可将一个数组遍历或枚举一个对象循�
 
 ```javascript
 var vm = new Vue({
-  data: {
-    items: ['a', 'b', 'c']
-  }
+	data: {
+		items: ['a', 'b', 'c']
+	}
 })
 vm.items[1] = 'x' // 不是响应性的
 vm.items.length = 2 // 不是响应性的
@@ -366,14 +366,14 @@ vm.items.splice(indexOfItem, 1, newValue)
 
 ```javascript
 data: {
-  numbers: [ 1, 2, 3, 4, 5 ]
+	numbers: [ 1, 2, 3, 4, 5 ]
 },
 computed: {
-  evenNumbers: function () {
-    return this.numbers.filter(function (number) {
-      return number % 2 === 0
-    })
-  }
+	evenNumbers: function () {
+		return this.numbers.filter(function (number) {
+			return number % 2 === 0
+		})
+	}
 }
 ```
 
@@ -389,14 +389,14 @@ computed: {
 
 ```javascript
 data: {
-  numbers: [ 1, 2, 3, 4, 5 ]
+	numbers: [ 1, 2, 3, 4, 5 ]
 },
 methods: {
-  even: function (numbers) {
-    return numbers.filter(function (number) {
-      return number % 2 === 0
-    })
-  }
+	even: function (numbers) {
+		return numbers.filter(function (number) {
+			return number % 2 === 0
+		})
+	}
 }
 ```
 
@@ -451,7 +451,7 @@ Vue.js 提供了 v-model 指令，用于在表单类元素上双向绑定数据�
 ```html
 <body>
 	<div id="app">
-		<input type="text" @input="handleInput" placeholder="输入"> 
+		<input type="text" @input="handleInput" placeholder="输入">
 		<p>输入的内容是：{{ message }}</p>
 	</div>
 	<script>
@@ -509,7 +509,7 @@ Vue.js 提供了 v-model 指令，用于在表单类元素上双向绑定数据�
 
 		<input type="checkbox" name="" id="basketball" value="basketball" v-model="checked">
 		<label for="basketball">basketball</label>
-		
+
 		<input type="checkbox" name="" id="volleyball" value="volleyball" v-model="checked">
 		<label for="volleyball">volleyball</label>
 	</div>
@@ -528,7 +528,7 @@ Vue.js 提供了 v-model 指令，用于在表单类元素上双向绑定数据�
 
 选择列表就是下拉选择器，也是常见的表单控件，同样也分为单选和多选两种方式。`<option>`是备选项，如果含有 value 属性，v-model 就会优先匹配 value 的值；如果没有，就会直接匹配`<option>`的 text。给`<selected>`添加属性 multiple 就可以多选，此时 v-model 绑定的是一个数组，与复选框用法类似。在业务中，`<option>`经常用 v-for 动态输出，value 和 text 也是用 v-bind 来动态输出的。
 
-6.2 
+6.2
 
 
 
@@ -548,10 +548,10 @@ Vue.js 提供了 v-model 指令，用于在表单类元素上双向绑定数据�
 
 ```html
 <input
-  type="checkbox"
-  v-model="toggle"
-  true-value="yes"
-  false-value="no"
+	type="checkbox"
+	v-model="toggle"
+	true-value="yes"
+	false-value="no"
 >
 ```
 
@@ -561,8 +561,8 @@ Vue.js 提供了 v-model 指令，用于在表单类元素上双向绑定数据�
 
 ```html
 <select v-model="selected">
-    <!-- 内联对象字面量 -->
-  <option v-bind:value="{ number: 123 }">123</option>
+		<!-- 内联对象字面量 -->
+	<option v-bind:value="{ number: 123 }">123</option>
 </select>
 ```
 
@@ -616,9 +616,9 @@ new Vue({ el: '#app' })
 
 ```html
 <div id="app">
-  <component-a></component-a>
-  <component-b></component-b>
-  <component-c></component-c>
+	<component-a></component-a>
+	<component-b></component-b>
+	<component-c></component-c>
 </div>
 ```
 
@@ -632,11 +632,11 @@ var ComponentB = { /* ... */ }
 var ComponentC = { /* ... */ }
 
 new Vue({
-  el: '#app',
-  components: {
-    'component-a': ComponentA,
-    'component-b': ComponentB
-  }
+	el: '#app',
+	components: {
+		'component-a': ComponentA,
+		'component-b': ComponentB
+	}
 })
 ```
 
@@ -649,8 +649,8 @@ Vue 组件的模板在某些情况下会收到 HTML 的限制，比如`<table>`�
 ```javascript
 Vue.component('my-component',{
 	template:'<button @click="counter++">{{ counter }}</button>',
-	data:function(){ 
-		return { 
+	data:function(){
+		return {
 			counter: 0
 		}
 	}
@@ -667,9 +667,9 @@ Vue.component('my-component',{
 
 ```javascript
 Vue.component('blog-post', {
-  // 在 JavaScript 中是 camelCase 的
-  props: ['postTitle'],
-  template: '<h3>{{ postTitle }}</h3>'
+	// 在 JavaScript 中是 camelCase 的
+	props: ['postTitle'],
+	template: '<h3>{{ postTitle }}</h3>'
 })
 ```
 
@@ -718,9 +718,9 @@ props 中声明的数据与组件 data 函数 return 的数据主要区别是 pr
 ```javascript
 props: ['initialCounter'],
 data: function () {
-  return {
-    counter: this.initialCounter
-  }
+	return {
+		counter: this.initialCounter
+	}
 }
 ```
 
@@ -731,9 +731,9 @@ data: function () {
 ```javascript
 props: ['size'],
 computed: {
-  normalizedSize: function () {
-    return this.size.trim().toLowerCase()
-  }
+	normalizedSize: function () {
+		return this.size.trim().toLowerCase()
+	}
 }
 ```
 
@@ -745,37 +745,37 @@ computed: {
 
 ```javascript
 Vue.component('my-component', {
-  props: {
-    // 基础的类型检查 (`null` 匹配任何类型)
-    propA: Number,
-    // 多个可能的类型
-    propB: [String, Number],
-    // 必填的字符串
-    propC: {
-      type: String,
-      required: true
-    },
-    // 带有默认值的数字
-    propD: {
-      type: Number,
-      default: 100
-    },
-    // 带有默认值的对象
-    propE: {
-      type: Object,
-      // 对象或数组默认值必须从一个工厂函数获取
-      default: function () {
-        return { message: 'hello' }
-      }
-    },
-    // 自定义验证函数
-    propF: {
-      validator: function (value) {
-        // 这个值必须匹配下列字符串中的一个
-        return ['success', 'warning', 'danger'].indexOf(value) !== -1
-      }
-    }
-  }
+	props: {
+		// 基础的类型检查 (`null` 匹配任何类型)
+		propA: Number,
+		// 多个可能的类型
+		propB: [String, Number],
+		// 必填的字符串
+		propC: {
+			type: String,
+			required: true
+		},
+		// 带有默认值的数字
+		propD: {
+			type: Number,
+			default: 100
+		},
+		// 带有默认值的对象
+		propE: {
+			type: Object,
+			// 对象或数组默认值必须从一个工厂函数获取
+			default: function () {
+				return { message: 'hello' }
+			}
+		},
+		// 自定义验证函数
+		propF: {
+			validator: function (value) {
+				// 这个值必须匹配下列字符串中的一个
+				return ['success', 'warning', 'danger'].indexOf(value) !== -1
+			}
+		}
+	}
 })
 ```
 
@@ -793,11 +793,11 @@ Vue.component('my-component', {
 
 ```javascript
 Vue.component('welcome-button', {
-  template: `
-    <button v-on:click="$emit('welcome')">
-      Click me to be welcomed
-    </button>
-  `
+	template: `
+		<button v-on:click="$emit('welcome')">
+			Click me to be welcomed
+		</button>
+	`
 })
 ```
 
@@ -805,7 +805,7 @@ Vue.component('welcome-button', {
 
 ```html
 <div id="emit-example-simple">
-  <welcome-button v-on:welcome="sayHi"></welcome-button>
+	<welcome-button v-on:welcome="sayHi"></welcome-button>
 </div>
 ```
 
@@ -813,12 +813,12 @@ Vue.component('welcome-button', {
 
 ```javascript
 new Vue({
-  el: '#emit-example-simple',
-  methods: {
-    sayHi: function () {
-      alert('Hi!')
-    }
-  }
+	el: '#emit-example-simple',
+	methods: {
+		sayHi: function () {
+			alert('Hi!')
+		}
+	}
 })
 ```
 
@@ -832,7 +832,7 @@ new Vue({
 Vue.component('my-component',{
 	template:'<button @click="handleClick">1</button>',
 	data: function () {
-	  return { counter: 1}
+		return { counter: 1}
 	},
 	methods:{
 		handleClick: function(){
@@ -846,9 +846,9 @@ Vue.component('my-component',{
 
 ```html
 <div id="app">
-  <p>总数：{{ total }}</p>
-  <my-component v-model="total"></my-component>
-  <!--<my-component @input="handleGetCounter"></my-component> -->
+	<p>总数：{{ total }}</p>
+	<my-component v-model="total"></my-component>
+	<!--<my-component @input="handleGetCounter"></my-component> -->
 </div>
 ```
 
@@ -860,11 +860,11 @@ var app = new Vue({
 	data:{
 		total:0
 	},
-    /* methods:{
-      handleGetCounter(counter) {
-      this.total = counter
-      }
-    } */
+		/* methods:{
+			handleGetCounter(counter) {
+			this.total = counter
+			}
+		} */
 })
 ```
 
@@ -914,15 +914,15 @@ props 传递数据、events 触发事件和 slot 内容分发就构成了 Vue �
 
 ```html
 <div class="container">
-  <header>
-    <slot name="header"></slot>
-  </header>
-  <main>
-    <slot></slot>
-  </main>
-  <footer>
-    <slot name="footer"></slot>
-  </footer>
+	<header>
+		<slot name="header"></slot>
+	</header>
+	<main>
+		<slot></slot>
+	</main>
+	<footer>
+		<slot name="footer"></slot>
+	</footer>
 </div>
 ```
 
@@ -930,16 +930,16 @@ props 传递数据、events 触发事件和 slot 内容分发就构成了 Vue �
 
 ```html
 <base-layout>
-  <template slot="header">
-    <h1>Here might be a page title</h1>
-  </template>
+	<template slot="header">
+		<h1>Here might be a page title</h1>
+	</template>
 
-  <p>A paragraph for the main content.</p>
-  <p>And another one.</p>
+	<p>A paragraph for the main content.</p>
+	<p>And another one.</p>
 
-  <template slot="footer">
-    <p>Here's some contact info</p>
-  </template>
+	<template slot="footer">
+		<p>Here is some contact info</p>
+	</template>
 </base-layout>
 ```
 
@@ -953,7 +953,7 @@ props 传递数据、events 触发事件和 slot 内容分发就构成了 Vue �
 		<child-component>
 			<template slot-scope="props">
 			<p>来自父组件的内容</p>
-			<p>{{ props.msg }}</p>	
+			<p>{{ props.msg }}</p>
 			</template>
 		</child-component>
 	</div>
@@ -1042,10 +1042,10 @@ Vue.component('child-component',{
 
 ```html
 <my-component inline-template>
-  <div>
-    <p>These are compiled as the component's own template.</p>
-    <p>Not parent's transclusion content.</p>
-  </div>
+	<div>
+		<p>These are compiled as the component's own template.</p>
+		<p>Not parent's transclusion content.</p>
+	</div>
 </my-component>
 ```
 
@@ -1088,12 +1088,12 @@ methods:{
 
 ```javascript
 Vue.component('async-example', function (resolve, reject) {
-  setTimeout(function () {
-    // 向 `resolve` 回调传递组件定义
-    resolve({
-      template: '<div>I am async!</div>'
-    })
-  }, 1000)
+	setTimeout(function () {
+		// 向 `resolve` 回调传递组件定义
+		resolve({
+			template: '<div>I am async!</div>'
+		})
+	}, 1000)
 })
 ```
 
@@ -1114,7 +1114,7 @@ Vue 会根据当前浏览器环境优先使用原生的 Promise then 和 Mutatio
 vm.msg = 'Hello'
 // DOM 还没有更新
 Vue.nextTick(function () {
-  // DOM 更新了
+	// DOM 更新了
 })
 ```
 
@@ -1124,7 +1124,7 @@ X-Templates。Vue 提供了另一种定义模板的方式，在一个`<script>`�
 
 ```html
 <script type="text/x-template" id="hello-world-template">
-  <p>Hello hello hello</p>
+	<p>Hello hello hello</p>
 </script>
 ```
 
@@ -1132,7 +1132,7 @@ X-Templates。Vue 提供了另一种定义模板的方式，在一个`<script>`�
 
 ```javascript
 Vue.component('hello-world', {
-  template: '#hello-world-template'
+	template: '#hello-world-template'
 })
 ```
 
@@ -1208,66 +1208,233 @@ JSC是简化的模板，让Render函数更好地书写和阅读，Vue.js提供�
 
 # 第十章 使用webpack
 
-webpack的主要使用场景是单页面富应用，将图片/CSS/字体打包成模块，从而处理模块间的依赖关系。export 和 import 是用来导出和导入模块的，一个模块就是一个 js 文件，拥有独立的作用域。导入的模块名称都是在 export 的文件中设置的，用户必须预先知道这个名称，如果想自定义名称，则使用 export default 来输出默认的模块。
+## 10.1 前端工程化与webpack
 
-webpack 配置中最重要也是必选的两项就是入口 Enrty 和出口 Output，入门的作用是告诉 webpack 从哪里开始寻找依赖，并且编译，出口则用来配置编译后的文件存储位置和文件名。entry 中的 js 文件就是我们配置的单入口，webpack 会从这个文件开始工作。output 中的 path 用来存放打包后文件的输出目录，是必填项，publicPath 指定资源文件引用的目录，flename 用于指定输出文件的名称。
+webpack的主要使用场景是单页面富应用（SPA，通常是由一个 html 文件和一堆按需加载的 js 组成，它的 html 结构可能会非常简单，所有代码都集成在神奇的 main.js 文件中），将图片/CSS/字体打包成模块，从而处理模块间的依赖关系。
 
-对于不同的模块，需要用不同的加载器 Loaders 来处理，而加载器就是 webpack 的最重要的功能，通过安装不同的加载器可以对各种后缀名的文件进行处理，比如说要写 CSS 样式，就要用到 style-load 和 css-loader。在 module 对象的 rules 属性中可以指定一系列的 loads，其包含 test 和 use 两个选项，从而让 webpack 在编译过程中遇到 require () 和import 语句导入一个后缀名为 css 的文件时，先转换。use 选项的值可以是数字或字符串，如果是数字，编译顺序就是从后往前。CSS 是通过 JavaScript 动态创建 (style) 标签来写入的，意味着代码已经编译在了 mian.js 里。
+举个简单的例子，平时加载 CSS 大多通过`<link>`标签引入 CSS 文件，而在 webpack 里，直接在一个 .js 文件中导入。import 是 ES2015的语法，这里也可以写成`require('src/styles/index.css')`。在打包时，index.css 会被打包进一个 js 文件里，通过动态创建`<style>`的形式来加载 css 样式，当然也可以进一步配置，在打包编译时把所有的 css 都提取出来，生成一个 css 的文件。
 
-webpack 最后一个重要的概念就是插件 Plugins。比如，通过很强大且可以定制的插件，可以把散落在各地的 css 或提取出来，并生成一个 main.css 文件。
+```javascript
+import 'src/styles/index.css'
+```
+
+
+
+export 和 import 是用来导出和导入模块的，一个模块就是一个 js 文件，拥有独立的作用域,里面定义的变量外部是无法获取的。模块导出后，在需要使用模块的文件使用 import 再导入，就可以在这个文件内使用这些模块了。
+
+导入的模块名称都是在 export 的文件中设置的，用户必须预先知道这个名称，如果想自定义名称，则使用 export default 来输出默认的模块。
+
+```javascript
+export default {
+	version: '1.0.0'
+};
+
+export default function (a, b) {
+	return a+b;
+};
+
+import conf from './config.js'
+import Add from './add.js'
+
+console.log(conf);  // { version: '1.0.0'}
+console.log(Add(1, 1));  // 2
+```
+
+
+
+
+如果使用 npm 安装了一些库，在 webpack 中可以直接导入。
+
+```javascript
+import vue from 'vue';
+import $ from 'jquery'
+```
+
+
+
+## 10.2 webpack基础配置
+
+创建目录。使用`npm init`使用 NPM 初始化配置。执行后，会有一系列选项，可以按回车键快速确认，完成后会在 demo 目录生成一个 package.json 的文件。
+
+本地局部安装。使用`npm install webpack --save-dev`安装 webpack，选项会将这作为开发依赖来安装 webpack。安装完成后，在 package.json 中会多一项配置。
+
+接着需要安装 webpack-dev-server，它可以在开发环境中提供很多服务，比如启动一个服务器、热更新、接口代理等，配置起来也很简单。
+
+归根到底，webpack 就是一个 .js 配置文件，架构好或差都体现在这个配置里，随着需求的不断出现，工程配置也是逐渐完善。
+
+在 package.json 的 script 里增加一个快速启动 webpack-dev-server 服务的脚本，当运行`npm run dev`命令时，就会执行对应的命令，其中--config 是指向 webpack-dev-server 读取的配置文件路径，--open 会在执行命令时自动在浏览器打开页面，默认地址是 127.0.0.1:8080，不过 IP 和端口号都是可以配置的。
+
+```javascript
+"scripts": {
+	 "dev": "webpack-dev-server —-host 172.172.172.1 —-port 8888 —-open --config webpack.config.js",
+},
+```
+
+
+
+webpack 配置中最重要也是必选的两项就是入口 Enrty 和出口 Output，入门的作用是告诉 webpack 从哪里开始寻找依赖，并且编译，出口则用来配置编译后的文件存储位置和文件名。entry 中的 js 文件就是我们配置的单入口，webpack 会从这个文件开始工作。output 中的 path 用来存放打包后文件的输出目录，是必填项，publicPath 指定资源文件引用的目录，filename 用于指定输出文件的名称。
+
+```JavaScript
+var path = require('path');
+var config = {
+		entry: {
+				app: './main'
+		},
+		output: {
+				path: path.join(__dirname, './dist'),
+				publicPath: '/dist/',
+				filename: 'main.js',
+		},
+};
+module.exports = config;
+```
+
+
+
+在 webpack 的世界里，每个文件都是一个模块，比如 css、js、html、less等。对于不同的模块，需要用不同的加载器 Loaders 来处理，而加载器就是 webpack 的最重要的功能，通过安装不同的加载器可以对各种后缀名的文件进行处理，比如说要写 CSS 样式，就要用到 style-load 和 css-loader。
+
+在 module 对象的 rules 属性中可以指定一系列的 loads，其包含 test 和 use 两个选项，从而让 webpack 在编译过程中遇到 require () 和import 语句导入一个后缀名为 css 的文件时，先转换。use 选项的值可以是数组或字符串，如果是数组，编译顺序就是从后往前。
+
+```javascript
+module: {
+	rules: [
+			{
+					test:/\.css$/,
+					use: [
+							'style-loader',
+							'css-loader'
+					]
+			}
+	]
+}
+```
+
+CSS 是通过 JavaScript 动态创建 (style) 标签来写入的，意味着代码已经编译在了 mian.js 里。但在实际业务中，项目大了样式会很多，都放在 JS 里太占面积，还不能做缓存，这时就要用到 webpack 最后一个重要的概念——插件。
+
+webpack 的插件功能很强大而且还可以定制。通过插件，可以把散落在各地的 css 或提取出来，并生成一个 main.css 文件。最终在 index.html 里通过`<link>`的形式加载它。
+
+## 10.3 单文件组件与vue-loader
+
+在字符串模块 template 选项里拼写字符串 DOM 非常费劲，尤其是用"\"换行。Vue.js是一个渐进式的 JavaScript 框架，在使用 webpack 构建 Vue 项目时，可以使用一种新的构建模式：.vue单文件组件。
 
 .vue 单文件组件就是一个后缀名为 .vue 的文件，是一种新的构建模式，在 webpack 中使用 vue-loader 就可以对 .vue 格式的文件进行处理，该文件一般包含三个部分，即<template>、<script>、<style>。分别是 HTML/CSS/JS/ 模板，如果在 style 标签上使用 scoped 属性则代表只在这个组件有效。也可以使用 CSS 预编译。使用 .vue 文件需要先安装 vue-loader、vue-style-loader 等加载器并做配置，因为要使用 ES6 语法，还需要安装 babel 和 babel-loader 等加载器。在 demo 目录下有一个 .babelrc 的文件，是写入 babel 的配置，webpack 会依赖此配置文件来使用 babel 编译 ES6 代码。这样，每个 .vue 就代表一个组件，组件之间可以互相依赖。
 
-ES6语法提示
-data(){}等同于data:function(){}
+.vue 的组件是没有名称的，在父组件使用时可以对它自定义。写好了组件，就可以在入口 main.js 中使用它了。
 
-.vue 的组件时没有名称的，在父组件使用时可以对它自定义，写好了就可以在入口 main.js 中使用它了。
+```javascript
+import Vue from 'vue';
+import App from './app/app.vue';
+
+new Vue({
+		el: '#app',
+		render: h => h(App)  
+})
+```
+
+
 
 ES6语法提示
 =>是箭头函数，`render:h=>h(App)`等同于`render:function(h){return h(App)}`也等同于`render:h=>{return h(App)}`。但是，箭头函数里面的this指向与普通函数是不一样的，箭头函数体内的this对象就是定义时所在的对象，而不是使用时所在的对象。
 
+```JavaScript
+function Timer () {
+	this.id = 1;
+	var _this = this;
+	setTimeout(function () {
+		console.log(this.id);  // undefined
+		console.log(_this.id);  // 1
+	},1000);
+
+	setTimeout(() => {
+		console.log(this.id);  // 1
+	},2000)
+}
+
+var timer = new Timer();
+```
+
 ES6语法提示
 `components:{vTitle,vButton}`等同于`component:{vTitle:vTitle,vButton:vButton}`。总结来说就是对象字面量缩写，当对象的 key 和 value 名称一致时，可以缩写成一个。
 
-安装 url-loader 和 file-loader 来支持图片、字体等文件，其中“?limit=1024”是指如果这个文件小于 1kb，就以 base64 的形式加载，不会生出一个文件。
+## 10.4 用于生产环境
+
+安装 url-loader 和 file-loader 来支持图片、字体等文件，其中“?limit=1024”是指如果这个文件小于1kb，就以 base64 的形式加载，不会生出一个文件。
 
 单页面富应用技术，意味着最终只有一个 html 文件，其余都是静态资源，实际部署到生产环境时，一般都会将 html 挂在后端程序下，由后端路由渲染这个页面，将所有静态资源单独部署到CDN，当然也可以和够短程序部署在一起，这样就实现了前后端完全分离。静态资源在大部分场景都有缓存。
 
 # 第十一章 插件
 
-注册插件需要一个公开的方法install，它的第一个参数是Vue构造器，第二个参数是一个可选的选项对象。然后通过Vue.use()来使用插件。
+Vue.js 提供了插件机制，可以在全局添加一些功能。它们可以简单到几个方法、属性，也可以很复杂，比如一整套组件库。
+
+注册插件需要一个公开的方法install，它的第一个参数是Vue构造器，第二个参数是一个可选的选项对象。然后通过Vue.use()来使用插件。绝大多数情况下，开发插件主要是通过 NPM 发布后给比人使用的，在自己的项目中可以直接在入门调用以上的方法，无需多一步注册和使用的步骤。
+
+```javascript
+MyPlugin.install = function (Vue, options) {
+  // 1. 添加全局方法或属性
+  Vue.myGlobalMethod = function () {
+    // 逻辑...
+  }
+
+  // 2. 添加全局资源
+  Vue.directive('my-directive', {
+    bind (el, binding, vnode, oldVnode) {
+      // 逻辑...
+    }
+    ...
+  })
+
+  // 3. 注入组件
+  Vue.mixin({
+    created: function () {
+      // 逻辑...
+    }
+    ...
+  })
+
+  // 4. 添加实例方法
+  Vue.prototype.$myMethod = function (methodOptions) {
+    // 逻辑...
+  }
+}
+```
+
+
+
+## 11.1 前端路由与vue-router
+
+路由通俗地将，就是网址，就是每次 GET 或者 POST 等请求在服务器端有一个专门的正则配置列表，然后匹配到具体的一条路径，分发到不同的 Controller，进行各种操作，最终将 html 或数据返回给前端，这就完成了一次 IO。
 
 目前大多数的网站都是这种后端路由，也就是多页面的，这样可以让页面在服务器渲染好直接返回给浏览器，不用等待前端加载任何js和css就可以直接显示网页内容，再比如对SEO友好，缺点是后端必须维护和改写模板。
 
-前后端分离的开发模式，后端只提供API返回数据，前端通过Ajax获取数据后，再用一定的方式渲染到页面里。缺点是首屏渲染需要时间来加载css和js。SPA就是在前后端分离的基础上，加一层前端路由。
+前后端分离的开发模式，后端只提供 API 返回数据，前端通过 Ajax 获取数据后，再用一定的方式渲染到页面里。缺点是首屏渲染需要时间来加载 css 和 js。SPA就是在前后端分离的基础上，加一层前端路由。
 
-前端路由，即由前端来维护一个路由规则，实现有两种，一是利用url的hash，就是常说的描点，java通过hashChange事件来监听url的改变。另一种就是HTML5的History模式，这种模式需要服务端支持。
+前端路由，即由前端来维护一个路由规则，实现有两种，一是利用url的hash，就是常说的描点（#），Javascript 通过 hashChange 事件来监听 url 的改变。另一种就是 HTML5 的 History 模式，它使 url 看起来像普通网站那样，以"/"分割，没有`#`，但页面并没有跳转，不过使用这种模式需要服务端支持，服务器在接收到所有的请求后，都指向同一个 html 文件，不然会出现404。
 
-vue-router路由不同的页面事实上就是动态加载不同的组件。每个页面对应一个组件，也就是对应一个.vue文件。在main.js里完成路由的剩下配置，创建一个数组来制定路由匹配列表，每个路由映射一个组件，component是映射的路由。
-
-ES6语法提示
-使用let和const命令来声明变量，代替了var。他们的作用域就是块。const声明后不能再修改，let则可以修改。
-
-使用了异步路由后，编译出的每个页面的js都叫作块。，课通过设置里chunkFilename字段修改chunk命名。
-
-vue-router有两种跳转页面的方法，第一种是使用内置的<router-link>组件，它会被渲染为一个<a>标签，to选项就是一个prop，指定需要跳转的路径，tag可以指定渲染成什么标签，使用replace不会留下History记录，active-class是跳转成功后给元素增加伪元素。
-
-第二种跳转方法，通过JavaScript进行，使用router实例的方法。通过点击事件触发$router.push方法。$router还有replace和go等方法。
-
-vue-router提供了导航钩子beforeEach和afterEach，它们会在路由即将改变前和改变后触发。导航钩子有三个参数，to表示进入的路由对象，from表示即将离开的路由对象，next表示调用该方法才能进入下一个钩子。
-
-Vuex所解决的问题与bus类似，它作为Vue的一个插件来使用，可以更好地管理和维护整个项目的组件问题。使用Vuex会有一定的门槛和复杂度，它的主要使用场景是大型单页应用。它的用法与vue-router类似，在main.js里，通过Vue.use()使用Vuex。仓库store包含了应用的数据（状态）和操作过程，任何组件使用同一store的数据发生变化时，对应的组件也会立刻更新。可以通过$store.state.变量名进行读取。在组件内，来自store的数据只能读取，不能手动改变，改变store中数据的唯一途径就是显式地提交mutations。mutations是Vuex的第二个选项，用来直接修改state里的数据。在组件内，通过this.$store.commite方法来执行mutations。第二种方法是直接使用包含type属性的对象。mutation里尽量不要异步操作数据。
+vue-router 路由不同的页面事实上就是动态加载不同的组件。每个页面对应一个组件，也就是对应一个 .vue 文件。在 main.js 里完成路由的剩下配置，创建一个数组来制定路由匹配列表，每个路由映射一个组件，component 是映射的路由。
 
 ES6语法提示
-increment(state,n=1)等同于increment(state,n){n=n||1}
+使用 let 和 const 命令来声明变量，代替了 var。他们的作用域就是块。const 声明后不能再修改，let 则可以修改。
 
-Vuex还有其他三个选项可以使用，getters、actions、modules。第一个就是用来依赖组件的计算属性；第二个是异步操作业务逻辑，在组件内通过$store.dispatch触发；最后一个可以将store分割到不同模块，每个module拥有自己的state、getters、mutations、actions，而且可以多层嵌套，在actions和getters中还可以接受一个参数rootState来访问根节点的状态。
+使用了异步路由后，编译出的每个页面的 js 都叫作块。，可通过设置里chunkFilename 字段修改 chunk 命名。
+
+vue-router 有两种跳转页面的方法，第一种是使用内置的`<router-link>`组件，它会被渲染为一个`<a>`标签，to 选项就是一个 prop，指定需要跳转的路径，tag 可以指定渲染成什么标签，使用 replace 不会留下 History 记录，active-class 是跳转成功后给元素增加伪元素。
+
+第二种跳转方法，通过 JavaScript 进行，使用 router 实例的方法。通过点击事件触发`$router.push`方法。`$router`还有 replace 和 go 等方法。
+
+vue-router 提供了导航钩子 beforeEach 和 afterEach，它们会在路由即将改变前和改变后触发。导航钩子有三个参数，to 表示进入的路由对象，from 表示即将离开的路由对象，next 表示调用该方法才能进入下一个钩子。
+
+Vuex 所解决的问题与 bus 类似，它作为 Vue 的一个插件来使用，可以更好地管理和维护整个项目的组件问题。使用 Vuex 会有一定的门槛和复杂度，它的主要使用场景是大型单页应用。它的用法与 vue-router 类似，在 main.js 里，通过 Vue.use() 使用 Vuex。仓库 store 包含了应用的数据（状态）和操作过程，任何组件使用同一 store 的数据发生变化时，对应的组件也会立刻更新。可以通过`$store.state`变量名进行读取。在组件内，来自 store 的数据只能读取，不能手动改变，改变 store 中数据的唯一途径就是显式地提交 mutations。mutations 是 Vuex 的第二个选项，用来直接修改 state 里的数据。在组件内，通过`this.$store.commite`方法来执行 mutations。第二种方法是直接使用包含 type 属性的对象。mutation 里尽量不要异步操作数据。
 
 ES6语法提示
-Promise是一种异步方案，它有三种状态：Pending（进行中）、Resolve（已完成）、Rejected（已失败）
+`increment(state,n=1)`等同于`increment(state,n){n=n||1}`
+
+Vuex 还有其他三个选项可以使用，getters、actions、modules。第一个就是用来依赖组件的计算属性；第二个是异步操作业务逻辑，在组件内通过`$store.dispatch`触发；最后一个可以将 store 分割到不同模块，每个 module 拥有自己的 state、getters、mutations、actions，而且可以多层嵌套，在 actions 和 getters 中还可以接受一个参数 rootState 来访问根节点的状态。
 
 ES6语法提示
-emit(event,...args)中的...args是函数参数的结构，使用它可以从当前参数（这里是第二个）到最后的参数都获取到。
+Promise 是一种异步方案，它有三种状态：Pending（进行中）、Resolve（已完成）、Rejected（已失败）
+
+ES6语法提示
+emit(event,...args) 中的 ...args 是函数参数的结构，使用它可以从当前参数（这里是第二个）到最后的参数都获取到。
 
 # 第十二章 iView经典组件解剖
 
