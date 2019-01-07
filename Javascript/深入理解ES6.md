@@ -339,7 +339,7 @@ Function 构造函数时 JavaScript 语法中很少被用到的一部分，通�
 
 ES6 增强了 Function 构造函数的功能，支持在创建函数时定义默认参数和不定参数。唯一需要做的是在参数名后添加一个等号及一个默认值。对于 Function 构造函数，新增的默认参数和不定参数这两个特性使其具备了与声明式创建函数相同的能力。
 
-## 3.4展开运算符
+## 3.4 展开运算符
 
 展开运算符可以让你指定一个数组，将它们打算后作为各自独立的参数传入函数。
 
@@ -845,9 +845,432 @@ function factorial(n, p = 1) {
 
 
 
+# 第四章 扩展对象的功能性
+
+ECMAScript 6 通过多种方式来加强对象的使用，通过简单的语法扩展，提供了更多操作对象及对象交互的方法。
+
+## 4.1 对象类别
+
+ES 6 规范清晰定义了每一个类别的对象。
+
+- 普通对象：具有 JavaScript 对象所有的默认内部行为。
+- 特异对象：具有某些与默认行为不符的内部行为。
+- 标准对象：ES6 规范中定义的对象，例如 Array、Data等。标准对象既可以是普通对象，也可以是特异对象。
+- 内建对象：脚本开始执行时存在于 JavaScript 执行环境中的对象，所有标准对象都是内建对象。
+
+## 4.2 对象字面量语法扩展
+
+对象字面量让我们创建对象不再需要编写冗余的代码，直接通过它简洁的语法就可以实现。而在 ES6 中，通过下面的几种语法，让对象字面量变得更强大、更简洁。
+
+属性初始值的简写。在 ES6 中，通过使用属性初始化的简写语法，可以消除属性名称与局部变量之间的重复书写。当一个对象的属性与本地变量同名时，不必再写冒号和值，简单地只写属性名即可。
+
+```javascript
+function createPerson(name, age) {
+    return {
+        naem,  // name: name,
+        age  // age: age
+    };
+}
+```
 
 
 
+对象方法的简写语法。在 ES5 及早期版本中，如果为对象添加方法，必须通过指定名称并完整定义函数来实现。而在 ES6 中，语法更简洁，消除了冒号和 function 关键字。在对象中创建一个方法，该属性被赋值为一个匿名函数表达式，它拥有在 ES5 中定义的对象方法所具有的的全部特性。二者唯一的区别是，简写方法可以使用 super 关键字。
+
+```javascript
+var person = {
+    name: "Nicholas",
+    sayName() {  // sayName: function() {
+        console.log(this.name);
+    }
+};
+```
 
 
+
+可计算属性名。在 ES5 及早期版本的对象实例中，如果想要通过计算得到属性名，就需要用方括号代替点记法。有些包括某些字符的字符串字面量作为标识符会出错，其和变量放在方括号中都是被允许的。
+
+```javascript
+var person = {},
+    lastName = "last name";
+
+person["first name"] = "Nicholas";
+person[lastName] = "Zakas";
+
+console.log(person["first name"]);      // "Nicholas"
+console.log(person[lastName]);          // "Zakas"
+```
+
+
+
+此外，在对象字面量中，可以直接使用字符串字面量作为属性名称。这种模式适用于属性名提前已知或可被字符串字面量表示的情况。
+
+```javascript
+var person = {
+    "first name": "Nicholas"
+};
+
+console.log(person["first name"]);      // "Nicholas"
+```
+
+
+
+如果属性名称被包含在一个变量中，或者需要通过计算才能得到该变量的值，那么在 ES5 中是无法为一个对象字面量定义该属性的。而在 ES6 中，可在对象字面量中使用可计算属性名称，其语法与引用对象实例的可计算属性名称相同，也是使用方括号。
+
+```javascript
+var suffix = " name";
+
+var person = {
+    ["first" + suffix]: "Nicholas",
+    ["last" + suffix]: "Zakas"
+};
+
+console.log(person["first name"]);      // "Nicholas"
+console.log(person["last name"]);       // "Zakas"
+```
+
+
+
+## 4.3 新增方法
+
+从 ES5 开始，避免创建新的全局方法和在 Object.prototype 上创建新的方法。当开发者想向标准添加新方法时，他们会找一个适当的现有对象，让这些方法可用。结果，当没有其他合适的对象时，全局 Object 对象会收到越来越多的对象方法。而在 ES6 中，为了使某些任务更易完成，在全局 Object 对象上引入了一些新方法。
+
+Object.is()方法......
+
+Object.assign()方法......
+
+## 4.4 重复的对象字面量属性
+
+ES5 严格模式中加入了对象字面量重复属性的校验，当同时存在多个同名属性时会抛出错误。但是在 ES6 中重复校验检查被移除了，无论是在严格模式还是非严格模式下，代码不再检查重复属性，对于每一组重复属性，都会选取最后一个取值。
+
+```javascript
+"use strict";
+
+var person = {
+    name: "Nicholas",
+    name: "Greg"        // no error in ES6 strict mode
+};
+
+console.log(person.name);       // "Greg"
+```
+
+
+
+## 4.5 自由属性枚举顺序
+
+ES5 中未定义对象属性的枚举顺序，由 JavaScript 引擎厂商自行决定。然而，ES6 严格规定了对象的自由属性被枚举时的返回顺序，这回影响到 Object.getOwnPropertyNames() 方法及 Reflect.ownKeys 返回属性的方式，Object.assign() 方法处理属性的顺序也将随之改变。
+
+自有属性枚举顺序的基本规则是：
+
+- 所有数字键按升序排序。
+- 所有字符串建按照它们被加入对象的顺序排序。
+- 所有 symbol 键按照它们被加入对象的顺序排序。
+
+4.6 增强对象原型
+
+4.7 正式的方法定义
+
+# 第五章 解构：使数据访问更便捷
+
+对象和数组字面量是 JavaScript 中两种最常用的数据解构，由于 JSON 数据格式的普及，二者已经成为语言中特别重要的一部分。在编码过程中，我们经常定义许多对象和数组，然后有组织第从中提取相关的信息片段。ES6 添加了可以简化这种任务的新特性：解构。解构是一种打破数据解构，将其拆分为更小部分的过程。
+
+## 5.1 为何使用解构功能
+
+在 ES5 及早期版本中，开发者为了从对象和数组中获取特定数据并赋值给变量，编写了很多看起来同质化的代码。想象一下，如果要提取更多变量，则必须依次编写类似的代码来为变量赋值，如果其中还包含嵌套结构，只靠遍历是找不到真实信息的，必须要深入挖掘整个数据解构才能找到所需数据。
+
+```javascript
+let options = {
+        repeat: true,
+        save: false
+    };
+
+// extract data from the object
+let repeat = options.repeat,
+    save = options.save;
+```
+
+
+
+所以 ES6 为对象和数组都添加了解构功能，将数据解构打散的过程变得更加简单，可以从打散后更小的部分中获取所需信息。许多语言都通过较少量的语法实现了解构功能，以简化获取信息的过程；而 ES6 中的实现实际上利用早已熟悉的语法：对象和数组字面量语法。
+
+## 5.2 对象解构
+
+对象字面量的语法形式是在一个赋值操作符左边放置一个对象字面量。type、name 都是局部声明的变量，也是用来从 oprions 对象读取相应值的属性名称。
+
+```javascript
+let node = {
+        type: "Identifier",
+        name: "foo"
+    };
+
+let { type, name } = node;
+
+console.log(type);      // "Identifier"
+console.log(name);      // "foo"
+```
+
+
+
+可以将对象解构应用到变量的声明中，也同样可以在给变量赋值时使用解构语法。注意的是，一定要用一对小括号包裹解构赋值语句，JavaScript 引擎将一对开放的花括号视为一个代码块，而语法规定，代码块语句不允许出现在赋值语句左侧，添加小括号后可以将块语句转换为一个表达式，从而实现整个解构赋值的过程。
+
+```javascript
+let node = {
+        type: "Identifier",
+        name: "foo"
+    },
+    type = "Literal",
+    name = 5;
+
+// assign different values using destructuring
+({ type, name } = node);
+
+console.log(type);      // "Identifier"
+console.log(name);      // "foo"
+```
+
+
+
+解构赋值表达式的值与表达式右侧的值相等，如此一来，在任何可以使用值得地方都可以使用解构赋值表达式。解构赋值表达式如果为 null 或 undefined 会导致程序抛出错误。也就是说，任何尝试读取 null 或 undefined 的属性的行为都会触发运行时错误。
+
+```javascript
+let node = {
+        type: "Identifier",
+        name: "foo"
+    },
+    type = "Literal",
+    name = 5;
+
+function outputInfo(value) {
+    console.log(value === node);        // true
+}
+
+outputInfo({ type, name } = node);
+
+console.log(type);      // "Identifier"
+console.log(name);      // "foo"
+```
+
+
+
+默认值。使用解构赋值表达式时，如果指定的局部变量名称在对象中不存在，那么这个局部变量会被赋值为 undefined。但是当指定的属性不存在时，可以随意定义一个默认值，在属性名称或添加一个等号（=）和相应的默认值即可。
+
+```javascript
+let node = {
+        type: "Identifier",
+        name: "foo"
+    };
+
+let { type, name, value, value1 = true } = node;
+
+console.log(type);      // "Identifier"
+console.log(name);      // "foo"
+console.log(value);     // undefined
+console.log(value1);    // true
+```
+
+
+
+为非同名局部变量赋值。如果希望使用不同命名的局部变量来存储对象属性的值，ES6 中的一个扩展语法可以满足需求，这个语法与完整的对象字面量属性初始化程序很像。这种语法实际上与传统对象字面量的语法相悖，原来的语法名称在冒号左边，值在右边；现在语法名在冒号右边，而读取的对象值在左边。当使用其他变量名进行赋值时也可以添加默认值，只需在变量名后添加等号和默认值即可。
+
+```javascript
+let node = {
+        type: "Identifier",
+        name: "foo"
+    };
+
+let { type: localType, name: localName } = node;
+
+console.log(localType);     // "Identifier"
+console.log(localName);     // "foo"
+```
+
+
+
+嵌套对象解构。解构嵌套对象仍然与对象字面量的语法相似，可以将对象拆解以获取想要的信息。在下面的解构中，所有冒号前的标识符都代表在对象中的检索位置，其右侧为被赋值的变量名；如果冒号后是花括号，则意味着要赋予的最终值嵌套在对象内部更深的层级中。
+
+```javascript
+let node = {
+        type: "Identifier",
+        name: "foo",
+        loc: {
+            start: {
+                line: 1,
+                column: 1
+            },
+            end: {
+                line: 1,
+                column: 4
+            }
+        }
+    };
+
+let { loc: { start }} = node;
+
+console.log(start.line);        // 1
+console.log(start.column);      // 1
+```
+
+
+
+更进一步，也可以使用一个与对象属性名不同的局部变量名。
+
+```javascript
+let node = {
+        type: "Identifier",
+        name: "foo",
+        loc: {
+            start: {
+                line: 1,
+                column: 1
+            },
+            end: {
+                line: 1,
+                column: 4
+            }
+        }
+    };
+
+// extract node.loc.start
+let { loc: { start: localStart }} = node;
+
+console.log(localStart.line);   // 1
+console.log(localStart.column); // 1
+```
+
+
+
+## 5.3 数组解构
+
+与对象解构的语法相比，数组解构就简单多了，它使用的是数组字面量，且解构操作全部在数组内完成，而不是像对象字面量语法一样使用对象的命名属性。在这个过程中，数组本身不会发生任何变化。
+
+```javascript
+let colors = [ "red", "green", "blue" ];
+
+let [ firstColor, secondColor ] = colors;
+
+console.log(firstColor);        // "red"
+console.log(secondColor);       // "green"
+```
+
+
+
+在解构模式中，也可以直接省略元素，只为感兴趣的元素提供变量名。
+
+```javascript
+let colors = [ "red", "green", "blue" ];
+
+let [ , , thirdColor ] = colors;
+
+console.log(thirdColor);        // "blue"
+```
+
+
+
+解构赋值。数组解构也可用于赋值上下文，但不需要用小括号包裹表达式，这一点与数组解构的约定不同。
+
+```javascript
+let colors = [ "red", "green", "blue" ],
+    firstColor = "black",
+    secondColor = "purple";
+
+[ firstColor, secondColor ] = colors;
+
+console.log(firstColor);        // "red"
+console.log(secondColor);       // "green"
+```
+
+
+
+数组解构还有一个独特的用例：交换两个变量的值，并且不需要额外的变量。右侧是一个为交换过程创建的临时数组字面量。代码执行过程中，先解构临时数组，将b和a的值赋值到左侧数组的前两个位置，最终结果是变量交换了它们的值。
+
+```javascript
+// Swapping variables in ECMAScript 6
+let a = 1,
+    b = 2;
+
+[ a, b ] = [ b, a ];
+
+console.log(a);     // 2
+console.log(b);     // 1
+```
+
+
+
+默认值。也可以在数组解构赋值表达式中为数组中的任意位置添加默认值，当指定位置的属性不存在或其值为 undefined 时使用默认值。
+
+嵌套数组解构。嵌套数组解构与嵌套对象解构的语法类似，在原有的数组模式中插入另一个数组模式，即可将解构过程深入到下一个层级。
+
+不定元素。在数组中，通过通过“...”语法将数组中的其余元素赋值给一个特定的变量。
+
+```javascript
+let colors = [ "red", "green", "blue" ];
+
+let [ firstColor, ...restColors ] = colors;
+
+console.log(firstColor);        // "red"
+console.log(restColors.length); // 2
+console.log(restColors[0]);     // "green"
+console.log(restColors[1]);     // "blue"
+```
+
+
+
+补丁元素语法有助于从数组中提取特定元素并保证其余元素可用，它还有数组复制的功能。concat() 方法的设计初衷是连接两个数组，如果调用时不传递参数就会返回当前函数的副本。在 ES6 中，可以通过不定元素的语法来实现相同的目标。
+
+```javascript
+// cloning an array in ECMAScript 6
+let colors = [ "red", "green", "blue" ];
+let [ ...clonedColors ] = colors;
+
+console.log(clonedColors);      //"[red,green,blue]"
+```
+
+
+
+## 5.4 混合解构
+
+可以混合使用对象解构和数组解构来创建更多复杂的表达式，如此一来，可以从任何混杂着对象和数组的数据解构中提取想要的信息。
+
+## 5.5 解构参数
+
+当定义一个接受大量可选参数的 JavaScript 函数时，通常会创建一个可选对象，将额外的参数定义为这个对象的属性。
+
+````javascript
+// properties on options represent additional parameters
+function setCookie(name, value, options) {
+
+    options = options || {};
+
+    let secure = options.secure,
+        path = options.path,
+        domain = options.domain,
+        expires = options.expires;
+
+    // code to set the cookie
+}
+
+// 可以简化为这样
+function setCookie(name, value, { secure, path, domain, expires }) {
+
+    // code to set the cookie
+}
+
+
+// third argument maps to options
+setCookie("type", "js", {
+    secure: true,
+    expires: 60000
+});
+````
+
+
+
+必须传值的结构参数。解构参数有一个奇怪的地方，默认情况下，如果调用函数时不提供被解构的参数会导致程序抛出错误。如果解构赋值表达式的右值为 null 或 undefined，则程序也会报错。如果希望将解构参数定义为可选的，那么久必须为其提供默认值来解决这个问题。也可以为解构参数指定默认值，就像在解构赋值语句中做的那样，只需在参数后添加等号并且指定一个默认值即可。
+
+```javascript
+function setCookie(name, value, { secure, path, domain, expires } = {}) {
+
+    // ...
+}
+```
 
