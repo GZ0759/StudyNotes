@@ -1183,6 +1183,8 @@ Vue 组件时单向数据流，所以无法从组件内部直接修改 prop、va
 
 练习2：增加一个控制步伐的prop——step，比如设置为10，点击加号按钮，一次增加10.
 
+开发一个标签页组件。每个标签页的主题内容肯定是由使用组件的父级控制的，所以这部分是一个 slot，而且 slot 的数量决定了标签切换按钮的数量。同时我们还定义一个子组件 pane，嵌套在标签页组件 tabs 里，我们的业务代码都放在 pane 的 slot 内，而3个 pane 组件作为整体成为 tabs 的 slot。
+
 # 第八章 自定义指令
 
 自定义指令的注册方式和组件很像，也分为全局注册和局部注册，一个指令定义对象可以提供如下几个钩子函数 (均为可选)：有blid、inserted、update、componentUpdated、unbind五种。其中钩子函数有四个参数，el、binding、vnode和oldVnode，binding是一个对象，包含的属性有name、value、oldValue、expression、arg、modifiers六个。
