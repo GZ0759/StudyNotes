@@ -1440,9 +1440,17 @@ emit(event,...args) 中的 ...args 是函数参数的结构，使用它可以从
 
 # 第十二章 iView经典组件解剖
 
-IView是一套基于Vue.js2的开源UI组件库，主要服务于PC界面的中后台产品，深度封装了40多个常用业务组件，比如Input、Checkbox、Select、Table；同时也是一整套的前端解决方案，包括设计规范、基础样式，支持服务端渲染（SSR），同时提供了可视化脚手架，方便快速构建项目工程。
+IView 是一套基于 Vue.js2 的开源 UI 组件库，主要服务于 PC 界面的中后台产品，深度封装了40多个常用业务组件，比如 Input、Checkbox、Select、Table；同时也是一整套的前端解决方案，包括设计规范、基础样式，支持服务端渲染（SSR），同时提供了可视化脚手架，方便快速构建项目工程。
 
-级联选择组件Cascader。接受一个prop:data作为选择面板的数据源，使用v-model可以双向绑定当前选择的项。data中的label是面板显示的内容，value是它对应的值，children是它的子集，可递归。v-model绑定一个数组，每一项对应data里的value。Cascader的核心是用到了组件·递归，使用组件递归必不可少的两个条件是由name选项和在适当的时候结束递归。iView作为独立组件，无法使用bus和vuex，为了实现跨组件通信，iView摸你了Vue1的dispatch和boradcast方法。
+## 12.1 级联选择组件Cascader。
+
+级联选择是网页应用中常见的表单类控件，主要用于省市区、公司级别、事务分类等关联数据集合的选择。
+
+Cascader 接受一个`prop:data`作为选择面板的数据源，使用 v-model 可以双向绑定当前选择的项。data 中的 label 是面板显示的内容，value 是它对应的值，children 是它的子集，可递归。v-model 绑定一个数组，每一项对应 data 里的 value。
+
+开发一个通用组件最重要的是定义 API，Vue 组件的 API 来自3部分：prop、slot 和 event。API 决定了一个组件的所有功能，而且作为对外提供的组件，一旦 API 确定好后，如果再迭代更新，用户的代价就会很高。
+
+Cascader 的核心是用到了组件·递归，使用组件递归必不可少的两个条件是由 name 选项和在适当的时候结束递归。iView 作为独立组件，无法使用bus和vuex，为了实现跨组件通信，iView 模拟了Vue1的dispatch和boradcast方法。、
 
 折叠面板组件Collapse。组件分为两部分：collapse.vue和panel.vue，前者作为组件容器，接收一个整体的slot，而slot就是由后者组成，并且可以进行折叠面板的嵌套。collage支持v-model来双向绑定当前激活的面板，判断激活的依据是panel的prop：name。
 
