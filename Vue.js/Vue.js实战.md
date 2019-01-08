@@ -1450,8 +1450,137 @@ Cascader 接受一个`prop:data`作为选择面板的数据源，使用 v-model 
 
 开发一个通用组件最重要的是定义 API，Vue 组件的 API 来自3部分：prop、slot 和 event。API 决定了一个组件的所有功能，而且作为对外提供的组件，一旦 API 确定好后，如果再迭代更新，用户的代价就会很高。
 
-Cascader 的核心是用到了组件·递归，使用组件递归必不可少的两个条件是由 name 选项和在适当的时候结束递归。iView 作为独立组件，无法使用bus和vuex，为了实现跨组件通信，iView 模拟了Vue1的dispatch和boradcast方法。、
+Cascader 的核心是用到了组件递归，使用组件递归必不可少的两个条件是由 name 选项和在适当的时候结束递归。级联选择器面板每一列都是一个组件 Caspanel，data 中的 children 决定了每项的子集，也就是需要递归显示 Caspanel 的数量。
 
-折叠面板组件Collapse。组件分为两部分：collapse.vue和panel.vue，前者作为组件容器，接收一个整体的slot，而slot就是由后者组成，并且可以进行折叠面板的嵌套。collage支持v-model来双向绑定当前激活的面板，判断激活的依据是panel的prop：name。
+```html
+<!-- caspanel.vue -->
+<template>
+    <span>
+        <ul v-if="data && data.length" :class="[prefixCls + '-menu']">
+            <Casitem v-for="item in data"
+                :key="getKey()"
+                :prefix-cls="prefixCls"
+                :data="item"
+                :tmp-item="tmpItem"
+                @click.native.stop="handleClickItem(item)"
+                @mouseenter.native.stop="handleHoverItem(item)"></Casitem>
+        </ul>
+        <Caspanel v-if="sublist && sublist.length" :prefix-cls="prefixCls" :data="sublist" :disabled="disabled" :trigger="trigger" :change-on-select="changeOnSelect"></Caspanel>
+    </span>
+</template>
+```
 
-iView内置工具函数。findComponentUpward方法以当前实例为参照点，向上寻找出指定name或几个name中的一个组件实例，找到后立即返回该实例。除了实用的工具函数外，iView内置的自定义指令、混合也可以直接使用。
+当点击某一列的某一项时，会把它对应 data 的 children 数据赋给 sublist，sublist会作为下一个递归的 Caspanel 的 data 使用，以此类推。若该项没有 children，说明它是级联选择器的最后一项，则点击直接结束选择，同时约束了 Caspanel 的递归。
+
+最里层的组件是 Casitem，就是每列的每项，它的作用就是把 data 或 children 的每个 label 显示出来。
+
+Cascader 的基本构成就是上述的3部分：cascader.vue、caspanel.vue 和 casitem.vue。其中 cascader.vue 又分成两部分：只读输入框和下拉菜单，在下拉菜单中使用第一个 Caspanel，开始递归每一列。
+
+```html
+<!-- cascader.vue -->
+<template>
+    <div :class="classes" v-click-outside="handleClose">
+        <div :class="[prefixCls + '-rel']" @click="toggleOpen">
+            <input type="hidden" :name="name" :value="currentValue">
+            <slot>
+                <i-input
+                    :readonly="!filterable"
+                    :disabled="disabled"
+                    :size="size"
+                    :placeholder="inputPlaceholder"></i-input>
+                <Icon type="ios-close-circle" :class="[prefixCls + '-arrow']" v-show="showCloseIcon" @click.native.stop="clearSelect"></Icon>
+                <Icon type="ios-arrow-down" :class="[prefixCls + '-arrow']"></Icon>
+            </slot>
+        </div>
+        <transition name="transition-drop">
+            <Drop v-show="visible">
+                <div>
+                    <Caspanel
+                        ref="caspanel"
+                        :prefix-cls="prefixCls"
+                        :data="data"
+                        :disabled="disabled"
+                        :change-on-select="changeOnSelect"
+                        :trigger="trigger"></Caspanel>
+                </div>
+            </Drop>
+        </transition>
+    </div>
+</template>
+```
+
+Input(i-input)组件在默认的 slot 内，这意味着可以自定义触发器部分，不局限于使用输入框，这让 Cascader 使用更灵活。使用 slot 时，需要自己渲染显示的内容，所以提供了事件 on-change，在选择完成时触发，返回 value 和 seletedData，分别为已选值和已选项的具体数据。
+
+iView 作为独立组件，无法使用bus和vuex，为了实现跨组件通信，iView 模拟了 Vue1 的 dispatch 和 boradcast 方法。
+
+独立组件与业务组件最大的不同是，业务组件往往针对数据的获取、整理、可视化，逻辑清晰简单，可以使用 vuex；而独立组件的复杂度更多集中在细节、交互、性能优化、API 设计上，对原生 JavaScript 有一定的考验。在使用过程中，可能会有新功能的不断添加，也会发现隐藏的 bug。所以独立组件一开始逻辑和代码并不复杂，多次迭代后悔越来越冗长，当然功能也更丰富，使用更稳定。
+
+## 12.2 折叠面板组件Collapse。
+
+折叠面板也是网站常用控件，可将一组内容区域展开或折叠，使页面干净整洁。
+
+组件分为两部分：collapse.vue 和 panel.vue，前者作为组件容器，接收一个整体的slot，而 slot 就是由后者组成，并且可以进行折叠面板的嵌套。collage 支持 v-model 来双向绑定当前激活的面板，判断激活的依据是 panel 的`prop：name`。
+
+```html
+<!-- collapse.vue -->
+<template>
+    <div :class="classes">
+        <slot></slot>
+    </div>
+</template>
+```
+
+```html
+<!-- panel.vue -->
+<template>
+    <div :class="itemClasses">
+        <div :class="headerClasses" @click="toggle">
+            <Icon type="ios-arrow-forward" v-if="!hideArrow"></Icon>
+            <slot></slot>
+        </div>
+        <div :class="contentClasses" v-show="isActive">
+            <div :class="boxClasses"><slot name="content"></slot></div>
+        </div>
+    </div>
+</template>
+```
+
+Panel 有两个 slot，默认为面板头部的内容，也就是标题，名为 content 的 slot 为主体内容。如果没有指定 name，Collapse 就会在初始化时遍历 Panel 组件，动态地设置一个 index。Collapse 会优先识别 name，在没有定义时才使用自动设置的 index。`slot: content`只在当前面板激活时显示，所以还需要增加一个数据 isActive 来控制显示与否，并通过默认的 slot 来切换。
+
+iView 的40多个组件都是独立的 UI 组件，它无法像业务组件那样使用 Vuex、bus 等技术进行跨组件通信，因此会经常访问和操作父（子）链来修改状态及调用方法。但是在业务开发中，要尽量避免这样的操作，因为很难知道是谁修改了组件的状态，正确的做法应该是使用 Vuex 或 bus 来统一维护。
+
+## 12.3 iView内置工具函数。
+
+iView 项目中还有很多实用的工具函数，比如 findComponentUpward、findComponentDownward 和 findComponentDownward 方法，它们用来向上或向下寻找指定 name 的组件，这3个方法直接返回的是组件实例，而不是传递数据。
+
+例如 findComponentUpward 方法以当前实例为参考点，向上寻找出指定 name 或几个 name 中的一个组件实例，找到后立即返回该实例。
+
+```Javascript
+function findComponentUpward (context, componentName, componentNames) {
+  if (typeof componentName === 'string';
+    componentNames = [componentName];
+  ) else {
+    componentNames = componentName;
+  }
+
+  let parent = context.$parent;
+  let name = parent.$options.name;
+  while (parent && (!name || componenetNames.indexOf(name) < 0)) {
+    parent = parent.$parent;
+    if (parent) name = parent.$options.name;
+  }
+  return parent;
+}
+```
+
+第一个参数 context 是上下文，即以哪个组件开始向上寻找，一般都传递 this，也就是当前的实例。componentName 和 componentNames 只需要传递一个即可，前者是字符串，后者是数组，函数开始会判断传递的类型，如果是字符串，就把它转为一个数组来使用，保证格式统一。
+
+除了实用的工具函数外，iView内置的自定义指令、混合也可以直接使用。
+
+iView 同时也是一整套的前端解决方案，包含工程构建、主题定制、多语言等功能，极大地提升了开发效率。
+
+# 第十三章 实战：知乎日报项目开发
+
+# 第十四章 实战：电商网站项目开发
+
+# 第十五章 相关开源项目介绍
