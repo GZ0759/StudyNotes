@@ -524,3 +524,76 @@ SSH 连接。如果需要团队里的每个人都对仓库有写权限，又不�
 
 另一个办法是让 SSH 服务器通过某个 LDAP 服务，或者其他已经设定好的集中授权机制，来进行授权。 只要每个用户可以获得主机的 shell 访问权限，任何 SSH 授权机制你都可视为是有效的。
 
+## 4.3 生成SSH公钥
+
+许多 Git 服务器都使用 SSH 公钥进行认证。为了向 Git 服务器提供 SSH 公钥，如果某系统用户尚未拥有密钥，必须事先为其生成一份。这个过程在所有操作系统上都是相似的。首先，需要确认自己是否已经拥有密钥。默认情况下，用户的 SSH 密钥存储在其`~/.ssh`目录下。进入该目录并列出其中内容，便可以快速确认自己是否拥有密钥。
+
+```shell
+$ cd ~/.ssh
+$ ls
+authorized_keys2  id_dsa       known_hosts
+config            id_dsa.pub
+```
+
+需要寻找一对以 id_dsa 或 id_rsa 命名的文件，其中一个带有 .pub 扩展名，代表公钥，另一个则是私钥。如果找不到这样的文件（或者根本没有 .ssh 目录），可以通过运行 ssh-keygen 程序来创建它们。在 Linux/Mac 系统中，ssh-keygen 随 SSH 软件包提供；在 Windows 上，该程序包含于 MSysGit 软件包中。
+
+首先 ssh-keygen 会确认密钥的存储位置（默认是 .ssh/id_rsa），然后要求输入两次密钥口令。如果不想在使用密钥时输入口令，将其留空即可。
+
+现在，进行了上述操作的用户需要将各自的密钥发送给任意一个 Git 服务器管理员，如果服务器正在使用基于公钥的 SSH 验证设置。
+
+```shell
+$ cat ~/.ssh/id_rsa.pub
+ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAklOUpkDHrfHY17SbrmTIpNLTGK9Tjom/BWDSU
+GPl+nafzlHDTYW7hdI4yZ5ew18JH4JW9jbhUFrviQzM7xlELEVf4h9lFX5QVkbPppSwg0cda3
+Pbv7kOdJ/MTyBlWXFCR+HAo3FXRitBqxiX1nKhXpHAZsMciLq8V6RjsNAQwdsdMFvSlVK/7XA
+t3FaoJoAsncM1Q9x5+3V0Ww68/eIFmb1zuUFljQJKprrX88XypNDvjYNby6vw/Pb0rwert/En
+mZ+AW4OZPnTPI89ZPmVMLuayrD2cE86Z/il8b+gw3r3+1nKatmIkjn2so1d01QraTlMqVSsbx
+NrRFi9wrf+M7Q== schacon@mylaptop.local
+```
+
+## 4.4 配置服务器
+
+配置服务器端的 SSH 访问。操作系统是标准的 Linux 发行版，比如 Ubuntu，使用`authorized_keys`方法对用户进行认证。首先，创建一个操作系统用户 git，并为其建立一个 .ssh 目录。
+
+接着，我们需要为系统用户 git 的`authorized_keys`文件添加一些开发者 SSH 公钥。假设我们已经获得了若干受信任的公钥，并将它们保存在临时文件中。将这些公钥加入系统用户 git 的 .ssh 目录下`authorized_keys `文件的末尾。
+
+```shell
+$ cat /tmp/id_rsa.john.pub >> ~/.ssh/authorized_keys
+$ cat /tmp/id_rsa.josie.pub >> ~/.ssh/authorized_keys
+$ cat /tmp/id_rsa.jessica.pub >> ~/.ssh/authorized_keys
+```
+
+现在我们来为开发者新建一个空仓库。可以借助带`--bare `选项的`git init`命令来做到这一点，该命令在初始化仓库时不会创建工作目录。
+
+接着，开发者任意一人可以将他们项目的最初版本推送到这个仓库中，他只需将此仓库设置为项目的远程仓库并向其推送分支。请注意，每添加一个新项目，都需要有人登陆服务器取得 shell，并创建一个裸仓库。我们假定这个设置了 git 用户和 Git 仓库的服务器使用 gitserver 作为主机名。同时，假设该服务器运行在内网，并且你已在 DNS 配置中将 gitserver 指向此服务器。那么可以运行如下命令将已有项目 myproject 推送上去。
+
+```shell
+# on John's computer
+$ cd myproject
+$ git init
+$ git add .
+$ git commit -m 'initial commit'
+$ git remote add origin git@gitserver:/opt/git/project.git
+$ git push origin master
+```
+
+此时，其他开发者可以克隆此仓库，并推回各自的改动。
+
+```shell
+$ git clone git@gitserver:/opt/git/project.git
+$ cd project
+$ vim README
+$ git commit -am 'fix for the README file'
+$ git push origin master
+```
+
+通过这种方法，可以快速搭建一个具有读写权限、面向多个开发者的 Git 服务器。需要注意的是，目前所有（获得授权的）开发者用户都能以系统用户 git 的身份登录服务器从而获得一个普通的 shell。如果想对此加以限制，则需要修改 passwd 文件中（git 用户所对应）的 shell 值。
+
+借助一个名为 git-shell 的受限 shell 工具，可以方便地将用户 git 的活动限制在与 Git 相关的范围内。该工具随 Git 软件包一同提供。如果将 git-shell 设置为用户 git 的登录 shell，那么用户便不能获得此服务器的普通 shell 访问权限。若要使用 git-shell，需要用它替换掉 bash 或 csh，使其成为系统用户的登录 shell。为了进行上述操作，首先必须确保 git-shell 已存在于 /etc/shells 文件中。那么可以使用`chsh<username>`命令修改任一系统用户的 shell。
+
+```shell
+$ sudo chsh git  
+# and enter the path to git-shell, usually: /usr/bin/git-shell
+```
+
+这样，用户 git 就只能使用 SSH 连接对 Git 仓库进行推送和拉取操作，而不能登录机器并取得普通 shell。如果试图登录，就会发现尝试被拒绝。
