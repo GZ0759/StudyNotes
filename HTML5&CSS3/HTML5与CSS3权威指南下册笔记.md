@@ -30,6 +30,8 @@
 - [第27章 Media Queries相关样式](#第27章-media-queries相关样式)
 - [第28章 CSS 3的其他重要样式和属性](#第28章-css-3的其他重要样式和属性)
 - [第29章 综合实例](#第29章-综合实例)
+  - [29.1　实例1：使用HTML 5中新增结构元素来构建网页](#291　实例1使用html-5中新增结构元素来构建网页)
+  - [29.2　实例2：使用HTML5+CSS3来构建Web应用程序](#292　实例2使用html5css3来构建web应用程序)
 
 <!-- /TOC -->
 
@@ -572,13 +574,90 @@ calc()方法的另一个妙用是可以用来对各种不同的计数单位进�
 
 # 第29章 综合实例 
 
-29.1　实例1：使用HTML 5中新增结构元素来构建网页 
+## 29.1　实例1：使用HTML 5中新增结构元素来构建网页
+
+HTML5 中新增了几个解构元素（section元素、article元素、nav元素、aside元素、header元素和footer元素），通过运用这些结构元素，可以让网页的整体解构更加直观和明确、更加富有语义化和更具有现代风格。
+
 29.1.1　组织网页结构 
+
+在一个用 HTML5 实现中，每一个网页都将由一些主题解构元素构成。在大型的网站中，一个网页通常由以下几个解构元素组成。
+
+- headr 结构元素：通常用来展示网站的标题、企业或公司的 LOGO 图片、广告、网站导航条等。
+- aside 解构元素：通常用来展示与当前网页或整个网站相关的一些辅助信息。例如，博客的文章列表和浏览者评论信息，购物网站的商品清单、用户信息、用户购买历史等，企业网站的产品信息、企业联系方法、友情链接等。aside 结构元素可以有多种形式，其中最常见的形式是侧边栏。
+- section 结构元素：一个网页中要显示的主题内容通常被放置在 section 结构元素中，每个 section 结构元素都应该有一个标题来显示当前要显示的主要内容的标题信息。每个 section 结构元素中通常还应该包括一个或多个 section 元素或 article 元素，用来显示网页主题内容中每一个相对独立的部分。
+- footer 结构元素：用来放置网站的版权声明和备案信息等与法律相关的信息，也可以放置企业的联系电话和传真等联系信息。
+
 29.1.2　构建网页标题 
+
+```html
+<header id="webTitle">
+  <div id="divTop1">公司标题</div>
+  <nav>网站导航</nav>
+  <div id="divTop2">首页轮播图</div>
+</header>
+```
+
 29.1.3　构建侧边栏 
+
+```html
+<aside>
+    <nav>产品分类</nav>
+    <div>联系我们</div>
+</aside>
+```
+
 29.1.4　构建主体内容 
+
+```html
+<article id="main" >
+    <header><h5>您的位置：首页</h5></header>
+    <section id="section1">公司动态</section>
+    <section id="section2">公司简介</section>
+    <section id="section3">推荐产品</section>
+</article>
+```
+
 29.1.5　构建版权信息 
-29.2　实例2：使用HTML 5+CSS 3来构建Web应用程序 
+
+```html
+<footer>
+    <div id="footertop"></div>
+    <div id="footermain">版权所有</div>
+</footer>
+```
+
+## 29.2　实例2：使用HTML5+CSS3来构建Web应用程序
+
+下一代 Web 应用程序的页面中使用 HTML5 中新增的表单元素和其他功能以及 CSS3 的样式。信息输入页面分为上下两部分，在页面的上半部分的表单中输入信息，点击表单中的“保存”按钮后在下半部分的一览表中显示所有信息，包括刚才输入的这天信息。同时数据全部保存在本地 IndexedDB 数据库中。
+
 29.2.1　HTML 5页面代码分析 
+
+```html
+<section>
+  <header id="div_head_title_big">
+	  <h1>编辑订单信息</h1>
+  </header>
+  <form id="form1">
+    <ul>字段控件</ul>
+    <div id="buttonDiv">操作按钮<div>
+  </form> 
+</section>
+<section>
+  <header id="div_head_title_big">
+    <h1>订单信息一览表</h1>
+  </header>
+  <div id="infoTable">
+    <table id="datatable">展示内容</table>
+  </div>
+</section>
+```
+
 29.2.2　CSS 3样式代码分析 
+
+将表单中所有放置页面文字的 td 元素的 id 设定为以 td_title 开头的文字，然后使用 CSS3 的 [att^=val] 属性选择器统一设定放置页面文字的 td 元素的背景颜色、字体颜色等属性。
+
+使用 CSS3 中的 read-only 选择器来设定只读控件的背景色为黄色。
+
+使用 nth-child(odd) 选择器来指定一览表中除标题行之外的所有奇数行背景色为浅灰色，使用 nth-child(even) 选择器来指定一览表中所有偶数行背景色为白色。
+
 29.2.3　脚本代码分析 
