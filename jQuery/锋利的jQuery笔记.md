@@ -1,3 +1,19 @@
+> 锋利的jQuery
+
+<!-- TOC -->
+
+- [第六章 jQuery与AJAX的应用](#第六章-jquery与ajax的应用)
+  - [6.1 Ajax的优势和不足](#61-ajax的优势和不足)
+  - [6.2 Ajax的XMLHttpRequest对象](#62-ajax的xmlhttprequest对象)
+  - [6.3 安装Web环境——AppServ](#63-安装web环境appserv)
+  - [6.4 编写第一个Ajax例子](#64-编写第一个ajax例子)
+  - [6.5 jQuery中的Ajax](#65-jquery中的ajax)
+  - [6.6 序列化元素](#66-序列化元素)
+  - [6.7 jQuery中的 Ajax 全局事件](#67-jquery中的-ajax-全局事件)
+  - [6.8 基于 jQuery 的Ajax 聊天室程序](#68-基于-jquery-的ajax-聊天室程序)
+
+<!-- /TOC -->
+
 # 第六章 jQuery与AJAX的应用
 
 Ajax 全称为“Asynchronous JavaScript and XML”（异步JavaScript和XML），它并不是指一种单一的技术，而是有机地利用了一系列交互式网页应用相关的技术所形成的结合体。

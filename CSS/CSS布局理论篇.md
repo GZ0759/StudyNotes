@@ -1,3 +1,17 @@
+
+<!-- TOC -->
+
+- [静态布局（Static Layout）](#静态布局static-layout)
+- [双飞翼布局](#双飞翼布局)
+- [多栏布局](#多栏布局)
+- [流式布局（Fluid）](#流式布局fluid)
+- [瀑布流布局（waterfall flow）](#瀑布流布局waterfall-flow)
+- [**自适应布局（Adaptive Layout）**](#自适应布局adaptive-layout)
+- [弹性布局（Flexbox）](#弹性布局flexbox)
+- [响应式布局**（Responsive Layout）**](#响应式布局responsive-layout)
+
+<!-- /TOC -->
+
 # 静态布局（Static Layout）
 
 即传统Web设计，网页上的所有元素的尺寸一律使用px作为单位。

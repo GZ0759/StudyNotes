@@ -1,3 +1,17 @@
+
+<!-- TOC -->
+
+- [一、YNKG](#一ynkg)
+  - [**link和@import的区别。**](#link和import的区别)
+  - [**HTML5有哪些新特性，移除了哪些元素？如何处理HTML5新标签的浏览器兼容问题？如何区分HTML和HTML5?**](#html5有哪些新特性移除了哪些元素如何处理html5新标签的浏览器兼容问题如何区分html和html5)
+  - [**position为relative和为absolute的相对定位元素。**](#position为relative和为absolute的相对定位元素)
+  - [**离线存储的方式和原理。**](#离线存储的方式和原理)
+  - [**创建Ajax的步骤。**](#创建ajax的步骤)
+  - [**GET请求和POST请求。**](#get请求和post请求)
+  - [**angular和react使用的TypeScript语法**](#angular和react使用的typescript语法)
+
+<!-- /TOC -->
+
 # 一、YNKG
 
 ## **link和@import的区别。**
