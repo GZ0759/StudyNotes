@@ -45,6 +45,8 @@
   - [10.4 用于生产环境](#104-用于生产环境)
 - [第十一章 插件](#第十一章-插件)
   - [11.1 前端路由与vue-router](#111-前端路由与vue-router)
+  - [11.2 状态管理与Vuex](#112-状态管理与Vuex)
+  - [11.3 实战：中央事件总线插件vue-bus](#113-实战：中央事件总线插件vue-bus)
 - [第十二章 iView经典组件解剖](#第十二章-iview经典组件解剖)
   - [12.1 级联选择组件Cascader。](#121-级联选择组件cascader)
   - [12.2 折叠面板组件Collapse。](#122-折叠面板组件collapse)
@@ -1463,37 +1465,223 @@ MyPlugin.install = function (Vue, options) {
 
 路由通俗地将，就是网址，就是每次 GET 或者 POST 等请求在服务器端有一个专门的正则配置列表，然后匹配到具体的一条路径，分发到不同的 Controller，进行各种操作，最终将 html 或数据返回给前端，这就完成了一次 IO。
 
-目前大多数的网站都是这种后端路由，也就是多页面的，这样可以让页面在服务器渲染好直接返回给浏览器，不用等待前端加载任何js和css就可以直接显示网页内容，再比如对SEO友好，缺点是后端必须维护和改写模板。
+目前大多数的网站都是后端路由，也就是多页面的，这样可以让页面在服务器渲染好直接返回给浏览器，不用等待前端加载任何 js 和 css 就可以直接显示网页内容，再比如对 SEO 友好，缺点是后端必须维护和改写模板。
 
-前后端分离的开发模式，后端只提供 API 返回数据，前端通过 Ajax 获取数据后，再用一定的方式渲染到页面里。缺点是首屏渲染需要时间来加载 css 和 js。SPA就是在前后端分离的基础上，加一层前端路由。
+前后端分离的开发模式，后端只提供 API 返回数据，前端通过 Ajax 获取数据后，再用一定的方式渲染到页面里。缺点是首屏渲染需要时间来加载 css 和 js。SPA 就是在前后端分离的基础上，加一层前端路由。
 
-前端路由，即由前端来维护一个路由规则，实现有两种，一是利用url的hash，就是常说的描点（#），Javascript 通过 hashChange 事件来监听 url 的改变。另一种就是 HTML5 的 History 模式，它使 url 看起来像普通网站那样，以"/"分割，没有`#`，但页面并没有跳转，不过使用这种模式需要服务端支持，服务器在接收到所有的请求后，都指向同一个 html 文件，不然会出现404。
+前端路由，即由前端来维护一个路由规则，实现有两种，一是利用 url 的 hash，就是常说的锚点（#），Javascript 通过 hashChange 事件来监听 url 的改变。另一种就是 HTML5 的 History 模式，它使 url 看起来像普通网站那样，以"/"分割，没有`#`，但页面并没有跳转，不过使用这种模式需要服务端支持，服务器在接收到所有的请求后，都指向同一个 html 文件，不然会出现404。
 
-vue-router 路由不同的页面事实上就是动态加载不同的组件。每个页面对应一个组件，也就是对应一个 .vue 文件。在 main.js 里完成路由的剩下配置，创建一个数组来制定路由匹配列表，每个路由映射一个组件，component 是映射的路由。
+vue-router 路由不同的页面事实上就是动态加载不同的组件，与使用 is 特性来实现动态组件的方法相似。每个页面对应一个组件，也就是对应一个 .vue 文件。在 main.js 里完成路由的剩下配置，创建一个数组来制定路由匹配列表，每个路由映射一个组件。Routers 里每一项的 path 属性就是指定当前匹配的路径，component 是映射的路由。webpack 会把每一个路由都打包为一个 js 文件，在请求该页面时，采取加载这个页面的 js，也就是异步实现的懒加载（按需加载）。这样做的好处是不需要在打开首页的时候就把所有的页面内容全部加载进来，只有在访问时才加载。如果非要一次性加载，可以写成`component: require('./view./index.vue')`
+
+```Javascript
+const Routers = [
+	{
+		path:'/index',
+		component:(resolve) => require(['./views/index.vue'],resolve)
+	},
+	{
+		path:'/about',
+		component:(resolve) => require(['./views/about.vue'],resolve)
+	}
+```
 
 ES6语法提示
 使用 let 和 const 命令来声明变量，代替了 var。他们的作用域就是块。const 声明后不能再修改，let 则可以修改。
 
-使用了异步路由后，编译出的每个页面的 js 都叫作块。，可通过设置里chunkFilename 字段修改 chunk 命名。
+使用了异步路由后，编译出的每个页面的 js 都叫作块，它们命名默认是 0.main.js、1.main.js 等等，可以通过设置里 chunkFilename 字段修改 chunk 命名。
 
-vue-router 有两种跳转页面的方法，第一种是使用内置的`<router-link>`组件，它会被渲染为一个`<a>`标签，to 选项就是一个 prop，指定需要跳转的路径，tag 可以指定渲染成什么标签，使用 replace 不会留下 History 记录，active-class 是跳转成功后给元素增加伪元素。
+```Javascript
+module.exports = {
+  output: {
+    publicPath: '/dist/',
+    filename: '[name].js'
+    chunkFilename: '[name].chunk.js'
+  },
+}
 
-第二种跳转方法，通过 JavaScript 进行，使用 router 实例的方法。通过点击事件触发`$router.push`方法。`$router`还有 replace 和 go 等方法。
+```
+
+有了 chunk 后，在每个页面(.vue)里写的样式也需要配置后才会打包进 main.css，否则仍然会通过 JavaScript 动态创建`<style>`标签的形式写入。
+
+```Javascript
+module.exports = {
+  plugins: [
+    new ExtractTextPlugin({
+      filename: '[name].css',
+      allChunks: true
+    }),
+  ]
+}
+```
+
+在 RouterConfig 里，设置 mode 为 history 会开启 HTML5  的History 路由模式，通过“/”设置路径。如果不配置 mode，就会使用“#”来设置路径。开启 History 路由，在生产环境时服务器端必须进行配置，将所有路由都指向同一个 html，或设置404页面为该 html，否则刷新时页面会出现404。
+
+路由列表的 path 也可以带参数，路由的一部分是固定的，一部分是动态的，但它们路由到同一个页面，在这个页面里，期望获取这个 id，然后请求相关数据。
+
+```Javascript
+// main.js
+const Routers = [
+  {
+    path: '/user/:id',
+    componet: (resolve) => require(['./views/user.vue'], resolve)
+  },
+  {
+    path: '*',
+    redirect: '/index'
+  }
+]
+// user.vue
+<template>
+  <div>{{ $route.params.id }}</div> 
+</template>
+<script>
+  export default {
+    mounted () {
+    console.log(this.$route.params.id)
+    }
+  }
+</script>
+```
+
+vue-router 有两种跳转页面的方法，第一种是使用内置的`<router-link>`组件，它会被渲染为一个`<a>`标签，to 选项就是一个 prop，指定需要跳转的路径，也可以用 v-bind 动态设置。tag 可以指定渲染成什么标签，使用 replace 不会留下 History 记录，active-class 是跳转成功后给元素增加伪元素（自动给当前元素一个名为 router-link-active 的class）。
+
+有时候，跳转页面可能需要在 JavaScript 里进行，类似于 window.location.href。这时可以用第二种跳转方法，使用 router 实例的方法。例如通过点击事件，触发`$router.push`方法。该方法的参数可以是一个字符串路径，或者一个描述地址的对象。`$router`还有 replace 和 go 等方法。replace 方法类似于 `<router-link>`的 replace 功能，它不会向 history 添加新纪录，而是替换掉当前的 history 记录。go 方法类似于 window.history.go()，在history 记录中向前或者后退多少步，参数时整数。
+
+```JavaScript
+// 字符串
+router.push('home')
+
+// 对象
+router.push({ path: 'home' })
+
+// 命名的路由
+router.push({ name: 'user', params: { userId: 123 }})
+
+// 带查询参数，变成 /register?plan=private
+router.push({ path: 'register', query: { plan: 'private' }})
+```
 
 vue-router 提供了导航钩子 beforeEach 和 afterEach，它们会在路由即将改变前和改变后触发。导航钩子有三个参数，to 表示进入的路由对象，from 表示即将离开的路由对象，next 表示调用该方法才能进入下一个钩子。
 
-Vuex 所解决的问题与 bus 类似，它作为 Vue 的一个插件来使用，可以更好地管理和维护整个项目的组件问题。使用 Vuex 会有一定的门槛和复杂度，它的主要使用场景是大型单页应用。它的用法与 vue-router 类似，在 main.js 里，通过 Vue.use() 使用 Vuex。仓库 store 包含了应用的数据（状态）和操作过程，任何组件使用同一 store 的数据发生变化时，对应的组件也会立刻更新。可以通过`$store.state`变量名进行读取。在组件内，来自 store 的数据只能读取，不能手动改变，改变 store 中数据的唯一途径就是显式地提交 mutations。mutations 是 Vuex 的第二个选项，用来直接修改 state 里的数据。在组件内，通过`this.$store.commite`方法来执行 mutations。第二种方法是直接使用包含 type 属性的对象。mutation 里尽量不要异步操作数据。
+next() 方法可以设置参数，例如某些页面需要校验是否登录，如果登录了就可以访问，否则跳转到登录页。这里可以通过 localStorage 来简易判断是否登录。next() 的参数设置为 false 时，可以取消导航，设置为具体的路径可以导航到指定的页面。
+
+```JavaScript
+router.afterEach((to, from, next) => {
+  if (window.localStorage.getItem('token')) {
+    next();
+  } else {
+    next('/login');
+  }
+})
+```
+
+## 11.2 状态管理与Vuex
+
+在上面跨级组件和兄弟组件通信时，使用了 bus 的一个方法，用来触发和接收事件，进一步起到通信的作用。Vuex 所解决的问题与 bus 类似，它作为 Vue 的一个插件来使用，可以更好地管理和维护整个项目的组件问题。Vuex 的设计就是用来统一管理组件状态的，它定义了一系列规范来使用和操作数据，使组件应用更加高效。
+
+使用 Vuex 会有一定的门槛和复杂度，它的主要使用场景是大型单页应用。更适合多人协同开发。如果项目不是很复杂，或者希望短期内见效，需要认真考虑是否有必要使用 Vuex。
+
+它的用法与 vue-router 类似，在 main.js 里，通过 Vue.use() 使用 Vuex。仓库 store 包含了应用的数据（状态）和操作过程。Vuex 里的数据都是响应式的，任何组件使用同一 store 的数据时，只要 store 的数据发生变化时，对应的组件也会立刻更新。数据保存在 Vuex 选项的 state 字段内。以下实例中，在任何组件内，可以通过`$store.state.count`读取。直接卸载 template 里显得有点乱，可以用一个计算属性来显示。
+
+```Javascript
+const store = new Vuex.Store({
+  state: {
+    count: 0
+  },
+  mutations: {
+    increment (state) {
+      state.count++
+    }
+  }
+})
+```
+
+在组件内，来自 store 的数据只能读取，不能手动改变，改变 store 中数据的唯一途径就是显式地提交 mutations。mutations 是 Vuex 的第二个选项，用来直接修改 state 里的数据。在组件内，通过`this.$store.commite`方法来执行 mutations。这看起来很像 JavaScript 的观察者模式，组件只负责提交一个事件名，Vuex 对应的 mutations 来完成业务逻辑。mutations 还可以接受第二个参数，可以是数字、字符串或对象等类型。
 
 ES6语法提示
 `increment(state,n=1)`等同于`increment(state,n){n=n||1}`
 
-Vuex 还有其他三个选项可以使用，getters、actions、modules。第一个就是用来依赖组件的计算属性；第二个是异步操作业务逻辑，在组件内通过`$store.dispatch`触发；最后一个可以将 store 分割到不同模块，每个 module 拥有自己的 state、getters、mutations、actions，而且可以多层嵌套，在 actions 和 getters 中还可以接受一个参数 rootState 来访问根节点的状态。
+提交 mutation 的另一种方式时，直接使用包含 type 属性的对象。注意，mutation 里尽量不要异步操作数据。如果异步操作数据已经进行了，组件在 commit 后不能立即改变数据，而且不知道什么时候会改变。
+
+```JavaScript
+this.$store.commit({
+  type: 'increment',
+  amount: 10
+})
+```
+
+高级用法。Vuex 还有其他三个选项可以使用，getters、actions、modules。第一个就是用来依赖组件的计算属性，getter 的返回值会根据它的依赖被缓存起来，且只有当它的依赖值发生了改变才会被重新计算。
+
+```JavaScript
+const store = new Vuex.Store({
+  state: {
+    todos: [
+      { id: 1, text: '...', done: true },
+      { id: 2, text: '...', done: false }
+    ]
+  },
+  getters: {
+    doneTodos: state => {
+      return state.todos.filter(todo => todo.done)
+    }
+  }
+})
+```
+
+第二个是异步操作业务逻辑，在组件内通过`$store.dispatch`触发。action 与 mutation 很像，不同的是 action 里面提交的是 mutation，并且可以异步操作业务逻辑。
+
+```JavaScript
+const store = new Vuex.Store({
+  state: {
+    count: 0
+  },
+  mutations: {
+    increment (state) {
+      state.count++
+    }
+  },
+  actions: {
+    increment (context) {
+      context.commit('increment')
+    }
+  }
+})
+```
 
 ES6语法提示
 Promise 是一种异步方案，它有三种状态：Pending（进行中）、Resolve（已完成）、Rejected（已失败）
 
+最后一个选项是 modules，它可以将 store 分割到不同模块，每个 module 拥有自己的 state、getters、mutations、actions，而且可以多层嵌套。module 的 mutation 和 getter 接收的第一个参数 state是当前模块的状态。在 actions 和 getters 中，还可以接收一个参数 rootState，来访问根节点的状态。
+
+```JavaScript
+const moduleA = {
+  state: { ... },
+  mutations: { ... },
+  actions: { ... },
+  getters: { ... }
+}
+
+const moduleB = {
+  state: { ... },
+  mutations: { ... },
+  actions: { ... }
+}
+
+const store = new Vuex.Store({
+  modules: {
+    a: moduleA,
+    b: moduleB
+  }
+})
+
+store.state.a // -> moduleA 的状态
+store.state.b // -> moduleB 的状态
+```
+
 ES6语法提示
 emit(event,...args) 中的 ...args 是函数参数的结构，使用它可以从当前参数（这里是第二个）到最后的参数都获取到。
+
+## 11.3 实战：中央事件总线插件vue-bus
 
 # 第十二章 iView经典组件解剖
 
