@@ -25,6 +25,7 @@
   - [3.2 分支的新建与合并](#32-分支的新建与合并)
   - [3.3 分支管理](#33-分支管理)
   - [3.4 分支开发工作流](#34-分支开发工作流)
+  - [3.5 远程分支](#35-远程分支)
 - [第四章 服务器上的Git](#第四章-服务器上的Git)
   - [4.1 协议](#41-协议)
   - [4.2 在服务器上搭建 Git](#42-在服务器上搭建-Git)
@@ -539,6 +540,73 @@ $ git branch -v
 特性分支。特性分支对任何规模的项目都适用。特性分支是一种短期分支，它被用来实现单一特性或其相关工作。在其他版本控制系统中创建和合并分支通常很费劲，但是在 Git 中一天之内多次创建、使用、合并、删除分支都很常见。
 
 在特性分支中提交了更新，在合并入主干分支后就可以删除它们。这项技术可以快速并且完整地进行上下文切换，因为工作被分散到不同的流水线中，在不同的流水线中每个分支都仅与其目标特性相关。在做代码审查之类的工作就能更加容易地看出做了哪些改动，可以把改动在特性分支中保留几分钟、几天或者几个月，等它们成熟之后再合并，而不用在乎它们建立的顺序或工作进度。
+
+## 3.5 远程分支
+
+远程引用是对远程仓库的引用（指针），包括分支、标签等等，可以通过`git ls-remote(remote)`来显式地获得远程引用的完整列表，或者通过`git remote show(remote)`或者远程分支的更多信息。然而，一个更常见的做法是利用远程跟踪分支。
+
+远程跟踪分支是远程分支状态的引用。它们是不能移动的本地引用，当做任何网络通信操作时，它们会自动移动。远程跟踪分支像连接远程仓库时，那些分支所处状态的书签。它们以 (remote)/(branch) 形式命名。 例如，如果想要看你最后一次与远程仓库 origin 通信时 master 分支的状态，可以查看 origin/master 分支。 与同事合作解决一个问题并且他们推送了一个 iss53 分支，可能有自己的本地 iss53 分支；但是在服务器上的分支会指向 origin/iss53 的提交。
+
+运行`git remote add`命令添加一个新的远程仓库引用到当前的项目。如果要同步工作，运行`git fetch origin`命令。这个命令查找"origin"是哪一个服务器，从中抓取本地没有的数据，并且更新本地数据库，移动 origin/master 指针指向新的、更新后的位置。
+
+推送。当想要公开分享一个分支时，需要将其推送到有写入权限的远程仓库上。本地的分支并不会自动与远程仓库同步，必须显示地推动想要分享的分支。这样，就可以把不愿意分享的内容放到私人分支上，而将需要和别人协作的内容推送到公开分支。运行`git push (remote) (branch)`，意味着推送本地的分支来更新远程仓库的分支（也可以通过这种格式来推送本地分支到一个命名不相同的远程分支。运行`git push origin serverfix:awesomebranch`来将本地的 serverfix 分支推送到远程仓库上的 awesomebranch 分支）。下一次其他协作者从服务器上抓取数据时，会在本地生成一个远程分支 origin/serverfix，指向服务器的 serverfix 分支的引用。
+
+要特别注意的一点是当抓取新的远程跟踪分支时，本地不会自动生成一份可编辑的副本。换一句话说，这种情况狂下，不会有一个新的 serverfix 分支，只有一个不可以修改的 origin/serverfix 指针。
+
+可以运行`git merge origin/serverfix`将这些工作合并到当前所在的分支。 如果想要在自己的 serverfix 分支上工作，可以将其建立在远程跟踪分支之上。这会给你一个用于工作的本地分支，并且起点位于 origin/serverfix。
+
+```shell
+$ git checkout -b serverfix origin/serverfix
+Branch serverfix set up to track remote branch serverfix from origin.
+Switched to a new branch 'serverfix'
+```
+
+跟踪分支。从一个远程跟踪分支检出一个本地分支会自动创建一个叫做“跟踪分支”（有时候也叫做“上游分支”）。跟踪分支是与远程分支有直接关系的本地分支。如果在一个跟踪分支上输入`git pull`，Git 能自动地识别去哪个服务器上抓取、合并到哪个分支。
+
+当克隆一个仓库时，它通常会自动地创建一个跟踪 origin/master 的 master 分支。然而，如果想要设置其他的跟踪分支、其他远程仓库上的跟踪分支，或者不跟踪 master 分支。最简单的就是运行`git checkout -b [branch] [remotename]/[branch]`，这是一个十分常用的操作所以 Git 提供了`--track`快捷方式。
+
+```shell
+$ git checkout --track origin/serverfix
+Branch serverfix set up to track remote branch serverfix from origin.
+Switched to a new branch 'serverfix'
+```
+
+如果想要将本地分支与远程分支设置为不同名字，你可以轻松地增加一个不同名字的本地分支的上一个命令。运行之后，本地分支 sf 自动从 origin/severfix 拉取。
+
+```shell
+$ git checkout -b sf origin/serverfix
+Branch sf set up to track remote branch serverfix from origin.
+Switched to a new branch 'sf'
+```
+
+设置已有的本地分支跟踪一个刚刚拉取下来的远程分支，或者想要修改正在跟踪的上游分支，你可以在任意时间使用`-u`或`--set-upstream-to`选项运行`git branch`来显式地设置。
+
+```shell
+$ git branch -u origin/serverfix
+Branch serverfix set up to track remote branch serverfix from origin.
+```
+
+上游快捷方式。当设置好跟踪分支后，可以通过 @{upstream} 或 @{u} 快捷方式来引用它。 所以在 master 分支时并且它正在跟踪 origin/master 时，如果愿意的话可以使用 git merge @{u} 来取代`git merge origin/master`。
+
+如果想要查看设置的所有跟踪分支，可以使用`git branch`的`-vv`选项。 这会将所有的本地分支列出来并且包含更多的信息，如每一个分支正在跟踪哪个远程分支与本地分支是否是领先、落后或是都有。需要重点注意的是这些数字的值来自于从每个服务器上最后一次抓取的数据。这个命令并没有连接服务器，它只会告诉关于本地缓存的服务器数据。如果想要统计最新的领先与落后数字，需要在运行此命令前抓取所有的远程仓库。可以想这样做：`$ git fetch --all; git branch -vv`。
+
+```shell
+$ git branch -vv
+  iss53     7e424c3 [origin/iss53: ahead 2] forgot the brackets
+  master    1ae2a45 [origin/master] deploying index fix
+* serverfix f8674d9 [teamone/server-fix-good: ahead 3, behind 1] this should do it
+  testing   5ea463a trying something new
+```
+
+拉取。当`git fetch`命令从服务器上抓取本地没有的数据时，它并不会修改工作目录中的内容。它只会获取数据然后让你自己合并。然而，有一个命令叫做`git pull`在大多数情况下它的含义是一个`git fetch`紧接着一个`git merge`命令。不管是显式地设置还是通过 clone 或 checkout 命令创建的跟踪分支，`git pull`都会查找当前分支所跟踪的服务器与分支，从服务器上抓取数据然后尝试合并入那个远程分支。
+
+删除远程分支。可以运行带有`--delete`选项的`git push`命令来删除一个远程分支。基本上这个命令做的只是从服务器上移除这个指针。Git 服务器通常会保留数据一段时间直到垃圾回收运行，所以如果不小心删除掉了，通常是很容易恢复的。
+
+```shell
+$ git push origin --delete serverfix
+To https://github.com/schacon/simplegit
+ - [deleted]         serverfix
+```
 
 # 第四章 服务器上的Git
 
