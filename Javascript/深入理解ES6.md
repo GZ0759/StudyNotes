@@ -33,6 +33,12 @@
   - [5.3 数组解构](#53-数组解构)
   - [5.4 混合解构](#54-混合解构)
   - [5.5 解构参数](#55-解构参数)
+- [第十章 改进数组功能](#第十章-改进的数组功能)
+  - [10.1 创建数组](#101-创建数组)
+  - [10.2 为所有数组添加的新方法](#102-为所有数组添加的新方法)
+  - [10.3 完型数组](#103-完型数组)
+  - [10.4 定型数组与普通数组的相似之处](#104-定型数组与普通数组的相似之处)
+  - [10.5 定型数组与普通数组的差别](#105-定型数组与普通数组的差别)
 
 <!-- /TOC -->
 
@@ -1308,3 +1314,320 @@ function setCookie(name, value, { secure, path, domain, expires } = {}) {
 }
 ```
 
+# 第十章 改进的数组功能
+
+数组是一种基础的 JavaScript 对象，随着时间推进，JavaScript 中的其他部分一直在演进，而直到 ECMAScript5 标准才为数组对象引入一些新方法来简化使用。ECMAScript6 标准继续改进数组，添加了很多新功能。
+
+## 10.1 创建数组
+
+在 ECMAScript6 以前，创建数组的方式主要有两种，一种是调用 Array 构造函数，另一种是用数组字面量语法，这两种方法均需列举数组中的元素，功能非常受限。如果想将一个类数组对象（具有数值型索引和 length 属性的对象）转换为数组，可选的方法也十分有限，经常需要编写额外的代码。为了进一步简化 JavaScript 数组的创建过程，ECMAScript6 新增了 Array.of() 和 Array.from() 两个方法 。
+
+如果给 Array 构造函数传入一个数值型的值，那么数组的 length 属性会被设为该值；如果传入多个值，此时无论这些值是不是数值型的，都会变为数组的元素。
+
+```JavaScript
+let items = new Array(2);
+console.log(items.length);          // 2
+console.log(items[0]);              // undefined
+console.log(items[1]);              // undefined
+
+items = new Array("2");
+console.log(items.length);          // 1
+console.log(items[0]);              // "2"
+
+items = new Array(1, 2);
+console.log(items.length);          // 2
+console.log(items[0]);              // 1
+console.log(items[1]);              // 2
+
+items = new Array(3, "2");
+console.log(items.length);          // 2
+console.log(items[0]);              // 3
+console.log(items[1]);              // "2"
+```
+
+ECMAScript6 通过引入 Array.of() 方法来解决这个问题。无论有多少个参数，无论参数时什么类型的，Array.of() 总会创建一个包含所有参数的数组。在大多数情况，可以用数组字面量来创建原生数组，但如果需要给一个函数传入 Array 的构造函数，则可能更希望传入 Array.of() 来确保行为一致。
+
+```JavaScript
+function createArray(arrayCreator, value) {
+    return arrayCreator(value);
+}
+
+let items = createArray(Array.of, value);
+```
+
+Array.from() 方法。JavaScript 不支持直接将非数组对象转换为真实数组，arguments 就是一种类数组对象，如果要把它当做数组使用则必须先转换该对象的类型。在 ECMAScript5 中，可能需要编写如下函数来把类数组对象转换为数组。
+
+```JavaScript
+function makeArray(arrayLike) {
+    var result = [];
+
+    for (var i = 0, len = arrayLike.length; i < len; i++) {
+        result.push(arrayLike[i]);
+    }
+
+    return result;
+}
+
+function doSomething() {
+    var args = makeArray(arguments);
+
+    // use args
+}
+```
+
+另外，开发者发现了一种只需编写极少代码的新方法，调用数组原生的 slice() 方法可以将非数组对象转换为数组。
+
+```JavaScript
+function makeArray(arrayLike) {
+    return Array.prototype.slice.call(arrayLike);
+}
+
+function doSomething() {
+    var args = makeArray(arguments);
+
+    // use args
+}
+```
+
+尽管这项技术不需要编写很多代码，但是调用时不能直觉地想到这事在“将 arrayLike 转换成一个数组”。所幸，ECMAScript6 添加了一个语义清晰、语法简洁的新方法 Array.from() 来将对象转化为数组。Array.from() 方法可以接受可迭代对象或类数组对象作为第一个参数，最终返回一个数组。Array.from() 方法调用会基于 arguments 对象中的元素创建一个新数组。
+
+映射转换。如果想要进一步转化数组，可以提供一个映射函数作为 Array.from() 第二个参数，这个函数用来将类数组对象中的每一个值转换成其他形式，最后将这些结果储存在结果数组的相应索引中。
+
+```JavaScript
+function translate() {
+    return Array.from(arguments, (value) => value + 1);
+}
+
+let numbers = translate(1, 2, 3);
+
+console.log(numbers);               // 2,3,4
+```
+
+如果用映射函数处理对象，也可以给 Array.from() 传入第三个参数来表示映射函数的 this 值，从而无需通过调用 bind() 方法或其他方法来指定 this 的值了。
+
+```JavaScript
+let helper = {
+    diff: 1,
+
+    add(value) {
+        return value + this.diff;
+    }
+};
+
+function translate() {
+    return Array.from(arguments, helper.add, helper);
+}
+
+let numbers = translate(1, 2, 3);
+
+console.log(numbers);               // 2,3,4
+```
+
+用 Array.from() 转换可迭代对象。Array.from() 方法可以处理类数组对象和可迭代对象，也就是说该方法能够将所有含有 Symbol.iterator 属性的对象转换为数组。
+
+```JavaScript
+let numbers = {
+    *[Symbol.iterator]() {
+        yield 1;
+        yield 2;
+        yield 3;
+    }
+};
+
+let numbers2 = Array.from(numbers, (value) => value + 1);
+
+console.log(numbers2);              // 2,3,4
+```
+
+## 10.2 为所有数组添加的新方法
+
+ECMAScript6 延续了 ECMAScript5 的一贯风格，也为数组添加了几个新的方法。find() 方法和 findIndex() 方法可以协助开发者在数组中查找任意值；fill() 方法和 copyWithin() 方法的灵感来自于定型数组的使用过程，定型数组也是 ECMAScript6 中的新特性，是一种只包含数字的数组。
+
+find() 方法和 findIndex() 方法。在 ECMAScript5 以前的版本中，由于没有内建的数组搜索方法，因此想在数组中查找元素会比较麻烦，于是 ECMAScript5 正式添加了 indexOf() 和 lastlndexOf() 两个方法，可以用它们在数组中查找特定的值。虽然这是一个巨大的进步，但这两种方法仍有局限之处，即每次只能查找一个值，如果想在一系列数字中查找第一个偶数，则必须自己编写代码来实现。于是 ECMAScript6 引入了 find() 方法和 findlndex() 方法来解决这个问题。
+
+find() 方法和 findIndex() 方法都接受两个参数：一个是回调函数；另一个是可选参数，用来指定回调函数中 this 的值。执行回调函数时，传入的参数分别为：数组中的某个元素和该元素在数组中的索引以及数组本身，与传入 map() 和 foreach() 方法的参数相同。如果给定的值满足定义的标准，回调函数应返回 true，一旦回调函数返回 true，find() 方法和 findIndex() 方法都会立即停止搜索数组剩余的部分。二者间的唯一的区别是，find() 方法返回查找到的值，findIndex() 方法返回查找倒的索引。
+
+```JavaScript
+let numbers = [25, 30, 35, 40, 45];
+
+console.log(numbers.find(n => n > 33));         // 35
+console.log(numbers.findIndex(n => n > 33));    // 2
+```
+
+如果要在数组中根据某个条件查找匹配的元素，那么 find() 方法和 findIndex() 方法可以很好地完成任务；如果只想查找与某个值匹配的元素，则 indexOf() 方法和 lastIndexOf() 方法时更好的选择。
+
+fill() 方法。fill() 方法可以用指定的值填充一至多个数组元素。当传入一个值时，fill() 方法会用这个值重写数组中的所有值。如果只想改变数组某一部分的值，可以传入开始索引和结束索引（不包含结束索引当前值）这两个可选参数。如果索引为负值，则这些值会与数组的length属性相加作为最终位置。
+
+```JavaScript
+let numbers = [1, 2, 3, 4];
+
+numbers.fill(1, 2);
+
+console.log(numbers.toString());    // 1,2,1,1
+
+numbers.fill(0, 1, 3);
+
+console.log(numbers.toString());    // 1,0,0,1
+```
+
+copyWithin() 方法。copyWithin() 方法与 fill() 方法相似，其也可以同时改变数组中的多个元素。fill() 方法是将数组元素赋值为一个指定的值，而 copyWithin() 方法则是从数组中复制元素的值。调用 copyWithin() 方法时需要传入两个参数：一个是该方法开始填充值的索引位置，另一个是开始复制值得索引位置。
+
+```JavaScript
+let numbers = [1, 2, 3, 4];
+
+// paste values into array starting at index 2
+// copy values from array starting at index 0
+numbers.copyWithin(2, 0);
+
+console.log(numbers.toString());    // 1,2,1,2
+```
+
+默认情况下，copyWithin() 方法会一直复制直到数组末尾的值，但是可以提供可选的第三个参数来限制被重写元素的数量。第三个参数时不包含结束索引，用于指定停止复制值的位置。
+
+```JavaScript
+let numbers = [1, 2, 3, 4];
+
+// paste values into array starting at index 2
+// copy values from array starting at index 0
+// stop copying values when you hit index 1
+numbers.copyWithin(2, 0, 1);
+
+console.log(numbers.toString());    // 1,2,1,4
+```
+
+## 10.3 完型数组
+
+定型数组是一种用于处理数值类型数据的专用数组，最早是在 WebGL 中使用的，WebGL ES 2.0 的移植版，在 Web 页面中通过`<canvas>`元素来呈现它。定型数组也被一同移植而来，其可为 JavaScript 提供快速的按位运算。
+
+在 JavaScript 中，数字是以64位浮点格式存储的，并按需转换为32位整数，所以算术运算非常慢，无法满足 WebGL 的需求。因此在 ECMAScript 6 中引入定型数组来解决这个问题，井提供更高性能的算术运算。所谓定型数组，就是将任何数字转换为一个包含数字比特的数组，随后就可以通过我们熟悉的 JavaScript 数组方法来进一步处理 。
+
+ECMAScript 6 采用定型数组作为语言的正式格式来确保更好的跨 JavaScript 引擎兼容性以及与 JavaScript 数组的互操作性。尽管 ECMAScript 6 版本的定型数组与 WebGL 中的不一样，但是仍保留了足够的相似之处，这使得 ECMAScript 6 版本可以基于 WebGL 版本演化而不至于走向完全分化。
+
+数值数据类型。JavaScript 数组按照 IEEE 754 标准定义的格式存储，也就是用64个比特来存储一个浮点形式的数字。这个格式用于表示 JavaScript 中的证书及浮点数，两种格式间经常伴随着数字改变发生相互转换。定型数组支持存储和操作以下8种不同的数值类型。
+
+- Signed 8-bit integer (int8)
+- Unsigned 8-bit integer (uint8)
+- Signed 16-bit integer (int16)
+- Unsigned 16-bit integer (uint16)
+- Signed 32-bit integer (int32)
+- Unsigned 32-bit integer (uint32)
+- 32-bit float (float32)
+- 64-bit float (float64)
+
+如果用普通的 JavaScript 数字来存储 8 位整数，会浪费整整 56 个比特，这些比特原本可以存储其他 8 位整数或小于 56 比特的数字。这也正是定型数组的一个实际用例，即更有效地利用比特。所有与定型数组有关的操作和对象都集中在这 8 个数据类型上，但是在使用它们之前，需要创建一个数组缓冲区存储这些数据。
+
+数组缓冲区。数组缓冲区是所有定型数组的根基，它是一段可以包含特定数量字节的内存地址。创建数组缓冲区的过程类似于在 C 语言中调用 malloc() 来分配内存，知识不需指明内存块所包含的数据类型。可以通过 ArrayBuffer 构造函数来创建数组缓冲区。创建完成后，可以通过 byteLength 属性查看缓冲区中的比特数量。
+
+```JavaScript
+let buffer = new ArrayBuffer(10);   // allocate 10 bytes
+console.log(buffer.byteLength);     // 10
+```
+
+也可以通过 slice() 方法分割已有数组缓冲区来创建一个新的，这个 slice() 方法与数组上的 slice() 方法很像：传入开始索引和结束索引为参数，然后返回一个新的 ArrayBuffer 实例，新实例由原始数组缓冲区的切片组成。
+
+通过视图操作数组缓冲区。数组缓冲区是内存中的一段地址，视图是用来操作内存的接口。视图可以操作数组缓冲区或缓冲区字节的子集，并按照其中一种数值型数据类型来读取和写入数据。DataView 类型是一种通用的数组缓冲区视图，其支持所有 8 种数值型数据类型。要使用 DataView，首先要创建一个 ArrayBuffer 实例，然后用这个实例来创建新的 DataView。
+
+如果提供了一个表示比特偏移量的数值，那么可以基于缓冲区的其中一部分来创建视图，DataView 将默认选取从偏移值开始到缓冲区末尾的所有比特。如果额外提供一个表示选取比特数量的可选参数，DataView 则从偏移位置后选取该数量的比特。
+
+```JavaScript
+let buffer = new ArrayBuffer(10),
+    view = new DataView(buffer);
+
+let buffer = new ArrayBuffer(10),
+    view = new DataView(buffer, 5, 2);      // cover bytes 5 and 6
+```
+
+获取视图信息。可以通过以下几种只读属性来获取视图的信息。
+
+- buffer - The array buffer that the view is tied to
+- byteOffset - The second argument to the DataView constructor, if provided (0 by default)
+- byteLength - The third argument to the DataView constructor, if provided (the buffer's byteLength by default)
+
+```JavaScript
+let buffer = new ArrayBuffer(10),
+    view1 = new DataView(buffer),           // cover all bytes
+    view2 = new DataView(buffer, 5, 2);     // cover bytes 5 and 6
+
+console.log(view1.buffer === buffer);       // true
+console.log(view2.buffer === buffer);       // true
+console.log(view1.byteOffset);              // 0
+console.log(view2.byteOffset);              // 5
+console.log(view1.byteLength);              // 10
+console.log(view2.byteLength);              // 2
+```
+
+读取和写入数据。JavaScript 有8种数值型数据类型，对于其中的每一种，都能在 DataView 的原型上找到相应的在数组缓冲区中写入数据和读取数据的方法。这些方法都以 set 或 get 开头，紧跟着的是每一种数据类型的缩写。例如，以下这个列表时用于读取和写入 init8 和 unit8 类型数据的方法。
+
+- getInt8(byteOffset, littleEndian) - Read an int8 starting at byteOffset
+- setInt8(byteOffset, value, littleEndian) - Write an int8 starting at byteOffset
+- getUint8(byteOffset, littleEndian) - Read an uint8 starting at byteOffset
+- setUint8(byteOffset, value, littleEndian) - Write an uint8 starting at byteOffset
+
+get 方法接受两个参数：读取数据时偏移的字节数量和一个可选的布尔值，表示是否按照小端序进行读取（小端序是指最低有效字节位于字节 0 的字节顺序）。set 方法接受三个参数：写入数据时偏移的比特数量、写入的值和一个可选的布尔值，表示是否按照小端序格式存储。
+
+定型数组是视图。ECMAScript 6 定型数组实际上是用于数组缓冲区的特定类型的视图，可以强制使用特定的数据类型，而不是使用通用的 DataView 对象来操作数组缓冲区。8 个特定类型的视图对应于 8 种数值型数据类型，uint8 的值还有其他选择。
+
+创建特定类型的视图。定型数组构造函数可以接受多种类型的参数，所以可以通过多种方法来创建定型数组。首先，可以传入 DataView 构造函数可接受的参数来创建新的定型数组，分别是数组缓冲区、可选的比特偏移量、可选的长度值。
+
+创建定型数组的第二种方法是：调用构造函数时传入一个数字。这个数字表示分配给数组的元素数量（不是比特数量），构造函数将创建一个新的缓冲区，并按照数组元素的数量来分配合理的比特数量，通过 length 属性可以访问数组中的元素数量。
+
+第三种创建定型数组的方法是调用构造函数时，将以下任一对象作为唯一的参数传入。
+
+- A Typed Array - Each element is copied into a new element on the new typed array. For example, if you pass an int8 to the Int16Array constructor, the int8 values would be copied into an int16 array. The new typed array has a different array buffer than the one that was passed in.
+- An Iterable - The object's iterator is called to retrieve the items to insert into the typed array. The constructor will throw an error if any elements are invalid for the view type.
+- An Array - The elements of the array are copied into a new typed array. The constructor will throw an error if any elements are invalid for the type.
+- An Array-Like Object - Behaves the same as an array.
+
+## 10.4 定型数组与普通数组的相似之处
+
+定型数组和普通数组有几个相似之处，在许多情况下可以按照普通数组的使用方式去使用定型数组。举个例子，通过 length 属性可以查看定型数组中含有的元素数量，通过数值型索引可以直接访问定型数组中的元素。
+
+```JavaScript
+let ints = new Int16Array([25, 50]);
+
+console.log(ints.length);          // 2
+console.log(ints[0]);              // 25
+console.log(ints[1]);              // 50
+
+ints[0] = 1;
+ints[1] = 2;
+
+console.log(ints[0]);              // 1
+console.log(ints[1]);              // 2
+```
+
+通用方法。定型数组也包括许多在功能上与普通数组方法等效的方法，以下方法均可用于定型数组。
+
+- copyWithin()
+- entries()
+- fill()
+- filter()
+- find()
+- findIndex()
+- forEach()
+- indexOf()
+- join()
+- keys()
+- lastIndexOf()
+- map()
+- reduce()
+- reduceRight()
+- reverse()
+- slice()
+- some()
+- sort()
+- values()
+
+相同的迭代器。定型数据与普通数组有3个相同的迭代器，分别是 entries() 方法、keys() 方法和 values() 方法，这意味着可以把定型数组当作普通数组一样来使用展开运算符、for-of 循环。
+
+of() 方法和 from() 方法。此外，所有定型数组都含有静态 of() 方法和 from() 方法，运行效果分别与 Array.of() 方法和 Array.from() 方法相似，区别是定型数组的方法返回定型数组，而普通数组的方法返回普通数组。
+
+## 10.5 定型数组与普通数组的差别
+
+定型数组与普通数组的最重要的差别是：定型数组不是普通数组。它不继承自 Array，通过 Array.isArray() 方法检查定型数组返回的是 false。
+
+行为差异。当操作普通数组时，其可以变大变小，但定型数组却始终保持相同的尺寸。给定型数组中不存在的数值索引赋值会被忽略，而在普通数组中就可以。
+
+缺失的方法。尽管定型数组包含许多与普通数组相同的方法，但也缺失了几个。以下几个方法在定型数组中不可使用：concat()、shift()、pop()、splice()、push()、unshift()。
+
+附加方法。最后，定型数组还有两个没出现在普通数组中的方法：set() 和 subarray()。这两个方法的功能相反，set() 方法将其他数组复制到己有的定型数组，subarray() 提取己有定型数组的一部分作为一个新的定型数组。
