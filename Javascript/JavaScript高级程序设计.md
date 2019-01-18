@@ -1282,7 +1282,8 @@ JSON 是 JavaScript 的一个严格的子集，利用了 JavaScript 中的一些
 
 JSON 的语法可以表示以下三种类型的值。  
 
-- 简单值。最简单的 JSON 数据形式就是简单值。可以在 JSON 中表示字符串、数值、布尔值和 null 。与 JavaScript 不同的是，JSON 字符串必须使用双引号。在实际应用中， JSON 更多地用来表示更复杂的数据结构，而简单值只是整个数据结构中的一部分  。
+- 简单值。最简单的 JSON 数据形式就是简单值。可以在 JSON 中表示字符串、数值、布尔值和 null 。与 JavaScript 不同的是，JSON 字符串必须使用双引号。在实际应用中， JSON 更多地用来表示更复杂的数据结构，而简单值只是整个数据结构中的一部分。
+
 - 对象。对象作为一种复杂数据类型，表示的是一组无序的键值对儿。而每个键值对儿中的值可以是简单值，也可以是复杂数据类型的值。JSON 中的对象要求给属性加引号。JSON 对象有两个地方不一样。首先，没有声明变量（ JSON 中没有变量的概念）。其次，没有末尾的分号（因为这不是 JavaScript 语句，所以不需要分号）。  
 
 - 数组。数组也是一种复杂数据类型，表示一组有序的值的列表。可以通过索引来访问其中的值。数组的值也可以是任意类型——简单值、对象或数组。JSON数组也没有变量和分号。把数组和对象结合起来，可以构成更复杂的数据集合。
@@ -1291,33 +1292,147 @@ JSON 不支持变量、函数或对象实例，它就是一种表示结构化数
 
 ## 20.2　解析与序列化
 
-JSON之所以流行，除了拥有与JavaScript类似的语法，更重要的原因是，可以把JSON数据结构解析为有用的Javascript对象，而 XML 数据结构要解析成 DOM 文档而且从中提取数据。
+JSON 之所以流行，除了拥有与JavaScript类似的语法，更重要的原因是，可以把 JSON 数据结构解析为有用的 Javascript 对象，而 XML 数据结构要解析成 DOM 文档而且从中提取数据。
 
-JSON对象有两个方法： stringify () 和 parse () ，在最简单的情况下，这两个方法分别用于把 JavaScript 对象序列化为 JSON 字符串和把 JSON 字符串解析为原生 JavaScript 值。在序列化JavaScript对象时，所有函数及原型成员都会被有意忽略，不体现在结果中，值为 undefined 的任何属性也都会被跳过，结果中最终都是值为有效JSON数据类型的实例属性。
+`eval()`函数。早期的 JSON 解析器基本上就是使用 JavaScript 的`eval()`函数。由于 JSON 是 JavaScript 语法的子集，因此`eval()`函数可以解析、解释并返回 JavaScript 对象和数组。ES5 对解析 JSON 的行为进行规范，定义了全局对象 JSON。
 
-JSON.stringify () 序列化选项。除了要序列化的 JavaScript 对象外，还可以接收另外两个参数，这两个参数用于指定以不同的方式序列化JavaScript对象。第一个参数是个过滤器（数组或函数），第二个参数是一个选项，表示是否在JSON字符串中保留缩进。
+JSON对象有两个方法：`stringify()`和`parse()`，在最简单的情况下，`stringify()`方法把 JavaScript 对象序列化为 JSON 字符串；`parse()`方法把 JSON 字符串解析为原生 JavaScript 值。
 
-- 过滤结果，如果过滤器是数组，那么 JSON.Stringify () 的结果中将只包含数组中列出的属性。
+在序列化 JavaScript 对象时，所有函数及原型成员都会被有意忽略，不体现在结果中，值为 undefined 的任何属性也都会被跳过，结果中最终都是值为有效 JSON 数据类型的实例属性。
+
+`JSON.stringify()`序列化选项。除了要序列化的 JavaScript 对象外，还可以接收另外两个参数，这两个参数用于指定以不同的方式序列化 JavaScript 对象。第一个参数是个过滤器（数组或函数），第二个参数是一个选项，表示是否在 JSON 字符串中保留缩进。
+
+- 过滤结果，如果过滤器是数组，那么`JSON.Stringify()`的结果中将只包含数组中列出的属性。
 - 如果过滤器是函数，那么传入的函数接收两个参数：属性名和属性值。为了改变序列化对象的结果，函数返回的值就是相应键的值。
+
+```JavaScript
+var book={
+	title:"Professional JavaScript",
+	authors:[
+		"Nicholas C. Zakas"
+	],
+	edition:3,
+	year:2011
+};
+var jsonText=JSON.stringify(book,function(key,value){
+	switch(key){
+		case "authors":
+			return value.join(",");
+		case "year":
+			return 5000;
+		case "edition":
+			return undefined;
+		default:
+			return value;
+	}
+});
+
+/*序列化后的JSON字符串如下所示*/
+{"title":"Professional JavaScript","authors":"Nicholas C.Zakas","year":5000}
+```
+
 - 字符串缩进，如果这个参数是一个数值，那它表示的是每个级别缩进的空格数，同时插入换行符以提高可读性。
 - 如果缩进参数是一个字符串而非数值，则这个字符串将在JSON字符串中被用作缩进字符。
 
-给对象定义 toJSON () 方法，返回其自身的 JSON 数据格式。对象将被序列化为一个简单的字符串而非对象，可以让 toJSON () 方法返回任何值，它都能正常工作。toJSON () 可以作为函数过滤器的补充。
+```JavaScript
+var book={
+	title:"Professional JavaScript",
+	authors:[
+		"Nicholas C. Zakas"
+	],
+	edition:3,
+	year:2011
+};
+var jsonText=JSON.stringify(book,null,4);
 
-JSON.parse () 解析方法也可以接收另一个参数，该参数是一个函数，将在每个键值对儿上调用，这个函数被称为还原函数，与序列化方法中的过滤函数的签名相同，都接收两个参数，一个键和一个值，而且都需要返回一个值。如果还原函数返回 undefined，则表示要从结果中删除相应的键；如果返回其他值，则将该值插 入到结果中。  
+//保存在jsonText中的字符串如下所示：
+{
+	"title":"Professional JavaScript",
+	"authors":[
+		"Nicholas C. Zakas"
+	],
+	"edition":3,
+	"year":2011
+}
+```
+
+`toJSON()`方法。有时候，`JSON.Stringify()`还是不能满足对某些对象进行自定义序列化的需求，在这个情况下，可以给对象定义`toJSON()`方法。该返回其自身的 JSON 数据格式。对象将被序列化为一个简单的字符串而非对象，可以让`toJSON()`方法返回任何值，它都能正常工作。`toJSON()`可以作为函数过滤器的补充。
+
+```JavaScript
+var book={
+	title:"Professional JavaScript",
+	authors:[
+		"Nicholas C. Zakas"
+	],
+	edition:3,
+	year:2011，
+	toJSON:function(){
+		return this.title;
+	}
+};
+var jsonText=JSON.stringify(book);  // "Professional JavaScript" 
+```
+
+`JSON.parse()`解析方法也可以接收另一个参数，该参数是一个函数，将在每个键值对儿上调用，这个函数被称为还原函数，与序列化方法中的过滤函数的签名相同，都接收两个参数，一个键和一个值，而且都需要返回一个值。如果还原函数返回 undefined，则表示要从结果中删除相应的键；如果返回其他值，则将该值插入到结果中。  
+
+```JavaScript
+var book = {
+  "title": "Professional JavaScript",
+  "authors": [
+    "Nicholas C. Zakas"
+  ],
+  edition: 3,
+  year: 2011,
+  releaseDate: new Date(2011, 11, 1)
+};
+var jsonText = JSON.stringify(book);
+var bookCopy = JSON.parse(jsonText, function(key, value){
+  if (key == "releaseDate"){
+    return new Date(value);
+  } else {
+    return value;
+  }
+});
+alert(bookCopy.releaseDate.getFullYear());
+```
 
 20.3　小结　
 
 # 第21章 Ajax与Comet
 
-Ajax，是对 Asynchronous Javascript+XML 的简写，这个技术能够向服务器请求额外的数据而无需卸载页面，会带来更好的用户体验。 Ajax 技术的核心是 XMLHttpRequest 对象，简称 XHR ，它为向服务器发送请求和解析服务器响应提供了流畅的接口，能够以异步方式从服务器取得更多信息。但Ajax通信与数据格式无关，这种技术就是无需刷新页面即可从服务器取得数据，但不一定是XML数据。
+Ajax，是对 Asynchronous Javascript+XML 的简写，这个技术能够向服务器请求额外的数据而无需卸载页面，会带来更好的用户体验。
+
+Ajax 技术的核心是 XMLHttpRequest 对象，简称 XHR ，它为向服务器发送请求和解析服务器响应提供了流畅的接口，能够以异步方式从服务器取得更多信息。但 Ajax 通信与数据格式无关，这种技术就是无需刷新页面即可从服务器取得数据，但不一定是 XML 数据。
 
 ## 21.1　XMLHttpRequest对象　
 
 在一般的浏览器中创建 XHR 对象，直接使用 XMLHttpRequest 构造函数，这便是原生的XHR实现。如果还要支持 IE 的早期版本，那么则可以在这个`createXHR()`函数中加入对原生 XHR 对象的支持。
 
-```javascript
-var xhr = new XMLHttpRequest();
+```JavaScript
+function createXHR(){       
+    if (typeof XMLHttpRequest != "undefined"){   
+        return new XMLHttpRequest();    
+    } else if (typeof ActiveXObject != "undefined"){  
+        if (typeof arguments.callee.activeXString != "string"){  
+                var versions = [ "MSXML2.XMLHttp.6.0", "MSXML2.XMLHttp.3.0",     
+                    "MSXML2.XMLHttp"], i, len; 
+ 
+           for (i=0,len=versions.length; i < len; i++){        
+               try {                   
+                   new ActiveXObject(versions[i]);     
+                   arguments.callee.activeXString = versions[i];   
+                   break;               
+               } catch (ex){        
+                    //跳过               
+               }           
+           }      
+        } 
+ 
+       return new ActiveXObject(arguments.callee.activeXString); 
+       
+       } else {   
+            throw new Error("No XHR object available.");     
+       } 
 ```
 
 XHR 的用法。在使用 XHR 对象时，要调用的第一个方法是 open () ，它接受3个参数：要发送的请求类型（ "get" 、 "post" 等）、请求的URL和表示是否异步发送请求的布尔值。其中 URL 相对于执行代码的当前页面（当然也可以使用绝对路径），调用 open () 方法并不会真正发送请求，而只是启动一个请求以备发送。
@@ -1484,7 +1599,7 @@ Preflighted Requests 透明服务器验证机制支持开发人员使用自定�
 
 利用 DOM 中能够执行跨域请求的功能，在不依赖 XHR 对象的情况下也能发送某种请求。
 
-动态创建图像经常用于图像Ping，它是与服务器进行简单、单向的跨域通信的一种方式。请求的数据是通过查询字符串形式发送的，而响应可以是任意内容，但通常是像素图或 204 响应。通过 图像Ping，浏览器得不到任何具体的数据，但通过侦听 load 和 error 事件，它能知道响应是什么时候接收到的。图像 Ping 最常用于跟踪用户点击页面或动态广告曝光次数。图像 Ping 有两个主要的缺点，一是只 能发送 GET 请求，二是无法访问服务器的响应文本。  
+动态创建图像经常用于图像Ping，它是与服务器进行简单、单向的跨域通信的一种方式。请求的数据是通过查询字符串形式发送的，而响应可以是任意内容，但通常是像素图或 204 响应。通过 图像Ping，浏览器得不到任何具体的数据，但通过侦听 load 和 error 事件，它能知道响应是什么时候接收到的。图像 Ping 最常用于跟踪用户点击页面或动态广告曝光次数。图像 Ping 有两个主要的缺点，一是只能发送 GET 请求，二是无法访问服务器的响应文本。  
 
 ```javascript
 var img = new Image();
