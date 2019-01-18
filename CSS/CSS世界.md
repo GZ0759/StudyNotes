@@ -42,8 +42,10 @@
   - [8.5 真正了解@font face 规则](#85-真正了解font-face-规则)
   - [8.6 文本的控制](#86-文本的控制)
   - [8.7 了解:first-letter/:first-line 伪元素](#87-了解first-letterfirst-line-伪元素)
+- [第9章 元素的装饰与美化](#第9章-元素的装饰与美化)
   - [9.1 CSS 世界的 color 很单调](#91-css-世界的-color-很单调)
   - [9.2 CSS 世界的 background 很单调](#92-css-世界的-background-很单调)
+- [第10章 元素的显示与隐藏](#第10章-元素的显示与隐藏)
   - [10.1 display 与元素的显隐](#101-display-与元素的显隐)
   - [10.2 visibility 与元素的显隐](#102-visibility-与元素的显隐)
 - [第11章 用户界面样式](#第11章-用户界面样式)
@@ -241,6 +243,7 @@ margin 与元素的内部尺寸。对于 padding，元素设定了 width 或者�
 <div class="father">
   <div class="son"></div>
 </div>
+
 .box {
   width: 300px;
 }
@@ -325,19 +328,53 @@ margin+padding 可以实现等高布局，同样，border 属性也可以实现�
 
 ## 5.1 字母x—CSS世界中隐匿的举足轻重的角色
 
-通俗地讲， x-height 指的就是小写字母 x 的高度，术语描述就是基线和等分线（ mean line）（也称作中线 midline）之间的距离。在 CSS 世界中， middle 指的是基线往上 1/2 x-height 高度。我们可以近似理解为字 母 x 交叉点那个位置。由此可见， vertical-align:middle 并不是绝对的垂直居中对齐，我们平常看到的 middle 效果只是一种近似效果。原因很简单，因为不同的字体在行内盒子中的位置是不一样的。
+通俗地讲，x-height 指的就是小写字母 x 的高度，术语描述就是基线和等分线（mean line）（也称作中线 midline）之间的距离。在 CSS 世界中，middle 指的是基线往上 1/2 x-height 高度。我们可以近似理解为字母 x 交叉点那个位置。由此可见，`vertical-align: middle`并不是绝对的垂直居中对齐，我们平常看到的 middle 效果只是一种近似效果。原因很简单，因为不同的字体在行内盒子中的位置是不一样的。
 
-ex 是 CSS 中的一个相对单位，指的是小写字母 x 的高度，没错，就是指 x-height。ex 的价值就在其副业上—不受字体和字号影响的内联元素的垂直居中对齐效果。内联元素默认是基线对齐的，而基线就是 x 的底部，而 1ex 就是一个 x 的高 度，通过使该元素（如图标）高度为 1ex ，同时背景图片居中，从而让其与文字垂直居中。
+ex 是 CSS 中的一个相对单位，指的是小写字母 x 的高度，没错，就是指 x-height。ex 的价值就在其副业上—不受字体和字号影响的内联元素的垂直居中对齐效果。内联元素默认是基线对齐的，而基线就是 x 的底部，而 1ex 就是一个 x 的高度，通过使该元素（如图标）高度为 1ex ，同时背景图片居中，从而让其与文字垂直居中。
+
+```css
+.icon-arrow {
+  display: inline-block;
+  width: 20px;
+  height: 1ex;
+  background: url(arrow.png) no-repeat center;
+}
+```
 
 ## 5.2 内联元素的基石line-height
 
-对于非替换元素的纯内联元素，其可视高度完全由 line-height 决定。注意这里的措辞—“完全”，什么 padding、 border 属性对可视高度是没有任何影响的，这也是我们平常口中的“盒模型”约定俗成说的是块级元素的原因。  
+`<div>`的高度是由行高 line-height 决定的，而非文字大小 font-size。对于非替换元素的纯内联元素，其可视高度完全由 line-height 决定,什么 padding、 border 属性对可视高度是没有任何影响的，这也是我们平常口中的“盒模型”约定俗成是块级元素的原因。  
 
-内联替换元素和内联非替换元素在一起时，由于同属内联元素，因此会共同形成一个“行框盒子”， line-height 在这个混合元素 的“行框盒子”中扮演的角色是决定这个行盒的最小高度。 原因有两个，一是替换元素的高度不受 line-height 影响，我们平时改变 line-height， 块级元素的高度跟着变化实际上是通过改变块级元素里面内联级别元素占据的高度实现的。  二是 vertical-align 属性在背后作祟。  
+内联替换元素和内联非替换元素在一起时，由于同属内联元素，因此会共同形成一个“行框盒子”。在 HTML5 文档模式下，每一个“行框盒子”的前面都有一个宽度为 0 的“幽灵空白节点”，其内联特性表现和普通字符一模一样，所以，容器高度会等于 line-height 设置的属性值。
 
-要让单行文字垂直居中，只需要 line-height 这一个属性就可以，与 height一点儿关系都没有。行高控制文字垂直居中，不仅适用于单行，多行也是可以的。准确的说法应该是 “line-height 可以让单行或多行元素近似垂直居中。行高可以实现“垂直居中”原因在于 CSS 中“行 距的上下等分机制”，如果行距的添加规则是在文字的上方或者下方，则行高是无法让文字垂直 居中的。说“近似”是因为文字字形的垂直中线位置普遍要比真正的“行框盒子”的垂直中线位置低。多行文本或者替换元素的垂直居中实现原理和单行文本就不一样了，需要 line-height 属性的好朋友 vertical-align 属性帮助才可以。
+对于块级元素，line-height 对其本身是没有任何作用的，我们平时改变 line-height，块级元素的高度跟着变化，原因是改变了块级元素里面内联级别元素占据的高度。
 
-```html
+```css
+.box {
+  line-height: 256px;
+}
+<div class="box">
+  <img src="1.jpg" height="128">
+</div>
+```
+
+line-height 在这个混合元素的“行框盒子”中扮演的角色是决定这个行盒的最小高度。原因有两个，一是替换元素的高度不受 line-height 影响，二是 vertical-align 属性在背后作祟。 
+
+因为 line-height 几乎无处不在的继承特性，并且 CSS 世界是为了更好地图文展示，所以 line-height 不仅是内联元素高度的基石，而且还是整个 CSS 世界高度体系的基石。
+
+要让单行文字垂直居中，只需要 line-height 这一个属性就可以，与 height一点儿关系都没有。其实，line-height 可以让单行或多行元素近似垂直居中。
+
+```css
+.title {
+  line-height: 24px;
+}
+```
+ 
+ 单行文本可以垂直居中的原因是 CSS 中“行距的上下等分机制”，但如果行距的添加规则是在文字的上方或者下方，则行高是无法让文字垂直居中的。说“近似”是因为文字字形的垂直中线位置，普遍要比真正的“行框盒子”的垂直中线位置低。
+ 
+ 多行文本或者替换元素的垂直居中实现原理和单行文本就不一样了，需要 line-height 属性的好朋友 vertical-align 属性帮助才可以。
+
+```
 .box {
   line-height: 120px;
   background-color: #f0f3f9;
@@ -346,44 +383,200 @@ ex 是 CSS 中的一个相对单位，指的是小写字母 x 的高度，没错
   display: inline-block;
   vertical-align: middle;
 }
+
 <div class="box">
   <div class="content">基于行高实现的多行文字垂直居中效果，需要vertical-align属性帮助。</div>
 </div>
 ```
 
-line-height 的默认值是 normal，还支持数值、百分比值以及长度值。  
+实现的原理大致是有两点。
 
-乍一看，似乎 line-height:1.5、 line-height:150%和 line-height:1.5em 这 3 种用法是一模一样的，最终的行高大小都是和font-size计算值，但是实际上， line-height:1.5 和另外两个有一点儿不同，那就是继承细节有所差别。如果使用数值作为 line-height 的属性值， 那么所有的子元素继承的都是这个值；但是，如果使用百分比值或者长度值作为属性值，那么所有 的子元素继承的是最终的计算值。  
+- 多行文本使用一个标签包裹，然后设置 display 为 inline-block。好处在于既然重置外部的 line-height 为正常的大小，又能保持内联元素特性，从而可以设置 vertical-align 属性，以及产生非常关键的"行框盒子"
+- 因为内联元素默认都是基线对齐的，所以通过对`.content`元素`vertical-align: middle`来调整多行文本的垂直位置，从而实现想要的垂直居中效果。
 
-无论内联元素 line-height 如何设置，最终父级元素的高度都是由数值大的那个 line-height 决定的，我称之为“内联元素 line-height 的大值特性”。因为“幽灵空白节点”的干扰会让内联元素的行高增大，而行框盒子的高度是由高度最高的那个“内联盒子”决定的  。所以可以通过设置子元 素 display:inline-block，创建一个独立的“行框盒子”，这样元素设置的 line-height 就可以生效了。
+line-height 的默认值是 normal，还支持数值、百分比值以及长度值。  乍一看，似乎`line-height: 1.5`、`line-height: 150%`和`line-height: 1.5em`这 3 种用法是一模一样的，最终的行高大小都是和 font-size 计算的值，但是实际上，`line-height: 1.5`和另外两个有一点儿不同，那就是继承细节有所差别。如果使用数值作为 line-height 的属性值，那么所有的子元素继承的都是这个已计算的数值；但是，如果使用百分比值或者长度值作为属性值，那么所有的子元素继承未计算前的值。  
+
+无论内联元素 line-height 如何设置，最终父级元素的高度都是由数值大的那个 line-height 决定的，称之为“内联元素 line-height 的大值特性”。因为“幽灵空白节点”的干扰会让内联元素的行高增大，而行框盒子的高度是由高度最高的那个“内联盒子”决定的。所以通过设置子元素`display: inline-block`，创建一个独立的“行框盒子”，这样元素设置的 line-height 才可以生效了,这也是多行文本垂直居中设置的原因。
+
+```
+<div class="box">
+  <span>内容...</span>
+</div>
+
+.box {
+  line-height: 96px;
+}
+.box span {
+  line-height: 20px;
+}
+// 或
+.box {
+  line-height: 20px;
+}
+.box span {
+  line-height: 96px;
+}
+```
 
 ## 5.3 line-height的好朋友vertical-align
 
-抛开 inherit 这类全局属性值不谈，我把 vertical-align 属性值分为以下 4 类：
-线类，如 baseline（默认值）、 top、 middle、 bottom；
-文本类，如 text-top、 text-bottom；
-上标下标类，如 sub、 super；
-数值百分比类，如 20px、 2em、 20%等。
+抛开 inherit 这类全局属性值不谈，vertical-align 属性值分为以下 4 类：
+- 线类，如 baseline（默认值）、 top、 middle、 bottom；
+- 文本类，如 text-top、 text-bottom；
+- 上标下标类，如 sub、 super；
+- 数值百分比类，如 20px、 2em、 20%等。
 
-由于 vertical-align 的默认值是 baseline，即基线对齐，而基线的定义是字母 x 的 下边缘。因此，内联元素默认都是沿着字母 x 的下边缘对齐的。对于图片等替换元素，往往使用元素本身的下边缘作为基线 ,所以默认值为baseline的内联文字通常与图片对齐。
+由于 vertical-align 的默认值是 baseline，即基线对齐，而基线的定义是字母 x 的下边缘。因此，内联元素默认都是沿着字母 x 的下边缘对齐的。对于图片等替换元素，往往使用元素本身的下边缘作为基线,所以默认值为 baseline 的内联文字通常与图片对齐。
 
-根据计算值的不同，相对于基线往上或往下偏移。如果 vertical- align 的计算值是正值网上偏移，如果是负值则往下偏移。 这里的 vertical-align 属性的百分比值则是相对于 line-height 的计算值计算的。  
+根据计算值的不同，相对于基线往上或往下偏移。如果 vertical- align 的计算值是正值则往上偏移，如果是负值则往下偏移。这里的 vertical-align 属性的百分比值则是相对于 line-height 的计算值计算的。
 
-vertical-align 起作用是有前提条件的，这个前提条件就是：只能应用于内联元素以及 display 值为 table-cell 的元素。  换句话说， vertical-align 属性只能作用在 display 计算值为 inline、 inlineblock， inline-table 或 table-cell 的元素上。SS 世界中，有一些 CSS 属性值会在背后默默地改变元素 display 属性的计算值，从而导致 vertical-align 不起作用，例如浮动和绝对定位会让元素块状化。    
+vertical-align 起作用是有前提条件的，这个前提条件就是：只能应用于内联元素以及 display 值为 table-cell 的元素。换句话说，vertical-align 属性只能作用在 display 计算值为 inline、 inline-block、inline-table 或 table-cell 的元素上。在 CSS 世界中，有一些 CSS 属性值会在背后默默地改变元素 display 属性的计算值，从而导致 vertical-align 不起作用，例如浮动和绝对定位会让元素块状化。
 
-对 table-cell 元素而言， vertical-align 起作用的是 table-cell 元素自身。虽然就效果而言， table-cell 元素设置 vertical-align 垂直对齐的是子元素，但是其作用的并不是子元素，而是 table-cell 元素自身。  
+```css
+.example {
+  float: left;
+  vertical-align: middle; /* 没有作用 */
+}
+.example {
+  position: absolute;
+  vertical-align: middle; /* 没有作用 */
+}
+```
 
-<span>标签前面实际上有一个看不见的类似字符的“幽灵空白节点”。对字符而言， font-size 越大字符的基线位置越往下，因为文字默认全部都是基线对齐，所以当字号大小不一样的两个文字在一起的时候，彼此就会发生上下位移，如果位移距离足够大，就会超过行高的限制，而导致出现意料之外的高度。知道了问题发生的原因，那问题就很好解决了。我们可以让“幽灵空白节点”和后面<span> 元素字号一样大。或者改变垂直对齐方式，如顶部对齐，这样就不会有参差位移了  安装。
+有时候只设置 height 而没有设置 line-height 也会让 vertical-align 不生效，因为行框盒子前面的“幽灵空白节点”高度太小，只有设置一个足够大的行高给“幽灵空白节点”才能让它起作用。
 
-图片底部留有间隙的问题也是“幽灵空白节点”、 line-height 和 vertical-align 属性这三个属性作怪。解决办法是，使图片块状化、或让容器line-height足够小、或让容器font-size足够小，或将图片设置其他vertical-align属性值。
+```css
+.box {
+  height: 128px;
+  line-height: 128px; /* 关键 CSS 属性 */
+}
+.box > img {
+  height: 96px;
+  vertical-align: middle;
+}
+<div class="box">
+  <img src="1.jpg">
+</div>
+```
 
-vertical-align 属性的默认值 baseline 在文本之类的内联元素那里就是字符 x 的下 边缘，对于替换元素则是替换元素的下边缘。但是，如果是 inline-block 元素，则规则要 复杂了：一个 inline-block 元素，如果里面没有内联元素，或者 overflow 不是 visible， 则该元素的基线就是其 margin 底边缘；否则其基线就是元素里面最后一行内联元素的基线。  
+对 table-cell 元素而言， vertical-align 起作用的是 table-cell 元素自身。
 
-vertial-align:top 和 vertial-align:bottom 基本表现类似，只是一个“上”一 个“下”，因此合在一起讲。 顾名思义， vertial-align:top 就是垂直上边缘对齐，具体定义如下。 内联元素：元素底部和当前行框盒子的顶部对齐。table-cell 元素：元素底 padding 边缘和表格行的顶部对齐。  
+```css
+.cell {
+  height: 128px;
+  display: table-cell;
+  vertical-align: middle;
+}
+.cell > img {
+  height: 96px;
+}
+```
 
-vertial- align:middle 近似垂直居中的原因与定义有关。内联元素：元素的垂直中心点和行框盒子基线往上 1/2 x-height 处对齐。table-cell 元素：单元格填充盒子相对于外面的表格行居中对齐。  
+vertical-align 和 line-height 之间的关系。第一点是，前者的百分比值时相对于后者计算的。
 
-vertical-align:text-top： 盒子的顶部和父级内容区域的顶部对齐。vertical-align:text-bottom：盒子的底部和父级内容区域的底部对齐。  
+同时容器与行高不相等也是这两个的问题。
+
+```
+.box { line-height: 32px; }
+.box > span { font-size: 24px; }
+<div class="box">
+  <span>文字</span>
+</div>
+```
+
+`<span>`标签前面实际上有一个看不见的类似字符的“幽灵空白节点”。对字符而言， font-size 越大字符的基线位置越往下，因为文字默认全部都是基线对齐，所以当字号大小不一样的两个文字在一起的时候，彼此就会发生上下位移，如果位移距离足够大，就会超过行高的限制，而导致出现意料之外的高度。让“幽灵空白节点”和后面`<span> `元素字号一样大。或者改变垂直对齐方式，如顶部对齐，这样就不会有参差位移了。
+
+图片底部留有间隙的问题也是“幽灵空白节点”、line-height 和 vertical-align 属性这三个属性作怪。解决办法是，使图片块状化、或让容器 line-height 足够小、或让容器 font-size 足够小，或将图片设置其他 vertical-align 属性值。
+
+```css
+.box {
+  width: 280px;
+  outline: 1px solid #aaa;
+}
+.box img {
+  height: 96px;
+}
+/* 间隙清除方法 */
+.box-1 img {
+  display: block;
+  margin: auto;
+}
+.box-2 {
+  line-height: 0;
+}
+.box-3 {
+  font-size: 0;
+}
+.box-4 img {
+  vertical-align: bottom;
+}
+```
+
+vertical-align 属性的默认值 baseline 在文本之类的内联元素那里就是字符 x 的下边缘，对于替换元素则是替换元素的下边缘。但是，如果是 inline-block 元素，则规则要复杂了：一个 inline-block 元素，如果里面没有内联元素，或者 overflow 不是 visible， 则该元素的基线就是其 margin 底边缘；否则其基线就是元素里面最后一行内联元素的基线。  
+
+最佳图标实践 CSS。小图标和文字对齐完全不受 font-size 大小的影响。
+
+```html
+<div class="box">
+  <h4>1. 空标签后面跟随文本</h4>
+  <p><i class="icon icon-delete"></i>删除</p>
+  <h4>2. 标签里面有“删除”文本</h4>
+  <p><i class="icon icon-delete">删除</i>随便什么文字</p>
+</div>
+```
+
+```css
+.box {
+  line-height: 20px;
+}
+.icon {
+  display: inline-block; 
+  width:20px; height:20px; 
+  white-space: nowrap; 
+  letter-spacing: -1em; 
+  text-indent: -999em;
+}
+.icon:before {
+  content:'\3000';
+}
+.icon-delete {
+  background: url(delete.png) no-repeat center;
+}
+```
+
+`vertial-align: top`和`vertial-align: bottom`基本表现类似，只是一个“上”一 个“下”，因此合在一起讲。顾名思义，`vertial-align:top`就是垂直上边缘对齐，具体定义如下。内联元素：元素底部和当前行框盒子的顶部对齐。table-cell 元素：元素底 padding 边缘和表格行的顶部对齐。  
+`vertial-align: middle`近似垂直居中的原因与定义有关。内联元素：元素的垂直中心点和行框盒子基线往上 1/2 x-height 处对齐。table-cell 元素：单元格填充盒子相对于外面的表格行居中对齐。  
+
+深入理解 vertical-align 文本类属性值。`vertical-align: text-top`：盒子的顶部和父级内容区域的顶部对齐。`vertical-align: text-bottom`：盒子的底部和父级内容区域的底部对齐。
+
+简单了解 vertical-align 上标下标属性值。vertical-align 上标下标类属性值指的就是 sub 和 super 两个值，分别表示下标和上标。在 HTML 代码中，有两个标签语义就是下标和上标，分别是上标`<sup>`和下标`<sub>`。
+
+基于 vertical-align 属性的水平垂直居中弹框。
+
+```css
+.container {
+  position: fixed;
+  top: 0; right: 0; bottom: 0; left: 0;
+  background-color: rgba(0,0,0,.5);
+  text-align: center;
+  font-size: 0;
+  white-space: nowrap;
+  overflow: auto;
+}
+.container:after {
+  content: '';
+  display: inline-block;
+  height: 100%;
+  vertical-align: middle;
+}
+.dialog {
+  display: inline-block;
+  vertical-align: middle;
+  text-align: left;
+  font-size: 14px;
+  white-space: normal;
+}
+```
 
 # 第6章 流的破坏与保护
 
@@ -424,6 +617,7 @@ float 属性的种种归根结底还是由于自身各种特性导致的。 floa
     <img src="zxx.jpg">
     <p class="girl">美女1，美女2，美女3，美女4，美女5，美女6，后宫1，后宫2，后宫36</p>
 </div>
+
 .father {
     border: 1px solid #444;
     overflow: hidden;
@@ -559,6 +753,7 @@ HTML 中有两个标签是默认可以产生滚动条的，一个是根元素`<h
   <a href="#three">3</a>
   <a href="#four">4</a>
 </div>
+
 .box {
   height: 10em;
   border: 1px solid #ddd;
@@ -621,6 +816,7 @@ absolute 的包含块。包含块（containing block）这个就是元素用来�
 
 ```
 <p><img src="1.jpg"></p>
+
 p {
   text-align: center;
 }
@@ -635,6 +831,7 @@ img {
 <div class="alignright">
   <span class="follow"></span>
 </div>
+
 .alignright {
   height: 0;
   text-align: right;
@@ -688,9 +885,7 @@ clip 隐藏仅仅是决定了哪部分是可见的，非可见部分无法响应
 
 当 absolute 遇到 left/top/right/bottom 属性的时候，absolute 元素才真正变成绝对定位元素。`left: 0; top: 0;`  表示相对于绝对定位元素包含块的左上角对齐，此时原本的相对特性丢失。如果我们仅设置了一个方向的绝对定位，例如`left: 0`，此时，水平方向绝对定位，但垂直方向的定位依然保持了相对特性。
 
-left/top/right/bottom 是具有定位特性元素专用的 CSS 属性，其中 left 和 right 属于水平对立定位方向，而 top 和 bottom 属于垂直对立定位方向。当一个绝对定位元素，其对立定位方向属性同时有具体定位数值的时候，流体特性就发生了。
-
-假设.box 元素的包含块是根元素，则下面的代码可以让.box 元素正好完全覆盖浏览器的可视窗口，并且如果改变浏览器窗口大小， .box 会自动跟着一起变化：    
+当一个绝对定位元素，其对立定位方向属性同时有具体定位数值的时候，流体特性就发生了。假设`.box`元素的包含块是根元素，则下面的代码可以让`.box`元素正好完全覆盖浏览器的可视窗口，并且如果改变浏览器窗口大小，`.box`会自动跟着一起变化：    
 
 ```css
 .box {
@@ -699,11 +894,13 @@ left/top/right/bottom 是具有定位特性元素专用的 CSS 属性，其中 l
 }
 ```
 
-如果设定宽高都是 100% 的那个.box，实际上已经完全丧失了流动性，通过添加 pdding、margin  即可验证。
+如果再将`.box`元素设定宽高都是 100% ，就完全丧失了流动性。所以设置了对立属性的绝对定位元素的表现神似普通`<div>`元素，无论设置 padding 还是 margin，占据的空间一直不变，变化的就是 content box 的尺寸，这就是典型的流体表现特性。
 
-所以，如果想让绝对定位元素宽高自适应于包含块，没有理由不使用流体特性写法，除非是替换元素的拉伸。而绝对定位元素的这种流体特性比普通元素要更强大，普通元素流体特性只有 一个方向，默认是水平方向，但是绝对定位元素可以让垂直方向和水平方向同时保持流动性。  
+所以，如果想让绝对定位元素宽高自适应于包含块，没有理由不使用流体特性写法，除非是替换元素的拉伸。而绝对定位元素的这种流体特性比普通元素要更强大，普通元素流体特性只有一个方向，默认是水平方向，但是绝对定位元素可以让垂直方向和水平方向同时保持流动性。  
 
-当绝对定位元素处于流体状态的时候，各个盒模型相关属性的解析和普通流体元素都是一模一样的， margin 负值可以让元素的尺寸更大，并且可以使用 margin:auto 让绝对定位元素保持居中。 绝对定位元素的 margin:auto 的填充规则和普通流体元素的一模一样。唯一的区别在于，绝对定位元素 margin:auto 居中从 IE8 浏览器开始支持，而普通元素的margin:auto 居中很早就支持了 。
+当绝对定位元素处于流体状态的时候，各个盒模型相关属性的解析和普通流体元素都是一模一样的， margin 负值可以让元素的尺寸更大，并且可以使用`margin: auto`让绝对定位元素保持居中。 
+
+绝对定位元素的`margin: auto`的填充规则和普通流体元素的一模一样。唯一的区别在于，绝对定位元素`margin: auto`居中从 IE8 浏览器开始支持，而普通元素的`margin: auto`居中很早就支持了。
 
 ```css
 /*如果项目不需要管 IE7 浏览器的话，
@@ -734,58 +931,69 @@ left/top/right/bottom 是具有定位特性元素专用的 CSS 属性，其中 l
 }
 ```
 
-
-
 ## 6.9 position:relative 才是大哥  
 
-虽然说 relative/absolute/fixed 都能对 absolute 的“包裹性”以及“定位”产 生限制，但只有 relative 可以让元素依然保持在正常的文档流中。relative 的定位有两大特性：一是相对自身；二是无侵入。 使用relative定位的元素，其相对的是自身进行偏移。 “无侵入”的意思是，当 relative 进行定位偏移的时候，一般情况下不会影响周围元素的布局。  
+虽然说 relative/absolute/fixed 都能对 absolute 的“包裹性”以及“定位”产生限制，但只有 relative 可以让元素依然保持在正常的文档流中。relative 的定位有两大特性：一是相对自身；二是无侵入。使用relative定位的元素，其相对的是自身进行偏移。 “无侵入”的意思是，当 relative 进行定位偏移的时候，一般情况下不会影响周围元素的布局。  
 
-relative 的定位还有另外两点值得一提：相对定位元素的 left/top/right/bottom 的百分比值是相对于包含块计算的，而不是自身。注意，虽然定位位移是相对自身，但是百分 比值的计算值不是。  
+relative 的定位还有另外两点值得一提：相对定位元素的 left/top/right/bottom 的百分比值是相对于包含块计算的，而不是自身。注意，虽然定位位移是相对自身，但是百分比值的计算值不是。 
 
-top 和 bottom 这两个垂直方向的百分比值计算跟 height 的百分比值是一样的，都是相对高度计算的。同时，如果包含块的高度是 auto，那么计算值是 0，偏移无效，也就是说，如果父元素没有设定高度或者不是“格式化高度”，那么 relative 类似 top:20% 的代码等同于 top:0。  
+top 和 bottom 这两个垂直方向的百分比值计算跟 height 的百分比值是一样的，都是相对高度计算的。同时，如果包含块的高度是 auto，那么计算值是 0，偏移无效，也就是说，如果父元素没有设定高度或者不是“格式化高度”，那么 relative 类似`top: 20%`的代码等同于`top: 0`。  
 
-当相对定位元素同时应用对立方向定位值的时候，也就是 top/bottom 和 left/right 同时使用的时候，其表现和绝对定位差异很大。绝对定位是尺寸拉伸，保持流体特性，但是相对定位却是“你死我活”的表现，也就是说，只有一个方向的定位属性会起作用。而孰强孰弱则是与文档流的顺序有关的，默认的文档流是自上而下、从左往右，因此 top/bottom 同时使用的时候， bottom 被干掉； left/right 同时使用的时候， right 毙命。  
+当 top/bottom 和 left/right 同时使用的时候，绝对定位是尺寸拉伸，保持流体特性，但是相对定位却是根据文档流的顺序来表现，只有一个方向的定位属性会起作用。 
 
-“relative 的最小化影响原则”是我自己总结的一套更好地布局实践的原则，主要分为以下两部分：尽量不使用 relative，如果想定位某些元素，看看能否使用“无依赖的绝对定位”；如果场景受限，一定要使用 relative，则该 relative 务必最小化。
+“relative 的最小化影响原则”是总结的一套更好地布局实践的原则，主要分为以下两部分：尽量不使用 relative，如果想定位某些元素，看看能否使用“无依赖的绝对定位”；如果场景受限，一定要使用 relative，则该 relative 务必最小化。
 
-因为一个普通元素变成相对定位元素，看上去长相什么的没有变化，但是实际上元素的层叠顺序提高了，甚至在 IE6 和 IE7 浏览器下无须设置 z-index 就直接创建了新的层叠上下文，会导致一些绝对定位浮层无论怎么设置 z-index 都会被其他元素覆盖。当然， z-index 无效已经算是比较严重的问题了。“relative 的最小化影响原则”不仅规避了复杂场景可能出现样式问题的隐患，从日后的维护角度讲也更方便。
+因为一个普通元素变成相对定位元素，实际上元素的层叠顺序提高了，甚至在 IE6 和 IE7 浏览器下无须设置 z-index 就直接创建了新的层叠上下文，会导致一些绝对定位浮层无论怎么设置 z-index 都会被其他元素覆盖。“relative 的最小化影响原则”规避了复杂场景可能出现样式问题的隐患，从日后的维护角度讲也更方便。
 
 ## 6.10 强悍的 position:fixed 固定定位  
 
-position:fixed 固定定位元素的“包含块”是根元素，我们可以将其近似看成<html> 元素。  
+`position: fixed`固定定位元素的“包含块”是根元素，我们可以将其近似看成`<html>`元素。  
 
 和“无依赖的绝对定位”类似，就是“无依赖的固定定位”，利用 absolute/fixed 元素没有设置 left/top/right/bottom 的相对定位特性，可以将目标元素定位到我们想要的位置。
 
-```html
-<div class="father" style="width: 300px;height: 200px;position: relative;">
-	<div class="right" style="height: 0;text-align: right;overflow: hidden;">
-		&nbsp;
-        <div class="son"style="display: inline; width: 40px; height:40px;
-                               position: fixed;margin-left: -40px;">
-            角</div>
-	</div>
+```
+<div class="father">
+  <div class="right">
+    &nbsp;<div class="son"></div>
+  </div>
 </div>
+
+.father {
+  width: 300px; height: 200px;
+  position: relative;
+}
+  .right {
+  height: 0;
+  text-align: right;
+  overflow: hidden;
+}
+.son {
+  display: inline;
+  width: 40px; height: 40px;
+  position: fixed;
+  margin-left: -40px;
+}
 ```
 
-有时候我们希望元素既有不跟随滚动的固定定位效果，又能被定位元素限制和精准定位。我们可以使用 position:absolute 进行模拟，原理其实很简单： 页面的滚动使用普通元素替代，此时滚动元素之外的其他元素自然就有了“固定定位”的效果了。这个其它元素虽然是绝对定位， 但是并不在滚动元素内部，自然滚动时不会跟随，如同固定定位效果，同时本身绝对定位。因此，可以使用 relative 进行限制或者 overflow 进行裁剪等。  
+有时候我们希望元素既有不跟随滚动的固定定位效果，又能被定位元素限制和精准定位。我们可以使用`position: absolute`进行模拟，原理其实很简单：页面的滚动使用普通元素替代，此时滚动元素之外的其他元素自然就有了“固定定位”的效果了。这个其它元素虽然是绝对定位，但是并不在滚动元素内部，自然滚动时不会跟随，如同固定定位效果，同时本身绝对定位。因此，可以使用 relative 进行限制或者 overflow 进行裁剪等。  
 
-蒙层弹窗是网页中常见的交互，其中黑色半透明全屏覆盖的蒙层基本上都是使用 position: fixed 定位实现的。但是，如果细致一点儿就会发现蒙层无法覆盖浏览器右侧的滚动栏，并且鼠标滚动的时候后面的背景内容依然可以被滚动，并没有被锁定，体验略打折扣。  
+蒙层弹窗是网页中常见的交互，其中黑色半透明全屏覆盖的蒙层基本上都是使用`position: fixed`定位实现的。但是，如果细致一点儿就会发现蒙层无法覆盖浏览器右侧的滚动栏，并且鼠标滚动的时候后面的背景内容依然可以被滚动，并没有被锁定，体验略打折扣。  
 
-如果是移动端项目，阻止 touchmove 事件的默认行为可以防止滚动；如果是桌面端项目， 可以让根元素直接overflow:hidden。但是， Windows 操作系统下的浏览器的滚动条都是占据一定宽度的，滚动条的消失必然会导致页面的可用宽度变化，页面会产生体验更糟糕的晃动问题，那怎么办呢？很简单，我们只需要找个东西填补消失的滚动条就好了。那该找什么东西充呢？这时候就轮到功勋卓越的 border 属性出马了—消失的滚动条使用同等宽度的透明边框填充！  
+如果是移动端项目，阻止 touchmove 事件的默认行为可以防止滚动；如果是桌面端项目，可以让根元素直接`overflow: hidden`。但是，Windows 操作系统下的浏览器的滚动条都是占据一定宽度的，滚动条的消失必然会导致页面的可用宽度变化，页面会产生体验更糟糕的晃动问题，那怎么办呢？很简单，我们只需要找个东西填补消失的滚动条就好了。那该找什么东西充呢？这时候就轮到功勋卓越的 border 属性出马了——消失的滚动条使用同等宽度的透明边框填充！  
 
 # 第7章 CSS世界的层叠规则
 
-所谓“层叠规则”，指的是当网页中的元素发生层叠时的表现规则。默认情况下，网页内容是没有偏移角的垂直视觉呈现，当内容发生层叠的时候，一定会有 一个前后的层叠顺序产生，有点儿类似于真实世界中“论资排辈”的感觉。  
+所谓“层叠规则”，指的是当网页中的元素发生层叠时的表现规则。默认情况下，网页内容是没有偏移角的垂直视觉呈现，当内容发生层叠的时候，一定会有一个前后的层叠顺序产生，有点儿类似于真实世界中“论资排辈”的感觉。  
 
 ## 7.1 z-index 只是 CSS 层叠规则中的一叶小舟
 
-在 CSS 世界中， z-index 属性只有和定位元素（position 不为 static 的元素）在一 起的时候才有作用，可以是正数也可以是负数。理论上说，数值越大层级越高，但实际上其规则要复杂很多。但随着 CSS3 新世界的到来， z-index 已经并非只对定位元素有效， flex 盒子的子元素也可以设置 z-index 属性。
+在 CSS 世界中，z-index 属性只有和定位元素（position 不为 static 的元素）在一起的时候才有作用，可以是正数也可以是负数。理论上说，数值越大层级越高，但实际上其规则要复杂很多。但随着 CSS3 新世界的到来，z-index 已经并非只对定位元素有效，flex 盒子的子元素也可以设置 z-index 属性。
 
 ## 7.2 理解 CSS 世界的层叠上下文和层叠水平
 
-层叠上下文，英文称作 stacking context，是 HTML 中的一个三维的概念。如果一个元素含有层叠上下文，我们可以理解为这个元素在 z 轴上就“高人一等”。我们可以把层叠上下文理 解为一种“层叠结界”，自成一个小世界。这个小世 界中可能有其他的“层叠结界”，而自身也可能处于其他“层叠结界”中。  
+层叠上下文，英文称作 stacking context，是 HTML 中的一个三维的概念。如果一个元素含有层叠上下文，我们可以理解为这个元素在 z 轴上就“高人一等”。我们可以把层叠上下文理解为一种“层叠结界”，自成一个小世界。这个小世界中可能有其他的“层叠结界”，而自身也可能处于其他“层叠结界”中。  
 
-层叠水平，英文称作 stacking level，决定了同一个层叠上下文中元 素在 z 轴上的显示顺序。显而易见，所有的元素都有层叠水平，包括层叠上下文元素，也包括普通元素。然而，对普通元素的层叠水平探讨只局限在当前层叠上下文元素中。
+层叠水平，英文称作 stacking level，决定了同一个层叠上下文中元素在 z 轴上的显示顺序。显而易见，所有的元素都有层叠水平，包括层叠上下文元素，也包括普通元素。然而，对普通元素的层叠水平探讨只局限在当前层叠上下文元素中。
 
 某些情况下 z-index 确实可以影响层叠水平，但是只限于定位元素以及 flex 盒子的孩子元素；而层叠水平所有的元素都存在。
 
@@ -801,13 +1009,13 @@ position:fixed 固定定位元素的“包含块”是根元素，我们可以�
 > - inline 水平盒子指的是包括 inline/inline-block/inline-table 元素的“层叠顺序”，它们都是同等级别的。
 > - 单纯从层叠水平上看，实际上 z-index:0 和 z-index:auto 是可以看成是一样的。注意这里的措辞—“单纯从层叠水平上看”，实际上，两者在层叠上下文领域有着根本性的差异。  
 
-background/border 为装饰属性，浮动和块状元素一般用作布局，而内联元素都是内容。内容的层叠顺序相当高，这样当发生层叠时，重要的文字、图片内容才可以优先显示 在屏幕上。  
+background/border 为装饰属性，浮动和块状元素一般用作布局，而内联元素都是内容。内容的层叠顺序相当高，这样当发生层叠时，重要的文字、图片内容才可以优先显示在屏幕上。  
 
 ## 7.4 务必牢记的层叠准则
 
 下面这两条是层叠领域的黄金准则。当元素发生层叠的时候，其覆盖关系遵循下面两条准则：
 
-- 谁大谁上： 当具有明显的层叠水平标识的时候，如生效的 z-index 属性值，在同一 个层叠上下文领域，层叠水平值大的那一个覆盖小的那一个。
+- 谁大谁上： 当具有明显的层叠水平标识的时候，如生效的 z-index 属性值，在同一个层叠上下文领域，层叠水平值大的那一个覆盖小的那一个。
 - 后来居上： 当元素的层叠水平一致、层叠顺序相同的时候，在 DOM 流中处于后面的元素会覆盖前面的元素。
 
 在 CSS 和 HTML 领域，只要元素发生了重叠，都离不开上面这两条黄金准则。  
@@ -828,9 +1036,9 @@ background/border 为装饰属性，浮动和块状元素一般用作布局，�
 - 正统派： z-index 值为数值的定位元素的传统“层叠上下文”。
 - 扩招派：其他 CSS3 属性。  
 
-根层叠上下文指的是页面根元素，可以看成是<html>元素。因此，页面中所有的元素一 定处于至少一个“层叠结界”中。  
+根层叠上下文指的是页面根元素，可以看成是`<html>`元素。因此，页面中所有的元素一定处于至少一个“层叠结界”中。  
 
-对于 position 值为 relative/absolute 以及 Firefox/IE 浏览器（不包括 Chrome 浏览器）下含有 position:fixed 声明的定位元素，当其 z-index 值不是 auto 的时候，会创建层叠上下文。z-index: auto 所在的元素是一个普通定位元素，而 z-index 一旦变成数值，哪怕是 0，就会创建一个层叠上下文。此时，层叠规则就可能发生了变化。层叠上下文的特性里面最后一条是自成体系。有时候，我们在网页重构的时候会发现 z-index 嵌套错乱，这时要看看是不是受父级的层叠上下文元素干扰了，可能就豁然开朗了。  
+对于 position 值为 relative/absolute 以及 Firefox/IE 浏览器（不包括 Chrome 浏览器）下含有`position: fixed`声明的定位元素，当其 z-index 值不是 auto 的时候，会创建层叠上下文。`z-index: auto`所在的元素是一个普通定位元素，而 z-index 一旦变成数值，哪怕是 0，就会创建一个层叠上下文。此时，层叠规则就可能发生了变化。层叠上下文的特性里面最后一条是自成体系。有时候，我们在网页重构的时候会发现 z-index 嵌套错乱，这时要看看是不是受父级的层叠上下文元素干扰了，可能就豁然开朗了。  
 
 CSS3 新世界的出现除了带来了新属性，还对过去的很多规则发出了挑战，其中对层叠上下文规则的影响显得特别突出。
 
@@ -843,7 +1051,7 @@ CSS3 新世界的出现除了带来了新属性，还对过去的很多规则发
 - 元素的 will-change 属性值为上面 2～6 的任意一个（如 will-change:opacity、 will-chang:transform 等）。
 - 元素的-webkit-overflow-scrolling 设为 touch。  
 
-定位元素会层叠在普通元素的上面，其根本原因就是：元素 一旦成为定位元素，其 z-index 就会自动生效，此时其 z-index 就是默认的 auto，也就是 0 级别，根据上面的层叠顺序表，就会覆盖inline或block或float元素。而不支持z-index 的层叠上下文元素天然是 z-index:auto 级别，也就意味着，层叠上下文元素和定位元素是一个层叠顺序的，于是当它们发生层叠的时候，遵循的是“后来居上”准则。  
+定位元素会层叠在普通元素的上面，其根本原因就是：元素一旦成为定位元素，其 z-index 就会自动生效，此时其 z-index 就是默认的 auto，也就是 0 级别，根据上面的层叠顺序表，就会覆盖inline或block或float元素。而不支持z-index 的层叠上下文元素天然是`z-index: auto`级别，也就意味着，层叠上下文元素和定位元素是一个层叠顺序的，于是当它们发生层叠的时候，遵循的是“后来居上”准则。  
 
 ## 7.6 z-index 负值深入理解
 
@@ -859,7 +1067,7 @@ z-index 负值的最终表现并不是单一的，而是与“层叠上下文”
 
 避免 z-index“一山比一山高”的样式混乱问题。  
 
-页面上主体元素遵循 z-index“不犯二”准则，浮层元素使用 z-index“层级计数器” 。
+页面上主体元素遵循 z-index “不犯二”准则，浮层元素使用 z-index “层级计数器” 。
 
 # 第8章 强大的文本处理能力
 
@@ -867,22 +1075,22 @@ z-index 负值的最终表现并不是单一的，而是与“层叠上下文”
 
 line-height 的部分类别属性值是相对于 font-size 计算的， vertical-align 百分比值属性值又是相对于 line-height 计算的，于是font-size 和 vertical-align 也有着关系。
 
-通过 vertical-align:25%声明让图片的下边缘和中文汉字的中心线对齐。其居中原理本质上和绝对定位元素 50%定位加偏移自身 1/2 尺寸实现居中是一样的，只不过这里的偏移使用的是 vertical-align 百分比值。将前面例子中的 vertical-align:25%改成 vertical-align:.6ex，效果基本上就是一样的，并且还多了 一个优点，就是使用 vertical-align:.6ex 实现的垂直居中效果不会受 line-height 变化影响。
+通过`vertical-align: 25%`声明让图片的下边缘和中文汉字的中心线对齐。其居中原理本质上和绝对定位元素50%定位加偏移自身 1/2 尺寸实现居中是一样的，只不过这里的偏移使用的是 vertical-align 百分比值。将前面例子中的`vertical-align: 25%`改成 `vertical-align: .6ex`，效果基本上就是一样的，并且还多了一个优点，就是使用`vertical-align: .6ex`实现的垂直居中效果不会受 line-height 变化影响。
 
 ex 是字符 x 高度，显然和 font-size 关系密切， font-size 值越大，自然 ex 对应的大小也就大。
 
 em 在传统排版中指一个字模的高度，注意是字模的高度，不是字符的高度。其一般由'M'的宽度决定（因为宽高相同），所以叫 em 。在 CSS 中， 1em 的计算值等同于当前元素所在的 font-size 计算值，可以将其想象成当前元素中（如果有）汉字的高度。  
 
-rem，即 root em，就是根元素 em 大小。 em 相对于当前元素， rem 相对于根元素，本质差别在于当前元素是多变的，根元素是固定的。如果使用 rem，我们的计算值不会受当前元素 font-size 大小的影响。因此，要想实现带有缩放性质的弹性布局，使用 rem 是最佳策略，但 rem 是 CSS3 单位， IE9 以上浏览器才支持。
+rem，即 root em，就是根元素 em 大小。 em 相对于当前元素，rem 相对于根元素，本质差别在于当前元素是多变的，根元素是固定的。如果使用 rem，我们的计算值不会受当前元素 font-size 大小的影响。因此，要想实现带有缩放性质的弹性布局，使用 rem 是最佳策略，但 rem 是 CSS3 单位，IE9 以上浏览器才支持。
 
-em 实际上更适用于图文内容展示的场景，对此进行弹性布局。例如， <h1>～ <h6>以及<p>等与文本内容展示的元素的 margin 都是用 em 作为单位，这样，当用户把浏览器默认字号从“中”设置成“大”或改成“小”的时候，上下间距也能根据字号大小自动调整， 使阅读更舒服。
+em 实际上更适用于图文内容展示的场景，对此进行弹性布局。例如，`<h1>`～`<h6>`以及`<p>`等与文本内容展示的元素的 margin 都是用 em 作为单位，这样，当用户把浏览器默认字号从“中”设置成“大”或改成“小”的时候，上下间距也能根据字号大小自动调整，使阅读更舒服。
 
 font-size 的关键字属性值分以下两类。
 
 相对尺寸关键字。指相对于当前元素 font-size 计算，包括：
 
-- larger：大一点，是<big>元素的默认 font-size 属性值。
-- smaller：小一点，是<small>元素的默认 font-size 属性值。
+- larger：大一点，是`<big>`元素的默认 font-size 属性值。
+- smaller：小一点，是`<small>`元素的默认 font-size 属性值。
 
 绝对尺寸关键字。与当前元素 font-size 无关，仅受浏览器设置的字号影响。注意这里的措辞，是“浏览器设置”，而非“根元素”，两者是有区别的。
 
@@ -894,11 +1102,11 @@ font-size 的关键字属性值分以下两类。
 - x-small：好小，和<h6>元素计算值近似。
 - xx-small：好小好小，无对应的HTML 元素。  
 
-桌面 Chrome 浏览器下有个 12px 的字号限制，就是文字的 font-size 计算值不能小于 12px 。如果 font-size:0 的字号表现就是 0，那么文字会直接被隐藏掉，并且只能是 font-size:0，哪怕设置成 font-size:0.0000001px， 都还是会被当作 12px 处理的。
+桌面 Chrome 浏览器下有个 12px 的字号限制，就是文字的 font-size 计算值不能小于 12px 。如果`font-size: 0`的字号表现就是 0，那么文字会直接被隐藏掉，并且只能是`font-size: 0`，哪怕设置成`font-size: 0.0000001px`， 都还是会被当作 12px 处理的。
 
 ## 8.2 字体属性家族的大家长 font-family
 
-CSS 世界中的有很多属性都是以 font-开头的，如 font-style、 font-weight 和这里要介绍的 font-family，把所有这些以 font-开头的 CSS 属性统称为“字体属性家族”。顾名思义， font-family 就是“字体家族”的意思。font-family 默认值由操作系统和浏览器共同决定。
+CSS 世界中的有很多属性都是以 font- 开头的，如 font-style、 font-weight 和这里要介绍的 font-family，把所有这些以 font- 开头的 CSS 属性统称为“字体属性家族”。顾名思义， font-family 就是“字体家族”的意思。font-family 默认值由操作系统和浏览器共同决定。
 
 font-family 支持两类属性值，一类是“字体名”，一类是“字体族”。  
 
@@ -913,17 +1121,17 @@ font-family 支持两类属性值，一类是“字体名”，一类是“字�
 > - font-family: fantasy（奇幻字体）
 > - font-family: system-ui（系统UI字体）
 
-字体分衬线字体和无衬线字体。所谓衬线字体，通俗讲就是笔画开始、结束的地方有额外装饰而且笔画的粗细会有所不同的字体。网页中常用中文衬线字体是“宋体”，常用英文衬线字体有 Times New Roman、 Georgia 等。无衬线字体没有这些额外的装饰，而且笔画的粗细差不多， 如中文的“雅黑”字体，英文包括 Arial、 Verdana、 Tahoma、 Helivetica、Calibri 等。  
+字体分衬线字体和无衬线字体。所谓衬线字体，通俗讲就是笔画开始、结束的地方有额外装饰而且笔画的粗细会有所不同的字体。网页中常用中文衬线字体是“宋体”，常用英文衬线字体有 Times New Roman、 Georgia 等。无衬线字体没有这些额外的装饰，而且笔画的粗细差不多，如中文的“雅黑”字体，英文包括 Arial、 Verdana、 Tahoma、 Helivetica、Calibri 等。  
 
 以前人们排正文喜欢使用衬线字体，但是如今，不知是审美疲劳还是人们更加追求简洁干净的缘故，更喜欢使用无衬线字体，如“微软雅黑”或者“苹方”之类的字体。  
 
-serif 和 sans-serif 还可以和具体的字体名称写在一起，但是需要注意的是， serif 和 sans-serif 一定要写在最后，因为在大多数浏览器下， 写在 serif 和 sans-serif 后面的所有字体都会被忽略。  
+serif 和 sans-serif 还可以和具体的字体名称写在一起，但是需要注意的是，serif 和 sans-serif 一定要写在最后，因为在大多数浏览器下， 写在 serif 和 sans-serif 后面的所有字体都会被忽略。  
 
 所谓等宽字体，一般是针对英文字体而言的。据我所知，东亚字体应该都是等宽的，就是每个字符在同等 font-size 下占据的宽度是一样的。等宽字体利于代码呈现。
 
 ch 和 em、 rem、 ex 一样，是 CSS 中和字符相关的相对单位。和 ch 相关的字符是 0，即阿拉伯数字 0。 1ch 表示一个 0 字符的宽度，所以 6 个 0 所占据的宽度就是 6ch。ch 是个 CSS3 单位，可以通过等宽字体对数字进行一些巧妙设计，例如电话号码的输入，一眼可以看出有没有足够十一位数字。
 
-虽然一些常见中文字体，如宋体、微软雅黑等，直接使用中文名称作为 CSS font-family 的属性值也能生效，但我们一般都不使用中文名称，而是使用英文名称， 主要是为了规避乱码的风险。  
+虽然一些常见中文字体，如宋体、微软雅黑等，直接使用中文名称作为 CSS font-family 的属性值也能生效，但我们一般都不使用中文名称，而是使用英文名称，主要是为了规避乱码的风险。  
 
 微软正黑体是一款全面支持 ClearType 技术的 TrueType 无衬线字体，用于繁体中文系统。相对应地，中国大陆地区用的是微软雅黑。我们平常所说的“宋体”，指的都是“中易宋体”，英文名称 SimSun，“黑体”类似的是“中易黑体”。所有英文名称大小写都经过一定的考量，并不是随便设定的，虽然说 CSS font-family 对名称的大小写不怎么敏感，但是根据经验，最好至少首字母要大写，否则在使用 CSS unicode-range 的时候可能会遇到一些麻烦。  
 
@@ -938,9 +1146,9 @@ font-weight 表示“字重”，通俗点讲，就是表示文字的粗细程�
 > 100～900 的整百数         定义由粗到细的字符。400 等同于 normal，而 700 等同于 bold。
 > inherit				规定应该从父元素继承字体的粗细。
 
-font-style 表示文字造型是斜还是正，与 font-weight 相比，其属性值就要少很多。其中， normal是默认值。浏览器显示一个标准的字体样式。italic 和 oblique 这两个关键字都表示“斜体”的意思。区别在于： italic 是使用当前字体的斜体字体，而 oblique 只是单纯地让文字倾斜。 如果当前字体没有对应的斜体字体，则退而求其次，解析为 oblique，也就是单纯形状倾斜。  
+font-style 表示文字造型是斜还是正，与 font-weight 相比，其属性值就要少很多。其中， normal是默认值。浏览器显示一个标准的字体样式。italic 和 oblique 这两个关键字都表示“斜体”的意思。区别在于：italic 是使用当前字体的斜体字体，而 oblique 只是单纯地让文字倾斜。 如果当前字体没有对应的斜体字体，则退而求其次，解析为 oblique，也就是单纯形状倾斜。  
 
-font-variant 是一个从 IE6 时代就过来的 CSS 属性，对于我们大中华用户，其支持的属性值和作用让我们这些汉字用户觉得有些头疼，实现小体型大写字母，两个属性值要么 normal， 要么 small-caps， font-variant:small-caps 就是可以让英文字符表现为小体型大写字母。  
+font-variant 是一个从 IE6 时代就过来的 CSS 属性，对于我们大中华用户，其支持的属性值和作用让我们这些汉字用户觉得有些头疼，实现小体型大写字母，两个属性值要么 normal， 要么 small-caps，font-variant:small-caps 就是可以让英文字符表现为小体型大写字母。  
 
 ## 8.4 font 属性
 
@@ -971,19 +1179,19 @@ font 属性除了缩写用法，还支持关键字属性值，其语法如下。
 
 这里的 font-family 可以看成是一个字体变量，名称可以非常随意，如直接用一个美元符号'$'。非 IE 浏览器下甚至可以直接使用纯空格' '。不过有一点需要注意，就是使用这些稀奇古怪的字符或者空格的时候，一定要加引号。  
 
-src 表示引入的字体资源可以是系统字体，也可以是外链字体。如果是使用系统安装字体， 则使用 local()功能符；如果是使用外链字体，则使用 url()功能符。而 local()功能符 IE9 及其以上版本浏览器才支持。
+src 表示引入的字体资源可以是系统字体，也可以是外链字体。如果是使用系统安装字体， 则使用 local()功能符；如果是使用外链字体，则使用 url() 功能符。而 local() 功能符 IE9 及其以上版本浏览器才支持。
 
-在 Chrome 浏览器下， @font face 规则设置 font-style:italic 可以让文字倾斜。因为有些字体可能会有专门的斜体字体，注意这个斜体字体并不 是让文字的形状倾斜，而是专门设计的倾斜的字体，所以很多细节会跟物理上的请求不一样。 于是，可以在 CSS 代码中使用 font-style:italic 的时候，通过方法会调用这个对应字体。
+在 Chrome 浏览器下， @font face 规则设置`font-style: italic`可以让文字倾斜。因为有些字体可能会有专门的斜体字体，注意这个斜体字体并不 是让文字的形状倾斜，而是专门设计的倾斜的字体，所以很多细节会跟物理上的请求不一样。 于是，可以在 CSS 代码中使用`font-style: italic`的时候，通过方法会调用这个对应字体。
 
 font-weight 和 font-style 类似，只不过它定义了不同字重、使用不同字体。对中文而言，这个要比 font-style 适用性强很多。  
 
 unicode-range 的作用是可以让特定的字符或者特定范围的字符使用指定的字体。例如， “微软雅黑”字体的引号左右间隙不均，方向不明，实在是看着不舒服，此时我们就专门指定这两个引号使用其他字体。  
 
-从面向未来的角度讲，字体图标技术的使用会越来越边缘化，因为和 SVG 图标技术相比， 其唯一的优势就是兼容一些老的 IE 浏览器。  SVG 图标同样是矢量的，同样颜色可控，但资源占用更少，加载体验更好，呈现效果更佳， 更加符合语义。
+从面向未来的角度讲，字体图标技术的使用会越来越边缘化，因为和 SVG 图标技术相比，其唯一的优势就是兼容一些老的 IE 浏览器。SVG 图标同样是矢量的，同样颜色可控，但资源占用更少，加载体验更好，呈现效果更佳，更加符合语义。
 
 ## 8.6 文本的控制
 
-CSS 有很多属性专门用来对文本进行控制，由于这些属性的作用机制往往是基于内联盒模型的，因此对于内联块状元素同样也是有效果的，这就使得这些 CSS 属性作用范围更广了，甚 至可以影响布局。  
+CSS 有很多属性专门用来对文本进行控制，由于这些属性的作用机制往往是基于内联盒模型的，因此对于内联块状元素同样也是有效果的，这就使得这些 CSS 属性作用范围更广了，甚至可以影响布局。  
 
 text-indent 就是对文本进行缩进控制，用得比较多的是 text-indent 负值隐藏文本内容。另外， text-indent 负值缩进在部分浏览器下会影响元素的 outline 区域，通常需要再设置 `overflow: hidden`。 与文本控制相关的 CSS 属性支持百分比值的并不多，text-indent 支持百分比值其实算是比较“有个性的”，但设置百分比值会有隐患。从理论上讲，我们可以使用 text-indent 与百分值实现宽度已知内联元素的居中效果。  
 
@@ -1004,7 +1212,7 @@ letter-spacing 可以用来控制字符之间的间距，这里说的“字符�
 
 word-spacing 和 letter-spacing 名称类似，其特性也有很多共通之处：都具有继承性；默认值都是 normal 而不是 0。通常情况下，两者表现并无差异；都支持负值，都可以让字符重叠；都支持小数值，如 `word-spacing: 0.5px`；在目前的 CSS2.1 规范中，并不支持百分比值，但新的草案中新增了对百分值的支持，这是是根据相对于字符的“步进宽度”（ advance width）计算的；间隔算法都会受到 `text-align: justify` 两端对齐的影响。
 
-当然也有差异。 letter-spacing 作用于所有字符，但 word-spacing 仅作用于空格字符。注意，是作用在“空格” 上，而不是字面意义上的“单词”。换句话说， word-spacing 的作用就是增加空格的间隙宽度。有空格就有效。在命名上， word-spacing 之所以称为 word-spacing 而不是 blank-spacing 之类的，主要原因是此属性当初主要为英文类排版设计， 而英文单词和单词之间是以空格分隔的，要想控制单词之间的间距，自然就向“空格”开刀了。  
+当然也有差异。letter-spacing 作用于所有字符，但 word-spacing 仅作用于空格字符。注意，是作用在“空格” 上，而不是字面意义上的“单词”。换句话说，word-spacing 的作用就是增加空格的间隙宽度。有空格就有效。在命名上，word-spacing 之所以称为 word-spacing 而不是 blank-spacing 之类的，主要原因是此属性当初主要为英文类排版设计， 而英文单词和单词之间是以空格分隔的，要想控制单词之间的间距，自然就向“空格”开刀了。  
 
 word-break 属性规定自动换行的处理方法。语法如下：
 
@@ -1017,7 +1225,7 @@ word-wrap 属性允许长单词或 URL 地址换行到下一行。在 CSS3 规�
 - word-wrap: normal  就是大家平常见得最多的正常的换行规则。
 - word-wrap: break-word  一行单词中实在没有其他靠谱的换行点的时候换行。  
 
-顾名思义， `word-break: break-all` 的作用是所有的都换行，毫不留情，一点儿空隙都不放过，而 `word-wrap: break-word` 则带有怜悯之心，如果这一行文字有可以换行的点，如空格或 CJK（中文/日文/韩文）之类的，就不打英文单词或字符的主意了，在这些换行点换行，至于对不对齐、好不好看则不关心，因此，很容易出现一片一片空白区域的情况。  
+顾名思义，`word-break: break-all` 的作用是所有的都换行，毫不留情，一点儿空隙都不放过，而 `word-wrap: break-word` 则带有怜悯之心，如果这一行文字有可以换行的点，如空格或 CJK（中文/日文/韩文）之类的，就不打英文单词或字符的主意了，在这些换行点换行，至于对不对齐、好不好看则不关心，因此，很容易出现一片一片空白区域的情况。  
 
 white-space 属性声明了如何处理元素内的空白字符，这类空白字符包括 Space（空格） 键、 Enter（回车）键、 Tab（制表符）键产生的空白。因此， white-space 可以决定图文内容是否在一行显示（回车空格是否生效），是否显示大段连续空白（空格是否生效）等。  其属性值包括下面这些。
 
@@ -1029,21 +1237,21 @@ white-space 属性声明了如何处理元素内的空白字符，这类空白�
 
 当 white-space 设置为 nowrap 的时候，元素的宽度此时表现为“最大可用宽度”，换行符和一些空格全部合并，文本一行显示。
 
-- “包含块”尺寸过小处理。 绝对定位以及 inline-block 元素都具有包裹性，当文本内容宽度超过包含块宽度的时候，就会发生文本环绕现象。可以对其使用 white-space:nowrap 声明让其如预期的那样一行显示。  
-- 单行文字溢出点点点效果。 text-overflow:ellipsis 文字内容超出打点效果离不开 white-space:nowrap 声明。  
-- 水平列表切换效果。 水平列表切换是网页中常见的交互效果，如果列表的数目是不固定的，使用 white-space:nowrap 使列表一行显示会是个非常不错的处理。   
+- “包含块”尺寸过小处理。绝对定位以及 inline-block 元素都具有包裹性，当文本内容宽度超过包含块宽度的时候，就会发生文本环绕现象。可以对其使用`white-space: nowrap`声明让其如预期的那样一行显示。  
+- 单行文字溢出点点点效果。`text-overflow: ellipsis`文字内容超出打点效果离不开`white-space: nowrap`声明。  
+- 水平列表切换效果。 水平列表切换是网页中常见的交互效果，如果列表的数目是不固定的，使用`white-space: nowrap`使列表一行显示会是个非常不错的处理。   
 
-IE 浏览器（至少 到 IE11）到目前为止使用 text-align:justify 都无法让中文两端对齐，而 Chrome、 Firefox 和 Safari 等浏览器都是可以的。  不过，好在 IE 有一个私有的 CSS 属性 text-justify（目前也写入规范草案了）可以实 现中文两端对齐的。text-align:justify 除了实现文本的两端对齐，还可以实现容错性更强的两端对齐布局效果。  在默认设置下， text-align:justify 要想有两端对齐的效果，需要满足两点：一是有分隔点，如空格；二是要超过一行，此时非最后一行内容会两端对齐。
+IE 浏览器（至少 到 IE11）到目前为止使用`text-align: justify`都无法让中文两端对齐，而 Chrome、 Firefox 和 Safari 等浏览器都是可以的。不过，好在 IE 有一个私有的 CSS 属性 text-justify（目前也写入规范草案了）可以实 现中文两端对齐的。`text-align: justify`除了实现文本的两端对齐，还可以实现容错性更强的两端对齐布局效果。  在默认设置下，`text-align:justify`要想有两端对齐的效果，需要满足两点：一是有分隔点，如空格；二是要超过一行，此时非最后一行内容会两端对齐。
 
-CSS 的 `text-decoration: underline` 可以给内联文本增加下划线，但是，如果对细节要求较高，就会发现，下划线经常会和中文文字的下边缘粘连在一起，英 文的话甚至直接穿过。最好的处理方法就是使用看似普通却功勋卓越的 border 属性。对于纯内联元素，垂直方向的 padding 属性和 border 属性对原来的布局定位等没有任何影 响。 也就是说， 就算 border-bottom 宽度设为 100px，上下行文字的垂直位置依旧纹丝不动。 再加上 border 兼容性很好，天然使用 color 颜色作为边框色，可谓下划线重叠问题解决办法 的不二之选。另外，配合 padding，我们就可以很有效地调节下边框和文字下边缘的距离，实 现我们最想要的效果。  
+CSS 的 `text-decoration: underline` 可以给内联文本增加下划线，但是，如果对细节要求较高，就会发现，下划线经常会和中文文字的下边缘粘连在一起，英 文的话甚至直接穿过。最好的处理方法就是使用看似普通却功勋卓越的 border 属性。对于纯内联元素，垂直方向的 padding 属性和 border 属性对原来的布局定位等没有任何影响。 也就是说， 就算 border-bottom 宽度设为 100px，上下行文字的垂直位置依旧纹丝不动。 再加上 border 兼容性很好，天然使用 color 颜色作为边框色，可谓下划线重叠问题解决办法 的不二之选。另外，配合 padding，我们就可以很有效地调节下边框和文字下边缘的距离，实现我们最想要的效果。  
 
-text-transform 也是为英文字符设计的，要么全大写 text-transform:uppercase， 要么全小写 text-transform:lowercase 。
+text-transform 也是为英文字符设计的，要么全大写`text-transform: uppercase`，要么全小写`text-transform: lowercase`。
 
 ## 8.7 了解:first-letter/:first-line 伪元素
 
-很多年前， Chrome 浏览器和 IE9 浏览器还未出现， 那时候 first-letter 叫伪类选择器， 写法是前面加一个冒号，如:first-letter。那时候的语义要更直白一些，选择第一个字符， 然后设置一些样式。后来，伪类和伪元素被划分得更加明确和规范了， ::after、 ::before、 ::backdrop、 ::first-letter、 ::first-line、 ::selection 等是伪元素， :active、 :focus、 :checked 等被称为伪类，这就导致::first-letter 的语义发生了一些变化— 首字符作为元素的假想子元素。  
+很多年前，Chrome 浏览器和 IE9 浏览器还未出现， 那时候 first-letter 叫伪类选择器， 写法是前面加一个冒号，如`:first-letter`。那时候的语义要更直白一些，选择第一个字符， 然后设置一些样式。后来，伪类和伪元素被划分得更加明确和规范了，`::after`、`::before`、`::backdrop`、`::first-letter`、`::first-line`、`::selection`等是伪元素，`:active`、`:focus`、`:checked`等被称为伪类，这就导致`::first-letter`的语义发生了一些变化——首字符作为元素的假想子元素。  
 
-要想让::first-letter(:first-letter)伪元素生效，是需要满足一定条件的
+要想让::first-letter(:first-letter)伪元素生效，是需要满足一定条件的。
 
 - 元素的 display 计算值必须是 block、 inline-block、 list-item、 table-cell 或者 table-caption，其他所有 display 计算值都没有用，包括 display:table 和 display:flex 等。
 - 此外，不是所有的字符都能单独作为::first-letter 伪元素存在的。常见的标点符号、各类括号和引号 在::first-letter 伪元素眼中全部都是“辅助类”字符。正常情况下可以直接作为伪元素的字符就是数字、英文字母、中文、 $、一些运算符，以 及非常容易被忽视的空格等。  
@@ -1065,23 +1273,23 @@ text-transform 也是为英文字符设计的，要么全大写 text-transform:u
 
 - :first-line 和:first-letter 伪元素一样，也支持标签嵌套，但是具体细则 和:first-letter 出入较大，例如，它不支持 table 相关属性等。  
 
-  第9章 元素的装饰与美化
+# 第9章 元素的装饰与美化
 
 ## 9.1 CSS 世界的 color 很单调  
 
-CSS1 的时候只支持 16 个基本颜色关键字，如 black、 white。  CSS2 只加入了一个颜色—橙色 orange。  CSS3 一下子增加了 100 多个颜色关键字，甚至连 mediumturquoise 这样的复杂得看不懂也记不住的关 键字都出现了。这些扩展的 CSS 颜色关键字是有专门的名称的，称为“X11 颜色名”，这里 的“X11”不是 11 区的意思，而是指用来显示位图的 X Window System，常见于类 UNIX 计算机系统上。  CSS4 仅增加了一个颜色关键字— rebeccapurple。  
+CSS1 的时候只支持 16 个基本颜色关键字，如 black、 white。  CSS2 只加入了一个颜色—橙色 orange。CSS3 一下子增加了 100 多个颜色关键字，甚至连 mediumturquoise 这样的复杂得看不懂也记不住的关 键字都出现了。这些扩展的 CSS 颜色关键字是有专门的名称的，称为“X11 颜色名”，这里 的“X11”不是 11 区的意思，而是指用来显示位图的 X Window System，常见于类 UNIX 计算机系统上。CSS4 仅增加了一个颜色关键字— rebeccapurple。  
 
-传统 HTML 的部分属性可以直接支持 color 属性，同时，我们也可以通过 style 属性书写 color 声明。  如果浏览器认识这些颜色关键字，则该什么颜色就显示什么颜色；但是，如果浏览器无法 识别这些颜色关键字，则两种书写的最终表现会有差异。  在 HTML 中，会使用其他算法将非识别颜色关键字转换成另外一个完全不同的颜色值；而 在 CSS 中则是直接使用默认颜色值。  
+传统 HTML 的部分属性可以直接支持 color 属性，同时，我们也可以通过 style 属性书写 color 声明。如果浏览器认识这些颜色关键字，则该什么颜色就显示什么颜色；但是，如果浏览器无法 识别这些颜色关键字，则两种书写的最终表现会有差异。在 HTML 中，会使用其他算法将非识别颜色关键字转换成另外一个完全不同的颜色值；而 在 CSS 中则是直接使用默认颜色值。  
 
 transparent 关键字是一个很有意思的关键字，让相应属性值作为透明出现， background-color:transparent 包括 IE6 浏览器都支持， border-color:transparent 从 IE7 浏览器开始支持， 但是 color: transparent 却从 IE9 浏览器才开始支持。  
 
-currentColor 可以使用当前 color 计算值，即所谓颜色值。但是同样地， IE9+浏览器才支持它。  实际上， CSS 中很多属性值默认就是 currentColor 的表现，我们一般（除了部分浏览器 animation 需要）无须画蛇添足地再声明这个关键字。如 border、 text-shadow、 box-shadow 等，尤其 border，包括 IE7 在内的浏览器都是如此特性。  
+currentColor 可以使用当前 color 计算值，即所谓颜色值。但是同样地， IE9+浏览器才支持它。实际上， CSS 中很多属性值默认就是 currentColor 的表现，我们一般（除了部分浏览器 animation 需要）无须画蛇添足地再声明这个关键字。如 border、 text-shadow、 box-shadow 等，尤其 border，包括 IE7 在内的浏览器都是如此特性。  
 
 CSS 世界的 color 属性支持十六进制颜色、 rgb 颜色。十六进制颜色指的是长得像 #000000 或#000 这样的颜色，我们在 CSS 中用得最频繁的就是这种格式的颜色。为什么呢？ 因为字符数目最少，书写更快，渲染性能更高。  rgb 颜色实际上和十六进制颜色是近亲，都归属于 rgb 颜色，只是进制有差异。  除了支持数值颜色，如 rgb(255, 0, 51)，还支持百分比 rgb 颜色，如 rgb(100%, 0%, 20%) 。rgb 数值格式只能是整数，不能是小数，否则，包括各 IE 以及 Chrome 在内的浏览器都会 无视它。  但 color 属性并不支持 hsl 颜色、 rgba 颜色和 hsla 颜色。  
 
 hsl 颜色是 CSS3 才出现的颜色表现格式， IE9+浏览器才支持。和 rgb 分别表示 red、 green、 blue 一样， hsl 颜色的 3 个字母也有自己的含义。其中， h 表示 hue，是色调的意思，取值 0～ 360，大致按照数值红、橙、黄、绿、青、蓝、紫变化节奏； s 表示 saturation（饱和度），用 0～ 100%表示，值越大饱和度越高，颜色越亮，通常我们评价某设计“亮瞎我们的眼”，就是“这 个设计颜色饱和度太高”的另一种说法； l 表示 lightness（亮度），也用 0～100%表示，值越高 颜色越亮， 100%就是白色， 50%则是正常亮度， 0%就是黑色。  
 
-最后， CSS3 中的颜色支持 Alpha 透明通道，于是就有了 rgba 颜色和 hsla 颜色， a 表示 透明度，取值在 0～1， 0 表示完全透明， 1 表示实色无透明。如果使用小数，前面的 0 可以省 略，能节约一个字符大小。  
+最后，CSS3 中的颜色支持 Alpha 透明通道，于是就有了 rgba 颜色和 hsla 颜色， a 表示 透明度，取值在 0～1， 0 表示完全透明， 1 表示实色无透明。如果使用小数，前面的 0 可以省 略，能节约一个字符大小。  
 
 ## 9.2 CSS 世界的 background 很单调  
 
@@ -1089,34 +1297,34 @@ CSS 世界中的 background 大部分有意思的内容都是在 CSS3 新世界�
 
 当我们使用 background 属性的时候，实际上使用的是一系列 background 相关属性的集合，包括：
 
-- background-image: none
+- `background-image: none`
   规定要使用的背景图像。一个元素如果 display 计算值为 none，在 IE 浏览器下（ IE8～IE11，更 高版本不确定）依然会发送图片请求， Firefox 浏览器不会，至于 Chrome 和 Safari 浏览器如果隐藏元素同时又设置了 background-image，则图片依然会去加载； 如果是父元素的 display 计算值为 none，则背景图不会请求，此时浏览器或许放心地认为这个背景图暂时是不会使用的。
-- background-position: 0% 0%
-  规定背景图像的位置。CSS 中有一类属性值被称作<position>值，表示一种 CSS 数据类型、二维坐标空间，用于设置相对盒子的坐标。 <position>值支持 1～4 个值，可以是具体数值，也可以是百分比值，还可以是 left、 top、 right、 center 和 bottom 等关键字。  如果缺省偏移关键字，则会认为是 center， 因此 background-position:top center 可以直接写成 background-position:top。 <position>值也支持百分比值，不过其表现与 CSS 中其他的百分比单位表现都不一样。  第一个值是水平位置，第二个值是垂直位置。左上角是 0% 0%。右下角是 100% 100%。如果您仅规定了一个值，另一个值将是 50%。
-- background-repeat: repeat
+- `background-position: 0% 0%`
+  规定背景图像的位置。CSS 中有一类属性值被称作`<position>`值，表示一种 CSS 数据类型、二维坐标空间，用于设置相对盒子的坐标。`<position>`值支持 1～4 个值，可以是具体数值，也可以是百分比值，还可以是 left、top、right、center 和 bottom 等关键字。  如果缺省偏移关键字，则会认为是 center，因此 background-position:top center 可以直接写成 background-position:top。`<position>`值也支持百分比值，不过其表现与 CSS 中其他的百分比单位表现都不一样。  第一个值是水平位置，第二个值是垂直位置。左上角是 0% 0%。右下角是 100% 100%。如果您仅规定了一个值，另一个值将是 50%。
+- `background-repeat: repeat`
   规定如何重复背景图像。background-repeat 支持 repeat、 repeat-x、 repeat-y 这几个值，语义清晰，兼容性好。
-- background-attachment: scroll
+- `background-attachment: scroll`
   CSS 世界中， background-attachment 支持 scroll 和 fixed 两个属性值，其中 scroll 是默认值，就是平常使用背景图的效果表现； fixed 表示背景相对于 当前文档视区定位，也就是页面再怎么滚动背景图片位置依旧纹丝 不动，稳若泰山。
-- background-color: transparent
+- `background-color: transparent`
   规定要使用的背景颜色。background 无论是单背景图还是多背景图，背景色一定是在最底下的位置。    
 
 如果是 IE9+浏览器，则还包括：
 
-- background-size: auto auto
+- `background-size: auto auto`
 
-- background-origin: padding-box
+- `background-origin: padding-box`
 
-- background-clip: border-box  
+- `background-clip: border-box`  
 
-  第10章 元素的显示与隐藏
+# 第10章 元素的显示与隐藏
 
-如果希望元素不可见，同时不占据空间，辅助设备无法访问，同时不渲染，可以使用 <script>标签隐藏。  <script>标签是不支持嵌套的，因此，如果希望在<script>标签中再放置其他不渲染的模板内容，可以试试使用<textarea>元素。另外， <script>标签隐藏内容获取使用 script.innerHTML， <textarea>使用 textarea.value。  
+如果希望元素不可见，同时不占据空间，辅助设备无法访问，同时不渲染，可以使用`<script>`标签隐藏。`<script>`标签是不支持嵌套的，因此，如果希望在`<script>`标签中再放置其他不渲染的模板内容，可以试试使用`<textarea>`元素。另外，`<script>`标签隐藏内容获取使用 script.innerHTML，`<textarea>`使用 textarea.value。  
 
-如果希望元素不可见，同时不占据空间，辅助设备无法访问，但资源有加载， DOM 可访问，则可以直接使用 display:none 隐藏。  
+如果希望元素不可见，同时不占据空间，辅助设备无法访问，但资源有加载，DOM 可访问，则可以直接使用`display: none`隐藏。  
 
-如果希望元素不可见，同时不占据空间，辅助设备无法访问，但显隐的时候可以有 transition 淡入淡出效果，则可以使用： .hidden { position: absolute; visibility: hidden; }  
+如果希望元素不可见，同时不占据空间，辅助设备无法访问，但显隐的时候可以有 transition 淡入淡出效果，则可以使用：`.hidden { position: absolute; visibility: hidden; }`  
 
-如果希望元素不可见，不能点击，辅助设备无法访问，但占据空间保留，则可以使用 visibility:hidden 隐藏。  
+如果希望元素不可见，不能点击，辅助设备无法访问，但占据空间保留，则可以使用`visibility: hidden`隐藏。  
 
 如果希望元素不可见，不能点击，不占据空间，但键盘可访问，则可以使用 clip 剪裁隐藏。  
 
@@ -1128,7 +1336,7 @@ CSS 世界中的 background 大部分有意思的内容都是在 CSS3 新世界�
 
 ## 10.1 display 与元素的显隐  
 
-对一个元素而言，如果 display 计算值是 none 则该元素以及所有后代元素都隐藏，如 果是其他 display 计算值则显示。  
+对一个元素而言，如果 display 计算值是 none 则该元素以及所有后代元素都隐藏，如果是其他 display 计算值则显示。  
 
 在 Firefox 浏览器下， display:none 的元素的 background-image 图片是不加载的， 包括父元素 display:none 也是如此；如果是 Chrome 和 Safari 浏览器，则要分情况，若父元 素 display:none，图片不加载，若本身背景图所在元素隐藏，则图片依旧会去加载；对 IE 浏览器而言，无论怎样都会请求图片资源。  
 
@@ -1154,7 +1362,7 @@ outline 是本书介绍到现在出现的第一个真正意义上的不占据任
 
 ## 11.2 光标属性 cursor  
 
-cursor 属性值几乎可以认为是当下支持的关键字属性值最多的 CSS 属性，没有之一。下 面就是按照功能特性对其进行的分类以及具体解释描述。  
+cursor 属性值几乎可以认为是当下支持的关键字属性值最多的 CSS 属性，没有之一。下面就是按照功能特性对其进行的分类以及具体解释描述。  
 
 常规
 
@@ -1222,16 +1430,16 @@ direction 属性似乎只能改变图片或者按钮的呈现顺序，但 对纯
 
 ## 12.2 改变 CSS 世界纵横规则的 writing-mode  
 
-和 float 属性有些类似， writing-mode 原本是为控制内联元素的显示而设计的（即所谓的文本布局）。因为在亚洲，尤其像中国这样的东亚国家，存在文字的排版不是水平而是垂直的情况，如中国的古诗文。因此， writing-mode 就是用来实现文字竖向呈现的。  
+和 float 属性有些类似，writing-mode 原本是为控制内联元素的显示而设计的（即所谓的文本布局）。因为在亚洲，尤其像中国这样的东亚国家，存在文字的排版不是水平而是垂直的情况，如中国的古诗文。因此，writing-mode 就是用来实现文字竖向呈现的。  
 
-writing-mode 的语法学习要求比其他 CSS 属性要高一些，因 为我们需要记住两套不同的语法：一个是 IE 私有属性，一个是 CSS3 规范属性。  
+writing-mode 的语法学习要求比其他 CSS 属性要高一些，因为我们需要记住两套不同的语法：一个是 IE 私有属性，一个是 CSS3 规范属性。  
 
 - 默认值 horizontal-tb 表 示文本流是水平方向（horizontal）的，元素是从上往下（top-bottom）堆叠的。  
 - vertical-rl 表示文本是垂直方向（ vertical）展示，然后阅读的顺序是从右往左 （right-left），和我们阅读古诗的顺序一致。
 - vertical-lr 表示文本是垂直方向（vertical）展示，然后阅读的顺序还是默认的从左往右（left-right），即仅仅是水平变垂直。   
 - IE 浏览器下的关键字值多达 11 个。如果项目需要兼容 IE7，则只要关注两个就可以了，即初始值 lr-tb 和 tb-rl，对应于 CSS3 规范中的 horizontal-tb 和 vertical-rl。如果项目只需要兼容 IE8 及以上版本浏览器，恭喜你，你可以和 CSS3 规范属性完全对应上了，而且 IE8 下的 writing-mode 要比 IE7 强大得多。我们需要关注初始值 lr-tb、 tb-rl 和 tb-lr，分别对应于 CSS3 中的 horizontal-tb、 vertical-rl 和 vertical-lr。  
 
-相同的 writing-mode 属性值并不会累加。 例如， 如果父子元素均设置了 writing-mode:tb-rl，只会渲染一次，子元素并不会两次“旋转”。
+相同的 writing-mode 属性值并不会累加。例如，如果父子元素均设置了`writing-mode: tb-rl`，只会渲染一次，子元素并不会两次“旋转”。
 
 在 IE 浏览器下， 如果一个自身具有布局的元素（不是纯文本之类元素）writing-mode 属性值和父元素不同，那么当子元素的布局流变化的时候，其父元素坐标系统的可用空间会被充分利用。
 
@@ -1239,4 +1447,4 @@ writing-mode 的语法学习要求比其他 CSS 属性要高一些，因 为我�
 
 在 CSS3 中，由于 writing-mode 的存在，对垂直流方向的 margin 值会发生合并。换句话说，如果元素是默认的水平流，则垂直 margin 会合并；如果元素是垂直流，则水平 margin 会合并。  普通块元素可以使用 margin:auto 实现垂直居中。可以使用 text-align:center 实现图片垂直居中。可以使用 text-indent 实现文字下沉效果。可以实现全兼容的 icon fonts 图标的旋转效果。充分利用高度的高度自适应布局。
 
-writing-mode、 direction 和 unicode-bidi 是 CSS 世界中三大可以改变文本布局 流向的属性，其中 direction 和 unicode-bidi 属于近亲，经常一起使用，也是仅有的两个不受 CSS3 的 all 属性影响的 CSS 属性，基本上就是和内联元素一起使用。它貌似是为阿拉伯 文字设计的。
+writing-mode、 direction 和 unicode-bidi 是 CSS 世界中三大可以改变文本布局流向的属性，其中 direction 和 unicode-bidi 属于近亲，经常一起使用，也是仅有的两个不受 CSS3 的 all 属性影响的 CSS 属性，基本上就是和内联元素一起使用。它貌似是为阿拉伯文字设计的。
