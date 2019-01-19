@@ -1895,7 +1895,6 @@ IndexedDB全称是Indexed Database API，是在浏览器中保存结构化数据
 
 25.5 Web计时 
 
-
 25.6 Web Workers 
 
 25.7 小结

@@ -1,6 +1,7 @@
 > 深入理解ES6
 > Understanding ES6
 > 2017年7月第一版
+> [开源图书地址](https://github.com/nzakas/understandinges6)
 
 <!-- TOC -->
 
@@ -11,6 +12,10 @@
   - [1.4 全局块作用域绑定](#14-全局块作用域绑定)
   - [1.5 块级绑定最佳实践的进化](#15-块级绑定最佳实践的进化)
 - [第二章 字符串和正则表达式](#第二章-字符串和正则表达式)
+  - [2.1 更好的Unicode支持](#21-更好的Unicode支持)
+  - [2.2 其他字符串变更](#22-其他字符串变更)
+  - [2.3 其他正则表达式语法变更](#23-其他正则表达式语法变更)
+  - [2.4 模板字面量](#24-模板字面量)
 - [第三章 函数](#第三章-函数)
   - [3.1 函数形参的默认值](#31-函数形参的默认值)
   - [3.2 处理无命名参数](#32-处理无命名参数)
@@ -201,6 +206,235 @@ console.log("ncz" in window);           // false
 当更多的开发者迁移到 ECMAScript 6 后，一种做法日益普及：默认使用 const，只有确实需要改变变量的值时使用 let 。因为大部分变量的值在初始化后不应再改变，而预料外的变量值的改变是很多 bug 的源头。
 
 # 第二章 字符串和正则表达式
+
+字符串可以说是编程时最重要的数据类型之一，几乎在每一门高级语言中都有它的存在，只有熟练掌握字符串的操作才能创建有用的程序。
+
+## 2.1 更好的Unicode支持
+
+在 ES6 出现以前，JavaScript 字符串一直基于16位字符编码（UTF-16）进行构建。每16位的序列是一个编码单元，代表一个字符。length、charAt() 等字符串属性和方法都是基于这种编码单元构造的。
+
+ES6 新增加了完全支持 UTF-16 的codePointAt() 方法，这个方法接受编码单元的位置而非字符位置作为参数，返回与字符串中给定位置对应的码位，即一个整数值。
+
+## 2.2 其他字符串变更
+
+JavaScript 字符串特性的更新总是延后于其他语言中的相同特性，例如，直到 ES5 才为字符串添加了`trim()`方法，而在 ES6 中继续扩展了 JavaScript 解析字符串的能力。
+
+字符串中的子串识别。自 JavaScript 首次被使用以来，开发者就开始使用`indexOf()`方法来在一段字符串中检测另一段子字符串，在 ES6 中，提供了一下3个类似的方法可以达到相同效果。
+
+- `includes()`方法。如果在字符串中检测到指定文本则返回 true，否则返回 false。
+- `startsWith()`方法。如果在字符串的起始部分检测到指定文本则返回 true，否则返回false。
+- `endsWith()`方法。如果在字符串的结束部分检测到指定文本则返回 true，否则返回 false。
+
+以上的3个方法都接受两个参数：第一个参数指定要搜索的文本；第二个参数时可选的，指定一个开始搜索的位置的索引值。实际上，指定第二个参数会大大减少字符串被搜索的范围。
+
+```JavaScript
+var msg = "Hello world!";
+
+console.log(msg.startsWith("Hello"));       // true
+console.log(msg.endsWith("!"));             // true
+console.log(msg.includes("o"));             // true
+
+console.log(msg.startsWith("o"));           // false
+console.log(msg.endsWith("world!"));        // true
+console.log(msg.includes("x"));             // false
+
+console.log(msg.startsWith("o", 4));        // true
+console.log(msg.endsWith("o", 8));          // true
+console.log(msg.includes("o", 8));          // false
+```
+
+尽管这3个方法执行后返回的都是布尔值，也极大地简化了子串匹配的方法，但是如果需要在一个字符串中寻找另一个字符串的实际位置，还需使用`index()`方法或`lastIndexOf()`方法
+
+`repeat()`方法。ES6 还为字符串增添了一个`repeat()`方法，其接受一个 number 类型的参数，表示该字符串的重复次数，返回值是当前字符串重复一定次数后的新字符串。
+
+```JavaScript
+console.log("x".repeat(3));         // "xxx"
+console.log("hello".repeat(2));     // "hellohello"
+console.log("abc".repeat(4));       // "abcabcabcabc"
+
+// indent using a specified number of spaces
+var indent = " ".repeat(4),
+    indentLevel = 0;
+
+// whenever you increase the indent
+var newIndent = indent.repeat(++indentLevel);
+```
+
+## 2.3 其他正则表达式语法变更
+
+正则表达式 y 修饰符。它会影响正则表达式搜索过程中的 sticky 属性，当在字符串中开始字符匹配时，它会通知搜索从正则表达式的 lastIndex 属性开始进行，如果在指定位置没能成功匹配，则停止继续匹配。
+
+正则表达式的赋值。在 ES5 中，可以通过给 RegExp 构造函数传递正则表达式作为参数来复制这个正则表达式。如果在 ES5环境中给 RegExp 构造函数提供第二个参数，为正则表达式指定一个修饰符，则代码无法运行。ES6 修改了这个行为，即使第一个参数为正则表达式，也可以通过第二个参数修改其修饰符。
+
+```JavaScript
+var re1 = /ab/i,
+
+    // throws an error in ES5, okay in ES6
+    re2 = new RegExp(re1, "g");
+
+
+console.log(re1.toString());            // "/ab/i"
+console.log(re2.toString());            // "/ab/g"
+
+console.log(re1.test("ab"));            // true
+console.log(re2.test("ab"));            // true
+
+console.log(re1.test("AB"));            // true
+console.log(re2.test("AB"));            // false
+```
+
+flags 属性。为了使获取修饰符的过程更加简单，ES6 新增了 flags 属性，它与 source 属性都是只读的原型属性访问器，对其只定义了`getter()`方法，这极大地简化了调试和编写继承代码的复杂度。
+
+```JavaScript
+function getFlags(re) {
+    var text = re.toString();
+    return text.substring(text.lastIndexOf("/") + 1, text.length);
+}
+
+// toString() is "/ab/g"
+var re = /ab/g;
+
+console.log(getFlags(re));          // "g"
+
+
+// ES6
+var re = /ab/g;
+
+console.log(re.source);     // "ab"
+console.log(re.flags);      // "g"
+```
+
+## 2.4 模板字面量
+
+事实上，ES5 中一直缺少许多特性，而ES6 通过模板字面量的方式进行了填补。
+
+- 多行字符串。一个正式的多行字符串的概念。
+- 基本的字符串格式化。将变量的值嵌入字符串的能力。
+- HTML 转义。向 HTML 插入经过安全转换后的字符串的能力。
+
+基础语法。模板字面量最简单的用法，看起来好像只是用反撇号（`）替换了单、双引号。在模板字面量中，不需要转义单、双引号，单需要转义反撇号。
+
+```JavaScript
+let message = `Hello world!`;
+
+console.log(message);               // "Hello world!"
+console.log(typeof message);        // "string"
+console.log(message.length);        // 12
+```
+
+多行字符串。自 JavaScript诞生起，开发者们一直在寻找一种创建多行字符串的方式。但如果使用单、双引号，字符串一定要在同一行才行。但一直存在一个语法 bug，在一个新行最前方添加反斜杠（\）可以承接上一行的代码，因此可以利用这个 bug 来创造多行字符串。
+
+```JavaScript
+var message = "Multiline \
+string";
+
+console.log(message);       // "Multiline string"
+```
+
+当通过这种方式把字符串打印到控制台时其并未按照跨行方式显示，因为反斜杠在此处代表行的延续，而非真正代表新的一行。如果想输出为新的一行，需要手动加入换行符。在所有主流的 JavaScript 引擎中，变量 message 的内容被打印在两个独立的行中，不过这个行为被视为引擎实现的 bug，很多开发者建议避免使用这种方法。
+
+```JavaScript
+var message = "Multiline \n\
+string";
+
+console.log(message);       // "Multiline
+                            //  string"
+```
+
+在 ES6 之前的版本中，通常都依靠数组或字符串拼接的方法来创建多行字符串。
+
+```JavaScript
+var message = [
+    "Multiline ",
+    "string"
+].join("\n");
+
+let message = "Multiline \n" +
+    "string";
+```
+
+ES 6 的模板字面量的语法简单，如果想要在字符串中添加新的一行，只需在代码中直接换行，此处的换行将同步出现在结果中。同时，在反撇号中的所有空白符都属于字符串的一部分，所以千万要小心缩进。
+
+```JavaScript
+let message = `Multiline
+string`;
+
+console.log(message);           // "Multiline
+                                //  string"
+console.log(message.length);    // 16
+```
+
+如果一定要通过适当的缩进来对齐文本，则可以考虑在多行模板字面量的第一行留白，并在后面的几行中缩进。HTML 标签缩进正确，且可以通过调用`trim()`方法移除最初的空行。
+
+```JavaScript
+let html = `
+<div>
+    <h1>Title</h1>
+</div>`.trim();
+```
+
+字符串占位符。模板字面量和字符串的真正区别在于模板字面量中的占位符功能。在一个模板字面量中，可以把任何合法的 JavaScript 表达式嵌入到占位符中并将其作为字符串的一部分输出到结果中。占位符由一个左侧的`$(`和右侧的`)`符号组成，中间可以包含任意的 JavaScript 表达式。
+
+```JavaScript
+let count = 10,
+    price = 0.25,
+    message = `${count} items cost $${(count * price).toFixed(2)}.`;
+
+console.log(message);       // "10 items cost $2.50."
+```
+
+同时，模板字面量本身也是 JavaScript 表达式，所以可以在一个模板字面量里嵌入另外一个。
+
+```JavaScript
+let name = "Nicholas",
+    message = `Hello, ${
+        `my name is ${ name }`
+    }.`;
+
+console.log(message);        // "Hello, my name is Nicholas."
+```
+
+标签模板。每个模板标签都可以执行模板字面量上的转换并返回最终的字符串值。标签指的是在模板字面量第一个反撇号前方标注的字符串。
+
+```JavaScript
+let message = tag`Hello world`;
+```
+
+定义标签。标签可以是一个函数，调用时传入加工过的模板字面量各部分数据，但必须结合每个部分来创建结果。第一个参数是数组，包含 JavaScript 解释过后的字面量字符串，它之后的所有参数都是每一个占位符的解释值。标签函数通常使用不定参数特性来定义占位符，从而简化数据处理的过程。
+
+```JavaScript
+function passthru(literals, ...substitutions) {
+    let result = "";
+
+    // run the loop only for the substitution count
+    for (let i = 0; i < substitutions.length; i++) {
+        result += literals[i];
+        result += substitutions[i];
+    }
+
+    // add the last literal
+    result += literals[literals.length - 1];
+
+    return result;
+}
+
+let count = 10,
+    price = 0.25,
+    message = passthru`${count} items cost $${(count * price).toFixed(2)}.`;
+
+console.log(message);       // "10 items cost $2.50."
+```
+
+在模板字面量中使用原始值。模板标签同样可以访问原生字符串信息，也就是说通过模板标签可以访问到字符转义被转换成等价字符前的原生字符串。最简单的例子是使用内建的`String.raw()`标签。原生字符串信息同样被传入模板标签，标签函数的第一个参数是一个数组，它有一个额外的属性 raw，是一个包含每一个字面值的原生等价信息的数组。
+
+```Javascript
+let message1 = `Multiline\nstring`,
+    message2 = String.raw`Multiline\nstring`;
+
+console.log(message1);          // "Multiline
+                                //  string"
+console.log(message2);          // "Multiline\\nstring"
+```
 
 # 第三章 函数
 
