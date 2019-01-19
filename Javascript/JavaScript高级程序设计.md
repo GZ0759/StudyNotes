@@ -1871,24 +1871,42 @@ Web Storage主要目的有两个：提供一种在cookie之外存储会话数据
 
 IndexedDB全称是Indexed Database API，是在浏览器中保存结构化数据的一种数据库。IndexedDB设计的操作完全是异步进行的。在得到完整支持的情况下，IndexedDB将是一个uzoweiAPI宿主的全局对象。它的最大特色是使用对象保存数据，而不是使用表来保存数据。调用IndexedDB.open()会返回一个IDBRequest对象，在这个对象上可以添加到onerror和onsuccess事件处理程序。默认情况下，IndexedDB数据库是没有版本号的，可以调用setVersion()方法传入以字符串形式表示的版本号进行指定，同样这个方法也会返回一个请求对象，需要你再指定事件处理程序。使用createObjectStore()方法来构建对象存储空间，第一个参数是全局唯一的键，第二个参数中中的keyPath属性时对象的一个属性，即存储空间的键，另外还有属性值。可以使用add()或put()方法来向其中添加数据。如果添加已经包含键值相同的对象时，add()会返回错误，put()则会重写原有对象。操作数据都是通过事务来完成的，在数据库对象上调用transaction()方法可以创建事务。如果没有参数，就只能通过事务来读取数据库中保存的对象。第一个参数表示访问的一个或多个对象，第二个参数表示访问方式。取得了事务的索引后，使用objectStore()方法并传入存储空间的名称，就可以访问特定的存储空间。使用事务可以直接通过以至的键检索单个对象，而需要检索多个对象则需要在事务内部创建游标。游标就是一指向结果集的指针。与传统数据库查询不同，游标并不提前收集结果。游标指针会先指向结果中的第一项，在接到查找下一项的指令时，才会指向下一项。调用openCursor()方法可以创建游标。使用游标也可以更新个别的记录，调用update()可以用指定的对象更新当前游标的value。对于某些数据，可能需要为一个对象存储空间指定多个键。可以考虑创建索引，首先引用对象存储空间，然后调用createIndex()方法。并发问题。只有当浏览器中仅有一个标签页使用数据库的情况下，调用setVersion()才能完成操作。每次成功打开数据库，都应该指定onversionchange事件处理程序。IndexedDB数据库只能由同源页面操作，占用的磁盘空间也有限制。
 
-23.4　小结　
-第24章 最佳实践　656
-24.1　可维护性　656
-24.2　性能　666
-24.3　部署　676
-24.4　小结　681
-第25章 新兴的API　682
-25.1　requestAnimationFrame()　682
-25.2　Page Visibility API　686
-25.3　Geolocation API　687
-25.4　File API　689
-25.5　Web计时　696
-25.6　Web Workers　697
-25.7　小结　70
-附录A ECMAScript Harmony　701
-附录B 严格模式　717
-附录C JavaScript库　723
-附录D JavaScript工具　727 [1] 
+23.4 小结 
+
+第24章 最佳实践 
+
+24.1 可维护性 656
+
+24.2 性能 666
+
+24.3 部署 676
+
+24.4 小结 681
+
+第25章 新兴的API
+
+25.1 requestAnimationFrame() 
+
+25.2 Page Visibility API 
+
+25.3 Geolocation API 
+
+25.4 File API 
+
+25.5 Web计时 
+
+
+25.6 Web Workers 
+
+25.7 小结
+
+附录A ECMAScript Harmony 
+
+附录B 严格模式
+
+附录C JavaScript库
+
+附录D JavaScript工具
 ​	
 ​	
 ​	
