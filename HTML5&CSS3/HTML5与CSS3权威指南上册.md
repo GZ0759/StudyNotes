@@ -575,42 +575,204 @@ small元素从原来的通用展示性元素变为更具体的、专门用来标
 
 # 第8章 本地存储 
 
-8.1　Web Storage 
-8.1.1　Web Storage是什么 
-8.1.2　简单Web留言本 
-8.1.3　作为简易数据库来利用 
-8.1.4　利用storage事件实时监视Web Storage中的数据 
-8.2　本地数据库 
-8.2.1　本地数据库的基本概念 
-8.2.2　用executeSql来执行查询 
-8.2.3　使用数据库实现Web留言本 
-8.2.4　transaction方法中的处理 
-8.3　indexedDB数据库 
-8.3.1　indexedDB数据库的基本概念 
-8.3.2　连接数据库 
-8.3.3　数据库的版本更新 
-8.3.4　创建对象仓库 
-8.3.5　创建索引 
-8.3.6　索引的multiEntry属性值 
-8.3.7　使用事务 
-8.3.8　保存数据 
-8.3.9　获取数据 
-8.3.10　根据主键值检索数据 
-8.3.11　根据索引属性值检索数据 
-8.3.12　复合索引 
-8.3.13　统计对象仓库中的数据数量 
-8.3.14　使用indexedDB API制作Web留言本 
+Web Storage 存储机制时对 HTML4 中 cookie 存储机制的一个改善。由于 cookie 存储机制有很多缺点，HTML5 不再使用它，转而使用改良后的 Web Storage 存储机制；本地数据库是 HTML5 中新增的一个功能，使用它可以在客户端本地建立一个数据库，原本必须存在服务器端数据库中的内容现在可以直接保存在客户端本地了，这大大减轻了服务器端的负担，同时也加快了访问数据的速度。
+
+## 8.1 Web Storage 
+
+8.1.1 Web Storage是什么 
+
+使用 cookie 可以在客户端保存诸如用户名等简单的用户信息，但是，用 cookie人 存储永久数据存在几个问题。
+
+- 大小。cookie 的大小被限制在 4KB。
+- 带宽。cookie 是随 HTTP 事务一起被发送的，因此会浪费一部分发送 cookie 时使用的带宽。
+- 复杂性。要正确地操纵 cookie 是很困难的。
+
+Web Storage 功能，就是在 Web 上存储数据的功能，这里的存储是针对客户端本地而言的，具体分为两种：临时保存的 sessionStorage 和永久保存的 localStorage。
+
+- sessionStorage 将数据保存在 session 对象中。所谓 session 是指用户在浏览某个网站时，从进入网站到浏览器关闭所经过的这段时间，也就是用户浏览这个网站所花费的事件。session 对象可以用来保存在这段时间内所要求的任何数据。
+- localStorage 将数据保存在客户端本地的硬件设备（通常指硬盘，也可以是其他硬件设备）中，即使浏览器被关闭了，该数据仍然存在，下次打开浏览器访问网站时仍然可以继续使用。不过，数据保存时按不同的浏览器分别进行保存的，也就是说，打开别的浏览器是读取不到在这个浏览器中保存的数据的。
+
+```JavaScript
+//sessionStorage保存数据的两种方法 
+sessionStorage.setItem("message",str); 
+sessionStorage.message=str; 
+
+//sessionStorage读取数据的两种方法 
+var msg = sessionStorage.getItem("message");
+var msg=sessionStorage.message;  
+
+//localStorage保存数据的两种方法
+localStorage.setItem("message",str);
+localStorage.message=str;  
+
+//localStorage读取数据的两种方法
+var msg = localStorage.getItem("message"); 
+var msg=localStorage.message;  
+ 
+```
+
+在保存数据时，若使用 sessionStorage 读取或保存数据，则使用 sessionStorage 对象并调用该对象的读写方法。同理，localStorage 也是如此。但是在保存数据时不允许重复保存相同的键名。保存后可以修改键值，但不允许修改键名。
+
+8.1.2 简单Web留言本 
+
+虽然这种一对一的数据读写方法使用起来比较简单，但是在实际使用过程中用户并不是很大，因为如果要保存的数据量比较大，那么使用这种方法会非常麻烦。下面利用 Web Storage 来保存和读取大量数据。
+
+```html
+<h1>简单Web留言本</h1>
+<textarea id="memo" cols="60" rows="10"></textarea><br>
+<input type="button" value="追加" onclick="saveStorage('memo');">
+<input type="button" value="初始化" onclick="clearStorage('msg');">
+<hr>
+<p id="msg"></p>
+```
+
+```JavaScript
+//  保存数据
+function saveStorage(id)
+{
+    var data = document.getElementById(id).value;
+    var time = new Date().getTime();
+    localStorage.setItem(time,data);
+    alert("数据已保存。");
+    loadStorage('msg');
+}
+// 加载数据
+function loadStorage(id)
+{
+    var result = '<table border="1">';
+    for(var i = 0;i < localStorage.length;i++)
+    {
+        var key = localStorage.key(i);
+        var value = localStorage.getItem(key);
+        var date = new Date();
+        date.setTime(key);
+        var datestr = date.toGMTString();
+        result += '<tr><td>' + value + '</td><td>' + datestr + '</td></tr>';
+    }
+    result += '</table>';
+    var target = document.getElementById(id);
+    target.innerHTML = result;
+}
+// 清空数据
+function clearStorage()
+{
+    localStorage.clear();
+    alert("全部数据被清除。");
+    loadStorage('msg');
+}
+```
+
+8.1.3 作为简易数据库来利用 
+
+如果想要用 Web Storage 作为数据库，应考虑怎样对列进行管理、怎样对数据进行检索。要做到这点，需要使用 JSON 格式。将对象以 JSON 格式作为文本保存，获取该对象时再通过 JSON 格式进行获取，这样就可以在 WebStorage 中保存和读取具有复杂结构的数据了。
+
+```html
+<h1>使用Web Storage来做简易数据库示例</h1>
+<table>
+    <tr><td>姓名:</td><td><input type="text" id="name"></td></tr>
+    <tr><td>EMAIL:</td><td><input type="text" id="email"></td></tr>
+    <tr><td>电话号码:</td><td><input type="text" id="tel"></td></tr>
+    <tr><td>备注:</td><td><input type="text" id="memo"></td></tr>
+    <tr>
+        <td></td>
+        <td><input type="button" value="保存" onclick="saveStorage();"></td>
+    </tr>
+</table>
+<hr>
+<p>检索:<input type="text" id="find">
+        <input type="button" value="检索" onclick="findStorage('msg');">
+</p>
+<p id="msg"></p>
+```
+
+```JavaScript
+function saveStorage()
+{
+    var data = new Object;
+    data.name = document.getElementById('name').value;
+    data.email = document.getElementById('email').value;
+    data.tel = document.getElementById('tel').value;
+    data.memo = document.getElementById('memo').value;
+    var str = JSON.stringify(data);
+    localStorage.setItem(data.name,str);
+    alert("数据已保存。");
+}
+function findStorage(id)
+{
+    var find = document.getElementById('find').value;
+    var str = localStorage.getItem(find);
+    var data =  JSON.parse(str);
+    var result = "姓名: " + data.name + '<br>';
+    result += "EMAIL: " + data.email + '<br>';
+    result += "电话号码: " + data.tel  + '<br>';
+    result += "备注: " + data.memo + '<br>';
+    var target = document.getElementById(id);
+    target.innerHTML = result;
+}
+```
+
+8.1.4 利用storage事件实时监视Web Storage中的数据 
+
+在 HTML5 中，可以通过对 window 对象的 storage 事件进行监听并指定其事件处理函数的方法来定义在其他页面中修改 sessionStorage 或 localStorage 中的值时所要执行的处理。
+
+在事件处理函数中，触发事件的事件对象（event参数值）具有如下几个属性。
+
+- event.key 属性：属性值为在 session 或 localStorage 中被修改的数据键值。 
+- event.oldValue 属性：属性值为在 sessionStorage 或 localStorage 中被修改的值。 
+- event.newValue 属性：属性值为在 sessionStorage 或 localStorage 中被修改后的值 
+- event.url 属性：属性值为修改 sessionStorage 或 localStorage 中值的页面的URL地址 
+- event.storageArea 属性 : 属性值为被变动的 sessionStorage 对象或 localStorage 对象
+
+## 8.2 本地数据库 
+
+8.2.1 本地数据库的基本概念 
+
+8.2.2 用executeSql来执行查询 
+
+8.2.3 使用数据库实现Web留言本 
+
+8.2.4 transaction方法中的处理 
+
+## 8.3 indexedDB数据库 
+
+8.3.1 indexedDB数据库的基本概念 
+
+8.3.2 连接数据库 
+
+8.3.3 数据库的版本更新 
+
+8.3.4 创建对象仓库 
+
+8.3.5 创建索引 
+
+8.3.6 索引的multiEntry属性值 
+
+8.3.7 使用事务 
+
+8.3.8 保存数据 
+
+8.3.9 获取数据 
+
+8.3.10 根据主键值检索数据 
+
+8.3.11 根据索引属性值检索数据 
+
+8.3.12 复合索引 
+
+8.3.13 统计对象仓库中的数据数量 
+
+8.3.14 使用indexedDB API制作Web留言本 
 
 # 第9章 离线应用程序 
 
-9.1　离线Web应用程序详解 
-9.1.1　新增的本地缓存 
-9.1.2　本地缓存与浏览器网页缓存的区别 
-9.2　manifest文件 
-9.3　浏览器与服务器的交互过程 
-9.4　applicationCache对象 
-9.4.1　swapCache方法 
-9.4.2　applicationCache对象的事件 
+9.1 离线Web应用程序详解 
+9.1.1 新增的本地缓存 
+9.1.2 本地缓存与浏览器网页缓存的区别 
+9.2 manifest文件 
+9.3 浏览器与服务器的交互过程 
+9.4 applicationCache对象 
+9.4.1 swapCache方法 
+9.4.2 applicationCache对象的事件 
 
 # 第10章 文件API 
 
