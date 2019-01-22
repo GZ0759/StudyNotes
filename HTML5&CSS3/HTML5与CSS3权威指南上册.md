@@ -1,6 +1,8 @@
 > HTML5与CSS3权威指南(第3版-上册)
 > 版次：2015年9月第一次出版
 
+# 目录
+
 <!-- TOC -->
 
 - [第2章 HTML 5与HTML 4的区别](#第2章-html-5与html-4的区别)
@@ -21,6 +23,9 @@
 - [第6章 多媒体相关API](#第6章-多媒体相关api)
 - [第7章 History API](#第7章-history-api)
 - [第8章 本地存储](#第8章-本地存储)
+  - [8.1 Web Storage](#81-Web-Storage)
+  - [8.2 本地数据库](#82-本地数据库)
+  - [8.3 indexedDB数据库](#83-indexedDB数据库)
 - [第9章 离线应用程序](#第9章-离线应用程序)
 - [第10章 文件API](#第10章-文件api)
 - [第11章 通信API](#第11章-通信api)
@@ -37,14 +42,23 @@
 <!-- /TOC -->
 
 第1章 Web时代的变迁 
+
 1.1 迎接新的Web时代 
+
 1.1.1 HTML 5时代即将来临 
+
 1.1.2 HTML 5的目标 
+
 1.2 HTML 5深受欢迎的理由 
+
 1.2.1 世界知名浏览器厂商对HTML 5的支持 
+
 1.2.2 第一个理由：时代的要求 
+
 1.2.3 第二个理由：Internet Explorer 8 
+
 1.3 可以放心使用HTML 5的三个理由 
+
 1.4 HTML 5要解决的三个问题 
 
 # 第2章 HTML 5与HTML 4的区别 
@@ -723,29 +737,347 @@ function findStorage(id)
 - event.url 属性：属性值为修改 sessionStorage 或 localStorage 中值的页面的URL地址 
 - event.storageArea 属性 : 属性值为被变动的 sessionStorage 对象或 localStorage 对象
 
+```html
+<title>修改Web Storage中的数据</title>
+<script>	
+function setLocalStorage(){
+    localStorage.test=document.getElementById("text1").value;
+} 
+</script>	
+</head>	
+<body>		
+请输入一些值:<input type="text" id="text1"/>
+<button onClick="setLocalStorage()">设置</button> 
+</body>
+```
+
+```JavaScript
+window.addEventListener('storage',function(event){
+    if (event.key =="test") {        
+        var output=document.getElementById("output");
+        output.innerHTML="原有值:"+event.oldValue;
+        output.innerHTML+="<br/>新值:"+event.newValue;
+        output.innerHTML+="<br/>变动页面地址:"+utf8_decode(unescape(event.url));
+        console.log(event.storageArea);
+        console.log(event.storageArea === localStorage); //输出true,此行代码只在Chrome浏览器中有效
+   }
+},false);
+function utf8_decode(utftext) {  
+    var string = "";  
+    var i = 0;  
+    var c = c1 = c2 = 0;  
+    while (i<utftext.length) {  
+        c = utftext.charCodeAt(i);  
+        if (c < 128) {  
+            string += String.fromCharCode(c);  
+            i++;  
+        }  
+        else if((c > 191) && (c < 224)) {  
+            c2 = utftext.charCodeAt(i+1);  
+            string += String.fromCharCode(((c & 31) << 6) | (c2 & 63));  
+            i += 2;  
+        }  
+        else {  
+            c2 = utftext.charCodeAt(i+1);  
+            c3 = utftext.charCodeAt(i+2);  
+            string += String.fromCharCode(((c & 15) << 12) | ((c2 & 63) << 6) | (c3 & 63));  
+            i += 3;  
+        }  
+    }  
+    return string;  
+}  
+```
+
 ## 8.2 本地数据库 
 
 8.2.1 本地数据库的基本概念 
 
+在 HTML4 中，数据库只能放在服务器端，通过服务器访问数据库，但是在 HTML5 中，可以像访问本地文件那样轻松地对内置数据进行直接访问。HTML5 中内置了两种本地数据库，一种是被称为“SQLLite”的，可以通过 SQL 语言来访问的文件型 SQL 数据库，另一种是被称为“indexedDB”的 NoSQL 类型的数据库。
+
+在 JavaScript 脚本代码中使用 SQLLite 数据库。总的来说，有两个必要的步骤。
+
+- 创建访问数据库的对象。
+- 使用事务处理。
+
+使用 openDatabase 方法可以创建一个访问数据库的对象。该方法使用4个参数，第一个参数Wie数据库名，第二个参数为版本号，第三个参数为数据库的描述，第四个参数为数据库的大小。该方法返回创建后的数据库访问对象，如果该数据库不存在，则创建该数据库。
+
+```JavaScript
+var db = openDatabase('madb', '1.0', 'Test DB', 2 * 1024 * 1024);
+```
+
+在实际访问数据库的时候，还需要调用 transaction 方法，用来执行事务处理。使用事务处理，可以防止在对数据库进行访问及执行有关操作的时候收到外界的干扰。因为在 Web 上，同时会有很多人都在对页面进行访问。如果在访问数据库的过程中，正在操作的数据被别的用户修改掉，会引起很多意想不到的后果。因此，可以使用事务来达到在操作完成之前，阻止别的用户访问数据库的目的。
+
+transaction 方法使用一个回调函数作为参数。在这个函数中，执行访问数据库的语句。
+
+```JavaScript
+db.transaction (function (tx) {
+  tx.executeSql('CREATE TABLE IF NOT EXISTS LOGS (id unique， Log)');
+})
+```
+
 8.2.2 用executeSql来执行查询 
+
+executeSql 方法是作为参数传递给回调函数 transaction 对象的方法。
+
+executeSql 方法的完整定义如下。其中第一个参数为需要执行的 SQL 语句，第二个参数为 SQL 语句中所有使用到的参数的数据，第三个参数为执行 SQL 语句时调用的回调函数，第四个参数为执行 SQL 语句出错时调用的回调函数。在 executeSQL 方法中，将 SQL 语句中所要使用到的参数先用“？”代替，然后依次将这些参数组成数组放在第二个参数中，第三和第四个为回调函数的参数接收两个参数，第一个参数为 transaction 对象，第二个为执行查询操作返回的结果数据集对象或执行发生错误时的错误信息文字。
+
+```JavaScript
+transation.executeSql(sqlquery, [], dataHandler, errorHandler);
+```
 
 8.2.3 使用数据库实现Web留言本 
 
+```html
+<h1>使用数据库实现Web留言本</h1>  
+<table>  
+    <tr><td>姓名:</td><td><input type="text" id="name"></td></tr>  
+    <tr><td>留言:</td><td><input type="text" id="memo"></td></tr>  
+    <tr>
+<td></td>
+<td><input type="button" value="保存" onclick="saveData();"></td>
+</tr>  
+</table>  
+<hr>  
+<table id="datatable" border="1"></table>  
+<p id="msg"></p>  
+```
+
+```JavaScript
+// 打开数据库
+var datatable = null;  
+var db = openDatabase('MyData', '', 'My Database', 102400);  
+// 初始化
+function init()
+{  
+    datatable = document.getElementById("datatable");  
+    showAllData();  
+}  
+// 擦除表格中当前显示的数据
+function removeAllData()
+{  
+    for (var i =datatable.childNodes.length-1; i>=0; i--) 
+    {  
+        datatable.removeChild(datatable.childNodes[i]);  
+    }  
+    var tr = document.createElement('tr');  
+    var th1 = document.createElement('th');  
+    var th2 = document.createElement('th');  
+    var th3 = document.createElement('th');  
+    th1.innerHTML = '姓名';  
+    th2.innerHTML = '留言';  
+    th3.innerHTML = '时间';  
+    tr.appendChild(th1);  
+    tr.appendChild(th2);  
+    tr.appendChild(th3);  
+    datatable.appendChild(tr);  
+}  
+// 显示数据
+function showData(row) 
+{  
+    var tr = document.createElement('tr');  
+    var td1 = document.createElement('td');  
+    td1.innerHTML = row.name;  
+    var td2 = document.createElement('td');  
+    td2.innerHTML = row.message;  
+    var td3 = document.createElement('td');  
+    var t = new Date();  
+    t.setTime(row.time);  
+    td3.innerHTML=t.toLocaleDateString()+" "+t.toLocaleTimeString();  
+    tr.appendChild(td1);  
+    tr.appendChild(td2);  
+    tr.appendChild(td3);  
+    datatable.appendChild(tr);    
+}  
+// 显示全部数据
+function showAllData() 
+{  
+    db.transaction(function(tx) 
+    {  
+        tx.executeSql('CREATE TABLE IF NOT EXISTS MsgData(name TEXT, message TEXT, time INTEGER)',[]);  
+        tx.executeSql('SELECT * FROM MsgData', [], function(tx, rs) 
+        {  
+            removeAllData();  
+            for(var i = 0; i < rs.rows.length; i++) 
+            {  
+                showData(rs.rows.item(i));  
+            }  
+        });  
+    });  
+}  
+// 追加数据
+function addData(name, message, time) 
+{  
+
+    db.transaction(function(tx) 
+    {  
+        tx.executeSql('INSERT INTO MsgData VALUES(?, ?, ?)',[name, message, time],function(tx, rs) 
+        {  
+            alert("成功保存数据!");  
+        },  
+        function(tx, error) 
+        {  
+            alert(error.source + "::" + error.message);  
+        });  
+    });  
+}  
+// 保存数据
+function saveData()
+{  
+    var name = document.getElementById('name').value;  
+    var memo = document.getElementById('memo').value;  
+    var time = new Date().getTime();  
+    addData(name,memo,time);  
+    showAllData();  
+}
+```
+
 8.2.4 transaction方法中的处理 
+
+追加数据。在 addData 函数中的 transaction 方法中使用回调函数，SQL 语句的作用是在数据表中插入一条数据。
+
+```JavaScript
+tx.executeSql(
+  'INSERT INTO MsgData VALUES(?, ?, ?)',
+  [name, message, time],
+  function(tx, rs) 
+{  
+    alert("成功保存数据!");  
+},  
+function(tx, error) 
+{  
+    alert(error.source + "::" + error.message);  
+});  
+```
+
+创建数据表。获取全部数据并显示的代码被书写在 showAllData 函数中。在这个函数中，使用了两次 transaction 方法，真正对应数据库执行时的 SQL 语句的作用是在数据库中创建一张数据表。如果已经存在数据表，重复创建该数据表时会引发错误，所以前面必须加上“IF NOT EXISTS”条件判断语句。
+
+```JavaScript
+tx.executeSql('CREATE TABLE IF NOT EXISTS MsgData(name TEXT, message TEXT, time INTEGER)',[]);  
+```
+
+获取全部数据。在 showAllData 函数中，为了获取全部数据，又使用了一次 transaction 方法。这里调用 removeAllData 将页面上表格中当前显示的数据全部擦除后，执行循环，将获取的多有数据都以`re.rows.item(i)`的形式作为参数传入 showData 函数中进行显示。
+
+```JavaScript
+tx.executeSql('SELECT * FROM MsgData', [], function(tx, rs) 
+{  
+    removeAllData();  
+    for(var i = 0; i < rs.rows.length; i++) 
+    {  
+        showData(rs.rows.item(i));  
+    }  
+});  
+```
 
 ## 8.3 indexedDB数据库 
 
 8.3.1 indexedDB数据库的基本概念 
 
+在 HTML5 中，新增一种被称为 indexedDB 的数据库，该数据库是一种存储在客户端本地的 NoSQL 数据库。
+
 8.3.2 连接数据库 
+
+在各浏览器中使用 indexedDB 数据库的时候，首先要对 indexedDB 数据库，该数据库所使用的事务、IDBKeyRange 对象与游标对象进行预定义。
+
+```JavaScript
+// 在各浏览器中都能运行的统一定义
+window.indexedDB=window.indexedDB||window.webkitIndexedDB||window.mozIndexedDB||window.msIndexedDB;
+
+window.IDBTransaction=window.IDBTransaction||wndow.webkitIDBTransaction||window.msIDBTransaction;
+
+window.IDBKeyRange=window.IDBKeyRange||window.webkitIDBKeyRange||window.msIDBKeyTRange;
+
+window.IDBCursor=window.IDBCursor||window.webkitIDBCursor||window.msIDBCursor;
+```
+
+连接某个 indexedDB 数据库。`indexedDB.open`方法用来连接数据库，该方法使用两个参数，其中第一个参数值为一个字符串，代表数据库名，第二个参数值为一个无符号长整型数值，代表数据库的版本号。`indexedDB`数据库对象的 open 方法返回一个 IDBOpenRequest 对象，代表一个请求连接数据库的请求对象。
+
+```JavaScript
+function connectionDatabase() {
+  var dbName='IndexedDBTest';//数据库名
+  var dbVersion=20120603；//版本号
+  var idb；
+  var dbConnect=indexedDB.Open(dbName,dbVersion);//连接数据库
+
+  dbConnect.onsuccess=function(e){
+    idb=e.target.result;//返回一个IDBDatabase对象，代表连接成功的数据库对象。
+    alert('数据库连接成功')
+  };
+  dbConnect.onerror=function(){ alert('数据库连接失败')};
+}
+```
+
+接下来，可以通过监听数据库连接的请求对象的 onsuccess 事件与 onerror 事件来定义数据库连接成功时与数据库连接失败时所需执行的事件处理函数。在连接成功的事件处理函数中，取得事件对象的 target.result 属性值，该属性值为一个 IDBDatabase 对象，代表连接工程的数据库对象。
+
+另外，在 indexedDB API 中，可以通过 indexedDB 数据库对象的 close 方法关闭数据库连接。当数据库连接被关闭后，不能继续执行任何对该数据库进行的操作，否则浏览器均抛出 InvalidStateError 异常，代表数据库连接已被关闭。
+
+```JavaScript
+idb.close();
+```
 
 8.3.3 数据库的版本更新 
 
+只是成功连接数据库，还不能执行任何数据操作。接下来，还应该创建相当于关系型数据库中数据表的对象仓库（object store）与用于检索数据的索引（index）。
+
+在使用 indexedDB 数据库的时候，所有对于数据的操作都在一个事务内部执行。事务分为三种：只读事务、读写事务与版本更新事务。对于创建对象仓库与索引的操作，我们只能在版本更新事务内部进行，因为在 indexedDB API 中不允许数据库中的数据仓库（相当于关系型数据库中的数据表）在同一个版本中发生变化，所以当我们创建或删除数据仓库时，必须使用新的版本号来更新数据库的版本，以避免重复修改数据库结构。
+
+监听数据库连接的请求对象的 onupgradeneeded 事件（当连接数据库时发现指定的版本号大于数据库当前版本号时触发该事件，当该事件被触发时一个数据库的版本更新事务已经被开启，同时数据库的版本号已经被自动更新完毕），并且指定在该事件触发时所执行的处理（该事件处理函数就是版本更新事务的回调函数）。
+
+```JavaScript
+dbConnect.onupgradeneeded = function(e){
+    //数据库版本更新
+    idb = e.target.result; 
+    /*e.target.transaction属性值为一个IDBTransaction事务对象，此处代表版本更新事务*/
+    var tx = e.target.transaction;
+    var oldVersion = e.oldVersion; //更新前的版本号
+    var newVersion = e.newVersion; //更新前的版本号
+    alert('数据库版本更新成功,旧的版本号为'+oldVersion+',新的版本号为'+newVersion); 
+    /*
+    * 此处可执行创建对象仓库等处理
+    */
+};
+```
+
 8.3.4 创建对象仓库 
+
+监听数据库连接的请求对象的 onupgradeneeded 事件（当连接数据库时发现指定的版本号大于数据库当前版本号时触发该事件，当该事件被触发时一个数据库的版本更新事务已经被开启，同时数据库的版本号已经被自动更新完毕），并且指定在该事件触发时调用数据库对象的 createObjectStore 方法创建对象仓库。
+
+```JavaScript
+dbConnect.onupgradeneeded = function(e){
+    idb = e.target.result; 
+    var tx = e.target.transaction;
+    var name = 'Users';
+    var optionalParameters = {
+        keyPath: 'userId',
+        autoIncrement: false
+    };
+    var store = idb.createObjectStore(name,  optionalParameters);
+    alert('对象仓库创建成功');
+    /*
+    * 索引创建部分略，稍后详述
+    */
+};
+```
+
+createObjectStore 方法使用两个参数，第一个参数值为一个字符串，代表对象仓库名。第二个参数 optionalParameters 为可选参数，参数值为一个 JavaScript 对象，该对象的 keyPath 属性值用于指定对象仓库中的每一条记录使用哪个属性值来作为该记录的主键值。在 indexedDB API 中，对象仓库中的每一条记录均为具有一个或多个属性值的一个对象，而 keyPath 属性值用于指定每一条记录使用哪个属性值作为该记录的主键值。
 
 8.3.5 创建索引 
 
+在数据库的版本更新事务中，在对象仓库创建成功后，调用对象仓库的 createIndex() 方法创建索引。该方法使用三个参数，其中第一个参数值为一个字符串，代表索引名；第二个参数值代表使用数据仓库中数据记录对象的哪个属性来创建索引；第三个参数为可选参数，参数值为一个 JavaScript 对象，该对象的 unique 属性值的作用相当于关系型数据库中索引的 unique 属性值的作用。
+
+```JavaScript
+var name =  'userNameIndex';
+var keyPath = 'userName';
+var optionalParameters = {
+    unique: false,
+    multiEntry: false 
+};
+var idx = store.createIndex(name, keyPath, optionalParameters);
+alert('索引创建成功');
+```
+
 8.3.6 索引的multiEntry属性值 
+
+在 indexedDB 数据库中，索引具有一个 multiEntry 属性，当该属性值为 true 时，如果数据记录的索引属性值为一个数组，可以将该数组中的每一个元素添加在索引中，如果该属性值为 false，则必须将该数组作为一个整体添加在索引中。成功的属性的默认值为 false。
 
 8.3.7 使用事务 
 
@@ -766,12 +1098,19 @@ function findStorage(id)
 # 第9章 离线应用程序 
 
 9.1 离线Web应用程序详解 
+
 9.1.1 新增的本地缓存 
+
 9.1.2 本地缓存与浏览器网页缓存的区别 
+
 9.2 manifest文件 
+
 9.3 浏览器与服务器的交互过程 
+
 9.4 applicationCache对象 
+
 9.4.1 swapCache方法 
+
 9.4.2 applicationCache对象的事件 
 
 # 第10章 文件API 
@@ -835,8 +1174,6 @@ HTML 5 中提供了在网页文档之间互相接收与发送信息的功能。�
 window.addEventListener('message',function(e){...},false);
 ```
 
-
-
 使用 window 对象的 postMessage 方法向其他窗口发送消息。这个方法使用两个参数：第一个参数为所发送的消息文本，但是也可以是任何 JavaScript 对象（通过JSON转换对象为文本）；第二个参数为接收消息的对象窗口的 URL 地址，也可以在URL 地址字符串中使用通配符“*”指定全部地址，建议使用准确的 URL 地址。
 
 otherWindow 为要发送窗口的对象的引用，可以通过 window.open 返回该对象，或通过对 window.frames 数组指定序号或名字的方式来返回单个 frame 所属的窗口对象。
@@ -844,8 +1181,6 @@ otherWindow 为要发送窗口的对象的引用，可以通过 window.open 返�
 ```javascript
 otherWindow.postMessage(message,tragetOrigin);
 ```
-
-
 
 11.1.2 跨文档消息传输示例 
 
@@ -861,8 +1196,6 @@ otherWindow.postMessage(message,tragetOrigin);
 - start 方法，用于激活端口，开始监听端口是否接收到消息。
 - close 方法，用于关闭并停用端口
 - onmessage 事件，当端口接收到消息时触发该事件。
-
-
 
 ## 11.2 WebSockets通信 
 
@@ -901,8 +1234,6 @@ websocket.onclose = function(event) {
 websocket.close();
 
 ```
-
-
 
 另外，可以通过读取 readyState 的属性值来获取 WebSocket 对象的状态，该属性值有如下几种。
 
