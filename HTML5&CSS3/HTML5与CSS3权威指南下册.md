@@ -1,6 +1,8 @@
 > HTML5与CSS3权威指南(第3版-下册)
 > 版次：2015年9月第一次出版
 
+# 目录
+
 <!-- TOC -->
 
 - [第18章 CSS 3概述](#第18章-css-3概述)
@@ -495,9 +497,60 @@ display:box;box-flex是css3新添加的盒子模型属性，它的出现可以�
 
 让多个 div 元素的总宽度等于浏览器窗口的宽度，而且能够随着窗口宽度的改变而改变时，只需要使用一个 flex 属性，使盒布局变成弹性布局就可以了。
 
+```css
+#container{
+	display: flex;
+}
+#left-sidebar{
+	width: 200px;
+	padding: 20px;
+	background-color: orange;
+}
+#contents{    
+  flex:1;
+	padding: 20px;
+	background-color: yellow;
+}
+#right-sidebar{
+	width: 200px;
+	padding: 20px;
+	background-color: limegreen;
+}
+#left-sidebar, #contents, #right-sidebar{
+  box-sizing: border-box;       
+}
+```
+
 26.3.2 改变元素的显示顺序 
 
 使用弹性盒布局的时候，可以通过 order 属性来改变各元素的显示顺序。可以在每个元素的样式中加入 order 属性，该属性使用一个表示序号的证书属性值，浏览器在显示的时候根据该序号从小到大显示这些元素。
+
+```css
+#container{
+	display: flex;
+}
+#left-sidebar{
+  order: 3;
+	width: 200px;
+	padding: 20px;
+	background-color: orange;
+}
+#contents{
+  order: 1;   
+	flex:1;
+	padding: 20px;
+	background-color: yellow;
+}
+#right-sidebar{
+  order: 2;
+	width: 200px;
+	padding: 20px;
+	background-color: limegreen;
+}
+#left-sidebar, #contents, #right-sidebar{
+  box-sizing: border-box;
+}
+```
 
 26.3.3 改变元素的排列方向 
 
@@ -511,10 +564,61 @@ display:box;box-flex是css3新添加的盒子模型属性，它的出现可以�
 
 - column-reverse：纵向反向排列
 
+```css
+#container{
+	display: flex;
+  flex-direction: column;
+}
+#left-sidebar{
+  order: 3;
+	width: 200px;
+	padding: 20px;
+	background-color: orange;
+}
+#contents{
+  order: 1;  
+	flex:1;
+	padding: 20px;
+	background-color: yellow;
+}
+#right-sidebar{
+  order: 2;
+	width: 200px;
+	padding: 20px;
+	background-color: limegreen;
+}
+#left-sidebar, #contents, #right-sidebar{
+  box-sizing: border-box;
+}
+```
 
 26.3.4 元素宽度与高度的自适应 
 
-使用盒布局的时候，元素的宽度与高度具有自适应性，即元素的宽度与高度可以根据排列方向的改变而改变。
+使用盒布局的时候，元素的宽度与高度具有自适应性，即元素的宽度与高度可以根据排列方向的改变而改变。下列代码中，元素的排列方向被设定为水平方向排列，三个元素的宽度为元素中内容的宽度，高度自动变成容器的高度；当排列方式被设定为垂直方向排列时，三个元素的高度为元素中内容的高度，宽度自动变为容器的宽度。
+
+```css
+#container{
+  display: flex;
+  border: solid 5px blue;
+	flex-direction: row;  /* 子元素高度自动变成容器的高度 */
+	width: 500px;
+	height: 300px;
+}
+#text-a{
+	background-color: orange;
+}
+#text-b{
+	background-color: yellow;
+}  
+#text-c{
+  background-color: limegreen;
+}
+#text-a, #text-b, #text-c{
+  box-sizing: border-box;
+  font-size: 1.5em;
+  font-weight: bold;
+}
+```
 
 26.3.5 使用弹性盒布局来消除空白 
 
