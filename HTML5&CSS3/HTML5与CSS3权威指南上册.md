@@ -5,6 +5,7 @@
 
 <!-- TOC -->
 
+- [第1章 Web时代的变迁](#第1章-Web时代的变迁)
 - [第2章 HTML 5与HTML 4的区别](#第2章-html-5与html-4的区别)
   - [2.1 语法的改变](#21-语法的改变)
   - [2.2 新增的元素和废除的元素](#22-新增的元素和废除的元素)
@@ -41,7 +42,7 @@
 
 <!-- /TOC -->
 
-第1章 Web时代的变迁 
+# 第1章 Web时代的变迁 
 
 1.1 迎接新的Web时代 
 
@@ -1363,28 +1364,53 @@ WebSockets API 适用于当多个客户端与同一个服务器需要实现实�
 # 第17章 其他API 
 
 17.1　Page Visibility API 
+
 17.1.1　Page Visibility API概述 
+
 17.1.2　Page Visibility API的使用场合 
+
 17.1.3　实现Page Visibility API 
+
 17.2　Fullscreen API 
+
 17.2.1　Fullscreen API概述 
+
 17.2.2　实现Fullscreen API 
+
 17.2.3　Fullscreen API代码使用示例 
+
 17.3　鼠标指针锁定API 
+
 17.3.1　鼠标指针锁定API概述 
+
 17.3.2　鼠标指针锁定API代码使用示例 
+
 17.4　requestAnimationFrame 
+
 17.4.1　requestAnimationFrame概述 
+
 17.4.2　requestAnimFrame代码使用示例 
+
 17.5　Mutation Observer 
+
 17.6　 Promise 
+
 17.6.1　Promise对象的基本概念 
+
 17.6.2　创建Promise对象 
+
 17.6.3　链式调用Promise对象的then方法 
+
 17.6.4　将异步操作队列化 
+
 17.6.5　异常处理 
+
 17.6.6　创建序列 
+
 17.6.7　执行并行处理 
+
 17.7　Beacon API 
+
 17.7.1　Beacon API概述 
+
 17.7.2　Beacon API的使用方法 
