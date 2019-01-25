@@ -1,5 +1,5 @@
 > CSS Mastery: Advanced Web Standards Solutions, Third Edition
-> [官方源码](https://github.com/Apress/css-mastery-16)
+> [源码](https://github.com/GZ0759/css-mastery-16)
 
 
 # 目录
