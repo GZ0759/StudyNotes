@@ -51,7 +51,7 @@
 
 ## 1.1 var声明及变量提升（Hoisting）机制
 
-在函数作用域或全局作用域中通过关键宇 var 声明的变量，无论实际上是在哪里声明的，都会被当成在当前作用域顶部声明的变量，这就是我们常说的提升（Hoisting）机制 。 
+在函数作用域或全局作用域中通过关键宇 var 声明的变量，无论实际上是在哪里声明的，都会被当成在当前作用域顶部声明的变量，这就是我们常说的提升（Hoisting）机制。 
 
 ```javascript
 function getValue(condition) {
@@ -1304,7 +1304,7 @@ console.log(name);      // "foo"
 
 
 
-解构赋值表达式的值与表达式右侧的值相等，如此一来，在任何可以使用值得地方都可以使用解构赋值表达式。解构赋值表达式如果为 null 或 undefined 会导致程序抛出错误。也就是说，任何尝试读取 null 或 undefined 的属性的行为都会触发运行时错误。
+解构赋值表达式的值与表达式右侧的值相等，如此一来，在任何可以使用值的地方都可以使用解构赋值表达式。但是注意的是，解构赋值表达式如果为 null 或 undefined 会导致程序抛出错误。也就是说，任何尝试读取 null 或 undefined 的属性的行为都会触发运行时错误。
 
 ```javascript
 let node = {
@@ -1474,6 +1474,15 @@ console.log(b);     // 1
 
 嵌套数组解构。嵌套数组解构与嵌套对象解构的语法类似，在原有的数组模式中插入另一个数组模式，即可将解构过程深入到下一个层级。
 
+```javascript
+let colors = [ "red", ["green", "lightgreen"], "blue" ];
+
+let [ firstColor, [secondColor] ] = colors;
+
+console.log(firstColor);        // "red"
+console.log(secondColor);     // "green"
+```
+
 不定元素。在数组中，通过通过“...”语法将数组中的其余元素赋值给一个特定的变量。
 
 ```javascript
@@ -1489,7 +1498,7 @@ console.log(restColors[1]);     // "blue"
 
 
 
-补丁元素语法有助于从数组中提取特定元素并保证其余元素可用，它还有数组复制的功能。concat() 方法的设计初衷是连接两个数组，如果调用时不传递参数就会返回当前函数的副本。在 ES6 中，可以通过不定元素的语法来实现相同的目标。
+不定元素语法有助于从数组中提取特定元素并保证其余元素可用，它还有数组复制的功能。concat() 方法的设计初衷是连接两个数组，如果调用时不传递参数就会返回当前函数的副本。在 ES6 中，可以通过不定元素的语法来实现相同的目标。
 
 ```javascript
 // cloning an array in ECMAScript 6
