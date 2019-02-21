@@ -1,10 +1,16 @@
 > Vue.js前端开发快速入门与专业应用
 > 2017年2月第1版
 
-第一章 Vue.js简介
-1.1 VUe.js是什么
-1.2 为什么要用Vue.js
-1.3 Vue.js的Hello world
+# 第一章 Vue.js简介
+
+## 1.1 VUe.js是什么
+
+Vue.js 被定义
+
+## 1.2 为什么要用Vue.js
+
+## 1.3 Vue.js的Hello world
+
 
 第二章 基础特性
 2.1 实例及选项
