@@ -189,7 +189,45 @@ Node.js 在什么时候会进入事件循环呢？答案是 Node.js 程序由事
 
 ## 3.4 调试
 
+命令行调试。Node.js 支持命令行下的单步调试。在命令行下执行`node debug debug.js`，将会启动调试工具。
+
+远程调试。V8 提供的调试功能是基于 TCP 协议的，因此 Node.js 可以轻松地实现远程调试。在命令行下使用以下两个语句之一可以打开调试服务器。`node --debug`命令选项可以启动调试服务器，默认情况下调试端口是 5858，也可以使用 --debug=1234 指定调试端口为 1234。使用 --debug 选项运行脚本时，脚本会正常执行，但不会暂停，在执行过程中调试客户端可以连接到调试服务器。如果要求脚本暂停执行等待客户端连接，则应该使用 --debug-brk 选项。这时调试服务器在启动后会立刻暂停执行脚本，等待调试客户端连接。
+`
+node --debug[=port] script.js
+node --debug-brk[=port] script.js
+`
+
+使用 Eclipse 调试 Node.js。基于 Node.js 的远程调试功能，我们甚至可以用支持 V8 调试协议的 IDE 调试，例如强大的 Eclipse。
+
+使用 node-inspector 调试 Node.js。大部分基于 Node.js 的应用都是运行在浏览器中的，例如强大的调试工具 node-inspector。node-inspector 是一个完全基于 Node.js 的开源在线调试工具，提供了强大的调试功能和友好的用户界面，它的使用方法十分简便。
+
 # 第四章 Node.js核心模块
+
+## 4.1 全局对象
+
+JavaScript 中有一个特殊的对象，称为全局对象（Global Object），它及其所有属性都可以在程序的任何地方访问，即全局变量。在浏览器 JavaScript 中，通常 window 是全局对象，而 Node.js 中的全局对象是 global，所有全局变量（除了 global 本身以外）都是 global 对象的属性。
+
+process 是一个全局变量，即 global 对象的属性。它用于描述当前 Node.js 进程状态的对象，提供了一个与操作系统的简单接口。
+
+process.argv 是命令行参数数组，第一个元素是 node， 第二个元素是脚本文件名，从第三个元素开始每个元素是一个运行参数。
+
+process.stdout是标准输出流，通常我们使用的 console.log() 向标准输出打印
+字符，而 process.stdout.write() 函数提供了更底层的接口。
+
+process.stdin是标准输入流，初始时它是被暂停的，要想从标准输入读取数据，
+你必须恢复流，并手动编写流的事件响应函数。
+
+process.nextTick(callback)的功能是为事件循环设置一项任务， Node.js 会在
+下次事件循环调响应时调用 callback。
+
+## 4.2 常用工具util
+
+## 4.3 事件驱动events
+
+## 4.4 文件系统fs
+
+## 4.5 HTTP服务器与客户端
+
 
 # 第五章 使用Node.js进行Web开发
 
