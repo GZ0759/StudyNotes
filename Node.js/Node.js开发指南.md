@@ -209,25 +209,92 @@ JavaScript 中有一个特殊的对象，称为全局对象（Global Object）�
 
 process 是一个全局变量，即 global 对象的属性。它用于描述当前 Node.js 进程状态的对象，提供了一个与操作系统的简单接口。
 
-process.argv 是命令行参数数组，第一个元素是 node， 第二个元素是脚本文件名，从第三个元素开始每个元素是一个运行参数。
+`process.argv` 是命令行参数数组，第一个元素是 node， 第二个元素是脚本文件名，从第三个元素开始每个元素是一个运行参数。
 
-process.stdout是标准输出流，通常我们使用的 console.log() 向标准输出打印
-字符，而 process.stdout.write() 函数提供了更底层的接口。
+`process.stdout`是标准输出流，通常我们使用的 console.log() 向标准输出打印字符，而 process.stdout.write() 函数提供了更底层的接口。
 
-process.stdin是标准输入流，初始时它是被暂停的，要想从标准输入读取数据，
-你必须恢复流，并手动编写流的事件响应函数。
+`process.stdin`是标准输入流，初始时它是被暂停的，要想从标准输入读取数据，你必须恢复流，并手动编写流的事件响应函数。
 
-process.nextTick(callback)的功能是为事件循环设置一项任务， Node.js 会在
-下次事件循环调响应时调用 callback。
+`process.nextTick(callback)`的功能是为事件循环设置一项任务， Node.js 会在下次事件循环调响应时调用 callback。
+
+console 用于提供控制台标准输出，它是由 Internet Explorer 的JScript引擎提供的调试工具，后来逐渐成为浏览器的事实标准。Node.js 沿用了这个标准，提供与习惯行为一致的 console 对象，用于向标准输出流或标准错误流输出字符。
+
+`console.log()`：向标准输出流打印字符并以换行符结束。 console.log 接受若干个参数，如果只有一个参数，则输出这个参数的字符串形式。如果有多个参数，则以类似于 C 语言 printf() 命令的格式输出。第一个参数是一个字符串，如果没有参数，只打印一个换行。
+
+`console.error()`：与 console.log() 用法相同，只是向标准错误流输出。
+
+`console.trace()`：向标准错误流输出当前的调用栈。
 
 ## 4.2 常用工具util
 
+util 是一个 Node.js 核心模块，提供常用函数的集合，用于弥补核心 JavaScript 的功能过于精简的不足。
+
+`util.inherits(constructor, superConstructor)`是一个实现对象间原型继承的函数。
+
+`util.inspect(object,[showHidden],[depth],[colors])`是一个将任意对象转换为字符串的方法，通常用于调试和错误输出。它至少接受一个参数 object，即要转换的对象。
+
 ## 4.3 事件驱动events
+
+events 是 Node.js 最重要的模块，没有“之一”，原因是 Node.js 本身架构就是事件式的，而它提供了唯一的接口，所以堪称 Node.js 事件编程的基石。events 模块不仅用于用户代码与 Node.js 下层事件循环的交互，还几乎被所有的模块依赖。
+
+事件发射器。events 模块只提供了一个对象：events:EventEmitter。EventEmitter 的核心就是事件发射与事件监听器功能的封装。EventEmitter 的每个事件由一个事件名和若干个参数组成，事件名是一个字符串，通常表达一定的语义。对于每个事件， EventEmitter 支持若干个事件监听器。当事件发射时，注册到这个事件的事件监听器被依次调用，事件参数作为回调函数参数传递。
+
+- `EventEmitter.on(event, listener)` 为指定事件注册一个监听器，接受一个字
+符串 event 和一个回调函数 listener。
+- `EventEmitter.emit(event, [arg1], [arg2], [...])` 发射 event 事件，传
+递若干可选参数到事件监听器的参数表。
+- `EventEmitter.once(event, listener)` 为指定事件注册一个单次监听器，即
+监听器最多只会触发一次，触发后立刻解除该监听器。
+- `EventEmitter.removeListener(event, listener)` 移除指定事件的某个监听
+器， listener 必须是该事件已经注册过的监听器。
+- `EventEmitter.removeAllListeners([event])` 移除所有事件的所有监听器，
+如果指定 event，则移除指定事件的所有监听器。
+
+EventEmitter 定义了一个特殊的事件 error，它包含了“错误”的语义，我们在遇到异常的时候通常会发射 error 事件。当 error 被发射时， EventEmitter 规定如果没有响应的监听器， Node.js 会把它当作异常，退出程序并打印调用栈。我们一般要为会发射 error 事件的对象设置监听器，避免遇到错误后整个程序崩溃。
+
+继承 EventEmitter。大多数时候我们不会直接使用 EventEmitter，而是在对象中继承它。包括 fs、 net、http 在内的，只要是支持事件响应的核心模块都是 EventEmitter 的子类。为什么要这样做呢？原因有两点。首先，具有某个实体功能的对象实现事件符合语义，事件的监听和发射应该是一个对象的方法。其次 JavaScript 的对象机制是基于原型的，支持部分多重继承，继 EventEmitter 不会打乱对象原有的继承关系。
 
 ## 4.4 文件系统fs
 
+fs 模块是文件操作的封装，它提供了文件的读取、写入、更名、删除、遍历目录、链接等 POSIX 文件系统操作。与其他模块不同的是， fs 模块中所有的操作都提供了异步的和同步的两个版本，例如读取文件内容的函数有异步的`fs.readFile()`和同步的`fs.readFileSync()`。
+
+`fs.readFile(filename,[encoding],[callback(err,data)])`是最简单的读取文件的函数。它接受一个必选参数 filename，表示要读取的文件名。第二个参数 encoding 是可选的，表示文件的字符编码。 callback 是回调函数，用于接收文件的内容。如果不指定 encoding，则 callback 就是第二个参数。回调函数提供两个参数 err 和 data， err 表示有没有错误发生， data 是文件内容。如果指定了 encoding， data 是一个解析后的字符串，否则 data 将会是以 Buffer 形式表示的二进制数据。
+
+```JavaScript
+var fs = require('fs');
+fs.readFile('content.txt', 'utf-8', function(err, data) {
+  if (err) {
+    console.error(err);
+  } else {
+    console.log(data);
+  }
+});
+```
+
+`fs.readFileSync(filename, [encoding])`是 fs.readFile 同步的版本。它接受的参数和 fs.readFile 相同，而读取到的文件内容会以函数返回值的形式返回。如果有错误发生， fs 将会抛出异常，你需要使用 try 和 catch 捕捉并处理异常。
+
+`fs.open(path, flags, [mode], [callback(err, fd)])`是 POSIX open 函数的
+封装，与 C 语言标准库中的 fopen 函数类似。它接受两个必选参数， path 为文件的路径，
+flags 可以是以下值。
+- r ：以读取模式打开文件。
+- r+ ：以读写模式打开文件。
+- w ：以写入模式打开文件，如果文件不存在则创建。
+- w+ ：以读写模式打开文件，如果文件不存在则创建。
+- a ：以追加模式打开文件，如果文件不存在则创建。
+- a+ ：以读取追加模式打开文件，如果文件不存在则创建。
+
+mode 参数用于创建文件时给文件指定权限，默认是 0666。回调函数将会传递一个文件描述符 fd。
+
+`fs.read(fd, buffer, offset, length, position, [callback(err, bytesRead, buffer)])`是 POSIX read 函数的封装，相比 fs.readFile 提供了更底层的接口。fs.read 的功能是从指定的文件描述符 fd 中读取数据并写入 buffer 指向的缓冲区对象。 offset 是buffer 的写入偏移量。 length 是要从文件中读取的字节数。 position 是文件读取的起始位置，如果 position 的值为 null，则会从当前文件指针的位置读取。回调函数传递bytesRead 和 buffer，分别表示读取的字节数和缓冲区对象。
+
 ## 4.5 HTTP服务器与客户端
 
+Node.js 标准库提供了 http 模块，其中封装了一个高效的 HTTP 服务器和一个简易的HTTP客户端。http.Server 是一个基于事件的 HTTP 服务器，它的核心由 Node.js 下层 C++ 部分实现，而接口由 JavaScript 封装，兼顾了高性能与简易性。 http.request 则是一个 HTTP 客户端工具，用于向 HTTP 服务器发起请求，例如实现 Pingback 或者内容抓取。
+
+HTTP 服务器。http.Server 是 http 模块中的 HTTP 服务器对象，用 Node.js 做的所有基于 HTTP 协议的系统，如网站、社交应用甚至代理服务器，都是基于 http.Server 实现的。它提供了
+一套封装级别很低的 API，仅仅是流控制和简单的消息解析，所有的高层功能都要通过它的接口来实现。
+
+`http.ClientRequest` 是由 http.request 或 http.get 返回产生的对象，表示一个已经产生而且正在进行中的 HTTP 请求。它提供一个 response 事件，即 http.request 或 http.get 第二个参数指定的回调函数的绑定对象。
 
 # 第五章 使用Node.js进行Web开发
 
