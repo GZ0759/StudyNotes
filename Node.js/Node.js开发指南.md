@@ -298,6 +298,160 @@ HTTP 服务器。http.Server 是 http 模块中的 HTTP 服务器对象，用 No
 
 # 第五章 使用Node.js进行Web开发
 
+## 5.1 准备工作
+
+Node.js 和 PHP、Perl、 ASP、 JSP 一样，目的都是实现动态网页，也就是说由服务器动态生成 HTML 页面。之所以要这么做，是因为静态 HTML 的可扩展性非常有限，无法与用户有效交互。同时如果有大量相似的内容，例如产品介绍页面，那么1000个产品就要1000个静态的 HTML 页面，维护这1000个页面简直是一场灾难，因此动态生成 HTML 页面的技术应运而生。最早实现动态网页的方法是使用Perl ①和 CGI。在 Perl 程序中输出 HTML 内容，由 HTTP 服务器调用 Perl 程序，将结果返回给客户端。大概在 2000 年左右，以 ASP、 PHP、 JSP 的为代表的以模板为基础的语言出现了，这种语言的使用方法与 CGI 相反，是在以 HTML 为主的模板中插入程序代码。
+
+但它的问题是页面和程序逻辑紧密耦合。为了解决这种问题，以 MVC 架构为基础的平台逐渐兴起，著名的 Ruby on Rails、 Django、 Zend Framework 都是基于 MVC 架构的。MVC（Model-View-Controller，模型视图控制器）是一种软件的设计模式，它最早是由 20 世纪 70 年代的 Smalltalk 语言提出的，即把一个复杂的软件工程分解为三个层面：模型、视图和控制器。
+- 模型是对象及其数据结构的实现，通常包含数据库操作。
+- 视图表示用户界面，在网站中通常就是 HTML 的组织结构。
+- 控制器用于处理用户请求和数据流、复杂模型，将输出传递给视图。
+我们称 PHP、 ASP、 JSP 为“模板为中心的架构”
+
+Node.js 本质上和 Perl 或 C++ 一样，都可以作为 CGI 扩展被调用，但它还可以跳过 HTTP 服务器，因为它本身就是。传统的架构中 HTTP 服务器的角色会由 Apache、 Nginx、 IIS 之类的软件来担任，而 Node.js 不需要②。 Node.js 提供了 http 模块，它是由 C++ 实现的，性能可靠，可以直接应用到生产环境。Node.js 和其他的语言相比的另一个显著区别，在于它的原始封装程度较低。例如 PHP 中你可以访问 $_REQUEST 获取客户端的 POST 或 GET 请求，通常不需要直接处理 HTTP 协议①。这些语言要求由 HTTP 服务器来调用，因此你需要设置一个 HTTP 服务器来处理客户端的请求， HTTP 服务器通过 CGI 或其他方式调用脚本语言解释器，将运行的结果传递回HTTP 服务器，最终再把内容返回给客户端。而在 Node.js 中，很多工作需要你自己来做（并不是都要自己动手，因为有第三方框架的帮助）。
+
+Express 除了为 http 模块提供了更高层的接口外，还实现了
+许多功能，其中包括：
+- 路由控制；
+- 模板解析支持；
+- 动态视图；
+- 用户会话；
+- CSRF 保护；
+- 静态文件服务；
+- 错误控制器；
+- 访问日志；
+- 缓存；
+- 插件支持。
+需要指出的是， Express 不是一个无所不包的全能框架，像 Rails 或 Django 那样实现了模板引擎甚至 ORM （Object Relation Model，对象关系模型）。它只是一个轻量级的 Web 框架，多数功能只是对 HTTP 协议中常用操作的封装，更多的功能需要插件或者整合其他模块来完成。
+
+## 5.2 快速开始
+
+Express 像很多框架一样都提供了 Quick Start（快速开始）工具，这个工具的功能通常是建立一个网站最小的基础框架，在此基础上完成开发。为了使用这个工具，我们需要用全局模式安装 Express，因为只有这样我们才能在命令行中使用它。
+
+通过以下命令建立网站基本结构：
+
+```
+express -t ejs microblog
+```
+
+无参数的`npm install`的功能就是检查当前目录下的 package.json，并自动安装所有指定的依赖。
+
+用 Express 实现的网站实际上就是一个 Node.js 程序，因此可以直接运行。我们运行`node app.js`， 看到`Express server listening on port 3000 in development mode`。接下来，打开浏览器，输入地址 http://localhost:3000， 就可以看到一个简单的 Welcome to Express 页面了。
+
+## 5.3 路由控制
+
+当通过浏览器访问 app.js 建立的服务器时，会看到一个简单的页面，实际上它已经完成了许多透明的工作，现在就让我们来解释一下它的工作机制，以帮助理解网站的整体架构。访问 http://localhost:3000，浏览器会向服务器发送以下请求。
+```
+GET / HTTP/1.1
+Host: localhost:3000
+Connection: keep-alive
+Cache-Control: max-age=0
+User-Agent: Mozilla/5.0 AppleWebKit/535.19 (KHTML, like Gecko) Chrome/18.0.1025.142
+Safari/535.19
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+Accept-Encoding: gzip,deflate,sdch
+Accept-Language: zh;q=0.8,en-US;q=0.6,en;q=0.4
+Accept-Charset: UTF-8,*;q=0.5
+```
+
+服务器在开始监听之前，设置好了所有的路由规则，当请求到达时直接分配到响应函数。`app.get` 是路由规则创建函数，它接受两个参数，第一个参数是请求的路径，第二个参数是一个回调函数，该路由规则被触发时调用回调函数，其参数表传递两个参数，分别是 req 和 res，表示请求信息和响应信息。
+
+Express 还支持更高级的路径匹配模式。例如我们想要展示一个用户的个人页面，路径为`/user/[username]`，可以用下面的方法定义路由规则。
+
+```
+app.get('/user/:username', function(req, res) {
+  res.send('user: ' + req.params.username);
+});
+```
+
+路径规则 `/user/:username` 会被自动编译为正则表达式，类似于 `\/user\/([^\/]+)\/?` 这样的形式。路径参数可以在响应函数中通过 req.params 的属性访问。
+
+路径规则同样支持 JavaScript 正则表达式，例如 `app.get(\/user\/([^\/]+)\/?,callback)`。这样的好处在于可以定义更加复杂的路径规则，而不同之处是匹配的参数是匿名的，因此需要通过`req.params[0]`、 `req.params[1]`这样的形式访问。
+
+Express 支持 REST 风格的请求方式，在介绍之前我们先说明一下什么是 REST。REST 的意思是 表征状态转移（Representational State Transfer），它是一种基于 HTTP 协议的网络应用的接口风格，充分利用 HTTP 的方法实现统一风格接口的服务。
+
+Express 支持同一路径绑定多个路由响应函数。
+```
+app.all('/user/:username', function(req, res) {
+  res.send('all methods captured');
+});
+app.get('/user/:username', function(req, res) {
+  res.send('user: ' + req.params.username);
+});
+```
+
+但当访问任何被这两条同样的规则匹配到的路径时，会发现请求总是被前一条路由规则捕获，后面的规则会被忽略。原因是 Express 在处理路由规则时，会优先匹配先定义的路由规则，因此后面相同的规则被屏蔽。Express 提供了路由控制权转移的方法，即回调函数的第三个参数next，通过调用next()，会将路由控制权转移给后面的规则。
+
+```
+app.all('/user/:username', function(req, res, next) {
+  console.log('all methods captured');
+  next();
+});
+app.get('/user/:username', function(req, res) {
+  res.send('user: ' + req.params.username);
+});
+```
+
+这是一个非常有用的工具，可以让我们轻易地实现中间件，而且还能提高代码的复用程度。例如我们针对一个用户查询信息和修改信息的操作，分别对应了 GET 和 PUT 操作，而两者共有的一个步骤是检查用户名是否合法，因此可以通过 next() 方法实现。
+
+```
+var users = {
+  'byvoid': {
+    name: 'Carbo',
+    website: 'http://www.byvoid.com'
+  }
+};
+app.all('/user/:username', function(req, res, next) {
+  // 检查用户是否存在
+  if (users[req.params.username]) {
+    next();
+  } else {
+   next(new Error(req.params.username + ' does not exist.'));
+  }
+});
+app.get('/user/:username', function(req, res) {
+  // 用户一定存在，直接展示
+  res.send(JSON.stringify(users[req.params.username]));
+});
+app.put('/user/:username', function(req, res) {
+  // 修改用户信息
+  res.send('Done');
+});
+```
+
+## 5.4 模板引擎
+
+模板引擎（Template Engine）是一个从页面模板根据一定的规则生成 HTML 的工具。它的发轫可以追溯到 1996 年 PHP 2.0 的诞生。 PHP 原本是 Personal Home Page Tools（个人主页工具）的简称，用于取代 Perl 和 CGI 的组合，其功能是让代码嵌入在 HTML 中执行，以产生动态的页面，因此 PHP 堪称是最早的模板引擎的雏形。随后的 ASP、JSP 都沿用了这个模式，即建立一个 HTML 页面模板，插入可执行的代码，运行时动态生成 HTML。
+
+模板引擎的功能是将页面模板和要显示的数据结合起来生成 HTML 页面。它既可以运行在服务器端又可以运行在客户端，大多数时候它都在服务器端直接被解析为 HTML，解析完成后再传输给客户端，因此客户端甚至无法判断页面是否是模板引擎生成的。有时候模板引擎也可以运行在客户端，即浏览器中，典型的代表就是 XSLT，它以 XML 为输入，在客户端生成 HTML 页面。但是由于浏览器兼容性问题， XSLT 并不是很流行。目前的主流还是由服务器运行模板引擎。
+
+在 MVC 架构中，模板引擎包含在服务器端。控制器得到用户请求后，从模型获取数据，调用模板引擎。模板引擎以数据和页面模板为输入，生成 HTML 页面，然后返回给控制器，由控制器交回客户端。
+
+基于 JavaScript 的模板引擎有许多种实现，我们推荐使用 ejs （Embedded JavaScript），因为它十分简单，而且与 Express 集成良好。由于它是标准 JavaScript 实现的，因此它不仅可以运行在服务器端，还可以运行在浏览器中。在 app.js 中通过以下两个语句设置了模板引擎和页面模板的位置。
+```
+app.set('views', __dirname + '/views');
+app.set('view engine', 'ejs');
+```
+Express 的视图系统还支持片段视图（partials），它就是一个页面的片段，通常是重复的内容，用于迭代显示。通过它你可以将相对独立的页面块分割出去，而且可以避免显式地使用 for 循环。partial 是一个可以在视图中使用函数，它接受两个参数，第一个是片段视图的名称，第二个可以是一个对象或一个数组，如果是一个对象，那么片段视图中上下文变量引用的就是这个对象；如果是一个数组，那么其中每个元素依次被迭代应用到片段视图。片段视图中上下文变量名就是视图文件名。
+
+Express 提供了一种叫做视图助手的工具，它的功能是允许在视图中访问一个全局的函数或对象，不用每次调用视图解析的时候单独传入。前面提到的 partial 就是一个视图助手。视图助手有两类，分别是静态视图助手和动态视图助手。这两者的差别在于，静态视图助手可以是任何类型的对象，包括接受任意参数的函数，但访问到的对象必须是与用户请求无关的，而动态视图助手只能是一个函数，这个函数不能接受参数，但可以访问 req 和 res 对象。
+
+## 5.5 建立微博网站
+
+根据功能设计，我们把路由按照以下方案规划。
+- /：首页
+- /u/[user]：用户的主页
+- /post：发表信息
+- /reg：用户注册
+- /login：用户登录
+- /logout：用户登出
+以上页面还可以根据用户状态细分。发表信息以及用户登出页面必须是已登录用户才能操作的功能，而用户注册和用户登入所面向的对象必须是未登入的用户。首页和用户主页则针对已登入和未登入的用户显示不同的内容。
+
+## 5.6 用户注册和登录
+
+## 5.7 发表微博
+
+
 # 第六章 Node.js进阶话题
 
 # 附录A JavaScript的高级特性
