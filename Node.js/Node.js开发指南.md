@@ -477,17 +477,169 @@ MongoDB 是一个对象数据库，它没有表、行等概念，也没有固定
 
 # 第六章 Node.js进阶话题
 
+## 6.1 模块加载机制
+
 Node.js 的模块加载对用户来说十分简单，只需调用 require 即可，但其内部机制较为复杂。
 
-## 6.1 模块加载机制
+模块的类型。Node.js 的模块可以分为两大类，一类是核心模块，另一类是文件模块。核心模块就是Node.js 标准 API 中提供的模块，如 fs、 http、 net、 vm 等，这些都是由 Node.js 官方提供的模块，编译成了二进制代码。我们可以直接通过 require 获取核心模块，例如 require('fs')。核心模块拥有最高的加载优先级，换言之如果有模块与其命名冲突，Node.js 总是会加载核心模块。
+
+文件模块则是存储为单独的文件（或文件夹）的模块，可能是 JavaScript 代码、 JSON 或编译好的 C/C++ 代码。文件模块的加载方法相对复杂，但十分灵活，尤其是和 npm 结合使用时。在不显式指定文件模块扩展名的时候， Node.js 会分别试图加上 .js、 .json 和 .node扩展名。 .js 是 JavaScript 代码， .json 是 JSON 格式的文本， .node 是编译好的 C/C++ 代码。
+
+文件模块的加载有两种方式，一种是按路径加载，一种是查找 node_modules 文件夹。如果 require 参数以“/ ”开头，那么就以绝对路径的方式查找模块名称，例如 require ('/home/byvoid/module') 将会按照优先级依次尝试加载 /home/byvoid/module.js、/home/byvoid/module.json 和 /home/byvoid/module.node。
+
+如果 require 参数以“./ ”或“../ ”开头，那么则以相对路径的方式来查找模块，这种方式在应用中是最常见的。
+
+如果require参数不以“/ ”、“./ ”或“../ ”开头，而该模块又不是核心模块，那么就要通过查找 node_modules 加载模块了。我们使用npm获取的包通常就是以这种方式加载的。在 node_modules 目录的外面一层，我们可以直接使用 require('express') 来代替require('./node_modules/express')。这是Node.js模块加载的一个重要特性：通过查找 node_modules 目录来加载模块。
+
+当 require 遇到一个既不是核心模块，又不是以路径形式表示的模块名称时，会试图在当前目录下的 node_modules 目录中来查找是不是有这样一个模块。如果没有找到，则会在当前目录的上一层中的 node_modules 目录中继续查找，反复执行这一过程，直到遇到根目录为止。
+
+加载缓存。Node.js 模块不会被重复加载，这是因为 Node.js 通过文件名缓存所有加载过的文件模块，所以以后再访问到时就不会重新加载了。注意， Node.js 是根据实际文件名缓存的，而不是require()提供的参数缓存的，也就是说即使你分别通过 require('express') 和 require('./node_modules/express') 加载两次，也不会重复加载，因为尽管两次参数不同，解析到的文件却是同一个。
 
 ## 6.2 控制流
 
+Node.js 的异步机制由事件和回调函数实现，一开始接触可能会感觉违反常规，但习惯以后就会发现还是很简单的。然而这之中其实暗藏了不少陷阱，一个很容易遇到的问题就是循环中的回调函数，初学者经常容易陷入这个圈套。
+
+```JavaScript
+//forloop.js
+var fs = require('fs');
+var files = ['a.txt', 'b.txt', 'c.txt'];
+for (var i = 0; i < files.length; i++) {
+  fs.readFile(files[i], 'utf-8', function(err, contents) {
+    console.log(files[i] + ': ' + contents);
+  });
+}
+// undefined: AAA
+// undefined: BBB
+// undefined: CCC
+```
+
+大多数情况下我们可以用数组的 forEach 方法解决这个问题：
+```JavaScript
+//callbackforeach.js
+var fs = require('fs');
+var files = ['a.txt', 'b.txt', 'c.txt'];
+files.forEach(function(filename) {
+  fs.readFile(filename, 'utf-8', function(err, contents) {
+   console.log(filename + ': ' + contents);
+  });
+});
+```
+
+除了循环的陷阱， Node.js 异步式编程还有一个显著的问题，即深层的回调函数嵌套。在这种情况下，我们很难像看基本控制流结构一样一眼看清回调函数之间的关系，因此当程序规模扩大时必须采取手段降低耦合度，以实现更加优美、可读的代码。这个问题本身没有立竿见影的解决方法，只能通过改变设计模式，时刻注意降低逻辑之间的耦合关系来解决。
+
+除此之外，还有许多项目试图解决这一难题。 async 是一个控制流解耦模块，它提供了async.series、 async.parallel、 async.waterfall 等函数，在实现复杂的逻辑时使用这些函数代替回调函数嵌套可以让程序变得更清晰可读且易于维护，但你必须遵循它的编程风格。
+
+streamlinejs和jscex则采用了更高级的手段，它的思想是“变同步为异步”，实现了一个JavaScript 到JavaScript 的编译器，使用户可以用同步编程的模式写代码，编译后执行时却是异步的。
+
+eventproxy 的思路与前面两者区别更大，它实现了对事件发射器的深度封装，采用一种完全基于事件松散耦合的方式来实现控制流的梳理。
+
 ## 6.3 Node.js应用部署
 
-## 6.3 Node.js不是银弹
+在开发的过程中，通过node app.js 命令运行服务器即可。但它不适合在产品环境下使用，为什么呢？因为到目前为止这个服务器还有几个重大缺陷。
 
+- 不支持故障恢复
+- 没有日志
+- 无法利用多核提高性能
+- 独占端口
+- 需要手动启动
+
+服务器的日志功能。Express 支持两种运行模式：开发模式和产品模式，前者的目的是利于调试，后者则是利于部署。使用产品模式运行服务器的方式很简单，只需设置 NODE_ENV 环境变量。通过 NODE_ENV=production node app.js 命令运行服务器可以看到。
+
+```
+Express server listening on port 3000 in production mode
+```
+
+接下来让我们实现访问日志和错误日志功能。访问日志就是记录用户对服务器的每个请求，包括客户端IP 地址，访问时间，访问路径，服务器响应以及客户端代理字符串。而错误日志则记录程序发生错误时的信息，由于调试中需要即时查看错误信息，将所有错误直接显示到终端即可，而在产品模式中，需要写入错误日志文件。
+
+从0.6 版本开始， Node.js 提供了一个核心模块： cluster。 cluster的功能是生成与当前进程相同的子进程，并且允许父进程和子进程之间共享端口。 Node.js 的另一个核心模块child_process 也提供了相似的进程生成功能，但最大的区别在于cluster 允许跨进程端口复用，给我们的网络服务器开发带来了很大的方便。
+
+共享80端口。默认的HTTP 端口是80，因此必须监听80端口才能使网址更加简洁。如果整个服务器只有一个网站，那么只需让app.js 监听80 端口即可。但很多时候一个服务器上运行着不止一个网站，尤其是还有用其他语言（如PHP）写成的网站，这该怎么办呢？此时虚拟主机可以粉墨登场了。虚拟主机，就是让多个网站共享使用同一服务器同一IP地址，通过域名的不同来划分请求。主流的HTTP服务器都提供了虚拟主机支持，如Nginx、 Apache、 IIS等。
+
+## 6.4 Node.js不是银弹
+
+Node.js 不适合做的事情。
+
+计算密集型的程序。理想情况下，Node.js 单线程在执行的过程中会将一个 CPU 核心完全占满，所有的请求必须等待当前请求处理完毕以后进入事件循环才能响应。如果一个应用是计算密集型的，那么除非你手动将它拆散，否则请求响应延迟将会相当大。
+
+单用户多任务型应用。如果面对的是单用户，譬如本地的命令行工具或者图形界面，那么所谓的大量并发请求就不存在了。但是用户提供界面的同时后台在进行某个计算，为了让用户界面不出现阻塞状态，不得不开启多线程或多进程。而Node.js 线程或进程之间的通信到目前为止还很不便，因为它根本没有锁，因而号称不会死锁。 Node.js 的多进程往往是在执行同一任务，通过多进程利用多处理器的资源，但遇到多进程相互协作时，就显得捉襟见肘了。
+
+逻辑十分复杂的事务。Node.js 的控制流不是线性的，它被一个个事件拆散，但人的思维却是线性的。Node.js更善于处理那些逻辑简单但访问频繁的任务，而不适合完成逻辑十分复杂的工作。
+
+Unicode与国际化。Node.js 不支持完整的Unicode，很多字符无法用string 表示。公平地说这不是Node.js 的缺陷，而是JavaScript 标准的问题。目前JavaScript 支持的字符集还是双字节的CS2，即用两个字节来表示一个Unicode 字符，这样能表示的字符数量是65536。
 
 # 附录A JavaScript的高级特性
 
+作用域。作用域（scope）是结构化编程语言中的重要概念，它决定了变量的可见范围和生命周期，正确使用作用域可以使代码更清晰、易懂。作用域可以减少命名冲突，而且是垃圾回收的基本单元。和 C、 C++、 Java 等常见语言不同， JavaScript 的作用域不是以花括号包围的块级作用域（block scope），这个特性经常被大多数人忽视，因而导致莫名其妙的错误。例如下面代码，在大多数类 C 的语言中会出现变量未定义的错误，而在 JavaScript 中却完全合法。
+
+```JavaScript
+if (true) {
+var somevar = 'value';
+}
+console.log(somevar); // 输出 value
+```
+这是因为 JavaScript 的作用域完全是由函数来决定的， if、 for 语句中的花括号不是独立的作用域。
+
+函数作用域。不同于大多数类 C 的语言，由一对花括号封闭的代码块就是一个作用域， JavaScript 的作用域是通过函数来定义的，在一个函数中定义的变量只对这个函数内部可见，我们称为函数作用域。在函数中引用一个变量时， JavaScript 会先搜索当前函数作用域，或者称为“局部作用域”，如果没有找到则搜索其上层作用域，一直到全局作用域。
+
+有一点需要注意：函数作用域的嵌套关系是定义时决定的，而不是调用时决定的，也就是说， JavaScript 的作用域是静态作用域，又叫词法作用域，这是因为作用域的嵌套关系可以在语法分析时确定，而不必等到运行时确定。
+
+在 JavaScript 中有一种特殊的对象称为 全局对象。这个对象在Node.js 对应的是 global 对象，在浏览器中对应的是 window 对象。由于全局对象的所有属性在任何地方都是可见的，所以这个对象又称为 全局作用域。全局作用域中的变量不论在什么函数中都可以被直接引用，而不必通过全局对象。
+
+闭包。通俗地讲， JavaScript 中每个的函数都是一个闭包，但通常意义上嵌套的函数更能够体现出闭包的特性。
+
+```JavaScript
+var generateClosure = function() {
+  var count = 0;
+  var get = function() {
+    count ++;
+    return count;
+  };
+  return get;
+};
+var counter = generateClosure();
+console.log(counter()); // 输出 1
+console.log(counter()); // 输出 2
+console.log(counter()); // 输出 3
+```
+
+这正是所谓闭包的特性。当一个函数返回它内部定义的一个函数时，就产生了一个闭包，闭包不但包括被返回的函数，还包括这个函数的定义环境。上面例子中，当函数generateClosure() 的内部函数 get 被一个外部变量 counter 引用时， counter 和 generateClosure() 的局部变量就是一个闭包。
+
+```JavaScript
+var generateClosure = function() {
+  var count = 0;
+  var get = function() {
+    count ++;
+    return count;
+  };
+  return get;
+};
+var counter1 = generateClosure();
+var counter2 = generateClosure();
+console.log(counter1()); // 输出 1
+console.log(counter2()); // 输出 1
+console.log(counter1()); // 输出 2
+console.log(counter1()); // 输出 3
+console.log(counter2()); // 输出 2
+```
+
+上面这个例子解释了闭包是如何产生的：counter1 和 counter2 分别调用了 generateClosure() 函数，生成了两个闭包的实例，它们内部引用的 count 变量分别属于各自的运行环境。
+
+闭包的用途。闭包有两个主要用途，一是实现嵌套的回调函数，二是隐藏对象的细节。
+
+对象。JavaScript 中的对象实际上就是一个由属性组成的关联数组，属性由名称和值组成，值的类型可以是任何数据类型，或者函数和其他对象。注意 JavaScript 具有函数式编程的特性，所以函数也是一种变量，大多数时候不用与一般的数据类型区分。
+
+在 JavaScript 中，你可以用以下方法创建一个简单的对象：
+
+```JavaScript
+var foo = {};
+foo.prop_1 = 'bar';
+foo.prop_2 = false;
+foo.prop_3 = function() {
+  return 'hello world';
+}
+console.log(foo.prop_3());
+```
+
 # 附录B Node.js编程规范
+
+
