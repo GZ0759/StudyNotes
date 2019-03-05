@@ -143,6 +143,116 @@ var vm = new Vue({
 
 ## 2.2 数据绑定
 
+Vue.js 的核心是一个响应式的数据绑定系统，建立绑定后， DOM 将和数据保持同步，这样就无需手动维护 DOM，使代码能够更加简洁易懂、提升效率。
+
+- 文本插值。数据绑定最基础的形式就是文本插值，使用的是双大括号标签 {{}}，为“Mustache” 语
+法。模板语法同时也支持单次插值，即首次赋值后再更改 vm 实例属性值不会引起 DOM 变化。Vue.js 2.0 去除了 {{*}} 这种写法，采用 v-once 代替这种单词插值。
+
+- HTML属性。Mustache 标签也同样适用于 HTML 属性中，但是Vue.js 2.0 中废弃了这种写法，用 v-bind 指令代替。
+
+- 绑定表达式。放在 Mustache 标签内的文本内容称为绑定表达式。除了直接输出属性值之外，一段绑定表达式可以由一个简单的 JavaScript 表达式和可选的一个或多个过滤器构成。每个绑定中只能包含单个表达式，并不支持 JavaScript 语句，否则 Vue.js 就会抛出warning 异常。并且绑定表达式里不支持正则表达式，如果需要进行复杂的转换，可以使用过滤器或者计算属性来进行处理。
+
+```JavaScript
+{{ var a = 1 }} // 无效
+{{ if (ok) { return name } }} // 无效，但可以写成 ok ? name : '' 或者 ok && name 这
+样的写法
+```
+
+- 过滤器。Vue.js 允许在表达式后添加可选的过滤器，以管道符“|” 指示。同时也允许多个过滤器链式使用，也允许传入多个参数。需要注意的是， Vue.js 2.0 中已经去除了内置的过滤器。
+
+- 指令。指令通常会直接书写在模板的 HTML 元素中，而为了有别于普通的属性， Vue.js 指令是带有前缀的 v- 的属性。可以理解为当表达式的值发生改变时，会有些特殊行为作用到绑定的 DOM 上。
+
+简单介绍指令绑定数据和事件的语法。
+
+参数
+
+```JavaScript
+<img v-bind:src="avatar" />
+```
+指令 v-bind 可以在后面带一个参数，用冒号（:）隔开， src 即为参数。此时 img 标签
+中的 src 会与 vm 实例中的 avatar 绑定，等同于 :
+```JavaScript
+<img src="{{avatar}}" />
+```
+
+修饰符
+
+修饰符（Modifiers）是以半角句号 . 开始的特殊后缀，用于表示指令应该以特殊方式绑定。
+```JavaScript
+<button v-on:click.stop=""doClick></button>
+```
+v-on 的作用是在对应的 DOM 元素上绑定事件监听器， doClick 为函数名，而 stop 即为
+修饰符，作用是停止冒泡，相当于调用了 e. stopPropagation()。
+
+计算属性。在项目开发中，展示的数据往往需要经过一些处理。除了在模板中绑定表达式或者利用过滤器外， Vue.js 还提供了计算属性这种方法，避免在模板中加入过重的业务逻辑，保证模板的结构清晰和可维护性。
+
+```JavaScript
+var vm = new Vue({
+  el : '#app,
+  data: {
+    firstName : 'Gavin'，
+    lastName: 'CLY'
+  }
+  computed : {
+    fullName : function() {
+    // this 指向 vm 实例
+    return this.firstName + ' ' + this.lastName
+    }
+  }
+});
+<p>{{ firstName }}</p> // Gavin
+<p>{{ lastName }}</p> // CLY
+<p>{{ fullName }}</p> // Gavin CLY
+```
+
+如果说上面那个例子并没有体现出来计算属性的优势的话，那计算属性的 Setter 方法，则在更新属性时给我们带来了便利。
+
+```JavaScript
+var vm = new Vue({
+  el : '#el',
+  data: {
+    //  vm.cents 设置为后端所存的数据
+    cents : 100，
+  }
+  computed : {
+    // 计算属性 price 为前端展示和更新的数据
+    price : {
+      set : function(newValue) {
+        this.cents = newValue * 100;
+      },
+      get : function() {
+       return (this.cents / 100).toFixed(2);
+      }
+    }
+  }
+});
+```
+
+表单控件。Vue.js 中提供 v-model 的指令对表单元素进行双向数据绑定，在修改表单元素值的
+同时，实例 vm 中对应的属性值也同时更新，反之亦然。Vue.js 为表单控件提供了一些参数，方便处理某些常规操作。
+
+- lazy。默认情况下， v-model 在 input 事件中同步输入框值与数据，加 lazy 属性后从会改到在
+change 事件中同步。
+
+- number。会自动将用户输入转为 Number 类型，如果原值转换结果为 NaN 则返回原值。
+
+- debounce。设置最小延时，单位为 ms，即为单位时间内仅执行一次数据更新。该参数往往应用在高耗操作上，例如在更新时发出 ajax 请求返回提示信息。
+
+不过 Vue.js 2.0 中取消了 lazy 和 number 作为参数，用修饰符（modifier）来代替。新增了 trim 修饰符，去掉输入值首尾空格。去除了 debounce 这个参数，原因是无法监测到输入新数据，但尚未同步到 vm 实例属性时这个状态。
+
+Class与Style绑定。在开发过程中，经常会遇到动态添加类名或直接修改内联样式。class 和 style 都是 DOM 元素的 attribute ，可以直接使用 v-bind 对这两个属性进行数据绑定。例如 `<p v-bind:style='style'><p>`，然后通过修改 vm.style 的值对元素样式进行修改。但这样未免过于繁琐而且容易出错，所以 Vue.js 为这两个属性单独做了增强处理，表达式的结果类型除了字符串之外，还可以是对象和数组。
+
+Class绑定。绑定的数据可以是对象和数组，具体的语法如下：
+- 对象语法： v-bind:class 接受参数是一个对象，而且可以与普通的 class 属性共存。
+- 数组语法： v-bind:class 也接受数组作为参数。也可以使用三元表达式切换数组中的 class 。
+
+内联样式绑定。style 属性绑定的数据即为内联样式，同样具有对象和数组两种形式。
+
+- 对象语法。直接绑定符合样式格式的对象。除了直接绑定对象外，也可以绑定单个属性或直接使用字符串。
+- 数组语法：v-bind:style 允许将多个样式对象绑定到统一元素上。
+
+自动添加前缀。在使用 transform 这类属性时，v-bind:style 会根据需要自动添加厂商前缀。 :style 在运行时进行前缀探测，如果浏览器版本本身就支持不加前缀的 css 属性，那就不会添加。
+
 ## 2.3 模板渲染
 
 ## 2.4 事件绑定与监听
