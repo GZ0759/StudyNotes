@@ -286,11 +286,236 @@ v-for 指令主要用于列表渲染，将根据接收到数组重复渲染 v-fo
 
 ## 2.4 事件绑定与监听
 
-第三章 指令
-3.1 内置指令
-3.2 自定义指令基础
-3.3 指令的高级选项
-3.4 指令在Vue.js2.0中的变化
+当模板渲染完成之后，就可以进行事件的绑定与监听了。Vue.js 提供了 v-on 指令用来监听 DOM 事件，通常在模板内直接使用，而不像传统方式在 js 中获取 DOM 元素，然后绑定事件。
+
+方法及内联语句处理器。通过 v-on 可以绑定实例属性 methods 中的方法作为事件的处理器，v-on: 后参数接受所有的原生事件名称。Vue.js 也提供了 v-on 的缩写形式"@"。除了直接绑定 methods 函数外，v-on 也支持内联 JavaScript 语句，但仅限一个语句。在直接绑定函数和内联语句时，都有可能需要获取原生 DOM 事件对象，一下两种方式都可以获取。
+
+```JavaScript
+<button v-on:click="showEvent">Event</button>
+<button v-on:click="showEvent($event)">showEvent</button>
+<button v-on:click="showEvent()">showEvent</button> // 这样写获取不到 event
+var vm = new Vue({
+  el : '#app',
+  methods : {
+    showEvent : function(event) {
+     console.log(event);
+    }
+  }
+});
+```
+
+修饰符。Vue.js 为指令 v-on 提供了多个修饰符，方便处理一些 DOM 事件的细节，并且修饰符可以串联使用。主要的修饰符如下。
+
+- .stop: 等同于调用 event. stopPropagation()。
+- .prevent: 等同于调用 event.preventDefault()。
+- .capture: 使用 capture 模式添加事件监听器。
+- .self: 只当事件是从监听元素本身触发时才触发回调。
+
+```html
+<!-- 阻止单击事件继续传播 -->
+<a v-on:click.stop="doThis"></a>
+
+<!-- 提交事件不再重载页面 -->
+<form v-on:submit.prevent="onSubmit"></form>
+
+<!-- 修饰符可以串联 -->
+<a v-on:click.stop.prevent="doThat"></a>
+
+<!-- 只有修饰符 -->
+<form v-on:submit.prevent></form>
+
+<!-- 添加事件监听器时使用事件捕获模式 -->
+<!-- 即元素自身触发的事件先在此处理，然后才交由内部元素进行处理 -->
+<div v-on:click.capture="doThis">...</div>
+
+<!-- 只当在 event.target 是当前元素自身时触发处理函数 -->
+<!-- 即事件不是从内部元素触发的 -->
+<div v-on:click.self="doThat">...</div>
+```
+
+除了事件修饰符之外，v-on 还提供了按键修饰符，方便我们监听键盘事件中的按键。Vue.js 给一些常用的按键名提供了别称，这样就省去了一些记 keyCode 的事件。全部按键别名为： enter、 tab、 delete、 esc、 space、 up、 down、 left、 right。Vue.js 也允许我们自己定义按键别名。Vue.js 2.0 中可以直接在 Vue.config.keyCodes 里添加自定义按键别名，无需修改 v-on 指令。
+
+```JavaScript
+// 可以使用 `v-on:keyup.f1`
+Vue.config.keyCodes.f1 = 112
+```
+
+与传统事件绑定的区别。Vue.js 事件处理方法和表达式都严格绑定在当前视图的 ViewModel 上，所以并不会维护困难。这么写的好处在于，无需手动管理事件，ViewModel 被校会时所有事件处理器都会自动被删除；方便解耦。在处理 ul、li 这种列表时，往往会把 li 事件代理到 ul 上，而 Vue.js 这类的框架由于不需要手动添加事件，往往会把事件绑定在 li 上，虽然多耗了些性能。但在实际运用中并没有什么特别的性能瓶颈影响，而且也省去代理中处理 e.target 的步骤，让事件和 DOM 元素关系更紧密、简单。
+
+## 2.5 Vue.extend()
+
+组件化开发也是 Vue.js 中非常重要的一个特性，可以将一个页面看成一个大的根组件，里面包含的元素就是不同的子组件，子组件也可以在不同的根组件中被调用。那么，如何可被重复使用的子组件呢？Vue.js 提供了 Vue。extend(options) 方法，创建基础 Vue 构造器的“子类”，参数 options 对象和直接声明 Vue 实例参数对象基本一致，使用方法如下。
+
+```JavaScript
+var Child = Vue.extend({
+  template : '#child',
+  // 不同的是， el 和 data 选项需要通过函数返回值赋值，避免多个组件实例共用一个数据
+  data : function() {
+    return {
+    ….
+    }
+  }
+  ….
+})
+Vue.component('child', Child) // 全局注册子组件
+<child></child> // 子组件在其他组件内的调用方式
+```
+
+# 第三章 指令
+
+指令是 Vue.js 中一个重要的特性，主要提供了一种机制将数据的变化映射为 DOM 行为。当数据变化时，指令会依据设定好的操作对 DOM 进行修改，这样就可以只关注数据的变化，而不用去管理 DOM 的变化和状态，使得逻辑更加清晰，可维护性更好。
+
+## 3.1 内置指令
+
+v-bind 主要用于动态绑定 DOM 元素属性，即元素属性实际的值是由 vm 实例中的 data 属性提供的。v-bind 也可以简写为“:”。v-bind 还拥有三种修饰符，分别为 .sync、 .once、 .camel，作用分别如下。
+
+- .sync ：用于组件 props 属性，进行双向绑定，即父组件绑定传递给子组件的值，无论在哪个组件中对其进行了修改，其他组件中的这个值也会随之更新。
+- .once ：同 .synce 一样，用于组件 props 属性，但进行的是单次绑定。和双向绑定正好相反，单次绑定是将绑定数据传递给子组件后，子组件单独维护这份数据，和父组件的数据再无关系，父组件的数据发生变化也不会影响子组件中的数据。
+- .camel ：将绑定的特性名字转回驼峰命名。只能用于普通 HTML 属性的绑定，通常会用于svg 标签下的属性。
+
+不过在 Vue.js 2.0 中，修饰符 .syce 和 .once 均被废弃，规定组件间仅能单向传递，如果子组件需要修改父组件，则必须使用事件机制来进行处理。
+
+v-model指令主要用于 input、select、textarea 标签中，具有 lazy、number、debounce（2.0废除）、trim（2.0新增）这些修饰符。
+
+v-if/v-else/v-show 这三个指令主要用于根据条件展示对应的模板内容。v-if 和 v-show 的主要区别在于，v-if 在条件为false 的情况下并不进行模板的搬移，而 v-show 则会在模板编译好之后将元素隐藏掉。v-if 的切换消耗要比 v-show 高，但初始条件为 false 的情况下，v-if 的初始渲染要稍快。
+
+v-for 也是用于模板渲染的指令，v-for 指令在 Vue.js 2.0 中做了些细微的调整。大致包含一下几个方面。
+
+- 参数顺序变化。当包含参数 index 或 key 时，对象参数修改为 (item, index) 或 (value, key)，这样与 JS Array 对象的新方法 forEach 和 map，以及一些对象迭代器（例如lodash）的参数能保持一致。
+- 属性 track-by 被 v-bind: key 代替。
+- v-for="n in 10" 中的 n 由原来的 0 ～ 9 迭代变成 1 ～ 10 迭代。
+
+在 Vue.js 2.0 中，在组件上使用 v-on 指令只监听自定义事件，即使用 $emit 触发的
+事件；如果要监听原生事件，需要使用修饰符 .native，例如 `<my-component v-on:click.native="onClick"></my-component>`
+
+v-text，参数类型为 String，作用是更新元素的 textContent。 {{}} 文本插值本身也会被编译成 textNode 的一个 v-text 指令。而与直接使用 {{}} 不同的是， v-text 需要绑定在某个元素上，能避免未编译前的闪现问题。
+
+如果直接使用 `<span>{{msg}}</span>`，在生命周期 beforeCompile 期间，此刻 msg 数据尚未编译至 {{msg}} 中，用户能看到一瞬间的 {{msg}}，然后闪现为 There is a message，而用 v-text 的话则不会有这个问题。
+
+v-HTML, 参数类型为 String， 作用为更新元素的 innerHTML，接受的字符串不会进行编译等操作，按普通 HTML 处理。同 v-text 类似， {{{}}} 插值也会编译为节点的 v-HTML 指令， v-HTML 也需要绑定在某个元素上且能避免编译前闪现问题。
+
+v-el 指令为 DOM 元素注册了一个索引，使得可以直接访问 DOM 元素。语法上说，可以通过所属实例的 $els 属性调用。或者在 vm 内部通过 this 进行调用。另外，由于 HTML 不区分大小写，在 v-el 中如果使用了驼峰命名方式，系统会自动转成小写。但可以使用“-”来连接期望的大写字符。
+
+v-ref 指令与 v-el 类似，只不过 v-ref 作用于子组件上，实例可以通过 $refs 访问子组件。命名方式也类似，想使用驼峰式命名的话用“-” 来做连接。
+
+```JavaScript
+<message v-ref:title content="title"></message>
+<message v-ref:sub-title content="subTitle"></message>
+
+var Message = Vue.extend({
+  props : ['content'],
+  template : '<h1>{{content}}</h1>'
+});
+Vue.component('message', Message);
+```
+
+最终将 vm.$refs.title 和 vm.$refs.subTitle 用 console.log 的方式打印到控制台中，结果为输出了两个子组件的实例。从理论上来说，我们可以通过父组件对子组件进行任意的操作，但实际上尽量还是会采用props 数据绑定，用组件间通信的方式去进行逻辑上的交互，尽量让组件只操作自己内部的数据和状态，如果组件间有通信，也通过调用组件暴露出来的接口进行通信，而不是直接跨组件修改数据。
+
+v-pre 指令相对简单，就是跳过编译这个元素和子元素，显示原始的 {{}}Mustache 标
+签，用来减少编译时间。
+
+```html
+<span v-pre>{{ this will not be compiled }}</span>
+```
+
+v-cloak 指令相当于在元素上添加了一个 `[v-cloak]` 的属性，直到关联的实例结束编译。官方推荐可以和 css 规则 `[v-cloak]{ display :none }` 一起使用，可以隐藏未编译的 Mustache 标签直到实例准备完毕。
+
+v-once 指令是 Vue.js 2.0 中新增的内置指令，用于标明元素或组件只渲染一次，即使随后发生绑定数据的变化或更新，该元素或组件及包含的子元素都不会再次被编译和渲染。这样就相当于我们明确标注了这些元素不需要被更新，所以 v-once 的作用是最大程度地提升了更新行为中页面的性能，可以略过一些明确不需要变化的步骤。
+
+## 3.2 自定义指令基础
+
+除了内置指令外，Vue.js 也提供了方法可以注册自定义指令，以便封装对 DOM 元素的处理方式，提高代码复用率。
+
+指令的注册。通过`Vue.directive(id, definition)`方法注册一个全局自定义指令，接收参数 id 和定义对象。id 是指令的唯一标识，定义对象则是指令的相关属性及钩子函数。`Vue.directive(‘global-directive’, definition); `全局注册指令，也可以通过组建的 directive 选项注册一个局部的自定义指令。
+
+```JavaScript
+var comp = Vue.extend({
+directives : {
+  'localDirective' : {} // 可以采用驼峰式命名
+}
+});
+```
+
+指令的定义对象。在注册指令的同时，可以传入 definition 对象，对指令赋予一些特殊的功能。这个定义对象主要包含三个钩子函数，bind、update 和 unbind。
+- bind: 只被调用一次，在指令第一次绑定到元素上时调用。
+- update: 指令在 bind 之后以初始值在参数进行第一次调用，之后每次当绑定值发生变化时调用，update 接收到的参数为 newValue 和 oldValue。
+- unbind: 指令从元素上解绑时调用，只调用一次。
+
+```JavaScript
+<div v-if="isExist" v-my-directive="param"></div>
+Vue.directive('my-directive', {
+  bind : function() {
+   console.log('bind', arguments);
+  },
+  update : function(newValue, oldValue) {
+    console.log('update', newValue, oldValue)
+  },
+  unbind : function() {
+    console.log('unbind', arguments);
+  }
+})
+var vm = new Vue({
+  el : '#app',
+  data : {
+    param : 'first',
+    isExist : true
+  }
+});
+```
+
+另外，如果我们只需要使用 update 函数时，可以直接传入一个函数代替定义对象。
+
+```JavaScript
+Vue.directive('my-directive', function(value) {
+// 该函数即为 update 函数
+});
+```
+
+上述例子中，可以使用 my-directive 指令绑定的值是 data 中的 param 属性。也可以直接绑定字符串常量，或使用字面修饰符，但这样的话需要注意 update 方法将只调用一次，因为普通字符串不能响应数据变化。除了字符串外，指令也能接受对象字面量或任意合法的 JavaScript 表达式。
+
+指令实例属性。除了了解指令的生命周期外，还需要知道指令中能调用的相关属性，一边对相关 DOM 进行操作。在指令的钩子函数内，可以通过 this 来调用指令实例。
+
+- el ：指令绑定的元素。
+- vm ：该指令的上下文 ViewModel，可以为 new Vue() 的实例，也可以为组件实例。
+- expression ：指令的表达式，不包括参数和过滤器。
+- arg ：指令的参数。
+- name ：指令的名字，不包括 v- 前缀。
+- modifiers ：一个对象，包含指令的修饰符。
+- descriptor ：一个对象，包含指令的解析结果。
+
+```html
+<div v-my-msg:console.log="content"></div>
+```
+
+```JavaScript
+Vue.directive('my-msg', {
+  bind : function() {
+    console.log('~~~~~~~~~~~bind~~~~~~~~~~~~~');
+    console.log('el', this.el);
+    console.log('name', this.name);
+    console.log('vm', this.vm);
+    console.log('expression', this.expression);
+    console.log('arg', this.arg);
+    console.log('modifiers', this.modifiers);
+    console.log('descriptor', this.descriptor);
+  },
+  update : function(newValue, oldValue) {
+    var keys = Object.keys(this.modifiers);
+    window[this.arg][keys[0]](newValue);
+  },
+  unbind : function() {
+  }
+});
+var vm = new Vue({
+  el : '#app',
+  data : {
+    content : 'there is the content'
+  }
+});
+```
+
+## 3.3 指令的高级选项
+## 3.4 指令在Vue.js2.0中的变化
 
 第四章 过滤器
 4.1 过滤器注册
