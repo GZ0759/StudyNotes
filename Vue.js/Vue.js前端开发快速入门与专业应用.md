@@ -489,44 +489,317 @@ Vue.directive('my-directive', function(value) {
 
 ```JavaScript
 Vue.directive('my-msg', {
-  bind : function() {
+  bind: function() {
     console.log('~~~~~~~~~~~bind~~~~~~~~~~~~~');
-    console.log('el', this.el);
-    console.log('name', this.name);
-    console.log('vm', this.vm);
-    console.log('expression', this.expression);
-    console.log('arg', this.arg);
-    console.log('modifiers', this.modifiers);
-    console.log('descriptor', this.descriptor);
+    console.log('el', this.el); // el <div></div>
+    console.log('name', this.name); // name my-msg
+    console.log('vm', this.vm); // vm
+    console.log('expression', this.expression); // expression content
+    console.log('arg', this.arg); // arg console
+    console.log('modifiers', this.modifiers); // modifiers Object {log: true}
+    console.log('descriptor', this.descriptor); 
   },
-  update : function(newValue, oldValue) {
+  update: function(newValue, oldValue) {
     var keys = Object.keys(this.modifiers);
     window[this.arg][keys[0]](newValue);
   },
-  unbind : function() {
+  unbind: function() {
   }
 });
 var vm = new Vue({
-  el : '#app',
-  data : {
-    content : 'there is the content'
+el: '#app',
+data: {
+  content: 'there is the content'
+}
+});
+```
+
+元素指令。元素指令是 Vue.js 的一种特殊指令，普通指令需要绑定在某个具体的 DOM 元素上，但元素指令可以单独存在，从使用方式上看更像是一个组件，但本身内部的实例属性和钩子函数是和指令一致的。Vue.js 2.0 中取消了这个特性，推荐使用组件来实现需要的业务。
+
+```JavaScript
+<div v-my-directive></div> // -> 普通指令使用方式
+<my-directive></my-directive> // -> 元素指令使用方式
+```
+
+## 3.3 指令的高级选项
+
+Vue.js 指令定义对象中除了钩子函数外，还有一些其他的选项。
+
+params。定义对象中可以接受一个 params 数组，Vue.js 编译器将自动提取自定义指令绑定元素上的这些属性。除了直接传入数值外， params 支持绑定动态数据，并且可以设定一个 watcher 监听，当数据变化时，会调用这个回调函数。
+
+```JavaScript
+<div v-my-advance-directive a="paramA"></div>
+Vue.directive('my-advance-directive', {
+  params : ['a'],
+  bind : function() {
+   console.log('params', this.params);
   }
 });
 ```
 
-## 3.3 指令的高级选项
+deep。当自定义指令作用域一个对象上时，可以使用 deep 选项来监听对象内部发生的变化。Vue.js 2.0 中废弃了该选项。 
+
+twoWay。在自定义指令中，如果需要向 Vue 实例写回数据，就需要在定义对象中使用 `twoWay:true`，这样可以在指令中使用 this.set(value) 来写回数据。
+
+acceptStatement。选项`acceptStatement: true`可以允许自定义指令接受内敛语句，同时 update 函数接收的值是一个函数，在调用该函数时，它将在所属实例作用域内运行。
+
+terminal。选项 terminal 的作用是阻止 Vue.js 遍历这个元素及其内部元素，并由该指令本身去编译绑定元素及其内部元素，内置的指令 v-if 和 v-for 都是 terminal 指令。
+
+priority。选项 priority 即为指定指令的优先级，普通指令默认是 1000，terminal 指令默认为 2000。同一元素上优先级高的指令会比其他指令处理得早一I些，相同优先级则按出现顺序依次处理。
+
 ## 3.4 指令在Vue.js2.0中的变化
 
-第四章 过滤器
-4.1 过滤器注册
-4.2 双向过滤器
-4.3 动态参数
-4.4 过滤器在Vue.js2.0中的变化
+在 Vue.js 2.0 中取消了指令实例这一概念，即在钩子函数中的 this 并不能指向指令的相关属性。指令的相关属性均通过参数的形式传递给钩子函数。
 
-第五章 过渡
-5.1 CSS过渡
-5.2 JavaScript过渡
-5.3 过渡系统在Vue.js2.0中的变化
+# 第四章 过滤器
+
+Vue.js 允许在表达式后面添加可选的过滤器，以管道符表示。过滤器的本质是一个函数，接受管道符前面的值作为初始值，同时也能接受额外的参数，返回值为经过处理后的输出值。多个过滤器可以进行串联。
+
+```JavaScript
+{{ message | filterA 'arg1' 'arg2' }}
+{{ message | filterA | filterB}}
+```
+
+## 4.1 过滤器注册
+
+Vue.js 提供了全局方法 Vue.filter() 注册一个自定义过滤器，接受过滤器 ID 和过滤器函数两个参数。除了初始值之外，过滤器也能接受任意数量的参数。
+
+```JavaScript
+Vue.filter('date', function(value) {
+  if(!value instanceof Date) return value;
+  return value.toLocaleDateString();
+})
+```
+
+## 4.2 双向过滤器
+
+之前提及的过滤器都是在数据输出到视图之前，对数据进行转化显示，但不影响数据本身。Vue.js 也提供了在改变视图中数据的值，写回 data 绑定属性中的过滤器，称为双向过滤器。
+
+```JavaScript
+<input type="text" v-model="price | cents" >
+Vue.filter('cents', {
+  // 该过滤器的作用是处理价钱的转化，一般数据库中保存的单位都为分，避免浮点运算
+  read : function(value) {
+   return (value / 100).toFixed(2);
+  },
+  write : function(value) {
+   return value * 100;
+  }
+  });
+  var vm = new Vue({
+  el : '#app',
+  data: {
+    price : 150
+  }
+});
+```
+
+从使用场景和功能来看，双向过滤器和第 2 章中提到的计算属性有点雷同。而 Vue.js 2.0 中也取消了过滤器对 v-model、 v-on 这些指令的支持，认为会导致更多复杂的情况，而且使用起来并不方便。所以 Vue.js 2.0 中只允许开发者在 {{}} 标签中使用过滤器，像上述对写操作有转化要求的数据，建议使用计算属性这一特性来实现。
+
+## 4.3 动态参数
+
+过滤器除了能接受单引号（""）括起来的参数外，也支持接受在 vm 实例中绑定的数据，称之为动态参数。使用区别就在于不需要用单引号将参数括起来。
+
+```JavaScript
+<input type="text" v-model="price" />
+<span>{{ date | dynamic price }}</span>
+
+Vue.filter('dynamic', function(date, price) {
+  return date.toLocaleDateString() + ' : ' + price;
+});
+var vm = new Vue({
+  el : '#app',
+  data: {
+    date : new Date(),
+    price : 150
+  }
+});
+```
+
+## 4.4 过滤器在Vue.js2.0中的变化
+
+过滤器在 Vue.js 2.0 中也发生了一些变化，大致说明如下：
+- 取消了所有内置过滤器，即 capitalize, uppercase, json 等。作者建议尽量使用单独的插件来按需加入你所需要的过滤器。不过如果你觉得仍然想使用这些 Vue.js 1.0 中的内置过
+滤器，也不是什么难办的事。 1.0 源码 filters/ 目录下的 index.js 和 array-filter.js 中就是所有内置过滤器的源码，你可以挑选你想用的手动加到 2.0 中。
+- 取消了对 v-model 和 v-on 的支持，过滤器只能使用在 {{}} 标签中。
+- 修改了过滤器参数的使用方式，采用函数的形式而不是空格来标记参数。例如： {{date | date('yyyy-MM-dd') }}。
+
+
+# 第五章 过渡
+
+过渡系统是 Vue.js 为 DOM 动画效果提供的一个特性，它能在元素从 DOM 中插入或移除时触发 CSS 过渡（transition）和动画（animation），也就是说在 DOM 元素发生变化时为其添加特定的 class 类名，从而产生过度效果。除了 CSS 过渡外， Vue.js 的过渡系统也支持 javascript 的过渡，通过暴露过渡系统的钩子函数。
+
+## 5.1 CSS过渡
+
+在模板中用 transition 绑定一个 DOM 元素，并且使用 v-if 指令使元素先处于未被编译状态。然后在控制台内手动调用 vm.show = true, 就可以看到在 DOM 元素完成编译后，过渡系统自动给元素添加了一个 my-startup-transition 的 class 类名。
+
+```JavaScript
+<div v-if="show" transition="my-startup"></div>
+var vm = new Vue({
+  el : '#app',
+  data: {
+   show : false
+  }
+});
+
+<div class="my-startup-transition"></div>
+
+```
+
+Vue.js 的过渡系统给元素插入及移除时分别添加了 2 个类名： *-enter 和 *-leave， * 即为 transition 绑定的字符串.需要注意的是，这两个类名的优先级需要高于 `.my-startup-transition`，不然被 my-startup-transition 覆盖后就失效了。
+
+```css
+.my-startup-enter, .my-startup-leave{
+  height: 0px;
+  opacity: 0;
+}
+```
+
+同样，我们也可以通过 CSS 的 animation 属性来实现过渡的效果。
+
+CSS 过渡钩子函数。Vue.js 提供了在插入或 DOM 元素时类名变化的钩子函数，可以通过 Vue.transition('name', {})的方式来执行具体的函数操作。
+
+```JavaScript
+Vue.transition('my-startup', {
+  beforeEnter: function (el) {
+    console.log('beforeEnter', el.className);
+  },
+  enter: function (el) {
+    console.log('enter', el.className);
+  },
+  afterEnter: function (el) {
+    console.log('afterEnter', el.className);
+  },
+  enterCancelled: function (el) {
+    console.log('enterCancelled', el.className);
+  },
+  beforeLeave: function (el) {
+    console.log('beforeLeave', el.className);
+  },
+  leave: function (el) {
+    console.log('leave', el.className);
+  },
+  afterLeave: function (el) {
+    console.log('afterLeave', el.className);
+  },
+  leaveCancelled: function (el) {
+    console.log('leaveCancelled', el.className);
+  }
+})
+```
+
+显示声明过渡类型。Vue.js 可以指定过渡元素监听的结束事件的类型。
+
+```JavaScript
+Vue.transition('done-type', {
+  type: 'animation'
+})
+```
+
+此时 Vue.js 就只监听元素的 animationend 事件，避免元素上还存在 transition 时导致的结束事件触发不一致。
+
+自定义过渡类名。除了使用默认的类名`*-enter`、`*-leave`外，Vue.js 也允许我们自定义过渡类名。
+
+```JavaScript
+Vue.transition('my-startup', {
+  enterClass: 'fadeIn',
+  leaveClass: 'fadeOut'
+})
+```
+
+Vue.js 官方推荐了一个 CSS 动画库， animate.css，配合自定义过渡类名使用，可以达
+到非常不错的效果。只需要引入一个 CSS 文件， `http://cdn.bootcss.com/animate.css/3.5.2/animate.min.css`，就可以使用里面的预设动画。
+
+## 5.2 JavaScript过渡
+
+Vue.js 也可以和一些 JavaScript 动画库配合使用，这里只需要调用 JavaScript 钩子函数，而不需要定义 CSS 样式。 transition 接受选项 css:false，将直接跳过 CSS 检测，避免 CSS 规则干扰过渡，而且需要在 enter 和 leave 钩子函数中调用 done 函数，明确过渡结束时间。此处将引入 Velocity.js 来配合使用 JavaScript 过渡。
+
+```JavaScript
+<style>
+.my-velocity-transition {
+  position: absolute; top:0px;
+  width: 100px; height: 100px;
+  background: black;
+}
+</style>
+<div v-if="velocity" transition="my-velocity"></div>
+Vue.transition('my-velocity', {
+  css : false,
+  enter: function (el, done) {
+    Velocity(el, { left : '100px' }, 500, 'swing', done);
+  },
+  enterCancelled: function (el) {
+    Velocity(el, 'stop');
+  },
+  leave: function (el, done) {
+    Velocity(el, { left : '0px' }, 500, 'swing', done);
+  },
+  leaveCancelled: function (el) {
+    Velocity(el, 'stop');
+  }
+})
+```
+
+## 5.3 过渡系统在Vue.js2.0中的变化
+
+- 用法变化。新的过渡系统中取消了 v-transition 这个指令，新增了名为 transition 的内置标签。transition 标签为一个抽象组件，并不会额外渲染一个 DOM 元素，仅仅是用于包裹过渡元素及触发过渡行为。 v-if、 v-show 等指令仍旧标记在内容元素上，并不会作用于transition 标签上。
+
+- 钩子函数。enterClass, leaveClass, enterActiveClass, leaveActiveClass, appearClass,appearActiveClass，可以分别自定义各阶段的 class 类名。总得来说，在 Vue.js 2.0 中我们可以直接使用 transition 标签并设定其属性来定义一个过渡效果，而不需要像在 Vue.js 1.0 中通过 Vue.transition() 语句来定义。
+
+-类名变化。Vue.js 2.0 中新增了两个类名 enter-active 和 leave-active，用于分离元素本身样式和过渡样式。我们可以把过渡样式放到 *-enter-active、 *-leave-active 中， *-enter， *-leave 中则定义元素过渡前的样式，而元素原本的样
+式则由自己的类名去控制，不和过渡系统自动添加的类名样式混合起来。
+
+- 钩子函数变化。Vue.js 2.0 中添加了三个新的钩子函数， before-appear, appear 和 after-appear。appear 主要是用于元素的首次渲染，如果同时声明了 enter 和 appear 的相关钩子函数，元素首次渲染的时候会使用 appear 系钩子函数，再次渲染的时候才使用 enter 系钩子函数。
+
+- transition-group。除了内置的 transition 标签外， Vue.js 2.0 提供了 transition-group 标签，方便作用到多个 DOM 元素上。
+
+```HTML
+<div id="list-demo" class="demo">
+  <button v-on:click="add">Add</button>
+  <button v-on:click="remove">Remove</button>
+  <transition-group name="list" tag="p">
+    <span v-for="item in items" v-bind:key="item" class="list-item">
+      {{ item }}
+    </span>
+  </transition-group>
+</div>
+```
+
+```JavaScript
+new Vue({
+  el: '#list-demo',
+  data: {
+    items: [1,2,3,4,5,6,7,8,9],
+    nextNum: 10
+  },
+  methods: {
+    randomIndex: function () {
+      return Math.floor(Math.random() * this.items.length)
+    },
+    add: function () {
+      this.items.splice(this.randomIndex(), 0, this.nextNum++)
+    },
+    remove: function () {
+      this.items.splice(this.randomIndex(), 1)
+    },
+  }
+})
+```
+
+```css
+.list-item {
+  display: inline-block;
+  margin-right: 10px;
+}
+.list-enter-active, .list-leave-active {
+  transition: all 1s;
+}
+.list-enter, .list-leave-to
+/* .list-leave-active for below version 2.1.8 */ {
+  opacity: 0;
+  transform: translateY(30px);
+}
+```
 
 第六章 组件
 6.1 组件注册
