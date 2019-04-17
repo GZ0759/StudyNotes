@@ -1412,6 +1412,7 @@ const router = new VueRouter({
 ```
 
 ## 7.2 Vue-resource
+
 ## 7.3 Vue-devtools
 
 第八章 Vue.js工程实例
