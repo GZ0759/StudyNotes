@@ -801,18 +801,618 @@ new Vue({
 }
 ```
 
-第六章 组件
-6.1 组件注册
-6.2 组件选项
-6.3 组件间通信
-6.4 内容分发
-6.5 动态组件
-6.6 Vue.js2.0中的变化
+# 第六章 组件
 
-第七章 Vue.js常用插件
-7.1 Vue-router
-7.2 Vue-resource
-7.3 Vue-devtools
+代码复用一直是软件开发中长期存在的一个问题，每个开发者都想再次使用之前写好的代码，又担心引入这段代码后对现有的程序产生影响。从 jQuery 开始，就开始通过插件的形式复用代码，到 Requirejs 开始将 js 文件模块化，按需加载。这两种方式都提供了比较
+方便的复用方式，但往往还需要自己手动加入所需的 CSS 文件和 HTML 模块。现在， Web Components 的出现提供了一种新的思路，可以自定义 tag 标签，并拥有自身的模板、样式和交互。 Angularjs 的指令， Reactjs 的组件化都在往这方面做尝试。同样， Vue.js 也提供了自己的组件系统，支持自定义 tag 和原生 HTML 元素的扩展。
+
+## 6.1 组件注册
+
+Vue.js 提供了两种注册方式，分别是全局注册和局部注册。
+
+全局注册需要确保在根实例初始化之前注册，这样才能使组件在任意实例中被使用，注
+册方式如下。这条语句需要写在 var vm = new Vue({…}) 之前，注册成功之后，就可以在模块中以自定义元素 `<my-component>` 的形式使用组件。
+
+```JavaScript
+<div id="app">
+  <my-component></my-component>
+</div>
+var MyComponent = Vue.extend({
+  template : '<p>This is a component</p>'
+})
+Vue.component('my-component', MyComponent)
+var vm = new Vue({
+  el : '#app'
+});
+```
+
+局部注册则限定了组件只能在被注册的组件中使用，而无法在其他组件中使用，注册方式如下。
+
+```JavaScript
+var Child = Vue.extend({
+  template : '<p>This is a child component</p>'
+});
+var Parent = Vue.extend({
+  template: '<div> \
+    <p>This is a parent component</p> \
+    <my-child></my-child> \
+    </div>',
+  components: {
+    'my-child': Child
+  }
+});
+<div>
+  <p>This is a parent component</p>
+  <p>This is a child component</p>
+</div>
+```
+
+注册语法糖。Vue.js 对于上述两种注册方式也提供了简化的方法，我们可以直接在注册的时候定义组件构造器选项。
+
+```JavaScript
+// 全局注册
+Vue.component('my-component', {
+  template : '<p>This is a component</p>'
+})
+// 局部注册
+var Parent = Vue.extend({
+  template: '<div> \
+    <p>This is a parent component</p> \
+    <my-child></my-child> \
+    </div>',
+  components: {
+    'my-child': {
+       template : '<p>This is a child component</p>'
+  }
+  }
+});
+```
+
+## 6.2 组件选项
+
+组件选项中与Vue选项的区别。组件选项中的 el 和 data 与 Vue 构造器选项中这两个属性的赋值会稍微有些不同。在 Vue 构造器中是直接赋值。而在组件中需要通过函数来返回一个新对象。
+
+组件 Props。选项 props 是组件中非常重要的一个选项，起到了父子组件间桥梁的作用。
+
+```JavaScript
+Vue.component('my-child', {
+  props : ['parent'],
+  template: '<p>{{ parent }} is from parent'
+})
+<my-child parent="This data"></my-child> 
+//-> <p>This data is from parent </p>
+```
+
+驼峰命名。同指令等情况相同，HTML 中的特性名是大小写不敏感的，所以浏览器会把所有大写字符解释为小写字符。这意味着当你使用 DOM 中的模板时，camelCase (驼峰命名法) 的 prop 名需要使用其等价的 kebab-case (短横线分隔命名)。
+
+```JavaScript
+Vue.component('blog-post', {
+  // 在 JavaScript 中是 camelCase 的
+  props: ['postTitle'],
+  template: '<h3>{{ postTitle }}</h3>'
+})
+```
+
+```html
+<!-- 在 HTML 中是 kebab-case 的 -->
+<blog-post post-title="hello!"></blog-post>
+```
+
+动态 Pros。可以通过 v-bind 的方式将父组件的 data 数据传递给子组件。需要注意的是，如果直接传递一个数值给子组件，就必须借助动态 Props。
+
+```html
+<!-- 即便 `42` 是静态的，我们仍然需要 `v-bind` 来告诉 Vue -->
+<!-- 这是一个 JavaScript 表达式而不是一个字符串。-->
+<blog-post v-bind:likes="42"></blog-post>
+
+<!-- 用一个变量进行动态赋值。-->
+<blog-post v-bind:likes="post.likes"></blog-post>
+```
+
+绑定类型。在动态绑定中，v-bind 指令也提供了几种修饰符来进行不同方式的绑定。Props 绑定默认是单向绑定，即当父组件的数据发生变化时，子组件的数据随之变化，但在子组件中修改数据并不影响父组件。修饰符`.sync`和`.once`显示的声明绑定为双向绑定或单词绑定。
+
+Props验证。组件可以指定 props 验证要求，这对开发第三方组件来说，可以让使用者更加准确地使用组件。使用验证的时候，props 接受的参数为 json 对象，而不是上述例子中的数组。
+
+```JavaScript
+Vue.component('my-component', {
+  props: {
+    // 基础的类型检查 (`null` 和 `undefined` 会通过任何类型验证)
+    propA: Number,
+    // 多个可能的类型
+    propB: [String, Number],
+    // 必填的字符串
+    propC: {
+      type: String,
+      required: true
+    },
+    // 带有默认值的数字
+    propD: {
+      type: Number,
+      default: 100
+    },
+    // 带有默认值的对象
+    propE: {
+      type: Object,
+      // 对象或数组默认值必须从一个工厂函数获取
+      default: function () {
+        return { message: 'hello' }
+      }
+    },
+    // 自定义验证函数
+    propF: {
+      validator: function (value) {
+        // 这个值必须匹配下列字符串中的一个
+        return ['success', 'warning', 'danger'].indexOf(value) !== -1
+      }
+    }
+  }
+})
+
+```
+
+## 6.3 组件间通信
+
+组件间通信是组件开发时非常重要的一环，既希望组件的独立性，数据能互不干涉，又不可避免组件间会有联系和交互。Vue.js 在组件间这一部分即提供了直接访问组件实例的方法，也提供了自定义事件机制，通过广播、派发、监听等形式进行跨组件的函数调用。
+
+直接访问。在组件实例中，Vue.js 提供了以下三个属性对其父子组件及根实例进行直接访问。这三个属性都挂载在组件的 this 上，虽然 Vue.js 提供了直接访问这种方式，但并不提倡这么操作。这会导致父组件和子组件紧密耦合，且自身状态难以理解，锁机尽量使用 props 在组件间传递数据。
+
+- $parent: 父组件实例。
+- $children: 包含所有子组件实例。
+- $root: 组件所在的根实例。
+
+自定义事件监听。在 Vue 实例中，系统提供了一套自定义事件接口，用于组件间通信，方便修改组件状态。
+
+可以在初始化实例或注册子组件的时候，直接传给选项 events 一个对象。也可以在某些特定情况或方法内采用 $on 方法来监听事件。
+
+自定义事件触发机制。设置完成事件监听后，接下来是 Vue.js 的触发机制。
+
+`$emit`。可以在实例本身触发事件。
+
+```JavaScript
+events : {
+  'add' : function(msg) {
+   this.todo.push(msg);
+  }
+}
+methods: {
+  onClick : function() {
+    this.$emit('add', 'there is a message');// 即可触发 events 中的 add 函数
+  }
+}
+```
+
+`$dispatch`。派发事件，事件沿着父链冒泡，并在在第一次触发回调之后自动停止冒泡，除非触发函数明确返回 true ，才会继续向上冒泡。
+
+```JavaScript
+// 父组件：
+events : {
+'add' : function(msg) {
+  this.todo.push(msg);
+  // return true　明确返回 true 后，事件会继续向上冒泡
+}
+}
+
+// 子组件：
+methods: {
+  toParent : function() {
+  this.$dispatch('add', 'message from child');
+  }
+}
+```
+
+`$broadcast`。广播事件，事件会向下传递给所有的后代。
+
+```JavaScript
+methods: {
+  toChild : function() {
+    this.$dispatch('msg', 'message from parent');
+  }
+}
+// 子组件：
+events : {
+  'msg' : function(msg) {
+   alert(msg);
+  }
+}
+```
+
+子组件索引。虽然不建议组件直接访问各自的实例，但有时不可避免，Vue.js 也提供了直接访问子组件的方式。除了之前的 this.children 外，还可以给子组件绑定一个 v-ref 指令，指定一个索引 ID。这样就能在父组件中就可以通过 this.$refs 的方式获取子组件实例。另外，如果 v-ref 作用在 v-for 绑定的元素上，那么父组件获取的则为一个数组，包含相应的子组件实例。
+
+## 6.4 内容分发
+
+在实际的一些情况中，子组件往往并不知道需要展示的内容， 而知提供基础的交互功能，内容及事件由父组件来提供。对此 Vue.js 提供了一种混合父组件与子组件自己模板的方式，这种方式称之为内容分发。Vue.js 参照了当前 web component 规范草稿，使用 `<slot>` 元素为原始内容的插槽。
+
+```JavaScript
+<div id="app">
+  // 使用包含 slot 标签属性的子组件
+  <my-slot>
+    // 属性 slot 值需要与子组件中 slot 的 name 值匹配
+    <p slot="title">{{ title }}</p>
+    <div slot="content">{{ content }}</div>
+  </my-slot>
+</div>
+// 注册 my-slot 组件，包含 <slot> 标签，且设定唯一标识 name
+Vue.component('my-slot', {
+  template : '<div>\
+  <div class="title"> \
+  <slot name="title"></slot> \
+  </div> \
+  <div class="content"> \
+  <slot name="content"></slot> \
+  </div> \
+  </div>',
+});
+var vm = new Vue({
+  el : '#app',
+  data : {
+    title : 'This is a title',
+    content : 'This is the content'
+  }
+});
+// 最后输出结果
+<div>
+  <div class="title">
+    <p slot="title">This is a title</p>
+  </div>
+  <div class="content">
+    <div slot="content">This is the content</div>
+  </div>
+</div>
+```
+
+在模板下，`<slot>` 绑定的是父组件的数据。父组件模板的内容在父组件作用域内编译，子组件模板的内容在子组件作用域内编译。
+
+`<slot>`标签允许有一个匿名 slot，不需要有 name 值，作为找不到匹配的内容片段的回退插槽，如果没有默认的 slot，这些找不到匹配的内容片段将被忽略。
+
+在父组件中，可以定义多个相同的 slot 属性的 DOM 标签，这样会依次插入到对应的子组件的 slot 便签中，以兄弟节点的方式呈现。
+
+## 6.5 动态组件
+
+Vue.js 支持动态组件，即多个组件可以使用同一挂载点，根据条件来切换不同的组件。使用保留标签`<component>`，通过绑定到 is 属性的值来判断挂载哪个组件。这种场景往往运用在路由控制或者 tab 切换中。
+
+```JavaScript
+<div id="app">
+  // 相当于一级导航栏，点击可切换页面
+  <ul>
+    <li @click="currentView = 'home'">Home</li>
+    <li @click="currentView = 'list'">List</li>
+    <li @click="currentView = 'detail'">Detail</li>
+  </ul>
+  <component :is="currentView"></component>
+</div>
+
+var vm = new Vue({
+  el : '#app',
+  data: {
+   currentView: 'home'
+  },
+  components: {
+    home: {
+      template : '<div>Home</div>'
+    },
+    list: {
+     template : '<div>List</div>'
+    },
+    detail: {
+      template : '<div>Detail</div>'
+    }
+  }
+});
+```
+
+component 标签接受 keep-alive 属性，可以将切换出去的组件保留在内存中，避免重新渲染。可以根据该特性适当地进行页面的性能优化，如果每个组件在激活时并不要求每次都实时请求数据，那使用 keep-alive 可以避免一些不必要的重复渲染，导致用户看到停留时间过长的空白页面。但如果每次激活组件都需要向后端请求数据的话，就不太适合使用 keepalive 属性了。Vue.js 2.0 中 keep-alive 属性被修改为标签。
+
+activate 钩子函数。Vue.js 给组件提供了 activate 钩子函数，作用于动态组件切换或者静态组件初始化的过程中。active 接受了一个回调函数作为参数，使用函数后组件才进行之后的渲染过程。
+
+```JavaScript
+home: {
+  template : '<div> \
+  <p>Home</p> \
+  <ul> \
+  <li v-for="item in items">{{ item }}</li> \
+  </ul> \
+  </div>',
+  data : function() {
+    return {
+     items : []
+    }
+  },
+  activate : function(done) {
+    var that = this;
+    // 此处的 setTimeout 用于模拟正式业务中的 ajax 异步请求数据
+    setTimeout(function() {
+      that.items = [1, 2, 3, 4, 5];
+      done();
+    }, 1000);
+  }
+}
+```
+
+## 6.6 Vue.js2.0中的变化
+
+Vue.js 2.0 中废弃了 event 选项，所有的自定义事件都需要通过`$emit`、`$on`、`$off`函数来进行触发、监听和取消监听。另外，废弃了`$dispatch`和`$broadcast`方法。官方认为这两种方法主要依赖于组件的属性结构，而当组件结构越来越复杂后，这种事件流的形式将难以被理解，而且也并不能解决兄弟组件之间的通信。所以官方推荐使用集中式的事件管理机制来处理组件间的通信，而不是依赖于组件本身的结构。
+
+```JavaScript
+// 官方建议可以直接使用一个空 Vue 实例来处理简单的事件触发机制：
+var bus = new Vue();
+bus.$emit('create', { title : 'name'});
+bus.$on('create', function(data) {
+// 进行对应的操作
+})
+```
+
+```JavaScript
+<div id="app">
+  <comp-a></comp-a>
+  <comp-b></comp-b>
+</div>
+var bus = new Vue();
+var vm = new Vue({
+el : '#app',
+components : {
+  compA : {
+  template : '<div> \
+    <input type="text" v-model="name" /> \
+    <button @click="create"> 添加 </button> \
+    </div>',
+  data : function() {
+    return {
+      name : ''
+    }
+  },
+  methods : {
+    create : function() {
+      bus.$emit('create', { name : this.name });
+      this.name = '';
+    }
+  }
+  },
+  compB : {
+    template : '<ul> \
+      <li v-for="item in items">{{ item.name }} </li> \
+      </ul>',
+    data : function() {
+      return {
+      items : []
+      }
+    },
+    // mounted 为 Vue.js 2.0 中新的生命周期函数
+    mounted() {
+      var that = this;
+      bus.$on('create', function(data) {
+        that.items.push(data);
+      })
+    }
+  }
+  }
+});
+```
+
+keep-alive 不再是动态组件 component 标签中的属性，而成为了单独的标签。keep-alive 也可以不和 component 配合使用，单独包裹多个子组件，只需要确保所有子组件只激活唯一一个即可。
+
+```JavaScript
+<keep-alive>
+  <comp-a v-if="active"></comp-a>
+  <comp-b v-else></comp-b>
+</keep-alive>
+```
+
+slot 不再支持多个相同 plot 属性的 DOM 插入到对应的 slot 标签中，一个 slot 只被使用一次。另外，slot 标签不再保存自身的属性及样式，均有父元素或被插入的元素提供样式和属性。
+
+子组件索引 v-ref 的声明方式产生了变化，不再是一个指令了，而替换成一个子组件的一个特殊属性。调用方式没有发生变化，仍采用 `vm.$refs` 的方式直接访问子组件实例。
+
+# 第七章 Vue.js常用插件
+
+Vue.js 本身只提供了数据与视图绑定及组件化等功能，如果想要开发一个完整的 SPA 应用，还需要使用一些 Vue.js 插件。
+
+## 7.1 Vue-router
+
+Vue-router 是给 Vue.js 提供路由管理的插件，利用 hash 的变化控制动态组件的切换。
+
+以往页面间跳转都由后端 MVC 中的 Controller 层控制，通过 `<a>` 标签的 href 或者直接修改 location.href，我们会向服务端发起一个请求，服务端响应后根据所接收到的信息去获取数据和指派对应的模板，渲染成 HTML 再返回给浏览器，解析成我们可见的页面。 Vue.js + Vue-router 的组合将这一套逻辑放在了前端去执行，切换到对应的组件后再向后端请求数据，填充进模板来，在浏览器端完成 HTML 的渲染。这样也有助于前后端分离，前端不用依赖于后端的逻辑，只需要后端提供数据接口即可。
+
+vue-router 的基本作用就是将每个路径映射到对应的组件，并通过修改路由进行组件间的切换。常规路径规则为在当前 url 路径后面加上 #!/path， path 即为设定的前端路由路径。
+
+一般应用中的路由方式不会那么简单，往往会出现二级导航这种情况。这时就需要使用嵌套路由这种写法。
+
+```JavaScript
+var Biz = Vue.extend({
+  template : '<div> \
+    <h1>This is the some business channel</h1> \
+    <div class="container"> \
+    <ul class="nav navbar-nav"> \
+    <li> \
+    <a v-link="{ path : \'/biz/list\'}">List</a> \
+    </li> \
+    <li> \
+    <a v-link="{ path : \'/biz/detail\'}">Detail</a> \
+    </li> \
+    </ul> \
+    </div> \
+    <router-view></router-view> \
+    </div>'
+});
+
+// 路由配置修改如下
+router.map({
+  '/home': {
+    component: Home
+  },
+  '/biz': {
+    component : Biz,
+    subRoutes : {
+      '/list' : {
+        component : {
+        template : '<h2>This is the business list page</h2>'
+      }
+      },
+      '/detail' : {
+        component : {
+        template : '<h2>This is the business detail page</h2>'
+      }
+      }
+    }
+  }
+})
+```
+
+路由匹配。vue-route 在设置路由规则的时候，支持以冒号开头的动态片段。
+
+```JavaScript
+router.map({
+  '/list/:page': {
+    component : {
+      template: '<h1>This is the No.{{ $route.params.page }} page</h1>'
+    }
+  }
+})
+```
+
+一条路有规则中支持包含多个动态片段。除了冒号: 开头的动态片段：page 外，Vue-router 还提供了以 * 号开头的全匹配片段。全匹配片段会包含所有符合的路径，而且不以“/”为间隔。
+
+具名路由。在设置路由规则时，可以给路径名设置一个别名，方便进行路由跳转，而不需要去记住过长的全路径。
+
+路由对象。在使用 Vue-router 启动应用时，每个匹配的自荐实例中都会被注入 router 的想，称之为路由对象。在组件内部可以通过 `this.$route` 的方式进行调用。
+路由对象共包含了一下几个属性。
+- $route.path
+- $route.params
+- $route.query
+- $route.router
+- $route.matched
+- $route.name
+
+v-link 是 vue-router 应用中用于路径间跳转的指令，其本质是调用路径实例 route 本身的 go 函数进行跳转。该指令接受一个 JavaScript 表达式，而且可以直接使用组件内绑定数据。
+
+常见的使用方式包含以下两种：
+- 直接使用字面路径
+- 使用具名路径，并可以通过 params 或 query 设置路径中的动态片段或查询变量。
+
+v-link包含其他参数选项。
+- activeClass
+- exact
+- replace
+- append
+
+路径配置项。在创建路由器实例的时候，Vue-router 提供了以下参数供配置。
+- hashbang
+- history
+- abstract
+- root
+- linkActiveClass
+- saveScrollPosition
+- transitionOnLoad
+- suppressTransitionError
+
+route钩子函数。在使用 Vue-router 的应用中，每个路由匹配到的组件中会多出一个 route 选项。在这个选项中可以使用路由切换的钩子函数来进行一定的业务逻辑操作。route 提供了 6 个钩子函数，分别如下。
+- canActivate(): 在组件创建之前被调用，验证组件是否可被创建。
+- activate(): 在组件创建且将要加载时被调用。
+- data(): 在 activate 之后被调用，用于加载和设置当前组件的数据。
+- canDeactivate(): 在组件被移出前被调用，验证是否可被移出。
+- deactivate(): 在组件移出时调用。
+
+路由实例属性及方法。在 Vue-router 启动的应用中，每个组件会被注入 router 实例，可以在组件内通过this.$router（或者使用路由对象 $route.router）进行访问。这个 router 实例主要包含了一些全局的钩子函数，以及配置路由规则，进行路由切换等 api。
+- router.app
+- router.mode
+- router.start(App, el)
+- router.stop()
+- router.map()
+- router.on()
+- router.go(path)
+
+vue-router 2.0 的变化。
+
+使用方式。VueRouter 的初始化方式、路由规则配置和启动方式均发生了变化。嵌套路由的配置方法也发生了变化，改用 children 属性来进行标记，而且其中的 path 路径不需要以“/”开头，否则会认为从根路径开头。
+```JavaScript
+const router = new VueRouter({
+  // 路由规则在实例化 VueRouter 的时候就直接传入，而不是调用 map 方法再进行传递
+  routes : [
+  { path : '/home', component: Home}
+  ]
+})
+// 启动方法也发生了变化， router 实例直接传入 Vue.js 实例中，并调用 $mount 方法挂载到DOM 元素中
+const app = new Vue({
+  router : router
+}).$mount('#app')
+```
+
+跳转方式。路由跳转的方式也发生了变化，首先是废弃了 v-link 指令，采用`<router-link>`标签来创建 a 标签来定义链接。其中的 to 属性和 v-link 所能接受的属性相同。其次是用 router 实例方法进行跳转的 api 也修改成了 push()，接受的选项参数基本没有变化。router.go() 方法不再表示跳转，而是接受一个整型参数，作用是在 history 记录中向前或者后退多少步，类似 window.history.go(n)。router 实例的 api 方法 push()、 replace()、 go() 主要是模拟 window.history 下的 pushState()、replaceState() 和 go() 的使用方法来实现的，并且确保 router 在不同模式下（ hash、 history）表现的一致性。
+
+钩子函数。Vue-router 基本重新定义了自身的钩子函数。主要可分为三个方面。
+- 全局钩子。在初始化 VueRouter 后直接使用 router 实例进行注册，包含 beforeEach和 afterEach 两个钩子，在每个路由切换前 / 后调用。
+- 单个路由钩子。这个需要在路由配置的时候直接定义
+- 组件内钩子。在组件内定义
+
+获取数据。由于钩子函数的变化，在 Vue.js 2.0 中也就不存在使用 data 钩子来处理请求数据的逻辑了，可以通过监听动态路由的变化来获取数据。
+
+```JavaScript
+const List = {
+  template: '...',
+  watch: {
+  '$route' (to, from) {
+    // 对路由变化作出响应，在此处理业务逻辑
+  }
+  }
+}
+```
+
+而且在 Vue.js 2.0 中，既可以在导航完成之前获取数据，也可以在导航完成之后获取数据。在导航完成之后获取数据，是为了在获取数据期间展示一个 loading 状态。可以在组件的 create() 钩子函数和 watch : { route : ' '} 中调用获取数据的函数。
+
+在导航获取之前完成数据，我们可以在 beforeRouteEnter 钩子中获取数据，并且只有当数据获取成功或确定有权限后才进行组件的渲染，否则就回退到路由变化前的组件状态。
+
+```JavaScript
+import pageSrv from './api/pages' // 此处先模拟一个获取数据的模块
+export default {
+  data () {
+    return {
+      list : []
+    }
+  },
+  beforeRouteEnter (to, from, next) {
+    pageSrv.get(to.params.page, (err, data) => {
+      if (err) {
+        next(false); // 中断当前导航
+      } else {
+        next(vm => {
+          vm.list = data;
+        })
+      }
+    })
+  },
+  watch: {
+    $route () {
+      this.list = null;
+      pageSrv.get(this.$route.params.id, (err, data) => {
+        if (err) {
+        // 处理展示错误的逻辑
+        } else {
+          this.list = data;
+        }
+      })
+    }
+  }
+}
+```
+
+命名视图。Vue-router 2.0 中允许同级展示多个视图，而不是嵌套展示，可以通过给`<router-view>`添加 name 属性的方式匹配不同的组件，如果没有设置 name，默认为 default。
+
+```JavaScript
+<router-view></router-view>
+<router-view name='main'></router-view>
+const router = new VueRouter({
+  routes: [
+    {
+      path: '/',
+      components: { // 要注意这里的属性是 components，而不是 component
+        default: Nav,
+        main: Main
+      }
+    }
+  ]
+})
+```
+
+## 7.2 Vue-resource
+## 7.3 Vue-devtools
 
 第八章 Vue.js工程实例
 8.1 准备工作
