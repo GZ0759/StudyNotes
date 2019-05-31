@@ -400,6 +400,7 @@ Bootstrap 的导入文件 bootstrap.less 一开始导入了基本的变量和混
 
 # 第三章 WordPress主题
 
+以 Roots 主题作为 WordPress 主题的起点。本章介绍的流程适用于将任意 Bootstrap 设计转换为 WordPress 主题。
 
 # 第四章 企业网站
 
