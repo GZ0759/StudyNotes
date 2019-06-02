@@ -311,9 +311,16 @@ min-width/min-height 的初始值是 auto，max-width/max-height 的初始值是
 2. 不能左右`:empty`伪类。也就是说添加 content 的空内容还是会被这个伪类选择到。
 3. content 动态生成值无法获取。
 
-在实际项目中，content 属性几乎都是用在`::before`/`::after`这两个伪元素中，因此，content 内容生成技术有时候也称为`::before`/`::after`伪元素技术。
+content内容生成技术。在实际项目中，content 属性几乎都是用在`::before`/`::after`这两个伪元素中，因此，content 内容生成技术有时候也称为`::before`/`::after`伪元素技术。
 
 1. content 辅助元素生成。通常，我们会把 content 的属性值设置为空字符串。然后，利用其他 CSS 代码来生成辅助元素，或实现图形效果，或实现特定布局。与使用显式的 HTML 标签元素相比，这样做的好处是 HTML 代码会显得更加干净和精简。
+```css
+.clear:after {
+  content: '';
+  display: table; /* 也可以是'block' */
+  clear: both;
+}
+```
 2. content 字符内容生成。content 字符内容生成就是直接写入字符内容，中英文都可以，比较常见的应用就是配合 @font-face 规则实现图标字体效果。除常规字符之外，我们还可以插入 Unicode 字符，比较经典 的就是插入换行符来实现某些布局或者效果。
 3. content 图片生成，指的是直接用 url 功能符显示图片。url 功能符中的图片地址不仅可以是常见的 png、 jpg 格式，还可以是 ico 图片、svg 文件以及 base64URL 地址，但不支持 CSS3 渐变背景图。虽然支持的图片格式多种多样，但是实际项目中，content 图片生成用得并不多，主要原因在于图片的尺寸不好控制，我们设置宽高无法改变图片的固有尺寸。所以，伪元素中的图片更多的是使用 background-image 模拟。
 4. 了解 content 开启闭合符号生成。content 支持的属性值中有一对不常用的 open-quote 和 close-quote 关键字，顾名思义，就是“开启的引号”和“闭合的引号”，使用纯正的中文解释就是“上引号”和“下引号”。CSS 中还有 no-open-quote 和 no-close-quote 关键字 。
@@ -347,7 +354,7 @@ li:before {
 
 padding 指盒子的内补间。因为 CSS 中默认的 box-sizing 是 content-box，所以使用 padding 会增加元素的尺寸。内联元素 padding 对视觉层和布局层具有双重影响。实际上，对于非替换元素的内联元素，不仅 padding 不会加入行盒高度的计算，margin 和 border 也都是如此，都是不计算高度，但实际上在内联盒周围发生了渲染。
 
-内联元素可以在不影响当前布局的情况下，优雅地增加链接或按钮的点击区域大小。利用内联元素的 padding 可以实现高度可控的分割线。
+内联元素可以在不影响当前布局的情况下，优雅地增加链接或按钮的点击区域大小。利用内联元素的 padding 还可以实现高度可控的分割线。
 
 ```css
 a + a:before {
@@ -383,13 +390,11 @@ padding 属性和 background-clip 属性配合，可以在有限的标签下实�
 
 ## 4.3 激进的 margin 属性
 
+margin 与元素尺寸以及相关布局。
+
 margin 与元素的内部尺寸。对于 padding，元素设定了 width 或者保持“包裹性”的时候，会改变元素可视尺寸；但是对于 margin 则相反，元素设定了 width 值或者保持“包裹性”的时候，margin 对尺寸没有影响，只有元素是“充分利用可用空间”状态的时候，margin 才可以改变元素的可视尺寸。例如下面的代码，子元素的宽度就是 340 像素了，尺寸通过负值设置变大了。
 
-```
-<div class="father">
-  <div class="son"></div>
-</div>
-
+```CSS
 .box {
   width: 300px;
 }
@@ -398,9 +403,24 @@ margin 与元素的内部尺寸。对于 padding，元素设定了 width 或者�
 }
 ```
 
+对于普通流体元素， margin 只能改变元素水平方向尺寸；但是，对于具有拉伸特性的绝对定位元素，则水平或垂直方向都可以，因为此时的尺寸表现符合“充分利用可用空间”。
+
 由于 margin 具有这种流体特性下的改变尺寸特性，因此，margin 可以很方便地实现很多流体布局效果。例如列表块两端对齐，有三个列表，中间有 2 个 20 像素的间隙，浮动之后右侧有个 20 像素的间隙从而无法完美实现。通过给父容器添加`magin-right: -20px`就可以解决问题。
 
-margin 与元素的外部尺寸。对于外部尺寸，margin 属性的影响则更为广泛，只要元素具有块状特性，无论有没有设置 width/height，无论是水平方向还是垂直方向，即使发生了 margin 合并，margin 对外部尺寸都着着实实发生了影响。通过设置内边距和外边距正负抵消，还可以在视觉多出一块可以使用的背景色，从而实现使用 margin 负值产生等高布局的效果。这个是针对具有块状特性的元素而言的，对于纯内联元素则不适用。
+```css
+ul {
+  margin-right: -20px;
+}
+ul > li {
+  float: left;
+  width: 100px;
+  margin-right: 20px;
+}
+```
+
+margin 与元素的外部尺寸。对于外部尺寸，margin 属性的影响则更为广泛，只要元素具有块状特性，无论有没有设置 width/height，无论是水平方向还是垂直方向，即使发生了 margin 合并，margin 对外部尺寸都着着实实发生了影响。
+
+通过设置内边距 padding 和外边距 margin 正负抵消，还可以在视觉多出一块可以使用的背景色，从而实现使用 margin 负值产生等高布局的效果。这个是针对具有块状特性的元素而言的，对于纯内联元素则不适用。
 
 ```css
 .column-box {
@@ -413,27 +433,42 @@ margin 与元素的外部尺寸。对于外部尺寸，margin 属性的影响则
 }
 ```
 
-和 padding 不同，内联元素垂直方向的 margin 是没有任何影响的，既不会影响外部尺寸， 也不会影响内部尺寸，有种石沉大海的感觉。
+上述 margin 对尺寸的影响是针对具有块状特性的元素而言的，对于纯内联元素则不适用。和 padding 不同，内联元素垂直方向的 margin 是没有任何影响的，既不会影响外部尺寸， 也不会影响内部尺寸，有种石沉大海的感觉。
 
-margin 的百分比值。和 padding 属性一样， margin 的百分比值无论是水平方向还是垂直方向都是相对于宽度计算的。在垂直方向上，会发生 margin 合并现象。外边距合并指的是，当两个垂直外边距相遇时，它们将形成一个外边距。合并后的外边距的高度等于两个发生合并的外边距的高度中的较大者。只有普通文档流中块框的垂直外边距才会发生外边距合并。行内框、浮动框或绝对定位之间的外边距不会合并。同时，这种说法在不考虑 writing-mode 的情况下才是正确的。
+margin 的百分比值。和 padding 属性一样， margin 的百分比值无论是水平方向还是垂直方向都是相对于宽度计算的。
+
+块级元素的上外边距（ margin-top）与下外边距（margin-bottom）有时会合并为单个外边距，这样的现象称为“margin 合并”。合并后的外边距的高度等于两个发生合并的外边距的高度中的较大者。行内框、浮动框或绝对定位之间的外边距不会合并。同时，这种说法在不考虑 writing-mode 的情况下才是正确的。
 
 margin 合并的 3 种场景。
 
 - 相邻兄弟元素 margin 合并。对于兄弟元素的 margin 合并其作用和 em 类似，都是让图文信息的排版更加舒服自然。
-- 父级和第一个/最后一个子元素。可以通过将父元素设置为块状格式化上下文元素，设置 border、padding，或添加内联元素进行阻止合并。父子 margin 合并的意义在于：在页面中任何地方嵌套或直接放入任何裸`<div>`，都不会影响原来的块状布局。
-- 空块级元素的 margin 合并。 可以通过设置垂直方向的 border、padding 值，添加内联元素，设置 height 或者 min-height 来解决。自身 margin 合并的意义在于可以避免不小心遗落或者生成的空标签影响排版和布局。
+- 父级和第一个/最后一个子元素。父子 margin 合并的意义在于：在页面中任何地方嵌套或直接放入任何裸`<div>`，都不会影响原来的块状布局。
+- 空块级元素的 margin 合并。自身 margin 合并的意义在于可以避免不小心遗落或者生成的空标签影响排版和布局。
 
-深入理解 CSS 中的`margin: auto`。`margin: auto`的填充规则是：如果一侧定值，一侧 auto，则 auto 为剩余空间大小；如果两侧均是 auto，则平分剩余空间。居中对齐左右同时 auto 计算即可。触发 margin:auto 计算有一个前提条件，就是 width 或 height 为 auto 时，元素是具有对应方向的自动填充特性的，因为在垂直上 height 是不符合条件的，所以不能运用这个方法进行垂直居中。
+margin 合并的计算规则总结为“正正取大值”“正负值相加”“负负最负值” 3 句话。
+
+深入理解 CSS 中的`margin: auto`。
+
+`margin: auto`的填充规则是：如果一侧定值，一侧 auto，则 auto 为剩余空间大小；如果两侧均是 auto，则平分剩余空间。居中对齐左右同时 auto 计算即可。触发 margin:auto 计算有一个前提条件，就是 width 或 height 为 auto 时，元素是具有对应方向的自动填充特性的，因为在垂直上 height 是不符合条件的，所以不能运用这个方法进行垂直居中。
 
 如果要进行垂直居中，可以使用两种方法。第一种方法是使用 writing-mode 改变文档流的方向。第二种方法是让绝对定位元素的 margin:auto 居中。
+
+```css
+.son {
+  position: absolute;
+  top: 0; right: 0; bottom: 0; left: 0;
+  width: 200px; height: 100px;
+  margin: auto;
+}
+```
 
 margin 无效情形解析。
 
 - display 计算值 inline 的非替换元素的垂直 margin 是无效的，对于内联替换元素，垂直 margin 有效，并且没有 margin 合并的问题，所以图片永远不会发生 margin 合并。
 - 表格中的`<tr>`和`<td>`元素或者设置 display 计算值是 table-cell 或 table-row 的元素的 margin 都是无效的。
 - margin 合并的时候，更改 margin 值可能是没有效果的。
-- 绝对定位元素非定位方位的 margin 值“无效”。
-- 定高容器的子元素的 margin-bottom 或者宽度定死的子元素的 margin-right 的 定位“失效”。
+- 绝对定位元素非定位方位的 margin 值“无效”。主要是因为绝对定位元素的渲染是独立的。
+- 定高容器的子元素的 margin-bottom 或者宽度定死的子元素的 margin-right 的定位“失效”。
 - 鞭长莫及导致的 margin 无效。
 - 内联特性导致的 margin 无效。因为有“幽灵空白节点” ，它们基于基线对齐。
 
@@ -441,12 +476,14 @@ margin 无效情形解析。
 
 注意， border-style 的默认值是 none，有一部分人可能会误以为是 solid。这也是单纯设置 border-width 或 border-color 没有边框显示的原因 。
 
+平常使用 border-width 几乎全是固定的数值，如 border-width:1px 之类，但是，可能有些人并不知道 border-width 还支持若干关键字，包括 thin、 medium（默认值）和 thick，
+
 border-color 有一个很重要也很实用的特性，就是“border-color 默认颜色就是 color 色值”。具体来讲，就是当没有指定 border-color 颜色值的时候，会使用当前元素的 color 计算值作为边框色。
 
 border 与透明边框技巧。虽然`color: transparent`在 IE9 以上版本的浏览器才支持，但是`border-color: transparent`在 IE7 浏览器就开始支持了，于是，我们解决一些棘手问题的思路就更加开阔了。
 
 - 右下方 background 定位的技巧。
-- 优雅地增加点击区域大小。
+- 优雅地增加点击区域大小。比 padding 更加友好。
 - 三角等图形绘制。border 属性可以轻松实现兼容性非常好的三角图形效果，其底层原因受 inset/outset 等看上去没有实用价值的 border-style 属性影响。
 
 margin+padding 可以实现等高布局，同样，border 属性也可以实现等高布局。此方法要想生效，有一点需要注意，父级容器不能使用`overflow: hidden`清除浮动影响，因为溢出隐藏是基于 padding box 的，如果设置了`overflow: hidden`，则左浮动的导航列表元素就会被隐藏掉，这显然不是我们想要的效果。
