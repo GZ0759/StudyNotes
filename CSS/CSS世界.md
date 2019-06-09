@@ -507,13 +507,15 @@ margin+padding 可以实现等高布局，同样，border 属性也可以实现�
 
 # 第 5 章 内联元素与流
 
-块级元素负责结构，内联元素接管内容，而 CSS 世界是面向图文混排，也就是内联元素设计的 。
+块级元素负责结构，内联元素接管内容，而 CSS 世界是面向图文混排，也就是内联元素设计的。
 
 ## 5.1 字母 x—CSS 世界中隐匿的举足轻重的角色
 
-通俗地讲，x-height 指的就是小写字母 x 的高度，术语描述就是基线和等分线（mean line）（也称作中线 midline）之间的距离。在 CSS 世界中，middle 指的是基线往上 1/2 x-height 高度。我们可以近似理解为字母 x 交叉点那个位置。由此可见，`vertical-align: middle`并不是绝对的垂直居中对齐，我们平常看到的 middle 效果只是一种近似效果。原因很简单，因为不同的字体在行内盒子中的位置是不一样的。
+字母 x 与 CSS 世界的基线。在各种内联相关模型中，凡是涉及垂直方向的排版或者对齐的，都离不开最基本的基线（ baseline）。例如， line-height 行高的定义就是两基线的间距， vertical-align 的默认值就是基线。字母 x 的下边缘（线）就是我们的基线。
 
-ex 是 CSS 中的一个相对单位，指的是小写字母 x 的高度，没错，就是指 x-height。ex 的价值就在其副业上—不受字体和字号影响的内联元素的垂直居中对齐效果。内联元素默认是基线对齐的，而基线就是 x 的底部，而 1ex 就是一个 x 的高度，通过使该元素（如图标）高度为 1ex ，同时背景图片居中，从而让其与文字垂直居中。
+字母 x 与 CSS 中的 x-height。通俗地讲，x-height 指的就是小写字母 x 的高度，术语描述就是基线和等分线（mean line）（也称作中线 midline）之间的距离。在 CSS 世界中，middle 指的是基线往上 1/2 x-height 高度。我们可以近似理解为字母 x 交叉点那个位置。由此可见，`vertical-align: middle`并不是绝对的垂直居中对齐，我们平常看到的 middle 效果只是一种近似效果。原因很简单，因为不同的字体在行内盒子中的位置是不一样的。
+
+字母 x 与 CSS 中的 ex。ex 是 CSS 中的一个相对单位，指的是小写字母 x 的高度，没错，就是指 x-height。ex 的价值就在其副业上——不受字体和字号影响的内联元素的垂直居中对齐效果。内联元素默认是基线对齐的，而基线就是 x 的底部，而 1ex 就是一个 x 的高度，通过使该元素（如图标）高度为 1ex ，同时背景图片居中，从而让其与文字垂直居中。
 
 ```css
 .icon-arrow {
@@ -532,10 +534,12 @@ ex 是 CSS 中的一个相对单位，指的是小写字母 x 的高度，没错
 
 对于块级元素，line-height 对其本身是没有任何作用的，我们平时改变 line-height，块级元素的高度跟着变化，原因是改变了块级元素里面内联级别元素占据的高度。
 
-```css
+```html
+<style>
 .box {
   line-height: 256px;
 }
+</style>
 <div class="box">
   <img src="1.jpg" height="128">
 </div>
@@ -557,15 +561,16 @@ line-height 在这个混合元素的“行框盒子”中扮演的角色是决�
 
 多行文本或者替换元素的垂直居中实现原理和单行文本就不一样了，需要 line-height 属性的好朋友 vertical-align 属性帮助才可以。
 
-```
+```html
+<style>
 .box {
   line-height: 120px;
-  background-color: #f0f3f9;
 }
 .content {
   display: inline-block;
   vertical-align: middle;
 }
+</style>
 
 <div class="box">
   <div class="content">基于行高实现的多行文字垂直居中效果，需要vertical-align属性帮助。</div>
@@ -574,32 +579,26 @@ line-height 在这个混合元素的“行框盒子”中扮演的角色是决�
 
 实现的原理大致是有两点。
 
-- 多行文本使用一个标签包裹，然后设置 display 为 inline-block。好处在于既然重置外部的 line-height 为正常的大小，又能保持内联元素特性，从而可以设置 vertical-align 属性，以及产生非常关键的"行框盒子"
-- 因为内联元素默认都是基线对齐的，所以通过对`.content`元素`vertical-align: middle`来调整多行文本的垂直位置，从而实现想要的垂直居中效果。
+- 多行文本使用一个标签包裹，然后设置 display 为 inline-block。好处在于既重置外部的 line-height 为正常的大小，又能保持内联元素特性，从而可以设置 vertical-align 属性，以及产生非常关键的"行框盒子"，这样就能在`.content`元素前面撑起了一个高度为 120px 的宽度为0 的内联元素。
+- 因为内联元素默认都是基线对齐的，所以通过对`.content`元素`vertical-align: middle`来调整多行文本的垂直位置，从而实现想要的垂直居中效果。如果是要借助 line-height 实现图片垂直居中效果，也是类似的原理和做法。
 
-line-height 的默认值是 normal，还支持数值、百分比值以及长度值。 乍一看，似乎`line-height: 1.5`、`line-height: 150%`和`line-height: 1.5em`这 3 种用法是一模一样的，最终的行高大小都是和 font-size 计算的值，但是实际上，`line-height: 1.5`和另外两个有一点儿不同，那就是继承细节有所差别。如果使用数值作为 line-height 的属性值，那么所有的子元素继承的都是这个已计算的数值；但是，如果使用百分比值或者长度值作为属性值，那么所有的子元素继承未计算前的值。
+深入line-height 的各类属性值。line-height 的默认值是 normal，还支持数值、百分比值以及长度值。 乍一看，似乎`line-height: 1.5`、`line-height: 150%`和`line-height: 1.5em`这 3 种用法是一模一样的，最终的行高大小都是和 font-size 计算的值，但是实际上，`line-height: 1.5`和另外两个有一点儿不同，那就是继承细节有所差别。如果使用数值（1.5）作为 line-height 的属性值，那么所有的子元素继承的都是这个已计算的数值；但是，如果使用百分比值（150%）或者长度值（1,5em）作为属性值，那么所有的子元素继承未计算前的值。
 
-无论内联元素 line-height 如何设置，最终父级元素的高度都是由数值大的那个 line-height 决定的，称之为“内联元素 line-height 的大值特性”。因为“幽灵空白节点”的干扰会让内联元素的行高增大，而行框盒子的高度是由高度最高的那个“内联盒子”决定的。所以通过设置子元素`display: inline-block`，创建一个独立的“行框盒子”，这样元素设置的 line-height 才可以生效了,这也是多行文本垂直居中设置的原因。
+```css
+.box   { font-size: 14px; }
 
+/* 当h3字体为32px时，子元素继承结果值48px */
+.box-1 { line-height: 1.5; }
+
+/* 当h3字体为32px时，子元素继承结果值21px */
+.box-2 { line-height: 150%; }
+.box-3 { line-height: 1.5em; }
+
+h3 { font-size: 32px; }
+p  { font-size: 20px; }
 ```
-<div class="box">
-  <span>内容...</span>
-</div>
 
-.box {
-  line-height: 96px;
-}
-.box span {
-  line-height: 20px;
-}
-// 或
-.box {
-  line-height: 20px;
-}
-.box span {
-  line-height: 96px;
-}
-```
+内联元素 line-height 的“大值特性”。无论内联元素 line-height 如何设置，最终父级元素的高度都是由数值大的那个 line-height 决定的，称之为“内联元素 line-height 的大值特性”。因为“幽灵空白节点”的干扰会让内联元素的行高增大，而行框盒子的高度是由高度最高的那个“内联盒子”决定的。所以，通过设置子元素`display: inline-block`，创建一个独立的“行框盒子”，这样元素设置的 line-height 才可以生效了,这也是多行文本垂直居中设置的原因。
 
 ## 5.3 line-height 的好朋友 vertical-align
 
@@ -610,7 +609,7 @@ line-height 的默认值是 normal，还支持数值、百分比值以及长度�
 - 上标下标类，如 sub、 super；
 - 数值百分比类，如 20px、 2em、 20%等。
 
-由于 vertical-align 的默认值是 baseline，即基线对齐，而基线的定义是字母 x 的下边缘。因此，内联元素默认都是沿着字母 x 的下边缘对齐的。对于图片等替换元素，往往使用元素本身的下边缘作为基线,所以默认值为 baseline 的内联文字通常与图片对齐。
+由于 vertical-align 的默认值是 baseline，即基线对齐，而基线的定义是字母 x 的下边缘。因此，内联元素默认都是沿着字母 x 的下边缘对齐的。对于图片等替换元素，往往使用元素本身的下边缘作为基线，所以默认值为 baseline 的内联文字通常与图片对齐。由于是相对字母 x 的下边缘对齐，而中文和部分英文字形的下边缘要低于字母 x 的下边缘，因此，会给人感觉文字是明显偏下的，一般都会进行调整。
 
 根据计算值的不同，相对于基线往上或往下偏移。如果 vertical-align 的计算值是正值则往上偏移，如果是负值则往下偏移。这里的 vertical-align 属性的百分比值则是相对于 line-height 的计算值计算的。
 
@@ -629,7 +628,8 @@ vertical-align 起作用是有前提条件的，这个前提条件就是：只�
 
 有时候只设置 height 而没有设置 line-height 也会让 vertical-align 不生效，因为行框盒子前面的“幽灵空白节点”高度太小，只有设置一个足够大的行高给“幽灵空白节点”才能让它起作用。
 
-```css
+```html
+<style>
 .box {
   height: 128px;
   line-height: 128px; /* 关键 CSS 属性 */
@@ -638,6 +638,8 @@ vertical-align 起作用是有前提条件的，这个前提条件就是：只�
   height: 96px;
   vertical-align: middle;
 }
+
+</style>
 <div class="box">
   <img src="1.jpg">
 </div>
@@ -660,9 +662,12 @@ vertical-align 和 line-height 之间的关系。第一点是，前者的百分�
 
 同时容器与行高不相等也是这两个的问题。
 
-```
+```html
+<style>
 .box { line-height: 32px; }
 .box > span { font-size: 24px; }
+</style>
+
 <div class="box">
   <span>文字</span>
 </div>
