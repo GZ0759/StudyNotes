@@ -95,11 +95,11 @@ Flexbox，也就是 Flexible Box Layout 模块，是 CSS 提供的用于布局�
 容器属性
 
 - flex-flow
-  - flex-direction 主轴方向
-  - flex-wrap 换行处理
-- justify-content 主轴对齐
-- align-items 辅轴对齐
-- align-content 多行对齐
+  - flex-direction 主轴方向（flex-direction: row|row-reverse|column|column-reverse）
+  - flex-wrap 换行处理（flex-wrap: nowrap | wrap | wrap-reverse）
+- justify-content 主轴对齐（justify-content: flex-start|flex-end|center|space-between|space-around）
+- align-items 辅轴对齐（align-items: stretch|center|flex-start|flex-end|baseline）
+- align-content 多行对齐（align-content: stretch|center|flex-start|flex-end|space-between|space-around）
 
 元素属性
 
