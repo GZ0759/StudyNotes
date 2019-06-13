@@ -46,17 +46,7 @@
 
 1.1 迎接新的Web时代 
 
-1.1.1 HTML 5时代即将来临 
-
-1.1.2 HTML 5的目标 
-
 1.2 HTML 5深受欢迎的理由 
-
-1.2.1 世界知名浏览器厂商对HTML 5的支持 
-
-1.2.2 第一个理由：时代的要求 
-
-1.2.3 第二个理由：Internet Explorer 8 
 
 1.3 可以放心使用HTML 5的三个理由 
 
@@ -66,17 +56,15 @@
 
 ## 2.1 语法的改变 
 
-2.1.1 HTML 5的语法变化 
-
 各浏览器之间的兼容性和互操作性在很大程度上取决于网站或网络应用程序的开发者在开发商所做的共同努力，而浏览器本身始终是存在缺陷的。因此，在HTML5中提高Web浏览器之间的兼容性是它的一个很大的目标。为了确保兼容性，就要有一个统一的标准。因为关于HTML5语法解析的算法也都提供了详细的记载，所以各Web浏览器的供应商可以把HTML5分析器集中封装在自己的浏览器中。
 
-2.1.2 HTML 5中的标记方法 
+HTML 5中的标记方法。
 
-内容类型。HTML5的文件扩展符与内容类型保持不变。扩展符仍然为“.html”或“.htm”，内容类型（ContentType）仍然为“text/html”。
-DOCTYPE声明。该声明必须是 HTML 文档的第一行，位于 <html> 标签之前。它是指示 web 浏览器关于页面使用哪个 HTML 版本进行编写的指令。在 HTML 4.01 中，<!DOCTYPE> 声明引用 DTD，因为 HTML 4.01 基于 SGML。DTD 规定了标记语言的规则，这样浏览器才能正确地呈现内容。HTML5 不基于 SGML，所以不需要引用 DTD。
-指定字符编码。在HTML5中，可以使用对<meta>元素直接追加charset属性的方式来指定编码。在 HTML 中，<meta> 标签没有结束标签。 元素可提供有关页面的元信息（meta-information），比如针对搜索引擎和更新频度的描述和关键词。
+- 内容类型。HTML5的文件扩展符与内容类型保持不变。扩展符仍然为“.html”或“.htm”，内容类型（ContentType）仍然为“text/html”。
 
-2.1.3 HTML 5确保的兼容性 
+- DOCTYPE声明。该声明必须是 HTML 文档的第一行，位于 <html> 标签之前。它是指示 web 浏览器关于页面使用哪个 HTML 版本进行编写的指令。在 HTML 4.01 中，<!DOCTYPE> 声明引用 DTD，因为 HTML 4.01 基于 SGML。DTD 规定了标记语言的规则，这样浏览器才能正确地呈现内容。HTML5 不基于 SGML，所以不需要引用 DTD。
+
+- 指定字符编码。在HTML5中，可以使用对<meta>元素直接追加charset属性的方式来指定编码。在 HTML 中，<meta> 标签没有结束标签。 元素可提供有关页面的元信息（meta-information），比如针对搜索引擎和更新频度的描述和关键词。
 
 在HTML5中，元素的标记可以省略。具体来说，分为“不允许写结束标记”、“可以省略结束标记”和“开始标记和结束标记全部可以省略”三种类型。
 
@@ -88,8 +76,6 @@ DOCTYPE声明。该声明必须是 HTML 文档的第一行，位于 <html> 标�
 
 对于具有Boolean值的属性，例如disable与readonly等，当只写属性而不指定属性值时，表示属性值为true，如果想要将属性值设为false，则可以不使用该属性。另外，要想将属性值设定为true，也可以将属性名设定为属性值，或将空字符串设定为属性值。
 在指定属性值的时候，如果属性值不包括空字符串、“>”、“<”、“=”、单引号、双引号等字符时，属性值两边的引号可以省略。
-
-2.1.4 标记示例 
 
 ## 2.2 新增的元素和废除的元素 
 
@@ -140,8 +126,11 @@ DOCTYPE声明。该声明必须是 HTML 文档的第一行，位于 <html> 标�
 2.2.4 废除的元素 
 
 - 能使用CSS代替的元素：例如basefont、big、center、font、s、strike、tt、u。
-- 不在使用frame框架。对于frameset元素、frame元素与noframes元素，由于frame框架对页面可用性存在负面影响，在html5里面已经不支持frame框架，只支持iframe框架，同时废除以上这三个元素。
+
+- 不再使用frame框架。对于frameset元素、frame元素与noframes元素，由于frame框架对页面可用性存在负面影响，在html5里面已经不支持frame框架，只支持iframe框架，同时废除以上这三个元素。
+
 - 只有部分浏览器支持的元素。对于applet元素、bgsound、blink、marquee元素，由于只有部分浏览器支持这些元素，特别是bgsound元素以及marquee元素，只被IE浏览器支持，所以在HTML5里面被废除！而applet元素可以由embed元素或者object元素代替，bgsound元素由audio元素代替，marquee可以使用javascript来代替！
+
 - 其它被废除的元素。废除rb元素，使用ruby元素代替；废除acronym元素，使用abbr元素代替；废除dir元素，使用ul元素代替；废除inindex元素，使用form元素与input元素相结合的方式代替；废除listing元素，使用pre元素代替；废除xmp元素，使用code元素代替；废除nextid元素，使用GUIDS代替；废除plaintext元素，使用“text/plian” MIME类型代替
 
 ## 2.3 新增的属性和废除的属性 
@@ -216,126 +205,110 @@ designMode属性用来指定整个页面是否可编辑，当页面可编辑时�
 下面列出了添加到 HTML 元素以定义事件动作的全局事件属性。其中有一些不是HTML5中新的事件属性。
 
 - Window 事件属性。针对 window 对象触发的事件（应用到 <body> 标签）：	
-  onafterprint	文档打印之后运行的脚本。
-  onbeforeprint	文档打印之前运行的脚本。
-  onbeforeunload	文档卸载之前运行的脚本。
-  onerror	在错误发生时运行的脚本。
-  onhaschange	当文档已改变时运行的脚本。
-  onload	页面结束加载之后触发。
-  onmessage	在消息被触发时运行的脚本。
-  onoffline	当文档离线时运行的脚本。
-  ononline	当文档上线时运行的脚本。
-  onpagehide	当窗口隐藏时运行的脚本。
-  onpageshow	当窗口成为可见时运行的脚本。
-  onpopstate	当窗口历史记录改变时运行的脚本。
-  onredo	当文档执行撤销（redo）时运行的脚本。
-  onresize	当浏览器窗口被调整大小时触发。
-  onstorage	在 Web Storage 区域更新后运行的脚本。
-  onundo	在文档执行 undo 时运行的脚本。
-  onunload	一旦页面已下载时触发（或者浏览器窗口已被关闭）。
-	 Form 事件。由 HTML 表单内的动作触发的事件（应用到几乎所有 HTML 元素，但最常用在 form 元素中）：	
-  onblur	元素失去焦点时运行的脚本。
-  onchange	在元素值被改变时运行的脚本。
-  oncontextmenu	当上下文菜单被触发时运行的脚本。
-  onfocus	当元素获得焦点时运行的脚本。
-  onformchange	在表单改变时运行的脚本。
-  onforminput	当表单获得用户输入时运行的脚本。
-  oninput	当元素获得用户输入时运行的脚本。
-  oninvalid	当元素无效时运行的脚本。
-  onreset	当表单中的重置按钮被点击时触发。HTML5 中不支持。
-  onselect	在元素中文本被选中后触发。
-  onsubmit	在提交表单时触发。
-	 Keyboard 事件	
-  onkeydown	在用户按下按键时触发。
-  onkeypress	在用户敲击按钮时触发。
-  onkeyup	当用户释放按键时触发。
-	 Mouse 事件。由鼠标或类似用户动作触发的事件：	
-  onclick	元素上发生鼠标点击时触发。
-  ondblclick	元素上发生鼠标双击时触发。
-  ondrag	元素被拖动时运行的脚本。
-  ondragend	在拖动操作末端运行的脚本。
-  ondragenter	当元素元素已被拖动到有效拖放区域时运行的脚本。
-  ondragleave	当元素离开有效拖放目标时运行的脚本。
-  ondragover	当元素在有效拖放目标上正在被拖动时运行的脚本。
-  ondragstart	在拖动操作开端运行的脚本。
-  ondrop	当被拖元素正在被拖放时运行的脚本。
-  onmousedown	当元素上按下鼠标按钮时触发。
-  onmousemove	当鼠标指针移动到元素上时触发。
-  onmouseout	当鼠标指针移出元素时触发。
-  onmouseover	当鼠标指针移动到元素上时触发。
-  onmouseup	当在元素上释放鼠标按钮时触发。
-  onmousewheel	当鼠标滚轮正在被滚动时运行的脚本。
-  onscroll	当元素滚动条被滚动时运行的脚本。
-	 Media 事件。由媒介（比如视频、图像和音频）触发的事件（适用于所有 HTML 元素，但常见于媒介元素中，比如 <audio>、<embed>、<img>、<object> 以及 <video>）:	
-  onabort	在退出时运行的脚本。
-  oncanplay	当文件就绪可以开始播放时运行的脚本（缓冲已足够开始时）。
-  oncanplaythrough	当媒介能够无需因缓冲而停止即可播放至结尾时运行的脚本。
-  ondurationchange	当媒介长度改变时运行的脚本。
-  onemptied	当发生故障并且文件突然不可用时运行的脚本（比如连接意外断开时）。
-  onended	当媒介已到达结尾时运行的脚本（可发送类似“感谢观看”之类的消息）。
-  onerror	当在文件加载期间发生错误时运行的脚本。
-  onloadeddata	当媒介数据已加载时运行的脚本。
-  onloadedmetadata	当元数据（比如分辨率和时长）被加载时运行的脚本。
-  onloadstart	在文件开始加载且未实际加载任何数据前运行的脚本。
-  onpause	当媒介被用户或程序暂停时运行的脚本。
-  onplay	当媒介已就绪可以开始播放时运行的脚本。
-  onplaying	当媒介已开始播放时运行的脚本。
-  onprogress	当浏览器正在获取媒介数据时运行的脚本。
-  onratechange	每当回放速率改变时运行的脚本（比如当用户切换到慢动作或快进模式）。
-  onreadystatechange	每当就绪状态改变时运行的脚本（就绪状态监测媒介数据的状态）。
-  onseeked	当 seeking 属性设置为 false（指示定位已结束）时运行的脚本。
-  onseeking	当 seeking 属性设置为 true（指示定位是活动的）时运行的脚本。
-  onstalled	在浏览器不论何种原因未能取回媒介数据时运行的脚本。
-  onsuspend	在媒介数据完全加载之前不论何种原因终止取回媒介数据时运行的脚本。
-  ontimeupdate	当播放位置改变时（比如当用户快进到媒介中一个不同的位置时）运行的脚本。
-  onvolumechange	每当音量改变时（包括将音量设置为静音）时运行的脚本。
-  onwaiting	当媒介已停止播放但打算继续播放时（比如当媒介暂停已缓冲更多数据）运行脚本
+  - onafterprint	文档打印之后运行的脚本。
+  - onbeforeprint	文档打印之前运行的脚本。
+  - onbeforeunload	文档卸载之前运行的脚本。
+  - onerror	在错误发生时运行的脚本。
+  - onhaschange	当文档已改变时运行的脚本。
+  - onload	页面结束加载之后触发。
+  - onmessage	在消息被触发时运行的脚本。
+  - onoffline	当文档离线时运行的脚本。
+  - ononline	当文档上线时运行的脚本。
+  - onpagehide	当窗口隐藏时运行的脚本。
+  - onpageshow	当窗口成为可见时运行的脚本。
+  - onpopstate	当窗口历史记录改变时运行的脚本。
+  - onredo	当文档执行撤销（redo）时运行的脚本。
+  - onresize	当浏览器窗口被调整大小时触发。
+  - onstorage	在 Web Storage 区域更新后运行的脚本。
+  - onundo	在文档执行 undo 时运行的脚本。
+  - onunload	一旦页面已下载时触发（或者浏览器窗口已被关闭）。
+
+- Form 事件。由 HTML 表单内的动作触发的事件（应用到几乎所有 HTML 元素，但最常用在 form 元素中）：	
+  - onblur	元素失去焦点时运行的脚本。
+  - onchange	在元素值被改变时运行的脚本。
+  - oncontextmenu	当上下文菜单被触发时运行的脚本。
+  - onfocus	当元素获得焦点时运行的脚本。
+  - onformchange	在表单改变时运行的脚本。
+  - onforminput	当表单获得用户输入时运行的脚本。
+  - oninput	当元素获得用户输入时运行的脚本。
+  - oninvalid	当元素无效时运行的脚本。
+  - onreset	当表单中的重置按钮被点击时触发。HTML5 中不支持。
+  - onselect	在元素中文本被选中后触发。
+  - onsubmit	在提交表单时触发。
+
+-Keyboard 事件	
+  - onkeydown	在用户按下按键时触发。
+  - onkeypress	在用户敲击按钮时触发。
+  - onkeyup	当用户释放按键时触发。
+
+-Mouse 事件。由鼠标或类似用户动作触发的事件：	
+  - onclick	元素上发生鼠标点击时触发。
+  - ondblclick	元素上发生鼠标双击时触发。
+  - ondrag	元素被拖动时运行的脚本。
+  - ondragend	在拖动操作末端运行的脚本。
+  - ondragenter	当元素元素已被拖动到有效拖放区域时运行的脚本。
+  - ondragleave	当元素离开有效拖放目标时运行的脚本。
+  - ondragover	当元素在有效拖放目标上正在被拖动时运行的脚本。
+  - ondragstart	在拖动操作开端运行的脚本。
+  - ondrop	当被拖元素正在被拖放时运行的脚本。
+  - onmousedown	当元素上按下鼠标按钮时触发。
+  - onmousemove	当鼠标指针移动到元素上时触发。
+  - onmouseout	当鼠标指针移出元素时触发。
+  - onmouseover	当鼠标指针移动到元素上时触发。
+  - onmouseup	当在元素上释放鼠标按钮时触发。
+  - onmousewheel	当鼠标滚轮正在被滚动时运行的脚本。
+  - onscroll	当元素滚动条被滚动时运行的脚本。
+
+- Media 事件。由媒介（比如视频、图像和音频）触发的事件（适用于所有 HTML 元素，但常见于媒介元素中，比如 <audio>、<embed>、<img>、<object> 以及 <video>）:	
+  - onabort	在退出时运行的脚本。
+  - oncanplay	当文件就绪可以开始播放时运行的脚本（缓冲已足够开始时）。
+  - oncanplaythrough	当媒介能够无需因缓冲而停止即可播放至结尾时运行的脚本。
+  - ondurationchange	当媒介长度改变时运行的脚本。
+  - onemptied	当发生故障并且文件突然不可用时运行的脚本（比如连接意外断开时）。
+  - onended	当媒介已到达结尾时运行的脚本（可发送类似“感谢观看”之类的消息）。
+  - onerror	当在文件加载期间发生错误时运行的脚本。
+  - onloadeddata	当媒介数据已加载时运行的脚本。
+  - onloadedmetadata	当元数据（比如分辨率和时长）被加载时运行的脚本。
+  - onloadstart	在文件开始加载且未实际加载任何数据前运行的脚本。
+  - onpause	当媒介被用户或程序暂停时运行的脚本。
+  - onplay	当媒介已就绪可以开始播放时运行的脚本。
+  - onplaying	当媒介已开始播放时运行的脚本。
+  - onprogress	当浏览器正在获取媒介数据时运行的脚本。
+  - onratechange	每当回放速率改变时运行的脚本（比如当用户切换到慢动作或快进模式）。
+  - onreadystatechange	每当就绪状态改变时运行的脚本（就绪状态监测媒介数据的状态）。
+  - onseeked	当 seeking 属性设置为 false（指示定位已结束）时运行的脚本。
+  - onseeking	当 seeking 属性设置为 true（指示定位是活动的）时运行的脚本。
+  - onstalled	在浏览器不论何种原因未能取回媒介数据时运行的脚本。
+  - onsuspend	在媒介数据完全加载之前不论何种原因终止取回媒介数据时运行的脚本。
+  - ontimeupdate	当播放位置改变时（比如当用户快进到媒介中一个不同的位置时）运行的脚本。
+  - onvolumechange	每当音量改变时（包括将音量设置为静音）时运行的脚本。
+  - onwaiting	当媒介已停止播放但打算继续播放时（比如当媒介暂停已缓冲更多数据）运行脚本
 
 # 第3章 HTML 5的结构 
 
 ## 3.1 新增的主体结构元素 
 
-3.1.1 article元素 
+article元素。标签定义外部的内容。外部内容可以是来自一个外部的新闻提供者的一篇新的文章，或者来自 blog 的文本，或者是来自论坛的文本。亦或是来自其他外部源内容。
 
-标签定义外部的内容。外部内容可以是来自一个外部的新闻提供者的一篇新的文章，或者来自 blog 的文本，或者是来自论坛的文本。亦或是来自其他外部源内容。
+section元素标签定义文档中的节（section、区段）。比如章节、页眉、页脚或文档中的其他部分。
 
-3.1.2 section元素 
+nav元素。标签定义导航链接的部分。
 
-标签定义文档中的节（section、区段）。比如章节、页眉、页脚或文档中的其他部分。
+aside元素。标签定义其所处内容之外的内容。aside 的内容应该与附近的内容相关。
 
-3.1.3 nav元素 
+time元素与微格式。标签定义日期或时间，或者两者。
 
-标签定义导航链接的部分。
-
-3.1.4 aside元素 
-
-标签定义其所处内容之外的内容。aside 的内容应该与附近的内容相关。
-
-3.1.5 time元素与微格式 
-
-标签定义日期或时间，或者两者。
-
-3.1.6 pubdate属性 
-
-属性指示 <time> 元素中的日期 / 时间是文档（或最近的前辈 <article> 元素）的发布日期。
+pubdate属性。属性指示 <time> 元素中的日期 / 时间是文档（或最近的前辈 <article> 元素）的发布日期。
 
 ## 3.2 新增的非主体结构元素 
 
-3.2.1 header元素 
+header元素。标签定义文档的页眉（介绍信息）。
 
-标签定义文档的页眉（介绍信息）。
+footer元素。标签定义 section 或 document 的页脚。在典型情况下，该元素会包含创作者的姓名、文档的创作日期以及/或者联系信息。
 
-3.2.2 footer元素 
+address元素。标签定义文档作者或拥有者的联系信息。如果 <address> 元素位于 <article> 元素内部，则它表示该文章作者或拥有者的联系信息。通常的做法是将 address 元素添加到网页的头部或底部。
 
-标签定义 section 或 document 的页脚。在典型情况下，该元素会包含创作者的姓名、文档的创作日期以及/或者联系信息。
-
-3.2.3 address元素 
-
-标签定义文档作者或拥有者的联系信息。如果 <address> 元素位于 <article> 元素内部，则它表示该文章作者或拥有者的联系信息。通常的做法是将 address 元素添加到网页的头部或底部。
-
-3.2.4 main元素 
-
-标签规定文档的主要内容。 元素中的内容对于文档来说应当是唯一的。它不应包含在文档中重复出现的内容，比如侧栏、导航栏、版权信息、站点标志或搜索表单。在一个文档中，不能出现一个以上的 <main> 元素。<main> 元素不能是以下元素的后代：<article>、<aside>、<footer>、<header> 或 <nav>。
+main元素。标签规定文档的主要内容。 元素中的内容对于文档来说应当是唯一的。它不应包含在文档中重复出现的内容，比如侧栏、导航栏、版权信息、站点标志或搜索表单。在一个文档中，不能出现一个以上的 <main> 元素。<main> 元素不能是以下元素的后代：<article>、<aside>、<footer>、<header> 或 <nav>。
 
 ## 3.3 HTML 5中网页结构 
 
@@ -539,62 +512,42 @@ small元素从原来的通用展示性元素变为更具体的、专门用来标
 # 第5章 绘制图形 
 
 5.1　canvas元素的基础知识 
-5.1.1　在页面中放置canvas元素 
-5.1.2　绘制矩形 
+
 5.2　使用路径 
-5.2.1　绘制圆形 
-5.2.2　不关闭路径会怎么样 
-5.2.3　绘制直线 
-5.2.4　绘制曲线 
-5.2.5　使用Path2D对象绘制路径 
+
 5.3　绘制渐变图形 
-5.3.1　绘制线性渐变 
-5.3.2　绘制径向渐变 
+
 5.4　绘制变形图形 
-5.4.1　坐标变换 
-5.4.2　坐标变换与路径的结合使用 
-5.4.3　矩阵变换 
+
 5.5　给图形绘制阴影 
+
 5.6　使用图像 
-5.6.1　绘制图像 
-5.6.2　图像平铺 
-5.6.3　图像裁剪 
-5.6.4　像素处理 
+
 5.7　图形、图像的组合与混合 
-5.7.1　组合图形 
-5.7.2　混合图像 
+
 5.8　绘制文字 
+
 5.9　补充知识 
-5.9.1　保存与恢复状态 
-5.9.2　保存文件 
-5.9.3　简单动画的制作 
+
 
 # 第6章 多媒体相关API 
 
 6.1　多媒体播放 
-6.1.1　video元素与audio元素的基础知识 
-6.1.2　属性 
-6.1.3　方法 
-6.1.4　事件 
+
 6.2　对音频或视频添加字幕 
-6.2.1　track元素的基础知识 
-6.2.2　track元素的各种属性 
-6.2.3　WebVTT文件 
+
 
 # 第7章 History API 
 
 7.1　History API的基本概念 
+
 7.2　History API使用示例 
-7.2.1　使用History API 
-7.2.2　结合使用Canvas API与History API 
 
 # 第8章 本地存储 
 
 Web Storage 存储机制时对 HTML4 中 cookie 存储机制的一个改善。由于 cookie 存储机制有很多缺点，HTML5 不再使用它，转而使用改良后的 Web Storage 存储机制；本地数据库是 HTML5 中新增的一个功能，使用它可以在客户端本地建立一个数据库，原本必须存在服务器端数据库中的内容现在可以直接保存在客户端本地了，这大大减轻了服务器端的负担，同时也加快了访问数据的速度。
 
 ## 8.1 Web Storage 
-
-8.1.1 Web Storage是什么 
 
 使用 cookie 可以在客户端保存诸如用户名等简单的用户信息，但是，用 cookie人 存储永久数据存在几个问题。
 
@@ -628,9 +581,7 @@ var msg=localStorage.message;
 
 在保存数据时，若使用 sessionStorage 读取或保存数据，则使用 sessionStorage 对象并调用该对象的读写方法。同理，localStorage 也是如此。但是在保存数据时不允许重复保存相同的键名。保存后可以修改键值，但不允许修改键名。
 
-8.1.2 简单Web留言本 
-
-虽然这种一对一的数据读写方法使用起来比较简单，但是在实际使用过程中用户并不是很大，因为如果要保存的数据量比较大，那么使用这种方法会非常麻烦。下面利用 Web Storage 来保存和读取大量数据。
+简单Web留言本、虽然这种一对一的数据读写方法使用起来比较简单，但是在实际使用过程中用户并不是很大，因为如果要保存的数据量比较大，那么使用这种方法会非常麻烦。下面利用 Web Storage 来保存和读取大量数据。
 
 ```html
 <h1>简单Web留言本</h1>
@@ -677,9 +628,7 @@ function clearStorage()
 }
 ```
 
-8.1.3 作为简易数据库来利用 
-
-如果想要用 Web Storage 作为数据库，应考虑怎样对列进行管理、怎样对数据进行检索。要做到这点，需要使用 JSON 格式。将对象以 JSON 格式作为文本保存，获取该对象时再通过 JSON 格式进行获取，这样就可以在 WebStorage 中保存和读取具有复杂结构的数据了。
+作为简易数据库来利用。如果想要用 Web Storage 作为数据库，应考虑怎样对列进行管理、怎样对数据进行检索。要做到这点，需要使用 JSON 格式。将对象以 JSON 格式作为文本保存，获取该对象时再通过 JSON 格式进行获取，这样就可以在 WebStorage 中保存和读取具有复杂结构的数据了。
 
 ```html
 <h1>使用Web Storage来做简易数据库示例</h1>
@@ -726,9 +675,7 @@ function findStorage(id)
 }
 ```
 
-8.1.4 利用storage事件实时监视Web Storage中的数据 
-
-在 HTML5 中，可以通过对 window 对象的 storage 事件进行监听并指定其事件处理函数的方法来定义在其他页面中修改 sessionStorage 或 localStorage 中的值时所要执行的处理。
+利用storage事件实时监视Web Storage中的数据。在 HTML5 中，可以通过对 window 对象的 storage 事件进行监听并指定其事件处理函数的方法来定义在其他页面中修改 sessionStorage 或 localStorage 中的值时所要执行的处理。
 
 在事件处理函数中，触发事件的事件对象（event参数值）具有如下几个属性。
 
@@ -1117,41 +1064,16 @@ alert('索引创建成功');
 # 第10章 文件API 
 
 10.1　FileList对象与file对象 
+
 10.2　ArrayBuffer对象与ArrayBufferView对象 
-10.2.1　基本概念 
-10.2.2　ArrayBuffer对象 
-10.2.3　ArrayBufferView对象 
-10.2.4　DataView对象 
+
 10.3　Blob对象 
-10.3.1　Blob对象概述 
-10.3.2　创建Blob对象 
-10.3.3　Blob对象的slice方法 
-10.3.4　在IndexedDB数据库中保存Blob对象 
+
 10.4　FileReader对象 
-10.4.1　FileReader对象的方法 
-10.4.2　FileReader对象的事件 
-10.4.3　FileReader对象的使用示例 
+
 10.5　FileSystem API 
-10.5.1　FileSystem API概述 
-10.5.2　FileSystem API的适用场合 
-10.5.3　请求访问文件系统 
-10.5.4　申请磁盘配额 
-10.5.5　创建文件 
-10.5.6　写入文件 
-10.5.7　在文件中追加数据 
-10.5.8　读取文件 
-10.5.9　复制磁盘中的文件 
-10.5.10　删除文件 
-10.5.11　创建目录 
-10.5.12　读取目录中的内容 
-10.5.13　删除目录 
-10.5.14　复制文件或目录 
-10.5.15　移动文件或目录与重命名文件或目录 
-10.5.16　filesystem:URL前缀 
-10.5.17　综合案例 
+
 10.6　Base64编码支持 
-10.6.1　Base64编码概述 
-10.6.2　在HTML 5中支持Base64编码 
 
 # 第11章 通信API 
 
@@ -1164,8 +1086,6 @@ alert('索引创建成功');
 通过使用Server-Sent Events API，服务器端可以每隔一段时间主动向客户端发送一个携带数据的事件，客户端在接收到该事件后可以使用该事件中所携带的数据进行页面上内容的更新或其他一些必要的处理。
 
 ## 11.1 跨文档消息传输 
-
-11.1.1 跨文档消息传输的基本知识 
 
 HTML 5 中提供了在网页文档之间互相接收与发送信息的功能。使用这个功能，只要获取到网页所在窗口对象的实例，不仅同源（域+端口号）的Web网页之间可以互相通信，甚至可以实现跨域通信。
 
@@ -1183,10 +1103,6 @@ otherWindow 为要发送窗口的对象的引用，可以通过 window.open 返�
 otherWindow.postMessage(message,tragetOrigin);
 ```
 
-11.1.2 跨文档消息传输示例 
-
-11.1.3 通道通信 
-
 通道通信机制提供了一种在多个源之间进行通信的方法，这些域之间通过端口进行通信，从一个端口中发出的数据被另一个端口接收。
 
 当需要在 iframe 元素中的子页面中实现通道通信机制时，需要创建一个 MessageChannel 对象。在创建该对象的同时，两个端口被同时创建，其中一个端口被本页面使用，而另一个端口将通过父页面被发送到其另一个 iframe 元素的子页面中。
@@ -1200,13 +1116,9 @@ otherWindow.postMessage(message,tragetOrigin);
 
 ## 11.2 WebSockets通信 
 
-11.2.1 WebSockets通信的基本知识 
-
 WebSockets 是HTML5 提供的在 Web 应用程序中客户端与服务端之间进行的非 HTTP 的通信机制，它实现了用 HTTP 不容易实现的服务器端的数据推送等智能通信技术。
 
 使用 WebSockets API 可以在服务器与客户端之间建立一个非 HTTP 的双向连接，这个连接是实时的，也是永久的，除非被显式关闭。同时可以使用跨域通信技术。
-
-11.2.2 使用WebSockets API 
 
 WebSockets 的 API 本身非常简单，首先将 URL 字符串作为参数，然后调用 WebSocket 对象的构造器来建立与非服务器之间的通信连接。URL 字符串必须以“ws”或“wss”文字作为开头，这个url设定之后可以通过访问 Websocket 对象的 url 属性来重新获取。
 
@@ -1243,19 +1155,12 @@ websocket.close();
 - CLOSING(数字值为2)，表示正在关闭连接。 
 - CLOSED(数字值为3)，表示已关闭链接。
 
-11.2.3 WebSockets API使用示例 
 
-11.2.4 发送对象 
+发送对象。使用 WebSocs API，不仅可以发送文本数据，还可以使用 JSON 对象来发送一切 JavaScript 中的对象，使用该对象的关键在于它的两个方法，分别是 JSON.parse 方法和 JSON.stringify 方法，前者把文本数据转换为 JavaScript 对象，后者则把 JavaScript 对象转换为文本数据。
 
-使用 WebSocs API，不仅可以发送文本数据，还可以使用 JSON 对象来发送一切 JavaScript 中的对象，使用该对象的关键在于它的两个方法，分别是 JSON.parse 方法和 JSON.stringify 方法，前者把文本数据转换为 JavaScript 对象，后者则把 JavaScript 对象转换为文本数据。
+发送与接收原始二进制数据。在 HTML5 中，除了可以使用 WebSockets API 发送文本数据及 JavaScript 对象之外，同时可以使用 WebSockets API 来发送 ArrayBuffer 对象及 Blob 对象。
 
-11.2.5 发送与接收原始二进制数据 
-
-在 HTML5 中，除了可以使用 WebSockets API 发送文本数据及 JavaScript 对象之外，同时可以使用 WebSockets API 来发送 ArrayBuffer 对象及 Blob 对象。
-
-11.2.6 实现WebSockets API的开发框架 
-
-当服务器端需要同时处理大量来自客户端的请求，并且需要确保服务器端只需花费较少的性能成本来处理这些请求时，可以使用这种新型的使用 WebSockets API 的应用程序架构，因为这种应用程序架构通常使用“非阻塞型IO”技术。这些开发框架包括
+实现WebSockets API的开发框架。当服务器端需要同时处理大量来自客户端的请求，并且需要确保服务器端只需花费较少的性能成本来处理这些请求时，可以使用这种新型的使用 WebSockets API 的应用程序架构，因为这种应用程序架构通常使用“非阻塞型IO”技术。这些开发框架包括
 
 - 使用 Node.js 开发语言的Socket.IO/WebSocket-Node/ws
 - 使用 Java 开发语言的 Jetty
@@ -1265,152 +1170,86 @@ websocket.close();
 - 使用 C++ 开发语言的 Libwebsockets
 - 使用 .NET 开发语言的 Superwebsocket
 
-11.2.7 WebSocket协议 
+WebSocket协议。在 WebSockets API 内部，通过使用 WebSockets 协议来实现多个客户端与服务器之间的双向协议。该协议定义客户端与服务器如何通过握手来建立通信管道，实现数据（包括原始二进制数据）的传送。现在，国际上标准的 WebSocket 协议为 RFC6455 协议。
 
-在 WebSockets API 内部，通过使用 WebSockets 协议来实现多个客户端与服务器之间的双向协议。该协议定义客户端与服务器如何通过握手来建立通信管道，实现数据（包括原始二进制数据）的传送。现在，国际上标准的 WebSocket 协议为 RFC6455 协议。
-
-11.2.8 WebSockets API的适用场景 
-
-WebSockets API 适用于当多个客户端与同一个服务器需要实现实时通信的场合。例如多人在线游戏网站、聊天室、实时体育或新闻评论网站、实时交互用户信息的社交网站。
+WebSockets API的适用场景。WebSockets API 适用于当多个客户端与同一个服务器需要实现实时通信的场合。例如多人在线游戏网站、聊天室、实时体育或新闻评论网站、实时交互用户信息的社交网站。
 
 ## 11.3 Server-Sent Events API 
-
-11.3.1　Server-Sent Events API的基本概念 
 
 所谓 Server-Sent Events ，就是指由服务器发送一些事件，由客户端接收这些事件。该 API 与 Websockets 不同之处在于它实现的是一种从服务器端发送到客户端的单向通信机制，而后者实现的是服务器端与客户端之间的双向通信机制。
 
 从现实意义上来说，Server-Sent Events API 可以被应用于一下场合：在取票软件中实时显示股票的在线数据、在新闻网站中实时显示最近刚刚发生的重大新闻、在在线聊天软件中实时显示当前聊天室中的用户名及用户人数、在其它任何需要实时显示服务器数据的场合。
 
-11.3.2　Server-Sent Events API的实现方法 
+Server-Sent Events API的实现方法 
 
-11.3.3　事件ID的使用示例 
-
-在服务器端，我们可以将每次发送的事件 ID 值自动加1，当客户端接收到该事件 ID 后，下次与服务器建立连接后再请求的头部信息中将同时提交该事件ID，服务器端可以检查该事件 ID 是否为上次发送的事件 ID，如果与上次发送的事件 ID 不一致则说明客户端与服务器建立连接失败的情况，本次需要同时发送前几次已经发送的数据。
+事件ID的使用示例。在服务器端，我们可以将每次发送的事件 ID 值自动加1，当客户端接收到该事件 ID 后，下次与服务器建立连接后再请求的头部信息中将同时提交该事件ID，服务器端可以检查该事件 ID 是否为上次发送的事件 ID，如果与上次发送的事件 ID 不一致则说明客户端与服务器建立连接失败的情况，本次需要同时发送前几次已经发送的数据。
 
 # 第12章 WebRTC通信 
 
-12.1　WebRTC的基本概念 
+12.1　WebRTC的基本概念
+
 12.2　使用getUserMedia方法访问本地设备 
-12.2.1　浏览器检测 
-12.2.2　获取对视频输入设备或音频输入设备的访问权限 
-12.2.3　实现拍照功能 
-12.2.4　与CSS 3结合使用 
+
 12.3　手工建立WebRTC通信 
-12.3.1　WebRTC通信的基本概念 
-12.3.2　建立P2P通信 
-12.3.3　手工实现信令 
-12.3.4　剖析SDP交换过程 
-12.3.5　剖析ICE交换过程 
+
 12.4　穿越NAT/防火墙进行通信 
-12.4.1　穿越NAT 
-12.4.2　穿越防火墙 
+
 12.5　使用Node.js进行信令 
-12.5.1　建立信令服务器 
-12.5.2　修改信令处理 
+
 12.6　使用WebRTC进行多人通信 
+
 12.7　使用RTCDataChannel进行通信 
-12.7.1　RTCDataChannel的基本概念 
-12.7.2　实现RTCDataChannel通信 
-12.7.3　实现浏览器与浏览器之间的文件发送功能 
+
 
 # 第13章 扩展的XMLHttpRequest API 
 
 13.1　从服务器端获取二进制数据 
-13.1.1　ArrayBuffer响应 
-13.1.2　Blob响应 
+
 13.2　发送数据 
-13.2.1　发送字符串 
-13.2.2　发送表单数据 
-13.2.3　上传文件 
-13.2.4　发送Blob对象 
-13.2.5　发送ArrayBuffer对象 
+
 13.3　跨域数据请求 
 
 # 第14章 使用Web Workers处理线程 
 
 14.1　基础知识 
+
 14.2　与线程进行数据的交互 
+
 14.3　线程嵌套 
-14.3.1　单层嵌套 
-14.3.2　在多个子线程中进行数据的交互 
+
 14.4　线程中可用的变量、函数与类 
+
 14.5　适用场合 
+
 14.6　SharedWorker 
-14.6.1　基础知识 
-14.6.2　实现前台页面与后台线程之间的通信 
-14.6.3　定义页面与共享的后台线程开始通信时的处理 
-14.6.4　SharedWorker的使用示例 
+
 
 # 第15章 获取地理位置信息 
 
 15.1　Geolocation API的基本知识 
-15.1.1　取得当前地理位置 
-15.1.2　持续监视当前地理位置的信息 
-15.1.3　停止获取当前用户的地理位置信息 
+ 
 15.2　position对象 
+
 15.3　在页面上使用google地图 
 
 # 第16章 拖放API与通知API 
 
 16.1　拖放API 
-16.1.1　实现拖放的步骤 
-16.1.2　DataTransfer对象的属性与方法 
-16.1.3　设定拖放时的视觉效果 
-16.1.4　自定义拖放图标 
+
 16.2　通知API 
-16.2.1　通知API的基础知识 
-16.2.2　通知API的代码使用示例 
 
 # 第17章 其他API 
 
 17.1　Page Visibility API 
 
-17.1.1　Page Visibility API概述 
-
-17.1.2　Page Visibility API的使用场合 
-
-17.1.3　实现Page Visibility API 
-
 17.2　Fullscreen API 
-
-17.2.1　Fullscreen API概述 
-
-17.2.2　实现Fullscreen API 
-
-17.2.3　Fullscreen API代码使用示例 
 
 17.3　鼠标指针锁定API 
 
-17.3.1　鼠标指针锁定API概述 
-
-17.3.2　鼠标指针锁定API代码使用示例 
-
 17.4　requestAnimationFrame 
-
-17.4.1　requestAnimationFrame概述 
-
-17.4.2　requestAnimFrame代码使用示例 
 
 17.5　Mutation Observer 
 
 17.6　 Promise 
 
-17.6.1　Promise对象的基本概念 
-
-17.6.2　创建Promise对象 
-
-17.6.3　链式调用Promise对象的then方法 
-
-17.6.4　将异步操作队列化 
-
-17.6.5　异常处理 
-
-17.6.6　创建序列 
-
-17.6.7　执行并行处理 
-
 17.7　Beacon API 
-
-17.7.1　Beacon API概述 
-
-17.7.2　Beacon API的使用方法 
