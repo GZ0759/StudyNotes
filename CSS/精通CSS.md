@@ -95,11 +95,11 @@ Flexbox，也就是 Flexible Box Layout 模块，是 CSS 提供的用于布局�
 容器属性
 
 - flex-flow
-  - flex-direction 主轴方向（flex-direction: row|row-reverse|column|column-reverse）
-  - flex-wrap 换行处理（flex-wrap: nowrap | wrap | wrap-reverse）
-- justify-content 主轴对齐（justify-content: flex-start|flex-end|center|space-between|space-around）
-- align-items 辅轴对齐（align-items: stretch|center|flex-start|flex-end|baseline）
-- align-content 多行对齐（align-content: stretch|center|flex-start|flex-end|space-between|space-around）
+  - flex-direction 主轴方向`（flex-direction: row|row-reverse|column|column-reverse）`
+  - flex-wrap 换行处理`（flex-wrap: nowrap | wrap | wrap-reverse）`
+- justify-content 主轴对齐`（justify-content: flex-start|flex-end|center|space-between|space-around）`
+- align-items 辅轴对齐`（align-items: stretch|center|flex-start|flex-end|baseline）`
+- align-content 多行对齐`（align-content: stretch|center|flex-start|flex-end|space-between|space-around）`
 
 元素属性
 
@@ -126,7 +126,9 @@ Flexbox 已经得到主流浏览器较新版本的广泛支持。如果要支持
 
 ### 6.3.3 对齐与空间
 
-Flexbox 对子项的排列有多种方式，沿主轴的排列叫排布（justification），沿辅轴的排列则叫对齐（alignment）。 用于指定排布方式的属性是 justify-content，其默认值是 flex-start，表示按照当前文本方向排布，关键词还有 flex-end、center、space-between、space-around。
+Flexbox 对子项的排列有多种方式，沿主轴的排列叫排布（justification），沿辅轴的排列则叫对齐（alignment）。 
+
+排布对齐。用于指定排布方式的属性是 justify-content，其默认值是 flex-start，表示按照当前文本方向排布，关键词还有 flex-end、center、space-between、space-around。
 
 Flexbox 不允许通过以上这些关键字指定个别项的排布方式。然而，如果指定某一项的外边距值为 auto，而且在容器里哪一侧还有空间，那么该外边距就会扩展占据可用空间。
 
@@ -134,7 +136,7 @@ Flexbox 不允许通过以上这些关键字指定个别项的排布方式。然
 
 除了同时对其所有项，还可以在辅轴上指定个别项的对齐方式。使用的是 align-self 属性。align-self 属性重写了容器的 align-items 属性。
 
-Flexbox 中的垂直对齐。在容器里只有一个元素时，只要将容器设置为 flex，再将需要居中的元素的外边距设置为 auto 就行了，因为 Flexbox 中各项的自动外边距会扩展“填充”相应方向的空间。如果 Flex 容器有多个元素，那么就可以使用对齐属性将它们聚拢到水平和垂直中心上，只需要把排布和对齐都设置为 center。
+垂直和水平居中。Flexbox 中的垂直对齐。在容器里只有一个元素时，只要将容器设置为 flex，再将需要居中的元素的外边距设置为 auto 就行了，因为 Flexbox 中各项的自动外边距会扩展“填充”相应方向的空间。如果 Flex 容器有多个元素，那么就可以使用对齐属性将它们聚拢到水平和垂直中心上，只需要把排布和对齐都设置为 center。
 
 ### 6.3.4 可伸缩的尺寸
 
@@ -202,9 +204,10 @@ Flexbox 支持对元素大小的灵活控制。体现在以下三个属性中：
 }
 .article-teaser img {
   width: 100%;
-  min-height: 0; /* [1] */
+  min-height: 0; 
   order: -1;
 }
+/* 底部查看更多按钮 */
 .article-teaser-more {
   margin-top: auto;
 }
