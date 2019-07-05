@@ -59,6 +59,159 @@ A 和 B、B 和 C、B 和 D 都是父子关系，C 和 D 是兄弟关系，A 和
 这两种方法的弊端是，无法在**跨级**或**兄弟**间通信。那这种情况下，就得配置额外的插件或工具了，比如 Vuex 和 Bus 的解决方案，本小册不再做它们的介绍，读者可以自行阅读相关内容。不过，它们都是依赖第三方插件的存在，这在开发独立组件时是不可取的，而在小册的后续章节，会陆续介绍一些黑科技，它们完全不依赖任何三方插件，就可以轻松得到任意的组件实例，或在任意组件间进行通信，且适用于任意场景。
 
 # 3 组件的通信 1：provide / inject
+
+## 什么是 provide / inject
+
+这对选项需要一起使用，以允许一个祖先组件向其所有子孙后代注入一个依赖，不论组件层次有多深，并在起上下游关系成立的时间里始终生效。如果熟悉 React，这与 React 的上下文特性很相似。provide 和 inject 主要为高阶插件/组件库提供用例。并不推荐直接用于应用程序代码中。
+
+```js
+// A.vue
+export default {
+  provide: {
+    name: 'Aresn'
+  }
+}
+
+// B.vue
+// B为A的子组件
+export default {
+  inject: ['name'],
+  mounted () {
+    console.log(this.name);  // Aresn
+  }
+}
+```
+
+值得注意的是，provide 和 inject 绑定并**不是可响应**的。然而，如果传入了一个可监听的对象，那么其对象的属性还是可响应的。
+
+## 替代 Vuex
+
+状态管理 Vuex 是一个专为 Vue.js 开发的**状态管理模式**，用于集中式存储管理应用的所有组件的状态，并以相应的规则保证状态以一种可预测的方式发生变化。
+
+使用 Vuex，最主要的目的是跨组件通信、全局数据维护、多人协同开发。需求比如有：用户的登录信息维护、通知信息维护等全局的状态和数据。
+
+将 app.vue 理解为一个最外层的根组件，用来存储所有需要的全局数据和状态，甚至是计算属性（computed）、方法（methods）等。因为你的项目中所有的组件（包含路由），它的父组件（或根组件）都是 app.vue，所以我们**把整个 app.vue 实例通过 `provide` 对外提供**。
+
+```html
+<!-- app.vue -->
+<script>
+  export default {
+    provide () {
+      return {
+        app: this
+      }
+    },
+    data () {
+      return {
+        userInfo: null
+      }
+    },
+    methods: {
+      getUserInfo () {
+        // 这里通过 ajax 获取用户信息后，赋值给 this.userInfo，以下为伪代码
+        $.ajax('/user/info', (data) => {
+          this.userInfo = data;
+        });
+      }
+    },
+    mounted () {
+      this.getUserInfo();
+    }
+  }
+</script>
+```
+
+```html
+<!-- 子组件 -->
+<template>
+  <div>
+    {{ app.userInfo }}
+  </div>
+</template>
+<script>
+  export default {
+    inject: ['app'],
+    methods: {
+      changeUserInfo () {
+        // 这里修改完用户数据后，通知 app.vue 更新，以下为伪代码
+        $.ajax('/user/update', () => {
+          // 直接通过 this.app 就可以调用 app.vue 里的方法
+          this.app.getUserInfo();
+        })
+      }
+    }
+  }
+</script>
+```
+
+## 进阶技巧
+
+如果项目足够复杂，或需要多人协同开发时，在 `app.vue` 里会写非常多的代码，多到结构复杂难以维护。这时可以使用 Vue.js 的混合 `mixins`，将不同的逻辑分开到不同的 js 文件里。
+
+```js
+// user.js
+export default {
+  data () {
+    return {
+      userInfo: null
+    }
+  },
+  methods: {
+    getUserInfo () {
+      // 这里通过 ajax 获取用户信息后，赋值给 this.userInfo，以下为伪代码
+      $.ajax('/user/info', (data) => {
+        this.userInfo = data;
+      });
+    }
+  },
+  mounted () {
+    this.getUserInfo();
+  }
+}
+```
+
+```html
+<!-- app.vue -->
+<script>
+  import mixins_user from '../mixins/user.js';
+
+  export default {
+    mixins: [mixins_user],
+    data () {
+      return {
+
+      }
+    }
+  }
+</script>
+```
+
+## 独立组件中使用
+
+只要一个组件使用了 `provide` 向下提供数据，那其下所有的子组件都可以通过 `inject` 来注入，不管中间隔了多少代，而且可以注入多个来自不同父级提供的数据。需要注意的是，一旦注入了某个数据，比如上面示例中的 `app`，那这个组件中就不能再声明 `app` 这个数据了，因为它已经被父级占有。
+
+独立组件使用 provide / inject 的场景，主要是具有联动关系的组件，比如接下来很快会介绍的第一个实战：具有数据校验功能的表单组件 Form。它其实是两个组件，一个是 Form，一个是 FormItem，FormItem 是 Form 的子组件，它会依赖 Form 组件上的一些特性（props），所以就需要得到父组件 Form，这在 Vue.js 2.2.0 版本以前，是没有 provide / inject 这对 API 的，而 Form 和 FormItem 不一定是父子关系，中间很可能间隔了其它组件，所以不能单纯使用 `$parent` 来向上获取实例。在 Vue.js 2.2.0 之前，一种比较可行的方案是用计算属性动态获取：
+
+```js
+computed: {
+  form () {
+    let parent = this.$parent;
+    while (parent.$options.name !== 'Form') {
+      parent = parent.$parent;
+    }
+    return parent;
+  }
+}
+```
+
+每个组件都可以设置 `name` 选项，作为组件名的标识，利用这个特点，通过向上遍历，直到找到需要的组件。这个方法可行，但相比一个 `inject` 来说，太费劲了，而且不那么优雅和 native。如果用 inject，可能只需要一行代码：
+
+```js
+export default {
+  inject: ['form']
+}
+```
+
 # 4 组件的通信 2：派发与广播——自行实现 dispatch 和 broadcast 方法
 # 5 实战 1：具有数据校验功能的表单组件——Form
 # 6 组件的通信 3：找到任意组件实例——findComponents 系列方法
