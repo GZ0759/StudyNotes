@@ -55,14 +55,14 @@ presented by [TOWER](www.git-tower.com) › Version control with Git - made easy
  $ git commit -a
  ```
  
- Commit previously staged changes
+ Commit previously staged changes  
  提交之前暂存的更改
  
  ```sh
  $ git commit
  ```
  
- Change the last commit Don‘t amend published commits!
+ Change the last commit Don‘t amend published commits!  
  更改最后一次提交。不要修改发布的提交！
  
  ```sh
@@ -84,7 +84,7 @@ presented by [TOWER](www.git-tower.com) › Version control with Git - made easy
  $ git log -p <file>
  ```
  
- Who changed what and when in <file>
+ Who changed what and when in <file>  
  谁改变了什么文件，何时改变了文件
  
  ```sh
@@ -93,42 +93,42 @@ presented by [TOWER](www.git-tower.com) › Version control with Git - made easy
  
  BRANCHES & TAGS
  
- List all existing branches
+ List all existing branches  
  列出所有现有分支
 
  ```sh
  $ git branch -av
  ```
  
- Switch HEAD branch
+ Switch HEAD branch  
  切换HEAD分支
  
  ```sh
  $ git checkout <branch>
  ```
  
- Create a new branch based  on your current HEAD
+ Create a new branch based  on your current HEAD  
  根据您当前的HEAD创建一个新分支
  
  ```sh
  $ git branch <new-branch>
  ```
  
- Create a new tracking branch based on  a remote branch
+ Create a new tracking branch based on  a remote branch  
  基于远程分支创建新的跟踪分支
  
  ```sh
  $ git checkout --track <remote/bran-ch>
  ```
  
- Delete a local branch
+ Delete a local branch  
  删除本地分支
 
  ```sh
  $ git branch -d <branch>
  ```
  
- Mark the current commit with a tag
+ Mark the current commit with a tag  
  使用 tag 标记当前提交
 
  ```sh
@@ -136,56 +136,56 @@ presented by [TOWER](www.git-tower.com) › Version control with Git - made easy
  ```
  
  ## UPDATE & PUBLISH
- List all currently configured remotes 
+ List all currently configured remotes  
  列出所有当前配置的远程设备
  
  ```sh
  $ git remote -v
  ```
  
- Show information about a remote 
+ Show information about a remote  
  显示有关远程设备的信息
  
  ```sh
  $ git remote show <remote>
  ```
  
- Add new remote repository, named <remote> 
+ Add new remote repository, named <remote>  
  添加名为<remote>的新远程仓库
 
  ```sh
  $ git remote add <shortname> <url>
  ```
  
- Download all changes from <remote>,  but don‘t integrate into HEAD 
+ Download all changes from <remote>,  but don‘t integrate into HEAD  
  从<remote>中下载所有更改 ，但不要集成到HEAD
 
  ```sh
  $ git fetch <remote>
  ```
 
- Download changes and directly  merge/integrate  into  HEAD
+ Download changes and directly  merge/integrate  into  HEAD  
  下载更改并直接合并/集成到HEAD中
 
  ```sh
  $ git pull <remote> <branch>
  ```
 
- Publish local changes on a remote
+ Publish local changes on a remote  
  在远程上发布本地更改
  
  ```sh
  $ git push <remote> <branch>
  ```
 
- Delete a branch on the remote
+ Delete a branch on the remote  
  删除远程设备上的分支
  
  ```sh
  $ git branch -dr <remote/branch>
  ```
 
- Publish your tags
+ Publish your tags  
  发布你的标签
  
  ```sh
@@ -194,42 +194,42 @@ presented by [TOWER](www.git-tower.com) › Version control with Git - made easy
 
  MERGE & REBASE
  
- Merge <branch> into your current HEAD 
+ Merge <branch> into your current HEAD  
  合并<branch> 进你当前的HEAD
  
  ```sh
  $ git merge <branch>
  ```
 
- Rebase your current HEAD onto <branch> Don‘t rebase published commits!
+ Rebase your current HEAD onto <branch> Don‘t rebase published commits!  
  将当前的HEAD重新打开 不要重新发布已发布的提交！
  
  ```sh
  $ git rebase <branch> 
  ```
 
- Abort a rebase
+ Abort a rebase  
  中止一个变基
  
  ```sh
  $ git rebase --abort
  ```
 
- Continue a rebase after resolving conflicts
+ Continue a rebase after resolving conflicts  
  解决冲突后继续变基
  
  ```sh
  $ git rebase --continue
  ```
 
- Use your configured merge tool to  solve conflicts 
+ Use your configured merge tool to  solve conflicts  
  使用配置的合并工具解决冲突
  
  ```sh
  $ git mergetool
  ```
 
- Use your editor to manually solve conflicts and  (after resolving) mark file as resolved 
+ Use your editor to manually solve conflicts and  (after resolving) mark file as resolved  
  使用编辑器手动解决冲突并（解析后）将文件标记为已解决
  
  ```sh
@@ -242,42 +242,42 @@ presented by [TOWER](www.git-tower.com) › Version control with Git - made easy
 
  ## UNDO
 
- Discard all local changes in your working  directory 
+ Discard all local changes in your working  directory  
  放弃工作目录中的所有本地更改
  
  ```sh
  $ git reset --hard HEAD
  ```
 
- Discard local changes in a specific file 
+ Discard local changes in a specific file  
  放弃特定文件中的本地更改
 
  ```sh
  $ git checkout HEAD <file>
  ```
 
- Revert a commit  (by producing a new commit with contrary changes) 
+ Revert a commit  (by producing a new commit with contrary changes)  
  恢复提交（通过生成具有相反更改的新提交）
 
  ```sh
  $ git revert <commit>
  ```
 
- Reset your HEAD pointer to a previous commit...and discard all changes since then
+ Reset your HEAD pointer to a previous commit...and discard all changes since then  
  将HEAD指针重置为先前的提交...并放弃此后的所有更改
 
  ```sh
  $ git reset --hard <commit>
  ```
 
- ...and preserve all changes as unstaged changes
+ ...and preserve all changes as unstaged changes  
  ...并将所有更改保留为未暂存更改
 
  ```sh
  $ git reset <commit>
  ```
 
- ...and preserve uncommitted local changes
+ ...and preserve uncommitted local changes  
  ...并保留未提交的本地更改
 
  ```sh
