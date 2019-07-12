@@ -1,6 +1,6 @@
-> Bootstrap实战
-> 2015年 5 月第 1 版
-> 著 [美] David Cochran [美] Ian Whitley
+> Bootstrap实战  
+> 2015年 5 月第 1 版  
+> 著 [美] David Cochran [美] Ian Whitley  
 > 译 李松峰
 
 # 第一章 初识Bootstrap

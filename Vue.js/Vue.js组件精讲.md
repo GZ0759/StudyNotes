@@ -1,5 +1,5 @@
-> Vue.js 组件精讲
-> Aresn iView 的作者 《Vue.js实战》的作者
+> Vue.js 组件精讲  
+> Aresn iView 的作者 《Vue.js实战》的作者  
 
 # 1 开篇：Vue.js 的精髓——组件
 

@@ -1,5 +1,5 @@
 > 你不知道的JavaScript（上卷） 
-> You Don’t Know JavaScript: Scope & Closures this & Object Prototypes
+> You Don’t Know JavaScript: Scope & Closures this & Object Prototypes  
 > 2015年 4 月第1版   
 
 # 目录

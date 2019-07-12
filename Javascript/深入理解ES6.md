@@ -1,6 +1,6 @@
-> 深入理解ES6
-> Understanding ES6
-> 2017年7月第一版
+> 深入理解ES6  
+> Understanding ES6  
+> 2017年7月第一版  
 > [开源图书地址](https://github.com/nzakas/understandinges6)
 
 <!-- TOC -->

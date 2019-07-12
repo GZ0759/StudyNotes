@@ -1,7 +1,7 @@
-> JavaScript经典实例（第2版）
-> JavaScript Cookbook, 2nd Ed.
-> 2015年 12 月第一次出版
-
+> JavaScript经典实例（第2版）  
+> JavaScript Cookbook, 2nd Ed.  
+> 2015年 12 月第一次出版  
+ 
 <!-- TOC -->
 
 - [第1章 JavaScript不只是简单的构建块](#第1章-javascript不只是简单的构建块)
