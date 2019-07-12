@@ -1,4 +1,5 @@
-presented by [TOWER](www.git-tower.com) › Version control with Git - made easy  
+> presented by TOWER  
+> Version control with Git - made easy  
  
  # GITCHEAT SHEET
  
@@ -41,7 +42,7 @@ presented by [TOWER](www.git-tower.com) › Version control with Git - made easy
  $ git add .
  ``
 
- Add some changes in <file> to the next commit  
+ Add some changes in `<file>` to the next commit  
  向下一次提交中添加中的一些更改
  
  ```sh
@@ -62,7 +63,7 @@ presented by [TOWER](www.git-tower.com) › Version control with Git - made easy
  $ git commit
  ```
  
- Change the last commit Don‘t amend published commits!  
+ Change the last commit. Don‘t amend published commits!  
  更改最后一次提交。不要修改发布的提交！
  
  ```sh
@@ -84,14 +85,14 @@ presented by [TOWER](www.git-tower.com) › Version control with Git - made easy
  $ git log -p <file>
  ```
  
- Who changed what and when in <file>  
+ Who changed what and when in `<file>`  
  谁改变了什么文件，何时改变了文件
  
  ```sh
  $ git blame <file>
  ```
  
- BRANCHES & TAGS
+ ## BRANCHES & TAGS
  
  List all existing branches  
  列出所有现有分支
@@ -108,13 +109,13 @@ presented by [TOWER](www.git-tower.com) › Version control with Git - made easy
  ```
  
  Create a new branch based  on your current HEAD  
- 根据您当前的HEAD创建一个新分支
+ 根据您当前的 HEAD 创建一个新分支
  
  ```sh
  $ git branch <new-branch>
  ```
  
- Create a new tracking branch based on  a remote branch  
+ Create a new tracking branch based on a remote branch  
  基于远程分支创建新的跟踪分支
  
  ```sh
@@ -150,21 +151,21 @@ presented by [TOWER](www.git-tower.com) › Version control with Git - made easy
  $ git remote show <remote>
  ```
  
- Add new remote repository, named <remote>  
- 添加名为<remote>的新远程仓库
+ Add new remote repository, named `<remote>`  
+ 添加名为`<remote>`的新远程仓库
 
  ```sh
  $ git remote add <shortname> <url>
  ```
  
- Download all changes from <remote>,  but don‘t integrate into HEAD  
- 从<remote>中下载所有更改 ，但不要集成到HEAD
+ Download all changes from `<remote>`,  but don‘t integrate into HEAD  
+ 从`<remote>`中下载所有更改 ，但不要集成到HEAD
 
  ```sh
  $ git fetch <remote>
  ```
 
- Download changes and directly  merge/integrate  into  HEAD  
+ Download changes and directly merge/integrate into  HEAD  
  下载更改并直接合并/集成到HEAD中
 
  ```sh
@@ -194,14 +195,14 @@ presented by [TOWER](www.git-tower.com) › Version control with Git - made easy
 
  MERGE & REBASE
  
- Merge <branch> into your current HEAD  
- 合并<branch> 进你当前的HEAD
+ Merge `<branch>` into your current HEAD  
+ 合并`<branch>` 进你当前的HEAD
  
  ```sh
  $ git merge <branch>
  ```
 
- Rebase your current HEAD onto <branch> Don‘t rebase published commits!  
+ Rebase your current HEAD onto `<branch>` Don‘t rebase published commits!  
  将当前的HEAD重新打开 不要重新发布已发布的提交！
  
  ```sh
@@ -289,8 +290,7 @@ presented by [TOWER](www.git-tower.com) › Version control with Git - made easy
 A commit should be a wrapper for related changes. For example, fixing two different bugs should produce two separate commits. Small commits make it easier for other de-velopers to understand the changes and roll them back if something went wrong.  
 With tools like the staging area and the abi-lity to stage only parts of a file, Git makes it easy to create very granular commits. 
 
-提交应该是相关更改的包装。例如，修复两个不同的bug应该产生两个单独的提交。消息使其他开发者更容易理解禅宗。 如果出了什么问题就把它们退回去。
-
+提交应该是相关更改的包装。例如，修复两个不同的bug应该产生两个单独的提交。消息使其他开发者更容易理解禅宗。 如果出了什么问题就把它们退回去。  
 有了诸如分阶段区域和ABI特性这样的工具，只对文件的部分进行分级，Git使创建非常细粒度的提交变得非常容易。
 
 ## COMMIT OFTEN 
@@ -307,11 +307,18 @@ You should only commit code when it‘s completed. This doesn‘t mean you have 
 
 ## WRITE GOOD COMMIT MESSAGES
 
-Begin your message with a short summary of your changes (up to 50 characters as a gui-deline). Separate it from the following body by including a blank line. The body of your message should provide detailed answers to the following questions: ›   What was the motivation for the change?›   How does it differ from the previous  implementation?Use the imperative, present tense («change», not «changed» or «changes») to be consistent with generated messages from commands like git merge.
+Begin your message with a short summary of your changes (up to 50 characters as a gui-deline). Separate it from the following body by including a blank line. The body of your message should provide detailed answers to the following questions: 
+
+- What was the motivation for the change?
+- How does it differ from the previous implementation?  
+
+Use the imperative, present tense («change», not «changed» or «changes») to be consistent with generated messages from commands like git merge.
 
 开始您的消息，以一个简短的总结，您的变化(多达50个字符作为一个Gui-deline)。将它与下面的正文分隔开，方法是包含一个空行。您的消息正文应该提供如以下问题的邮件式解答：
-改变的动机是什么？
-它与以前的实施方式有何不同？
+
+- 改变的动机是什么？  
+- 它与以前的实施方式有何不同？  
+
 使用祈使句、现在时态（省去变化、不改变或改变）与来自Git合并的命令生成的消息一致。
 
 ## VERSION CONTROL IS NOT  A BACKUP SYSTEM
@@ -334,7 +341,8 @@ git允许您从许多不同的工作流中选择：长时间运行的分支、�
 
 ## HELP & DOCUMENTATION 
 
-Get help on the command line 
+Get help on the command line  
+在命令行上获取帮助
 
 ```sh
 $ git help <command> 
