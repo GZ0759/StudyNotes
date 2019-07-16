@@ -13,8 +13,7 @@ Vue.js 的组件化理念和 ReactJS 异曲同工——“一切都是组件”�
 
 ## 1.2 为什么要用Vue.js
 
-相比较 Angularjs 和 ReactJS，Vue.js 一直以轻量级，易上手被称道。MVVM 的开发模式也使前端从原先的 DOM 操作中解放出来，我们不再需要在维护视图和数据的统一上花大量
-的时间，只需要关注于 data 的变化，代码变得更加容易维护。
+相比较 Angularjs 和 ReactJS，Vue.js 一直以轻量级，易上手被称道。MVVM 的开发模式也使前端从原先的 DOM 操作中解放出来，我们不再需要在维护视图和数据的统一上花大量的时间，只需要关注于 data 的变化，代码变得更加容易维护。
 
 作为新兴的前端框架，Vue.js 也抛弃了对 IE8 的支持，在移动端支持到 Android 4.2+ 和 iOS 7+。
 
@@ -62,7 +61,7 @@ template ：类型为字符串。默认会将 template 值替换挂载元素（�
 
 Vue.js 2.0 中废除了 replace 这个参数，并且强制要求每一个 Vue.js 实例需要有一个根元素。
 
-Vue.js 实例中可以通过 data 属性定义数据，这些数据可以在实例对应的模板中进行绑定并使用。需要注意的是，如果传入 data 的是一个对象， Vue 实例会代理起 data 对象里的所有属性，而不会对传入的对象进行深拷贝。另外，我们也可以引用 Vue 实例 vm 中的 $data 来获取声明的数据，
+Vue.js 实例中可以通过 data 属性定义数据，这些数据可以在实例对应的模板中进行绑定并使用。需要注意的是，如果传入 data 的是一个对象， Vue 实例会代理起 data 对象里的所有属性，而不会对传入的对象进行深拷贝。另外，我们也可以引用 Vue 实例 vm 中的 `$data` 来获取声明的数据，
 
 ```JavaScript
 var data = { a: 1 }
@@ -87,7 +86,7 @@ vm.a // -> 3
 
 可以通过选项属性 methods 对象来定义方法，并且使用 v-on 指令来监听 DOM 事件。
 
-另外， Vue.js 实例也支持自定义事件，可以在初始化时传入 events 对象，通过实例的$emit 方法进行触发。这套通信机制常用在组件间相互通信的情况中，例如子组件冒泡触发父组件事件方法，或者父组件广播某个事件，子组件对其进行监听等。而 Vue.js 2.0 中废弃了 events 选项属性，不再支持事件广播这类特性，推荐直接使用Vue 实例的全局方法 `$on()`/`$emit()`，或者使用插件 Vuex 来处理。
+另外， Vue.js 实例也支持自定义事件，可以在初始化时传入 events 对象，通过实例的 `$emit` 方法进行触发。这套通信机制常用在组件间相互通信的情况中，例如子组件冒泡触发父组件事件方法，或者父组件广播某个事件，子组件对其进行监听等。而 Vue.js 2.0 中废弃了 events 选项属性，不再支持事件广播这类特性，推荐直接使用Vue 实例的全局方法 `$on()`/`$emit()`，或者使用插件 Vuex 来处理。
 
 ```JavaScript
 var vm = new Vue({
@@ -160,7 +159,7 @@ Vue.js 的核心是一个响应式的数据绑定系统，建立绑定后， DOM
 
 - 过滤器。Vue.js 允许在表达式后添加可选的过滤器，以管道符“|” 指示。同时也允许多个过滤器链式使用，也允许传入多个参数。需要注意的是， Vue.js 2.0 中已经去除了内置的过滤器。
 
-- 指令。指令通常会直接书写在模板的 HTML 元素中，而为了有别于普通的属性， Vue.js 指令是带有前缀的 v- 的属性。可以理解为当表达式的值发生改变时，会有些特殊行为作用到绑定的 DOM 上。
+- 指令。指令通常会直接书写在模板的 HTML 元素中，而为了有别于普通的属性， Vue.js 指令是带有前缀的 `v-` 的属性。可以理解为当表达式的值发生改变时，会有些特殊行为作用到绑定的 DOM 上。
 
 简单介绍指令绑定数据和事件的语法。
 
@@ -169,8 +168,7 @@ Vue.js 的核心是一个响应式的数据绑定系统，建立绑定后， DOM
 ```JavaScript
 <img v-bind:src="avatar" />
 ```
-指令 v-bind 可以在后面带一个参数，用冒号（:）隔开， src 即为参数。此时 img 标签
-中的 src 会与 vm 实例中的 avatar 绑定，等同于 :
+指令 v-bind 可以在后面带一个参数，用冒号（:）隔开， src 即为参数。此时 img 标签中的 src 会与 vm 实例中的 avatar 绑定，等同于 :
 ```JavaScript
 <img src="{{avatar}}" />
 ```
@@ -231,12 +229,12 @@ var vm = new Vue({
 表单控件。Vue.js 中提供 v-model 的指令对表单元素进行双向数据绑定，在修改表单元素值的
 同时，实例 vm 中对应的属性值也同时更新，反之亦然。Vue.js 为表单控件提供了一些参数，方便处理某些常规操作。
 
-- lazy。默认情况下， v-model 在 input 事件中同步输入框值与数据，加 lazy 属性后从会改到在
+- `lazy`。默认情况下， v-model 在 input 事件中同步输入框值与数据，加 lazy 属性后从会改到在
 change 事件中同步。
 
-- number。会自动将用户输入转为 Number 类型，如果原值转换结果为 NaN 则返回原值。
+- `number`。会自动将用户输入转为 Number 类型，如果原值转换结果为 NaN 则返回原值。
 
-- debounce。设置最小延时，单位为 ms，即为单位时间内仅执行一次数据更新。该参数往往应用在高耗操作上，例如在更新时发出 ajax 请求返回提示信息。
+- `debounce`。设置最小延时，单位为 ms，即为单位时间内仅执行一次数据更新。该参数往往应用在高耗操作上，例如在更新时发出 ajax 请求返回提示信息。
 
 不过 Vue.js 2.0 中取消了 lazy 和 number 作为参数，用修饰符（modifier）来代替。新增了 trim 修饰符，去掉输入值首尾空格。去除了 debounce 这个参数，原因是无法监测到输入新数据，但尚未同步到 vm 实例属性时这个状态。
 
@@ -251,7 +249,7 @@ Class绑定。绑定的数据可以是对象和数组，具体的语法如下：
 - 对象语法。直接绑定符合样式格式的对象。除了直接绑定对象外，也可以绑定单个属性或直接使用字符串。
 - 数组语法：v-bind:style 允许将多个样式对象绑定到统一元素上。
 
-自动添加前缀。在使用 transform 这类属性时，v-bind:style 会根据需要自动添加厂商前缀。 :style 在运行时进行前缀探测，如果浏览器版本本身就支持不加前缀的 css 属性，那就不会添加。
+自动添加前缀。在使用 transform 这类属性时，`v-bind:style` 会根据需要自动添加厂商前缀。 :style 在运行时进行前缀探测，如果浏览器版本本身就支持不加前缀的 css 属性，那就不会添加。
 
 ## 2.3 模板渲染
 
@@ -306,10 +304,10 @@ var vm = new Vue({
 
 修饰符。Vue.js 为指令 v-on 提供了多个修饰符，方便处理一些 DOM 事件的细节，并且修饰符可以串联使用。主要的修饰符如下。
 
-- .stop: 等同于调用 `event. stopPropagation()`。
-- .prevent: 等同于调用 `event.preventDefault()`。
-- .capture: 使用 capture 模式添加事件监听器。
-- .self: 只当事件是从监听元素本身触发时才触发回调。
+- `.stop`: 等同于调用 `event. stopPropagation()`。
+- `.prevent`: 等同于调用 `event.preventDefault()`。
+- `.capture`: 使用 capture 模式添加事件监听器。
+- `.self`: 只当事件是从监听元素本身触发时才触发回调。
 
 ```html
 <!-- 阻止单击事件继续传播 -->
@@ -369,11 +367,11 @@ Vue.component('child', Child) // 全局注册子组件
 
 v-bind 主要用于动态绑定 DOM 元素属性，即元素属性实际的值是由 vm 实例中的 data 属性提供的。v-bind 也可以简写为“:”。v-bind 还拥有三种修饰符，分别为 .sync、 .once、 .camel，作用分别如下。
 
-- .sync ：用于组件 props 属性，进行双向绑定，即父组件绑定传递给子组件的值，无论在哪个组件中对其进行了修改，其他组件中的这个值也会随之更新。
-- .once ：同 .synce 一样，用于组件 props 属性，但进行的是单次绑定。和双向绑定正好相反，单次绑定是将绑定数据传递给子组件后，子组件单独维护这份数据，和父组件的数据再无关系，父组件的数据发生变化也不会影响子组件中的数据。
-- .camel ：将绑定的特性名字转回驼峰命名。只能用于普通 HTML 属性的绑定，通常会用于svg 标签下的属性。
+- `.sync` ：用于组件 props 属性，进行双向绑定，即父组件绑定传递给子组件的值，无论在哪个组件中对其进行了修改，其他组件中的这个值也会随之更新。
+- `.once `：同 .synce 一样，用于组件 props 属性，但进行的是单次绑定。和双向绑定正好相反，单次绑定是将绑定数据传递给子组件后，子组件单独维护这份数据，和父组件的数据再无关系，父组件的数据发生变化也不会影响子组件中的数据。
+- `.camel`：将绑定的特性名字转回驼峰命名。只能用于普通 HTML 属性的绑定，通常会用于svg 标签下的属性。
 
-不过在 Vue.js 2.0 中，修饰符 .syce 和 .once 均被废弃，规定组件间仅能单向传递，如果子组件需要修改父组件，则必须使用事件机制来进行处理。
+不过在 Vue.js 2.0 中，修饰符 `.syce` 和 `.once` 均被废弃，规定组件间仅能单向传递，如果子组件需要修改父组件，则必须使用事件机制来进行处理。
 
 v-model指令主要用于 input、select、textarea 标签中，具有 lazy、number、debounce（2.0废除）、trim（2.0新增）这些修饰符。
 
@@ -386,17 +384,17 @@ v-for 也是用于模板渲染的指令，v-for 指令在 Vue.js 2.0 中做了�
 - v-for="n in 10" 中的 n 由原来的 0 ～ 9 迭代变成 1 ～ 10 迭代。
 
 在 Vue.js 2.0 中，在组件上使用 v-on 指令只监听自定义事件，即使用 $emit 触发的
-事件；如果要监听原生事件，需要使用修饰符 .native，例如 `<my-component v-on:click.native="onClick"></my-component>`
+事件；如果要监听原生事件，需要使用修饰符 `.native`，例如 `<my-component v-on:click.native="onClick"></my-component>`
 
-v-text，参数类型为 String，作用是更新元素的 textContent。 {{}} 文本插值本身也会被编译成 textNode 的一个 v-text 指令。而与直接使用 {{}} 不同的是， v-text 需要绑定在某个元素上，能避免未编译前的闪现问题。
+v-text，参数类型为 String，作用是更新元素的 textContent。 `{{}}` 文本插值本身也会被编译成 textNode 的一个 v-text 指令。而与直接使用 `{{}}` 不同的是， v-text 需要绑定在某个元素上，能避免未编译前的闪现问题。
 
-如果直接使用 `<span>{{msg}}</span>`，在生命周期 beforeCompile 期间，此刻 msg 数据尚未编译至 {{msg}} 中，用户能看到一瞬间的 {{msg}}，然后闪现为 There is a message，而用 v-text 的话则不会有这个问题。
+如果直接使用 `<span>{{msg}}</span>`，在生命周期 beforeCompile 期间，此刻 msg 数据尚未编译至 `{{msg}}` 中，用户能看到一瞬间的 `{{msg}}`，然后闪现为 There is a message，而用 v-text 的话则不会有这个问题。
 
-v-HTML, 参数类型为 String， 作用为更新元素的 innerHTML，接受的字符串不会进行编译等操作，按普通 HTML 处理。同 v-text 类似， {{{}}} 插值也会编译为节点的 v-HTML 指令， v-HTML 也需要绑定在某个元素上且能避免编译前闪现问题。
+v-HTML, 参数类型为 String， 作用为更新元素的 innerHTML，接受的字符串不会进行编译等操作，按普通 HTML 处理。同 v-text 类似， `{{{}}}` 插值也会编译为节点的 v-HTML 指令， v-HTML 也需要绑定在某个元素上且能避免编译前闪现问题。
 
 v-el 指令为 DOM 元素注册了一个索引，使得可以直接访问 DOM 元素。语法上说，可以通过所属实例的 $els 属性调用。或者在 vm 内部通过 this 进行调用。另外，由于 HTML 不区分大小写，在 v-el 中如果使用了驼峰命名方式，系统会自动转成小写。但可以使用“-”来连接期望的大写字符。
 
-v-ref 指令与 v-el 类似，只不过 v-ref 作用于子组件上，实例可以通过 $refs 访问子组件。命名方式也类似，想使用驼峰式命名的话用“-” 来做连接。
+v-ref 指令与 v-el 类似，只不过 v-ref 作用于子组件上，实例可以通过 `$refs` 访问子组件。命名方式也类似，想使用驼峰式命名的话用“-” 来做连接。
 
 ```JavaScript
 <message v-ref:title content="title"></message>
@@ -411,7 +409,7 @@ Vue.component('message', Message);
 
 最终将 `vm.$refs.title` 和 `vm.$refs.subTitle` 用 console.log 的方式打印到控制台中，结果为输出了两个子组件的实例。从理论上来说，我们可以通过父组件对子组件进行任意的操作，但实际上尽量还是会采用props 数据绑定，用组件间通信的方式去进行逻辑上的交互，尽量让组件只操作自己内部的数据和状态，如果组件间有通信，也通过调用组件暴露出来的接口进行通信，而不是直接跨组件修改数据。
 
-v-pre 指令相对简单，就是跳过编译这个元素和子元素，显示原始的 {{}}Mustache 标
+v-pre 指令相对简单，就是跳过编译这个元素和子元素，显示原始的 `{{}}`Mustache 标
 签，用来减少编译时间。
 
 ```html
@@ -539,7 +537,7 @@ Vue.directive('my-advance-directive', {
 
 deep。当自定义指令作用域一个对象上时，可以使用 deep 选项来监听对象内部发生的变化。Vue.js 2.0 中废弃了该选项。 
 
-twoWay。在自定义指令中，如果需要向 Vue 实例写回数据，就需要在定义对象中使用 `twoWay:true`，这样可以在指令中使用 this.set(value) 来写回数据。
+twoWay。在自定义指令中，如果需要向 Vue 实例写回数据，就需要在定义对象中使用 `twoWay:true`，这样可以在指令中使用 `this.set(value)` 来写回数据。
 
 acceptStatement。选项`acceptStatement: true`可以允许自定义指令接受内敛语句，同时 update 函数接收的值是一个函数，在调用该函数时，它将在所属实例作用域内运行。
 
@@ -562,7 +560,7 @@ Vue.js 允许在表达式后面添加可选的过滤器，以管道符表示。�
 
 ## 4.1 过滤器注册
 
-Vue.js 提供了全局方法 Vue.filter() 注册一个自定义过滤器，接受过滤器 ID 和过滤器函数两个参数。除了初始值之外，过滤器也能接受任意数量的参数。
+Vue.js 提供了全局方法 `Vue.filter()` 注册一个自定义过滤器，接受过滤器 ID 和过滤器函数两个参数。除了初始值之外，过滤器也能接受任意数量的参数。
 
 ```JavaScript
 Vue.filter('date', function(value) {
@@ -621,8 +619,8 @@ var vm = new Vue({
 过滤器在 Vue.js 2.0 中也发生了一些变化，大致说明如下：
 - 取消了所有内置过滤器，即 capitalize, uppercase, json 等。作者建议尽量使用单独的插件来按需加入你所需要的过滤器。不过如果你觉得仍然想使用这些 Vue.js 1.0 中的内置过
 滤器，也不是什么难办的事。 1.0 源码 filters/ 目录下的 index.js 和 array-filter.js 中就是所有内置过滤器的源码，你可以挑选你想用的手动加到 2.0 中。
-- 取消了对 v-model 和 v-on 的支持，过滤器只能使用在 {{}} 标签中。
-- 修改了过滤器参数的使用方式，采用函数的形式而不是空格来标记参数。例如： {{date | date('yyyy-MM-dd') }}。
+- 取消了对 v-model 和 v-on 的支持，过滤器只能使用在 `{{}}` 标签中。
+- 修改了过滤器参数的使用方式，采用函数的形式而不是空格来标记参数。例如： `{{ date | date('yyyy-MM-dd') }}`。
 
 
 # 第五章 过渡
@@ -646,7 +644,7 @@ var vm = new Vue({
 
 ```
 
-Vue.js 的过渡系统给元素插入及移除时分别添加了 2 个类名： *-enter 和 *-leave， * 即为 transition 绑定的字符串.需要注意的是，这两个类名的优先级需要高于 `.my-startup-transition`，不然被 my-startup-transition 覆盖后就失效了。
+Vue.js 的过渡系统给元素插入及移除时分别添加了 2 个类名： `*-enter` 和 `*-leave`， * 即为 transition 绑定的字符串.需要注意的是，这两个类名的优先级需要高于 `.my-startup-transition`，不然被 my-startup-transition 覆盖后就失效了。
 
 ```css
 .my-startup-enter, .my-startup-leave{
@@ -657,7 +655,7 @@ Vue.js 的过渡系统给元素插入及移除时分别添加了 2 个类名： 
 
 同样，我们也可以通过 CSS 的 animation 属性来实现过渡的效果。
 
-CSS 过渡钩子函数。Vue.js 提供了在插入或 DOM 元素时类名变化的钩子函数，可以通过 Vue.transition('name', {})的方式来执行具体的函数操作。
+CSS 过渡钩子函数。Vue.js 提供了在插入或 DOM 元素时类名变化的钩子函数，可以通过 `Vue.transition('name', {})` 的方式来执行具体的函数操作。
 
 ```JavaScript
 Vue.transition('my-startup', {
@@ -744,7 +742,7 @@ Vue.transition('my-velocity', {
 
 - 用法变化。新的过渡系统中取消了 v-transition 这个指令，新增了名为 transition 的内置标签。transition 标签为一个抽象组件，并不会额外渲染一个 DOM 元素，仅仅是用于包裹过渡元素及触发过渡行为。 v-if、 v-show 等指令仍旧标记在内容元素上，并不会作用于transition 标签上。
 
-- 钩子函数。enterClass, leaveClass, enterActiveClass, leaveActiveClass, appearClass,appearActiveClass，可以分别自定义各阶段的 class 类名。总得来说，在 Vue.js 2.0 中我们可以直接使用 transition 标签并设定其属性来定义一个过渡效果，而不需要像在 Vue.js 1.0 中通过 Vue.transition() 语句来定义。
+- 钩子函数。enterClass, leaveClass, enterActiveClass, leaveActiveClass, appearClass,appearActiveClass，可以分别自定义各阶段的 class 类名。总得来说，在 Vue.js 2.0 中我们可以直接使用 transition 标签并设定其属性来定义一个过渡效果，而不需要像在 Vue.js 1.0 中通过 `Vue.transition()` 语句来定义。
 
 -类名变化。Vue.js 2.0 中新增了两个类名 enter-active 和 leave-active，用于分离元素本身样式和过渡样式。我们可以把过渡样式放到 *-enter-active、 *-leave-active 中， *-enter， *-leave 中则定义元素过渡前的样式，而元素原本的样
 式则由自己的类名去控制，不和过渡系统自动添加的类名样式混合起来。
@@ -811,7 +809,7 @@ new Vue({
 Vue.js 提供了两种注册方式，分别是全局注册和局部注册。
 
 全局注册需要确保在根实例初始化之前注册，这样才能使组件在任意实例中被使用，注
-册方式如下。这条语句需要写在 var vm = new Vue({…}) 之前，注册成功之后，就可以在模块中以自定义元素 `<my-component>` 的形式使用组件。
+册方式如下。这条语句需要写在 `var vm = new Vue({…})` 之前，注册成功之后，就可以在模块中以自定义元素 `<my-component>` 的形式使用组件。
 
 ```JavaScript
 <div id="app">
@@ -956,9 +954,9 @@ Vue.component('my-component', {
 
 直接访问。在组件实例中，Vue.js 提供了以下三个属性对其父子组件及根实例进行直接访问。这三个属性都挂载在组件的 this 上，虽然 Vue.js 提供了直接访问这种方式，但并不提倡这么操作。这会导致父组件和子组件紧密耦合，且自身状态难以理解，锁机尽量使用 props 在组件间传递数据。
 
-- $parent: 父组件实例。
-- $children: 包含所有子组件实例。
-- $root: 组件所在的根实例。
+- `$parent`: 父组件实例。
+- `$children`: 包含所有子组件实例。
+- `$root`: 组件所在的根实例。
 
 自定义事件监听。在 Vue 实例中，系统提供了一套自定义事件接口，用于组件间通信，方便修改组件状态。
 
@@ -1016,7 +1014,7 @@ events : {
 }
 ```
 
-子组件索引。虽然不建议组件直接访问各自的实例，但有时不可避免，Vue.js 也提供了直接访问子组件的方式。除了之前的 this.children 外，还可以给子组件绑定一个 v-ref 指令，指定一个索引 ID。这样就能在父组件中就可以通过 this.$refs 的方式获取子组件实例。另外，如果 v-ref 作用在 v-for 绑定的元素上，那么父组件获取的则为一个数组，包含相应的子组件实例。
+子组件索引。虽然不建议组件直接访问各自的实例，但有时不可避免，Vue.js 也提供了直接访问子组件的方式。除了之前的 `this.children` 外，还可以给子组件绑定一个 v-ref 指令，指定一个索引 ID。这样就能在父组件中就可以通过 this.$refs 的方式获取子组件实例。另外，如果 v-ref 作用在 v-for 绑定的元素上，那么父组件获取的则为一个数组，包含相应的子组件实例。
 
 ## 6.4 内容分发
 
@@ -1209,7 +1207,7 @@ Vue.js 本身只提供了数据与视图绑定及组件化等功能，如果想�
 
 Vue-router 是给 Vue.js 提供路由管理的插件，利用 hash 的变化控制动态组件的切换。
 
-以往页面间跳转都由后端 MVC 中的 Controller 层控制，通过 `<a>` 标签的 href 或者直接修改 location.href，我们会向服务端发起一个请求，服务端响应后根据所接收到的信息去获取数据和指派对应的模板，渲染成 HTML 再返回给浏览器，解析成我们可见的页面。 Vue.js + Vue-router 的组合将这一套逻辑放在了前端去执行，切换到对应的组件后再向后端请求数据，填充进模板来，在浏览器端完成 HTML 的渲染。这样也有助于前后端分离，前端不用依赖于后端的逻辑，只需要后端提供数据接口即可。
+以往页面间跳转都由后端 MVC 中的 Controller 层控制，通过 `<a>` 标签的 href 或者直接修改 `location.href`，我们会向服务端发起一个请求，服务端响应后根据所接收到的信息去获取数据和指派对应的模板，渲染成 HTML 再返回给浏览器，解析成我们可见的页面。 Vue.js + Vue-router 的组合将这一套逻辑放在了前端去执行，切换到对应的组件后再向后端请求数据，填充进模板来，在浏览器端完成 HTML 的渲染。这样也有助于前后端分离，前端不用依赖于后端的逻辑，只需要后端提供数据接口即可。
 
 vue-router 的基本作用就是将每个路径映射到对应的组件，并通过修改路由进行组件间的切换。常规路径规则为在当前 url 路径后面加上 #!/path， path 即为设定的前端路由路径。
 
@@ -1273,13 +1271,14 @@ router.map({
 具名路由。在设置路由规则时，可以给路径名设置一个别名，方便进行路由跳转，而不需要去记住过长的全路径。
 
 路由对象。在使用 Vue-router 启动应用时，每个匹配的自荐实例中都会被注入 router 的想，称之为路由对象。在组件内部可以通过 `this.$route` 的方式进行调用。
+
 路由对象共包含了一下几个属性。
-- $route.path
-- $route.params
-- $route.query
-- $route.router
-- $route.matched
-- $route.name
+- `$route.path`
+- `$route.params`
+- `$route.query`
+- `$route.router`
+- `$route.matched`
+- `$route.name`
 
 v-link 是 vue-router 应用中用于路径间跳转的指令，其本质是调用路径实例 route 本身的 go 函数进行跳转。该指令接受一个 JavaScript 表达式，而且可以直接使用组件内绑定数据。
 
@@ -1304,20 +1303,20 @@ v-link包含其他参数选项。
 - suppressTransitionError
 
 route钩子函数。在使用 Vue-router 的应用中，每个路由匹配到的组件中会多出一个 route 选项。在这个选项中可以使用路由切换的钩子函数来进行一定的业务逻辑操作。route 提供了 6 个钩子函数，分别如下。
-- canActivate(): 在组件创建之前被调用，验证组件是否可被创建。
-- activate(): 在组件创建且将要加载时被调用。
-- data(): 在 activate 之后被调用，用于加载和设置当前组件的数据。
-- canDeactivate(): 在组件被移出前被调用，验证是否可被移出。
-- deactivate(): 在组件移出时调用。
+- `canActivate()`: 在组件创建之前被调用，验证组件是否可被创建。
+- `activate()`: 在组件创建且将要加载时被调用。
+- `data()`: 在 activate 之后被调用，用于加载和设置当前组件的数据。
+- `canDeactivate()`: 在组件被移出前被调用，验证是否可被移出。
+- `deactivate()`: 在组件移出时调用。
 
 路由实例属性及方法。在 Vue-router 启动的应用中，每个组件会被注入 router 实例，可以在组件内通过this.$router（或者使用路由对象 $route.router）进行访问。这个 router 实例主要包含了一些全局的钩子函数，以及配置路由规则，进行路由切换等 api。
-- router.app
-- router.mode
-- router.start(App, el)
-- router.stop()
-- router.map()
-- router.on()
-- router.go(path)
+- `router.app`
+- `router.mode`
+- `router.start(App, el)`
+- `router.stop()`
+- `router.map()`
+- `router.on()`
+- `router.go(path)`
 
 vue-router 2.0 的变化。
 
@@ -1335,7 +1334,7 @@ const app = new Vue({
 }).$mount('#app')
 ```
 
-跳转方式。路由跳转的方式也发生了变化，首先是废弃了 v-link 指令，采用`<router-link>`标签来创建 a 标签来定义链接。其中的 to 属性和 v-link 所能接受的属性相同。其次是用 router 实例方法进行跳转的 api 也修改成了 push()，接受的选项参数基本没有变化。router.go() 方法不再表示跳转，而是接受一个整型参数，作用是在 history 记录中向前或者后退多少步，类似 window.history.go(n)。router 实例的 api 方法 push()、 replace()、 go() 主要是模拟 window.history 下的 pushState()、replaceState() 和 go() 的使用方法来实现的，并且确保 router 在不同模式下（ hash、 history）表现的一致性。
+跳转方式。路由跳转的方式也发生了变化，首先是废弃了 v-link 指令，采用`<router-link>`标签来创建 a 标签来定义链接。其中的 to 属性和 v-link 所能接受的属性相同。其次是用 router 实例方法进行跳转的 api 也修改成了 push()，接受的选项参数基本没有变化。`router.go()` 方法不再表示跳转，而是接受一个整型参数，作用是在 history 记录中向前或者后退多少步，类似 `window.history.go(n)`。router 实例的 api 方法 `push()`、 `replace()`、` go()` 主要是模拟 window.history 下的 `pushState()`、`replaceState()` 和 `go()` 的使用方法来实现的，并且确保 router 在不同模式下（ hash、 history）表现的一致性。
 
 钩子函数。Vue-router 基本重新定义了自身的钩子函数。主要可分为三个方面。
 - 全局钩子。在初始化 VueRouter 后直接使用 router 实例进行注册，包含 beforeEach和 afterEach 两个钩子，在每个路由切换前 / 后调用。
@@ -1355,7 +1354,7 @@ const List = {
 }
 ```
 
-而且在 Vue.js 2.0 中，既可以在导航完成之前获取数据，也可以在导航完成之后获取数据。在导航完成之后获取数据，是为了在获取数据期间展示一个 loading 状态。可以在组件的 create() 钩子函数和 watch : { route : ' '} 中调用获取数据的函数。
+而且在 Vue.js 2.0 中，既可以在导航完成之前获取数据，也可以在导航完成之后获取数据。在导航完成之后获取数据，是为了在获取数据期间展示一个 loading 状态。可以在组件的 `create()` 钩子函数和 `watch : { route : ' '}` 中调用获取数据的函数。
 
 在导航获取之前完成数据，我们可以在 beforeRouteEnter 钩子中获取数据，并且只有当数据获取成功或确定有权限后才进行组件的渲染，否则就回退到路由变化前的组件状态。
 
