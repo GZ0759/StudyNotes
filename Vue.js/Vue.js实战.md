@@ -85,7 +85,7 @@ Vue.js 是一个渐进式的 JavaScript 框架，根据项目需求，可以选�
 
 ## 2.1 Vue实例与数据绑定
 
-Vue.js 应用的创建很简单，通过构造函数 Vue 就可以创建一个 Vue 的根实例，并启动 Vue 应用。变量 app 就代表了这个 Vue 实例，基本上所以的代码都是一个对象，写入 Vue 实例的选项内。
+Vue.js 应用的创建很简单，通过构造函数 Vue 就可以创建一个 Vue 的根实例，并启动 Vue 应用。变量 app 就代表了这个 Vue 实例，基本上所有的代码都是一个对象，写入 Vue 实例的选项内。
 
 ```javascript
 var app = new Vue({
