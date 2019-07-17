@@ -61,10 +61,9 @@
 
 ## 1.1 Vue.js是什么
 
-Vue.js 的官方文档中是这样介绍它的。 简单小巧的核心，渐进式技术栈，足以应付任何规模的应用。 简单小巧是指 Vue.js 压缩后大小仅有17KB。所谓渐进式（Progressive），就是你可以一步一 步、有阶段性地来使用 Vue.js，不必一开始就使用所有的东西。
+Vue.js 的官方文档中是这样介绍它的。 简单小巧的核心，渐进式技术栈，足以应付任何规模的应用。 简单小巧是指 Vue.js 压缩后大小仅有17KB。所谓渐进式（Progressive），就是你可以一步一步、有阶段性地来使用 Vue.js，不必一开始就使用所有的东西。
 
-使用 Vue.js 可以让 Web 开发变得简单，同时也颠覆了传统前端开发模式。它提供了现代 Web 开发中常见的高级功能，比如 ：
-
+使用 Vue.js 可以让 Web 开发变得简单，同时也颠覆了传统前端开发模式。它提供了现代 Web 开发中常见的高级功能，比如：  
 - 解耦视图与数据
 - 可复用的组件
 - 前端路由
@@ -75,7 +74,7 @@ MVVM（Model-VIew-ViewModel）模式是由经典的软件架构 MVC 衍生来的
 
 ## 1.2 如何使用Vue.js
 
-Vue.js 是一个渐进式的 JavaScript 框架，根据项目需求，可以选择从不同的维度来使用它。如果只是简单开发， 可以直接通过 script 加载 CDN 文件。引入 Vue.js 框架后，在 body 底部使用 new Vue() 的方式创建一个实例，这就是 Vue.js 最基本的开发模式。
+Vue.js 是一个渐进式的 JavaScript 框架，根据项目需求，可以选择从不同的维度来使用它。如果只是简单开发，可以直接通过 script 加载 CDN 文件。引入 Vue.js 框架后，在 body 底部使用 `new Vue()` 的方式创建一个实例，这就是 Vue.js 最基本的开发模式。
 
 ```html
 `<!-- 开发环境版本，包含了有帮助的命令行警告 -->
@@ -86,7 +85,7 @@ Vue.js 是一个渐进式的 JavaScript 框架，根据项目需求，可以选�
 
 ## 2.1 Vue实例与数据绑定
 
-Vue.js 应用的创建很简单，通过构造函数 Vue 就可以创建一个 Vue 的根实例，并启动 Vue 应用。变量 app 就代表了这个 Vue 实例，基本上所以的代码都是一个对象，写入 Vue 实例的选项内。
+Vue.js 应用的创建很简单，通过构造函数 Vue 就可以创建一个 Vue 的根实例，并启动 Vue 应用。变量 app 就代表了这个 Vue 实例，基本上所有的代码都是一个对象，写入 Vue 实例的选项内。
 
 ```javascript
 var app = new Vue({
@@ -94,9 +93,7 @@ var app = new Vue({
 })
 ```
 
-
-
-Vue 实例对象的一个必不可少的选项就是 el ，用于指定一个页面中已存在的 DOM 元素来挂载 Vue 实例，它可以是 HTMLElement ，也可以是 CSS 选择器。挂载成功后，我们可以通过 app.$el 来访问该元素。Vue 提供了很多常见的实例属性和方法，都以`$`开头。
+Vue 实例对象的一个必不可少的选项就是 el ，用于指定一个页面中已存在的 DOM 元素来挂载 Vue 实例，它可以是 HTMLElement ，也可以是 CSS 选择器。挂载成功后，我们可以通过 `app.$el` 来访问该元素。Vue 提供了很多常见的实例属性和方法，都以`$`开头。
 
 ```javascript
 // <div id='app'></div>
@@ -104,8 +101,6 @@ var app = new Vue({
 		el:"#app" /* 或者是 document.getElementById('app') */
 }）
 ```
-
-
 
 通过 Vue 实例的 data 选项，可以声明应用内需要双向绑定的数据。建议所有会用到的数据都预先在 data 内声明，这样不至于将数据散落在业务逻辑中，难以维护。Vue 实例本身也代理了 data 对象里的所有属性。
 
@@ -119,8 +114,6 @@ var vm = new Vue({
 vm.a // => 1
 vm.$data === data // => true
 ```
-
-
 
 每个 Vue 实例创建时，都会经历一系列的初始化过程，同时也会调用相应的生命周期钩子， 我们可以利用这些钩子，在合适的时机执行我们的业务逻辑。这些钩子与 el 和 data 类似，也是作为选项写入 Vue 实例内，并且钩子的 this 指向的是调用它的 Vue 实例。
 
@@ -140,9 +133,7 @@ new Vue({
 })
 ```
 
-
-
-比较常用的生命周期钩子有，created（实例创建完成后调用）、mounted（el挂载到实例上后调用）、beforeDestroy（实例销毁之前调用）。这些钩子与 el 和 data 类似，也是作为选项写入 Vue 实例内，并且钩子的 this 指向的是调用它的 Vue 实例。
+比较常用的生命周期钩子有，`created`（实例创建完成后调用）、`mounted`（el挂载到实例上后调用）、`beforeDestroy`（实例销毁之前调用）。这些钩子与 el 和 data 类似，也是作为选项写入 Vue 实例内，并且钩子的 this 指向的是调用它的 Vue 实例。
 
 使用双大括号（Mustache语法）`"{{}}"`是最基本的文本插值方法，它会自动将我们双向绑定的数值实时显示出来，可以 v-text 代替。通过任何方法修改数据，大括号的内容都会被实时替换。
 
@@ -151,8 +142,6 @@ new Vue({
 <!-- 和下面的一样 -->
 <span>{{msg}}</span>
 ```
-
-
 
 ```html
 <p>Using mustaches: {{ rawHtml }}</p>   
@@ -165,9 +154,7 @@ new Vue({
 <!-- 跳过这个元素及子元素的编译过程。可用来显示原始 Mustache 标签 -->
 ```
 
-
-
-在`{{}}`中，除了简单的绑定属性值外，还可以使用 JavaScript 表达式进行简单的运算 、三元运算等。Vue.js只支持单个表达式，不支持语句和流控制。另外在表达式中，不能使用用户自定义的全局变量，只能使用 Vue 白名单内的全局变量，例如 Math 和 Date。
+在`{{}}`中，除了简单的绑定属性值外，还可以使用 JavaScript 表达式进行简单的运算 、三元运算等。Vue.js 只支持单个表达式，不支持语句和流控制。另外在表达式中，不能使用用户自定义的全局变量，只能使用 Vue 白名单内的全局变量，例如 Math 和 Date。
 
 Vue.js 支持在`{{}}`插值的尾部添加一个管道符 “ | ” 对数据进行过滤，经常用于格式化文本。过滤的规则是自定义的，通过给 Vue 实例添加选项 filters 来设置，过滤器可以串联，也可以接受参数。过滤器可以用在两个地方：双花括号插值和 v-bind 表达式。
 
@@ -179,13 +166,11 @@ Vue.js 支持在`{{}}`插值的尾部添加一个管道符 “ | ” 对数据�
 <div v-bind:id="rawId | formatId"></div>
 ```
 
-
-
 ## 2.2 指令与事件
 
 指令是 Vue.js 模板中最常用的一项功能，它带有前缀 v-，指令的主要职责就是当起表达式的值改变时，相应地将某些行为应用到 DOM 上。
 
-数据驱动 DOM 是Vue.js 的核心理念，所以不到万不得已时不要主动操作 DOM，只需要维护好数据，DOM 的事 Vue 会帮忙优雅处理。
+数据驱动 DOM 是 Vue.js 的核心理念，所以不到万不得已时不要主动操作 DOM，只需要维护好数据，DOM 的事 Vue 会帮忙优雅处理。
 
 Vue.js 内置了很多指令，帮助快速完成常见的 DOM 操作，比如循环渲染、显示与隐藏等，其中有两个比较重要的指令是 v-bind 和 v-on。
 
@@ -231,8 +216,6 @@ computed: {
 vm.fullName = 'John Doe'
 ```
 
-
-
 计算属性除了简单的文本插值外，还经常用于动态地设置元素的样式名称 class 和内联样式 style 。当使用组件时，计算属性也经常用来动态传递 props 。
 
 计算属性还有两个很实用的小技巧，一是计算属性可以依赖其他计算属性，二是计算属性不仅可以依赖当前Vue实例的数据，还可以依赖其它实例的数据。
@@ -245,8 +228,6 @@ vm.fullName = 'John Doe'
 <p>Reversed message: "{{ reversedMessage() }}"</p>
 ```
 
-
-
 ```javascript
 // 在组件中
 methods: {
@@ -255,8 +236,6 @@ methods: {
 	}
 }
 ```
-
-
 
 计算属性是基于它的依赖缓存的。 一个计算属性所依赖的数据发生变化时，它才会重新取值，所以依赖数据只要不改变，计算属性也就不更新。但是 methods 则不同，只要重新渲染，它就会被调用，因此函数也会被执行 。
 
@@ -274,7 +253,7 @@ v-bind 的的主要用法是动态更新 HTML 元素上的属性。
 
 绑定 class 的几种方式，包括对象语法、数组语法和在组件上使用。
 
-给 v-bind:class 设置一个对象，可以动态地切换 class。对象中也可以传入多个属性，来动态切换 class，表达式中项为真时对应的类名就会加载。另外，该设置能够与普通 class 共存。
+给 `v-bind:class` 设置一个对象，可以动态地切换 class。对象中也可以传入多个属性，来动态切换 class，表达式中项为真时对应的类名就会加载。另外，该设置能够与普通 class 共存。
 
 当 :class 的表达式过长或逻辑复杂时，还可以绑定一个计算属性。
 
@@ -284,9 +263,7 @@ v-bind 的的主要用法是动态更新 HTML 元素上的属性。
 </div>
 ```
 
-
-
-当需要应用多个 class 时， 可以使用数组语法，给 :class 绑定一个数组，应用一个 class 列表。也可以使用三元表达式来根据条件切换 class。如果 class 有多个条件时，可以在数组语法中使用对象语法。
+当需要应用多个 class 时， 可以使用数组语法，给 `:class` 绑定一个数组，应用一个 class 列表。也可以使用三元表达式来根据条件切换 class。如果 class 有多个条件时，可以在数组语法中使用对象语法。
 
 ```html
 <div v-bind:class="[activeClass, errorClass]"></div>
@@ -301,9 +278,7 @@ data: {
 
 ```
 
-
-
-如果直接在自定义组件上使用 class 或 :class，样式规则会直接应用到这个组件的根元素上。但只适合于自定义组件的最外层是一个根元素。当不满足这种条件或需要给具体的子元素设置类名时，应当使用组件的 props 来传递。
+如果直接在自定义组件上使用 `class` 或 `:class`，样式规则会直接应用到这个组件的根元素上。但只适合于自定义组件的最外层是一个根元素。当不满足这种条件或需要给具体的子元素设置类名时，应当使用组件的 props 来传递。
 
 ```html
 <my-component class="baz boo"></my-component>
@@ -318,11 +293,9 @@ data: {
 </script>
 ```
 
-
-
 ## 4.3 绑定内联样式
 
-绑定内联样式，使用v-bind:style可以给元素绑定内联样式，方法与:class类似，也有对象语法和数组语法，看起来很像直接在元素上写CSS。
+绑定内联样式，使用`v-bind:style`可以给元素绑定内联样式，方法与`:class`类似，也有对象语法和数组语法，看起来很像直接在元素上写CSS。
 
 CSS属性名称使用驼峰命名或短横分割命名。大多数情况下直接写一长串的样式不便于阅读和维护，一般以对象写在data或computed，也可以使用数组语法。大多数情况下 ， 直接写一长串的样式不便于阅读和维护，所以一般写在 data 或 computed 里。
 
@@ -342,15 +315,13 @@ CSS属性名称使用驼峰命名或短横分割命名。大多数情况下直�
 </script>
 ```
 
-
-
 另外，Vue.js会自动给特殊的CSS属性名称增加前缀，比如 transform。
 
 # 第五章 内置指令
 
 ## 5.1 基本指令
 
-v-cloak 不需要表达式，在 Vue 实例结束编译时从从绑定的HTML元素上移除，经常和 CSS 的 display:none 配合使用。在一般情况下，v-cloak 是一个解决初始化慢导致页面闪动的最佳实践。对于简单的项目很实用，但是在具有工程化的项目里，剩下的内容都是由路由去挂载不同组件完成的，所以不再需要 v-cloak。
+v-cloak 不需要表达式，在 Vue 实例结束编译时从从绑定的HTML元素上移除，经常和 CSS 的 `display:none` 配合使用。在一般情况下，v-cloak 是一个解决初始化慢导致页面闪动的最佳实践。对于简单的项目很实用，但是在具有工程化的项目里，剩下的内容都是由路由去挂载不同组件完成的，所以不再需要 v-cloak。
 
 ```html
 <div v-cloak>
@@ -358,15 +329,11 @@ v-cloak 不需要表达式，在 Vue 实例结束编译时从从绑定的HTML元
 </div>
 ```
 
-
-
 ```css
 [v-cloak] {
 	display: none;
 }
 ```
-
-
 
 v-once 也是一个不需要表达式的指令，作用是定义它的元素或组件只渲染一次，包括元素或组件的所有子节点。首次渲染后，不再随数据的变化重新渲染，将被视为静态内容。v-once 在业务中很少使用，只有需要进一步优化性能时才会用得上。
 
@@ -392,9 +359,7 @@ v-for 是列表渲染指令，可将一个数组遍历或枚举一个对象循�
 </div>
 ```
 
-
-
-数组更新，Vue 包含了一组观察数组变异的方法，使用它们改变数组也会触发视图更新，例如 push()、pop()、shift()、unshift()、splice()、sort()、reverse()。但非变异方法不会更新视图，例如 filter()、concat()、slice()，它们返回的是一个新数组，在使用这些非变异方法时，可以用新数组来替换原数组。Vue 在检测到数组变化时，并不是直接重新渲染整个列表，而是最大化地复用 DOM 元素，因此可以大胆地用新数组来替换旧数组，不用担心性能问题。
+数组更新，Vue 包含了一组观察数组变异的方法，使用它们改变数组也会触发视图更新，例如 `push()`、`pop()`、`shift()`、`unshift()`、`splice()`、`sort()`、`reverse()`。但非变异方法不会更新视图，例如 `filter()`、`concat()`、`slice()`，它们返回的是一个新数组，在使用这些非变异方法时，可以用新数组来替换原数组。Vue 在检测到数组变化时，并不是直接重新渲染整个列表，而是最大化地复用 DOM 元素，因此可以大胆地用新数组来替换旧数组，不用担心性能问题。
 
 需要注意的是，通过索引直接设置项、修改数组长度，也是不会触发视图更新的。解决第一个问题的方法可以使用 Vue内置的 set 方法，如果是在 webpack 中使用组件化的方式，默认是没有导入 Vue 的，这是可以使用`$set`。另一种方法时直接使用 splice 来解决。
 
@@ -413,15 +378,11 @@ Vue.set(vm.items, indexOfItem, newValue)
 vm.items.splice(indexOfItem, 1, newValue)
 ```
 
-
-
 过滤与排序。当不想改变原数组，想通过一个数组的副本来做过滤或排序的显示时，可以使用计算属性来返回过滤或排序后的数组。
 
 ```html
 <li v-for="n in evenNumbers">{{ n }}</li>
 ```
-
-
 
 ```javascript
 data: {
@@ -436,15 +397,11 @@ computed: {
 }
 ```
 
-
-
 在计算属性不适用的情况下 (例如，在嵌套 v-for 循环中) 你可以使用一个 method 方法。
 
 ```html
 <li v-for="n in even(numbers)">{{ n }}</li>
 ```
-
-
 
 ```javascript
 data: {
@@ -459,11 +416,9 @@ methods: {
 }
 ```
 
-
-
 ## 5.4 方法与事件
 
-在事件绑定上，类似原生 JavaScript 的 onclick 等写法，也是在 HTML 上进行监听的。`@click`的表达式可以直接使用 JavaScript语句，也可以是一个在 Vue 实例中 methods 选项内的函数名。
+在事件绑定上，类似原生 JavaScript 的 onclick 等写法，也是在 HTML 上进行监听的。`@click`的表达式可以直接使用 JavaScript 语句，也可以是一个在 Vue 实例中 methods 选项内的函数名。
 
 `@click`调用的方法名后可以不跟括号"()"，如果该方法有参数，默认会将原生事件对象 event 传入。
 
@@ -497,8 +452,6 @@ Vue 提供了一个特殊变量`$event`，用于访问原生 DOM 事件。
 
 练习2：将商品列表 list 改为一个二维数组来实现商品的分类，比如可分为“电子产品”、“生活用品”和“果蔬”，同类商品聚合在一起。提示，你可能会用到两次 v-for。
 
-
-
 # 第六章 表单与v-model
 
 ## 6.1 基本用法
@@ -529,8 +482,6 @@ Vue.js 提供了 v-model 指令，用于在表单类元素上双向绑定数据�
 </body>
 ```
 
-
-
 单选按钮在单独使用时，不需要 v-model，直接使用 v-bind 绑定一个布尔类型的值，为真时选中，为否时不选。如果是组合使用来实现互斥选择的效果，就需要 v-model 配合 value 来使用。
 
 ```html
@@ -555,8 +506,6 @@ Vue.js 提供了 v-model 指令，用于在表单类元素上双向绑定数据�
 	</script>
 </body>
 ```
-
-
 
 复选框也分单独使用和组合使用，不过用法稍与单选不同。复选框单独使用时，也是用 v-model 来绑定一个布尔值。组合使用时，也是 v-model 与 value 一起，多个勾选框都绑定到同一个数组类型的数据，value 的值在数组当中，就会选中这一项。这一过程也是双向的，在勾选时，value 的值也会自动 push 到这个数字中。
 
@@ -583,13 +532,7 @@ Vue.js 提供了 v-model 指令，用于在表单类元素上双向绑定数据�
 </body>
 ```
 
-
-
 选择列表就是下拉选择器，也是常见的表单控件，同样也分为单选和多选两种方式。`<option>`是备选项，如果含有 value 属性，v-model 就会优先匹配 value 的值；如果没有，就会直接匹配`<option>`的 text。给`<selected>`添加属性 multiple 就可以多选，此时 v-model 绑定的是一个数组，与复选框用法类似。在业务中，`<option>`经常用 v-for 动态输出，value 和 text 也是用 v-bind 来动态输出的。
-
-6.2
-
-
 
 ## 6.2 绑定值
 
@@ -600,8 +543,6 @@ Vue.js 提供了 v-model 指令，用于在表单类元素上双向绑定数据�
 ```html
 <input type="radio" v-model="pick" v-bind:value="a">
 ```
-
-
 
 复选框，选中时和未勾选时有两种类型，如果再使用 v-bind 则可以在实现动态绑定。
 
@@ -614,9 +555,7 @@ Vue.js 提供了 v-model 指令，用于在表单类元素上双向绑定数据�
 >
 ```
 
-
-
-选择列表，当选中时，app.selected 是一个 Object，所以 app.selected.number === 123。
+选择列表，当选中时，app.selected 是一个 Object，所以 `app.selected.number === 123`。
 
 ```html
 <select v-model="selected">
@@ -624,8 +563,6 @@ Vue.js 提供了 v-model 指令，用于在表单类元素上双向绑定数据�
 	<option v-bind:value="{ number: 123 }">123</option>
 </select>
 ```
-
-
 
 ## 6.3 修饰符
 
@@ -651,15 +588,11 @@ Vue.js 的组件就是提高复用性，让代码可复用。那些没见过的�
 Vue.component('my-component-name', { /* ... */ })
 ```
 
-
-
 当使用 PascalCase (首字母大写命名) 定义一个组件时，你在引用这个自定义元素时两种命名法都可以使用。也就是说 `<my-component-name>` 和 `<MyComponentName>` 都是可接受的。注意，尽管如此，直接在 DOM (即非字符串的模板) 中使用时只有 kebab-case 是有效的。
 
 ```
 Vue.component('MyComponentName', { /* ... */ })
 ```
-
-
 
 组件与创建 Vue 实例类似，需要注册后才可以使用。注册有全局注册和局部注册两种方式。全局注册后，任何 Vue 实例都可以使用。template 的 DOM 结构必须被一个元素包含。
 
@@ -671,8 +604,6 @@ Vue.component('component-c', { /* ... */ })
 new Vue({ el: '#app' })
 ```
 
-
-
 ```html
 <div id="app">
 	<component-a></component-a>
@@ -680,8 +611,6 @@ new Vue({ el: '#app' })
 	<component-c></component-c>
 </div>
 ```
-
-
 
 在 Vue 实例中，使用 components 选项可以局部注册组件，注册后的组件只有在该实例作用域下有效，组件中也可以使用 components 选项来注册组件，使组件可以嵌套。
 
@@ -699,8 +628,6 @@ new Vue({
 })
 ```
 
-
-
 Vue 组件的模板在某些情况下会收到 HTML 的限制，比如`<table>`内规定只允许时`<tr>`、`<td>`、`<th>`等这些表格元素，所以在`<table>`内直接使用组件时无效的。这种情况下，可以使用特殊的 is 属性来挂载组件。
 
 除了 template 选项外，组件中还可以像 Vue 实例那样使用其他的选项，比如 data、computed、methods 等。但是在使用 data 时，和实例稍有区别，data 必须是函数，然后将数据 return 出去。一个组件的 data 选项必须是一个函数，因此每个实例可以维护一份被返回对象的独立的拷贝。如果 return 出的对象引用了外部的一个对象，那这么这个对象就是共享的，任何一方修改都会同步。
@@ -716,13 +643,11 @@ Vue.component('my-component',{
 })
 ```
 
-
-
 ## 7.2 使用props传递数据
 
 组件不仅仅是要把模板的内容进行复用，更重要的是组件间要进行通信。通常父组件的模板中包含子组件，父组件要正向地向子组件传递数据或参数，子组件接收到后根据参数的不同来渲染不同的内容或执行操作。这个正向传递数据的过程就是通过 props 来实现的。
 
-在组件中，使用选项 props 来声明需要从父级接受的数据，props 的值有字符串数组类型和对象类型。由于HTML特性不区分大小写，当使用DOM模板时，驼峰命名的 prop 名称要转为短横分割命名。
+在组件中，使用选项 props 来声明需要从父级接受的数据，props 的值有字符串数组类型和对象类型。由于 HTML 特性不区分大小写，当使用 DOM 模板时，驼峰命名的 prop 名称要转为短横分割命名。
 
 ```javascript
 Vue.component('blog-post', {
@@ -732,14 +657,10 @@ Vue.component('blog-post', {
 })
 ```
 
-
-
 ```html
 <!-- 在 HTML 中是 kebab-case 的 -->
 <blog-post post-title="hello!"></blog-post>
 ```
-
-
 
 props 中声明的数据与组件 data 函数 return 的数据主要区别是 props 的来自父级，而 data 中的是组件自己的数据，作用域是组件本身，这两种数据都可以在模板 template 及计算属性 computed 和方法 methods 中使用。
 
@@ -766,8 +687,6 @@ props 中声明的数据与组件 data 函数 return 的数据主要区别是 pr
 </body>
 ```
 
-
-
 注意，如果只是传递数字、布尔值、数组、对象，而没有使用 v-bind，传递的仅仅是字符串。
 
 单向数据流。Vue 2.x 与  Vue 1.x 比较大的一个改变就是，前者通过 props 传递数据是单向的了，也就是父组件数据变化时会传递给子组件，但是反过来不行。而在 Vue 1.x 里提供了 .sync 修饰符来支持双向绑定。之所以这样设计，是尽可能将父子组件解耦，避免子组件无意中修改了父组件的状态。
@@ -783,8 +702,6 @@ data: function () {
 }
 ```
 
-
-
 另一种情况就是 prop 作为需要被转变的原始值传入。这种情况用计算属性就可以了。
 
 ```javascript
@@ -795,8 +712,6 @@ computed: {
 	}
 }
 ```
-
-
 
 注意，在 JavaScript 中对象和数组时引用类型，指向同一个内存空间，所以 props 是对象和数组时，在子组件内改变是会影响父组件的。
 
@@ -838,8 +753,6 @@ Vue.component('my-component', {
 })
 ```
 
-
-
 验证的 type 类型可以是 String、Number、Boolean、Object、Array、Function，type也可以是一个自定义构造器，使用 instanceof 检测。当 prop 验证失败时，在开发版本下会在控制台抛出警告。
 
 ## 7.3 组件通信
@@ -860,15 +773,11 @@ Vue.component('welcome-button', {
 })
 ```
 
-
-
 ```html
 <div id="emit-example-simple">
 	<welcome-button v-on:welcome="sayHi"></welcome-button>
 </div>
 ```
-
-
 
 ```javascript
 new Vue({
@@ -880,8 +789,6 @@ new Vue({
 	}
 })
 ```
-
-
 
 使用 v-model。Vue 2.x 可以在自定义组件上使用 v-model 指令。
 
@@ -901,8 +808,6 @@ Vue.component('my-component',{
 });
 ```
 
-
-
 ```html
 <div id="app">
 	<p>总数：{{ total }}</p>
@@ -910,8 +815,6 @@ Vue.component('my-component',{
 	<!--<my-component @input="handleGetCounter"></my-component> -->
 </div>
 ```
-
-
 
 ```javascript
 var app = new Vue({
@@ -926,8 +829,6 @@ var app = new Vue({
 		} */
 })
 ```
-
-
 
 一个组件上的 v-model 默认会利用名为 value 的 prop 和名为 input 的事件，但是像单选框、复选框等类型的输入控件可能会将 value 特性用于不同的目的。实现一个具有双向绑定的 v-model 组件要满足两个条件：接收一个 value 属性和在有新的 value 时触发 input 事件。因此，v-model 可以用来创建自定义的表单输入组件，进行数据双向绑定。
 
@@ -950,8 +851,6 @@ var app = new Vue({
 <!-- `vm.$refs.child` will be the child component instance -->
 <child-component ref="child"></child-component>
 ```
-
-
 
 注意，`$refs`只在组件渲染完成后才填充，并且它是非响应式的，它仅仅作为一个直接访问于组件的应急方案，应当避免在模板或计算属性中使用`$refs`。
 
@@ -985,8 +884,6 @@ props 传递数据、events 触发事件和 slot 内容分发就构成了 Vue �
 </div>
 ```
 
-
-
 ```html
 <base-layout>
 	<template slot="header">
@@ -1001,8 +898,6 @@ props 传递数据、events 触发事件和 slot 内容分发就构成了 Vue �
 	</template>
 </base-layout>
 ```
-
-
 
 作用域插槽。作用域插槽是一种特殊的 slot，使用一个可以复用的模板替换已渲染元素。作用域插槽的使用场景就是父组件既可以复用子组件的 slot，又可以使 slot 内容不一致。
 
@@ -1027,8 +922,6 @@ props 传递数据、events 触发事件和 slot 内容分发就构成了 Vue �
 </body>
 ```
 
-
-
 作用域插槽更具代表性的用例是列表组件，允许组件自定义应该如何渲染列表每一项。
 
 ```html
@@ -1039,8 +932,6 @@ props 传递数据、events 触发事件和 slot 内容分发就构成了 Vue �
 	</template>
 </child-component>
 ```
-
-
 
 ```javascript
 Vue.component('child-component',{
@@ -1066,21 +957,17 @@ var app = new Vue({
 })
 ```
 
-
-
 访问 slot。Vue.js 2.x 提供了用来访问被 slot 分发的内容的方法`$slots`。每个具名插槽有其相应的属性 (例如：slot="foo"中的内容将会在`vm.$slots.foo`中被找到)。default属性包括了所有没有被包含在具名插槽中的节点。
 
 ## 7.5 组件高级用法
 
-递归组件。组件在它的模板内可以递归地调用自己，只要给组件设置name的选项就可以。设置 name 后，在组件模板内就可以递归使用了。不过需要注意的是，必须给一个条件来限制递归数量，否则会抛出错误：max stack size exceeded。
+递归组件。组件在它的模板内可以递归地调用自己，只要给组件设置 name 的选项就可以。设置 name 后，在组件模板内就可以递归使用了。不过需要注意的是，必须给一个条件来限制递归数量，否则会抛出错误：max stack size exceeded。
 
 ```html
 <div id="app">
 	<child-component :count="1"></child-component>
 </div>
 ```
-
-
 
 ```javascript
 Vue.component('child-component',{
@@ -1095,8 +982,6 @@ Vue.component('child-component',{
 })
 ```
 
-
-
 内联模板。组件的模板一般都是在 template 选项内定义的，Vue 提供了一个内联模板功能，在使用组件时，给组件标签使用 inline-tempate 特性，组件就会把它的内容当作模板，而不是把它当作内容分发，这让模板更灵活。但是，在父组件声明的数据和在子组件中声明的数据，都可以渲染，如果同名优先使用子组件的数据，这就是内联模板的缺点， 它让作用域比较难理解。
 
 ```html
@@ -1108,8 +993,6 @@ Vue.component('child-component',{
 </my-component>
 ```
 
-
-
 动态组件。Vue.js 提供了一个特殊的元素`<component>`用来动态地挂载不同的组件，使用 :is 特性来选择要挂载的组件。动态地改变 currentView 的值就可以动态挂载组件了，也可以直接绑定在组件对象上。
 
 ```html
@@ -1118,8 +1001,6 @@ Vue.component('child-component',{
 <button @click="handleChangeView('B')">切换到B</button>
 <button @click="handleChangeView('C')">切换到C</button>
 ```
-
-
 
 ```javascript
 components:{
@@ -1139,8 +1020,6 @@ methods:{
 	</script>
 ```
 
-
-
 异步组件。当工程足够大，使用组件足够多时，是时候考虑下性能问题了。Vue.js 允许将组件定义为一个工厂函数，动态地解析组件 Vue.js 只在组件需要渲染时触发工厂函数，并且把结果缓存起来，用于后面的再次渲染。
 
 工厂函数接收一个 resolve 回调，在收到从服务器下载的组件定义时调用，也可以调用 reject(reson) 提示加载失败。
@@ -1155,8 +1034,6 @@ Vue.component('async-example', function (resolve, reject) {
 	}, 1000)
 })
 ```
-
-
 
 ## 7.6 其它
 
@@ -1177,8 +1054,6 @@ Vue.nextTick(function () {
 })
 ```
 
-
-
 X-Templates。Vue 提供了另一种定义模板的方式，在一个`<script>`标签里使用 text/x-template 类型，并且指定一个 id，将这个 id 赋给 template。在`<script>`标签里，可以愉快地写 HTML 代码，不用考虑换行问题。不过，Vue 的初衷并不是滥用它，因为它将模板和组件的其他定义隔离了。
 
 ```html
@@ -1187,17 +1062,13 @@ X-Templates。Vue 提供了另一种定义模板的方式，在一个`<script>`�
 </script>
 ```
 
-
-
 ```javascript
 Vue.component('hello-world', {
 	template: '#hello-world-template'
 })
 ```
 
-
-
-手动挂载实例的方法。创建的实例可以通过 new Vue() 的形式创建出来。在一些非常特殊的情况下，我们需要动态地区创建 Vue 实例。Vue 提供了 Vue.extend 和`$mount`两个方法来手动挂载一个实例。
+手动挂载实例的方法。创建的实例可以通过 `new Vue()` 的形式创建出来。在一些非常特殊的情况下，我们需要动态地区创建 Vue 实例。Vue 提供了` Vue.extend` 和`$mount`两个方法来手动挂载一个实例。
 
 Vue.extend 是基础 Vue 构造器，创建一个“子类”，参数是包含组件选项的对象。
 
@@ -1224,13 +1095,11 @@ Vue.extend 是基础 Vue 构造器，创建一个“子类”，参数是包含�
 </script>
 ```
 
-
-
 ## 7.7 实战：两个常用组件的开发
 
 开发一个数字输入框组件。数字输入框是对普通输入框的扩展，用来快捷输入一个标准的数字。数字输入框只能输入数字，而且又两个快捷按钮，可以直接减1或加1。除此之外，还可以设置初始值、最大值、最小值，在数值改变时，触发一个自定义事件来通知父组件。
 
-所有的组件配置都在组件里定义，先在 template 里定义了组件的根节点，因为是独立组件，应该对每个 prop 进行校验。这里根据需求有最大值、最小值和默认值，有3个 prop：max 和 min 都是数字类型，默认值是正无穷大和负无穷大，value 也是数字类型，默认值是0.
+所有的组件配置都在组件里定义，先在 template 里定义了组件的根节点，因为是独立组件，应该对每个 prop 进行校验。这里根据需求有最大值、最小值和默认值，有3个 `prop：max` 和 min 都是数字类型，默认值是正无穷大和负无穷大，value 也是数字类型，默认值是0.
 
 父组件的 value 是一个关键的绑定值，所以用了 v-model 这样优雅的方式实现双向绑定，也让 API 看起来很合理。大多数表单类组件都应该有一个 v-model，比如输入框、单选框、多选框、下拉选择器等。
 
@@ -1248,11 +1117,11 @@ Vue 组件时单向数据流，所以无法从组件内部直接修改 prop、va
 
 自定义指令的注册方式和组件很像，也分为全局注册和局部注册，一个指令定义对象可以提供如下几个钩子函数 (均为可选)：有blid、inserted、update、componentUpdated、unbind五种。其中钩子函数有四个参数，el、binding、vnode和oldVnode，binding是一个对象，包含的属性有name、value、oldValue、expression、arg、modifiers六个。
 
-如果指令需要多个值，可以传入一个JavaScript对象字面量。记住，指令函数能够接受所有合法的 JavaScript 表达式
+如果指令需要多个值，可以传入一个cJavaScriptc对象字面量。记住，指令函数能够接受所有合法的 JavaScript 表达式
 
 # 第九章 Render函数
 
-Vue.js 2.x与Vue.js1.x最大的区别就在于前者使用了Virtual Dom（虚拟DOM）来更新节点，提升渲染性能。虚拟DOM并不是真正意义上的DOM，而是一个轻量级的JavaScript对象，在状态发生变化时，虚拟DOM会进行Diff运算，来更新只需要被替换的DOM，而不是全部重绘，与DOM操作相比，开销会小很多。
+Vue.js 2.x 与 Vue.js1.x 最大的区别就在于前者使用了Virtual Dom（虚拟DOM）来更新节点，提升渲染性能。虚拟DOM并不是真正意义上的DOM，而是一个轻量级的JavaScript对象，在状态发生变化时，虚拟DOM会进行Diff运算，来更新只需要被替换的DOM，而不是全部重绘，与DOM操作相比，开销会小很多。
 vNode对象通过一些特定的选项描述了真实的DOM结构，每个DOM元素或组件都对应一个VNode对象，VNode主要可以分为如下几类，TextVNode文本节点、ElementVnode普通元素节点、ComponentVnode组件节点、EmptyVNode没有内容的注释节点、CLoneVNode克隆节点，可以是以上任意类型的节点，唯一的区别在于isCloned属性为true
 
 Render函数通过createElement参数来创建Virtual Dom，结构精简了很多。slot的使用场景也是在Render函数中的。createElement函数生成模板，它有3个参数。第一个参数是必选的，可以是一个HTML标签字符串，也可以是一个组件或函数；第二个是可选参数，包含模板相关属性的数据对象，在template中使用，第三个是子节点VNodes，由creatElement()构建而成，也是可选参数。
@@ -1279,8 +1148,6 @@ webpack的主要使用场景是单页面富应用（SPA，通常是由一个 htm
 import 'src/styles/index.css'
 ```
 
-
-
 export 和 import 是用来导出和导入模块的，一个模块就是一个 js 文件，拥有独立的作用域,里面定义的变量外部是无法获取的。模块导出后，在需要使用模块的文件使用 import 再导入，就可以在这个文件内使用这些模块了。
 
 导入的模块名称都是在 export 的文件中设置的，用户必须预先知道这个名称，如果想自定义名称，则使用 export default 来输出默认的模块。
@@ -1301,17 +1168,12 @@ console.log(conf);  // { version: '1.0.0'}
 console.log(Add(1, 1));  // 2
 ```
 
-
-
-
 如果使用 npm 安装了一些库，在 webpack 中可以直接导入。
 
 ```javascript
 import vue from 'vue';
 import $ from 'jquery'
 ```
-
-
 
 ## 10.2 webpack基础配置
 
@@ -1331,8 +1193,6 @@ import $ from 'jquery'
 },
 ```
 
-
-
 webpack 配置中最重要也是必选的两项就是入口 Enrty 和出口 Output，入门的作用是告诉 webpack 从哪里开始寻找依赖，并且编译，出口则用来配置编译后的文件存储位置和文件名。entry 中的 js 文件就是我们配置的单入口，webpack 会从这个文件开始工作。output 中的 path 用来存放打包后文件的输出目录，是必填项，publicPath 指定资源文件引用的目录，filename 用于指定输出文件的名称。
 
 ```JavaScript
@@ -1349,8 +1209,6 @@ var config = {
 };
 module.exports = config;
 ```
-
-
 
 在 webpack 的世界里，每个文件都是一个模块，比如 css、js、html、less等。对于不同的模块，需要用不同的加载器 Loaders 来处理，而加载器就是 webpack 的最重要的功能，通过安装不同的加载器可以对各种后缀名的文件进行处理，比如说要写 CSS 样式，就要用到 style-load 和 css-loader。
 
@@ -1378,7 +1236,7 @@ webpack 的插件功能很强大而且还可以定制。通过插件，可以把
 
 在字符串模块 template 选项里拼写字符串 DOM 非常费劲，尤其是用"\"换行。Vue.js是一个渐进式的 JavaScript 框架，在使用 webpack 构建 Vue 项目时，可以使用一种新的构建模式：.vue单文件组件。
 
-.vue 单文件组件就是一个后缀名为 .vue 的文件，是一种新的构建模式，在 webpack 中使用 vue-loader 就可以对 .vue 格式的文件进行处理，该文件一般包含三个部分，即<template>、<script>、<style>。分别是 HTML/CSS/JS/ 模板，如果在 style 标签上使用 scoped 属性则代表只在这个组件有效。也可以使用 CSS 预编译。使用 .vue 文件需要先安装 vue-loader、vue-style-loader 等加载器并做配置，因为要使用 ES6 语法，还需要安装 babel 和 babel-loader 等加载器。在 demo 目录下有一个 .babelrc 的文件，是写入 babel 的配置，webpack 会依赖此配置文件来使用 babel 编译 ES6 代码。这样，每个 .vue 就代表一个组件，组件之间可以互相依赖。
+.vue 单文件组件就是一个后缀名为 .vue 的文件，是一种新的构建模式，在 webpack 中使用 vue-loader 就可以对 .vue 格式的文件进行处理，该文件一般包含三个部分，即`<template>``、<script>`、`<style>`。分别是 HTML/CSS/JS/ 模板，如果在 style 标签上使用 scoped 属性则代表只在这个组件有效。也可以使用 CSS 预编译。使用 .vue 文件需要先安装 vue-loader、vue-style-loader 等加载器并做配置，因为要使用 ES6 语法，还需要安装 babel 和 babel-loader 等加载器。在 demo 目录下有一个 .babelrc 的文件，是写入 babel 的配置，webpack 会依赖此配置文件来使用 babel 编译 ES6 代码。这样，每个 .vue 就代表一个组件，组件之间可以互相依赖。
 
 .vue 的组件是没有名称的，在父组件使用时可以对它自定义。写好了组件，就可以在入口 main.js 中使用它了。
 
@@ -1392,10 +1250,8 @@ new Vue({
 })
 ```
 
-
-
 ES6语法提示
-=>是箭头函数，`render:h=>h(App)`等同于`render:function(h){return h(App)}`也等同于`render:h=>{return h(App)}`。但是，箭头函数里面的this指向与普通函数是不一样的，箭头函数体内的this对象就是定义时所在的对象，而不是使用时所在的对象。
+`=>`是箭头函数，`render:h=>h(App)`等同于`render:function(h){return h(App)}`也等同于`render:h=>{return h(App)}`。但是，箭头函数里面的this指向与普通函数是不一样的，箭头函数体内的this对象就是定义时所在的对象，而不是使用时所在的对象。
 
 ```JavaScript
 function Timer () {
@@ -1427,7 +1283,7 @@ ES6语法提示
 
 Vue.js 提供了插件机制，可以在全局添加一些功能。它们可以简单到几个方法、属性，也可以很复杂，比如一整套组件库。
 
-注册插件需要一个公开的方法install，它的第一个参数是Vue构造器，第二个参数是一个可选的选项对象。然后通过Vue.use()来使用插件。绝大多数情况下，开发插件主要是通过 NPM 发布后给比人使用的，在自己的项目中可以直接在入门调用以上的方法，无需多一步注册和使用的步骤。
+注册插件需要一个公开的方法install，它的第一个参数是Vue构造器，第二个参数是一个可选的选项对象。然后通过`Vue.use()`来使用插件。绝大多数情况下，开发插件主要是通过 NPM 发布后给比人使用的，在自己的项目中可以直接在入门调用以上的方法，无需多一步注册和使用的步骤。
 
 ```javascript
 MyPlugin.install = function (Vue, options) {
@@ -1458,8 +1314,6 @@ MyPlugin.install = function (Vue, options) {
   }
 }
 ```
-
-
 
 ## 11.1 前端路由与vue-router
 
@@ -1545,7 +1399,7 @@ const Routers = [
 
 vue-router 有两种跳转页面的方法，第一种是使用内置的`<router-link>`组件，它会被渲染为一个`<a>`标签，to 选项就是一个 prop，指定需要跳转的路径，也可以用 v-bind 动态设置。tag 可以指定渲染成什么标签，使用 replace 不会留下 History 记录，active-class 是跳转成功后给元素增加伪元素（自动给当前元素一个名为 router-link-active 的class）。
 
-有时候，跳转页面可能需要在 JavaScript 里进行，类似于 window.location.href。这时可以用第二种跳转方法，使用 router 实例的方法。例如通过点击事件，触发`$router.push`方法。该方法的参数可以是一个字符串路径，或者一个描述地址的对象。`$router`还有 replace 和 go 等方法。replace 方法类似于 `<router-link>`的 replace 功能，它不会向 history 添加新纪录，而是替换掉当前的 history 记录。go 方法类似于 window.history.go()，在history 记录中向前或者后退多少步，参数时整数。
+有时候，跳转页面可能需要在 JavaScript 里进行，类似于`window.location.href`。这时可以用第二种跳转方法，使用 router 实例的方法。例如通过点击事件，触发`$router.push`方法。该方法的参数可以是一个字符串路径，或者一个描述地址的对象。`$router`还有 replace 和 go 等方法。replace 方法类似于 `<router-link>`的 replace 功能，它不会向 history 添加新纪录，而是替换掉当前的 history 记录。go 方法类似于 `window.history.go()`，在history 记录中向前或者后退多少步，参数时整数。
 
 ```JavaScript
 // 字符串
@@ -1563,7 +1417,7 @@ router.push({ path: 'register', query: { plan: 'private' }})
 
 vue-router 提供了导航钩子 beforeEach 和 afterEach，它们会在路由即将改变前和改变后触发。导航钩子有三个参数，to 表示进入的路由对象，from 表示即将离开的路由对象，next 表示调用该方法才能进入下一个钩子。
 
-next() 方法可以设置参数，例如某些页面需要校验是否登录，如果登录了就可以访问，否则跳转到登录页。这里可以通过 localStorage 来简易判断是否登录。next() 的参数设置为 false 时，可以取消导航，设置为具体的路径可以导航到指定的页面。
+`next()` 方法可以设置参数，例如某些页面需要校验是否登录，如果登录了就可以访问，否则跳转到登录页。这里可以通过 localStorage 来简易判断是否登录。`next()` 的参数设置为 false 时，可以取消导航，设置为具体的路径可以导航到指定的页面。
 
 ```JavaScript
 router.afterEach((to, from, next) => {
@@ -1756,7 +1610,7 @@ Cascader 的基本构成就是上述的3部分：cascader.vue、caspanel.vue 和
 
 Input(i-input)组件在默认的 slot 内，这意味着可以自定义触发器部分，不局限于使用输入框，这让 Cascader 使用更灵活。使用 slot 时，需要自己渲染显示的内容，所以提供了事件 on-change，在选择完成时触发，返回 value 和 seletedData，分别为已选值和已选项的具体数据。
 
-iView 作为独立组件，无法使用bus和vuex，为了实现跨组件通信，iView 模拟了 Vue1 的 dispatch 和 boradcast 方法。
+iView 作为独立组件，无法使用 bus 和 vuex，为了实现跨组件通信，iView 模拟了 Vue1 的 dispatch 和 boradcast 方法。
 
 独立组件与业务组件最大的不同是，业务组件往往针对数据的获取、整理、可视化，逻辑清晰简单，可以使用 vuex；而独立组件的复杂度更多集中在细节、交互、性能优化、API 设计上，对原生 JavaScript 有一定的考验。在使用过程中，可能会有新功能的不断添加，也会发现隐藏的 bug。所以独立组件一开始逻辑和代码并不复杂，多次迭代后悔越来越冗长，当然功能也更丰富，使用更稳定。
 
@@ -1764,7 +1618,7 @@ iView 作为独立组件，无法使用bus和vuex，为了实现跨组件通信�
 
 折叠面板也是网站常用控件，可将一组内容区域展开或折叠，使页面干净整洁。
 
-组件分为两部分：collapse.vue 和 panel.vue，前者作为组件容器，接收一个整体的slot，而 slot 就是由后者组成，并且可以进行折叠面板的嵌套。collage 支持 v-model 来双向绑定当前激活的面板，判断激活的依据是 panel 的`prop：name`。
+组件分为两部分：`collapse.vue` 和 `panel.vue`，前者作为组件容器，接收一个整体的slot，而 slot 就是由后者组成，并且可以进行折叠面板的嵌套。collage 支持 v-model 来双向绑定当前激活的面板，判断激活的依据是 panel 的`prop：name`。
 
 ```html
 <!-- collapse.vue -->
