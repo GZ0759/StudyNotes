@@ -77,7 +77,7 @@ typeof Symbol()      === "symbol";    // true
 
 
 
-null 是基本类型中唯一的一个“假值”类型， typeof 对它的返回值为 "object"。function（函数）也是 JavaScript 的一个内置类型。然而查阅规范就会知道， 它实际上是 object 的一个“子类型”。具体来说，函数是“可调用对象”，它有一个内部属性 [[Call]]，该属性使其可以被调用。数组也是对象。确切地说，它也是 object 的一个“子类型”，数组的元素按数字顺序来进行索引（而非普通像对象那样通过字符串键值），其 length 属性是元 素的个数。
+null 是基本类型中唯一的一个“假值”类型， typeof 对它的返回值为 "object"。function（函数）也是 JavaScript 的一个内置类型。然而查阅规范就会知道， 它实际上是 object 的一个“子类型”。具体来说，函数是“可调用对象”，它有一个内部属性 `[[Call]]`，该属性使其可以被调用。数组也是对象。确切地说，它也是 object 的一个“子类型”，数组的元素按数字顺序来进行索引（而非普通像对象那样通过字符串键值），其 length 属性是元 素的个数。
 
 ```javascript
 typeof null === "object"; // true
@@ -150,7 +150,17 @@ JavaScript 使用有限数字表示法，所以和纯粹的数学运算不同，
 
 ## 第3章 原生函数	
 
-常见的原生函数有：• String() • Number() • Boolean() • Array() • Object() • Function() • RegExp() • Date() • Error() • Symbol()。
+常见的原生函数有：  
+- String() 
+- Number() 
+- Boolean() 
+- Array() 
+- Object() 
+- Function() 
+- RegExp() 
+- Date() 
+- Error() 
+- Symbol()。
 
 实际上，它们就是内建函数，内建函数可以被当作构造函数来使用，但是通过构造函数创建出来的是封装了基本类型值的封装对象。
 
