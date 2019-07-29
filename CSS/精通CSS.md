@@ -75,6 +75,8 @@ margin: 0;
 }
 ```
 
+属性选择符。
+
 ```css
 abbr[title] {
 border-bottom: 1px dotted #999;
@@ -92,7 +94,34 @@ a[hreflang|=en]
 
 伪元素。有时候想选择的页面区域不是通过元素来表示的，而我们也不想为此给页面添加额外的标记。CSS 为这种情况提供了一些特殊选择符，叫做伪元素。伪元素一般使用双冒号语法，但是一些旧版本浏览器在实现伪元素时支持的是但冒号语法。
 
+```css
+.chapter::before {
+content: '”';
+font-size: 15em;
+}
+```
+
 伪类。有时候想基于文档结构以外的情形来为页面添加样式，比如基于超链接或表单元素的状态。这时候可以使用伪类选择符。伪类选择符的语法是以一个冒号开头，用于选择元素的特定状态或关系。
+
+```css
+/* makes all unvisited links blue */
+a:link {
+color: blue;
+}
+/* makes all visited links green */
+a:visited {
+color: green;
+}
+/* makes links red on mouse hover, keyboard focus */
+a:hover,
+a:focus {
+color: red;
+}
+/*...and purple when activated. */
+a:active {
+color: purple;
+}
+```
 
 结构化伪类。使用结构化伪类能够做很多事，因为在文档中基于相对位置精确选择元素时，它们提供了方便。CSS3 新增了一大批与文档结构有关的伪类。其中最常用的是 nth-child 选择符，可以用来交替地为表格应用样式。nth-last-child 选择符与 nth-child 选择符类似，只不过是从最后一个元素倒序计算。CSS2.1 中有一个选择第一个子元素的伪元素，叫`:first-child`，相当于直观版的`:nth-child(1)`。CSS3 选择符规范又添加了一个选择最后一个子元素的伪类`:last-child`，对应于`nth-last-child(1)`。此外，还有`:only-child`和选择特定类型的唯一子元素`only-of-type`。
 
@@ -101,6 +130,13 @@ a[hreflang|=en]
 ## 2.2 层叠
 
 稍微复杂的样式表中都可能存在两条甚至多条规则同时选择一个元素的情况。CSS 通过一种叫层叠的机制来处理这种冲突。层叠机制的原理是为规则赋予不同的重要程度。同时允许用户使用`!important`标注来覆盖规则，主要是处于无障碍交互的需要。
+
+```css
+p {
+font-size: 1.5em !important;
+color: #666 !important;
+}
+```
 
 归纳起来，层叠机制的重要性级别从高到低如下所示。
 
@@ -131,6 +167,25 @@ a[hreflang|=en]
 
 首先可以把样式放在 style 元素中，直接放在文档的 head 部分。如果样式不多，不愿意因为浏览器额外下载文件而耽误时间，那么就可以使用这种方法。如果样式在外部样式表中，那么有两种方法把它们挂接到网页上，最常用的方式是使用 link 元素，还有一种方法是使用`@import`指令加载外部 CSS 文件。
 
+```html
+<!-- 直接放置style -->
+<style>
+body {
+font-family: Avenir Next, SegoeUI, sans-serif;
+color: grey;
+}
+</style>
+
+<!-- 使用link加载 -->
+<link href="/c/base.css" rel="stylesheet" />
+
+
+<!-- 使用@import加载 -->
+<style>
+@import url("/c/modules.css");
+</style>
+```
+
 性能。选择以什么方式把 CSS 加载到页面中，决定了浏览器显示页面的速度。度量 Web 性能的一个重要指标就是网页内容实际显示在屏幕上需要多久。这个指标有时候也叫“渲染时间”或“上屏时间”。
 
 - 减少 HTTP 请求
@@ -144,6 +199,15 @@ a[hreflang|=en]
 - 不让浏览器渲染阻塞 JavaScript
 
 如果在 HTML 文档的`<head>`元素加入了`<script>`元素，浏览器必须先把链接的内容下载下来，然后再向用户显示网页内容。这种情况下的 HTML 和 CSS 解析完全被下载以及执行脚本阻断了，也就是所谓的“渲染阻塞”。渲染阻塞明显会拖慢网站加载速度。为此，主流的做法是在 HTML 页面底部的结束标签`</body>`之前加载 JavaScript。比较现代的做法是在`<head>`中使用`<script>`标签时添加 async 或 defer 属性。
+
+```html
+<head>
+  <!-- will load asynchronously, but execute immediately when downloaded -->
+  <script src="/scripts/core.js" async></script>
+  <!-- will load asynchronously, but execute after HTML is done-->
+  <script src="/scripts/deferred.js" defer></script>
+</head>
+```
 
 # 第三章 可视化格式模型
 
