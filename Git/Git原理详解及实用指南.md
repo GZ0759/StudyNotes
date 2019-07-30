@@ -237,7 +237,28 @@ git merge --abort
 
 # 11 高级 1：不喜欢 merge 的分叉？用 rebase 吧
 
+## 11.1 rebase——在新位置重新提交
+
+`rebase` 的意思是，给你的 `commit` 序列重新设置基础点（也就是父 `commit`）。展开来说就是，把你指定的 `commit` 以及它所在的 `commit` 串，以指定的目标 `commit` 为基础，依次重新提交一次。通过这样的方式，就让本来分叉了的提交历史重新回到了一条线。
+
+```shell
+git checkout branch1
+git rebase master
+
+git checkout master
+git merge branch1
+```
+
+为了避免和远端仓库发生冲突，一般不要从 `master` 向其他 `branch` 执行 `rebase` 操作。而如果是 `master` 以外的 `branch` 之间的 `rebase`（比如 `branch1` 和 `branch2` 之间），就不必这么多费一步，直接 `rebase` 就好。
+
 # 12 高级 2：刚刚提交的代码，发现写错了怎么办？
+
+amend" 是「修正」的意思。在提交时，如果加上 `--amend` 参数，Git 不会在当前 `commit` 上增加 `commit`，而是会把当前 `commit` 里的内容和暂存区（stageing area）里的内容合并起来后创建一个新的 `commit`，用这个新的 `commit` 把当前 `commit` 替换掉。所以 `commit --amend` 做的事就是它的字面意思：对最新一条 `commit` 进行修正。
+
+```shell
+git add 笑声.txt
+git commit --amend
+```
 
 # 13 高级 3：写错的不是最新的提交，而是倒数第二个？
 
