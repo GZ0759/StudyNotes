@@ -227,11 +227,11 @@ height 和 width 还有一个比较明显的区别就是对百分比单位的支
 
 改变 width/height 作用细节的 box-sizing。该属性虽然是 CSS3 属性，但是 IE8 可以在添加-ms-私有前缀后支持，IE9 浏览器开始就不需要私有前缀。box-sizing 属性的作用是改变 width 的作用细节。默认情况下，width 是作用在 content box 上，而该属性的作用就是可以把 width 作用的盒子变成其他几个。box-sizing 被发明出来最大的初衷应该是解决替换元素宽度自适应问题。
 
-相对简单而单纯的 height:auto。CSS 的默认流是水平方向的，宽度是稀缺的，高度是无限的。因此，宽度的分配规则就比较复杂，高度就显得比较随意，叠加就是最终的高度值，当然如果存在于绝对定位模型中，也具有格式化高度特性。
+相对简单而单纯的 `height: auto`。CSS 的默认流是水平方向的，宽度是稀缺的，高度是无限的。因此，宽度的分配规则就比较复杂，高度就显得比较随意，叠加就是最终的高度值，当然如果存在于绝对定位模型中，也具有格式化高度特性。
 
-关于 height:100%。height 和 width 还有一个比较明显的区别就是对百分比单位的支持。对于 width 属性，就算父元素 width 为 auto，其百分比也是支持的。但是，对于 height 属性，如果父元素 height 为 auto ，只要子元素在文档流中，其百分比值完全就被忽略了。
+关于 `height: 100%`。height 和 width 还有一个比较明显的区别就是对百分比单位的支持。对于 width 属性，就算父元素 width 为 auto，其百分比也是支持的。但是，对于 height 属性，如果父元素 height 为 auto ，只要子元素在文档流中，其百分比值完全就被忽略了。
 
-如何让元素支持 height:100% 效果。
+如何让元素支持 `height: 100%` 效果。
 
 - 设定显式的高度值。
 - 使用绝对定位。但绝对定位的宽高百分比是相对于 padding box 的。
@@ -249,11 +249,11 @@ img {
 }
 ```
 
-height:auto 是必需的，否则，如果原始图片有设定 height， max-width 生效的时候，图片就会被水平压缩。强制 height 为 auto 可以确保宽度不超出的同时使图片保持原来的比例。但这样也会有体验上的问题，那就是在加载时图片占据高度会从 0 变成计算高度，图文会有明显的瀑布式下落。
+`height: auto` 是必需的，否则，如果原始图片有设定 height， max-width 生效的时候，图片就会被水平压缩。强制 height 为 auto 可以确保宽度不超出的同时使图片保持原来的比例。但这样也会有体验上的问题，那就是在加载时图片占据高度会从 0 变成计算高度，图文会有明显的瀑布式下落。
 
 min-width/min-height 的初始值是 auto，max-width/max-height 的初始值是 none。 max-width 会覆盖 width，包裹覆盖 !important；min-width 覆盖 max-width，此规则发生在 min-width 和 max-width 冲突的时候。
 
-任意高度元素的展开收起动画技术。如果使用 height+overflow:hidden 实现，height 使用的值假设是 auto，则从 0 到 auto 是无法计算的，因此无法形成过渡效果。
+任意高度元素的展开收起动画技术。如果使用 height+`overflow: hidden` 实现，height 使用的值假设是 auto，则从 0 到 auto 是无法计算的，因此无法形成过渡效果。
 
 ```css
 .element {
@@ -314,6 +314,7 @@ min-width/min-height 的初始值是 auto，max-width/max-height 的初始值是
 content内容生成技术。在实际项目中，content 属性几乎都是用在`::before`/`::after`这两个伪元素中，因此，content 内容生成技术有时候也称为`::before`/`::after`伪元素技术。
 
 1. content 辅助元素生成。通常，我们会把 content 的属性值设置为空字符串。然后，利用其他 CSS 代码来生成辅助元素，或实现图形效果，或实现特定布局。与使用显式的 HTML 标签元素相比，这样做的好处是 HTML 代码会显得更加干净和精简。
+
 ```css
 .clear:after {
   content: '';
@@ -321,6 +322,7 @@ content内容生成技术。在实际项目中，content 属性几乎都是用�
   clear: both;
 }
 ```
+
 2. content 字符内容生成。content 字符内容生成就是直接写入字符内容，中英文都可以，比较常见的应用就是配合 @font-face 规则实现图标字体效果。除常规字符之外，我们还可以插入 Unicode 字符，比较经典 的就是插入换行符来实现某些布局或者效果。
 3. content 图片生成，指的是直接用 url 功能符显示图片。url 功能符中的图片地址不仅可以是常见的 png、 jpg 格式，还可以是 ico 图片、svg 文件以及 base64URL 地址，但不支持 CSS3 渐变背景图。虽然支持的图片格式多种多样，但是实际项目中，content 图片生成用得并不多，主要原因在于图片的尺寸不好控制，我们设置宽高无法改变图片的固有尺寸。所以，伪元素中的图片更多的是使用 background-image 模拟。
 4. 了解 content 开启闭合符号生成。content 支持的属性值中有一对不常用的 open-quote 和 close-quote 关键字，顾名思义，就是“开启的引号”和“闭合的引号”，使用纯正的中文解释就是“上引号”和“下引号”。CSS 中还有 no-open-quote 和 no-close-quote 关键字 。
@@ -437,7 +439,7 @@ margin 与元素的外部尺寸。对于外部尺寸，margin 属性的影响则
 
 margin 的百分比值。和 padding 属性一样， margin 的百分比值无论是水平方向还是垂直方向都是相对于宽度计算的。
 
-块级元素的上外边距（ margin-top）与下外边距（margin-bottom）有时会合并为单个外边距，这样的现象称为“margin 合并”。合并后的外边距的高度等于两个发生合并的外边距的高度中的较大者。行内框、浮动框或绝对定位之间的外边距不会合并。同时，这种说法在不考虑 writing-mode 的情况下才是正确的。
+块级元素的上外边距（margin-top）与下外边距（margin-bottom）有时会合并为单个外边距，这样的现象称为“margin 合并”。合并后的外边距的高度等于两个发生合并的外边距的高度中的较大者。行内框、浮动框或绝对定位之间的外边距不会合并。同时，这种说法在不考虑 writing-mode 的情况下才是正确的。
 
 margin 合并的 3 种场景。
 
@@ -451,7 +453,7 @@ margin 合并的计算规则总结为“正正取大值”“正负值相加”�
 
 `margin: auto`的填充规则是：如果一侧定值，一侧 auto，则 auto 为剩余空间大小；如果两侧均是 auto，则平分剩余空间。居中对齐左右同时 auto 计算即可。触发 margin:auto 计算有一个前提条件，就是 width 或 height 为 auto 时，元素是具有对应方向的自动填充特性的，因为在垂直上 height 是不符合条件的，所以不能运用这个方法进行垂直居中。
 
-如果要进行垂直居中，可以使用两种方法。第一种方法是使用 writing-mode 改变文档流的方向。第二种方法是让绝对定位元素的 margin:auto 居中。
+如果要进行垂直居中，可以使用两种方法。第一种方法是使用 writing-mode 改变文档流的方向。第二种方法是让绝对定位元素的 `margin: auto` 居中。
 
 ```css
 .son {
@@ -476,7 +478,7 @@ margin 无效情形解析。
 
 注意， border-style 的默认值是 none，有一部分人可能会误以为是 solid。这也是单纯设置 border-width 或 border-color 没有边框显示的原因 。
 
-平常使用 border-width 几乎全是固定的数值，如 border-width:1px 之类，但是，可能有些人并不知道 border-width 还支持若干关键字，包括 thin、 medium（默认值）和 thick，
+平常使用 border-width 几乎全是固定的数值，如 `border-width: 1px` 之类，但是，可能有些人并不知道 border-width 还支持若干关键字，包括 thin、 medium（默认值）和 thick，
 
 border-color 有一个很重要也很实用的特性，就是“border-color 默认颜色就是 color 色值”。具体来讲，就是当没有指定 border-color 颜色值的时候，会使用当前元素的 color 计算值作为边框色。
 
@@ -734,7 +736,7 @@ vertical-align 属性的默认值 baseline 在文本之类的内联元素那里�
 }
 ```
 
-`vertial-align: top`和`vertial-align: bottom`基本表现类似，只是一个“上”一 个“下”，因此合在一起讲。顾名思义，`vertial-align:top`就是垂直上边缘对齐，具体定义如下。内联元素：元素底部和当前行框盒子的顶部对齐。table-cell 元素：元素底 padding 边缘和表格行的顶部对齐。  
+`vertial-align: top`和`vertial-align: bottom`基本表现类似，只是一个“上”一个“下”，因此合在一起讲。顾名思义，`vertial-align:top`就是垂直上边缘对齐，具体定义如下。内联元素：元素底部和当前行框盒子的顶部对齐。table-cell 元素：元素底 padding 边缘和表格行的顶部对齐。  
 `vertial-align: middle`近似垂直居中的原因与定义有关。内联元素：元素的垂直中心点和行框盒子基线往上 1/2 x-height 处对齐。table-cell 元素：单元格填充盒子相对于外面的表格行居中对齐。
 
 深入理解 vertical-align 文本类属性值。`vertical-align: text-top`：盒子的顶部和父级内容区域的顶部对齐。`vertical-align: text-bottom`：盒子的底部和父级内容区域的底部对齐。
@@ -777,7 +779,7 @@ CSS 世界中正常的流内容或者流布局虽然也足够强大，但是实�
 
 ## 6.1 魔鬼属性 float
 
-浮动的本质就是为了实现文字环绕效果。 而这种文字环绕，主要指的就是文字环绕图片显示的效果。
+浮动的本质就是为了实现文字环绕效果。而这种文字环绕，主要指的就是文字环绕图片显示的效果。
 
 float 好像也像流一样满足我们布局页面的需求，但是实际上，这种布局方案缺少弹性。举个例子，一旦某个列表高度变高了，则下面的列表就可能发生不愿看到的布局错位，布局的容错性很糟糕。
 
@@ -805,12 +807,14 @@ float 属性的种种归根结底还是由于自身各种特性导致的。 floa
 
 我们可以利用 float 破坏 CSS 正常流的特性，实现两栏或多栏的自适应布局。一边元素没有浮动，也没有设置宽度，因此，流动性保持得很好。同时设置 margin、border 或者 padding 都可以自动改变 content box 的尺寸， 继而实现了宽度自适应布局效果。如果是百分比宽度，则也是可以的。
 
-```
+```html
 <div class="father">
     <img src="zxx.jpg">
     <p class="girl">美女1，美女2，美女3，美女4，美女5，美女6，后宫1，后宫2，后宫36</p>
 </div>
+```
 
+```css
 .father {
     border: 1px solid #444;
     overflow: hidden;
@@ -827,7 +831,7 @@ float 属性的种种归根结底还是由于自身各种特性导致的。 floa
 
 ## 6.2 float 的天然克星 clear
 
-官方对 clear 属性的解释是：“元素盒子的边不能和前面的浮动元素相邻。” clear 属性指定一个元素是否可以在它之前的浮动元素旁边，或者必须向下移动(清除浮动) 到这些浮动元素的下面。clear 属性适用于浮动和非浮动元素。
+官方对 clear 属性的解释是：“元素盒子的边不能和前面的浮动元素相邻。” clear 属性指定一个元素是否可以在它之前的浮动元素旁边，或者必须向下移动（清除浮动） 到这些浮动元素的下面。clear 属性适用于浮动和非浮动元素。
 
 clear 属性时让自身不能和前面的浮动元素相邻。考虑到 float 属性要么就 left 要么就 right，不可能同时存在，同时由于 clear 属性对“后面的”浮动元素时不闻不问的。所以当`clear: left`有效的时候，`clear: right`必定无效，也就是此时`clear: left`等同于设置`clear both`；同样的，`clear: right`如果有效也是等同于设置`clear: both`。由此可见，`clear:left`和`clear:right`这两个声明就没有任何使用的价值，至少在 CSS 世界中是如此，直接使用`clear:both`就行（针对一个浮动相邻元素）。
 
@@ -840,7 +844,7 @@ clear 属性只有块级元素才有效的，而::after 等伪元素默认都是
 
 当应用于非浮动块时，它将非浮动块的边框边界移动到所有相关浮动元素外边界的下方。这个非浮动块的垂直外边距会折叠。另一方面，两个浮动元素的垂直外边距将不会折叠。当应用于浮动元素时，它将元素的外边界移动到所有相关的浮动元素外边界的下方。这会影响后面浮动元素的布局，后面的浮动元素的位置无法高于它之前的元素。
 
-注释:如果你想要一个元素将所有浮动元素包含在内（解决浮动元素 float 使其父元素高度塌陷），你既可以将这个容器设置为浮动，又可以通过 `::after` 伪元素设置 clear 属性作为替代。还有三种方法是，给父元素一个固定高度；添加一个块级元素，并给此元素设置`clear:both`清除浮动；给父元素添加 `overflow：hidden；`。
+注释:如果你想要一个元素将所有浮动元素包含在内（解决浮动元素 float 使其父元素高度塌陷），你既可以将这个容器设置为浮动，又可以通过 `::after` 伪元素设置 clear 属性作为替代。还有三种方法是，给父元素一个固定高度；添加一个块级元素，并给此元素设置`clear: both`清除浮动；给父元素添加 `overflow：hidden；`。
 
 ## 6.3 CSS 世界的结界——BFC
 
@@ -944,7 +948,7 @@ HTML 中有两个标签是默认可以产生滚动条的，一个是根元素`<h
 
 知道`overflow:hidden`元素依然可以滚动，可以帮助我们实现无 JavaScript 的选项卡效果。但却有不少不足之处：其一，容器高度需要固定；第二，也是最麻烦的，就是“由内而外”的锚点定位会触发窗体的重定位，也就是说，如果页面也是可以滚动的，则点击选项卡按钮后页面发生跳动。
 
-```
+```html
 <div class="box">
   <div class="list" id="one">1</div>
   <div class="list" id="two">2</div>
@@ -957,7 +961,9 @@ HTML 中有两个标签是默认可以产生滚动条的，一个是根元素`<h
   <a href="#three">3</a>
   <a href="#four">4</a>
 </div>
+```
 
+```css
 .box {
   height: 10em;
   border: 1px solid #ddd;
@@ -969,7 +975,7 @@ HTML 中有两个标签是默认可以产生滚动条的，一个是根元素`<h
 }
 ```
 
-知道`overflow:hidden`元素依然可以滚动，还可以帮助我们理解一些现象发生的原因。例如，之前提到过的使用 margin-bottom 负值加 padding-bottom 正值以及父元素 overflow:hidden 配合实现的等高布局，在大多数情况下，这种布局使用是没有任何问题的，但是如果使用`dom.scrollIntoView()`或者触发窗体视区范围之外的内部元素的锚点定位行为，布局就会飞掉，没错，布局就像长了翅膀一样飞掉了。
+知道`overflow:hidden`元素依然可以滚动，还可以帮助我们理解一些现象发生的原因。例如，之前提到过的使用 margin-bottom 负值加 padding-bottom 正值以及父元素 `overflow:hidden` 配合实现的等高布局，在大多数情况下，这种布局使用是没有任何问题的，但是如果使用`dom.scrollIntoView()`或者触发窗体视区范围之外的内部元素的锚点定位行为，布局就会飞掉，没错，布局就像长了翅膀一样飞掉了。
 
 ## 6.5 float 的兄弟 position:absolute
 
@@ -980,7 +986,7 @@ HTML 中有两个标签是默认可以产生滚动条的，一个是根元素`<h
 - 两者都能“块状格式化上下文”， 也就是 BFC。
 - 两者都具有“包裹性”，也就是尺寸收缩包裹，同时具有自适应性。和 float 或其他“包裹性”声明带来的“自适应性”相比，absolute 有一个平时不太被人注意的差异，那就是 absolute 的自适应性最大宽度往往不是由父元素决定的，本质上说，这个差异是由“包含块”的差异决定的。换句话说， absolute 元素具有与众不同的“包含块”。
 
-absolute 的包含块。包含块（containing block）这个就是元素用来计算和定位的一个框。根元素（很多场景下可以看成是`<html>`）被称为“初始包含块”，其尺寸等同于浏览器可视窗口的大小。对于其他元素，如果该元素的 position 是 relative 或者 static，则“包含块” 由其最近的块容器祖先盒的 content box 边界形成。如果元素`position: fixed`，则“包含块”是“初始包含块”。如果元素`position: absolute`，则“包含块”由最近的 position 不为 static 的祖先元素建立，具体方式如下。
+absolute 的包含块。包含块（containing block）这个就是元素用来计算和定位的一个框。根元素（很多场景下可以看成是`<html>`）被称为“初始包含块”��其尺寸等同于浏览器可视窗口的大小。对于其他元素，如果该元素的 position 是 relative 或者 static，则“包含块” 由其最近的块容器祖先盒的 content box 边界形成。如果元素`position: fixed`，则“包含块”是“初始包含块”。如果元素`position: absolute`，则“包含块”由最近的 position 不为 static 的祖先元素建立，具体方式如下。
 
 如果该祖先元素是纯 inline 元素，则规则略复杂：假设给内联元素的前后各生成一个宽度为 0 的内联盒子（ inline box），则这两个内联盒子的 padding box 外面的包围盒就是内联元素的“包含块”；如果该内联元素被跨行分割了，那么“包含块”是未定义的，也就是 CSS2.1 规范并没有明确定义，浏览器自行发挥。 否则，“包含块”由该祖先的 padding box 边界形成。如果没有符合条件的祖先元素，则“包含块”是“初始包含块”。
 
@@ -994,10 +1000,13 @@ absolute 的包含块。包含块（containing block）这个就是元素用来�
 
 要实现导航文字右上方的定位很简单，直接对加图标这个元素进行样式设定就可以了了，原来纯文字导航时的样式完全不需要有一丁点儿的修改。实际上，即使是普通的水平对齐的图标也可以使用“无依赖绝对定位”实现。此方法兼容性很好，与 inline-block 对齐相比的好处在于，inline-block 对齐的最终行框并不是 20px，因为中文下沉，图标居中，要想视觉上水平，图标 vertical-align 对齐要比实际低一点，这就会导致最终整个航诳的高度是 21px 或者更大。
 
-```
+```html
 <span class="icon-x">
   <i class="icon-warn"></i>邮箱格式不准确
 </span>
+```
+
+```css
 .icon-x {
   line-height: 20px;
   padding-left: 20px;
@@ -1031,11 +1040,13 @@ img {
 
 利用 text-align 控制 absolute 元素的定位最适合的使用场景就是主窗体右侧的“返回顶部”以及“反馈”等小布局的实现。使用`:before`伪元素在前面插入一个空格，此时设置`.alignright`为`text-align: right`，则此空格对齐主结构的右边缘显示，后面的固定定位元素（同绝对定位元素）由于“无依赖定位”特性，左边缘正好就是主结构的右边缘，天然跑到主结构的外面显示了。设置`height：0; overflow: hidden`可以让空格不占据位置，从而让元素不影响主结构的布局。
 
-```
+```html
 <div class="alignright">
   <span class="follow"></span>
 </div>
+```
 
+```css
 .alignright {
   height: 0;
   text-align: right;
@@ -1166,13 +1177,15 @@ top 和 bottom 这两个垂直方向的百分比值计算跟 height 的百分比
 
 和“无依赖的绝对定位”类似，就是“无依赖的固定定位”，利用 absolute/fixed 元素没有设置 left/top/right/bottom 的相对定位特性，可以将目标元素定位到我们想要的位置。
 
-```
+```html
 <div class="father">
   <div class="right">
     &nbsp;<div class="son"></div>
   </div>
 </div>
+```
 
+```css
 .father {
   width: 300px; height: 200px;
   position: relative;
@@ -1309,12 +1322,12 @@ font-size 的关键字属性值分以下两类。
 
 绝对尺寸关键字。与当前元素 font-size 无关，仅受浏览器设置的字号影响。注意这里的措辞，是“浏览器设置”，而非“根元素”，两者是有区别的。
 
-- xx-large：好大好大，和<h1>元素计算值一样。
-- x-large：好大，和<h2>元素计算值一样。
-- large：大，和<h3>元素计算值近似（“近似”指计算值偏差在 1 像素以内，下同）。
+- xx-large：好大好大，和`<h1>`元素计算值一样。
+- x-large：好大，和`<h2>`元素计算值一样。
+- large：大，和`<h3>`元素计算值近似（“近似”指计算值偏差在 1 像素以内，下同）。
 - medium：不上不下，是 font-size 的初始值。
-- small：小，和<h5>元素计算值近似。
-- x-small：好小，和<h6>元素计算值近似。
+- small：小，和`<h5>`元素计算值近似。
+- x-small：好小，和`<h6>`元素计算值近似。
 - xx-small：好小好小，无对应的 HTML 元素。
 
 桌面 Chrome 浏览器下有个 12px 的字号限制，就是文字的 font-size 计算值不能小于 12px 。如果`font-size: 0`的字号表现就是 0，那么文字会直接被隐藏掉，并且只能是`font-size: 0`，哪怕设置成`font-size: 0.0000001px`， 都还是会被当作 12px 处理的。
@@ -1416,7 +1429,7 @@ text-indent 就是对文本进行缩进控制，用得比较多的是 text-inden
 - `<button>`标签按钮 text-indent 值有效，但是存在兼容性差异， IE 浏览器理解为单标签，百分比值按照容器计算，而 Chrome 和 Firefox 浏览器标签内还有其他 Shadow DOM 元 素，因此百分比值是按照自身的尺寸计算的。
 - `<input>`和`<textarea>`输入框的 text-indent 在低版本 IE 浏览器下有兼容问题。
 
-letter-spacing 可以用来控制字符之间的间距，这里说的“字符”包括英文字母、汉字以及空格等，letter-spocing 具有以下一些特性。
+letter-spacing 可以用来控制字符之间的间距，这里说的“字符”包括英文字母、汉字以及空格等，letter-spacing 具有以下一些特性。
 
 - 继承性。
 - 默认值是 normal 而不是 0。虽然说正常情况下， normal 的计算值就是 0 。
@@ -1427,7 +1440,7 @@ letter-spacing 可以用来控制字符之间的间距，这里说的“字符�
 
 word-spacing 和 letter-spacing 名称类似，其特性也有很多共通之处：都具有继承性；默认值都是 normal 而不是 0。通常情况下，两者表现并无差异；都支持负值，都可以让字符重叠；都支持小数值，如 `word-spacing: 0.5px`；在目前的 CSS2.1 规范中，并不支持百分比值，但新的草案中新增了对百分值的支持，这是是根据相对于字符的“步进宽度”（ advance width）计算的；间隔算法都会受到 `text-align: justify` 两端对齐的影响。
 
-当然也有差异。letter-spacing 作用于所有字符，但 word-spacing 仅作用于空格字符。注意，是作用在“空格” 上，而不是字面意义上的“单词”。换句话说，word-spacing 的作用就是增加空格的间隙宽度。有空格就有效。在命名上，word-spacing 之所以称为 word-spacing 而不是 blank-spacing 之类的，主要原因是此属性当初主要为英文类排版设计， 而英文单词和单词之间是以空格分隔的，要想控制单词之间的间距，自然就向“空格”开刀了。
+当然也有差异。letter-spacing 作用于所有字符，但 word-spacing 仅作用于空格字符。注意，是作用在“空格”上，而不是字面意义上的“单词”。换句话说，word-spacing 的作用就是增加空格的间隙宽度。有空格就有效。在命名上，word-spacing 之所以称为 word-spacing 而不是 blank-spacing 之类的，主要原因是此属性当初主要为英文类排版设计，而英文单词和单词之间是以空格分隔的，要想控制单词之间的间距，自然就向“空格”开刀了。
 
 word-break 属性规定自动换行的处理方法。语法如下：
 
@@ -1456,7 +1469,7 @@ white-space 属性声明了如何处理元素内的空白字符，这类空白�
 - 单行文字溢出点点点效果。`text-overflow: ellipsis`文字内容超出打点效果离不开`white-space: nowrap`声明。
 - 水平列表切换效果。 水平列表切换是网页中常见的交互效果，如果列表的数目是不固定的，使用`white-space: nowrap`使列表一行显示会是个非常不错的处理。
 
-IE 浏览器（至少 到 IE11）到目前为止使用`text-align: justify`都无法让中文两端对齐，而 Chrome、 Firefox 和 Safari 等浏览器都是可以的。不过，好在 IE 有一个私有的 CSS 属性 text-justify（目前也写入规范草案了）可以实 现中文两端对齐的。`text-align: justify`除了实现文本的两端对齐，还可以实现容错性更强的两端对齐布局效果。 在默认设置下，`text-align:justify`要想有两端对齐的效果，需要满足两点：一是有分隔点，如空格；二是要超过一行，此时非最后一行内容会两端对齐。
+IE 浏览器（至 到 IE11）到目前为止使用`text-align: justify`都无法让中文两端对齐，而 Chrome、 Firefox 和 Safari 等浏览器都是可以的。不过，好在 IE 有一个私有的 CSS 属性 text-justify（目前也写入规范草案了）可以实 现中文两端对齐的。`text-align: justify`除了实现文本的两端对齐，还可以实现容错性更强的两端对齐布局效果。 在默认设置下，`text-align:justify`要想有两端对齐的效果，需要满足两点：一是有分隔点，如空格；二是要超过一行，此时非最后一行内容会两端对齐。
 
 CSS 的 `text-decoration: underline` 可以给内联文本增加下划线，但是，如果对细节要求较高，就会发现，下划线经常会和中文文字的下边缘粘连在一起，英 文的话甚至直接穿过。最好的处理方法就是使用看似普通却功勋卓越的 border 属性。对于纯内联元素，垂直方向的 padding 属性和 border 属性对原来的布局定位等没有任何影响。 也就是说， 就算 border-bottom 宽度设为 100px，上下行文字的垂直位置依旧纹丝不动。 再加上 border 兼容性很好，天然使用 color 颜色作为边框色，可谓下划线重叠问题解决办法 的不二之选。另外，配合 padding，我们就可以很有效地调节下边框和文字下边缘的距离，实现我们最想要的效果。
 
@@ -1466,7 +1479,7 @@ text-transform 也是为英文字符设计的，要么全大写`text-transform: 
 
 很多年前，Chrome 浏览器和 IE9 浏览器还未出现， 那时候 first-letter 叫伪类选择器， 写法是前面加一个冒号，如`:first-letter`。那时候的语义要更直白一些，选择第一个字符， 然后设置一些样式。后来，伪类和伪元素被划分得更加明确和规范了，`::after`、`::before`、`::backdrop`、`::first-letter`、`::first-line`、`::selection`等是伪元素，`:active`、`:focus`、`:checked`等被称为伪类，这就导致`::first-letter`的语义发生了一些变化——首字符作为元素的假想子元素。
 
-要想让::first-letter(:first-letter)伪元素生效，是需要满足一定条件的。
+要想让`::first-letter(:first-letter)`伪元素生效，是需要满足一定条件的。
 
 - 元素的 display 计算值必须是 block、 inline-block、 list-item、 table-cell 或者 table-caption，其他所有 display 计算值都没有用，包括 display:table 和 display:flex 等。
 - 此外，不是所有的字符都能单独作为::first-letter 伪元素存在的。常见的标点符号、各类括号和引号 在::first-letter 伪元素眼中全部都是“辅助类”字符。正常情况下可以直接作为伪元素的字符就是数字、英文字母、中文、 \$、一些运算符，以 及非常容易被忽视的空格等。
@@ -1500,7 +1513,7 @@ transparent 关键字是一个很有意思的关键字，让相应属性值作�
 
 currentColor 可以使用当前 color 计算值，即所谓颜色值。但是同样地， IE9+浏览器才支持它。实际上， CSS 中很多属性值默认就是 currentColor 的表现，我们一般（除了部分浏览器 animation 需要）无须画蛇添足地再声明这个关键字。如 border、 text-shadow、 box-shadow 等，尤其 border，包括 IE7 在内的浏览器都是如此特性。
 
-CSS 世界的 color 属性支持十六进制颜色、 rgb 颜色。十六进制颜色指的是长得像 #000000 或#000 这样的颜色，我们在 CSS 中用得最频繁的就是这种格式的颜色。为什么呢？ 因为字符数目最少，书写更快，渲染性能更高。 rgb 颜色实际上和十六进制颜色是近亲，都归属于 rgb 颜色，只是进制有差异。 除了支持数值颜色，如 rgb(255, 0, 51)，还支持百分比 rgb 颜色，如 rgb(100%, 0%, 20%) 。rgb 数值格式只能是整数，不能是小数，否则，包括各 IE 以及 Chrome 在内的浏览器都会 无视它。 但 color 属性并不支持 hsl 颜色、 rgba 颜色和 hsla 颜色。
+CSS 世界的 color 属性支持十六进制颜色、 rgb 颜色。十六进制颜色指的是长得像 #000000 或#000 这样的颜色，我们在 CSS 中用得最频繁的就是这种格式的颜色。为什么呢？ 因为字符数目最少，书写更快，渲染性能更高。 rgb 颜色实际上和十六进制颜色是近亲，都归属于 rgb 颜色，只是进制有差异。 除了支持数值颜色，如 `rgb(255, 0, 51)`，还支持百分比 rgb 颜色，如 `rgb(100%, 0%, 20%)` 。rgb 数值格式只能是整数，不能是小数，否则，包括各 IE 以及 Chrome 在内的浏览器都会 无视它。 但 color 属性并不支持 hsl 颜色、 rgba 颜色和 hsla 颜色。
 
 hsl 颜色是 CSS3 才出现的颜色表现格式， IE9+浏览器才支持。和 rgb 分别表示 red、 green、 blue 一样， hsl 颜色的 3 个字母也有自己的含义。其中， h 表示 hue，是色调的意思，取值 0 ～ 360，大致按照数值红、橙、黄、绿、青、蓝、紫变化节奏； s 表示 saturation（饱和度），用 0 ～ 100%表示，值越大饱和度越高，颜色越亮，通常我们评价某设计“亮瞎我们的眼”，就是“这 个设计颜色饱和度太高”的另一种说法； l 表示 lightness（亮度），也用 0 ～ 100%表示，值越高 颜色越亮， 100%就是白色， 50%则是正常亮度， 0%就是黑色。
 
@@ -1660,6 +1673,6 @@ writing-mode 的语法学习要求比其他 CSS 属性要高一些，因为我�
 
 虽然 Chrome 和 Opera 认识 tb-rl 等老的 IE 属性值，但也仅仅是认识而已，并没有任何实际效果！
 
-在 CSS3 中，由于 writing-mode 的存在，对垂直流方向的 margin 值会发生合并。换句话说，如果元素是默认的水平流，则垂直 margin 会合并；如果元素是垂直流，则水平 margin 会合并。 普通块元素可以使用 margin:auto 实现垂直居中。可以使用 text-align:center 实现图片垂直居中。可以使用 text-indent 实现文字下沉效果。可以实现全兼容的 icon fonts 图标的旋转效果。充分利用高度的高度自适应布局。
+在 CSS3 中，由于 writing-mode 的存在，对垂直流方向的 margin 值会发生合并。换句话说，如果元素是默认的水平流，则垂直 margin 会合并；如果元素是垂直流，则水平 margin 会合并。 普通块元素可以使用 `margin:auto` 实现垂直居中。可以使用 text-align:center 实现图片垂直居中。可以使用 text-indent 实现文字下沉效果。可以实现全兼容的 icon fonts 图标的旋转效果。充分利用高度的高度自适应布局。
 
 writing-mode、 direction 和 unicode-bidi 是 CSS 世界中三大可以改变文本布局流向的属性，其中 direction 和 unicode-bidi 属于近亲，经常一起使用，也是仅有的两个不受 CSS3 的 all 属性影响的 CSS 属性，基本上就是和内联元素一起使用。它貌似是为阿拉伯文字设计的。

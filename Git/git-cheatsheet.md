@@ -38,9 +38,9 @@
  Add all current changes to the next commit  
  将所有当前更改添加到下一个提交
 
- ``sh
+ ```sh
  $ git add .
- ``
+ ```
 
  Add some changes in `<file>` to the next commit  
  向下一次提交中添加中的一些更改
