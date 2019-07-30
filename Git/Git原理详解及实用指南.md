@@ -285,24 +285,151 @@ git rebase -i HEAD^^
 
 需要修改这两行的内容来指定你需要的操作。每个 `commit` 默认的操作都是 `pick` ，表示「直接应用这个 `commit`」。所以如果你现在直接退出编辑界面，那么结果仍然是空操作。
 
+需要把它的操作指令从 `pick` 改成 `edit` 。 `edit` 的意思是「应用这个 commit，然后停下来等待继续修正」。把 `pick` 修改成 `edit` 后，就可以退出编辑界面了。
+
 ## 修改写错的 commit
+
+修改完成之后，和上节里的方法一样，用 `commit --amend` 来把修正应用到当前最新的 `commit`：
+
+```shell
+git add 笑声
+git commit --amend
+```
 
 ## 继续 rebase 过程
 
+在修复完成之后，就可以用 `rebase --continue` 来继续 `rebase` 过程，把后面的 `commit` 直接应用上去。
+
+```shell
+git rebase --continue
+```
+
 # 14 高级 4：比错还错，想直接丢弃刚写的提交？
+
+## reset --hard 丢弃最新的提交
+
+提交了`commit`，写完回头看了看，你觉得「不行这得重新写」。那么你可以用 `reset --hard` 来撤销这条 `commit`。
+
+```shell
+git reset --hard HEAD^
+```
+
+不过，你被撤销的那条提交并没有消失，只是你不再用到它了。如果你在撤销它之前记下了它的 `SHA-1` 码，那么你还可以通过 `SHA-1` 来找到他它。
 
 # 15 高级 5：想丢弃的也不是最新的提交？
 
+## 用交互式 rebase 撤销提交
+
+之前讲的修正 `commit` 的方法是把要修改的 `commit` 左边的 `pick` 改成 `edit`，而如果你要撤销某个 `commit` ，做法就更加简单粗暴一点：直接删掉这一行就好。
+
+`pick` 的直接意思是「选取」，在这个界面的意思就是应用这个 `commit`。而如果把这一行删掉，那就相当于在 `rebase` 的过程中跳过了这个 `commit`，从而也就把这个 `commit` 撤销掉了。
+
+## 用 rebase --onto 撤销提交
+
+`rebase` 加上 `--onto` 选项之后，可以指定 `rebase` 的「起点」。一般的 `rebase`，告诉 Git 的是「我要把当前 `commit` 以及它之前的 `commit`s 重新提交到目标 `commit` 上去，这其中，`rebase` 的「起点」是自动判定的：选取当前 `commit` 和目标 `commit` 在历史上的交叉点作为起点。而 `--onto` 参数，就可以额外给 rebase 指定它的起点。`--onto` 参数后面有三个附加参数：目标 `commit`、起点 `commit`（注意：rebase 的时候会把起点排除在外）、终点 `commit`。
+
+```shell
+git rebase --onto HEAD^^ HEAD^ branch1
+```
+
+上面这行代码的意思是：以倒数第二个 `commit` 为起点（起点不包含在 `rebase` 序列里哟），`branch1` 为终点，`rebase` 到倒数第三个 `commit` 上。
+
 # 16 高级 6：代码已经 push 上去了才发现写错？
+
+## 出错的内容在你自己的 branch
+
+假如是某个你自己独立开发的 `branch` 出错了，不会影响到其他人，那没关系用前面几节讲的方法把写错的 `commit` 修改或者删除掉，然后再 `push` 上去就好了。由于你在本地对已有的 `commit` 做了修改，这时你再 `push` 就会失败，因为中央仓库包含本地没有的 `commit`s。你本来就希望用本地的内容覆盖掉中央仓库的内容。那么这时就不要乖乖听话，按照提示去先 `pull` 一下再 `push` 了，而是要选择「强行」`push`。
+
+```shell
+git push origin branch1 -f
+```
+
+## 出错的内容已经合并到 master
+
+增加一个新的提交，把之前提交的内容抹掉。例如之前你增加了一行代码，你希望撤销它，那么你就做一个删掉这行代码的提交；如果你删掉了一行代码，你希望撤销它，那么你就做一个把这行代码还原回来的提交。这种事做起来也不算麻烦，因为 Git 有一个对应的指令：`revert`。
+
+它的用法很简单，你希望撤销哪个 `commit`，就把它填在后面：
+
+```shell
+git revert HEAD^
+```
+
+上面这行代码就会增加一条新的 `commit`，它的内容和倒数第二个 `commit` 是相反的，从而和倒数第二个 `commit` 相互抵消，达到撤销的效果。
+
+在 `revert` 完成之后，把新的 `commit` 再 `push` 上去，这个 `commit` 的内容就被撤销了。它和前面所介绍的撤销方式相比，最主要的区别是，这次改动只是被「反转」了，并没有在历史中消失掉，你的历史中会存在两条 `commit` ：一个原始 `commit` ，一个对它的反转 `commit`。
 
 # 17 高级 7：reset 的本质——不止可以撤销提交
 
+## reset 的本质：移动 HEAD 以及它所指向的 branch
+## reset --hard：重置工作目录
+## reset --soft：保留工作目录
+## reset 不加参数：保留工作目录，并清空暂存区
+
 # 18 高级 8：checkout 的本质
+
+实质上，`checkout` 并不止可以切换 `branch`。`checkout` 本质上的功能其实是：签出（ checkout ）指定的 `commit`。
+
+`git checkout branch名` 的本质，其实是把 `HEAD` 指向指定的 `branch`，然后签出这个 `branch` 所对应的 `commit` 的工作目录。所以同样的，`checkout` 的目标也可以不是 `branch`，而直接指定某个 `commit`。
+
+在 `git status` 的提示语中，Git 会告诉你可以用 `checkout -- 文件名` 的格式，通过「签出」的方式来撤销指定文件的修改。
+
+## checkout 和 reset 的不同
+
+`checkout` 和 `reset` 都可以切换 `HEAD` 的位置，它们除了有许多细节的差异外，最大的区别在于：`reset` 在移动 `HEAD` 时会带着它所指向的 `branch` 一起移动，而 `checkout` 不会。当你用 `checkout` 指向其他地方的时候，`HEAD` 和 它所指向的 `branch` 就自动脱离了。
+
+事实上，`checkout` 有一个专门用来只让 `HEAD` 和 `branch` 脱离而不移动 `HEAD` 的用法：
+
+```shell
+git checkout --detach
+```
+
+执行这行代码，Git 就会把 `HEAD` 和 `branch` 脱离，直接指向当前 `commit`。
 
 # 19 高级 9：紧急情况：「立即给我打个包，现在马上！」
 
+## stash：临时存放工作目录的改动
+
+"stash" 这个词，和它意思比较接近的中文翻译是「藏匿」，是「把东西放在一个秘密的地方以备未来使用」的意思。在 Git 中，`stash` 指令可以帮你把工作目录的内容全部放在你本地的一个独立的地方，它不会被提交，也不会被删除，你把东西放起来之后就可以去做你的临时工作了，做完以后再来取走，就可以继续之前手头的事了。
+
+注意：没有被 track 的文件（即从来没有被 add 过的文件不会被 stash 起来，因为 Git 会忽略它们。如果想把这些文件也一起 stash，可以加上 `-u` 参数，它是 `--include-untracked` 的简写。
+
+```shell
+git stash -u
+```
+
 # 20 高级 10：branch 删过了才想起来有用？
 
+## reflog ：引用的 log
+
+`reflog` 是 "reference log" 的缩写，使用它可以查看 Git 仓库中的引用的移动记录。如果不指定引用，它会显示 `HEAD` 的移动记录。假如你误删了 `branch1` 这个 `branch`，那么你可以查看一下 `HEAD` 的移动历史。
+
+`HEAD` 的最后一次移动行为是「从 `branch1` 移动到 `master`」。而在这之后，`branch1` 就被删除了。所以它之前的那个 `commit` 就是 `branch1` 被删除之前的位置了，也就是第二行的 `c08de9a`。
+
+所以现在就可以切换回 `c08de9a`，然后重新创建 `branch1` ：
+
+```shell
+git checkout c08de9a
+git checkout -b branch1
+```
+
+这样，你刚删除的 `branch1` 就找回来了。
+
+注意：不再被引用直接或间接指向的 `commit`s 会在一定时间后被 Git 回收，所以使用 `reflog` 来找回删除的 `branch` 的操作一定要及时，不然有可能会由于 `commit` 被回收而再也找不回来。
+
+## 查看其他引用的 reflog
+
+`reflog` 默认查看 `HEAD` 的移动历史，除此之外，也可以手动加上名称来查看其他引用的移动历史，例如某个 `branch`。
+
+```shell
+git reflog master
+```
+
 # 21 额外说点：.gitignore——排除不想被管理的文件和目录
+
+在 Git 中有一个特殊的文本文件：`.gitignore`。这个文本文件记录了所有你希望被 Git 忽略的目录和文件。
+
+如果你是在 GitHub 上创建仓库，你可以在创建仓库的界面中就通过选项来让 GitHub 帮你创建好一个符合项目类型的 `.gitignore` 文件，你就不用再自己麻烦去写一大堆的配置了。不过如果你不是在 GitHub 上创建的项目，或者你对 GitHub 帮你创建的 `.gitignore` 文件有一些额外的补充，那么你可以自己来编辑这个文件。
+
+文件中 `#` 打头的是注释文件，其他的都是对忽略文件的配置。匹配规则从上图中就能看出个大致，具体的匹配规则可以去官网的相关条目查看。
 
 # 22 总结
