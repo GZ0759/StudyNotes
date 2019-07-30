@@ -260,7 +260,34 @@ git add 笑声.txt
 git commit --amend
 ```
 
+需要注意的有一点：`commit --amend` 并不是直接修改原 `commit` 的内容，而是生成一条新的 `commit`。
+
 # 13 高级 3：写错的不是最新的提交，而是倒数第二个？
+
+## rebase -i：交互式 rebase
+
+`rebase -i` 是 `rebase --interactive` 的缩写形式，意为「交互式 rebase」。所谓「交互式 rebase」，就是在 `rebase` 的操作执行之前，你可以指定要 `rebase` 的 `commit` 链中的每一个 `commit` 是否需要进一步修改。
+
+说明：在 Git 中，有两个「偏移符号」： `^` 和 `~`。`^` 的用法：在 `commit` 的后面加一个或多个 `^` 号，可以把 `commit` 往回偏移，偏移的数量是 `^` 的数量。例如：`master^` 表示 `master` 指向的 `commit` 之前的那个 `commit`； `HEAD^^`  表示 `HEAD` 所指向的 `commit` 往前数两个 `commit`。`~` 的用法：在 `commit` 的后面加上 `~` 号和一个数，可以把 `commit` 往回偏移，偏移的数量是 `~` 号后面的数。例如：`HEAD~5` 表示 `HEAD` 指向的 `commit`往前数 5 个 `commit`。
+
+```shell
+git rebase -i HEAD^^
+```
+
+如果没有 `-i` 参数的话，这种「原地 rebase」相当于空操作，会直接结束。而在加了 `-i` 后，就会跳到一个新的界面。
+
+## 编辑界面：选择 commit 和对应的操作
+
+这两行指示了两个信息：
+
+1. 需要处理哪些 `commit`s；
+2. 怎么处理它们。
+
+需要修改这两行的内容来指定你需要的操作。每个 `commit` 默认的操作都是 `pick` ，表示「直接应用这个 `commit`」。所以如果你现在直接退出编辑界面，那么结果仍然是空操作。
+
+## 修改写错的 commit
+
+## 继续 rebase 过程
 
 # 14 高级 4：比错还错，想直接丢弃刚写的提交？
 
