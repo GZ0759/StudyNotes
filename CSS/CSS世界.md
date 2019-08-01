@@ -65,7 +65,7 @@ CSS 世界中的“流”实际上是 CSS 世界中的一种基本的定位和�
 
 CSS 世界构建的基石是 HTML，而 HTML 最具代表的两个基石`<div>`和`<span>`正好是 CSS 世界中块级元素和内联级元素的代表。
 
-所谓“流体布局”，指的是利用元素“流”的特性实现的各类布局效果。因为“流”本身具有自适应特性，所以“流体布局”往往都是具有自适应性的。但是，“流体布局”并不等同于“自适应布局”。“自适应布局”是对凡是具有自适应特性的一类布局的统称，“流体布局”要狭窄得多。例如，表格布局也可以设置为 100%自适应，但表格和“流”不是一路的，并不属于“流体布局”。 曾经风靡的“div+CSS 布局”，实际上指的就是这里的“流体布局”。
+所谓“流体布局”，指的是利用元素“流”的特性实现的各类布局效果。因为“流”本身具有自适应特性，所以“流体布局”往往都是具有自适应性的。但是，“流体布局”并不等同于“自适应布局”。“自适应布局”是对凡是具有自适应特性的一类布局的统称，“流体布局”要狭窄得多。例如，表格布局也可以设置为 100% 自适应，但表格和“流”不是一路的，并不属于“流体布局”。 曾经风靡的“div+CSS 布局”，实际上指的就是这里的“流体布局”。
 
 CSS 新世界，CSS 3 主要有两个大的改变，布局更为丰富（CSS3 媒介查询、弹性盒子布局、格珊布局）、视觉表现更进步（圆角、阴影和渐变、transform 变换、filter 滤镜和混合模式、animation 动画）。
 
@@ -85,9 +85,9 @@ CSS 新世界，CSS 3 主要有两个大的改变，布局更为丰富（CSS3 �
 
 - 绝对长度单位。最常见的就是 px，还有 pt、cm、mm、pc 等。
 
-功能符。值以函数的形式指定（就是被括号括起来的那种），主要用来表示颜色（rgba 和 hsla）、背景图片地址（url）、元素属性值、计算（calc）和过渡效果等，如 rgba(0,0,0,.5)、url('css-world.png')、 attr('href')和 scale(-1)。
+功能符。值以函数的形式指定（就是被括号括起来的那种），主要用来表示颜色（rgba 和 hsla）、背景图片地址（url）、元素属性值、计算（calc）和过渡效果等，如 `rgba(0,0,0,.5)`、`url('css-world.png')`、 `attr('href')`和 `scale(-1)`。
 
-属性值。属性冒号后面的所有内容统一称为属性值。例如，1px solid rgb(0,0,0) 就可以称为属性值，它是由“值+关键字+功能符”构成的。属性值也可以由单一内容构成。例如，`z-index:1` 的 1 也是属性值。
+属性值。属性冒号后面的所有内容统一称为属性值。例如，`1px solid rgb(0,0,0)` 就可以称为属性值，它是由“值+关键字+功能符”构成的。属性值也可以由单一内容构成。例如，`z-index:1` 的 1 也是属性值。
 
 声明。属性名加上属性值就是声明。
 
@@ -133,7 +133,7 @@ CSS 新世界，CSS 3 主要有两个大的改变，布局更为丰富（CSS3 �
 
 ## 3.2 width/height 作用的具体细节
 
-display:inline-table 的盒子是怎样组成的。外面是“内联盒子”，里面是“table 盒子”。得到的就是一个可以和文字在一行中显示的表格。
+`display: inline-table` 的盒子是怎样组成的。外面是“内联盒子”，里面是“table 盒子”。得到的就是一个可以和文字在一行中显示的表格。
 
 width/height 作用在哪个盒子上。width 的默认值是 auto，它至少包含了以下 4 种不同的宽度表现。
 
@@ -154,7 +154,7 @@ width/height 作用在哪个盒子上。width 的默认值是 auto，它至少�
 }
 ```
 
-多年前总结过一套“鑫三无准则”，即“无宽度，无图片，无浮动”。为何要“无宽度”？原因很简单，表现为“外部尺寸”的块级元素一旦设置了宽度，流动性就丢失了。
+总结一套“鑫三无准则”，即“无宽度，无图片，无浮动”。为何要“无宽度”？原因很简单，表现为“外部尺寸”的块级元素一旦设置了宽度，流动性就丢失了。
 
 ```css
 .nav {
@@ -174,10 +174,10 @@ width/height 作用在哪个盒子上。width 的默认值是 auto，它至少�
 
 ```css
 div {
+  /* 该祖先元素宽度是1000px，则该元素宽度是960px */
   position: absolute;
   left: 20px;
   right: 20px;
-  /* 该祖先元素宽度是1000px，则该元素宽度是960px */
 }
 ```
 
@@ -251,9 +251,9 @@ img {
 
 `height: auto` 是必需的，否则，如果原始图片有设定 height， max-width 生效的时候，图片就会被水平压缩。强制 height 为 auto 可以确保宽度不超出的同时使图片保持原来的比例。但这样也会有体验上的问题，那就是在加载时图片占据高度会从 0 变成计算高度，图文会有明显的瀑布式下落。
 
-min-width/min-height 的初始值是 auto，max-width/max-height 的初始值是 none。 max-width 会覆盖 width，包裹覆盖 !important；min-width 覆盖 max-width，此规则发生在 min-width 和 max-width 冲突的时候。
+min-width/min-height 的初始值是 auto，max-width/max-height 的初始值是 none。max-width 会覆盖 width，包裹覆盖 !important；min-width 覆盖 max-width，此规则发生在 min-width 和 max-width 冲突的时候。
 
-任意高度元素的展开收起动画技术。如果使用 height+`overflow: hidden` 实现，height 使用的值假设是 auto，则从 0 到 auto 是无法计算的，因此无法形成过渡效果。
+任意高度元素的展开收起动画技术。如果使用 `height`+`overflow: hidden` 实现，height 使用的值假设是 auto，则从 0 到 auto 是无法计算的，因此无法形成过渡效果。
 
 ```css
 .element {
@@ -262,7 +262,8 @@ min-width/min-height 的初始值是 auto，max-width/max-height 的初始值是
   transition: max-height 0.25s;
 }
 .element.active {
-  max-height: 666px; /* 一个足够大的最大高度值 */
+  /* 一个足够大的最大高度值 */
+  max-height: 666px;
 }
 ```
 
@@ -332,21 +333,27 @@ content内容生成技术。在实际项目中，content 属性几乎都是用�
 ```css
 /* 单个计算器 */
 body {
-  counter-reset: section; /* 重置计数器成0 */
+  /* 重置计数器成0 */
+  counter-reset: section; 
 }
 h3:before {
-  counter-increment: section; /* 增加计数器值 */
-  content: "Section " counter(section) ": "; /* 显示计数器 */
+  /* 增加计数器值 */
+  counter-increment: section; 
+  /* 显示计数器 */
+  content: "Section " counter(section) ": "; 
 }
 
 /* 计算器嵌套 */
 ol {
-  counter-reset: section; /* 为每个ol元素创建新的计数器实例 */
+  /* 为每个ol元素创建新的计数器实例 */
+  counter-reset: section; 
   list-style-type: none;
 }
 li:before {
-  counter-increment: section; /* 只增加计数器的当前实例 */
-  content: counters(section, ".") " "; /* 为所有计数器实例增加以“.”分隔的值 */
+  /* 只增加计数器的当前实例 */
+  counter-increment: section; 
+  /* 为所有计数器实例增加以“.”分隔的值 */
+  content: counters(section, ".") " "; 
 }
 ```
 
@@ -439,9 +446,7 @@ margin 与元素的外部尺寸。对于外部尺寸，margin 属性的影响则
 
 margin 的百分比值。和 padding 属性一样， margin 的百分比值无论是水平方向还是垂直方向都是相对于宽度计算的。
 
-块级元素的上外边距（margin-top）与下外边距（margin-bottom）有时会合并为单个外边距，这样的现象称为“margin 合并”。合并后的外边距的高度等于两个发生合并的外边距的高度中的较大者。行内框、浮动框或绝对定位之间的外边距不会合并。同时，这种说法在不考虑 writing-mode 的情况下才是正确的。
-
-margin 合并的 3 种场景。
+块级元素的上外边距（margin-top）与下外边距（margin-bottom）有时会合并为单个外边距，这样的现象称为“margin 合并”。合并后的外边距的高度等于两个发生合并的外边距的高度中的较大者。行内框、浮动框或绝对定位之间的外边距不会合并。同时，这种说法在不考虑 writing-mode 的情况下才是正确的。以下是 margin 合并的 3 种场景。
 
 - 相邻兄弟元素 margin 合并。对于兄弟元素的 margin 合并其作用和 em 类似，都是让图文信息的排版更加舒服自然。
 - 父级和第一个/最后一个子元素。父子 margin 合并的意义在于：在页面中任何地方嵌套或直接放入任何裸`<div>`，都不会影响原来的块状布局。
@@ -905,7 +910,7 @@ img {
 
 要想彻底清除浮动的影响，最适合的属性不是 clear 而是 overflow。一般使用`overflow: hidden`，利用 BFC 的“结界”特性彻底解决浮动对外部或兄弟元素的影响。虽然有许多其他 CSS 声明也能清除浮动，但是基本上都会让元素的宽度表现为“包裹性”，也就是会影响原来的样式布局。
 
-一个设置了 overflow:hidden 声明的元素，当其子元素内容超出容器宽度高度限制的时候，剪裁的边界是 border box 的内边缘，而非 padding box 的内边缘。所以我们在实际项目开发的时候，要尽量避免滚动容器设置 padding-bottom 值。
+一个设置了 `overflow:hidden` 声明的元素，当其子元素内容超出容器宽度高度限制的时候，剪裁的边界是 border box 的内边缘，而非 padding box 的内边缘。所以我们在实际项目开发的时候，要尽量避免滚动容器设置 padding-bottom 值。
 
 自 IE8 以上版本的浏览器开始， overflow 属性家族增加了两个属性，就是这里的 overflow-x 和 overflow-y，分别表示单独控制水平或垂直方向上的剪裁规则。支持的属性值和 overflow 属性一模一样。
 

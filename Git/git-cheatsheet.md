@@ -310,10 +310,9 @@ Git允许您从许多不同的工作流中选择：长时间运行的分支、�
 ## HELP & DOCUMENTATION 
 
 Get help on the command line  
-在命令行上获取帮助
 
 ```sh
-$ git help <command> 
+$ git help <command>  # 在命令行上获取帮助
 ```
 
 ## FREE ONLINE RESOURCES
