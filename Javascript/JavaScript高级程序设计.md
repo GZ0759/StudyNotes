@@ -327,54 +327,126 @@ ECMAScript数组的每一项可以保存任何类型的数据，大小是动态�
 
 ### 5.2.1 检查数组
 
-检查数组的方法是 `Array.isArray()` 方法，确定某个值是不是数组，不管它是在哪个全局执行环境中创建的。
+- `instanceof`。如果假设只有一个全局变量，使用该方法即可确定某个对象是否为数组。
+- `Array.isArray()`。这个方法的目的是最终确定某个值到底是不是数组，而不管它是在哪个全局执行环境中创建的。
 
 ### 5.2.2 转换数组
 
-转换数组的方法，所有对象都具有 `toLocaleString()` 、 `toString()` 和 `valueOf()` 方法。第二个是返回由数组中的每个值的字符串形式拼接而成的。第三个是返回的还是数组，取出对象内部的值，不进行类型转换。第一个基本相同，但是是调用数组每一项的 `toLocalString()` 方法，而不是 `toString()` 方法。上面三种方法在默认情况下都会以逗号分隔的字符串的形式返回数组项，但是 `join()` 方法，则可以使用不同的分隔符来构建这个字符串 。它只接受一个用作分隔符的字符串参数。如果不传值或者传入 undefind ，则使用逗号作为分隔符。
+所有对象都具有 `toLocaleString()`、 `toString()`和 `valueOf()`方法。
+
+- `toString()`。返回由数组中的每个值的字符串形式拼接而成的一个以逗号分隔的字符串。
+- `valueOf()`。返回的还是数组，取出对象内部的值，不进行类型转换。
+- `toLocaleString()`。当调用数组的这个方法时，它也会创建一个数组值的以逗号分隔的字符串。调用的是每一项的`toLocaleString()`方法，而不是`toString()`方法。
+- `join()` 。可以使用不同的分隔符来构建这个字符串 。它只接受一个用作分隔符的字符串参数。如果不传值或者传入 undefind ，则使用逗号作为分隔符。
 
 ### 5.2.3 栈方法
 
-栈方法有 `push()` 和 `pop()` 方法。栈是一种 LIFO（ Last-In-First-Out， 后进先出 ）的数据结构，也就是最新添加的项最早被移除。`push()` 方法可以接受任意数量的参数，把它们逐个添加到数组末尾，并返回修改后数组的长度；而 `pop()` 方法则从数组末尾移除最后一项，减少数组的length值，然后返回移除的项。
+栈方法有 `push()` 和 `pop()` 方法。栈是一种 LIFO（ Last-In-First-Out， 后进先出 ）的数据结构，也就是最新添加的项最早被移除。
+
+- `push()` 方法可以接受任意数量的参数，把它们逐个添加到数组末尾，并返回修改后数组的长度；
+- `pop()` 方法则从数组末尾移除最后一项，减少数组的length值，然后返回移除的项。
 
 ### 5.2.4 队列方法
 
-队列方法有 `unshift()` 和 `shift()` 方法。队列数据结构的访问规则是 FIFO（ First-In-First-Out， `先进先出）。队列在列表的末端添加项，从列表的前端移除项。unshift()` 方法能在数组的前端添加任意个项并返回新数组的长度。 `shift()` 方法能够移除数组中的第一个项并返回该项，同时将数组长度减1。
+队列方法有 `unshift()` 和 `shift()` 方法。队列数据结构的访问规则是 FIFO（ First-In-First-Out， 先进先出）。队列在列表的末端添加项，从列表的前端移除项。
+
+- `unshift()` 方法能在数组的前端添加任意个项并返回新数组的长度。
+- `shift()` 方法能够移除数组中的第一个项并返回该项，同时将数组长度减1。
 
 ### 5.2.5 重排序方法
 
-重排序方法， `reverse()` 方法会反转数组项的顺序。而 `sort()` 方法按升序排列数组项，通过调用每个数组项的 `toString()` 转型方法，然后以字母表顺序比较得到的字符串。如果数组包含 undefined 元素，它们会被排到数组的尾部。同时 `sort ()` 方法可以接受一个比较函数作为参数，以便我们指定哪个值位于哪个值的前面。比较函数接受两个参数，如果第一个参数位于第二个之前则返回一个负数，如果两个参数相等则返回0，如果第一个参数应该位于第二个之后则返回一个正数。一言概之，返回正值则把第一个参数移到第二个参数后面。对于数值类型或者其 `valueOf()` 方法会返回数值类型的对象类型 ，函数直接返回为第二个值与第一个值想减的结果就行。
+数组中已经存在两个可以直接用来重排序的方法： `reverse()`和 `sort()`。
+
+- `reverse()` 方法会反转数组项的顺序，但还不够灵活。
+- `sort()` 方法按升序排列数组项，通过调用每个数组项的 `toString()` 转型方法，然后以字母表顺序比较得到的字符串。同时 `sort ()` 方法可以接受一个比较函数作为参数，以便我们指定哪个值位于哪个值的前面。
+
+```JavaScript
+//  升序
+function compare(value1, value2) {
+  if (value1 < value2) {
+    return -1;  // 如果第一个参数应该位于第二个之前则返回一个负数
+  } else if (value1 > value2) {
+    return 1;  // 如果第一个参数应该位于第二个之后则返回一个正数
+  } else {
+    return 0;  // 如果两个参数相等则返回 0
+  }
+}
+
+//  对于数值类型或者其 valueOf() 方法会返回数值类型的对象类型，可以使用一个更简单的比较函数。
+function compare(value1, value2){
+  return value1 - value2;
+}
+```
 
 ### 5.2.6 操作方法
 
-操作方法主要有三个：连接数组 `concat()` 方法、截取数组 `slice()` 方法和修改数组 `splice()` `方法。concat()` 方法可以基于当前数组中的所有项创造一个新数组，将接受到的参数添加到这个副本的末尾，最后返回新构建的数组。 `slice()` 方法能够基于当前数组中的一个或多个项创建一个新数组，它接受一或两个参数，即要返回项的起始和结束位置，如果只有一个参数，即返回该参数位置开始到当前数组末尾的所有项。如果有两个参数，返回包括起始位置到不包括结束位置的所有项。如果参数有一个负数，则用数组长度加上该数来确定相应的位置。 `splice()` 方法始终返回一个数组，该数组中包含从原始数组中删除的项（如果没有删除任何项，则返回一个空数组）。接受三个参数以实现删除，替换或插入的功能。第一个参数表示操作的起始位置，第二参数表示删除的个数，第三个表示添加的数组项。插入是根据位置进行前插，替换的是返回数组中的一项。
+操作方法主要有三个：连接数组 `concat()` 方法、截取数组 `slice()` 方法和修改数组 `splice()`方法。
+
+- `concat()` 方法可以基于当前数组中的所有项创造一个新数组，将接受到的参数添加到这个副本的末尾，最后返回新构建的数组。 
+- `slice()` 方法能够基于当前数组中的一个或多个项创建一个新数组，它接受一或两个参数，即要返回项的起始和结束位置，如果只有一个参数，即返回该参数位置开始到当前数组末尾的所有项。如果有两个参数，返回包括起始位置到不包括结束位置的所有项。如果参数有一个负数，则用数组长度加上该数来确定相应的位置。
+- `splice()` 方法始终返回一个数组，该数组中包含从原始数组中删除的项（如果没有删除任何项，则返回一个空数组）。接受三个参数以实现删除，替换或插入的功能。第一个参数表示操作的起始位置，第二参数表示删除的个数，第三个表示添加的数组项。插入是根据位置进行前插，替换的是返回数组中的一项。
 
 ```javascript
+// 删除第一项 
 var colors = ["red", "green", "blue"]; 
-var removed = colors.splice(0,1); // 删除第一项 
+var removed = colors.splice(0,1); 
 alert(colors); // green,blue 
-alert(removed); // red，返回的数组中只包含一项 
+alert(removed); // red
 
-removed = colors.splice(1, 0, "yellow"); // 从位置 1 开始插入一项 
+// 从位置 1 开始插入一项 
+removed = colors.splice(1, 0, "yellow"); 
 alert(colors); // green,yellow,blue 
-alert(removed); // 返回的是一个空数组 
+alert(removed); // []
 
-removed = colors.splice(1, 1, "red"); // 插入一项，删除一项
+// 插入一项，删除一项
+removed = colors.splice(1, 1, "red"); 
 alert(colors); // green,red,blue 
-alert(removed); // yellow，返回的数组中只包含一项  
+alert(removed); // yellow
 ```
 
 ### 5.2.7 位置方法
 
-位置方法， `indexOf ()` 和 `lastIndexOf ()` 方法都接受两个参数，要查找的项和（可选的）表示查找起点位置的索引，前者从开头向后查找，后者则从末尾向前查找。两个返回都是返回要查找的项在数组中的位置，或者在没找到的情况下返回-1。
+位置方法， `indexOf ()` 和 `lastIndexOf ()` 方法都接受两个参数，要查找的项和（可选的）表示查找起点位置的索引。两个返回都是返回要查找的项在数组中的位置，或者在没找到的情况下返回-1。
+
+- `indexOf ()`。从开头向后查找。
+- `lastIndexOf ()`。从末尾向前查找。
 
 ### 5.2.8 迭代方法
 
-迭代方法，数组有五个迭代方法：`every ()`  、`some ()` 、`fliter ()`  、`map ()`  、`forEach ()`  。每个方法都接收两个参数，要在每一项上运行的函数和（可选的）运行该函数的作用域对象——影响 this 的值。传入这些方法中的函数会接受三个参数：数组项的值 ( item ) 、该项在数组中的位置 ( index ) 和数组对象本身 ( array ) 。 every () 和 some () 方法是遍历数组进行判断，前者必须每一项都判断正确才能返回 true ，后者只要有一项正确就可以返回 true 。 filter () 通过运行函数，返回该函数会返回 true 的项组成的本来的数组， map () 则返回每次函数调用的结果组成的新数组。 forEach () 对数组中的每一项运行给定函数，这个方法没有返回值，本质上与 for 循环迭代数组一样。
+迭代方法，数组有五个迭代方法。每个方法都接收两个参数，要在每一项上运行的函数和（可选的）运行该函数的作用域对象——影响 this 的值。  
+传入这些方法中的函数会接受三个参数：数组项的值 `item` 、该项在数组中的位置 `index` 和数组对象本身 `array`。另外，这五个方法都不会修改数组中的包含的值。
+
+- `every()`：对数组中的每一项运行给定函数，如果该函数对每一项都返回 true，则返回 true。
+- `filter()`：对数组中的每一项运行给定函数，返回该函数会返回 true 的项组成的数组。
+- `forEach()`：对数组中的每一项运行给定函数。这个方法没有返回值。
+- `map()`：对数组中的每一项运行给定函数，返回每次函数调用的结果组成的数组。
+- `some()`：对数组中的每一项运行给定函数，如果该函数对任一项返回 true，则返回 true。
 
 ### 5.2.9 归并方法
 
-归并方法， `reduce ()` 和 `reduceRight ()` 都是会迭代数组的所有项，然后构建一个最终返回的值，前者从数组的第一项开始遍历，后者从最后一项开始遍历。两个方法都接受两个参数，一个在每一项上调用的函数和（可选的）作为归并基础的初始值。而函数接收四个参数：前一个值 ( prev ) 、当前值 ( cur ) 、项的索引 ( index ) 和数组对象 ( array ) 。
+归并方法， `reduce ()` 和 `reduceRight ()` 都是会迭代数组的所有项，然后构建一个最终返回的值。两个方法都接受两个参数，一个在每一项上调用的函数和（可选的）作为归并基础的初始值。而函数接收四个参数：前一个值 `prev` 、当前值 `cur` 、项的索引 `index` 和数组对象 `array` 。
+
+- `reduce()`从数组的第一项开始遍历；
+- `reduceRight()`从最后一项开始遍历。
+
+```JavaScript
+// 使用 reduce() 方法可以执行求数组中所有值之和的操作
+var values = [1,2,3,4,5];
+var sum = values.reduce(function(prev, cur, index, array){
+  return prev + cur;
+});
+alert(sum); //15
+```
+
+The `reduce()` method executes the callback once for each assigned value present in the array, taking four arguments:
+
+- `accumulator`
+- `currentValue`
+- `currentIndex`
+- `array`
+
+The first time the callback is called, `accumulator` and `currentValue` can be one of two values. If `initialValue` is provided in the call to `reduce()`, then `accumulator` will be equal to `initialValue`, and `currentValue` will be equal to the first value in the array. If no `initialValue` is provided, then `accumulator` will be equal to the first value in the array, and `currentValue` will be equal to the second.  
+If `initialValue` is not provided, `reduce()` will execute the callback function starting at index 1, skipping the first index. If `initialValue` is provided, it will start at index 0.
 
 ## 5.3 Date类型 
 
@@ -1134,7 +1206,11 @@ HTMl5事件。contextmenu事件，用以表示何时应该显示上下文菜单�
 
 选择文本。调用select()方法，大多数浏览器都会将焦点设置到文本框中，这个方法不接受参数。在选择了文本框的文本或者调用slect()方法时，就会触发select事件。有两个属性：selectStionart和selectionEnd，这两个属性保存的是基于0的数值，表示所选择文本的范围（即文本选取开头和结尾的偏移量）。IE8及更早的版本不支持，可以通过document.selection对象，对象保存着用户在整个文档范围内选择的文本信息，即可通过document.selection。createRange().text取得焦点所在文本。选择部分文本。除了select()方法，所有文本框还有setSelectionRange()方法，这个方法接收两个参数：要选择的第一个字符的索引和要选择的最后一个字符之后的字符的索引。如果IE是老版本，则需要先用createRange()方法创建一个范围，然后使用collapse()将范围折叠到文本框的开始位置，接着调用那个moveStart()和moveEnd()这两个方法，最后使用范围的select()方法选择文本。
 
-过滤输入。屏蔽字符，响应向文本框中插入字符操作的是keypress事件，先取得字符编码，然后将字符编码转换成字符串，再使用正则表达式来测试该字符串，从而确定用户输入的是不是数值，如果测试失败，可以通过阻止这个事件的默认行为来屏蔽此类字符。操作剪贴板，剪贴板事件有六个：beforecopy、copy、beforecut、cut、beforepaste、paste，在实际的事件发生之前before+事件可以向剪贴板发送数据，或者从剪贴板取得数据之前修改数据，但是取消操作只能用事件copy、cut和paste。要访问剪贴板中的数据，可以使用clipboardData对象，一般在了确保跨浏览器兼容性，最好只在发生剪贴板事件期间使用这个对象，这个对象有三个方法：getData()、setData()和clearData()，第一个方法接受一个参数，即要取得的数据的格式，第二个方法第一个参数也是数据类型，第二个参数是要放在剪贴板中的文本。自动切换焦点。通过函数比较用户输入的值与文本框的maxlength特性，如果值相等，则需要查找表单字段集合，直至找到下一个文本框，找到之后将焦点奇幻到该文本框。然后，我们把这个函数指定为每个文本框的onkeyup事件处理程序。HTML5约束验证API。第一种情况是在表单字段中指定了required属性。HTML5为`<input>`元素的type属性又增加了几个值，这些新的类型不仅能反映数据类型的信息，而且还能提供一些默认的验证功能。例如"email"类型要求输入的文本必须符合电子邮件地址的模式，而"url"类型要求输入的文本必须符合URL的模式，这些设置特定的输入类型不能阻止用户输入无效的值，只能应用某些默认的验证。HTML5还定义了另外几种输入元素，这几个元素都要求填写某种基于数字的值："number"、"range"、"datetime"、"datetime-local"、"date""mouth"、"week""tiem"。对于这些数值类型的输入元素，可以指定min属性、max属性和step属性。以上属性在JavaScript中都能通过对应的元素访问或修改，此外还有两个方法：stepUp()和stepDown()，都接收一个可选的参数，要在当前值基础上加上或减去的数值。输入模式。HTML5为文本字段新增了pattern属性，这个属性的值是一个正则表达式，用于匹配文本框中的值，模式的开头和末尾不用加^和$符号表示输入的值必须从头到尾都与模式匹配。检测有效性。使用checkValidity()方法可以检测表单中的某个字段是否有效，使用validity属性则显示字段为什么有效或无效。这个对象中包含一系列属性，每个属性会返回一个布尔值，如果判断不匹配，则返回true。禁用验证。通过设置novalidate属性，可以告诉表单不进行验证。在JavaScript中使用noValidate属性可以取得或设置这个值，如果这个属性存在，值为true，否则为false。
+过滤输入。屏蔽字符，响应向文本框中插入字符操作的是keypress事件，先取得字符编码，然后将字符编码转换成字符串，再使用正则表达式来测试该字符串，从而确定用户输入的是不是数值，如果测试失败，可以通过阻止这个事件的默认行为来屏蔽此类字符。
+
+操作剪贴板，剪贴板事件有六个：beforecopy、copy、beforecut、cut、beforepaste、paste，在实际的事件发生之前before+事件可以向剪贴板发送数据，或者从剪贴板取得数据之前修改数据，但是取消操作只能用事件copy、cut和paste。要访问剪贴板中的数据，可以使用clipboardData对象，一般在了确保跨浏览器兼容性，最好只在发生剪贴板事件期间使用这个对象，这个对象有三个方法：getData()、setData()和clearData()，第一个方法接受一个参数，即要取得的数据的格式，第二个方法第一个参数也是数据类型，第二个参数是要放在剪贴板中的文本。自动切换焦点。通过函数比较用户输入的值与文本框的maxlength特性，如果值相等，则需要查找表单字段集合，直至找到下一个文本框，找到之后将焦点奇幻到该文本框。然后，我们把这个函数指定为每个文本框的onkeyup事件处理程序。
+
+HTML5约束验证API。第一种情况是在表单字段中指定了required属性。HTML5为`<input>`元素的type属性又增加了几个值，这些新的类型不仅能反映数据类型的信息，而且还能提供一些默认的验证功能。例如"email"类型要求输入的文本必须符合电子邮件地址的模式，而"url"类型要求输入的文本必须符合URL的模式，这些设置特定的输入类型不能阻止用户输入无效的值，只能应用某些默认的验证。HTML5还定义了另外几种输入元素，这几个元素都要求填写某种基于数字的值："number"、"range"、"datetime"、"datetime-local"、"date""mouth"、"week""tiem"。对于这些数值类型的输入元素，可以指定min属性、max属性和step属性。以上属性在JavaScript中都能通过对应的元素访问或修改，此外还有两个方法：stepUp()和stepDown()，都接收一个可选的参数，要在当前值基础上加上或减去的数值。输入模式。HTML5为文本字段新增了pattern属性，这个属性的值是一个正则表达式，用于匹配文本框中的值，模式的开头和末尾不用加^和$符号表示输入的值必须从头到尾都与模式匹配。检测有效性。使用checkValidity()方法可以检测表单中的某个字段是否有效，使用validity属性则显示字段为什么有效或无效。这个对象中包含一系列属性，每个属性会返回一个布尔值，如果判断不匹配，则返回true。禁用验证。通过设置novalidate属性，可以告诉表单不进行验证。在JavaScript中使用noValidate属性可以取得或设置这个值，如果这个属性存在，值为true，否则为false。
 
 ## 14.3 选择框脚本 
 
