@@ -114,7 +114,7 @@ Node.js’ package ecosystem, npm, is the largest ecosystem of open source libra
 
 ## 得到什么
 
-学习到B/S编程模型，B/S是指基于browser(浏览器）与server（服务器）模式的应用。Node是学习改编程模型的一个比较好的工具。
+学习到B/S编程模型，B/S是指基于browser（浏览器）与server（服务器）模式的应用。Node是学习改编程模型的一个比较好的工具。
 
 学习到模块化编程、Node常用API、异步编程（回调函数）、Express开发框架、ECMAScript 6应用等等知识。
 
@@ -138,11 +138,11 @@ Node.js’ package ecosystem, npm, is the largest ecosystem of open source libra
 
 ## ECMAScript
 
-由于Node使用了V8，其实现很接近标准，通过还提供了一些标准之外的实用的附加功能。Node中 没有BOM、DOM一说。Javascript类型可以简单分为基本类型和复杂类型两种，前者访问的是值，后者访问的是对值的引用，基本类型包括number、boolean、string、null和undefined，复杂类型包括array、function和object。
+由于Node使用了V8，其实现很接近标准，通过还提供了一些标准之外的实用的附加功能。Node中没有BOM、DOM一说。Javascript类型可以简单分为基本类型和复杂类型两种，前者访问的是值，后者访问的是对值的引用，基本类型包括number、boolean、string、null和undefined，复杂类型包括array、function和object。
 
 ## 核心模块
 
-Node为JavaScript提供了很多服务器级别的API，这些API绝大多数都被包装到了一个具名的核心模块中。例如文件操作的 fs核心模块，http服务构建的http模块、path路径操作模块、os操作系统信息模块等等。核心模块在导入时无需添加路径名。
+Node为JavaScript提供了很多服务器级别的API，这些API绝大多数都被包装到了一个具名的核心模块中。例如文件操作的fs核心模块，http服务构建的http模块、path路径操作模块、os操作系统信息模块等等。核心模块在导入时无需添加路径名。
 
 `var fs = require('fs')`
 
@@ -196,15 +196,15 @@ ip地址是用来定位计算机的，端口号是用来定位具体的应用程
 
 1. 软件版本阶段说明
 
-> o    Base版: 此版本表示该软件仅仅是一个假页面链接，通常包括所有的功能和页面布局，但是页面中的功能都没有做完整的实现，只是做为整体网站的一个基础架构。
->
-> o    Alpha版: 此版本表示该软件在此阶段主要是以实现软件功能为主，通常只在软件开发者内部交流，一般而言，该版本软件的Bug较多，需要继续修改。
->
-> o    Beta版: 该版本相对于α版已有了很大的改进，消除了严重的错误，但还是存在着一些缺陷，需要经过多次测试来进一步消除，此版本主要的修改对像是软件的UI。
->
-> o    RC版: 该版本已经相当成熟了，基本上不存在导致错误的BUG，与即将发行的正式版相差无几。
->
-> o    Release版: 该版本意味“最终版本”，在前面版本的一系列测试版之后，终归会有一个正式版本，是最终交付用户使用的一个版本。该版本有时也称为标准版。一般情况下，Release不会以单词形式出现在软件封面上，取而代之的是符号(Ｒ)。
+- Base版: 此版本表示该软件仅仅是一个假页面链接，通常包括所有的功能和页面布局，但是页面中的功能都没有做完整的实现，只是做为整体网站的一个基础架构。
+
+- Alpha版: 此版本表示该软件在此阶段主要是以实现软件功能为主，通常只在软件开发者内部交流，一般而言，该版本软件的Bug较多，需要继续修改。
+
+- Beta版: 该版本相对于α版已有了很大的改进，消除了严重的错误，但还是存在着一些缺陷，需要经过多次测试来进一步消除，此版本主要的修改对像是软件的UI。
+
+- RC版: 该版本已经相当成熟了，基本上不存在导致错误的BUG，与即将发行的正式版相差无几。
+
+- Release版: 该版本意味“最终版本”，在前面版本的一系列测试版之后，终归会有一个正式版本，是最终交付用户使用的一个版本。该版本有时也称为标准版。一般情况下，Release不会以单词形式出现在软件封面上，取而代之的是符号(Ｒ)。
 
  
 
@@ -212,15 +212,15 @@ ip地址是用来定位计算机的，端口号是用来定位具体的应用程
 
 　　软件版本号由四部分组成，第一个1为主版本号，第二个1为子版本号，第三个1为阶段版本号，第四部分为日期版本号加希腊字母版本号，希腊字母版本号共有5种，分别为：base、alpha、beta、RC、release。例如：1.1.1.051021_beta。版本号定修改规则如下
 
-> o    主版本号(1)：当功能模块有较大的变动，比如增加多个模块或者整体架构发生变化。此版本号由项目决定是否修改。
->
-> o    子版本号(1)：当功能有一定的增加或变化，比如增加了对权限控制、增加自定义视图等功能。此版本号由项目决定是否修改。
->
-> o    阶段版本号(1)：一般是 Bug 修复或是一些小的变动，要经常发布修订版，时间间隔不限，修复一个严重的bug即可发布一个修订版。此版本号由项目经理决定是否修改。
->
-> o    日期版本号(051021):用于记录修改项目的当前日期，每天对项目的修改都需要更改日期版本号。此版本号由开发人员决定是否修改。
->
-> o    希腊字母版本号(beta):此版本号用于标注当前版本的软件处于哪个开发阶段，当软件进入到另一个阶段时需要修改此版本号。此版本号由项目决定是否修改。
+- 主版本号(1)：当功能模块有较大的变动，比如增加多个模块或者整体架构发生变化。此版本号由项目决定是否修改。
+
+- 子版本号(1)：当功能有一定的增加或变化，比如增加了对权限控制、增加自定义视图等功能。此版本号由项目决定是否修改。
+
+- 阶段版本号(1)：一般是 Bug 修复或是一些小的变动，要经常发布修订版，时间间隔不限，修复一个严重的bug即可发布一个修订版。此版本号由项目经理决定是否修改。
+
+- 日期版本号(051021):用于记录修改项目的当前日期，每天对项目的修改都需要更改日期版本号。此版本号由开发人员决定是否修改。
+
+- 希腊字母版本号(beta):此版本号用于标注当前版本的软件处于哪个开发阶段，当软件进入到另一个阶段时需要修改此版本号。此版本号由项目决定是否修改。
 
 ## Node.js重定向
 
@@ -259,27 +259,27 @@ res.end()
 
 CommonJS对模块的定义十分简单，主要分为模块的引用、模块定义和模块标识三个部分。
 
-> - 模块引用的示例代码是：`var math = require('math');`  
-> - 在模块中，上下文提供 require () 来引入外部模块。对应引入的功能，上下文提供了 exports 对象用于导出当前模块的方法或者变量，并且它是唯一导出的出口。在模块中，还存在一个 module 对象，它代表模块自身，而 exports 是 module 的属性，上下文提供的 exports 对象实际上是 module.exports 的引用。在 Node 中，一个文件就是一个模块，将方法挂载在 exports 对象上作为属性即可定义导出的方式。
-> - 模块标识就是传递给 require () 方法的参数，它必须是符合小驼峰命名的字符串，或者 "./" 或 "../" 开头的相对路径，或者绝对路径。它可以没有文件名后缀 .js 。
+- 模块引用的示例代码是：`var math = require('math');`  
+- 在模块中，上下文提供 require () 来引入外部模块。对应引入的功能，上下文提供了 exports 对象用于导出当前模块的方法或者变量，并且它是唯一导出的出口。在模块中，还存在一个 module 对象，它代表模块自身，而 exports 是 module 的属性，上下文提供的 exports 对象实际上是 module.exports 的引用。在 Node 中，一个文件就是一个模块，将方法挂载在 exports 对象上作为属性即可定义导出的方式。
+- 模块标识就是传递给 require () 方法的参数，它必须是符合小驼峰命名的字符串，或者 "./" 或 "../" 开头的相对路径，或者绝对路径。它可以没有文件名后缀 .js 。
 
 Node的模块实现。在Node中引入模块，需要大概经历如下三个步骤：路径分析、文件定位和编译执行。
 
-> 优先从缓存加载。和浏览器会缓存静态js文件一样，Node也会对引入的模块进行缓存，不同的是浏览器缓存的是文件，Node缓存的是编译执行之后的对象。简言之，已经加载过的模块不会重复加载，如果再次加载一般还是只是取得接口对象。这样避免重复加载会提高加载效率。另外，不论是核心模块还是文件模块， require () 对相同模块的二次加载一律采用缓存优先的方式，这是第一优先级的，核心模块缓存检查先于文件模块的缓存检查。
->
-> 模块标识符分析与文件定位。模块标识符在Node中主要分为以下几类：
->
-> - 核心模块。核心模块优先级仅次于缓存加载，因此无法加载一个和核心模块标识符相同的自定义模块。
-> - 相对路径文件模块。以 "./" 、 "../" 开头的标识符，分别表示当前目录和上一级目录，不可以省略。读取文件可以直接用文件名作为相对路径的开头，但是读取文件模块不行。
-> - 绝对路径文件模块。以 "/" 开始或直接使用 "D:/Baidu/BaiduPinyin/a.js" 的标识符，前者表示当前文件模块所属的磁盘根目录。另外，无论是绝对路径还是相对路径的文件模块， require () 方法会将路径转为真实路径，并以真实路径作为索引，并将编译执行后的结果存放到缓存中。
-> - 非路径形式的文件模块，又称作第三方模块或者自定义模块。第三方模块是指非核心模块，也不是路径形式的标识符。它是一种特殊的文件模块，可能是一个文件或者包的形式，如自定义的 connect 模块。注意，因为第三方模块也是通过直接引用包名进行引入，所以第三方模块一定不能与核心模块重名。路径查找规律一般是先找到当前文件所处目录的 node_modules 目录，然后查找该包名文件下的 package.json 文件， 通过该文件里面的 main 属性 找到入口模块，然后加载使用这个第三方包，实际上最终加载的还是文件。如果 package.json 文件不存在或者没有 main 指定的入口模块或者 main 属性指定文件名错误， Node 会将 index 当作默认文件名，然后一次查找 index.js 、index.json 、index.node 。如果在目录分析的过程中没有定位成功任何文件，则自定义模块进入下一个模块路径进行查找，即进入其上一级目录的 node_modules 目录查找，如果直到当前磁盘根目录还没找到，则抛出查找失败的异常。当前文件的目录越深，模块查找耗时越多。
->
-> 模块编译。每一个编译成功的模块都会将其文件路径作为索引缓存在Module._cache对象上。对于不同扩展名，其载入方法也有所不同：
->
-> - *.js* 通过fs模块同步读取文件后编译执行。
-> - *.node* 这是C/C++编写的扩展文件，通过dlopen()方法加载最后编译生成的文件
-> - *.json* 同过fs模块同步读取文件后，用JSON.pares()解析返回结果
-> - *其他* 当作.js
+优先从缓存加载。和浏览器会缓存静态js文件一样，Node也会对引入的模块进行缓存，不同的是浏览器缓存的是文件，Node缓存的是编译执行之后的对象。简言之，已经加载过的模块不会重复加载，如果再次加载一般还是只是取得接口对象。这样避免重复加载会提高加载效率。另外，不论是核心模块还是文件模块， require () 对相同模块的二次加载一律采用缓存优先的方式，这是第一优先级的，核心模块缓存检查先于文件模块的缓存检查。
+ 
+模块标识符分析与文件定位。模块标识符在Node中主要分为以下几类：
+ 
+- 核心模块。核心模块优先级仅次于缓存加载，因此无法加载一个和核心模块标识符相同的自定义模块。
+- 相对路径文件模块。以 "./" 、 "../" 开头的标识符，分别表示当前目录和上一级目录，不可以省略。读取文件可以直接用文件名作为相对路径的开头，但是读取文件模块不行。
+- 绝对路径文件模块。以 "/" 开始或直接使用 "D:/Baidu/BaiduPinyin/a.js" 的标识符，前者表示当前文件模块所属的磁盘根目录。另外，无论是绝对路径还是相对路径的文件模块， require () 方法会将路径转为真实路径，并以真实路径作为索引，并将编译执行后的结果存放到缓存中。
+- 非路径形式的文件模块，又称作第三方模块或者自定义模块。第三方模块是指非核心模块，也不是路径形式的标识符。它是一种特殊的文件模块，可能是一个文件或者包的形式，如自定义的 connect 模块。注意，因为第三方模块也是通过直接引用包名进行引入，所以第三方模块一定不能与核心模块重名。路径查找规律一般是先找到当前文件所处目录的 node_modules 目录，然后查找该包名文件下的 package.json 文件， 通过该文件里面的 main 属性 找到入口模块，然后加载使用这个第三方包，实际上最终加载的还是文件。如果 package.json 文件不存在或者没有 main 指定的入口模块或者 main 属性指定文件名错误， Node 会将 index 当作默认文件名，然后一次查找 index.js 、index.json 、index.node 。如果在目录分析的过程中没有定位成功任何文件，则自定义模块进入下一个模块路径进行查找，即进入其上一级目录的 node_modules 目录查找，如果直到当前磁盘根目录还没找到，则抛出查找失败的异常。当前文件的目录越深，模块查找耗时越多。
+ 
+模块编译。每一个编译成功的模块都会将其文件路径作为索引缓存在Module._cache对象上。对于不同扩展名，其载入方法也有所不同：
+ 
+- *.js* 通过fs模块同步读取文件后编译执行。
+- *.node* 这是C/C++编写的扩展文件，通过dlopen()方法加载最后编译生成的文件
+- *.json* 同过fs模块同步读取文件后，用JSON.pares()解析返回结果
+- *其他* 当作.js
 
 # 五、包管理器npm
 
@@ -298,271 +298,271 @@ NPM的全称是Node Package Manager，是随同NodeJS一起安装的包管理和
 
 ## 命令行常用命令
 
-> ### npm install 安装模块
->
-> ```shell
-> npm install (with no args, in package dir)	
-> npm install [<@scope>/]<name>
-> npm install [<@scope>/]<name>@<tag>
-> npm install [<@scope>/]<name>@<version>
-> npm install [<@scope>/]<name>@<version range>
-> npm install <tarball file>
-> npm install <tarball url>
-> npm install <folder>
-> 
-> alias: npm i
-> common options: [-S|--save|-D|--save-dev|-O|--save-optional] [-E|--save-exact] [--dry-run]
-> 
-> # 默认情况下，根据dependencies配置安装所有的依赖包到当地的 node_modules 文件夹中。
-> npm install
-> # 安装包，默认会安装最新的版本。
-> npm install gulp
-> # 安装指定版本。
-> npm install gulp@3.9.1
-> # -S, --save 安装包信息将加入到dependencies（生产阶段的依赖）
-> # -D, --save-dev 安装包信息将加入到devDependencies（开发阶段的依赖），所以开发阶段一般使用它。
-> # -O, --save-optional 安装包信息将加入到optionalDependencies（可选阶段的依赖）
-> # -E, --save-exact 精确安装指定模块版本
-> npm install --save gulp
-> # 全局安装（global）,使用 -g 或 --global
-> npm install gulp --global
-> 
-> # 项目对模块的依赖可以使用下面的 3 种方法来表示（假设当前版本号是 1.1.0 ）：
-> # - 兼容模块新发布的补丁版本：~1.1.0、1.1.x、1.1
-> # - 兼容模块新发布的小版本、补丁版本：^1.1.0、1.x、1
-> # - 兼容模块新发布的大版本、小版本、补丁版本：*、x
-> ```
->
->
->
-> ### npm uninstall 卸载模块 
->
-> ```shell
-> npm uninstall [<@scope>/]<pkg>[@<version>]... [-S|--save|-D|--save-dev|-O|--save-optional]
-> 
-> aliases: remove, rm, r, un, unlink
-> 
-> # 如卸载开发版本的模块
-> npm uninstall gulp --save-dev
-> ```
->
->
->
-> ### npm update 更新模块
->
-> ```shell
-> npm update [-g] [<pkg>...]
-> ```
->
->
->
-> ### npm outdated 检查模块是否已经过时
->
-> ```shell
-> npm outdated [[<@scope>/]<pkg> ...]
-> 
-> # 此命令会列出所有已经过时的包，可以及时进行包的更新
-> npm outdated
-> ```
->
->
->
-> ### npm ls 查看安装的模块
->
-> ```shell
-> npm ls [[<@scope>/]<pkg> ...]
-> 
-> aliases: list, la, ll
-> 
-> # 查看全局安装的模块及依赖 
-> npm ls -g 
-> ```
->
->
->
-> ### npm init 在项目中引导创建一个package.json文件
->
-> ```shell
-> npm init [-f|--force|-y|--yes]
-> 
-> # 安装包的信息可保持到项目的package.json文件中，以便后续的其它的项目开发或者他人合作使用，也说package.json在项目中是必不可少的。 -Y 表示跳过向导。
-> npm init -Y
-> ```
->
->
->
-> ### npm help 查看某条命令的详细帮助 
->
-> ```shell
-> npm help <term> [<terms..>]
-> 
-> # 系统在默认的浏览器或者默认的编辑器中打开本地nodejs安装包的网页文件，如果是 --help 则是在命令行显示。
-> npm install --help
-> ```
->
->
->
-> ### **npm root** 查看包的安装路径
->
-> ```shell
-> npm root [-g]
-> 
-> #输出 node_modules的路径
-> ```
->
->
->
-> ### npm config 管理npm的配置路径
->
-> ```shell
-> npm config set <key> <value> [-g|--global]
-> npm config get <key>
-> npm config delete <key>
-> npm config list
-> npm config edit
-> npm get <key>
-> npm set <key> <value> [-g|--global]
-> 
-> # 对于config这块用得最多应该是设置代理，解决npm安装一些模块失败的问题
-> # 例如我在公司内网，因为公司的防火墙原因，无法完成任何模块的安装，这个时候设置代理可以解决
-> npm config set proxy=http://xxx
-> # 又如国内的网络环境问题，某官方的IP可能被和谐了，幸好国内有好心人，搭建了镜像，此时我们简单设置镜像。
-> npm config set registry="http://r.cnpmjs.org"
-> # 也可以临时配置，如安装淘宝镜像。之后可以通过cnpm命令安装了。
-> npm install -g cnpm --registry=https://registry.npm.taobao.org
-> ```
->
->
->
-> ### npm cache 管理模块的缓存
->
-> ```shell
-> npm cache add <tarball file>
-> npm cache add <folder>
-> npm cache add <tarball url>
-> npm cache add <name>@<version>
-> 
-> npm cache ls [<path>]
-> 
-> npm cache clean [<path>]
-> 
-> # 最常用命令无非清除npm本地缓存
-> npm cache clean 
-> ```
->
->
->
-> ### npm start 启动模块
->
-> ```shell
-> npm start [-- <args>]
-> 
-> # 该命令写在package.json文件scripts的start字段中，可以自定义命令来配置一个服务器环境和安装一系列的必要程序，如
-> "scripts": {
->     "start": "gulp -ws"
-> }
-> # 此时在cmd中输入npm start命令相当于执行gulpfile.js文件自定义的watch和server命令。如果package.json文件没有设置start，则将直接启动node server.js
-> ```
->
->
->
-> ### npm stop 停止模块
->
-> ```shell
-> npm stop [-- <args>]
-> ```
->
->
->
-> ### npm restart 重新启动模块
->
-> ```shell
-> npm restart [-- <args>]
-> ```
->
->
->
-> ### npm test 测试模块
->
-> ```shell
-> npm test [-- <args>]
-> npm tst [-- <args>]
-> 
-> # 该命令写在package.json文件scripts的test字段中，可以自定义该命令来执行一些操作，如
-> "scripts": {
->     "test": "gulp release"
-> },
-> # 此时在cmd中输入npm test命令相当于执行gulpfile.js文件自定义的release命令。
-> ```
->
->
->
-> ### npm version 查看模块版本
->
-> ```shell
-> npm version [<newversion> | major | minor | patch | premajor | preminor | prepatch | prerelease | from-git]
-> 
-> 'npm [-v | --version]' to print npm version
-> 'npm view <pkg> version' to view a package's published version
-> 'npm ls' to inspect current package/dependency versions
-> 
-> # 查看模块的版本
-> npm version
-> ```
->
->
->
-> ### npm view 查看模块的注册信息
->
-> ```shell
-> npm view [<@scope>/]<name>[@<version>] [<field>[.<subfield>]...]
-> 
-> aliases: info, show, v
-> 
-> # 查看模块的依赖关系
-> npm view gulp dependencies
-> #查看模块的源文件地址
-> npm view gulp repository.url
-> #查看模块的贡献者，包含邮箱地址
-> npm view npm contributors
-> ```
->
->
->
-> ### npm adduser 用户登录
->
-> ```shell
-> npm adduser [--registry=url] [--scope=@orgname] [--always-auth]
-> 
-> #发布模板到npm社区前需要先登录，然后再进入发布的操作
-> ```
->
->
->
-> ### npm publish 发布模块
->
-> ```shell
-> npm publish [<tarball>|<folder>] [--tag <tag>] [--access <public|restricted>]
-> 
-> Publishes '.' if no argument supplied
-> Sets tag 'latest' if no --tag specified
-> ```
->
->
->
-> ### npm access 在发布的包上设置访问级别
->
-> ```shell
-> npm access public [<package>]
-> npm access restricted [<package>]
-> 
-> npm access grant <read-only|read-write> <scope:team> [<package>]
-> npm access revoke <scope:team> [<package>]
-> 
-> npm access ls-packages [<user>|<scope>|<scope:team>]
-> npm access ls-collaborators [<package> [<user>]]
-> npm access edit [<package>]
-> ```
+### npm install 安装模块
+
+```shell
+npm install (with no args, in package dir)	
+npm install [<@scope>/]<name>
+npm install [<@scope>/]<name>@<tag>
+npm install [<@scope>/]<name>@<version>
+npm install [<@scope>/]<name>@<version range>
+npm install <tarball file>
+npm install <tarball url>
+npm install <folder>
+
+alias: npm i
+common options: [-S|--save|-D|--save-dev|-O|--save-optional] [-E|--save-exact] [--dry-run]
+
+# 默认情况下，根据dependencies配置安装所有的依赖包到当地的 node_modules 文件夹中。
+npm install
+# 安装包，默认会安装最新的版本。
+npm install gulp
+# 安装指定版本。
+npm install gulp@3.9.1
+# -S, --save 安装包信息将加入到dependencies（生产阶段的依赖）
+# -D, --save-dev 安装包信息将加入到devDependencies（开发阶段的依赖），所以开发阶段一般使用它。
+# -O, --save-optional 安装包信息将加入到optionalDependencies（可选阶段的依赖）
+# -E, --save-exact 精确安装指定模块版本
+npm install --save gulp
+# 全局安装（global）,使用 -g 或 --global
+npm install gulp --global
+
+# 项目对模块的依赖可以使用下面的 3 种方法来表示（假设当前版本号是 1.1.0 ）：
+# - 兼容模块新发布的补丁版本：~1.1.0、1.1.x、1.1
+# - 兼容模块新发布的小版本、补丁版本：^1.1.0、1.x、1
+# - 兼容模块新发布的大版本、小版本、补丁版本：*、x
+```
+
+
+
+### npm uninstall 卸载模块 
+
+```shell
+npm uninstall [<@scope>/]<pkg>[@<version>]... [-S|--save|-D|--save-dev|-O|--save-optional]
+
+aliases: remove, rm, r, un, unlink
+
+# 如卸载开发版本的模块
+npm uninstall gulp --save-dev
+```
+
+
+
+### npm update 更新模块
+
+```shell
+npm update [-g] [<pkg>...]
+```
+
+
+
+### npm outdated 检查模块是否已经过时
+
+```shell
+npm outdated [[<@scope>/]<pkg> ...]
+
+# 此命令会列出所有已经过时的包，可以及时进行包的更新
+npm outdated
+```
+
+
+
+### npm ls 查看安装的模块
+
+```shell
+npm ls [[<@scope>/]<pkg> ...]
+
+aliases: list, la, ll
+
+# 查看全局安装的模块及依赖 
+npm ls -g 
+```
+
+
+
+### npm init 在项目中引导创建一个package.json文件
+
+```shell
+npm init [-f|--force|-y|--yes]
+
+# 安装包的信息可保持到项目的package.json文件中，以便后续的其它的项目开发或者他人合作使用，也说package.json在项目中是必不可少的。 -Y 表示跳过向导。
+npm init -Y
+```
+
+
+
+### npm help 查看某条命令的详细帮助 
+
+```shell
+npm help <term> [<terms..>]
+
+# 系统在默认的浏览器或者默认的编辑器中打开本地nodejs安装包的网页文件，如果是 --help 则是在命令行显示。
+npm install --help
+```
+
+
+
+### **npm root** 查看包的安装路径
+
+```shell
+npm root [-g]
+
+#输出 node_modules的路径
+```
+
+
+
+### npm config 管理npm的配置路径
+
+```shell
+npm config set <key> <value> [-g|--global]
+npm config get <key>
+npm config delete <key>
+npm config list
+npm config edit
+npm get <key>
+npm set <key> <value> [-g|--global]
+
+# 对于config这块用得最多应该是设置代理，解决npm安装一些模块失败的问题
+# 例如我在公司内网，因为公司的防火墙原因，无法完成任何模块的安装，这个时候设置代理可以解决
+npm config set proxy=http://xxx
+# 又如国内的网络环境问题，某官方的IP可能被和谐了，幸好国内有好心人，搭建了镜像，此时我们简单设置镜像。
+npm config set registry="http://r.cnpmjs.org"
+# 也可以临时配置，如安装淘宝镜像。之后可以通过cnpm命令安装了。
+npm install -g cnpm --registry=https://registry.npm.taobao.org
+```
+
+
+
+### npm cache 管理模块的缓存
+
+```shell
+npm cache add <tarball file>
+npm cache add <folder>
+npm cache add <tarball url>
+npm cache add <name>@<version>
+
+npm cache ls [<path>]
+
+npm cache clean [<path>]
+
+# 最常用命令无非清除npm本地缓存
+npm cache clean 
+```
+
+
+
+### npm start 启动模块
+
+```shell
+npm start [-- <args>]
+
+# 该命令写在package.json文件scripts的start字段中，可以自定义命令来配置一个服务器环境和安装一系列的必要程序，如
+"scripts": {
+    "start": "gulp -ws"
+}
+# 此时在cmd中输入npm start命令相当于执行gulpfile.js文件自定义的watch和server命令。如果package.json文件没有设置start，则将直接启动node server.js
+```
+
+
+
+### npm stop 停止模块
+
+```shell
+npm stop [-- <args>]
+```
+
+
+
+### npm restart 重新启动模块
+
+```shell
+npm restart [-- <args>]
+```
+
+
+
+### npm test 测试模块
+
+```shell
+npm test [-- <args>]
+npm tst [-- <args>]
+
+# 该命令写在package.json文件scripts的test字段中，可以自定义该命令来执行一些操作，如
+"scripts": {
+    "test": "gulp release"
+},
+# 此时在cmd中输入npm test命令相当于执行gulpfile.js文件自定义的release命令。
+```
+
+
+
+### npm version 查看模块版本
+
+```shell
+npm version [<newversion> | major | minor | patch | premajor | preminor | prepatch | prerelease | from-git]
+
+'npm [-v | --version]' to print npm version
+'npm view <pkg> version' to view a package's published version
+'npm ls' to inspect current package/dependency versions
+
+# 查看模块的版本
+npm version
+```
+
+
+
+### npm view 查看模块的注册信息
+
+```shell
+npm view [<@scope>/]<name>[@<version>] [<field>[.<subfield>]...]
+
+aliases: info, show, v
+
+# 查看模块的依赖关系
+npm view gulp dependencies
+#查看模块的源文件地址
+npm view gulp repository.url
+#查看模块的贡献者，包含邮箱地址
+npm view npm contributors
+```
+
+
+
+### npm adduser 用户登录
+
+```shell
+npm adduser [--registry=url] [--scope=@orgname] [--always-auth]
+
+#发布模板到npm社区前需要先登录，然后再进入发布的操作
+```
+
+
+
+### npm publish 发布模块
+
+```shell
+npm publish [<tarball>|<folder>] [--tag <tag>] [--access <public|restricted>]
+
+Publishes '.' if no argument supplied
+Sets tag 'latest' if no --tag specified
+```
+
+
+
+### npm access 在发布的包上设置访问级别
+
+```shell
+npm access public [<package>]
+npm access restricted [<package>]
+
+npm access grant <read-only|read-write> <scope:team> [<package>]
+npm access revoke <scope:team> [<package>]
+
+npm access ls-packages [<user>|<scope>|<scope:team>]
+npm access ls-collaborators [<package> [<user>]]
+npm access edit [<package>]
+```
 
 
 
