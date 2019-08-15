@@ -1160,24 +1160,47 @@ DOM2级事件处理程序。用于处理指定和删除事件处理程序的操�
 
 UI事件指的是那些不一定与用户操作有关的事件。除了DOMActivate之外，其他事件在DOM2级事件中都归为HTML事件。
 
-  - load事件：当页面完全加载后，就会触发window上面的load事件，第一种使用方式是通过JavaScript来指定事件处理程序，作用于window，第二种方式是在`<body>`元素添加一个onload特性。图像上面也可以触发load事件。
-  - unload事件：这个事件在文档被完全卸载后触发，只要用户从一个页面切换到另一个页面。
-  - resize事件：当浏览器窗口被调整到一个新的高度或宽度时触发。scroll事件：虽然是在window对象上发生，但它实际表示的则是页面中相应元素的变化。
+- load事件：当页面完全加载后，就会触发window上面的load事件，第一种使用方式是通过JavaScript来指定事件处理程序，作用于window，第二种方式是在`<body>`元素添加一个onload特性。图像上面也可以触发load事件。
+- unload事件：这个事件在文档被完全卸载后触发，只要用户从一个页面切换到另一个页面。
+- resize事件：当浏览器窗口被调整到一个新的高度或宽度时触发。scroll事件：虽然是在window对象上发生，但它实际表示的则是页面中相应元素的变化。
 
 ### 13.4.2 焦点事件。
 
 焦点事件会在页面元素获得或失去焦点时触发。利用这些事件并与`document.hasFocus()`方法及`document.activeElement`属性配合，可以知晓用户在页面上的行踪。
 
-  - blur表示失去焦点时触发
-  - focus表示获得焦点时触发。
+- blur表示失去焦点时触发
+- focus表示获得焦点时触发。
 
 ### 13.4.3 鼠标与滚轮事件。
 
-鼠标事件是Web开发中最常用的一类事件，主要定义了9个鼠标事件：点击click、双击dbclick、按下任意鼠标按钮mousedown、光标首次进入范围mouseenter、光标首次移出范围mouseleave、光标在内部移动mousemove、鼠标离开元素mouseout、鼠标进入元素mouseover、释放鼠标按钮mouseup。除了mouseenter和mouseleave，所有鼠标事件都会冒泡，也可以被取消，而取消鼠标事件将会影响浏览器的默认行为。鼠标事件中还有一类滚轮事件，一个mousewheel事件跟踪鼠标滚轮，类似于Mac的触控板。客户区坐标位置。鼠标事件都是在浏览器视口中的特定位置上发生的，这个位置信息保存在事件对象的clientX和clientY属性中。页面坐标位置。通过客户区坐标能够知道鼠标是在视口中什么位置发生的，而页面坐标通过事件对象的pageX和pageY属性，能告诉你事件时在页面中的什么位置发生的。屏幕坐标位置。鼠标事件发生时，不仅会有相对于浏览器窗口的位置，还有一个相对于整个电脑屏幕的位置，而通过screenX和screenY属性就可以确定鼠标事件发生时鼠标指针相对于整个屏幕的坐标信息。修改建。在按下鼠标时键盘上的某些键也可以影响到所要采取的操作，这些修改建就是Shift、Ctrl、Alt和Meta（windows系统是windows，苹果电脑是Cmd），并且规定4个属性来表示这些修改建的形态：shiftKey、ctrlKey、altKey、metaKey，如果按下则表示为true，否则为false。相关元素。在发生mouseover和mouseout事件时，事件的主目标分别是获得光标的元素、失去光标的元素，相关元素则相反。DOM通过event对象的relatedTarget属性提供了相关元素的信息。这个属性只对于mouseover和mouseout事件才包含值，对于其他事件，这个属性的值是null。mousedown和mouseup时间的event对象存在一个button的属性，表示按下或释放的按钮，属性值有三个，0表示主鼠标按钮、1表示中间的鼠标按钮、2表示次鼠标按钮。常规的设置中，主鼠标按钮就是鼠标左键。更多的事件信息，“DOM2级事件”规范在event对象中还提供了detail属性，用于给出有关事件的更多信息。鼠标滚轮事件。在垂直方向上滚动页面时，就会触发mousewheel时间，可以在任何元素上面触发，最终冒泡到document或window，对应的event对象包含鼠标事件的所有标准信息外，还包含一个特殊的wheelDelta属性，当向前滚动时它是120的倍数，向后滚动时它是-120的倍数。触摸设备。不支持dbclick事件，轻击可点击元素会触发mousemove事件。mousemove事件也会触发mouseover和mouseout事件。两个手指放在屏幕上且页面随手移动而滚动时会触发mousewheel事件和scroll事件。无障碍性问题。可以通过键盘上的回车键来触发click时间，但其他鼠标事件却无法通过键盘来触发。
+鼠标事件是Web开发中最常用的一类事件，主要定义了9个鼠标事件：点击`click`、双击`dbclick`、按下任意鼠标按钮`mousedown`、光标首次进入范围`mouseenter`、光标首次移出范围`mouseleave`、光标在内部移动`mousemove`、鼠标离开元素`mouseout`、鼠标进入元素`mouseover`、释放鼠标按钮`mouseup`。
+
+除了`mouseenter`和`mouseleave`，所有鼠标事件都会冒泡，也可以被取消，而取消鼠标事件将会影响浏览器的默认行为。
+
+鼠标事件中还有一类滚轮事件，一个mousewheel事件跟踪鼠标滚轮，类似于Mac的触控板。客户区坐标位置。
+
+鼠标事件都是在浏览器视口中的特定位置上发生的，这个位置信息保存在事件对象的clientX和clientY属性中。
+
+页面坐标位置。通过客户区坐标能够知道鼠标是在视口中什么位置发生的，而页面坐标通过事件对象的pageX和pageY属性，能告诉你事件时在页面中的什么位置发生的。
+
+屏幕坐标位置。鼠标事件发生时，不仅会有相对于浏览器窗口的位置，还有一个相对于整个电脑屏幕的位置，而通过screenX和screenY属性就可以确定鼠标事件发生时鼠标指针相对于整个屏幕的坐标信息。
+
+修改键。在按下鼠标时键盘上的某些键也可以影响到所要采取的操作，这些修改建就是Shift、Ctrl、Alt和Meta（windows系统是windows，苹果电脑是Cmd），并且规定4个属性来表示这些修改建的形态：shiftKey、ctrlKey、altKey、metaKey，如果按下则表示为true，否则为false。
+
+相关元素。在发生mouseover和mouseout事件时，事件的主目标分别是获得光标的元素、失去光标的元素，相关元素则相反。DOM通过event对象的relatedTarget属性提供了相关元素的信息。这个属性只对于mouseover和mouseout事件才包含值，对于其他事件，这个属性的值是null。mousedown和mouseup时间的event对象存在一个button的属性，表示按下或释放的按钮，属性值有三个，0表示主鼠标按钮、1表示中间的鼠标按钮、2表示次鼠标按钮。常规的设置中，主鼠标按钮就是鼠标左键。
+
+更多的事件信息，“DOM2级事件”规范在event对象中还提供了detail属性，用于给出有关事件的更多信息。鼠标滚轮事件。在垂直方向上滚动页面时，就会触发mousewheel时间，可以在任何元素上面触发，最终冒泡到document或window，对应的event对象包含鼠标事件的所有标准信息外，还包含一个特殊的wheelDelta属性，当向前滚动时它是120的倍数，向后滚动时它是-120的倍数。触摸设备。不支持dbclick事件，轻击可点击元素会触发mousemove事件。mousemove事件也会触发mouseover和mouseout事件。两个手指放在屏幕上且页面随手移动而滚动时会触发mousewheel事件和scroll事件。无障碍性问题。可以通过键盘上的回车键来触发click时间，但其他鼠标事件却无法通过键盘来触发。
 
 ### 13.4.4 键盘与文本事件。
 
-有三个键盘事件，keydown：当用户按下键盘上的任意键时触发，而且如果按住不放，会重复触发此事件；keypress：当用户按下键盘上的字符键时触发，而且如果按住不放，会重复触发此事件。按下Esc键也会触发这个事件；keyup：当用户释放键盘上的键时触发。只有一个文本事件：textInput，这个事件时对keypress的补充，用意是在将文本显示给用户之前更容易拦截文本。键盘事件与鼠标事件一样，都支持相同的修改键。在发生keydown和keyup事件时，event对象的keyCode属性中会包含一个代码，与键盘上一个特定的键对应，对数字字母字符键，keyCode属性的值与ASCII码中对应小写字母或数字的编码相同。发生keypress事件意味着按下的键会影响到屏幕中文本的显示。多数浏览器的event对象都支持一个charCode属性，这个属性只有在发生keypress事件时才包含值，而且这个值是按下那个键所代表字符的ASCII码。DOM3级事件中的键盘事件，不再包含charCode属性，而是包含两个新属性：key和char。DOM3级事件还添加了一个名为location的属性，这是一个数值，表示按下了什么位置上的键。最后是给event对象添加了getModifierState()方法，接收一个参数，是等于Shift、Control、AltGraph或Meta的字符串，表示要检测的修改键。如果处于被按下状态则返回true布尔值。“DOM3级事件”规范中引入了一个新事件，名叫textInput，当用户在编辑区域中输入字符时，就会触发这个事件，它的event对象中还包含一个data属性，这个属性的值就是用户输入的字符，event对象上还有一个inputMethod属性，表示把文本输入到文本框中的方式。
+有三个键盘事件
+- keydown：当用户按下键盘上的任意键时触发，而且如果按住不放，会重复触发此事件
+- keypress：当用户按下键盘上的字符键时触发，而且如果按住不放，会重复触发此事件。按下Esc键也会触发这个事件
+- keyup：当用户释放键盘上的键时触发。
+
+只有一个文本事件：textInput，这个事件时对keypress的补充，用意是在将文本显示给用户之前更容易拦截文本。键盘事件与鼠标事件一样，都支持相同的修改键。在发生keydown和keyup事件时，event对象的keyCode属性中会包含一个代码，与键盘上一个特定的键对应，对数字字母字符键，keyCode属性的值与ASCII码中对应小写字母或数字的编码相同。发生keypress事件意味着按下的键会影响到屏幕中文本的显示。多数浏览器的event对象都支持一个charCode属性，这个属性只有在发生keypress事件时才包含值，而且这个值是按下那个键所代表字符的ASCII码。
+
+DOM3级事件中的键盘事件，不再包含charCode属性，而是包含两个新属性：key和char。DOM3级事件还添加了一个名为location的属性，这是一个数值，表示按下了什么位置上的键。最后是给event对象添加了getModifierState()方法，接收一个参数，是等于Shift、Control、AltGraph或Meta的字符串，表示要检测的修改键。如果处于被按下状态则返回true布尔值。“DOM3级事件”规范中引入了一个新事件，名叫textInput，当用户在编辑区域中输入字符时，就会触发这个事件，它的event对象中还包含一个data属性，这个属性的值就是用户输入的字符，event对象上还有一个inputMethod属性，表示把文本输入到文本框中的方式。
 
 ### 13.4.5 复合事件。
 
