@@ -505,13 +505,9 @@ no changes added to commit (use "git add" and/or "git commit -a")
 任何因包含合并冲突而有待解决的文件，都会以未合并状态标识出来。Git 会在有冲突的文件中加入标准的冲突解决标记，这样就可以打开这些包含冲突的文件然后手动解决冲突。出现冲突的文件会包含一些特殊区段，看起来像下面这个样子。
 
 ```html
-<<<<<<< HEAD:index.html
-<div id="footer">contact : email.support@github.com</div>
-=======
 <div id="footer">
  please contact us at support@github.com
 </div>
->>>>>>> iss53:index.html
 ```
 
 这表示 HEAD 所指示的版本在这个区段的上半部分（======= 的上半部分），而 iss53 分支所指示的版本在 ======= 的下半部分。为了解决冲突，必须选择使用由 ====== 分割的两部分中的一个，或者也可以自行合并这些内容。并且将 <<<<<<< , ======= , 和 >>>>>>> 这些行完全删除了。在你解决了所有文件里的冲突之后，对每个文件使用`git add`命令来将其标记为冲突已解决。 一旦暂存这些原本有冲突的文件，Git 就会将它们标记为冲突已解决。
