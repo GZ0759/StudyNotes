@@ -128,13 +128,13 @@
  Show information about a remote  
  
  ```sh
- $ git remote show <remote>  # 
+ $ git remote show <remote>  # 显示有关远程仓库的信息
  ```
  
  Add new remote repository, named `<remote>`  
 
  ```sh
- $ git remote add <shortname> <url>  # 
+ $ git remote add <shortname> <url>  # 添加名为< Remote >的新远程存储库
  ```
  
  Download all changes from `<remote>`,  but don‘t integrate into HEAD  
