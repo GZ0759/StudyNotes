@@ -991,17 +991,59 @@ History 对象保存着用户上网的历史记录，从窗口被打开的那一
 
 # 第10章 DOM　
 
-DOM是文档对象模型，是针对HTML和XML文档的一个API应用程序编程接口，脱胎于DHTML，描述了一个层次化的节点树，允许开发人员添加、移除和修改页面的某一部分。
+DOM是文档对象模型，是针对HTML和XML文档的一个API应用程序编程接口，描述了一个层次化的节点树，允许开发人员添加、移除和修改页面的某一部分。现在它已经成为表现和操作页面标记的真正的跨平台、语言中立的方式。
 
 ## 10.1 节点层次 
 
-节点分为几种不同的类型，每种类型分别表示文档中不同的信息以（或）标记。每个节点都拥有各自的特点、数据和方法，另外也与其他节点存在某种关系。
+节点分为几种不同的类型，每种类型分别表示文档中不同的信息以（或）标记。每个节点都拥有各自的特点、数据和方法，另外也与其他节点存在某种关系。节点之间的关系构成了层次，而所有页面标记则表现为一个以特定节点为根节点的树形结构。
 
-文档节点是每个文档的根节点，一般是`<html>`元素，又叫文档元素，是文档最外层的元素，每个文档只能有一个文档元素。HTML元素通过元素节点表示，特性通过特性节点表示，文档类型通过文档类型节点表示，而注释则通过注释节点表示，共有12中节点类型。
+```html
+<html>
+  <head>
+    <title>Sample Page</title>
+  </head>
+  <body>
+    <p>Hello World!</p>
+  </body>
+</html>
+```
 
-Node类型。DOM1级定义的一个Node接口，该接口将由DOM衷的所有节点类型实现，这个接口在JavaScript中是作为Node类型实现的。JavaScript中的所有节点类型都继承自Node类型，因此所有节点类型都共享者相同的基本属性和方法。每个节点都有一个nodeType，用于表明节点的类型，节点类型由定义的12个数值常量表示。由于IE没有公开Node类型的构造函数，因此最好将nodeType属性与数字值进行比较，这个适合所有浏览器。
+文档节点是每个文档的根节点。在这个例子中，文档节点只有一个子节点，即`<html>`元素，我们称之为文档元素。文档元素是文档的最外层元素，文档中的其他所有元素都包含在文档元素中。每个文档只能有一个文档元素。在 HTML 页面中，文档元素始终都是`<html>`元素。在 XML 中，没有预定义的元素，因此任何元素都可能成为文档元素。
 
-要了解节点的具体信息，可以使用nodeName和nodeValue两个属性。每个节点都有一个childNodes属性，其中保存着一个NOdeList数组对象，用于保存一组有序的节点，可以通过位置来访问这些节点。每个节点都有一个parentNode属性，该属性指向文档数中的父结点。所有节点最有的最后一个属性时ownerDocument，该属性指向表示整个文档的文档节点。而hasChildrenNodes()在节点包含一或多个子节点的情况下返回true，这是比查询childNodes列表的length属性更简单的方法。
+每一段标记都可以通过树中的一个节点来表示： HTML 元素通过元素节点表示，特性（attribute）通过特性节点表示，文档类型通过文档类型节点表示，而注释则通过注释节点表示。总共有 12 种节点类型，这些类型都继承自一个基类型。
+
+Node类型。DOM1级定义的一个Node接口，该接口将由DOM衷的所有节点类型实现，这个接口在JavaScript中是作为Node类型实现的。JavaScript中的所有节点类型都继承自Node类型，因此所有节点类型都共享者相同的基本属性和方法。
+
+每个节点都有一个nodeType，用于表明节点的类型，节点类型由定义的12个数值常量表示。由于IE没有公开Node类型的构造函数，为了确保跨浏览器兼容，最好将nodeType属性与数字值进行比较。
+
+- Node.ELEMENT_NODE(1)；
+- Node.ATTRIBUTE_NODE(2)；
+- Node.TEXT_NODE(3)；
+- Node.CDATA_SECTION_NODE(4)；
+- Node.ENTITY_REFERENCE_NODE(5)；
+- Node.ENTITY_NODE(6)；
+- Node.PROCESSING_INSTRUCTION_NODE(7)；
+- Node.COMMENT_NODE(8)；
+- Node.DOCUMENT_NODE(9)；
+- Node.DOCUMENT_TYPE_NODE(10)；
+- Node.DOCUMENT_FRAGMENT_NODE(11)；
+- Node.NOTATION_NODE(12)。
+
+nodeName 和 nodeValue 属性。
+
+要了解节点的具体信息，可以使用 nodeName 和 nodeValue 两个属性。对于元素节点， nodeName 中保存的始终都是元素的标签名，而 nodeValue 的值则始终为 null。
+
+```js
+if (someNode.nodeType == 1){
+  value = someNode.nodeName; //nodeName 的值是元素的标签名
+}
+```
+
+节点关系。
+
+文档中所有的节点之间都存在这样或那样的关系。每个节点都有一个 childNodes 属性，其中保存着一个 NOdeList 数组对象，用于保存一组有序的节点，可以通过位置来访问这些节点。但是它不是 Array 的实例，它实际上是基于 DOM 结构动态执行查询的结果，DOM 结构的变化能够自动反应在 NodeList 对象中，因此 NodeList 是有生命、有呼吸的对象，而不是一张快照。如果要访问保存在 NodeList 中的节点，可以通过方括号，也可以使用`item()`方法。
+
+每个节点都有一个 parentNode 属性，该属性指向文档数中的父结点。而`hasChildrenNodes()`在节点包含一或多个子节点的情况下返回 true，这是比查询 childNodes 列表的length属性更简单的方法。所有节点都有的最后一个属性是 ownerDocument，该属性指向表示整个文档的文档节点。通过这个属性，可以不必在节点层次中通过层层回溯到达顶端，而是可以直接访问文档节点。
 
 操作节点，最常用的方法是appendChildren()，用于向childNodes列表的末尾添加一个节点，更新完成后该方法返回新增的节点，如果已经存在，那么就会转移到新位置。另外inserBefore()方法，是把节点放在childNodes列表中的某个特定的位置上，接受两个参数：要插入的节点和作为参照的节点。如果参照节点是null，则插入最后。replaceChild()方法替换节点，并返回移除的节点。removeChild()方法只是移除而非替换节点，只接受一个参数。这两个方法移除的节点仍然为文档所有，只不过在文档中已经没有了自己的位置。
 
