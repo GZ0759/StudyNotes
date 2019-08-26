@@ -184,7 +184,7 @@ alert(message); // "hi"
 
 - `Boolean`类型只有 true 和 false 两个字面值，而且是小写字母。`""`、0和NaN、null、undefined转换为布尔值都是false。要将一个值转换成对应的Boolean值，可以调用转型函数 `Boolean()` 函数。
 
-- `Number`类型，表示的最小数值保存在 Number.MIN_VALUE 中，表示的最大数值保存在Number.MAX_VALUE中。如果某个数值不在这两个值之间，则会转换成特殊的Infinity值（负无穷或者正无穷），不能再参与下一次的计算。NaN，即非数值，是一个特殊的数值。  
+- `Number`类型，表示的最小数值保存在 Number.MIN_VALUE 中，表示的最大数值保存在 Number.MAX_VALUE 中。如果某个数值不在这两个值之间，则会转换成特殊的 Infinity 值（负无穷或者正无穷），不能再参与下一次的计算。NaN，即非数值，是一个特殊的数值。  
 在 ECMAScript 中，任何数值除以 0 会返回NaN（not a number）。NaN本身有两个非同寻常的特点。首先，任何涉及NaN的操作（例如NaN/10）都会返回NaN，这个特点在多步计算中有可能导致问题。其次，NaN与任何值都不相等，包括NaN本身。`isNaN()`函数接受一个参数，尝试将这个值转换成数值，不能被转换成数值的值会导致这个函数返回true，否则转换成false。把非数值转换为数值的方法主要有三个： `Number()` 、`parseInt()` 和 `parseFloat()` 。
 
 - `String`类型用于表示由零或多个16位Unicode字符组成的字符序列，即字符串，可用双引号或单引号表示。在计算长度时，每个字符量代表一个字符。字符串是不可变的，改变某个变量保存的字符串，就要销毁原来的字符串，然后用新字符串填充该变量。  
@@ -991,17 +991,59 @@ History 对象保存着用户上网的历史记录，从窗口被打开的那一
 
 # 第10章 DOM　
 
-DOM是文档对象模型，是针对HTML和XML文档的一个API应用程序编程接口，脱胎于DHTML，描述了一个层次化的节点树，允许开发人员添加、移除和修改页面的某一部分。
+DOM是文档对象模型，是针对HTML和XML文档的一个API应用程序编程接口，描述了一个层次化的节点树，允许开发人员添加、移除和修改页面的某一部分。现在它已经成为表现和操作页面标记的真正的跨平台、语言中立的方式。
 
 ## 10.1 节点层次 
 
-节点分为几种不同的类型，每种类型分别表示文档中不同的信息以（或）标记。每个节点都拥有各自的特点、数据和方法，另外也与其他节点存在某种关系。
+节点分为几种不同的类型，每种类型分别表示文档中不同的信息以（或）标记。每个节点都拥有各自的特点、数据和方法，另外也与其他节点存在某种关系。节点之间的关系构成了层次，而所有页面标记则表现为一个以特定节点为根节点的树形结构。
 
-文档节点是每个文档的根节点，一般是`<html>`元素，又叫文档元素，是文档最外层的元素，每个文档只能有一个文档元素。HTML元素通过元素节点表示，特性通过特性节点表示，文档类型通过文档类型节点表示，而注释则通过注释节点表示，共有12中节点类型。
+```html
+<html>
+  <head>
+    <title>Sample Page</title>
+  </head>
+  <body>
+    <p>Hello World!</p>
+  </body>
+</html>
+```
 
-Node类型。DOM1级定义的一个Node接口，该接口将由DOM衷的所有节点类型实现，这个接口在JavaScript中是作为Node类型实现的。JavaScript中的所有节点类型都继承自Node类型，因此所有节点类型都共享者相同的基本属性和方法。每个节点都有一个nodeType，用于表明节点的类型，节点类型由定义的12个数值常量表示。由于IE没有公开Node类型的构造函数，因此最好将nodeType属性与数字值进行比较，这个适合所有浏览器。
+文档节点是每个文档的根节点。在这个例子中，文档节点只有一个子节点，即`<html>`元素，我们称之为文档元素。文档元素是文档的最外层元素，文档中的其他所有元素都包含在文档元素中。每个文档只能有一个文档元素。在 HTML 页面中，文档元素始终都是`<html>`元素。在 XML 中，没有预定义的元素，因此任何元素都可能成为文档元素。
 
-要了解节点的具体信息，可以使用nodeName和nodeValue两个属性。每个节点都有一个childNodes属性，其中保存着一个NOdeList数组对象，用于保存一组有序的节点，可以通过位置来访问这些节点。每个节点都有一个parentNode属性，该属性指向文档数中的父结点。所有节点最有的最后一个属性时ownerDocument，该属性指向表示整个文档的文档节点。而hasChildrenNodes()在节点包含一或多个子节点的情况下返回true，这是比查询childNodes列表的length属性更简单的方法。
+每一段标记都可以通过树中的一个节点来表示： HTML 元素通过元素节点表示，特性（attribute）通过特性节点表示，文档类型通过文档类型节点表示，而注释则通过注释节点表示。总共有 12 种节点类型，这些类型都继承自一个基类型。
+
+Node类型。DOM1级定义的一个Node接口，该接口将由DOM衷的所有节点类型实现，这个接口在JavaScript中是作为Node类型实现的。JavaScript中的所有节点类型都继承自Node类型，因此所有节点类型都共享者相同的基本属性和方法。
+
+每个节点都有一个nodeType，用于表明节点的类型，节点类型由定义的12个数值常量表示。由于IE没有公开Node类型的构造函数，为了确保跨浏览器兼容，最好将nodeType属性与数字值进行比较。
+
+- Node.ELEMENT_NODE(1)；
+- Node.ATTRIBUTE_NODE(2)；
+- Node.TEXT_NODE(3)；
+- Node.CDATA_SECTION_NODE(4)；
+- Node.ENTITY_REFERENCE_NODE(5)；
+- Node.ENTITY_NODE(6)；
+- Node.PROCESSING_INSTRUCTION_NODE(7)；
+- Node.COMMENT_NODE(8)；
+- Node.DOCUMENT_NODE(9)；
+- Node.DOCUMENT_TYPE_NODE(10)；
+- Node.DOCUMENT_FRAGMENT_NODE(11)；
+- Node.NOTATION_NODE(12)。
+
+nodeName 和 nodeValue 属性。
+
+要了解节点的具体信息，可以使用 nodeName 和 nodeValue 两个属性。对于元素节点， nodeName 中保存的始终都是元素的标签名，而 nodeValue 的值则始终为 null。
+
+```js
+if (someNode.nodeType == 1){
+  value = someNode.nodeName; //nodeName 的值是元素的标签名
+}
+```
+
+节点关系。
+
+文档中所有的节点之间都存在这样或那样的关系。每个节点都有一个 childNodes 属性，其中保存着一个 NOdeList 数组对象，用于保存一组有序的节点，可以通过位置来访问这些节点。但是它不是 Array 的实例，它实际上是基于 DOM 结构动态执行查询的结果，DOM 结构的变化能够自动反应在 NodeList 对象中，因此 NodeList 是有生命、有呼吸的对象，而不是一张快照。如果要访问保存在 NodeList 中的节点，可以通过方括号，也可以使用`item()`方法。
+
+每个节点都有一个 parentNode 属性，该属性指向文档数中的父结点。而`hasChildrenNodes()`在节点包含一或多个子节点的情况下返回 true，这是比查询 childNodes 列表的length属性更简单的方法。所有节点都有的最后一个属性是 ownerDocument，该属性指向表示整个文档的文档节点。通过这个属性，可以不必在节点层次中通过层层回溯到达顶端，而是可以直接访问文档节点。
 
 操作节点，最常用的方法是appendChildren()，用于向childNodes列表的末尾添加一个节点，更新完成后该方法返回新增的节点，如果已经存在，那么就会转移到新位置。另外inserBefore()方法，是把节点放在childNodes列表中的某个特定的位置上，接受两个参数：要插入的节点和作为参照的节点。如果参照节点是null，则插入最后。replaceChild()方法替换节点，并返回移除的节点。removeChild()方法只是移除而非替换节点，只接受一个参数。这两个方法移除的节点仍然为文档所有，只不过在文档中已经没有了自己的位置。
 
@@ -1057,7 +1099,7 @@ Attr类型。元素的特性在DOM中以Attr类型来表示，在所有浏览器
 
 ## 11.1 选择符API 
 
-Selectors API Level 1的核心就是两个方法：querySelector()和querySelectorAll()，通过CSS选择符查询DOM文档取得元素的引用。如果接受一个CSS选择符，第一个方法会返回与该模式匹配的第一个元素，没有找到则返回null；第二个方法返回的是一个NOdeList的实例，没有找到则NodeList为空。要取得返回的NOdeList中的每一个元素，可以使用item方法，也可以使用方括号语法。Selectors API Level 2规范为Element类型新增了一个方法matchSelector()方法，其接收一个参数CSS选择符，吐过调用元素与该选择符匹配，返回true，否则返回false。
+Selectors API Level 1的核心就是两个方法：`querySelector()`和`querySelectorAll()`，通过CSS选择符查询DOM文档取得元素的引用。如果接受一个CSS选择符，第一个方法会返回与该模式匹配的第一个元素，没有找到则返回null；第二个方法返回的是一个NOdeList的实例，没有找到则NodeList为空。要取得返回的NOdeList中的每一个元素，可以使用item方法，也可以使用方括号语法。Selectors API Level 2规范为Element类型新增了一个方法`matchSelector()`方法，其接收一个参数CSS选择符，吐过调用元素与该选择符匹配，返回true，否则返回false。
 
 ## 11.2 元素遍历 
 
@@ -1099,7 +1141,7 @@ DOM1级主要定义的是HTML和XML文档的底层结构，DOM2和DOM3级则在�
 
 ## 12.2 样式 
 
-任何支持style特性的HTML元素在JavaScript中都有一个对应的style属性。这个style对象是CSSStyleDeclaration的实例，包含着通过HTML的style特性指定的所有样式信息，但不包含与外部样式表或嵌入样式表经层叠而来的样式。对于使用短划线的CSS属性名，必须将其转换成驼峰大小写的形式，才能通过JavaScript来访问。由于在JavaScript中float是保留字，因此不能作为属性名，所以改成cssFloat。同时还定义了一些属性和方法，可以修改样式，例如cssText属性可以访问style特性中的CSS代码，这是为元素应用多项变化最快捷的方式，因为可以一次性地应用所有变化。设置length属性的木笔，就是将其与item()方法配套使用，以便迭代在元素中定义的CSS属性，同时可以使用getPropertyValue()和getPropertyCSSValue()方法获得属性值。前者获得字符串，后者获得包含两个属性的CSSValue对象。计算的样可以使用getComputedStyle()方法，这个方法接受两个参数：要取得计算样式的元素和一个伪元素字符串。如果不需要伪元素信息，第二个参数可以是null，返回的是一个CSSStyleDeclaration对象（与style属性的类型相同），其中包含当前元素的所有计算的样式，所有计算的样式都是只读的。
+任何支持style特性的HTML元素在JavaScript中都有一个对应的style属性。这个style对象是CSSStyleDeclaration的实例，包含着通过HTML的style特性指定的所有样式信息，但不包含与外部样式表或嵌入样式表经层叠而来的样式。对于使用短划线的CSS属性名，必须将其转换成驼峰大小写的形式，才能通过JavaScript来访问。由于在JavaScript中float是保留字，因此不能作为属性名，所以改成cssFloat。同时还定义了一些属性和方法，可以修改样式，例如cssText属性可以访问style特性中的CSS代码，这是为元素应用多项变化最快捷的方式，因为可以一次性地应用所有变化。设置length属性的木笔，就是将其与item()方法配套使用，以便迭代在元素中定义的CSS属性，同时可以使用`getPropertyValue()`和`getPropertyCSSValue()`方法获得属性值。前者获得字符串，后者获得包含两个属性的CSSValue对象。计算的样可以使用getComputedStyle()方法，这个方法接受两个参数：要取得计算样式的元素和一个伪元素字符串。如果不需要伪元素信息，第二个参数可以是null，返回的是一个CSSStyleDeclaration对象（与style属性的类型相同），其中包含当前元素的所有计算的样式，所有计算的样式都是只读的。
 
 操作样式表。CSSStyleSheet类型表示的是样式表，包括通过`<link>`元素包含的样式表和在`<style>`元素中定义的样式表。应用文档的所有样式表是通过document.styleSheets集合来表示，通过这个集合的length属性可以获知文档中样式表的数量，而通过方括号语法或item()方法可以访问每个样式表。不同浏览器的document.styleSheets返回的样式表也不同。也可以直接通过`<link>`或`<style>`元素来取得CSSStyleSheet对象。
 
