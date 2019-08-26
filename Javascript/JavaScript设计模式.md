@@ -221,6 +221,8 @@ m.checkEmail();
 
 ### 包装明星——封装
 
+在 javascript 中创建一个类很容易，首先声明一个函数保存在一个变量里。按编程习惯一般将这个代表类的变量名字母大写。然后在这个函数（类）的内部通过对 this 变量添加属性或者方法来实现对类添加属性或者方法。
+
 ```js
 var Book = function(id, bookname, price) {
     this.id = id;
@@ -228,7 +230,13 @@ var Book = function(id, bookname, price) {
     this.price = price;
 };
 
-/** 在类的原型上添加属性和方法，有两种方式，一种是一一为源性对象属性赋值，另一种则是将一个对象赋值给类的原型对象。但这两种不要混用 */
+var book = new Book(10, "JavaScript设计模式", 50);
+console.log(book.bookname);
+```
+
+也可以通过在类的原型上添加属性和方法，有两种方式，一种是一一为原型对象属性赋值，另一种则是将一个对象赋值给类的原型对象，但这两种不要混用。
+
+```js
 Book.prototype.display = function() {
     // 展示这本书
 };
@@ -237,9 +245,57 @@ Book.prototype.display = function() {
 Book.prototype = {
     display: function() {}
 };
+```
 
-var book = new Book(10, "JavaScript设计模式", 50);
-console.log(book.bookname);
+通过类创建一个新对象时，this 指向的属性和方法都会得到相应的创建，而通过 prototype 继承的属性或者方法是每个对象通过 prototype 访问到，所以每次通过类创建一个新对象时这些属性和方法不会再次创建。
+
+- 由于 javascript 的函数级作用域，声明在函数内部的变量以及方法在外界是访问不到的，通过此特性即可创建类的私有变量以及私有方法。
+- 然而在函数内部通过 this 创建的属性和方法，在类创建对象时，每个对象自身都拥有一份并且可以在外部访问到。因此通过 this 创建的属性可看作是对象共有属性和对象共有方法。
+- 通过 this 创建的方法，不但可以访问这些对象的共有属性与共有方法，而且还能访问到类（创建时）或对象自身的私有属性和私有方法，由于这些方法权利比较大，所以又可看成特权方法。
+- 在对象创建时通过使用这些特权放啊发可以初始化实例对象的一些属性，因此这些在创建对象时调用的特权方法还可以看作是类的构造器。
+
+
+```js
+// 私有属性与私有方法，对象公有属性和对象公有方法，构造器
+var Book = function(id, name, price) {
+    // 私有属性
+    var num = 1;
+    // 私有方法
+    function checkId() {}
+    // 特权方法
+    this.getName = function() {};
+    this.getPrice = function() {};
+    this.setName = function() {};
+    this.setPrice = function() {};
+    // 对象公有属性
+    this.id = id;
+    this.copy = function() {};
+    // 构造器
+    this.setName(name);
+    this.setPrice(price);
+};
+
+// 类静态公有属性（对象不能访问）
+Book.isChinese = true;
+// 类静态公有方法（对象不能访问）
+Book.resetTime = function() {
+    console.log("new Time");
+};
+Book.prototype = {
+    // 公有属性
+    isJSBook: false,
+    // 公有方法
+    display: function() {}
+};
+
+var b = new Book(11, "JavaScript设计模式", 50);
+console.log(b.num); // undefined
+console.log(b.isJSBook);  // false
+console.log(b.id);  // 11
+console.log(b.isChinese); // undefined
+
+console.log(Book.isChinese);  // true
+Book.resetTime(); // new Time
 ```
 
 # 第二篇 创建型设计模式
