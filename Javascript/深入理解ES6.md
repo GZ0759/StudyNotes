@@ -1,7 +1,7 @@
 > 深入理解ES6  
 > Understanding ES6  
 > 2017年7月第一版  
-> [开源图书地址](https://github.com/nzakas/understandinges6)
+> [开源图书地址](https://github.com/nzakas/understand2inges6)
 
 <!-- TOC -->
 
@@ -55,21 +55,27 @@
 
 ```javascript
 function getValue(condition) {
-
     if (condition) {
         var value = "blue";
-
         // other code
-
         return value;
     } else {
-
         // value exists here with a value of undefined
-
         return null;
     }
-
     // value exists here with a value of undefined
+}
+
+// 相当于
+function getValue(condition) {
+    var value;
+    if (condition) {
+        value = "blue";
+        // other code
+        return value;
+    } else {
+        return null;
+    }
 }
 ```
 
@@ -77,7 +83,7 @@ function getValue(condition) {
 
 ## 1.2 块级声明
 
-块级声明用于声明在指定块的作用域之外无法访问的变量。块级作用域（也被称为词法作用域）存在于：函数内部、块中（字符 { 和 } 之间的区域）。很多类C语言都有块级作用域，而ECMAScript 6 引入块级作用域就是为了让 JavaScript 更灵活也更普适。
+块级声明用于声明在指定块的作用域之外无法访问的变量。块级作用域（也被称为词法作用域）存在于：函数内部、块中（字符 `{` 和 `}` 之间的区域）。很多类C语言都有块级作用域，而ECMAScript 6 引入块级作用域就是为了让 JavaScript 更灵活也更普适。
 
 let 声明。let 声明的用法与 var 相同。使用 let 来代替声明变量，就可以把变量的作用域限制在当前代码块中。由于 let 声明不会被提升，因此开发者通常将 let 声明语句放在封闭代码块的顶部，以便整个代码块都可以访问。
 
