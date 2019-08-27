@@ -671,6 +671,12 @@ Vue.component('blog-post', {
 <blog-post post-title="hello!"></blog-post>
 ```
 
+如果我们从以下来源使用模板的话，这条限制是不存在的：
+
+- 字符串 (例如：template: '...')
+- 单文件组件 (.vue)
+- `<script type="text/x-template">`
+
 props 中声明的数据与组件 data 函数 return 的数据主要区别是 props 的来自父级，而 data 中的是组件自己的数据，作用域是组件本身，这两种数据都可以在模板 template 及计算属性 computed 和方法 methods 中使用。
 
 有时候，传递的数据并不是直接写死的，而是来自父级的动态数据，这时可以使用指令 v-bind 来动态绑定 props 的值，党父组件的数据变化时，也会传递给子组件。
