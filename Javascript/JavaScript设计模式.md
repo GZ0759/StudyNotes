@@ -215,11 +215,11 @@ m.checkEmail();
 
 ## 第2章 写的都是看到的——面向对象编程
 
-### 两种编程风格——面向过程与面向对象
+### 2.1 两种编程风格——面向过程与面向对象
 
 面向对象编程就是将你的需求抽象成一个对象，然后针对这个对象分析器特征（属性）与动作（方法）。这个对象我们称之为类。面向对象编程思想有一个特点就是封装，就是说把你需要的功能放在一个对象里。
 
-### 包装明星——封装
+### 2.2 包装明星——封装
 
 在 javascript 中创建一个类很容易，首先声明一个函数保存在一个变量里。按编程习惯一般将这个代表类的变量名字母大写。然后在这个函数（类）的内部通过对 this 变量添加属性或者方法来实现对类添加属性或者方法。
 
@@ -306,7 +306,127 @@ console.log(Book.isChinese);  // true
 Book.resetTime(); // new Time
 ```
 
-闭包实现。闭包是有权访问另外一个函数作用域中变量的函数，即在一个函数内部创建另外一个函数。
+闭包实现。闭包是有权访问另外一个函数作用域中变量的函数，即在一个函数内部创建另外一个函数。我们把这个闭包作为创建对象的构造函数，这样它既是闭包又是可实例对象的函数，即可访问到类函数作用域中的变量。有时候在闭包内部实现一个完整的类然后将其返回。
+
+```js
+var Book = (function() {
+    // 静态私有变量
+    var bookNum = 0;
+    // 静态私有方法
+    function checkBook(name) {}
+    // 创建类
+    function _book(newId, newName, newPrice) {
+        // 私有变量
+        var name, price;
+        // 私有方法
+        function checkID(id) {}
+        // 特权方法
+        this.getName = function() {};
+        this.getPrice = function() {};
+        this.setName = function() {};
+        this.setPrice = function() {};
+        // 公有属性
+        this.id = newId;
+        // 公有方法
+        this.copy = function() {};
+        bookNum++;
+        if (bookNum > 100) {
+            throw new Error("我们仅出版100本书。");
+        }
+        // 构造器
+        this.setName(name);
+        this.setPrice(price);
+    }
+    // 构造原型
+    _book.prototype = {
+        // 静态公有属性
+        isJSBook: false,
+        display: function() {}
+    };
+    // 返回类
+    return _book;
+})();
+```
+
+创建对象的安全模式。在JavaScript创建对象时有一种安全模式就可以安全解决忘记使用new关键字而引发的错误。
+
+```js
+/** 反面示例 */
+var Book = function(title, time, type) {
+    this.title = title;
+    this.time = time;
+    this.type = type;
+};
+var book = Book("JavaScript", "2014", "js");
+console.log(book); // undefined
+console.log(window.title); // JavaScript
+console.log(window.time); // 2014
+console.log(window.type); // js
+
+/** 图书安全类 */
+var Book = function(title, time, type) {
+    // 判断执行过程中this是否是当前这个对象（如果是用new创建的）
+    if (this instanceof Book) {
+        this.title = title;
+        this.time = time;
+        this.type = type;
+    } else {
+        // 否则重新创建这个对象
+        return new Book(title, time, type);
+    }
+};
+
+var book = Book("javaScript", "2014", "js");
+
+// 测试
+console.log(book); // Book
+console.log(book.title); // JavaScript
+console.log(book.time); // 2014
+console.log(book.type); // js
+console.log(window.title); // undefined
+console.log(window.type); // undefined
+console.log(window.time); // undefined
+```
+
+### 3.3 传宗接代——继承
+
+每个类都有3个部分。
+- 构造函数内，供实例对象赋值用
+- 构造函数外，直接通过点语法添加，供类使用
+- 类的原型中，实例化对象可以通过其原型链间接访问到，也是为供所有实例化对象所共用。
+
+类式继承。类的原型对象的作用就是为类的原型添加共有方法，但类不能直接访问这些属性和方法，必须通过原型 prototype 来访问。而实例化一个父类的时候，新创建的对象复制了父类的构造函数内的属性和方法并且将原型 `_proto_` 指向了父类的原型对象，这样就拥有了父类的原型对象上的属性与方法，并且这个新创建的对象可直接访问到父类原型对象上的属性和方法，也可以访问从父类构造函数中赋值的属性和方法。将这个对象赋值给子类的原型，那么这个子类的原型同样可以访问父类原型上的属性和方法与父类构造函数中复制的属性和方法。
+
+```js
+// 声明父类
+function SuperClass() {
+    this.superValue = true;
+}
+// 为父类添加公有方法
+SuperClass.prototype.getSuperValue = function() {
+    return this.superValue;
+};
+// 声明子类
+function SubClass() {
+    this.SubValue = false;
+}
+
+// 继承父类
+SubClass.prototype = new SuperClass();
+// 为子类添加公有方法
+SubClass.prototype.getSubValue = function() {
+    return this.SubValue;
+};
+
+var instance = new SubClass();
+console.log(instance.getSuperValue()); // true
+console.log(instance.getSubValue()); // false
+
+console.log(instance instanceof SuperClass); // true
+console.log(instance instanceof SubClass); // true
+console.log(SubClass instanceof SuperClass); // false
+console.log(SubClass.prototype instanceof SuperClass); // true
+```
 
 # 第二篇 创建型设计模式
 
