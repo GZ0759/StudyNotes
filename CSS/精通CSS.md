@@ -570,7 +570,50 @@ CSS 变换支持在页面中平移、旋转、变形和缩放元素。此外，�
 
 过渡是一种动画，可以从一种状态过渡到另一种状态，比如按钮从常规状态变成被按下的状态。正常情况下，这种变化是瞬间完成的，至少浏览器会尽快实现这种状态变换。在点击或按下按钮时，浏览器会计算页面的新外观，然后在几毫秒之内完成重绘。而应用过渡时，我们要告诉浏览器完成类似变换要花多长时间，然后浏览器再计算在此期间屏幕上该显示哪些过渡状态。
 
-过渡计时函数。
+过渡会自动双向运行，因此只要状态一反转，反向动画就会运行。
+
+```css
+button {
+  transition: all 150ms;
+}
+button:active {
+  transform: translateY(.25em);
+}
+```
+
+transition 属性是一个简写形式，可以一次设置多个属性。设置过渡的持续时间，以及告诉浏览器在两个状态间切换时动画所有属性。
+
+```css
+button {
+  transition-property: all;
+  transition-duration: .15s;
+}
+
+/* 如果是特定属性变化而不是全部 */
+button {
+  transition: box-shadow .15s, transform .15s;
+}
+
+/* 另一种方式 */
+button {
+  transition-property: transform, box-shadow;
+  transition-duration: .15s;
+}
+```
+
+过渡计时函数。默认情况下，过渡变化的速度并不是每一帧都相同，这种速度的变化在动画属于中叫缓动，能让动画效果更自然和流畅。CSS 通过相应的数学函数控制这些变化，而这些函数由 `transition-timing-function`属性来指定。还有一些关键字代表不同类型的缓动函数。
+- ease
+- liner
+- ease-in
+- ease-out
+- ease-in-out
+
+```css
+button {
+transition: all .25 ease-in;
+/* ...or we could set transition-timing-function: ease-in; */
+}
+```
 
 使用不同的正向和反向过渡。
 
