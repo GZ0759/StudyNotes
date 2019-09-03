@@ -428,6 +428,107 @@ console.log(SubClass instanceof SuperClass); // false
 console.log(SubClass.prototype instanceof SuperClass); // true
 ```
 
+这种类式继承有两个缺点。
+- 由于子类通过其原型 prototype 对父类实例化，继承了父类。所以说父类中的共有属性要是引用类型，就会在子类中被所有实例公用，因此一个子类的实例更改子类原型从父类构造器函数中继承来的共有属性就会直接影响到其他子类。
+- 由于子类实现的继承是靠其原型 prototype 对父类的实例化实现的，因此在创建父类的时候，是无法向父类传递参数的，因而在实例化父类的时候也无法对父类构造函数内的属性进行初始化。
+
+```js
+function SuperClass() {
+    this.books = ["JavaScript", "html", "css"];
+}
+
+function SubClass() {}
+SubClass.prototype = new SuperClass();
+var instance1 = new SubClass();
+var instance2 = new SubClass();
+console.log(instance2.books); // ["JavaScript", "html", "css"]
+instance1.books.push("设计模式");
+console.log(instance2.books); // ["JavaScript", "html", "css", "设计模式"]
+```
+
+创建即继承——构造函数继承。由于这类继承没有涉及原型prototype，所以父类的原型的方法自然不会被子类继承。`SuperClass.call(this, id);`这条语句是构造函数式继承的精华，由于 call 这个方法可以更改函数的作用环境，因此在子类中，对 superClass 调用这个方法就是将子类中的变量在父类中执行一遍，由于父类中是给 this 绑定属性的，因此子类自然也就继承了父类的共有属性。
+
+由于这种类型的继承没有涉及原型 prototype，所以父类的原型方法自然不会被子类继承，而如果要想被子类继承就必须要放在构造函数中，这样创建出来的每个实例都会单独拥有一份而不能共用。
+
+```js
+// 声明父类
+function SuperClass(id) {
+    // 引用类型公有属性
+    this.books = ["JavaScript", "html", "css"];
+    // 值类型公有属性
+    this.id = id;
+}
+
+// 父类声明原型方法
+SuperClass.prototype.showBooks = function() {
+    console.log(this.books);
+};
+
+// 声明子类
+function SubClass(id) {
+    // 继承父类
+    SuperClass.call(this, id);
+}
+
+// 创建第一个子类的示例
+var instance1 = new SubClass(10);
+var instance2 = new SubClass(11);
+
+instance1.books.push("设计模式");
+console.log(instance1.books); // ["JavaScript", "html", "css", "设计模式"];
+console.log(instance1.id); // 10
+console.log(instance2.books); // ["JavaScript", "html", "css"]
+console.log(instance2.id); // 11
+
+instance1.showBooks(); // TypeError
+```
+
+将优点为我所用——组合继承。类式继承是通过子类的原型prototype对父类实例化来实现的，构造函数式继承是通过在子类的构造函数作用环境中执行一次父类的构造函数来实现的，组合继承只要同时做到两点即可。  
+这种继承方式在使用构造函数继承时执行了一遍父类的构造函数，而在实现子类原型的类式继承时又调用了一遍父类构造函数，因此父类构造函数调用了两遍，所以这种继承方式并不是最完美的方式。
+
+```js
+/** 组合式继承 */
+// 声明父类
+function SuperClass() {
+    // 值类型公有属性
+    this.name = name;
+    // 引用类型公有属性
+    this.books = ["html", "css", "JavaScript"];
+}
+
+// 父类原型公有方法
+SuperClass.prototype.getName = function() {
+    console.log(this.name);
+};
+
+// 声明子类
+function SubClass(name, time) {
+    // 构造函数式继承父类属性
+    SuperClass.call(this, name);
+    // 子类中新增公有属性
+    this.time = time;
+}
+
+// 类式继承 子类原型继承父类
+SubClass.prototype = new SuperClass();
+// 子类原型方法
+SubClass.prototype.getTime = function() {
+    console.log(this.time);
+};
+
+// 测试
+var instance1 = new SubClass("js book", 2014);
+instance1.books.push("设计模式");
+console.log(instance1.books); // ["html", "css", "JavaScript", "设计模式"]
+instance1.getName();  // js book;
+instance1.getTime();  // 2014
+
+var instance2 = new SubClass("css book", 2013);
+console.log(instance2.books); // ["html", "css", "JavaScript"]
+instance1.getName();  // css book;
+instance1.getTime();  // 2013
+```
+
 # 第二篇 创建型设计模式
 
 # 第三篇 结构性设计模式
