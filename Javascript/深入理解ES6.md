@@ -1941,8 +1941,52 @@ readFile("example.txt", function(err, contents) {
 });
 ```
 
+虽然这个模式运行效果很不错，但由于嵌套了太多的回调函数，使自己陷入了回调地狱。如果想要实现更复杂的功能，回调函数的局限性同样也会显现出来。
+
+```js
+method1(function(err, result) {
+
+    if (err) {
+        throw err;
+    }
+
+    method2(function(err, result) {
+
+        if (err) {
+            throw err;
+        }
+
+        method3(function(err, result) {
+
+            if (err) {
+                throw err;
+            }
+
+            method4(function(err, result) {
+
+                if (err) {
+                    throw err;
+                }
+
+                method5(result);
+            });
+
+        });
+
+    });
+
+});
+```
 
 ## 11.2 Promise的基础知识
+
+Promise 相当于异步操作结果的占位符，它不会去订阅一个事件，也不会传递一个回调函数给目标函数，而是让函数返回一个 Promise 对象，未来对这个对象的操作完全取决于 Promise 的生命周期。
+
+```js
+// readFile promises to complete at some point in the future
+let promise = readFile("example.txt");
+```
+
 ## 11.3 全局的Promise拒绝处理
 ## 11.4 串联Promise
 ## 11.5 响应多个Promise

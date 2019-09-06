@@ -658,6 +658,101 @@ instance2.getName();  // css book
 instance2.getTime();  // 2013
 ```
 
+### 2.4 老师不止一位——多继承
+
+在 javascript 中继承是依赖于原型 prototype 链实现的，只有一条原型链，所以理论上是不能继承多个父类的。然而 javascript 是灵活的，通过一些技巧方法却可以继承多个对象的属性来实现类似的多继承。
+
+extend 方法是一个浅复制过程，只能复制值类型的属性，对于引用类型的属性无能为力。而在 jquery 等一些框架中实现了深复制，就是将源对象中的引用类型的属性再执行一遍 extend 方法而实现的。
+
+```js
+/** 单继承 属性复制 */
+var extend = function(target, source) {
+    for (var property in source) {
+        // 将对象中的属性复制到目标对象中
+        target[property] = source[property];
+    }
+    // 返回目标对象
+    return target;
+};
+
+// 测试用例
+var book = {
+    name: "JavaScript设计模式",
+    alike: ["css", "html", "JavaScript"]
+};
+var anotherBook = {
+    color: "blue"
+};
+extend(anotherBook, book);
+console.log(anotherBook.name); // JavaScript设计模式
+console.log(anotherBook.alike); // ["css", "html", "JavaScript"]
+
+anotherBook.alike.push("ajax");
+anotherBook.name = "设计模式";
+console.log(anotherBook.name);  // 设计模式
+console.log(anotherBook.alike); // ["css", "html", "JavaScript", "ajax"]
+console.log(book.name); // JavaScript设计模式
+console.log(book.alike);  // ["css", "html", "JavaScript", "ajax"]
+```
+
+mix 方法的作用就是将传入的多个对象的属性复制到源对象中，这样既可实现多个对象的属性的继承。也可以将他绑定到原生对象Object上，这样所有的对象就可以拥有这个方法了。
+
+```js
+/** 多继承 属性复制 */
+var mix = function() {
+    var i = 1, // 从第二个参数开始为被继承的对象
+        leng = arguments.length, // 获取参数长度
+        target = arguments[0], // 第一个参数为目标对象
+        arg; // 缓存参数对象
+    // 遍历被继承的对象
+    for (; i < len; i++) {
+        // 缓存当前对象
+        arg = arguments[i];
+        // 遍历被继承对象中的属性
+        for (var variable in arg) {
+            // 将被继承对象中的属性复制到目标对象中
+            target[variable] = arg[variable];
+        }
+    }
+
+    // 返回目标对象
+    return target;
+};
+
+otherBook.mix(book1, book2);
+console.log(otherBook);
+```
+
+### 2.5 多种调用方式——多态
+
+多态，就是同一个方法多种调用方式。在 javascript 中也是可以实现的，只不过要对传入的参数做判断以实现多种调用方式吧。
+
+```js
+function add() {
+    // 获取参数
+    var arg = arguments,
+        len = arg.length;
+    switch (len) {
+        // 如果没有参数
+        case 0:
+            return 10;
+        case 1:
+            return 10 + arg[0];
+        case 2:
+            return arg[0] + arg[1];
+    }
+}
+
+// 测试用例
+console.log(add()); // 10
+console.log(add(5)); // 15
+console.log(add(6, 7)); // 13
+```
+
+### 我问你答
+
+多继承中通过对对象与方法浅复制实现继承，想一想如何才能实现深复制呢？（浅复制中复制对象的方法对象实质是一种指向引用，所以在深复制中要把对象中的引用类型属性细化成值类型拷贝到目标对象中）
+
 # 第二篇 创建型设计模式
 
 # 第三篇 结构性设计模式
