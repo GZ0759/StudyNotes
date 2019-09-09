@@ -1908,7 +1908,7 @@ button.onclick = function(event) {
 
 事件模型适用于处理简单的交互，然而将多个独立的异步调用连接在一起会使程序更加复杂，因为必须跟踪每个事件的事件目标（如此示例中的button ）。此外，必须要保证事件在添加事件处理程序之后才被触发。
 
-###　回调模式
+### 回调模式
 
 Node.js 通过普及回调函数来改进异步编程模型，回调模式与事件模型类似，异步代码都会在未来的某个时间点执行， 二者的区别是回调模式中被调用的函数是作为参数传入的。
 
@@ -1985,6 +1985,97 @@ Promise 相当于异步操作结果的占位符，它不会去订阅一个事件
 ```js
 // readFile promises to complete at some point in the future
 let promise = readFile("example.txt");
+```
+
+### Promise 的声明周期。
+
+每个 Promise 都会经历一个短暂的声明周期：先是处于进行中（pending）的状态，此时操作尚未完成，所以它也是未处理（unsettled）的；一旦异步操作执行结束，Promise 则变成已处理（settled）的状态。操作结束后，Promise 可能会进入到以下两种状态中的其中一个：
+
+- Fulfilled: Promise 异步操作成功完成。
+- Rejected: 由于程序错误或一些其他原因，Promise 异步操作未能成功完成。
+
+内部属性`[[PromiseState]]`被用来表示 Promise 的 3 种状态："pending", "fulfilled", 和 "rejected"。这个属性不暴露在 Promise 对象上，所以不能以编程的方式检测 Promise 的状态，只有当 Promise 的状态改变时，通过 `then() `方法来采取特定的行动。
+
+所有 Promise 都有 `then()` 方法，它接受两个参数：第一个是当 Promise 的状态变为 fulfilled 时要调用的函数，与异步操作相关的附加数据都会传递给这个完成函数（fulfillment function）；第二个是当 Promise 的状态变为 rejected 时要调用的函数，其与完成时调用的函数类似，所有与失败状态相关的附加数据都会传递给这个拒绝函数（rejection function）。
+
+`then()`的两个参数都是可选的，所以可以按照任意组合的方式来监听 Promise，执行完成或被拒绝都会被响应。
+
+```js
+let promise = readFile("example.txt");
+
+promise.then(function(contents) {
+    // fulfillment
+    console.log(contents);
+}, function(err) {
+    // rejection
+    console.error(err.message);
+});
+
+promise.then(function(contents) {
+    // fulfillment
+    console.log(contents);
+});
+
+promise.then(null, function(err) {
+    // rejection
+    console.error(err.message);
+});
+```
+
+Promise 还有一个 `catch()` 方法，相当于只给其传入拒绝处理程序的 `then()` 方法。
+
+```js
+promise.catch(function(err) {
+    // rejection
+    console.error(err.message);
+});
+
+// is the same as:
+
+promise.then(null, function(err) {
+    // rejection
+    console.error(err.message);
+});
+```
+
+### 创建未完成的 Promise
+
+用 Promise 构造函数可以创建新的 Promise，构造函数只接受一个参数：包含初始化 Promise 代码的执行器（executor）函数。执行器接受两个参数，分别是 `resolve()` 函数和 `reject()` 函数。执行器成功完成时调用 `resolve()` 函数，反之，失败时则调用 `reject()` 函数。
+
+```js
+// Node.js example
+
+let fs = require("fs");
+
+function readFile(filename) {
+    return new Promise(function(resolve, reject) {
+
+        // trigger the asynchronous operation
+        fs.readFile(filename, { encoding: "utf8" }, function(err, contents) {
+
+            // check for errors
+            if (err) {
+                reject(err);
+                return;
+            }
+
+            // the read succeeded
+            resolve(contents);
+
+        });
+    });
+}
+
+let promise = readFile("example.txt");
+
+// listen for both fulfillment and rejection
+promise.then(function(contents) {
+    // fulfillment
+    console.log(contents);
+}, function(err) {
+    // rejection
+    console.error(err.message);
+});
 ```
 
 ## 11.3 全局的Promise拒绝处理
