@@ -388,8 +388,10 @@ var longestCommonPrefix = function(strs) {
   if (!strs.length) {
     return '';
   }
-  let shortStrLength = strs[0].length; // 最短字符串的长度
-  let shortStrPosition = 0; // 最短字符串的位置
+  // 最短字符串的长度
+  let shortStrLength = strs[0].length; 
+  // 最短字符串的位置
+  let shortStrPosition = 0; 
   for (let i = 0; i < strs.length; i++){
     if (strs[i].length < shortStrLength) {
       shortStrLength = strs[i].length;
@@ -397,12 +399,15 @@ var longestCommonPrefix = function(strs) {
     }
   }
   let result = [];
+  // 字符串中字符的位置
   for (let i = 0; i < shortStrLength; i++) {
+    // 字符串的位置
     for (let j = 0; j < strs.length; j++) {
       if (strs[shortStrPosition][i] != strs[j][i]) {
         return result.join('');
       }
       if (j === strs.length - 1) {
+        // 遍历字符串找出最短的一个下标
         result[i] = strs[shortStrPosition][i];
       }
     }
@@ -471,5 +476,112 @@ var longestCommonPrefix = function(strs) {
     };
     return prev.slice(0, i);
   });
+};
+```
+
+# 020 - 有效的括号（valid-parentheses）
+
+* 难度：简单
+* 涉及知识：栈、字符串
+* 题目地址：https://leetcode-cn.com/problems/valid-parentheses/
+* 题目内容：
+
+```
+给定一个只包括 '('，')'，'{'，'}'，'['，']' 的字符串，判断字符串是否有效。
+
+有效字符串需满足：
+
+左括号必须用相同类型的右括号闭合。
+左括号必须以正确的顺序闭合。
+注意空字符串可被认为是有效字符串。
+
+示例 1:
+输入: "()"
+输出: true
+
+示例 2:
+输入: "()[]{}"
+输出: true
+
+示例 3:
+输入: "(]"
+输出: false
+
+示例 4:
+输入: "([)]"
+输出: false
+
+示例 5:
+输入: "{[]}"
+输出: true
+```
+
+## 解法 - 栈
+
+```js
+var isValid = function(s) {
+  let judge = {
+    '[': ']',
+    '(': ')',
+    '{': '}',
+  }
+  let parameter = s.split('');
+  let stack = [];
+  for (let i = 0; i < parameter.length; i++) {
+    // “左”字符类型的栈的最后一个
+    let lastOne = stack[stack.length - 1];
+    if (judge[lastOne] === parameter[i]) {
+      stack.pop();
+    } else {
+      stack.push(parameter[i]);
+    }
+  }
+  if (stack.length == 0) {
+    return true;
+  }
+  return false;
+};
+```
+
+# 021 - 合并两个有序链表（merge-two-sorted-lists）
+
+* 难度：简单
+* 涉及知识：链表
+* 题目地址：https://leetcode-cn.com/problems/merge-two-sorted-lists/
+* 题目内容：
+
+```
+将两个有序链表合并为一个新的有序链表并返回。
+
+新链表是通过拼接给定的两个链表的所有节点组成的。 
+
+示例：
+输入：1->2->4, 1->3->4
+输出：1->1->2->3->4->4
+```
+
+## 解法 - 链表
+
+```js
+// l1 = { val: 1, next: { val: 2, next: { val: 4, next: null } } }
+// l2 = { val: 1, next: { val: 3, next: { val: 5, next: null } } }
+var mergeTwoLists = function (l1, l2) {
+  var mergedHead = { val: -1, next: null },
+    crt = mergedHead;
+  while (l1 && l2) {
+    if (l1.val > l2.val) {
+      crt.next = l2;
+      l2 = l2.next;
+    } else {
+      crt.next = l1;
+      l1 = l1.next;
+    }
+    // 跳转下一个节点
+    crt = crt.next;
+  }
+  // 最后一个
+  crt.next = l1 || l2;
+
+  return mergedHead.next;
 };
 ```
