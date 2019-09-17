@@ -8,7 +8,7 @@
 
 ## 第1章 灵活的语言——JavaScript
 
-### 用对象收编变量。
+### 1.3 用对象收编变量。
 
 可以将全局变量统一放在一个变量里保存，这样就可减少覆盖或被覆盖的风险。
 
@@ -47,7 +47,7 @@ var a = CheckObject();
 a.checkEmail();
 ```
 
-### 类也可以。
+### 1.6 类也可以。
 
 虽然创建了新对象完成了需求，但是它不是一个真正意义上类的创建方式，创建的对象与对象 CheckObject 没有任何关系。如下，把所有的方法放在函数内部，通过 this 定义，每一次通过 new 关键字创建新对象的时候，新创建的对象都会对类的 this 上的属性进行复制，所以这些新创建的对象都会有自己的一套方法。
 
@@ -70,7 +70,7 @@ a.checkEmail();
 a.checkPassword();
 ```
 
-### 一个检测类。
+### 1.7 一个检测类。
 
 但是有时候这么做造成的消耗是很奢侈的，因为这些新创建的对象都有自己的一套方法，需要处理一下。如下，创建出来的对象所拥有的方法就都是一个，因为它们都要依赖 prototype 原型依次寻找，而找到的方法都是同一个，它们都绑定在 CheckObject 对象类的原型上。
 
@@ -105,7 +105,7 @@ c.checkEmail();
 c.checkPassword();
 ```
 
-### 方法还可以这样用。
+### 1.8 方法还可以这样用。
 
 使用该类多次调用了对象，这是可以避免的。可以在声明的每一个方法的末尾处将当前对象返回，在JavaScript 中 this 指向的就是当前对象。
 
@@ -130,7 +130,7 @@ var d = new CheckObjectSix();
 d.checkName().checkEmail().checkPassword();
 ```
 
-### 函数的祖先。
+### 1.9函数的祖先。
 
 prototype.js 是一款 JavaScript 框架，里面为我们方便的封装了很多方法，最大的特点是对原生对象（JavaScript语言为们提供的对象类，如Function、Array、Object等等）的拓展。例如我们想给每一个函数都添加一个检测邮箱的方法可以这么做
 
@@ -754,6 +754,150 @@ console.log(add(6, 7)); // 13
 多继承中通过对对象与方法浅复制实现继承，想一想如何才能实现深复制呢？（浅复制中复制对象的方法对象实质是一种指向引用，所以在深复制中要把对象中的引用类型属性细化成值类型拷贝到目标对象中）
 
 # 第二篇 创建型设计模式
+
+## 第3章 神奇的魔术师——简单工厂模式
+
+简单工厂模式（Simple Factory）：又叫静态工厂方法，由一个工厂对象决定创建某一种产品对象类的实例。主要用来创建同一类对象。
+
+用户输入的内容不符合规范时出现警示框。
+
+```js
+var LoginAlert = function(text) {
+    this.content = text;
+};
+LoginAlert.prototype.show = function() {
+    // 显示警示框
+};
+var userNameAlert = new LoginAlert('用户名不能多于16个字母或数字');
+userNameAlert.show();
+
+var passwordAlert = new LoginAlert();
+passwordAlert.show('输入的密码不正确');
+
+// 还有LoginConfirm、LoginPrompt类
+```
+
+将所有类封装在一个函数里，不用再关注这些对象依赖于哪个基类，这个函数通常也被称为工厂函数，这种模式叫简单工厂模式。
+
+```js
+var PopFactory = function(name) {
+    switch (name) {
+        case 'alert': 
+            return new LoginAlert();
+        case 'confirm': 
+            return new LoginConfirm();
+        case 'prompt': 
+            return new LoginPrompt();
+    }
+}
+```
+
+简单工厂模式的理念就是创建对象，上面的方式是对不同的类实例化，不过除此之外简单工厂模式还可以用来创建相似对象。
+
+```js
+function createPop(type, text) {
+    var o = new Object();
+    o.content = text;
+    o.show = function() {
+        // 显示方法
+    };
+    if(type === 'alert') {
+        // 警示框差异部分
+    }
+    if(type === 'prompt') {
+        // 提示框差异部分
+    }
+    if(type === 'confirm') {
+        // 确定框差异部分
+    }
+    return o;
+}
+
+var userNameAlert = createPop("alert", "用户名只能是26个字母和数字");
+```
+
+第一种是通过类实例化对象创建的，第二种是通过创建一个新对象然后包装增强其属性和功能来实现的。后面寄生方式创建的对象都是一个新的个体，所以他们的方法就不能公用了。
+
+### 我问你答
+
+谈谈简单工厂模式与类的异同点。
+
+## 第4章 给我一张名片——工厂方法模式
+
+工厂方法模式（Factory Method）：通过对产品类的抽象使其创建业务主要负责用于创建多类产品的实例。
+
+工厂方法模式本意是说将实际创建对象工作推迟到子类当中。这样核心类就成了抽象类，在 javascript 中实现工厂方法模式只需要参考它的核心思想即可。所以可以将工厂方法看作是一个实例化对象的工厂类。为了安全起见，我们采用安全模式类，将创建对象的基类放在工厂方法类的原型中即可。
+
+```js
+/** 使用安全模式类可以屏蔽创建类的实例时，忽略使用new关键字造成的错误 */
+var Demo = function() {
+    if (!(this instanceof Demo)) {
+        return new Demo();
+    }
+};
+
+var d = Demo();
+d.show(); // 成功获取！
+```
+
+安全的工厂方法。
+
+```js
+// 安全模式创建的工厂类
+var Factory = function(type, content) {
+    if (this instanceof Factory) {
+        var s = new this[type](content);
+        return s;
+    } else {
+        return new Factory(type, content);
+    }
+};
+
+// 工厂原型中设置创建所有类型数据对象的基类
+Factory.prototype = {
+    Java: function(content) {
+        // 将内容保存在content里面以备以后使用
+        this.content = content;
+        // 创建对象时，通过闭包，直接执行，将内容按需求的样式插入到页面内
+        (function(content) {
+            var div = document.createElement("div");
+            div.innerHTML = content;
+            div.style.color = "green";
+            document.getElementById('container').appendChild(div);
+        })(content);
+    },
+    Php: function(content) {
+        // ......
+    },
+    JavaScript: function(content) {
+        // ......
+    }
+};
+
+var data = [{
+    type: "JavaScript",
+    content: "JavaScript哪家强"
+}, {
+    type: "Java",
+    content: "Java哪家强"
+}, {
+    type: "php",
+    content: "php哪家强"
+}];
+
+for (var i = 0; i < data.length; i++) {
+    Factory(data[i].type, data[i].content);
+}
+```
+
+### 我问你答
+
+通过工厂方法模式为页面创建不同功能的按钮。
+
+## 第5章 出现的都是幻觉——抽象工厂模式
+## 第6章 分即是合——建造者模式
+## 第7章 语言之魂——原型模式
+## 第8章 一个人的寂寞——单例模式
 
 # 第三篇 结构性设计模式
 
