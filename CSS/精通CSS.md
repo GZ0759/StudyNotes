@@ -453,7 +453,7 @@ order 属性的值决定了可伸缩项的绘制次序，但这个值可能会�
 
 ## 10.1 概述
 
-CSS 变换用于在空间中移动物体，而 CSS 过渡和 CSS 关键帧动画用于控制元素随时间推移而变化。在实战中人们通常把它们当成互补的技术来用，加个动画就意味着每秒要改变其外观 60 次，变换可以让卢兰奇根据对变化的描述进行非常高效的计算。过渡和关键帧动画可以让我们以巧妙的方式把这些变化转换成动画效果。
+CSS 变换用于在空间中移动物体，而 CSS 过渡和 CSS 关键帧动画用于控制元素随时间推移而变化。在实战中人们通常把它们当成互补的技术来用，加个动画就意味着每秒要改变其外观 60 次，变换可以让浏览器根据对变化的描述进行非常高效的计算。过渡和关键帧动画可以让我们以巧妙的方式把这些变化转换成动画效果。
 
 关于浏览器支持。变换、过渡和关键帧动画的规范仍然在制定中，但是大多数特性已经在常用浏览器中实现了，除了 IE8 和 Opera Mini。IE9 只支持变换的二维子集，而且要使用 -ms 前缀，并不支持关键帧动画和过渡。在 Webkit 和 Blink 系的浏览器中，变换、过渡和关键帧动画相关的属性都要加 -webkit- 前缀，旧版本的 FIrefox 还需要加 -moz- 前缀。
 
@@ -471,7 +471,7 @@ CSS 变换支持在页面中平移、旋转、变形和缩放元素。此外，�
 
 如上，页面上元素原来的位置仍然保留了像素空间，但元素上的所有点都被畸变场给变换到了新位置。如果给变换后的元素再应用一个外边距，那么因为元素所在的整个据表坐标都会被旋转，不会出现跟未旋转时一样的效果。旋转后的元素也不会妨碍页面其他部分的布局，就好像根本没有变换过一样。
 
-注意，变换会影响页面的溢出。如果变换后的元素超出设置了overflow属性的元素，导致出现了滚动条，则变换后的元素会影响可滚动区域。
+注意，变换会影响页面的溢出。如果变换后的元素超出设置了 overflow 属性的元素，导致出现了滚动条，则变换后的元素会影响可滚动区域。
 
 变换原点。默认情况下，变换是以元素边框盒子的中心作为原点的。控制原点的属性叫transform-origin。可以给transform-origin设1~3个值，分别代表x、y和z轴坐标。如果只给了一个值，则第二个默认是关键字center，与background- position类似。
 
@@ -583,6 +583,11 @@ button:active {
 
 transition 属性是一个简写形式，可以一次设置多个属性。设置过渡的持续时间，以及告诉浏览器在两个状态间切换时动画所有属性。
 
+- transition-property 过渡效果的 CSS 属性的名称
+- transition-duration 完成过渡效果需要的时间
+- transition-timing-function 速度效果的速度曲线
+- transition-delay 过渡效果何时开始
+
 ```css
 button {
   transition-property: all;
@@ -615,13 +620,61 @@ transition: all .25 ease-in;
 }
 ```
 
-使用不同的正向和反向过渡。
+在底层，控制速度变化的数学函数基于三次贝塞尔函数生成，每个关键字都是这些函数带特定参数的简写形式，在 CSS 变换中可以使用`cubic-bezier()`函数作为缓动值。同时，还可以指定过渡中每一步的状态，这非常适合创建订个动画。这里的`tiansition-timing-function`指定为`steps(6, start)`意思就是把过渡过程切分为六个步骤，在么跑一次开始时改变属性。默认情况下，`steps(6)`会在每一步结束时改变属性，但也可以通过传入`start`或`end`作为第二个参数来明确指定。
 
-“黏着”过渡。
+```css
+.hello-box {
+  width: 200px;
+  height: 200px;
+  transition: background-position 1s steps(6, start);
+  background: url(steps-animation.png) no-repeat 0 -1200px;
+}
+.hello-box:hover {
+  background-position: 0 0;
+}
+```
 
-延迟过渡。
+使用不同的正向和反向过渡。有时候，会希望某个方向的过渡快一些，而反方向的过渡慢一些，为此可以定义不同的过渡属性集合：一个针对非悬停状态，另一个针对悬停状态。
 
-过渡的能与不能。
+```css
+.hello {
+  transition: background-position 0s steps(6);
+}
+.hello:hover {
+  transition-duration: .6s;
+}
+```
+
+“黏着”过渡。另一个方法是根本不让过渡方向，为了“黏着”过渡，可以指定一个非常大的持续时间。
+
+```css
+.hello {
+  transition: background-position 9999999999s steps(6);
+}
+.hello:hover {
+  transition-duration: 0.6s;
+}
+```
+
+延迟过渡。通常，过渡会随状态变化立即发生，比如类名被 JavaScript 修改或按钮被按下。但是可以通过 `transition-delay` 属性来推迟过渡的发生。延迟时间也可以是负值，可以一开始就直接跳到过渡的中段。
+
+过渡的能与不能。多数情况下，涉及长度和颜色的都是可以的，这取决于是否有计算值的中间状态。比如100px到200px，红到蓝，但 display 属性的两个值 block 和 none 就没有中间状态。当然，这个规则本身其实也有例外的。
+
+- 可插值。有些属性虽然没有明确的中间值，却可以实现动画。比如 z-index 和 column-count 只接受整数值，浏览器会自动插入整数值。visibility 属性也可以实现过渡动画，浏览器在过渡经过中点后突变为两个终点值中的一个。
+- 过渡到内容高度。对于有些可以实现动画的属性比如 height，只能在数值之间过渡，不能使用像 auto 这样的关键字。
+
+```css
+.js .expando-list {
+  overflow: hidden;
+  transition: all .25s ease-in-out;
+  max-height: 0;
+  opacity: 0;
+}
+.js .is-expanded .expando-list {
+  max-height: 24em;
+  opacity: 1;
+}
+```
 
 ## 10.4 CSS关键帧动画
 
