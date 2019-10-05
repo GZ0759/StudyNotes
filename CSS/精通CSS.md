@@ -246,6 +246,29 @@ CSS 中有几种不同的定位模型，包括浮动、绝对定位和相对定�
 
 # 第四章 网页排版
 
+## 4.1 CSS的基本排版技术
+
+文本颜色（color）。默认情况下，浏览器会把绝大部分文本渲染为黑色。
+
+字体族（font-family）。字体族属性的值是一个备选字体的列表，按优先级从左到右排列。字体列表最后的 serif 和 sans-serif 叫做通用字体族，此外还有 cursive、fantasy 和 monospace 等通用字体族。
+
+字型大小（font-size）与行高（line-height）。几乎所有浏览器中的字型的默认大小都是16像素，除非用户修改过偏好设置。em单位用于字型大小属性时，实际上是一个相应元素继承的字型大小缩放因子。更灵活的方式则是使用 rem 单位，它始终是基于根元素的 em 大小缩放。长度单位还有 mm、cm、in 和 pt 等绝对物理长度，这些主要是给打印样式准备的。
+
+行间距、对齐及行盒子的构造。每行文本都会生成一个行盒子，行盒子还可以进一步拆分成表示行内元素的行内盒子，或者连接两个行内元素的匿名行内盒子。行内盒子中的内容区显示文本，内容区的高度由 font-size 的测量尺度。小写字母“x”的上边界决定了所谓的“x高度”。字形会被摆放在内容区中，每个字形都会在垂直方向上不偏不倚，使得每个行内盒子的底边都默认对齐于靠近底部的共同水平线，这条线叫基线。最后，行高指的是行盒子的总高度，更通俗的叫法是行间距，排版术语叫铅空，就是排字员用来隔开字符行的铅块。除了 line-height，行内盒子也会受到 vertical-align 属性的影响。它的默认值是 baseline ，即子元素的基线与父元素的基线对齐。
+
+文本粗细（font-weight）。可以不用给出变体的名字，而只使用关键字：normal、bold、bolder 和 lighter。也可以直接用数字值，都是 100 的整数倍，最大为 900.
+
+字体样式（font-style）。设置字体样式会从字型中选择斜体显示，前提是存在这个变体，如果不存在，浏览器会通过倾斜体来模拟，但结果同样不会太理想。斜体通常用于表示强调，或者表达一种不同的语气。
+
+大小写变换和小型大写变体。CSS 可以控制英文字母大小写，属性时 text-transform。除了 uppercase 这个值将字母显示为大写，还可以用 lowercase 把所有字母变成小写，用 capitalize 把每个单词的首字母变成大写。CSS 还有一个属性 font-variant，可以通过值 small-caps 把英文文本转换成所谓的“小型大写字母”。
+
+控制字母和单词间距。首先是 word-spacing 属性，功能是控制词间距。类似的，可以通过 letter-spacing 属性来控制字符间的距离。对于小写英文字母的文本来说，人为控制字母间距不是好事。
+
+## 4.2 版心宽度、律动和毛边
+## 4.3 Web字体
+## 4.4 高级排版特性
+## 4.5 文本特效
+
 # 第五章 漂亮的盒子
 
 # 第六章 内容布局
@@ -680,9 +703,195 @@ transition: all .25 ease-in;
 
 CSS过渡是一种隐式动画。换句话说，我们给浏览器指定两个状态，让浏览器在元素从一个状态过渡到另一个状态的过程中，给指定的属性添加动画效果。有时候，动画的范围不仅限于两个状态，或者要实现动画的属性一开始也不一定存在。CSS Animations规范引入了关键帧的概念来帮我们实现这一类动画。此外，关键帧动画还支持对动画时间及方式的控制。
 
+动画与生命的幻象。CSS 动画的语法有点古怪，需要使用`@keyframes`规则来定义并命名一个关键帧序列，然后再通过`animation-*`属性将该序列连接到一个或多个规则。
+
+```css
+/* 将关键帧序列命名为roll */
+@keyframes roll {
+/* from是0%的别名 */
+from {
+  transform: translateX(-100%);
+  animation-timing-function: ease-in-out;
+}
+20% {
+  transform: translateX(-100%) skewX(15deg);
+}
+28% {
+  transform: translateX(-100%) skewX(0deg);
+  animation-timing-function: ease-out;
+}
+45% {
+  transform: translateX(-100%) skewX(-5deg) rotate(20deg) scaleY(1.1);
+  animation-timing-function: ease-in-out;
+}
+50% {
+  transform: translateX(-100%) rotate(45deg) scaleY(1.1);
+  animation-timing-function: ease-in;
+}
+60% {
+  transform: translateX(-100%) rotate(90deg);
+}
+65% {
+  transform: translateX(-100%) rotate(90deg) skewY(10deg);
+}
+70% {
+  transform: translateX(-100%) rotate(90deg) skewY(0deg);
+}
+/* to是100%的别名 */
+to {
+  transform: translateX(-100%) rotate(90deg);
+}
+}
+```
+
+将关键帧块连接到元素。关键帧动画也有相应的属性控制持续时间、延迟和计时函数，而且可控制的方面更多一些。
+
+```css
+.box-inner {
+  animation-name: roll;
+  animation-duration: 1.5s;
+  animation-delay: 1s;
+  animation-iteration-count: 3;
+  animation-timing-function: linear;
+  transform-origin: bottom right;
+  /* 相当于 */
+  animation: roll 1.5s 1s 3 linear;
+  transform-origin: bottom right;
+}
+```
+
+可以让方块原地旋转，但希望方块能从视口外面进入并移动到其最终位置的话，还需要附加到前一个动画里实现。因为想让动画从某个值开始，到初始值结束，所以省略了 to 关键帧。最后一个关键字 backwards，设置的是动画序列的 animation-fill-mode 属性，告诉浏览器在动画运行之前或之后如何处理动画。默认情况下，第一个关键帧中的属性在动画运行之前不会被应用，如果指定了关键字 backwards，那相应的属性就会反向填充，即第一个关键帧中的属性会立即应用，即使动画有延迟或一开始被暂停。关键字 forward 表示应用最后一个关键帧的计算样式。both 表示同时应用正向和反向填充。
+
+```css
+@keyframes shift {
+  from {
+    transform: translateX(-300%);
+  }
+}
+.box-outer {
+  display: inline-block;
+  animation: shift 4.5s 1s steps(3, start) backwards;
+}
+```
+
+```html
+<h1 class="logo">
+<!-- This is the box we are animating -->
+<span class="box-outer"><span class="box-inner"></span></span>
+<span class="logo-box">Box</span><span class="logo-model">model</span>
+</h1>
+```
+
+曲线动画。通常，元素在两点间的位移动画都是走直线的，通过多使用一些关键帧，每一帧稍微改变一点方向，可以实现元素沿曲线运行，但更好的办法是以特殊方式组合旋转和平移。这里没有专门的属性来设置延迟，因此让从 70% 到 100% 这段时间的状态保持相同。同时可以通过 animation-play-state 的值设置为 paused 让动画暂停，该属性默认值为 running。
+
+```css
+@keyframes jump {
+  from {
+    transform: rotate(0) translateX(-170px) rotate(0) scale(1);
+  }
+  70%, 100% {
+    transform: rotate(175deg) translateX(-170px) rotate(-175deg) scale(.5);
+  }
+}
+
+.file-icon {
+  animation: jump 2s ease-in-out infinite;
+}
+```
+
 ## 10.5 三维变换
 
-三维空间中，概念与二维变化一样，只不过要多考虑一个维度，也就是z轴。三维变换允许我们控制坐标系统，旋转、变形、缩放元素，以及向前或向后移动元素。想要实现这些效果，那就要先了解透视的概念。
+三维空间中，概念与二维变化一样，只不过要多考虑一个维度，也就是z轴。三维变换允许我们控制坐标系统，旋转、变形、缩放元素，以及向前或向后移动元素。
+
+透视简介。提到三维，就意味着要在三个轴向上变换。其中 x 轴和 y 轴跟以前一样，而 z 轴表示的是用户到屏幕的方向。屏幕的表面通常被称为 z 平面，也就是 z 轴默认的起点位置。要定义 perspective 透视，先得确定用户距离这个元素有多远。离得越近变化越大，离得越远变化越小。默认的距离是无穷远。因此不会发生明显的变化。可以通过 perspective-origin 属性来修改消失点的位置。在父元素上设置 perspective 属性，额可以让其中所有元素的三维变换共享同样的透视关系。要设置个别元素的透视，可以使用 `perspective()` 函数。
+
+```css
+body {
+  perspective: 800px;
+}
+
+.box {
+  margin: auto;
+  border: 2px solid;
+  width: 100px;
+  height: 100px;
+  transform: rotateY(60deg);
+}
+```
+
+创建三维部件。让用户界面的一部分隐藏在元素的背面，点击按钮这个元素会翻转180度，显示背面的面板。
+
+```html
+<div class="flip-wrapper menu-wrapper">
+  <div class="flip-a menu">
+    <h1 class="menu-heading">Top menu choices</h1>
+    <ol class="menu-list">
+      <li>Capricciosa</li>
+      <!-- ...and so on, all 10 choices -->
+    </ol>
+  </div>
+  <div class="flip-b menu-settings">
+  <!-- the form on the back of the widget goes here. -->
+  </div>
+</div>
+```
+
+首先，在 body 元素上设置透视，并让包装元素成为其后代的定位上下文。然后再针对包装元素的 transform 属性来添加过渡。
+
+```css
+.csstransforms3d body {
+  perspective: 1000px;
+}
+.csstransforms3d .flip-wrapper {
+  position: relative;
+  transition: transform .25s ease-in-out;
+}
+```
+
+接下来让背面对应的元素绝对定位，以便它占据跟前面一样大的空间，同时将其围绕 y 轴翻转 180 度。同时还需要在两面被翻时两面都不可见，以免互相干扰。
+
+```css
+.csstransforms3d .flip-b {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  margin: 0;
+  transform: rotateY(-180deg);
+}
+.csstransforms3d .flip-b,
+.csstransforms3d .flip-a {
+  backface-visibility: hidden;
+}
+```
+
+默认情况下，任何应用给父元素的三维变换都会让子元素上的三维变换失效，并使其变平。通过将包装元素上的 transform-style 属性设置为 preserve-3d，创建一个三维上下文，让子元素的变换与父元素在同一个三维空间中。
+
+```css
+.csstransforms3d .flip-wrapper {
+  position: relative;
+  transition: all .25s ease-in-out;
+  transform-style: preserve-3d; /* default is flat */
+}
+```
+
+最后一步，在用户点击按钮时，通过 JavaScript 切换包装元素上的类名，添加 is-flipped 类会触发整个部件沿 y 轴旋转180度。
+
+```CSS
+.csstransforms3d .flip-wrapper.is-flipped {
+  transform: rotateY(180deg);
+}
+```
+
+高级三维变换。
+
+`rotate3d()`。除了`rorateX()`、`rorateY()`和`rorateZ()`（以及二维版本`rorate()`）这几个单维旋转函数之外，还有一个`rorate3d()`函数，这个函数可以围绕穿越三维空间的任意一条线翻转元素。这个函数接受四个参数：前三个参数分别表示 x 轴、y 轴和 z 轴的向量坐标，最后一个是角度。其中坐标定义了一条线，作为翻转环绕的轴。
+
+```css
+.box {
+  transform: rotate3d(1, 1, 1, 45deg);
+}
+```
+
+与二维矩阵变换类似，也有一个 `matrix3d()` 函数可以组合多个轴向上的平移、缩放、变形和旋转。三维矩阵变换接受十六个参数，以便计算最终呈现在坐标系中的对象。
 
 # 第十一章 高级特效
 
