@@ -265,11 +265,276 @@ CSS 中有几种不同的定位模型，包括浮动、绝对定位和相对定�
 控制字母和单词间距。首先是 word-spacing 属性，功能是控制词间距。类似的，可以通过 letter-spacing 属性来控制字符间的距离。对于小写英文字母的文本来说，人为控制字母间距不是好事。
 
 ## 4.2 版心宽度、律动和毛边
+
+接下来讨论一个对阅读体验有着重大影响的因素：行长。用排版的行话说，就是版心宽度。要控制行长，可以通过设定包含文本的段落、标题等元素的宽度来实现。
+
+文本缩进与对齐。默认情况下，文本时左对齐的，文本左对齐有助于眼睛找到下一行，保持阅读节奏。使用相邻组合设置 text-indent 属性可以设置行首缩进。段落的右边参差不齐，这种参差不齐的样式在排版上也有属于，叫做“毛边”（rag）。居中文本非常适合小型用户界面元素（如按钮）或短标题的布局，因为两端参差不齐会影响可读性。
+
+text-align 属性可以接受下列任意一个关键字值：left、right、center 和 justify。CSS Text Level 3规范还额外定义了几个值，包括 start 和 end。这两个逻辑方向关键字与文本书写模式相对应。
+
+连字符。要想使用自动连字符功能，需要保证两点。首先，在页面 html 元素中设置语言代码：`<html lang="en">`。其次，通过 CSS 将相关元素的 hyphens 属性值设为 auto。
+
+多栏文本。为了有效利用资源，可以将文本分成多栏，并且对每栏的宽度加以限制。这里的 columns 属性时 column-count 和column-width 属性的简写形式。如果同时设置了 column-count 和 column-wi，则前者会作为最大栏数，后者会作为最小栏宽。
+
+```css
+article {
+  max-width: 70em;
+  columns: 20em;
+  column-gap: 1.5em;
+  margin: 0 auto;
+}
+```
+
+可以让某些元素排列到栏内文本流之外，强制它们伸长以达到跨栏的效果`column-span: all`。
+
+垂直律动与基线网络。在印刷设计中所有分栏的间距是统一的，正文文本都会缩进基线网络。
+
 ## 4.3 Web字体
+
+`@font-face`规则。嵌入 Web 字体的关键是`@font-face`规则，通过它可以指定浏览器下载 Web 字体的服务器地址，以及如何在样式表中引用该字体。
+
+```css
+@font-face {
+  font-family: Vollkorn;
+  font-weight: bold;
+  src: url("fonts/vollkorn/Vollkorn-Bold.woff") format('woff');
+}
+h1, h2, h3, h4, h5, h6 {
+  font-family: Vollkorn, Georgia, serif;
+  font-weight: bold;
+}
+```
+
+为了解决旧版本卢兰奇对于字体格式支持的不一致问题，可以在`@font-face`规则中声明多个 src 值，包括`format()`提示。然后，由浏览器来决定到底使用哪种格式。
+
+```css
+@font-face {
+font-family: Vollkorn;
+src: url('fonts/Vollkorn-Regular.eot#?ie') format('embedded-opentype'),
+     url('fonts/Vollkorn-Regular.woff2') format('woff2'),
+     url('fonts/Vollkorn-Regular.woff') format('woff'),
+     url('fonts/Vollkorn-Regular.ttf') format('truetype'),
+     url('fonts/Vollkorn-Regular.svg') format('svg');
+}
+```
+
+字体描述符。字体描述符不是属性，不会改变字体，它们的值只是为了告诉浏览器在什么情况下可以触发使用这个特定字体文件。`@font-face`规则可以接受几个声明，多数是可选的。最常见的列举如下：
+- font-family: 必需，字体族的名称。
+- src: 必需，url或url列表，用于下载字体。
+- font-weight: 可选的字体粗细，默认值为normal。
+- font-style: 可选的字体样式，默认值为normal。
+
+Web 字体给网页设计带来了很大的飞跃，但同时也给网页中的实际应用嗲来了一些麻烦。浏览器需要下载额外的字体文件，演唱用户等待的时间。同时，浏览器在渲染这些字体时也会有一些问题。
+
+在下载 Web 字体的时候，浏览器会有两种方式处理相应的文本内容。第一种方式是在字体下完完成钱暂缓显示文本。第二种方式是在字体下载完成前，浏览器先用一种后辈字体显示内容。
+
 ## 4.4 高级排版特性
+
+微软和 Adobe 在20世纪90年代开发了 OpenType 字体格式，支持在字体文件中包含字体的额外设定和特性，可以在多数浏览器中显示字距调整、连字、替代数字，以及饰线等装饰性比划。
+
 ## 4.5 文本特效
 
+合理使用文本阴影。CSS 的 text-shadow 属性可以用来给文本绘制阴影。对标题或短文本应用阴影，非常适合模拟凸版印刷或者喷涂效果。text-shadow 属性的语法非常直观，需要指定相对于源文本 x 轴和 y 轴的偏移量（可正可负）、模糊距离和颜色值，由空格分隔。除此之外，还可以通过用逗号分隔来给文本添加多组阴影，多组阴影会按先后顺序堆叠。
+
 # 第五章 漂亮的盒子
+
+## 5.1 背景颜色
+
+背景颜色。第二个属性 background 是一个简写属性，通过它可以一次性地设置与背景相关的多个属性，使用这个属性的同时设置了除背景颜色之外的其它值，只不过把其他属性重置为默认值而已。
+
+```css
+body {
+  background-color: #bada55;
+}
+/* We could also set the background color using the shorter background property: */
+body {
+  background: #bada55;
+}
+```
+
+颜色值与不透明度。可以使用十六进制表示指定的颜色。如果三组数字中每组的两位数字相同，可以简写成三位数字，比如`#aabbcc`可以简写为`#abc`。颜色值也可以用预定义的关键字表示，比如 red、black、teal、goldenrod 或 darkseagreen。
+
+RGB值可以用另一种方式表示，即`rgb()`函数式表示法。最近，CSS 规范又提供了新的表示颜色的方法：`hsl()`、`rgba()`、`hsla()`。
+
+其中，末尾的a表示 alpha，是用于控制透明度的阿尔法通道，用以设置颜色的透明程度。除此之外，CSS 也提供另一种方式来控制透明度，那就是 opacity 属性。前者只让背景颜色变得透明，后者让整个元素都变透明了，包括元素中包含的内容。使用 opacity 把一个元素设置为透明后，将无法再让其子元素变得不那么透明。
+
+## 5.2 背景图片
+
+如果图片从页面中去掉之后，网页本身仍然有意义的，那么该图片就可以当作背景图片。否则，该图片就是内容图片，使用一个 img 元素向页面中插入图片。
+
+简单的背景图片示例。首先设置一个灰蓝色的背景图片颜色，再添加一个背景图片。添加默认背景颜色很重要，以防图片加载失败。背景图片的另一个相关属性 background-repeat 的默认值是 repeat，意思是背景图片要沿着 x 轴和 y 轴重复。这个特性对花纹图案的背景图片非常有用，但对照片可能就不合适了。
+
+```css
+.profile-box {
+  width: 100%;
+  height: 600px;
+  background-color: #8Da9cf;
+  background-image: url(img/big-cat.jpg);
+  background-repeat: no-repeat;
+}
+```
+
+加载图片。使用`url()`函数式表示法时，可以使用相对路径，如果路径以一个斜杠开头，如`/img/cat.jpg`，则浏览器会在相对于 CSS 文件所在域的顶级目录的 img 子目录下寻找图片。这里也可以使用绝对路径，也可以在加载图片时不指向文件，二十载样式表中直接嵌入数据，这时候要用刀数据URI（data URI），数据URI的值是文件中二进制编码的数据转换而来的长字符串。使用嵌入的数据URI有好处也有坏处，使用它主要是为了减少 HTTP 请求，但与此同时也会增加样式表提及，因此请慎重使用。
+
+```css
+.egg {
+background-image:
+url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAC gAAAAoAQAAAACkhYXAAAAAjElEQVR4AWP…
+/* ...and so on, random (?) data for a long time.. */
+...4DwIMtzFJs99p9xkOXfsddZ/hlhiY/AYib1vsSbdn+P9vf/1/hv8//oBIIICRz///
+r3sPMqHsPcN9MLvn1s6SfIbbUWFl74HkdTB5rWw/w51nN8vzIbrgJDuI/PMTRP7+ByK//68HkeUg8v3//WjkWwj5G0R+
++w5WyV8P1gsxB2EmwhYAgeerNiRVNyEAAAAASUVORK5CYII=);
+}
+```
+
+图片格式。下面除了 SVG 都是位图格式，位图意味着文件会包含每个像素的数据，拥有内在的维度（宽度和高度），对于细节丰富的图片，比如照片或详细示意图，位图很合适。但很多情况下，真正合适的是 SVG 图形，其文件包含的是如何在屏幕上绘制图形的指令。由于包含的是指令，SVG 土坪可以任意缩放，也可以在任意像素密度的屏幕上清晰呈现。换句话说，SVG 图形永远不会丢失，也不会出现“锯齿”。
+
+- JPEG: 一种位图格式，有损压缩，压缩率越高，损失细节越多，适合照片。不支持透明度设置。
+- PNG: 一种位图格式，无损压缩，不适合照片（因为文件会很大），适合图标、插图等小尺寸文件。支持阿尔法透明度设置。
+- GIT: 早期的位图格式，与PNG类似，主要用于动图。严格来说，除动图外，GIT 基本已被 PNG 取代。实际上 PNG 也支持动图，只是浏览器支持落后。GIF支持透明度设置，但不支持阿尔法分极，因此边缘会有“锯齿”。
+- SVG: 一种矢量图形格式，本身也是一种标记语言。SVG 可以直接嵌入到网页中，也可以作为资源引用；可以作为背景图，也可以作为内容图。
+- WebP: 谷歌开的一种新图片格式，结合了 JPEG 的高压缩率和 PNG 的阿尔法透明特性。
+
+## 5.3 背景图片语法
+
+背景位置。背景图片的位置由 background-position 属性控制。该属性既可以使用关键字，也可以使用像素、em或百分比。最简单的情况下，可以只给两个值：一个表示相对于左侧的偏移量，一个表示相对于顶部的偏移量。
+
+使用关键字来对齐背景图片，要在 x 轴上用 left、center 或 right，在 y 轴 上用 top、center 或 bottom。顺序一般都是先 x 轴后 y 轴。
+
+背景图片定位这一限制一直是很多问题的来源。新语法允许给 background-position 添加外边空声明，先写边界关键字，再写长度值。
+
+```css
+.link-with-icon {
+  padding-right: 2em;
+  background-image: url(img/icon.png);
+  background-repeat: no-repeat;
+  background-position: right 1em top 50%;
+}
+```
+
+使用另一个 CSS 特性，可以实现与前面示例相同的效果，但支持度可能更高一点，就是`calc()`函数式表示法。
+
+```css
+.link-with-icon {
+  /* other properties omitted for brevity. */
+  background-position: calc(100% - 1em) 50%;
+}
+```
+
+背景裁剪与原点。默认情况下，背景图片是绘制在元素边框以内的。如果把背景图片定位到边框下方，而边框又被设置为半透明，那么图片边缘就会出现半透明的边框。使用 background-clip 属性可以改变这个行为，这个属性的默认值为`background-clip: border-box`，将其该我I padding-box 就可以把图片裁剪到内边距盒子以内。而 content-box 值则会把图片位于内边距及其之外的部分裁剪掉。
+
+即使 background-clip 属性的值改变了，背景定位默认的远点仍然在代码中声明的内边距盒子（padding-box）的左上角。因此也可以使用 background-origin 属性来控制原点的位置，这个属性也接受盒模型相关的几个值：border-box、padding-box、content-box。
+
+背景附着。背景会附着在指定元素的后面，如果滚动页面，那么背景也会随着元素移动而移动，可以通过 background-attachment 属性改变这种行为。除了 fixed 和默认值 scroll 外，还可以把 background-attachment 设为 local。
+
+背景大小。如果在小屏幕上，图片会被剪切掉，如果屏幕特别大，那么元素边缘可能出现空白。要避免上述情况，不管页面如何缩放，都让内容保持自己的宽高比，就要使用 background-size 属性。
+
+```css
+.profile-box {
+  background-size: 400px 240px;
+}
+```
+
+要让图片随元素缩放而缩放，则必须使用百分比值。不过要注意，百分比值并不是相对于图片固有大小，而是相对于容器大小。更好的做法是只给一个维度设置百分比值，另一个维度设置关键字值 auto。
+
+同时，可以把背景大小设置为 contain，这个值可以让浏览器尽可能保持图片最大化，同时不改变图片的宽高比。与前面的例子类似，但浏览器会自动决定哪一边使用 auto 值，哪一边使用100%。
+
+然后，可以将背景大小设置为 cover，意思是图片会缩放以保证覆盖元素的每一个像素，同时不会变形。
+
+背景属性简写。因为两个长度值即可以用于背景位置、又可以用于背景大小，所以两个都需要声明，而且首先声明背景位置，后声明背景大小，值之间以斜杠（/）分割。因为`*-box`关键字即可以用于背景原点，又可以用于背景裁剪，所以有如下规则。
+- 如果只存在一个`*-box`关键字，则背景原点和背景裁剪都取这个关键字值。
+- 如果存在两个`*-box`关键字，则第一个设置背景原点，第二个设置背景裁剪。
+
+```css
+.profile-box {
+  /* background: background-position / background-size background-origin background-clip */
+  background: url(img/cat.jpg) 50% 50% / cover no-repeat padding-box content-box #bada55;
+}
+```
+
+## 5.4 多重背景
+
+现在支持一个元素设置多个背景图片，每个背景属性也就有了相应的多值语法，多个值由逗号分隔。多重背景按声明的先后次序自上而下堆叠，最先声明的在最上面，最后声明的在最下面，背景颜色在所有背景图片下面。
+
+```css
+.multi-bg {
+background-image: url(img/spades.png), url(img/hearts.png),
+                  url(img/diamonds.png), url(clubs.png);
+  background-position: left top, right top, left bottom, right bottom;
+  background-repeat: no-repeat, no-repeat, no-repeat, no-repeat;
+  background-color: pink;
+}
+```
+
+## 5.5 边框与圆角
+
+边框半径：圆角。圆角是一个锦上添花的效果，并不对可用性构成影响。因此，使用标准属性就好。给 border-radius 属性一个长度值，就可以一次性设置盒子四个角的半径。
+
+```css
+.box {
+  border-radius: 0.5em;
+}
+/* 顺时针方向一次列出各个角 */
+.box {
+  border-radius: 0.5em 2em 0.5em 2em;
+}
+/* 把每个角设置成非对称的 */
+.box {
+  border-radius: 2em .5em 1em .5em / .5em 2em .5em 1em;
+}
+.box {
+  border-radius: 2em 3em; /* repeated for bottom right and bottom left. */
+}
+```
+
+创建正圆和胶囊形状。圆角半径可不仅可以使用长度值，还可以使用百分比值。在给 border-radius 指定百分比值时，x 轴和 y 轴分别相对于元素的宽度和高度来计算实际值。如果两个圆角的弧线香蕉，那么两个轴向就会分别缩小半径，知道圆弧不再相交。对于方形元素的对称圆角而言，任何大于50%的值都会得到圆形。而对于圆角半径相同的一个矩形元素而言，可能是一个椭圆形，因为圆角是按照高度或长度碧丽缩小的。
+
+圆角弧线为保证不相交会自动缩小半径。因此，在创建胶囊两头的半圆形时，可以故意指定一个比所需半径大的值，以得到半圆形。
+
+```css
+.obrund {
+  border-radius: 999em; /* arbitrarily very large length */
+}
+```
+
+边框图片。border-image 属性支持把一张图片切成九块，浏览器会自动把每一块应用到指定的边框位置，中间的一块回被忽略，不过也可以改变这个行为。也可以告诉浏览器如何覆盖边框，可以拉伸、重复或补白。
+
+## 5.6 盒阴影
+
+CSS 属性 box-shadow 可以给元素添加阴影，而且这个属性浏览器基本都支持。头两个值表示 x 轴和 y 轴的便宜；第三个值表示模糊半径（阴影边界的模糊程度）；最后是颜色，使用`rgba()`。而且阴影的形状跟盒子的圆角也是一致的。
+
+扩展半径：调整阴影大小。box-shadow 比 text-shadow 稍微灵活一点，比如可以在模糊半径后面再加一个值，表示扩展半径，用于扩展阴影的大小。这个值默认为0，即阴影与所属元素一样大。增大这个值，阴影相应增大，负值导致阴影缩小。
+
+```css
+.larger-shadow {
+  box-shadow: 1em 1em .5em .5em rgba(0, 0, 0, 0.3);
+}
+.smaller-shadow {
+  box-shadow: 1em 1em .5em -.5em rgba(0, 0, 0, 0.3);
+}
+```
+
+box-shadow 的另一个比 text-shadow 更为灵活之处是可以使用 insert 关键字。这个关键字可以为元素应用内阴影，即把元素当成投影表面，可以创造一种背景被“镂空”的效果。
+
+```css
+.profile-box {
+  box-shadow: inset 0 -.5em .5em rgba(0, 0, 0, 0.3);
+}
+```
+
+多阴影。与 text-shadow 类似，也可以给一个元素应用多个阴影，以逗号分隔多组值。考虑到 border 只能给元素添加一个边框，可以利用这个技术给元素添加更多“边框”。通过给阴影一个值为0的模糊半径，就可以通过不同的扩展半径来生成多个类似边框的区域。由于阴影不影响布局，这个效果又类似 outline 属性。
+
+```css
+.profile-photo {
+box-shadow: 0 0 0 10px #1C318D,
+            0 0 0 20px #3955C7,
+            0 0 0 30px #546DC7,
+            0 0 0 40px #7284D8;
+}
+```
+
+## 5.7 渐变
+## 5.8 为嵌入图片和元素添加样式
 
 # 第六章 内容布局
 
