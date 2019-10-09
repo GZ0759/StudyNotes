@@ -15,7 +15,7 @@ HTML 简史。CSS的初衷是把跟 HTML 混在一起的表现性标记提取出
 
 语义化标记是优秀 HTML 文档的基础。语义就是以系统方式表示的含义。语义化标记意味着在正确的地方使用正确的元素。
 
-ID和class属性。为元素添加 ID 和 class 属性不一定能给文档增加含义或结构，这两个属性只是一种让其他因素来操作与解析文档的通用手段。CSS 也可以利用这一手段。
+ID 和 class 属性。为元素添加 ID 和 class 属性不一定能给文档增加含义或结构，这两个属性只是一种让其他因素来操作与解析文档的通用手段。CSS 也可以利用这一手段。
 
 HTML5 新增了一批结构化元素。增加这些新元素是为了在 HTML 文档中创建逻辑性区块。除了 main 之外，所有其他新元素都可以在一个文档中多次出现，以便让机器和人更好地理解文档。
 - section
@@ -26,7 +26,7 @@ HTML5 新增了一批结构化元素。增加这些新元素是为了在 HTML �
 - aside
 - main
 
-div和span。在没有合适的语义元素的情况下，div 仍然是给内容分组的一个不错的选择。额外添加的无语义 div 元素对保证代码的清晰和可维护性非常重要。
+div 和 span。在没有合适的语义元素的情况下，div 仍然是给内容分组的一个不错的选择。额外添加的无语义 div 元素对保证代码的清晰和可维护性非常重要。
 
 重新定义的表现性文本元素。今天，`<i>`元素用于下标识与周围内容不一样的内容，一般在排版上会显示为斜体。`<b>`元素的含义和`<i>`几乎一样，只是针对习惯上标记为粗体的内容。这两个元素与`<em>`及`<strong>`的区别在于：它们没有任何强调自己所包含内容的意味。多数情况下，应该选择`<em>`和`<strong>`，因为它们是用来强调及重点强调内容的语义正确的选择。
 
@@ -46,11 +46,11 @@ div和span。在没有合适的语义元素的情况下，div 仍然是给内容
 
 ```css
 p {
-color: black;
+  color: black;
 }
 
 blockquote p {
-padding-left: 2em;
+  padding-left: 2em;
 }
 ```
 
@@ -58,11 +58,11 @@ padding-left: 2em;
 
 ```css
 #intro {
-font-weight: bold;
+  font-weight: bold;
 }
 
 .date-posted {
-color: #ccc;
+  color: #ccc;
 }
 ```
 
@@ -72,14 +72,14 @@ color: #ccc;
 
 ```css
 #nav > li {
-background: url(folder.png) no-repeat left top;
-padding-left: 20px;
+  background: url(folder.png) no-repeat left top;
+  padding-left: 20px;
 }
 
 h2 + p {
-font-size: 1.4em;
-font-weight: bold;
-color: #777;
+  font-size: 1.4em;
+  font-weight: bold;
+  color: #777;
 }
 ```
 
@@ -87,8 +87,8 @@ color: #777;
 
 ```css
 * {
-padding: 0;
-margin: 0;
+  padding: 0;
+  margin: 0;
 }
 ```
 
@@ -126,8 +126,8 @@ a[hreflang|=en]
 
 ```css
 .chapter::before {
-content: '”';
-font-size: 15em;
+  content: '”';
+  font-size: 15em;
 }
 ```
 
@@ -201,8 +201,8 @@ color: #666 !important;
 <!-- 直接放置style -->
 <style>
 body {
-font-family: Avenir Next, SegoeUI, sans-serif;
-color: grey;
+  font-family: Avenir Next, SegoeUI, sans-serif;
+  color: grey;
 }
 </style>
 
@@ -389,9 +389,9 @@ body {
 
 颜色值与不透明度。可以使用十六进制表示指定的颜色。如果三组数字中每组的两位数字相同，可以简写成三位数字，比如`#aabbcc`可以简写为`#abc`。颜色值也可以用预定义的关键字表示，比如 red、black、teal、goldenrod 或 darkseagreen。
 
-RGB值可以用另一种方式表示，即`rgb()`函数式表示法。最近，CSS 规范又提供了新的表示颜色的方法：`hsl()`、`rgba()`、`hsla()`。
+RGB 值可以用另一种方式表示，即`rgb()`函数式表示法。最近，CSS 规范又提供了新的表示颜色的方法：`hsl()`、`rgba()`、`hsla()`。
 
-其中，末尾的a表示 alpha，是用于控制透明度的阿尔法通道，用以设置颜色的透明程度。除此之外，CSS 也提供另一种方式来控制透明度，那就是 opacity 属性。前者只让背景颜色变得透明，后者让整个元素都变透明了，包括元素中包含的内容。使用 opacity 把一个元素设置为透明后，将无法再让其子元素变得不那么透明。
+其中，末尾的 a 表示 alpha，是用于控制透明度的阿尔法通道，用以设置颜色的透明程度。除此之外，CSS 也提供另一种方式来控制透明度，那就是 opacity 属性。前者只让背景颜色变得透明，后者让整个元素都变透明了，包括元素中包含的内容。使用 opacity 把一个元素设置为透明后，将无法再让其子元素变得不那么透明。
 
 ## 5.2 背景图片
 
@@ -536,7 +536,7 @@ background-image: url(img/spades.png), url(img/hearts.png),
 
 ## 5.6 盒阴影
 
-CSS 属性 box-shadow 可以给元素添加阴影，而且这个属性浏览器基本都支持。头两个值表示 x 轴和 y 轴的便宜；第三个值表示模糊半径（阴影边界的模糊程度）；最后是颜色，使用`rgba()`。而且阴影的形状跟盒子的圆角也是一致的。
+CSS 属性 box-shadow 可以给元素添加阴影，而且这个属性浏览器基本都支持。头两个值表示 x 轴和 y 轴的便宜；第三个值表示模糊半径（阴影边界的模糊程度）；最后一个是颜色，使用`rgba()`。而且阴影的形状跟盒子的圆角也是一致的。
 
 扩展半径：调整阴影大小。box-shadow 比 text-shadow 稍微灵活一点，比如可以在模糊半径后面再加一个值，表示扩展半径，用于扩展阴影的大小。这个值默认为0，即阴影与所属元素一样大。增大这个值，阴影相应增大，负值导致阴影缩小。
 
