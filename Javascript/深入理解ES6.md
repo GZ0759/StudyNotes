@@ -1214,9 +1214,61 @@ console.log(person["last name"]);       // "Zakas"
 
 从 ES5 开始，避免创建新的全局方法和在 Object.prototype 上创建新的方法。当开发者想向标准添加新方法时，他们会找一个适当的现有对象，让这些方法可用。结果，当没有其他合适的对象时，全局 Object 对象会收到越来越多的对象方法。而在 ES6 中，为了使某些任务更易完成，在全局 Object 对象上引入了一些新方法。
 
-Object.is()方法......
+### 4.3.1 Object.is()方法
 
-Object.assign()方法......
+ES 6 引入了 Object.is() 方法来弥补全等运算符的不准确运算。这个方法接受两个参数，如果这两个参数类型相同且具有相同的值，则返回 true。
+
+```js
+console.log(+0 == -0);              // true
+console.log(+0 === -0);             // true
+console.log(Object.is(+0, -0));     // false
+
+console.log(NaN == NaN);            // false
+console.log(NaN === NaN);           // false
+console.log(Object.is(NaN, NaN));   // true
+
+console.log(5 == 5);                // true
+console.log(5 == "5");              // true
+console.log(5 === 5);               // true
+console.log(5 === "5");             // false
+console.log(Object.is(5, 5));       // true
+console.log(Object.is(5, "5"));     // false
+```
+
+### 4.3.2 Object.assign()方法
+
+混合（Mixin）是 JavaScript 中实现对象组合最流行的一种模式。在一个 mixin 方法中，一个对象接收来自另一个对象的属性和方法，许多 JavaScript 库中都有类似的 mixin 方法。
+
+```js
+function mixin(receiver, supplier) {
+    Object.keys(supplier).forEach(function(key) {
+        receiver[key] = supplier[key];
+    });
+
+    return receiver;
+}
+```
+
+这种混合模式非常流行，因而 ECMAScript 6 添加了 `Object.assign()` 方法来实现相同的功能，这个方法接受一个接收对象和任意数量的源对象，最终返回接收对象。`mixin()` 方法使用赋值操作符（assignment operator） `=`来复制相关属性，却不能复制访问器属性到接收对象中，因此最终添加的方法弃用 mixin 而改用 assign 作为方法名 。
+
+`Object.assign()`方法可以接受任意数量的源对象，并按指定的顺序将属性复制到接收对象中。所以如果多个源对象具有同名属性，则排位靠后的源对象会覆盖排位靠前的。
+
+```js
+var receiver = {};
+
+Object.assign(receiver,
+    {
+        type: "js",
+        name: "file.js"
+    },
+    {
+        type: "css"
+    }
+);
+
+console.log(receiver.type);     // "css"
+console.log(receiver.name);     // "file.js"
+```
 
 ## 4.4 重复的对象字面量属性
 
