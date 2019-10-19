@@ -1944,9 +1944,9 @@ of() 方法和 from() 方法。此外，所有定型数组都含有静态 of() �
 
 # 第十一章 Promise与异步编程
 
-javascript 有很多强大的功能，其中一个是它可以轻松地搞定异步编程。作为一 门为 Web 而生的语言 ，它从一开始就需要能够响应异步的用户交互，如点击和按键操作等。 Node.js 用回调函数代替了事件，使异步编程在 JavaScript 领域更加流行。
+javascript 有很多强大的功能，其中一个是它可以轻松地搞定异步编程。作为一门为 Web 而生的语言 ，它从一开始就需要能够响应异步的用户交互，如点击和按键操作等。 Node.js 用回调函数代替了事件，使异步编程在 JavaScript 领域更加流行。
 
-Promise 可以实现其他语言中类似 Future 和 Deferred 一样的功能，是另一种异步编程的选择，它既可以像事件和回调函数一样指定稍后执行的代码，也可以明确指示代码是否成功执行。基于这些成功或失败的状态，为了让代码更容易理解和调试，可以链式地编写 Promise 。
+Promise 可以实现其他语言中类似 Future 和 Deferred 一样的功能，是另一种异步编程的选择，它既可以像事件和回调函数一样指定稍后执行的代码，也可以明确指示代码是否成功执行。基于这些成功或失败的状态，为了让代码更容易理解和调试，可以链式地编写 Promise。
 
 ## 11.1 异步编程的背景知识
 
@@ -1954,7 +1954,7 @@ javascript 引擎是基于单线程（Single-threaded） 事件循环的概念�
 
 JavaScript 引擎同一时刻只能执行一个代码块，所以需要跟踪即将运行的代码，那些代码被放在一个任务队列（job queue）中，每当一段代码准备执行时，都会被添加到任务队列。每当 JavaScript 引擎中的一段代码结束执行，事件循环（event loop）会执行队列中的下一个任务，它是 JavaScript 引擎中的一段程序，负责监控代码执行井管理任务队列。请记住，队列中的任务会从第一个一直执行到最后一个。
 
-### 事件模型
+### 11.1.1 事件模型
 
 用户点击按钮或按下键盘上的按键会触发类似 onclick 这样的事件，它会向任务队列添加一个新任务来响应用户的操作，这是 JavaScript 中最基础的异步编程形式，直到事件触发时才执行事件处理程序，且执行时上下文与定义时的相同 。
 
@@ -1965,9 +1965,9 @@ button.onclick = function(event) {
 };
 ```
 
-事件模型适用于处理简单的交互，然而将多个独立的异步调用连接在一起会使程序更加复杂，因为必须跟踪每个事件的事件目标（如此示例中的button ）。此外，必须要保证事件在添加事件处理程序之后才被触发。
+事件模型适用于处理简单的交互，然而将多个独立的异步调用连接在一起会使程序更加复杂，因为必须跟踪每个事件的事件目标（如示例中的button ）。此外，必须要保证事件在添加事件处理程序之后才被触发。
 
-### 回调模式
+### 11.1.2 回调模式
 
 Node.js 通过普及回调函数来改进异步编程模型，回调模式与事件模型类似，异步代码都会在未来的某个时间点执行， 二者的区别是回调模式中被调用的函数是作为参数传入的。
 
@@ -1981,6 +1981,8 @@ readFile("example.txt", function(err, contents) {
 });
 console.log("Hi!");
 ```
+
+调用 `readFile()` 函数后，console.log("Hi")语句立即执行并输出“Hi” ；当 `readFile()` 结束执行时，会向任务队列的末尾添加一个新任务，该任务包含回调函数及相应的参数，当队列前面所有的任务完成后才执行该任务，并最终执行 `console.log(content)`输出所有内容 。
 
 回调模式比事件模型更灵活，因为相比之下，通过回调模式链接多个调用更容易。 
 
@@ -2046,16 +2048,16 @@ Promise 相当于异步操作结果的占位符，它不会去订阅一个事件
 let promise = readFile("example.txt");
 ```
 
-### Promise 的声明周期。
+### 11.2.1 Promise 的声明周期。
 
 每个 Promise 都会经历一个短暂的声明周期：先是处于进行中（pending）的状态，此时操作尚未完成，所以它也是未处理（unsettled）的；一旦异步操作执行结束，Promise 则变成已处理（settled）的状态。操作结束后，Promise 可能会进入到以下两种状态中的其中一个：
 
 - Fulfilled: Promise 异步操作成功完成。
 - Rejected: 由于程序错误或一些其他原因，Promise 异步操作未能成功完成。
 
-内部属性`[[PromiseState]]`被用来表示 Promise 的 3 种状态："pending", "fulfilled", 和 "rejected"。这个属性不暴露在 Promise 对象上，所以不能以编程的方式检测 Promise 的状态，只有当 Promise 的状态改变时，通过 `then() `方法来采取特定的行动。
+内部属性`[[PromiseState]]`被用来表示 Promise 的 3 种状态："pending", "fulfilled", 和 "rejected"。这个属性不暴露在 Promise 对象上，所以不能以编程的方式检测 Promise 的状态，只有当 Promise 的状态改变时，通过`then() `方法来采取特定的行动。
 
-所有 Promise 都有 `then()` 方法，它接受两个参数：第一个是当 Promise 的状态变为 fulfilled 时要调用的函数，与异步操作相关的附加数据都会传递给这个完成函数（fulfillment function）；第二个是当 Promise 的状态变为 rejected 时要调用的函数，其与完成时调用的函数类似，所有与失败状态相关的附加数据都会传递给这个拒绝函数（rejection function）。
+所有 Promise 都有`then()`方法，它接受两个参数：第一个是当 Promise 的状态变为 fulfilled 时要调用的函数，与异步操作相关的附加数据都会传递给这个完成函数（fulfillment function）；第二个是当 Promise 的状态变为 rejected 时要调用的函数，其与完成时调用的函数类似，所有与失败状态相关的附加数据都会传递给这个拒绝函数（rejection function）。
 
 `then()`的两个参数都是可选的，所以可以按照任意组合的方式来监听 Promise，执行完成或被拒绝都会被响应。
 
@@ -2097,7 +2099,7 @@ promise.then(null, function(err) {
 });
 ```
 
-### 创建未完成的 Promise
+### 11.2.2 创建未完成的 Promise
 
 用 Promise 构造函数可以创建新的 Promise，构造函数只接受一个参数：包含初始化 Promise 代码的执行器（executor）函数。执行器接受两个参数，分别是 `resolve()` 函数和 `reject()` 函数。执行器成功完成时调用 `resolve()` 函数，反之，失败时则调用 `reject()` 函数。
 
@@ -2137,7 +2139,269 @@ promise.then(function(contents) {
 });
 ```
 
+在执行器中，无论是调用 `resolve()` 还是`reject()`，都会向任务队列中添加一个任务来解决这个 Promise。像`setTimeout()`或`setInterval()`函数一样，这种是名为任务编排的过程。当编排任务时，会向任务队列中添加一个新任务，并明确指定将任务延后执行。
+
+```js
+// 500ms 之后将这个函数添加到任务队列
+setTimeout(function() {
+    console.log("Timeout");
+}, 500)
+
+console.log("Hi!");
+
+// Hi!
+// Timeout
+```
+
+Promise 具有类似的工作原理，Promise的执行器会立即执行，然后才执行后续流程中的代码。调用 `resolve()`后回触发一个异步操作，传入`then()`和`catch()`方法的函数会被添加到任务队列中并异步执行。请注意，即使在代码中`then()`调用位于`console.log()`之前，但其与执行器不同，它并没有立即执行。这是因为，完成处理程序和拒绝程序总是在执行器完成后被添加到任务队列的末尾。
+
+```js
+let promise = new Promise(function(resolve, reject) {
+    console.log("Promise");
+    resolve();
+});
+
+promise.then(function() {
+    console.log("Resolved.");
+});
+
+console.log("Hi!");
+
+// Promise
+// Hi!
+// Resolved
+```
+
+### 11.2.3 创建已处理的Promise
+
+创建未处理 Promise 的最好方法是使用 Promise 的构造函数，这是由于 Promise 执行器具有动态性。但如果你想用 Promise 来表示一个己知值，则编排一个只是简单地给 `resolve()` 函数传值的任务并无实际意义，反倒是可以用以下两种方法根据特定的值来创建己解决 Promise。
+
+使用`Promise.resolve()`。`Promise.resolve()` 方法只接受一个参数并返回一个完成态的 Promise，也就是说不会有任务编排的过程，而且需要向 Promise 添加一至多个完成处理程序来获取值。
+
+```js
+let promise = Promise.resolve(42);
+
+promise.then(function(value) {
+    console.log(value);         // 42
+});
+```
+
+使用`Promise.reject()`。你也可以使用 `Promise.reject()` 方法来创建已拒绝的 Promise，它与`Promise.resolve()`很像，唯一的区别是创建出来的是拒绝态的 Promise。
+
+```js
+let promise = Promise.reject(42);
+
+promise.catch(function(value) {
+    console.log(value);         // 42
+});
+```
+
+如果向 `Promise.resolve()` 或 `Promise.reject()` 方法传递了一个 promise，那么该 promise 不会做任何修改而直接返回。
+
+
+
+非 promise 的 thenable 对象。`Promise.resolve()` 和 `Promise.reject()` 都可以接收非 promise 的 thenable 对象作为参数。在传递它之后，这些方法在调用 `then()`之后创建一个新的 promise ，并在`then()`函数中被调用。
+
+拥有`then()`方法且接受 resolve 和 reject 这两个参数的普通对象就是非 Promise 的 Thenable 对象。
+
+```js
+let thenable = {
+    then: function(resolve, reject) {
+        resolve(42);
+    }
+};
+```
+
+Thenable 对象和 Promise 之间只有`then()`方法这一个相似之处，可以调用`Promise.resolve()`方法将 Thenable 对象转变成一个已完成 Promise。
+
+```js
+let thenable = {
+    then: function(resolve, reject) {
+        resolve(42);
+    }
+};
+
+// Promise.resolve()调用的是 thenable.then()
+// then()方法内部调用了 resolve(42)
+let p1 = Promise.resolve(thenable);
+p1.then(function(value) {
+    console.log(value);     // 42
+});
+```
+
+可以使用与`Promise.resolve()`相同的过程创建基于 Thenable 对象的己拒
+绝 Promise。
+
+```js
+let thenable = {
+    then: function(resolve, reject) {
+        reject(42);
+    }
+};
+
+let p1 = Promise.resolve(thenable);
+p1.catch(function(value) {
+    console.log(value);     // 42
+});
+```
+
+有了`Proimse.resolve()` 和 `Promise.reject()` 方法，可以更轻松地处理非 promise 的 thenable 对象。很多库都在 promise 被引入 ECMAScript 6 之前就使用了 thenable，所以将 thenable 转化为正式 promise 的向后兼容特性对于这些已存在的库来讲至关重要。如果不确定一个对象是否是 promise，最好的办法就是将该对象传入 `Promise.resolve()` 或 `Promise.reject()`，因为 promise 在这些函数中不会发生任何改变。
+
+### 11.2.4 执行器错误
+
+如果执行器内部抛出一个错误，则Promise 的拒绝处理程序就会被调用。
+
+```js
+let promise = new Promise(function(resolve, reject) {
+    throw new Error("Explosion!");
+});
+
+promise.catch(function(error) {
+    console.log(error.message);     // "Explosion!"
+});
+```
+
+该段代码中，执行函数故意抛出了一个错误。实际上每个执行函数内部都包含一个隐式的 try-catch，因此内部的错误会被捕捉并传入拒绝处理程序。该例等效如下：
+
+```js
+let promise = new Promise(function(resolve, reject) {
+    try {
+        throw new Error("Explosion!");
+    } catch (ex) {
+        reject(ex);
+    }
+});
+
+promise.catch(function(error) {
+    console.log(error.message);     // "Explosion!"
+});
+```
+
+为了简化这种常见的用例，执行器会捕获所有抛出的错误，但只有当拒绝处理程序时才会记录执行器中抛出的错误，否则错误会被忽略掉。在早期的时候，开发人员使用 Promise 会遇到这种问题，后来 JavaScript 环境提供了一些捕获已拒绝 Promise 的钩子函数来解决这个问题。
+
 ## 11.3 全局的Promise拒绝处理
+
+有关 Promise 的其中一个最争议的问题是，如果没有拒绝处理程序的情况下拒绝一个 Promise，那么不会提示失败信息。这是 JavaScript 语言中唯一一处没有强制报错的地方，一些人认为这是标准中最大的缺陷。Promise 的特性决定了很难检测一个 Promise 是否被处理过。
+
+```js
+// Promise被立即拒绝
+let rejected = Promise.reject(42);
+
+// 在当前，rejected 未被处理
+
+// 一段时间过后...
+rejected.catch(function(value) {
+    // 现在 rejected 已被处理
+    console.log(value);
+});
+```
+
+任何时候都可以调用`then()`或`catch()`方法，无论 Promise 是否已解决这两个方法都可以正常运行，但这样就很难知道一个 Promise 何时被处理。
+
+### 11.3.1 Node.js环境的拒绝处理
+
+在 Node.js 中，处理 Promise 拒绝时会触发 Process 对象中的两个事件。设计这些事件是用来识别那些被拒绝却又没被处理过的 Promise 的。
+
+- unhandledRejection 在一个事件循环中，当 Promise 被拒绝，并且没有提供拒绝处理程序时被调用。
+- rejectionHandled 在一个事件循环后，当 Promise 被拒绝，并且拥有提供拒绝处理程序时被调用。
+
+拒绝原因（通常是一个错误对象）及被拒绝的 Promise 作为参数被传入 unhandledRejection 事件处理程序中。
+
+```js
+let rejected;
+
+process.on("unhandledRejection", function(reason, promise) {
+    console.log(reason.message);            // "Explosion!"
+    console.log(rejected === promise);      // true
+});
+
+rejected = Promise.reject(new Error("Explosion!"));
+```
+
+
+rejectionHandled 事件处理程序只有一个参数，就是被拒绝的 Promise。这里的 rejectionHandled 事件在拒绝处理程序最后被调用时触发，如果在创建 rejected 之后直接添加拒绝处理程序，那么该事件不会被触发，因为 rejected 创建的过程与拒绝处理程序的调用在同一个事件循环中，此时 rejectionHandled 事件尚未生效。
+
+```js
+let rejected;
+
+process.on("rejectionHandled", function(promise) {
+    console.log(rejected === promise);              // true
+});
+
+rejected = Promise.reject(new Error("Explosion!"));
+
+// 等待 rejection 处理的添加
+setTimeout(function() {
+    rejected.catch(function(value) {
+        console.log(value.message);     // "Explosion!"
+    });
+}, 1000);
+```
+
+通过事件 rejectionHandled 和事件 unhandledRejection 将潜在未处理的拒绝存储为一个列表，等待一段时间后检查列表便能够正确地跟踪潜在的未处理拒绝。例如下面这个简单的未处理拒绝跟踪器。
+
+```js
+let possiblyUnhandledRejections = new Map();
+
+// 当 rejection 未处理时，将其添加到 map 中
+process.on("unhandledRejection", function(reason, promise) {
+    possiblyUnhandledRejections.set(promise, reason);
+});
+
+process.on("rejectionHandled", function(promise) {
+    possiblyUnhandledRejections.delete(promise);
+});
+
+setInterval(function() {
+
+    possiblyUnhandledRejections.forEach(function(reason, promise) {
+        console.log(reason.message ? reason.message : reason);
+
+        // 做一些什么来处理这些拒绝
+        handleRejection(promise, reason);
+    });
+
+    possiblyUnhandledRejections.clear();
+
+}, 60000);
+```
+
+### 11.3.2 浏览器环境的拒绝处理
+
+浏览器也是通过触发两个事件来识别未处理的拒绝的，虽然这些事件实在 window 对象上出发的，但实际上与 Node.js 中的完全等效。
+
+- unhandledrejection 在一个事件循环中，当 Promise 被拒绝，并且没有提供拒绝处理程序时被调用。
+- rejectionHandled 在一个事件循环后，当 Promise 被拒绝，并且拥有提供拒绝处理程序时被调用。
+
+在 Node.js 实现中，事件处理程序接受多个独立参数：而在浏览器中，事件处理程序接受一个有以下属性的事件对象作为参数：
+- type 事件名称（“unhandledrejection”或“rejectionHandled”）
+- promise 被拒绝的 Promise 对象
+- reason 来自 Promise 的拒绝值
+
+浏览器实现中的另一处不同是，在两个事件中都可以使用拒绝值（reason）。
+
+```js
+let rejected;
+
+// 也可以使用addEventListener('unhandledrejection')
+window.onunhandledrejection = function(event) {
+    console.log(event.type);                    // "unhandledrejection"
+    console.log(event.reason.message);          // "Explosion!"
+    console.log(rejected === event.promise);    // true
+});
+
+// 也可以使用addEventListener('rejectionhandled')
+window.onrejectionhandled = function(event) {
+    console.log(event.type);                    // "rejectionhandled"
+    console.log(event.reason.message);          // "Explosion!"
+    console.log(rejected === event.promise);    // true
+});
+
+rejected = Promise.reject(new Error("Explosion!"));
+```
+
+在浏览器中，跟踪未处理的代码也与 Node.js 中的非常相似。二者都是用同样的方法将 Promise 及其处理值存储在 Map 集合中，然后再进行检索。唯一的区别是，在事件处理程序中检索信息的位置不同。
+
 ## 11.4 串联Promise
 ## 11.5 响应多个Promise
 ## 11.6 自Promise继承
