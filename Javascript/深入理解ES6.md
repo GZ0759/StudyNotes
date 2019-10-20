@@ -3,50 +3,6 @@
 > 2017年7月第一版  
 > [开源图书地址](https://github.com/nzakas/understandinges6)
 
-<!-- TOC -->
-
-- [第一章 块级作用域绑定](#第一章-块级作用域绑定)
-  - [1.1 var声明及变量提升（Hoisting）机制](#11-var声明及变量提升hoisting机制)
-  - [1.2 块级声明](#12-块级声明)
-  - [1.3 循环中的块作用域绑定](#13-循环中的块作用域绑定)
-  - [1.4 全局块作用域绑定](#14-全局块作用域绑定)
-  - [1.5 块级绑定最佳实践的进化](#15-块级绑定最佳实践的进化)
-- [第二章 字符串和正则表达式](#第二章-字符串和正则表达式)
-  - [2.1 更好的Unicode支持](#21-更好的Unicode支持)
-  - [2.2 其他字符串变更](#22-其他字符串变更)
-  - [2.3 其他正则表达式语法变更](#23-其他正则表达式语法变更)
-  - [2.4 模板字面量](#24-模板字面量)
-- [第三章 函数](#第三章-函数)
-  - [3.1 函数形参的默认值](#31-函数形参的默认值)
-  - [3.2 处理无命名参数](#32-处理无命名参数)
-  - [3.3 增强的Function构造函数](#33-增强的function构造函数)
-  - [3.4 展开运算符](#34-展开运算符)
-  - [3.5 name属性](#35-name属性)
-  - [3.6 明确函数的多重用途](#36-明确函数的多重用途)
-  - [3.7块级函数](#37块级函数)
-  - [3.8 箭头函数](#38-箭头函数)
-  - [3.9 尾调用优化](#39-尾调用优化)
-- [第四章 扩展对象的功能性](#第四章-扩展对象的功能性)
-  - [4.1 对象类别](#41-对象类别)
-  - [4.2 对象字面量语法扩展](#42-对象字面量语法扩展)
-  - [4.3 新增方法](#43-新增方法)
-  - [4.4 重复的对象字面量属性](#44-重复的对象字面量属性)
-  - [4.5 自由属性枚举顺序](#45-自由属性枚举顺序)
-- [第五章 解构：使数据访问更便捷](#第五章-解构使数据访问更便捷)
-  - [5.1 为何使用解构功能](#51-为何使用解构功能)
-  - [5.2 对象解构](#52-对象解构)
-  - [5.3 数组解构](#53-数组解构)
-  - [5.4 混合解构](#54-混合解构)
-  - [5.5 解构参数](#55-解构参数)
-- [第十章 改进数组功能](#第十章-改进的数组功能)
-  - [10.1 创建数组](#101-创建数组)
-  - [10.2 为所有数组添加的新方法](#102-为所有数组添加的新方法)
-  - [10.3 完型数组](#103-完型数组)
-  - [10.4 定型数组与普通数组的相似之处](#104-定型数组与普通数组的相似之处)
-  - [10.5 定型数组与普通数组的差别](#105-定型数组与普通数组的差别)
-
-<!-- /TOC -->
-
 # 第一章 块级作用域绑定
 
 ## 1.1 var声明及变量提升机制
@@ -1624,6 +1580,80 @@ function setCookie(name, value, { secure, path, domain, expires } = {}) {
 }
 ```
 
+# 第6章 Symbol和Symbol属性
+## 6.1 创建Symbol
+## 6.2 Symbol的使用方法
+## 6.3 Symbol共享体系
+## 6.4 Symbol与类型强制转换
+## 6.5 Symbol属性检索
+## 6.6 通过well-known Symbol暴露内部操作
+### 6.6.1 Symbol.hasInstance方法
+### 6.6.1 Symbol.isConcatSpreadable属性
+### 6.6.1 Symbol.match、Symbol.replace、Symbol.search和Symbol.split属性
+### 6.6.1 Symbol.toPrimitive方法
+### 6.6.1 Symbol.toStringTag属性
+### 6.6.1 Symbol.unscopables属性
+
+# 第7章 Set集合与Map集合
+## 7.1 ECMAScript 5中的Set集合与Map集合
+## 7.2 该解决方案的一些问题
+## 7.3 ECMAScript 6中的Set集合
+### 7.3.1 创建Set集合并添加元素
+### 7.3.2 移除元素
+### 7.3.3 Set集合的forEach()方法
+### 7.3.4 将Set集合转换为数组
+### 7.3.5 Weak Set集合
+## 7.4 ECMAScript 6中的Map集合
+### 7.4.1 Map集合支持的方法
+### 7.4.2 Map集合的初始化方法
+### 7.4.3 Map集合的forEach()方法
+### 7.4.4 Weak Map集合
+
+# 第8章 迭代器（Iterator）和生成器（Generator）
+## 8.1 循环语句的问题
+## 8.2 什么是迭代器
+## 8.3 什么是生成器
+### 8.3.1 生成器函数表达式
+### 8.3.2 生成器对象的方法
+## 8.4 可迭代对象和for-of循环
+### 8.4.1 访问默认迭代器
+### 8.4.2 创建可迭代对象
+## 8.5 内建迭代器
+### 8.5.1 集合对象迭代器
+### 8.5.2 字符串迭代器
+### 8.5.3 NodeList迭代器
+## 8.6 展开运算符与非数组可迭代对象
+## 8.7 高级迭代器功能
+### 8.7.1 给迭代器传递参数
+### 8.7.2 在迭代器中抛出错误
+### 8.7.3 生成器返回语句
+### 8.7.4 委托生成器
+## 8.8 异步任务执行
+### 8.8.1 简单任务执行器
+### 8.8.2 向任务执行器传递数据
+### 8.8.3 异步任务执行器
+
+# 第9章 JavaScript中的类 181
+## 9.1 ECMAScript 5中的近类结构 181
+## 9.2 类的声明 182
+### 9.2.1 基本的类声明语法 182
+### 9.2.2 为何使用类语法 184
+## 9.3 类表达式 186
+### 9.3.1 基本的类表达式语法 186
+### 9.3.2 命名类表达式 187
+## 9.4 作为一等公民的类 189
+## 9.5 访问器属性 190
+## 9.6 可计算成员名称 192
+## 9.7 生成器方法 193
+## 9.8 静态成员 195
+## 9.9 继承与派生类 196
+### 9.9.1 类方法遮蔽 199
+### 9.9.2 静态成员继承 199
+### 9.9.3 派生自表达式的类 200
+### 9.9.4 内建对象的继承 203
+### 9.9.5 Symbol.species属性 205
+## 9.10 在类的构造函数中使用new.target 208
+
 # 第十章 改进的数组功能
 
 数组是一种基础的 JavaScript 对象，随着时间推进，JavaScript 中的其他部分一直在演进，而直到 ECMAScript5 标准才为数组对象引入一些新方法来简化使用。ECMAScript6 标准继续改进数组，添加了很多新功能。
@@ -2403,6 +2433,385 @@ rejected = Promise.reject(new Error("Explosion!"));
 在浏览器中，跟踪未处理的代码也与 Node.js 中的非常相似。二者都是用同样的方法将 Promise 及其处理值存储在 Map 集合中，然后再进行检索。唯一的区别是，在事件处理程序中检索信息的位置不同。
 
 ## 11.4 串联Promise
+
+每次调用`then()`或`catch()`方法时实际上创建并返回了另一个 Promise，只有当第一个 Promise 完成或被拒绝后，第二个才会被解决。
+
+```js
+let p1 = new Promise(function(resolve, reject) {
+    resolve(42);
+});
+
+p1.then(function(value) {
+    console.log(value);
+}).then(function() {
+    console.log("Finished");
+});
+```
+
+### 14.1 捕获错误
+
+完成处理程序或拒绝处理程序中可能发生错误，而 Promise 链可以用来捕获这些错误。务必在 Promise 链的末尾留有一个拒绝处理程序以确保能够正确处理所有可能发生的错误。
+
+```js
+let p1 = new Promise(function(resolve, reject) {
+    resolve(42);
+});
+
+p1.then(function(value) {
+    throw new Error("Boom!");
+}).catch(function(error) {
+    console.log(error.message);     // "Boom!"
+});
+```
+
+### 14.2 Promise链的返回值
+
+Promise 链的另一个重要特性是可以给下游 Promise 传递数据，从执行器`resolve()`处理程序到 Promise 完成处理程序的数据传递，如果在完成处理程序中指定一个返回值，则可以沿着这条链继续传递数据。在拒绝处理程序中也可以做相同的事情。
+
+```js
+let p1 = new Promise(function(resolve, reject) {
+    resolve(42);
+});
+
+p1.then(function(value) {
+    console.log(value);         // "42"
+    return value + 1;
+}).then(function(value) {
+    console.log(value);         // "43"
+});
+```
+
+### 14.3 在Promise链中返回Promise
+
+在 Promise 间可以通过完成和拒绝程序中返回的原始值来传递数据。但是如果返回的是 Promise 对象，会通过一个额外的步骤来确定下一步怎么走。关于这个模式，最需要注意的是，第二个完成处理程序被添加到了第三个 Promise 而不是 p2 中。
+
+```js
+let p1 = new Promise(function(resolve, reject) {
+    resolve(42);
+});
+
+let p2 = new Promise(function(resolve, reject) {
+    resolve(43);
+});
+
+p1.then(function(value) {
+    // 首个完成处理程序
+    console.log(value);     // 42
+    return p2;
+}).then(function(value) {
+    // 第二个完成处理程序
+    console.log(value);     // 43
+});
+```
+
+在完成或拒绝处理程序中返回 Thenable 对象不会改变 Promise 执行器的执行时机，先定义的 Promise 的执行器先执行，后定义的后执行。
+
+```js
+let p1 = new Promise(function(resolve, reject) {
+    resolve(42);
+});
+
+p1.then(function(value) {
+    console.log(value);     // 42
+
+    // create a new promise
+    let p2 = new Promise(function(resolve, reject) {
+        resolve(43);
+    });
+
+    return p2
+}).then(function(value) {
+    console.log(value);     // 43
+});
+```
+
 ## 11.5 响应多个Promise
+
+如果想通过监听多个 Promise 来决定下一步的操作，则可以使用 ES6 提供的`Promise.all()`和`Promise.race()`方法来监听多个 Promise。
+
+### 11.5.1 Promise.all()方法
+
+`Promise.all()`方法只接受一个参数并返回一个 Promise，该参数是一个含有多个受监视 Promise 的可迭代对象（如数组），只有当可迭代对象中所有 Promise 都被解决后返回的 Promise 才会被解决，只有当可迭代对象中所有 Promise 都被完成后返回的 Promise 才会被完成。完成处理程序的结果是一个包含每个解决值的数组，这些值按照 Promise 被解决的顺序存储，所以可以根据每个结果来匹配对应的 Promise。
+
+```js
+et p1 = new Promise(function(resolve, reject) {
+    resolve(42);
+});
+
+let p2 = new Promise(function(resolve, reject) {
+    resolve(43);
+});
+
+let p3 = new Promise(function(resolve, reject) {
+    resolve(44);
+});
+
+let p4 = Promise.all([p1, p2, p3]);
+
+p4.then(function(value) {
+    console.log(Array.isArray(value));  // true
+    console.log(value[0]);              // 42
+    console.log(value[1]);              // 43
+    console.log(value[2]);              // 44
+});
+```
+
+所有传入`Promise.all()`方法的 Promise 只要有一个被拒绝，那么返回的 Promise 没等所有 Promise 都完成就立即被拒绝了。而拒绝处理程序总是接受一个值而非数组，该值来自被拒绝 Promise 的拒绝值。
+
+```js
+let p1 = new Promise(function(resolve, reject) {
+    resolve(42);
+});
+
+let p2 = new Promise(function(resolve, reject) {
+    reject(43);
+});
+
+let p3 = new Promise(function(resolve, reject) {
+    resolve(44);
+});
+
+let p4 = Promise.all([p1, p2, p3]);
+
+p4.catch(function(value) {
+    console.log(Array.isArray(value))   // false
+    console.log(value);                 // 43
+});
+```
+
+### 11.5.2 Promise.race()方法
+
+`Promise.race()`方法监听多个 Promise 的方法稍有不同，它也接受多个受监视 Promise 的可迭代对象作为唯一参数并返回一个 Promise，但只要有一个 Promise 被解决返回的 Promise 就被解决，无须等到所有 Promise 都被完成。一旦数组中的某个 Promise 被完成，`Promise.race()`方法也会像`Promise.all()`方法一样返回一个特定的 Promise。
+
+```js
+let p1 = Promise.resolve(42);
+
+let p2 = new Promise(function(resolve, reject) {
+    resolve(43);
+});
+
+let p3 = new Promise(function(resolve, reject) {
+    resolve(44);
+});
+
+let p4 = Promise.race([p1, p2, p3]);
+
+// p1创建时便处于已完成状态，其他 Promise 用于编排任务
+p4.then(function(value) {
+    console.log(value);     // 42
+});
+```
+
+实际上，传给`Promise.race()`方法的 Promise 会进行竞选，以决出哪一个先被解决，如果先解决的是已完成 Promise，则返回已完成 Promise；如果已解决的是已拒绝 Promise，则返回已拒绝 Promise。
+
+```js
+let p1 = new Promise(function(resolve, reject) {
+    setTimeout(function() {
+        resolve(42);
+    }, 100);
+});
+
+let p2 = new Promise(function(resolve, reject) {
+    reject(43);
+});
+
+let p3 = new Promise(function(resolve, reject) {
+    setTimeout(function() {
+        resolve(44);
+    }, 50);
+});
+
+let p4 = Promise.race([p1, p2, p3]);
+
+p4.catch(function(value) {
+    console.log(value);     // 43
+});
+```
+
 ## 11.6 自Promise继承
+
+Promise 与其他内建类型一样，也可以作为基类派生其他类，所以可以定义自己的 Promise 变量来扩展内建 Promise 的功能。
+
+```js
+// 既支持`then()`、`catch()`方法
+// 又支持`sucess()`、`failure()`方法
+class MyPromise extends Promise {
+    // 使用默认的构造函数
+    success(resolve, reject) {
+        return this.then(resolve, reject);
+    }
+    failure(reject) {
+        return this.catch(reject);
+    }
+}
+
+let promise = new MyPromise(function(resolve, reject) {
+    resolve(42);
+});
+
+promise.success(function(value) {
+    console.log(value);             // 42
+}).failure(function(value) {
+    console.log(value);
+});
+```
+
 ## 11.7 基于Promise的异步任务执行
+
+在异步任务执行中可以使用生成器。但是这个实现会导致一些问题。首先，在返回值是函数的函数中包裹每一个函数会令人感到困惑。其次，无法区分用作任务执行器回调函数的返回值和一个不是回调函数的返回值。
+
+```js
+let fs = require("fs");
+
+function run(taskDef) {
+
+    // 创建迭代器，使其在作用域其它部分可用。
+    let task = taskDef();
+    // 任务开始
+    let result = task.next();
+    // 递归函数并持续调用 next()
+    function step() {
+        // 如果还有工作要做
+        if (!result.done) {
+            if (typeof result.value === "function") {
+                result.value(function(err, data) {
+                    if (err) {
+                        result = task.throw(err);
+                        return;
+                    }
+
+                    result = task.next(data);
+                    step();
+                });
+            } else {
+                result = task.next(result.value);
+                step();
+            }
+
+        }
+    }
+    // 开始递归
+    step();
+
+}
+
+// 定义任务运行器需要的函数
+function readFile(filename) {
+    return function(callback) {
+        fs.readFile(filename, callback);
+    };
+}
+
+// 运行一个任务
+run(function*() {
+    let contents = yield readFile("config.json");
+    doSomethingWith(contents);
+    console.log("Done");
+});
+```
+
+只要每个异步操作都返回 Promise，就可以极大地简化并通用化这个过程。
+
+```js
+let fs = require("fs");
+
+function run(taskDef) {
+    // 创建迭代器
+    let task = taskDef();
+    // 开始任务
+    let result = task.next();
+    // 使用函数递归进行迭代
+    (function step() {
+        // 如果还有工作要做
+        if (!result.done) {
+
+            // 使用 resolve() 来简化 promise 的处理
+            let promise = Promise.resolve(result.value);
+            promise.then(function(value) {
+                result = task.next(value);
+                step();
+            }).catch(function(error) {
+                result = task.throw(error);
+                step();
+            });
+        }
+    }());
+}
+
+// 定义任务运行器需要的函数
+function readFile(filename) {
+    return new Promise(function(resolve, reject) {
+        fs.readFile(filename, function(err, contents) {
+            if (err) {
+                reject(err);
+            } else {
+                resolve(contents);
+            }
+        });
+    });
+}
+
+// 运行一个任务
+run(function*() {
+    let contents = yield readFile("config.json");
+    doSomethingWith(contents);
+    console.log("Done");
+});
+```
+
+# 第12章 代理（Proxy）和反射（Reflection）API
+## 12.1 数组问题
+## 12.2 代理和反射
+## 12.3 创建一个简单的代理
+## 12.4 使用set陷阱验证属性
+## 12.5 用get陷阱验证对象结构（Object Shape）
+## 12.6 使用has陷阱隐藏已有属性
+## 12.7 用deleteProperty陷阱防止删除属性
+## 12.8 原型代理陷阱
+-- 原型代理陷阱的运行机制
+-- 为什么有两组方法
+## 12.9 对象可扩展性陷阱
+-- 两个基础示例
+-- 重复的可扩展性方法
+## 12.10 属性描述符陷阱
+-- 给Object.defineProperty()添加限制
+-- 描述符对象限制
+-- 重复的描述符方法
+## 12.11 ownKeys陷阱
+## 12.12 函数代理中的apply和construct陷阱
+-- 验证函数参数
+-- 不用new调用构造函数
+-- 覆写抽象基类构造函数
+-- 可调用的类构造函数
+## 12.13 可撤销代理
+## 12.14 解决数组问题
+-- 检测数组索引
+-- 添加新元素时增加length的值
+-- 减少length的值来删除元素
+-- 实现MyArray类
+## 12.15 将代理用作原型
+-- 在原型上使用get陷阱
+-- 在原型上使用set陷阱
+-- 在原型上使用has陷阱
+-- 将代理用作类的原型
+
+# 第13章 用模块封装代码
+## 13.1 什么是模块
+## 13.2 导出的基本语法
+## 13.3 导入的基本语法
+-- 导入单个绑定
+-- 导入多个绑定
+-- 导入整个模块
+-- 导入绑定的一个微妙怪异之处
+## 13.4 导出和导入时重命名
+## 13.5 模块的默认值
+-- 导出默认值
+-- 导入默认值
+## 13.6 重新导出一个绑定
+## 13.7 无绑定导入
+## 13.8 加载模块
+-- 在Web浏览器中使用模块
+-- 浏览器模块说明符解析
+
+# 附录A ECMAScript 6中较小的改动
+# 附录B 了解ECMAScript 7（2016）
