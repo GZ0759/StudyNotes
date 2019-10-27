@@ -2796,22 +2796,365 @@ run(function*() {
 -- 将代理用作类的原型
 
 # 第13章 用模块封装代码
+
+在 ECMAScript 6 以前，在应用程序的每一个JavaScript 中定义的一切都共享一个全局作用域。JavaScript 用“共享一切”的方法加载代码，这是该语言中最容易出错且令人感到困惑的地方。
+
 ## 13.1 什么是模块
+
+模块是自动运行在严格模式下并且没有办法退出运行的 JavaScript 代码。与共享一切框架相反的是，在模块顶部创建变量不会自动被添加到全局共享作用域，这个变量仅在模块的顶级作用域中存在，而且模块必须导出一些外部代码可以访问的元素，如变量或函数。模块也可以从其他模块导入绑定。
+
+另外两个模块的特性与作用域关系不大，但也很重要。
+- 在模块的顶部， this 的值是 undefined
+- 模块不支持 HTML 风格的代码注释
+
+脚本，也就是任何不是模块的 JavaScript 代码，则缺少这些特性。模块和其他 JavaScript 代码之间的差异可能乍一看不起眼，但是它们代表了 JavaScript 代码加载和求值的一个重要变化。模块真正的魔力所在是仅导出和导入需要的绑定，而不是将所用东西都放到一个文件。只有很好地理解了导出和导入才能理解模块与脚本的区别。
+
 ## 13.2 导出的基本语法
+
+可以用 export 关键字将一部分己发布的代码暴露给其他模块，在最简单的用例中，可以将 export 放在任何变量、函数或类声明的前面，以将它们从模块导出。
+
+```js
+// 导出数据
+export var color = "red";
+export let name = "Nicholas";
+export const magicNumber = 7;
+
+// 导出函数
+export function sum(num1, num2) {
+    return num1 + num1;
+}
+
+// 导出类
+export class Rectangle {
+    constructor(length, width) {
+        this.length = length;
+        this.width = width;
+    }
+}
+
+// 该函数是模块私有的
+function subtract(num1, num2) {
+    return num1 - num2;
+}
+
+// 定义一个函数...
+function multiply(num1, num2) {
+    return num1 * num2;
+}
+
+// ...并在之后导出它
+export multiply;
+```
+
+除了 export 关键字外，每一个声明与脚本中的一模一样。因为导出的函数和类声明需要有一个名称，所以代码中的每一个函数或类也确实有这个名称。除非用 default 关键字，否则不能用这个语法导出匿名函数或类。
+
+另外，`multiply()`函数在定义时没有马上导出。由于不必总是导出声明，可以导出引用，因此这段代码可以运行。但是，这个示例并未导出`subtract()`函数，任何未显式导出的变量、函数或类都是模块私有的，无法从模块外部访问。
+
 ## 13.3 导入的基本语法
--- 导入单个绑定
--- 导入多个绑定
--- 导入整个模块
--- 导入绑定的一个微妙怪异之处
+
+从模块中导出的功能可以通过 import 关键字在另一个模块中访问，import 语句的两个部分分别是：要导入的标识符应当从哪个模块导入。
+
+```js
+import { identifier1, identifier2 } from "./example.js";
+```
+
+import 后面的大括号表示从给定模块导入的绑定（binding），关键字 from 表示从哪个模块导入给定的绑定，该模块由表示模块路径的字符串指定（被称作模块说明符）。浏览器使用的路径格式与传给`<script>`元素的相同，也就是说，必须把文件扩展名也加上。另一方面，Node.js 则遵循基于文件系统前缀区分本地文件和包的惯例。例如，example 是一个包而 .／example.js 是一个本地文件 。
+
+导入绑定的列表看起来与解构对象很相似，但它不是。
+
+当从模块中导入一个绑定时，它就好像使用 const 定义的一样，无法定义另一个同名变量 （包括导入另一个同名绑定），也无法在 import 时语句前使用标识符或改变绑定的值。
+
+### 13.3.1 导入单个绑定
+
+可以导入并以多种方式使用这个模块中的绑定。例如，可以只导入一个标识符。但是如果尝试赋新值，结果是抛出一个错误，因为不能给导入的绑定重新赋值。
+
+为了最好地兼容多个浏览器和 Node.js 环境，一定要在字符串之前包含`/`、`./`或`../`来表示要导入的文件。
+
+```js
+// 只引入单个标识符
+import { sum } from "./example.js";
+
+console.log(sum(1, 2));     // 3
+
+sum = 1;        // 错误
+```
+
+### 13.3.2 导入多个绑定
+
+如果想从模块中导入多个绑定，则可以明确地将它们列出来。
+
+```js
+// 引入多个绑定
+import { sum, multiply, magicNumber } from "./example.js";
+console.log(sum(1, magicNumber));   // 8
+console.log(multiply(1, 2));        // 2
+```
+
+### 13.3.3 导入整个模块
+
+特殊情况下，可以导入整个模块作为一个单一的对象，然后所有的导出都可以作为对象的属性使用。
+
+```js
+// 导入一些
+import * as example from "./example.js";
+console.log(example.sum(1, example.magicNumber));  // 8
+console.log(example.multiply(1, 2));  // 2
+```
+
+但是无论在 import 语句中把一个模块写了多少次，该模块将只执行一次。导入模块的代码执行后，在实例化的模块被保存在内存中，只要另一个 import 语句引用它就可以重复使用，这些模块将使用相同的模块实例。
+
+模块语法的限制。export 和import 的一种重要的限制是，它们必须在其他语句和函数之外使用。同样，只能在木块顶部使用。出于同样的原因，不能动态地导入或导出模块。export和 import 关键字被设计成静态的。
+
+### 13.3.4 导入绑定的一个微妙怪异之处
+
+ECMAScript 6 的 import 语句为变量、函数和类创建的是只读绑定，而不是像正常变量一样简单地引用原始绑定。标识符只有在被导出的模块中可以修改，即使是导入绑定的模块也无法更改绑定的值。
+
+```js
+export var name = "Nicholas";
+export function setName(newName) {
+    name = newName;
+}
+```
+
+```js
+import { name, setName } from "./example.js";
+
+console.log(name);       // "Nicholas"
+setName("Greg");
+console.log(name);       // "Greg"
+
+name = "Nicholas";       // 错误
+```
+
 ## 13.4 导出和导入时重命名
+
+有时候，从一个模块导入变量、函数或者类时，我们可能不希望使用它们的原始名称。幸运的是，可以在导出过程和导入过程中改变导出元素的名称。  
+
+假设要使用不同的名称导出一个函数，则可以用 as 关键字来指定函数在模块外应该被称为什么名称。
+
+```js
+function sum(num1, num2) {
+    return num1 + num2;
+}
+
+export { sum as add };
+```
+
+如果模块想使用不同的名称来导入函数。
+
+```js
+import { add as sum } from "./example.js";
+console.log(typeof add);            // "undefined"
+console.log(sum(1, 2));             // 3
+```
+
 ## 13.5 模块的默认值
--- 导出默认值
--- 导入默认值
+
+由于在诸如 CommonJS （浏览器外的另一个 JavaScript 使用规范）的其他模块系统中，从模块中导出和导入默认值是一个常见的做法，该语法被进行了优化。模块的默认值指的是通过 default 关键宇指定的单个变量、函数或类，只能为每个模块设置一个默认的导出值，导出时多次使用 default 关键字是一个语法错误。
+
+### 13.5.1 导出默认值
+
+在重命名导出时标识符 default 具有特殊含义，用来指示模块的默认值。由于 default 是 JavaScript 中的默认关键字，因此不能将其用于变量、函数或类的名称：但是，可以将其用作属性名称。所以用 default 来重命名模块是为了尽可能与非默认导出的定义一致。如果想在一条导出语句中同时指定多个导出（包括默认导出），这个语法非常有用。
+
+```js
+// 函数被模块所代表，不需要名称
+export default function(num1, num2) {
+    return num1 + num2;
+}
+
+// 添加默认导出值得标识符
+function sum(num1, num2) {
+    return num1 + num2;
+}
+export default sum;
+
+// 使用重命名语法
+function sum(num1, num2) {
+    return num1 + num2;
+}
+export { sum as default };
+```
+
+### 13.5.2 导入默认值
+
+本地名称 sum 用于表示模块导出的任何默认函数，这种语法是最纯净的，ECMAScript 6 的创建者希望它能够成为 Web 上主流的模块导入形式，并且可以使用己有的对象 。
+
+```js
+// 引入默认值
+import sum from "./example.js";
+
+console.log(sum(1, 2));     // 3
+```
+
+对于导出默认值和一或多个非默认绑定的模块，可以用一条语句导入所有导出的绑定。
+
+```js
+export let color = "red";
+
+export default function(num1, num2) {
+    return num1 + num2;
+}
+```
+
+可以使用下面的 import 语句同时引入 color 和 默认输出的函数。用逗号将默认的本地名称与大括号包裹的非默认值分隔开，请记住 ， 在 import 语句中，默认值必须排在非默认值之前。
+
+```js
+import sum, { color } from "./example.js";
+
+console.log(sum(1, 2));     // 3
+console.log(color);         // "red"
+```
+
+与导出默认值一样， 也可以在导入默认值时使用重命名语法。
+
+```js
+import { default as sum, color } from "example";
+
+console.log(sum(1, 2));     // 3
+console.log(color);         // "red"
+```
+
 ## 13.6 重新导出一个绑定
+
+最终，可能需要重新导出模块己经导入的内容。例如，你正在用几个小模块创建一个库， 则可以用本章己经讨论的模式重新导出己经导入的值。这种形式的 export 在指定的模块中查找声明，然后将其导出。当然，对于同样的值也可以以不同的名称导出。如果导出一切时，原模块有默认的导出至，则使用该语句将无法重新定义一个新的默认导出。
+
+```js
+import { sum } from "./example.js";
+export { sum }
+
+// 单条语句完成任务
+export { sum } from "./example.js";
+
+// sum从example.js导入，再将add这个名字导出
+export { sum as add } from "./example.js";
+
+// 导出一个模块汇总的所有值
+export * from "./example.js";
+```
+
 ## 13.7 无绑定导入
+
+某些模块可能不导出任何东西，相反，它们可能只修改全局作用域中的对象。尽管模块中的顶层变量、函数和类不会自动地出现在全局作用域中，但这并不意味着模块无法访问全局作用域。内建对象（如 Array 和 Object ）的共事定义可以在模块中访问，对这些对象所做的更改将反映在其他模块中。
+
+```js
+// module code without exports or imports
+Array.prototype.pushAll = function(items) {
+
+    // items must be an array
+    if (!Array.isArray(items)) {
+        throw new TypeError("Argument must be an array.");
+    }
+
+    // use built-in push() and spread operator
+    return this.push(...items);
+};
+```
+
+即使没有任何导出或导入的操作，这也是一个有效的模块。这段代码既可以用作模块也可 以用作脚本。由于它不导出任何东西，因而可以使用简化的导入操作来执行模块代码，而且不导入任何的绑定。
+
+```js
+import "./example.js";
+
+let colors = ["red", "green", "blue"];
+let items = [];
+
+items.pushAll(colors);
+```
+
+无绑定导入最有可能被应用于创建 Polyfill 和 Shim。polyfill 是一段代码(或者插件)，提供了那些开发者们希望浏览器原生提供支持的功能。Shim 指的是在一个旧的环境中模拟出一个新 API ，而且仅靠旧环境中已有的手段实现，以便所有的浏览器具有相同的行为。
+
 ## 13.8 加载模块
--- 在Web浏览器中使用模块
--- 浏览器模块说明符解析
+
+然 ECMAScript 6 定义了模块的语法，但它并没有定义如何加载这些模块。这正是规范复杂性的一个体现，应由不同的实现环境来决定。 
+
+### 13.8.1 在Web浏览器中使用模块
+
+即使在 ECMAScript 6 出现以前， Web 浏览器也有多种方式可 以将 JavaScript 包含在 Web 应用程序中 ， 这些脚本加载的方法分别是：
+- 在`<script>`元素中通过 src 属性指定一个加载代码的地址来加载 JavaScript 代码文件 。
+- 将 JavaScript 代码内嵌到没有 src 属性的 `<script>`元素中。
+- 通过 Web Worker 或 Service Worker 的方法加载并执行 JavaScript 代码文件。
+
+在`<script>`中使用模块。主要有两种方式，元素以可以执行内联代码或加载 src 中指定的文件，同时 type 属性的值为“module”时即可支持加载模块。 此外，当无法识别 type 的值时，浏览器会忽略`<script>`元素 ，因此不支持模块的浏览器将自动忽略`<script type="module">`未提供良好的向后兼容性 。
+
+```html
+<!-- 加载一个 JavaScript 模块文件 -->
+<script type="module" src="module.js"></script>
+
+<!-- 包含一个模块内联代码 -->
+<script type="module">
+
+import { sum } from "./example.js";
+
+let result = sum(1, 2);
+
+</script>
+```
+
+Web 浏览器中的模块加载顺序。模块与脚本不同，它是独一无二的，可以通过 import 关键字来指明其所依赖的其他文件，并且这些文件必须被加载进该模块才能正确执行。为了支持该功能 ，`<script type="module">`执行时自动应用 defer 属性。模块文件便开始下载，直到文档被完全解析模块才会执行。模块按照它们出现在 HTML 文件中的顺序执行。
+
+```html
+<!-- 最先执行 -->
+<script type="module" src="module1.js"></script>
+
+<!-- 第二个执行 -->
+<script type="module">
+import { sum } from "./example.js";
+
+let result = sum(1, 2);
+</script>
+
+<!-- 第三个执行 -->
+<script type="module" src="module2.js"></script>
+```
+
+每个模块都可以从一个或多个其他的模块导入，这会使问题复杂化。因此，首先解析模块以识别所有导入语句：然后，每个导入语句都触发一次获取过程（从网络或从缓存），并且在所有导入资源都被加载和执行后才会执行当前模块。
+
+Web 浏览器中的异步模块加载。当`<script>`元素的 async 属性应用于脚本时，脚本文件将在文件完全下载并解析后执行。文档中 async 脚本的顺序不会影响脚本执行的顺序，脚本在下载完成后立即执行，而不必等待包含的文档完成解析。
+
+async 属性也可以应用在模块上，在`<script type="module">`元素上应用 async 属性会让模块以类似于脚本的方式执行，唯一的区别是，在模块执行前，模块中所有的导入资源都必须下载下来。这可以确保只有当模块执行所需的所有资源都下载完成后才执行模块 ，但不能保证的是模块的执行时机。
+
+```html
+<!-- 无法确定哪个模块会首先运行 -->
+<script type="module" async src="module1.js"></script>
+<script type="module" async src="module2.js"></script>
+```
+
+将模块作为 Woker 加载。Worker，例如 Web Worker 和 Service Woker，可以在网页上下文之外执行 JavaScript 代码。创建新 Worker 的步骤包括：创建一个新的 Worker 实例（或其他的类），传入 JavaScript 文件的地址。默认的加载机制是按照脚本的方式加载文件。
+
+```js
+// 以 script 的方式加载 script.js
+let worker = new Worker("script.js");
+```
+
+为了支持加载模块，HTML 标准的开发者向这些构造函数添加了第二个参数，第二个参数是一个对象，其 type 属性的默认值为“script”。可以将 type 设置为“module”来加载模块文件。
+
+```js
+// 以模块的方式加载 module.js
+let worker = new Worker("module.js", { type: "module" });
+```
+
+Worker 模块通常与 Worker 脚本一起使用，但也有一些例外。首先，Worker 脚本只能从与引用的网页相同的源加载，但是 Worker 模块不会完全受限，虽然 Worker 模块具有相同的默认限制，但它们还是可以加载并访问具有适当的跨域资源共享（CORS）头的文件；其次，尽管 Worker 脚本可以使用 `self.importScripts()` 方法将其他脚本加载到 Worker 中，但`self.importScripts()`却始终无法加载 Worker 模块，因为应该使用 import 来导入。
+
+### 13.8.2 浏览器模块说明符解析
+
+模块说明符（module specifier）使用的都是相对路径（例如，字符串 “./example.js”），浏览器要求模块说明符具有以下几种格式之一。
+
+- 以／开头的解析为从根目录开始。
+- 以 .／开头的解析为从当前目录开始。
+- 以 ..／开头的解析为从父目录开始。
+- URL 格式。
+
+故此，一些看起来正常的模块说明符在浏览器中实际上是无效的，井且会导致错误。
+
+```js
+// 无效的 开头未使用 /，./，或 ../
+import { first } from "example.js";
+
+// 无效的 开头未使用 /，./，或 ../
+import { second } from "example/index.js";
+```
+
+由于这两个模块说明符的格式不正确（缺少正确的起始字符），因此它们无法被浏览器加载，即使在``<script>``标签中用作 src 的值时二者都可以正常工作。`<script>`标签和 import 之间的这种行为差异是有意为之。
 
 # 附录A ECMAScript 6中较小的改动
 # 附录B 了解ECMAScript 7（2016）
