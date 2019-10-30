@@ -916,11 +916,11 @@ var functionName = function(arg0, arg1, arg2){
 var sayHi;
 if(condition){
   sayHi = function(){
-  alert("Hi!");
+    alert("Hi!");
   };
 } else {
   sayHi = function(){
-  alert("Yo!");
+    alert("Yo!");
   };
 }
 ```
