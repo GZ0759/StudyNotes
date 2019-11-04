@@ -1176,6 +1176,7 @@ person.setName("Greg");
 alert(person.getName()); //"Greg"
 ```
 
+### 7.4.1 静态私有变量
 
 第二种方法，使用静态私有变量。通过在私有作用域中定义私有变量或函数，然后又定义了构造函数及其公有方法。公有方法是在原型上定义的，定义构造函数时使用函数表达式，因此函数声明只能创建局部函数，而构造函数就成了一个全局变量，能够在私有作用域之外被访问到。同时没有显示声明变量，因为初始化未经声明的变量，总会创建一个全局变量。此时私有变量和私有函数是由实例共享的。
 
@@ -1222,9 +1223,97 @@ alert(person1.getName()); //"Michael"
 alert(person2.getName()); //"Michael"
 ```
 
-模块模式，前面的模式是用于为自定义类型创建私有变量和特权方法的，而道格拉斯所说的模块模式则是为单例创建私有变量和特权方法。所谓单例，指的是只有一个实例的对象。模块模式通过为单例添加私有变量和特权方法能够使使其得到增强。返回的对象字面量中只包含可以公开的属性和方法。简言之，如果必须创建一个对象并以某些数据对其进行初始化，同时还要公开一些能够访问这些私有数据的方法，那么就可以使用模块模式。
+### 7.4.2 模块模式
+
+模块模式，前面的模式是用于为自定义类型创建私有变量和特权方法的，而道格拉斯所说的模块模式则是为单例创建私有变量和特权方法。所谓单例，指的是只有一个实例的对象。模块模式通过为单例添加私有变量和特权方法能够使使其得到增强。返回的对象字面量中只包含可以公开的属性和方法。
+
+```js
+var singleton = function(){
+  //私有变量和私有函数
+  var privateVariable = 10;
+  function privateFunction(){
+    return false;
+  }
+  //特权/公有方法和属性
+  return {
+    publicProperty: true,
+    publicMethod : function(){
+      privateVariable++;
+      return privateFunction();
+    }
+  };
+}();
+```
+
+从本质上来讲，这个对象字面量定义的是单例的公共接口。这种模式在需要对单例进行某些初始化，同时又需要维护其私有变量时是非常有用的。简言之，如果必须创建一个对象并以某些数据对其进行初始化，同时还要公开一些能够访问这些私有数据的方法，那么就可以使用模块模式。
+
+```js
+var application = function(){
+  //私有变量和函数
+  var components = new Array();
+  //初始化
+  components.push(new BaseComponent());
+  //公共
+  return {
+    getComponentCount : function(){
+      return components.length;
+    },
+    registerComponent : function(component){
+      if (typeof component == "object"){
+        components.push(component);
+      }
+    }
+  };
+}();
+```
+
+### 7.4.3 增强的模块模式
 
 增强的模块模式，即在返回对象之前加入对其增强的代码，这个模式适合那些单例必须是某种类型的实例，同时还必须添加某些属性和（或）方法对其加以增强的情况。
+
+```js
+var singleton = function(){
+  //私有变量和私有函数
+  var privateVariable = 10;
+  function privateFunction(){
+    return false;
+  }
+  //创建对象
+  var object = new CustomType();
+  //添加特权/公有属性和方法
+  object.publicProperty = true;
+  object.publicMethod = function(){
+    privateVariable++;
+    return privateFunction();
+  };
+  //返回这个对象
+  return object;
+}();
+```
+
+如果前面演示模块模式的例子中的 application 对象必须是 BaseComponent 的实例，那么就可以使用以下代码。
+
+```js
+var application = function(){
+  //私有变量和函数
+  var components = new Array();
+  //初始化
+  components.push(new BaseComponent());
+  //创建 application 的一个局部副本
+  var app = new BaseComponent();
+  //公共接口
+  app.getComponentCount = function(){
+    return components.length;
+  };
+  app.registerComponent = function(component){
+    if (typeof component == "object"){
+    components.push(component);
+    }
+  };
+  //返回这个副本
+  return app;
+}();
+```
 
 7.5　小结
 
