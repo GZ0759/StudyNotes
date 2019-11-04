@@ -2259,8 +2259,7 @@ p1.then(function(value) {
 });
 ```
 
-可以使用与`Promise.resolve()`相同的过程创建基于 Thenable 对象的己拒
-绝 Promise。
+可以使用与`Promise.resolve()`相同的过程创建基于 Thenable 对象的己拒绝 Promise。
 
 ```js
 let thenable = {

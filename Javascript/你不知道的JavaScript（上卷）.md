@@ -1,6 +1,7 @@
 > 你不知道的JavaScript（上卷）  
 > You Don’t Know JavaScript: Scope & Closures this & Object Prototypes   
 > 2015年 4 月第1版    
+> [开源图书地址](https://github.com/getify/You-Dont-Know-JS)
 
 # 目录
 
