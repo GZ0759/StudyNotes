@@ -1,6 +1,24 @@
-# Promise 对象
+> ES6标准入门（第3版）
+> ECMAScript 6 Primer
+> 2017年9月第三版
+> 同步[在线开源版本](https://github.com/ruanyf/es6tutorial/)
 
-## Promise 的含义
+# 第1章 ECMAScript 6简介
+# 第2章 let 和 const 命令
+# 第3章 变量的解构赋值
+# 第4章 字符串的扩展
+# 第5章 正则的扩展
+# 第6章 数值的扩展
+# 第7章 函数的扩展
+# 第8章 数组的扩展
+# 第9章 对象的扩展
+# 第10章 Symbol
+# 第11章 Set 和 Map 数据结构
+# 第12章 Proxy
+# 第13章 Reflect
+# 第14章 Promise 对象
+
+## 14.1 Promise 的含义
 
 Promise 是异步编程的一种解决方案，比传统的解决方案（回调函数和事件）更合理和更强大。它由社区最早提出和实现，ES6 将其写进了语言标准，统一了用法，并提供了`Promise`原生对象。所谓`Promise`，简单说就是一个容器，里面保存着某个未来才会结束的事件（通常是一个异步操作）的结果。从语法上说，Promise 是一个对象，从它可以获取异步操作的消息。
 
@@ -19,7 +37,7 @@ Promise 是异步编程的一种解决方案，比传统的解决方案（回调
 
 如果某些事件不断地反复发生，一般来说，使用 [Stream](https://nodejs.org/api/stream.html) 模式是比部署`Promise`更好的选择。
 
-## 基本用法
+## 14.2 基本用法
 
 ES6 规定，`Promise`对象是一个构造函数，用来生成`Promise`实例。`Promise`构造函数接受一个函数作为参数，该函数的两个参数分别是`resolve`和`reject`。它们是两个函数，由 JavaScript 引擎提供。
 - `resolve`函数的作用是，将`Promise`对象的状态从“未完成”变为“成功”（即从 pending 变为 resolved），在异步操作成功时调用，并将异步操作的结果，作为参数传递出去；
@@ -174,7 +192,7 @@ new Promise((resolve, reject) => {
 })
 ```
 
-## Promise.prototype.then()
+## 14.3 Promise.prototype.then()
 
 Promise 实例具有`then`方法，也就是说，`then`方法是定义在原型对象`Promise.prototype`上的。它的作用是为 Promise 实例添加状态改变时的回调函数。前面说过，`then`方法的第一个参数是`resolved`状态的回调函数，第二个参数（可选）是`rejected`状态的回调函数。
 
@@ -208,7 +226,7 @@ getJSON("/post/1.json").then(
 );
 ```
 
-## Promise.prototype.catch()
+## 14.4 Promise.prototype.catch()
 
 `Promise.prototype.catch`方法是`.then(null, rejection)`或`.then(undefined, rejection)`的别名，用于指定发生错误时的回调函数。如果该对象状态变为`resolved`，则会调用`then`方法指定的回调函数；如果异步操作抛出错误，状态就会变为`rejected`，就会调用`catch`方法指定的回调函数，处理这个错误。另外，`then`方法指定的回调函数，如果运行中抛出错误，也会被`catch`方法捕获。
 
@@ -337,7 +355,7 @@ someAsyncThing()
 // carry on
 ```
 
-## Promise.prototype.finally()
+## 14.5 Promise.prototype.finally()
 
 `finally`方法用于指定不管 Promise 对象最后状态如何，都会执行的操作。该方法是 ES2018 引入标准的。不管`promise`最后的状态，在执行完`then`或`catch`指定的回调函数以后，都会执行`finally`方法指定的回调函数。
 
@@ -408,7 +426,7 @@ Promise.reject(3).then(() => {}, () => {})
 Promise.reject(3).finally(() => {})
 ```
 
-## Promise.all()
+## 14.6 Promise.all()
 
 `Promise.all()`方法用于将多个 Promise 实例，包装成一个新的 Promise 实例。
 
@@ -503,7 +521,7 @@ Promise.all([p1, p2])
 // Error: 报错了
 ```
 
-## Promise.race()
+## 14.7 Promise.race()
 
 `Promise.race()`方法同样是将多个 Promise 实例，包装成一个新的 Promise 实例。
 
@@ -532,7 +550,7 @@ p
 
 上面代码中，如果 5 秒之内`fetch`方法无法返回结果，变量`p`的状态就会变为`rejected`，从而触发`catch`方法指定的回调函数。
 
-## Promise.allSettled()
+## 14.8 Promise.allSettled()
 
 `Promise.allSettled()`方法接受一组 Promise 实例作为参数，包装成一个新的 Promise 实例。只有等到所有这些参数实例都返回结果，不管是`fulfilled`还是`rejected`，包装实例才会结束。该方法由 [ES2020](https://github.com/tc39/proposal-promise-allSettled) 引入。
 
@@ -599,7 +617,7 @@ try {
 
 上面代码中，`Promise.all()`无法确定所有请求都结束。想要达到这个目的，写起来很麻烦，有了`Promise.allSettled()`，这就很容易了。
 
-## Promise.any()
+## 14.9 Promise.any()
 
 `Promise.any()`方法接受一组 Promise 实例作为参数，包装成一个新的 Promise 实例。只要参数实例有一个变成`fulfilled`状态，包装实例就会变成`fulfilled`状态；如果所有参数实例都变成`rejected`状态，包装实例就会变成`rejected`状态。该方法目前是一个第三阶段的[提案](https://github.com/tc39/proposal-promise-any) 。
 
@@ -661,7 +679,7 @@ Promise.any([rejected, alsoRejected]).catch(function (results) {
 });
 ```
 
-## Promise.resolve()
+## 14.10 Promise.resolve()
 
 有时需要将现有对象转为 Promise 对象，`Promise.resolve()`方法就起到这个作用。
 
@@ -765,7 +783,7 @@ console.log('one');
 
 上面代码中，`setTimeout(fn, 0)`在下一轮“事件循环”开始时执行，`Promise.resolve()`在本轮“事件循环”结束时执行，`console.log('one')`则是立即执行，因此最先输出。
 
-## Promise.reject()
+## 14.11 Promise.reject()
 
 `Promise.reject(reason)`方法也会返回一个新的 Promise 实例，该实例的状态为`rejected`。
 
@@ -800,7 +818,7 @@ Promise.reject(thenable)
 
 上面代码中，`Promise.reject`方法的参数是一个`thenable`对象，执行以后，后面`catch`方法的参数不是`reject`抛出的“出错了”这个字符串，而是`thenable`对象。
 
-## 应用
+## 14.12 应用
 
 ### 加载图片
 
@@ -858,7 +876,7 @@ run(g);
 
 上面代码的 Generator 函数`g`之中，有一个异步操作`getFoo`，它返回的就是一个`Promise`对象。函数`run`用来处理这个`Promise`对象，并调用下一个`next`方法。
 
-## Promise.try()
+## 14.13 Promise.try()
 
 实际开发中，经常遇到一种情况：不知道或者不想区分，函数`f`是同步函数还是异步操作，但是想用 Promise 来处理它。因为这样就可以不管`f`是否包含异步操作，都用`then`方法指定下一步流程，用`catch`方法处理`f`抛出的错误。一般就会采用下面的写法。
 
@@ -971,3 +989,16 @@ Promise.try(() => database.users.get({id: userId}))
 ```
 
 事实上，`Promise.try`就是模拟`try`代码块，就像`promise.catch`模拟的是`catch`代码块。
+
+# 第15章 Iterator 和 for...of 循环
+# 第16章 Generator 函数的语法
+# 第17章 Generator 函数的异步应用
+# 第18章 async 函数
+# 第19章 Class 的基本语法
+# 第20章 Class 的继承
+# 第21章 修饰器
+# 第22章 Module 的语法
+# 第23章 Module 的加载实现
+# 第24章 编程风格
+# 第25章 读懂规格
+# 第26章 ArrayBuffer
