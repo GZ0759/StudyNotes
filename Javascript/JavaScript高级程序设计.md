@@ -615,31 +615,293 @@ ECMA-262 描述了一组用于操作数据值的操作符，它们能够适用�
 
 ## 3.6 语句　
 
-- if 语句，其中括号里面的条件可以不是布尔值，ECMAScript 会自动调用 `Boolean()` 转换函数将这个表达式的结果转换成一个布尔值。
+ECMA-262 规定了一组语句（也称为流控制语句）。从本质上看，语句定义了 ECMAScript 中的主要语法，语句通常使用一或多个关键字来完成给定任务。语句可以很简单，例如通知函数退出；也可以比较复杂，例如指定重复执行某个命令的次数。
 
-- do-while 语句，是一种后测试循环语句，循环体代码至少会被执行一次。
+## 3.6.1 if语句
 
-- while 语句属于前测试循环语句，循环体内的代码有可能永远不会被执行。
+大多数编程语言中最为常用的一个语句就是 if 语句。
 
-- for 语句也是一种前测试循环语句，但它具有在执行循环体之前初始化变量和定义循环体后要执行的代码的能力。另外，for语句中的初始化表达式、控制表达式和循环后表达式都是可选的。
+```js
+if (condition) statement1 else statement2
+```
 
-- for-in 语句是一种精准的迭代语句，可以用来枚举对象的属性。也可以用来遍历数组。如果表达要迭代的对象的变量值为 null 或 undefined ，不再执行循环体。
+其中的 condition（条件）可以是任意表达式；而且对这个表达式求值的结果不一定是布尔值。ECMAScript 会自动调用`Boolean()`转换函数将这个表达式的结果转换为一个布尔值。
 
-- label 语句，可以在代码中添加标签，以便将来使用。
+如果对 condition 求值的结果是 true，则执行 statement1（语句 1），如果对 condition 求值的结果是 false，则执行 statement2 （语句 2）。而且这两个语句既可以是一行代码，也可以是一个代码块（以一对花括号括起来的多行代码）。不过，业界普遍推崇的最佳实践是始终使用代码块，即使要执行的只有一行代码。
 
-- break 和 continue 语句，用于在循环体中准确地控制代码的执行，其中 break 语句会立即退出循环，强制继续执行循环体后面的语句，而 continue 语句虽然也是立刻退出循环，但退出循环后从循环的顶部继续执行。
+```js
+if (i > 25)
+alert("Greater than 25."); // 单行语句
+else {
+alert("Less than or equal to 25."); // 代码块中的语句
+}
+IfStatementExample01.htm
+```
 
-- with 语句，作用是将代码的作用域设置到一个特定的对象中。使用 with 关联了某个对象，然后再代码块内部循环对象的同名属性。严格模式下不允许使用 with 语句，否则将视为语法错误。
+## 3.6.2 do-while语句
 
-- switch 语句是一种流控制语句，通过为每个 case 后面都添加一个 break 语句，就可以避免同时执行多个 case 代码的情况。如果情况都不符合，则跳转到 default 代码块。 switch 语句与其它语言不同的是，可以使用任何数据类型，每个 case 的值不一定是常量，可以是变量，字符串、甚至是表达式。因为这个语句比较使用的是全等操作符，因此不会发生类型自动转换。字符串还是字符串。
+do-while 语句是一种后测试循环语句，即只有在循环体中的代码执行之后，才会测试出口条件。换句话说，在对条件表达式求值之前，循环体内的代码至少会被执行一次。
+
+```js
+do {
+statement
+} while (expression);
+```
+
+## 3.6.3 while语句
+
+while 语句属于前测试循环语句，也就是说，在循环体内的代码被执行之前，就会对出口条件求值。因此，循环体内的代码有可能永远不会被执行。
+
+```js
+while(expression) statement
+```
+
+## 3.6.4 for语句
+
+for 语句也是一种前测试循环语句，但它具有在执行循环之前初始化变量和定义循环后要执行的代码的能力。使用 while 循环做不到的，使用 for 循环同样也做不到。也就是说， for 循环只是把与循环有关的代码集中在了一个位置。
+
+```js
+for (initialization; expression; post-loop-expression) statement
+```
+
+有必要指出的是，在 for 循环的变量初始化表达式中，也可以不使用 var 关键字。该变量的初始化可以在外部执行。由于 ECMAScript 中不存在块级作用域，因此在循环内部定义的变量也可以在外部访问到。
+
+此外， for 语句中的初始化表达式、控制表达式和循环后表达式都是可选的。将这三个表达式全部省略，就会创建一个无限循环。
+
+## 3.6.5 for-in语句
+
+for-in 语句是一种精准的迭代语句，可以用来枚举对象的属性。
+
+```js
+for (property in expression) statement
+```
+
+ECMAScript 对象的属性没有顺序。因此，通过 for-in 循环输出的属性名的顺序是不可预测的。具体来讲，所有属性都会被返回一次，但返回的先后次序可能会因浏览器而异。
+
+但是，如果表示要迭代的对象的变量值为 null 或 undefined， for-in 语句会抛出错误。ECMAScript 5 更正了这一行为；对这种情况不再抛出错误，而只是不执行循环体。为了保证最大限度的兼容性，建议在使用 for-in 循环之前，先检测确认该对象的值不是 null 或 undefined。
+
+## 3.6.6 label语句
+
+使用 label 语句可以在代码中添加标签，以便将来使用。
+
+```js
+label: statement
+```
+
+加标签的语句一般都要与 for 语句等循环语句配合使用。
+
+```js
+start: for (var i=0; i < count; i++) {
+  alert(i);
+}
+```
+## 3.6.7 break和continue语句
+
+break 和 continue 语句用于在循环中精确地控制代码的执行。其中， break 语句会立即退出循环，强制继续执行循环后面的语句。而 continue 语句虽然也是立即退出循环，但退出循环后会从循环的顶部继续执行。
+
+```js
+var num = 0;
+for (var i=1; i < 10; i++) {
+  if (i % 5 == 0) {
+    break;
+  }
+  num++;
+}
+alert(num); //4
+```
+
+```js
+var num = 0;
+for (var i=1; i < 10; i++) {
+  if (i % 5 == 0) {
+    continue;
+  }
+  num++;
+}
+alert(num); //8
+```
+
+break 和 continue 语句都可以与 label 语句联合使用，从而返回代码中特定的位置。这种联合使用的情况多发生在循环嵌套的情况下。
+
+```js
+var num = 0;
+outermost:
+for (var i=0; i < 10; i++) {
+  for (var j=0; j < 10; j++) {
+    if (i == 5 && j == 5) {
+      break outermost;
+    }
+    num++; 
+  }
+}
+alert(num); //55
+```
+
+```js
+var num = 0;
+outermost:
+for (var i=0; i < 10; i++) {
+  for (var j=0; j < 10; j++) {
+    if (i == 5 && j == 5) {
+      continue outermost;
+    }
+    num++;
+  }
+}
+alert(num); //95
+```
+
+虽然联用 break、 continue 和 label 语句能够执行复杂的操作，但如果使用过度，也会给调试带来麻烦。在此，我们建议如果使用 label 语句，一定要使用描述性的标签，同时不要嵌套过多的循环。
+
+## 3.6.8 with语句
+
+with 语句的作用是将代码的作用域设置到一个特定的对象中。 
+
+```js
+with (expression) statement;
+```
+
+定义 with 语句的目的主要是为了简化多次编写同一个对象的工作
+
+```js
+var qs = location.search.substring(1);
+var hostName = location.hostname;
+var url = location.href;
+
+// 相当于
+with(location){
+var qs = search.substring(1);
+var hostName = hostname;
+var url = href;
+}
+```
+
+严格模式下不允许使用 with 语句，否则将视为语法错误。由于大量使用 with 语句会导致性能下降，同时也会给调试代码造成困难，因此在开发大型应用程序时，不建议使用 with 语句。
+
+## 3.6.9 switch语句
+
+switch 语句与 if 语句的关系最为密切，而且也是在其他语言中普遍使用的一种流控制语句。ECMAScript 中 switch 语句的语法与其他基于 C 的语言非常接近。
+
+```js
+switch (expression) {
+  case value: statement
+    break;
+  case value: statement
+    break;
+  case value: statement
+    break;
+  case value: statement
+    break;
+  default: statement
+}
+```
+
+通过为每个 case 后面都添加一个 break 语句，就可以避免同时执行多个 case 代码的情况。假如确实需要混合几种情形，不要忘了在代码中添加注释，说明是有意省略了 break 关键字。
+
+虽然 ECMAScript 中的 switch 语句借鉴自其他语言，但这个语句也有自己的特色。首先，可以在 switch 语句中使用任何数据类型（在很多其他语言中只能使用数值），无论是字符串，还是对象都没有问题。其次，每个 case 的值不一定是常量，可以是变量，甚至是表达式。
+
+```js
+switch ("hello world") {
+  case "hello" + " world":
+    alert("Greeting was found.");
+    break;
+  case "goodbye":
+    alert("Closing was found.");
+    break;
+  default:
+    alert("Unexpected message was found.");
+}
+```
+
+使用表达式作为 case 值还可以实现下列操作。
+
+```js
+var num = 25;
+switch (true) {
+  case num < 0:
+    alert("Less than 0.");
+    break;
+  case num >= 0 && num <= 10:
+    alert("Between 0 and 10.");
+    break;
+  case num > 10 && num <= 20:
+    alert("Between 10 and 20.");
+    break;
+  default:
+   alert("More than 20.");
+}
+```
+
+switch 语句在比较值时使用的是全等操作符，因此不会发生类型转换。
 
 ## 3.7 函数　
 
-ECMAScript 中的函数使用 function 关键字来声明，后跟一组参数以及函数体。函数的调用，可以通过其函数名，后面加上一对圆括号和参数（参数如果有多个，用逗号隔开）进行调用，函数定义时不必指定是否返回值，如果没有指定返回值，则返回undefined，这种用法一般用在需要提前停止函数执行而又不需要返回值的情况下。
+函数对任何语言来说都是一个核心的概念。通过函数可以封装任意多条语句，而且可以在任何地方、任何时候调用执行。 ECMAScript 中的函数使用 function 关键字来声明，后跟一组参数以及函数体。
 
-理解参数。ECMAScript中的函数参数在内部是用一个数字来表示的，通过arguments对象来访问这个参数数组，从而获取传递给函数的每一个参数。因此，在函数定义时，命名的参数值提供便利，但不是必须的。另外，arguments对象可以与命名的参数一起使用，同时他们对应的值永远保持同步，而没有传递值的命名参数将自动被赋予undefined值。
+函数可以通过其函数名来调用，后面还要加上一对圆括号和参数（圆括号中的参数如果有多个，可以用逗号隔开）。
 
-没有重载。如果ECMAScript中定义了两个名字相同的函数，则该名字只属于后定义的函数，重载是不可能做到的，但可以通过检查传入函数中的参数的类型和数量并做出不同的反应，模仿方法的重载。
+```js
+function sayHi(name, message) {
+  alert("Hello " + name + "," + message);
+}
+
+sayHi("Nicholas", "how are you today?");
+```
+
+ECMAScript 中的函数在定义时不必指定是否返回值。实际上，任何函数在任何时候都可以通过 return 语句后跟要返回的值来实现返回值。而位于 return 语句之后的任何代码都永远不会执行。
+
+```js
+function sum(num1, num2) {
+  return num1 + num2;
+}
+```
+
+当然，一个函数中也可以包含多个 return 语句。
+
+```js
+function diff(num1, num2) {
+  if (num1 < num2) {
+    return num2 - num1;
+  } else {
+    return num1 - num2;
+  }
+}
+```
+
+另外， return 语句也可以不带有任何返回值。在这种情况下，函数在停止执行后将返回 undefined值。这种用法一般用在需要提前停止函数执行而又不需要返回值的情况下。
+
+推荐的做法是要么让函数始终都返回一个值，要么永远都不要返回值。否则，如果函数有时候返回值，有时候有不返回值，会给调试代码带来不便。
+
+### 3.7.1 理解参数
+
+ECMAScript 中的参数在内部是用一个数组来表示的。函数接收到的始终都是这个数组，而不关心数组中包含哪些参数（如果有参数的话）。如果这个数组中不包含任何元素，无所谓；如果包含多个元素，也没有问题。实际上，在函数体内可以通过 arguments 对象来
+访问这个参数数组，从而获取传递给函数的每一个参数。
+
+其实， arguments 对象只是与数组类似（它并不是 Array 的实例），因为可以使用方括号语法访问它的每一个元素（即第一个元素是 `arguments[0]`，第二个元素是 `argumetns[1]`，以此类推），使用 length 属性来确定传递进来多少个参数。
+
+关于 arguments 的行为，还有一点比较有意思。那就是它的值永远与对应命名参数的值保持同步。不过，这并不是说读取这两个值会访问相同的内存空间；它们的内存空间是独立的，但它们的值会同步。
+
+另外还要记住，如果只传入了一个参数，那么为 `arguments[1]`设置的值不会反应到命名参数中。这是因为 arguments 对象的长度是由传入的参数个数决定的，不是由定义函数时的命名参数的个数决定的。
+
+关于参数还要记住最后一点：没有传递值的命名参数将自动被赋予 undefined 值。这就跟定义了变量但又没有初始化一样。
+
+### 3.7.2 没有重载
+
+ECMAScript 函数不能像传统意义上那样实现重载。而在其他语言（如 Java）中，可以为一个函数编写两个定义，只要这两个定义的签名（接受的参数的类型和数量）不同即可。
+
+如果在 ECMAScript 中定义了两个名字相同的函数，则该名字只属于后定义的函数。
+
+```js
+function addSomeNumber(num){
+  return num + 100;
+}
+function addSomeNumber(num) {
+  return num + 200;
+}
+var result = addSomeNumber(100); //300
+```
+
+但可以通过检查传入函数中的参数的类型和数量并做出不同的反应，模仿方法的重载。
 
 3.8　小结　
 
