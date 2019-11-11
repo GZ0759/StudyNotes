@@ -1244,7 +1244,7 @@ ECMAScript 中有两种属性：数据属性和访问器属性。
 
 Value 特性被设置为指定的值 ，对这个值的任何修改都反映在这个位置上。
 
-要修改属性默认的特性，必须使用 Object.defineProperty () 方法，该方法接收三个参数：属性所在的对象、属性的名字和一个描述符对象。可以多次调用 Object.defineProperty () 方法修改同一个属性，但在把 configurable 特性设置为 false 之后就会有限制了。
+要修改属性默认的特性，必须使用 `Object.defineProperty ()` 方法，该方法接收三个参数：属性所在的对象、属性的名字和一个描述符对象。可以多次调用 Object.defineProperty () 方法修改同一个属性，但在把 configurable 特性设置为 false 之后就会有限制了。
 
 访问器属性不包含数据值：它们包含一对儿 getter 和 setter 函数，不过他们都不是必需的。在读取访问器属性时，会调用 getter 函数，这个函数负责返回有效的值；在写入访问器属性时，会调用 setter 函数并传入新值，这个函数负责决定如何处理数据。访问器属性有如下 4 个特性。
 
@@ -1333,7 +1333,7 @@ alert(person1.sayName == person2.sayName);  //false
 
 - 对象实例访问原型对象。当调用构造函数创建一个新实例后，该实例的内部将包含一个指针（内部属性），指向构造函数的原型对象。ECMA-262 第 5 版中管这个指针叫`[[Prototype]]`。虽然在脚本中 没有标准的方式访问 `[[Prototype]]` ，但 Firefox、 Safari 和 Chrome 在每个对象上都支持一个属性 `__proto__`；而在其他实现中，这个属性对脚本则是完全不可见的。     
 
-  虽然在所有实现中都无法访问到 prototype，但是可以通过 isPrototypeOf () 方法来确定对象之间是否存在这种关系，对象内部存在一个指向构造函数的 prototype 的指针，就返回 true 。而使用 Object.getPrototypeOf () 方法则会返回 prototype 的值。
+  虽然在所有实现中都无法访问到 prototype，但是可以通过 `isPrototypeOf ()` 方法来确定对象之间是否存在这种关系，对象内部存在一个指向构造函数的 prototype 的指针，就返回 true 。而使用 Object.getPrototypeOf () 方法则会返回 prototype 的值。
 
   虽然可以通过对象实例访问保存在原型中的值，但却不能通过对象实例重写原型中的值。当为对象实例添加一个属性时，这个属性就会疲敝原型对象中保存的同名属性。不过，使用 delete 操作符则可以完全删除实例属性，从而让我们能够重新访问原型中的属性。使用 hasOwnProperty () 方法可以检测一个属性是否存在于实例中，还是存在于原型中，但是只在给定属性存在于对象实例中时，才会返回 true 。
 
@@ -1507,7 +1507,7 @@ alert(SuperType.prototype.isPrototypeOf(instance)); //true
 
 
 
-借用构造函数，通过使用 apply () 和 call () 方法在新创建的对象上执行构造函数。
+借用构造函数，通过使用 `apply ()` 和 `call ()` 方法在新创建的对象上执行构造函数。
 
 组合继承，指的是原型链和结构构造函数的技术组合到一起，从而发挥二者之长的一种继承模式。
 
@@ -1959,19 +1959,200 @@ BOM 浏览器对象模型是 Web 中使用 JavaScript 最重要的内容，BOM �
 
 ## 8.1 window对象 
 
-BOM 的核心对象是 window，它表示浏览器的一个实例。在浏览器中，它既是通过 JavaScript 访问浏览器窗口的一个接口，又是 ECMAScript 规定的 Global 对象。
+BOM 的核心对象是 window，它表示浏览器的一个实例。在浏览器中， window 对象有双重角色，它既是通过 JavaScript 访问浏览器窗口的一个接口，又是 ECMAScript 规定的 Global 对象。这意味着在网页中定义的任何一个对象、变量和函数，都以 window 作为其 Global 对象，因此有权访问`parseInt()`等方法。
 
-在全局作用域中声明的变量、函数都会变成 window 对象的属性和方法。全局变量不能通过 delete 操作符删除，而直接在window 对象上的定义的属性可以。尝试访问未声明的变量会抛出错误，但通过查询 window 对象，可以知道某个可能未声明的变量是否存在。
+### 8.1.1 全局作用域
 
-如果页面中包含框架，则每个框架都拥有自己的 window 对象，并且保存在 frames 集合中，在集合中可以通过数值索引或者框架名称来访问相应的 window 对象。
+由于 window 对象同时扮演着 ECMAScript 中 Global 对象的角色，因此所有在全局作用域中声明的变量、函数都会变成 window 对象的属性和方法。
 
-使用 moveTo () 和 moveBy () 方法可能将窗口精确地移动到一个新位置，这两个方法都接收两个参数，其中 moveTo () 接收的新新位置的 x 和 y 坐标值，而 moneyBy () 接收的是在水平和垂直方向上移动的像素数。
+```js
+var age = 29;
+function sayAge(){
+  alert(this.age);
+}
+alert(window.age); //29
+sayAge(); //29
+window.sayAge(); //29
+```
 
-使用 resizeTo () 和 resizeBy () 方法可以调整浏览器窗口的大小，这两个方法都接收两个参数，前者接收浏览器窗口的新宽度和新高度，而后者接收新窗口与原窗口的宽度和高度之差。
+定义全局变量与在 window 对象上直接定义属性还是有一点差别：全局变量不能通过 delete 操作符删除，而直接在 window 对象上的定义的属性可以。使用 var 语句添加的 window 属性有一个名为`[[Configurable]]`的特性，这个特性的值被设置为false，因此这样定义的属性不可以通过delete 操作符删除。
 
-使用 window.open () 方法既可以导航到一个特定的 URL，也可以打开一个新的浏览器窗口。这个方法接收四个参数：要加载的 URL、窗口目标、一个特性字符串以及一个表示新页面是否取代浏览器历史记录中当前加载页面的布尔值。通常只须传递第一个参数，最后一个参数只在不打开新窗口的情况下使用。而窗口目标如果是已有窗口或框架名称，那么就会在具有该名称的窗口或框架中加载第一个参数指定的URL；第三个参数是一个以逗号分隔的设置字符串，表示在新窗口中都显示哪些特性。window.open () 方法会返回一个指向新窗口的引用。新创建的 window 对象有一个 openr 属性，其中保存着打开它的原始窗口对象。
+```js
+var age = 29;
+window.color = "red";
+//在 IE < 9 时抛出错误，在其他所有浏览器中都返回 false
+delete window.age;
+//在 IE < 9 时抛出错误，在其他所有浏览器中都返回 true
+delete window.color; //returns true
+alert(window.age); //29
+alert(window.color); //undefined
+```
 
-JavaScript 是单线程语言，但它允许通过设置超时值和间歇时间值来调度代码在特定的时刻执行。超时调用需要使用window 对象的 setTimeout () 方法，在指定的时候过后执行代码，它接受两个参数：要执行的代码和以毫秒表示的时间，即在执行代码前需要等待多少毫秒，才把当前任务添加到队列中。调用 setTimeout () 之后，该方法会返回一个数值 ID，表示超时调用，使用 clearTimeout () 方法并将相应的超时调用 ID 作为参数传递给它，则可以取消尚未执行的超时调用计划。间歇调用与超时调用类似，方法是 setInterval ()，它会按照指定的时间间隔重复执行代码，直至间歇调用被取消或者页面被卸载。在开发环境下，很少使用真正的间歇调用，原因是后一个间歇调用可能会在前一个间歇调用结束之前启动。
+尝试访问未声明的变量会抛出错误，但是通过查询 window 对象，可以知道某个可能未声明的变量是否存在。
+
+```js
+//这里会抛出错误，因为 oldValue 未定义
+var newValue = oldValue;
+//这里不会抛出错误，因为这是一次属性查询
+//newValue 的值是 undefined
+var newValue = window.oldValue;
+```
+
+### 8.1.2 窗口关系及框架
+
+如果页面中包含框架，则每个框架都拥有自己的 window 对象，并且保存在 frames 集合中。在 frames 集合中，可以通过数值索引（从 0 开始，从左至右，从上到下）或者框架名称来访问相应的 window 对象。每个 window 对象都有一个 name 属性，其中包含框架的名称。
+
+```html
+<html>
+  <head>
+    <title>Frameset Example</title>
+  </head>
+  <frameset rows="160,*">
+    <frame src="frame.htm" name="topFrame">
+    <frameset cols="50%,50%">
+      <frame src="anotherframe.htm" name="leftFrame">
+      <frame src="yetanotherframe.htm" name="rightFrame">
+    </frameset>
+  </frameset>
+</html>
+```
+
+### 8.1.3 窗口位置
+
+用来确定和修改 window 对象位置的属性和方法有很多。 IE、 Safari、 Opera 和 Chrome 都提供了screenLeft 和 screenTop 属性，分别用于表示窗口相对于屏幕左边和上边的位置。 Firefox 则在screenX 和 screenY 属性中提供相同的窗口位置信息， Safari 和 Chrome 也同时支持这两个属性。
+
+```js
+var leftPos = (typeof window.screenLeft == "number") ?
+  window.screenLeft : window.screenX;
+var topPos = (typeof window.screenTop == "number") ?
+  window.screenTop : window.screenY;
+```
+
+使用 `moveTo ()` 和 `moveBy ()` 方法可能将窗口精确地移动到一个新位置，这两个方法都接收两个参数，其中 `moveTo ()` 接收的新新位置的 x 和 y 坐标值，而 `moveBy ()` 接收的是在水平和垂直方向上移动的像素数。
+
+### 8.1.4 窗口大小
+
+跨浏览器确定一个窗口的大小不是一件简单的事。 IE9+、 Firefox、 Safari、 Opera 和 Chrome 均为此提供了 4 个属性： innerWidth、 innerHeight、 outerWidth 和 outerHeight。
+
+使用 `resizeTo ()` 和 `resizeBy ()` 方法可以调整浏览器窗口的大小，这两个方法都接收两个参数，前者接收浏览器窗口的新宽度和新高度，而后者接收新窗口与原窗口的宽度和高度之差。需要注意的是，这两个方法与移动窗口位置的方法类似，也有可能被浏览器禁用。
+
+```js
+//调整到 100× 100
+window.resizeTo(100, 100);
+//调整到 200× 150
+window.resizeBy(100, 50);
+//调整到 300× 300
+window.resizeTo(300, 300);
+```
+
+### 8.1.5 导航和打开窗口
+
+使用 `window.open()`方法既可以导航到一个特定的 URL，也可以打开一个新的浏览器窗口。这个方法可以接收 4 个参数：要加载的 URL、窗口目标、一个特性字符串以及一个表示新页面是否取代浏览器历史记录中当前加载页面的布尔值。通常只须传递第一个参数，最后一个参数只在不打开新窗口的情况下使用。
+
+```js
+//等同于< a href="http://www.wrox.com" target="topFrame"></a>
+window.open("http://www.wrox.com/", "topFrame");
+```
+
+### 8.1.6 间歇调用和超时调用
+
+JavaScript 是单线程语言，但它允许通过设置超时值和间歇时间值来调度代码在特定的时刻执行。前者是在指定的时间过后执行代码，而后者则是每隔指定的时间就执行一次代码。
+
+超时调用需要使用 window 对象的 `setTimeout()`方法，它接受两个参数：要执行的代码和以毫秒表示的时间（即在执行代码前需要等待多少毫秒）。其中，第一个参数可以是一个包含 JavaScript 代码的字符串（就和在 `eval()`函数中使用的字符串一样），也可以是一个函数。例如，下面对 `setTimeout()`的两次调用都会在一秒钟后显示一个警告框。
+
+```js
+//不建议传递字符串！
+setTimeout("alert('Hello world!') ", 1000);
+
+//推荐的调用方式
+setTimeout(function() {
+  alert("Hello world!");
+}, 1000);
+```
+
+第二个参数是一个表示等待多长时间的毫秒数，但经过该时间后指定的代码不一定会执行。JavaScript 是一个单线程序的解释器，因此一定时间内只能执行一段代码。为了控制要执行的代码，就有一个 JavaScript 任务队列。这些任务会按照将它们添加到队列的顺序执行。 `setTimeout()`的第二个参数告诉 JavaScript 再过多长时间把当前任务添加到队列中。如果队列是空的，那么添加的代码会立即执行；如果队列不是空的，那么它就要等前面的代码执行完了以后再执行。
+
+调用 `setTimeout()`之后，该方法会返回一个数值 ID，表示超时调用。这个超时调用 ID 是计划执行代码的唯一标识符，可以通过它来取消超时调用。要取消尚未执行的超时调用计划，可以调用`clearTimeout()`方法并将相应的超时调用 ID 作为参数传递给它
+
+```js
+//设置超时调用
+var timeoutId = setTimeout(function() {
+  alert("Hello world!");
+}, 1000);
+
+//注意：把它取消
+clearTimeout(timeoutId);
+```
+
+间歇调用与超时调用类似，只不过它会按照指定的时间间隔重复执行代码，直至间歇调用被取消或者页面被卸载。设置间歇调用的方法是 `setInterval()`，它接受的参数与 `setTimeout()`相同：要执行的代码（字符串或函数）和每次执行之前需要等待的毫秒数。
+
+```js
+//不建议传递字符串！
+setInterval ("alert('Hello world!') ", 10000);
+//推荐的调用方式
+setInterval (function() {
+  alert("Hello world!");
+}, 10000);
+```
+
+调用 setInterval()方法同样也会返回一个间歇调用 ID，该 ID 可用于在将来某个时刻取消间歇调用。要取消尚未执行的间歇调用，可以使用 clearInterval()方法并传入相应的间歇调用 ID。取消间歇调用的重要性要远远高于取消超时调用，因为在不加干涉的情况下，间歇调用将会一直执行到页面卸载。
+
+```js
+var num = 0;
+var max = 10;
+var intervalId = null;
+function incrementNumber() {
+  num++;
+  //如果执行次数达到了 max 设定的值，则取消后续尚未执行的调用
+  if (num == max) {
+    clearInterval(intervalId);
+    alert("Done");
+  }
+}
+intervalId = setInterval(incrementNumber, 500);
+```
+
+在使用超时调用时，没有必要跟踪超时调用 ID，因为每次执行代码之后，如果不再设置另一次超时调用，调用就会自行停止。一般认为，使用超时调用来模拟间歇调用的是一种最佳模式。在开发环境下，很少使用真正的间歇调用，原因是后一个间歇调用可能会在前一个间歇调用结束之前启动。而像前面示例中那样使用超时调用，则完全可以避免这一点。所以，最好不要使用间歇调用。
+
+```js
+var num = 0;
+var max = 10;
+function incrementNumber() {
+  num++;
+  //如果执行次数未达到 max 设定的值，则设置另一次超时调用
+  if (num < max) {
+    setTimeout(incrementNumber, 500);
+  } else {
+    alert("Done");
+  }
+}
+  setTimeout(incrementNumber, 500);
+```
+
+### 8.1.7 系统对话框
+
+浏览器通过 `alert()`、 `confirm()`和 `prompt()`方法可以调用系统对话框向用户显示消息。系统对话框与在浏览器中显示的网页没有关系，也不包含 HTML。它们的外观由操作系统及（或）浏览器设置决定，而不是由 CSS 决定。此外，通过这几个方法打开的对话框都是同步和模态的。也就是说，显示这些对话框的时候代码会停止执行，而关掉这些对话框后代码又会恢复执行。
+
+```js
+if (confirm("Are you sure?")) {
+  alert("I'm so glad you're sure! ");
+} else {
+  alert("I'm sorry to hear you're not sure. ");
+}
+```
+
+最后一种对话框是通过调用 `prompt()`方法生成的，这是一个“提示”框，用于提示用户输入一些文本。提示框中除了显示 OK 和 Cancel 按钮之外，还会显示一个文本输入域，以供用户在其中输入内容。`prompt()`方法接受两个参数：要显示给用户的文本提示和文本输入域的默认值（可以是一个空字符串）。
+
+```js
+var result = prompt("What is your name? ", "");
+if (result !== null) {
+  alert("Welcome, " + result);
+}
+```
+
+综上所述，这些系统对话框很适合向用户显示消息并请用户作出决定。由于不涉及 HTML、 CSS 或JavaScript，因此它们是增强 Web 应用程序的一种便捷方式。
+
+还有两个可以通过 JavaScript 打开的对话框，即“查找”和“打印”。这两个对话框都是异步显示的，能够将控制权立即交还给脚本。这两个对话框与用户通过浏览器菜单的“查找”和“打印”命令打开的对话框相同。而在 JavaScript 中则可以像下面这样通过 window 对象的 `find()`和 `print()`方法打开它们。
 
 浏览器通过 alert ()、confirm () 和 prompt () 方法可以调用系统对话框向用户显示信息，它们的外观由操作系统及（或）浏览器设置决定。第一个方法接受一个字符串并将其显示给用户，第二个方法是确认对话框，有两个按钮让用户决定是否执行给定的操作，confirm () 方法返回的布尔值中，true 表示单击了 OK，false表示单击了 Cancel 或单击了右上角的 X 按钮。第三种方法是用于提示用户输入一些文本，接受两个参数，要显示给用户的文本提示和文本输入域的默认值。
 
