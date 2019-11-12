@@ -962,11 +962,42 @@ JavaScript具有自动垃圾收集机制，执行环境会负责管理代码执�
 
 ## 5.2 Array类型　
 
-ECMAScript数组的每一项可以保存任何类型的数据，大小是动态调整的。
+虽然 ECMAScript 数组与其他语言中的数组都是数据的有序列表，但与其他语言不同的是， ECMAScript 数组的每一项可以保存任何类型的数据。而且， ECMAScript 数组的大小是可以动态调整的，即可以随着数据的添加自动增长以容纳新增数据。
 
-创建数字的基本方式有两种，第一是使用 Array 构造函数，可以保留 new 操作符也可以省略；第二种基本方法是使用数组字面量表示法，数组字面量是由包含数组项的方括号表示，多个数组项之间以逗号隔开。
+创建数字的基本方式有两种，第一是使用 Array 构造函数，可以保留 new 操作符也可以省略；第二种基本方法是使用数组字面量表示法，数组字面量是由包含数组项的方括号表示，多个数组项之间以逗号隔开。如果在数组字面量的最后一项添加逗号，由于 IE 的实现与其他浏览器不一致，可能导致不同的结果，因此强烈建议不要使用这种语法。
 
-在读取和设置数组的值时，要使用方括号并提供相应值的基于 0 的的数字索引。如果设置某个值的索引超过了数组现有的项数，则数组的长度也会相应增加。数组的length属性不止可读，也可以通过设置这个属性从数组末尾移除项或添加新项。
+```js
+var colors = new Array(3); // 创建一个包含 3 项的数组
+var names = new Array("Greg"); // 创建一个包含 1 项，即字符串"Greg"的数组
+
+var colors = Array(3); // 创建一个包含 3 项的数组
+var names = Array("Greg"); // 创建一个包含 1 项，即字符串"Greg"的数组
+
+var colors = ["red", "blue", "green"]; // 创建一个包含 3 个字符串的数组
+var names = []; // 创建一个空数组
+var values = [1,2,]; // 不要这样！这样会创建一个包含 2 或 3 项的数组
+var options = [,,,,,]; // 不要这样！这样会创建一个包含 5 或 6 项的数组
+```
+
+在读取和设置数组的值时，要使用方括号并提供相应值的基于 0 的的数字索引。方括号中的索引表示要访问的值。如果索引小于数组中的项数，则返回对应项的值。
+
+```js
+var colors = ["red", "blue", "green"]; // 定义一个字符串数组
+alert(colors[0]); // 显示第一项
+colors[2] = "black"; // 修改第三项
+colors[3] = "brown"; // 新增第四项
+```
+设置数组的值也使用相同的语法，但会替换指定位置的值。如果设置某个值的索引超过了数组现有项数，则数组的长度也会相应增加。
+
+数组的项数保存在其 length 属性中，这个属性始终会返回 0 或更大的值。利用 length 属性也可以方便地在数组末尾添加新项。
+
+```js
+var colors = ["red", "blue", "green"]; // 创建一个包含 3 个字符串的数组
+colors[99] = "black"; // （在位置 99）添加一种颜色
+alert(colors.length); // 100
+```
+
+数组最多可以包含 4 294 967 295 个项，这几乎已经能够满足任何编程需求了。如果想添加的项数超过这个上限值，就会发生异常。而创建一个初始大小与这个上限值接近的数组，则可能会导致运行时间超长的脚本错误。
 
 ### 5.2.1 检查数组
 
@@ -1000,40 +1031,79 @@ ECMAScript数组的每一项可以保存任何类型的数据，大小是动态�
 
 数组中已经存在两个可以直接用来重排序的方法： `reverse()`和 `sort()`。
 
-- `reverse()` 方法会反转数组项的顺序，但还不够灵活。
-- `sort()` 方法按升序排列数组项，通过调用每个数组项的 `toString()` 转型方法，然后以字母表顺序比较得到的字符串。同时 `sort ()` 方法可以接受一个比较函数作为参数，以便我们指定哪个值位于哪个值的前面。
+默认情况下， `sort()`方法按升序排列数组项——即最小的值位于最前面，最大的值排在最后面。为了实现排序， `sort()`方法会调用每个数组项的 `toString()`转型方法，然后比较得到的字符串，以确定如何排序。即使数组中的每一项都是数值， `sort()`方法比较的也是字符串。
 
-```JavaScript
-//  升序
+```js
+var values = [0, 1, 5, 10, 15];
+values.sort();
+alert(values); //0,1,10,15,5
+```
+
+不用说，这种排序方式在很多情况下都不是最佳方案。因此 `sort()`方法可以接收一个比较函数作为参数，以便我们指定哪个值位于哪个值的前面。比较函数接收两个参数，如果第一个参数应该位于第二个之前则返回一个负数，如果两个参数相等则返回 0，如果第一个参数应该位于第二个之后则返回一个正数。
+
+```js
 function compare(value1, value2) {
   if (value1 < value2) {
-    return -1;  // 如果第一个参数应该位于第二个之前则返回一个负数
+    return -1;
   } else if (value1 > value2) {
-    return 1;  // 如果第一个参数应该位于第二个之后则返回一个正数
+    return 1;
   } else {
-    return 0;  // 如果两个参数相等则返回 0
+    return 0;
   }
 }
 
-//  对于数值类型或者其 valueOf() 方法会返回数值类型的对象类型，可以使用一个更简单的比较函数。
+var values = [0, 1, 5, 10, 15];
+values.sort(compare);
+alert(values); //0,1,5,10,15
+```
+
+对于数值类型或者其 `valueOf()`方法会返回数值类型的对象类型，可以使用一个更简单的比较函数。这个函数只要用第二个值减第一个值即可。
+
+```JavaScript
+// 降序
 function compare(value1, value2){
-  return value1 - value2;
+  return value2 - value1;
 }
 ```
 
 ### 5.2.6 操作方法
 
-操作方法主要有三个：连接数组 `concat()` 方法、截取数组 `slice()` 方法和修改数组 `splice()`方法。
+ECMAScript 为操作已经包含在数组中的项提供了很多方法。其中， `concat()`方法可以基于当前数组中的所有项创建一个新数组。具体来说，这个方法会先创建当前数组一个副本，然后将接收到的参数添加到这个副本的末尾，最后返回新构建的数组。在没有给 `concat()`方法传递参数的情况下，它只是复制当前数组并返回副本。如果传递给 `concat()`方法的是一或多个数组，则该方法会将这些数组中的每一项都添加到结果数组中。如果传递的值不是数组，这些值就会被简单地添加到结果数组的末尾。
 
-- `concat()` 方法可以基于当前数组中的所有项创造一个新数组，将接受到的参数添加到这个副本的末尾，最后返回新构建的数组。 
-- `slice()` 方法能够基于当前数组中的一个或多个项创建一个新数组，它接受一或两个参数，即要返回项的起始和结束位置，如果只有一个参数，即返回该参数位置开始到当前数组末尾的所有项。如果有两个参数，返回包括起始位置到不包括结束位置的所有项。如果参数有一个负数，则用数组长度加上该数来确定相应的位置。
-- `splice()` 方法始终返回一个数组，该数组中包含从原始数组中删除的项（如果没有删除任何项，则返回一个空数组）。接受三个参数以实现删除，替换或插入的功能。第一个参数表示操作的起始位置，第二参数表示删除的个数，第三个表示添加的数组项。插入是根据位置进行前插，替换的是返回数组中的一项。
+```js
+var colors = ["red", "green", "blue"];
+var colors2 = colors.concat("yellow", ["black", "brown"]);
+alert(colors); //red,green,blue
+alert(colors2); //red,green,blue,yellow,black,brown
+```
+
+下一个方法是 `slice()`，它能够基于当前数组中的一或多个项创建一个新数组。 `slice()`方法可以接受一或两个参数，即要返回项的起始和结束位置。在只有一个参数的情况下， `slice()`方法返回从该参数指定位置开始到当前数组末尾的所有项。如果有两个参数，该方法返回起始和结束位置之间的项——但不包括结束位置的项。注意， `slice()`方法不会影响原始数组。
+
+```js
+var colors = ["red", "green", "blue", "yellow", "purple"];
+var colors2 = colors.slice(1);
+var colors3 = colors.slice(1,4);
+alert(colors2); //green,blue,yellow,purple
+alert(colors3); //green,blue,yellow
+```
+
+如果 `slice()`方法的参数中有一个负数，则用数组长度加上该数来确定相应的位置。例如，在一个包含 5 项的数组上调用 `slice(-2,-1)`与调用 `slice(3,4)`得到的结果相同。如果结束位置小于起始位置，则返回空数组。
+
+下面我们来介绍 `splice()`方法，这个方法恐怕要算是最强大的数组方法了，它有很多种用法。`splice()`的主要用途是向数组的中部插入项，但使用这种方法的方式则有如下 3 种。
+
+- 删除：可以删除任意数量的项，只需指定 2 个参数：要删除的第一项的位置和要删除的项数。
+
+- 插入：可以向指定位置插入任意数量的项，只需提供 3 个参数：起始位置、0（要删除的项数）和要插入的项。如果要插入多个项，可以再传入第四、第五，以至任意多个项。
+
+- 替换：可以向指定位置插入任意数量的项，且同时删除任意数量的项，只需指定 3 个参数：起始位置、要删除的项数和要插入的任意数量的项。插入的项数不必与删除的项数相等。
+
+`splice()`方法始终都会返回一个数组，该数组中包含从原始数组中删除的项（如果没有删除任何项，则返回一个空数组）。
 
 ```javascript
 // slice()
 // 删除第一项 
 var colors = ["red", "green", "blue"]; 
-var removed = colors.splice(0,1); 
+var removed = colors.splice(0, 1); 
 alert(colors); // green,blue 
 alert(removed); // red
 
@@ -1052,47 +1122,92 @@ alert(removed); // yellow
 
 ### 5.2.7 位置方法
 
-位置方法， `indexOf ()` 和 `lastIndexOf ()` 方法都接受两个参数，要查找的项和（可选的）表示查找起点位置的索引。两个返回都是返回要查找的项在数组中的位置，或者在没找到的情况下返回-1。
+ECMAScript 5 为数组实例添加了两个位置方法： `indexOf()`和 `lastIndexOf()`。这两个方法都接收两个参数：要查找的项和（可选的）表示查找起点位置的索引。其中， `indexOf()`方法从数组的开头（位置 0）开始向后查找， `lastIndexOf()`方法则从数组的末尾开始向前查找。这两个方法都返回要查找的项在数组中的位置，或者在没找到的情况下返回-1。在比较第一个参数与数组中的每一项时，会使用全等操作符；也就是说，要求查找的项必须严格相等（就像使用===一样）。
 
-- `indexOf ()`。从开头向后查找。
-- `lastIndexOf ()`。从末尾向前查找。
+```js
+var numbers = [1,2,3,4,5,4,3,2,1];
+alert(numbers.indexOf(4)); //3
+alert(numbers.lastIndexOf(4)); //5
+alert(numbers.indexOf(4, 4)); //5
+alert(numbers.lastIndexOf(4, 4)); //3
+
+var person = { name: "Nicholas" };
+var people = [{ name: "Nicholas" }];
+var morePeople = [person];
+alert(people.indexOf(person)); //-1
+alert(morePeople.indexOf(person)); //0
+```
 
 ### 5.2.8 迭代方法
 
-迭代方法，数组有五个迭代方法。每个方法都接收两个参数，要在每一项上运行的函数和（可选的）运行该函数的作用域对象——影响 this 的值。  
-传入这些方法中的函数会接受三个参数：数组项的值 `item` 、该项在数组中的位置 `index` 和数组对象本身 `array`。另外，这五个方法都不会修改数组中的包含的值。
+ECMAScript 5 为数组定义了 5 个迭代方法。每个方法都接收两个参数：要在每一项上运行的函数和（可选的）运行该函数的作用域对象——影响 this 的值。传入这些方法中的函数会接收三个参数：数组项的值、该项在数组中的位置和数组对象本身。根据使用的方法不同，这个函数执行后的返回值可能会也可能不会影响方法的返回值。
 
-- `every()`：对数组中的每一项运行给定函数，如果该函数对每一项都返回 true，则返回 true。
-- `filter()`：对数组中的每一项运行给定函数，返回该函数会返回 true 的项组成的数组。
-- `forEach()`：对数组中的每一项运行给定函数。这个方法没有返回值。
-- `map()`：对数组中的每一项运行给定函数，返回每次函数调用的结果组成的数组。
-- `some()`：对数组中的每一项运行给定函数，如果该函数对任一项返回 true，则返回 true。
+以下方法都不会修改数组中的包含的值。
+
+- `every()`：遍历运行函数，如果该函数对每一项都返回 true，则返回 true。
+- `filter()`：遍历运行函数，返回该函数会返回 true 的项组成的数组。
+- `forEach()`：遍历运行函数。这个方法没有返回值。
+- `map()`：遍历运行函数，返回每次函数调用的结果组成的数组。
+- `some()`：遍历运行函数，如果该函数对任一项返回 true，则返回 true。
+
+在这些方法中，最相似的是 `every()`和 `some()`，它们都用于查询数组中的项是否满足某个条件。
+
+```js
+var numbers = [1,2,3,4,5,4,3,2,1];
+var everyResult = numbers.every(function(item, index, array){
+  return (item > 2);
+});
+alert(everyResult); //false
+
+var someResult = numbers.some(function(item, index, array){
+  return (item > 2);
+});
+alert(someResult); //true
+```
+
+再看一看 `filter()`函数，它利用指定的函数确定是否在返回的数组中包含某一项。
+
+```js
+var numbers = [1,2,3,4,5,4,3,2,1];
+var filterResult = numbers.filter(function(item, index, array){
+return (item > 2);
+});
+alert(filterResult); //[3,4,5,4,3]
+```
+
+`map()`也返回一个数组，而这个数组的每一项都是在原始数组中的对应项上运行传入函数的结果。
+
+```js
+var numbers = [1,2,3,4,5,4,3,2,1];
+var mapResult = numbers.map(function(item, index, array){
+  return item * 2;
+});
+alert(mapResult); //[2,4,6,8,10,8,6,4,2]
+```
+
+最后一个方法是 `forEach()`，它只是对数组中的每一项运行传入的函数。这个方法没有返回值，本质上与使用 for 循环迭代数组一样。
+
+```js
+var numbers = [1,2,3,4,5,4,3,2,1];
+numbers.forEach(function(item, index, array){
+  //执行某些操作
+});
+```
 
 ### 5.2.9 归并方法
 
-归并方法， `reduce ()` 和 `reduceRight ()` 都是会迭代数组的所有项，然后构建一个最终返回的值。两个方法都接受两个参数，一个在每一项上调用的函数和（可选的）作为归并基础的初始值。而函数接收四个参数：前一个值 `prev` 、当前值 `cur` 、项的索引 `index` 和数组对象 `array` 。
+ECMAScript 5 还新增了两个归并数组的方法： `reduce()`和 `reduceRight()`。这两个方法都会迭代数组的所有项，然后构建一个最终返回的值。其中， `reduce()`方法从数组的第一项开始，逐个遍历到最后。而 `reduceRight()`则从数组的最后一项开始，向前遍历到第一项。
 
-- `reduce()`从数组的第一项开始遍历；
-- `reduceRight()`从最后一项开始遍历。
+这两个方法都接收两个参数：一个在每一项上调用的函数和（可选的）作为归并基础的初始值。传给 `reduce()`和 `reduceRight()`的函数接收 4 个参数：前一个值、当前值、项的索引和数组对象。这个函数返回的任何值都会作为第一个参数自动传给下一项。第一次迭代发生在数组的第二项上，因此第一个参数是数组的第一项，第二个参数就是数组的第二项。
 
-```JavaScript
-// 使用 reduce() 方法可以执行求数组中所有值之和的操作
+```js
+// 求数组中所有值之和
 var values = [1,2,3,4,5];
 var sum = values.reduce(function(prev, cur, index, array){
   return prev + cur;
 });
 alert(sum); //15
 ```
-
-The `reduce()` method executes the callback once for each assigned value present in the array, taking four arguments:
-
-- `accumulator`
-- `currentValue`
-- `currentIndex`
-- `array`
-
-The first time the callback is called, `accumulator` and `currentValue` can be one of two values. If `initialValue` is provided in the call to `reduce()`, then `accumulator` will be equal to `initialValue`, and `currentValue` will be equal to the first value in the array. If no `initialValue` is provided, then `accumulator` will be equal to the first value in the array, and `currentValue` will be equal to the second.  
-If `initialValue` is not provided, `reduce()` will execute the callback function starting at index 1, skipping the first index. If `initialValue` is provided, it will start at index 0.
 
 ## 5.3 Date类型 
 
