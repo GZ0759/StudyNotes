@@ -2154,13 +2154,113 @@ if (result !== null) {
 
 还有两个可以通过 JavaScript 打开的对话框，即“查找”和“打印”。这两个对话框都是异步显示的，能够将控制权立即交还给脚本。这两个对话框与用户通过浏览器菜单的“查找”和“打印”命令打开的对话框相同。而在 JavaScript 中则可以像下面这样通过 window 对象的 `find()`和 `print()`方法打开它们。
 
-浏览器通过 alert ()、confirm () 和 prompt () 方法可以调用系统对话框向用户显示信息，它们的外观由操作系统及（或）浏览器设置决定。第一个方法接受一个字符串并将其显示给用户，第二个方法是确认对话框，有两个按钮让用户决定是否执行给定的操作，confirm () 方法返回的布尔值中，true 表示单击了 OK，false表示单击了 Cancel 或单击了右上角的 X 按钮。第三种方法是用于提示用户输入一些文本，接受两个参数，要显示给用户的文本提示和文本输入域的默认值。
+```js
+//显示“打印”对话框
+window.print();
+//显示“查找”对话框
+window.find();
+```
 
 ## 8.2 location对象 
 
-location 对象提供了与当前窗口中加载的文档有关的信息，还提供了一些导航功能。它很特别，既是 window 对象的属性，也是 document 对象的属性。它的用处不止表示在它当前文档的信息，还表现在它将URL解析为独立的片段，让开发人员可以通过不同的属性来访问这些片段。可以创建函数，用于解析查询字符串，然后返回包含所有参数的一个对象，每个查询字符串参数都成了返回对象的属性。
+location 是最有用的 BOM 对象之一，它提供了与当前窗口中加载的文档有关的信息，还提供了一些导航功能。事实上， location 对象是很特别的一个对象，因为它既是 window 对象的属性，也是document 对象的属性；换句话说， `window.location` 和 `document.location` 引用的是同一个对象。location 对象的用处不只表现在它保存着当前文档的信息，还表现在它将 URL 解析为独立的片段，让开发人员可以通过不同的属性访问这些片段。
 
-使用 localhost 对象可以通过很多方式来改变浏览器的位置，第一个是使用 assign () 方法并为其传递一个 URL，就可以立即打开新 URL 并在浏览器的历史记录中生成一条记录，location.href 或 window.lacation 设置为一个 URL 值，也会以该值调用 assign () 方法。通过修改 location 对象的其它属性也可以改变当前加载的页面，浏览器的历史记录中就会生成一条新纪录，因此用户通过单击“后退”按钮都会导航到前一个页面。调用 replace () 方法，禁用“后退”按钮。调用 reload () 方法，重新加载当前显示的页面。
+下表列出了 location 对象的所有属性（注：省略了每个属性前面的 location 前缀）。
+
+|  属性名  |         例子         |                                    说明                                     |
+| -------- | -------------------- | --------------------------------------------------------------------------- |
+| hash     | "#contents"          | 返回URL中的hash（#号后跟零或多个字符），如果URL中不包含散列，则返回空字符串 |
+| host     | "www.wrox.com:80"    | 返回服务器名称和端口号（如果有）                                            |
+| hostname | "www.wrox.com"       | 返回不带端口号的服务器名称                                                  |
+| href     | "http:/www.wrox.com" | 返回当前加载页面的完整URL。而location对象的`toString()`方法也返回这个值     |
+| pathname | "/WileyCDA/"         | 返回URL中的目录和（或）文件名                                               |
+| port     | "8080"               | 返回URL中指定的端口号。如果URL中不包含端口号，则这个属性返回空字符串        |
+| protocol | "http:"              | 返回页面使用的协议。通常是http:或https:                                     |
+| search   | "?q=javascript"      | 返回URL的查询字符串。这个字符串以问号开头                                   |
+
+### 8.2.1 查询字符串参数
+
+尽管 `location.search` 返回从问号到 URL 末尾的所有内容，但却没有办法逐个访问其中的每个查询字符串参数。为此，可以像下面这样创建一个函数，用以解析查询字符串，然后返回包含所有参数的一个对象。
+
+```js
+function getQueryStringArgs(){
+  //取得查询字符串并去掉开头的问号
+  var qs = (location.search.length > 0 ? location.search.substring(1) : ""),
+  //保存数据的对象
+  args = {},
+  //取得每一项
+  items = qs.length ? qs.split("&") : [],
+  item = null,
+  name = null,
+  value = null,
+  //在 for 循环中使用
+  i = 0,
+  len = items.length;
+  //逐个将每一项添加到 args 对象中
+  for (i=0; i < len; i++){
+  item = items[i].split("=");
+  name = decodeURIComponent(item[0]);
+  value = decodeURIComponent(item[1]);
+  if (name.length) {
+  args[name] = value;
+  }
+  }
+  return args;
+}
+```
+
+### 8.2.2 位置操作
+
+使用 location 对象可以通过很多方式来改变浏览器的位置。首先，也是最常用的方式，就是使用`assign()`方法并为其传递一个 URL。这样，就可以立即打开新 URL 并在浏览器的历史记录中生成一条记录。如果是将 `location.href` 或 `window.location` 设置为一个 URL 值，也会以该值调用 `assign()`方法。
+
+```js
+location.assign("http://www.wrox.com");
+// 等价于
+window.location = "http://www.wrox.com";
+location.href = "http://www.wrox.com";
+```
+
+另外，修改location 对象的其他属性也可以改变当前加载的页面。每次修改 location 的属性（hash 除外），页面都会以新 URL 重新加载。
+
+```js
+//假设初始 URL 为 http://www.wrox.com/WileyCDA/
+//将 URL 修改为"http://www.wrox.com/WileyCDA/#section1"
+location.hash = "#section1";
+//将 URL 修改为"http://www.wrox.com/WileyCDA/?q=javascript"
+location.search = "?q=javascript";
+//将 URL 修改为"http://www.yahoo.com/WileyCDA/"
+location.hostname = "www.yahoo.com";
+//将 URL 修改为"http://www.yahoo.com/mydir/"
+location.pathname = "mydir";
+//将 URL 修改为"http://www.yahoo.com:8080/WileyCDA/"
+location.port = 8080;
+```
+
+当通过上述任何一种方式修改 URL 之后，浏览器的历史记录中就会生成一条新记录，因此用户通过单击“后退”按钮都会导航到前一个页面。要禁用这种行为，可以使用 `replace()`方法。这个方法只接受一个参数，即要导航到的 URL；结果虽然会导致浏览器位置改变，但不会在历史记录中生成新记录。在调用 `replace()`方法之后，用户不能回到前一个页面。
+
+```js
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>You won't be able to get back here</title>
+  </head>
+  <body>
+    <p>Enjoy this page for a second, because you won't be coming back here.</p>
+    <script type="text/javascript">
+      setTimeout(function () {
+        location.replace("http://www.wrox.com/");
+      }, 1000);
+    </script>
+  </body>
+</html>
+```
+
+与位置有关的最后一个方法是 `reload()`，作用是重新加载当前显示的页面。如果调用 `reload()`时不传递任何参数，页面就会以最有效的方式重新加载。也就是说，如果页面自上次请求以来并没有改变过，页面就会从浏览器缓存中重新加载。如果要强制从服务器重新加载，则需要像下面这样为该方法传递参数 true。
+
+```js
+location.reload(); //重新加载（有可能从缓存中加载）
+location.reload(true); //重新加载（从服务器重新加载）
+```
 
 ## 8.3 navigator对象
 
