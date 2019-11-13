@@ -414,27 +414,65 @@ You want to use new ECMAScript 6 features, such as the string extras like starts
 
 # 第2章 JavaScript数组
 
+JavaScript 中没有数组类型。相反，通过 JavaScript 的 Array 对象来支持数组。多年来，Array 对象的支持发生了显著的变化，从简单的数组访问发展为赋予了允许搜索和排序数组的高级功能，以及使用较为高效率的技术来操作数组元素。
+
 ## 2.1 在数组中搜索
+
+### 问题
+
+想要在数组中搜索一个特定值，如果找到的话，获取该数组元素的索引。
 
 You want to search an array for a specific value and get the array element index if found.  
 
-使用数组方法indexOf()和lastIndexOf()，两个方法都接受一个搜索值，再将数组中的每个元素比较，如果找到则返回表示该数组元素的一个索引，没有找到则返回-1，前者返回找到的第一个元素，后者返回找到的最后一个元素。两个方法都接受一个开始索引，表示在哪里开始搜索。
+Use the Array methods indexOf() and lastIndexOf():
 
-```javascript
-
+```js
+var animals = new Array("dog","cat","seal","elephant","walrus","lion");
+console.log(animals.indexOf("elephant")); // prints 3
 ```
 
+### 讨论
 
+使用数组方法`indexOf()`和`lastIndexOf()`，两个方法都接受一个搜索值，再将数组中的每个元素比较，如果找到则返回表示该数组元素的一个索引，没有找到则返回-1，前者返回找到的第一个元素，后者返回找到的最后一个元素。两个方法都接受一个开始索引，表示在哪里开始搜索。
 
-findIndex()方法，测试每个数组值并且当测试成功的时候返回数组元素的索引，find()方法则是返回通过测试的元素的值，这两个方法都接受一个回调函数，以及另一个可选的参数，它在函数中的作用就像this。
+```javascript
+var animals = new Array("dog","cat","seal","walrus","lion", "cat");
+console.log(animals.indexOf("cat")); // prints 1
+console.log(animals.lastIndexOf("cat")); // prints 5
+
+console.log(animals.indexOf("cat",2)); // prints 5
+console.log(animals.lastIndexOf("cat",4)); // prints 1
+```
+
+还可以使用 ES6 的`findIndex()`方法，测试每个数组值并且当测试成功的时候返回数组元素的索引。
+
+```js
+var nums = [2, 4, 19, 15, 183, 6, 7, 1, 1];
+var over = nums.findIndex(function(element) {
+  return (element >= 100);
+});
+
+console.log(nums[over]);
+```
+
+一个具有可比性的 ES6 数组方法是`find()`，它执行相同的过程，但是返回成功通过测试的元素的值。
+
+这两个方法都接受一个回调函数，以及另一个可选的参数，它在函数中的作用就像this。该回调函数有3个参数，数组元素、索引和数组自身。但是，只有一个参数是必需的。这些方法都不修改原始的数组。
 
 ## 2.2 用concat()和apply()将一个二维数组扁平化
 
+### 问题
+
+想要将一个两维数组扁平化为一个单维数组。
+
 You want to flatten a two-dimensional array.  
 
-使用Array对象concat()方法，把多维数组合并为一个单维数组。apply()方法传递一个空的数组作为第一个参数，因为concat()通过该数组连接到一个已有的数组上面工作。
+使用Array对象`concat()`方法，把多维数组合并为一个单维数组。
 
-```javascript
+Use the Array object concat() method to merge the multidimensional array into a
+single-dimensional array:
+
+```js
 var fruitarray = [];
 fruitarray[0] = ['strawberry','orange'];
 fruitarray[1] = ['lime','peach','banana'];
@@ -445,9 +483,19 @@ var newArray = fruitarray.concat.apply([],fruitarray);
 console.log(newArray[5]); // tangerine
 ```
 
+### 讨论
 
+Array 对象 `concat()`方法接受一个或多个数组，并且将数组元素附加到用来调用该方法的父数组的内容的末尾。合并的数组作为一个新的数组返回。这种功能的用途之一是，返回由一个多维数组中的元素所组成的一个单维数组。
+
+```js
+var newArray = fruitarray[0].concat(fruitarray[1],fruitarray[2],fruitarray[3]);
+```
+
+`apply()`方法允许针对给定的一个参数的数组，应用将要调用的函数（concat）。在这个示例中，参数的数组就是最初的多维数组。为了使其能够工作，要给`apply()`传递一个空的数组作为第一个参数，因为`concat()`通过将该数组连接到一个已有的数组上面工作。
 
 ## 2.3 删除或替换数组元素
+
+想要在数组中找到给定的值的出现，删除掉该元素或者用另一个值替换它。
 
 You want to find occurrences of a given value in an array, and either remove the element or replace with another value. 
 
@@ -465,9 +513,51 @@ console.log(animals.toString());
 
 
 
-splice()方法可接受3个参数，第一个参数是进行拼接处的索引，第二个参数是删除元素的数目，第三个参数是替换元素。如果索引是负数，那么将从数组末尾开始拼接该元素。
+splice()方法可接受3个参数，第一个参数是进行拼接处的索引（必须），第二个参数是删除元素的数目（可选），第三个参数是一组替换元素（可选）。如果索引是负数，那么将从数组末尾开始拼接该元素，而不是从数组开头进行。
+
+```js
+var animals = ["cat","walrus","lion", "cat"];
+// splice in new element
+animals.splice(-1,1,"monkey"); // cat,walrus,lion,monkey
+```
+
+如果没有提供要拼接的元素数目，从索引到末尾的所有元素都将删除。
+
+```js
+var animals = ["cat","walrus","lion", "cat"];
+// remove all elements after second
+animals.splice(2); // cat,walrus
+```
+
+最后一个参数是替代值，可以是替代元素的一个集合，也可以是用逗号隔开的替代值。
+
+```js
+var animals = ["cat","walrus","lion", "cat"];
+// replace second element with two
+animals.splice(2,1,"zebra","elephant"); // cat,walrus,zebra,elephant,cat
+```
+
+删除或替换一个元素很方便，但是，删除或替换一个特定元素的所有实例甚至会更方便。
+
+```js
+var charSets = ["ab","bb","cd","ab","cc","ab","dd","ab"];
+// replace element
+while (charSets.indexOf("ab") != -1) {
+charSets.splice(charSets.indexOf("ab"),1,"**");
+}
+// ["**", "bb", "cd", "**", "cc", "**", "dd", "**"]
+console.log(charSets);
+
+// delete new element
+while(charSets.indexOf("**") != -1) {
+charSets.splice(charSets.indexOf("**"),1);
+}
+console.log(charSets); // ["bb", "cd", "cc", "dd"]
+```
 
 ## 2.4 提取一个数组的一部分
+
+想要从一个数组提取一部分，但是保持最初的数组的完整性。
 
 You want to extract out a portion of an array but keep the original array intact.  
 
@@ -479,9 +569,24 @@ var domestic = animals.slice(4,7);
 console.log(domestic); // ['cat','dog','rabbit'];
 ```
 
+`slice()`方法复制一个已有的数组的一部分，返回一个新的数组。它执行浅拷贝，这意味着，如果数组元素时对象，两个数组都指向相同的对象。对新数组中的对象进行修改，会在旧的数组的相同的对象中反应出来。
+
+```js
+var mArray = [];
+mArray[0] = ['apple','pear'];
+mArray[1] = ['strawberry','lemon'];
+mArray[2] = ['lime','peach','berry'];
+var nArray = mArray.slice(1,2);
+console.log(mArray[1]); // ['strawberry','lemon']
+nArray[0][0] = 'raspberry';
+console.log(nArray[0]); // ['raspberry','lemon']
+console.log(mArray[1]); // ['raspberry','lemon']
+```
 
 
 ## 2.5 对每个数组元素应用一个函数
+
+想要使用一个函数来检查一个数组值，如果满足给定的条件，就替换它。
 
 You want to use a function to check an array value, and replace it if it matches a given criterion.  
 
@@ -497,15 +602,27 @@ charSets.forEach(replaceElement);
 console.log(charSets); // ["**", "bb", "cd", "**", "cc", "**", "dd", "**"]
 ```
 
+`forEach()`方法接受一个参数，即回调函数。该函数自身有3个参数：数组元素、元素的索引和数组。所以这3个参数都用于该函数中，但是，只有第一个参数是必需的。
 
+警告：不要从传递给`forEach()`的函数中返回一个值，因为该值将会被丢弃。
 
-forEach()方法接受一个参数，即回调函数，该函数有三个参数：数组元素、元素的索引和数组。同时可以使用以下语句代替上面的条件语句：`(element == "ab") && (array[index] = "**");`  
+如果想要修改数组的一个副本，而不是替换最初的数组，使用`map()`方法。
+
+关于条件语句。在单个一行中使用条件语句，可以不用使用花括号。同时可以更加晦涩一些，虽然这种方法比传统的 if 语句可读性要差一点。
+
+```js
+// if (element == "ab") array[index] = "**";
+// 等价于
+(element == "ab") && (array[index] = "**");
+```
 
 ## 2.6 使用foreach()和call()遍历querySelectorAll()结果
 
+想要对调用`querySelectorAll()`所返回的一个 nodeList，使用`forEach()`。
+
 You want to use forEach() on the nodeList returned from a call to querySelector All().  
 
-为了让forEach()和NodeList一起使用，我们在一个空的数组上调用该方法，然后再该对象上使用call()，从而在NodeLists上模拟了一个Array效果。
+可以将`forEach()`强制地和一个 NodeList 一起使用。
 
 ```javascript
 // use querySelector to find all second table cells
@@ -518,6 +635,8 @@ sum+=parseFloat(cell.firstChild.data);
 
 
 ## 2.7 对数组中的每个元素执行一个函数并放回一个新数组
+
+想要把一个十进制数的数组转换为一个新的数组，其中都是它们等价的十六进制数形式。
 
 You want to convert an array of decimal numbers into a new array with their hexadecimal equivalents.  
 
@@ -537,6 +656,8 @@ console.log(hexArray); // ["17", "ff", "7a", "5", "10", "63"]
 
 ## 2.8 创建一个过滤后的数组
 
+想要过滤一个数组中的元素的值，并且把结果赋给一个新的数组。
+
 You want to filter element values in an array and assign the results to a new array.  
 
 使用Array对象的filter()方法，将一个回调函数应用于每一个数组元素，作为参数传递给filter()方法的函数返回一个布尔值，它根据测试数组元素的结果来返回，这个返回值决定了该数组元素是否添加到一个新的数组中，如果返回true，将会添加；否则将不会添加。
@@ -552,6 +673,8 @@ console.log(newArray); // ["bb", "cd", "cc", "dd"]
 
 
 ## 2.9 验证数组内容
+
+想要确保数组内容满足某个条件。
 
 You want to ensure that array contents meet certain criteria.  
 
@@ -578,6 +701,8 @@ console.log(result); // true
 
 ## 2.10 使用一个关联数组来存储表单元素名和值
 
+想要存储表单元素的名称和值，以便随后用于验证。
+
 You want to store form element names and values for later validation purposes.  
 
 使用关联数组来存储元素，使用元素标识符作为数组索引。不要使用Array对象来创建关联数组，直接使用JavaScript Object即可。keys()对象返回了对象的可枚举属性的一个数组，并且forEach()遍历该数组。
@@ -598,6 +723,8 @@ Object.keys(elemArray).forEach(function (key) {
 dict模式，创建拥有一个空的原型的对象，以避免已有的属性可能会搞乱应用程序，而不是创建一个标准的对象。
 
 ## 2.11 使用解构赋值简化代码
+
+想要将数组元素的支赋给几个变量，但是确实不像单独地赋每一个值。
 
 You want to assign array element values to several variables, but you really don’t want to have assign each, individually.  
 
