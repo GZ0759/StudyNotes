@@ -490,7 +490,7 @@ You want to use a function to check an array value, and replace it if it matches
 ```javascript
 var charSets = ["ab","bb","cd","ab","cc","ab","dd","ab"];
 function replaceElement(element,index,array) {
-if (element == "ab") array[index] = "**";
+  if (element == "ab") array[index] = "**";
 }
 // apply function to each array element
 charSets.forEach(replaceElement);
@@ -617,11 +617,12 @@ Google开发的Traceur是接受ES6代码并将其解释编译的一款应用。
 
 有3种基本的方式可以创建函数：声明式函数、匿名函数或函数构造函数、函数字面值或函数表达式。
 
-> 声明式函数是通过使用function关键字触发的一条语句，并且当JavaScript应用程序初次载入的时候解析。
->
-> 匿名函数是使用new运算符构造的，并且引用Function对象。和声明式函数不同，每次访问匿名函数的时候解析它。
->
-> 字面值函数是一个函数表达式，包括参数和函数体，用于在另一个函数的参数中作为回调函数。
+- 声明式函数是通过使用function关键字触发的一条语句，并且当JavaScript应用程序初次载入的时候解析。
+
+- 匿名函数是使用new运算符构造的，并且引用Function对象。和声明式函数不同，每次访问匿名函数的时候解析它。
+
+- 字面值函数是一个函数表达式，包括参数和函数体，用于在另一个函数的参数中作为回调函数。
+
 
 ## 3.1 放置函数并提升
 

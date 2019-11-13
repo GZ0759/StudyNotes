@@ -1001,17 +1001,73 @@ alert(colors.length); // 100
 
 ### 5.2.1 检查数组
 
-- `instanceof`。如果假设只有一个全局变量，使用该方法即可确定某个对象是否为数组。
-- `Array.isArray()`。这个方法的目的是最终确定某个值到底是不是数组，而不管它是在哪个全局执行环境中创建的。
+自从 ECMAScript 3 做出规定以后，就出现了确定某个对象是不是数组的经典问题。对于一个网页，或者一个全局作用域而言，使用 `instanceof` 操作符就能得到满意的结果：
 
-### 5.2.2 转换数组
+```js
+if (value instanceof Array){
+  //对数组执行某些操作
+}
+```
 
-所有对象都具有 `toLocaleString()`、 `toString()`和 `valueOf()`方法。
+instanceof 操作符的问题在于，它假定只有一个全局执行环境。如果网页中包含多个框架，那实际上就存在两个以上不同的全局执行环境，从而存在两个以上不同版本的 Array 构造函数。如果你从一个框架向另一个框架传入一个数组，那么传入的数组与在第二个框架中原生创建的数组分别具有各自不同的构造函数。
 
-- `toString()`。返回由数组中的每个值的字符串形式拼接而成的一个以逗号分隔的字符串。
-- `valueOf()`。返回的还是数组，取出对象内部的值，不进行类型转换。
-- `toLocaleString()`。当调用数组的这个方法时，它也会创建一个数组值的以逗号分隔的字符串。调用的是每一项的`toLocaleString()`方法，而不是`toString()`方法。
-- `join()` 。可以使用不同的分隔符来构建这个字符串 。它只接受一个用作分隔符的字符串参数。如果不传值或者传入 undefind ，则使用逗号作为分隔符。
+为了解决这个问题， ECMAScript 5 新增了 `Array.isArray()`方法。这个方法的目的是最终确定某个值到底是不是数组，而不管它是在哪个全局执行环境中创建的。这个方法的用法如下。
+
+```js
+if (Array.isArray(value)){
+  //对数组执行某些操作
+}
+```
+
+### 5.2.2 转换方法
+
+如前所述，所有对象都具有 `toLocaleString()`、`toString()`和` valueOf()`方法。其中，调用数组的 `toString()`方法会返回由数组中每个值的字符串形式拼接而成的一个以逗号分隔的字符串。而调用 `valueOf()`返回的还是数组。实际上，为了创建这个字符串会调用数组每一项的`toString()`方法。由于 `alert()`要接收字符串参数，所以它会在后台调用 `toString()`方法，由此会得到与直接调用 `toString()`方法相同的结果。
+
+```js
+var colors = ["red", "blue", "green"]; // 创建一个包含 3 个字符串的数组
+alert(colors.toString()); // red,blue,green
+alert(colors.valueOf()); // red,blue,green
+alert(colors); // red,blue,green
+
+console.log(colors.toString()); // red,blue,green
+console.log(colors.valueOf()); // (3) ["red", "blue", "green"]
+console.log(colors); // (3) ["red", "blue", "green"]
+```
+
+另外， `toLocaleString()`方法经常也会返回与 `toString()`和 `valueOf()`方法相同的值，但也不总是如此。当调用数组的 `toLocaleString()`方法时，它也会创建一个数组值的以逗号分隔的字符串。而与前两个方法唯一的不同之处在于，这一次为了取得每一项的值，调用的是每一项的 `toLocaleString()`方法，而不是 `toString()`方法。
+
+```js
+var person1 = {
+  toLocaleString : function () {
+    return "Nikolaos";
+  },
+  toString : function() {
+    return "Nicholas";
+  }
+};
+var person2 = {
+  toLocaleString : function () {
+    return "Grigorios";
+  },
+  toString : function() {
+    return "Greg";
+  }
+};
+var people = [person1, person2];
+alert(people); //Nicholas,Greg
+alert(people.toString()); //Nicholas,Greg
+alert(people.toLocaleString()); //Nikolaos,Grigorios
+```
+
+数组继承的 `toLocaleString()`、 `toString()`和 `valueOf()`方法，在默认情况下都会以逗号分隔的字符串的形式返回数组项。而如果使用 `join()`方法，则可以使用不同的分隔符来构建这个字符串。 `join()`方法只接收一个参数，即用作分隔符的字符串，然后返回包含所有数组项的字符串。
+
+```js
+var colors = ["red", "green", "blue"];
+alert(colors.join(",")); //red,green,blue
+alert(colors.join("||")); //red||green||blue
+```
+
+如果数组中的某一项的值是 null 或者 undefined，那么该值在 `join()`、`toLocaleString()`、 `toString()`和 `valueOf()`方法返回的结果中以空字符串表示。
 
 ### 5.2.3 栈方法
 
@@ -1019,6 +1075,18 @@ alert(colors.length); // 100
 
 - `push()` 方法可以接受任意数量的参数，把它们逐个添加到数组末尾，并返回修改后数组的长度；
 - `pop()` 方法则从数组末尾移除最后一项，减少数组的length值，然后返回移除的项。
+
+```js
+var colors = new Array(); // 创建一个数组
+var count = colors.push("red", "green"); // 推入两项
+alert(count); //2
+count = colors.push("black"); // 推入另一项
+alert(count); //3
+
+var item = colors.pop(); // 取得最后一项
+alert(item); //"black"
+alert(colors.length); //2
+```
 
 ### 5.2.4 队列方法
 
