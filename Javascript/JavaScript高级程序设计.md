@@ -1313,43 +1313,251 @@ RegExp构造函数包含一些属性，这些属性分别有一个长属性名�
 
 ## 5.5 Function类型　
 
-函数是对象，因此函数名实际上也是一个指向函数对象的指针，不会与某个函数绑定。在使用函数表达式定义函数时，没有必要使用函数名，通过变量即可以引用函数，但是函数末尾要有一个分号。还有一个定义函数的方式是使用Function构造函数，可以接收任意数量的参数，最后的一个参数是函数体，前面的参数则枚举出了新函数的参数。因为函数名是指针，所以不存在函数重载的概念，因为在创建第二个函数实际上是覆盖了第一个函数的变量。
+函数实际上是对象。每个函数都是 Function 类型的实例，而且都与其他引用类型一样具有属性和方法。由于函数是对象，因此函数名实际上也是一个指向函数对象的指针，不会与某个函数绑定。函数通常是使用函数声明语法定义的。另外，还要注意函数末尾有一个分号，就像声明其他变量时一样。
 
-```javascript
-function sum (num1, num2) { return num1 + num2; }  // 使用函数声明语法定义函数  
+```js
+// 函数声明语法
+function sum (num1, num2) {
+  return num1 + num2;
+}
 
-var sum = function(num1, num2) { return num1 + num2; };  // 使用函数表达式定义函数  
-
-var sum = new Function("num1", "num2", "return num1 + num2"); // 使用Function构造函数，不推荐   
+// 与函数表达式定义函数的方式几乎相差无几
+var sum = function(num1, num2){
+  return num1 + num2;
+};
 ```
 
-函数声明与函数表达式的语法基本等价，但是什么时候通过变量访问函数这一点有区别。Javascript引擎在第一遍会声明函数并将它们放到源代码树的顶部，函数表达式则不行。也就是说，解析器会率先读取函数声明，并使其在执行任何代码之前可用（可以访问）；至于函数表达式，则必须等到解析器执行到它所在的代码行，才会真正被解释执行。  
+最后一种定义函数的方式是使用 Function 构造函数。Function 构造函数可以接收任意数量的参数，但最后一个参数始终都被看成是函数体，而前面的参数则枚举出了新函数的参数。从技术角度讲，这是一个函数表达式。但是，不推荐使用这种方法定义函数，因为这种语法会导致解析两次代码（第一次是解析常规 ECMAScript 代码，第二次是解析传入构造函数中的字符串），从而影响性能。不过，这种语法对于理解“函数是对象，函数名是指针”的概念倒是非常直观的。
 
-函数可以作为值来使用，也就是说不仅可以像传递参数一样把一个函数传递给另一个函数，而且可以将一个函数作为另一个函数的结果返回。但是被传递的这个函数必须去标函数名后面的括号，表示要访问函数的指针而不是执行函数。
+```js
+var sum = new Function("num1", "num2", "return num1 + num2"); // 不推荐
+```
 
-在函数内部，一般有两个特殊的对象：arguments 和 this 。 arguments 是一个类数组对象，包含着传入函数中的所有参数，同时还有个名叫 callee 的属性，该属性时一个指针，指向拥有这个 arguments 对象的函数，可以用作定义阶乘函数，方便与函数名解耦。 this 是另一个特殊对象，表示引用的是函数据以执行的环境对象。ECMAScript 5 也规范化了另一个函数对象的属性： caller  ，保存着调用当前函数的函数的引用，如果在全局作用域中调用该函数，它的值为 null ，也可以通过 arguments.callee.caller 来访问相同的信息。
+由于函数名仅仅是指向函数的指针，因此函数名与包含对象指针的其他变量没有什么不同。换句话说，一个函数可能会有多个名字。注意，使用不带圆括号的函数名是访问函数指针，而非调用函数。
 
-函数是对象，因此函数也有属性和方法，每个函数都有 length 和 prototype 两个属性。 length 表示函数希望接收的命名函数的个数， prototype 是保存所有实例方法的真正所在，诸如 toString () 和 valueOf () 等方法都保存在 prototype 名下，不过只是通过各自对象的实例访问。在创建自定义引用类型以及实现继承时， prototype 属性的作用是极为重要的。另外， prototype 属性是不可以枚举的。
+```js
+function sum(num1, num2){
+  return num1 + num2;
+}
+alert(sum(10,10)); //20
+var anotherSum = sum;
+alert(anotherSum(10,10)); //20
+sum = null;
+alert(anotherSum(10,10)); //20
+```
 
-每个函数一般还包含连个非继承而来的方法： apply () 和 call () ，这两个方法的用途都是在特定的作用域中调用函数，实际上等于设置函数体内 this 对象的值。 apply () 方法接收两个参数：第一个是在其中运行函数的作用域，或者说是要调用函数的母对象，第二个是参数数组。 call () 与 apply () 作用相同，不同的是第二个参数必须将传递给函数的参数逐个列举起来。除了传递参数，他们还能通过传递第一个参数来扩充函数赖以运行的作用域。 ES5 还定义一个创建函数实例的方法 bind () ，其 this 值会被绑定到传给 bind () 函数的值，即是将函数绑定到某个对象，使该对象里面有这个函数。
+### 5.1 没有重载（深入理解）
+
+将函数名想象为指针，也有助于理解为什么 ECMAScript 中没有函数重载的概念。
+
+```js
+function addSomeNumber(num){
+  return num + 100;
+}
+function addSomeNumber(num) {
+  return num + 200;
+}
+var result = addSomeNumber(100); //300
+```
+
+这个例子中声明了两个同名函数，而结果则是后面的函数覆盖了前面的函数。以上代码实际与下面的代码没有什么区别。
+
+```js
+var addSomeNumber = function (num){
+  return num + 100;
+};
+addSomeNumber = function (num) {
+  return num + 200;
+};
+var result = addSomeNumber(100); //300
+```
+
+### 5.2 函数声明与函数表达式
+
+实际上，解析器在向执行环境中加载数据时，对函数声明和函数表达式并非一视同仁。解析器会率先读取函数声明，并使其在执行任何代码之前可用（可以访问）；至于函数表达式，则必须等到解析器执行到它所在的代码行，才会真正被解释执行。
+
+```js
+alert(sum(10,10));
+function sum(num1, num2){
+  return num1 + num2;
+}
+```
+
+因为在代码开始执行之前，解析器就已经通过一个名为函数声明提升（function declaration hoisting）的过程，读取并将函数声明添加到执行环境中。对代码求值时， JavaScript 引擎在第一遍会声明函数并将它们放到源代码树的顶部。所以，即使声明函数的代码在调用它的代码后面， JavaScript 引擎也能把函数声明提升到顶部。如果像下面例子所示的，把上面的函数声明改为等价的函数表达式，就会在执行期间导致错误。
+
+```js
+alert(sum(10,10));
+var sum = function(num1, num2){
+return num1 + num2;
+};
+```
+
+除了什么时候可以通过变量访问函数这一点区别之外，函数声明与函数表达式的语法其实是等价的。
+
+### 5.3 作为值的函数
+
+因为 ECMAScript 中的函数名本身就是变量，所以函数也可以作为值来使用。也就是说，不仅可以像传递参数一样把一个函数传递给另一个函数，而且可以将一个函数作为另一个函数的结果返回。
+
+```js
+function callSomeFunction(someFunction, someArgument){
+  return someFunction(someArgument);
+}
+
+function add10(num){
+  return num + 10;
+}
+var result1 = callSomeFunction(add10, 10);
+alert(result1); //20
+function getGreeting(name){
+  return "Hello, " + name;
+}
+var result2 = callSomeFunction(getGreeting, "Nicholas");
+alert(result2); //"Hello, Nicholas"
+```
+
+当然，可以从一个函数中返回另一个函数，而且这也是极为有用的一种技术。例如，假设有一个对象数组，我们想要根据某个对象属性对数组进行排序。而传递给数组 `sort()`方法的比较函数要接收两个参数，即要比较的值。可是，我们需要一种方式来指明按照哪个属性来排序。要解决这个问题，可以定义一个函数，它接收一个属性名，然后根据这个属性名来创建一个比较函数，下面就是这个函数的定义。
+
+```js
+function createComparisonFunction(propertyName) {
+  return function(object1, object2){
+    var value1 = object1[propertyName];
+    var value2 = object2[propertyName];
+    if (value1 < value2){
+      return -1;
+    } else if (value1 > value2){
+      return 1;
+    } else {
+      return 0;
+    }
+  };
+}
+
+var data = [{name: "Zachary", age: 28}, {name: "Nicholas", age: 29}];
+data.sort(createComparisonFunction("name"));
+alert(data[0].name); //Nicholas
+data.sort(createComparisonFunction("age"));
+alert(data[0].name); //Zachary
+```
+
+### 5.4 函数的内部属性
+
+在函数内部，有两个特殊的对象： arguments 和 this。其中， arguments 是一个类数组对象，包含着传入函数中的所有参数。虽然 arguments 的主要用途是保存函数参数，但这个对象还有一个名叫 callee 的属性，该属性是一个指针，指向拥有这个 arguments 对象的函数。请看下面这个非常经典的阶乘函数。使用`arguments.callee`可以让函数与函数名解耦。
+
+```js
+function factorial(num){
+  if (num <= 1) {
+    return 1;
+  } else {
+    return num * arguments.callee(num-1)
+  }
+}
+
+var trueFactorial = factorial;
+factorial = function(){
+  return 0;
+};
+alert(trueFactorial(5)); //120
+alert(factorial(5)); //0
+```
+
+函数内部的另一个特殊对象是 this，其行为与 Java 和 C#中的 this 大致类似。换句话说， this 引用的是函数据以执行的环境对象——或者也可以说是 this 值（当在网页的全局作用域中调用函数时，this 对象引用的就是 window）。
+
+```js
+window.color = "red";
+var o = { color: "blue" };
+function sayColor(){
+  alert(this.color);
+}
+sayColor(); //"red"
+o.sayColor = sayColor;
+o.sayColor(); //"blue"
+```
+
+函数的名字仅仅是一个包含指针的变量而已。因此，即使是在不同的环境中执行，全局的 `sayColor()`函数与 `o.sayColor()`指向的仍然是同一个函数。
+
+ECMAScript 5 也规范化了另一个函数对象的属性： caller。这个属性中保存着调用当前函数的函数的引用，如果是在全局作用域中调用当前函数，它的值为 null。
+
+```js
+function outer(){
+  inner();
+}
+function inner(){
+  alert(inner.caller);
+}
+outer()
+```
+
+为了实现更松散的耦合，也可以通过 `arguments.callee.caller`来访问相同的信息。
+
+```js
+function outer(){
+  inner();
+}
+function inner(){
+  alert(arguments.callee.caller);
+}
+outer();
+```
+
+### 5.5.5 函数属性和方法
+
+函数是对象，因此函数也有属性和方法，每个函数都有 length 和 prototype 两个属性。 length 表示函数希望接收的命名函数的个数， prototype 是保存所有实例方法的真正所在，诸如 `toString ()` 和 `valueOf ()` 等方法都保存在 prototype 名下，不过只是通过各自对象的实例访问。在创建自定义引用类型以及实现继承时， prototype 属性的作用是极为重要的。在 ECMAScript 5 中， prototype 属性是不可枚举的，因此使用 for-in 无法发现。
+
+每个函数一般还包含连个非继承而来的方法： `apply ()` 和 `call ()` ，这两个方法的用途都是在特定的作用域中调用函数，实际上等于设置函数体内 this 对象的值。
+
+首先 `apply ()` 方法接收两个参数：第一个是在其中运行函数的作用域，另一个是参数数组。其中，第二个参数可以是 Array 的实例，也可以是 arguments 对象。
+
+```js
+function sum(num1, num2){
+  return num1 + num2;
+}
+function callSum1(num1, num2){
+  return sum.apply(this, arguments); // 传入 arguments 对象
+}
+function callSum2(num1, num2){
+  return sum.apply(this, [num1, num2]); // 传入数组
+}
+alert(callSum1(10,10)); //20
+alert(callSum2(10,10)); //20
+```
+
+`call()`方法与 `apply()`方法的作用相同，它们的区别仅在于接收参数的方式不同。对于 `call()`方法而言，第一个参数是 this 值没有变化，变化的是其余参数都直接传递给函数。换句话说，在使用`call()`方法时，传递给函数的参数必须逐个列举出来。
+
+```js
+function sum(num1, num2){
+  return num1 + num2;
+}
+function callSum(num1, num2){
+  return sum.call(this, num1, num2);
+}
+alert(callSum(10,10)); //20
+```
+
+事实上，传递参数并非 `apply()`和 `call()`真正的用武之地；它们真正强大的地方是能够扩充函数赖以运行的作用域。使用 `call()`（或 `apply()`）来扩充作用域的最大好处，就是对象不需要与方法有任何耦合关系。
+
+```js
+window.color = "red";
+var o = { color: "blue" };
+function sayColor(){
+  alert(this.color);
+}
+sayColor(); //red
+sayColor.call(this); //red
+sayColor.call(window); //red
+sayColor.call(o); //blue
+```
+
+ECMAScript 5 还定义了一个方法： `bind()`。这个方法会创建一个函数的实例，其 this 值会被绑定到传给 `bind()`函数的值。
 
 ```javascript
-// 使用 call () 扩充函数作用域
-window.color = "red"; 
-var o = { color: "blue" }; 
-function sayColor(){ alert(this.color); } 
-sayColor(); //red 
-sayColor.call(this); //red 
-sayColor.call(window); //red 
-sayColor.call(o); //blue  
-
-// 使用 bind () 绑定作用域
 window.color = "red";
 var o = { color: "blue" };
 function sayColor(){ alert(this.color ); }
 var objectSayColor = sayColor.bind(o);
 objectSayColor(); //blue
 ```
+
+每个函数继承的 `toLocaleString()`和 `toString()`方法始终都返回函数的代码。返回代码的格式则因浏览器而异——有的返回的代码与源代码中的函数代码一样，而有的则返回函数代码的内部表示，即由解析器删除了注释并对某些代码作了改动后的代码。由于存在这些差异，我们无法根据这两个方法返回的结果来实现任何重要功能；不过，这些信息在调试代码时倒是很有用。另外一个继承的`valueOf()`方法同样也只返回函数代码。
 
 ## 5.6 基本包装类型
 
