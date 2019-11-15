@@ -1383,7 +1383,9 @@ function sum(num1, num2){
 }
 ```
 
-因为在代码开始执行之前，解析器就已经通过一个名为函数声明提升（function declaration hoisting）的过程，读取并将函数声明添加到执行环境中。对代码求值时， JavaScript 引擎在第一遍会声明函数并将它们放到源代码树的顶部。所以，即使声明函数的代码在调用它的代码后面， JavaScript 引擎也能把函数声明提升到顶部。如果像下面例子所示的，把上面的函数声明改为等价的函数表达式，就会在执行期间导致错误。
+因为在代码开始执行之前，解析器就已经通过一个名为函数声明提升（function declaration hoisting）的过程，读取并将函数声明添加到执行环境中。对代码求值时， JavaScript 引擎在第一遍会声明函数并将它们放到源代码树的顶部。所以，即使声明函数的代码在调用它的代码后面， JavaScript 引擎也能把函数声明提升到顶部。
+
+如果像下面例子所示的，把上面的函数声明改为等价的函数表达式，就会在执行期间导致错误。
 
 ```js
 alert(sum(10,10));
@@ -1552,7 +1554,9 @@ ECMAScript 5 还定义了一个方法： `bind()`。这个方法会创建一个�
 ```javascript
 window.color = "red";
 var o = { color: "blue" };
-function sayColor(){ alert(this.color ); }
+function sayColor(){ 
+  alert(this.color ); 
+}
 var objectSayColor = sayColor.bind(o);
 objectSayColor(); //blue
 ```
@@ -1561,48 +1565,360 @@ objectSayColor(); //blue
 
 ## 5.6 基本包装类型
 
-为了便于操作基本类型值，ECMAScript还提供了三个特殊的引用类型： Boolean 、 Number 和 String ，这些类型与其他应用类型相似，但同时也具有各自的基本类型相应的特殊行为。实际上，每当读取一个基本类型值的时候，后台就会创建一个对应的基本包装类型的对象，从而让我们能够调用一些方法来操作这些数据。引用类型与基本包装类型的主要区别就是对象的生存期，自动创建的基本包装类型的对象，只存在于一行代码的执行瞬间，然后立即被销毁。这意味我们不能再运行时为基本类型值添加属性和方法。
+为了便于操作基本类型值，ECMAScript还提供了三个特殊的引用类型： Boolean 、 Number 和 String ，这些类型与其他应用类型相似，但同时也具有各自的基本类型相应的特殊行为。实际上，每当读取一个基本类型值的时候，后台就会创建一个对应的基本包装类型的对象，从而让我们能够调用一些方法来操作这些数据。
 
-Boolean类型是与布尔值对应的引用类型，重写了 valueOf () 方法和 toString () 方法，分别返回基本类型值和字符串的 true 与 false 。基本类型与引用类型的布尔值有三个不同的区别，一般建议永远不要使用 Boolean 对象。
-
-- 布尔表达式的所有对象会自动被转换为 true ； 
-- typeof 操作符对基本类型返回 "boolean" ，对引用类型返回 object ；
-- 使用 instanceof 操作符测试 Boolean 对象会返回 true ，而测试基本类型的布尔值则返回 false 。
-
-Number是与数字值对应的引用类型。它重写了转换为字符串的方法： valueOf() 、 toLocaleString () 和 toString () 方法。重写后的 valueOf () 方法返回对象表示的基本类型的数值，另外两个方法则返回字符串形式的数值。另外，还有 toFixed () 方法，这个方法会按照指定的小数位返回数值的字符串表示。如果数值本身包含的小数比指定的还多，那么接近指定的最大小数位的值就会舍入。还有用于格式化数值的方法是 toExponential () ，该方法返回以指数表示法表示的数值的字符串形式，接受一个指定输出结果中的小数位数的参数。如果想表示这个数值最合适的格式，就应该使用 toPrecision () 方法， toPrecision () 方法可能会返回固定大小（ fixed ）格式，也可能返回指数（ exponential ）格式；具体规则是看哪种格式最合适。这个方法接收一个参数，即表示数值的所有数字的位数（不包括指数部分）。 
-
-```javascript
-var num1 = 10.005;
-alert(num1.toFixed(2)); // "10.01"	调用 toFixed () 方法
-
-var num2 = 10;
-alert(num2.toExponential(1)); // "1.0e+1"	调用 toExponential () 方法
-
-var num3 = 99;
-alert(num3.toPrecision(1)); // "1e+2"	调用 toPrecision () 方法，返回指数（ exponential ）格式
-alert(num3.toPrecision(2)); // "99"		调用 toPrecision () 方法，返回固定大小（ fixed ）格式
-alert(num3.toPrecision(3)); // "99.0"	调用 toPrecision () 方法，返回固定大小（ fixed ）格式
+```js
+var s1 = "some text";
+var s2 = s1.substring(2);
 ```
 
- 
+在读取模式中访问字符串时，后台都会自动完成下列处理。这也分别适用于 Boolean 和 Number 类型对应的布尔值和数字值。
 
-String类型是字符串的对象包装类型，除了继承的转换为字符串的方法，它的每个实例都有一个 length 属性，表示字符串中包含多个字符。另外，还有很多方法，用于辅助完成对 ECMAScript 中字符串的解析和操作。
+1. 创建 String 类型的一个实例；
+2. 在实例上调用指定的方法；
+3. 销毁这个实例。
 
-- 字符方法。用于访问字符串中特定字符的方法是： charAt () 和 charCodeAt () ，这两个方法都接收一个基于0的字符位置的参数，前者返回字符，后者返回字符编码，另外也可以使用方括号加数字索引来访问字符串中的特定字符。
+```js
+var s1 = new String("some text");
+var s2 = s1.substring(2);
+s1 = null;
+```
 
-- 字符串操作方法。用于将一或多个字符串拼接起来，返回拼接得到的新字符串方法是 concat () 它可以接受任意多个参数，拼接任意多个字符串，实践中使用更多的还是加号操作符。还有三个基于字符串创建新字符串的方法： slice () 、 substr () 和 substring () 。这三个方法都会返回被操作字符串的一个子字符串，而且都接受一或两个参数，第一个参数指定字符串开始的位置，第二个参数（可选的）表示字符串到哪里结束。 slice () 、 substring () 两个方法的第二参数是字符串最后一个字符后面的位置， substr () 的第二个参数指定的则是返回的字符个数。如果没有给这些方法传递第二个参数，则将字符串的长度作为结束为止。
+引用类型与基本包装类型的主要区别就是对象的生存期。使用 new 操作符创建的引用类型的实例，在执行流离开当前作用域之前都一直保存在内存中。而自动创建的基本包装类型的对象，则只存在于一行代码的执行瞬间，然后立即被销毁。这意味着我们不能在运行时为基本类型值添加属性和方法。
+
+```js
+var s1 = "some text";
+s1.color = "red";
+alert(s1.color); //undefined
+```
+
+当然，可以显式地调用 Boolean、 Number 和 String 来创建基本包装类型的对象。不过，应该在绝对必要的情况下再这样做，因为这种做法很容易让人分不清自己是在处理基本类型还是引用类型的值。对基本包装类型的实例调用 typeof 会返回"object"，而且所有基本包装类型的对象都会被转换为布尔值 true。
+
+Object 构造函数也会像工厂方法一样，根据传入值的类型返回相应基本包装类型的实例。
+
+```js
+var obj = new Object("some text");
+alert(obj instanceof String); //true
+```
+
+要注意的是，使用 new 调用基本包装类型的构造函数，与直接调用同名的转型函数是不一样的。
+
+```js
+var value = "25";
+var number = Number(value); //转型函数
+alert(typeof number); //"number"
+var obj = new Number(value); //构造函数
+alert(typeof obj); //"object"
+```
+
+尽管我们不建议显式地创建基本包装类型的对象，但它们操作基本类型值的能力还是相当重要的。而每个基本包装类型都提供了操作相应值的便捷方法。
+
+### 5.6.1 Boolean类型
+
+Boolean 类型是与布尔值对应的引用类型。要创建 Boolean 对象，可以像下面这样调用 Boolean 构造函数并传入 true 或 false 值。
+
+```js
+var booleanObject = new Boolean(true);
+```
+
+Boolean 类型的实例重写了 `valueOf()`方法，返回基本类型值 true 或 false；重写了 `toString()` 方法，返回字符串"true"和"false"。可是， Boolean 对象在 ECMAScript 中的用处不大，因为它经常会造成人们的误解。其中最常见的问题就是在布尔表达式中使用 Boolean 对象。
+
+```js
+var falseObject = new Boolean(false);
+
+var result = falseObject && true;
+alert(result); //true
+
+var falseValue = false;
+result = falseValue && true;
+alert(result); //false
+```
+
+基本类型与引用类型的布尔值还有两个区别。首先， typeof 操作符对基本类型返回"boolean"，而对引用类型返回"object"。其次，由于 Boolean 对象是 Boolean 类型的实例，所以使用 instanceof 操作符测试 Boolean 对象会返回 true，而测试基本类型的布尔值则返回 false。
+
+```js
+alert(typeof falseObject); //object
+alert(typeof falseValue); //boolean
+alert(falseObject instanceof Boolean); //true
+alert(falseValue instanceof Boolean); //false
+```
+
+### 5.6.2 Number类型
+
+Number 是与数字值对应的引用类型。要创建 Number 对象，可以在调用 Number 构造函数时向其中传递相应的数值。
+
+```js
+var numberObject = new Number(10);
+```
+
+与 Boolean 类型一样， Number 类型也重写了 `valueOf()`、 `toLocaleString()`和` toString()` 方法。重写后的 `valueOf()`方法返回对象表示的基本类型的数值，另外两个方法则返回字符串形式的数值。
+
+```js
+var num = 10;
+alert(num.toString()); //"10"
+alert(num.toString(2)); //"1010"
+alert(num.toString(8)); //"12"
+alert(num.toString(10)); //"10"
+alert(num.toString(16)); //"a"
+```
+
+除了继承的方法之外， Number 类型还提供了一些用于将数值格式化为字符串的方法。其中， `toFixed()`方法会按照指定的小数位返回数值的字符串表示。如果数值本身包含的小数位比指定的还多，那么接近指定的最大小数位的值就会舍入。其中的舍入是银行家舍入:所谓银行家舍入法，其实质是一种四舍六入五取偶（又称四舍六入五留双）法。
+
+```js
+var num = 10;
+alert(num.toFixed(2)); //"10.00"
+
+var num = 10.005;
+alert(num.toFixed(2)); //"10.01"
+```
+
+另外可用于格式化数值的方法是 `toExponential()`，该方法返回以指数表示法（也称 e 表示法）表示的数值的字符串形式。与 `toFixed()`一样， `toExponential()`也接收一个参数，而且该参数同样也是指定输出结果中的小数位数。
+
+```js
+var num = 10;
+alert(num.toExponential(1)); //"1.0e+1"
+```
+
+对于一个数值来说， toPrecision()方法可能会返回固定大小（fixed）格式，也可能返回指数（exponential）格式；具体规则是看哪种格式最合适。这个方法接收一个参数，即表示数值的所有数字的位数（不包括指数部分）。
+
+```js
+var num = 99;
+alert(num.toPrecision(1)); //"1e+2"
+alert(num.toPrecision(2)); //"99"
+alert(num.toPrecision(3)); //"99.0"
+```
+
+与 Boolean 对象类似， Number 对象也以后台方式为数值提供了重要的功能。但与此同时，我们仍然不建议直接实例化 Number 类型，而原因与显式创建 Boolean 对象一样。具体来讲，就是在使用typeof 和 instanceof 操作符测试基本类型数值与引用类型数值时，得到的结果完全不同。
+
+```javascript
+var numberObject = new Number(10);
+var numberValue = 10;
+alert(typeof numberObject); //"object"
+alert(typeof numberValue); //"number"
+alert(numberObject instanceof Number); //true
+alert(numberValue instanceof Number); //false
+```
+
+### 5.6.3 String类型
+
+String 类型是字符串的对象包装类型，可以像下面这样使用 String 构造函数来创建。
+
+```js
+var stringObject = new String("hello world");
+```
+
+String 对象的方法也可以在所有基本的字符串值中访问到。其中，继承的 `valueOf()`、`toLocaleString()`和 `toString()`方法，都返回对象所表示的基本字符串值。
+
+String 类型的每个实例都有一个 length 属性，表示字符串中包含多个字符。
+
+```js
+var stringValue = "hello world";
+alert(stringValue.length); //"11"
+```
+
+String 类型提供了很多方法，用于辅助完成对 ECMAScript 中字符串的解析和操作。
+
+#### 5.6.3.1 字符方法
+
+两个用于访问字符串中特定字符的方法是： `charAt()`和 `charCodeAt()`。这两个方法都接收一个参数，即基于 0 的字符位置。其中， `charAt()`方法以单字符字符串的形式返回给定位置的那个字符（ECMAScript 中没有字符类型），`charCodeAt()`返回字符编码。
+
+```js
+var stringValue = "hello world";
+alert(stringValue.charAt(1)); //"e"
+
+alert(stringValue.charCodeAt(1)); //输出"101"
+```
+
+ECMAScript 5 还定义了另一个访问个别字符的方法。在支持此方法的浏览器中，可以使用方括号加数字索引来访问字符串中的特定字符
+
+```js
+var stringValue = "hello world";
+alert(stringValue[1]); //"e"
+```
+
+#### 5.6.3.2 字符串操作方法
+
+第一个就是 `concat()`，用于将一或多个字符串拼接起来，返回拼接得到的新字符串。实际上， `concat()`方法可以接受任意多个参数，也就是说可以通过它拼接任意多个字符串。
+
+```js
+var stringValue = "hello ";
+var result = stringValue.concat("world", "!");
+alert(result); //"hello world!"
+alert(stringValue); //"hello"
+```
+
+虽然 `concat()`是专门用来拼接字符串的方法，但实践中使用更多的还是加号操作符（+）。而且，使用加号操作符在大多数情况下都比使用 `concat()`方法要简便易行（特别是在拼接多个字符串的情况下）。
+
+ECMAScript还提供了三个基于子字符串创建新字符串的方法： `slice()`、 `substr()`和 `substring()`。这三个方法都会返回被操作字符串的一个子字符串，而且也都接受一或两个参数。第一个参数指定子字符串的开始位置，第二个参数（在指定的情况下）表示子字符串到哪里结束。   
+具体来说， `slice()`和`substring()`的第二个参数指定的是子字符串最后一个字符后面的位置。而 `substr()`的第二个参数指定的则是返回的字符个数。如果没有给这些方法传递第二个参数，则将字符串的长度作为结束位置。 
+
+```js
+var stringValue = "hello world";
+
+alert(stringValue.slice(3)); //"lo world"
+alert(stringValue.substring(3)); //"lo world"
+alert(stringValue.substr(3)); //"lo world"
+
+alert(stringValue.slice(3, 7)); //"lo w"
+alert(stringValue.substring(3,7)); //"lo w"
+alert(stringValue.substr(3, 7)); //"lo worl"
+```
+
+与`concat()`方法一样， `slice()`、 `substr()`和 `substring()`也不会修改字符串本身的值——它们只是返回一个基本类型的字符串值，对原始字符串没有任何影响。
+
+在传递给这些方法的参数是负值的情况下，它们的行为就不尽相同了。其中， `slice()`方法会将传入的负值与字符串的长度相加， `substr()`方法将负的第一个参数加上字符串的长度，而将负的第二个参数转换为 0。最后， `substring()`方法会把所有负值参数都转换为 0。
+
+```js
+// stringValue.length: 11
+var stringValue = "hello world";
+
+alert(stringValue.slice(-3)); //"rld" 
+alert(stringValue.substring(-3)); //"hello world"
+alert(stringValue.substr(-3)); //"rld"
+
+alert(stringValue.slice(3, -4)); //"lo w"
+alert(stringValue.substring(3, -4)); //"hel"
+alert(stringValue.substr(3, -4)); //""（空字符串）
+```
 
 - 字符串位置方法。有两个可以从字符串中查找子字符串的方法： indexOf () 和 lastIndexOf () 。这两个方法都是从一个字符串中搜索给定的字符串，然后返回子字符串的位置，没有找到则返回 -1 。区别在于，前者从字符串的开头向后搜索子字符串  ，后者从字符串的末尾向前搜索子字符串。
 
-- trim () 方法。这个方法会创建一个字符串的副本，删除前置以及后缀的所有空格，然后返回结果。由于 trim () 返回的是字符串的副本，所以原始字符串中的前置及后缀空格会保持不变。  
+#### 5.6.3.3 字符串位置方法
 
-- 字符串大小写转换方法。ECMAScript 中涉及字符串大小写转换的方法有四个： toLowerCase () 、 toLocalLowerCase () 、 toUpperCase () 、toLocalUpperCase () 四个方法，其中第二个方法和第四个方法是针对特定地区的实现，第一个和第三个方法转换为小写，第二个和第四个方法转换为大写。
+有两个可以从字符串中查找子字符串的方法： indexOf()和 lastIndexOf()。这两个方法都是从一个字符串中搜索给定的子字符串，然后返子字符串的位置（如果没有找到该子字符串，则返回-1）。这两个方法的区别在于： indexOf()方法从字符串的开头向后搜索子字符串，而 lastIndexOf()方法是从字符串的末尾向前搜索子字符串。
 
-- 字符串的模式匹配方法。第一个方法就是 match () ，只接受一个参数，要么是一个正则表达式，要么是一个 RegExp 对象。另一个用于查找模式的方法是 search () 方法，返回的是字符串中第一个匹配项的索引，没有找到则返回 -1 ，该方法始终是从字符串开头向后寻找模式。为了简化替换字符串的方法， ECMAScript 提供了一个 replace () 方法，接受两个参数，第一个是 RexExp 对象或者一个字符串，第二个参数是一个字符串或者一个函数。如果第一个参数是字符串，那么只会替换第一个子字符串，如果第一个参数使用正则表达式并且指定全局标志，那么就会替换所有符合要求的子字符串。最后一个与模式匹配相关的方法是 split () ，这个方法可以基于指定的分隔符将一个字符串分割成多个字符串，并将结果放在一个数组中。
+```js
+var stringValue = "hello world";
+alert(stringValue.indexOf("o")); //4
+alert(stringValue.lastIndexOf("o")); //7
+```
 
-- localeCompare () 方法 。还有，比较两个字符串的方法是 localeCompare () ，如果字符串在字母表中应该排在字符串参数之前，则返回一个负数（大多数情况下是-1）； 如果字符串等于字符串参数，则返回 0； 如果字符串在字母表中应该排在字符串参数之后，则返回一个正数（大多数情况下是 1）。  
+这两个方法都可以接收可选的第二个参数，表示从字符串中的哪个位置开始搜索。换句话说，indexOf()会从该参数指定的位置向后搜索，忽略该位置之前的所有字符；而 lastIndexOf()则会从指定的位置向前搜索，忽略该位置之后的所有字符。
 
-- fromCharCode () 方法 。这个方法的任务是接收一或多个字符编码，然后将它们转换成一个字符串。从本质上来看，这个方法与实例方法 charCodeAt () 执行的是相反的操作。  
+```js
+var stringValue = "hello world";
+alert(stringValue.indexOf("o", 6)); //7
+alert(stringValue.lastIndexOf("o", 6)); //4
+```
+
+在使用第二个参数的情况下，可以通过循环调用 indexOf()或 lastIndexOf()来找到所有匹配的子字符串。
+
+```js
+var stringValue = "Lorem ipsum dolor sit amet, consectetur adipisicing elit";
+var positions = new Array();
+var pos = stringValue.indexOf("e");
+while(pos > -1){
+  positions.push(pos);
+  pos = stringValue.indexOf("e", pos + 1);
+}
+alert(positions); //"3,24,32,35,52"
+```
+
+#### 5.6.3.4 trim()方法
+
+ECMAScript 5 为所有字符串定义了 `trim()`方法。这个方法会创建一个字符串的副本，删除前置及后缀的所有空格，然后返回结果。
+
+```js
+var stringValue = " hello world ";
+var trimmedStringValue = stringValue.trim();
+alert(stringValue); //" hello world "
+alert(trimmedStringValue); //"hello world"
+```
+
+由于 `trim()`返回的是字符串的副本，所以原始字符串中的前置及后缀空格会保持不变。
+
+#### 5.6.3.5 字符串大小写转换方法
+
+CMAScript 中涉及字符串大小写转换的方法有 4 个： `toLowerCase()`、 `toLocaleLowerCase()`、 `toUpperCase()`和 `toLocaleUpperCase()`。其中， `toLowerCase()`和 `toUpperCase()`是两个经典的方法，借鉴自 java.lang.String 中的同名方法。而 `toLocaleLowerCase()`和 `toLocaleUpperCase()`方法则是针对特定地区的实现。对有些地区来说，针对地区的方法与其通用方法得到的结果相同，但少数语言（如土耳其语）会为 Unicode 大小写转换应用特殊的规则，这时候就必须使用针对地区的方法来保证实现正确的转换。
+
+```js
+var stringValue = "hello world";
+alert(stringValue.toLocaleUpperCase()); //"HELLO WORLD"
+alert(stringValue.toUpperCase()); //"HELLO WORLD"
+alert(stringValue.toLocaleLowerCase()); //"hello world"
+alert(stringValue.toLowerCase()); //"hello world"
+```
+
+#### 5.6.3.6 字符串的模式匹配方法
+
+String 类型定义了几个用于在字符串中匹配模式的方法。第一个方法就是 `match()`，在字符串上调用这个方法，本质上与调用 RegExp 的 `exec()`方法相同。 `match()`方法只接受一个参数，要么是一个正则表达式，要么是一个 RegExp 对象。
+
+```js
+var text = "cat, bat, sat, fat";
+var pattern = /.at/;
+//与 pattern.exec(text)相同
+var matches = text.match(pattern);
+alert(matches.index); //0
+alert(matches[0]); //"cat"
+alert(pattern.lastIndex); //0
+```
+
+另一个用于查找模式的方法是 `search()`。这个方法的唯一参数与 `match()`方法的参数相同：由字符串或 RegExp 对象指定的一个正则表达式。 `search()`方法返回字符串中第一个匹配项的索引；如果没有找到匹配项，则返回-1。而且， `search()`方法始终是从字符串开头向后查找模式。
+
+```js
+var text = "cat, bat, sat, fat";
+var pos = text.search(/at/);
+alert(pos); //1
+```
+
+为了简化替换子字符串的操作， ECMAScript 提供了 `replace()`方法。这个方法接受两个参数：第一个参数可以是一个 RegExp 对象或者一个字符串（这个字符串不会被转换成正则表达式），第二个参数可以是一个字符串或者一个函数。如果第一个参数是字符串，那么只会替换第一个子字符串。要想替换所有子字符串，唯一的办法就是提供一个正则表达式，而且要指定全局（g）标志。
+
+```js
+var text = "cat, bat, sat, fat";
+var result = text.replace("at", "ond");
+alert(result); //"cond, bat, sat, fat"
+result = text.replace(/at/g, "ond");
+alert(result); //"cond, bond, sond, fond"
+```
+
+`replace()`方法的第二个参数也可以是一个函数。在只有一个匹配项（即与模式匹配的字符串）的情况下，会向这个函数传递 3 个参数：模式的匹配项、模式匹配项在字符串中的位置和原始字符串。在正则表达式中定义了多个捕获组的情况下，传递给函数的参数依次是模式的匹配项、第一个捕获组的匹配项、第二个捕获组的匹配项……，但最后两个参数仍然分别是模式的匹配项在字符串中的位置和原始字符串。这个函数应该返回一个字符串，表示应该被替换的匹配项使用函数作为 `replace()`方法的第二个参数可以实现更加精细的替换操作。
+
+```js
+function htmlEscape(text){
+  return text.replace(/[<>"&]/g, function(match, pos, originalText){
+    switch(match){
+      case "<":
+      return "&lt;";
+      case ">":
+      return "&gt;";
+      case "&":
+      return "&amp;";
+      case "\"":
+      return "&quot;";
+    }
+  });
+}
+alert(htmlEscape("<p class=\"greeting\">Hello world!</p>"));
+//&lt;p class=&quot;greeting&quot;&gt;Hello world!&lt;/p&gt;
+```
+
+最后一个与模式匹配有关的方法是 `split()`，这个方法可以基于指定的分隔符将一个字符串分割成多个子字符串，并将结果放在一个数组中。分隔符可以是字符串，也可以是一个 RegExp 对象（这个方法不会将字符串看成正则表达式）。 `split()`方法可以接受可选的第二个参数，用于指定数组的大小，以便确保返回的数组不会超过既定大小。
+
+```js
+var colorText = "red,blue,green,yellow";
+var colors1 = colorText.split(","); //["red", "blue", "green", "yellow"]
+var colors2 = colorText.split(",", 2); //["red", "blue"]
+var colors3 = colorText.split(/[^\,]+/); //["", ",", ",", ",", ""]
+```
+
+#### 5.6.3.7 localeCompare()方法
+
+与操作字符串有关的最后一个方法是 `localeCompare()`，这个方法比较两个字符串，并返回下列值中的一个：
+- 如果字符串在字母表中应该排在字符串参数之前，则返回一个负数（大多数情况下是-1，具体的值要视实现而定）；
+- 如果字符串等于字符串参数，则返回 0；
+- 如果字符串在字母表中应该排在字符串参数之后，则返回一个正数（大多数情况下是 1，具体的值同样要视实现而定）。
+
+#### 5.6.3.8 fromCharCode()方法  
+
+另外， String 构造函数本身还有一个静态方法： `fromCharCode()`。这个方法的任务是接收一或多个字符编码，然后将它们转换成一个字符串。从本质上来看，这个方法与实例方法 `charCodeAt()`执行的是相反的操作。
+
+```js
+alert(String.fromCharCode(104, 101, 108, 108, 111)); //"hello"
+```
+
+#### 5.6.3.9 HTML()方法  
+
+早期的 Web 浏览器提供商觉察到了使用 JavaScript 动态格式化 HTML 的需求。于是，这些提供商就扩展了标准，实现了一些专门用于简化常见 HTML 格式化任务的方法。不过，需要请读者注意的是，应该尽量不使用这些方法，因为它们创建的标记通常无法表达语义。
 
 ## 5.7 单体内置对象　
 
