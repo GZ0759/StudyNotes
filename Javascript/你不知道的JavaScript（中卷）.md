@@ -45,12 +45,17 @@
 <!-- /TOC -->
 
 # 第一部分 类型和语法
-
-ECMAScript 类型又进一步细分为语言类型和规范类型。 ECMAScript 语言中所有的值都有一个对应的语言类型。 ECMAScript 语言类型包括 Undefined、 Null、 Boolean、 String、 Number 和 Object。  
-
-本书中，我们这样来定义“类型”（与规范类似）：对语言引擎和开发人员来说， 类型是值 的内部特征，它定义了值的行为，以使其区别于其他值。  
-
 ## 第1章 类型
+
+对语言引擎和开发人员来说，类型是值的内部特征，它定义了值的行为，以使其区别于其他值。
+
+换句话说，如果语言引擎和开发人员对 42（数字）和 "42"（字符串）采取不同的处理方式，那就说明它们是不同的类型，一个是 number，一个是 string。通常我们对数字 42 进行数学运算，而对字符串 "42" 进行字符串操作，比如输出到页面。它们是不同的类型。
+
+### 1.1 类型
+
+要正确合理地进行类型转换，必须掌握 JavaScript 中的各个类型及其内在行为。几乎所有的 JavaScript 程序都会涉及某种形式的强制类型转换。
+
+### 1.2 内置类型
 
 JavaScript 有七种内置类型： 
 
@@ -64,6 +69,8 @@ JavaScript 有七种内置类型：
 
 除对象之外，其他统称为“基本类型”。
 
+可以用 typeof 运算符来查看值的类型，它返回的是类型的字符串值。有意思的是，这七种类型和它们的字符串值并不一一对应。
+
 ```javascript
 typeof undefined     === "undefined"; // true
 typeof true          === "boolean";   // true
@@ -75,22 +82,26 @@ typeof { life: 42 }  === "object";    // true
 typeof Symbol()      === "symbol";    // true
 ```
 
-
-
-null 是基本类型中唯一的一个“假值”类型， typeof 对它的返回值为 "object"。function（函数）也是 JavaScript 的一个内置类型。然而查阅规范就会知道， 它实际上是 object 的一个“子类型”。具体来说，函数是“可调用对象”，它有一个内部属性 `[[Call]]`，该属性使其可以被调用。数组也是对象。确切地说，它也是 object 的一个“子类型”，数组的元素按数字顺序来进行索引（而非普通像对象那样通过字符串键值），其 length 属性是元 素的个数。
+另外，null 是基本类型中唯一的一个“假值”类型， typeof 对它的返回值为 "object"。
 
 ```javascript
 typeof null === "object"; // true
 
 var a = null;
 (!a && typeof a === "object"); // true
+```
 
+function（函数）也是 JavaScript 的一个内置类型。它实际上是 object 的一个“子类型”。具体来说，函数是“可调用对象”，它有一个内部属性 `[[Call]]`，该属性使其可以被调用。函数对象的 length 属性是其声明的参数的个数
+
+数组也是对象。确切地说，它也是 object 的一个“子类型”，数组的元素按数字顺序来进行索引（而非普通像对象那样通过字符串键值），其 length 属性是元 素的个数。
+
+```javascript
 typeof function a(){ /* .. */ } === "function"; // true
 
 typeof [1,2,3] === "object"; // true
 ```
 
-
+### 1.3 值和类型
 
 JavaScript 中的变量是没有类型的， 只有值才有。变量可以随时持有任何类型的值。在对变量执行 typeof 操作时，得到的结果并不是该变量的类型，而是该变量持有的值的类 型，因为 JavaScript 中的变量没有类型。typeof 运算符总是会返回一个字符串。
 
