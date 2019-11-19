@@ -91,9 +91,9 @@ var a = null;
 (!a && typeof a === "object"); // true
 ```
 
-function（函数）也是 JavaScript 的一个内置类型。它实际上是 object 的一个“子类型”。具体来说，函数是“可调用对象”，它有一个内部属性 `[[Call]]`，该属性使其可以被调用。函数对象的 length 属性是其声明的参数的个数
+function（函数）也是 JavaScript 的一个内置类型。它实际上是 object 的一个“子类型”。具体来说，函数是“可调用对象”，它有一个内部属性`[[Call]]`，该属性使其可以被调用。函数对象的 length 属性是其声明的参数的个数。
 
-数组也是对象。确切地说，它也是 object 的一个“子类型”，数组的元素按数字顺序来进行索引（而非普通像对象那样通过字符串键值），其 length 属性是元 素的个数。
+数组也是对象。确切地说，它也是 object 的一个“子类型”，数组的元素按数字顺序来进行索引（而非普通像对象那样通过字符串键值），其 length 属性是元素的个数。
 
 ```javascript
 typeof function a(){ /* .. */ } === "function"; // true
@@ -103,9 +103,21 @@ typeof [1,2,3] === "object"; // true
 
 ### 1.3 值和类型
 
-JavaScript 中的变量是没有类型的， 只有值才有。变量可以随时持有任何类型的值。在对变量执行 typeof 操作时，得到的结果并不是该变量的类型，而是该变量持有的值的类 型，因为 JavaScript 中的变量没有类型。typeof 运算符总是会返回一个字符串。
+JavaScript 中的变量是没有类型的，只有值才有。变量可以随时持有任何类型的值。也就是说，语言引擎不要求变量总是持有与其初始值同类型的值。一个变量可以现在被赋值为字符串类型值，随后又被赋值为数字类型值。
 
-变量在未持有值的时候为 undefined。此时 typeof 返回 "undefined" 。已在作用域中声明但还没有赋值的变量，是 undefined 的。相反，还没有在作用域中声明过的变量，是 undeclared 的。对于 undeclared（或者 not defined）变量， typeof 照样返回 "undefined"。  
+在对变量执行 typeof 操作时，得到的结果并不是该变量的类型，而是该变量持有的值的类型，因为 JavaScript 中的变量没有类型。typeof 运算符总是会返回一个字符串。
+
+```js
+var a = 42;
+typeof a; // "number"
+
+a = true;
+typeof a; // "boolean"
+```
+
+#### 1.3.1 undefined 和 undeclared
+
+已在作用域中声明但还没有赋值的变量，是 undefined 的。相反，还没有在作用域中声明过的变量，是 undeclared 的。对于 undeclared（或者 not defined）变量， typeof 照样返回 "undefined"。  
 
 ```javascript
 var a;
@@ -117,21 +129,167 @@ typeof a; // "undefined"
 typeof b; // "undefined"
 ```
 
-
+#### 1.3.2 typeof Undeclared
 
 该安全防范机制对在浏览器中运行的 JavaScript 代码来说还是很有帮助的，因为多个脚本文件会在共享的全局命名空间中加载变量。  
 
+如何在程序中检查全局变量 DEBUG 才不会出现 ReferenceError 错误。这时 typeof 的安全防范机制就成了我们的好帮手。
+
+```js
+// 这样会抛出错误
+if (DEBUG) {
+	console.log( "Debugging is starting" );
+}
+// 这样是安全的
+if (typeof DEBUG !== "undefined") {
+	console.log( "Debugging is starting" );
+}
+```
+
+还有一种不用通过 typeof 的安全防范机制的方法，就是检查所有全局变量是否是全局对象的属性，浏览器中的全局对象是 window。与 undeclared 变量不同，访问不存在的对象属性（甚至是在全局对象 window 上）不会产生 ReferenceError 错误。
+
+```js
+if (window.DEBUG) {
+	// ..
+}
+```
+
+还有一些人喜欢使用“依赖注入”（dependency injection）设计模式，就是将依赖通过参数显式地传递到函数中。
+
+```js
+function doSomethingCool(FeatureXYZ) {
+	var helper = FeatureXYZ ||
+	  function() { /*.. default feature ..*/ };
+	var val = helper();
+	// ..
+}
+```
+
 ## 第2章 值	
 
-数组。和其他强类型语言不同，在 JavaScript 中，数组可以容纳任何类型的值，可以是字符串、 数字、对象（object），甚至是其他数组（多维数组就是通过这种方式来实现的）。
+### 2.1 数组
 
-对数组声明后即可向其中加入值，不需要预先设定大小。
+和其他强类型语言不同，在 JavaScript 中，数组可以容纳任何类型的值，可以是字符串、 数字、对象（object），甚至是其他数组（多维数组就是通过这种方式来实现的）。对数组声明后即可向其中加入值，不需要预先设定大小。
 
-数组通过数字进行索引，但有趣的是它们也是对象，所以也可以包含字符串键值和属性 （但这些并不计算在数组长度内）。这里有个问题需要特别注意，如果字符串键值能够被强制类型转换为十进制数字的话，它就会被当作数字索引来处理。  
+在创建“稀疏”数组（sparse array，即含有空白或空缺单元的数组）时要特别注意。
 
-字符串。字符串和数组的确很相似，它们都是类数组，都有 length 属性以及 indexOf(..)（从 ES5 开始数组支持此方法）和 concat(..) 方法。
+```js
+var a = [ ];
+a[0] = 1;
+// 此处没有设置a[1]单元
+a[2] = [ 3 ];
 
-JavaScript 中字符串是不可变的，而数组是可变的。字符串不可变是指字符串的成员函数不会改变其原始值，而是创建并返回一个新的字符串。而数组的成员函数都是在其原始值上进行操作。  
+a[1]; // undefined
+a.length; // 3
+```
+
+数组通过数字进行索引，但有趣的是它们也是对象，所以也可以包含字符串键值和属性 （但这些并不计算在数组长度内）。
+
+```js
+var a = [ ];
+a[0] = 1;
+a["foobar"] = 2;
+
+a.length; // 1
+a["foobar"]; // 2
+a.foobar; // 2
+```
+
+这里有个问题需要特别注意，如果字符串键值能够被强制类型转换为十进制数字的话，它就会被当作数字索引来处理。在数组中加入字符串键值或属性并不是一个好主意。建议使用对象来存放键值或属性值，用数组来存放数字索引值。
+
+```js
+var a = [ ];
+a["13"] = 42;
+a.length; // 14
+```
+
+**类数组**。有时需要将类数组（一组通过数字索引的值）转换为真正的数组，这一般通过数组工具函数（如 `indexOf(..)`、 `concat(..)`、 `forEach(..)` 等）来实现。
+
+例如，一些 DOM 查询操作会返回 DOM 元素列表，它们并非真正意义上的数组，但十分类似。另一个例子是通过 arguments 对象（类数组）将函数的参数当作列表来访问。
+
+工具函数 `slice(..)` 经常被用于这类转换。
+
+```js
+function foo() {
+	var arr = Array.prototype.slice.call( arguments );
+	arr.push( "bam" );
+	console.log( arr );
+}
+foo( "bar", "baz" ); // ["bar","baz","bam"]
+```
+
+用 ES6 中的内置工具函数 `Array.from(..) `也能实现同样的功能。
+
+```js
+var arr = Array.from( arguments );
+```
+
+### 2.2 字符串
+
+字符串和数组的确很相似，它们都是类数组，都有 length 属性以及 `indexOf(..)`（从 ES5 开始数组支持此方法）和 `concat(..)` 方法。
+
+```js
+var a = "foo";
+var b = ["f","o","o"];
+
+a.length; // 3
+b.length; // 3
+
+a.indexOf( "o" ); // 1
+b.indexOf( "o" ); // 1
+
+var c = a.concat( "bar" ); // "foobar"
+var d = b.concat( ["b","a","r"] ); // ["f","o","o","b","a","r"]
+
+a === c; // false
+b === d; // false
+
+a; // "foo"
+b; // ["f","o","o"]
+```
+
+JavaScript 中字符串是不可变的，而数组是可变的。字符串不可变是指字符串的成员函数不会改变其原始值，而是创建并返回一个新的字符串。而数组的成员函数都是在其原始值上进行操作。 
+
+许多数组函数用来处理字符串很方便。虽然字符串没有这些函数，但可以通过“借用”数组的非变更方法来处理字符串。
+
+```js
+a.join; // undefined
+a.map; // undefined
+var c = Array.prototype.join.call( a, "-" );
+var d = Array.prototype.map.call( a, function(v){
+	return v.toUpperCase() + ".";
+} ).join( "" );
+c; // "f-o-o"
+d; // "F.O.O."
+```
+
+另一个不同点在于字符串反转（JavaScript 面试常见问题）。数组有一个字符串没有的可变更成员函数 `reverse()`。可惜我们无法“借用”数组的可变更成员函数，因为字符串是不可变的。
+
+```js
+a.reverse; // undefined
+b.reverse(); // ["!","o","O","f"]
+b; // ["f","O","o","!"]
+```
+
+一个变通（破解）的办法是先将字符串转换为数组，待处理完后再将结果转换回字符串。
+
+```js
+var c = a
+// 将a的值转换为字符数组
+.split( "" )
+
+// 将数组中的字符进行倒转
+.reverse()
+
+// 将数组中的字符拼接回字符串
+.join( "" );
+
+c; // "oof"
+```
+
+### 2.3 数字
+### 2.4 特殊数值
+### 2.5 值和引用
 
 数字。JavaScript 只有一种数值类型： number（数字），包括“整数”和带小数的十进制数。此处 “整数”之所以加引号是因为和其他语言不同， JavaScript 没有真正意义上的整数。JavaScript 中的“整数”就是没有小数的十进制数。所以 42.0 即等同于“整数” 42。
 
