@@ -288,34 +288,415 @@ c; // "oof"
 ```
 
 ### 2.3 数字
-### 2.4 特殊数值
-### 2.5 值和引用
 
-数字。JavaScript 只有一种数值类型： number（数字），包括“整数”和带小数的十进制数。此处 “整数”之所以加引号是因为和其他语言不同， JavaScript 没有真正意义上的整数。JavaScript 中的“整数”就是没有小数的十进制数。所以 42.0 即等同于“整数” 42。
+JavaScript 只有一种数值类型： number（数字），包括“整数”和带小数的十进制数。此处 “整数”之所以加引号是因为和其他语言不同， JavaScript 没有真正意义上的整数。JavaScript 中的“整数”就是没有小数的十进制数。所以 42.0 即等同于“整数” 42。
 
 与大部分现代编程语言（包括几乎所有的脚本语言）一样， JavaScript 中的数字类型是基于 IEEE 754 标准来实现的，该标准通常也被称为“浮点数”。 JavaScript 使用的是“双精度”格式（即 64 位二进制）。  
 
-由于数字值可以使用Number对象进行封装，因此数字值可以调用Number.prototype中的方法。
+特别大和特别小的数字默认用指数格式显示，与 `toExponential()` 函数的输出结果相同。
+
+```js
+var a = 5E10;
+a; // 50000000000
+a.toExponential(); // "5e+10"
+var b = a * a;
+b; // 2.5e+21
+var c = 1 / a;
+c; // 2e-11
+```
+
+由于数字值可以使用Number对象进行封装，因此数字值可以调用Number.prototype中的方法。例如， `tofixed(..)` 方法可指定小数部分的显示位数。输出结果实际上是给定数字的字符串形式，如果指定的小数部分的显示位数多于实际位数就用 0 补齐。
+
+```js
+var a = 42.59;
+a.toFixed( 0 ); // "43"
+a.toFixed( 1 ); // "42.6"
+a.toFixed( 2 ); // "42.59"
+a.toFixed( 3 ); // "42.590"
+a.toFixed( 4 ); // "42.5900"
+```
+
+`toPrecision(..)` 方法用来指定有效数位的显示位数：
+
+```js
+var a = 42.59;
+a.toPrecision( 1 ); // "4e+1"
+a.toPrecision( 2 ); // "43"
+a.toPrecision( 3 ); // "42.6"
+a.toPrecision( 4 ); // "42.59"
+a.toPrecision( 5 ); // "42.590"
+a.toPrecision( 6 ); // "42.5900"
+```
+
+方法不仅适用于数字变量，也适用于数字常量。不过对于 . 运算符需要给予特别注意，因为它是一个有效的数字字符，会被优先识别为数字常量的一部分，然后才是对象属性访问运算符。
+
+```js
+// 无效语法：
+42.toFixed( 3 ); // SyntaxError
+// 下面的语法都有效：
+(42).toFixed( 3 ); // "42.000"
+0.42.toFixed( 3 ); // "0.420"
+42..toFixed( 3 ); // "42.000"
+```
+
+一些工具库扩展了 Number.prototype 的内置方法以提供更多的数值操作，比如用 `10..makeItRain()` 方法来实现十秒钟金钱雨动画等效果。
+
+数字常量还可以用其他格式来表示，如二进制、八进制和十六进制。当前的 JavaScript 版本都支持这些格式：
+
+```js
+0xf3; // 243的十六进制
+0Xf3; // 同上
+0363; // 243的八进制
+```
+
+二进制浮点数最大的问题，二进制浮点数中的 0.1 和 0.2 并不是十分精确，它们相加的结果并非刚好等于0.3，而是一个比较接近的数字 0.30000000000000004，所以条件判断结果为 false。
+
+```js
+0.1 + 0.2 === 0.3; // false
+```
 
 判断 0.1 + 0.2 和 0.3 是都相等最常见的方法是设置一个误差范围值，通常称为“机器精度”（machine epsilon）。
 
-要检测一个值是否是整数，可以使用 ES6 中的 Number.isInteger(..) 方法。
+从 ES6 开始，该值定义在 `Number.EPSILON` 中，我们可以直接拿来用，也可以为 ES6 之前的版本写 polyfill：
 
-特殊数值。undefined 类型只有一个值，即 undefined。 null 类型也只有一个值，即 null。它们的名 称既是类型也是值。null 是一个特殊关键字，不是标识符，我们不能将其当作变量来使用和赋值。然而 undefined 却是一个标识符，可以被当作变量来使用和赋值。  
+```js
+if (!Number.EPSILON) {
+	Number.EPSILON = Math.pow(2,-52);
+}
+```
 
-表达式 void ___ 没有返回值，因此返回结果是 undefined。 void 并不改变表达式的结果， 只是让表达式不返回值。
+可以使用 `Number.EPSILON` 来比较两个数字是否相等（在指定的误差范围内）：
 
-特殊的数字。NaN 意指“不是一个数字”（not a number），将它理解为“无效数值”“失败数值”或者“坏数值”可能更准确些。NaN 是一个“警戒值”（sentinel value，有特殊用途的常规值），用于指出数字类型中的错误情况，即“执行数学运算没有成功，这是失败后返回的结果”。  
+```js
+function numbersCloseEnoughToEqual(n1,n2) {
+	return Math.abs( n1 - n2 ) < Number.EPSILON;
+}
+var a = 0.1 + 0.2;
+var b = 0.3;
+numbersCloseEnoughToEqual( a, b ); // true
+numbersCloseEnoughToEqual( 0.0000001, 0.0000002 ); // false
+```
 
-NaN 是一个特殊值，它和自身不相等，是唯一一个非自反的值，而 NaN != NaN 为 true 。可以使用内建的全局工具函数 isNaN(..) 来判断一个值是否是 NaN。  
+要检测一个值是否是整数，可以使用 ES6 中的 `Number.isInteger(..)` 方法。
 
-JavaScript 使用有限数字表示法，所以和纯粹的数学运算不同， JavaScript 的运算结果有可能溢出，此时结果为 Infinity 或者 -Infinity。 Infinity/ Infinity 是一个未定义操作，结果为 NaN。  
+```js
+Number.isInteger( 42 ); // true
+Number.isInteger( 42.000 ); // true
+Number.isInteger( 42.3 ); // false
+```
 
-特殊等式。ES6 中新加入了一个工具方法 Object.is(..) 来判断两个值是否绝对相等。能使用 == 和 === 时就尽量不要使用 Object.is(..)，因为前者效率更高、 更为通用。 Object.is(..) 主要用来处理那些特殊的相等比较。   
+也可以为 ES6 之前的版本 polyfill `Number.isInteger(..)` 方法：
 
-值和引用。简单值（即标量基本类型值， scalar primitive） 总是通过值复制的方式来赋值 / 传递，包括 null 、 undefined、字符串、数字、布尔和 ES6 中的 symbol。复合值（compound value）——对象（包括数组和封装对象）和函数，则总是通过引用复制的方式来赋值 / 传递。由于引用指向的是值本身而非变量，所以一个引用无法更改另一个引用的指向。  
+```js
+if (!Number.isInteger) {
+	Number.isInteger = function(num) {
+		return typeof num == "number" && num % 1 == 0;
+	};
+}
+```
 
-我们无法自行决定使用值复制还是引用复制，一切由值的类型来决定。如果通过值复制的方式来传递复合值（如数组），就需要为其创建一个复本，这样传递的就不再是原始值。 如果要将标量基本类型值传递到函数内并进行更改，就需要将该值封装到一个复合值（对象、数组等）中，然后通过引用复制的方式传递。
+要检测一个值是否是安全的整数，可以使用 ES6 中的 Number.isSafeInteger(..) 方法：
+
+```js
+Number.isSafeInteger( Number.MAX_SAFE_INTEGER ); // true
+Number.isSafeInteger( Math.pow( 2, 53 ) ); // false
+Number.isSafeInteger( Math.pow( 2, 53 ) - 1 ); // true
+```
+
+可以为 ES6 之前的版本 polyfill Number.isSafeInteger(..) 方法：
+
+```js
+if (!Number.isSafeInteger) {
+	Number.isSafeInteger = function(num) {
+		return Number.isInteger( num ) &&
+		Math.abs( num ) <= Number.MAX_SAFE_INTEGER;
+	};
+}
+```
+
+### 2.4 特殊数值
+
+#### 2.4.1 不是值的值
+
+undefined 类型只有一个值，即 undefined。 null 类型也只有一个值，即 null。它们的名称既是类型也是值。
+
+undefined 和 null 常被用来表示“空的”值或“不是值”的值。二者之间有一些细微的差别。
+
+- null 指空值（empty value）
+- undefined 指没有值（missing value）
+
+或者：
+
+- undefined 指从未赋值
+- null 指曾赋过值，但是目前没有值
+
+null 是一个特殊关键字，不是标识符，我们不能将其当作变量来使用和赋值。然而 undefined 却是一个标识符，可以被当作变量来使用和赋值。
+
+#### 2.4.2 undefined
+
+在非严格模式下，我们可以为全局标识符 undefined 赋值（这样的设计实在是欠考虑！）：
+
+```js
+function foo() {
+	undefined = 2; // 非常糟糕的做法！
+}
+foo();
+
+function foo() {
+	"use strict";
+	undefined = 2; // TypeError!
+}
+foo();
+```
+
+undefined 是一个内置标识符，它的值为 undefined，通过 void 运算符即可得到该值。
+
+表达式 `void ___` 没有返回值，因此返回结果是 undefined。 void 并不改变表达式的结果，只是让表达式不返回值。按惯例我们用 `void 0` 来获得 undefined（这主要源自 C 语言，当然使用 void true 或其他 void 表达式也是可以的）。 `void 0`、 `void 1` 和 undefined 之间并没有实质上的区别。
+
+```js
+var a = 42;
+console.log( void a, a ); // undefined 42
+```
+
+void 运算符在其他地方也能派上用场，比如不让表达式返回任何结果（即使其有副作用）。
+
+```js
+function doSomething() {
+	// 注： APP.ready 由程序自己定义
+	if (!APP.ready) {
+		// 稍后再试
+		return void setTimeout( doSomething,100 );
+	}
+	var result;
+	// 其他
+	return result;
+}
+// 现在可以了吗？
+if (doSomething()) {
+	// 立即执行下一个任务
+}
+```
+
+很多开发人员喜欢分开操作，效果都一样，只是没有使用 void 运算符：
+
+```js
+if (!APP.ready) {
+	// 稍后再试
+	setTimeout( doSomething,100 );
+	return;
+}
+```
+
+#### 2.4.3 特殊的数字
+
+不是数字的数字。如果数学运算的操作数不是数字类型（或者无法解析为常规的十进制或十六进制数字），就无法返回一个有效的数字，这种情况下返回值为 NaN。换句话说，“不是数字的数字”仍然是数字类型。NaN 是一个“警戒值”（sentinel value，有特殊用途的常规值），用于指出数字类型中的错误情况，即“执行数学运算没有成功，这是失败后返回的结果”。
+
+```js
+var a = 2 / "foo"; // NaN
+typeof a === "number"; // true
+```
+
+有人也许认为如果要检查变量的值是否为 NaN，可以直接和 NaN 进行比较，就像比较 null 和 undefined 那样。实则不然。NaN 是一个特殊值，它和自身不相等，是唯一一个非自反的值。
+
+```js
+var a = 2 / "foo";
+a == NaN; // false
+a === NaN; // false
+```
+
+可以使用内建的全局工具函数 `isNaN(..)` 来判断一个值是否是 NaN。然而操作起来并非这么容易。 `isNaN(..)` 有一个严重的缺陷，它的检查方式过于死板，就是“检查参数是否不是 NaN，也不是数字”。
+
+```js
+var a = 2 / "foo";
+var b = "foo";
+a; // NaN
+b; "foo"
+window.isNaN( a ); // true
+window.isNaN( b ); // true——晕！
+```
+
+从 ES6 开始我们可以使用工具函数 `Number.isNaN(..)`。 ES6 之前的浏览器的 polyfill 如下：
+
+```js
+if (!Number.isNaN) {
+	Number.isNaN = function(n) {
+	return (
+		typeof n === "number" &&
+		  window.isNaN( n )
+		);
+	};
+}
+var a = 2 / "foo";
+var b = "foo";
+Number.isNaN( a ); // true
+Number.isNaN( b ); // false——好！
+```
+
+实际上还有一个更简单的方法，即利用 NaN 不等于自身这个特点。 NaN 是 JavaScript 中唯一一个不等于自身的值。
+
+```js
+if (!Number.isNaN) {
+	Number.isNaN = function(n) {
+		return n !== n;
+	};
+}
+```
+
+无穷数。熟悉传统编译型语言（如 C）的开发人员可能都遇到过编译错误（compiler error）或者运行时错误（runtime exception），例如“除以 0”。
+
+```js
+var a = 1 / 0; // Infinity
+var b = -1 / 0; // -Infinity
+```
+
+JavaScript 使用有限数字表示法（finite numeric representation，即之前介绍过的 IEEE 754浮点数），所以和纯粹的数学运算不同， JavaScript 的运算结果有可能溢出，此时结果为Infinity 或者 -Infinity。
+
+```js
+var a = Number.MAX_VALUE; // 1.7976931348623157e+308
+a + a; // Infinity
+a + Math.pow( 2, 970 ); // Infinity
+a + Math.pow( 2, 969 ); // 1.7976931348623157e+308
+```
+
+零值。-0 除了可以用作常量以外，也可以是某些数学运算的返回值。加法和减法运算不会得到负零（negative zero）。
+
+```js
+var a = 0 / -3; // -0
+var b = 0 * -3; // -0
+```
+
+要区分 -0 和 0，不能仅仅依赖开发调试窗口的显示结果，还需要做一些特殊处理：
+
+```js
+function isNegZero(n) {
+n = Number( n );
+return (n === 0) && (1 / n === -Infinity);
+}
+isNegZero( -0 ); // true
+isNegZero( 0 / -3 ); // true
+isNegZero( 0 ); // false
+```
+
+#### 2.4.4 特殊等式
+
+特殊等式。ES6 中新加入了一个工具方法` Object.is(..)` 来判断两个值是否绝对相等。
+
+```js
+var a = 2 / "foo";
+var b = -3 * 0;
+Object.is( a, NaN ); // true
+Object.is( b, -0 ); // true
+Object.is( b, 0 ); // false
+```
+
+对于 ES6 之前的版本， Object.is(..) 有一个简单的 polyfill。
+
+```js
+if (!Object.is) {
+	Object.is = function(v1, v2) {
+	// 判断是否是-0
+	if (v1 === 0 && v2 === 0) {
+		return 1 / v1 === 1 / v2;
+	}
+	// 判断是否是NaN
+	if (v1 !== v1) {
+		return v2 !== v2;
+	}
+	// 其他情况
+	return v1 === v2;
+	};
+}
+```
+
+能使用 == 和 === 时就尽量不要使用` Object.is(..)`，因为前者效率更高、 更为通用。` Object.is(..)` 主要用来处理那些特殊的相等比较。
+
+### 2.5 值和引用
+
+JavaScript 中没有指针，引用的工作机制也不尽相同。在 JavaScript 中变量不可能成为指向另一个变量的引用。JavaScript 引用指向的是值。如果一个值有 10 个引用，这些引用指向的都是同一个值， 它们相互之间没有引用 / 指向关系。JavaScript 对值和引用的赋值 / 传递在语法上没有区别，完全根据值的类型来决定。
+
+简单值（即标量基本类型值， scalar primitive） 总是通过值复制的方式来赋值 / 传递，包括 null 、 undefined、字符串、数字、布尔和 ES6 中的 symbol。
+
+复合值（compound value）——对象（包括数组和封装对象）和函数，则总是通过引用复制的方式来赋值 / 传递。由于引用指向的是值本身而非变量，所以一个引用无法更改另一个引用的指向。  
+
+由于引用指向的是值本身而非变量，所以一个引用无法更改另一个引用的指向。
+
+```js
+var a = [1,2,3];
+var b = a;
+a; // [1,2,3]
+b; // [1,2,3]
+
+// 然后
+b = [4,5,6];
+a; // [1,2,3]
+b; // [4,5,6]
+```
+
+函数参数就经常让人产生这样的困惑。
+
+```js
+function foo(x) {
+x.push( 4 );
+x; // [1,2,3,4]
+// 然后
+x = [4,5,6];
+x.push( 7 );
+x; // [4,5,6,7]
+}
+var a = [1,2,3];
+foo( a );
+a; // 是[1,2,3,4]，不是[4,5,6,7]
+```
+
+我们不能通过引用 x 来更改引用 a 的指向，只能更改 a 和 x 共同指向的值。
+
+```js
+function foo(x) {
+x.push( 4 );
+x; // [1,2,3,4]
+// 然后
+x.length = 0; // 清空数组
+x.push( 4, 5, 6, 7 );
+x; // [4,5,6,7]
+}
+var a = [1,2,3];
+foo( a );
+a; // 是[4,5,6,7]，不是[1,2,3,4]
+```
+
+我们无法自行决定使用值复制还是引用复制，一切由值的类型来决定。
+
+如果通过值复制的方式来传递复合值（如数组），就需要为其创建一个复本，这样传递的就不再是原始值。 
+
+```js
+foo( a.slice() );
+```
+
+如果要将标量基本类型值传递到函数内并进行更改，就需要将该值封装到一个复合值（对象、数组等）中，然后通过引用复制的方式传递。
+
+```js
+function foo(wrapper) {
+	wrapper.a = 42;
+}
+var obj = {
+	a: 2
+};
+foo( obj );
+obj.a; // 42
+```
+
+与预期不同的是，虽然传递的是指向数字对象的引用复本，但我们并不能通过它来更改其中的基本类型值。
+
+```js
+function foo(x) {
+	x = x + 1;
+	x; // 3
+}
+var a = 2;
+var b = new Number( a ); // Object(a)也一样
+foo( b );
+console.log( b ); // 是2，不是3
+```
 
 ## 第3章 原生函数	
 
