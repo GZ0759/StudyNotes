@@ -1842,11 +1842,221 @@ for (let x of collection) {
 ```
 
 ## 8.5 内建迭代器
+
+迭代器是 ES6 的 一个重要组成部分，在 ECMAScript 6 中，已经默认为许多内建类型提供了内建迭代器，只有当这些内建法代器无法实现你的目标时才需要自己创建 。 通常来说当定义自己的对象和类时才会遇到这种情况，否则，完全可以依靠内建的迭代器完成工作，而最常使用的可能是集合的那些迭代器。
+
 ### 8.5.1 集合对象迭代器
+
+在 ECMAScript 6 中有 3 种类型的集合对象：数组、 Map 集合与 Set 集合 。为了更好地访问对象中的内容，这 3 种对象都内建了以下三种选代器：
+
+- `entries()` 返回一个法代器，其值为多个键值对。
+- `values()` 返回一个迭代器，其值为集合的值。
+- `keys()` 返回一个迭代器，其值为集合中的所有键名。
+
+调用以上 3 个方法都可以访问集合的迭代器。
+
+`entries()`迭代器。每次调用 `next()`方法时， `entries()`迭代器都会返回一个数组，数组中的两个元素分别表示集合中每个元素的键与值。如果被遍历的对象是数组，则第一个元素是数字类型的索引 ：如果是 Set 集合，则第一个元素与第二个元素都是值（ Set集合中的值被同时作为键与值使用）；如果是 Map 集合，则第一个元素为键名。
+
+```js
+let colors = [ "red", "green", "blue" ];
+let tracking = new Set([1234, 5678, 9012]);
+let data = new Map();
+
+data.set("title", "Understanding ECMAScript 6");
+data.set("format", "ebook");
+
+for (let entry of colors.entries()) {
+    console.log(entry);
+}
+
+for (let entry of tracking.entries()) {
+    console.log(entry);
+}
+
+for (let entry of data.entries()) {
+    console.log(entry);
+}
+
+// [0, "red"]
+// [1, "green"]
+// [2, "blue"]
+// [1234, 1234]
+// [5678, 5678]
+// [9012, 9012]
+// ["title", "Understanding ECMAScript 6"]
+// ["format", "ebook"]
+```
+
+`values()` 迭代器。调用 `values()` 迭代器时会返回集合中所存的所有值。
+
+```js
+let colors = [ "red", "green", "blue" ];
+let tracking = new Set([1234, 5678, 9012]);
+let data = new Map();
+
+data.set("title", "Understanding ECMAScript 6");
+data.set("format", "ebook");
+
+for (let value of colors.values()) {
+    console.log(value);
+}
+
+for (let value of tracking.values()) {
+    console.log(value);
+}
+
+for (let value of data.values()) {
+    console.log(value);
+}
+
+// "red"
+// "green"
+// "blue"
+// 1234
+// 5678
+// 9012
+// "Understanding ECMAScript 6"
+// "ebook"
+```
+
+`keys()` 迭代器。`keys()` 迭代器会返回集合中存在的每一个键。如果遍历的是数组，则会返回数字类型的键，数组本身的其他属性不会被返回 ； 如果是 Set 集合 ， 由于键与值是相同的 ， 因此 `keys()`和 `values()`返回的也是相同的法代器；如果是 Map集合，则 `keys()`迭代器会返回每个独立的键。
+
+```js
+let colors = [ "red", "green", "blue" ];
+let tracking = new Set([1234, 5678, 9012]);
+let data = new Map();
+
+data.set("title", "Understanding ECMAScript 6");
+data.set("format", "ebook");
+
+for (let key of colors.keys()) {
+    console.log(key);
+}
+
+for (let key of tracking.keys()) {
+    console.log(key);
+}
+
+for (let key of data.keys()) {
+    console.log(key);
+}
+
+// 0
+// 1
+// 2
+// 1234
+// 5678
+// 9012
+// "title"
+// "format"
+```
+
+集合类型的默认迭代器。每个集合类型都有一个默认的法代器， 在 for-of 循环中，如果没有显式指定则使用默认的法代器。数组和 Set 集合的默认迭代器是 `values()` 方法， Map集合的默认迭代器是 `entries()`方法。有了这些默认的法代器，可以更轻松地在 for-of 循环中使用集合对象。
+
+```js
+let colors = [ "red", "green", "blue" ];
+let tracking = new Set([1234, 5678, 9012]);
+let data = new Map();
+
+data.set("title", "Understanding ECMAScript 6");
+data.set("format", "print");
+
+// same as using colors.values()
+for (let value of colors) {
+    console.log(value);
+}
+
+// same as using tracking.values()
+for (let num of tracking) {
+    console.log(num);
+}
+
+// same as using data.entries()
+for (let entry of data) {
+    console.log(entry);
+}
+```
+
+解构与 for-of 循环。如果要在 for-of 循环中使用解构语法，则可以利用 Map 集合默认构造函数的行为来简化编码过程，将 Map 集合中每一个条目解构为key 和 value 两 变量。使用这种方法后，便不再需要访问含有键和值的两元素数组，也不需要通过 Map 集合的内建方法取出每一个键和值。 除了Map 集合外，我们也可将 for-of 循环中的解构方法应用于 Set 集合与数组 。
+
+```js 
+let data = new Map();  
+data.set("title", "Understanding ECMAScript 6");  
+data.set("format", "ebook");  
+// same as using data.entries()  
+for (let [key, value] of data) {  
+    console.log(key + "=" + value);  
+}  
+```
+
 ### 8.5.2 字符串迭代器
+
+自 ECMAScript 5 发布以后， JavaScript 字符串慢慢变得更像数组了，例如，ECMAScript 5 正式规定可以通过方括号访问字符串中的宇符（也就是说，`text[0]`可以获取字符串 text 的第一个字符，并以此类推）。由于方括号操作的是编码单元而非字符，因此无法正确访问双字节字符.
+
+```js
+var message = "A 𠮷 B";
+
+for (let i=0; i < message.length; i++) {
+    console.log(message[i]);
+}
+
+// A
+// (blank)
+// (blank)
+// (blank)
+// (blank)
+// B
+```
+
+所幸， ECMAScript 6 的目标是全面支持 Unicode ，并且我们可以通过改变字符串的默认迭代器来解决这个问题，使其操作字符而不是编码单元。现在，我们修改前一个示例中字符串的默认迭代器，让 for-of 循环输出正确的内容。
+
+```js
+var message = "A 𠮷 B";
+
+for (let c of message) {
+    console.log(c);
+}
+
+// A
+// (blank)
+// 𠮷
+// (blank)
+// B
+```
+
 ### 8.5.3 NodeList迭代器
 
+DOM 标准中有一个 NodeList 类型， document 对象中的所有元素都用这个类型来表示。对于编写 Web 浏览器环境中的 JavaScript 的开发者来说，需要花一点儿功夫去理解 NodeList 对象和数组之间的差异。 二者都使用 length 属性来表示集合中元素的数量，都可以通过方括号来访问集合中的独立元素：而在内部实现中，二者的表现非常不一致，因而会造成很多困扰。
+
+自从 ECMAScript 6 添加了默认迭代器后， DOM 定义中的 NodeList 类型（定义在 HTML 标准而不是 ECMAScript 6 标准中）也拥有了默认迭代器，其行为与数组的默认迭代器完全一致。所以可以将 NodeList 应用于 for-of 循环及其他支持对象默认迭代器的地方。
+
+```js
+var divs = document.getElementsByTagName("div");
+
+for (let div of divs) {
+    console.log(div.id);
+}
+```
+
 ## 8.6 展开运算符与非数组可迭代对象
+
+展开运算符把 Set 集合的所有值填充到了一个数组字面量里，它可以操作所有可迭代对象，并根据默认迭代器来选取要引用的值，从迭代器读取所有值。然后按照返回顺序将它们依次插入到数组中。
+
+```js
+let set = new Set([1, 2, 3, 3, 3, 4, 5]),
+    array = [...set];
+
+console.log(array);             // [1,2,3,4,5]
+```
+
+展开运算符把 Map 集合转换成包含多个数组的数组， Map 集合的默认法代器返回的是多组键值对，所以结果数组与执行 `new Map()` 时传入的数组看起来一样 。
+
+```js
+let map = new Map([ ["name", "Nicholas"], ["age", 25]]),
+    array = [...map];
+
+console.log(array);         // [ ["name", "Nicholas"], ["age", 25]]
+```
 
 ## 8.7 高级迭代器功能
 ### 8.7.1 给迭代器传递参数

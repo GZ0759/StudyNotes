@@ -1426,32 +1426,132 @@ unicode-range 的作用是可以让特定的字符或者特定范围的字符使
 
 CSS 有很多属性专门用来对文本进行控制，由于这些属性的作用机制往往是基于内联盒模型的，因此对于内联块状元素同样也是有效果的，这就使得这些 CSS 属性作用范围更广了，甚至可以影响布局。
 
-text-indent 就是对文本进行缩进控制，用得比较多的是 text-indent 负值隐藏文本内容。另外， text-indent 负值缩进在部分浏览器下会影响元素的 outline 区域，通常需要再设置 `overflow: hidden`。 与文本控制相关的 CSS 属性支持百分比值的并不多，text-indent 支持百分比值其实算是比较“有个性的”，但设置百分比值会有隐患。从理论上讲，我们可以使用 text-indent 与百分值实现宽度已知内联元素的居中效果。
+### 8.61. text-indent与内联元素缩进
 
-- text-indent 仅对第一行内联盒子内容有效。
-- 非替换元素以外的 display 计算值为 inline 的内联元素设置 text-indent 值无效，如果计算值是 inline-block/inline-table 则会生效。因此，如果父级块状元素设置 了 text-indent 属性值，子 inline-block/inline-table 需要设置 text-indent:0 重置。
-- `<input>`标签按钮 text-indent 值无效。
-- `<button>`标签按钮 text-indent 值有效，但是存在兼容性差异， IE 浏览器理解为单标签，百分比值按照容器计算，而 Chrome 和 Firefox 浏览器标签内还有其他 Shadow DOM 元 素，因此百分比值是按照自身的尺寸计算的。
-- `<input>`和`<textarea>`输入框的 text-indent 在低版本 IE 浏览器下有兼容问题。
+text-indent 就是对文本进行缩进控制，但是这种缩进对内容要求比较高，如果段落掺杂英文、数字或者图片等内容，缩进反而可能会给人以参差不齐的感觉，加上现代 Web 形式更加多样，text-indent 在实际项目中的应用已经脱离了它原本的设计初衷。
 
-letter-spacing 可以用来控制字符之间的间距，这里说的“字符”包括英文字母、汉字以及空格等，letter-spacing 具有以下一些特性。
+首先用得比较多的是 text-indent 负值隐藏文本内容。比方说，很多网站的标识（logo）就是网站的名称，从 SEO 的角度讲，我们大可以使用`<h1>`和`<h2>`这种级别的标签放置我们的标识，同时写上对应的文字内容。
 
-- 继承性。
-- 默认值是 normal 而不是 0。虽然说正常情况下， normal 的计算值就是 0 。
-- 支持负值，且值足够大的时候，会让字符形成重叠，甚至反向排列（非 IE 浏览器）。
-- 和 text-indent 属性一样，无论值多大或多小，第一行一定会保留至少一个字符。 letter-spacing 还有一个非常有意思的特性就是，在默认的左对齐情况下，无论值如何设 置，第一个字符的位置一定是纹丝不动的。
-- 支持小数值，即使 0.1px 也是支持的，但并不总能看到效果，这与屏幕的密度有关。
-- 暂不支持百分比值。
+```html
+<h1 class="logo">CSS 世界</h1>
+```
 
-word-spacing 和 letter-spacing 名称类似，其特性也有很多共通之处：都具有继承性；默认值都是 normal 而不是 0。通常情况下，两者表现并无差异；都支持负值，都可以让字符重叠；都支持小数值，如 `word-spacing: 0.5px`；在目前的 CSS2.1 规范中，并不支持百分比值，但新的草案中新增了对百分值的支持，这是是根据相对于字符的“步进宽度”（ advance width）计算的；间隔算法都会受到 `text-align: justify` 两端对齐的影响。
+```css
+.logo {
+  width: 120px;
+  background: url(logo.png);
+  text-indent: -120px;
+}
+```
 
-当然也有差异。letter-spacing 作用于所有字符，但 word-spacing 仅作用于空格字符。注意，是作用在“空格”上，而不是字面意义上的“单词”。换句话说，word-spacing 的作用就是增加空格的间隙宽度。有空格就有效。在命名上，word-spacing 之所以称为 word-spacing 而不是 blank-spacing 之类的，主要原因是此属性当初主要为英文类排版设计，而英文单词和单词之间是以空格分隔的，要想控制单词之间的间距，自然就向“空格”开刀了。
+另外， text-indent 负值缩进在部分浏览器下会影响元素的 outline 区域，通常需要再设置 `overflow: hidden`。 与文本控制相关的 CSS 属性支持百分比值的并不多，text-indent 支持百分比值其实算是比较“有个性的”，但设置百分比值会有隐患。
+
+从理论上讲，我们可以使用 text-indent 与百分值实现宽度已知内联元素的居中效果。但是，由于 text-align 属性的存在，这种居中小技巧平常使用的机会很少，除非是 text-align 不能设置为 center 的场景。
+
+```css
+.box {
+  text-indent: 50%;
+}
+.box img {
+  width: 256px;
+  margin-left: -128px;
+}
+```
+
+在标签受限的情况下可以实现一些特殊的布局效果。
+
+```html
+<p>提问：问题内容...</p>
+<p>回答：回答内容...</p>
+<p>提问：问题内容...</p>
+<p>回答：回答内容...</p>
+```
+```css
+p {
+text-indent: -3em;
+padding-left: 3em;
+}
+```
+
+最后再说几个可能不知道的小知识。
+
+1. text-indent 仅对第一行内联盒子内容有效。
+2. 非替换元素以外的 display 计算值为 inline 的内联元素设置 text-indent 值无效，如果计算值是 inline-block/inline-table 则会生效。因此，如果父级块状元素设置 了 text-indent 属性值，子 inline-block/inline-table 需要设置 text-indent:0 重置。
+3. `<input>`标签按钮 text-indent 值无效。
+4. `<button>`标签按钮 text-indent 值有效，但是存在兼容性差异。
+5. `<input>`和`<textarea>`输入框的 text-indent 在低版本 IE 浏览器下有兼容问题。
+
+### 8.6.2 letter-spacing与字符间距
+
+letter-spacing 可以用来控制字符之间的间距，这里说的“字符”包括英文字母、汉字以及空格等。
+
+letter-spacing 具有以下一些特性。
+
+1. 继承性。
+2. 默认值是 normal 而不是 0。虽然说正常情况下， normal 的计算值就是 0 。在有些场景下， letter-spacing 会调整 normal 的计算值以实现更好的版面布局。
+3. 支持负值，且值足够大的时候，会让字符形成重叠，甚至反向排列（非 IE 浏览器）。
+4. 和 text-indent 属性一样，无论值多大或多小，第一行一定会保留至少一个字符。 letter-spacing 还有一个非常有意思的特性就是，在默认的左对齐情况下，无论值如何设置，第一个字符的位置一定是纹丝不动的。
+5. 支持小数值，即使 0.1px 也是支持的，但并不总能看到效果，这与屏幕的密度有关。
+6. 暂不支持百分比值。
+
+在实际开发的时候， letter-spacing 除了控制文字内容排版外，还可以修复一些布局上的问题。例如，清除 inline-block 列表由于换行符或者空格产生的空白间隙，使布局控制更精准。
+
+```css
+.box {
+  letter-spacing: -1em;
+}
+.list {
+  letter-spacing: 0;
+}
+```
+
+由于 letter-spacing 负值的字体重叠特性，我们还可以利用该属性实现一些文本动效。这样就可以有文字依次飞入的效果了。
+
+```css
+.title {
+animation: textIn 1s both;
+}
+@keyframes textIn {
+  0% {
+    letter-spacing: -200px;
+  }
+  100% {
+    letter-spacing: 0;
+  }
+}
+```
+
+### 8.6.3 word-spacing与单词间距
+
+word-spacing 和 letter-spacing 名称类似，其特性也有很多共通之处：
+
+1. 都具有继承性；
+2. 默认值都是 normal 而不是 0。通常情况下，两者表现并无差异；
+3. 都支持负值，都可以让字符重叠；
+4. 都支持小数值，如 `word-spacing: 0.5px`；
+5. 在目前的 CSS2.1 规范中，并不支持百分比值，但新的草案中新增了对百分值的支持。
+6. 间隔算法都会受到 `text-align: justify` 两端对齐的影响。
+
+当然也有差异。letter-spacing 作用于所有字符，但 word-spacing 仅作用于空格字符。注意，是作用在“空格”上，而不是字面意义上的“单词”。love 虽然是一个单词，但没有空格，那么很抱歉， word-spacing 无效。
+
+```css
+.wp {
+  word-spacing: 20px;
+}
+```
+```html
+<p class="wp">我 love 前端！ </p>
+```
+
+换句话说，word-spacing 的作用就是增加空格的间隙宽度。有空格就有效。在命名上，word-spacing 之所以称为 word-spacing 而不是 blank-spacing 之类的，主要原因是此属性当初主要为英文类排版设计，而英文单词和单词之间是以空格分隔的，要想控制单词之间的间距，自然就向“空格”开刀了。
+
+### 8.6.4 了解 word-break 和 word-wrap 的区别
 
 word-break 属性规定自动换行的处理方法。语法如下：
 
-- word-break: normal 使用默认的换行规则。
-- word-break: break-all 允许任意非 CJK（ Chinese/Japanese/Korean）文本间的单词断行，这个值所有浏览器都支持。
-- word-break: keep-all 不允许 CJK 文本中的单词换行，只能在半角空格或连字符处换行。非 CJK 文本的行为实际上和 normal 一致。目前移动端还不适合使用 word-break:keep-all。
+- normal 使用默认的换行规则。
+- break-all 允许任意非 CJK（Chinese/Japanese/Korean）文本间的单词断行，这个值所有浏览器都支持。
+- keep-all 不允许 CJK 文本中的单词换行，只能在半角空格或连字符处换行。非 CJK 文本的行为实际上和 normal 一致。目前移动端还不适合使用 `word-break:keep-all`。
 
 word-wrap 属性允许长单词或 URL 地址换行到下一行。在 CSS3 规范里，这个属性的名称被修改了，叫作 overflow-wrap。
 
@@ -1459,6 +1559,8 @@ word-wrap 属性允许长单词或 URL 地址换行到下一行。在 CSS3 规�
 - word-wrap: break-word 一行单词中实在没有其他靠谱的换行点的时候换行。
 
 顾名思义，`word-break: break-all` 的作用是所有的都换行，毫不留情，一点儿空隙都不放过，而 `word-wrap: break-word` 则带有怜悯之心，如果这一行文字有可以换行的点，如空格或 CJK（中文/日文/韩文）之类的，就不打英文单词或字符的主意了，在这些换行点换行，至于对不对齐、好不好看则不关心，因此，很容易出现一片一片空白区域的情况。
+
+### 8.6.5 white-space 与换行和空格的控制
 
 white-space 属性声明了如何处理元素内的空白字符，这类空白字符包括 Space（空格） 键、 Enter（回车）键、 Tab（制表符）键产生的空白。因此， white-space 可以决定图文内容是否在一行显示（回车空格是否生效），是否显示大段连续空白（空格是否生效）等。 其属性值包括下面这些。
 
@@ -1468,17 +1570,37 @@ white-space 属性声明了如何处理元素内的空白字符，这类空白�
 - pre-wrap：空白字符不合并，并且内容只在有换行符的地方换行，同时允许文本环绕。
 - pre-line：合并空白字符，但只在有换行符的地方换行，允许文本环绕。
 
+从上面的解释我们可以看出， white-space 的功能分 3 个维度，分别是：是否合并空白字符，是否合并换行符，以及文本是否自动换行。
+
 当 white-space 设置为 nowrap 的时候，元素的宽度此时表现为“最大可用宽度”，换行符和一些空格全部合并，文本一行显示。
 
 - “包含块”尺寸过小处理。绝对定位以及 inline-block 元素都具有包裹性，当文本内容宽度超过包含块宽度的时候，就会发生文本环绕现象。可以对其使用`white-space: nowrap`声明让其如预期的那样一行显示。
+
 - 单行文字溢出点点点效果。`text-overflow: ellipsis`文字内容超出打点效果离不开`white-space: nowrap`声明。
+
 - 水平列表切换效果。 水平列表切换是网页中常见的交互效果，如果列表的数目是不固定的，使用`white-space: nowrap`使列表一行显示会是个非常不错的处理。
 
-IE 浏览器（至 到 IE11）到目前为止使用`text-align: justify`都无法让中文两端对齐，而 Chrome、 Firefox 和 Safari 等浏览器都是可以的。不过，好在 IE 有一个私有的 CSS 属性 text-justify（目前也写入规范草案了）可以实 现中文两端对齐的。`text-align: justify`除了实现文本的两端对齐，还可以实现容错性更强的两端对齐布局效果。 在默认设置下，`text-align:justify`要想有两端对齐的效果，需要满足两点：一是有分隔点，如空格；二是要超过一行，此时非最后一行内容会两端对齐。
+###　8.6.6 text-align与元素对齐
 
-CSS 的 `text-decoration: underline` 可以给内联文本增加下划线，但是，如果对细节要求较高，就会发现，下划线经常会和中文文字的下边缘粘连在一起，英 文的话甚至直接穿过。最好的处理方法就是使用看似普通却功勋卓越的 border 属性。对于纯内联元素，垂直方向的 padding 属性和 border 属性对原来的布局定位等没有任何影响。 也就是说， 就算 border-bottom 宽度设为 100px，上下行文字的垂直位置依旧纹丝不动。 再加上 border 兼容性很好，天然使用 color 颜色作为边框色，可谓下划线重叠问题解决办法 的不二之选。另外，配合 padding，我们就可以很有效地调节下边框和文字下边缘的距离，实现我们最想要的效果。
+IE 浏览器（至少到 IE11）到目前为止使用`text-align: justify`都无法让中文两端对齐，而 Chrome、 Firefox 和 Safari 等浏览器都是可以的。不过，好在 IE 有一个私有的 CSS 属性 text-justify（目前也写入规范草案了）可以实现中文两端对齐的。
+
+`text-align: justify`除了实现文本的两端对齐，还可以实现容错性更强的两端对齐布局效果。 
+
+在默认设置下，`text-align:justify`要想有两端对齐的效果，需要满足两点：一是有分隔点，如空格；二是要超过一行，此时非最后一行内容会两端对齐。
+
+### 8.6.7 如何解决 text-decoration 下划线和文本重叠的问题
+
+CSS 的 `text-decoration: underline` 可以给内联文本增加下划线，但是，如果对细节要求较高，就会发现，下划线经常会和中文文字的下边缘粘连在一起，英文的话甚至直接穿过。
+
+最好的处理方法就是使用看似普通却功勋卓越的 border 属性。对于纯内联元素，垂直方向的 padding 属性和 border 属性对原来的布局定位等没有任何影响。 也就是说， 就算 border-bottom 宽度设为 100px，上下行文字的垂直位置依旧纹丝不动。 再加上 border 兼容性很好，天然使用 color 颜色作为边框色，可谓下划线重叠问题解决办法的不二之选。另外，配合 padding，我们就可以很有效地调节下边框和文字下边缘的距离，实现我们最想要的效果。
+
+### 8.6.8 一本万利的 text-transform 字符大小写
 
 text-transform 也是为英文字符设计的，要么全大写`text-transform: uppercase`，要么全小写`text-transform: lowercase`。
+
+场景一：身份证输入。我国的身份证最后一位有可能是字母 X，且各种场合都是指定必须大写。可以给输入身份证的`<input>`输入框设置`text-transform: uppercase;`。
+
+场景二：验证码输入。用户惴惴不安的小心思根本就不会出现，因为用户输入小写字母的时候，输入框里面出现的就是和验证码一样的大写内容。
 
 ## 8.7 了解:first-letter/:first-line 伪元素
 
