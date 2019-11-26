@@ -2096,9 +2096,11 @@ console.log(array);         // [ ["name", "Nicholas"], ["age", 25]]
 
 ## 10.1 创建数组
 
-在 ECMAScript6 以前，创建数组的方式主要有两种，一种是调用 Array 构造函数，另一种是用数组字面量语法，这两种方法均需列举数组中的元素，功能非常受限。如果想将一个类数组对象（具有数值型索引和 length 属性的对象）转换为数组，可选的方法也十分有限，经常需要编写额外的代码。为了进一步简化 JavaScript 数组的创建过程，ECMAScript6 新增了 Array.of() 和 Array.from() 两个方法 。
+在 ECMAScript6 以前，创建数组的方式主要有两种，一种是调用 Array 构造函数，另一种是用数组字面量语法，这两种方法均需列举数组中的元素，功能非常受限。如果想将一个类数组对象（具有数值型索引和 length 属性的对象）转换为数组，可选的方法也十分有限，经常需要编写额外的代码。为了进一步简化 JavaScript 数组的创建过程，ECMAScript6 新增了 `Array.of()` 和 `Array.from()` 两个方法 。
 
-如果给 Array 构造函数传入一个数值型的值，那么数组的 length 属性会被设为该值；如果传入多个值，此时无论这些值是不是数值型的，都会变为数组的元素。
+### 10.1.1 Array.of()方法
+
+如果给 Array 构造函数传入一个数值型的值，那么数组的 length 属性会被设为该值；如果传入多个值，此时无论这些值是不是数值型的，都会变为数组的元素。这个特性令人感到困惑，所以存在一定的风险。
 
 ```JavaScript
 let items = new Array(2);
@@ -2121,7 +2123,24 @@ console.log(items[0]);              // 3
 console.log(items[1]);              // "2"
 ```
 
-ECMAScript6 通过引入 Array.of() 方法来解决这个问题。无论有多少个参数，无论参数时什么类型的，Array.of() 总会创建一个包含所有参数的数组。在大多数情况，可以用数组字面量来创建原生数组，但如果需要给一个函数传入 Array 的构造函数，则可能更希望传入 Array.of() 来确保行为一致。
+ECMAScript6 通过引入 `Array.of()` 方法来解决这个问题。无论有多少个参数，无论参数时什么类型的，`Array.of()` 总会创建一个包含所有参数的数组。
+
+```js
+let items = Array.of(1, 2);
+console.log(items.length);          // 2
+console.log(items[0]);              // 1
+console.log(items[1]);              // 2
+
+items = Array.of(2);
+console.log(items.length);          // 1
+console.log(items[0]);              // 2
+
+items = Array.of("2");
+console.log(items.length);          // 1
+console.log(items[0]);              // "2"
+```
+
+这与数组字面量的使用方法很相似，在大多数情况，可以用数组字面量来创建原生数组，但如果需要给一个函数传入 Array 的构造函数，则可能更希望传入 `Array.of()` 来确保行为一致。
 
 ```JavaScript
 function createArray(arrayCreator, value) {
@@ -2131,7 +2150,9 @@ function createArray(arrayCreator, value) {
 let items = createArray(Array.of, value);
 ```
 
-Array.from() 方法。JavaScript 不支持直接将非数组对象转换为真实数组，arguments 就是一种类数组对象，如果要把它当做数组使用则必须先转换该对象的类型。在 ECMAScript5 中，可能需要编写如下函数来把类数组对象转换为数组。
+### 10.1.2 Array.from()方法
+
+`Array.from()` 方法。JavaScript 不支持直接将非数组对象转换为真实数组，arguments 就是一种类数组对象，如果要把它当做数组使用则必须先转换该对象的类型。在 ECMAScript5 中，可能需要编写如下函数来把类数组对象转换为数组。
 
 ```JavaScript
 function makeArray(arrayLike) {
@@ -2151,7 +2172,7 @@ function doSomething() {
 }
 ```
 
-另外，开发者发现了一种只需编写极少代码的新方法，调用数组原生的 slice() 方法可以将非数组对象转换为数组。
+另外，开发者发现了一种只需编写极少代码的新方法，调用数组原生的 `slice()` 方法可以将非数组对象转换为数组。
 
 ```JavaScript
 function makeArray(arrayLike) {
@@ -2160,14 +2181,20 @@ function makeArray(arrayLike) {
 
 function doSomething() {
     var args = makeArray(arguments);
-
     // use args
 }
 ```
 
-尽管这项技术不需要编写很多代码，但是调用时不能直觉地想到这事在“将 arrayLike 转换成一个数组”。所幸，ECMAScript6 添加了一个语义清晰、语法简洁的新方法 Array.from() 来将对象转化为数组。Array.from() 方法可以接受可迭代对象或类数组对象作为第一个参数，最终返回一个数组。Array.from() 方法调用会基于 arguments 对象中的元素创建一个新数组。
+ECMAScript6 添加了一个语义清晰、语法简洁的新方法 `Array.from()` 来将对象转化为数组。`Array.from()` 方法可以接受可迭代对象或类数组对象作为第一个参数，最终返回一个数组。`Array.from()` 方法也是通过 this 来确定返回数组的类型的。
 
-映射转换。如果想要进一步转化数组，可以提供一个映射函数作为 Array.from() 第二个参数，这个函数用来将类数组对象中的每一个值转换成其他形式，最后将这些结果储存在结果数组的相应索引中。
+```js
+function doSomething() {
+    var args = Array.from(arguments);
+    // use args
+}
+```
+
+映射转换。如果想要进一步转化数组，可以提供一个映射函数作为 `Array.from()` 第二个参数，这个函数用来将类数组对象中的每一个值转换成其他形式，最后将这些结果储存在结果数组的相应索引中。
 
 ```JavaScript
 function translate() {
@@ -2179,7 +2206,7 @@ let numbers = translate(1, 2, 3);
 console.log(numbers);               // 2,3,4
 ```
 
-如果用映射函数处理对象，也可以给 Array.from() 传入第三个参数来表示映射函数的 this 值，从而无需通过调用 bind() 方法或其他方法来指定 this 的值了。
+如果用映射函数处理对象，也可以给 `Array.from()` 传入第三个参数来表示映射函数的 this 值，从而无需通过调用 `bind()` 方法或其他方法来指定 this 的值了。
 
 ```JavaScript
 let helper = {
@@ -2199,7 +2226,7 @@ let numbers = translate(1, 2, 3);
 console.log(numbers);               // 2,3,4
 ```
 
-用 Array.from() 转换可迭代对象。Array.from() 方法可以处理类数组对象和可迭代对象，也就是说该方法能够将所有含有 Symbol.iterator 属性的对象转换为数组。
+用 `Array.from()` 转换可迭代对象。`Array.from()` 方法可以处理类数组对象和可迭代对象，也就是说该方法能够将所有含有 Symbol.iterator 属性的对象转换为数组。
 
 ```JavaScript
 let numbers = {
@@ -2217,11 +2244,19 @@ console.log(numbers2);              // 2,3,4
 
 ## 10.2 为所有数组添加的新方法
 
-ECMAScript6 延续了 ECMAScript5 的一贯风格，也为数组添加了几个新的方法。find() 方法和 findIndex() 方法可以协助开发者在数组中查找任意值；fill() 方法和 copyWithin() 方法的灵感来自于定型数组的使用过程，定型数组也是 ECMAScript6 中的新特性，是一种只包含数字的数组。
+ECMAScript6 延续了 ECMAScript5 的一贯风格，也为数组添加了几个新的方法。`find()` 方法和 `findIndex()` 方法可以协助开发者在数组中查找任意值；`fill()` 方法和 `copyWithin()` 方法的灵感来自于定型数组的使用过程。
 
-find() 方法和 findIndex() 方法。在 ECMAScript5 以前的版本中，由于没有内建的数组搜索方法，因此想在数组中查找元素会比较麻烦，于是 ECMAScript5 正式添加了 indexOf() 和 lastlndexOf() 两个方法，可以用它们在数组中查找特定的值。虽然这是一个巨大的进步，但这两种方法仍有局限之处，即每次只能查找一个值，如果想在一系列数字中查找第一个偶数，则必须自己编写代码来实现。于是 ECMAScript6 引入了 find() 方法和 findlndex() 方法来解决这个问题。
+### 10.2.1 find()方法和findIndex()方法
 
-find() 方法和 findIndex() 方法都接受两个参数：一个是回调函数；另一个是可选参数，用来指定回调函数中 this 的值。执行回调函数时，传入的参数分别为：数组中的某个元素和该元素在数组中的索引以及数组本身，与传入 map() 和 foreach() 方法的参数相同。如果给定的值满足定义的标准，回调函数应返回 true，一旦回调函数返回 true，find() 方法和 findIndex() 方法都会立即停止搜索数组剩余的部分。二者间的唯一的区别是，find() 方法返回查找到的值，findIndex() 方法返回查找倒的索引。
+在 ECMAScript5 以前的版本中，由于没有内建的数组搜索方法，因此想在数组中查找元素会比较麻烦，于是 ECMAScript5 正式添加了 `indexOf()` 和 `lastlndexOf()` 两个方法，可以用它们在数组中查找特定的值。虽然这是一个巨大的进步，但这两种方法仍有局限之处，即每次只能查找一个值，如果想在一系列数字中查找第一个偶数，则必须自己编写代码来实现。于是 ECMAScript6 引入了 `find()` 方法和 `findlndex()` 方法来解决这个问题。
+
+`find()` 方法和 `findIndex()` 方法都接受两个参数：一个是回调函数；另一个是可选参数，用来指定回调函数中 this 的值。
+
+执行回调函数时，传入的参数分别为：数组中的某个元素和该元素在数组中的索引以及数组本身，与传入 `map()` 和 `foreach()` 方法的参数相同。
+
+如果给定的值满足定义的标准，回调函数应返回 true，一旦回调函数返回 true，`find()` 方法和 `findIndex()` 方法都会立即停止搜索数组剩余的部分。
+
+二者间的唯一的区别是，`find()` 方法返回查找到的值，`findIndex()` 方法返回查找倒的索引。
 
 ```JavaScript
 let numbers = [25, 30, 35, 40, 45];
@@ -2230,23 +2265,34 @@ console.log(numbers.find(n => n > 33));         // 35
 console.log(numbers.findIndex(n => n > 33));    // 2
 ```
 
-如果要在数组中根据某个条件查找匹配的元素，那么 find() 方法和 findIndex() 方法可以很好地完成任务；如果只想查找与某个值匹配的元素，则 indexOf() 方法和 lastIndexOf() 方法时更好的选择。
+如果要在数组中根据某个条件查找匹配的元素，那么 `find()` 方法和 `findIndex()` 方法可以很好地完成任务；如果只想查找与某个值匹配的元素，则 `indexOf()` 方法和 `lastIndexOf()` 方法时更好的选择。
 
-fill() 方法。fill() 方法可以用指定的值填充一至多个数组元素。当传入一个值时，fill() 方法会用这个值重写数组中的所有值。如果只想改变数组某一部分的值，可以传入开始索引和结束索引（不包含结束索引当前值）这两个可选参数。如果索引为负值，则这些值会与数组的length属性相加作为最终位置。
+### 10.2.2 fill() 方法。
+
+`fill()` 方法可以用指定的值填充一至多个数组元素。当传入一个值时，`fill()` 方法会用这个值重写数组中的所有值。
+
+```js
+let numbers = [1, 2, 3, 4];
+
+numbers.fill(1);
+console.log(numbers.toString());    // 1,1,1,1
+```
+
+如果只想改变数组某一部分的值，可以传入开始索引和结束索引（不包含结束索引当前值）这两个可选参数。如果索引为负值，则这些值会与数组的length属性相加作为最终位置。
 
 ```JavaScript
 let numbers = [1, 2, 3, 4];
 
 numbers.fill(1, 2);
-
 console.log(numbers.toString());    // 1,2,1,1
 
 numbers.fill(0, 1, 3);
-
 console.log(numbers.toString());    // 1,0,0,1
 ```
 
-copyWithin() 方法。copyWithin() 方法与 fill() 方法相似，其也可以同时改变数组中的多个元素。fill() 方法是将数组元素赋值为一个指定的值，而 copyWithin() 方法则是从数组中复制元素的值。调用 copyWithin() 方法时需要传入两个参数：一个是该方法开始填充值的索引位置，另一个是开始复制值得索引位置。
+### 10.2.3 copyWithin()方法。
+
+`copyWithin()` 方法与 `fill()` 方法相似，其也可以同时改变数组中的多个元素。`fill()` 方法是将数组元素赋值为一个指定的值，而 `copyWithin()` 方法则是从数组中复制元素的值。调用 `copyWithin()` 方法时需要传入两个参数：一个是该方法开始填充值的索引位置，另一个是开始复制值得索引位置。
 
 ```JavaScript
 let numbers = [1, 2, 3, 4];
@@ -2258,7 +2304,7 @@ numbers.copyWithin(2, 0);
 console.log(numbers.toString());    // 1,2,1,2
 ```
 
-默认情况下，copyWithin() 方法会一直复制直到数组末尾的值，但是可以提供可选的第三个参数来限制被重写元素的数量。第三个参数时不包含结束索引，用于指定停止复制值的位置。
+默认情况下，`copyWithin()` 方法会一直复制直到数组末尾的值，但是可以提供可选的第三个参数来限制被重写元素的数量。第三个参数时不包含结束索引，用于指定停止复制值的位置。
 
 ```JavaScript
 let numbers = [1, 2, 3, 4];
@@ -2279,29 +2325,35 @@ console.log(numbers.toString());    // 1,2,1,4
 
 ECMAScript 6 采用定型数组作为语言的正式格式来确保更好的跨 JavaScript 引擎兼容性以及与 JavaScript 数组的互操作性。尽管 ECMAScript 6 版本的定型数组与 WebGL 中的不一样，但是仍保留了足够的相似之处，这使得 ECMAScript 6 版本可以基于 WebGL 版本演化而不至于走向完全分化。
 
-数值数据类型。JavaScript 数组按照 IEEE 754 标准定义的格式存储，也就是用64个比特来存储一个浮点形式的数字。这个格式用于表示 JavaScript 中的证书及浮点数，两种格式间经常伴随着数字改变发生相互转换。定型数组支持存储和操作以下8种不同的数值类型。
+### 10.3.1 数值数据类型。
 
-- Signed 8-bit integer (int8)
-- Unsigned 8-bit integer (uint8)
-- Signed 16-bit integer (int16)
-- Unsigned 16-bit integer (uint16)
-- Signed 32-bit integer (int32)
-- Unsigned 32-bit integer (uint32)
-- 32-bit float (float32)
-- 64-bit float (float64)
+JavaScript 数组按照 IEEE 754 标准定义的格式存储，也就是用64个比特来存储一个浮点形式的数字。这个格式用于表示 JavaScript 中的证书及浮点数，两种格式间经常伴随着数字改变发生相互转换。定型数组支持存储和操作以下8种不同的数值类型。
+
+- 有符号 8位 整数 (int8)
+- 无符号 8位 整数 (uint8)
+- 有符号 16位 整数 (int16)
+- 无符号 16位 整数 (uint16)
+- 有符号 32位 整数 (int32)
+- 无符号 32位 整数 (uint32)
+- 32位 浮点数 (float32)
+- 64位 浮点数 (float64)
 
 如果用普通的 JavaScript 数字来存储 8 位整数，会浪费整整 56 个比特，这些比特原本可以存储其他 8 位整数或小于 56 比特的数字。这也正是定型数组的一个实际用例，即更有效地利用比特。所有与定型数组有关的操作和对象都集中在这 8 个数据类型上，但是在使用它们之前，需要创建一个数组缓冲区存储这些数据。
 
-数组缓冲区。数组缓冲区是所有定型数组的根基，它是一段可以包含特定数量字节的内存地址。创建数组缓冲区的过程类似于在 C 语言中调用 malloc() 来分配内存，知识不需指明内存块所包含的数据类型。可以通过 ArrayBuffer 构造函数来创建数组缓冲区。创建完成后，可以通过 byteLength 属性查看缓冲区中的比特数量。
+### 10.3.2 数组缓冲区
+
+数组缓冲区是所有定型数组的根基，它是一段可以包含特定数量字节的内存地址。创建数组缓冲区的过程类似于在 C 语言中调用 `malloc()` 来分配内存，知识不需指明内存块所包含的数据类型。可以通过 ArrayBuffer 构造函数来创建数组缓冲区。创建完成后，可以通过 byteLength 属性查看缓冲区中的比特数量。
 
 ```JavaScript
 let buffer = new ArrayBuffer(10);   // allocate 10 bytes
 console.log(buffer.byteLength);     // 10
 ```
 
-也可以通过 slice() 方法分割已有数组缓冲区来创建一个新的，这个 slice() 方法与数组上的 slice() 方法很像：传入开始索引和结束索引为参数，然后返回一个新的 ArrayBuffer 实例，新实例由原始数组缓冲区的切片组成。
+也可以通过 `slice()` 方法分割已有数组缓冲区来创建一个新的，这个 `slice()` 方法与数组上的 `slice()` 方法很像：传入开始索引和结束索引为参数，然后返回一个新的 ArrayBuffer 实例，新实例由原始数组缓冲区的切片组成。
 
-通过视图操作数组缓冲区。数组缓冲区是内存中的一段地址，视图是用来操作内存的接口。视图可以操作数组缓冲区或缓冲区字节的子集，并按照其中一种数值型数据类型来读取和写入数据。DataView 类型是一种通用的数组缓冲区视图，其支持所有 8 种数值型数据类型。要使用 DataView，首先要创建一个 ArrayBuffer 实例，然后用这个实例来创建新的 DataView。
+### 10.3.3 通过视图操作数组缓冲区
+
+数组缓冲区是内存中的一段地址，视图是用来操作内存的接口。视图可以操作数组缓冲区或缓冲区字节的子集，并按照其中一种数值型数据类型来读取和写入数据。DataView 类型是一种通用的数组缓冲区视图，其支持所有 8 种数值型数据类型。要使用 DataView，首先要创建一个 ArrayBuffer 实例，然后用这个实例来创建新的 DataView。
 
 如果提供了一个表示比特偏移量的数值，那么可以基于缓冲区的其中一部分来创建视图，DataView 将默认选取从偏移值开始到缓冲区末尾的所有比特。如果额外提供一个表示选取比特数量的可选参数，DataView 则从偏移位置后选取该数量的比特。
 
