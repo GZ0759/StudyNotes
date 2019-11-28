@@ -1,4 +1,5 @@
 > Vue.js 实战  
+> 梁灏
 > 2017 年 10 月第一次出版
 
 <!-- TOC -->
@@ -61,29 +62,41 @@
 
 ## 1.1 Vue.js是什么
 
-Vue.js 的官方文档中是这样介绍它的：简单小巧的核心，渐进式技术栈，足以应付任何规模的应用。 简单小巧是指 Vue.js 压缩后大小仅有17KB。所谓渐进式（Progressive），就是你可以一步一步、有阶段性地来使用 Vue.js，不必一开始就使用所有的东西。
+Vue.js 的官方文档中是这样介绍它的：简单小巧的核心，渐进式技术栈，足以应付任何规模的应用。简单小巧是指 Vue.js 压缩后大小仅有17KB。所谓渐进式（Progressive），就是可以一步一步、有阶段性地来使用 Vue.js，不必一开始就使用所有的东西。
 
-使用 Vue.js 可以让 Web 开发变得简单，同时也颠覆了传统前端开发模式。它提供了现代 Web 开发中常见的高级功能，比如：  
+使用 Vue.js 可以让 Web 开发变得简单，同时也颠覆了传统前端开发模式。它提供了现代 Web 开发中常见的高级功能。
+
 - 解耦视图与数据
 - 可复用的组件
 - 前端路由
 - 状态管理
 - 虚拟 DOM（Virtual DOM）
 
-MVVM（Model-VIew-ViewModel）模式是由经典的软件架构 MVC 衍生来的 。当 View （视图层）变化时，会自动更新到 ViewModel （视图模型），反之亦然。 View 和 ViewModel 之间通过双向绑定（tdata-binding）建立联系。Vue.js 通过 MVVM 的模式拆分为视图与数据两部分，并将其分离。因此，你只需要关心你的数据即可， DOM 的事情 Vue 会帮你自动搞定。
+MVVM（Model-VIew-ViewModel）模式是由经典的软件架构 MVC 衍生来的 。当 View （视图层）变化时，会自动更新到 ViewModel （视图模型），反之亦然。 View 和 ViewModel 之间通过双向绑定（tdata-binding）建立联系。
+
+Vue.js 通过 MVVM 的模式拆分为视图与数据两部分，并将其分离。因此，只需要关心数据即可， DOM 的事情 Vue 会帮你自动搞定。
 
 ## 1.2 如何使用Vue.js
 
-Vue.js 是一个渐进式的 JavaScript 框架，根据项目需求，可以选择从不同的维度来使用它。如果只是简单开发，可以直接通过 script 加载 CDN 文件。引入 Vue.js 框架后，在 body 底部使用 `new Vue()` 的方式创建一个实例，这就是 Vue.js 最基本的开发模式。
+Vue.js 是一个渐进式的 JavaScript 框架，根据项目需求，可以选择从不同的维度来使用它。如果只是简单开发，可以直接通过 script 加载 CDN 文件。当然也可以将代码下载下来通过自己的相对路径来引用。
+
+引入 Vue.js 框架后，在 body 底部使用 `new Vue()` 的方式创建一个实例，这就是 Vue.js 最基本的开发模式。
 
 ```html
-`<!-- 开发环境版本，包含了有帮助的命令行警告 -->
-<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>`
+<!-- 开发环境版本，包含了有帮助的命令行警告 -->
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+
+<!-- 生产环境版本，优化了尺寸和速度 -->
+<script src="https://cdn.jsdelivr.net/npm/vue"></script>
 ```
+
+对于一些业务逻辑复杂，对前端工程有要求的项目，可以使用 Vue 单文件的形式配合 webpack 使用，必要时还会用到 vuex 来管理状态，vue-router 来管理路由。
 
 # 第二章 数据绑定和第一个Vue应用
 
 ## 2.1 Vue实例与数据绑定
+
+### 2.1.1 实例与数据
 
 Vue.js 应用的创建很简单，通过构造函数 Vue 就可以创建一个 Vue 的根实例，并启动 Vue 应用。变量 app 就代表了这个 Vue 实例，基本上所有的代码都是一个对象，写入 Vue 实例的选项内。
 
@@ -93,70 +106,174 @@ var app = new Vue({
 })
 ```
 
-Vue 实例对象的一个必不可少的选项就是 el ，用于指定一个页面中已存在的 DOM 元素来挂载 Vue 实例，它可以是 HTMLElement ，也可以是 CSS 选择器。挂载成功后，我们可以通过 `app.$el` 来访问该元素。Vue 提供了很多常见的实例属性和方法，都以`$`开头。
+Vue 实例对象的一个必不可少的选项就是 el ，用于指定一个页面中已存在的 DOM 元素来挂载 Vue 实例，它可以是 HTMLElement ，也可以是 CSS 选择器。
+
+```html
+<div id='app'></div>
+```
 
 ```javascript
-// <div id='app'></div>
 var app = new Vue({
-	el:"#app" /* 或者是 document.getElementById('app') */
+	// el: document.getElementById('app')
+	el:"#app"
 }）
 ```
 
-通过 Vue 实例的 data 选项，可以声明应用内需要双向绑定的数据。建议所有会用到的数据都预先在 data 内声明，这样不至于将数据散落在业务逻辑中，难以维护。Vue 实例本身也代理了 data 对象里的所有属性。
+挂载成功后，我们可以通过 `app.$el` 来访问该元素。Vue 提供了很多常见的实例属性和方法，都以`$`开头。通过 Vue 实例的 data 选项，可以声明应用内需要双向绑定的数据。建议所有会用到的数据都预先在 data 内声明，这样不至于将数据散落在业务逻辑中，难以维护。Vue 实例本身也代理了 data 对象里的所有属性。
+
+```js
+var app = new Vue({
+	el: '#app',
+	data: { a: 2 }
+})
+console.log(app.a)  // 2
+```
+
+除了显式地声明数据外，也可以指向一个己有的变量，并且它们之间默认建立了双向绑定，当修改其中任意一个时，另一个也会一起变化。
 
 ```javascript
-var data = { a: 1 }
+var myData = { a: 1 }
 
 // 直接创建一个实例
-var vm = new Vue({
-	data: data
-})
-vm.a // => 1
-vm.$data === data // => true
-```
-
-每个 Vue 实例创建时，都会经历一系列的初始化过程，同时也会调用相应的生命周期钩子， 我们可以利用这些钩子，在合适的时机执行我们的业务逻辑。这些钩子与 el 和 data 类似，也是作为选项写入 Vue 实例内，并且钩子的 this 指向的是调用它的 Vue 实例。
-
-```javascript
-new Vue({
+var app = new Vue({
 	el: '#app',
-	data: {
-		a: 1
-	},
-	created: function () {
-		// `this` 指向 vm 实例
-		console.log('a is: ' + this.a)
-	},
-		mounted: function () {
-		console.log(this.$el); // <div id="app"><div>    
-	}
+	data: myData
 })
+
+console.log(app.a)  // 1
+
+// 修改属性
+app.a = 2;
+console.log(app.a)  // 2
+
+// 修改原数据
+myData.a = 3;
+console.log(app.a)  // 3
 ```
 
-比较常用的生命周期钩子有，`created`（实例创建完成后调用）、`mounted`（el挂载到实例上后调用）、`beforeDestroy`（实例销毁之前调用）。这些钩子与 el 和 data 类似，也是作为选项写入 Vue 实例内，并且钩子的 this 指向的是调用它的 Vue 实例。
+### 2.1.2 声明周期
 
-使用双大括号（Mustache语法）`"{{}}"`是最基本的文本插值方法，它会自动将我们双向绑定的数值实时显示出来，可以使用 `v-text` 代替。通过任何方法修改数据，大括号的内容都会被实时替换。
+每个 Vue 实例创建时，都会经历一系列的初始化过程，同时也会调用相应的生命周期钩子，我们可以利用这些钩子，在合适的时机执行我们的业务逻辑。如果使用过 jQuery， 一定知道它的 `ready()` 方法。
+
+比较常用的生命周期钩子有。
+
+- `created`（实例创建完成后调用）
+- `mounted`（el挂载到实例上后调用）
+- `beforeDestroy`（实例销毁之前调用）
+
+这些钩子与 el 和 data 类似，也是作为选项写入 Vue 实例内，并且钩子的 this 指向的是调用它的 Vue 实例。
+
+```js
+var app = new Vue({
+	el:'#app ',
+	data: { a: 2 },
+	created: function () {
+		console.log(this.a)  // 2
+	},
+	mounted: function () {
+		console.log(this.$el)  // <div id="app"></div>
+	}
+}),
+```
+
+### 2.1.3 插值与表达式
+
+使用双大括号（Mustache语法）`{{}}"`是最基本的文本插值方法，它会自动将我们双向绑定的数值实时显示出来，可以使用 `v-text` 代替。通过任何方法修改数据，大括号的内容都会被实时替换。
 
 ```html
-<span v-text="msg"></span>
-<!-- 和下面的一样 -->
-<span>{{msg}}</span>
+<body>
+	<div id="app">
+		<!-- 《Vue.js 实战》 -->
+		{{ book }}
+	</div>
+</body>
+<script>
+	var app = new Vue({
+		el: '#app',
+		data: {
+			book: '《Vue.js 实战》' 
+		}
+	}); 
+</script>
 ```
+
+通过任何方法修改数据 book，大括号的内容都会被实时替换，比如下面的这个示例，实时显示当前的时间，每秒更新。
 
 ```html
-<!-- 显示 rawHtml 表示的内容，文本形式 -->
-<p>Using mustaches: {{ rawHtml }}</p>   
-
-<!-- 显示rawHtml 表示的内容，如是 html 则解析再显示 -->
-<p>Using v-html directive: <span v-html="rawHtml"></span></p>
-
-<!-- 跳过这个元素及子元素的编译过程。可用来显示原始 Mustache 标签 -->
-<span v-pre>{{ this will not be compiled }}</span>
+<body>
+	<div id="app">
+		{{ date }}
+	</div>
+</body>
+<script>
+	var vm = new Vue({
+		el: '#app',
+		data: {
+			date: new Date() 
+		},
+		mounted: function(){
+			//声明一个变量指向 Vue 实例 this.作用域一致
+			var _this = this;
+			this.timer = setInterval(function(){
+				//修改数据date
+				_this.date = new Date();
+			}, 1000);
+		},
+		beforeDestroy: function(){
+			if(this.timer){
+				//在 Vue 实例销毁前，清除我们的定时器
+				clearInterval();
+			}
+		}
+	}); 
+</script>
 ```
 
-在`{{}}`中，除了简单的绑定属性值外，还可以使用 JavaScript 表达式进行简单的运算 、三元运算等。Vue.js 只支持单个表达式，不支持语句和流控制。另外在表达式中，不能使用用户自定义的全局变量，只能使用 Vue 白名单内的全局变量，例如 Math 和 Date。
+如果有的时候就是想输出 HTML，而不是将数据解释后的纯文本，可以使用 `v-html`。这里要注意，如果将用户产生的内容使用 v-html 输出后，有可能导致 xss 攻击，所以要在服务端对用户提交的内容进行处理， 一般可将尖括号“<>”转义。
 
-Vue.js 支持在`{{}}`插值的尾部添加一个管道符 `|` 对数据进行过滤，经常用于格式化文本。过滤的规则是自定义的，通过给 Vue 实例添加选项 filters 来设置，过滤器可以串联，也可以接受参数。过滤器可以用在两个地方：双花括号插值和 v-bind 表达式。
+```html
+<body>
+	<div id="app">
+		<span v-html="link"></span>
+	</div>
+</body>
+<script>
+	var vm = new Vue({
+		el: '#app',
+		data: {
+			link: '<a href="#">我是一个连接，可以点我哈</a>'
+		}
+	}); 
+</script>
+```
+
+如果想显示`{{}}`标签，而不进行替换， 使用 v-pre 即可跳过这个元素和它的子元素的编译过程。
+
+在`{{}}`中，除了简单的绑定属性值外，还可以使用 JavaScript 表达式进行简单的运算 、三元运算等。
+
+```html
+ <div id="app">
+	{{ number / 10 }}
+	{{ isOK ? '确定' : '取消' }}
+	{{ text.split(',').reverse().join(',') }}
+</div>
+```
+
+Vue.js 只支持单个表达式，不支持语句和流控制。另外在表达式中，不能使用用户自定义的全局变量，只能使用 Vue 白名单内的全局变量，例如 Math 和 Date。
+
+### 2.1.4 过滤器
+
+Vue.js 支持在`{{}}`插值的尾部添加一个管道符 `|` 对数据进行过滤，经常用于格式化文本。过滤的规则是自定义的，通过给 Vue 实例添加选项 filters 来设置。过滤器可以用在两个地方：双花括号插值和 v-bind 表达式。
+
+```js
+filters: {
+  capitalize: function (value) {
+    if (!value) return ''
+    value = value.toString()
+    return value.charAt(0).toUpperCase() + value.slice(1)
+  }
+}
+```
 
 ```html
 <!-- 在双花括号中 -->
@@ -164,6 +281,14 @@ Vue.js 支持在`{{}}`插值的尾部添加一个管道符 `|` 对数据进行�
 
 <!-- 在 `v-bind` 中 -->
 <div v-bind:id="rawId | formatId"></div>
+```
+
+过滤器可以串联，也可以接受参数。接收参数时，这里的字符串 arg1 和 arg2 将分别传给过滤器的第二个和第三个参数，因为第一个是数据本身。
+
+```html
+{{ message | filterA | filterB }}
+
+{{ message | filterA('arg1', arg2) }}
 ```
 
 ## 2.2 指令与事件
