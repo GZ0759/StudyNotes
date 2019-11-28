@@ -293,21 +293,107 @@ filters: {
 
 ## 2.2 指令与事件
 
-指令是 Vue.js 模板中最常用的一项功能，它带有前缀 `v-`，指令的主要职责就是当起表达式的值改变时，相应地将某些行为应用到 DOM 上。
+指令是 Vue.js 模板中最常用的一项功能，它带有前缀 `v-`，指令的主要职责就是当起表达式的值改变时，相应地将某些行为应用到 DOM 上。数据驱动 DOM 是 Vue.js 的核心理念，所以不到万不得已时不要主动操作 DOM，只需要维护好数据，DOM 的事 Vue 会帮忙优雅处理。
 
-数据驱动 DOM 是 Vue.js 的核心理念，所以不到万不得已时不要主动操作 DOM，只需要维护好数据，DOM 的事 Vue 会帮忙优雅处理。
+```html
+<body>
+	<div id="app">
+		<p v-if="show">显示这段文本</p>
+	</div>
+</body>
+<script>
+var vm = new Vue({
+	el: '#app',
+	data: {
+		show: true
+	}
+})
+</script>
+```
 
 Vue.js 内置了很多指令，帮助快速完成常见的 DOM 操作，比如循环渲染、显示与隐藏等，其中有两个比较重要的指令是 `v-bind` 和 `v-on`。
 
 `v-bind` 的基本用途是动态更新HTML元素上的属性，比如 id、class 等。
 
+```html
+<body>
+	<div id="app">
+		<a v-bind:href="url">链接</a>
+		<img v-bind:src="imgUrl" />
+	</div>
+</body>
+<script>
+var vm = new Vue({
+	el: '#app',
+	data: {
+		url: 'https://www.baidu.com',
+		imgUrl: 'img/1.jpg'
+	}
+})
+</script>
+```
+
 `v-on` 指令用来绑定事件监听器。在普通元素上，`v-on` 可以监听原生的 DOM 事件，表达式可以是一个方法名，这些方法都写在 Vue 实例的 methods 属性内，并且是函数的形式，函数内的 this 指向的是当前 Vue 实例本身，因此可以直接使用 `this.xxx` 的形式来访问或修改数据。表达式除了方法名，也可以直接是一个内联语句。
+
+```html
+<body>
+	<div id="app">
+		<p v-if="show">这是一段文本</p>
+		<button v-on:click="handleClose">点击隐藏</button>
+		<!-- <button v-on:click="show = false">点击隐藏</button> -->
+	</div>
+</body>
+<script>
+var vm = new Vue({
+	el: '#app',
+	data: {
+		show: true
+	},
+	methods: {
+		handleClose: function(){
+			this.show = false;
+		}
+	}
+})
+</script>
+```
+
+Vue.js 将 methods 里的方法也代理了，所以也可以像访问 Vue 数据那样来调用方法：
+
+```js
+var app = new Vue({
+	el: '#app',
+	data: {
+		show: true
+	},
+	methods: {
+		handleClose: function(){
+			this.close();
+		},
+		close: function(){
+			this.show = false;
+		}
+	}
+})
+```
 
 ## 2.3 语法糖
 
 语法糖是指在不影响功能的情况下，添加某种方法实现同样的效果，从而方便程序开发。
 
 Vue.js 的 `v-bind` 和 `v-on` 指令都提供了语法糖，也可以说是缩写，比如 `v-bind` 可以省略，直接写一个冒号 `:` ；`v-on` 可以直接用 `@` 来缩写。
+
+```html
+<a v-bind:href="url">链接</a>
+<!--缩写为-->
+<a :href="url">链接</a>
+
+<button v-on:click="handleClose">点击隐藏</button>
+<!--缩写为-->
+<button @click="handleClose">点击隐藏</button>
+```
+
+使用语法糖可以简化代码的书写。
 
 # 第三章 计算属性
 
