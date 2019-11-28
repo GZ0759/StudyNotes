@@ -400,15 +400,60 @@ Vue.js 的 `v-bind` 和 `v-on` 指令都提供了语法糖，也可以说是缩�
 
 # 第三章 计算属性
 
+模板内的表达式常用于简单的运算，当其过长或逻辑复杂时，会难以维护，本章的计算属性就是用于解决该问题的。
+
 ## 3.1 什么是计算属性
 
-模板内的表达式非常便利，但是设计它们的初衷是用于简单运算的。在模板中放入太多的逻辑会让模板过重且难以维护。
+在模板中双向绑定一些数据或表达式了。但是表达式如果过长，或逻辑更为复杂时，就会变得雕肿甚至难以阅读和维护。
+
+```html
+<div id="app">
+	{{ text.split(',').reverse().join(',') }}
+</div>
+```
 
 所有的计算属性都以函数的形式写在 Vue 实例内的 computed 选项内，最终返回计算后的结果。
 
+```html
+<body>
+	<div id="app">
+	{{ reverseText }}
+	</div>
+</body>
+<script>
+var vm = new Vue({
+	el: '#app',
+	data: {
+		text: '123,456'
+	},
+	computed: {
+		reverseText: function(){
+			//这里的this指向的是当前的 Vue 实例
+			return this.text.split(',').reverse().join(',');
+		}
+	}
+})
+</script>
+```
+
 ## 3.2 计算属性用法
 
-在一个计算属性里可以完成各种复杂的逻辑，包括运算、函数调用等，只要最终返回一个结果就可以。除了简单的用法，计算属性还可以依赖多个 Vue 实例的数据，只要其中任一数据变化，计算属性就会重新执行，视图也会更新。  
+在一个计算属性里可以完成各种复杂的逻辑，包括运算、函数调用等，只要最终返回一个结果就可以。除了简单的用法，计算属性还可以依赖多个 Vue 实例的数据，只要其中任一数据变化，计算属性就会重新执行，视图也会更新。例如，下面的示例展示的是在购物车内两个包裹的物品总价。
+
+```js
+computed: {
+	prices: function(){
+		var prices = 0;
+		for(var i = 0;i < this.package1.length;i++){
+			prices += this.package1[i].price * this.package1[i].count;
+		}
+		for(var i = 0;i < this.package2.length;i++){
+			prices += this.package2[i].price * this.package2[i].count;
+		}
+		return prices;
+	}
+}
+```
 
 每一个计算属性都包含一个 getter 和一个 setter，默认只是利用了 getter 来读取。在需要时，也可以提供一个 setter 函数 ， 当手动修改计算属性的值就像修改一个普通数据那样时，就会触发 setter 函数，执行一些自定义的操作。
 
@@ -427,7 +472,7 @@ computed: {
 		}
 	}
 }
-vm.fullName = 'John Doe'
+vm.fullName = 'John Doe'  // setter被调用
 ```
 
 计算属性除了简单的文本插值外，还经常用于动态地设置元素的样式名称 class 和内联样式 style 。当使用组件时，计算属性也经常用来动态传递 props 。
@@ -436,7 +481,7 @@ vm.fullName = 'John Doe'
 
 ## 3.3 计算属性缓存
 
-调用 methods 里的方法也可以与计算属性起到同样的作用。
+调用 methods 里的方法也可以与计算属性起到同样的作用。甚至该方法还可以接受参数，使用起来更灵活。
 
 ```html
 <p>Reversed message: "{{ reversedMessage() }}"</p>
@@ -452,6 +497,15 @@ methods: {
 ```
 
 计算属性是基于它的依赖缓存的。 一个计算属性所依赖的数据发生变化时，它才会重新取值，所以依赖数据只要不改变，计算属性也就不更新。但是 methods 则不同，只要重新渲染，它就会被调用，因此函数也会被执行 。
+
+```js
+// 计算属性 now 不会更新
+computed: {
+	now: function(){
+		return Date.now();
+	}
+}
+```
 
 使用计算属性还是 methods 取决于你是否需要缓存，当遍历大数组和做大量计算时，应当使用计算属性，除非你不希望得到缓存。  
 
