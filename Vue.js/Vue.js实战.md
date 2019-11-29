@@ -511,6 +511,8 @@ computed: {
 
 # 第四章 v-bind及class与style绑定
 
+DOM 元素经常会动态地绑定一些 class 类名或 style 样式，本章将介绍使用 v-bind 指令来绑定 class 和 style 的多种方法。
+
 ## 4.1 了解b-bind指令
 
 `v-bind` 的的主要用法是动态更新 HTML 元素上的属性。
@@ -521,15 +523,55 @@ computed: {
 
 绑定 class 的几种方式，包括对象语法、数组语法和在组件上使用。
 
+### 4.2.1 对象语法
+
 给 `v-bind: class` 设置一个对象，可以动态地切换 class。对象中也可以传入多个属性，来动态切换 class，表达式中项为真时对应的类名就会加载。另外，该设置能够与普通 class 共存。
 
-当 `:class` 的表达式过长或逻辑复杂时，还可以绑定一个计算属性。
+```html
+<body>
+   <div id="app">
+       <div class="static" :class="{ 'active':isActive,'error':isError }"></div>
+   </div>
+</body>
+<script>
+   var vm = new Vue({
+     el: '#app',
+     data: {
+        isActive: true,
+        isError: false
+     }
+   })
+</script>
+```
+
+当 `:class` 的表达式过长或逻辑复杂时，还可以绑定一个计算属性。这是一种很友好和常见的用法，一般当条件多于两个时，都可以使用 data 或 computed。
 
 ```html
-<div class="static"
-	v-bind:class="{ active: isActive, 'text-danger': hasError }">
-</div>
+<body>
+   <div id="app">
+       <div :class="classes"></div>
+   </div>
+</body>
+<script>
+   var vm = new Vue({
+     el: '#app',
+     data: {
+        isActive: true,
+        error: null
+     },
+     computed: {
+       classes: function(){
+          return{
+              active : this.isActive && !this.error,
+              'text-fail': this.error && this.error.type === 'fail'
+          }           
+       }
+     }
+   })
+</script>
 ```
+
+### 4.2.2 数组语法
 
 当需要应用多个 class 时， 可以使用数组语法，给 `:class` 绑定一个数组，应用一个 class 列表。也可以使用三元表达式来根据条件切换 class。如果 class 有多个条件时，可以在数组语法中使用对象语法。
 
@@ -543,8 +585,39 @@ data: {
 -->
 
 <div v-bind:class="[isActive ? activeClass : '', errorClass]"></div>
-
 ```
+
+当然，与对象语法一样，也可以使用 data、 computed 和 methods 三种方法。
+
+```html
+<body>
+   <div id="app">
+       <button :class="classes">我是一个按钮</button>
+   </div>
+</body>
+<script>
+   var vm = new Vue({
+     el: '#app',
+     data: {
+       size: 'large',
+       disabled: true
+     },
+     computed: {
+      classes: function(){
+          return [
+              'btn',
+              {
+                  ['btn-' + this.size]: this.size !== '',
+                  ['btn-disabled']: this.disabled
+              }
+          ]
+      }       
+     }
+   })
+</script>
+```
+
+### 4.2.3 在组件上使用
 
 如果直接在自定义组件上使用 `class` 或 `:class`，样式规则会直接应用到这个组件的根元素上。但只适合于自定义组件的最外层是一个根元素。当不满足这种条件或需要给具体的子元素设置类名时，应当使用组件的 props 来传递。
 
@@ -565,6 +638,10 @@ data: {
 
 绑定内联样式，使用`v-bind: style`可以给元素绑定内联样式，方法与`:class`类似，也有对象语法和数组语法，看起来很像直接在元素上写CSS。
 
+```html
+<div :style="{ 'color': color,'fontSize': fontSize + 'px'}">文本</div>
+```
+
 CSS属性名称使用驼峰命名或短横分割命名。大多数情况下直接写一长串的样式不便于阅读和维护，一般以对象写在 data 或 computed，也可以使用数组语法。大多数情况下，直接写一长串的样式不便于阅读和维护，所以一般写在 data 或 computed 里。
 
 ```html
@@ -581,6 +658,12 @@ CSS属性名称使用驼峰命名或短横分割命名。大多数情况下直�
 		}
 	})
 </script>
+```
+
+应用多个样式对象时 ， 可以使用数组语法。但在实际业务中，`:style` 的数组语法并不常用 因为往往可以写在一个对象里面，而较为常用的应当是计算属性。
+
+```html
+<div :style="[styleA, styleB]">文本</div>
 ```
 
 另外，Vue.js会自动给特殊的CSS属性名称增加前缀，比如 transform。
@@ -607,19 +690,104 @@ CSS属性名称使用驼峰命名或短横分割命名。大多数情况下直�
 
 ## 5.2 条件渲染指令
 
+### 5.2.1 v-if、v-else-if、v-else
+
 与 JavaScript 的条件语句 if、else、else if 类似，Vue.js 的条件指令可以根据表达式的值在 DOM 中渲染或销毁元素/组件。可以在 Vue.js 内置的`<template>`元素上使用条件指令，最终渲染的结果不会包含该元素。
+
+```html
+<div>
+	<p v-if="status === 1">当 status 为1时显示该行</p>  
+	<p v-else-if="status === 2">当 status 为2时显示该行</p>  
+	<p v-else>否则显示该行</p>  
+</div>   
+
+<template v-if="status === 1">
+	<p>这是一段文本</p>
+	<p>这是一段文本</p>
+	<p>这是一段文本</p>
+</template>
+```
 
 Vue 在渲染元素时，出于效率考虑，会尽可能地复用已有的元素而非重新渲染。`v-if`、`v-else-if`、`v-else` 是条件渲染指令，利用 key 属性，可以决定是否要复用元素，key 的值必须是唯一的。
 
+```html
+<body>
+   <div id="app">
+      <template v-if="type === 'name'">
+          <label>用户名：</label>
+          <input placeholder="请输入用户名..." key="name-input" />
+      </template>
+      <template v-else>
+          <label>邮箱：</label>
+          <input placeholder="请输入邮箱..." key="mail-input" />
+      </template>
+      <button @click="handleToggleClick">切换输入类型</button>
+   </div>   
+</body>
+<script>
+   var vm = new Vue({    
+      el: '#app',
+      data: {
+          type: 'name'
+      },
+      methods: {
+          handleToggleClick: function(){
+              this.type = this.type === 'name' ? 'mail' : 'name';
+          }
+      }
+   })
+</script>
+```
+
+### 5.2.2 v-show
+
 `v-show` 改变元素的 CSS 属性 display，当 `v-show` 表达式的值为 false 时，元素会隐藏，查看 DOM 结构会看到元素上加载了内联样式`display: none;`。但该指令不能在`<template>`上使用。
+
+```html
+<body>
+   <div id="app">
+      <p v-show="status === 1">当 status 为 1 时显示该行</p>
+   </div>   
+</body>
+<script>
+   var vm = new Vue({    
+      el: '#app',
+      data: {
+          status: 2
+      }
+   })
+</script>
+```
+
+### 5.2.3 v-if与v-show的选择
 
 `v-if` 是真正的条件渲染，它会根据表达式适当地销毁或重建元素及绑定的事件或子组件，如果表达式的初始值为 false，则一开始元素/组件并不会渲染，只有当条件第一次变为真时才开始变异。而 `v-show` 只是简单的 CSS 属性切换，无论条件真与否，都会被编译。相比之下，`v-if` 更适合条件不经常改变的场景，因为它切换开销相对较大，而 `v-show` 适用于频繁切换条件。
 
 ## 5.3 列表渲染指令v-for
 
-`v-for` 是列表渲染指令，可将一个数组遍历或枚举一个对象循环显示。也支持用 of 来代替 in 作为分隔符，前者是当前数组元素的别名，后者是数组。遍历数组时，`v-for` 的表达式支持一个可选参数作为当前项的索引。与 `v-if` 一样，`v-for` 也可以用在内置标签`<template>`上，将多个元素进行渲染。
+### 5.3.1 基本用法
 
-除了数组外，对象的属性也是可以遍历的。遍历对象属性时，有两个可选参数，分别是键名和索引。`v-for` 也可以迭代整数和字符串。
+当需要将一个数组遍历或枚举一个对象循环显示时，就会用到列表渲染指令 v-for。它的表达式需结合 in 来使用，类似 item in items 的形式。列表渲染也支持用 of 来代替 in 作为分隔符，它更接近 JavaScript 迭代器的语法。
+
+```html
+<ul>
+	<li v-for="book in books">{{book.name}}</li>
+	<!-- 或者 -->
+	<li v-for="book of books">{{book.name}}</li>
+</ul>   
+```
+
+遍历数组时，`v-for` 的表达式支持一个可选参数作为当前项的索引。分隔符 in 前的语句使用括号，第二项就是当前项的索引。
+
+```html
+<ul>
+	<li v-for="(book,index) in books">{{ index }} - {{book.name}}</li>
+</ul>   
+```
+
+与 `v-if` 一样，`v-for` 也可以用在内置标签`<template>`上，将多个元素进行渲染。
+
+除了数组外，对象的属性也是可以遍历的。遍历对象属性时，有两个可选参数，分别是键名和索引。
 
 ```html
 <div v-for="(value, key, index) in object">
@@ -627,7 +795,18 @@ Vue 在渲染元素时，出于效率考虑，会尽可能地复用已有的元�
 </div>
 ```
 
-数组更新，Vue 包含了一组观察数组变异的方法，使用它们改变数组也会触发视图更新，包括 
+`v-for` 也可以迭代整数和字符串。
+
+```html
+<div id="app">
+	<!-- 1 2 3 4 5 6 7 8 9 10 -->
+	<span v-for="i in 10">{{ i + ' '}}</span>
+</div>
+```
+
+### 5.3.3 数组更新
+
+Vue 的核心是数据与视图的双向绑定，当我们修改数组时， Vue 会检测到数据变化，所以用 v-for 渲染的视图也会立即更新。 Vue 包含了一组观察数组变异的方法，使用它们改变数组也会触发视图更新：
 
 1. `push()`
 2. `pop()`
@@ -637,9 +816,22 @@ Vue 在渲染元素时，出于效率考虑，会尽可能地复用已有的元�
 6. `sort()`
 7. `reverse()`
 
-但非变异方法不会更新视图，例如 `filter()`、`concat()`、`slice()`，它们返回的是一个新数组，在使用这些非变异方法时，可以用新数组来替换原数组。Vue 在检测到数组变化时，并不是直接重新渲染整个列表，而是最大化地复用 DOM 元素，因此可以大胆地用新数组来替换旧数组，不用担心性能问题。
+但非变异方法不会更新视图，例如 `filter()`、`concat()`、`slice()`，它们返回的是一个新数组，在使用这些非变异方法时，可以用新数组来替换原数组。
 
-需要注意的是，通过索引直接设置项、修改数组长度，也是不会触发视图更新的。解决第一个问题的方法可以使用 Vue内置的 set 方法，如果是在 webpack 中使用组件化的方式，默认是没有导入 Vue 的，这时可以使用`$set`。另一种方法时直接使用 splice 来解决。
+```js
+vm.books = vm.books.filter(function(item){
+	return item.name.match(/JavaScript/);
+});
+```
+
+Vue 在检测到数组变化时，并不是直接重新渲染整个列表，而是最大化地复用 DOM 元素，因此可以大胆地用新数组来替换旧数组，不用担心性能问题。
+
+需要注意的是，通过索引直接设置项、修改数组长度，也是不会触发视图更新的。
+
+- 通过索引直接设置项，比如 `vm.books[3] = { ... }`
+- 修改数组长度，比如 `vm.books.length = 1`
+
+解决第一个问题的方法可以使用 Vue内置的 set 方法，如果是在 webpack 中使用组件化的方式，默认是没有导入 Vue 的，这时可以使用`$set`。另一种方法时直接使用 splice 来解决。
 
 ```javascript
 var vm = new Vue({
@@ -650,13 +842,25 @@ var vm = new Vue({
 vm.items[1] = 'x' // 不是响应性的
 vm.items.length = 2 // 不是响应性的
 
+let indexOfItem = 1, newValue = x;
+
 // Vue.set
 Vue.set(vm.items, indexOfItem, newValue)
+
 // Array.prototype.splice
 vm.items.splice(indexOfItem, 1, newValue)
 ```
 
-过滤与排序。当不想改变原数组，想通过一个数组的副本来做过滤或排序的显示时，可以使用计算属性来返回过滤或排序后的数组。
+第二个问题也可以直接用 splice 来解决：
+
+```js
+let newLength = 2;
+vm.items.splice(newLength)
+```
+
+### 5.3.3 过滤与排序
+
+当不想改变原数组，想通过一个数组的副本来做过滤或排序的显示时，可以使用计算属性来返回过滤或排序后的数组。
 
 ```html
 <li v-for="n in evenNumbers">{{ n }}</li>
