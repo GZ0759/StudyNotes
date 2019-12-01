@@ -900,29 +900,52 @@ methods: {
 
 ## 5.4 方法与事件
 
-在事件绑定上，类似原生 JavaScript 的 onclick 等写法，也是在 HTML 上进行监听的。`@click`的表达式可以直接使用 JavaScript 语句，也可以是一个在 Vue 实例中 methods 选项内的函数名。
+### 5.4.1 基本用法
 
-`@click`调用的方法名后可以不跟括号`()`，如果该方法有参数，默认会将原生事件对象 event 传入。
+在事件绑定上，类似原生 JavaScript 的 onclick 等写法，也是在 HTML 上进行监听的。`@click`的表达式可以直接使用 JavaScript 语句，也可以是一个在 Vue 实例中 methods 选项内的函数名。`@click`调用的方法名后可以不跟括号`()`，如果该方法有参数，默认会将原生事件对象 event 传入。
+
+```html
+<button @click="counter++">+1</button>
+
+<button @click="handleAdd()">+1</button>
+<button @click="handleAdd(10)">+10</button>
+```
 
 这种在 HTML 元素上监听事件的设计看似将 DOM 与 JavaScript 紧耦合，违背分离的原理，实则刚好相反。因为通过 HTML 就可以知道调用的是哪个方法，将逻辑与 DOM 解耦，便于维护。最重要的是，当 ViewModel 销毁时，所有的事件处理器都会自动删除，无需自己清理。
 
 Vue 提供了一个特殊变量`$event`，用于访问原生 DOM 事件。
 
+```html
+<a href="http://www.baidu.com" @click="handleClick('禁止打开',$event)">点我打开链接</a>
+```
+
+### 5.4.2 修饰符
+
 事件可以用修饰符来实现特定功能，例如`event.preventDefault()`，可以用 Vue 事件的修饰符来实现。在绑定的事件后加小圆点`.`，再跟一个后缀来使用修饰符。
 
-- `.stop` - 调用 `event.stopPropagation()`。
-- `.prevent` - 调用 `event.preventDefault()`。
-- `.capture` - 添加事件侦听器时使用 capture 模式。
-- `.self` - 只当事件是从侦听器绑定的元素本身触发时才触发回调。
-- `.{keyCode | keyAlias}` - 只当事件是从特定键触发时才触发回调。
-- `.native` - 监听组件根元素的原生事件。
-- `.once` - 只触发一次回调。
-- `.left` - (2.2.0) 只当点击鼠标左键时触发。
-- `.right` - (2.2.0) 只当点击鼠标右键时触发。
-- `.middle` - (2.2.0) 只当点击鼠标中键时触发。
-- `.passive` - (2.3.0) 以 `{ passive: true }` 模式添加侦听器
+- `.stop`
+- `.prevent`
+- `.capture`
+- `.self`
+- `.once`
+- `.passive`
 
 在表单元素上监听键盘事件时，还可以使用按键修饰符，比如按下具体某个键时才调用方法。也可以自己配置具体按键，全局定义后即可使用 keycode 和快键名称，甚至组合使用。除了具体的某个 keyCode 外，Vue 还提供了一些快捷名称。这些按键修饰符也可以组合使用，或和鼠标一起配合使用。
+
+```html
+<!-- 只有在keyCode 是13时调用vm.submit() -->
+<input @keyup.13="submit" />
+```
+
+- `.enter`
+- `.tab`
+- `.delete` (捕获“删除”和“退格”键)
+- `.esc`
+- `.space`
+- `.up`
+- `.down`
+- `.left`
+- `.right`
 
 ## 5.5 实战：利用计算属性、指令等知识开发购物车
 
