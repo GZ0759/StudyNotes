@@ -959,9 +959,29 @@ Vue 提供了一个特殊变量`$event`，用于访问原生 DOM 事件。
 
 # 第六章 表单与v-model
 
+表单类控件承载了一个网页数据的录入与交互，本章将介绍如何使用指令 v-model 完成表单的数据双向绑定。
+
 ## 6.1 基本用法
 
 Vue.js 提供了 `v-model` 指令，用于在表单类元素上双向绑定数据。例如在输入框上使用时，输入的内容会实时映射到绑定的数据上。使用 `v-model` 后，表单控件显示的值只依赖所绑定的数据，不再关心初始化时的 value 属性。
+
+```html
+<body>
+	<div id="app">
+		<input type="text" v-model="message" placeholder="请输入..." />
+		<p>输入的内容是：{{ message }}</p>
+	</div>
+	<script>
+		var app = new Vue({
+			el: '#app',
+			data: {
+				message: ''
+			}
+		});
+	</script>
+</body>
+```
+使用 v-model 后，表单控件显示的值只依赖所绑定的数据，不再关心初始化时的 value 属性，对于在`<textarea></textarea>` 之间插入的值，也不会生效。
 
 使用 `v-model` 时，如果是用中文输入法输入中文，一般在没有选定词语前，也就是在拼音阶段，Vue 是不会更新数据的。如果希望实时更新中文数据，可以用`@input`来替代 `v-model`。事实上，`v-model` 也是一个特殊的语法糖，只不过它会在不同的表单上智能处理。
 
@@ -988,6 +1008,23 @@ Vue.js 提供了 `v-model` 指令，用于在表单类元素上双向绑定数�
 ```
 
 单选按钮在单独使用时，不需要 `v-model`，直接使用 v-bind 绑定一个布尔类型的值，为真时选中，为否时不选。如果是组合使用来实现互斥选择的效果，就需要 `v-model` 配合 value 来使用。
+
+```html
+<body>
+	<div id="app">
+		<input type="radio" :checked="picked" />
+		<label>单选按钮</label>
+	</div>
+	<script>
+		var app = new Vue({
+			el: '#app',
+			data: {
+				picked: true
+			}
+		});
+	</script>
+</body>
+```
 
 ```html
 <body>
@@ -1039,45 +1076,88 @@ Vue.js 提供了 `v-model` 指令，用于在表单类元素上双向绑定数�
 
 选择列表就是下拉选择器，也是常见的表单控件，同样也分为单选和多选两种方式。`<option>`是备选项，如果含有 value 属性，`v-model` 就会优先匹配 value 的值；如果没有，就会直接匹配`<option>`的 text。给`<selected>`添加属性 multiple 就可以多选，此时 `v-model` 绑定的是一个数组，与复选框用法类似。在业务中，`<option>`经常用 v-for 动态输出，value 和 text 也是用 `v-bind` 来动态输出的。
 
+虽然用选择列表`<select>`控件可以很简单地完成下拉选择的需求，但是在实际业务中反而不常用，因为它的样式依赖平台和浏览器，无法统一，也不太美观，功能也受限，比如不支持搜索，所以常见的解决方案是用 div 模拟一个类似的控件。
+
 ## 6.2 绑定值
 
 单选框按钮、复选框和选择列表在单独使用或组合的模式下，`v-model` 绑定的值是一个动态字符串或布尔值，但在业务中，有时需要绑定一个动态的数据，这时可以用 `v-bind` 来实现。
 
-单选按钮，通过 data 里面的 a 的值的改变，来动态绑定按钮。
+单选按钮，通过 data 里面的值的改变，来动态绑定按钮。
+
+```html
+<div id="app">
+	<input type="radio" v-model="picked" :value="value" />
+	<label>单选按钮</label>
+	<p>{{ picked }}</p>
+	<p>{{ value }}</p>
+</div>
+<script>
+var app = new Vue({
+	el: '#app',
+	data: {
+		picked: false,
+		value: 123
+	}
+});
+</script>
+```
 
 ```html
 <input type="radio" v-model="pick" v-bind:value="a">
 ```
 
-复选框，选中时和未勾选时有两种类型，如果再使用 v-bind 则可以在实现动态绑定。
+复选框，选中时和未勾选时有两种类型，可以再使用 v-bind 则可以在实现动态绑定。
 
 ```html
-<input
-	type="checkbox"
-	v-model="toggle"
-	true-value="yes"
-	false-value="no"
->
+<div id="app">
+	<input type="checkbox" v-model="toggle" :true-value="value1" :fales-value="value2"/>
+	<label>复选框</label>
+	<p>{{ toggle }}</p>
+	<p>{{ value1 }}</p>
+	<p>{{ value2 }}</p>
+</div>
+<script>
+var app = new Vue({
+	el: '#app',
+	data: {
+		toggle: false,
+		value1: 'a',
+		value2: 'b'
+	}
+});
+</script>
 ```
 
 选择列表，当选中时，app.selected 是一个 Object，所以 `app.selected.number === 123`。
 
 ```html
-<select v-model="selected">
-	<!-- 内联对象字面量 -->
-	<option v-bind:value="{ number: 123 }">123</option>
-</select>
+<div id="app">
+	<select v-model="selected">
+	<option :value="{ number: 123 }">123</option>
+	</select>
+	{{ selected.number }}
+</div>
+<script>
+var app = new Vue({
+	el: '#app',
+	data: {
+		selected: ''
+	}
+});
+</script>
 ```
 
 ## 6.3 修饰符
 
 与事件的修饰符类似，v-model 也有修饰符，用于控制数据同步的时机。
 
-`lazy` 修饰符。在输入框中，v-model 默认是在 input 时间中同步输入框的数据（除了提示中介绍的中文输入法情况外），使用修饰符 .lazy 会转变为在 change 事件中同步。
+`lazy` 修饰符。在输入框中，v-model 默认是在 input 时间中同步输入框的数据（除了提示中介绍的中文输入法情况外），使用修饰符 `.lazy` 会转变为在 change 事件中同步。
 
-`number` 修饰符。使用修饰符 .number 可以将输入转换为 Number 类型，否则虽然输入的是数字，但类型还是 String，在数字输入框中比较有用。
+`number` 修饰符。使用修饰符 `.number` 可以将输入转换为 Number 类型，否则虽然输入的是数字，但类型还是 String，在数字输入框中比较有用。
 
-trim 修饰符。使用修饰符 .trim 可以自动过滤输入的首尾空格。
+`trim` 修饰符。使用修饰符 `.trim` 可以自动过滤输入的首尾空格。
+
+从 Vue.2.x 开始， v-model 还可以用于自定义组件，满足定制化的需求。
 
 # 第七章 组件详解
 
