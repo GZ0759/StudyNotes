@@ -1,10 +1,10 @@
-> JavaScript设计模式
-> Addy Osmani 著
-> 徐涛 译
-> 2013年 06 月 第一版
-> [开源图书原文地址](https://addyosmani.com/resources/essentialjsdesignpatterns/book/index.html)
-> [译文地址](https://www.oschina.net/translate/learning-javascript-design-patterns)
-> [W3Cschool](https://www.w3cschool.cn/zobyhd/)
+> JavaScript设计模式  
+> Addy Osmani 著  
+> 徐涛 译  
+> 2013年 06 月 第一版  
+> [开源图书原文地址](https://addyosmani.com/resources/essentialjsdesignpatterns/book/index.html)  
+> [译文地址](https://www.oschina.net/translate/learning-javascript-design-patterns)  
+> [W3Cschool](https://www.w3cschool.cn/zobyhd/)  
 
 # 第1章 介绍
 
@@ -3736,14 +3736,14 @@ $( "div" ).on( "click", function () {
 10.8 使用更松散数据绑定的MVVM
 10.9 MVC、MVP与MVVM
 10.10 Backbone.js与KnockoutJS
-第11章 模块化的JavaScript设计模式
+# 第11章 模块化的JavaScript设计模式
 11.1 脚本加载器要点
 11.2 AMD
 11.3 CommonJS
 11.4 AMD和CommonJS：互相竞争，标准同效
 11.5 ES Harmony
 11.6 总结
-第12章 jQuery中的设计模式
+# 第12章 jQuery中的设计模式
 12.1 Composite（组合）模式
 12.2 Adapter（适配器）模式
 12.3 Facade（外观）模式
@@ -3752,7 +3752,7 @@ $( "div" ).on( "click", function () {
 12.6 延迟初始化
 12.7 Proxy（代理）模式
 12.8 Builder（生成器）模式
-第13章 jQuery插件设计模式
+# 第13章 jQuery插件设计模式
 13.1 模式
 13.2 Lightweight Start模式
 13.3 完整的Widget Factory模式
@@ -3769,4 +3769,4 @@ $( "div" ).on( "click", function () {
 13.14 命名空间模式
 13.15 命名空间基础
 13.16 高级命名空间模式
-第14章 总结
+# 第14章 总结
