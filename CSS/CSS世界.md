@@ -1195,7 +1195,7 @@ top 和 bottom 这两个垂直方向的百分比值计算跟 height 的百分比
   width: 300px; height: 200px;
   position: relative;
 }
-  .right {
+.right {
   height: 0;
   text-align: right;
   overflow: hidden;

@@ -1789,7 +1789,7 @@ webpack 配置中最重要也是必选的两项就是入口 Enrty 和出口 Outp
 ```JavaScript
 var path = require('path');
 var config = {
-		entry: {
+	    entry: {
 				app: './main'
 		},
 		output: {
