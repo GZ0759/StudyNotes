@@ -435,11 +435,11 @@ myModule.myMethod3({
 模块模式最初被定义为一种在传统软件工程中为类提供私有和公有封装的方法。在JavaScript中，模块化模式用来进一步模拟类的概念，通过这种方式，能够使一个单独的对象拥有公有/私有方法和变量，从而屏蔽来自全局作用域的特殊部分。产生的结果是：函数与页面上其它脚本定义的函数冲突的可能性降低。
 
 **私有**
-模块模式使用闭包的方式来将"私有信息",状态和组织结构封装起来。提供了一种将公有和私有方法，变量封装混合在一起的方式，这种方式防止内部信息泄露到全局中，从而避免了和其它开发者接口发生冲图的可能性。在这种模式下只有公有的API 会返回，其它将全部保留在闭包的私有空间中。
+模块模式使用闭包封装“私有”状态和组织。它提供一种包装混合公有或私有方法、变量的方式，防止其泄露至全局作用域，或者与别的开发人员的接口发生冲突。通过该模式，只需返回一个公有API，而其他的一切则都维持在私有闭包里。
 
-这种方法提供了一个比较清晰的解决方案，在只暴露一个接口供其它部分使用的情况下，将执行繁重任务的逻辑保护起来。这个模式非常类似于立即调用函数式表达式(IIFE-查看命名空间相关章节获取更多信息)，但是这种模式返回的是对象，而立即调用函数表达式返回的是一个函数。
+这为我们提供了一个屏蔽处理底层事件逻辑的整洁解决方案，同时只暴露一个接口供应用程序的其他部分使用。该模式除了返回一个对象而并不是函数之外，非常类似于一个立即调用的函数表达式。
 
-需要注意的是，在javascript事实上没有一个显式的真正意义上的"私有性"概念，因为与传统语言不同，javascript没有访问修饰符。从技术上讲，变量不能被声明为公有的或者私有的，因此我们使用函数域的方式去模拟这个概念。在模块模式中，因为闭包的缘故，声明的变量或者方法只在模块内部有效。在返回对象中定义的变量或者方法可以供任何人使用。
+应该指出的是，在js中没有正真意义上的“私有”，因为js没有访问修饰符，因此我们使用函数作用域来模拟这个概念。在Module模式内：闭包声明的变量和方法只在该模式内部可用。但在返回对象上定义的变量和方法，则对外部使用者都是可用的。
 
 **历史**
 从历史角度来看，模块模式最初是在2003年由一群人共同发展出来的，这其中包括Richard Cornford。后来通过Douglas Crockford的演讲，逐渐变得流行起来。另外一件事情是，如果你曾经用过雅虎的YUI库，你会看到其中的一些特性和模块模式非常类似，而这种情况的原因是在创建YUI框架的时候，模块模式极大的影响了YUI的设计。
@@ -461,45 +461,42 @@ var testModule = (function () {
   };
 })();
 
-// Usage:
-
-// Increment our counter
+// 增加计数器
 testModule.incrementCounter();
 
-// Check the counter value and reset
-// Outputs: 1
+// 检查计数器值并重置
 testModule.resetCounter();
 ```
 
-在这里我们看到，其它部分的代码不能直接访问我们的`incrementCounter()` 或者 `resetCounter()`的值。counter变量被完全从全局域中隔离起来了，因此其表现的就像一个私有变量一样，它的存在只局限于模块的闭包内部，因此只有两个函数可以访问counter。我们的方法是有名字空间限制的，因此在我们代码的测试部分，我们需要给所有函数调用前面加上模块的名字(例如"testModule")。
+在这里我们看到，其它部分的代码不能直接访问我们的`incrementCounter()` 或者 `resetCounter()`的值。counter变量被完全从全局域中隔离起来了，因此其表现的就像一个私有变量一样，它的存在只局限于模块的闭包内部，因此只有两个函数可以访问counter。我们的方法是有名字空间限制的，因此在我们代码的测试部分，所有的调用都需要加上前缀(例如"testModule")。
 
-当使用模块模式时，我们会发现通过使用简单的模板，对于开始使用模块模式非常有用。下面是一个模板包含了命名空间，公共变量和私有变量。
+使用模块模式时，可能会觉得它可以用来定义一个简单的模板来入门。下面是一个包含命名空间、公有和私有变量的模块模式。
 
 ```js
 var myNamespace = (function () {
 
   var myPrivateVar, myPrivateMethod;
 
-  // A private counter variable
+  // 私有计数器变量
   myPrivateVar = 0;
 
-  // A private function which logs any arguments
+  // 记录所有参数的私有函数
   myPrivateMethod = function( foo ) {
       console.log( foo );
   };
 
   return {
 
-    // A public variable
+    // 公有变量
     myPublicVar: "foo",
 
-    // A public function utilizing privates
+    // 调用私有变量和方法的公有函数
     myPublicFunction: function( bar ) {
 
-      // Increment our private counter
+      // 增加私有计数器值
       myPrivateVar++;
 
-      // Call our private method using bar
+      // 传入 bar 调用私有方法
       myPrivateMethod( bar );
 
     }
@@ -508,60 +505,46 @@ var myNamespace = (function () {
 })();
 ```
 
-看一下另外一个例子，下面我们看到一个使用这种模式实现的购物车。这个模块完全自包含在一个叫做basketModule 全局变量中。模块中的购物车数组是私有的，应用的其它部分不能直接读取。只存在与模块的闭包中，因此只有可以访问其域的方法可以访问这个变量。
+看一下另外一个例子，下面我们看到一个使用这种模式实现的购物车。这个模块完全自包含在一个叫做basketModule 全局变量中。模块中的购物车数组是私有的，应用的其它部分不能直接读取。它只与模块的闭包一起存在，因此只有可以访问其域的方法可以访问这个变量。
 
 ```js
 var basketModule = (function () {
-
-  // privates
-
   var basket = [];
-
   function doSomethingPrivate() {
     //...
   }
-
   function doSomethingElsePrivate() {
     //...
   }
-
-  // Return an object exposed to the public
+  // 返回一个暴露出的公有对象
   return {
-
-    // Add items to our basket
+    // 添加item到购物车
     addItem: function( values ) {
       basket.push(values);
     },
-
-    // Get the count of items in the basket
+    // 获取购物车里的item数目
     getItemCount: function () {
       return basket.length;
     },
-
-    // Public alias to a  private function
+    // 私有函数的公有形式别名
     doSomething: doSomethingPrivate,
 
-    // Get the total value of items in the basket
+    // 获取购物车里所有item的价格总值
     getTotal: function () {
-
       var q = this.getItemCount(),
           p = 0;
-
       while (q--) {
         p += basket[q].price;
       }
-
       return p;
     }
   };
 }());
 ```
 
-在模块内部，你可能注意到我们返回了应外一个对象。这个自动赋值给了basketModule 因此我们可以这样和这个对象交互。
+在这个模块中，可能已经注意到返回了一个对象。它被自动赋值给 basketModule ，以便我们可以与它交互。
 
 ```js
-// basketModule returns an object with a public API we can use
-
 basketModule.addItem({
   item: "bread",
   price: 0.5
@@ -578,15 +561,10 @@ console.log( basketModule.getItemCount() );
 // Outputs: 0.8
 console.log( basketModule.getTotal() );
 
-// However, the following will not work:
-
 // Outputs: undefined
-// This is because the basket itself is not exposed as a part of our
-// the public API
 console.log( basketModule.basket );
 
-// This also won't work as it only exists within the scope of our
-// basketModule closure, but not the returned public object
+// Uncaught ReferenceError: basket is not defined
 console.log( basket );
 ```
 
@@ -594,69 +572,62 @@ console.log( basket );
 
 请注意在上面的basket模块中域函数是如何在我们所有的函数中被封装起来的，以及我们如何立即调用这个域函数，并且将返回值保存下来。这种方式有以下的优势：
 
-可以创建只能被我们模块访问的私有函数。这些函数没有暴露出来（只有一些API是暴露出来的），它们被认为是完全私有的。
-当我们在一个调试器中，需要发现哪个函数抛出异常的时候，可以很容易的看到调用栈，因为这些函数是正常声明的并且是命名的函数。
-正如过去 T.J Crowder 指出的，这种模式同样可以让我们在不同的情况下返回不同的函数。我见过有开发者使用这种技巧用于执行UA（尿检，抽样检查）测试，目的是为了在他们的模块里面针对IE专门提供一条代码路径，但是现在我们也可以简单的使用特征检测达到相同的目的。
+- 只有模块自身才能享有拥有私有函数的自由，因为它只会暴露我们输出的API。
+- 鉴于函数往往已声明并命名，在试图找到哪些函数抛出异常时，这将使得在调试器中显示调用堆栈变得更容易。
+- 根据环境，还可以让我们返回不同的函数。
 
 ### 9.2.3 模块模式变化
 
-**Import mixins（导入混合）**
+**引入混合**
 
-这个变体展示了如何将全局（例如 jQuery, Underscore）作为一个参数传入模块的匿名函数。这种方式允许我们导入全局，并且按照我们的想法在本地为这些全局起一个别名。
+模式的这种变化展示了全局变量（如jQuery、Underscore）如何作为参数传递给模块的匿名函数。这允许我们引入它们，并按照我们所希望的为它们取个本地别名。
 
 ```js
-// Global module
-var myModule = (function ( jQ, _ ) {
-
-    function privateMethod1(){
-        jQ(".container").html("test");
+// 全局模块
+var myModule = (function (jQ, _) {
+  function privateMethod1() {
+    jQ(".container").html("test");
+  }
+  function privateMethod2() {
+    console.log(_.min([10, 5, 100, 2, 1000]));
+  }
+  return {
+    publicMethod: function () {
+      privateMethod1();
     }
-
-    function privateMethod2(){
-      console.log( _.min([10, 5, 100, 2, 1000]) );
-    }
-
-    return{
-        publicMethod: function(){
-            privateMethod1();               
-        }           
-    };
-
-// Pull in jQuery and Underscore
-}( jQuery, _ ));
-
+  };
+// 引入jQuery和Underscore
+})(jQuery, _));
 myModule.publicMethod();
 ```
 
-**Exports（导出）**
-这个变体允许我们声明全局对象而不用使用它们，同样也支持在下一个例子中我们将会看到的全局导入的概念。
+**引出**
+
+下一个变化允许我们声明全局变量，而不需实现它们，并可以同样地支持上一个示例中的全局引入的概念。
 
 ```js
-// Global module
+// 全局模块
 var myModule = (function () {
-
-    // Module object
+  // 模块对象
   var module = {},
     privateVariable = "Hello World";
-
   function privateMethod() {
     // ...
   }
-
   module.publicProperty = "Foobar";
   module.publicMethod = function () {
     console.log( privateVariable );
   };
 
   return module;
-
 }());
 ```
 
-### 9.2.4 工具箱和框架特定的模块模式实现。
+### 9.2.4 工具包和特定框架的模块模式实现。
 
 **Dojo**
-Dojo提供了一个方便的方法 `dojo.setObject()` 来设置对象。这需要将以"."符号为第一个参数的分隔符，如：myObj.parent.child 是指定义在"myOjb"内部的一个对象“parent”，它的一个属性为"child"。使用`setObject()`方法允许我们设置children 的值，可以创建路径传递过程中的任何对象即使这些它们根本不存在。
+
+Dojo 提供了一种和对象一起用的便利方法`dojo.setObject()`。其第一个参数是用点号分割的字符串，如`myObj.parent.child`，它在parent对象中引用一个称为child的属性，parent对象是在myObj内部定义。我们可以使用`setObject()`设置子级的值（比如属性等），如果中间对象不存在的话，也可以通过点号分割将中间的字符作为中间对象进行创建。
 
 例如，如果我们声明商店命名空间的对象basket.coreas，可以实现使用传统的方式如下：
 
@@ -674,77 +645,62 @@ if ( !store.basket["core"] ) {
 store.basket.core = {
   // ...rest of our logic
 };
+```
+
 或使用Dojo1.7（AMD兼容的版本）及以上如下：
 
-require(["dojo/_base/customStore"], function( store ){
-
-  // using dojo.setObject()
-  store.setObject( "basket.core", (function() {
-
-      var basket = [];
-
-      function privateMethod() {
-          console.log(basket);
+```js
+require(["dojo/_base/customStore"], function (store) {
+  // 使用 dojo.setObject()
+  store.setObject("basket.core", (function () {
+    var basket = [];
+    function privateMethod() {
+      console.log(basket);
+    }
+    return {
+      publicMethod: function (){
+          privateMethod();
       }
-
-      return {
-          publicMethod: function(){
-                  privateMethod();
-          }
-      };
-
-  }()));
-
+    };
+  })());
 });
 ```
 
 **ExtJS**
-对于这些使用Sencha的ExtJS的人们，你们很幸运，因为官方文档包含一些例子，用于展示如何正确地在框架里面使用模块模式。
 
-下面我们可以看到一个例子关于如何定义一个名字空间，然后填入一个包含有私有和公有API的模块。除了一些语义上的不同之外，这个例子和使用vanilla javascript 实现的模块模式非常相似。
+对比那些使用Sencha ExtJS的人，你的运气会好一点，因为官方文档包含了一些示例，演示了EXTJS框架下如何正确使用Module模式。
+
+在这里，我们可以看到这样的一个示例：如何定义一个名称空间，然后填充一个包含私有和公有 API 的模块。除了一些语义差异，它与如何在纯JavaScript中实现Module模式十分相近。
 
 ```js
-// create namespace
+// 创建命名空间
 Ext.namespace("myNameSpace");
-
-// create application
+// 创建应用
 myNameSpace.app = function () {
-
-  // do NOT access DOM from here; elements don't exist yet
-  // private variables
-
+  // 私有变量
   var btn1,
       privVar1 = 11;
-
-  // private functions
+  // 私有函数
   var btn1Handler = function ( button, event ) {
       console.log( "privVar1=" + privVar1 );
       console.log( "this.btn1Text=" + this.btn1Text );
     };
-
-  // public space
   return {
-    // public properties, e.g. strings to translate
+    // 公有属性
     btn1Text: "Button 1",
-
-    // public methods
+    // 公有该方法
     init: function () {
-
       if ( Ext.Ext2 ) {
-
         btn1 = new Ext.Button({
           renderTo: "btn1-ct",
           text: this.btn1Text,
           handler: btn1Handler
         });
-
       } else {
-
         btn1 = new Ext.Button( "btn1-ct", {
           text: this.btn1Text,
           handler: btn1Handler
         });
-
       }
     }
   };
@@ -752,33 +708,26 @@ myNameSpace.app = function () {
 ```
 
 **YUI**
-类似地，我们也可以使用YUI3来实现模块模式。下面的例子很大程度上是基于原始由Eric Miraglia实现的YUI本身的模块模式，但是和vanillla Javascript 实现的版本比较起来差异不是很大。
+
+同样，在使用 YUI3 构建应用程序时，我们也可以实现Module模式。下面的示例在很大程度上基于由Eric Miraglia提出的原始YUI Module模式实现，但它又与纯JavaScript版本截然不同。
 
 ```js
 Y.namespace( "store.basket" ) = (function () {
-
     var myPrivateVar, myPrivateMethod;
-
-    // private variables:
+    // 私有变量
     myPrivateVar = "I can be accessed only within Y.store.basket.";
-
-    // private method:
+    // 私有方法
     myPrivateMethod = function () {
         Y.log( "I can be accessed only from within YAHOO.store.basket" );
     }
-
     return {
         myPublicProperty: "I'm a public property.",
-
         myPublicMethod: function () {
             Y.log( "I'm a public method." );
-
-            // Within basket, I can access "private" vars and methods:
+            // 在basket里，可以访问到私有变量和方法
             Y.log( myPrivateVar );
             Y.log( myPrivateMethod() );
-
-            // The native scope of myPublicMethod is store so we can
-            // access public members using "this":
+            // myPublicMethod 的原始作用域是store，所以可以使用this来访问公有成员
             Y.log( this.myPublicProperty );
         }
     };
@@ -787,43 +736,43 @@ Y.namespace( "store.basket" ) = (function () {
 ```
 
 **jQuery**
-因为jQuery编码规范没有规定插件如何实现模块模式，因此有很多种方式可以实现模块模式。Ben Cherry 之间提供一种方案，因为模块之间可能存在大量的共性，因此通过使用函数包装器封装模块的定义。
 
-在下面的例子中，定义了一个library 函数，这个函数声明了一个新的库，并且在新的库（例如 模块）创建的时候，自动将初始化函数绑定到document的ready上。
+有许多方式可以将非jQuery插件代码包装在Module模式中。如果模块之间有多个共性，Ben Cherry之前建议过一种实现，在模块模式内部模块定义附件使用函数包装器。
+
+在下面的示例中，定义了library函数，它声明一个新库，并在创建新库（即模块）时将init函数自动绑定到document.ready。
 
 ```js
 function library( module ) {
-
   $( function() {
     if ( module.init ) {
       module.init();
     }
   });
-
   return module;
 }
 
 var myLibrary = library(function () {
-
   return {
     init: function () {
-      // module implementation
+      // 模块实现
     }
   };
 }());
 ```
 
 ### 9.2.5 优势
-既然我们已经看到单例模式很有用，为什么还是使用模块模式呢？首先，对于有面向对象背景的开发者来讲，至少从javascript语言上来讲，模块模式相对于真正的封装概念更清晰。
 
-其次，模块模式支持私有数据-因此，在模块模式中，公共部分代码可以访问私有数据，但是在模块外部，不能访问类的私有部分（没开玩笑！感谢David Engfer 的玩笑）。
+首先，相比真正封装的思想，它对于很多拥有面向对象背景的开发人员来说更加整洁，至少是从JavaScript的角度。
+
+其次，它支持私有数据，因此，在Module模式中，代码的公有（public）部分能够接触私有部分，然而外界无法接触类的私有部分。
 
 ### 9.2.6 缺点
-模块模式的缺点是因为我们采用不同的方式访问公有和私有成员，因此当我们想要改变这些成员的可见性的时候，我们不得不在所有使用这些成员的地方修改代码。
 
-我们也不能在对象之后添加的方法里面访问这些私有变量。也就是说，很多情况下，模块模式很有用，并且当使用正确的时候，潜在地可以改善我们代码的结构。
+Module模式的缺点是：由于我们访问公有和私有成员的方式不同，当我们想改变可见性时，实际上我们必须要修改每一个曾经使用过该成员的地方。
 
-其它缺点包括不能为私有成员创建自动化的单元测试，以及在紧急修复bug时所带来的额外的复杂性。根本没有可能可以对私有成员打补丁。相反地，我们必须覆盖所有的使用存在bug私有成员的公共方法。开发者不能简单的扩展私有成员，因此我们需要记得，私有成员并非它们表面上看上去那么具有扩展性。
+我们也无法访问那些之后在方法里添加的私有成员。也就是说，在很多情况下，如果正确使用，Module模式仍然是相当有用的，肯定可以改进应用程序的结构。
+
+其他缺点包括：无法为私有成员创建自动化单元测试，bug需要修正补丁时会增加额外的复杂性。为私有方法打补丁是不可能的。相反，我们必须覆盖所有与有bug的私有方法进行交互的公有方法。另外开发人员也无法轻易地扩展私有方法，所以要记住，私有方法并不像它们最初显现出来的那么灵活。
 
 想要了解更深入的信息，可以阅读 Ben Cherry 这篇[精彩的文章](http://www.adequatelygood.com/JavaScript-Module-Pattern-In-Depth.html)。
 
