@@ -235,9 +235,8 @@ var newObject = Object.create( null );
 var newObject = new Object();
 ```
 
-有四种方式可以将一个键值对赋给一个对象:
-
-ECMAScript 3 兼容形式。包括点语法和中括号语法。
+有四种方式可以将一个键值对赋给一个对象:   
+ECMAScript 3 兼容形式。包括点语法（Dot syntax）和中括号语法（Square bracket syntax）。
 
 ```js
 newObject.someKey = "Hello World";
@@ -247,7 +246,7 @@ newObject["someKey"] = "Hello World";
 var key = newObject["someKey"];
 ```
 
-只实用 ECMAScript 5 的方式。包括`Object.defineProperty`和 `Object.defineProperties`。
+只适用 ECMAScript 5 的方式。包括`Object.defineProperty`和 `Object.defineProperties`。
 
 ```js
 Object.defineProperty( newObject, "someKey", {
@@ -333,8 +332,7 @@ console.log( mondeo.toString() );
 
 ### 9.1.3 使用“原型”的构造器
 
-在Javascript中函数有一个prototype的属性。调用JavaScript 构造器创建一个对象后，新对象就会具有构造器原型的所有属性。通过这种方式，就可以创建多个访问相同prototype的Car对象了。
-
+在Javascript中函数有一个prototype的属性。调用JavaScript 构造器创建一个对象后，新对象就会具有构造器原型的所有属性。通过这种方式，就可以创建多个访问相同prototype的Car对象了。注意这里我们使用 `Object.prototype.newMethod` 而不是 `Object.prototype` ，以避免我们重新定义原型对象。
 ```js
 function Car( model, year, miles ) {
 
@@ -344,8 +342,6 @@ function Car( model, year, miles ) {
 
 }
 
-// 注意这里我们使用 Object.prototype.newMethod 而不是
-// Object.prototype ，以避免我们重新定义原型对象
 Car.prototype.toString = function () {
   return this.model + " has done " + this.miles + " miles";
 };
@@ -381,9 +377,7 @@ Module（模块）是任何健壮的应用程序架构中不可或缺的一部�
 
 ```js
 var myObjectLiteral = {
-
     variableKey: variableValue,
-
     functionKey: function () {
       // ...
     };
@@ -397,24 +391,19 @@ var myModule = {
 
   myProperty: "someValue",
 
-  // 对象字面量包含了属性和方法（properties and methods）.
-  // 例如，我们可以定义一个模块配置进对象：
   myConfig: {
     useCaching: true,
     language: "en"
   },
 
-  // 非常基本的方法
   myMethod: function () {
     console.log( "Where in the world is Paul Irish today?" );
   },
 
-  // 输出基于当前配置（<span>configuration</span>）的一个值
   myMethod2: function () {
     console.log( "Caching is:" + ( this.myConfig.useCaching ) ? "enabled" : "disabled" );
   },
 
-  // 重写当前的配置（configuration）
   myMethod3: function( newConfig ) {
 
     if ( typeof newConfig === "object" ) {
@@ -427,7 +416,7 @@ var myModule = {
 // 输出: Where in the world is Paul Irish today?
 myModule.myMethod();
 
-// 输出: enabled
+// 输出: Caching is:enabled
 myModule.myMethod2();
 
 // 输出: fr
@@ -437,7 +426,7 @@ myModule.myMethod3({
 });
 ```
 
-使用对象字面量有助于封装和组织代码。如果你想近一步了解对象字面量可以阅读 Rebecca Murphey 写过的关于此类话题的更深入的文章。
+使用对象字面量有助于封装和组织代码。如果你想近一步了解对象字面量可以阅读 Rebecca Murphey 写过的关于此类话题的更深入的[文章](http://rmurphey.com/blog/2009/10/15/using-objects-to-organize-your-code)。
 
 也就是说，如果我们选择了这种技术，我们可能对模块模式有同样的兴趣。它仍然使用对象字面量，但只是作为一个作用域函数的返回值。
 
@@ -452,29 +441,24 @@ myModule.myMethod3({
 
 需要注意的是，在javascript事实上没有一个显式的真正意义上的"私有性"概念，因为与传统语言不同，javascript没有访问修饰符。从技术上讲，变量不能被声明为公有的或者私有的，因此我们使用函数域的方式去模拟这个概念。在模块模式中，因为闭包的缘故，声明的变量或者方法只在模块内部有效。在返回对象中定义的变量或者方法可以供任何人使用。
 
-历史
+**历史**
 从历史角度来看，模块模式最初是在2003年由一群人共同发展出来的，这其中包括Richard Cornford。后来通过Douglas Crockford的演讲，逐渐变得流行起来。另外一件事情是，如果你曾经用过雅虎的YUI库，你会看到其中的一些特性和模块模式非常类似，而这种情况的原因是在创建YUI框架的时候，模块模式极大的影响了YUI的设计。
 
-例子
+**例子**
 下面这个例子通过创建一个自包含的模块实现了模块模式。
 
 ```js
 var testModule = (function () {
-
   var counter = 0;
-
   return {
-
     incrementCounter: function () {
       return counter++;
     },
-
     resetCounter: function () {
       console.log( "counter value prior to reset: " + counter );
       counter = 0;
     }
   };
-
 })();
 
 // Usage:
@@ -615,7 +599,9 @@ console.log( basket );
 正如过去 T.J Crowder 指出的，这种模式同样可以让我们在不同的情况下返回不同的函数。我见过有开发者使用这种技巧用于执行UA（尿检，抽样检查）测试，目的是为了在他们的模块里面针对IE专门提供一条代码路径，但是现在我们也可以简单的使用特征检测达到相同的目的。
 
 ### 9.2.3 模块模式变化
-Import mixins(导入混合)
+
+**Import mixins（导入混合）**
+
 这个变体展示了如何将全局（例如 jQuery, Underscore）作为一个参数传入模块的匿名函数。这种方式允许我们导入全局，并且按照我们的想法在本地为这些全局起一个别名。
 
 ```js
@@ -642,7 +628,7 @@ var myModule = (function ( jQ, _ ) {
 myModule.publicMethod();
 ```
 
-Exports（导出）
+**Exports（导出）**
 这个变体允许我们声明全局对象而不用使用它们，同样也支持在下一个例子中我们将会看到的全局导入的概念。
 
 ```js
@@ -667,10 +653,10 @@ var myModule = (function () {
 }());
 ```
 
-工具箱和框架特定的模块模式实现。
+### 9.2.4 工具箱和框架特定的模块模式实现。
 
-Dojo
-Dojo提供了一个方便的方法 dojo.setObject() 来设置对象。这需要将以"."符号为第一个参数的分隔符，如：myObj.parent.child 是指定义在"myOjb"内部的一个对象“parent”，它的一个属性为"child"。使用setObject()方法允许我们设置children 的值，可以创建路径传递过程中的任何对象即使这些它们根本不存在。
+**Dojo**
+Dojo提供了一个方便的方法 `dojo.setObject()` 来设置对象。这需要将以"."符号为第一个参数的分隔符，如：myObj.parent.child 是指定义在"myOjb"内部的一个对象“parent”，它的一个属性为"child"。使用`setObject()`方法允许我们设置children 的值，可以创建路径传递过程中的任何对象即使这些它们根本不存在。
 
 例如，如果我们声明商店命名空间的对象basket.coreas，可以实现使用传统的方式如下：
 
@@ -712,7 +698,7 @@ require(["dojo/_base/customStore"], function( store ){
 });
 ```
 
-ExtJS
+**ExtJS**
 对于这些使用Sencha的ExtJS的人们，你们很幸运，因为官方文档包含一些例子，用于展示如何正确地在框架里面使用模块模式。
 
 下面我们可以看到一个例子关于如何定义一个名字空间，然后填入一个包含有私有和公有API的模块。除了一些语义上的不同之外，这个例子和使用vanilla javascript 实现的模块模式非常相似。
@@ -765,7 +751,7 @@ myNameSpace.app = function () {
 }();
 ```
 
-YUI
+**YUI**
 类似地，我们也可以使用YUI3来实现模块模式。下面的例子很大程度上是基于原始由Eric Miraglia实现的YUI本身的模块模式，但是和vanillla Javascript 实现的版本比较起来差异不是很大。
 
 ```js
@@ -800,7 +786,7 @@ Y.namespace( "store.basket" ) = (function () {
 })();
 ```
 
-jQuery
+**jQuery**
 因为jQuery编码规范没有规定插件如何实现模块模式，因此有很多种方式可以实现模块模式。Ben Cherry 之间提供一种方案，因为模块之间可能存在大量的共性，因此通过使用函数包装器封装模块的定义。
 
 在下面的例子中，定义了一个library 函数，这个函数声明了一个新的库，并且在新的库（例如 模块）创建的时候，自动将初始化函数绑定到document的ready上。
@@ -827,12 +813,12 @@ var myLibrary = library(function () {
 }());
 ```
 
-优势
+### 9.2.5 优势
 既然我们已经看到单例模式很有用，为什么还是使用模块模式呢？首先，对于有面向对象背景的开发者来讲，至少从javascript语言上来讲，模块模式相对于真正的封装概念更清晰。
 
 其次，模块模式支持私有数据-因此，在模块模式中，公共部分代码可以访问私有数据，但是在模块外部，不能访问类的私有部分（没开玩笑！感谢David Engfer 的玩笑）。
 
-缺点
+### 9.2.6 缺点
 模块模式的缺点是因为我们采用不同的方式访问公有和私有成员，因此当我们想要改变这些成员的可见性的时候，我们不得不在所有使用这些成员的地方修改代码。
 
 我们也不能在对象之后添加的方法里面访问这些私有变量。也就是说，很多情况下，模块模式很有用，并且当使用正确的时候，潜在地可以改善我们代码的结构。
@@ -841,11 +827,9 @@ var myLibrary = library(function () {
 
 想要了解更深入的信息，可以阅读 Ben Cherry 这篇[精彩的文章](http://www.adequatelygood.com/JavaScript-Module-Pattern-In-Depth.html)。
 
-## 9.3 Revealing Module（揭示模块）模式
+## 9.3 揭示模块模式
 
-### 暴露模块模式
-
-既然我们对模块模式已经有一些了解了，让我们看一下改进版本 - Christian Heilmann 的启发式模块模式。 启发式模块模式来自于，当Heilmann对这样一个现状的不满，即当我们想要在一个公有方法中调用另外一个公有方法，或者访问公有变量的时候，我们不得不重复主对象的名称。他也不喜欢模块模式中，当想要将某个成员变成公共成员时，修改文字标记的做法。
+揭示模块（Revealing Module）模式来自于，当Heilmann对这样一个现状的不满，即当我们想要在一个公有方法中调用另外一个公有方法，或者访问公有变量的时候，我们不得不重复主对象的名称。他也不喜欢模块模式中，当想要将某个成员变成公共成员时，修改文字标记的做法。
 
 因此他工作的结果就是一个更新的模式，在这个模式中，我们可以简单地在私有域中定义我们所有的函数和变量，并且返回一个匿名对象，这个对象包含有一些指针，这些指针指向我们想要暴露出来的私有成员，使这些私有成员公有化。
 
@@ -919,11 +903,11 @@ var myRevealingModule = function () {
 myRevealingModule.start();
 ```
 
-### 优势
+### 9.3.1 优势
 
 这个模式是我们脚本的语法更加一致。同样在模块的最后关于那些函数和变量可以被公共访问也变得更加清晰，增强了可读性。
 
-### 缺点
+### 9.3.2 缺点
 
 这个模式的一个缺点是如果私有函数需要使用公有函数，那么这个公有函数在需要打补丁的时候就不能被重载。因为私有函数仍然使用的是私有的实现，并且这个模式不能用于公有成员，只用于函数。
 
@@ -931,10 +915,9 @@ myRevealingModule.start();
 
 因为上面的原因，使用暴露式模块模式创建的模块相对于原始的模块模式更容易出问题，因此在使用的时候需要小心。
 
-## 9.4 Singleton（单例）模式
+## 9.4 单例模式
 
-### 单例模式
-单例模式之所以这么叫，是因为它限制一个类只能有一个实例化对象。经典的实现方式是，创建一个类，这个类包含一个方法，这个方法在没有对象存在的情况下，将会创建一个新的实例对象。如果对象存在，这个方法只是返回这个对象的引用。
+单例（Singleton）模式之所以这么叫，是因为它限制一个类只能有一个实例化对象。经典的实现方式是，创建一个类，这个类包含一个方法，这个方法在没有对象存在的情况下，将会创建一个新的实例对象。如果对象存在，这个方法只是返回这个对象的引用。
 
 单例和静态类不同，因为我们可以退出单例的初始化时间。通常这样做是因为，在初始化的时候需要一些额外的信息，而这些信息在声明的时候无法得知。对于并不知晓对单例模式引用的代码来讲，单例模式没有为它们提供一种方式可以简单的获取单例模式。这是因为，单例模式既不返回对象也不返回类，它只返回一种结构。可以类比闭包中的变量不是闭包-提供闭包的函数域是闭包（绕进去了）。
 
@@ -1134,10 +1117,9 @@ console.log( singletonTest.pointX );
 
 要想进一步了解关于单例的信息，可以读读 Miller Medeiros 推荐的这篇非常棒的关于单例模式以及单例模式各种各样问题的[文章](https://www.ibm.com/developerworks/webservices/library/co-single/index.html)，也可以看看这篇[文章](http://misko.hevery.com/2008/09/10/where-have-all-the-new-operators-gone/)的评论，这些评论讨论了单例模式是怎样增加了模块间的紧耦合。我很乐意去支持这些推荐，因为这两篇文章提出了很多关于单例模式重要的观点，而这些观点是很值得重视的。
 
-## 9.5 Observer（观察者）模式
+## 9.5 观察者模式
 
-### 观察者模式
-观察者模式是这样一种设计模式。一个被称作被观察者的对象，维护一组被称为观察者的对象，这些对象依赖于被观察者，被观察者自动将自身的状态的任何变化通知给它们。
+观察者（Observer）模式是这样一种设计模式。一个被称作被观察者的对象，维护一组被称为观察者的对象，这些对象依赖于被观察者，被观察者自动将自身的状态的任何变化通知给它们。
 
 当一个被观察者需要将一些变化通知给观察者的时候，它将采用广播的方式，这条广播可能包含特定于这条通知的一些数据。
 
@@ -1151,6 +1133,7 @@ console.log( singletonTest.pointX );
 - 观察者：提供一个更新接口，用于当被观察者状态变化时，得到通知。
 - 具体的被观察者：状态变化时广播通知给观察者，保持具体的观察者的信息。
 - 具体的观察者：保持一个指向具体被观察者的引用，实现一个更新接口，用于观察，以便保证自身状态总是和被观察者状态一致的。
+
 首先，让我们对被观察者可能有的一组依赖其的观察者进行建模：
 ```js
 function ObserverList(){
@@ -1302,7 +1285,7 @@ function AddNewObserver(){
 ```
 在这个例子里面，我们看到了如何实现和配置观察者模式，了解了被观察者，观察者，具体被观察者，具体观察者的概念。
 
-### 观察者模式和发布/订阅模式的不同
+### 9.5.1 观察者模式和发布/订阅模式的不同
 观察者模式确实很有用，但是在javascript时间里面，通常我们使用一种叫做发布/订阅模式的变体来实现观察者模式。这两种模式很相似，但是也有一些值得注意的不同。
 
 观察者模式要求想要接受相关通知的观察者必须到发起这个事件的被观察者上注册这个事件。
@@ -1352,7 +1335,7 @@ publish( "inbox/newMessage", [{
 ```
 这个例子的更广的意义是对松耦合的原则的一种推崇。不是一个对象直接调用另外一个对象的方法，而是通过订阅另外一个对象的一个特定的任务或者活动，从而在这个任务或者活动出现的时候的得到通知。
 
-### 优势
+### 9.5.2 优势
 观察者和发布/订阅模式鼓励人们认真考虑应用不同部分之间的关系，同时帮助我们找出这样的层，该层中包含有直接的关系，这些关系可以通过一些列的观察者和被观察者来替换掉。这中方式可以有效地将一个应用程序切割成小块，这些小块耦合度低，从而改善代码的管理，以及用于潜在的代码复用。
 
 使用观察者模式更深层次的动机是，当我们需要维护相关对象的一致性的时候，我们可以避免对象之间的紧密耦合。例如，一个对象可以通知另外一个对象，而不需要知道这个对象的信息。
@@ -1361,14 +1344,14 @@ publish( "inbox/newMessage", [{
 
 尽管这些模式并不是万能的灵丹妙药，这些模式仍然是作为最好的设计松耦合系统的工具之一，因此在任何的JavaScript 开发者的工具箱里面，都应该有这样一个重要的工具。
 
-### 缺点
+### 9.5.3 缺点
 事实上，这些模式的一些问题实际上正是来自于它们所带来的一些好处。在发布/订阅模式中，将发布者共订阅者上解耦，将会在一些情况下，导致很难确保我们应用中的特定部分按照我们预期的那样正常工作。
 
 例如，发布者可以假设有一个或者多个订阅者正在监听它们。比如我们基于这样的假设，在某些应用处理过程中来记录或者输出错误日志。如果订阅者执行日志功能崩溃了（或者因为某些原因不能正常工作），因为系统本身的解耦本质，发布者没有办法感知到这些事情。
 
 另外一个这种模式的缺点是，订阅者对彼此之间存在没有感知，对切换发布者的代价无从得知。因为订阅者和发布者之间的动态关系，更新依赖也很能去追踪。
 
-发布/订阅实现
+### 9.5.4 发布/订阅实现
 发布/订阅在JavaScript的生态系统中非常合适，主要是因为作为核心的ECMAScript 实现是事件驱动的。尤其是在浏览器环境下更是如此，因为DOM使用事件作为其主要的用于脚本的交互API。
 
 也就是说，无论是ECMAScript 还是DOM都没有在实现代码中提供核心对象或者方法用于创建定制的事件系统（DOM3 的CustomEvent是一个例外，这个事件绑定在DOM上，因此通常用处不大）。
