@@ -237,71 +237,54 @@ var newObject = new Object();
 
 有四种方式可以将一个键值对赋给一个对象:
 
-ECMAScript 3 兼容形式。
+ECMAScript 3 兼容形式。包括点语法和中括号语法。
 
 ```js
-// 1\. “点号”法
-// 设置属性
 newObject.someKey = "Hello World";
-// 获取属性
 var key = newObject.someKey;
 
-// 2\. “方括号”法
 newObject["someKey"] = "Hello World";
 var key = newObject["someKey"];
 ```
 
-仅 ECMAScript 5 兼容性形式。
+只实用 ECMAScript 5 的方式。包括`Object.defineProperty`和 `Object.defineProperties`。
 
 ```js
-// 3\. Object.defineProperty方式
-// 设置属性
 Object.defineProperty( newObject, "someKey", {
     value: "for more control of the property's behavior",
     writable: true,
     enumerable: true,
     configurable: true
 });
-
-// 如果上面的方式你感到难以阅读，可以简短的写成下面这样：
-
+// 简写
 var defineProp = function ( obj, key, value ){
   config.value = value;
   Object.defineProperty( obj, key, config );
 };
-
 // 为了使用它，我们要创建一个“person”对象
 var person = Object.create( null );
-
 // 用属性构造对象
 defineProp( person, "car",  "Delorean" );
 defineProp( person, "dateOfBirth", "1981" );
 defineProp( person, "hasBeard", false );
 
-// 4\. Object.defineProperties方式
-
 // 设置属性
 Object.defineProperties( newObject, {
-
   "someKey": { 
     value: "Hello World", 
     writable: true 
   },
-
   "anotherKey": { 
     value: "Foo bar", 
     writable: false 
   } 
 
 });
-// 3和4中的读取属行可用1和2中的任意一种
 ```
 
 在这本书的后面一点，这些方法会被用于继承，如下：
 
 ```js
-// 使用:
-
 // 创建一个继承与Person的赛车司机
 var driver = Object.create( person );
 
@@ -315,11 +298,11 @@ console.log( driver.dateOfBirth );
 console.log( driver.topSpeed );
 ```
 
-### 基础构造器
+### 9.1.2 基本构造器
 
-正如我们先前所看到的，Javascript不支持类的概念，但它有一种与对象一起工作的构造器函数。使用new关键字来调用该函数，我们可以告诉Javascript把这个函数当做一个构造器来用,它可以用自己所定义的成员来初始化一个对象。
+正如我们先前所看到的，Javascript不支持类的概念，但它确实支持与对象一起用的 constructor（构造器）函数。使用new关键字来调用该函数，使Javascript像使用构造器一样实例化一个新对象，并且对象成员由该函数定义。
 
-在这个构造器内部，关键字this引用到刚被创建的对象。回到对象创建，一个基本的构造函数看起来像这样:
+在构造器中，关键字this引用新创建的对象。一个基本的构造器看起来是这个样子:
 
 ```js
 function Car( model, year, miles ) {
@@ -346,11 +329,11 @@ console.log( civic.toString() );
 console.log( mondeo.toString() );
 ```
 
-上面这是个简单版本的构造器模式，但它还是有些问题。一个是难以继承，另一个是每个Car构造函数创建的对象中，`toString()`之类的函数都被重新定义。这不是非常好，理想的情况是所有Car类型的对象都应该引用同一个函数。 这要谢谢 ECMAScript3和ECMAScript5-兼容版，对于构造对象他们提供了另外一些选择，解决限制小菜一碟。
+上面这是个简单版本的构造器模式，但它还是有些问题。一个是难以继承，另一个是每个Car构造函数创建的对象中，`toString()`之类的函数都被重新定义。这不是非常好，理想的情况是所有Car类型的对象都应该引用同一个函数。 值得庆幸的是，因为有很多 ES3 和ES5 兼容替代方法能够用于创建对象，所以很容易解决这个限制问题。
 
-### 使用“原型”的构造器
+### 9.1.3 使用“原型”的构造器
 
-在Javascript中函数有一个prototype的属性。当我们调用Javascript的构造器创建一个对象时，构造函数prototype上的属性对于所创建的对象来说都看见。照这样，就可以创建多个访问相同prototype的Car对象了。下面，我们来扩展一下原来的例子：
+在Javascript中函数有一个prototype的属性。调用JavaScript 构造器创建一个对象后，新对象就会具有构造器原型的所有属性。通过这种方式，就可以创建多个访问相同prototype的Car对象了。
 
 ```js
 function Car( model, year, miles ) {
@@ -361,7 +344,7 @@ function Car( model, year, miles ) {
 
 }
 
-// 注意这里我们使用Note here that we are using Object.prototype.newMethod 而不是
+// 注意这里我们使用 Object.prototype.newMethod 而不是
 // Object.prototype ，以避免我们重新定义原型对象
 Car.prototype.toString = function () {
   return this.model + " has done " + this.miles + " miles";
@@ -378,26 +361,23 @@ console.log( mondeo.toString() );
 
 通过上面代码，单个`toString()`实例被所有的Car对象所共享了。
 
-## 9.2 Module（模块）模式
+## 9.2 模块模式
 
-### 模块化模式
+Module（模块）是任何健壮的应用程序架构中不可或缺的一部分，它通常能够帮助我们清晰地分析和组织项目中的代码单元。
 
-模块是任何健壮的应用程序体系结构不可或缺的一部分，特点是有助于保持应用项目的代码单元既能清晰地分离又有组织。
+在JavaScript中，有几种用于实现模块的方法。
 
-在JavaScript中，实现模块有几个选项，他们包括：
-
-- 模块化模式
-- 对象表示法
+- 对象字面量表示法
+- Module 模式
 - AMD模块
 - CommonJS 模块
 - ECMAScript Harmony 模块
 
-我们在书中后面的现代模块化JavaScript设计模式章节中将探讨这些选项中的最后三个。
+我们在书中后面的现代模块化JavaScript设计模式章节中将探讨这些选项中的最后三个。Module模式在某种程度上时基于对象字面量的，因此首先重新认识对象字面量是由意义的。
 
-模块化模式是基于对象的文字部分，所以首先对于更新我们对它们的知识是很有意义的。
+### 9.2.1 对象字面量
 
-对象字面值
-在对象字面值的标记里，一个对象被描述为一组以逗号分隔的名称/值对括在大括号（{}）的集合。对象内部的名称可以是字符串或是标记符后跟着一个冒号":"。在对象里最后一个名称/值对不应该以","为结束符，因为这样会导致错误。
+在对象字面量表示法中，一个对象被描述为一组包含在大括号`{}`中、以逗号分隔的 name/value 对。对象内的名称可以是字符串或标识符，后面跟着一个冒号。对象中最后的一个 name/value 对的后面不用加逗号，如果加将会导致出错。
 
 ```js
 var myObjectLiteral = {
@@ -410,14 +390,14 @@ var myObjectLiteral = {
 };
 ```
 
-对象字面值不要求使用新的操作实例，但是不能够在结构体开始使用，因为打开"{"可能被解释为一个块的开始。在对象外新的成员会被加载，使用分配如下：smyModule.property = "someValue"; 下面我们可以看到一个更完整的使用对象字面值定义一个模块的例子：
+对象字面量不需要使用new运算符进行实例化，但不能用在一个语句的开头，因为开始的可能被解读为一个块的开始。在对象的外部，新成员可以使用如下赋值语句添加到对象字面量中，如`myModule.property="someValue"`。
 
 ```js
 var myModule = {
 
   myProperty: "someValue",
 
-  // 对象字面值包含了属性和方法（properties and methods）.
+  // 对象字面量包含了属性和方法（properties and methods）.
   // 例如，我们可以定义一个模块配置进对象：
   myConfig: {
     useCaching: true,
@@ -457,17 +437,15 @@ myModule.myMethod3({
 });
 ```
 
-使用对象字面值可以协助封装和组织你的代码。如果你想近一步了解对象字面值可以阅读 Rebecca Murphey 写过的关于此类话题的更深入的文章(depth)。
+使用对象字面量有助于封装和组织代码。如果你想近一步了解对象字面量可以阅读 Rebecca Murphey 写过的关于此类话题的更深入的文章。
 
-也就是说，如果我们选择了这种技术，我们可能对模块模式有同样的兴趣。即使使用对象字面值，但也只有一个函数的返回值。
+也就是说，如果我们选择了这种技术，我们可能对模块模式有同样的兴趣。它仍然使用对象字面量，但只是作为一个作用域函数的返回值。
 
-### 模块化模式
+### 9.2.2 模块化模式
 
-模块化模式最初被定义为一种对传统软件工程中的类提供私有和公共封装的方法。
+模块模式最初被定义为一种在传统软件工程中为类提供私有和公有封装的方法。在JavaScript中，模块化模式用来进一步模拟类的概念，通过这种方式，能够使一个单独的对象拥有公有/私有方法和变量，从而屏蔽来自全局作用域的特殊部分。产生的结果是：函数与页面上其它脚本定义的函数冲突的可能性降低。
 
-在JavaScript中，模块化模式用来进一步模拟类的概念，通过这样一种方式：我们可以在一个单一的对象中包含公共/私有的方法和变量，从而从全局范围中屏蔽特定的部分。这个结果是可以减少我们的函数名称与在页面中其他脚本区域定义的函数名称冲突的可能性。
-
-私有信息
+**私有**
 模块模式使用闭包的方式来将"私有信息",状态和组织结构封装起来。提供了一种将公有和私有方法，变量封装混合在一起的方式，这种方式防止内部信息泄露到全局中，从而避免了和其它开发者接口发生冲图的可能性。在这种模式下只有公有的API 会返回，其它将全部保留在闭包的私有空间中。
 
 这种方法提供了一个比较清晰的解决方案，在只暴露一个接口供其它部分使用的情况下，将执行繁重任务的逻辑保护起来。这个模式非常类似于立即调用函数式表达式(IIFE-查看命名空间相关章节获取更多信息)，但是这种模式返回的是对象，而立即调用函数表达式返回的是一个函数。
@@ -636,7 +614,7 @@ console.log( basket );
 当我们在一个调试器中，需要发现哪个函数抛出异常的时候，可以很容易的看到调用栈，因为这些函数是正常声明的并且是命名的函数。
 正如过去 T.J Crowder 指出的，这种模式同样可以让我们在不同的情况下返回不同的函数。我见过有开发者使用这种技巧用于执行UA（尿检，抽样检查）测试，目的是为了在他们的模块里面针对IE专门提供一条代码路径，但是现在我们也可以简单的使用特征检测达到相同的目的。
 
-模块模式的变体
+### 9.2.3 模块模式变化
 Import mixins(导入混合)
 这个变体展示了如何将全局（例如 jQuery, Underscore）作为一个参数传入模块的匿名函数。这种方式允许我们导入全局，并且按照我们的想法在本地为这些全局起一个别名。
 
