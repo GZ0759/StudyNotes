@@ -778,33 +778,27 @@ Module模式的缺点是：由于我们访问公有和私有成员的方式不�
 
 ## 9.3 揭示模块模式
 
-揭示模块（Revealing Module）模式来自于，当Heilmann对这样一个现状的不满，即当我们想要在一个公有方法中调用另外一个公有方法，或者访问公有变量的时候，我们不得不重复主对象的名称。他也不喜欢模块模式中，当想要将某个成员变成公共成员时，修改文字标记的做法。
+揭示模块（Revealing Module）模式的产生是因为Heilmann很不满意这种状况：当他想从另一个方法调用一个公有方法或访问公有变量时，必须要重复主对象的名称。他也不喜欢使用Module模式时，必须要切换到对象字面量表示法来让某种方法变成公有方法。
 
-因此他工作的结果就是一个更新的模式，在这个模式中，我们可以简单地在私有域中定义我们所有的函数和变量，并且返回一个匿名对象，这个对象包含有一些指针，这些指针指向我们想要暴露出来的私有成员，使这些私有成员公有化。
+他努力的结果就是创建了一个更新的模式，能够在私有范围内简单定义所有的函数和变量，并返回一个匿名对象，它拥有指向私有函数的指针，该函数是他希望展示为公有的方法。
 
-下面给出一个如何使用暴露式模块模式的例子:
+有关如何使用Revealing Module模式的示例如下所示：
 
 ```js
 var myRevealingModule = function () {
-
   var privateVar = "Ben Cherry",
       publicVar  = "Hey there!";
-
   function privateFunction() {
       console.log( "Name:" + privateVar );
   }
-
   function publicSetName( strName ) {
       privateVar = strName;
   }
-
   function publicGetName() {
       privateFunction();
   }
 
-  // Reveal public pointers to 
-  // private functions and properties
-
+  // 将暴露的公有指针指向到私有函数和属性上
   return {
       setName: publicSetName,
       greeting: publicVar,
@@ -819,34 +813,26 @@ myRevealingModule.setName( "Paul Kinlan" );
 
 ```js
 var myRevealingModule = function () {
-
   var privateCounter = 0;
-
   function privateFunction() {
       privateCounter++;
   }
-
   function publicFunction() {
       publicIncrement();
   }
-
   function publicIncrement() {
       privateFunction();
   }
-
   function publicGetCount(){
     return privateCounter;
   }
 
-  // Reveal public pointers to
-  // private functions and properties       
-
+  // 将暴露的公有指针指向到私有函数和属性上     
   return {
       start: publicFunction,
       increment: publicIncrement,
       count: publicGetCount
   };
-
 }();
 
 myRevealingModule.start();
@@ -854,91 +840,69 @@ myRevealingModule.start();
 
 ### 9.3.1 优势
 
-这个模式是我们脚本的语法更加一致。同样在模块的最后关于那些函数和变量可以被公共访问也变得更加清晰，增强了可读性。
+该模式可以使脚本语法更加一致。在模块代码底部，它也会很容易指出哪些函数和变量可以被公开访问，从而改善可读性。
 
 ### 9.3.2 缺点
 
-这个模式的一个缺点是如果私有函数需要使用公有函数，那么这个公有函数在需要打补丁的时候就不能被重载。因为私有函数仍然使用的是私有的实现，并且这个模式不能用于公有成员，只用于函数。
+该模式的一个缺点是：如果一个私有函数引用一个公有函数，在需要打补丁时，公有函数是不能被覆盖的。这是因为私有函数将继续引用私有实现，该模式并不适用于公有成员，只适用于函数。
 
-公有成员使用私有成员也遵循上面不能打补丁的规则。
+引用私有变量的公有对象成员也遵守无补丁规则。
 
-因为上面的原因，使用暴露式模块模式创建的模块相对于原始的模块模式更容易出问题，因此在使用的时候需要小心。
+正因为如此，采用Revealing Module模式创建的模块可能比那些采用原始Module模式创建的模块更加脆弱，所以在使用时应该特别小心。
 
 ## 9.4 单例模式
 
-单例（Singleton）模式之所以这么叫，是因为它限制一个类只能有一个实例化对象。经典的实现方式是，创建一个类，这个类包含一个方法，这个方法在没有对象存在的情况下，将会创建一个新的实例对象。如果对象存在，这个方法只是返回这个对象的引用。
+Singleton（单例）模式被熟知的原因是因为它限制了类的实例化次数只能一次。从经典意义上来说，Singleton模式，在该实例不存在的情况下，可以通过一个方法创建一个类来实现创建类的新实例；如果实例已经存在，它会简单返回该对象的引用。
 
-单例和静态类不同，因为我们可以退出单例的初始化时间。通常这样做是因为，在初始化的时候需要一些额外的信息，而这些信息在声明的时候无法得知。对于并不知晓对单例模式引用的代码来讲，单例模式没有为它们提供一种方式可以简单的获取单例模式。这是因为，单例模式既不返回对象也不返回类，它只返回一种结构。可以类比闭包中的变量不是闭包-提供闭包的函数域是闭包（绕进去了）。
+Singleton不同于静态类（或对象），因为我们可以推迟它们的初始化，这通常是因为它们需要一些信息，而这些信息在初始化期间可能无法获得。对于没有察觉到之前的引用的代码，它们不会提供方便检索的方法。这是因为它既不是对象，也不是由一个Singleton返回的“类”；它是一个结构。思考一下闭包变量为何实际上并不是闭包，而提供闭包的函数作用域是闭包。
 
-在JavaScript语言中, 单例服务作为一个从全局空间的代码实现中隔离出来共享的资源空间是为了提供一个单独的函数访问指针。
-
-我们能像这样实现一个单例:
+在JavaScript中，Singleton充当共享资源命名空间，从全局命名空间中隔离出代码实现，从而为函数提供单一访问点。我们可以像如下这样实现一个Singleton：
 
 ```js
 var mySingleton = (function () {
-
-  // Instance stores a reference to the Singleton
+  // 实例保持了Singleton的一个引用
   var instance;
-
   function init() {
-
-    // 单例
-
+    // Singleton
     // 私有方法和变量
     function privateMethod(){
         console.log( "I am private" );
     }
-
     var privateVariable = "Im also private";
-
     var privateRandomNumber = Math.random();
 
     return {
-
       // 共有方法和变量
       publicMethod: function () {
         console.log( "The public can see me!" );
       },
-
       publicProperty: "I am also public",
-
       getRandomNumber: function() {
         return privateRandomNumber;
       }
-
     };
 
   };
 
   return {
-
     // 如果存在获取此单例实例，如果不存在创建一个单例实例
     getInstance: function () {
-
       if ( !instance ) {
         instance = init();
       }
-
       return instance;
     }
-
   };
 
 })();
 
 var myBadSingleton = (function () {
-
-  // 存储单例实例的引用
+  // 实例保持了Singleton的一个引用
   var instance;
-
   function init() {
-
     // 单例
-
     var privateRandomNumber = Math.random();
-
     return {
-
       getRandomNumber: function() {
         return privateRandomNumber;
       }
@@ -948,21 +912,16 @@ var myBadSingleton = (function () {
   };
 
   return {
-
-    // 总是创建一个新的实例
+    // 每次都创建新实例
     getInstance: function () {
-
       instance = init();
-
       return instance;
     }
-
   };
 
 })();
 
 // 使用:
-
 var singleA = mySingleton.getInstance();
 var singleB = mySingleton.getInstance();
 console.log( singleA.getRandomNumber() === singleB.getRandomNumber() ); // true
@@ -972,13 +931,11 @@ var badSingleB = myBadSingleton.getInstance();
 console.log( badSingleA.getRandomNumber() !== badSingleB.getRandomNumber() ); // true
 ```
 
-创建一个全局访问的单例实例 (通常通过 MySingleton.getInstance()) 因为我们不能(至少在静态语言中) 直接调用 new MySingleton() 创建实例. 这在JavaScript语言中是不可能的。
+是什么使Singleton成为实例的全局访问入口（通常通过`MySingleton.getinstance()`），因为我们没有（至少在静态语言中）直接调用新的`MySingleton()`。然而，这在JavaScript中是可能的。在“四人组”所著的书中，有关Singleton模式适用性的描述如下。
 
-在四人帮(GoF)的书里面，单例模式的应用描述如下：
-
-每个类只有一个实例，这个实例必须通过一个广为人知的接口，来被客户访问。
-子类如果要扩展这个唯一的实例，客户可以不用修改代码就能使用这个扩展后的实例。
-关于第二点，可以参考如下的实例，我们需要这样编码:
+当类只能有一个实例而且客户可以从一个众所周知的访问点访问它时。
+该唯一的实例应该是通过子类化可扩展的，并且客户应该无需更改代码就能使用一个扩展的实例时。
+这些观点另外关联到一个场景，这里我们可能需要如下这样的代码：
 
 ```js
 mySingleton.getInstance = function(){
@@ -993,76 +950,61 @@ mySingleton.getInstance = function(){
 };
 ```
 
-在这里，getInstance 有点类似于工厂方法，我们不需要去更新每个访问单例的代码。FooSingleton可以是BasicSinglton的子类，并且实现了相同的接口。
+在这里，getInstance变得有点像Factory（工厂）方法，当访问它时，我们不需要更新代码中的每个访问点。FooSingleton（上面）将是一个BasicSingleton的子类，并将实现相同的接口。
 
-为什么对于单例模式来讲，延迟执行执行这么重要？
+为何延迟执行对于Singleton很重要？
 
-在c++代码中，单例模式将不可预知的动态初始化顺序问题隔离掉，将控制权返回给程序员。
+在C++中，Singleton负责隔绝动态初始化顺序的不可预知性，将控制权归还给程序员。
+值得注意的是类的静态实例（对象）和Singleton之间的区别：当Singleton可以作为一个静态的实例实现时，它也可以延迟构建，直到需要使用静态实例时，无需使用资源或内存。
 
-区分类的静态实例和单例模式很重要：尽管单例模式可以被实现成一个静态实例，但是单例可以懒构造，在真正用到之前，单例模式不需要分配资源或者内存。
+如果我们有一个可以直接被初始化的静态对象，需要确保执行代码的顺序总是相同的（例如：在初始化期间objCar需要objWheel的情况），当我们有大量的源文件时，它并不能伸缩。
 
-如果我们有个静态对象可以被直接初始化，我们需要保证代码总是以同样的顺序执行（例如 汽车需要轮胎先初始化）当你有很多源文件的时候，这种方式没有可扩展性。
+Singleton和静态对象都是有用的，但是我们不应当以同样的方式过度使用它们，也不应过度使用其他模式。
 
-单例模式和静态对象都很有用，但是不能滥用-同样的我们也不能滥用其它模式。
-
-在实践中，当一个对象需要和另外的对象进行跨系统协作的时候，单例模式很有用。下面是一个单例模式在这种情况下使用的例子：
+在实践中，当在系统中确实需要一个对象来协调其他对象时，Singleton模式是很有用的。在这里，大家可以看到在这个上下文中模式的使用：
 
 ```js
 var SingletonTester = (function () {
-
-  // options: an object containing configuration options for the singleton
+  // options: 包含singleton所需配置信息的对象
   // e.g var options = { name: "test", pointX: 5}; 
   function Singleton( options )  {
-
-    // set options to the options supplied
-    // or an empty object if none are provided
+    // 如果未提供options,则设置为空对象
     options = options || {};
-
-    // set some properties for our singleton
+    // 为singleton设置一些属性
     this.name = "SingletonTester";
-
     this.pointX = options.pointX || 6;
-
     this.pointY = options.pointY || 10; 
-
   }
 
-  // our instance holder 
+  // 实例持有者
   var instance;
-
-  // an emulation of static variables and methods
+  // 静态变量和方法的模拟
   var _static  = {  
-
     name:  "SingletonTester",
-
-    // Method for getting an instance. It returns
-    // a singleton instance of a singleton object
+    // 获取实例的方法,返回singleton对象的singleton实例
     getInstance:  function( options ) {   
       if( instance  ===  undefined )  {    
         instance = new Singleton( options );   
       }   
-
       return  instance; 
-
     } 
   }; 
-
   return  _static;
 
 })();
 
-var singletonTest  =  SingletonTester.getInstance({
-  pointX:  5
-});
+  var singletonTest = SingletonTester.getInstance({
+    pointX:  5
+  });
 
-// Log the output of pointX just to verify it is correct
-// Outputs: 5
+// 记录pointX的输出以便验证
+// 输出: 5
 console.log( singletonTest.pointX );
 ```
 
-尽管单例模式有着合理的使用需求，但是通常当我们发现自己需要在javascript使用它的时候，这是一种信号，表明我们可能需要去重新评估自己的设计。
+Singleton很有使用价值，通常当发现在JavaScript中需要它的时候，则表示我们可能需要重新评估我们的设计。
 
-这通常表明系统中的模块要么紧耦合要么逻辑过于分散在代码库的多个部分。单例模式更难测试，因为可能有多种多样的问题出现，例如隐藏的依赖关系，很难去创建多个实例，很难清理依赖关系，等等。
+Singleton的存在往往表明系统中的模块要么是系统紧密耦合，要么是其逻辑过于分散在代码库的多个部分。由于一系列的问题：从隐藏的依赖到创建多个实例的难度、底层依赖的难度等等，Singleton的测试会更加困难。
 
 要想进一步了解关于单例的信息，可以读读 Miller Medeiros 推荐的这篇非常棒的关于单例模式以及单例模式各种各样问题的[文章](https://www.ibm.com/developerworks/webservices/library/co-single/index.html)，也可以看看这篇[文章](http://misko.hevery.com/2008/09/10/where-have-all-the-new-operators-gone/)的评论，这些评论讨论了单例模式是怎样增加了模块间的紧耦合。我很乐意去支持这些推荐，因为这两篇文章提出了很多关于单例模式重要的观点，而这些观点是很值得重视的。
 
