@@ -87,6 +87,7 @@ var CheckObjectFive = function () {
 // CheckObject.prototype.checkPassword = function() {
 //     // 验证密码
 // };
+// 或者
 CheckObjectFive.prototype = {
     checkName: function () {
         console.log("验证姓名");
@@ -130,7 +131,7 @@ var d = new CheckObjectSix();
 d.checkName().checkEmail().checkPassword();
 ```
 
-### 1.9函数的祖先。
+### 1.9 函数的祖先。
 
 prototype.js 是一款 JavaScript 框架，里面为我们方便的封装了很多方法，最大的特点是对原生对象（JavaScript语言为们提供的对象类，如Function、Array、Object等等）的拓展。例如我们想给每一个函数都添加一个检测邮箱的方法可以这么做
 

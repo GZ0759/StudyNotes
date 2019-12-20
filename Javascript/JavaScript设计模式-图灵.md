@@ -1010,22 +1010,33 @@ Singleton的存在往往表明系统中的模块要么是系统紧密耦合，�
 
 ## 9.5 观察者模式
 
-观察者（Observer）模式是这样一种设计模式。一个被称作被观察者的对象，维护一组被称为观察者的对象，这些对象依赖于被观察者，被观察者自动将自身的状态的任何变化通知给它们。
+Observer（观察者）是一种设计模式，其中，一个对象（称为subject）维持一系列依赖于它（观察者）的对象，将有关状态的任何变更自动通知给它们。
 
-当一个被观察者需要将一些变化通知给观察者的时候，它将采用广播的方式，这条广播可能包含特定于这条通知的一些数据。
+当一个目标需要告诉观察者发生了什么有趣的事情，它会向观察者广播一个通知（可以包括与通知主题相关的特定数据）。
 
-当特定的观察者不再需要接受来自于它所注册的被观察者的通知的时候，被观察者可以将其从所维护的组中删除。 在这里提及一下设计模式现有的定义很有必要。这个定义是与所使用的语言无关的。通过这个定义，最终我们可以更深层次地了解到设计模式如何使用以及其优势。在四人帮的《设计模式:可重用的面向对象软件的元素》这本书中，是这样定义观察者模式的:
+本节书摘来自异步社区《JavaScript设计模式》一书中的第9章，第9.5节， 作者： 【美】Addy Osmani 译者： 徐涛 更多章节内容可以访问云栖社区“异步社区”公众号查看。
 
-一个或者更多的观察者对一个被观察者的状态感兴趣，将自身的这种兴趣通过附着自身的方式注册在被观察者身上。当被观察者发生变化，而这种便可也是观察者所关心的，就会产生一个通知，这个通知将会被送出去，最后将会调用每个观察者的更新方法。当观察者不在对被观察者的状态感兴趣的时候，它们只需要简单的将自身剥离即可。
+9.5 Observer（观察者）模式
+Observer（观察者）是一种设计模式，其中，一个对象（称为subject）维持一系列依赖于它（观察者）的对象，将有关状态的任何变更自动通知给它们（见图9-3）。
 
-我们现在可以通过实现一个观察者模式来进一步扩展我们刚才所学到的东西。这个实现包含一下组件：
+当一个目标需要告诉观察者发生了什么有趣的事情，它会向观察者广播一个通知（可以包括与通知主题相关的特定数据）。
+screenshot
 
-- 被观察者：维护一组观察者， 提供用于增加和移除观察者的方法。
-- 观察者：提供一个更新接口，用于当被观察者状态变化时，得到通知。
-- 具体的被观察者：状态变化时广播通知给观察者，保持具体的观察者的信息。
-- 具体的观察者：保持一个指向具体被观察者的引用，实现一个更新接口，用于观察，以便保证自身状态总是和被观察者状态一致的。
+当我们不再希望某个特定的观察者获得其注册目标发出的改变通知时，该目标可以将它从观察者列表中删除。
 
-首先，让我们对被观察者可能有的一组依赖其的观察者进行建模：
+参考之前发布的设计模式定义通常是很有用的，它与语言无关，以便久而久之使其使用和优势变得更有意义。“四人组”所著书籍（《设计模式：可复用面向对象软件的基础》）中提供的Observer模式的定义是：
+
+“一个或多个观察者对目标的状态感兴趣，它们通过将自己依附在目标对象上以便注册所感兴趣的内容。目标状态发生改变并且观察者可能对这些改变感兴趣，就会发送一个通知消息，调用每个观察者的更新方法。当观察者不再对目标状态感兴趣时，它们可以简单地将自己从中分离。”
+
+现在我们可以扩展所学到的内容来使用以下组件实现Observer模式：
+
+- Subject（目标）。维护一系列的观察者，方便添加或删除观察者
+- Observer（观察者）。为那些在目标状态发生改变时需获得通知的对象提供一个更新接口
+- ConcreteSubject（具体目标）。状态发生改变时，向Observer发出通知，储存ConcreteObserver的状态
+- ConcreteObserver（具体观察者）。存储一个指向ConcreteSubject的引用，实现Observer的更新接口，以使自身状态与目标的状态保持一致
+
+首先，让我们来模拟一个目标可能拥有的一系列依赖Observer：
+
 ```js
 function ObserverList(){
   this.observerList = [];
@@ -1084,14 +1095,16 @@ ObserverList.prototype.RemoveAt = function( index ){
   }
 };
 
-// Extend an object with an extension
+// 使用extension扩展对象
 function extend( extension, obj ){
   for ( var key in extension ){
     obj[key] = extension[key];
   }
 }
 ```
-接着，我们对被观察者以及其增加，删除，通知在观察者列表中的观察者的能力进行建模：
+
+接下来，让我们来模拟目标（Subject）和在观察者列表上添加、删除或通知观察者的能力。
+
 ```js
 function Subject(){
   this.observers = new ObserverList();
@@ -1112,7 +1125,9 @@ Subject.prototype.Notify = function( context ){
   }
 };
 ```
-我们接着定义建立新的观察者的一个框架。这里的update 函数之后会被具体的行为覆盖。
+
+然后定义一个框架来创建新的Observer。这里的Update功能将在后面的自定义行为部分进一步介绍。
+
 ```js
 // The Observer
 function Observer(){
@@ -1121,11 +1136,12 @@ function Observer(){
   };
 }
 ```
-在我们的样例应用里面，我们使用上面的观察者组件，现在我们定义：
 
-一个按钮，这个按钮用于增加新的充当观察者的选择框到页面上
-一个控制用的选择框 , 充当一个被观察者，通知其它选择框是否应该被选中
-一个容器，用于放置新的选择框
+在使用上述Observer组件的样例应用程序中，定义如下：
+
+- 一个按钮，这个按钮用于增加新的充当观察者的选择框到页面上
+- 一个控制用的选择框 , 充当一个被观察者，通知其它选择框是否应该被选中
+- 一个容器，用于放置新的选择框
 我们接着定义具体被观察者和具体观察者，用于给页面增加新的观察者，以及实现更新接口。通过查看下面的内联的注释，搞清楚在我们样例中的这些组件是如何工作的。
 
 ```HTML
@@ -1177,15 +1193,17 @@ function AddNewObserver(){
 在这个例子里面，我们看到了如何实现和配置观察者模式，了解了被观察者，观察者，具体被观察者，具体观察者的概念。
 
 ### 9.5.1 观察者模式和发布/订阅模式的不同
-观察者模式确实很有用，但是在javascript时间里面，通常我们使用一种叫做发布/订阅模式的变体来实现观察者模式。这两种模式很相似，但是也有一些值得注意的不同。
 
-观察者模式要求想要接受相关通知的观察者必须到发起这个事件的被观察者上注册这个事件。
+通常在JavaScript里，注重Observer模式是很有用的，我们会发现它一般使用一个被称为Publish/Subscribe（发布/订阅）模式的变量来实现。虽然这些模式非常相似，但是它们之间的几点区别也是值得注意的。
 
-发布/订阅模式使用一个主题/事件频道，这个频道处于想要获取通知的订阅者和发起事件的发布者之间。这个事件系统允许代码定义应用相关的事件，这个事件可以传递特殊的参数，参数中包含有订阅者所需要的值。这种想法是为了避免订阅者和发布者之间的依赖性。
+Observer模式要求希望接收到主题通知的观察者（或对象）必须订阅内容改变的事件。
 
-这种和观察者模式之间的不同，使订阅者可以实现一个合适的事件处理函数，用于注册和接受由发布者广播的相关通知。
+Publish/Subscribe模式使用了一个主题/事件通道，这个通道介于希望接收到通知（订阅者）的对象和激活事件的对象（发布者）之间。该事件系统允许代码定义应用程序的特定事件，这些事件可以传递自定义参数，自定义参数包含订阅者所需的值。其目的是避免订阅者和发布者之间产生依赖关系。
 
-这里给出一个关于如何使用发布者/订阅者模式的例子，这个例子中完整地实现了功能强大的`publish()`,` subscribe()` 和 `unsubscribe()`。
+这与Observer模式不同，因为它允许任何订阅者执行适当的事件处理程序来注册和接收发布者发出的通知。
+
+下面这个示例说明了如果有`publish()`、`subscribe()`和`unsubscribe()`的功能实现，是如何使用Publish/Subscribe模式的：
+
 ```js
 // 一个非常简单的邮件处理器
 
@@ -1224,31 +1242,36 @@ publish( "inbox/newMessage", [{
 // unsubscribe( subscriber1,  );
 // unsubscribe( subscriber2 );
 ```
-这个例子的更广的意义是对松耦合的原则的一种推崇。不是一个对象直接调用另外一个对象的方法，而是通过订阅另外一个对象的一个特定的任务或者活动，从而在这个任务或者活动出现的时候的得到通知。
+这里的中心思想是促进松散耦合。通过订阅另一个对象的特定任务或活动，当任务/活动发生时获得通知，而不是单个对象直接调用其他对象的方法。
 
 ### 9.5.2 优势
-观察者和发布/订阅模式鼓励人们认真考虑应用不同部分之间的关系，同时帮助我们找出这样的层，该层中包含有直接的关系，这些关系可以通过一些列的观察者和被观察者来替换掉。这中方式可以有效地将一个应用程序切割成小块，这些小块耦合度低，从而改善代码的管理，以及用于潜在的代码复用。
 
-使用观察者模式更深层次的动机是，当我们需要维护相关对象的一致性的时候，我们可以避免对象之间的紧密耦合。例如，一个对象可以通知另外一个对象，而不需要知道这个对象的信息。
+Observer模式和Publish/Subscribe模式鼓励我们努力思考应用程序不同部分之间的关系。它们也帮助我们识别包含直接关系的层，并且可以用目标集和观察者进行替换。实际上可以用于将应用程序分解为更小、更松散耦合的块，以改进代码管理和潜在的复用。
 
-两种模式下，观察者和被观察者之间都可以存在动态关系。这提供很好的灵活性，而当我们的应用中不同的部分之间紧密耦合的时候，是很难实现这种灵活性的。
+使用Observer模式背后的另一个动机是我们需要在哪里维护相关对象之间的一致性，而无需使类紧密耦合。例如，当一个对象需要能够通知其他对象，而无需在这些对象方面做假设时。
 
-尽管这些模式并不是万能的灵丹妙药，这些模式仍然是作为最好的设计松耦合系统的工具之一，因此在任何的JavaScript 开发者的工具箱里面，都应该有这样一个重要的工具。
+在使用任何一种模式时，动态关系可以在观察者和目标之间存在。这提供了很大的灵活性，当应用程序的不同部分紧密耦合时，这可不是很容易实现的。
+
+虽然它可能不一直是所有问题的最佳解决方案，但这些模式仍是用于设计解耦性系统的最佳工具之一，应该视为所有JavaScript开发人员工具中的一个重要工具。
 
 ### 9.5.3 缺点
-事实上，这些模式的一些问题实际上正是来自于它们所带来的一些好处。在发布/订阅模式中，将发布者共订阅者上解耦，将会在一些情况下，导致很难确保我们应用中的特定部分按照我们预期的那样正常工作。
 
-例如，发布者可以假设有一个或者多个订阅者正在监听它们。比如我们基于这样的假设，在某些应用处理过程中来记录或者输出错误日志。如果订阅者执行日志功能崩溃了（或者因为某些原因不能正常工作），因为系统本身的解耦本质，发布者没有办法感知到这些事情。
+因此，这些模式的某些问题实际上源于它的主要好处。在Publish/Subscribe中，通过从订阅者中解耦发布者，它有时会很难保证应用程序的特定部分按照我们期望的运行。
 
-另外一个这种模式的缺点是，订阅者对彼此之间存在没有感知，对切换发布者的代价无从得知。因为订阅者和发布者之间的动态关系，更新依赖也很能去追踪。
+例如，发布者可能会假设：一个或多个订阅者在监听它们。倘若我们假设订阅者需要记录或输出一些与应用程序处理有关的错误。如果订阅者执行日志崩溃了（或出于某种原因无法正常运行），由于系统的解耦特性，发布者就不会看到这一点。
+
+这种模式的另一个缺点是：订阅者非常无视彼此的存在，并对变换发布者产生的成本视而不见。由于订阅者和发布者之间的动态关系，很难跟踪依赖更新。
 
 ### 9.5.4 发布/订阅实现
-发布/订阅在JavaScript的生态系统中非常合适，主要是因为作为核心的ECMAScript 实现是事件驱动的。尤其是在浏览器环境下更是如此，因为DOM使用事件作为其主要的用于脚本的交互API。
 
-也就是说，无论是ECMAScript 还是DOM都没有在实现代码中提供核心对象或者方法用于创建定制的事件系统（DOM3 的CustomEvent是一个例外，这个事件绑定在DOM上，因此通常用处不大）。
+Publish/Subscribe非常适用于JavaScript生态系统，这主要是因为在其核心，ECMAScript实现是由事件驱动的。在浏览器环境下尤其如此，因为DOM将事件是作为脚本编程的主要交互API。
 
-幸运的是，流行的JavaScript库例如dojo, jQuery(定制事件)以及YUI已经有相关的工具，可以帮助我们方便的实现一个发布/订阅者系统。下面我们看一些例子。
+也就是说，在实现代码里，无论是ECMAScript还是DOM都不会提供核心对象或方法来创建自定义事件系统（或许除了DOM3 CustomEvent以外，它被绑定到DOM，因此一般是无用的）。
 
+幸运的是，流行的JavaScript库，比如Dojo、jQuery（自定义事件）和 YUI都拥有一些实用程序可以很容易实现Publish/Subscribe系统。如下是一些有关示例：
+
+
+```js
 // 发布
 
 // jQuery: $(obj).trigger("channel", [arg1, arg2, arg3]);
@@ -1281,20 +1304,18 @@ dojo.unsubscribe( handle );
 
 // YUI: el.detach("channel");
 el.detach( "/login" );
-对于想要在vanilla Javascript(或者其它库)中使用发布/订阅模式的人来讲， AmplifyJS 包含了一个干净的，库无关的实现，可以和任何库或者工具箱一起使用。Radio.js, PubSubJS 或者 Pure JS PubSub 来自于 Peter Higgins 都有类似的替代品值得研究。
+```
 
-尤其对于jQuery 开发者来讲，他们拥有很多其它的选择，可以选择大量的良好实现的代码，从Peter Higgins 的jQuery插件到Ben Alman 在GitHub 上的（优化的）发布/订阅 jQuery gist。下面给出了这些代码的链接。
+对于那些希望使用采用纯 JavaScript（或其他库）的Publish/Subscribe模式的人来说，AmplifyJS（包含了一个整洁、与库无关的实现，它可用于任何库或工具包。值得一看的类似语言有Radio.js 、PubSubJS 、或Peter Higgins所写的Pure JS PubSub。
 
-Ben Alman的发布/订阅 gist(推荐)
-Rick Waldron 在上面基础上修改的 jQuery-core 风格的实现
-Peter Higgins 的插件
-AppendTo 在AmplifyJS中的 发布/订阅实现
-Ben Truyman的 gist
-从上面我们可以看到在javascript中有这么多种观察者模式的实现，让我们看一下最小的一个版本的发布/订阅模式实现，这个实现我放在github 上，叫做pubsubz。这个实现展示了发布，订阅的核心概念，以及如何取消订阅。
+jQuery开发人员更是有相当多的其他选择，可以选择使用众多完整实现中的一个，从Peter Higgins的jQuery插件到Ben Alman在GitHub上的优化过的Pub/Sub jQuerygist。
 
-我之所以选择这个代码作为我们例子的基础，是因为这个代码紧密贴合了方法签名和实现方式，这种实现方式正是我想看到的javascript版本的经典的观察者模式所应该有的样子。
+所以我们现在能够正确了解有多少个纯JavaScript实现的Observer模式了，让我们来看一下在GitHub上发布的一个被称为pubsubz的项目中一个极简版本的Publish/Subscribe I。它展示了订阅和发布的核心概念，以及取消订阅的概念。
 
-发布/订阅实例
+我选择了在这个代码的基础上展示我们的示例，因为它非常接近我们所期望的JavaScript版经典Observer模式所包括的方法命名和实现方式。
+
+**发布/订阅实例**
+
 ```js
 var pubsub = {};
 
@@ -1303,9 +1324,7 @@ var pubsub = {};
     var topics = {},
         subUid = -1;
 
-    // Publish or broadcast events of interest
-    // with a specific topic name and arguments
-    // such as the data to pass along
+    // 发布或广播事件，包含特定的topic名称和参数（比如传递的数据）
     q.publish = function( topic, args ) {
 
         if ( !topics[topic] ) {
@@ -1322,10 +1341,7 @@ var pubsub = {};
         return this;
     };
 
-    // Subscribe to events of interest
-    // with a specific topic name and a
-    // callback function, to be executed
-    // when the topic/event is observed
+    // // 通过特定的名称和回调函数订阅事件，topic/event触发时执行事件
     q.subscribe = function( topic, func ) {
 
         if (!topics[topic]) {
@@ -1340,9 +1356,7 @@ var pubsub = {};
         return token;
     };
 
-    // Unsubscribe from a specific
-    // topic, based on a tokenized reference
-    // to the subscription
+    // //基于订阅上的标记引用，通过特定topic取消订阅
     q.unsubscribe = function( token ) {
         for ( var m in topics ) {
             if ( topics[m] ) {
@@ -1358,25 +1372,23 @@ var pubsub = {};
     };
 }( pubsub ));
 ```
-示例:使用我们的实现
-我们现在可以使用发布实例和订阅感兴趣的事件，例如:
-```js
-// Another simple message handler
 
-// A simple message logger that logs any topics and data received through our
-// subscriber
+**使用上述实现**
+
+我们现在可以使用该实现来发布和订阅感兴趣的活动。
+
+```js
+// 另一个简单的消息处理程序
+
+// 简单的消息记录器记录所有通过订阅者接收到的主题（topic）和数据
 var messageLogger = function ( topics, data ) {
     console.log( "Logging: " + topics + ": " + data );
 };
 
-// Subscribers listen for topics they have subscribed to and
-// invoke a callback function (e.g messageLogger) once a new
-// notification is broadcast on that topic
+// 订阅者监听订阅的topic，一旦该topic广播一个通知，订阅者就调用回调函数
 var subscription = pubsub.subscribe( "inbox/newMessage", messageLogger );
 
-// Publishers are in charge of publishing topics or notifications of
-// interest to the application. e.g:
-
+// 发布者负责发布程序感兴趣的topic或通知，例如：
 pubsub.publish( "inbox/newMessage", "hello world!" );
 
 // or
@@ -1388,25 +1400,24 @@ pubsub.publish( "inbox/newMessage", {
   body: "Hey again!"
 });
 
-// We cab also unsubscribe if we no longer wish for our subscribers
-// to be notified
-// pubsub.unsubscribe( subscription );
-
-// Once unsubscribed, this for example won't result in our
-// messageLogger being executed as the subscriber is
-// no longer listening
+// 如果订阅者不想被通知了，也可以取消订阅
+// 一旦取消订阅，下面的代码执行后将不会记录消息，因为订阅者不再进行监听了
 pubsub.publish( "inbox/newMessage", "Hello! are you still there?" );
 ```
-例如：用户界面通知
-接下来，让我们想象一下，我们有一个Web应用程序，负责显示实时股票信息。
 
-应用程序可能有一个表格显示股票统计数据和一个计数器显示的最后更新点。当数据模型发生变化时，应用程序将需要更新表格和计数器。在这种情况下，我们的主题（这将发布主题/通知）是数据模型以及我们的订阅者是表格和计数器。
+**用户界面通知**
 
-当我们的订阅者收到通知：该模型本身已经改变，他们自己可以进行相应的更新。
+接下来，假设我们有一个负责显示实时股票信息的Web应用程序。
 
-在我们的实现中，如果发现新的股票信息是可用的，我们的订阅者将收听到的主题“新数据可用”。如果一个新的通知发布到该主题，那将触发表格去添加一个包含此信息的新行。它也将更新最后更新计数器，记录最后一次添加的数据
+该应用程序有一个显示股票统计的网格和一个显示最后更新点的计数器。当数据模型改变时，应用程序需要更新网格和计数器。在这种情况下，目标（它将发布主题/通知）就是数据模型，观察者就是网格和计数器。
+
+当观察者接收到Model（模型）自身已经改变的通知时，则可以相应地更新自己。
+
+在我们的实现中，订阅者会监听newDataAvailable这个topic，以探测是否有新的股票信息。如果新通知发布到这个topic，它将触发gridUpdate向包含股票信息的网格添加一个新行。它还将更新一个last updated计数器来记录最后一次添加的数据（示例9-2）。
+
+示例9-2 用户界面通知
 ```js
-// Return the current local time to be used in our UI later
+//  返回稍后界面上要用到的当前本地时间
 getCurrentTime = function (){
 
    var date = new Date(),
@@ -1418,7 +1429,7 @@ getCurrentTime = function (){
         return (m + "/" + d + "/" + y + " " + t);
 };
 
-// Add a new row of data to our fictional grid component
+// 向网格组件上添加新数据行
 function addGridRow( data ) {
 
    // ui.grid.addRow( data );
@@ -1426,8 +1437,7 @@ function addGridRow( data ) {
 
 }
 
-// Update our fictional grid to show the time it was last
-// updated
+// 更新网格上的最新更新时间
 function updateCounter( data ) {
 
    // ui.grid.updateLastChanged( getCurrentTime() );  
@@ -1435,7 +1445,7 @@ function updateCounter( data ) {
 
 }
 
-// Update the grid using the data passed to our subscribers
+// 使用传递给订阅者的数据data更新网格
 gridUpdate = function( topic, data ){
 
   if ( data !== "undefined" ) {
@@ -1448,11 +1458,9 @@ gridUpdate = function( topic, data ){
 // Create a subscription to the newDataAvailable topic
 var subscriber = pubsub.subscribe( "newDataAvailable", gridUpdate );
 
-// The following represents updates to our data layer. This could be
-// powered by ajax requests which broadcast that new data is available
-// to the rest of the application.
+// 下面的代码描绘了数据层，一般应该使用ajax请求获取最新的数据后，告知程序有最新数据
 
-// Publish changes to the gridUpdated topic representing new entries
+// 发布者更新gridUpdate topic来展示新数据项
 pubsub.publish( "newDataAvailable", {
   summary: "Apple made $5 billion",
   identifier: "APPL",
@@ -1465,9 +1473,12 @@ pubsub.publish( "newDataAvailable", {
   stockPrice: 30.85
 });
 ```
-样例：在下面这个电影评分的例子里面，我们使用Ben Alman的发布/订阅实现来解耦应用程序。我们使用Ben Alman的jQuery实现，来展示如何解耦用户界面。请注意，我们如何做到提交一个评分，来产生一个发布信息，这个信息表明了当前新的用户和评分数据可用。
 
-剩余的工作留给订阅者，由订阅者来代理这些主题中的数据发生的变化。在我们的例子中，我们将新的数据压入到现存的数组中，接着使用Underscore库的template()方法来渲染模板。
+**使用Ben Alman的Pub/Sub实现解耦应用程序**
+
+在接下来的电影评级示例中，我们将使用Ben Alman在Publish/Subscribe模式上的jQuery实现来展示我们如何解耦一个用户界面。需要注意的是，如何提交评级才会有新用户和评级数据同时发布通知的效果。
+
+这是留给这些topic的订阅者来处理那些数据的。在我们的例子中，将新数据放入现有的数组中，然后使用Underscore库的`.template()`方法使用模板呈现它们。
 
 HTML/模板
 ```html
@@ -1570,17 +1581,18 @@ JavaScript
 
 })( jQuery );
 ```
-样例：解耦一个基于Ajax的jQuery应用。
 
-在我们最后的例子中，我们将从实用的角度来看一下如何在开发早起使用发布/订阅模式来解耦代码，这样可以帮助我们避免之后痛苦的重构过程。
+**解耦基于Ajax的jQuery应用程序**
 
-在Ajax重度依赖的应用里面，我们常会见到这种情况，当我们收到一个请求的响应之后，我们希望能够完成不仅仅一个特定的操作。我们可以简单的将所有请求后的逻辑加入到成功的回调函数里面，但是这样做有一些问题。
+在最后一个示例中，我们将看一下如何使用 Pub/Sub 解耦在早期开发过程中的代码，以此使我们省去一些可能繁琐的重构工作。
 
-高度耦合的应用优势会增加重用功能的代价，因为高度耦合增加了内部函数/代码的依赖性。这意味着如果我们只是希望获取一次性获取结果集，可以将请求后 的逻辑代码 硬编码在回调函数里面，这种方式可以正常工作，但是当我们想要对相同的数据源(不同的最终行为)做更多的Ajax调用的时候，这种方式就不适合了，我们必须要多次重写部分代码。与其回溯调用相同数据源的每一层，然后在将它们泛化，不如一开始就使用发布/订阅模式来节约时间。
+通常在侧重Ajax技术的应用程序中，一旦我们收到了请求的响应，我们就想据此实现不只一个特定动作。我们可以简单地向成功回调中添加所有的post请求逻辑，但这种方法存在一些缺点。
 
-使用观察者，我们可以简单的将整个应用范围的通知进行隔离，针对不同的事件，我们可以把这种隔离做到我们想要的粒度上，如果使用其它模式，则可能不会有这么优雅的实现。
+由于函数/代码之间互相依赖的增加，高度耦合的应用程序有时会增加复用函数所需的工作量。这意味着，如果我们只是想一次性获取一个结果集，在回调中对post请求逻辑进行硬编码可能是行得通的，但是，当我们需要对相同的数据源（和不同的端行为）进一步地进行Ajax调用，而没有多次重写部分代码，那就不那么合适了。我们可以从一开始就使用pub/sub来节省时间，而不必遍历调用相同数据源的每一层而后再对它们进行操作。
 
-注意我们下面的例子中，当用户表明他们想要做一次搜索查询的时候，一个话题通知就会生成，而当请求返回，并且实际的数据可用的时候，又会生成另外一个通知。而如何使用这些事件（或者返回的数据），都是由订阅者自己决定的。这样做的好处是，如果我们想要，我们可以有10个不同的订阅者，以不同的方式使用返回的数据，而对于Ajax层来讲，它不会关心你如何处理数据。它唯一的责任就是请求和返回数据，接着将数据发送给所有想要使用数据的地方。这种相关性上的隔离可以是我们整个代码设计更为清晰。
+通过使用Observer，我们还可以将不同事件降至我们所要的任何粒度级别，并轻松地根据这些事件分离应用程序范围内的通知，而使用其他模式完成这项工作的优雅度较低。
+
+请注意在下面的样例中，当用户表示他想进行搜索查询时，是如何发出一个topic通知的，以及当请求返回并且有实际数据可用时，是如何发出另一个通知的。它让订阅者随后决定如何利用这些事件（或返回的数据）。它的好处是：如果我们愿意，我们可以有10个不同的订阅者以不同的方式使用返回的数据，但这对于Ajax层而言是无关紧要的。其唯一的责任是请求和返回数据，然后传递给任何想使用它的人。这种关注点分离能使代码的整个设计变得更加整洁。
 
 HTML/Templates
 ```html
@@ -1667,7 +1679,7 @@ JavaScript
 })();
 ```
 
-观察者模式在应用设计中，解耦一系列不同的场景上非常有用，如果你没有用过它，我推荐你尝试一下今天提到的之前写到的某个实现。这个模式是一个易于学习的模式，同时也是一个威力巨大的模式。
+在应用程序设计中，Observer模式在解耦多个不同脚本方面是非常有用的，如果你还没有使用它，我建议你了解一下这里提到的其中一个预先编写的实现，并试着使用一下。这是要入门了解的一个比较简单的设计模式，但同时也是最强大的设计模式之一。
 
 ## 9.6 Mediator（中介者）模式
 

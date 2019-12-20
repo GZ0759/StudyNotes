@@ -2175,33 +2175,33 @@ Cascader 的基本构成就是上述的3部分：cascader.vue、caspanel.vue 和
 ```html
 <!-- cascader.vue -->
 <template>
-    <div :class="classes" v-click-outside="handleClose">
-        <div :class="[prefixCls + '-rel']" @click="toggleOpen">
-            <input type="hidden" :name="name" :value="currentValue">
-            <slot>
-                <i-input
-                    :readonly="!filterable"
-                    :disabled="disabled"
-                    :size="size"
-                    :placeholder="inputPlaceholder"></i-input>
-                <Icon type="ios-close-circle" :class="[prefixCls + '-arrow']" v-show="showCloseIcon" @click.native.stop="clearSelect"></Icon>
-                <Icon type="ios-arrow-down" :class="[prefixCls + '-arrow']"></Icon>
-            </slot>
-        </div>
-        <transition name="transition-drop">
-            <Drop v-show="visible">
-                <div>
-                    <Caspanel
-                        ref="caspanel"
-                        :prefix-cls="prefixCls"
-                        :data="data"
-                        :disabled="disabled"
-                        :change-on-select="changeOnSelect"
-                        :trigger="trigger"></Caspanel>
-                </div>
-            </Drop>
-        </transition>
-    </div>
+	<div :class="classes" v-click-outside="handleClose">
+		<div :class="[prefixCls + '-rel']" @click="toggleOpen">
+			<input type="hidden" :name="name" :value="currentValue">
+			<slot>
+				<i-input
+					:readonly="!filterable"
+					:disabled="disabled"
+					:size="size"
+					:placeholder="inputPlaceholder"></i-input>
+				<Icon type="ios-close-circle" :class="[prefixCls + '-arrow']" v-show="showCloseIcon" @click.native.stop="clearSelect"></Icon>
+				<Icon type="ios-arrow-down" :class="[prefixCls + '-arrow']"></Icon>
+			</slot>
+		</div>
+		<transition name="transition-drop">
+			<Drop v-show="visible">
+				<div>
+					<Caspanel
+						ref="caspanel"
+						:prefix-cls="prefixCls"
+						:data="data"
+						:disabled="disabled"
+						:change-on-select="changeOnSelect"
+						:trigger="trigger"></Caspanel>
+				</div>
+			</Drop>
+		</transition>
+	</div>
 </template>
 ```
 
