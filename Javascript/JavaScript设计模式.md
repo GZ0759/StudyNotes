@@ -10,7 +10,7 @@
 
 ### 1.3 用对象收编变量。
 
-可以将全局变量统一放在一个变量里保存，这样就可减少覆盖或被覆盖的风险。
+对象有属性和方法，如果想要访问它的属性或方法时，可以通过点语法向下遍历查询得到。因此可以创建一个检测对象，然后把方法放在里面。可以将全局变量统一放在一个变量里保存，这样就可减少覆盖或被覆盖的风险。
 
 ```JavaScript
 var CheckObject = {
@@ -26,7 +26,26 @@ var CheckObject = {
 }
 ```
 
-真假对象。但是上面这个对象不能复制一份，或者说这个对象类在用 new 关键字创建新的对象时，新创建的对象时不能继承这些方法的。如果想要简单地复制一下对象，可以将这些方法放在一个函数对象中。
+### 1.4 对象的另一种形式
+
+首先要声明一个对象，然后给它添加方法，当然在 JavaScript 中函数也是对象，所以可以这么做。
+
+```JavaScript
+var CheckObject = function(){};
+CheckObject.checkName = function () {
+  // 验证姓名
+},
+CheckObject.checkEmail = function () {
+  // 验证邮箱
+},
+CheckObject.checkPassword = function () {
+  // 验证密码
+}
+```
+
+### 1.5 真假对象
+
+但是上面这个对象不能复制一份，或者说这个对象类在用 new 关键字创建新的对象时，新创建的对象时不能继承这些方法的。如果想要简单地复制一下对象，可以将这些方法放在一个函数对象中。
 
 ```JavaScript
 var CheckObject = function() {
@@ -77,17 +96,6 @@ a.checkPassword();
 ```JavaScript
 var CheckObjectFive = function () {
 };
-// var CheckObject = function() {};
-// CheckObject.prototype.checkName = function() {
-//     // 验证姓名
-// };
-// CheckObject.prototype.checkEmail = function() {
-//     // 验证邮箱
-// };
-// CheckObject.prototype.checkPassword = function() {
-//     // 验证密码
-// };
-// 或者
 CheckObjectFive.prototype = {
     checkName: function () {
         console.log("验证姓名");
@@ -100,15 +108,15 @@ CheckObjectFive.prototype = {
     }
 };
 
-var c = new CheckObjectFive();
-c.checkName();
-c.checkEmail();
-c.checkPassword();
+var a = new CheckObjectFive();
+a.checkName();
+a.checkEmail();
+a.checkPassword();
 ```
 
 ### 1.8 方法还可以这样用。
 
-使用该类多次调用了对象，这是可以避免的。可以在声明的每一个方法的末尾处将当前对象返回，在JavaScript 中 this 指向的就是当前对象。
+使用该类多次调用了对象，这是可以避免的。可以在声明的每一个方法的末尾处将当前对象返回，在JavaScript 中 this 指向的就是当前对象。当然也可以放到类的原型对象中。
 
 ```JavaScript
 var CheckObjectSix = function () {
@@ -127,13 +135,13 @@ CheckObjectSix.prototype = {
         return this;
     }
 };
-var d = new CheckObjectSix();
-d.checkName().checkEmail().checkPassword();
+var a = new CheckObjectSix();
+a.checkName().checkEmail().checkPassword();
 ```
 
 ### 1.9 函数的祖先。
 
-prototype.js 是一款 JavaScript 框架，里面为我们方便的封装了很多方法，最大的特点是对原生对象（JavaScript语言为们提供的对象类，如Function、Array、Object等等）的拓展。例如我们想给每一个函数都添加一个检测邮箱的方法可以这么做
+prototype.js 是一款 JavaScript 框架，里面为我们方便的封装了很多方法，最大的特点是对原生对象（JavaScript语言为们提供的对象类，如Function、Array、Object等等）的拓展。例如我们想给每一个函数都添加一个检测邮箱的方法可以这么做。
 
 ```js
 Function.prototype.checkEmail = function() {
@@ -149,7 +157,7 @@ var f = new Function();
 f.checkEmail();
 ```
 
-这样做会无缘原生对象Function，所以别人创建的函数也会被你创建的函数所污染，造成不必要的开销，但是你可以抽象出一个统一添加方法的功能方法。
+但是这样做会无缘原生对象Function，所以别人创建的函数也会被你创建的函数所污染，造成不必要的开销，但是你可以抽象出一个统一添加方法的功能方法。
 
 ```js
 Function.prototype.addMethod = function(name, fn) {
@@ -158,15 +166,21 @@ Function.prototype.addMethod = function(name, fn) {
 
 var methods = function() {};
 // 或者 var methods = new Function();
-methods.addMethod("checkName", function() {});
-methods.addMethod("checkEmail", function() {});
+methods.addMethod("checkName", function() {
+    // 验证姓名
+});
+methods.addMethod("checkEmail", function() {
+    // 验证邮箱
+});
 
 // 调用
 methods.checkEmail();
 methods.checkName();
 ```
 
-链式添加。分别对 addMethod 和 里面的方法进行链式调用。
+### 1.10 可以链式添加吗
+
+链式添加。分别对 addMethod 和里面的方法进行链式调用。
 
 ```js
 Function.prototype.addMethod = function(name, fn) {
@@ -175,6 +189,7 @@ Function.prototype.addMethod = function(name, fn) {
 };
 
 var methods = function() {};
+// 链式添加的添加方法
 methods.addMethod("checkName", function() {
   // 验证姓名
   return this;
@@ -182,10 +197,14 @@ methods.addMethod("checkName", function() {
   // 验证邮箱
   return this;
 });
+
+// 链接添加的方法调用
 methods.checkEmail().checkName();
 ```
 
-换一种方式使用方法。采用类式调用的方法。
+### 1.11 换一种方式使用方法。
+
+上面在测试的时候，采用的是函数式调用方式，因此也可以采用类式调用的方法。
 
 ```js
 Function.prototype.addMethod = function(name, fn) {
@@ -199,6 +218,7 @@ Methods.addMethod("checkName", function() {
 }).addMethod("checkEmail", function() {
   // 验证邮箱
 });
+
 var m = new Methods()
 m.checkName();
 m.checkEmail();
@@ -218,11 +238,15 @@ m.checkEmail();
 
 ### 2.1 两种编程风格——面向过程与面向对象
 
-面向对象编程就是将你的需求抽象成一个对象，然后针对这个对象分析器特征（属性）与动作（方法）。这个对象我们称之为类。面向对象编程思想有一个特点就是封装，就是说把你需要的功能放在一个对象里。
+面向对象编程就是将需求抽象成一个对象，然后针对这个对象分析器特征（属性）与动作（方法）。这个对象我们称之为类。面向对象编程思想有一个特点就是封装，就是说把你需要的功能放在一个对象里。
+
+遗憾的是对于 JavaScript 这种解释性的弱类型语言没有经典强类型语言中那种通过 class 等关键字实现的类的封装方式，JavaScript 中都是通过一些特性模仿实现的，但这也带来了极高的灵活性，让编写的代码更自由。
 
 ### 2.2 包装明星——封装
 
-在 javascript 中创建一个类很容易，首先声明一个函数保存在一个变量里。按编程习惯一般将这个代表类的变量名字母大写。然后在这个函数（类）的内部通过对 this 变量添加属性或者方法来实现对类添加属性或者方法。
+#### 2.2.1 创建一个类
+
+在 javascript 中创建一个类很容易，首先声明一个函数保存在一个变量里。按编程习惯一般将这个代表类的变量名字母大写。然后在这个函数（类）的内部通过对 this 变量添加属性或者方法来实现对类添加属性或者方法。 this 是函数内部自带的一个变量，用于指向当前这个对象。
 
 ```js
 var Book = function(id, bookname, price) {
@@ -252,12 +276,15 @@ Book.prototype = {
 
 constructor 是一个属性，当创建一个函数或者对象时都会为其创建一个原型对象 prototype，在prototype 对象中又会像函数中创建 this 一样创建一个 constructor 属性，那么 constructor 属性指向的就是拥有整个原型对象的函数或对象。
 
-属性与方法封装。
+#### 2.2.2 属性与方法封装。
 
-- 由于 javascript 的函数级作用域，声明在函数内部的变量以及方法在外界是访问不到的，通过此特性即可创建类的私有变量以及私有方法。
-- 然而在函数内部通过 this 创建的属性和方法，在类创建对象时，每个对象自身都拥有一份并且可以在外部访问到。因此通过 this 创建的属性可看作是对象共有属性和对象共有方法。
-- 通过 this 创建的方法，不但可以访问这些对象的共有属性与共有方法，而且还能访问到类（创建时）或对象自身的私有属性和私有方法，由于这些方法权利比较大，所以又可看成特权方法。
-- 在对象创建时通过使用这些特权方法可以初始化实例对象的一些属性，因此这些在创建对象时调用的特权方法还可以看作是类的构造器。
+由于 JavaScript 的函数级作用域，声明在函数内部的变量以及方法在外界是访问不到的，通过此特性即可创建类的私有变量以及私有方法。
+
+然而在函数内部通过 this 创建的属性和方法，在类创建对象时，每个对象自身都拥有一份并且可以在外部访问到。因此通过 this 创建的属性可看作是对象共有属性和对象共有方法。
+
+通过 this 创建的方法，不但可以访问这些对象的共有属性与共有方法，而且还能访问到类（创建时）或对象自身的私有属性和私有方法，由于这些方法权利比较大，所以又可看成特权方法。
+
+在对象创建时通过使用这些特权方法可以初始化实例对象的一些属性，因此这些在创建对象时调用的特权方法还可以看作是类的构造器。
 
 
 ```js
@@ -307,7 +334,9 @@ console.log(Book.isChinese);  // true
 Book.resetTime(); // new Time
 ```
 
-闭包实现。闭包是有权访问另外一个函数作用域中变量的函数，即在一个函数内部创建另外一个函数。我们把这个闭包作为创建对象的构造函数，这样它既是闭包又是可实例对象的函数，即可访问到类函数作用域中的变量。有时候在闭包内部实现一个完整的类然后将其返回。
+#### 2.2.3 闭包实现。
+
+闭包是有权访问另外一个函数作用域中变量的函数，即在一个函数内部创建另外一个函数。我们把这个闭包作为创建对象的构造函数，这样它既是闭包又是可实例对象的函数，即可访问到类函数作用域中的变量。有时候在闭包内部实现一个完整的类然后将其返回。
 
 ```js
 var Book = (function() {
@@ -349,10 +378,11 @@ var Book = (function() {
 })();
 ```
 
-创建对象的安全模式。在JavaScript创建对象时有一种安全模式就可以安全解决忘记使用new关键字而引发的错误。
+#### 2.2.4 创建对象的安全模式。
+
+对于初学者来说，在创建对象上由于不适应这种写法，所以经常容易忘记使用 new 而犯错误。
 
 ```js
-/** 反面示例 */
 var Book = function(title, time, type) {
     this.title = title;
     this.time = time;
@@ -363,7 +393,11 @@ console.log(book); // undefined
 console.log(window.title); // JavaScript
 console.log(window.time); // 2014
 console.log(window.type); // js
+```
 
+在 JavaScript 创建对象时有一种安全模式就可以安全解决忘记使用 new 关键字而引发的错误。
+
+```js
 /** 图书安全类 */
 var Book = function(title, time, type) {
     // 判断执行过程中this是否是当前这个对象（如果是用new创建的）
