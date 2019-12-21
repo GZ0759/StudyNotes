@@ -221,7 +221,7 @@ console.log( myCar.getInfo() );
 
 在经典面向对象编程语言中，Constructor（构造器）是一种在内存已分配给该对象的情况下，用来初始化新创建对象的特殊方法。在JavaScript中，几乎所有的东西都是对象，我们通常最感兴趣的是 object 构造器。
 
-Object 构造器用于创建特定类型的对象——准备好对象以备使用，同时接收构造器可以使用的参数，以在第一次创建对象时，设置成员属性和方法的值。
+Object 构造器用于创建特定类型的对象，准备好对象以备使用，同时接收构造器可以使用的参数，以在第一次创建对象时，设置成员属性和方法的值。
 
 ### 9.1.1 对象创建
 
@@ -239,9 +239,11 @@ var newObject = new Object();
 ECMAScript 3 兼容形式。包括点语法（Dot syntax）和中括号语法（Square bracket syntax）。
 
 ```js
+// 点语法
 newObject.someKey = "Hello World";
 var key = newObject.someKey;
 
+// 中括号语法
 newObject["someKey"] = "Hello World";
 var key = newObject["someKey"];
 ```
@@ -249,25 +251,16 @@ var key = newObject["someKey"];
 只适用 ECMAScript 5 的方式。包括`Object.defineProperty`和 `Object.defineProperties`。
 
 ```js
+// Object.defineProperty
 Object.defineProperty( newObject, "someKey", {
     value: "for more control of the property's behavior",
     writable: true,
     enumerable: true,
     configurable: true
 });
-// 简写
-var defineProp = function ( obj, key, value ){
-  config.value = value;
-  Object.defineProperty( obj, key, config );
-};
-// 为了使用它，我们要创建一个“person”对象
-var person = Object.create( null );
-// 用属性构造对象
-defineProp( person, "car",  "Delorean" );
-defineProp( person, "dateOfBirth", "1981" );
-defineProp( person, "hasBeard", false );
+// {someKey: "for more control of the property's behavior"}
 
-// 设置属性
+// Object.defineProperties
 Object.defineProperties( newObject, {
   "someKey": { 
     value: "Hello World", 
@@ -277,8 +270,8 @@ Object.defineProperties( newObject, {
     value: "Foo bar", 
     writable: false 
   } 
-
 });
+// {someKey: "Hello World", anotherKey: "Foo bar"}
 ```
 
 在这本书的后面一点，这些方法会被用于继承，如下：
@@ -299,9 +292,9 @@ console.log( driver.topSpeed );
 
 ### 9.1.2 基本构造器
 
-正如我们先前所看到的，Javascript不支持类的概念，但它确实支持与对象一起用的 constructor（构造器）函数。使用new关键字来调用该函数，使Javascript像使用构造器一样实例化一个新对象，并且对象成员由该函数定义。
+正如我们先前所看到的，Javascript不支持类的概念，但它确实支持与对象一起用的 constructor（构造器）函数。使用new关键字来调用该函数，使 Javascript 像使用构造器一样实例化一个新对象，并且对象成员由该函数定义。
 
-在构造器中，关键字this引用新创建的对象。一个基本的构造器看起来是这个样子:
+在构造器中，关键字 this 引用新创建的对象。一个基本的构造器看起来是这个样子:
 
 ```js
 function Car( model, year, miles ) {
@@ -315,24 +308,22 @@ function Car( model, year, miles ) {
   };
 }
 
-// 使用:
-
-// 我们可以示例化一个Car
+// 实例化
 var civic = new Car( "Honda Civic", 2009, 20000 );
 var mondeo = new Car( "Ford Mondeo", 2010, 5000 );
 
-// 打开浏览器控制台查看这些对象toString()方法的输出值
-// output of the toString() method being called on
-// these objects
 console.log( civic.toString() );
+// Honda Civic has done 20000 miles
 console.log( mondeo.toString() );
+// VM169:18 Ford Mondeo has done 5000 miles
 ```
 
-上面这是个简单版本的构造器模式，但它还是有些问题。一个是难以继承，另一个是每个Car构造函数创建的对象中，`toString()`之类的函数都被重新定义。这不是非常好，理想的情况是所有Car类型的对象都应该引用同一个函数。 值得庆幸的是，因为有很多 ES3 和ES5 兼容替代方法能够用于创建对象，所以很容易解决这个限制问题。
+上面这是个简单版本的构造器模式，但它还是有些问题。一个是难以继承，另一个是每个 Car 构造函数创建的对象中，`toString()`之类的函数都被重新定义。这不是非常好，理想的情况是所有 Car 类型的对象都应该引用同一个函数。 值得庆幸的是，因为有很多 ES3 和 ES5 兼容替代方法能够用于创建对象，所以很容易解决这个限制问题。
 
 ### 9.1.3 使用“原型”的构造器
 
-在Javascript中函数有一个prototype的属性。调用JavaScript 构造器创建一个对象后，新对象就会具有构造器原型的所有属性。通过这种方式，就可以创建多个访问相同prototype的Car对象了。注意这里我们使用 `Object.prototype.newMethod` 而不是 `Object.prototype` ，以避免我们重新定义原型对象。
+在Javascript中函数有一个prototype的属性。调用JavaScript 构造器创建一个对象后，新对象就会具有构造器原型的所有属性。通过这种方式，就可以创建多个访问相同prototype的Car对象了。
+
 ```js
 function Car( model, year, miles ) {
 
@@ -345,8 +336,6 @@ function Car( model, year, miles ) {
 Car.prototype.toString = function () {
   return this.model + " has done " + this.miles + " miles";
 };
-
-// 使用:
 
 var civic = new Car( "Honda Civic", 2009, 20000 );
 var mondeo = new Car( "Ford Mondeo", 2010, 5000 );
@@ -476,29 +465,22 @@ testModule.resetCounter();
 var myNamespace = (function () {
 
   var myPrivateVar, myPrivateMethod;
-
   // 私有计数器变量
   myPrivateVar = 0;
-
   // 记录所有参数的私有函数
   myPrivateMethod = function( foo ) {
       console.log( foo );
   };
 
   return {
-
     // 公有变量
     myPublicVar: "foo",
-
     // 调用私有变量和方法的公有函数
     myPublicFunction: function( bar ) {
-
       // 增加私有计数器值
       myPrivateVar++;
-
       // 传入 bar 调用私有方法
       myPrivateMethod( bar );
-
     }
   };
 
@@ -555,22 +537,22 @@ basketModule.addItem({
   price: 0.3
 });
 
-// Outputs: 2
+// 输出: 2
 console.log( basketModule.getItemCount() );
 
-// Outputs: 0.8
+// 输出: 0.8
 console.log( basketModule.getTotal() );
 
-// Outputs: undefined
+// 输出: undefined
 console.log( basketModule.basket );
 
-// Uncaught ReferenceError: basket is not defined
 console.log( basket );
+// Uncaught ReferenceError: basket is not defined
 ```
 
-上面的方法都处于basketModule 的名字空间中。
+上面的方法都处于 basketModule 的名字空间中。
 
-请注意在上面的basket模块中域函数是如何在我们所有的函数中被封装起来的，以及我们如何立即调用这个域函数，并且将返回值保存下来。这种方式有以下的优势：
+请注意在上面的 basket 模块中域函数是如何在我们所有的函数中被封装起来的，以及我们如何立即调用这个域函数，并且将返回值保存下来。这种方式有以下的优势：
 
 - 只有模块自身才能享有拥有私有函数的自由，因为它只会暴露我们输出的API。
 - 鉴于函数往往已声明并命名，在试图找到哪些函数抛出异常时，这将使得在调试器中显示调用堆栈变得更容易。
@@ -2358,93 +2340,79 @@ module.facade( {run: true, val:10} );
 
 当使用这个模式的时候，尝试了解任何有关性能上面的消耗，要知道它们是否值得以抽象的级别被提供出来调用。
 
-## 9.10 Factory（工厂）模式
+## 9.10 工厂模式
 
-工厂模式
-工厂模式是另外一种关注对象创建概念的创建模式。它的领域中同其它模式的不同之处在于它并没有明确要求我们使用一个构造器。取而代之，一个工厂能提供一个创建对象的公共接口，我们可以在其中指定我们希望被创建的工厂对象的类型。
+Factory（工厂）模式是另一种创建型模式，涉及创建对象的概念。其分类不同于其他模式的地方在于它不显式地要求使用一个构造函数。而 Factory 可以提供一个通用的接口来创建对象，我们可以指定我们所希望创建的工厂对象的类型。
 
-试想一下，在我们被要求创建一种类型的UI组件时，我们就有一个UI工厂。并不是通过直接使用new操作符或者通过另外一个构造器来创建这个组件，我们取而代之的向一个工厂对象索要一个新的组件。我们告知工厂我们需要什么类型的组件（例如：“按钮”，“面板”），而它会将其初始化，然后返回供我们使用。
+假设有一个UI工厂，我们要创建一个UI组件的类型。不需要直接使用new运算符或者通过另一个创建型构造函数创建这个组件，而是要求Factory对象创建一个新的组件。我们通知Factory需要什么类型的对象（如“按钮”、“面板”），它会进行实例化，然后将它返回给我们使用。
 
-如果创建过程相当复杂的话，那这会特别的有用，例如：如果它强烈依赖于动态因素或者应用程序配置的话。
+如果对象创建过程相对比较复杂，这种方法特别有用，例如，如果它强烈依赖于动态因素或应用程序配置的话。
 
-这个模式的一些例子可以在UI库里面找到，例如ExtJS, 用于创建对象或者组件的方法可以被做更深层次的子类。 下面使用用我们之前的那些代码来做的一个例子，通过使用构造器模式逻辑来定义汽车。这个例子展示了Vehicle 工厂可以使用工厂模式来实现。
+可以在ExtJS等UI库中找到此模式的示例，其中创建对象或组件的方法也有可能被归入子类了。
+
+下面这个示例构建在之前的代码片段之上，使用Constructor模式逻辑来定义汽车。它展示了如何使用Factory模式来实现vehicle工厂：
+
 ```js
-// Types.js - Constructors used behind the scenes
-
-// A constructor for defining new cars
 function Car( options ) {
-
-  // some defaults
   this.doors = options.doors || 4;
   this.state = options.state || "brand new";
   this.color = options.color || "silver";
-
 }
 
-// A constructor for defining new trucks
 function Truck( options){
-
   this.state = options.state || "used";
   this.wheelSize = options.wheelSize || "large";
   this.color = options.color || "blue";
 }
 
-// FactoryExample.js
-
-// Define a skeleton vehicle factory
+// 定义vehicle工厂
 function VehicleFactory() {}
 
-// Define the prototypes and utilities for this factory
-
-// Our default vehicleClass is Car
+// 定义该工厂的原型和试用工具，默认的vehicleClass是Car
 VehicleFactory.prototype.vehicleClass = Car;
 
-// Our Factory method for creating new Vehicle instances
+// 创建新Vehicle实例的工厂方法
 VehicleFactory.prototype.createVehicle = function ( options ) {
-
   if( options.vehicleType === "car" ){
     this.vehicleClass = Car;
   }else{
     this.vehicleClass = Truck;
   }
-
   return new this.vehicleClass( options );
-
 };
 
-// Create an instance of our factory that makes cars
+// 创建生成汽车的工厂实例
 var carFactory = new VehicleFactory();
 var car = carFactory.createVehicle( {
-            vehicleType: "car",
-            color: "yellow",
-            doors: 6 } );
+  vehicleType: "car",
+  color: "yellow",
+  doors: 6 } );
 
-// Test to confirm our car was created using the vehicleClass/prototype Car
-
-// Outputs: true
+// 输出: true
 console.log( car instanceof Car );
 
-// Outputs: Car object of color "yellow", doors: 6 in a "brand new" state
+// 输出: Car {doors: 6, state: "brand new", color: "yellow"}
 console.log( car );
 ```
+
 方法1: 修改 VehicleFactory 实例使用 Truck 类
+
 ```js
 var movingTruck = carFactory.createVehicle( {
-                      vehicleType: "truck",
-                      state: "like new",
-                      color: "red",
-                      wheelSize: "small" } );
+  vehicleType: "truck",
+  state: "like new",
+  color: "red",
+  wheelSize: "small" } );
 
-// Test to confirm our truck was created with the vehicleClass/prototype Truck
-
-// Outputs: true
+// 输出: true
 console.log( movingTruck instanceof Truck );
 
-// Outputs: Truck object of color "red", a "like new" state
-// and a "small" wheelSize
+// 输出: Truck {state: "like new", wheelSize: "small", color: "red"}
 console.log( movingTruck );
 ```
+
 方法2: 做 VehicleFactory 的子类用于创建一个工厂类生产 Trucks
+
 ```js
 function TruckFactory () {}
 TruckFactory.prototype = new VehicleFactory();
@@ -2452,77 +2420,72 @@ TruckFactory.prototype.vehicleClass = Truck;
 
 var truckFactory = new TruckFactory();
 var myBigTruck = truckFactory.createVehicle( {
-                    state: "omg..so bad.",
-                    color: "pink",
-                    wheelSize: "so big" } );
+  state: "omg..so bad.",
+  color: "pink",
+  wheelSize: "so big" } );
 
-// Confirms that myBigTruck was created with the prototype Truck
-// Outputs: true
+// 输出: true
 console.log( myBigTruck instanceof Truck );
 
-// Outputs: Truck object with the color "pink", wheelSize "so big"
-// and state "omg. so bad"
+// 输出: Truck {state: "omg..so bad.", wheelSize: "so big", color: "pink"}
 console.log( myBigTruck );
 ```
-何时使用工厂模式
-当被应用到下面的场景中时，工厂模式特别有用：
 
-当我们的对象或者组件设置涉及到高程度级别的复杂度时。
-当我们需要根据我们所在的环境方便的生成不同对象的实体时。
-当我们在许多共享同一个属性的许多小型对象或组件上工作时。
-当带有其它仅仅需要满足一种API约定(又名鸭式类型)的对象的组合对象工作时.这对于解耦来说是有用的。
-何时不要去使用工厂模式
-当被应用到错误的问题类型上时,这一模式会给应用程序引入大量不必要的复杂性.除非为创建对象提供一个接口是我们编写的库或者框架的一个设计上目标,否则我会建议使用明确的构造器,以避免不必要的开销。
+### 9.10.1 何时使用工厂模式
 
-由于对象的创建过程被高效的抽象在一个接口后面的事实,这也会给依赖于这个过程可能会有多复杂的单元测试带来问题。
+Factory模式应用于如下场景时是特别有用的：
 
-抽象工厂
-了解抽象工厂模式也是非常实用的,它的目标是以一个通用的目标将一组独立的工厂进行封装.它将一堆对象的实现细节从它们的一般用例中分离。
+- 当对象或组件设置涉及高复杂性时
+- 当需要根据所在的不同环境轻松生成对象的不同实例时
+- 当处理很多共享相同属性的小型对象或组件时
+- 在编写只需要满足一个API契约（亦称鸭子类型）的其他对象的实例对象时。对于解耦是很有用的。
 
-抽象工厂应该被用在一种必须从其创建或生成对象的方式处独立,或者需要同多种类型的对象一起工作,这样的系统中。
+### 9.10.2 何时不要去使用工厂模式
 
-简单且容易理解的例子就是一个发动机工厂,它定义了获取或者注册发动机类型的方式.抽象工厂会被命名为AbstractVehicleFactory.抽象工厂将允许像"car"或者"truck"的发动机类型的定义,并且构造工厂将仅实现满足发动机合同的类.(例如:Vehicle.prototype.driven和Vehicle.prototype.breakDown)。
+如果应用错误，这种模式会为应用程序带来大量不必要的复杂性。除非为创建对象提供一个接口是我们正在编写的库或框架的设计目标，否则我建议坚持使用显式构造函数，以避免不必要的开销。
+
+由于对象创建的过程实际上是藏身接口之后抽象出来的，单元测试也可能带来问题，这取决于对象创建的过程有多复杂。
+
+### 9.10.3 抽象工厂
+
+了解抽象工厂模式也是有用的，它用于封装一组具有共同目标的单个工厂。它能够将一组对象的实现细节从一般用法中分离出来。
+
+应当使用抽象工厂模式的情况是：一个系统必须独立于它所创建的对象的生成方式，或它需要与多种对象类型一起工作。
+
+既简单又容易理解的示例是车辆工厂，它定义了获取或注册车辆类型的方法。抽象工厂可以命名为AbstractVehicleFactory。抽象工厂将允许对像car或truck这样的车辆类型进行定义，具体工厂只需要实现履行车辆契约的类（如Vehicle.prototype.drive和Vehicle.prototype.breakDown）。
+
 ```js
 var AbstractVehicleFactory = (function () {
-
-    // Storage for our vehicle types
-    var types = {};
-
-    return {
-        getVehicle: function ( type, customizations ) {
-            var Vehicle = types[type];
-
-            return (Vehicle ? new Vehicle(customizations) : null);
-        },
-
-        registerVehicle: function ( type, Vehicle ) {
-            var proto = Vehicle.prototype;
-
-            // only register classes that fulfill the vehicle contract
-            if ( proto.drive && proto.breakDown ) {
-                types[type] = Vehicle;
-            }
-
-            return AbstractVehicleFactory;
+// 存储车辆类型
+  var types = {};
+  return {
+    getVehicle: function ( type, customizations ) {
+        var Vehicle = types[type];
+        return (Vehicle) ? return new Vehicle(customizations) : null;
+    },
+    registerVehicle: function ( type, Vehicle ) {
+        var proto = Vehicle.prototype;
+        // 只注册实现车辆契约的类
+        if ( proto.drive && proto.breakDown ) {
+              types[type] = Vehicle;
         }
-    };
+        return AbstractVehicleFactory;
+    }
+  };
 })();
-
-// Usage:
-
+// 用法:
 AbstractVehicleFactory.registerVehicle( "car", Car );
 AbstractVehicleFactory.registerVehicle( "truck", Truck );
-
-// Instantiate a new car based on the abstract vehicle type
+// 基于抽象车辆类型实例化一个新car对象
 var car = AbstractVehicleFactory.getVehicle( "car" , {
-            color: "lime green",
-            state: "like new" } );
-
-// Instantiate a new truck in a similar manner
+  color: "lime green",
+  state: "like new" } );
+// 同理实例化一个新truck对象
 var truck = AbstractVehicleFactory.getVehicle( "truck" , {
-            wheelSize: "medium",
-            color: "neon yellow" } );
+  wheelSize: "medium",
+  color: "neon yellow" } );
 ```
+
 ## 9.11 Mixin模式
 
 Mixin 模式
