@@ -2107,7 +2107,11 @@ alert(typeof descriptor.get); //"function"
 
 ## 6.2 创建对象
 
-**工厂模式**是软件工程领域一种广为人知的设计模式，这种模式抽象了创建对象的过程，用函数来封装以特定接口创建对象的细节。工厂模式虽然解决了创建多个相似对象的问题，但却没有解决对象识别的问题（即怎样知道一个对象的类型）。 
+虽然 Object 构造函数或对象字面量都可以用来创建单个对象，但这些方式有个明显的缺点：使用同一个接口创建很多对象，会产生大量的重复代码。为解决这个问题，人们开始使用工厂模式的一种变体。
+
+### 6.2.1 工厂模式
+
+工厂模式是软件工程领域一种广为人知的设计模式，这种模式抽象了创建具体对象的过程，用函数来封装以特定接口创建对象的细节。工厂模式虽然解决了创建多个相似对象的问题，但却没有解决对象识别的问题（即怎样知道一个对象的类型）。 
 
 ```js
 function createPerson(name, age, job){
@@ -2128,66 +2132,211 @@ person1.sayName();   //"Nicholas"
 person2.sayName();   //"Greg" 
 ```
 
+### 6.2.2 构造函数模式
 
-
-**构造函数模式**是一个新的模式，解决工厂模式不能解决对象识别的问题。同时也可以自定义构造函数，从而定义自定义对象类型的属性和方法。
-
-构造函数始终都应该以一个大写字母开头，而非构造函数则应该以一个小写字母开头。要创建 Person 的新实例，必须使用 new 操作符。
-
-对象的 constructor 属性最初是用来标识对象类型的，也可以指向构造函数，用 instanceof 操作符可以更可靠地检测对象是否为某某的实例。
-
-构造函数不存在函数定义的特殊语法，通过 new 操作符来调用，那么它就可以作为构造函数。而任何函数，如果不通过 new 操作符来调用，那它跟普通函数也不会有什么两样。
-
-使用构造函数的主要问题，就是每个方法都要在每个实例上重新创建一遍。ECMAScript 中的函数是对象，因此每定义一个函数，也就是实例化了一个对象。因此，不同实例上的同名函数是不相等的。   
+ECMAScript 中的构造函数可用来创建特定类型的对象。像 Object 和 Array 这样的原生构造函数，在运行时会自动出现在执行环境中。此外，也可以创建自定义的构造函数，从而定义自定义对象类型的属性和方法。例如，可以使用构造函数模式将前面的例子重写如下。
 
 ```js
 function Person(name, age, job){
-    this.name = name;
-    this.age = age;
-    this.job = job;
-    this.sayName = function(){
-        alert(this.name);
-    };    
+  this.name = name;
+  this.age = age;
+  this.job = job;
+  this.sayName = function(){
+    alert(this.name);
+  };
 }
-
 var person1 = new Person("Nicholas", 29, "Software Engineer");
 var person2 = new Person("Greg", 27, "Doctor");
+```
 
-person1.sayName();   //"Nicholas"
-person2.sayName();   //"Greg"
+在这个例子中，` Person()`函数取代了 `createPerson()`函数。我们注意到，` Person()`中的代码除了与 `createPerson()`中相同的部分外，还存在以下不同之处：
+- 没有显式地创建对象；
+- 直接将属性和方法赋给了 this 对象；
+- 没有 return 语句。
 
-alert(person1 instanceof Object);  //true
-alert(person1 instanceof Person);  //true
-alert(person2 instanceof Object);  //true
-alert(person2 instanceof Person);  //true
+此外，还应该注意到函数名 Person 使用的是大写字母 P。按照惯例，构造函数始终都应该以一个大写字母开头，而非构造函数则应该以一个小写字母开头。这个做法借鉴自其他 OO 语言，主要是为了区别于 ECMAScript 中的其他函数；因为构造函数本身也是函数，只不过可以用来创建对象而已。
 
-alert(person1.constructor == Person);  //true
-alert(person2.constructor == Person);  //true
+要创建 Person 的新实例，必须使用 new 操作符。以这种方式调用构造函数实际上会经历以下 4 个步骤：
+1. 创建一个新对象；
+2. 将构造函数的作用域赋给新对象（因此 this 就指向了这个新对象）；
+3. 执行构造函数中的代码（为这个新对象添加属性）；
+4. 返回新对象。
 
+在前面例子的最后， person1 和 person2 分别保存着 Person 的一个不同的实例。这两个对象都有一个 constructor（构造函数）属性，该属性指向 Person 。对象的 constructor 属性最初是用来标识对象类型的。但是，提到检测对象类型，还是 instanceof 操作符要更可靠一些。
+
+```js
+alert(person1.constructor == Person); //true
+alert(person2.constructor == Person); //true
+
+alert(person1 instanceof Object); //true
+alert(person1 instanceof Person); //true
+alert(person2 instanceof Object); //true
+alert(person2 instanceof Person); //true
+```
+
+创建自定义的构造函数意味着将来可以将它的实例标识为一种特定的类型；而这正是构造函数模式胜过工厂模式的地方。
+
+**将构造函数当作函数**。构造函数与其他函数的唯一区别，就在于调用它们的方式不同。不过，构造函数毕竟也是函数，不存在定义构造函数的特殊语法。任何函数，只要通过 new 操作符来调用，那它就可以作为构造函数；而任何函数，如果不通过 new 操作符来调用，那它跟普通函数也不会有什么两样。
+
+```js
+// 当作构造函数使用
+var person = new Person("Nicholas", 29, "Software Engineer");
+person.sayName(); //"Nicholas"
+
+// 作为普通函数调用
+Person("Greg", 27, "Doctor"); // 添加到 window
+window.sayName(); //"Greg"
+
+// 在另一个对象的作用域中调用
+var o = new Object();
+Person.call(o, "Kristen", 25, "Nurse");
+o.sayName(); //"Kristen"
+```
+
+**构造函数的问题**。使用构造函数的主要问题，就是每个方法都要在每个实例上重新创建一遍。ECMAScript 中的函数是对象，因此每定义一个函数，也就是实例化了一个对象。说明白些，以这种方式创建函数，会导致不同的作用域链和标识符解析，但创建 Function 新实例的机制仍然是相同的。因此，不同实例上的同名函数是不相等的。
+
+```js
 alert(person1.sayName == person2.sayName);  //false      
 ```
 
+然而，创建两个完成同样任务的 Function 实例的确没有必要；况且有 this 对象在，根本不用在执行代码前就把函数绑定到特定对象上面。因此，大可像下面这样，通过把函数定义转移到构造函数外部来解决这个问题。
 
+```js
+function Person(name, age, job){
+  this.name = name;
+  this.age = age;
+  this.job = job;
+  this.sayName = sayName;
+}
+function sayName(){
+  alert(this.name);
+}
+var person1 = new Person("Nicholas", 29, "Software Engineer");
+var person2 = new Person("Greg", 27, "Doctor");
+```
 
-**原型模式。**我们创建的每个函数都有一个 prototype 原型属性，这个属性是一个指针，指向一个对象，而这个对象的用途是包含可以由特定类型类型的所有实例共享的属性和方法。换句话说，不必在构造函数中定义对象实例的信息，而是可以将这些信息直接添加到原型对象中，新对象的属性和方法是由所有实例共享的。
+这样做确实解决了两个函数做同一件事的问题，可是新问题又来了：在全局作用域中定义的函数实际上只能被某个对象调用，这让全局作用域有点名不副实。而更让人无法接受的是：如果对象需要定义很多方法，那么就要定义很多个全局函数，于是我们这个自定义的引用类型就丝毫没有封装性可言了。好在，这些问题可以通过使用原型模式来解决。
 
-原型对象。
+### 6.2.3 原型模式
 
-- 构造函数访问原型对象。无论什么时候，只要创建了一个新函数，就会根据一组特定的规则为该函数创建一个 prototype 属性，这个属性指向函数的原型对象。
+我们创建的每个函数都有一个 prototype 原型属性，这个属性是一个指针，指向一个对象，而这个对象的用途是包含可以由特定类型类型的所有实例共享的属性和方法。换句话说，不必在构造函数中定义对象实例的信息，而是可以将这些信息直接添加到原型对象中。但与构造函数模式不同的是，新对象的这些属性和方法是由所有实例共享的。
 
-- 原型对象访问构造函数。在默认情况下，所有原型对象都会自动获得一个 constructor （构造函数）属性，这个属性包含一个指向 prototype 属性所在函数的指针。  创建了自定义的构造函数之后，其原型对象默认只会取得 constructor 属性，调用这个属性则指向构造函数；至于其它方法则都是从 Object 继承而来的 。
+```js
+function Person(){
+}
+Person.prototype.name = "Nicholas";
+Person.prototype.age = 29;
+Person.prototype.job = "Software Engineer";
+Person.prototype.sayName = function(){
+  alert(this.name);
+};
 
-- 对象实例访问原型对象。当调用构造函数创建一个新实例后，该实例的内部将包含一个指针（内部属性），指向构造函数的原型对象。ECMA-262 第 5 版中管这个指针叫`[[Prototype]]`。虽然在脚本中 没有标准的方式访问 `[[Prototype]]` ，但 Firefox、 Safari 和 Chrome 在每个对象上都支持一个属性 `__proto__`；而在其他实现中，这个属性对脚本则是完全不可见的。     
+var person1 = new Person();
+person1.sayName(); //"Nicholas"
 
-  虽然在所有实现中都无法访问到 prototype，但是可以通过 `isPrototypeOf ()` 方法来确定对象之间是否存在这种关系，对象内部存在一个指向构造函数的 prototype 的指针，就返回 true 。而使用 Object.getPrototypeOf () 方法则会返回 prototype 的值。
+var person2 = new Person();
+person2.sayName(); //"Nicholas"
 
-  虽然可以通过对象实例访问保存在原型中的值，但却不能通过对象实例重写原型中的值。当为对象实例添加一个属性时，这个属性就会疲敝原型对象中保存的同名属性。不过，使用 delete 操作符则可以完全删除实例属性，从而让我们能够重新访问原型中的属性。使用 hasOwnProperty () 方法可以检测一个属性是否存在于实例中，还是存在于原型中，但是只在给定属性存在于对象实例中时，才会返回 true 。
+alert(person1.sayName == person2.sayName); //true
+```
+
+**理解原型对象**
+
+无论什么时候，只要创建了一个新函数，就会根据一组特定的规则为该函数创建一个 prototype 属性，这个属性指向函数的原型对象。在默认情况下，所有原型对象都会自动获得一个 constructor （构造函数）属性，这个属性包含一个指向 prototype 属性所在函数的指针。
+
+创建了自定义的构造函数之后，其原型对象默认只会取得 constructor 属性；至于其他方法，则都是从 Object 继承而来的。当调用构造函数创建一个新实例后，该实例的内部将包含一个指针（内部属性），指向构造函数的原型对象。 ECMA-262 第 5 版中管这个指针叫`[[Prototype]]`。虽然在脚本中没有标准的方式访问`[[Prototype]]`，但 Firefox、 Safari 和 Chrome 在每个对象上都支持一个属性__proto__；而在其他实现中，这个属性对脚本则是完全不可见的。不过，要明确的真正重要的一点就是，这个连接存在于实例与构造函数的原型对象之间，而不是存在于实例与构造函数之间。
+
+虽然在所有实现中都无法访问到`[[Prototype]]`，但是可以通过 `isPrototypeOf ()` 方法来确定对象之间是否存在这种关系，从本质上讲，如果`[[Prototype]]`指向调用 `isPrototypeOf()`方法的对象（Person.prototype），那么这个方法就返回 true。
+
+```js
+alert(Person.prototype.isPrototypeOf(person1)); //true
+alert(Person.prototype.isPrototypeOf(person2)); //true
+```
+
+ECMAScript 5 增加了一个新方法，叫 `Object.getPrototypeOf()`，在所有支持的实现中，这个方法返回`[[Prototype]]`的值。返回的对象实际就是这个对象的原型。
+
+```js
+alert(Object.getPrototypeOf(person1) == Person.prototype); //true
+alert(Object.getPrototypeOf(person1).name); //"Nicholas"
+```
+
+虽然可以通过对象实例访问保存在原型中的值，但却不能通过对象实例重写原型中的值。当为对象实例添加一个属性时，这个属性就会屏蔽原型对象中保存的同名属性。换句话说，添加这个属性只会阻止我们访问原型中的那个属性，但不会修改那个属性。
+
+```js
+function Person(){
+}
+Person.prototype.name = "Nicholas";
+Person.prototype.age = 29;
+Person.prototype.job = "Software Engineer";
+Person.prototype.sayName = function(){
+  alert(this.name);
+};
+var person1 = new Person();
+var person2 = new Person();
+person1.name = "Greg";
+alert(person1.name); //"Greg"—— 来自实例
+alert(person2.name); //"Nicholas"—— 来自原型
+```
+
+即使将这个同名属性设置为 null，也只会在实例中设置这个属性，而不会恢复其指向原型的连接。不过，使用 delete 操作符则可以完全删除实例属性，从而让我们能够重新访问原型中的属性。
+
+```js
+function Person(){
+}
+Person.prototype.name = "Nicholas";
+Person.prototype.age = 29;
+Person.prototype.job = "Software Engineer";
+Person.prototype.sayName = function(){
+  alert(this.name);
+};
+var person1 = new Person();
+var person2 = new Person();
+person1.name = "Greg";
+alert(person1.name); //"Greg"—— 来自实例
+alert(person2.name); //"Nicholas"—— 来自原型
+
+delete person1.name;
+alert(person1.name); //"Nicholas"—— 来自原型
+```
+
+使用 `hasOwnProperty ()` 方法可以检测一个属性是否存在于实例中，还是存在于原型中，但是只在给定属性存在于对象实例中时，才会返回 true 。
+
+```js
+function Person(){
+}
+Person.prototype.name = "Nicholas";
+Person.prototype.age = 29;
+Person.prototype.job = "Software Engineer";
+Person.prototype.sayName = function(){
+  alert(this.name);
+};
+var person1 = new Person();
+var person2 = new Person();
+
+alert(person1.hasOwnProperty("name")); //false
+person1.name = "Greg";
+alert(person1.name); //"Greg"—— 来自实例
+alert(person1.hasOwnProperty("name")); //true
+
+alert(person2.name); //"Nicholas"—— 来自原型
+alert(person2.hasOwnProperty("name")); //false
+
+delete person1.name;
+alert(person1.name); //"Nicholas"—— 来自原型
+alert(person1.hasOwnProperty("name")); //false
+```
+
+**原型与 in 操作符**
 
 在单独使用 in 操作符时，它会在通过对象能够访问给定属性时返回 true ，无论该属性存在于事例中还是原型中。在使用 for-in 循环时，返回的是所有能够通过对象访问的、可枚举的属性，其中既包括存在于实例中的属性，也包括存在于原型中的属性。要取得对象上所有可枚举的实例属性，可以使用 Object.keys () 方法，这个方法接收一个对象作为参数，返回一个包含所有可枚举属性的字符串数组。如果想得到所有实例的属性，无论它是否可以枚举，都可以使用 Object.getOwnPropertyNames () 方法。
+
+**更简单的原型语法**
 
 更简单的原型语法，用一个包含所有属性和方法的对象字面量来重写整个原型对象，但 constructor 属性不再指向该构造函数了。前面曾经介绍过，每创建一 个函数，就会同时创建它的 prototype 对象，这个对象也会自动获得 constructor 属性。而我们在这里使用的语法，本质上完全重写了默认的 prototype 对象，因此 constructor 属性也就变成了新对象的 constructor 属性（指向 Object 构造函数），不再指向 Person 函数。  
 
 原型的动态性，由于在原型中查找值的过程是一次搜索，因此我们对原型对象所做的任何修改都能够立即从实例上反映出来——即使是先创建了实例后修改原型也照样如此。如果是重写整个原型对象，那么情况就不一样了。调用构造函数时会为实例添加一个指向最初原型的指针，而把原型修改为另外一个对象就等于切断了构造函数与最初原型之间的联系，切断了现有原型与任何之前已经存在的对象实例之间的联系；它们引用的仍然是最初的原型。  
+
+**原生对象的原型**
 
 原型模式的重要性不仅体现在创建自定义类型方面，就连所有原生的引用类型，都是采用这种模式创建的。所有原生引用类型都在其构造函数的原型上定义方法。原型模式的最大问题是由其共享的本性所导致的，通过在实例上添加一个同名属性可以隐藏原型中对应属性，但包含引用类型值的属性就出现问题了，实例一般都是要有属于自己的全部属性的，不与其他实例共享。  
 
@@ -2213,9 +2362,13 @@ delete person1.name;
 alert(person1.name);   //"Nicholas" - from the prototype
 ```
 
+**原型对象的问题**
 
+原型模式也不是没有缺点。首先，它省略了为构造函数传递初始化参数这一环节，结果所有实例在默认情况下都将取得相同的属性值。虽然这会在某种程度上带来一些不方便，但还不是原型的最大问题。原型模式的最大问题是由其共享的本性所导致的。
 
-**创建自定义类型的最常见方式**，就是组合使用构造函数模式与原型模式。构造函数模式用于定义实例属性，而原型模式用于定义方法和共享的属性，这种模式还支持向构造函数传递参数。
+### 6.2.4 组合使用构造函数模式和原型模式
+
+创建自定义类型的最常见方式，就是组合使用构造函数模式与原型模式。构造函数模式用于定义实例属性，而原型模式用于定义方法和共享的属性，这种模式还支持向构造函数传递参数。
 
 ```js
 function Person(name, age, job){
@@ -2243,7 +2396,7 @@ alert(person1.friends === person2.friends);  //false
 alert(person1.sayName === person2.sayName);  //true
 ```
 
-
+### 6.2.5 动态原型模式
 
 **动态原型模式**把所有信息封装在了构造函数中，而通过在构造函数中初始化原型（仅在必要的情况下），又保持了同时使用构造函数和原型的优点。换句话说，可以通过检查某个应该存在的方法是否有效，来决定是否需要初始化原型。
 
@@ -2269,7 +2422,7 @@ var friend = new Person("Nicholas", 29, "Software Engineer");
 friend.sayName();
 ```
 
-
+### 6.2.6 寄生构造函数模式
 
 **寄生构造函数模式**的基本思想是创建一个函数，该函数的作用仅仅是封装创建对象的代码，然后再返回新创建的对象。
 
@@ -2289,7 +2442,7 @@ var friend = new Person("Nicholas", 29, "Software Engineer");
 friend.sayName();  //"Nicholas"
 ```
 
-
+### 6.2.7 稳妥构造函数模式
 
 **稳妥构造函数模式**，最适合在一些安全的环境中，没有公共属性，方法也不引用 this 的对象，或者在防止数据被其他应用程序改动时使用。
 
