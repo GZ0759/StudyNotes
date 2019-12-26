@@ -2328,7 +2328,91 @@ alert(person1.hasOwnProperty("name")); //false
 
 **原型与 in 操作符**
 
-在单独使用 in 操作符时，它会在通过对象能够访问给定属性时返回 true ，无论该属性存在于事例中还是原型中。在使用 for-in 循环时，返回的是所有能够通过对象访问的、可枚举的属性，其中既包括存在于实例中的属性，也包括存在于原型中的属性。要取得对象上所有可枚举的实例属性，可以使用 Object.keys () 方法，这个方法接收一个对象作为参数，返回一个包含所有可枚举属性的字符串数组。如果想得到所有实例的属性，无论它是否可以枚举，都可以使用 Object.getOwnPropertyNames () 方法。
+有两种方式使用 in 操作符：单独使用和在 for-in 循环中使用。在单独使用时， in 操作符会在通过对象能够访问给定属性时返回 true，无论该属性存在于实例中还是原型中。
+
+```js
+function Person(){
+}
+Person.prototype.name = "Nicholas";
+Person.prototype.age = 29;
+Person.prototype.job = "Software Engineer";
+Person.prototype.sayName = function(){
+  alert(this.name);
+};
+var person1 = new Person();
+var person2 = new Person();
+
+alert(person1.hasOwnProperty("name")); //false
+alert("name" in person1); //true
+
+person1.name = "Greg";
+alert(person1.name); //"Greg" —— 来自实例
+alert(person1.hasOwnProperty("name")); //true
+alert("name" in person1); //true
+
+alert(person2.name); //"Nicholas" —— 来自原型
+alert(person2.hasOwnProperty("name")); //false
+alert("name" in person2); //true
+
+delete person1.name;
+alert(person1.name); //"Nicholas" —— 来自原型
+alert(person1.hasOwnProperty("name")); //false
+alert("name" in person1); //true
+```
+
+由于 in 操作符只要通过对象能够访问到属性就返回 true， `hasOwnProperty()`只在属性存在于实例中时才返回 true，因此只要 in 操作符返回 true 而 `hasOwnProperty()`返回 false，就可以确定属性是原型中的属性。
+
+```js
+function hasPrototypeProperty(object, name){
+  return !object.hasOwnProperty(name) && (name in object);
+}
+
+function Person(){
+}
+Person.prototype.name = "Nicholas";
+Person.prototype.age = 29;
+Person.prototype.job = "Software Engineer";
+Person.prototype.sayName = function(){
+alert(this.name);
+};
+
+var person = new Person();
+alert(hasPrototypeProperty(person, "name")); //true
+
+person.name = "Greg";
+alert(hasPrototypeProperty(person, "name")); //false
+```
+
+在使用 for-in 循环时，返回的是所有能够通过对象访问的、可枚举的（enumerated）属性，其中既包括存在于实例中的属性，也包括存在于原型中的属性。屏蔽了原型中不可枚举属性（即将`[[Enumerable]]`标记为 false 的属性）的实例属性也会在 for-in 循环中返回，因为根据规定，所有开发人员定义的属性都是可枚举的——只有在 IE8 及更早版本中例外。
+
+IE 早期版本的实现中存在一个 bug，即屏蔽不可枚举属性的实例属性不会出现在 for-in 循环中。
+
+要取得对象上所有可枚举的实例属性，可以使用 ECMAScript 5 的 `Object.keys()`方法。这个方法接收一个对象作为参数，返回一个包含所有可枚举属性的字符串数组。
+
+```js
+function Person(){
+}
+Person.prototype.name = "Nicholas";
+Person.prototype.age = 29;
+Person.prototype.job = "Software Engineer";
+Person.prototype.sayName = function(){
+  alert(this.name);
+};
+var keys = Object.keys(Person.prototype);
+alert(keys); //"name,age,job,sayName"
+var p1 = new Person();
+p1.name = "Rob";
+p1.age = 31;
+var p1keys = Object.keys(p1);
+alert(p1keys); //"name,age"
+```
+
+如果你想要得到所有实例属性，无论它是否可枚举，都可以使用 `Object.getOwnPropertyNames()`方法。注意结果中包含了不可枚举的 constructor 属性。` Object.keys()`和 `Object.getOwnPropertyNames()`方法都可以用来替代 for-in 循环。 
+
+```js
+var keys = Object.getOwnPropertyNames(Person.prototype);
+alert(keys); //"constructor,name,age,job,sayName"
+```
 
 **更简单的原型语法**
 
