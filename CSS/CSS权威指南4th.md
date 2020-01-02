@@ -1,6 +1,9 @@
-> CSS权威指南第三版  
-> CSS:The Definitive Guide  
-> 2007年10第一次出版  
+> CSS权威指南第四版  
+> CSS:The Definitive Guide(4th Edition)
+> 2000-05-01: First Release  
+> 2004-03-01: Second Release  
+> 2006-11-01: Third Release  
+> 2017-10-10: Fourth Release  
 > [线上资源](https://github.com/gdut-yy/CSS-The-Definitive-Guide-4th-zh)
 
 第 1 章 CSS 和 Documents
