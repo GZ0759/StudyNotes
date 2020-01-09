@@ -1034,9 +1034,31 @@ a++;
 
 ## 第3章 Promise	
 
+随着开发者和规范撰写者绝望地清理他们的代码和设计中由回调地狱引发的疯狂行为， Promise 风暴已经开始席卷 JavaScript 世界。
+
+实际上，绝大多数 JavaScript/DOM 平台新增的异步 API 都是基于 Promise 构建的。
+
 ### 3.1 什么是Promise
 
-通过 Promise，调用 then(..) 实际上可以接受两个函数，第一个用于完成情况，第二个用于拒绝情况。从外部看，由于 Promise 封装了依赖于时间的状态——等待底层值的完成或拒绝，所以 Promise 本身是与时间无关的。因此， Promise 可以按照可预测的方式组成（组合），而不用关心时序或底层的结果。  另外，一旦 Promise 决议，它就永远保持在这个状态。此时它就成为了不变值（immutable value），可以根据需求多次查看。  
+通过 Promise，调用 `then(..)` 实际上可以接受两个函数，第一个用于完成情况，第二个用于拒绝情况。
+
+```js
+add( fetchX(), fetchY() )  
+.then(      
+	// 完成处理函数      
+	function(sum) {          
+		console.log( sum );      
+	},      
+	// 拒绝处理函数     
+	function(err) {          
+		console.error( err ); // 烦！      
+	}  
+); 
+```
+
+从外部看，由于 Promise 封装了依赖于时间的状态——等待底层值的完成或拒绝，所以 Promise 本身是与时间无关的。因此， Promise 可以按照可预测的方式组成（组合），而不用关心时序或底层的结果。  
+
+另外，一旦 Promise 决议，它就永远保持在这个状态。此时它就成为了不变值（immutable value），可以根据需求多次查看。  
 
 Promise 是一种封装和组合未来值的易于复用的机制。  
 
