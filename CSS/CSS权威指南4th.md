@@ -69,6 +69,10 @@ HTML 元素大部分是非置换元素（nonreplaced element），即元素的�
 </body>
 ```
 
+这里有两个块级元素（ body 和 p ）及一个行内元素（ em ）。根据 HTML 规范， em 可以放在 p 里，而反过来却不行。一般地， HTML 层次结构要求，行内元素可以放在块级元素中，反之则不行。
+
+与此不同， CSS 没有这种限制。在不改变标记的前提下，可以像下面一样改变它们的显示方式。
+
 ```css
 p {
   display: inline;
@@ -78,11 +82,11 @@ em {
 }
 ```
 
-```html
-<em><p>This is a paragraph improperly enclosed by an inline element.</p></em>
-```
+这会导致行内框中出现一个块级框。这完全是有效的，不违背任何 CSS 规则。然而，如果在 HTML 中调换元素之间的嵌套关系，就会出现问题。
 
-```html
+改变元素的显示方式对 HTML 文档来说是有用的，不过对 XML 文档而言的作用更大。 XML 文档的元素没有固定的显示方式，而是完全由编写人员定义。
+
+```xml
 <book>
   <maintitle>Cascading Style Sheets: The Definitive Guide</maintitle>
   <subtitle>Third Edition</subtitle>
@@ -101,6 +105,8 @@ em {
 </book>
 ```
 
+上述内容默认将显示为行内文本，这样显示没有什么用。因此，可以用 display 定义基本布局，还可以在上述规则的基础上再添加一些样式，得到更好的视觉效果。
+
 ```css
 book,
 maintitle,
@@ -117,25 +123,32 @@ pubdate {
 
 ## 1.3 把CSS应用到HTML上
 
-### link标签
+HTML 文档内部有一定的结构。这种结构正式 HTML 与 CSS 之间固有关系的一部分，如若不然，二者之间便是泾渭分明。
+
+### 1.3.1 link标签
+
+link标签的基本作用是把其他文档与当前文档关联起来。 CSS 通过它链接应用到文档上的样式表。通过link链接的样式表不是HTML文档的一部分，但却供文档使用。我们称这样的样式表为外部样式表（external stylesheet）。
 
 ```html
 <link rel="stylesheet" type="text/css" href="sheet.css" media="all">
 ```
 
-link标签的作用是把其他文档与当前文档关联起来。
-
-CSS使用link链接的样式表不是HTML文档的一部分，但却供文档使用。我们称这样的样式表为外部样式表（external stylesheet）。
 为了正确的加载样式表，link标签必须放在head元素中，不能放在其他元素中。
 
-属性
+**属性**
 
 - rel是relation（关系）的简称，这里指定的是stylesheet。
-- type属性的值为text/css，说明通过link标签加载的数据类型。（可省略不写，默认为text/css）。
+- type属性的值为text/css，说明通过link标签加载的数据类型。
 - href的值是样式表的URL。可以是绝对地址，或者相对地址。
-- media属性，它的值是一个或多个媒体描述符（media descriptor），可以省略。
+- media属性，它的值是一个或多个媒体描述符（media descriptor），指明媒体的类型和具有的功能。多个媒体描述符以逗号分号。
 
-### 候选样式表
+```html
+<link rel="stylesheet" type="text/css" href="visual-sheet.css" 
+media="screen, projection">
+```
+
+**候选样式表**
+
 候选样式表（alternate stylesheet）的定义方式是把rel属性的值设为alternate stylesheet。仅当用户自己选择，文档才会使用候选样式表渲染。
 
 如果浏览器支持候选样式表，会使用link元素title属性的值生成候选样式表列表。
@@ -146,9 +159,24 @@ CSS使用link链接的样式表不是HTML文档的一部分，但却供文档使
 <link rel="stylesheet" type="text/css" href="sheet3.css" title="Crazy Colors">
 ```
 
-浏览器默认使用第一个样式表（这里是名为Default的样式表）。此外用户还可以自己选择想使用的样式表（实际上这就是CSS开始崭露头角之时的方式）。
+浏览器默认使用第一个样式表（这里是名为Default的样式表）。此外用户还可以自己选择想使用的样式表（实际上这就是CSS开始崭露头角之时的方式）。此外，还可以为不同的候选样式表设定相同的 title 值，把它们分组放在一起。利用这一点，用户可以为屏幕和印刷媒体选择不同的外观。
 
-### style 元素
+下面三个 link 元素声明的都是首选样式表，因为都设定了 title 属性，但是文档只会使用其中一个，另外两个则完全被忽略，并且因为 HTML 没有提供相关的方法，无法确定该忽略哪些首选样式表，又该使用哪个首选样式表。
+
+```html
+<link rel="stylesheet" type="text/css"
+href="sheet1.css" title="Default" media="screen">
+<link rel="stylesheet" type="text/css"
+href="print-sheet1.css" title="Default" media="print">
+<link rel="alternate stylesheet" type="text/css"
+href="bigtext.css" title="Big Text" media="screen">
+<link rel="alternate stylesheet" type="text/css"
+href="print-bigtext.css" title="Big Text" media="print">
+```
+
+如果不为样式表设定标题，那它就是永久样式表（persistent stylesheet），始终用于显示文档。这通常是文档编写人员想要的行为。
+
+### 1.3.2 style 元素
 
 style元素也是一种引入样式表的方式，直接写在文档中：
 
@@ -158,13 +186,13 @@ style元素也是一种引入样式表的方式，直接写在文档中：
 
 开始与结束style标签之间的样式表称为文档样式表（document stylesheet）或嵌入样式表（embedded stylesheet）。style元素可以直接包含应用到文档上的样式，也可以通过@import 指令引入外部样式表。
 
-### @import 指令
+### 1.3.3 @import 指令
 
 与link标签一样，Web浏览器遇到@import 指令时会加载外部样式表。但是**@import 指令必须写在样式表的开头**，否则不起作用。
 
 一个文档中可以有多个@import 指令，但是无法指定候选样式表，可以指定媒体描述符。
 
-### 行内样式
+### 1.3.5 行内样式
 
 如果只是为单个元素提供少量样式，可以利用HTML元素的style属性设置行内样式。
 
@@ -176,7 +204,7 @@ style元素也是一种引入样式表的方式，直接写在文档中：
 
 style属性中不能使用@import 指令。
 
-### HTTP链接
+### 1.3.4 HTTP链接
 
 为文档关联CSS还有一种鲜为人知的方式：使用HTTP首部。
 
