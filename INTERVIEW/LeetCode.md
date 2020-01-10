@@ -40,37 +40,31 @@ var twoSum = function(nums, target) {
 ## 解法 - indexOf()
 
 ```js
-var twoSum = function(nums, target) {
+var twoSum = function (nums, target) {
   let result = [];
-  nums.map((item, index) => {
-    // 另一个符合条件的数的下标
-    let theOther = nums.indexOf(target - item);
-    if (theOther > -1 && theOther != index) {
-      result = [index, theOther].sort((a, b) => a - b);
+  nums.forEach((item, index) => {
+    let otherIndex = nums.indexOf(target - item);
+    if (otherIndex > -1 && otherIndex !== index) {
+      result = [index, otherIndex].sort((a, b) => a - b)
     }
-  });
-  return result;
+  })
+  return result
 };
 ```
 
 ## 解法 - Map
 
 ```js
-var twoSum = function(nums, target) {
+var twoSum = function (nums, target) {
   let map = new Map();
   for (let i = 0; i < nums.length; i++) {
-    // 选中值
-    let one = nums[i];
-    // 选中值的匹配值
-    let theOther = target - nums[i];
-    if (map.has(one)) {
-      // 找到匹配值
-      return [map.get(one), i];
+    if (map.has(nums[i])) {
+      return [map.get(nums[i]), i]
     } else {
-      // 存入匹配值
-      map.set(theOther, i);
+      map.set(target - nums[i], i)
     }
   }
+  return result
 };
 ```
 
@@ -142,6 +136,18 @@ var reverse = function(x) {
 };
 ```
 
+## 解法 - 转数组并反转
+
+```js
+var reverse = function (x) {
+    let result = String(Math.abs(x)).split('').reverse().join('')
+    if (result < -Math.pow(2, 31) || result > Math.pow(2, 31)) {
+        result = 0;
+    }
+    return x > 0 ? result : -result
+};
+```
+
 # 009 - 回文数（palindrome-number）
 
 * 难度：简单
@@ -200,6 +206,18 @@ var isPalindrome = function(x) {
     x = Math.floor(x / 10);
   }
   return x === revertedNumber || x === Math.floor(revertedNumber / 10);
+};
+```
+
+## 解题 - 数组反转
+
+```js
+var isPalindrome = function (x) {
+    if (x < 0) return false
+    let xToString = String(x);
+    let xToOtherString = xToString.split('').reverse().join('');
+    let result = xToString == xToOtherString;
+    return result
 };
 ```
 
