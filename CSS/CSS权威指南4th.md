@@ -21,7 +21,9 @@ CSS 就是在这样的背景下诞生的。它的目标是提供一个简单的�
 
 CSS3分成多个模块的根本原因是各模块可以独立演进，尤其是重要的（或是受众广的）模块可以按照W3C的规划向前推进，而不必受其他模块拖累。
 
-但是这样做也有缺点，那就是CSS规范不能涵盖一切。所以我们没有办法指着某些文件说：这就是CSS3，而是应该分模块学习不同的特性。模块的灵活性有时可以弥补由此引起的语义不足。如果要看单独的完整规范，可以留意CSS工作组每年发布的[Snapshot 文档](https://www.w3.org/Style/CSS/)。
+但是这样做也有缺点，那就是CSS规范不能涵盖一切。所以我们没有办法指着某些文件说：这就是CSS3，而是应该分模块学习不同的特性。模块的灵活性有时可以弥补由此引起的语义不足。
+
+如果要看单独的完整规范，可以留意CSS工作组每年发布的[Snapshot 文档](https://www.w3.org/Style/CSS/)。
 
 ## 1.2 元素
 
@@ -41,7 +43,7 @@ CSS3分成多个模块的根本原因是各模块可以独立演进，尤其是�
 
 如果指向的图像文件存在，文档会把那个图像显示出来，否则，浏览器什么也不显示，或者显示“图像损坏”占位图。
 
-input 元素类似，根据类型的不同， 会替换成单选按钮、复选框或文本输入框。
+input 元素类似，根据类型的不同，会替换成单选按钮、复选框或文本输入框。
 
 #### 非置换元素
 
@@ -127,13 +129,13 @@ HTML 文档内部有一定的结构。这种结构正式 HTML 与 CSS 之间固�
 
 ### 1.3.1 link标签
 
-link标签的基本作用是把其他文档与当前文档关联起来。 CSS 通过它链接应用到文档上的样式表。通过link链接的样式表不是HTML文档的一部分，但却供文档使用。我们称这样的样式表为外部样式表（external stylesheet）。
+link 标签的基本作用是把其他文档与当前文档关联起来。 CSS 通过它链接应用到文档上的样式表。通过 link 链接的样式表不是HTML文档的一部分，但却供文档使用。我们称这样的样式表为外部样式表（external stylesheet）。
 
 ```html
 <link rel="stylesheet" type="text/css" href="sheet.css" media="all">
 ```
 
-为了正确的加载样式表，link标签必须放在head元素中，不能放在其他元素中。
+为了正确的加载样式表， link 标签必须放在 head 元素中，不能放在其他元素中。
 
 **属性**
 
@@ -149,14 +151,14 @@ media="screen, projection">
 
 **候选样式表**
 
-候选样式表（alternate stylesheet）的定义方式是把rel属性的值设为alternate stylesheet。仅当用户自己选择，文档才会使用候选样式表渲染。
+候选样式表（alternate stylesheet）的定义方式是把 rel 属性的值设为alternate stylesheet。仅当用户自己选择，文档才会使用候选样式表渲染。
 
 如果浏览器支持候选样式表，会使用link元素title属性的值生成候选样式表列表。
 
 ```html
 <link rel="stylesheet" type="text/css" href="sheet1.css" title="Default">
-<link rel="stylesheet" type="text/css" href="sheet2.css" title="Big Text">
-<link rel="stylesheet" type="text/css" href="sheet3.css" title="Crazy Colors">
+<link rel="alternate stylesheet" type="text/css" href="bigtext.css" title="Big Text">
+<link rel="alternate stylesheet" type="text/css" href="zany.css" title="Crazy colors!">
 ```
 
 浏览器默认使用第一个样式表（这里是名为Default的样式表）。此外用户还可以自己选择想使用的样式表（实际上这就是CSS开始崭露头角之时的方式）。此外，还可以为不同的候选样式表设定相同的 title 值，把它们分组放在一起。利用这一点，用户可以为屏幕和印刷媒体选择不同的外观。
@@ -164,14 +166,10 @@ media="screen, projection">
 下面三个 link 元素声明的都是首选样式表，因为都设定了 title 属性，但是文档只会使用其中一个，另外两个则完全被忽略，并且因为 HTML 没有提供相关的方法，无法确定该忽略哪些首选样式表，又该使用哪个首选样式表。
 
 ```html
-<link rel="stylesheet" type="text/css"
-href="sheet1.css" title="Default" media="screen">
-<link rel="stylesheet" type="text/css"
-href="print-sheet1.css" title="Default" media="print">
-<link rel="alternate stylesheet" type="text/css"
-href="bigtext.css" title="Big Text" media="screen">
-<link rel="alternate stylesheet" type="text/css"
-href="print-bigtext.css" title="Big Text" media="print">
+<link rel="stylesheet" type="text/css"href="sheet1.css" title="Default" media="screen">
+<link rel="stylesheet" type="text/css"href="print-sheet1.css" title="Default" media="print">
+<link rel="alternate stylesheet" type="text/css"href="bigtext.css" title="Big Text" media="screen">
+<link rel="alternate stylesheet" type="text/css"href="print-bigtext.css" title="Big Text" media="print">
 ```
 
 如果不为样式表设定标题，那它就是永久样式表（persistent stylesheet），始终用于显示文档。这通常是文档编写人员想要的行为。
