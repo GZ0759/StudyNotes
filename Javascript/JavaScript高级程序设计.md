@@ -2744,10 +2744,6 @@ alert(SuperType.prototype.isPrototypeOf(instance)); //true
 函数声明是使用 function 关键字，再加上函数的名字，这就是指定函数名的方式。函数声明的重要特征就是函数声明提升，执行代码之前先读取函数声明。这意味着可以把函数声明放在调用它的语句后面。
 
 ```js
-function functionName(arg0, arg1, arg2) {
-  //函数体
-}
-
 //  不会抛出错误
 sayHi();
 function sayHi(){
@@ -2755,17 +2751,31 @@ function sayHi(){
 }
 ```
 
-第二种创建函数的方式是使用函数表达式。函数表达式有几种不同的语法形式。下面形式看起来好像是常规的变量赋值语句，即创建一个函数并将它赋值给变量。这种情况下创建的函数叫做匿名函数（anonymous function），因为 function 关键字后面没有标识符（匿名函数有时候也叫拉姆达函数），匿名函数的 name 属性是空字符串。
+第二种创建函数的方式是使用函数表达式。函数表达式有几种不同的语法形式。
+
+下面形式看起来好像是常规的变量赋值语句，即创建一个函数并将它赋值给变量。这种情况下创建的函数叫做匿名函数（anonymous function），因为 function 关键字后面没有标识符（匿名函数有时候也叫拉姆达函数），匿名函数的 name 属性是空字符串。函数表达式与其他表达式一样，在使用前必须先赋值。
 
 ```js
-var functionName = function(arg0, arg1, arg2){
-  //函数体
+sayHi(); //错误：函数还不存在
+var sayHi = function(){
+  alert("Hi!");
 };
 ```
 
 理解函数提升的关键，就是理解函数声明与函数表达式之间的区别。
 
 ```js
+//不要这样做！
+if(condition){
+  function sayHi(){
+      alert("Hi!");
+    }
+} else {
+  function sayHi(){
+      alert("Yo!");
+    }
+}
+
 //可以这样做
 var sayHi;
 if(condition){
@@ -2783,7 +2793,7 @@ if(condition){
 
 ## 7.1 递归 
 
-递归函数是在一个函数通过名字调用自身的情况下构成的。`arguments.callee`是一个指向正在执行的函数的指针，因此可以用它来实现对函数的递归调用，同时也可以使用命名函数表达式来达成相同的结果。
+递归函数是在一个函数通过名字调用自身的情况下构成的。
 
 ```js
 function factorial(num){
@@ -2831,9 +2841,64 @@ var factorial = (function f(num){
 
 闭包是指有权访问另一个函数作用域中的变量的函数。创建闭包的常见方式，就是在一个函数内部创建另一个函数。
 
-当某个函数被调用时，会创建一个执行环境（execution context）及相应的作用域链。然后，使用 arguments 和其他命名参数的值来初始化函数的活动对象（activation object）。但在作用域链中，外部函数的活动对象始终处于第二位，外部函数的外部函数的活动对象处于第三位，……直至作为作用域链终点的全局执行环境。在函数执行过程中，为读取和写入变量的值，就需要在作用域链中查找变量。无论什么时候在函数中访问一个变量时，就会从作用域链中搜索具有相应名字的变量。
+```js
+function createComparisonFunction(propertyName) {
+  return function(object1, object2){
+    var value1 = object1[propertyName];
+    var value2 = object2[propertyName];
+    if (value1 < value2){
+      return -1;
+    } else if (value1 > value2){
+      return 1;
+    } else {
+      return 0;
+    }
+  };
+}
+```
 
-一般来讲，当函数执行完毕后，局部活动对象就会被销毁，内存中仅保存全局作用域，但是闭包的情况又有所不同。在另一个函数内部定义的函数将包含函数（外部函数）的活动对象添加到它的作用域链中，换句话说，当外部函数返回后，其执行环境的作用域链会被销毁，但它的活动对象仍然会留在内存中，直到匿名函数被销毁后，外部函数的活动对象才会被销毁。
+当某个函数被调用时，会创建一个执行环境（execution context）及相应的作用域链。然后，使用 arguments 和其他命名参数的值来初始化函数的活动对象（activation object）。但在作用域链中，外部函数的活动对象始终处于第二位，外部函数的外部函数的活动对象处于第三位，……直至作为作用域链终点的全局执行环境。
+
+在函数执行过程中，为读取和写入变量的值，就需要在作用域链中查找变量。无论什么时候在函数中访问一个变量时，就会从作用域链中搜索具有相应名字的变量。
+
+```js
+function compare(value1, value2){
+  if (value1 < value2){
+    return -1;
+  } else if (value1 > value2){
+    return 1;
+  } else {
+    return 0;
+  }
+}
+var result = compare(5, 10);
+```
+
+后台的每个执行环境都有一个表示变量的对象——变量对象。全局环境的变量对象始终存在，而像`compare()`函数这样的局部环境的变量对象，则只在函数执行的过程中存在。在创建 `compare()`函数时，会创建一个预先包含全局变量对象的作用域链，这个作用域链被保存在内部的`[[Scope]]`属性中。当调用 `compare()`函数时，会为函数创建一个执行环境，然后通过复制函数的`[[Scope]]`属性中的对象构建起执行环境的作用域链。此后，又有一个活动对象（在此作为变量对象使用）被创建并被推入执行环境作用域链的前端。对于这个例子中 `compare()`函数的执行环境而言，其作用域链中包含两个变量对象：本地活动对象和全局变量对象。显然，作用域链本质上是一个指向变量对象的指针列表，它只引用但不实际包含变量对象。
+
+无论什么时候在函数中访问一个变量时，就会从作用域链中搜索具有相应名字的变量。一般来讲，当函数执行完毕后，局部活动对象就会被销毁，内存中仅保存全局作用域（全局执行环境的变量对象）。但是，闭包的情况又有所不同。
+
+在另一个函数内部定义的函数会将包含函数（即外部函数）的活动对象添加到它的作用域链中。因此，在 `createComparisonFunction()`函数内部定义的匿名函数的作用域链中，实际上将会包含外部函数 `createComparisonFunction()`的活动对象。当下列代码执行时，包含函数与内部匿名函数的作用域链。
+
+```js
+var compare = createComparisonFunction("name");
+var result = compare({ name: "Nicholas" }, { name: "Greg" });
+```
+
+在匿名函数从 `createComparisonFunction()`中被返回后，它的作用域链被初始化为包含`createComparisonFunction()`函数的活动对象和全局变量对象。这样，匿名函数就可以访问在`createComparisonFunction()`中定义的所有变量。更为重要的是，`createComparisonFunction()`函数在执行完毕后，其活动对象也不会被销毁，因为匿名函数的作用域链仍然在引用这个活动对象。换句话说，当 `createComparisonFunction()`函数返回后，其执行环境的作用域链会被销毁，但它的活动对象仍然会留在内存中；直到匿名函数被销毁后， `createComparisonFunction()`的活动对象才会被销毁，例如：
+
+```js
+//创建函数
+var compareNames = createComparisonFunction("name");
+//调用函数
+var result = compareNames({ name: "Nicholas" }, { name: "Greg" });
+//解除对匿名函数的引用（以便释放内存）
+compareNames = null;
+```
+
+首先，创建的比较函数被保存在变量 compareNames 中。而通过将 compareNames 设置为等于 null 解除该函数的引用，就等于通知垃圾回收例程将其清除。随着匿名函数的作用域链被销毁，其他作用域（除了全局作用域）也都可以安全地销毁了。
+
+由于闭包会携带包含它的函数的作用域，因此会比其他函数占用更多的内存。过度使用闭包可能会导致内存占用过多，建议只在绝对必要时再考虑使用闭包。虽然像 V8 等优化后的 JavaScript 引擎会尝试回收被闭包占用的内存，但请大家还是要慎重使用闭包。
 
 ### 7.2.1 闭包与变量
 
@@ -2851,6 +2916,8 @@ function createFunctions(){
 }
 ```
 
+这个函数会返回一个函数数组。表面上看，似乎每个函数都应该返自己的索引值。但实际上，每个函数都返回 10。因为每个函数的作用域链中都保存着`createFunctions()`函数的活动对象，所以它们引用的都是同一个变量i 。 当`createFunctions()`函数返回后，变量 i 的值是 10，此时每个函数都引用着保存变量 i 的同一个变量对象，所以在每个函数内部 i 的值都是 10。
+
 可以通过创建另一个匿名函数强制让闭包的行为符合预期。
 
 ```js
@@ -2866,6 +2933,8 @@ function createFunctions(){
   return result;
 }
 ```
+
+在这个版本中，没有直接把闭包赋值给数组，而是定义了一个匿名函数，并将立即执行该匿名函数的结果赋给数组。这里的匿名函数有一个参数 num，也就是最终的函数要返回的值。在调用每个匿名函数时，我们传入了变量 i。由于函数参数是按值传递的，所以就会将变量 i 的当前值复制给参数 num。而在这个匿名函数内部，又创建并返回了一个访问 num 的闭包。这样一来， result 数组中的每个函数都有自己 num 变量的一个副本，因此就可以返回各自不同的数值了。
 
 ### 7.2.2 关于this对象
 
@@ -2900,11 +2969,11 @@ var object = {
 alert(object.getNameFunc()()); //"My Object"
 ```
 
-几种特殊情况下， this 的值可能会意外地改变。
+在下面几种特殊情况下， this 的值可能会意外地改变。
 
 ```js
 var name = "The Window";
-  var object = {
+var object = {
   name : "My Object",
   getName: function(){
     return this.name;
@@ -2916,9 +2985,11 @@ object.getName(); //"My Object"
 (object.getName = object.getName)(); //"The Window"，在非严格模式下
 ```
 
+第三行代码先执行了一条赋值语句，然后再调用赋值后的结果。因为这个赋值表达式的值是函数本身，所以 this 的值不能得到维持，结果就返回了"The Window"。
+
 ### 7.2.3 内存泄漏
 
-内存泄露，如果闭包的作用域链中保存着一个 HTML 元素，那么意味着该元素将无法被销毁。只要匿名函数存在，变量引用 DOM 的引用数至少也是1，因此它所占用的内存就永远不会被回收。
+由于 IE9 之前的版本对 JScript 对象和 COM 对象使用不同的垃圾收集例程，因此闭包在 IE 的这些版本中会导致一些特殊的问题。具体来说，如果闭包的作用域链中保存着一个HTML 元素，那么就意味着该元素将无法被销毁。只要匿名函数存在，变量引用 DOM 的引用数至少也是1，因此它所占用的内存就永远不会被回收。
 
 ```js
 function assignHandler(){
@@ -2929,7 +3000,7 @@ function assignHandler(){
 }
 ```
 
-闭包会引用包含函数的整个活动对象，而其中包含着 element。即使闭包不直接引用 element，包含函数的活动对象中也仍然会保存一个引用。因此，有必要把 element 变量设置为 null。这样就能够解除对 DOM 对象的引用，顺利地减少其引用数，确保正常回收其占用的内存。
+闭包会引用包含函数的整个活动对象，而其中包含着 element。通过把 element.id 的一个副本保存在一个变量中，并且在闭包中引用该变量消除了循环引用。但仅仅做到这一步，还是不能解决内存泄漏的问题。即使闭包不直接引用 element，包含函数的活动对象中也仍然会保存一个引用。因此，有必要把 element 变量设置为 null。这样就能够解除对 DOM 对象的引用，顺利地减少其引用数，确保正常回收其占用的内存。
 
 ```js
 function assignHandler(){
