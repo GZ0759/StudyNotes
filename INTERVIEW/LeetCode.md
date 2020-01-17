@@ -325,7 +325,7 @@ var romanToInt = function(s) {
 };
 ```
 
-##  解法 - Map
+##  解法 - Map数学方法
 
 ```js
 var romanToInt = function(s) {
@@ -337,33 +337,6 @@ var romanToInt = function(s) {
   map.set('C', 100);
   map.set('D', 500);
   map.set('M', 1000)
-  
-  // let result = 0;
-  // for (let i = 0; i < s.length; i++) {
-  //   if (s[i] + s[i+1] === 'IV') {
-  //     result += 4;
-  //     i = i + 1;
-  //   } else if(s[i] + s[i+1] === 'IX') {
-  //     result += 9;
-  //     i = i + 1;
-  //   } else if(s[i] + s[i+1] === 'XL') {
-  //     result += 40;
-  //     i = i + 1;
-  //   } else if(s[i] + s[i+1] === 'XC') {
-  //     result += 90;
-  //     i = i + 1;
-  //   } else if(s[i] + s[i+1] === 'CD') {
-  //     result += 400
-  //     i = i + 1;
-  //   } else if(s[i] + s[i+1] === 'CM') {
-  //     result += 900;
-  //     i = i + 1;
-  //   } else {
-  //     result += map.get(s[i]);
-  //   }
-  // }
-  
-  // return result;
 
   let re = map.get(s[0]);
   for (let i = 1; i < s.length; i++) {
