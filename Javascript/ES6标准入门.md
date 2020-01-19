@@ -4160,7 +4160,7 @@ function doStuff() {
 
 # 第十八章 async 函数
 
-## 含义
+## 18.1 含义
 
 ES2017 标准引入了 async 函数，使得异步操作变得更加方便。async 函数是什么？一句话，它就是 Generator 函数的语法糖。
 
@@ -4206,7 +4206,7 @@ const asyncReadFile = async function () {
 
 进一步说，`async`函数完全可以看作多个异步操作，包装成的一个 Promise 对象，而`await`命令就是内部`then`命令的语法糖。
 
-## 基本用法
+## 18.2 基本用法
 
 `async`函数返回一个 Promise 对象，可以使用`then`方法添加回调函数。当函数执行的时候，一旦遇到`await`就会先返回，等到异步操作完成，再接着执行函数体内后面的语句。
 
@@ -4292,11 +4292,11 @@ storage.getAvatar('jake').then(…);
 const foo = async () => {};
 ```
 
-## 语法
+## 18.3 语法
 
 `async`函数的语法规则总体上比较简单，难点是错误处理机制。
 
-### 返回 Promise 对象
+### 18.3.1 返回 Promise 对象
 
 `async`函数返回一个 Promise 对象。`async`函数内部`return`语句返回的值，会成为`then`方法回调函数的参数。
 
@@ -4323,7 +4323,7 @@ f().then(
 // Error: 出错了
 ```
 
-### Promise 对象的状态变化
+### 18.3.2 Promise 对象的状态变化
 
 `async`函数返回的 Promise 对象，必须等到内部所有`await`命令后面的 Promise 对象执行完，才会发生状态改变，除非遇到`return`语句或者抛出错误。也就是说，只有`async`函数内部的异步操作执行完，才会执行`then`方法指定的回调函数。
 
@@ -4341,7 +4341,7 @@ getTitle('https://tc39.github.io/ecma262/').then(console.log)
 
 上面代码中，函数`getTitle`内部有三个操作：抓取网页、取出文本、匹配页面标题。只有这三个操作全部完成，才会执行`then`方法里面的`console.log`。
 
-### await 命令
+### 18.3.3 await 命令
 
 正常情况下，`await`命令后面是一个 Promise 对象，返回该对象的结果。如果不是 Promise 对象，就直接返回对应的值。
 
@@ -4458,7 +4458,7 @@ f()
 // hello world
 ```
 
-### 错误处理
+### 18.3.4 错误处理
 
 如果`await`后面的异步操作出错，那么等同于`async`函数返回的 Promise 对象被`reject`。
 
@@ -4530,7 +4530,7 @@ test();
 
 上面代码中，如果`await`操作成功，就会使用`break`语句退出循环；如果失败，会被`catch`语句捕捉，然后进入下一轮循环。
 
-### 使用注意点
+### 18.3.5 使用注意点
 
 第一点，前面已经说过，`await`命令后面的`Promise`对象，运行结果可能是`rejected`，所以最好把`await`命令放在`try...catch`代码块中。
 
@@ -4659,7 +4659,7 @@ const a = async () => {
 
 上面代码中，`b()`运行的时候，`a()`是暂停执行，上下文环境都保存着。一旦`b()`或`c()`报错，错误堆栈将包括`a()`。
 
-## async 函数的实现原理
+## 18.4 async 函数的实现原理
 
 async 函数的实现原理，就是将 Generator 函数和自动执行器，包装在一个函数里。
 
@@ -4706,7 +4706,7 @@ function spawn(genF) {
 }
 ```
 
-## 与其他异步处理方法的比较
+## 18.5 与其他异步处理方法的比较
 
 我们通过一个例子，来看 async 函数与 Promise、Generator 函数的比较。
 
@@ -4783,7 +4783,7 @@ async function chainAnimationsAsync(elem, animations) {
 
 可以看到 Async 函数的实现最简洁，最符合语义，几乎没有语义不相关的代码。它将 Generator 写法中的自动执行器，改在语言层面提供，不暴露给用户，因此代码量最少。如果使用 Generator 写法，自动执行器需要用户自己提供。
 
-## 实例：按顺序完成异步操作
+## 18.6 实例：按顺序完成异步操作
 
 实际开发中，经常遇到一组异步操作，需要按照顺序完成。比如，依次远程读取一组 URL，然后按照读取的顺序输出结果。
 
@@ -4836,7 +4836,7 @@ async function logInOrder(urls) {
 
 上面代码中，虽然`map`方法的参数是`async`函数，但它是并发执行的，因为只有`async`函数内部是继发执行，外部不受影响。后面的`for..of`循环内部使用了`await`，因此实现了按顺序输出。
 
-## 顶层 await
+## 18.7 顶层 await
 
 根据语法规格，`await`命令只能出现在 async 函数内部，否则都会报错。
 
