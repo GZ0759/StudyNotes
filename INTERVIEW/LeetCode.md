@@ -514,27 +514,42 @@ var longestCommonPrefix = function(strs) {
 ## 解法 - 栈
 
 ```js
-var isValid = function(s) {
+var isValid = function (s) {
   let judge = {
-    '[': ']',
     '(': ')',
     '{': '}',
+    '[': ']',
   }
-  let parameter = s.split('');
-  let stack = [];
-  for (let i = 0; i < parameter.length; i++) {
+  let strArr = s.split('');
+  let strStack = [];
+  strArr.forEach((item) => {
     // “左”字符类型的栈的最后一个
-    let lastOne = stack[stack.length - 1];
-    if (judge[lastOne] === parameter[i]) {
-      stack.pop();
+    lastOne = strStack[strStack.length - 1];
+    if (judge[lastOne] === item) {
+      strStack.pop();
     } else {
-      stack.push(parameter[i]);
+      strStack.push(item)
+    }
+  })
+  return strStack.length === 0
+};
+```
+
+## 解法 - 内层替换
+
+```js
+var isValid = function (s) {
+  let strSet = ['()', '[]', '{}'];
+  while (s.length) {
+    let temp = s;
+    strSet.forEach(item => {
+      s = s.replace(item, '')
+    })
+    if (temp === s) {
+      return false
     }
   }
-  if (stack.length == 0) {
-    return true;
-  }
-  return false;
+  return true
 };
 ```
 
