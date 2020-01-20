@@ -637,7 +637,7 @@ for (int i = 0; i < len; i++) {
 }
 ```
 
-## 3.1 解法 - 双指针
+## 解法 - 双指针删减
 
 ```js
 var removeDuplicates = function(nums) {
@@ -650,12 +650,184 @@ var removeDuplicates = function(nums) {
 };
 ```
 
-## 3.2 解法 - 违规操作
+## 解法 - Set构造函数去重
 
 ```js
-var removeDuplicates = function(nums) {
-  var a = [...new Set(nums)];
-  for (var i = 0;i < a.length;i++) nums[i] = a[i];
-  return a.length;
+var removeDuplicates = function (nums) {
+  let a = [...new Set(nums)];
+  a.forEach((item, index) => {
+    nums[index] = item;
+  })
+  return a.length
+};
+```
+
+## 解法 - 双指针替换
+
+```js
+var removeDuplicates = function (nums) {
+  if (nums.length == 0) return 0;
+  let i = 0;
+  for (let j = 1; j < nums.length; j++) {
+    if (nums[i] != nums[j]) {
+      i++;
+      nums[i] = nums[j];
+    }
+  }
+  return i + 1
+};
+```
+
+# 027 - 移除元素（remove-element）
+
+* 难度：简单
+* 涉及知识：数组、双指针
+* 题目地址：https://leetcode-cn.com/problems/remove-element/
+* 题目内容：
+
+给定一个数组 nums 和一个值 val，你需要原地移除所有数值等于 val 的元素，返回移除后数组的新长度。
+
+不要使用额外的数组空间，你必须在原地修改输入数组并在使用 O(1) 额外空间的条件下完成。
+
+元素的顺序可以改变。你不需要考虑数组中超出新长度后面的元素。
+
+示例 1:
+
+给定 nums = [3,2,2,3], val = 3,
+函数应该返回新的长度 2, 并且 nums 中的前两个元素均为 2。
+你不需要考虑数组中超出新长度后面的元素。
+
+示例 2:
+
+给定 nums = [0,1,2,2,3,0,4,2], val = 2,
+函数应该返回新的长度 5, 并且 nums 中的前五个元素为 0, 1, 3, 0, 4。
+注意这五个元素可为任意顺序。
+你不需要考虑数组中超出新长度后面的元素。
+
+说明:
+
+为什么返回数值是整数，但输出的答案是数组呢?
+请注意，输入数组是以“引用”方式传递的，这意味着在函数里修改输入数组对于调用者是可见的。
+
+你可以想象内部操作如下:
+
+```js
+// nums 是以“引用”方式传递的。也就是说，不对实参作任何拷贝
+int len = removeElement(nums, val);
+
+// 在函数里修改输入数组对于调用者是可见的。
+// 根据你的函数返回的长度, 它会打印出数组中该长度范围内的所有元素。
+for (int i = 0; i < len; i++) {
+    print(nums[i]);
+}
+```
+
+## 解法 - 双指针删减
+
+```js
+var removeElement = function (nums, val) {
+  for (j = 0; j < nums.length; j++) {
+    if (nums[j] == val) {
+      nums.splice(j, 1)
+      j--;
+    }
+  }
+  return nums.length;
+};
+```
+
+## 解法 - indexOf
+
+```js
+var removeElement = function(nums, val) {
+  while (nums.indexOf(val) != -1) {
+    nums.splice(nums.indexOf(val), 1);
+  }
+  return nums.length
+};
+```
+
+## 解法 - 双指针替换
+
+```js
+var removeElement = function (nums, val) {
+  let i = 0;
+  // for (let j = 0; j < nums.length; j++) {
+  //     if (nums[j] != val) {
+  //         nums[i] = nums[j];
+  //         i++;
+  //     }
+  // }
+  nums.forEach(item => {
+    if (item != val) {
+      nums[i] = item;
+      i++
+    }
+  })
+  return i;
+};
+```
+
+## 解法 - 双指针替换 - 当要删除的元素很少时
+
+```js
+var removeElement = function (nums, val) {
+  let i = 0;
+  let n = nums.length;
+  while (i < n) {
+    if (nums[i] == val) {
+      nums[i] = nums[n - 1]
+      n--
+    } else {
+      i++
+    }
+  }
+  return i;
+};
+```
+
+# 028 - 实现strStr（implement-strstr）
+
+* 难度：简单
+* 涉及知识：双指针、字符串
+* 题目地址：https://leetcode-cn.com/problems/implement-strstr/
+* 题目内容：
+
+实现 strStr() 函数。
+
+给定一个 haystack 字符串和一个 needle 字符串，在 haystack 字符串中找出 needle 字符串出现的第一个位置 (从0开始)。如果不存在，则返回  -1。
+
+示例 1:
+输入: haystack = "hello", needle = "ll"
+输出: 2
+
+示例 2:
+输入: haystack = "aaaaa", needle = "bba"
+输出: -1
+
+说明:
+当 needle 是空字符串时，我们应当返回什么值呢？这是一个在面试中很好的问题。
+
+对于本题而言，当 needle 是空字符串时我们应当返回 0 。这与C语言的 strstr() 以及 Java的 indexOf() 定义相符。
+
+## 解法 - indexOf()
+
+```js
+var strStr = function (haystack, needle) {
+  return haystack.indexOf(needle)
+};
+```
+
+## 解法 - substring()
+
+```js
+var strStr = function (haystack, needle) {
+  if (!needle.length) return 0;
+  for (let i = 0; i < haystack.length; i++) {
+    if (haystack.substring(i, i + needle.length) === needle) {
+      return i
+    }
+  }
+  return -1
 };
 ```
