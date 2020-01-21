@@ -1,7 +1,7 @@
 > JavaScript权威指南第6版  
 > David Flanagan 著  
 > 淘宝前端团队 译  
-> 2012 年 4 月第 1 版
+> 2012 年 4 月第 1 版  
 > [试读章节](https://book.2cto.com/201210/7006.html)
 
 # 前言
