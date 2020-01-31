@@ -675,10 +675,172 @@ var factorial = function(x) {
 ```
 
 ### 8.3.3 将对象属性用作实参
+
+当一个函数包含超过三个形参时，要记住调用函数中实参的正确顺序比较困难，最好通过名/值对的形式来传入参数。为了实现这种风格的方法调用，定义函数的时候，传入的实参都写入一个单独的对象之中，在调用的时候传入一个对象，对象中的名/值是真正需要的实参数据。
+
+```js
+//将原始值数组的length元素复制至目标数组
+//开始复制原始数组的from_start元素
+//并且将其复制到目标数组to_start中
+//要记住实现的顺序并不容易
+function arrayCopy( /*array*/ from, /*index*/ from_start, 
+                    /*array*/ to, /*index*/ to_start, 
+                    /*integer*/ length) {
+    //逻辑代码
+}
+//这个版本的实现效率有些低，但你不必再记住实参的顺序
+//并且from_start和to_start都默认为0
+function easyCopy(args) {
+    arrayCopy(args.form,
+        args.form_start || 0, //注意，这里设置了默认值
+        args.to,
+        args.to_start || 0, args.length);
+}
+//来看如何调用easyCopy
+var a = [1, 2, 3, 4],
+    b = [];
+easyCopy({
+    from: a,
+    to: b,
+    length: 4
+});
+```
+
 ### 8.3.4 实参类型
 
+JavaScript 方法的形参并未声明类型，在形参传入函数体之前也未做任何类型检查。
+
+应当添加类似的实参类型检查逻辑，宁愿程序在传入非法值时报错，也不愿非法值导致程序在执行时报错。
+
+```js
+//判定o是否是一个类数组对象
+//字符串和函数都length属性，但是他们可以有typeOf检测将其排除
+//在客户端javascript中，DOM文本节点也有length属性，需要用额外的o.nodetype != 3将其排除
+function isArrayLike(o) {
+    if (o && //o非null、undefined等
+        typeof o === "object" && //o是对象
+        isFinite(o.length) && //o.length是有限数
+        o.length >= o && //o.length是非负数
+        o.length === Math.floor(o.length) && //o.length是整数
+        o.length < 4294967296) //o.length < 2^32
+        return true;
+    else
+        return fasle; //否则它不是
+}
+
+//返回数组（或类数组对象）a的元素累加和
+//数组a中必须为数字/ null undefined的元素都将忽略
+function sum(a) {
+    if (isArrayLike(a)) {
+        var total = 0;
+        for (var i = 0; i < a.length; i++) { //遍历所有元素
+            var element = a[i];
+            if (element == null) continue; //跳过null和undefiend
+            if (isFinite(element)) total += element;
+            else throw new Error("sum():elements must be a finte numbers");
+        }
+        return total;
+    } else throw new Error("sun():arguments mustbe array-like")
+};
+
+a = [1,2,4,5,3,6,7];
+sum(a)
+```
+
+JavaScript 是一种非常灵活的弱类型语言，有时适合编写实参类型和实参个数的不确定性的函数。接下来的`flexisum()`方法就是这样。它可以接收任意数量的实参，并可以递归地处理实参是数组的情况。
+
+```js
+function flexisum(a) {
+    var total = 0;
+    for (var i = 0; i < arguments.length; i++) {
+        var element = arguments[i],
+            n;
+        if (element == null) continue; //忽略null和undefined
+        if (isArray(element)) //如果实参是数组
+            n = flexisum.apply(this, element); //递归的计算累加和
+        else if (typeof element === "function") //否则，如果是函数...
+            n = Number(element()); //调用它并做类型抓换
+        else
+            n = Number(element); //直接做类型抓换
+        if (isNaN(n)) //如果无法转换为数字，则抛出异常
+            throw Error("flexisum():can nont convent" + element + "to number");
+        total += n; //否则，将n累加到total
+    }
+    return total;
+}
+```
+
 ## 8.4 作为值的函数 
+
+函数可以定义，也可以调用，这是函数最重要的特性。在 JavaScript 中，函数不仅是一种语法，也是值，也就是说，可以将函数赋值给变量，存储在对象的属性或数组的元素中，作为参数传入另外一个函数等。
+
+```js
+function square(x) {
+    return x * x
+}
+var s = square; //现在s和sqare指代同一个函数
+square(4); //=>16
+s(4); //=>16
+```
+
+除了可以将函数赋值给变量，同样可以将函数赋值给对象的属性。当函数作为对象的属性调用时，函数就成为方法。
+
+```js
+var o = {
+        square: function(x) {
+            return x * x
+        }
+    }; //对象直接量
+var y = o.square(16);
+```
+
+函数甚至不需要名字，当把它们赋值给数组元素时。
+
+```js
+var a = [
+    function(x) {return x * x},
+    20];
+console.log(a[0](a[1])) //=>400
+```
+
+**自定义函数属性**
+
+JavaScript 中的函数并不是原始值，而是一种特殊的对象，也就是说，函数可以拥有属性。
+
+比如，想写一个返回一个唯一整数的函数，不管在哪里调用函数都会返回这个整数。而函数不能两次返回同一个值。因为这个信息仅仅是函数本身用到的。最好将这个信息保存到函数对象的一个属性中。
+
+```js
+//初始化函数对象的计数器属性
+//由于函数声明被提前了，因此这个是可以在函数声明
+//之前给它的成员赋值的
+unInterger.counter = 0;
+
+//每次调用这个函数都会返回一个不同的整数
+//它使用一个属性来记住下一次将要返回的值
+function unInterger() {
+        unInterger.counter++  ; //先返回计数器的值，然后计数器自增1
+}
+```
+
+下面这个函数`factorrial()`使用了自身的属性（将自身当作数组来对象）来缓存上一次的计算结果。
+
+```js
+//计算阶乘，并将结果缓存在函数的属性中
+function factorrial(n) {
+    if (isFinite(n) && n > 0 && n == Math.round(n)) { //有限的正整数
+        if (!(n in factorrial)) //如果没有缓存结果
+            factorrial[n] = n * factorrial(n - 1); //计算并缓存之
+        return factorrial[n];
+    } else return NaN; //如果输入有误
+}
+factorrial[1] = 1; //初始化缓存以保存这种基本情况
+console.log(factorrial())
+```
+
 ## 8.5 作为命名空间的函数 
+
+
+
 ## 8.6 闭包 
 ## 8.7 函数属性、方法和构造函数 
 ## 8.8 函数式编程 
