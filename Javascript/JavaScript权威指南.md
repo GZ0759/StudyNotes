@@ -1241,6 +1241,159 @@ var outerArguments = arguments; //保存起来以便嵌套的函数能使用它
 ```
 
 ## 8.7 函数属性、方法和构造函数 
+
+在 JavaScript 程序中，函数是一些值。对函数执行 typeof 运算会返回字符串“function”，但是函数其实是 JavaScript 中特殊的对象。因为函数也是对象，它们也可以拥有属性和方法，就像普通的对象可以拥有属性和方法一样。甚至可以用`Function()`构造函数来创建新的函数对象。
+
+### 8.7.1 length属性
+
+在函数体里，`arguments.length`表示传入函数的实参的个数。而函数本身的 length 属性则有着不同含义。函数的 length 属性时只读属性，它代表函数实参实参的数量，这里的参数指的是“形参”而非“实参”，也就是在函数定义时给出的实参个数，通常也是在函数调用时期望传入函数的实参个数。
+
+```js
+//这个函数使用arguments.callee,因此它不能再严格模式下工作
+function check(args) {
+    var actual = args.length; //实参的真实个数
+    var expected = args.callee.length; //期望的实参个数
+    if (actual !== expected) //如果不同则抛出异常
+        throw Error("Expected" + expected + "args; got" + actual)
+}
+
+function f(x, y, z) {
+    check(arguments); //检查实参个数和期望的实参个数是否一致
+    return x + y + z; //再执行函数的后续逻辑
+}
+```
+
+### 8.7.2 prototype属性
+
+每一个函数都包含一个 prototype 属性，这个属性是指向一个对象的引用。这个对象称作“原型对象”（prototype object）。每一个函数都包含不同的原型对象。当将函数用作构造函数的时候，新创建的对象会从原型对象上继承属性。
+
+### 8.7.3 call()方法和apply()方法
+
+可以将`call()`和`apply()`看作是某个对象的方法，通过调用方法的形式来间接调用函数。`call()`和`apply()`的第一个实参是要调用函数的母对象，它是调用上下文，在函数体内通过 this 来获得对它的引用。要想以对象 o 的方法来调用函数`f()`，可以这样使用。
+
+```js
+f.call(o);
+f.apply(o);
+
+// 上面的例子每行代码和下面代码的功能类型
+// （假设对象o中预先不存在名为m的属性）
+o.m = f; //将f存储为o的临时方法
+o.m(); //调用它不传入参数
+delete o.m; //将临时方法删除
+```
+
+在 ECMAScript 5 的严格模式中，`call()`和`apply()`的第一个实参都会变成 this 的值，哪怕传入的实参是原始值甚至是 null 或 undefined 。在 ECMAScript 3 和非严格模式中，传入的 null 和 undefined 都会被全局对象代替，而其他原始值则会被相应的包装对象（wrapper object）所替代。
+
+对于`call()`来说，第一个调用上下文实参之后的所有参数就是要传入待调用函数的值。`apply()`方法与之类似，但传入实参的形式和`call()`有所不同，它的实参都放入一个数组当中。
+
+```js
+f.call(o, 1, 2);
+
+f.apply(o, [1, 2]);
+```
+
+如果一个函数的实参可以是任意数量，给`apply()`传入的参数数组可以是任意长度的。比如，为了找出数组中最大的数值元素，调用`Math.max()`方法的时候可以给`apply()`传入一个包含任意个元素的数组：
+
+```js
+var biggest = Math.max.apply(Math, array_of_numbers);
+```
+
+需要注意的是，传入`apply()`的参数数组可以是类数组对象也可以是真实数组。实际上，可以将当前函数的 arguments 数组直接传入（另一个函数的）`apply()`来调用另一个函数。
+
+```js
+//将对象o中名为m()的方法替换为令一个方法
+//可以在调用原始的方法之前和之后记录日志消息
+function trace(o, m) {
+    var original = o[m]; //在闭包中保存原始方法
+    o[m] = function() { //定义新的方法
+        console.log(new Date(), "entering:", m); //输出消息
+        var result = original.apply(this, arguments); //调用原始函数
+        console.log(new Date(), "exiting:", m);
+        return result;
+    };
+}
+```
+
+`trace()`函数接收两个参数，一个对象和一个方法名，它将指定的方法替换为一个新方法，这个新方法是“包裹”原始方法的另一个泛函数。这种动态修改已有方法的做法有时称作“monkey-patching”。
+
+### 8.7.4 bind()方法
+
+`bind()`实在 ECMAScript 5 中新增的方法，但在 ECMAScript 3 中可以轻易模拟`bind()`。从名字就可以看出，这个方法的主要作用就是将函数绑定至某个对象。当在函数`f()`上调用`bind()`方法并传入一个对象 o 作为参数，这个方法将返回一个新的函数。（以函数调用的方式）调用新的函数将会把原始的函数`f()`当作 o 的方法来调用。传入新函数的任何实参都将传入原始函数。
+
+```js
+function f(y) {
+    return this.x + y;
+} //这个是待绑定的函数
+var o = { x: 1 }; //将要绑定的函数
+var g = f.bind(o); //通过g(x)来调用o.f(x)
+console.log(g(4)) // => 5
+```
+
+也可以通过以下代码实现轻松绑定：
+
+```js
+//返回一个函数，通过它来调用o中的方法f(),传递它所有的实参
+function bind(f, o){    
+    if(f.bind) return f.bind(o);//如果bind()方法存在的话，使用bind()方法
+    else return function(){//否则这样绑定
+        return f.apply(o, arguments);
+    }
+}
+```
+
+ECMAScript 5 中的`bind()`方法不仅仅是将函数绑定至一个对象，它还附带一些其他应用：除了第一个实参之外，传入`bind()`的实参也会绑定至 this ，这个附带的应用是一种常见的函数式编程技术，有时也被称为“柯里化”（currying）。
+
+```js
+var sum = function(x,y){
+    return x + y
+};//返回两个实参的值
+
+//创建一个类似sum的新函数，但this的值绑定到null
+//并且第一个参数绑定到1，这个新的参数期望只传入一个实参
+var succ = sum.bind(null, 1);
+succ(5)     // =>6 x绑定到1，并传入2作为实例y
+
+function f(y,z) {
+    return this.x + y + z
+}; //另外一个左累加计算的函数
+
+var g = f.bind({x: 1}, 2);  //绑定this和y
+g(3) //=>6:this.x绑定到1，y绑定到2，z绑定到3
+```
+
+也可以绑定 this 的值并在 ECMScript 3 中实现这个附带的应用。下面的代码就模拟了实现标准的`bind()`方法。注意，我们将这个方法另存为`Function.prototype.bind`，以便所有的函数对象都继承它。
+
+```js
+ if(!Function.prototype.bind){
+    Function.prototype.bind = function(o /*,args*/){
+        //将this和arguments的值保存至变量中
+        //以便在后面的嵌套函数中可以使用他们
+        var self = this, boundArgs = arguments;
+        
+        //bind()返回值是一个函数
+        return function(){
+            //创建一个实参列表
+            //将传入bind()的第二个及后续的实参都传入这个函数
+            var arg = [], i;
+            for(i=1; i<boundArgs.length; i++) 
+                args.push(boundArgs[i]);
+            for(i=0; i<arguments.length; i++) 
+                args.push(arguments[i]);
+            //现在将self作为o的方法来调用，传入这些实参
+            return self.apply(o, args);
+        };
+    };
+}
+```
+
+`bind()`方法返回的函数是一个闭包，在这个闭包的外部函数中声明了 self 和 boundArgs 变量，这两个变量在闭包里用到。尽管定义闭包的内部函数已经从外部函数中返回，而且调用这个闭包逻辑的时刻要在外部函数返回之后（在闭包中照样可以正确访问这两个变量）。
+
+ECMAScript 5 定义的`bind()`方法也有一些特性是上述 ECMAScript 3 代码无法模拟的。首先，真正的`bind()`方法返回一个函数对象，这个函数对象的 length 属性时绑定函数的形参个数减去绑定的实参的个数（length 的值不能小于零）。再者，ECMAscript 5 的`bind()`方法可以顺带用作构造函数。如果`bind()`返回的函数用作构造函数，将忽略传入`bind()`的 this ，原始函数就会以构造函数的形式调用，其实参已经绑定。由`bind()`方法所返回的函数并不包含 prototype 属性（普通函数固有的 prototype 属性是不能删除的），并且将这些绑定的函数用作构造函数时所创建的对象从原始的未绑定的构造函数中继承 prototype 。同样，在使用 instanceof 运算符时，绑定构造函数和未绑定构造函数并无两样。
+
+### 8.7.5 toString()方法
+### 8.7.6 Function()构造函数
+### 8.7.7 可调用的对象
+
 ## 8.8 函数式编程 
 
 # 第9章 类和模块
