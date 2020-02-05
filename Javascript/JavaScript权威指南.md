@@ -1456,11 +1456,11 @@ function isFunction(x) {
 假设有一个数组，数组元素都是数字，我们想要计算这些元素的平均值和标准差。若使用非函数式编程风格的话，代码会是这样：
 
 ```js
-var data = [1, 1, 3, 5, 5, 6]; //这里待处理的数组
+var data = [1, 1, 3, 5, 5]; //这里待处理的数组
 //平均数是所有元素的累加值和除以元素的个数
 var total = 0;
 for (var i = 0; i < data.length; i++) total += data[i]
-var mean = total / data.length; //=>3.5
+var mean = total / data.length; //=>3
 
 //计算标准差，首先计算每个数减去平均数减去平均数之后偏差的平方然后求和
 total = 0;
@@ -1468,12 +1468,275 @@ for (var i = 0; i < data.length; i++) {
     var deviation = data[i] - mean;
     total += deviation * deviation;
 }
-var stddev = Math.sqrt(total / (data.length - 1)); // 2.16794833886788 标准差的值
+var stddev = Math.sqrt(total / (data.length - 1)); // 标准差的值是2
+```
+
+可以使用数组方法`map()`和`reduce()`来实现同样的计算，这种实现极其简洁。
+
+```js
+//首先先简单定义两个简单函数
+var sum = function(x,y){return x+y;};
+var square = function(x) {return x*x;};
+
+//然后将这些函数和数组方法配合使用计算出平均数和标准差
+var data = [1, 1, 3, 5, 5]; //这里待处理的数组
+var mean =data.reduce(sum)/data.length;
+var deviations = data.map(function(x){return x-mean;});
+var stddev = Math.sqrt(deviations.map(square).reduce(sum)/(data.length-1));
+```
+
+如果基于 ECMAScript 3 来如何实现呢？因为 ECMAScript 3 并不包含这些数组方法，如果不存在内置方法的话可以自定义`map()`和`reduce()`函数。
+
+```js
+//对于每个数组元素调用函数f()，并返回一个结果数组
+//如果Array.prototype.map定义了的话，就使用这个方法
+var map = Array.prototype.map 
+  ? function(a, f) {
+          return a.map(f);
+    } //如果已经存在map()方法，就直接使用它
+  : function(a, f) { //否则就自己实现一个
+      var result = [];
+      for (var i = 0, len = a.length; i < len; i++) {
+          if (i in a) result[i] = f.call(null, a[i], i, a);
+          return result;
+      }
+  };
+
+//使用函数f()和可选的初始值将数组a减至一个值
+//如果Array.prototype.reduce存在的话，就使用这个方法
+var reduce = Array.prototype.reduce 
+? function(a, f, initial) { //如果reduce()方法存在的话
+    if (arguments.length > 2)
+        return a.reduce(f, initial); //如果成功的传入了一个值
+    else return a.reduce(f); //否则没有初始值
+}
+: function(a,f,initial){//这个算法来自ECMAScript5规范
+    var i =0,len =a.length,accumulator;
+    //以特定的初始值开始，否则第一个值取自a
+    if(arguments.length>2) accumulator = initial;
+    else {//找到数组中第一个已经定义的索引
+        if(len == 0) throw TypeError();
+        while(i<len){
+            if(i in a){
+                accumulator = a[i++];
+                break;
+            }else i++;
+        }if(i == len) throw TypeError();
+    }
+    //对于数组中剩下的元素一次调用f()
+    while(i<len){
+        if(i in a)
+        accumulator = f.call(undefined,accumulator,a[i],i,a);
+    }
+    return accumulator;
+};
+```
+
+使用定义的`map()`和`reduce()`函数，计算平均值和标准差的代码看起来像这样：
+
+```js
+var data = [1,2,35,6,3,2];
+var sum =function(x,y){return x+y;};
+var square = function(x){return x*x;};
+var mean =reduce(data,sum)/data.length;
+var deviations = map(data,function(x){return x-mean;});
+var stddev = Math.sqrt(reduce(map(deviations,square),sum)/(data.length-1));
 ```
 
 ### 8.8.2 高阶函数
+
+所谓高阶函数（higher-order function）就是操作函数的函数，它接收一个或多个函数作为参数，并返回一个新函数。
+
+下面的`not()`函数就是一个高阶函数，因为它接收一个函数作为参数，并返回一个新函数。
+
+```js
+//这个高阶函数返回一个新的函数，这个新函数将它的实参传入f()
+//并返回f的返回值逻辑非
+function not(f){
+    return function(){//返回一个新的函数
+        var result = f.apply(this,arguments);//调用f()
+        return !result; //对结果求反
+    };
+}
+var even = function (x){//判断a是否为偶数的函数
+    return x % 2 === 0;
+};
+
+var odd = not(even); //判断一个新函数，和even()相反
+[1,1,3,5,5].every(odd); //=>true 每个元素为奇数
+```
+
+来看下面的`mapper()`函数，它也是接收一个函数作为参数，并返回一个新函数，这个新函数将一个数组映射到另一个使用这个函数的数组上。这个函数使用了之前定义的`map()`函数。
+
+```js
+// 所返回的函数的参数应当是一个实参数组，并对每个函数数组元素执行函数f()
+// 并返回所有的计算结果组成数组
+// 可以对比下这个函数和上下文提到的map()函数
+function mapper(f) {
+    return function(a) {
+        return map(a, f);
+    };
+}
+var increment = function(x) {return x + 1;};
+var incrementer = mapper(increment);
+
+incrementer([1, 2, 3]) // => [2,3,4]
+```
+
+这里是一个更常见的例子，它接收两个函数`f()`和`g()`，并返回一个新的函数用以计算`f(g())`：
+
+```js
+//返回一个新的可计算f(g(...))的函数
+//返回的函数h()将它所有的实参传入g(),然后将g()的返回值传入f()
+//调用f()和g()时的this值和调用h()时的this值是同一个this
+function compose(f,g){
+    return function(){
+        //需要给f()传入一个参数，所以使用f()的call方法
+        //需要给g()传入很多参数，所以使用g()的apply()方法
+        return f.call(this,g.apply(this,arguments));
+    };
+}
+var square = function(x){return x*x;};
+var sum = function(x,y){return x+y;};
+var squareofsum = compose(square,sum);
+squareofsum(2,10) //=>144
+```
+
 ### 8.8.3 不完全函数
+
+函数`f()`的`bind()`方法返回一个新函数，给新函数传入特定的上下文和一组特定的参数，然后调用函数`f()`。我们说它把函数“绑定至”对象并传入一部分参数。`bind()`方法只是把实参放在（完整实参列表的）左侧，也就是说传入`bind()`的实参都是放在传入原始函数逇实参列表开始的位置，但有时我们期望将传入`bind()`的实参放在（完整实参列表的）右侧：
+
+```js
+// 实现一个工具函数将类数组对象（或对象）转换为正真的数组
+// 在后面示例代码中用到了这个方法将arguments对象转化为正真的数组
+function array(a, n) {return Array.prototype.slice.call(a, n || 0);}
+
+//这个函数的实参传递至左侧
+function partialLeft(f /*,...*/ ) {
+    var args = arguments; //保存外部实参数组
+    return function() { //并返回这个函数
+        var a = array(args, 1); //开始处理外部的地图份额args
+        a = a.concat(array(arguments)); //然后增加内所有内部实参
+        return f.apply(this, a); //然后基于这个实参列表调用f()
+    };
+}
+
+//这个函数的实参传递至右侧
+function partialRight(f /*,...*/ ) {
+    var args = arguments; //保存外部实参数组
+    return function() { //返回这个函数
+        var a = array(arguments); //从内部参数开始
+        a = a.concat(array(args, 1)); //然后从外部第一个args开始添加
+        return f.apply(this, a); //然后基于这个实参列表调用f()
+    };
+}
+
+//这个函数的实参被用做模板
+//实参列表中的undefeined值都被填充
+function partial(f /*,...*/ ) {
+    var args = arguments; //保存外部实参数组
+    return function() {
+        var a = array(args, 1); //从外部的args开始
+        var i = 0,
+            j = 0;
+        //遍历args,从内部实参填充undefined值
+        for (; i < a.length; i++)
+            if (a[i] === undefined) a[i] = arguments[j++];
+            //现在将剩下的内部实参都追加进去
+        a = a.concat(array(arguments, j))
+        return f.apply(this, a);
+    };
+}
+//这个函数带有三个实参
+var f = function(x, y, z) {
+    return x * (y - z);
+};
+//注意三个不完全调用之前的区别
+partialLeft(f, 2)(3, 4) //=>-2: 绑定第一个实参:2*(3-4)
+partialRight(f, 2)(3, 4) //=>6: 绑定最后一个实参:3*(4-2)
+partial(f, undefined, 2)(3, 4) //=>-6 绑定中间的实参:3*(2-4)
+```
+
+利用这种不完全函数的编程技巧，可以编写一些有意思的代码，利用已有的函数定义新的函数。
+
+```js
+var increment = partialLeft(sum,1);
+var cuberoot = partialRight(Math.pow,1/3);
+String.prototype.first = partial(String.prototype.charAt,0);
+String.prototype.last = partial(String.prototype.substr,-1,1);
+```
+
+当将不完全调用和其他高阶函数整合在一起的时候，事情就变得格外有趣。比如，这里的例子定义了`not()`函数，它用到了刚才提到的不完全调用：
+
+```js
+var not = partialLeft(compose,function(x){return !x;});
+var even = function(x) {return x % 2 === 0;};
+var odd = not(even);
+var isNumber = not(isNaN)
+```
+
+我们也可以使用不完全调用的组合来重新足足求平均数和标准差的代码，这种编码风格是非常纯粹的函数式编程：
+
+```js
+var data = [1,1,3,5,5]
+var sum =function(x,y){return x+y;}; //两个初等函数
+var product =function(x,y){return x*y;};
+var neg = partial(product-1);
+var square = partial(Math.pow,undefined,2);
+var sqrt = partial(Math.pow,undefined,.5);
+var reciprocal = partial(Math.pow,undefined,-1);
+
+//现在来计算平均值和标准差，所有的函数调用都不带运算符
+//这段代码看起来很像lisp代码
+var mean = product(reduce(data,sum),reciprocal(data.length));
+var stddev = sqrt(product(reduce(map(data,
+    compose(square,
+        partial(sum,neg(mean))))
+,sum),
+reciprocal(sum(data.length,-1))));
+
+console.log(mean)
+```
+
 ### 8.8.4 记忆
+
+在 8.4.1 节中定义了一个阶乘函数，它可以将上次的计算结果缓存起来。在函数式编程当中，这种缓存技巧叫做“记忆”（memorization）。下面的代码展示了一个高阶函数，`memorize()`接收一个函数作为实参，并返回带有记忆能力的函数。
+
+```js
+function memorize(f) {
+    var cache = {}; //将值保存在闭包内
+    return function() {
+        //将实参转换为字符串形式，并将其用做缓存的键
+        var key = arguments.length + Array.prototype.join.call(arguments, ",");
+        if (key in cache) return cache[key];
+        else return cache[key] = f.apply(this, arguments);
+    };
+}
+```
+
+`memorize()`函数创建一个新的对象，这个对象被当作缓存（的宿主）并赋值给一个局部变量，因此对于返回的函数来说它是私有的（在闭包中）。所返回的函数将它的实参数组转换字符串，并将字符串用作缓存对象的属性名。如果在缓存中存在这个值，则直接返回它。
+
+否则，就调用既定的函数对实参进行计算，将计算结果缓存起来并返回，下面的代码展示了如何使用`memorize()`：
+
+```js
+//返回两个整数的最大公约数
+//使用欧几里德算法
+function gcd(a,b){//这里省略对a和b的类型检查
+    var t;
+    if (a>b) t=b,b=a,a=t; //确保a>=b
+    while(b !=0) t=b, b= a%b, a=t; //这里是求最大公约数的欧几里德算法
+    return a;
+}
+var gcdmemo = memorize(gcd);
+gcdmemo(85,187); //=>17
+
+//注意，我们写一个递归函数时，往往需要实际记忆功能
+//我们更希望调用了实现了记忆功能的递归函数，而不是原递归函数
+var factorial = memorize(function(n){
+    return(n <= 1)?1:n *factorial(n-1);
+});
+factorial(5) //=>120 对4-1的值也有缓存
+```
 
 # 第9章 类和模块
 # 第10章 正则表达式的模式匹配
