@@ -1064,6 +1064,28 @@ n + " objects"  // =>"NaN objects"：NaN转换为字符串"NaN"
 
 下表简要说明了在 JavaScript 中如何进行类型转换。空单元格表示不必要也没有执行转换。
 
+|           值           |  转换为字符串  |    数字     | 布尔值 |         对象          |
+| ---------------------- | -------------- | ----------- | ------ | --------------------- |
+| undefined              | "undefined"    | NaN         | false  | throws TypeError      |
+| null                   | "null"         | 0           | false  | throws TypeError      |
+| true                   | "true"         | 1           |        | new Boolean(true)     |
+| false                  | "false"        | 0           |        | new Boolean(false)    |
+| ""(空字符串)           |                | 0           | false  | new String("")        |
+| "1.2"(非空,数字)       |                | 1.2         | true   | new String("1.2")     |
+| "one"(非空,非数字)     |                | NaN         | true   | new String("one")     |
+| 0                      | "0"            |             | false  | new Number(0)         |
+| -0                     | "0"            |             | false  | new Number(-0)        |
+| NaN                    | "NaN"          |             | false  | new Number(NaN)       |
+| Infinity               | "Infinity"     |             | true   | new Number(Infinity)  |
+| -Infinity              | "-Infinity"    |             | true   | new Number(-Infinity) |
+| 1(无穷大,非零)         | "1"            |             | true   | new Number(1)         |
+| {}(任意对象)           | 参考3.8.3节    | 参考3.8.3节 | true   |                       |
+| [](任意数组)           | ""             | 0           | true   |                       |
+| [9](1个数字元素)       | "9"            | 9           | true   |                       |
+| ['a'](其他数组)        | 使用join()方法 | NaN         | true   |                       |
+| function(){}(任意函数) | 参考3.8.3节    | NaN         | true   |                       |
+
+
 ## 3.9 变量声明
 ## 3.10 变量作用域
 
