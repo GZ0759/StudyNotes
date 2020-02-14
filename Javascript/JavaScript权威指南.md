@@ -2359,9 +2359,186 @@ for (i = 0; i < a.length; a[i++] = 0) /*empty*/;
 var 和 function 都是声明语句，它们声明或定义变量或函数。这些语句定义标识符（变量名和函数名）并给其复制，这些标识符可以在程序中任意地方使用。声明语句本身什么也不做，但它有一个重要的意义，通过创建变量和函数，可以更好地组织代码的语义。
 
 ### 5.3.1 var
+
+var 语句用来声明一个或多个变量，它的语法如下：
+
+```js
+var name_1[ = value_1][, ..., name_n[ = value_n]]
+```
+
+关键字 var 之后跟随的是要声明的变量列表，列表中的每一个变量都可以带有初始化表达式，用于指定它的初始值，例如：
+
+```js
+var i;  // 一个简单的变量
+var j = 0;  // 一个带有初始值的变量
+var p, q;  // 两个变量
+var greet = "hello" + name;  // 更复杂的初始化表达式
+var x = 2.34,y = Math.cos(0.75),r, theta;  // 很多变量
+var x = 2,y = x * x;  // 第二个变量使用了第一个变量
+var x = 2,
+    f = function(x) {return x * x},  // 每个变量都独占一行
+    y = f(x)
+```
+
+如果var语句出现在函数体内，那么它定义的是一个局部变量，其作用域就是这个函数。如果在顶层代码中使用var语句，它声明的是全局变量，在整个JavaScript程序中都是可见的。正如在3.10.2节提到的，全局变量是全局对象的属性。然而和其他全局对象属性不同的是，var声明的变量是无法通过delete删除的。
+
+如果var语句中的变量没有指定初始化表达式，那么这个变量的值初始为undefined。变量在声明它们的脚本或函数中都是有定义的，变量声明语句会被“提前”至脚本或者函数的顶部。但是初始化的操作则还在原来var语句的位置执行，在声明语句之前变量的值是undefined。
+
+需要注意的是，var语句同样可以作为for循环或者for/in循环的组成部分（和在循环之外声明的变量声明一样，这里声明的变量也会“提前”）。
+
+```js
+for (var i = 0; i < 10; i++) console.log(i);
+for (var i = 0, j = 10; i < 10; i++, j--) console.log(i * j);
+for (var i in o) console.log(i);
+```
+
+注意，多次声明同一个变量是无所谓的。
+
 ### 5.3.2 function
 
+关键字function用来定义函数。在4.3节中我们已经见过函数定义表达式。函数定义也可以写成语句的形式。例如，下面示例代码中的两种定义写法：
+
+```js
+// 将表达式赋值给一个变量
+var f = function f(x) { 
+  return x + 1; 
+} 
+// 含有变量名的语句 
+function f(x){ 
+  return x + 1; 
+} 
+```
+
+函数声明的语法如下：
+
+```js
+function funcname([arg1[, arg2[..., argn]]]) {
+  statements
+}
+```
+
+funcname是要声明的函数的名称的标识符。函数名之后的圆括号中是参数列表，参数之间使用逗号分隔。当调用函数时，这些标识符则指代传入函数的实参。
+
+函数体是由JavaScript语句组成的，语句的数量不限，且用花括号括起来。在定义函数时，并不执行函数体内的语句，它和调用函数时待执行的新函数对象相关联。注意，function语句里的花括号是必需的，这和while循环和其他一些语句所使用的语句块是不同的，即使函数体只包含一条语句，仍然必须使用花括号将其括起来。
+
+```js
+function hyteus(x, y) {
+    return Math.sqrt(x * x + y * y);
+}
+
+// 一个递归函数
+function facial(n) { 
+    if (n <= 1) return 1;
+    return n * facial(n - 1);
+}
+```
+
+函数声明语句通常出现在JavaScript代码的最顶层，也可以嵌套在其他函数体内。但在嵌套时，函数声明只能出现在所嵌套函数的顶部。也就是说，函数定义不能出现在if语句、while循环或其他任何语句中，正是由于函数声明位置的这种限制，ECMAScript标准规范并没有将函数声明归类为真正的语句。有一些JavaScript实现的确允许在出现语句的地方都可以进行函数声明，但是不同的实现在细节处理方式上有很大差别，因此将函数声明放在其他的语句内的做法并不具备可移植性。
+
+尽管函数声明语句和函数定义表达式包含相同的函数名，但二者仍然不同。两种方式都创建了新的函数对象，但函数声明语句中的函数名是一个变量名，变量指向函数对象。
+
+和通过var声明变量一样，函数定义语句中的函数被显式地“提前”到了脚本或函数的顶部。因此它们在整个脚本和函数内都是可见的。使用var的话，只有变量声明提前了——变量的初始化代码仍然在原来的位置。然而使用函数声明语句的话，函数名称和函数体均提前：脚本中的所有函数和函数中所有嵌套的函数都会在当前上下文中其他代码之前声明。也就是说，可以在声明一个JavaScript函数之前调用它。
+
+和var语句一样，函数声明语句创建的变量也是无法删除的。但是这些变量不是只读的，变量值可以重写。
+
 ## 5.4 条件语句
+
+条件语句是通过判断指定表达式的值来决定执行还是跳转某些语句。这些语句是代码的“决策点”，有时称为“分支”。如果说 JavaScript 解释器是按照代码的“路径”执行的，条件语句就是这条路径上的分叉点，程序执行到这里时必须选择其中一条路径继续执行。
+
+### 5.4.1 if
+
+if语句是一种基本的控制语句，它让JavaScript程序可以选择执行路径，更准确地说，就是有条件地执行语句，这种语句有两种形式，第一种是：
+
+```js
+if (expression)
+  statement
+```
+
+在这种形式中，需要计算expression的值，如果计算结果是真值，那么就执行statement。如果expression的值是假值，那么就不执行statement。例如：
+
+```js
+if (username == null)  // 如果username是null或undefined
+  username = "jack wong";  // 对其进行定义
+```
+
+同样地：
+
+```js
+// 如果username是null/undefined/false/0/""/NaN
+// 那么给它赋一个新值
+if (!username)  
+  username = "jack wong";
+```
+
+需要注意的是，if语句中括住expression的圆括号在语法上是必需的。
+
+JavaScript语法规定，if关键字和带圆括号的表达式之后必须跟随一条语句，但可以使用语句块将多条语句合并成一条。因此，if语句的形式如下所示：
+
+```js
+if (!address) {
+  address = "";
+  message = "please mailing address";
+}
+```
+
+if语句的第二种形式引入了else从句，当expression的值是false的时候执行else中的逻辑。其语法如下：
+
+```js
+if (expression)
+  statement1
+else
+  statement2
+```
+
+在这段代码中，当expression为真值时执行statement1，当expression为假值时执行statement2，例如：
+
+```js
+if (n == 1)
+  console.log("You have 1 new message");
+else
+  console.log("You have" + n + "new message");
+```
+
+当在if/else语句中嵌套使用if语句时，必须注意确保else语句匹配正确的if语句。考虑如下代码：
+
+```js
+i = j = 1;
+k = 2;
+if (i == j)
+  if (j == k)
+    console.log("i equs k");
+else
+  console.log("i dosent equal j");  // 错误！！
+```
+
+在这个示例中，内层if语句构成了外层if语句所需要的子句。但是，if和else的匹配关系并不清晰（只有缩进给出了一些暗示），而且在这个例子中，缩进给出的暗示是错误的，因为JavaScript解释器将上述代码实际解释为：
+
+```js
+if (i == j) {
+  if (j == k)
+    console.log("i equs k");
+  else
+    console.log("i dosent equal j");
+}
+```
+
+和大多数编程语言一样，JavaScript中的if、else匹配规则是，else总是和就近的if语句匹配。为了让这个例子可读性更强、更易理解、更方便维护和调试，应当适当地使用花括号：
+
+```js
+if (i == j) {
+  if (j == k) {
+    console.log("i equs k");
+  } else {  // 花括号使代码的结果更清晰
+    console.log("i dosent equal j");
+  }
+}
+```
+
+虽然这并不是本书中所使用的编码风格，但许多程序员都有将if和else语句主体用花括号括起来的习惯（就像在类似while循环这样的复合语句中一样），即便每条分支只有一条语句，但坚持这样做可以避免刚才这种程序歧义的问题。
+
+### 5.4.2 else if
+### 5.4.3 switch
+
 ## 5.5 循环
 ## 5.6 跳转
 ## 5.7 其他语句类型
