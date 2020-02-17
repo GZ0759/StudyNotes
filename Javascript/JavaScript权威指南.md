@@ -3026,10 +3026,120 @@ while(test) {
 本节讨论剩余的三种 JavaScript 语句—— with、debugger 和 use strict。
 
 ### 5.7.1 with语句
+
+3.10.3节讨论了作用域链（scope chain），一个可以按序检索的对象列表，通过它可以进行变量名解析。with语句用于临时扩展作用域链，它具有如下的语法：
+
+```js
+with (object)
+statement
+```
+
+这条语句将object添加到作用域链的头部，然后执行statement，最后把作用域链恢复到原始状态。
+
+在严格模式中（参照5.7.3节）是禁止使用with语句的，并且在非严格模式里也是不推荐使用with语句的，尽可能避免使用with语句。那些使用with语句的JavaScript代码非常难于优化，并且同没有使用with语句的代码相比，它运行得更慢。
+
+在对象嵌套层次很深的时候通常会使用with语句来简化代码编写。例如，在客户端JavaScript中，可能会使用类似下面这种表达式来访问一个HTML表单中的元素：
+
+```js
+document.forms[0].address.value
+```
+
+如果这种表达式在代码中多次出现，则可以使用with语句将form对象添加至作用域链的顶层：
+
+```js
+with(document.forms[0]){
+  // 直接访问表单元素
+  name.value="";
+  address.value="";
+  email.value ="";
+}
+```
+
+这种方法减少了大量的输入，不用再为每个属性名添加`document.forms[0]`前缀。这个对象临时挂载在作用域链上，当JavaScript需要解析诸如address的标识符时，就会自动在这个对象中查找。当然，不使用with语句的等价代码可以写成这样：
+
+```js
+var f = document.forms[0];
+f.name.value = "";
+f.adress.value = "";
+f.email.value = "";
+```
+
+不要忘记，只有在查找标识符的时候才会用到作用域链，创建新的变量的时候不使用它，看一下下面这行代码：
+
+```js
+with(o) x = 1;
+```
+
+如果对象o有一个属性x，那么这行代码给这个属性赋值为1。但如果o中没有定义属性x，这段代码和不使用with语句的代码`x=1`是一模一样的。它给一个局部变量或者全局变量x赋值，或者创建全局对象的一个新属性。with语句提供了一种读取o的属性的快捷方式，但它并不能创建o的属性。
+
 ### 5.7.2 debugger语句
+
+debugger语句通常什么也不做。然而，当调试程序可用并运行的时候，JavaScript解释器将会（非必需）以调式模式运行。实际上，这条语句用来产生一个断点（breakpoint），JavaScript代码的执行会停止在断点的位置，这时可以使用调试器输出变量的值、检查调用栈等。例如，假设由于调用函数`f()`的时候使用了未定义的参数，因此`f()`抛出一个异常，但无法定位到底是哪里抛出了异常。为了有助于调试这个问题，需要修改函数`f()`：
+
+```js
+function f(o){
+  if (o === undefined) debugger;  // 这段代码用来临时调试
+  console.log(1)   // 函数的其它部分
+}
+f();
+```
+
+这时，当调用`f()`的时候没有传入参数，程序将停止执行，这时可以通过调试器检测调用栈并找出错误产生的原因。
+
+在ECMAScript 5中，debugger语句正式加入到这门语言里。但在相当长的一段时间里，主流浏览器厂商已经将其实现了。注意，可用的调试器是远远不够的，debugger语句不会启动调试器。但如果调试器已经在运行中，这条语句才会真正产生一个断点。例如，如果使用Firefox的调试扩展插件Firebug，则必须首先为待调试的网页启用Friebug，这样debugger语句才能正常工作。
+
 ### 5.7.3 “use strict”
 
+“use strict”是ECMAScript 5引入的一条指令。指令不是语句（但非常接近于语句）。“use strict”指令和普通的语句之间有两个重要的区别：
+
+- 它不包含任何语言的关键字，指令仅仅是一个包含一个特殊字符串直接量的表达式（可以是使用单引号也可以使用双引号），对于那些没有实现ECMAScript 5的JavaScript解释器来说，它只是一条没有副作用的表达式语句，它什么也没做。将来的ECMAScript标准希望将use用做关键字，这样就可以省略引号了。
+- 它只能出现在脚本代码的开始或者函数体的开始、任何实体语句之前。但它不必一定出现在脚本的首行或函数体内的首行，因为“use strict”指令之后或之前都可能有其他字符串直接量表达式语句，并且JavaScript的具体实现可能将它们解析为解释器自有的指令。在脚本或者函数体内第一条常规语句之后字符串直接量表达式语句只当做普通的表达式语句对待；它们不会当做指令解析，它们也没有任何副作用。
+
+使用“use strict”指令的目的是说明（脚本或函数中）后续的代码将会解析为严格代码（strict code）。如果顶层（不在任何函数内的）代码使用了“use strict”指令，那么它们就是严格代码。如果函数体定义所处的代码是严格代码或者函数体使用了“use strict”指令，那么函数体的代码也是严格代码。如果`eval()`调用时所处的代码是严格代码或者`eval()`要执行的字符串中使用了“scrict code”指令，则`eval()`内的代码是严格代码。
+
+严格代码以严格模式执行。ECMAScript 5中的严格模式是该语言的一个受限制的子集，它修正了语言的重要缺陷，并提供健壮的查错功能和增强的安全机制。严格模式和非严格模式之间的区别如下（前三条尤为重要）：
+
+- 在严格模式中禁止使用with语句。在严格模式中，所有的变量都要先声明，如果给一个未声明的变量、函数、函数数、catch从句参数或全局对象的属性赋值，将会抛出一个引用错误异常（在非严格模式中，这种隐式声明的全局变量的方法是给全局对象新添加一个新属性）。
+- 在严格模式中，调用的函数（不是方法）中的一个this值是undefined。（在非严格模式中，调用的函数中的this值总是全局对象）。可以利用这种特性来判断JavaScript实现是否支持严格模式：`var hasStrictMode = (function() { "use strict"; return this === undefined }());`
+- 同样，在严格模式中，当通过`call()`或`apply()`来调用函数时，其中的this值就是通过`call()`或`apply()`传入的第一个参数（在非严格模式中，null和undefined值被全局对象和转换为对象的非对象值所代替）。
+- 在严格模式中，给只读属性赋值和给不可扩展的对象创建新成员都将抛出一个类型错误异常（在非严格模式中，这些操作只是简单地操作失败，不会报错）。
+- 在严格模式中，传入`eval()`的代码不能在调用程序所在的上下文中声明变量或定义函数，而在非严格模式中是可以这样做的。相反，变量和函数的定义是在`eval()`创建的新作用域中，这个作用域在`eval()`返回时就弃用了。
+- 在严格模式中，函数里的arguments对象拥有传入函数值的静态副本。在非严格模式中，arguments对象具有“魔术般”的行为，arguments里的数组元素和函数参数都是指向同一个值的引用。
+- 在严格模式中，当delete运算符后跟随非法的标识符（比如变量、函数、函数参数）时，将会抛出一个语法错误异常（在非严格模式中，这种delete表达式什么也没做，并返回false）。
+- 在严格模式中，试图删除一个不可配置的属性将抛出一个类型错误异常（在非严格模式中，delete表达式操作失败，并返回false）。
+- 在严格模式中，在一个对象直接量中定义两个或多个同名属性将产生一个语法错误（在非严格模式中不会报错）。
+- 在严格模式中，函数声明中存在两个或多个同名的参数将产生一个语法错误（在非严格模式中不会报错）。
+- 在严格模式中是不允许使用八进制整数直接量（以0为前缀，而不是0x为前缀）的（在非严格模式中某些实现是允许八进制整数直接量的）。
+- 在严格模式中，标识符eval和arguments当做关键字，它们的值是不能更改的。不能给这些标识符赋值，也不能把它们声明为变量、用做函数名、用做函数参数或用做catch块的标识符。
+- 在严格模式中限制了对调用栈的检测能力，在严格模式的函数中，arguments. caller和arguments.callee都会抛出一个类型错误异常。严格模式的函数同样具有caller和arguments属性，当访问这两个属性时将抛出类型错误异常（有一些JavaScript的实现在非严格模式里定义了这些非标准的属性）。
+
 ## 5.8 Javascript语句小结
+
+| 语句 | 语法 | 用途 |
+|---|---|---|
+| break | break[label]; | 退出最内侧循环或者退出switch语句，又或退出label指定的语句 |
+| case | case expression： | 在switch语句标记一条语句 |
+| continue | continue [label]; | 重新开始最内层的循环或从新开始label指定的循环 |
+| debugger | debugger; | 断点器调试 |
+| default | default; | 在switch标记默认语句 |
+| do/while | do statement while(expression); | while循环的一种替代形式 |
+| empty | ; | 什么都不做 |
+| for | for(init;test;incr)statement | 一种简写的循环 |
+| for/in | for(var in object)statement | 遍历一个对象属性 |
+| function | function name([param[],...]){body} | 声明一个函数 |
+| if/else | if (expr)statement1[else statement2] | 执行statement1或者statement2 |
+| label | label:statement | 给statement指定一个名字：label |
+| return | return [expression]; | 从函数返回一个值 |
+| switch | switch(expression){statements} | 用case或者“default：”语句标记多个分支语句 |
+| throw | throw expression | 抛出异常 |
+| try | try {statements}
+    	[catch {hander satements}]
+    	[finally {cleanup satements}]
+     | 捕获异常 |
+| use strict  | "use strict" | 对脚本和函数使用严格模式 |
+| var | avr name=[=expr][,...] | 声明并初始化一个或多个变量 |
+| while | while (expression) statement | 基本的循环结构 |
+| with | with(object) statement | 扩展作用域链（不赞成使用） |
 
 # 第6章 对象
 # 第7章 数组
