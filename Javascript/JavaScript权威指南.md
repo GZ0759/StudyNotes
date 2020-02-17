@@ -2022,18 +2022,20 @@ total = total + salaes_tax
 这类运算符还包括“-=”、“*=”、“&=”等。表4-2列出了这一类的所有运算符。
 
 
-| 运算符   | 示例       | 等价于  |      
-| `+=`     | a+=b       | a=a+b   |      
-| `-=`     | a-=b       | a=a-b   |      
-| `*=`     | a*=b       | a=a*b   |      
-| `/=`     | a/=b       | a=a/b   |      
-| `%=`     | a%=b       | a=a%b   |      
-| `<<=`    | a<<=b      | a=a<<b  |      
-| `>>=`    | a>>=b      | a=a>>b  |      
-| `>>>=`   | a>>>=b     | a=a>>>b |      
-| `&=`     | a&=b       | a=a&b   |      
-| `|=`     | `a|=b`     | `a=a|b` | 
-| `^= `    | a^=b       | a=a^b   |      
+| 运算符 | 示例  | 等价于  |
+|--------|--------|---------|
+| `+=`   | a+=b   | a=a+b   |
+| `-=`   | a-=b   | a=a-b   |
+| `*=`   | a*=b   | a=a*b   |
+| `/=`   | a/=b   | a=a/b   |
+| `%=`   | a%=b   | a=a%b   |
+| `<<=`  | a<<=b  | a=a<<b  |
+| `>>=`  | a>>=b  | a=a>>b  |
+| `>>>=` | a>>>=b | a=a>>>b |
+| `&=`   | a&=b   | a=a&b   |
+| `|=`   | `a|=b` | `a=a|b` |
+| `^= `  | a^=b   | a=a^b   |
+
 
 大多数情况下，表达式为`a op =b`。这里的op代表一个运算符，这个表达式等价于
 `a =a op b`。
@@ -2144,17 +2146,16 @@ else
 
 typeof是一元运算符，放在单个操作数前面，操作数可以是任何类型，返回值表示操作类型的一个字符串。
 
-|           x            |                typeof x                 |
-| ---------------------- | --------------------------------------- |
-| undefined              | "undefined"                             |
-| null                   | "object"                                |
-| ture或false            | "boolean"                               |
-| 任意数字或NaN          | "number"                                |
-| 任意字符串             | "String"                                |
-| 任意函数               | "function"                              |
-| 任意内置对象（非函数） | "object"                                |
-| 任意宿主对象           | 由编译器各自实现的字符串，但不是 
-"undefined" "boolean" "number" "string" |
+| x | typeof x |
+|---|---|
+| undefined | "undefined" |
+| null | "object" |
+| ture或false | "boolean" |
+| 任意数字或NaN | "number" |
+| 任意字符串 | "String" |
+| 任意函数 | "function" |
+| 任意内置对象（非函数） | "object" |
+| 任意宿主对象 | 由编译器各自实现的字符串，但不是"undefined" "boolean" "number" "string" |
 
 typeof最常用的用法写在表达式中们就像这样
 
@@ -3132,10 +3133,7 @@ f();
 | return | return [expression]; | 从函数返回一个值 |
 | switch | switch(expression){statements} | 用case或者“default：”语句标记多个分支语句 |
 | throw | throw expression | 抛出异常 |
-| try | try {statements}
-    	[catch {hander satements}]
-    	[finally {cleanup satements}]
-     | 捕获异常 |
+| try | try {statements} [catch {hander satements}] [finally {cleanup satements}] | 捕获异常 |
 | use strict  | "use strict" | 对脚本和函数使用严格模式 |
 | var | avr name=[=expr][,...] | 声明并初始化一个或多个变量 |
 | while | while (expression) statement | 基本的循环结构 |
