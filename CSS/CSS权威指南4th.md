@@ -178,7 +178,7 @@ media="screen, projection">
 
 style元素也是一种引入样式表的方式，直接写在文档中：
 
-```html
+```
 <style type="text/css">...</style>
 ```
 
