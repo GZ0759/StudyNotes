@@ -3176,7 +3176,255 @@ JavaScript 对象是动态的——可以新增属性也可以删除属性——
 - 继承属性（inherited property）是在对象的原型对象中定义的属性。
 
 ## 6.1 创建对象 
+
+### 6.1.1 对象直接量
+
+创建对象最简单的方式就是在JavaScript代码中使用对象直接量。对象直接量是由若干名/值对组成的映射表，名/值对中间用冒号分隔，名/值对之间用逗号分隔，整个映射表用花括号括起来。属性名可以是JavaScript标识符也可以是字符串直接量（包括空字符串）。属性的值可以是任意类型的JavaScript表达式，表达式的值（可以是原始值也可以是对象值）就是这个属性的值。下面有一些例子：
+
+```js
+var empty ={};  // 一个空对象
+var point ={x:0, y:0};  // 两个属性
+var point2 ={x:point.x, y:point.y+1};
+var book ={
+    "main title": "javascript",  // 属性名字里有空格，必须用字符串表示
+    'sub-title': "the defintive guide",  // 属性里有连接字符，因此需要使用字符串
+    "for": "all adiences",  // for是保留字，因此需要引号。
+    author: {  // 这个属性的值是一个对象
+        firstName: "dabid",  // 这里属性的值也是一个对象
+        surname: "flangan"  // 这里的属性名都没有引号
+    }
+};
+```
+
+在ECMAScript 5（以及ECMAScript 3的一些实现）中，保留字可以用做不带引号的属性名。然而对于ECMAScript 3来说，使用保留字作为属性名必须使用引号引起来。在ECMAScript 5中，对象直接量中的最后一个属性后的逗号将忽略，且在ECMAScript 3的大部分实现中也可以忽略这个逗号，但在IE中则报错。
+
+对象直接量是一个表达式，这个表达式的每次运算都创建并初始化一个新的对象。每次计算对象直接量的时候，也都会计算它的每个属性的值。也就是说，如果在一个重复调用的函数中的循环体内使用了对象直接量，它将创建很多新对象，并且每次创建的对象的属性值也有可能不同。
+
+### 6.1.2 通过new创建对象
+
+new运算符创建并初始化一个新对象。关键字new后跟随一个函数调用。这里的函数称做构造函数（constructor），构造函数用以初始化一个新创建的对象。JavaScript语言核心中的原始类型都包含内置构造函数。例如：
+
+```js
+var o = new Object();  // 创建一个空对象，和{}一样
+var a = new Array();
+var d = new Date();
+var r = new RegExp("js");
+```
+
+除了这些内置构造函数，用自定义构造函数来初始化新对象也是非常常见的。
+
+### 6.1.3 原型
+
+在讲述第三种对象创建技术之前，我们应当首先解释一下原型。每一个JavaScript对象（null除外）都和另一个对象相关联。“另一个”对象就是我们熟知的原型，每一个对象都从原型继承属性。
+
+所有通过对象直接量创建的对象都具有同一个原型对象，并可以通过JavaScript代码`Object.prototype`获得对原型对象的引用。通过关键字new和构造函数调用创建的对象的原型就是构造函数的prototype属性的值。因此，同使用{}创建对象一样，通过`new Object()`创建的对象也继承自`Object.prototype`。同样，通过`new Array()`创建的对象的原型就是`Array.prototype`，通过`new Date()`创建的对象的原型就是`Date.prototype`。
+
+没有原型的对象为数不多，`Object.prototype`就是其中之一。它不继承任何属性。其他原型对象都是普通对象，普通对象都具有原型。所有的内置构造函数（以及大部分自定义的构造函数）都具有一个继承自`Object.prototype`的原型。例如，`Date.prototype`的属性继承自`Object.prototype`，因此由`new Date()`创建的Date对象的属性同时继承自`Date.prototype`和`Object.prototype`。这一系列链接的原型对象就是所谓的“原型链”（prototype chain）。
+
+6.2.2节讲述属性继承的工作机制。6.8.1节将会讲到如何获取对象的原型。第9章将会更详细地讨论原型和构造函数，包括如何通过编写构造函数定义对象的“类”，以及给构造函数的prototype属性赋值可以让其“实例”直接使用这个原型上的属性和方法。
+
+### 6.1.4 Object.create()
+
+ECMAScript 5定义了一个名为`Object.create()`的方法，它创建一个新对象，其中第一个参数是这个对象的原型。`Object.create()`提供第二个可选参数，用以对对象的属性进行进一步描述。
+
+`Object.create()`是一个静态函数，而不是提供给某个对象调用的方法。使用它的方法很简单，只须传入所需的原型对象即可：
+
+```js
+var o1 = Object.create({
+  x: 1,
+  y: 2
+});  // o1继承了属性x和y
+```
+
+可以通过传入参数null来创建一个没有原型的新对象，但通过这种方式创建的对象不会继承任何东西，甚至不包括基础方法，比如`toString()`，也就是说，它将不能和“+”运算符一起正常工作：
+
+```js
+var o2 = Object.create(null);  // o2不继承任何属性和方法
+```
+
+如果想创建一个普通的空对象（比如通过{}或`new Object()`创建的对象），需要传入Object.prototype：
+
+```js
+var o3 =Object.create(Object.prototype);  // o3和{}和new Object一样
+```
+
+可以通过任意原型创建新对象（换句话说，可以使任意对象可继承），这是一个强大的特性。在ECMAScript3中可以用类似的代码来模拟原型继承：
+
+```js
+//inherit()返回了一个继承自原型对象p属性的新对象
+//这里是有ECMAScript5中的Object.create()函数（如果存在的话）
+//如果不存在Object.create,则使用其他方法
+function inherit(p) {
+  if (p == null) throw TypeError(); //p是一个对象，不能是null
+  if (Object.create) //如果Object.create存在
+      return Object.create(p); //直接使用它
+  var t = typeof p; //否则进一步检测
+  if (t !== "object" && t !== "function") throw TypeError;
+  function f() {}; //定义一个空构造函数
+  f.prototype = p; //将其原型属性设置p
+  return new f(); //将f()创建p的继承对象
+}
+```
+
+现在只要知道`inherit()`返回的新对象继承了参数对象的属性就可以了。注意，`inherit()`并不能完全代替`Object.create()`，它不能通过传入null原型来创建对象，而且不能接收可选的第二个参数。不过我们仍会在本章和第9章的示例代码中多次用到`inherit()`。
+
+`inherit()`函数的其中一个用途就是防止库函数无意间（非恶意地）修改那些不受你控制的对象。不是将对象直接作为参数传入函数，而是将它的继承对象传入函数。当函数读取继承对象的属性时，实际上读取的是继承来的值。如果给继承对象的属性赋值，则这些属性只会影响这个继承对象自身，而不是原始对象：
+
+```js
+var o = {x: "donot change this balue"};
+library_function(inherit(o));  // 防止对o的意外修改
+```
+
 ## 6.2 属性的查询和设置 
+
+可以通过点`.`或方括号`[]`运算符来获取属性的值。运算符左侧应当是一个表达式，它返回一个对象。对于点`.`来说，右侧必须是一个以属性名称命名的简单标识符。对于方括号`[]`来说，方括号内必须是一个计算结果为字符串的表达式，这个字符串就是属性的名字。
+
+```js
+var author = book.author;  // 得到book的“author”属性
+var name = oAuthor.surname  // 得到author的“surname”的属性
+var title = book["main title"]  // 得到book的main title属性
+```
+
+和查询属性值的写法一样，通过点和方括号也可以创建属性或给属性赋值，但需要将它们放在赋值表达式的左侧：
+
+```js
+book.edition = 6;  // 给book添加一个名为edition的属性
+book["main title"] = "ECMAscript";  // 给"main title"属性赋值
+```
+
+在ECMAScript 3中，点运算符后的标识符不能是保留字，比如，`o.for`或`o.class`是非法的，因为for是JavaScript的关键字，class是保留字。如果一个对象的属性名是保留字，则必须使用方括号的形式访问它们，比如`o["for"]`和`o["class"]`。ECMAScript 5对此放宽了限制（包括ECMAScript3的某些实现），可以在点运算符后直接使用保留字。
+
+当使用方括号时，我们说方括号内的表达式必须返回字符串。其实更严格地讲，表达式必须返回字符串或返回一个可以转换为字符串的值。在第7章里有一些例子中的方括号内使用了数字，这情况象是非常常见的。
+
+### 6.2.1 作为关联数组的对象
+
+上文提到，下面两个JavaScript表达式的值相同：
+
+```js
+object.property
+object["property"]
+```
+
+第一种语法使用点运算符和一个标识符，这和C和Java中访问一个结构体或对象的静态字段非常类似。第二种语法使用方括号和一个字符串，看起来更像数组，只是这个数组元素是通过字符串索引而不是数字索引。这种数组就是我们所说的关联数组（associative array），也称做散列、映射或字典（dictionary）。JavaScript对象都是关联数组，本节将讨论它的重要性。
+
+在C、C++和Java和一些强类型(strong typed)语言中，对象只能拥有固定数目的属性，并且这些属性名称必须提前定义好。由于JavaScript是弱类型语言，因此不必遵循这条规定，在任何对象中程序都可以创建任意数量的属性。但当通过点运算符(.)访问对象的属性时，属性名用一个标识符来表示。标识符必须直接出现在JavaScript程序中，它们不是数据类型，因此程序无法修改它们。
+
+反过来讲，当通过[]来访问对象的属性时，属性名通过字符串来表示。字符串是JavaScript的数据类型，在程序运行时可以修改和创建它们。因此，可以在JavaScript中使用下面这种代码：
+
+```js
+var addr = "";
+// 读取custom对象的address0、address1、address2和address3属性
+for (i = 0; i < 4; i++) {
+  addr += customer["address" + i] + '\n';
+};
+```
+
+这个例子主要说明了使用数组写法和用字符串表达式来访问对象属性的灵活性。这段代码也可以通过点运算符来重写，但是很多场景只能使用数组写法来完成。假设你正在写一个程序，这个程序利用网络资源计算当前用户股票市场投资的金额。程序允许用户输入每只股票的名称和购股份额。该程序使用名为portfolio的对象来存储这些信息。每只股票在这个对象中都有对应的属性，属性名称就是股票名称，属性值就是购股数量，例如，如果用户持有IBM的50股，那么portfolio.ibm属性的值就为50。
+
+下面是程序的部分代码，这个函数用来给portifolio添加新的股票：
+
+```js
+function addstock (portfolio,stockname,shares){
+portfolio[stockname] = shares;
+```
+
+由于用户是在程序运行时输入股票名称，因此在之前无法得知这些股票的名称是什么。而由于在写程序的时候不知道属性名称，因此无法通过点运算符(.)来访问对象portfolio的属性。但可以使用[]运算符，因为它使用字符串值（字符串值是动态的，可以在运行时更改）而不是标识符（标识符是静态的，必须写死在程序中）作为索引对属性进行访问。
+
+当使用for/in循环遍历关联数组时，就可以清晰地体会到for/in的强大之处。下面的例子就是利用for/in计算portfolio的总计值：
+
+```js
+function getvalue(protfolio) {
+  var total = 0.0;
+  for (stock in protfolio) {  // 遍历protfolio中的每只股票
+    var shares = protfolio[stock];  // 得到每只股票的份额
+    var price = getquote(stock);  // 查找股票的价格
+    total += shares * price;  // 将结果累加到total中
+  }
+  return total;
+}
+```
+
+### 6.2.2 继承
+
+JavaScript对象具有“自有属性”（own property），也有一些属性是从原型对象继承而来的。为了更好地理解这种继承，必须更深入地了解属性访问的细节。本节中的许多示例代码借用了例6-1中的`inherit()`函数，通过给它传入指定原型对象来创建实例。
+
+假设要查询对象o的属性x，如果o中不存在x，那么将会继续在o的原型对象中查询属性x。如果原型对象中也没有x，但这个原型对象也有原型，那么继续在这个原型对象的原型上执行查询，直到找到x或者查找到一个原型是null的对象为止。可以看到，对象的原型属性构成了一个“链”，通过这个“链”可以实现属性的继承。
+
+```js
+var o = {};  // 从Object.prototype继承对象方法
+o.x = 1;  // 给o定义一个属性x
+
+var p = inherit(o);  // p继承o和Object.prototype
+p.y = 2;  // 给p定义一个属性y
+
+var q = inherit(p);  // q继承p、o和Object.prototype
+q.z = 3;  // 给q定义一个属性z
+
+var s = q.toString();  // toString继承自Object.prototype
+q.x + q.y  // =>3：xhey分别继承自o和p
+```
+
+现在假设给对象o的属性x赋值，如果o中已经有属性x（这个属性不是继承来的），那么这个赋值操作只改变这个已有属性x的值。如果o中不存在属性x，那么赋值操作给o添加一个新属性x。如果之前o继承自属性x，那么这个继承的属性就被新创建的同名属性覆盖了。
+
+属性赋值操作首先检查原型链，以此判定是否允许赋值操作。例如，如果o继承自一个只读属性x，那么赋值操作是不允许的。如果允许属性赋值操作，它也总是在原始对象上创建属性或对已有的属性赋值，而不会去修改原型链。在JavaScript中，只有在查询属性时才会体会到继承的存在，而设置属性则和继承无关，这是JavaScript的一个重要特性，该特性让程序员可以有选择地覆盖（override）继承的属性。
+
+```js
+var unitcircle = {r: 1}  // 一个用来继承的的对象
+var c = inherit(unitcircle);  // c继承r
+c.x = 1; c.y = 1;  // c定义两个属性
+c.r = 2;  // c覆盖继承来的属性
+console.log(unitcircle.r)  // =>1 对象原型没有被修改
+```
+
+属性赋值要么失败，要么创建一个属性，要么在原始对象中设置属性，但有一个例外，如果o继承自属性x，而这个属性是一个具有setter方法的accessor属性，那么这时将调用setter方法而不是给o创建一个属性x。需要注意的是，setter方法是由对象o调用的，而不是定义这个属性的原型对象调用的。因此如果setter方法定义任意属性，这个操作只是针对o本身，并不会修改原型链。
+
+### 6.2.3 属性访问错误
+
+属性访问并不总是返回或设置一个值。本节讲述查询或设置属性时的一些出错情况。
+
+查询一个不存在的属性并不会报错，如果在对象o自身的属性或继承的属性中均未找到属性x，属性访问表达式`o.x`返回undefined。
+
+```js
+// book对象有属性“sub-title”，而没有属性“subtitle”
+book.subtitle;  // =>undefined：属性不存在
+```
+
+但是，如果对象不存在，那么试图查询这个不存在的对象的属性就会报错。null和undefined值都没有属性，因此查询这些值的属性会报错，接上例：
+
+```js
+//  抛出一个类型错误异常，undefined没有length属性
+var len = book.subtitle.length;
+// Uncaught TypeError: Cannot read property 'length' of undefined
+```
+
+除非确定book和book.subtitle都是（或在行为上）对象，否则不能这样写表达式book. subtitle.length，因为这样会报错，下面提供了两种避免出错的方法：
+
+```js
+//一种很冗余但很容易懂的方法
+var len = undefined;
+if (book){
+  if(book.subtitle) len =book.subtitle.length;
+}
+
+//一种更简练的常用的方法，获取subtitle的length属性undefined
+var len = book && book.subtitle && book.subtitle.length;
+```
+
+当然，给null和undefined设置属性也会报类型错误。给其他值设置属性也不总是成功，有一些属性是只读的，不能重新赋值，有一些对象不允许新增属性，但让人颇感意外的是，这些设置属性的失败操作不会报错：
+
+```js
+// 内置构造函数的原型是只读的
+Object.prototype = 0;  // 赋值失败，但没报错，Object.prototype没有修改
+```
+
+这是一个历史遗留问题，这个bug在ECMAScript 5的严格模式中已经修复。在严格模式中，任何失败的属性设置操作都会抛出一个类型错误异常。
+
+尽管属性赋值成功或失败的规律看起来很简单，但要描述清楚并不容易。在这些场景下给对象o设置属性p会失败：
+
+- o中的属性p是只读的：不能给只读属性重新赋值（`defineProperty()`方法中有一个例外，可以对可配置的只读属性重新赋值）。
+- o中的属性p是继承属性，且它是只读的：不能通过同名自有属性覆盖只读的继承属性。
+- o中不存在自有属性p：o没有使用setter方法继承属性p，并且o的可扩展性（extensible attribute）是false。如果o中不存在p，而且没有setter方法可供调用，则p一定会添加至o中。但如果o不是可扩展的，那么在o中不能定义新属性。
+
 ## 6.3 删除属性 
 ## 6.4 检测属性 
 ## 6.5 枚举属性 
