@@ -3426,6 +3426,9 @@ Object.prototype = 0;  // 赋值失败，但没报错，Object.prototype没有�
 - o中不存在自有属性p：o没有使用setter方法继承属性p，并且o的可扩展性（extensible attribute）是false。如果o中不存在p，而且没有setter方法可供调用，则p一定会添加至o中。但如果o不是可扩展的，那么在o中不能定义新属性。
 
 ## 6.3 删除属性 
+
+delete运算符（见4.13.3节）可以删除对象的属性。它的操作数应当是一个属性访问表达式。让人感到意外的是，delete只是断开属性和宿主对象的联系，而不会去操作属性中的属性：
+
 ## 6.4 检测属性 
 ## 6.5 枚举属性 
 ## 6.6 属性getter和setter 
