@@ -4168,7 +4168,7 @@ a[1] = "one";
 ```js
 a = []; //开始是空数组
 a.push("zero"); //在末尾添加一个元素。 a = ["zero"]
-a.push("one","two");//再添加两个元素
+a.push("one","two"); //再添加两个元素
 ```
 
 在数组尾部压入一个元素与给数组`a[a.length]`赋值是一样的。可以使用`unshift()`方法在数组的首部插入一个元素，并且将其他元素依次移到更高的索引处。
@@ -4187,6 +4187,90 @@ a.length;  // =>3: delete操作并不影响数组的长度
 上面我们看到，也可以简单地设置length属性为一个新的期望长度来删除数组尾部的元素。数组有`pop()`方法（它和`push()`一起使用），后者一次使减少长度1并返回被删除元素的值。还有一个`shift()`方法（它和`unshift()`一起使用），从数组头部删除一个元素。和delete不同的是`shift()`方法将所有元素下移到比当前索引低1的地方。7.8节和第三部分涵盖`pop()`和`shift()`的内容。最后，`splice()`是一个通用的方法来插入、删除或替换数组元素。它会根据需要修改length属性并移动元素到更高或较低的索引处。
 
 ## 7.6 数组遍历
+
+使用for循环是遍历数组元素最常见的方法：
+
+```js
+var keys = Object.keys(o); //获得o对象属性名组成的数组
+var values = []; //在数组中存储匹配属性的值
+for (var i = 0; i < keys.length; i++) { //对于数组中的每个索引
+    var key = keys[i]; //获得索引处的键值
+    values[i] = o[key]; //在values数组中保存属性值
+}
+```
+
+在嵌套循环或其他性能非常重要的上下文中，可以看到这种基本的数组遍历需要优化，数组的长度应该只查询一次而非每次循环都要查询：
+
+```js
+for (var i = 0, len = keys.length; i < len; i++) {
+  //循环体仍然不变
+}
+```
+
+这些例子假设数组是稠密的，并且所有的元素都是合法数据。否则，使用数组元素之前应该先检测它们。如果想要排除null、undefined和不存在的元素，代码如下：
+
+```js
+for (var i = 0; i < keys.length; i++) {
+  if (!keys[i]) continue;  // 跳过null、undefined和不存在的元素
+}
+```
+
+如果只想跳过undefined和不存在的元素，代码如下：
+
+```js
+for (var i = 0; i < keys.length; i++) {
+  if (!keys[i] === undefined) continue; // 跳过undefined和不存在的元素
+  // 循环体    
+}
+```
+
+最后，如果只想跳过不存在的元素而仍然要处理存在的undefined元素，代码如下：
+
+```js
+for (var i = 0; i < keys.length; i++) {
+  if (!(i in keys)) continue; // 跳过不存在的元素
+}
+```
+
+还可以使用for/in循环（见5.5.4节）处理稀疏数组。循环每次将一个可枚举的属性名（包括数组索引）赋值给循环变量。不存在的索引将不会遍历到：
+
+```js
+for (var index in sparseArray) {
+  var value = sparseArray[index];
+  // 此处可使用索引和值做一些事情
+}
+```
+
+在6.5节已经注意到for/in循环能够枚举继承的属性名，如添加到Array.prototype中的方法。由于这个原因，在数组上不应该使用for/in循环，除非使用额外的检测方法来过滤不想要的属性。如下检测代码取其一即可：
+
+```js
+for (var i in a) {
+  if (!a.hasOwnProperty(i)) continue; // 跳过继承的属性
+  // 循环体
+}
+
+for (var i in a) {
+  // 跳过不是非负整数的i
+  if (String(Math.floor(Math.abs(Number(i)))) !== i) continue;
+}
+
+```
+
+ECMAScript规范允许for/in循环以不同的顺序遍历对象的属性。通常数组元素的遍历实现是升序的，但不能保证一定是这样的。特别地，如果数组同时拥有对象属性和数组元素，返回的属性名很可能是按照创建的顺序而非数值的大小顺序。如何处理这个问题的实现各不相同，如果算法依赖于遍历的顺序，那么最好不要使用for/in而用常规的for循环。
+
+ECMAScript 5定义了一些遍历数组元素的新方法，按照索引的顺序按个传递给定义的一个函数。这些方法中最常用的就是`forEach()`方法：
+
+```js
+var data = [1, 2, 3, 4, 5];
+var sumOfSquares = 0; //得到数据的平方和
+data.forEach(function(x) { //把每个元素传递给此函数
+    sumOfSquares += x * x; //平方相加
+});
+sumOfSquares; //=>55: 1+4+9+16+25
+```
+
+`forEach()`和相关的遍历方法使得数组拥有简单而强大的函数式编程风格。
+
 ## 7.7 多维数组
 ## 7.8 数组方法
 ## 7.9 ES5中的数组方法
