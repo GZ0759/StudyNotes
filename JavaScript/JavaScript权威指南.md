@@ -4262,11 +4262,11 @@ ECMAScript 5定义了一些遍历数组元素的新方法，按照索引的顺�
 
 ```js
 var data = [1, 2, 3, 4, 5];
-var sumOfSquares = 0; //得到数据的平方和
-data.forEach(function(x) { //把每个元素传递给此函数
-    sumOfSquares += x * x; //平方相加
+var sumOfSquares = 0; // 得到数据的平方和
+data.forEach(function(x) { // 把每个元素传递给此函数
+    sumOfSquares += x * x; // 平方相加
 });
-sumOfSquares; //=>55: 1+4+9+16+25
+sumOfSquares; // =>55: 1+4+9+16+25
 ```
 
 `forEach()`和相关的遍历方法使得数组拥有简单而强大的函数式编程风格。
