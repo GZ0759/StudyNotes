@@ -4557,11 +4557,236 @@ a.some(isNaN) // => false：a不包含非数值元素
 注意，一旦`every()`和`some()`确认该返回什么值它们就会停止遍历数组元素。`some()`在判定函数第一次返回true后就返回true，但如果判定函数一直返回false，它将会遍历整个数组。`every()`恰好相反：它在判定函数第一次返回false后就返回false，但如果判定函数一直返回true，它将会遍历整个数组。注意，根据数学上的惯例，在空数组上调用时，`every()`返回true，`some()`返回false。
 
 ### 7.9.5 reduce()和reduceRight()
+
+`reduce()`和`reduceRight()`方法使用指定的函数将数组元素进行组合，生成单个值。这在函数式编程中是常见的操作，也可以称为“注入”和“折叠”。举例说明它是如何工作的：
+
+```js
+var a = [1, 2, 3, 4, 5];
+var sum = a.reduce(function(x, y) {return x + y}, 0); // 数组求和
+var produce = a.reduce(function(x, y) {return x * y}, 1); // 数组求积
+var max = a.reduce(function(x,y){return (x>y)?x:y;}); // 求最大值
+```
+
+`reduce()`需要两个参数。第一个是执行化简操作的函数。化简函数的任务就是用某种方法把两个值组合或化简为一个值，并返回化简后的值。在上述例子中，函数通过加法、乘法或取最大值的方法组合两个值。第二个（可选）的参数是一个传递给函数的初始值。
+
+`reduce()`使用的函数与`forEach()`和`map()`使用的函数不同。比较熟悉的是，数组元素、元素的索引和数组本身将作为第2～4个参数传递给函数。第一个参数是到目前为止的化简操作累积的结果。第一次调用函数时，第一个参数是一个初始值，它就是传递给`reduce()`的第二个参数。在接下来的调用中，这个值就是上一次化简函数的返回值。在上面的第一个例子中，第一次调用化简函数时的参数是0和1。将两者相加并返回1。再次调用时的参数是1和2，它返回3。然后它计算3+3=6、6+4=10，最后计算10+5=15。最后的值是15，`reduce()`返回这个值。
+
+可能已经注意到了，上面第三次调用`reduce()`时只有一个参数：没有指定初始值。当不指定初始值调用`reduce()`时，它将使用数组的第一个元素作为其初始值。这意味着第一次调用化简函数就使用了第一个和第二个数组元素作为其第一个和第二个参数。在上面求和与求积的例子中，可以省略初始值参数。
+
+在空数组上，不带初始值参数调用`reduce()`将导致类型错误异常。如果调用它的时候只有一个值——数组只有一个元素并且没有指定初始值，或者有一个空数组并且指定一个初始值——`reduce()`只是简单地返回那个值而不会调用化简函数。
+
+`reduceRight()`的工作原理和`reduce()`一样，不同的是它按照数组索引从高到低（从右到左）处理数组，而不是从低到高。如果化简操作的优先顺序是从右到左，你可能想使用它，例如：
+
+```js
+var a = [2, 3, 4];
+// 计算2^(3^4)。乘方操作的优先顺序是从右到左
+var big = a.reduceRight(function(accumlator, value) {
+  return Math.pow(value, accumlator);
+});
+```
+
+注意，`reduce()`和`reduceRight()`都能接收一个可选的参数，它指定了化简函数调用时的this关键字的值。可选的初始值参数仍然需要占一个位置。如果想让化简函数作为一个特殊对象的方法调用，请参看`Function.bind()`方法。
+
+值得注意的是，上面描述的`every()`和`some()`方法是一种类型的数组化简操作。但是不同的是，它们会尽早终止遍历而不总是访问每一个数组元素。
+
+为了简单起见，到目前位置所展示的例子都是数值的，但数学计算不是`reduce()`和`reduceRight()`的唯一意图。考虑一下例6-2中的`union()`函数。它计算两个对象的“并集”，并返回另一个新对象，新对象具有二者的属性。该函数期待两个对象并返回另一个对象，所以它的工作原理和一个化简函数一样，并且可以使用`reduce()`来把它一般化，计算任意数目的对象的“并集”。
+
+```js
+function extend(o, p) {
+  for (prop in p) { // 遍历p中所有的属性
+    o[prop] = p[prop]; // 将遍历属性添加至o中
+  }
+  return o;
+}
+
+function union(o, p) {
+  return extend(extend({}, o), p);
+}
+
+var objects =[{x:1},{y:2},{z:3}];
+var merged = objects.reduce(union); // => {x:1,y:2,z:3}
+```
+
+回想一下，当两个对象拥有同名的属性时，`union()`函数使用第一个参数的属性值。这样，`reduce()`和`reduceRight()`在使用`union()`时给出了不同的结果：
+
+```js
+var objects =[{x:1,a:1}, {y:2,a:2}, {z:3,a:3}]; 
+var leftunion = objects.reduce(union); // => {x:1, a:3, y:2, z:3}
+var rightunion = objects.reduceRight(union); // => {z:3, a:1, y:2, x:1}
+```
+
 ### 7.9.6 indexOf()和lastIndexOf()
 
+`indexOf()`和`lastIndexOf()`搜索整个数组中具有给定值的元素，返回找到的第一个元素的索引或者如果没有找到就返回-1。`indexOf()`从头至尾搜索，而`lastIndexOf()`则反向搜索。
+
+```js
+a = [0, 1, 2, 1, 0];
+a.indexOf(1); // =>1：a[1]是1
+a.lastIndexOf(1); // =>3：a[3]是1
+a.indexOf(3) // =>-1：没有找到值为3的元素
+```
+
+不同于本节描述的其他方法，`indexOf()`和`lastIndexOf()`方法不接收一个函数作为其参数。第一个参数是需要搜索的值，第二个参数是可选的：它指定数组中的一个索引，从那里开始搜索。如果省略该参数，`indexOf()`从头开始搜索，而`lastIndexOf()`从末尾开始搜索。第二个参数也可以是负数，它代表相对数组末尾的偏移量，对于`splice()`方法：例如，-1指定数组的最后一个元素。
+
+如下函数在一个数组中搜索指定的值并返回包含所有匹配的数组索引的一个数组。它展示了如何运用`indexOf()`的第二个参数来查找除了第一个以外匹配的值。
+
+```js
+// 在数组中查找所有出现的x，并返回一个包含匹配索引的数组
+function findall(a, x) {
+  var results = [], // 将会返回的数组
+    len = a.length, // 待搜索数组的长度
+    pos = 0; // 开始搜索的位置
+  while (pos < len) { // 循环搜素多个元素...
+    pos = a.indexOf(x, pos); // 搜素
+    if (pos === -1) break; // 未找到，就完成搜素
+    results.push(pos); // 否则，在数组中存储索引
+    pos = pos + 1; // 并从下一个位置开始搜索
+  }
+  return results; // 返回包含索引的数组
+};
+```
+
+注意，字符串也有`indexOf()`和`lastIndexOf()`方法，它们和数组方法的功能类似。
+
 ## 7.10 数组类型
+
+我们在本章中到处都可以看见数组是具有特殊行为的对象。给定一个未知的对象，判定它是否为数组通常非常有用。在ECMAScript 5中，可以使用`Array.isArray()`函数来做这件事情：
+
+```js
+Array.isArray([]); // true
+Array.isArray({}); // false
+```
+
+但是，在ECMAScript 5以前，要区分数组和非数组对象却令人惊讶地困难。typeof操作符在这里帮不上忙：对数组它返回“对象”（并且对于除了函数以外的所有对象都是如此）。instanceof操作符只能用于简单的情形：
+
+```js
+[] instanceof Array; // => true
+({}) instanceof Array; // => false
+```
+
+使用instanceof的问题是在Web浏览器中有可能有多个窗口或窗体（frame）存在。每个窗口都有自己的JavaScript环境，有自己的全局对象。并且，每个全局对象有自己的一组构造函数。因此一个窗体中的对象将不可能是另外窗体中的构造函数的实例。窗体之间的混淆不常发生，但这个问题足已证明instanceof操作符不能视为一个可靠的数组检测方法。
+
+解决方案是检查对象的类属性。对数组而言该属性的值总是“Array”，因此在ECMAScript3中`isArray()`函数的代码可以这样书写：
+
+```js
+var isArray = Function.isArray || function(o) {
+  return typeof o === "object" && 
+  Object.prototype.toString.call(o) === "[object Array]";
+};
+```
+
+实际上，此处类属性的检测就是ECMAScript 5中`Array.isArray()`函数所做的事情。获得对象类属性的技术使用了6.8.2节和例6-4中展示的Object.prototype.toString()方法。
+
 ## 7.11 类数组对象
+
+我们已经看到，JavaScript数组的有一些特性是其他对象所没有的：
+
+- 当有新的元素添加到列表中时，自动更新length属性。
+- 设置length为一个较小值将截断数组。
+- 从Array.prototype中继承一些有用的方法。
+- 其类属性为“Array”。
+
+这些特性让JavaScript数组和常规的对象有明显的区别。但是它们不是定义数组的本质特性。一种常常完全合理的看法把拥有一个数值length属性和对应非负整数属性的对象看做一种类型的数组。
+
+实践中这些“类数组”对象实际上偶尔出现，虽然不能在它们之上直接调用数组方法或者期望length属性有什么特殊的行为，但是仍然可以用针对真正数组遍历的代码来遍历它们。结论就是很多数组算法针对类数组对象工作得很好，就像针对真正的数组一样。如果算法把数组看成只读的或者如果它们至少保持数组长度不变，也尤其是这种情况。以下代码为一个常规对象增加了一些属性使其变成类数组对象，然后遍历生成的伪数组的“元素”：
+
+```js
+var a = {}; // 从一个常规空对象开始
+// 添加一组属性，称为“类数组”
+var i = 0;
+while (i < 10) {
+  a[i] = i * i;
+  i++;
+}
+a.length = i;
+
+// 现在当真正的数组遍历它
+var total = 0;
+for (var j = 0; j < a.length; j++)
+  total += a[j];
+console.log(total)
+```
+
+8.3.2节描述的Arguments对象就是一个类数组对象。在客户端JavaScript中，一些DOM方法（如`document.getElementsByTagName()`）也返回类数组对象。下面有一个函数可以用来检测类数组对象：
+
+```js
+//判定o是否是一个类数组对象
+//字符串和函数都length属性，但是他们可以有typeOf检测将其排除
+//在客户端javascript中，DOM文本节点也有length属性，需要用额外的o.nodetype != 3将其排除
+function isArrayLike(o) {
+  if (o && //o非null、undefined等
+    typeof o === "object" && //o是对象
+    isFinite(o.length) && //o.length是有限数
+    o.length >= o && //o.length是非负数
+    o.length === Math.floor(o.length) && //o.length是整数
+    o.length < 4294967296) //o.length < 2^32
+    return true;
+  else
+    return fasle; //否则它不是
+}
+```
+
+将在7.12节中看到在ECMAScript 5中字符串的行为与数组类似（并且有些浏览器在ECMAScript 5之前已经让字符串变成可索引的了）。然而，类似上述的类数组对象的检测方法针对字符串常常返回false——它们通常最好当做字符串处理，而非数组。
+
+JavaScript数组方法是特意定义为通用的，因此它们不仅应用在真正的数组而且在类数组对象上都能正确工作。在ECMAScript 5中，所有的数组方法都是通用的。在ECMAScript 3中，除了`toString()`和`toLocaleString()`以外的所有方法也是通用的。（`concat()`方法是一个特例：虽然可以用在类数组对象上，但它没有将那个对象扩充进返回的数组中。）既然类数组对象没有继承自Array.prototype，那就不能在它们上面直接调用数组方法。尽管如此，可以间接地使用Function.call方法调用：
+
+```js
+var a ={"0":"a","1":"b","2":"c",length:3}
+Array.prototype.join.call(a,"+") // => "a+b+c"
+Array.prototype.slice.call(a,0) // => ["a","b","c"]：真正的数组副本
+Array.prototype.map.call(a.Function(x){
+  return x.toUpperCase();
+}) // => ["A","B","C"] 
+```
+
+在7.10节的`isArray()`方法之前我们就已经见过`call()`技术。8.7.3节涵盖关于Function对象的`call()`方法的更多内容。ECMAScript 5数组方法是在Firefox 1.5中引入的。由于它们的写法的一般性，Firefox还将这些方法的版本在Array构造函数上直接定义为函数。使用这些方法定义的版本，上述例子就可以这样重写：
+
+```js
+var a = {"0": "a","1": "b","2": "c",length: 3};
+Array.join(a, "+");
+Array.slice(a, 0);
+Array.map(a, function(x) {
+  return x.toUpperCase();
+})
+```
+
+当用在类数组对象上时，数组方法的静态函数版本非常有用。但既然它们不是标准的，不能期望它们在所有的浏览器中都有定义。可以这样书写代码来保证使用它们之前是存在的：
+
+```js
+Array.join = Array.join || function(a, serp) {
+  return Array.prototype.join.call(a, serp);
+};
+Array.slice = Array.slice || function(a, form, to) {
+  return Array.prototype.slice.call(a, form, to);
+};
+Array.map = Array.map || function(a, f, thisArg) {
+  return Array.prototype.map.call(a, f, thisArg);
+};
+```
+
 ## 7.12 作为数组的字符串
+
+在ECMAScript 5（在众多最近的浏览器实现——包括IE8——早于ECMAScript5）中，字符串的行为类似于只读的数组。除了用`charAt()`方法来访问单个的字符以外，还可以使用方括号：
+
+```js
+var s = "test";
+s.charAt(0); // => "t"
+s[1 ;  // => "e"
+```
+
+当然，针对字符串的typeof操作符仍然返回“string”，但是如果给Array.isArray()传递字符串，它将返回false。
+
+可索引的字符串的最大的好处就是简单，用方括号代替了`charAt()`调用，这样更加简洁、可读并且可能更高效。不仅如此，字符串的行为类似于数组的事实使得通用的数组方法可以应用到字符串上。例如：
+
+```js
+var s = "javascript"
+Array.prototype.join.call(s, " "); //=>' j a v a s c r i p t'
+Array.prototype.filter.call(s, function(x) { //过滤字符串中的字符
+  return x.match(/[^aeiou]/); //匹配非元音字符
+}).join("") //=>jvscrpt
+```
+
+请记住，字符串是不可变值，故当把它们作为数组看待时，它们是只读的。如`push()`、`sort()`、`reverse()`和`splice()`等数组方法会修改数组，它们在字符串上是无效的。不仅如此，使用数组方法来修改字符串会导致错误：出错的时候没有提示。
 
 # 第8章 函数
 
