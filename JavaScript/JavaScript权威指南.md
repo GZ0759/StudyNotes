@@ -4792,15 +4792,15 @@ Array.prototype.filter.call(s, function(x) { //过滤字符串中的字符
 
 函数是这样的一段 JavaScript 代码，它只定义一次，但可能被执行或调用任意次。
 
-JavaScript函数是参数化的：函数的定义会包括一个称为形参（parameter）的标识符列表，这些参数在函数体中像局部变量一样工作。函数调用会为形参提供实参的值。函数使用它们实参的值来计算返回值，成为该函数调用表达式的值。
+JavaScript 函数是参数化的：函数的定义会包括一个称为形参（parameter）的标识符列表，这些参数在函数体中像局部变量一样工作。函数调用会为形参提供实参的值。函数使用它们实参的值来计算返回值，成为该函数调用表达式的值。
 
-除了实参之外，每次调用还会拥有另一个值——本次调用的上下文——这就是this关键字的值。
+除了实参之外，每次调用还会拥有另一个值——本次调用的上下文——这就是 this 关键字的值。
 
-如果函数挂载在一个对象上，作为对象的一个属性，就称它为对象的方法。当通过这个对象来调用函数时，该对象就是此次调用的上下文（context），也就是该函数的this的值。
+如果函数挂载在一个对象上，作为对象的一个属性，就称它为对象的方法。当通过这个对象来调用函数时，该对象就是此次调用的上下文（context），也就是该函数的 this 的值。
 
 用于初始化一个新创建的对象的函数称为构造函数（constructor）。
 
-在JavaScript里，函数即对象，程序可以随意操控它们。比如，JavaScript可以把函数赋值给变量，或者作为参数传递给其他函数。因为函数就是对象，所以可以给它们设置属性，甚至调用它们的方法。
+在 JavaScript 里，函数即对象，程序可以随意操控它们。比如， JavaScript 可以把函数赋值给变量，或者作为参数传递给其他函数。因为函数就是对象，所以可以给它们设置属性，甚至调用它们的方法。
 
 JavaScript 的函数可以嵌套在其他函数中定义，这样它们就可以访问它们被定义时所处的作用域中的任何变量。这意味着 JavaScript 函数构成了一个闭包（closure），它给 JavaScript 带来了非常强劲的编程能力。
 
@@ -4818,45 +4818,45 @@ JavaScript 的函数可以嵌套在其他函数中定义，这样它们就可以
 //定义javascript函数
 //输出o的每个属性的名称和值，返回undefined
 function printprops(o) {
-    for (p in o)
-        console.log(p + ":" + o[p] + "\n")
+  for (p in o)
+    console.log(p + ":" + o[p] + "\n")
 }
 
 //计算两个迪卡尔坐标（x1,y1）和(x2,y2)之间的距离
 function distance(x1, y1, x2, y2) {
-    var dx = x2 - x1;
-    var dy = y2 - y1;
-    return Math.sqrt(dx * dx + dy * dy)
+  var dx = x2 - x1;
+  var dy = y2 - y1;
+  return Math.sqrt(dx * dx + dy * dy)
 }
 
 //计算递归函数（调用自身的函数）
 //x!的值是从x到x递减（步长为1）的值的累乘
 function factorial(x) {
-    if (x <= 1) return 1;
-    return x * factorial(x - 1);
+  if (x <= 1) return 1;
+  return x * factorial(x - 1);
 }
 
 //这个函数表达式定义了一个函数用来求传入参数的平方
 //注意我们把它赋值了给一个变量
 var square = function(x) {
-    return x * x
+  return x * x
 }
 
 //函数表达式可以包含名称，这在递归时很有用
 var f = function fact(x) {
-    if (x <= 1) return 1;
-    else return x * fact(x - 1);
+  if (x <= 1) return 1;
+  else return x * fact(x - 1);
 };
 //f(7)=>5040
 
 //函数表达式也可以作为参数传给其它函数
 data.sort(function(a, b) {
-    return a - b;
+  return a - b;
 });
 
 //函数表达式有时定义后立即使用
 var tensquared = (function(x) {
-    return x * x;
+  return x * x;
 }(10))
 ```
 
@@ -4889,7 +4889,7 @@ function hyuse(a, b) {
 
 ## 8.2 函数调用 
 
-构成函数主体的 JavaScript 代码在定义之时并不会执行，只有调用该函数时，它们才会执行。有4种方式来调用JavaScript函数：
+构成函数主体的 JavaScript 代码在定义之时并不会执行，只有调用该函数时，它们才会执行。有4种方式来调用 JavaScript 函数：
 
 1. 作为函数
 2. 作为方法
@@ -4910,7 +4910,7 @@ var probality = factorial(5) / factorial(13);
 
 对于普通的函数调用，函数的返回值称为调用表达式的值。如果该函数返回时因为解释器达到结尾，返回值就是 undefined 。如果函数返回时因为解释器执行到一条 return 语句，返回值就是 return 之后的表达式的值。如果 return 语句没有值，则返回 undefined 。
 
-根据ECMAScript 3和非严格的ECMAScript 5对函数调用的规定，调用上下文（this的值）是全局对象。然而，在严格模式下，调用上下文则是 undefined 。以函数形式调用的函数通常不使用 this 关键字。不过，“this”可以用来判断当前是否是严格模式。
+根据 ECMAScript3 和非严格的 ECMAScript5 对函数调用的规定，调用上下文（this的值）是全局对象。然而，在严格模式下，调用上下文则是 undefined 。以函数形式调用的函数通常不使用 this 关键字。不过，“this”可以用来判断当前是否是严格模式。
 
 ```js
 var strict= (function(){return !this;}());
@@ -4918,13 +4918,13 @@ var strict= (function(){return !this;}());
 
 ### 8.2.2 方法调用
 
-一个方法无非是个保存在一个对象的属性里的 JavaScript 函数。如果有一个函数 f 和一个对象 o ，则可以用下面的代码给 o 定义一个名为 m() 的方法。
+一个方法无非是个保存在一个对象的属性里的 JavaScript 函数。如果有一个函数 f 和一个对象 o ，则可以用下面的代码给 o 定义一个名为`m()`的方法。
 
 ```js
 o.m = f;
 ```
 
-给对象 o 定义了方法 m() 调用它时就像这样：
+给对象 o 定义了方法`m()`调用它时就像这样：
 
 ```js
 o.m();
@@ -4980,7 +4980,7 @@ $(":header").map(function(){return this.id}).get().sort();
 
 需要注意的是， this 是一个关键字，不是变量，也不是属性名。 JavaScript 的语法不允许给 this 赋值。
 
-和变量不同，关键字this没有作用域的限制，嵌套的函数不会从调用它的函数中继承this。如果嵌套函数作为方法调用，其this的值指向调用它的对象。如果嵌套函数作为函数调用，其this值不是全局对象（非严格模式下）就是undefined（严格模式下）。很多人误以为调用嵌套函数时this会指向调用外层函数的上下文。如果你想访问这个外部函数的this值，需要将this的值保存在一个变量里，这个变量和内部函数都同在一个作用域内。通常使用变量self来保存this，比如：
+和变量不同，关键字 this 没有作用域的限制，嵌套的函数不会从调用它的函数中继承 this 。如果嵌套函数作为方法调用，其 this 的值指向调用它的对象。如果嵌套函数作为函数调用，其 this 值不是全局对象（非严格模式下）就是undefined（严格模式下）。很多人误以为调用嵌套函数时 this 会指向调用外层函数的上下文。如果你想访问这个外部函数的 this 值，需要将 this 的值保存在一个变量里，这个变量和内部函数都同在一个作用域内。通常使用变量self来保存 this ，比如：
 
 ```js
 var o = { //对象o
@@ -5097,7 +5097,7 @@ f(11);
 
 **callee和caller属性**
 
-除了数组元素，实参对象还定义了 callee和 caller属性。在 ECMAScript 5 严格模式中，对这两个属性的读写操作都会产生一个类型错误。而在非严格模式下， ECMAScript标准规定 callee 属性指代当前正在执行的函数。 caller是非标准的，但大多数浏览器实现了这个属性，它指代调用当前正在执行的函数的函数。通过 caller 属性可以访问调用栈。callee 属性在某些时候会非常有用，比如在匿名函数中通过 callee 来递归地调用自身。
+除了数组元素，实参对象还定义了 callee 和 caller 属性。在 ECMAScript 5 严格模式中，对这两个属性的读写操作都会产生一个类型错误。而在非严格模式下， ECMAScript标准规定 callee 属性指代当前正在执行的函数。 caller是非标准的，但大多数浏览器实现了这个属性，它指代调用当前正在执行的函数的函数。通过 caller 属性可以访问调用栈。callee 属性在某些时候会非常有用，比如在匿名函数中通过 callee 来递归地调用自身。
 
 ```js
 var factorial = function(x) {
@@ -5250,7 +5250,7 @@ unInterger.counter = 0;
 //每次调用这个函数都会返回一个不同的整数
 //它使用一个属性来记住下一次将要返回的值
 function unInterger() {
-        unInterger.counter++  ; //先返回计数器的值，然后计数器自增1
+  unInterger.counter++  ; //先返回计数器的值，然后计数器自增1
 }
 ```
 
@@ -5259,11 +5259,11 @@ function unInterger() {
 ```js
 //计算阶乘，并将结果缓存在函数的属性中
 function factorrial(n) {
-    if (isFinite(n) && n > 0 && n == Math.round(n)) { //有限的正整数
-        if (!(n in factorrial)) //如果没有缓存结果
-            factorrial[n] = n * factorrial(n - 1); //计算并缓存之
-        return factorrial[n];
-    } else return NaN; //如果输入有误
+  if (isFinite(n) && n > 0 && n == Math.round(n)) { //有限的正整数
+    if (!(n in factorrial)) //如果没有缓存结果
+      factorrial[n] = n * factorrial(n - 1); //计算并缓存之
+    return factorrial[n];
+  } else return NaN; //如果输入有误
 }
 factorrial[1] = 1; //初始化缓存以保存这种基本情况
 console.log(factorrial())
@@ -5275,11 +5275,11 @@ console.log(factorrial())
 
 ```js
 function mymodule() {
-    //模块代码
-    //这个模块所有使用的所有变量是局部变量
-    //而不是污染全局命名空间
+  // 模块代码
+  // 这个模块所有使用的所有变量是局部变量
+  // 而不是污染全局命名空间
 }
-mymodule(); //不要忘了还要调用的这个函数
+mymodule(); // 不要忘了还要调用的这个函数
 ```
 
 这段代码仅仅定义了一个单独的全局变量：名为“mymodule”的函数。这样还是太麻烦，可以直接定义一个匿名函数，并在某个表达式中调用它。
@@ -5301,11 +5301,11 @@ mymodule(); //不要忘了还要调用的这个函数
 ```js
 var scope = "global scope"; //全局变量
 function checkscope() {
-    var scope = "local scope"; //局部变量
-    function f() {
-            return console.log(scope);
-        } //在作用域中返回这个值
-    return f();
+  var scope = "local scope"; //局部变量
+  function f() {
+    return console.log(scope);
+  } //在作用域中返回这个值
+  return f();
 }
 checkscope(); // local scope
 ```
