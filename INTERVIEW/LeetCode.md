@@ -383,32 +383,30 @@ var longestCommonPrefix = function(strs) {
   if (!strs.length) {
     return '';
   }
-  // 最短字符串的长度
-  let shortStrLength = strs[0].length; 
-  // 最短字符串的位置
-  let shortStrPosition = 0; 
-  for (let i = 0; i < strs.length; i++){
-    if (strs[i].length < shortStrLength) {
-      shortStrLength = strs[i].length;
-      shortStrPosition = i;
-    }
-  }
+  let minStr = strs[0];
+  strs.forEach(item=> {
+      if(item.length < minStr.length) {
+          minStr = item;
+      }
+  })
+
   let result = [];
   // 字符串中字符的位置
-  for (let i = 0; i < shortStrLength; i++) {
+  for (let i = 0; i < minStr.length; i++) {
     // 字符串的位置
     for (let j = 0; j < strs.length; j++) {
-      if (strs[shortStrPosition][i] != strs[j][i]) {
+      if (minStr[i] != strs[j][i]) {
         return result.join('');
       }
       if (j === strs.length - 1) {
         // 遍历字符串找出最短的一个下标
-        result[i] = strs[shortStrPosition][i];
+        result[i] = minStr[i];
       }
     }
   }
   return result.join('');
 };
+
 ```
 
 ## 解法 - 水平扫描
@@ -420,7 +418,6 @@ var longestCommonPrefix = function(strs) {
   }
   
   var result = strs[0];
-  
   for(let i = 0; i < result.length; i++) {
     for(let j = 1; j < strs.length; j++) {
       if (result[i] !== strs[j][i]) {
