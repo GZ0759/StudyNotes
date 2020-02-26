@@ -4843,7 +4843,6 @@ var f = function fact(x) {
   if (x <= 1) return 1;
   else return x * fact(x - 1);
 };
-//f(7)=>5040
 
 //函数表达式也可以作为参数传给其它函数
 data.sort(function(a, b) {
@@ -4935,12 +4934,12 @@ o.m(x, y);
 
 ```js
 var calcul = { //对象直接量
-    oprand1: 1,
-    oprand2: 1,
-    add: function() {
-        //注意this关键字的用法，this指带当前对象
-        return this.result = this.oprand1 + this.oprand2;
-    }
+  oprand1: 1,
+  oprand2: 1,
+  add: function() {
+    //注意this关键字的用法，this指带当前对象
+    return this.result = this.oprand1 + this.oprand2;
+  }
 };
 calcul.add(); //这个方法调用计算1+1的结果
 calcul.result; //=>2
@@ -4949,7 +4948,7 @@ calcul.result; //=>2
 大多数方法调用使用点符号来访问属性，使用方括号也可以进行属性访问操作。
 
 ```js
-o["m"](x,y) //o.m(x,y)的另外一种写法
+o["m"](x, y) //o.m(x,y)的另外一种写法
 a[0](z)//同样是一个方法调用(这里假设a[0]是一个函数)
 ```
 
@@ -4976,20 +4975,20 @@ $(":header").map(function(){return this.id}).get().sort();
 
 需要注意的是， this 是一个关键字，不是变量，也不是属性名。 JavaScript 的语法不允许给 this 赋值。
 
-和变量不同，关键字 this 没有作用域的限制，嵌套的函数不会从调用它的函数中继承 this 。如果嵌套函数作为方法调用，其 this 的值指向调用它的对象。如果嵌套函数作为函数调用，其 this 值不是全局对象（非严格模式下）就是undefined（严格模式下）。很多人误以为调用嵌套函数时 this 会指向调用外层函数的上下文。如果你想访问这个外部函数的 this 值，需要将 this 的值保存在一个变量里，这个变量和内部函数都同在一个作用域内。通常使用变量self来保存 this ，比如：
+和变量不同，关键字 this 没有作用域的限制，嵌套的函数不会从调用它的函数中继承 this 。如果嵌套函数作为方法调用，其 this 的值指向调用它的对象。如果嵌套函数作为函数调用，其 this 值不是全局对象（非严格模式下）就是undefined（严格模式下）。很多人误以为调用嵌套函数时 this 会指向调用外层函数的上下文。如果你想访问这个外部函数的 this 值，需要将 this 的值保存在一个变量里，这个变量和内部函数都同在一个作用域内。通常使用变量 self 来保存 this ，比如：
 
 ```js
 var o = { //对象o
-    m: function() { //对象中的方法m()
-        var self = this; //将this的值保存在一个变量中
-        console.log(this === o); //输出true，this就是这个对象o
-        f(); //调用辅助函数f()
+  m: function() { //对象中的方法m()
+    var self = this; //将this的值保存在一个变量中
+    console.log(this === o); //输出true，this就是这个对象o
+    f(); //调用辅助函数f()
 
-        function f() { //定义一个嵌套函数f()
-            console.log(this === o); //"false":this的值是全局对象undefied
-            console.log(self === o); //"true": slef指外部函数this的值
-        }
+    function f() { //定义一个嵌套函数f()
+      console.log(this === o); //"false":this的值是全局对象undefied
+      console.log(self === o); //"true": slef指外部函数this的值
     }
+  }
 };
 o.m();//调用对象o的方法m
 ```
@@ -5078,7 +5077,7 @@ max(1, 10, 222, 100); //=>222
 
 注意，不定实参函数的实参个数不能为零，`arguments[]`对象最适合的应用场景是在这样一类函数中，这种函数包含固定个数的命名和必须参数，以及随后个数不定的可选实参。
 
-数组对象包含一个非同寻常的特性。在非严格 模式下，当一个函数包含若干形参，实参对象的数组元素时函数形参所对应实参的别名，实参对象中以数字索引，并且形参名称可以认为是相同变量的不同命名。通过实参名字来修改参数值的话，通过`arguments[]`数组也可以获取到更改后的值。
+数组对象包含一个非同寻常的特性。在非严格模式下，当一个函数包含若干形参，实参对象的数组元素时函数形参所对应实参的别名，实参对象中以数字索引，并且形参名称可以认为是相同变量的不同命名。通过实参名字来修改参数值的话，通过`arguments[]`数组也可以获取到更改后的值。
 
 ```js
 function f(x) {
@@ -5114,23 +5113,23 @@ var factorial = function(x) {
 function arrayCopy( /*array*/ from, /*index*/ from_start, 
                     /*array*/ to, /*index*/ to_start, 
                     /*integer*/ length) {
-    //逻辑代码
+  //逻辑代码
 }
 //这个版本的实现效率有些低，但你不必再记住实参的顺序
 //并且from_start和to_start都默认为0
 function easyCopy(args) {
-    arrayCopy(args.form,
-        args.form_start || 0, //注意，这里设置了默认值
-        args.to,
-        args.to_start || 0, args.length);
+  arrayCopy(args.form,
+    args.form_start || 0, //注意，这里设置了默认值
+    args.to,
+    args.to_start || 0, args.length);
 }
 //来看如何调用easyCopy
 var a = [1, 2, 3, 4],
     b = [];
 easyCopy({
-    from: a,
-    to: b,
-    length: 4
+  from: a,
+  to: b,
+  length: 4
 });
 ```
 
@@ -5145,30 +5144,30 @@ JavaScript 方法的形参并未声明类型，在形参传入函数体之前也
 //字符串和函数都length属性，但是他们可以有typeOf检测将其排除
 //在客户端javascript中，DOM文本节点也有length属性，需要用额外的o.nodetype != 3将其排除
 function isArrayLike(o) {
-    if (o && //o非null、undefined等
-        typeof o === "object" && //o是对象
-        isFinite(o.length) && //o.length是有限数
-        o.length >= o && //o.length是非负数
-        o.length === Math.floor(o.length) && //o.length是整数
-        o.length < 4294967296) //o.length < 2^32
-        return true;
-    else
-        return fasle; //否则它不是
+  if (o && //o非null、undefined等
+    typeof o === "object" && //o是对象
+    isFinite(o.length) && //o.length是有限数
+    o.length >= o && //o.length是非负数
+    o.length === Math.floor(o.length) && //o.length是整数
+    o.length < 4294967296) //o.length < 2^32
+    return true;
+  else
+    return fasle; //否则它不是
 }
 
 //返回数组（或类数组对象）a的元素累加和
 //数组a中必须为数字/ null undefined的元素都将忽略
 function sum(a) {
-    if (isArrayLike(a)) {
-        var total = 0;
-        for (var i = 0; i < a.length; i++) { //遍历所有元素
-            var element = a[i];
-            if (element == null) continue; //跳过null和undefiend
-            if (isFinite(element)) total += element;
-            else throw new Error("sum():elements must be a finte numbers");
-        }
-        return total;
-    } else throw new Error("sun():arguments mustbe array-like")
+  if (isArrayLike(a)) {
+    var total = 0;
+    for (var i = 0; i < a.length; i++) { //遍历所有元素
+      var element = a[i];
+      if (element == null) continue; //跳过null和undefiend
+      if (isFinite(element)) total += element;
+      else throw new Error("sum():elements must be a finte numbers");
+    }
+    return total;
+  } else throw new Error("sun():arguments mustbe array-like")
 };
 
 a = [1,2,4,5,3,6,7];
@@ -5179,22 +5178,22 @@ JavaScript 是一种非常灵活的弱类型语言，有时适合编写实参类
 
 ```js
 function flexisum(a) {
-    var total = 0;
-    for (var i = 0; i < arguments.length; i++) {
-        var element = arguments[i],
-            n;
-        if (element == null) continue; //忽略null和undefined
-        if (isArray(element)) //如果实参是数组
-            n = flexisum.apply(this, element); //递归的计算累加和
-        else if (typeof element === "function") //否则，如果是函数...
-            n = Number(element()); //调用它并做类型抓换
-        else
-            n = Number(element); //直接做类型抓换
-        if (isNaN(n)) //如果无法转换为数字，则抛出异常
-            throw Error("flexisum():can nont convent" + element + "to number");
-        total += n; //否则，将n累加到total
-    }
-    return total;
+  var total = 0;
+  for (var i = 0; i < arguments.length; i++) {
+    var element = arguments[i],
+        n;
+    if (element == null) continue; //忽略null和undefined
+    if (isArray(element)) //如果实参是数组
+      n = flexisum.apply(this, element); //递归的计算累加和
+    else if (typeof element === "function") //否则，如果是函数...
+      n = Number(element()); //调用它并做类型抓换
+    else
+      n = Number(element); //直接做类型抓换
+    if (isNaN(n)) //如果无法转换为数字，则抛出异常
+      throw Error("flexisum():can nont convent" + element + "to number");
+    total += n; //否则，将n累加到total
+  }
+  return total;
 }
 ```
 
@@ -5204,7 +5203,7 @@ function flexisum(a) {
 
 ```js
 function square(x) {
-    return x * x
+  return x * x
 }
 var s = square; //现在s和sqare指代同一个函数
 square(4); //=>16
@@ -5215,10 +5214,10 @@ s(4); //=>16
 
 ```js
 var o = {
-        square: function(x) {
-            return x * x
-        }
-    }; //对象直接量
+  square: function(x) {
+    return x * x
+  }
+}; //对象直接量
 var y = o.square(16);
 ```
 
@@ -5226,8 +5225,9 @@ var y = o.square(16);
 
 ```js
 var a = [
-    function(x) {return x * x},
-    20];
+  function(x) {return x * x},
+  20
+];
 console.log(a[0](a[1])) //=>400
 ```
 
@@ -5282,7 +5282,7 @@ mymodule(); // 不要忘了还要调用的这个函数
 
 ```js
 (function() { //mymodule函数重写为匿名函数表达式
-    //模块代码
+  //模块代码
 }()); //结束函数定义并立即调用它
 ```
 
@@ -5313,18 +5313,18 @@ checkscope(); // local scope
 ```js
 var scope = "global scope"; //全局变量
 function checkscope() {
-    var scope = "local scope"; //局部变量
-    function f() {
-            return console.log(scope);
-        } //在作用域中返回这个值
-    return f;
+  var scope = "local scope"; //局部变量
+  function f() {
+    return console.log(scope);
+  } //在作用域中返回这个值
+  return f;
 }
 checkscope()(); // local scope
 ```
 
 > 实现闭包。函数定义时的作用域链到函数执行时依然有效。往往我们觉得在外部函数中定义的局部变量在函数返回后就不存在了，那么嵌套的函数如何能调用不存在的作用域链呢？但其实这是错的。
 
-> 我们将作用域链描述为一个对象列表，不是绑定的栈。每次调用 JavaScript 函数的时候，都会为之创建一个新的对象用来保存局部变量，把这个对象添加至作用域链中。当函数返回的时候，就从作用域链中将这个绑定变量的对象删除。如果不存在嵌套的函数，也没有其他引用指向这个绑定对象，它就会被当作垃圾回收掉。如果定义了嵌套的函数，每个嵌套函数都各自对应一个作用域链，并且这个作用域链指向一个变量绑定对象。如果这些嵌套的函数对象在外部函数中保存下来，那么它们也会和所指向的变量绑定对象一样当作垃圾回收。但是，如果这个函数定义了嵌套的函数，并将它作为返回值返回���者存储在某处的属性里，这时就会有一个外部引用指向这个嵌套的函数。它就不会被当作垃圾回收，并且它所指向的变量绑定对象也不会被当作垃圾回收。
+> 我们将作用域链描述为一个对象列表，不是绑定的栈。每次调用 JavaScript 函数的时候，都会为之创建一个新的对象用来保存局部变量，把这个对象添加至作用域链中。当函数返回的时候，就从作用域链中将这个绑定变量的对象删除。如果不存在嵌套的函数，也没有其他引用指向这个绑定对象，它就会被当作垃圾回收掉。如果定义了嵌套的函数，每个嵌套函数都各自对应一个作用域链，并且这个作用域链指向一个变量绑定对象。如果这些嵌套的函数对象在外部函数中保存下来，那么它们也会和所指向的变量绑定对象一样当作垃圾回收。但是，如果这个函数定义了嵌套的函数，并将它作为返回值返回或者存储在某处的属性里，这时就会有一个外部引用指向这个嵌套的函数。它就不会被当作垃圾回收，并且它所指向的变量绑定对象也不会被当作垃圾回收。
 
 在 8.4.1 节中定义了`uniqueInteger()`函数，这个函数使用自身的一个属性来保存每次返回的值，以便每次调用都能跟踪上次的返回值。但这种做法有一个问题，就是恶意代码可能将计数器重置或者把一个非整数赋值给它，导致该函数不一定能产生唯一的整数。而闭包可以捕捉到单个函数调用的局部变量，并将这些局部变量用作私有状态。
 
@@ -5339,11 +5339,11 @@ var uniqueInteger = (function() { //定义函数并立即调用
 
 ```js
 function counter(){
-    var n =0;
-    return{
-        count: function(){ return n++; },
-        reset: function(){ n = 0; }
-    };
+  var n =0;
+  return{
+    count: function(){ return n++; },
+    reset: function(){ n = 0; }
+  };
 }
 var c = counter(), d = counter(); //创建两个计数器
 console.log(c.count())  // =>0
@@ -5359,17 +5359,17 @@ console.log(d.count())  // =>2
 
 ```js
 function counter(n) { //函数参数n是一个私有变量
-    return {
-        //属性getter方法返回并给私有计数器var递增1
-        get count() {
-            return n++;
-        },
-        //属性setter方法不允许n递减
-        set count(m) {
-            if (m >= n) n = m;
-            else throw Error("count can only be set to a larger value");
-        }
-    };
+  return {
+    //属性getter方法返回并给私有计数器var递增1
+    get count() {
+      return n++;
+    },
+    //属性setter方法不允许n递减
+    set count(m) {
+      if (m >= n) n = m;
+      else throw Error("count can only be set to a larger value");
+    }
+  };
 }
 var c = counter(1000);
 console.log(c.count) //=>1000
@@ -5607,9 +5607,9 @@ var f = function(x, y) {
 var scope = "global";
 
 function constructFunction() {
-        var scope = "local";
-        return new Function("return scope"); //无法捕捉局部作用域
-    }
+  var scope = "local";
+  return new Function("return scope"); //无法捕捉局部作用域
+}
 //这行代码返回global
 //因为通过Function()构造函数所返回的函数使用的不是局部作用域
 constructFunction()(); //=>"global"
