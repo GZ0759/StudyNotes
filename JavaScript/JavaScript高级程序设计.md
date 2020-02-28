@@ -1394,7 +1394,7 @@ RegExp构造函数包含一些属性，这些属性分别有一个长属性名�
 
 ## 5.5 Function类型　
 
-函数实际上是对象。每个函数都是 Function 类型的实例，而且都与其他引用类型一样具有属性和方法。由于函数是对象，因此函数名实际上也是一个指向函数对象的指针，不会与某个函数绑定。函数通常是使用函数声明语法定义的。另外，还要注意函数末尾有一个分号，就像声明其他变量时一样。
+函数实际上是对象。每个函数都是 Function 类型的实例，而且都与其他引用类型一样具有属性和方法。由于函数是对象，因此函数名实际上也是一个指向函数对象的指针，不会与某个函数绑定。函数通常是使用函数声明语法定义的。这与使用函数表达式定义函数的方式几乎相差无几。另外，还要注意函数末尾有一个分号，就像声明其他变量时一样。
 
 ```js
 // 函数声明语法
@@ -1402,7 +1402,7 @@ function sum (num1, num2) {
   return num1 + num2;
 }
 
-// 与函数表达式定义函数的方式几乎相差无几
+// 函数表达式
 var sum = function(num1, num2){
   return num1 + num2;
 };
@@ -1466,7 +1466,7 @@ function sum(num1, num2){
 
 因为在代码开始执行之前，解析器就已经通过一个名为函数声明提升（function declaration hoisting）的过程，读取并将函数声明添加到执行环境中。对代码求值时， JavaScript 引擎在第一遍会声明函数并将它们放到源代码树的顶部。所以，即使声明函数的代码在调用它的代码后面， JavaScript 引擎也能把函数声明提升到顶部。
 
-如果像下面例子所示的，把上面的函数声明改为等价的函数表达式，就会在执行期间导致错误。
+如果把上面的函数声明改为等价的函数表达式，就会在执行期间导致错误。原因在于函数位于一个初始化语句中，而不是一个函数声明。而且，由于第一行代码就会导致“unexpected identifier”（意外标识符）错误，实际上也不会执行到下一行。
 
 ```js
 alert(sum(10,10));
@@ -1485,12 +1485,18 @@ return num1 + num2;
 function callSomeFunction(someFunction, someArgument){
   return someFunction(someArgument);
 }
+```
 
+这个函数接受两个参数。第一个参数应该是一个函数，第二个参数应该是要传递给该函数的一个值。然后，就可以像下面的例子一样传递函数了。这里的 `callSomeFunction()`函数是通用的，即无论第一个参数中传递进来的是什么函数，它都会返回执行第一个参数后的结果。
+
+```js
 function add10(num){
   return num + 10;
 }
+
 var result1 = callSomeFunction(add10, 10);
 alert(result1); //20
+
 function getGreeting(name){
   return "Hello, " + name;
 }
@@ -1501,6 +1507,8 @@ alert(result2); //"Hello, Nicholas"
 当然，可以从一个函数中返回另一个函数，而且这也是极为有用的一种技术。例如，假设有一个对象数组，我们想要根据某个对象属性对数组进行排序。而传递给数组 `sort()`方法的比较函数要接收两个参数，即要比较的值。可是，我们需要一种方式来指明按照哪个属性来排序。要解决这个问题，可以定义一个函数，它接收一个属性名，然后根据这个属性名来创建一个比较函数，下面就是这个函数的定义。
 
 ```js
+// 调用 createComparisonFunction("name")方法创建了一个比较函数，
+// 以便按照每个对象的 name 属性值进行排序。
 function createComparisonFunction(propertyName) {
   return function(object1, object2){
     var value1 = object1[propertyName];
@@ -1516,8 +1524,10 @@ function createComparisonFunction(propertyName) {
 }
 
 var data = [{name: "Zachary", age: 28}, {name: "Nicholas", age: 29}];
+
 data.sort(createComparisonFunction("name"));
 alert(data[0].name); //Nicholas
+
 data.sort(createComparisonFunction("age"));
 alert(data[0].name); //Zachary
 ```
@@ -1536,9 +1546,11 @@ function factorial(num){
 }
 
 var trueFactorial = factorial;
+
 factorial = function(){
   return 0;
 };
+
 alert(trueFactorial(5)); //120
 alert(factorial(5)); //0
 ```
@@ -1548,39 +1560,35 @@ alert(factorial(5)); //0
 ```js
 window.color = "red";
 var o = { color: "blue" };
+
 function sayColor(){
   alert(this.color);
 }
+
 sayColor(); //"red"
 o.sayColor = sayColor;
 o.sayColor(); //"blue"
 ```
 
-函数的名字仅仅是一个包含指针的变量而已。因此，即使是在不同的环境中执行，全局的 `sayColor()`函数与 `o.sayColor()`指向的仍然是同一个函数。
+> 函数的名字仅仅是一个包含指针的变量而已。因此，即使是在不同的环境中执行，全局的 `sayColor()`函数与 `o.sayColor()`指向的仍然是同一个函数。
 
-ECMAScript 5 也规范化了另一个函数对象的属性： caller。这个属性中保存着调用当前函数的函数的引用，如果是在全局作用域中调用当前函数，它的值为 null。
-
-```js
-function outer(){
-  inner();
-}
-function inner(){
-  alert(inner.caller);
-}
-outer()
-```
-
-为了实现更松散的耦合，也可以通过 `arguments.callee.caller`来访问相同的信息。
+ECMAScript 5 也规范化了另一个函数对象的属性： caller。这个属性中保存着调用当前函数的函数的引用，如果是在全局作用域中调用当前函数，它的值为 null。为了实现更松散的耦合，也可以通过 `arguments.callee.caller`来访问相同的信息。
 
 ```js
 function outer(){
   inner();
 }
+
 function inner(){
+  // alert(inner.caller);
+  // 相当于
   alert(arguments.callee.caller);
 }
+
 outer();
 ```
+
+当函数在严格模式下运行时，访问 `arguments.callee` 会导致错误。 ECMAScript 5 还定义了`arguments.caller` 属性，但在严格模式下访问它也会导致错误，而在非严格模式下这个属性始终是undefined。定义这个属性是为了分清 `arguments.caller` 和函数的 `caller` 属性。以上变化都是为了加强这门语言的安全性，这样第三方代码就不能在相同的环境里窥视其他代码了。严格模式还有一个限制：不能为函数的 caller 属性赋值，否则会导致错误。
 
 ### 5.5.5 函数属性和方法
 
