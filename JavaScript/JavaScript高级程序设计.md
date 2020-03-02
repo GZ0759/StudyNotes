@@ -1594,9 +1594,22 @@ outer();
 
 函数是对象，因此函数也有属性和方法，每个函数都有 length 和 prototype 两个属性。 length 表示函数希望接收的命名函数的个数， prototype 是保存所有实例方法的真正所在，诸如 `toString ()` 和 `valueOf ()` 等方法都保存在 prototype 名下，不过只是通过各自对象的实例访问。在创建自定义引用类型以及实现继承时， prototype 属性的作用是极为重要的。在 ECMAScript 5 中， prototype 属性是不可枚举的，因此使用 for-in 无法发现。
 
-每个函数一般还包含连个非继承而来的方法： `apply ()` 和 `call ()` ，这两个方法的用途都是在特定的作用域中调用函数，实际上等于设置函数体内 this 对象的值。
+```js
+function sayName(name){
+  alert(name);
+}
+function sum(num1, num2){
+  return num1 + num2;
+}
+function sayHi(){
+  alert("hi");
+}
+alert(sayName.length); //1
+alert(sum.length); //2
+alert(sayHi.length); //0
+```
 
-首先 `apply ()` 方法接收两个参数：第一个是在其中运行函数的作用域，另一个是参数数组。其中，第二个参数可以是 Array 的实例，也可以是 arguments 对象。
+每个函数一般还包含连个非继承而来的方法： `apply ()` 和 `call ()` ，这两个方法的用途都是在特定的作用域中调用函数，实际上等于设置函数体内 this 对象的值。首先 `apply ()` 方法接收两个参数：第一个是在其中运行函数的作用域，另一个是参数数组。其中，第二个参数可以是 Array 的实例，也可以是 arguments 对象。
 
 ```js
 function sum(num1, num2){
@@ -1638,7 +1651,7 @@ sayColor.call(window); //red
 sayColor.call(o); //blue
 ```
 
-ECMAScript 5 还定义了一个方法： `bind()`。这个方法会创建一个函数的实例，其 this 值会被绑定到传给 `bind()`函数的值。
+ECMAScript 5 还定义了一个方法： `bind()`。这个方法会创建一个函数的实例，其 this 值会被绑定到传给`bind()`函数的值。
 
 ```javascript
 window.color = "red";
