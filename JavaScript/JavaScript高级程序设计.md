@@ -2864,7 +2864,7 @@ var sayHi = function(){
 };
 ```
 
-理解函数提升的关键，就是理解函数声明与函数表达式之间的区别。
+理解函数提升的关键，就是理解函数声明与函数表达式之间的区别。例如，执行以下代码的结果可能会让人意想不到。
 
 ```js
 //不要这样做！
@@ -2877,7 +2877,11 @@ if(condition){
       alert("Yo!");
     }
 }
+```
 
+实际上，以上的代码在 ECMAScript 中属于无效语法， JavaScript 引擎会尝试修正错误，将其转换为合理的状态。但问题是浏览器尝试修正错误的做法并不一致。大多数浏览器会返回第二个声明，忽略condition； Firefox 会在 condition 为 true 时返回第一个声明。因此这种使用方式很危险，不应该出现在你的代码中。不过，如果是使用函数表达式，那就没有什么问题了。
+
+```js
 //可以这样做
 var sayHi;
 if(condition){
@@ -2891,7 +2895,25 @@ if(condition){
 }
 ```
 
-能够创建函数再赋值给变量，也就能够把函数作为其他函数的值返回。返回的函数可能会被赋值给一个变量，或者以其他方式被调用；不过，在函数内部，它是匿名的。在把函数当成值来使用的情况下都可以使用匿名函数。不过，这并不是匿名函数唯一的用途。
+能够创建函数再赋值给变量，也就能够把函数作为其他函数的值返回。
+
+```js
+function createComparisonFunction(propertyName) {
+  return function(object1, object2){
+    var value1 = object1[propertyName];
+    var value2 = object2[propertyName];
+    if (value1 < value2){
+     return -1;
+    } else if (value1 > value2){
+     return 1;
+    } else {
+     return 0;
+    }
+  };
+}
+```
+
+返回的函数可能会被赋值给一个变量，或者以其他方式被调用；不过，在函数内部，它是匿名的。在把函数当成值来使用的情况下都可以使用匿名函数。不过，这并不是匿名函数唯一的用途。
 
 ## 7.1 递归 
 
