@@ -5827,17 +5827,17 @@ incrementer([1, 2, 3]) // => [2,3,4]
 // 返回一个新的可计算f(g(...))的函数
 // 返回的函数h()将它所有的实参传入g(),然后将g()的返回值传入f()
 // 调用f()和g()时的this值和调用h()时的this值是同一个this
-function compose(f,g){
+function compose(f, g){
   return function(){
     // 需要给f()传入一个参数，所以使用f()的call方法
     // 需要给g()传入很多参数，所以使用g()的apply()方法
-    return f.call(this,g.apply(this,arguments));
+    return f.call(this, g.apply(this, arguments));
   };
 }
 var square = function(x){return x*x;};
 var sum = function(x,y){return x+y;};
-var squareofsum = compose(square,sum);
-squareofsum(2,10) //=>144
+var squareofsum = compose(square, sum);
+squareofsum(2, 3) // => 25
 ```
 
 ### 8.8.3 不完全函数
@@ -5847,52 +5847,54 @@ squareofsum(2,10) //=>144
 ```js
 // 实现一个工具函数将类数组对象（或对象）转换为正真的数组
 // 在后面示例代码中用到了这个方法将arguments对象转化为正真的数组
-function array(a, n) {return Array.prototype.slice.call(a, n || 0);}
+function array(a, n) {
+  return Array.prototype.slice.call(a, n || 0);
+}
 
-//这个函数的实参传递至左侧
+// 这个函数的实参传递至左侧
 function partialLeft(f /*,...*/ ) {
-    var args = arguments; //保存外部实参数组
-    return function() { //并返回这个函数
-        var a = array(args, 1); //开始处理外部的地图份额args
-        a = a.concat(array(arguments)); //然后增加内所有内部实参
-        return f.apply(this, a); //然后基于这个实参列表调用f()
-    };
+  var args = arguments; // 保存外部实参数组
+  return function() { // 并返回这个函数
+    var a = array(args, 1); // 开始处理外部的地图份额args
+    a = a.concat(array(arguments)); // 然后增加内所有内部实参
+    return f.apply(this, a); // 然后基于这个实参列表调用f()
+  };
 }
 
-//这个函数的实参传递至右侧
+// 这个函数的实参传递至右侧
 function partialRight(f /*,...*/ ) {
-    var args = arguments; //保存外部实参数组
-    return function() { //返回这个函数
-        var a = array(arguments); //从内部参数开始
-        a = a.concat(array(args, 1)); //然后从外部第一个args开始添加
-        return f.apply(this, a); //然后基于这个实参列表调用f()
-    };
+  var args = arguments; // 保存外部实参数组
+  return function() { // 返回这个函数
+    var a = array(arguments); // 从内部参数开始
+    a = a.concat(array(args, 1)); // 然后从外部第一个args开始添加
+    return f.apply(this, a); // 然后基于这个实参列表调用f()
+  };
 }
 
-//这个函数的实参被用做模板
-//实参列表中的undefeined值都被填充
+// 这个函数的实参被用做模板
+// 实参列表中的undefeined值都被填充
 function partial(f /*,...*/ ) {
-    var args = arguments; //保存外部实参数组
-    return function() {
-        var a = array(args, 1); //从外部的args开始
-        var i = 0,
-            j = 0;
-        //遍历args,从内部实参填充undefined值
-        for (; i < a.length; i++)
-            if (a[i] === undefined) a[i] = arguments[j++];
-            //现在将剩下的内部实参都追加进去
-        a = a.concat(array(arguments, j))
-        return f.apply(this, a);
-    };
+  var args = arguments; // 保存外部实参数组
+  return function() {
+    var a = array(args, 1); // 从外部的args开始
+    var i = 0,
+        j = 0;
+    // 遍历args,从内部实参填充undefined值
+    for (; i < a.length; i++)
+      if (a[i] === undefined) a[i] = arguments[j++];
+      // 现在将剩下的内部实参都追加进去
+    a = a.concat(array(arguments, j))
+    return f.apply(this, a);
+  };
 }
-//这个函数带有三个实参
+// 这个函数带有三个实参
 var f = function(x, y, z) {
-    return x * (y - z);
+  return x * (y - z);
 };
-//注意三个不完全调用之前的区别
-partialLeft(f, 2)(3, 4) //=>-2: 绑定第一个实参:2*(3-4)
-partialRight(f, 2)(3, 4) //=>6: 绑定最后一个实参:3*(4-2)
-partial(f, undefined, 2)(3, 4) //=>-6 绑定中间的实参:3*(2-4)
+// 注意三个不完全调用之前的区别
+partialLeft(f, 2)(3, 4) // => -2: 绑定第一个实参:2*(3-4)
+partialRight(f, 2)(3, 4) // => 6: 绑定最后一个实参:3*(4-2)
+partial(f, undefined, 2)(3, 4) // => -6 绑定中间的实参:3*(2-4)
 ```
 
 利用这种不完全函数的编程技巧，可以编写一些有意思的代码，利用已有的函数定义新的函数。
@@ -5907,8 +5909,12 @@ String.prototype.last = partial(String.prototype.substr,-1,1);
 当将不完全调用和其他高阶函数整合在一起的时候，事情就变得格外有趣。比如，这里的例子定义了`not()`函数，它用到了刚才提到的不完全调用：
 
 ```js
-var not = partialLeft(compose,function(x){return !x;});
-var even = function(x) {return x % 2 === 0;};
+var not = partialLeft(compose,function(x){
+  return !x;
+});
+var even = function(x) {
+  return x % 2 === 0;
+};
 var odd = not(even);
 var isNumber = not(isNaN)
 ```
@@ -5916,24 +5922,25 @@ var isNumber = not(isNaN)
 我们也可以使用不完全调用的组合来重新足足求平均数和标准差的代码，这种编码风格是非常纯粹的函数式编程：
 
 ```js
+// 要处理的数据
 var data = [1,1,3,5,5]
-var sum =function(x,y){return x+y;}; //两个初等函数
+// 两个初等函数
+var sum =function(x,y){return x+y;}; 
 var product =function(x,y){return x*y;};
+// 定义其他函数
 var neg = partial(product-1);
-var square = partial(Math.pow,undefined,2);
-var sqrt = partial(Math.pow,undefined,.5);
-var reciprocal = partial(Math.pow,undefined,-1);
+var square = partial(Math.pow, undefined, 2);
+var sqrt = partial(Math.pow, undefined, .5);
+var reciprocal = partial(Math.pow, undefined, -1);
 
-//现在来计算平均值和标准差，所有的函数调用都不带运算符
-//这段代码看起来很像lisp代码
+// 现在来计算平均值和标准差，所有的函数调用都不带运算符
+// 这段代码看起来很像lisp代码
 var mean = product(reduce(data,sum),reciprocal(data.length));
 var stddev = sqrt(product(reduce(map(data,
-    compose(square,
-        partial(sum,neg(mean))))
+  compose(square,
+    partial(sum, neg(mean))))
 ,sum),
-reciprocal(sum(data.length,-1))));
-
-console.log(mean)
+reciprocal(sum(data.length, -1))));
 ```
 
 ### 8.8.4 记忆
@@ -5941,14 +5948,16 @@ console.log(mean)
 在 8.4.1 节中定义了一个阶乘函数，它可以将上次的计算结果缓存起来。在函数式编程当中，这种缓存技巧叫做“记忆”（memorization）。下面的代码展示了一个高阶函数，`memorize()`接收一个函数作为实参，并返回带有记忆能力的函数。
 
 ```js
+// 返回f()的带有记忆功能的版本
+// 只有当f()的实参的字符串表示都不相同时它才会工作
 function memorize(f) {
-    var cache = {}; //将值保存在闭包内
-    return function() {
-        //将实参转换为字符串形式，并将其用做缓存的键
-        var key = arguments.length + Array.prototype.join.call(arguments, ",");
-        if (key in cache) return cache[key];
-        else return cache[key] = f.apply(this, arguments);
-    };
+  var cache = {}; // 将值保存在闭包内
+  return function() {
+    // 将实参转换为字符串形式，并将其用做缓存的键
+    var key = arguments.length + Array.prototype.join.call(arguments, ",");
+    if (key in cache) return cache[key];
+    else return cache[key] = f.apply(this, arguments);
+  };
 }
 ```
 
@@ -5957,23 +5966,25 @@ function memorize(f) {
 否则，就调用既定的函数对实参进行计算，将计算结果缓存起来并返回，下面的代码展示了如何使用`memorize()`：
 
 ```js
-//返回两个整数的最大公约数
-//使用欧几里德算法
-function gcd(a,b){//这里省略对a和b的类型检查
-    var t;
-    if (a>b) t=b,b=a,a=t; //确保a>=b
-    while(b !=0) t=b, b= a%b, a=t; //这里是求最大公约数的欧几里德算法
-    return a;
+// 返回两个整数的最大公约数
+// 使用欧几里德算法
+function gcd(a, b){ // 这里省略对a和b的类型检查
+  var t;
+  if (a > b) t = b, b = a, a = t; // 确保a>=b
+  while(b != 0) {
+    t = b, b = a%b, a = t; // 这里是求最大公约数的欧几里德算法
+  }
+  return a;
 }
 var gcdmemo = memorize(gcd);
 gcdmemo(85,187); //=>17
 
-//注意，我们写一个递归函数时，往往需要实际记忆功能
-//我们更希望调用了实现了记忆功能的递归函数，而不是原递归函数
+// 注意，我们写一个递归函数时，往往需要实际记忆功能
+// 我们更希望调用了实现了记忆功能的递归函数，而不是原递归函数
 var factorial = memorize(function(n){
-    return(n <= 1)?1:n *factorial(n-1);
+  return(n <= 1)?1:n *factorial(n-1);
 });
-factorial(5) //=>120 对4-1的值也有缓存
+factorial(5) // => 120：对4-1的值也有缓存
 ```
 
 # 第9章 类和模块
