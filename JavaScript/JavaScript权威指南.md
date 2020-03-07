@@ -5290,7 +5290,7 @@ mymodule(); // 不要忘了还要调用的这个函数
 
 和其他大多数现代编程语言一样， JavaScript 也采用词法作用域（lexical scoping），也就是说，函数的执行依赖于变量作用域，这个作用域是在函数定义时决定的，而不是函数调用时决定的。为了实现这种词语作用域， JavaScript 函数对象的内部状态不仅包含函数的代码逻辑，还必须引用当前的作用域链。函数对象可以通过作用域链相互关联起来，函数体内部的变量都可以保存在函数作用域内，这种特性在计算机科学文献中被称为“闭包”。
 
-从技术的角度讲，所有的 JavaScript 函数都是闭包，它们都是对象，它们都关联到作用域链。定义大多数函数时的作用域链在调用函数时依然有效，但这并不影响闭包。当一个函数嵌套了另一个函数，外部函数将嵌套的函数对象作为返回值返回的时候，往往会发生这种事情:调用函数时闭包所指向的作用域链和定义函数时的作用域链不是同一个作用域链。有很多强大的编程技术都利用到了这类嵌套的函数闭包，以至于这种编程模式在 JavaScript 中非常常见。
+从技术的角度讲，所有的 JavaScript 函数都是闭包，它们都是对象，它们都关联到作用域链。定义大多数函数时的作用域链在调用函数时依然有效，但这并不影响闭包。当一个函数嵌套了另一个函数，外部函数将嵌套的函数对象作为返回值返回的时候，往往会发生这种事情：调用函数时闭包所指向的作用域链和定义函数时的作用域链不是同一个作用域链。有很多强大的编程技术都利用到了这类嵌套的函数闭包，以至于这种编程模式在 JavaScript 中非常常见。
 
 理解闭包首先要了解嵌套函数的词法作用域规则。
 
@@ -5303,12 +5303,10 @@ function checkscope() {
   } //在作用域中返回这个值
   return f();
 }
-checkscope(); // local scope
+checkscope(); // => local scope
 ```
 
-将函数体内的一对圆括号移动到了`checkscope()`之后。`checkscope()`现在仅仅返回函数体内嵌套的一个函数对象，而不是直接返回结果。
-
-回顾一下词法作用域链的基本规则： JavaScript 函数的执行涉及到作用域链，这个作用域链是函数定义的时候创建的。嵌套的函数`f()`定义在这个作用域链里，其中的变量 scope 一定是局部变量，不管在何时何地执行函数`f()`，这种绑定在执行`f()`时依然有效，因此最后一行代码返回“local scope”。简言之，闭包的这个特性强大到让人吃惊：它们可以捕捉到局部变量（和参数），并一直保存下来，看起来像这些变量绑定到了在其中定义它们的外部函数。
+将函数体内的一对圆括号移动到了`checkscope()`之后。`checkscope()`现在仅仅返回函数体内嵌套的一个函数对象，而不是直接返回结果。在定义函数的作用域外面，调用这个嵌套的函数（包含最后一行代码的最后一对圆括号）会发生什么事情呢？
 
 ```js
 var scope = "global scope"; //全局变量
@@ -5319,21 +5317,26 @@ function checkscope() {
   } //在作用域中返回这个值
   return f;
 }
-checkscope()(); // local scope
+checkscope()(); // 返回值是什么？
 ```
 
-> 实现闭包。函数定义时的作用域链到函数执行时依然有效。往往我们觉得在外部函数中定义的局部变量在函数返回后就不存在了，那么嵌套的函数如何能调用不存在的作用域链呢？但其实这是错的。
+回顾一下词法作用域链的基本规则： JavaScript 函数的执行涉及到作用域链，这个作用域链是函数定义的时候创建的。嵌套的函数`f()`定义在这个作用域链里，其中的变量 scope 一定是局部变量，不管在何时何地执行函数`f()`，这种绑定在执行`f()`时依然有效，因此最后一行代码返回“local scope”。简言之，闭包的这个特性强大到让人吃惊：它们可以捕捉到局部变量（和参数），并一直保存下来，看起来像这些变量绑定到了在其中定义它们的外部函数。
 
-> 我们将作用域链描述为一个对象列表，不是绑定的栈。每次调用 JavaScript 函数的时候，都会为之创建一个新的对象用来保存局部变量，把这个对象添加至作用域链中。当函数返回的时候，就从作用域链中将这个绑定变量的对象删除。如果不存在嵌套的函数，也没有其他引用指向这个绑定对象，它就会被当作垃圾回收掉。如果定义了嵌套的函数，每个嵌套函数都各自对应一个作用域链，并且这个作用域链指向一个变量绑定对象。如果这些嵌套的函数对象在外部函数中保存下来，那么它们也会和所指向的变量绑定对象一样当作垃圾回收。但是，如果这个函数定义了嵌套的函数，并将它作为返回值返回或者存储在某处的属性里，这时就会有一个外部引用指向这个嵌套的函数。它就不会被当作垃圾回收，并且它所指向的变量绑定对象也不会被当作垃圾回收。
+> 实现闭包。函数定义时的作用域链到函数执行时依然有效。往往我们觉得在外部函数中定义的局部变量在函数返回后就不存在了，那么嵌套的函数如何能调用不存在的作用域链呢？但其实这是错的。  
+我们将作用域链描述为一个对象列表，不是绑定的栈。每次调用 JavaScript 函数的时候，都会为之创建一个新的对象用来保存局部变量，把这个对象添加至作用域链中。当函数返回的时候，就从作用域链中将这个绑定变量的对象删除。如果不存在嵌套的函数，也没有其他引用指向这个绑定对象，它就会被当作垃圾回收掉。如果定义了嵌套的函数，每个嵌套函数都各自对应一个作用域链，并且这个作用域链指向一个变量绑定对象。如果这些嵌套的函数对象在外部函数中保存下来，那么它们也会和所指向的变量绑定对象一样当作垃圾回收。但是，如果这个函数定义了嵌套的函数，并将它作为返回值返回或者存储在某处的属性里，这时就会有一个外部引用指向这个嵌套的函数。它就不会被当作垃圾回收，并且它所指向的变量绑定对象也不会被当作垃圾回收。
 
 在 8.4.1 节中定义了`uniqueInteger()`函数，这个函数使用自身的一个属性来保存每次返回的值，以便每次调用都能跟踪上次的返回值。但这种做法有一个问题，就是恶意代码可能将计数器重置或者把一个非整数赋值给它，导致该函数不一定能产生唯一的整数。而闭包可以捕捉到单个函数调用的局部变量，并将这些局部变量用作私有状态。
 
 ```js
 var uniqueInteger = (function() { //定义函数并立即调用
     var counter = 0; //函数的私有状态
-    return function() {return counter++;};
+    return function() {
+      return counter++;
+    };
 }());
 ```
+
+实际上，这段代码定义了一个立即调用的函数（函数的开始带有左圆括号），因此是这个函数的返回值赋值给变量 uniqueInteger 。现在，我们来看函数体，这个函数返回另外一个函数，这是一个嵌套的函数，我们将它赋值给变量 uniqueInteger ，嵌套的函数是可以访问作用域内的变量的，而且可以访问外部函数中定义的 counter 变量。当外部函数返回之后，其他任何代码都无法访问 counter 变量，只有内部的函数才能访问到它。
 
 像 counter 一样的私有变量不是只能用在一个单独的闭包内，在同一个外部函数内定义的多个嵌套函数也可以访问它，这多个嵌套函数都共享一个作用域链。
 
@@ -5345,26 +5348,24 @@ function counter(){
     reset: function(){ n = 0; }
   };
 }
-var c = counter(), d = counter(); //创建两个计数器
+var c = counter(), d = counter(); // 创建两个计数器
 console.log(c.count())  // =>0
-console.log(d.count())  // =>0
-
+console.log(d.count())  // =>0：它们互不干扰
 c.reset()  // reset()和count方法共享状态
-console.log(c.count())  // =>0 因为我们重置了c
-console.log(d.count())  // =>1 我们没有重置d
-console.log(d.count())  // =>2
+console.log(c.count())  // =>0：因为我们重置了c
+console.log(d.count())  // =>1：我们没有重置d
 ```
 
-从技术角度看，其实可以将这个闭包合并为属性存取器方法 getter 和 seter 。
+从技术角度看，其实可以将这个闭包合并为属性存取器方法 getter 和 seter 。下面这段代码所示的`counter()`函数的版本是6.6节中代码的变种，所不同的是，这里私有状态的实现是利用了闭包，而不是利用普通的对象属性来实现：
 
 ```js
-function counter(n) { //函数参数n是一个私有变量
+function counter(n) { // 函数参数n是一个私有变量
   return {
-    //属性getter方法返回并给私有计数器var递增1
+    // 属性getter方法返回并给私有计数器var递增1
     get count() {
       return n++;
     },
-    //属性setter方法不允许n递减
+    // 属性setter方法不允许n递减
     set count(m) {
       if (m >= n) n = m;
       else throw Error("count can only be set to a larger value");
@@ -5382,49 +5383,62 @@ console.log(c.count) //=>2001
 c.count = 2000 //Error
 ```
 
+需要注意的是，这个版本的`counter()`函数并未声明局部变量，而只是使用参数n来保存私有状态，属性存取器方法可以访问n。这样的话，调用`counter()`的函数就可以指定私有变量的初始值了。
+
 在同一个作用域链中定义两个闭包，这两个闭包共享同样的私有变量或变量。这是一种非常重要的技术，但还是要特别小心那些不希望共享的变量往往不经意间共享给了其他的闭包。
 
 ```js
-//这个函数返回一个总是返回v的函数
+// 这个函数返回一个总是返回v的函数
 function constfunc(v) {
-    return function() { return v; }
+  return function() { 
+    return v; 
+  }
 };
 
-//创建一个数组用来常数函数
+// 创建一个数组用来常数函数
 var funcs = [];
-for (var i = 0; i < 10; i++) funcs[i] = constfunc(i);
+for (var i = 0; i < 10; i++) {
+  funcs[i] = constfunc(i);
+}
 
-//在第5个位置的元素所表示的函数返回值为5
-funcs[5]() //=>5
+// 在第5个位置的元素所表示的函数返回值为5
+funcs[5]() // => 5
 ```
 
 这段代码利用循环创建了很多个闭包，当写类似这种代码的时候往往会犯一个错误，那就是试图将循环代码移入定义这个闭包的函数之内。
 
 ```js
-//返回一个函数组成的数组，它们的返回值是0-9
+// 返回一个函数组成的数组，它们的返回值是0-9
 function constfuncs() {
-    var funcs = [];
-    for (var i = 0; i < 10; i++)
-        funcs[i] = function() {
-            return i;
-        };
-    return funcs;
+  var funcs = [];
+  for (var i = 0; i < 10; i++)
+    funcs[i] = function() {
+      return i;
+    };
+  return funcs;
 }
+
 var funcs = constfuncs();
-console.log(funcs[5]()) //10
+console.log(funcs[5]()) // 10
 ```
 
-书写闭包的时候还需要注意一件事情， this 是 JavaScript 的关键字，而不是变量。正如之前讨论得，每个函数调用都包含一个 this 值，如果闭包在外部函数里是无法访问 this 的，除非外部函数将 this 转存为一个变量。
+上面这段代码创建了10个闭包，并将它们存储到一个数组中。这些闭包都是在同一个函数调用中定义的，因此它们可以共享变量i。当`constfuncs()`返回时，变量i的值是10，所有的闭包都共享这一个值，因此，数组中的函数的返回值都是同一个值，这不是我们想要的结果。关联到闭包的作用域链都是“活动的”，记住这一点非常重要。嵌套的函数不会将作用域内的私有成员复制一份，也不会对所绑定的变量生成静态快照（static snapshot）。
+
+书写闭包的时候还需要注意一件事情， this 是 JavaScript 的关键字，而不是变量。正如之前讨论得，每个函数调用都包含一个 this 值，闭包是不可以访问在外部函数里的 this 值的，除非外部函数将 this 转存为一个变量。
 
 ```js
-var self = this; //将this保存到一个变量中，以便嵌套的函数能够访问它
+// 将this保存到一个变量中，以便嵌套的函数能够访问它
+var self = this; 
 ```
 
 绑定 arguments 的问题与之类似， arguments 并不是一个关键字，但在调用每个函数时都会自动声明它，由于闭包具有自己所绑定的 arguments ，因此闭包内无法直接访问外部函数的参数数组，除非外部函数将参数数组保存到另外一个变量中。
 
 ```js
-var outerArguments = arguments; //保存起来以便嵌套的函数能使用它
+// 保存起来以便嵌套的函数能使用它
+var outerArguments = arguments; 
 ```
+
+在本章接下来讲到的例8-5中就利用了这种编程技巧来定义闭包，以便在闭包中可以访问外部函数的this和arguments值。
 
 ## 8.7 函数属性、方法和构造函数 
 
@@ -5432,26 +5446,26 @@ var outerArguments = arguments; //保存起来以便嵌套的函数能使用它
 
 ### 8.7.1 length属性
 
-在函数体里，`arguments.length`表示传入函数的实参的个数。而函数本身的 length 属性则有着不同含义。函数的 length 属性时只读属性，它代表函数实参实参的数量，这里的参数指的是“形参”而非“实参”，也就是在函数定义时给出的实参个数，通常也是在函数调用时期望传入函数的实参个数。
+在函数体里，`arguments.length`表示传入函数的实参的个数。而函数本身的 length 属性则有着不同含义。函数的 length 属性时只读属性，它代表函数参数的数量，这里的参数指的是“形参”而非“实参”，也就是在函数定义时给出的参数个数，通常也是在函数调用时期望传入函数的参数个数。
 
 ```js
-//这个函数使用arguments.callee,因此它不能再严格模式下工作
+// 这个函数使用arguments.callee,因此它不能再严格模式下工作
 function check(args) {
-    var actual = args.length; //实参的真实个数
-    var expected = args.callee.length; //期望的实参个数
-    if (actual !== expected) //如果不同则抛出异常
-        throw Error("Expected" + expected + "args; got" + actual)
+  var actual = args.length; // 实参个数
+  var expected = args.callee.length; // 形参个数
+  if (actual !== expected) // 如果不同则抛出异常
+    throw Error("Expected" + expected + "args; got" + actual)
 }
 
 function f(x, y, z) {
-    check(arguments); //检查实参个数和期望的实参个数是否一致
-    return x + y + z; //再执行函数的后续逻辑
+  check(arguments); // 检查实参个数和形参个数是否一致
+  return x + y + z; // 再执行函数的后续逻辑
 }
 ```
 
 ### 8.7.2 prototype属性
 
-每一个函数都包含一个 prototype 属性，这个属性是指向一个对象的引用。这个对象称作“原型对象”（prototype object）。每一个函数都包含不同的原型对象。当将函数用作构造函数的时候，新创建的对象会从原型对象上继承属性。
+每一个函数都包含一个 prototype 属性，这个属性是指向一个对象的引用。这个对象称作“原型对象”（prototype object）。每一个函数都包含不同的原型对象。当将函数用作构造函数的时候，新创建的对象会从原型对象上继承属性。6.1.3节讨论了原型和prototype属性，在第9章里会有进一步讨论。
 
 ### 8.7.3 call()方法和apply()方法
 
@@ -5460,9 +5474,11 @@ function f(x, y, z) {
 ```js
 f.call(o);
 f.apply(o);
+```
 
-// 上面的例子每行代码和下面代码的功能类型
-// （假设对象o中预先不存在名为m的属性）
+上面的例子每行代码和下面代码的功能类型（假设对象o中预先不存在名为m的属性）
+
+```js
 o.m = f; //将f存储为o的临时方法
 o.m(); //调用它不传入参数
 delete o.m; //将临时方法删除
@@ -5487,16 +5503,16 @@ var biggest = Math.max.apply(Math, array_of_numbers);
 需要注意的是，传入`apply()`的参数数组可以是类数组对象也可以是真实数组。实际上，可以将当前函数的 arguments 数组直接传入（另一个函数的）`apply()`来调用另一个函数。
 
 ```js
-//将对象o中名为m()的方法替换为令一个方法
-//可以在调用原始的方法之前和之后记录日志消息
+// 将对象o中名为m()的方法替换为另一个方法
+// 可以在调用原始的方法之前和之后记录日志消息
 function trace(o, m) {
-    var original = o[m]; //在闭包中保存原始方法
-    o[m] = function() { //定义新的方法
-        console.log(new Date(), "entering:", m); //输出消息
-        var result = original.apply(this, arguments); //调用原始函数
-        console.log(new Date(), "exiting:", m);
-        return result;
-    };
+  var original = o[m]; // 在闭包中保存原始方法
+  o[m] = function() { // 定义新的方法
+    console.log(new Date(), "entering:", m); // 输出消息
+    var result = original.apply(this, arguments); // 调用原始函数
+    console.log(new Date(), "exiting:", m);
+    return result;
+  };
 }
 ```
 
@@ -5507,68 +5523,79 @@ function trace(o, m) {
 `bind()`实在 ECMAScript 5 中新增的方法，但在 ECMAScript 3 中可以轻易模拟`bind()`。从名字就可以看出，这个方法的主要作用就是将函数绑定至某个对象。当在函数`f()`上调用`bind()`方法并传入一个对象 o 作为参数，这个方法将返回一个新的函数。（以函数调用的方式）调用新的函数将会把原始的函数`f()`当作 o 的方法来调用。传入新函数的任何实参都将传入原始函数。
 
 ```js
+// 这个是待绑定的函数
 function f(y) {
-    return this.x + y;
-} //这个是待绑定的函数
-var o = { x: 1 }; //将要绑定的函数
-var g = f.bind(o); //通过g(x)来调用o.f(x)
-console.log(g(4)) // => 5
+  return this.x + y;
+} 
+// 将要绑定的函数
+var o = { x: 1 }; 
+// 通过g(x)来调用o.f(x)
+var g = f.bind(o); 
+g(2) // => 3
 ```
 
 也可以通过以下代码实现轻松绑定：
 
 ```js
-//返回一个函数，通过它来调用o中的方法f(),传递它所有的实参
+// 返回一个函数，通过它来调用o中的方法f(),传递它所有的实参
 function bind(f, o){    
-    if(f.bind) return f.bind(o);//如果bind()方法存在的话，使用bind()方法
-    else return function(){//否则这样绑定
-        return f.apply(o, arguments);
+  // 如果bind()方法存在的话，使用bind()方法
+  if(f.bind) {
+    return f.bind(o);
+  } else {
+    // 否则这样绑定
+    return function(){
+      return f.apply(o, arguments);
     }
+  }
 }
 ```
 
 ECMAScript 5 中的`bind()`方法不仅仅是将函数绑定至一个对象，它还附带一些其他应用：除了第一个实参之外，传入`bind()`的实参也会绑定至 this ，这个附带的应用是一种常见的函数式编程技术，有时也被称为“柯里化”（currying）。
 
 ```js
+// 返回两个实参的值
 var sum = function(x,y){
-    return x + y
-};//返回两个实参的值
-
-//创建一个类似sum的新函数，但this的值绑定到null
-//并且第一个参数绑定到1，这个新的参数期望只传入一个实参
+  return x + y
+};
+// 创建一个类似sum的新函数，但this的值绑定到null
+// 并且第一个参数绑定到1，这个新的参数期望只传入一个实参
 var succ = sum.bind(null, 1);
-succ(5)     // =>6 x绑定到1，并传入2作为实例y
+// => 3：x绑定到1，并传入2作为实参y
+succ(2)     
 
+// 另外一个左累加计算的函数
 function f(y,z) {
-    return this.x + y + z
-}; //另外一个左累加计算的函数
-
-var g = f.bind({x: 1}, 2);  //绑定this和y
-g(3) //=>6:this.x绑定到1，y绑定到2，z绑定到3
+  return this.x + y + z
+}; 
+// 绑定this和y
+var g = f.bind({x: 1}, 2);  
+// => 6：this.x绑定到1，y绑定到2，z绑定到3
+g(3) 
 ```
 
 也可以绑定 this 的值并在 ECMScript 3 中实现这个附带的应用。下面的代码就模拟了实现标准的`bind()`方法。注意，我们将这个方法另存为`Function.prototype.bind`，以便所有的函数对象都继承它。
 
 ```js
  if(!Function.prototype.bind){
-    Function.prototype.bind = function(o /*,args*/){
-        //将this和arguments的值保存至变量中
-        //以便在后面的嵌套函数中可以使用他们
-        var self = this, boundArgs = arguments;
-        
-        //bind()返回值是一个函数
-        return function(){
-            //创建一个实参列表
-            //将传入bind()的第二个及后续的实参都传入这个函数
-            var arg = [], i;
-            for(i=1; i<boundArgs.length; i++) 
-                args.push(boundArgs[i]);
-            for(i=0; i<arguments.length; i++) 
-                args.push(arguments[i]);
-            //现在将self作为o的方法来调用，传入这些实参
-            return self.apply(o, args);
-        };
+  Function.prototype.bind = function(o /*,args*/){
+    // 将this和arguments的值保存至变量中
+    // 以便在后面的嵌套函数中可以使用他们
+    var self = this, boundArgs = arguments;
+    
+    // bind()返回值是一个函数
+    return function(){
+      // 创建一个实参列表
+      // 将传入bind()的第二个及后续的实参都传入这个函数
+      var arg = [], i;
+      for(i = 1; i < boundArgs.length; i++) 
+        args.push(boundArgs[i]);
+      for(i = 0; i < arguments.length; i++) 
+        args.push(arguments[i]);
+      // 现在将self作为o的方法来调用，传入这些实参
+      return self.apply(o, args);
     };
+  };
 }
 ```
 
@@ -5589,7 +5616,7 @@ var f = new Function("x", "y", "return x*y");
 
 // 等价于
 var f = function(x, y) {
-    return x * y;
+  return x * y;
 }
 ```
 
@@ -5608,11 +5635,11 @@ var scope = "global";
 
 function constructFunction() {
   var scope = "local";
-  return new Function("return scope"); //无法捕捉局部作用域
+  return new Function("return scope"); // 无法捕捉局部作用域
 }
-//这行代码返回global
-//因为通过Function()构造函数所返回的函数使用的不是局部作用域
-constructFunction()(); //=>"global"
+// 这行代码返回global
+// 因为通过Function()构造函数所返回的函数使用的不是局部作用域
+constructFunction()(); // => "global"
 ```
 
 可以将`Function()`构造函数认为是在全局作用域中执行的`eval()`，`eval()`可以在自己的私有作用域内定义新变量和函数，`Function()`构造函数在实际编程过程中很少会用到。
@@ -5629,7 +5656,7 @@ constructFunction()(); //=>"global"
 
 ```js
 function isFunction(x) {
-    return Object.prototype.toString.call(x) === "[object Function]"
+  return Object.prototype.toString.call(x) === "[object Function]"
 }
 ```
 
@@ -5642,17 +5669,19 @@ function isFunction(x) {
 假设有一个数组，数组元素都是数字，我们想要计算这些元素的平均值和标准差。若使用非函数式编程风格的话，代码会是这样：
 
 ```js
-var data = [1, 1, 3, 5, 5]; //这里待处理的数组
-//平均数是所有元素的累加值和除以元素的个数
+var data = [1, 1, 3, 5, 5]; // 这里待处理的数组
+// 平均数是所有元素的累加值和除以元素的个数
 var total = 0;
-for (var i = 0; i < data.length; i++) total += data[i]
-var mean = total / data.length; //=>3
+for (var i = 0; i < data.length; i++) {
+  total += data[i]
+}
+var mean = total / data.length; // => 3
 
-//计算标准差，首先计算每个数减去平均数减去平均数之后偏差的平方然后求和
+// 计算标准差，首先计算每个数减去平均数减去平均数之后偏差的平方然后求和
 total = 0;
 for (var i = 0; i < data.length; i++) {
-    var deviation = data[i] - mean;
-    total += deviation * deviation;
+  var deviation = data[i] - mean;
+  total += deviation * deviation;
 }
 var stddev = Math.sqrt(total / (data.length - 1)); // 标准差的值是2
 ```
@@ -5660,110 +5689,133 @@ var stddev = Math.sqrt(total / (data.length - 1)); // 标准差的值是2
 可以使用数组方法`map()`和`reduce()`来实现同样的计算，这种实现极其简洁。
 
 ```js
-//首先先简单定义两个简单函数
-var sum = function(x,y){return x+y;};
-var square = function(x) {return x*x;};
+// 首先先简单定义两个简单函数
+var sum = function(x,y){
+  return x+y;
+};
+var square = function(x) {
+  return x*x;
+};
 
-//然后将这些函数和数组方法配合使用计算出平均数和标准差
-var data = [1, 1, 3, 5, 5]; //这里待处理的数组
-var mean =data.reduce(sum)/data.length;
-var deviations = data.map(function(x){return x-mean;});
+// 然后将这些函数和数组方法配合使用计算出平均数和标准差
+var data = [1, 1, 3, 5, 5]; 
+var mean = data.reduce(sum)/data.length;
+var deviations = data.map(function(x){
+  return x-mean;
+});
 var stddev = Math.sqrt(deviations.map(square).reduce(sum)/(data.length-1));
 ```
 
 如果基于 ECMAScript 3 来如何实现呢？因为 ECMAScript 3 并不包含这些数组方法，如果不存在内置方法的话可以自定义`map()`和`reduce()`函数。
 
 ```js
-//对于每个数组元素调用函数f()，并返回一个结果数组
-//如果Array.prototype.map定义了的话，就使用这个方法
+// 对于每个数组元素调用函数f()，并返回一个结果数组
+// 如果Array.prototype.map定义了的话，就使用这个方法
 var map = Array.prototype.map 
   ? function(a, f) {
-          return a.map(f);
-    } //如果已经存在map()方法，就直接使用它
-  : function(a, f) { //否则就自己实现一个
-      var result = [];
-      for (var i = 0, len = a.length; i < len; i++) {
-          if (i in a) result[i] = f.call(null, a[i], i, a);
-          return result;
+      // 如果已经存在map()方法，就直接使用它
+      return a.map(f);
+    } 
+  : function(a, f) { 
+    // 否则就自己实现一个
+    var result = [];
+    for (var i = 0, len = a.length; i < len; i++) {
+      if (i in a) {
+        result[i] = f.call(null, a[i], i, a);
       }
+      return result;
+    }
   };
 
-//使用函数f()和可选的初始值将数组a减至一个值
-//如果Array.prototype.reduce存在的话，就使用这个方法
+// 使用函数f()和可选的初始值将数组a减至一个值
+// 如果Array.prototype.reduce存在的话，就使用这个方法
 var reduce = Array.prototype.reduce 
-? function(a, f, initial) { //如果reduce()方法存在的话
-    if (arguments.length > 2)
-        return a.reduce(f, initial); //如果成功的传入了一个值
-    else return a.reduce(f); //否则没有初始值
+? function(a, f, initial) { 
+  // 如果reduce()方法存在的话
+  if (arguments.length > 2)
+    // 如果成功的传入了一个值
+    return a.reduce(f, initial); 
+  else {
+    //否则没有初始值
+    return a.reduce(f);
+  } 
 }
-: function(a,f,initial){//这个算法来自ECMAScript5规范
-    var i =0,len =a.length,accumulator;
-    //以特定的初始值开始，否则第一个值取自a
-    if(arguments.length>2) accumulator = initial;
-    else {//找到数组中第一个已经定义的索引
-        if(len == 0) throw TypeError();
-        while(i<len){
-            if(i in a){
-                accumulator = a[i++];
-                break;
-            }else i++;
-        }if(i == len) throw TypeError();
-    }
-    //对于数组中剩下的元素一次调用f()
+: function(a,f,initial){
+  // 这个算法来自ECMAScript5规范
+  var i =0,len =a.length,accumulator;
+  // 以特定的初始值开始，否则第一个值取自a
+  if(arguments.length>2) accumulator = initial;
+  else {
+    // 找到数组中第一个已经定义的索引
+    if(len == 0) throw TypeError();
     while(i<len){
-        if(i in a)
-        accumulator = f.call(undefined,accumulator,a[i],i,a);
-    }
-    return accumulator;
+      if(i in a){
+        accumulator = a[i++];
+        break;
+      }else i++;
+    }if(i == len) throw TypeError();
+  }
+  // 对于数组中剩下的元素一次调用f()
+  while(i<len){
+    if(i in a)
+    accumulator = f.call(undefined,accumulator,a[i],i,a);
+  }
+  return accumulator;
 };
 ```
 
 使用定义的`map()`和`reduce()`函数，计算平均值和标准差的代码看起来像这样：
 
 ```js
-var data = [1,2,35,6,3,2];
-var sum =function(x,y){return x+y;};
-var square = function(x){return x*x;};
-var mean =reduce(data,sum)/data.length;
-var deviations = map(data,function(x){return x-mean;});
+var data = [1, 2, 35, 6, 3, 2];
+var sum =function(x,y){
+  return x+y;
+};
+var square = function(x){
+  return x*x;
+};
+var mean = reduce(data,sum)/data.length;
+var deviations = map(data,function(x){
+  return x-mean;
+});
 var stddev = Math.sqrt(reduce(map(deviations,square),sum)/(data.length-1));
 ```
 
 ### 8.8.2 高阶函数
 
-所谓高阶函数（higher-order function）就是操作函数的函数，它接收一个或多个函数作为参数，并返回一个新函数。
-
-下面的`not()`函数就是一个高阶函数，因为它接收一个函数作为参数，并返回一个新函数。
+所谓高阶函数（higher-order function）就是操作函数的函数，它接收一个或多个函数作为参数，并返回一个新函数，来看这个例子：
 
 ```js
-//这个高阶函数返回一个新的函数，这个新函数将它的实参传入f()
-//并返回f的返回值逻辑非
+// 这个高阶函数返回一个新的函数，这个新函数将它的实参传入f()
+// 并返回f的返回值逻辑非
 function not(f){
-    return function(){//返回一个新的函数
-        var result = f.apply(this,arguments);//调用f()
-        return !result; //对结果求反
-    };
+  return function(){  // 返回一个新的函数
+    var result = f.apply(this, arguments);  // 调用f()
+    return !result;  // 对结果求反
+  };
 }
-var even = function (x){//判断a是否为偶数的函数
-    return x % 2 === 0;
+var even = function (x){  // 判断a是否为偶数的函数
+  return x % 2 === 0;
 };
 
-var odd = not(even); //判断一个新函数，和even()相反
-[1,1,3,5,5].every(odd); //=>true 每个元素为奇数
+var odd = not(even);  // 判断一个新函数，和even()相反
+[1, 1, 3, 5, 5].every(odd);  // =>true 每个元素为奇数
 ```
 
-来看下面的`mapper()`函数，它也是接收一个函数作为参数，并返回一个新函数，这个新函数将一个数组映射到另一个使用这个函数的数组上。这个函数使用了之前定义的`map()`函数。
+上面的`not()`函数就是一个高阶函数，因为它接收一个函数作为参数，并返回一个新函数。来看下面的`mapper()`函数，它也是接收一个函数作为参数，并返回一个新函数，这个新函数将一个数组映射到另一个使用这个函数的数组上。这个函数使用了之前定义的`map()`函数。
 
 ```js
 // 所返回的函数的参数应当是一个实参数组，并对每个函数数组元素执行函数f()
 // 并返回所有的计算结果组成数组
 // 可以对比下这个函数和上下文提到的map()函数
 function mapper(f) {
-    return function(a) {
-        return map(a, f);
-    };
+  return function(a) {
+    return map(a, f);
+  };
 }
-var increment = function(x) {return x + 1;};
+var increment = function(x) {
+  return x + 1;
+};
 var incrementer = mapper(increment);
 
 incrementer([1, 2, 3]) // => [2,3,4]
@@ -5772,15 +5824,15 @@ incrementer([1, 2, 3]) // => [2,3,4]
 这里是一个更常见的例子，它接收两个函数`f()`和`g()`，并返回一个新的函数用以计算`f(g())`：
 
 ```js
-//返回一个新的可计算f(g(...))的函数
-//返回的函数h()将它所有的实参传入g(),然后将g()的返回值传入f()
-//调用f()和g()时的this值和调用h()时的this值是同一个this
+// 返回一个新的可计算f(g(...))的函数
+// 返回的函数h()将它所有的实参传入g(),然后将g()的返回值传入f()
+// 调用f()和g()时的this值和调用h()时的this值是同一个this
 function compose(f,g){
-    return function(){
-        //需要给f()传入一个参数，所以使用f()的call方法
-        //需要给g()传入很多参数，所以使用g()的apply()方法
-        return f.call(this,g.apply(this,arguments));
-    };
+  return function(){
+    // 需要给f()传入一个参数，所以使用f()的call方法
+    // 需要给g()传入很多参数，所以使用g()的apply()方法
+    return f.call(this,g.apply(this,arguments));
+  };
 }
 var square = function(x){return x*x;};
 var sum = function(x,y){return x+y;};
