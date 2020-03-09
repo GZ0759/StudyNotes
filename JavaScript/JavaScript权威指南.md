@@ -5555,7 +5555,7 @@ ECMAScript 5 中的`bind()`方法不仅仅是将函数绑定至一个对象，�
 
 ```js
 // 返回两个实参的值
-var sum = function(x,y){
+var sum = function(x, y){
   return x + y
 };
 // 创建一个类似sum的新函数，但this的值绑定到null
@@ -5565,7 +5565,7 @@ var succ = sum.bind(null, 1);
 succ(2)     
 
 // 另外一个左累加计算的函数
-function f(y,z) {
+function f(y, z) {
   return this.x + y + z
 }; 
 // 绑定this和y
