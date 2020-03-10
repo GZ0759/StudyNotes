@@ -2560,7 +2560,7 @@ var person2 = new Person("Greg", 27, "Doctor");
 
 ### 6.2.3 原型模式
 
-我们创建的每个函数都有一个 prototype 原型属性，这个属性是一个指针，指向一个对象，而这个对象的用途是包含可以由特定类型类型的所有实例共享的属性和方法。换句话说，不必在构造函数中定义对象实例的信息，而是可以将这些信息直接添加到原型对象中。但与构造函数模式不同的是，新对象的这些属性和方法是由所有实例共享的。
+我们创建的每个函数都有一个 prototype（原型）属性，这个属性是一个指针，指向一个对象，而这个对象的用途是包含可以由特定类型的所有实例共享的属性和方法。如果按照字面意思来理解，那么 prototype 就是通过调用构造函数而创建的那个对象实例的原型对象。使用原型对象的好处是可以让所有对象实例共享它所包含的属性和方法。换句话说，不必在构造函数中定义对象实例的信息，而是可以将这些信息直接添加到原型对象中，如下面的例子所示。
 
 ```js
 function Person(){
@@ -2581,13 +2581,17 @@ person2.sayName(); //"Nicholas"
 alert(person1.sayName == person2.sayName); //true
 ```
 
+即使如此，也仍然可以通过调用构造函数来创建新对象，而且新对象还会具有相同的属性和方法。但与构造函数模式不同的是，新对象的这些属性和方法是由所有实例共享的。换句话说，person1 和 person2 访问的都是同一组属性和同一个`sayName()`函数。要理解原型模式的工作原理，必须先理解 ECMAScript 中原型对象的性质。
+
 **1.理解原型对象**
 
-无论什么时候，只要创建了一个新函数，就会根据一组特定的规则为该函数创建一个 prototype 属性，这个属性指向函数的原型对象。在默认情况下，所有原型对象都会自动获得一个 constructor （构造函数）属性，这个属性包含一个指向 prototype 属性所在函数的指针。
+无论什么时候，只要创建了一个新函数，就会根据一组特定的规则为该函数创建一个 prototype 属性，这个属性指向函数的原型对象。在默认情况下，所有原型对象都会自动获得一个 constructor （构造函数）属性，这个属性包含一个指向 prototype 属性所在函数的指针。就拿前面的例子来说，`Person.prototype.constructor` 指向 Person。而通过这个构造函数，我们还可继续为原型对象添加其他属性和方法。
 
-创建了自定义的构造函数之后，其原型对象默认只会取得 constructor 属性；至于其他方法，则都是从 Object 继承而来的。当调用构造函数创建一个新实例后，该实例的内部将包含一个指针（内部属性），指向构造函数的原型对象。 ECMA-262 第 5 版中管这个指针叫`[[Prototype]]`。虽然在脚本中没有标准的方式访问`[[Prototype]]`，但 Firefox、 Safari 和 Chrome 在每个对象上都支持一个属性__proto__；而在其他实现中，这个属性对脚本则是完全不可见的。不过，要明确的真正重要的一点就是，这个连接存在于实例与构造函数的原型对象之间，而不是存在于实例与构造函数之间。
+创建了自定义的构造函数之后，其原型对象默认只会取得 constructor 属性；至于其他方法，则都是从 Object 继承而来的。当调用构造函数创建一个新实例后，该实例的内部将包含一个指针（内部属性），指向构造函数的原型对象。 ECMA-262 第 5 版中管这个指针叫`[[Prototype]]`。虽然在脚本中没有标准的方式访问`[[Prototype]]`，但 Firefox、 Safari 和 Chrome 在每个对象上都支持一个属性`__proto__`；而在其他实现中，这个属性对脚本则是完全不可见的。不过，要明确的真正重要的一点就是，这个连接存在于实例与构造函数的原型对象之间，而不是存在于实例与构造函数之间。
 
-虽然在所有实现中都无法访问到`[[Prototype]]`，但是可以通过 `isPrototypeOf ()` 方法来确定对象之间是否存在这种关系，从本质上讲，如果`[[Prototype]]`指向调用 `isPrototypeOf()`方法的对象（Person.prototype），那么这个方法就返回 true。
+图 6-1 展示了 Person 构造函数、 Person 的原型属性以及 Person 现有的两个实例之间的关系。在此，`Person.prototype `指向了原型对象，而 `Person.prototype.constructor` 又指回了 Person。原型对象中除了包含 constructor 属性之外，还包括后来添加的其他属性。 Person 的每个实例——person1 和 person2 都包含一个内部属性，该属性仅仅指向了 `Person.prototype`；换句话说，它们与构造函数没有直接的关系。此外，要格外注意的是，虽然这两个实例都不包含属性和方法，但我们却可以调用`person1.sayName()`。这是通过查找对象属性的过程来实现的。
+
+虽然在所有实现中都无法访问到`[[Prototype]]`，但是可以通过 `isPrototypeOf()` 方法来确定对象之间是否存在这种关系，从本质上讲，如果`[[Prototype]]`指向调用`isPrototypeOf()`方法的对象（Person.prototype），那么这个方法就返回 true。
 
 ```js
 alert(Person.prototype.isPrototypeOf(person1)); //true
@@ -2600,6 +2604,10 @@ ECMAScript 5 增加了一个新方法，叫 `Object.getPrototypeOf()`，在所�
 alert(Object.getPrototypeOf(person1) == Person.prototype); //true
 alert(Object.getPrototypeOf(person1).name); //"Nicholas"
 ```
+
+每当代码读取某个对象的某个属性时，都会执行一次搜索，目标是具有给定名字的属性。搜索首先从对象实例本身开始。如果在实例中找到了具有给定名字的属性，则返回该属性的值；如果没有找到，则继续搜索指针指向的原型对象，在原型对象中查找具有给定名字的属性。如果在原型对象中找到了这个属性，则返回该属性的值。也就是说，在我们调用 `person1.sayName()`的时候，会先后执行两次搜索。首先，解析器会问：“实例 person1 有 sayName 属性吗？”答：“没有。”然后，它继续搜索，再问：“person1 的原型有 sayName 属性吗？”答：“有。”于是，它就读取那个保存在原型对象中的函数。当我们调用 `person2.sayName()`时，将会重现相同的搜索过程，得到相同的结果。而这正是多个对象实例共享原型所保存的属性和方法的基本原理。
+
+> 前面提到过，原型最初只包含 constructor 属性，而该属性也是共享的，因此可以通过对象实例访问。
 
 虽然可以通过对象实例访问保存在原型中的值，但却不能通过对象实例重写原型中的值。当为对象实例添加一个属性时，这个属性就会屏蔽原型对象中保存的同名属性。换句话说，添加这个属性只会阻止我们访问原型中的那个属性，但不会修改那个属性。
 
@@ -2614,6 +2622,7 @@ Person.prototype.sayName = function(){
 };
 var person1 = new Person();
 var person2 = new Person();
+
 person1.name = "Greg";
 alert(person1.name); //"Greg"—— 来自实例
 alert(person2.name); //"Nicholas"—— 来自原型
@@ -2632,6 +2641,7 @@ Person.prototype.sayName = function(){
 };
 var person1 = new Person();
 var person2 = new Person();
+
 person1.name = "Greg";
 alert(person1.name); //"Greg"—— 来自实例
 alert(person2.name); //"Nicholas"—— 来自原型
@@ -2640,7 +2650,7 @@ delete person1.name;
 alert(person1.name); //"Nicholas"—— 来自原型
 ```
 
-使用 `hasOwnProperty ()` 方法可以检测一个属性是否存在于实例中，还是存在于原型中，但是只在给定属性存在于对象实例中时，才会返回 true 。
+使用`hasOwnProperty()`方法可以检测一个属性是存在于实例中，还是存在于原型中。这个方法（不要忘了它是从 Object 继承来的）只在给定属性存在于对象实例中时，才会返回 true。来看下面这个例子。
 
 ```js
 function Person(){
@@ -2655,6 +2665,7 @@ var person1 = new Person();
 var person2 = new Person();
 
 alert(person1.hasOwnProperty("name")); //false
+
 person1.name = "Greg";
 alert(person1.name); //"Greg"—— 来自实例
 alert(person1.hasOwnProperty("name")); //true
@@ -2666,6 +2677,10 @@ delete person1.name;
 alert(person1.name); //"Nicholas"—— 来自原型
 alert(person1.hasOwnProperty("name")); //false
 ```
+
+通过使用`hasOwnProperty()`方法，什么时候访问的是实例属性，什么时候访问的是原型属性就一清二楚了。
+
+> ECMAScript 5 的`Object.getOwnPropertyDescriptor()`方法只能用于实例属性，要取得原型属性的描述符，必须直接在原型对象上调用`Object.getOwnPropertyDescriptor()`方法。
 
 **2.原型与 in 操作符**
 
@@ -2701,13 +2716,17 @@ alert(person1.hasOwnProperty("name")); //false
 alert("name" in person1); //true
 ```
 
-由于 in 操作符只要通过对象能够访问到属性就返回 true， `hasOwnProperty()`只在属性存在于实例中时才返回 true，因此只要 in 操作符返回 true 而 `hasOwnProperty()`返回 false，就可以确定属性是原型中的属性。
+以上代码执行的整个过程中， name 属性要么是直接在对象上访问到的，要么是通过原型访问到的。因此，调用"name" in person1 始终都返回 true，无论该属性存在于实例中还是存在于原型中。同时使用 `hasOwnProperty()`方法和 in 操作符，就可以确定该属性到底是存在于对象中，还是存在于原型中，如下所示。
 
 ```js
 function hasPrototypeProperty(object, name){
   return !object.hasOwnProperty(name) && (name in object);
 }
+```
 
+由于 in 操作符只要通过对象能够访问到属性就返回 true，`hasOwnProperty()`只在属性存在于实例中时才返回 true，因此只要 in 操作符返回 true 而`hasOwnProperty()`返回 false，就可以确定属性是原型中的属性。下面来看一看上面定义的函数`hasPrototypeProperty()`的用法。
+
+```js
 function Person(){
 }
 Person.prototype.name = "Nicholas";
@@ -2739,8 +2758,10 @@ Person.prototype.job = "Software Engineer";
 Person.prototype.sayName = function(){
   alert(this.name);
 };
+
 var keys = Object.keys(Person.prototype);
 alert(keys); //"name,age,job,sayName"
+
 var p1 = new Person();
 p1.name = "Rob";
 p1.age = 31;
@@ -2757,7 +2778,7 @@ alert(keys); //"constructor,name,age,job,sayName"
 
 **3.更简单的原型语法**
 
-为减少不必要的输入，也为了从视觉上更好地封装原型的功能，更常见的做法是用一个包含所有属性和方法的对象字面量来重写整个原型对象。
+前面例子中每添加一个属性和方法就要敲一遍`Person.prototype`。为减少不必要的输入，也为了从视觉上更好地封装原型的功能，更常见的做法是用一个包含所有属性和方法的对象字面量来重写整个原型对象，如下面的例子所示。
 
 ```js
 function Person(){
@@ -2772,17 +2793,18 @@ Person.prototype = {
 };
 ```
 
-最终结果相同，但有一个例外： constructor 属性不再指向 Person 了。前面曾经介绍过，每创建一个函数，就会同时创建它的 prototype 对象，这个对象也会自动获得 constructor 属性。而我们在这里使用的语法，本质上完全重写了默认的 prototype 对象，因此 constructor 属性也就变成了新对象的 constructor 属性（指向 Object 构造函数），不再指向 Person 函数。此时，尽管 instanceof 操作符还能返回正确的结果，但通过 constructor 已经无法确定对象的类型了。
+在上面的代码中，我们将 `Person.prototype` 设置为等于一个以对象字面量形式创建的新对象。最终结果相同，但有一个例外： constructor 属性不再指向 Person 了。前面曾经介绍过，每创建一个函数，就会同时创建它的 prototype 对象，这个对象也会自动获得 constructor 属性。而我们在这里使用的语法，本质上完全重写了默认的 prototype 对象，因此 constructor 属性也就变成了新对象的 constructor 属性（指向 Object 构造函数），不再指向 Person 函数。此时，尽管 instanceof 操作符还能返回正确的结果，但通过 constructor 已经无法确定对象的类型了。
 
 ```js
 var friend = new Person();
+
 alert(friend instanceof Object); //true
 alert(friend instanceof Person); //true
 alert(friend.constructor == Person); //false
 alert(friend.constructor == Object); //true
 ```
 
-如果 constructor 的值真的很重要，可以像下面这样特意将它设置回适当的值。注意，以这种方式重设 constructor 属性会导致它的`[[Enumerable]]`特性被设置为 true。默认情况下，原生的 constructor 属性是不可枚举的。
+在此，用 instanceof 操作符测试 Object 和 Person 仍然返回 true，但 constructor 属性则等于 Object 而不等于 Person 了。如果 constructor 的值真的很重要，可以像下面这样特意将它设置回适当的值。
 
 ```js
 function Person(){
@@ -2798,7 +2820,7 @@ Person.prototype = {
 };
 ```
 
-因此如果你使用兼容 ECMAScript 5 的 JavaScript 引擎，可以试一试 `Object.defineProperty()`。
+注意，以这种方式重设 constructor 属性会导致它的`[[Enumerable]]`特性被设置为 true。默认情况下，原生的 constructor 属性是不可枚举的。因此如果你使用兼容 ECMAScript 5 的 JavaScript 引擎，可以试一试 `Object.defineProperty()`。
 
 ```js
 function Person(){
@@ -2820,7 +2842,7 @@ Object.defineProperty(Person.prototype, "constructor", {
 
 **4.原型的动态性**
 
-由于在原型中查找值的过程是一次搜索，因此我们对原型对象所做的任何修改都能够立即从实例上反映出来——即使是先创建了实例后修改原型也照样如此。因为实例与原型之间的连接只不过是一个指针，而非一个副本。
+由于在原型中查找值的过程是一次搜索，因此我们对原型对象所做的任何修改都能够立即从实例上反映出来——即使是先创建了实例后修改原型也照样如此。请看下面的例子。
 
 ```js
 var friend = new Person();
@@ -2829,6 +2851,8 @@ Person.prototype.sayHi = function(){
 };
 friend.sayHi(); //"hi"（没有问题！）
 ```
+
+即使 person 实例是在添加新方法之前创建的，但它仍然可以访问这个新方法。其原因可以归结为实例与原型之间的松散连接关系。当我们调用`person.sayHi()`时，首先会在实例中搜索名为 sayHi 的属性，在没找到的情况下，会继续搜索原型。因为实例与原型之间的连接只不过是一个指针，而非一个副本，因此就可以在原型中找到新的 sayHi 属性并返回保存在那里的函数。
 
 尽管可以随时为原型添加属性和方法，并且修改能够立即在所有对象实例中反映出来，但如果是重写整个原型对象，那么情况就不一样了。我们知道，调用构造函数时会为实例添加一个指向最初原型的`[[Prototype]]`指针，而把原型修改为另外一个对象就等于切断了构造函数与最初原型之间的联系。请记住：实例中的指针仅指向原型，而不指向构造函数。
 
@@ -2848,16 +2872,18 @@ Person.prototype = {
 friend.sayName(); //error
 ```
 
+重写原型对象切断了现有原型与任何之前已经存在的对象实例之间的联系；它们引用的仍然是最初的原型。
+
 **5.原生对象的原型**
 
-原型模式的重要性不仅体现在创建自定义类型方面，就连所有原生的引用类型，都是采用这种模式创建的。所有原生引用类型（Object、 Array、 String，等等）都在其构造函数的原型上定义了方法。
+原型模式的重要性不仅体现在创建自定义类型方面，就连所有原生的引用类型，都是采用这种模式创建的。所有原生引用类型（Object、 Array、 String，等等）都在其构造函数的原型上定义了方法。例如，在 Array.prototype 中可以找到`sort()`方法，而在 String.prototype 中可以找到`substring()`方法，如下所示。
 
 ```js
 alert(typeof Array.prototype.sort); //"function"
 alert(typeof String.prototype.substring); //"function"
 ```
 
-通过原生对象的原型，不仅可以取得所有默认方法的引用，而且也可以定义新方法。可以像修改自定义对象的原型一样修改原生对象的原型，因此可以随时添加方法。
+通过原生对象的原型，不仅可以取得所有默认方法的引用，而且也可以定义新方法。可以像修改自定义对象的原型一样修改原生对象的原型，因此可以随时添加方法。下面的代码就给基本包装类型 String 添加了一个名为`startsWith()`的方法。
 
 ```js
 String.prototype.startsWith = function (text) {
@@ -2867,7 +2893,11 @@ var msg = "Hello world!";
 alert(msg.startsWith("Hello")); //true
 ```
 
-**原型对象的问题**
+由于 msg 是字符串，而且后台会调用 String 基本包装函数创建这个字符串，因此通过 msg 就可以调用`startsWith()`方法。
+
+> 尽管可以这样做，但我们不推荐在产品化的程序中修改原生对象的原型。如果因某个实现中缺少某个方法，就在原生对象的原型中添加这个方法，那么当在另一个支持该方法的实现中运行代码时，就可能会导致命名冲突。而且，这样做也可能会意外地重写原生方法。
+
+**6.原型对象的问题**
 
 原型模式也不是没有缺点。首先，它省略了为构造函数传递初始化参数这一环节，结果所有实例在默认情况下都将取得相同的属性值。虽然这会在某种程度上带来一些不方便，但还不是原型的最大问题。原型模式的最大问题是由其共享的本性所导致的。
 
@@ -2886,15 +2916,18 @@ Person.prototype = {
     alert(this.name);
   }
 };
+
 var person1 = new Person();
 var person2 = new Person();
+
 person1.friends.push("Van");
+
 alert(person1.friends); //"Shelby,Court,Van"
 alert(person2.friends); //"Shelby,Court,Van"
 alert(person1.friends === person2.friends); //true
 ```
 
-由于 friends 数组存在于` Person.prototype` 而非 person1 中，所以刚刚提到的修改也会通过`person2.friends`（与 person1.friends 指向同一个数组）反映出来。假如我们的初衷就是像这样在所有实例中共享一个数组，那么对这个结果我没有话可说。可是，实例一般都是要有属于自己的全部属性的。而这个问题正是我们很少看到有人单独使用原型模式的原因所在。
+由于 friends 数组存在于`Person.prototype` 而非 person1 中，所以刚刚提到的修改也会通过`person2.friends`（与 `person1.friends` 指向同一个数组）反映出来。假如我们的初衷就是像这样在所有实例中共享一个数组，那么对这个结果我没有话可说。可是，实例一般都是要有属于自己的全部属性的。而这个问题正是我们很少看到有人单独使用原型模式的原因所在。
 
 ### 6.2.4 组合使用构造函数模式和原型模式
 
