@@ -1341,7 +1341,7 @@ checkscope() //=> sested scope："嵌套作用域"
 
 ### 3.10.1 函数作用域和声明提前
 
-有一些类似 C 语言的编程语言中，花括号内的每一段代码都具有各自的作用域，而且变量在声明它们的代码段之外是不可见的，我们称为块级作用域（block scope），而 JavaScript 中没有块级作用域。 JavaScript 取而代之地使用了函数作用域（function scope），变量在声明它们的函数体以外这个函数体嵌套的任意函数体内都是有定义的。
+有一些类似 C 语言的编程语言中，花括号内的每一段代码都具有各自的作用域，而且变量在声明它们的代码段之外是不可见的，我们称为块级作用域（block scope），而 JavaScript 中没有块级作用域。 JavaScript 取而代之地使用了函数作用域（function scope），变量在声明它们的函数体以及这个函数体嵌套的任意函数体内都是有定义的。
 
 ```js
 function test(o) {
@@ -5555,7 +5555,7 @@ ECMAScript 5 中的`bind()`方法不仅仅是将函数绑定至一个对象，�
 
 ```js
 // 返回两个实参的值
-var sum = function(x,y){
+var sum = function(x, y){
   return x + y
 };
 // 创建一个类似sum的新函数，但this的值绑定到null
@@ -5565,7 +5565,7 @@ var succ = sum.bind(null, 1);
 succ(2)     
 
 // 另外一个左累加计算的函数
-function f(y,z) {
+function f(y, z) {
   return this.x + y + z
 }; 
 // 绑定this和y
