@@ -2440,26 +2440,25 @@ alert(typeof descriptor.get); //"function"
 
 ### 6.2.1 工厂模式
 
-工厂模式是软件工程领域一种广为人知的设计模式，这种模式抽象了创建具体对象的过程，用函数来封装以特定接口创建对象的细节。工厂模式虽然解决了创建多个相似对象的问题，但却没有解决对象识别的问题（即怎样知道一个对象的类型）。 
+工厂模式是软件工程领域一种广为人知的设计模式，这种模式抽象了创建具体对象的过程。考虑到在 ECMAScript 中无法创建类，开发人员就发明了一种函数，用函数来封装以特定接口创建对象的细节，如下面的例子所示。
 
 ```js
 function createPerson(name, age, job){
-    var o = new Object();
-    o.name = name;
-    o.age = age;
-    o.job = job;
-    o.sayName = function(){
-        alert(this.name);
-    };    
-    return o;
+  var o = new Object();
+  o.name = name;
+  o.age = age;
+  o.job = job;
+  o.sayName = function(){
+    alert(this.name);
+  };    
+  return o;
 }
 
 var person1 = createPerson("Nicholas", 29, "Software Engineer");
 var person2 = createPerson("Greg", 27, "Doctor");
-
-person1.sayName();   //"Nicholas"
-person2.sayName();   //"Greg" 
 ```
+
+函数`createPerson()`能够根据接受的参数来构建一个包含所有必要信息的 Person 对象。可以无数次地调用这个函数，而每次它都会返回一个包含三个属性一个方法的对象。工厂模式虽然解决了创建多个相似对象的问题，但却没有解决对象识别的问题（即怎样知道一个对象的类型）。随着 JavaScript 的发展，又一个新模式出现了。
 
 ### 6.2.2 构造函数模式
 
@@ -2478,7 +2477,8 @@ var person1 = new Person("Nicholas", 29, "Software Engineer");
 var person2 = new Person("Greg", 27, "Doctor");
 ```
 
-在这个例子中，` Person()`函数取代了 `createPerson()`函数。我们注意到，` Person()`中的代码除了与 `createPerson()`中相同的部分外，还存在以下不同之处：
+在这个例子中，`Person()`函数取代了 `createPerson()`函数。我们注意到，` Person()`中的代码除了与 `createPerson()`中相同的部分外，还存在以下不同之处：
+
 - 没有显式地创建对象；
 - 直接将属性和方法赋给了 this 对象；
 - 没有 return 语句。
@@ -2486,12 +2486,13 @@ var person2 = new Person("Greg", 27, "Doctor");
 此外，还应该注意到函数名 Person 使用的是大写字母 P。按照惯例，构造函数始终都应该以一个大写字母开头，而非构造函数则应该以一个小写字母开头。这个做法借鉴自其他 OO 语言，主要是为了区别于 ECMAScript 中的其他函数；因为构造函数本身也是函数，只不过可以用来创建对象而已。
 
 要创建 Person 的新实例，必须使用 new 操作符。以这种方式调用构造函数实际上会经历以下 4 个步骤：
+
 1. 创建一个新对象；
 2. 将构造函数的作用域赋给新对象（因此 this 就指向了这个新对象）；
 3. 执行构造函数中的代码（为这个新对象添加属性）；
 4. 返回新对象。
 
-在前面例子的最后， person1 和 person2 分别保存着 Person 的一个不同的实例。这两个对象都有一个 constructor（构造函数）属性，该属性指向 Person 。对象的 constructor 属性最初是用来标识对象类型的。但是，提到检测对象类型，还是 instanceof 操作符要更可靠一些。
+在前面例子的最后， person1 和 person2 分别保存着 Person 的一个不同的实例。这两个对象都有一个 `constructor`（构造函数）属性，该属性指向 Person 。对象的 `constructor` 属性最初是用来标识对象类型的。但是，提到检测对象类型，还是 instanceof 操作符要更可靠一些。
 
 ```js
 alert(person1.constructor == Person); //true
@@ -2505,7 +2506,7 @@ alert(person2 instanceof Person); //true
 
 创建自定义的构造函数意味着将来可以将它的实例标识为一种特定的类型；而这正是构造函数模式胜过工厂模式的地方。
 
-**将构造函数当作函数**。构造函数与其他函数的唯一区别，就在于调用它们的方式不同。不过，构造函数毕竟也是函数，不存在定义构造函数的特殊语法。任何函数，只要通过 new 操作符来调用，那它就可以作为构造函数；而任何函数，如果不通过 new 操作符来调用，那它跟普通函数也不会有什么两样。
+**1. 将构造函数当作函数**。构造函数与其他函数的唯一区别，就在于调用它们的方式不同。不过，构造函数毕竟也是函数，不存在定义构造函数的特殊语法。任何函数，只要通过 new 操作符来调用，那它就可以作为构造函数；而任何函数，如果不通过 new 操作符来调用，那它跟普通函数也不会有什么两样。例如，前面例子中定义的`Person()`函数可以通过下列任何一种方式来调用。
 
 ```js
 // 当作构造函数使用
@@ -2522,7 +2523,18 @@ Person.call(o, "Kristen", 25, "Nurse");
 o.sayName(); //"Kristen"
 ```
 
-**构造函数的问题**。使用构造函数的主要问题，就是每个方法都要在每个实例上重新创建一遍。ECMAScript 中的函数是对象，因此每定义一个函数，也就是实例化了一个对象。说明白些，以这种方式创建函数，会导致不同的作用域链和标识符解析，但创建 Function 新实例的机制仍然是相同的。因此，不同实例上的同名函数是不相等的。
+**2. 构造函数的问题**。使用构造函数的主要问题，就是每个方法都要在每个实例上重新创建一遍。在前面的例子中， person1 和 person2 都有一个名为`sayName()`的方法，但那两个方法不是同一个 Function 的实例。不要忘了——ECMAScript 中的函数是对象，因此每定义一个函数，也就是实例化了一个对象。从逻辑角度讲，此时的构造函数也可以这样定义。
+
+```js
+function Person(name, age, job){
+  this.name = name;
+  this.age = age;
+  this.job = job;
+  this.sayName = new Function("alert(this.name)"); // 与声明函数在逻辑上是等价的
+}
+```
+
+从这个角度上来看构造函数，更容易明白每个 Person 实例都包含一个不同的 Function 实例（以显示 name 属性）的本质。说明白些，以这种方式创建函数，会导致不同的作用域链和标识符解析，但创建 Function 新实例的机制仍然是相同的。因此，不同实例上的同名函数是不相等的，以下代码可以证明这一点。
 
 ```js
 alert(person1.sayName == person2.sayName);  //false      
@@ -2544,7 +2556,7 @@ var person1 = new Person("Nicholas", 29, "Software Engineer");
 var person2 = new Person("Greg", 27, "Doctor");
 ```
 
-这样做确实解决了两个函数做同一件事的问题，可是新问题又来了：在全局作用域中定义的函数实际上只能被某个对象调用，这让全局作用域有点名不副实。而更让人无法接受的是：如果对象需要定义很多方法，那么就要定义很多个全局函数，于是我们这个自定义的引用类型就丝毫没有封装性可言了。好在，这些问题可以通过使用原型模式来解决。
+在这个例子中，我们把`sayName()`函数的定义转移到了构造函数外部。而在构造函数内部，我们将 sayName 属性设置成等于全局的 sayName 函数。这样一来，由于 sayName 包含的是一个指向函数的指针，因此 person1 和 person2 对象就共享了在全局作用域中定义的同一个`sayName()`函数。这样做确实解决了两个函数做同一件事的问题，可是新问题又来了：在全局作用域中定义的函数实际上只能被某个对象调用，这让全局作用域有点名不副实。而更让人无法接受的是：如果对象需要定义很多方法，那么就要定义很多个全局函数，于是我们这个自定义的引用类型就丝毫没有封装性可言了。好在，这些问题可以通过使用原型模式来解决。
 
 ### 6.2.3 原型模式
 
@@ -2569,7 +2581,7 @@ person2.sayName(); //"Nicholas"
 alert(person1.sayName == person2.sayName); //true
 ```
 
-**理解原型对象**
+**1.理解原型对象**
 
 无论什么时候，只要创建了一个新函数，就会根据一组特定的规则为该函数创建一个 prototype 属性，这个属性指向函数的原型对象。在默认情况下，所有原型对象都会自动获得一个 constructor （构造函数）属性，这个属性包含一个指向 prototype 属性所在函数的指针。
 
@@ -2655,7 +2667,7 @@ alert(person1.name); //"Nicholas"—— 来自原型
 alert(person1.hasOwnProperty("name")); //false
 ```
 
-**原型与 in 操作符**
+**2.原型与 in 操作符**
 
 有两种方式使用 in 操作符：单独使用和在 for-in 循环中使用。在单独使用时， in 操作符会在通过对象能够访问给定属性时返回 true，无论该属性存在于实例中还是原型中。
 
@@ -2743,7 +2755,7 @@ var keys = Object.getOwnPropertyNames(Person.prototype);
 alert(keys); //"constructor,name,age,job,sayName"
 ```
 
-**更简单的原型语法**
+**3.更简单的原型语法**
 
 为减少不必要的输入，也为了从视觉上更好地封装原型的功能，更常见的做法是用一个包含所有属性和方法的对象字面量来重写整个原型对象。
 
@@ -2806,7 +2818,7 @@ Object.defineProperty(Person.prototype, "constructor", {
 });
 ```
 
-**原型的动态性**
+**4.原型的动态性**
 
 由于在原型中查找值的过程是一次搜索，因此我们对原型对象所做的任何修改都能够立即从实例上反映出来——即使是先创建了实例后修改原型也照样如此。因为实例与原型之间的连接只不过是一个指针，而非一个副本。
 
@@ -2836,7 +2848,7 @@ Person.prototype = {
 friend.sayName(); //error
 ```
 
-**原生对象的原型**
+**5.原生对象的原型**
 
 原型模式的重要性不仅体现在创建自定义类型方面，就连所有原生的引用类型，都是采用这种模式创建的。所有原生引用类型（Object、 Array、 String，等等）都在其构造函数的原型上定义了方法。
 
