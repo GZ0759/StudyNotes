@@ -3186,13 +3186,13 @@ var empty ={};  // 一个空对象
 var point ={x:0, y:0};  // 两个属性
 var point2 ={x:point.x, y:point.y+1};
 var book ={
-    "main title": "javascript",  // 属性名字里有空格，必须用字符串表示
-    'sub-title': "the defintive guide",  // 属性里有连接字符，因此需要使用字符串
-    "for": "all adiences",  // for是保留字，因此需要引号。
-    author: {  // 这个属性的值是一个对象
-        firstName: "dabid",  // 这里属性的值也是一个对象
-        surname: "flangan"  // 这里的属性名都没有引号
-    }
+  "main title": "javascript",  // 属性名字里有空格，必须用字符串表示
+  'sub-title': "the defintive guide",  // 属性里有连接字符，因此需要使用字符串
+  "for": "all adiences",  // for是保留字，因此需要引号。
+  author: {  // 这个属性的值是一个对象
+    firstName: "dabid",  // 这里属性的值也是一个对象
+    surname: "flangan"  // 这里的属性名都没有引号
+  }
 };
 ```
 
@@ -3217,11 +3217,11 @@ var r = new RegExp("js");
 
 在讲述第三种对象创建技术之前，我们应当首先解释一下原型。每一个JavaScript对象（null除外）都和另一个对象相关联。“另一个”对象就是我们熟知的原型，每一个对象都从原型继承属性。
 
-所有通过对象直接量创建的对象都具有同一个原型对象，并可以通过JavaScript代码`Object.prototype`获得对原型对象的引用。通过关键字new和构造函数调用创建的对象的原型就是构造函数的prototype属性的值。因此，同使用{}创建对象一样，通过`new Object()`创建的对象也继承自`Object.prototype`。同样，通过`new Array()`创建的对象的原型就是`Array.prototype`，通过`new Date()`创建的对象的原型就是`Date.prototype`。
+所有通过对象直接量创建的对象都具有同一个原型对象，并可以通过JavaScript代码`Object.prototype`获得对原型对象的引用。通过关键字new和构造函数调用创建的对象的原型就是构造函数的prototype属性的值。因此，同使用`{}`创建对象一样，通过`new Object()`创建的对象也继承自`Object.prototype`。同样，通过`new Array()`创建的对象的原型就是`Array.prototype`，通过`new Date()`创建的对象的原型就是`Date.prototype`。
 
 没有原型的对象为数不多，`Object.prototype`就是其中之一。它不继承任何属性。其他原型对象都是普通对象，普通对象都具有原型。所有的内置构造函数（以及大部分自定义的构造函数）都具有一个继承自`Object.prototype`的原型。例如，`Date.prototype`的属性继承自`Object.prototype`，因此由`new Date()`创建的Date对象的属性同时继承自`Date.prototype`和`Object.prototype`。这一系列链接的原型对象就是所谓的“原型链”（prototype chain）。
 
-6.2.2节讲述属性继承的工作机制。6.8.1节将会讲到如何获取对象的原型。第9章将会更详细地讨论原型和构造函数，包括如何通过编写构造函数定义对象的“类”，以及给构造函数的prototype属性赋值可以让其“实例”直接使用这个原型上的属性和方法。
+6.2.2节讲述属性继承的工作机制。6.8.1节将会讲到如何获取对象的原型。第9章将会更详细地讨论原型和构造函数，包括如何通过编写构造函数定义对象的“类”，以及给构造函数的 prototype 属性赋值可以让其“实例”直接使用这个原型上的属性和方法。
 
 ### 6.1.4 Object.create()
 
@@ -3242,27 +3242,27 @@ var o1 = Object.create({
 var o2 = Object.create(null);  // o2不继承任何属性和方法
 ```
 
-如果想创建一个普通的空对象（比如通过{}或`new Object()`创建的对象），需要传入Object.prototype：
+如果想创建一个普通的空对象（比如通过`{}`或`new Object()`创建的对象），需要传入`Object.prototype`：
 
 ```js
 var o3 =Object.create(Object.prototype);  // o3和{}和new Object一样
 ```
 
-可以通过任意原型创建新对象（换句话说，可以使任意对象可继承），这是一个强大的特性。在ECMAScript3中可以用类似的代码来模拟原型继承：
+可以通过任意原型创建新对象（换句话说，可以使任意对象可继承），这是一个强大的特性。在 ECMAScript3 中可以用类似的代码来模拟原型继承：
 
 ```js
-//inherit()返回了一个继承自原型对象p属性的新对象
-//这里是有ECMAScript5中的Object.create()函数（如果存在的话）
-//如果不存在Object.create,则使用其他方法
+// inherit()返回了一个继承自原型对象p属性的新对象
+// 这里是有ECMAScript5中的Object.create()函数（如果存在的话）
+// 如果不存在Object.create,则使用其他方法
 function inherit(p) {
-  if (p == null) throw TypeError(); //p是一个对象，不能是null
-  if (Object.create) //如果Object.create存在
-      return Object.create(p); //直接使用它
-  var t = typeof p; //否则进一步检测
+  if (p == null) throw TypeError(); // p是一个对象，不能是null
+  if (Object.create) // 如果Object.create存在
+    return Object.create(p); // 直接使用它
+  var t = typeof p; // 否则进一步检测
   if (t !== "object" && t !== "function") throw TypeError;
-  function f() {}; //定义一个空构造函数
-  f.prototype = p; //将其原型属性设置p
-  return new f(); //将f()创建p的继承对象
+  function f() {}; // 定义一个空构造函数
+  f.prototype = p; // 将其原型属性设置p
+  return new f(); // 将f()创建p的继承对象
 }
 ```
 
@@ -3271,7 +3271,9 @@ function inherit(p) {
 `inherit()`函数的其中一个用途就是防止库函数无意间（非恶意地）修改那些不受你控制的对象。不是将对象直接作为参数传入函数，而是将它的继承对象传入函数。当函数读取继承对象的属性时，实际上读取的是继承来的值。如果给继承对象的属性赋值，则这些属性只会影响这个继承对象自身，而不是原始对象：
 
 ```js
-var o = {x: "donot change this balue"};
+var o = {
+  x: "donot change this balue"
+};
 library_function(inherit(o));  // 防止对o的意外修改
 ```
 
@@ -3292,7 +3294,7 @@ book.edition = 6;  // 给book添加一个名为edition的属性
 book["main title"] = "ECMAscript";  // 给"main title"属性赋值
 ```
 
-在ECMAScript 3中，点运算符后的标识符不能是保留字，比如，`o.for`或`o.class`是非法的，因为for是JavaScript的关键字，class是保留字。如果一个对象的属性名是保留字，则必须使用方括号的形式访问它们，比如`o["for"]`和`o["class"]`。ECMAScript 5对此放宽了限制（包括ECMAScript3的某些实现），可以在点运算符后直接使用保留字。
+在 ECMAScript 3 中，点运算符后的标识符不能是保留字，比如，`o.for`或`o.class`是非法的，因为for是JavaScript的关键字，class是保留字。如果一个对象的属性名是保留字，则必须使用方括号的形式访问它们，比如`o["for"]`和`o["class"]`。ECMAScript 5对此放宽了限制（包括ECMAScript3的某些实现），可以在点运算符后直接使用保留字。
 
 当使用方括号时，我们说方括号内的表达式必须返回字符串。其实更严格地讲，表达式必须返回字符串或返回一个可以转换为字符串的值。在第7章里有一些例子中的方括号内使用了数字，这情况象是非常常见的。
 
@@ -3307,9 +3309,9 @@ object["property"]
 
 第一种语法使用点运算符和一个标识符，这和C和Java中访问一个结构体或对象的静态字段非常类似。第二种语法使用方括号和一个字符串，看起来更像数组，只是这个数组元素是通过字符串索引而不是数字索引。这种数组就是我们所说的关联数组（associative array），也称做散列、映射或字典（dictionary）。JavaScript对象都是关联数组，本节将讨论它的重要性。
 
-在C、C++和Java和一些强类型(strong typed)语言中，对象只能拥有固定数目的属性，并且这些属性名称必须提前定义好。由于JavaScript是弱类型语言，因此不必遵循这条规定，在任何对象中程序都可以创建任意数量的属性。但当通过点运算符(.)访问对象的属性时，属性名用一个标识符来表示。标识符必须直接出现在JavaScript程序中，它们不是数据类型，因此程序无法修改它们。
+在C、C++和Java和一些强类型(strong typed)语言中，对象只能拥有固定数目的属性，并且这些属性名称必须提前定义好。由于JavaScript是弱类型语言，因此不必遵循这条规定，在任何对象中程序都可以创建任意数量的属性。但当通过点运算符`.`访问对象的属性时，属性名用一个标识符来表示。标识符必须直接出现在JavaScript程序中，它们不是数据类型，因此程序无法修改它们。
 
-反过来讲，当通过[]来访问对象的属性时，属性名通过字符串来表示。字符串是JavaScript的数据类型，在程序运行时可以修改和创建它们。因此，可以在JavaScript中使用下面这种代码：
+反过来讲，当通过`[]`来访问对象的属性时，属性名通过字符串来表示。字符串是JavaScript的数据类型，在程序运行时可以修改和创建它们。因此，可以在JavaScript中使用下面这种代码：
 
 ```js
 var addr = "";
@@ -3319,16 +3321,16 @@ for (i = 0; i < 4; i++) {
 };
 ```
 
-这个例子主要说明了使用数组写法和用字符串表达式来访问对象属性的灵活性。这段代码也可以通过点运算符来重写，但是很多场景只能使用数组写法来完成。假设你正在写一个程序，这个程序利用网络资源计算当前用户股票市场投资的金额。程序允许用户输入每只股票的名称和购股份额。该程序使用名为portfolio的对象来存储这些信息。每只股票在这个对象中都有对应的属性，属性名称就是股票名称，属性值就是购股数量，例如，如果用户持有IBM的50股，那么portfolio.ibm属性的值就为50。
+这个例子主要说明了使用数组写法和用字符串表达式来访问对象属性的灵活性。这段代码也可以通过点运算符来重写，但是很多场景只能使用数组写法来完成。假设你正在写一个程序，这个程序利用网络资源计算当前用户股票市场投资的金额。程序允许用户输入每只股票的名称和购股份额。该程序使用名为portfolio的对象来存储这些信息。每只股票在这个对象中都有对应的属性，属性名称就是股票名称，属性值就是购股数量，例如，如果用户持有 IBM 的50股，那么 portfolio.ibm 属性的值就为50。
 
-下面是程序的部分代码，这个函数用来给portifolio添加新的股票：
+下面是程序的部分代码，这个函数用来给 portifolio 添加新的股票：
 
 ```js
 function addstock (portfolio,stockname,shares){
 portfolio[stockname] = shares;
 ```
 
-由于用户是在程序运行时输入股票名称，因此在之前无法得知这些股票的名称是什么。而由于在写程序的时候不知道属性名称，因此无法通过点运算符(.)来访问对象portfolio的属性。但可以使用[]运算符，因为它使用字符串值（字符串值是动态的，可以在运行时更改）而不是标识符（标识符是静态的，必须写死在程序中）作为索引对属性进行访问。
+由于用户是在程序运行时输入股票名称，因此在之前无法得知这些股票的名称是什么。而由于在写程序的时候不知道属性名称，因此无法通过点运算符`.`来访问对象portfolio的属性。但可以使用`[]`运算符，因为它使用字符串值（字符串值是动态的，可以在运行时更改）而不是标识符（标识符是静态的，必须写死在程序中）作为索引对属性进行访问。
 
 当使用for/in循环遍历关联数组时，就可以清晰地体会到for/in的强大之处。下面的例子就是利用for/in计算portfolio的总计值：
 
@@ -3348,7 +3350,7 @@ function getvalue(protfolio) {
 
 JavaScript对象具有“自有属性”（own property），也有一些属性是从原型对象继承而来的。为了更好地理解这种继承，必须更深入地了解属性访问的细节。本节中的许多示例代码借用了例6-1中的`inherit()`函数，通过给它传入指定原型对象来创建实例。
 
-假设要查询对象o的属性x，如果o中不存在x，那么将会继续在o的原型对象中查询属性x。如果原型对象中也没有x，但这个原型对象也有原型，那么继续在这个原型对象的原型上执行查询，直到找到x或者查找到一个原型是null的对象为止。可以看到，对象的原型属性构成了一个“链”，通过这个“链”可以实现属性的继承。
+假设要查询对象o的属性x，如果o中不存在x，那么将会继续在o的原型对象中查询属性x。如果原型对象中也没有x，但这个原型对象也有原型，那么继续在这个原型对象的原型上执行查询，直到找到x或者查找到一个原型是 null 的对象为止。可以看到，对象的原型属性构成了一个“链”，通过这个“链”可以实现属性的继承。
 
 ```js
 var o = {};  // 从Object.prototype继承对象方法
@@ -3382,35 +3384,35 @@ console.log(unitcircle.r)  // =>1 对象原型没有被修改
 
 属性访问并不总是返回或设置一个值。本节讲述查询或设置属性时的一些出错情况。
 
-查询一个不存在的属性并不会报错，如果在对象o自身的属性或继承的属性中均未找到属性x，属性访问表达式`o.x`返回undefined。
+查询一个不存在的属性并不会报错，如果在对象o自身的属性或继承的属性中均未找到属性x，属性访问表达式`o.x`返回 undefined 。
 
 ```js
 // book对象有属性“sub-title”，而没有属性“subtitle”
 book.subtitle;  // =>undefined：属性不存在
 ```
 
-但是，如果对象不存在，那么试图查询这个不存在的对象的属性就会报错。null和undefined值都没有属性，因此查询这些值的属性会报错，接上例：
+但是，如果对象不存在，那么试图查询这个不存在的对象的属性就会报错。 null 和 undefined 值都没有属性，因此查询这些值的属性会报错，接上例：
 
 ```js
-//  抛出一个类型错误异常，undefined没有length属性
+// 抛出一个类型错误异常，undefined没有length属性
 var len = book.subtitle.length;
 // Uncaught TypeError: Cannot read property 'length' of undefined
 ```
 
-除非确定book和book.subtitle都是（或在行为上）对象，否则不能这样写表达式book. subtitle.length，因为这样会报错，下面提供了两种避免出错的方法：
+除非确定 book 和 book.subtitle 都是（或在行为上）对象，否则不能这样写表达式`book.subtitle.length`，因为这样会报错，下面提供了两种避免出错的方法：
 
 ```js
-//一种很冗余但很容易懂的方法
+// 一种很冗余但很容易懂的方法
 var len = undefined;
 if (book){
-  if(book.subtitle) len =book.subtitle.length;
+  if(book.subtitle) len = book.subtitle.length;
 }
 
-//一种更简练的常用的方法，获取subtitle的length属性undefined
+// 一种更简练的常用的方法，获取subtitle的length属性undefined
 var len = book && book.subtitle && book.subtitle.length;
 ```
 
-当然，给null和undefined设置属性也会报类型错误。给其他值设置属性也不总是成功，有一些属性是只读的，不能重新赋值，有一些对象不允许新增属性，但让人颇感意外的是，这些设置属性的失败操作不会报错：
+当然，给 null 和 undefined 设置属性也会报类型错误。给其他值设置属性也不总是成功，有一些属性是只读的，不能重新赋值，有一些对象不允许新增属性，但让人颇感意外的是，这些设置属性的失败操作不会报错：
 
 ```js
 // 内置构造函数的原型是只读的
@@ -3419,7 +3421,7 @@ Object.prototype = 0;  // 赋值失败，但没报错，Object.prototype没有�
 
 这是一个历史遗留问题，这个bug在ECMAScript 5的严格模式中已经修复。在严格模式中，任何失败的属性设置操作都会抛出一个类型错误异常。
 
-尽管属性赋值成功或失败的规律看起来很简单，但要描述清楚并不容易。在这些场景下给对象o设置属性p会失败：
+尽管属性赋值成功或失败的规律看起来很简单，但要描述清楚并不容易。在这些场景下给对象 o 设置属性 p 会失败：
 
 - o中的属性p是只读的：不能给只读属性重新赋值（`defineProperty()`方法中有一个例外，可以对可配置的只读属性重新赋值）。
 - o中的属性p是继承属性，且它是只读的：不能通过同名自有属性覆盖只读的继承属性。
@@ -3427,7 +3429,7 @@ Object.prototype = 0;  // 赋值失败，但没报错，Object.prototype没有�
 
 ## 6.3 删除属性 
 
-delete运算符可以删除对象的属性。它的操作数应当是一个属性访问表达式。让人感到意外的是，delete只是断开属性和宿主对象的联系，而不会去操作属性中的属性：
+delete 运算符可以删除对象的属性。它的操作数应当是一个属性访问表达式。让人感到意外的是， delete 只是断开属性和宿主对象的联系，而不会去操作属性中的属性：
 
 ```js
 delete book.author;  // book不再有属性author
@@ -3447,7 +3449,7 @@ delete o.toString();  // 返回true
 delete 1;  // 无意义，返回true
 ```
 
-delete不能删除那些可配置性为false的属性（尽管可以删除不可扩展对象的可配置属性）。某些内置对象的属性是不可配置的，比如通过变量声明和函数声明创建的全局对象的属性。在严格模式中，删除一个不可配置属性会报一个类型错误。在非严格模式中（以及ECMAScript3中），在这些情况下的delete操作会返回false：
+delete 不能删除那些可配置性为false的属性（尽管可以删除不可扩展对象的可配置属性）。某些内置对象的属性是不可配置的，比如通过变量声明和函数声明创建的全局对象的属性。在严格模式中，删除一个不可配置属性会报一个类型错误。在非严格模式中（以及ECMAScript3中），在这些情况下的delete操作会返回false：
 
 ```js
 delete Object.prototype;  // 不能删除，属性是不可配置的
@@ -3473,7 +3475,7 @@ delete.this.x  // 正常工作
 
 ## 6.4 检测属性 
 
-JavaScript对象可以看做属性的集合，我们经常会检测集合中成员的所属关系——判断某个属性是否存在于某个对象中。可以通过in运算符、`hasOwnPreperty()`和`propertyIsEnumerable()`方法来完成这个工作，甚至仅通过属性查询也可以做到这一点。
+JavaScript对象可以看做属性的集合，我们经常会检测集合中成员的所属关系——判断某个属性是否存在于某个对象中。可以通过 in 运算符、`hasOwnPreperty()`和`propertyIsEnumerable()`方法来完成这个工作，甚至仅通过属性查询也可以做到这一点。
 
 in运算符的左侧是属性名（字符串），右侧是对象。如果对象的自有属性或继承属性中包含这个属性则返回true：
 
@@ -3503,7 +3505,7 @@ o.propertyIsEnumerable("y");  // false：y是继承来的
 Object.prototype.propertyIsEnumerable("toString");  // false：不可枚举
 ```
 
-除了使用in运算符之外，另一种更简便的方法是使用“!==”判断一个属性是否是undefined：
+除了使用in运算符之外，另一种更简便的方法是使用`!==`判断一个属性是否是undefined：
 
 ```js
 var o = {x: 1}
@@ -3526,7 +3528,7 @@ delete o.x;  // 删除了属性x
 "x" in o  // false  属性不存在
 ```
 
-注意，上述代码中使用的是“!==”运算符，而不是“!=”。“!==”可以区分undefined和null。有时则不必作这种区分：
+注意，上述代码中使用的是`!==`运算符，而不是`!=`。`!==`可以区分undefined和null。有时则不必作这种区分：
 
 ```js
 // 如果o中有属性x，且x的值不是null undefined ,o.x乘以2
@@ -3572,7 +3574,7 @@ for(p in o){
 
 function extend(o, p) {
   for (prop in p) { //遍历p中所有的属性
-      o[prop] = p[prop]; //将遍历属性添加至o中
+    o[prop] = p[prop]; //将遍历属性添加至o中
   }
   return o;
 }
@@ -3583,8 +3585,8 @@ function extend(o, p) {
 
 function merge(o, p) {
   for (prop in p) { //遍历p中所有的元素
-      if (o.hasOwnProperty[prop]) continue; //过滤掉已在o中存在的属性
-      o[prop] = p[prop]; //将属性添加至o中
+    if (o.hasOwnProperty[prop]) continue; //过滤掉已在o中存在的属性
+    o[prop] = p[prop]; //将属性添加至o中
   }
   return o;
 }
@@ -3595,7 +3597,7 @@ function merge(o, p) {
 */
 function restrict(o, p) {
   for (prop in o) { //遍历o的所有属性
-      if (!(prop in p)) delete o[prop]; //如果在p中不存在，则删除之
+    if (!(prop in p)) delete o[prop]; //如果在p中不存在，则删除之
   }
   return o;
 }
@@ -3606,7 +3608,7 @@ function restrict(o, p) {
 */
 function subtarck(o, p) {
   for (prop in p) { //遍历p中所有的属性
-      delete o[prop]; //从o中删除（删除一个不存在的属性一般不报错）
+    delete o[prop]; //从o中删除（删除一个不存在的属性一般不报错）
   }
   return o;
 }
@@ -3634,8 +3636,8 @@ function keys(o) {
   if (typeof o !== "object") throw TypeError(); //参数必须是对象
   var result = []; //将要返回的对象
   for (var prop in o) { //遍历所有可枚举的属性
-      if (o.hasOwnProperty(prop)) //判断是否自有属性
-          result.push(prop); //将属性名添加至数组中
+    if (o.hasOwnProperty(prop)) //判断是否自有属性
+      result.push(prop); //将属性名添加至数组中
   }
   return result; //返回这个数组
 }
@@ -3674,17 +3676,17 @@ var p = {
   // r是可读写的存取器属性，它带有getter和setter。
   // 函数体结束后不要忘记带上逗号
   get r() {
-      return Math.sqrt(this.x * this.x + this.y * this.y);
+    return Math.sqrt(this.x * this.x + this.y * this.y);
   },
   set r(newvalue) {
-      var oldvalue = Math.sqrt(this.x * this.x + this.y * this.y);
-      var ratio = newvalue / oldvalue;
-      this.x *= ratio;
-      this.y *= ratio;
+    var oldvalue = Math.sqrt(this.x * this.x + this.y * this.y);
+    var ratio = newvalue / oldvalue;
+    this.x *= ratio;
+    this.y *= ratio;
   },
   // theta是只读存取器属性，它只有getter方法
   get theta() {
-      return Math.atan2(this.y, this.x);
+    return Math.atan2(this.y, this.x);
   }
 };
 ```
@@ -3711,13 +3713,13 @@ var serialnum = {
 
   // 返回当前的值，然后自增
   get next() {
-      return this.$n++;
+    return this.$n++;
   },
 
   // 返回当前新的值，大只有当它比当前值大时才设置成功
   set next(n) {
-      if (n >= this.$n) this.$n = n;
-      else throw "序列号的值不能比当前值小";
+    if (n >= this.$n) this.$n = n;
+    else throw "序列号的值不能比当前值小";
   }
 };
 ```
@@ -3730,20 +3732,20 @@ var serialnum = {
 //每次产生的随机数都在0-255之间
 var random = {
   get octet() {
-      return Math.floor(Math.random() * 256);
-    },
-    get uint16() {
-      return Math.floor(Math.random() * 65536);
-    },
-    get int16() {
-      return Math.floor(Math.random() * 65536) - 32768;
-    }
+    return Math.floor(Math.random() * 256);
+  },
+  get uint16() {
+    return Math.floor(Math.random() * 65536);
+  },
+  get int16() {
+    return Math.floor(Math.random() * 65536) - 32768;
+  }
 }
 ```
 
 ## 6.7 属性的特性 
 
-除了包含名字和值之外，属性还包含一些标识它们可写、可枚举和可配置的特性。在ECMAScript 3中无法设置这些特性，所有通过ECMAScript 3的程序创建的属性都是可写的、可枚举的和可配置的，且无法对这些特性做修改。本节将讲述ECMAScript5中查询和设置这些属性特性的API。这些API对于库的开发者来说非常重要，因为：
+除了包含名字和值之外，属性还包含一些标识它们可写、可枚举和可配置的特性。在ECMAScript 3中无法设置这些特性，所有通过 ECMAScript 3 的程序创建的属性都是可写的、可枚举的和可配置的，且无法对这些特性做修改。本节将讲述ECMAScript5中查询和设置这些属性特性的API。这些API对于库的开发者来说非常重要，因为：
 
 - 可以通过这些API给原型对象添加方法，并将它们设置成不可枚举的，这让它们看起来更像内置方法。
 - 可以通过这些API给对象定义不能修改或删除的属性，借此“锁定”这个对象。
@@ -3873,7 +3875,7 @@ Object.defineProperty(Object.prototype,
 
 原型属性时在实例对象创建之初就设置好的，通过对象直接量创建的对象使用`Object.prototype`作为它们的原型。通过new创建的对象使用构造函数的prototype属性作为它们的原型。通过`Object.create()`创建的对象使用第一个参数（也可以是null）作为它们的原型。
 
-在ECMAScript 5中，将对象作为参数传入`Object.getPrototypeOf()`可以查询它的原型。在ECMAScript 3中，则没有与之等价的函数，但经常使用表达式`o.constructor.prototype`来检测一个对象的原型。通过new表达式创建的对象，通常继承一个constructor属性，这个属性指代创建这个对象的构造函数。注意，通过对象直接量或`Object.create()`创建的对象包含一个名为constructor的属性，这个属性指代`Object()`构造函数。因此，constructor.prototype才是对象直接量的真正的原型，但对于通过`Object.create()`创建的对象则往往不是这样。
+在ECMAScript 5中，将对象作为参数传入`Object.getPrototypeOf()`可以查询它的原型。在ECMAScript 3中，则没有与之等价的函数，但经常使用表达式`o.constructor.prototype`来检测一个对象的原型。通过 new 表达式创建的对象，通常继承一个 constructor 属性，这个属性指代创建这个对象的构造函数。注意，通过对象直接量或`Object.create()`创建的对象包含一个名为 constructor 的属性，这个属性指代`Object()`构造函数。因此，`constructor.prototype`才是对象直接量的真正的原型，但对于通过`Object.create()`创建的对象则往往不是这样。
 
 要想检测一个对象是否是另一个对象的原型（或处于原型链中），请使用`isPrototypeOf()`方法。例如，可以通过`p.isPrototypeOf(o)`来检测p是否是o的原型：
 
@@ -3884,7 +3886,7 @@ p.isPrototypeOf(o);  // =>true o继承自p
 Object.prototype.isPrototypeOf(p);  // =>true p继承自Object.prototype
 ```
 
-需要注意的是，`isPrototypeOf()`函数实现的功能和instanceof运算符非常类似。
+需要注意的是，`isPrototypeOf()`函数实现的功能和 instanceof 运算符非常类似。
 
 Mozilla实现的JavaScript（包括早些年的Netscape）对外暴露了一个专门命名为`__proto__`的属性，用以直接查询/设置对象的原型。但并不推荐使用`__proto__`，因为尽管Safari和Chrome的当前版本都支持它，但IE和Opera还未实现它（可能以后也不会实现）。实现了ECMAScript 5的Firefox版本依然支持`__proto__`，但对修改不可扩展对象的原型做了限制。
 
@@ -3896,7 +3898,7 @@ Mozilla实现的JavaScript（包括早些年的Netscape）对外暴露了一个�
 [object class]
 ```
 
-因此，要想获得对象的类，可以调用对象的`toString()`方法，然后提取已返回字符串的第8个到倒数第二个位置之间的字符。不过让人感觉棘手的是，很多对象继承的`toString()`方法重写了，为了能调用正确的`toString()`版本，必须间接地调用`Function.call()`方法。例6-4中的classof()函数可以返回传递给它的任意对象的类：
+因此，要想获得对象的类，可以调用对象的`toString()`方法，然后提取已返回字符串的第8个到倒数第二个位置之间的字符。不过让人感觉棘手的是，很多对象继承的`toString()`方法重写了，为了能调用正确的`toString()`版本，必须间接地调用`Function.call()`方法。例6-4中的`classof()`函数可以返回传递给它的任意对象的类：
 
 ```js
 function classOf(o) {
