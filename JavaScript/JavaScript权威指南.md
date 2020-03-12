@@ -7063,66 +7063,53 @@ s instanceof Set; //=>true
 
 在面向对象编程中，类B可以继承自另外一个类A。我们将A称为父类（superclass）,将B称为子类（subclass）。B的实例从A继承了所有的实例方法。类B可以定义自己的实例方法，有些方法可以重载A的同名方法，这种做法称为“方法链”（method chaining）。同样，子类的构造函数`B()`有时需要调用父类的构造函数`A()`,这种做法称为“构造函数链”（constructor chaining）。子类还可以有子类，当涉及类的层次结构时，往往需要定义抽象类（abstract class）。抽象类中定义的方法没有实现。抽象类中的抽象方法是在抽象类的具体子类中实现的。
 
-javascript中创建子类的关键之处在于，采用合适的方法对原型对象进行初始化。如果类B继承自类A，B.prototype必须是A.prototype的后嗣。B的实例继承自B.prototype,后者同样也继承自A.prototype.本节将会对刚才提到的子类相关的术语做一一解释，还会介绍类继承的替代方案：“组合”（composition）。
+JavaScript 中创建子类的关键之处在于，采用合适的方法对原型对象进行初始化。如果类B继承自类A，`B.prototype`必须是`A.prototype`的后嗣。B的实例继承自B.prototype,后者同样也继承自`A.prototype`.本节将会对刚才提到的子类相关的术语做一一解释，还会介绍类继承的替代方案：“组合”（composition）。
 
-从上文中的Set类开始讲解，本节将会讨论如何定义子类。如何实现构造函数链并重载方法，如何使用组合来代替继承，以及如何通过抽象类从实现中提炼出接口。本节以一个扩展的例子结束。这个例子定义了Set类的层次结构。注意本节老师的几个例子着重讲述了实现子类的基础技术，其中某些技术有重要的缺陷，后续几节会讲到。
+从上文中的Set类开始讲解，本节将会讨论如何定义子类。如何实现构造函数链并重载方法，如何使用组合来代替继承，以及如何通过抽象类从实现中提炼出接口。本节以一个扩展的例子结束。这个例子定义了Set类的层次结构。注意本节开始的几个例子着重讲述了实现子类的基础技术，其中某些技术有重要的缺陷，后续几节会讲到。
 
 ### 9.7.1 定义子类
 
-javascript的对象可以从类的原型对象中继承属性（通常继承是方法）。如果O是类B的实例，B是A的子类，那么O也一定从A中继承了属性。为此，首先要确保B的原型对象继承A的原型对象，通过inherit函数可以这样来实现：
+JavaScript 的对象可以从类的原型对象中继承属性（通常继承是方法）。如果O是类B的实例，B是A的子类，那么O也一定从A中继承了属性。为此，首先要确保B的原型对象继承A的原型对象，通过inherit函数可以这样来实现：
 
 ```js
-/*inherit*/
-function inherit(p) {
-if (p == null) throw TypeError();
-if (Object.create)
-    return Object.create(p);
-var t = typeof p;
-if (t !== "object" && t !== "function") throw TypeError();
-
-function f() {};
-f.prototype = p;
-return new f();
-}
-/*inherit*/
 B.prototype = inherit(A.prototype); //子类派生父类
 B.prototype.constructor = B; //重载继承来的constructor属性
 ```
-末尾这两行代码是在javascript中创建子类的关键。
 
-   如果不这样做，原型对象仅仅是一个普通对象，它只继承自Object.prototype，这意味着你的类和所有的类一样是Object的子类。如果将这两行代码添加至defienClass()函数中（9.3）节，可以将它变成下面的例子中的defineSubclass()函数和Function.prototype.extend()方法：
+末尾这两行代码是在 JavaScript 中创建子类的关键。如果不这样做，原型对象仅仅是一个普通对象，它只继承自Object.prototype，这意味着你的类和所有的类一样是Object的子类。如果将这两行代码添加至defienClass()函数中（9.3）节，可以将它变成下面的例子中的defineSubclass()函数和Function.prototype.extend()方法：
 
 ```js
 /*定义子类*/
 //用一个简单的函数创建简单的子类
 function defineSubclass(superclass, //父类的构造函数
-      constructor, //新的子类的构造函数
-      methods, //实例方法：复制至原型中
-      statics) //类属性：复制至构造函数中
-  {
-      //建立子类的原型对象
-      constructor.prototype = inherit(superclass.prototype);
-      constructor.prototype.constructor = constructor;
-      //像对常规类一样复制方法和类属性
-      if (methods) extend(constructor.prototype, methods);
-      if (statics) extend(constructor, statics);
-      //返回这个类
-      return constructor;
-  }
-  //也可以通过父类构造函数的方法来做到这一点
+  constructor, //新的子类的构造函数
+  methods, //实例方法：复制至原型中
+  statics) //类属性：复制至构造函数中
+{
+  //建立子类的原型对象
+  constructor.prototype = inherit(superclass.prototype);
+  constructor.prototype.constructor = constructor;
+  //像对常规类一样复制方法和类属性
+  if (methods) extend(constructor.prototype, methods);
+  if (statics) extend(constructor, statics);
+  //返回这个类
+  return constructor;
+}
+//也可以通过父类构造函数的方法来做到这一点
 Function.prototype.extend = function(constructor, methods, statics) {
   return defineSubclass(this, constructor, methods, statics);
 };
 ```
-下面的例子展示了不使用defineSubclass()函数如何“手动”实现子类。这里定义了Set的子类SingletonSet.SingletonSet是一个特殊的集合，它是只读的，而且含有单独的常量成员。
+
+下面的例子展示了不使用`defineSubclass()`函数如何“手动”实现子类。这里定义了Set的子类`SingletonSet.SingletonSet`是一个特殊的集合，它是只读的，而且含有单独的常量成员。
 
 ```js
 /*SingletonSet:一个简单子类*/
 //构造函数
 function SingletonSet(member) {
-      this.member = member; //记住这个集合中这个唯一的成员
-  }
-  //创建一个原型对象，这个原型对象继承自S儿童的原型
+  this.member = member; //记住这个集合中这个唯一的成员
+}
+//创建一个原型对象，这个原型对象继承自S儿童的原型
 SingletonSet.prototype = inherit(Set.prototype);
 //给原型添加属性
 //如果有同名属性就覆盖Set.prototype中的同名属性
@@ -7140,20 +7127,24 @@ extend(SingletonSet.prototype,{
   contains:function(x){return x === this.member;}
 });
 ```
-这里的SingletonSet类是一个比较简单的实现，它包含5个简单的方法定义。它实现了5个核心的Set方法，但从它的父类中继承了toString(),toArray()和equals()方法。定义子类就是为了继承这些方法。比如，Set类的equals()方法（在9.4节中定义）用来对Set实例进行比较，只要Set的实例包含size()和foreach()方法，就可以通过equals()比较。
 
-因为SingletonSet是Set的子类 ，所有它自动继承了equals()的实现，不用再实现一次。当然，如果想要简单的实现方式，那么给SingletonSet类定义它自己的equals()版本会更高效一些：
+这里的SingletonSet类是一个比较简单的实现，它包含5个简单的方法定义。它实现了5个核心的Set方法，但从它的父类中继承了`toString()`,`toArray()`和`equals()`方法。定义子类就是为了继承这些方法。比如，Set类的`equals()`方法（在9.4节中定义）用来对Set实例进行比较，只要Set的实例包含`size()`和`foreach()`方法，就可以通过`equals()`比较。
 
-            SingletonSet.prototype.equals = function(that){
-                return that instanceof Set && that.size() ==1 && that.contains(this.member);
-            };
-需要注意的是，SingletonSet不是将Set中的方法列表静态地借用过来，而是动态的从Set类继承方法。如果给Set.prototype添加新的方法，Set和SingletonSet的所有实例会立即拥有这个方法（假定SingletonSet没有定义与之同名的方法）。
+因为SingletonSet是Set的子类 ，所有它自动继承了`equals()`的实现，不用再实现一次。当然，如果想要简单的实现方式，那么给SingletonSet类定义它自己的`equals()`版本会更高效一些：
+
+```js
+SingletonSet.prototype.equals = function(that){
+  return that instanceof Set && that.size() ==1 && that.contains(this.member);
+};
+```
+
+需要注意的是，SingletonSet不是将Set中的方法列表静态地借用过来，而是动态的从Set类继承方法。如果给`Set.prototype`添加新的方法，Set和SingletonSet的所有实例会立即拥有这个方法（假定SingletonSet没有定义与之同名的方法）。
 
 ### 9.7.2 构造函数和方法链
 
 最后一节的SingletonSet类定义了全新的集合实现，而且将它继承自其父类的核心方法全部替换。然而定义子类的时，我们往往希望对父类的行为进行修改或扩充，而不是完全替换掉它们。为了做到这一点，构造函数和子类的的方法需要调用或链接到父类构造函数和父类的方法。
 
-下面的例子对此做了展示。它定义了Set的子类NonNullSet,它不允许null和undefined作为它的成员。为了使用这种方式对成员做限制，NonNullSet需要在其add()方法中对null和undefined值做检测。但它需要完全重新实现一个add()方法，因此它调用了父类中的这个方法。注意，NonNullSet()构造函数同样不需要重新实现，它只须将它的参数传入父类构造函数（作为函数 来调用它，而不是通过构造函数来调用），通过父类的构造函数来初始化新创建的对象。
+下面的例子对此做了展示。它定义了Set的子类NonNullSet,它不允许null和undefined作为它的成员。为了使用这种方式对成员做限制，NonNullSet需要在其add()方法中对null和undefined值做检测。但它需要完全重新实现一个`add()`方法，因此它调用了父类中的这个方法。注意，`NonNullSet()`构造函数同样不需要重新实现，它只须将它的参数传入父类构造函数（作为函数 来调用它，而不是通过构造函数来调用），通过父类的构造函数来初始化新创建的对象。
 
 ```js
 /*在子类中调用父类的构造函数和方法*/
@@ -7161,11 +7152,11 @@ extend(SingletonSet.prototype,{
 *NonNullSet 是Set的子类，它的成员不能是null和undefined
 * */
 function NonNullSet() {
-      //仅链接到父类
-      //作为普通函数调用父类的构造函数来初始化通过构造函数调用创建的对象
-      Set.apply(this, arguments);
-  }
-  //将NonNullSet设置为Set的子类
+  //仅链接到父类
+  //作为普通函数调用父类的构造函数来初始化通过构造函数调用创建的对象
+  Set.apply(this, arguments);
+}
+//将NonNullSet设置为Set的子类
 NonNullSet.prototype = inherit(Set.prototype);
 NonNullSet.prototype.constructor = NonNullSet;
 //为了将null和undefined排除在外，只须重写add()方法
@@ -7173,61 +7164,66 @@ NonNullSet.prototype.add = function() {
   //检测参数是不是null货站undefined
   for(var i = 0; i < arguments.length; i++)
   if (arguments[i] == null)
-      throw new Error("can not add null or  undefined to a NonNullSet");
-      //调运父类的add()方法以只须实际的插入操作
-      return Set.prototype.add.apply(this,arguments);
+    throw new Error("can not add null or  undefined to a NonNullSet");
+    //调运父类的add()方法以只须实际的插入操作
+    return Set.prototype.add.apply(this,arguments);
 };
 ```
-让我们将这个非null集合的概念推而广之，称为“过滤后的集合”，这个集合中成员首先传入一个过滤函数再执行添加操作。为此，定义一个类工厂函数，类似enumeration()函数，传入一个过滤函数，返回一个新的Set子类，实际上，可以对此做进一步的通用化的处理，定义一个可接受两个参数的类工厂：子类和用于add()方法的过滤函数。这个工厂方法称为filteredsetSubclass(),并通过这样的代码来使用它：
 
-             //定义一个只能保持字符串的“集合”类
-            var StringSet = filteredSetSubclass(set, function(x) {return typeof x === "string";});
-            //这个集合类的成员不能是null、undefeined或函数
-            var Myset = filteredSetSubclass(NonNullSet,function(x){return typeof x !== "function";});
+让我们将这个非null集合的概念推而广之，称为“过滤后的集合”，这个集合中成员首先传入一个过滤函数再执行添加操作。为此，定义一个类工厂函数，类似`enumeration()`函数，传入一个过滤函数，返回一个新的Set子类，实际上，可以对此做进一步的通用化的处理，定义一个可接受两个参数的类工厂：子类和用于add()方法的过滤函数。这个工厂方法称为`filteredsetSubclass()`,并通过这样的代码来使用它：
+
+```js
+//定义一个只能保持字符串的“集合”类
+var StringSet = filteredSetSubclass(set, function(x) {return typeof x === "string";});
+//这个集合类的成员不能是null、undefeined或函数
+var Myset = filteredSetSubclass(NonNullSet,function(x){return typeof x !== "function";});
+```
+
 下面的这个例子是工厂函数的实现代码。注意，这个例子中的方法链和构造函数链和NonNullset中的实现是一样的。
 
 ```js
 /**
-  *类工厂和方法链
-  * 这个函数返回具体的Set类子链
-  * 并重写该类的add()方法用以对添加的元素做特殊的过滤
-  **/
+*类工厂和方法链
+* 这个函数返回具体的Set类子链
+* 并重写该类的add()方法用以对添加的元素做特殊的过滤
+**/
 function filteredSetSubClass(superclass,filter){
-    var constructor = function(){//子类的构造函数
-        superclass.apply(this,arguments); //调用父类构造函数
-    };
-    var proto = constructor.prototype = inherit(superclass.prototype);
-    proto.constructor = constructor;
-    proto.add = function(){
-        //在添加任何成员之前首先使用过滤器将所有参数进行过滤
-        for(var i=0; i<arguments.length;i++){
-            var v = arguments[i];
-            if(!filter(v)) throw ("value" + v +"rejected by filter");
-        }
-        //调运父类的add()方法
-        superclass.prototype.add.apply(this,arguments);
-    };
-    return constructor;
+  var constructor = function(){//子类的构造函数
+    superclass.apply(this,arguments); //调用父类构造函数
+  };
+  var proto = constructor.prototype = inherit(superclass.prototype);
+  proto.constructor = constructor;
+  proto.add = function(){
+    //在添加任何成员之前首先使用过滤器将所有参数进行过滤
+    for(var i=0; i<arguments.length;i++){
+        var v = arguments[i];
+        if(!filter(v)) throw ("value" + v +"rejected by filter");
+    }
+    //调运父类的add()方法
+    superclass.prototype.add.apply(this,arguments);
+  };
+  return constructor;
 }
 ```
-上面的例子中一个比较有趣的事情是，用一个函数将创建子类的代码包装起来，这样就可以在构造函数和方法链中使用父类的参数，而不是通过写死某个父类的名字来使用它的参数。也就是说，如果想修改父类 ，只须修改下一处的代码即可，而不比对每个用到父类类名的地方都做修改。已经有足够的理由证明这种技术的可行性，即使不是定义类工厂的场景中，这种技术也是值得提倡使用的。比如，可以这样使用包装函数和上面的例子中Function.prototype.extend()方法来重写NonNullSet:
+
+上面的例子中一个比较有趣的事情是，用一个函数将创建子类的代码包装起来，这样就可以在构造函数和方法链中使用父类的参数，而不是通过写死某个父类的名字来使用它的参数。也就是说，如果想修改父类 ，只须修改下一处的代码即可，而不比对每个用到父类类名的地方都做修改。已经有足够的理由证明这种技术的可行性，即使不是定义类工厂的场景中，这种技术也是值得提倡使用的。比如，可以这样使用包装函数和上面的例子中`Function.prototype.extend()`方法来重写NonNullSet:
 
 ```js
 var NonNullSet = (function() { //定义并立即调用这个函数
-  var superclass = Set; //仅指定父类
-  return superclass.extend(function() {
-          superclass.apply(this.arguments);
-      }, //构造函数
-      {
-          add: function() {
-              //检测参数是否为null或undefined
-              for (var i = 0; i < arguments.length; i++)
-                  if (arguments[i] == null)
-                      throw new Error("can not add null or undefined");
-                  //调用父亲类的add()方法以只须实际的插入操作
-              return superclass.prototype.add.apply(this, arguments);
-          }
-      });
+var superclass = Set; //仅指定父类
+return superclass.extend(function() {
+  superclass.apply(this.arguments);
+}, //构造函数
+{
+  add: function() {
+      //检测参数是否为null或undefined
+      for (var i = 0; i < arguments.length; i++)
+          if (arguments[i] == null)
+            throw new Error("can not add null or undefined");
+          //调用父亲类的add()方法以只须实际的插入操作
+      return superclass.prototype.add.apply(this, arguments);
+  }
+});
 }());
 ```
 最后，值得强调是的，类似这种创建工厂的能力是javascript语言动态特性的一个体现，类工厂是一种非常强大和有用的特性，这在java和c++等语言中是没有 的。
@@ -7236,56 +7232,62 @@ var NonNullSet = (function() { //定义并立即调用这个函数
 
 在前一节中，定义的集合可以根据特定的标准对集合成员做限制，而且使用了子类的技术来实现这种功能，所创建的自定义子类使用了特定的过滤函数来对集合中的成员做限制。父类和过滤函数的每个组合都需要创建一个新的类。
 
-然后还有另一种更好的方法来完成这种需求，即面向对象编程中一条广为人知的设计原则：“组合优于继承”（可参照Erich Gamma et al所著的《Design Patterns》和Joshua Bloch所著的《Effective Java》）。这样可以利用组合的原理定义一个新的集合实现，它“包装”了另外一个集合对象，在将受限制的成员过滤掉之后会用到这个（包装的）集合对象。下面的例子展示了其工作原理
+然后还有另一种更好的方法来完成这种需求，即面向对象编程中一条广为人知的设计原则：“组合优于继承”（可参照Erich Gamma et al所著的《Design Patterns》和Joshua Bloch所著的《Effective Java》）。这样可以利用组合的原理定义一个新的集合实现，它“包装”了另外一个集合对象，在将受限制的成员过滤掉之后会用到这个（包装的）集合对象。下面的例子展示了其工作原理：
 
 ```js
 /*使用组合代替继承的集合的实现*/
 /**
-  *实现一个FilteredSet,它实现包装某个指定的“集合”对象。
-  * 并对传入add()方法的值应用的了某种指定的过滤器
-  * “范围”类中其他所有的核心方法延续到包装后的实例中
-  **/
+*实现一个FilteredSet,它实现包装某个指定的“集合”对象。
+* 并对传入add()方法的值应用的了某种指定的过滤器
+* “范围”类中其他所有的核心方法延续到包装后的实例中
+**/
 var FileredSet = Set.extend(
-    function FileredSet (set,filter){//构造函数
-        this.set = set;
-        this.filter = filter;
+  function FileredSet (set,filter){//构造函数
+    this.set = set;
+    this.filter = filter;
+  },
+  {//实例方法
+    add:function(){
+        //如果已经有过滤器，直接使用它
+      if(this.filter){
+          for(var i = 0;i<arguments.length;i++){
+            var v =arguments[i];
+            if(!this.filter(v))
+            throw new Error ("FilteredSet:value" + v + "rejeced by filter");
+          }
+        }
+        //调用set中的add()方法
+        this.set.add.apply(this.set,arguments);
+        return this;
     },
-    {//实例方法
-        add:function(){
-            //如果已经有过滤器，直接使用它
-            if(this.filter){
-                for(var i = 0;i<arguments.length;i++){
-                    var v =arguments[i];
-                    if(!this.filter(v))
-                    throw new Error ("FilteredSet:value" + v + "rejeced by filter");
-                }
-            }
-            //调用set中的add()方法
-            this.set.add.apply(this.set,arguments);
-            return this;
-        },
-        contains:function(v){return this.set.contains(v);},
-        size:function(){return this.set.size();},
-        foreach:function(f,c){this.set.foreach(f,c);}
-    }
+    contains:function(v){return this.set.contains(v);},
+    size:function(){return this.set.size();},
+    foreach:function(f,c){this.set.foreach(f,c);}
+  }
 );
 ```
-在这个例子中使用组合的一个好处是，只须创建一个段杜的FilteredSet子类即可。可以利用这个类的实例来创建任意带有成员限制的集合实例。比如不用上文中定义的NonNullSet类，可以这样做：
 
+在这个例子中使用组合的一个好处是，只须创建一个单独的FilteredSet子类即可。可以利用这个类的实例来创建任意带有成员限制的集合实例。比如不用上文中定义的NonNullSet类，可以这样做：
+
+```js
 var s = new FilteredSet(new Set(),function(x){return x !== null;});
+```
+
 甚至还可以对已经过滤的集合进行过滤：
 
+```js
 var t = new FileredSet(s,function(x){return !(x instanceof Set);})
+```
+
 ### 9.7.4 类的层次结构和抽象类
 
-在上节中给出了“组合优于继承”的原则，但为了将这条原则阐述清楚，创建了Set的子类。这样做的原因就是最终得到类是Set的实例（本书作者这里表示稍微有含糊，作者的意思应该就是“Set子类的实例也是Set的实例”，而不是“子类是Set的实例”）。它会从Set继承有用的辅助方法，比如toString()和equals()。尽管这是一个很实际的原因，但不用创建类似Set类这样具有类的子类也可以很好的用组合来实现“范围”。上文中的SingletonSet类可以有另外一种类型的实现，这个类还是继承自Set，因此它可以继承很多辅助方法，但它的实现和其父类的实现完全不一样。SingletonSet并不是Set类的专用版本，而是完全不同的另一种Set。在类层次结构中SingletonSet和Set应当是兄弟的关系，而非父子关系。
-不管是在经典面向对象编程的语言中还是在javascript中，通行的解决办法是（这里指的是实现类的不同定制版本的解决办法，更直接的讲究是实现多态的方法）“从实现中抽离出接口”。假定定义了一个AbstractSet类，其中定义了一些辅助方法比如toString(),但并没有实现诸如foreach()的核心方法。这样，实现Set、SingletonSet和FilteredSet都是这个抽象类的子类，FilteredSet和SlingletonSet都不必再显示为了某个不相关的子类了。
+在上节中给出了“组合优于继承”的原则，但为了将这条原则阐述清楚，创建了Set的子类。这样做的原因就是最终得到类是Set的实例（本书作者这里表示稍微有含糊，作者的意思应该就是“Set子类的实例也是Set的实例”，而不是“子类是Set的实例”）。它会从Set继承有用的辅助方法，比如`toString()`和`equals()`。尽管这是一个很实际的原因，但不用创建类似Set类这样具有类的子类也可以很好的用组合来实现“范围”。上文中的SingletonSet类可以有另外一种类型的实现，这个类还是继承自Set，因此它可以继承很多辅助方法，但它的实现和其父类的实现完全不一样。SingletonSet并不是Set类的专用版本，而是完全不同的另一种Set。在类层次结构中SingletonSet和Set应当是兄弟的关系，而非父子关系。
 
-下面的例子在这个思路上更进了一步，定义了一个层次结构的抽象的集合类。AbstractSet只定义了一个抽象方法，contains()。任何类只要"声称"自己是一个表示范围的类，就必须定义这个contains()方法。然后定义AbstractSet的子类AbstractSet的子类AbstractEnumerableSet。这个类增加了抽象的size()和foreach()方法，而且定义了一些有用的非抽象方法(toString/toArray/equals等)AbstractEnumerableSet并没有定义add()和remove()方法，它只代表只读集合。SingletonSet可以实现为非抽象子类。最后，定义了AbstractEnumerableSet的子类AbstractWritableSet。这个final抽象集合定义了抽象方法add()和remove()，并实现了诸如union()和intersection()等具体方法，这两个方法调用了add()和remove()。AbstractWritableSet是Set和FilteredSet相应的父类。但这个例子中并没有实现它。而是实现了一个新的名叫ArraySet的非抽象类。
+不管是在经典面向对象编程的语言中还是在javascript中，通行的解决办法是（这里指的是实现类的不同定制版本的解决办法，更直接的讲究是实现多态的方法）“从实现中抽离出接口”。假定定义了一个AbstractSet类，其中定义了一些辅助方法比如`toString()`,但并没有实现诸如foreach()的核心方法。这样，实现Set、SingletonSet和FilteredSet都是这个抽象类的子类，FilteredSet和SlingletonSet都不必再显示为了某个不相关的子类了。
 
-这个例子很长，但是还是应当完整的看一遍。这里用到了Function.prototype.extend()作为创建子类的快捷方法。
+下面的例子在这个思路上更进了一步，定义了一个层次结构的抽象的集合类。bstractSet只定义了一个抽象方法，`contains()`。任何类只要"声称"自己是一个表示范围的类，就必须定义这个`contains()`方法。然后定义AbstractSet的子类AbstractSet的子类AbstractEnumerableSet。这个类增加了抽象的`size()`和`foreach()`方法，而且定义了一些有用的非抽象方法(toString/toArray/equals等)AbstractEnumerableSet并没有定义`add()`和`remove()`方法，它只代表只读集合。SingletonSet可以实现为非抽象子类。最后，定义了AbstractEnumerableSet的子类AbstractWritableSet。这个final抽象集合定义了抽象方法`add()`和`remove()`，并实现了诸如union()和intersection()等具体方法，这两个方法调用了`add()`和`remove()`。AbstractWritableSet是Set和FilteredSet相应的父类。但这个例子中并没有实现它。而是实现了一个新的名叫ArraySet的非抽象类。
 
- 
+这个例子很长，但是还是应当完整的看一遍。这里用到了`Function.prototype.extend()`作为创建子类的快捷方法。
 
 ```js
 /*抽象类和非抽象类Set类的层次结构*/
@@ -7296,70 +7298,70 @@ function AbstractSet(){throw new Error("can not instantiate abstract classes");}
 AbstractSet.prototype.contains = abstractmethod;
 
 /**
-  *NotSet是AbstractSet的一个非抽象子类
-  * 所有不在其他集合中的成员都在这个集合中
-  * 因为它是在其它集合中不可写的条件下而定义的，同时由于它的成员个数是无限个，因此它是不可枚举的
-  * 我们只能用它来检测元素成员的归属情况
-  * 注意我们使用了Function.prototype.extend()方法来定义这个子类
-  **/
+*NotSet是AbstractSet的一个非抽象子类
+* 所有不在其他集合中的成员都在这个集合中
+* 因为它是在其它集合中不可写的条件下而定义的，同时由于它的成员个数是无限个，因此它是不可枚举的
+* 我们只能用它来检测元素成员的归属情况
+* 注意我们使用了Function.prototype.extend()方法来定义这个子类
+**/
 var NotSet = AbstractSet.extend(
-    function NotSet(set){this.set = set;},
-    {
-        contains:function(x){return !this.set.contains(x);},
-        toString:function(x){return "~" + this.set.toString();},
-        equals:function (that){
-            return that instanceof NotSet && this.set.equals(that.set);
-        }
+  function NotSet(set){this.set = set;},
+  {
+    contains:function(x){return !this.set.contains(x);},
+    toString:function(x){return "~" + this.set.toString();},
+    equals:function (that){
+      return that instanceof NotSet && this.set.equals(that.set);
     }
+  }
 );
 
 /**
-  * AbstractEnumerableSet是AbstractSet的一个抽象子类
-  * 它定义了抽象方法size()和foreach(),然后实现了非抽象方法isEmpty、toArray、to[locale]String()和equals()方法
-  * 子类实现了contains()、size()和foreach()，这三个方法可以很轻易的地调用这5个非抽象方法
-  **/
+* AbstractEnumerableSet是AbstractSet的一个抽象子类
+* 它定义了抽象方法size()和foreach(),然后实现了非抽象方法isEmpty、toArray、to[locale]String()和equals()方法
+* 子类实现了contains()、size()和foreach()，这三个方法可以很轻易的地调用这5个非抽象方法
+**/
 var AbstractEnumerableSet = AbstractSet.extend(
-    function(){throw new Error("can not instantiate abstract classes");},
-    {
-        size:abstractmethod,
-        foreach:abstractmethod,
-        isEmpty:function(){return this.size()==0;},
-        toString:function(){
-            var s = "{",i = 0;
-            this.foreach(function(v){
-                if(i++ > 0) s += ",";
-                s += v;
-            });
-            return s + "}";
-        },
-        toLocaleString:function(){
-            var s = "{", i = 0;
-            this.foreach(function(v){
-                if (i++ > 0) s += ",";
-                if (v == null) s += v; //null和undefined
-                else s += v.toLocaleString(); //其它情况下
-            });
-            return s + "}";
-        },
-        toArray:function(){
-            var a = [];
-            this.foreach(function(v){a.push(v);});
-            return a;
-        },
-        equals: function(that){
-            if(!(that instanceof AbstractEnumerableSet)) return false;
-            //如果他们的大小不同，则它们不相等
-            if(this.size() != that.size()) return false;
-            //检测每一个元素是否也在that中
-            try{
-                this.foreach(function(v){if (!that.contains(v)) throw false;});
-                return true; //所有的元素都匹配：集合相等
-            }catch(x){
-                if(x === false)return false; //集合不相等
-                  throw x; //发生了其它的异常：重新抛出异常
-            }
-        }
+  function(){throw new Error("can not instantiate abstract classes");},
+  {
+    size:abstractmethod,
+    foreach:abstractmethod,
+    isEmpty:function(){return this.size()==0;},
+    toString:function(){
+      var s = "{",i = 0;
+      this.foreach(function(v){
+        if(i++ > 0) s += ",";
+        s += v;
+      });
+      return s + "}";
+    },
+    toLocaleString:function(){
+      var s = "{", i = 0;
+      this.foreach(function(v){
+        if (i++ > 0) s += ",";
+        if (v == null) s += v; //null和undefined
+        else s += v.toLocaleString(); //其它情况下
+      });
+      return s + "}";
+    },
+    toArray:function(){
+      var a = [];
+      this.foreach(function(v){a.push(v);});
+      return a;
+    },
+    equals: function(that){
+      if(!(that instanceof AbstractEnumerableSet)) return false;
+      //如果他们的大小不同，则它们不相等
+      if(this.size() != that.size()) return false;
+      //检测每一个元素是否也在that中
+      try{
+        this.foreach(function(v){if (!that.contains(v)) throw false;});
+        return true; //所有的元素都匹配：集合相等
+      }catch(x){
+        if(x === false)return false; //集合不相等
+          throw x; //发生了其它的异常：重新抛出异常
+      }
     }
+  }
 );
 
 /**
@@ -7367,85 +7369,82 @@ var AbstractEnumerableSet = AbstractSet.extend(
   * singleton的集合是只读的，它只包含一个成员
   **/
 var SingletonSet = AbstractEnumerableSet.extend(
-    function SingletonSet(member){this.member = member;},
-    {
-        contains:function(x){return x === this.member;},
-        size:function(){return 1;},
-        foreach:function(f,ctx){f.call(ctx,this.member);}
-    }
+  function SingletonSet(member){this.member = member;},
+  {
+    contains:function(x){return x === this.member;},
+    size:function(){return 1;},
+    foreach:function(f,ctx){f.call(ctx,this.member);}
+  }
 );
 
 /**
-  *AbstractWriteableSet是AbstractEnumerableSet的抽象子类
-  * 它定义了抽象方法add()和remove()
-  * 然后实现了非抽象方法union(),intersection()和difference()
-  **/
+*AbstractWriteableSet是AbstractEnumerableSet的抽象子类
+* 它定义了抽象方法add()和remove()
+* 然后实现了非抽象方法union(),intersection()和difference()
+**/
 var AbstractWritableSet = AbstractEnumerableSet.extend(
-    function(){throw new Error("can not instantiate abstract classes");},
-    {
-        add:abstractmethod,
-        remove:abstractmethod,
-        union:function(that){
-            var self = this;
-            that.foreach(function(v){self.add(v);});
-            return this;
-        },
-        intersection:function(that){
-            var self = this;
-            this.foreach(function(v){if(!that.contains(v)) self.remove(v);});
-            return this;
-        },
-        difference:function(that){
-            var self = this;
-            that.foreach(function (v){self.remove(v);});
-            return this;
-        }
+  function(){throw new Error("can not instantiate abstract classes");},
+  {
+    add:abstractmethod,
+    remove:abstractmethod,
+    union:function(that){
+      var self = this;
+      that.foreach(function(v){self.add(v);});
+      return this;
+    },
+    intersection:function(that){
+      var self = this;
+      this.foreach(function(v){if(!that.contains(v)) self.remove(v);});
+      return this;
+    },
+    difference:function(that){
+      var self = this;
+      that.foreach(function (v){self.remove(v);});
+      return this;
     }
+  }
 );
 
 /**
-  *ArraySet是AbstractWritableSet的非抽象子类
-  * 它以数组的形式表示集合中的元素
-  * 对于它的contains()方法使用了数组的线性查找，因为contains()方法的算法复杂度是0(n)而不是0(1)
-  * 它非常使用于相对小型的结合，注意，这里的实现用到了ECMAscript5数组方法indexof()和forEach()
-  **/
+*ArraySet是AbstractWritableSet的非抽象子类
+* 它以数组的形式表示集合中的元素
+* 对于它的contains()方法使用了数组的线性查找，因为contains()方法的算法复杂度是0(n)而不是0(1)
+* 它非常使用于相对小型的结合，注意，这里的实现用到了ECMAscript5数组方法indexof()和forEach()
+**/
 var ArraySet = AbstractWritableSet.extend(
-    function ArraySet(){
-        this.values = [];
-        this.add.apply(this,arguments);
+  function ArraySet(){
+      this.values = [];
+      this.add.apply(this,arguments);
+  },
+  {
+    contains:function(v){return this.values.indexOf(v) != -1;},
+    size:function(){return this.values.forEach(f,c);},
+    add:function(){
+      for (var i = 0; i<arguments.length; i++){
+        var arg =arguments[i];
+        if(!this.contains(arg)) this.values.push(arg);
+      }
+      return this;
     },
-    {
-        contains:function(v){return this.values.indexOf(v) != -1;},
-        size:function(){return this.values.forEach(f,c);},
-        add:function(){
-            for (var i = 0; i<arguments.length; i++){
-                var arg =arguments[i];
-                if(!this.contains(arg)) this.values.push(arg);
-            }
-            return this;
-        },
-        remove:function(){
-            for(var i = 0; i < arguments.length; i++){
-                var p = this.values.indexOf(arguments[i]);
-                if(p == -1) continue;
-                this.values.splice(p,1);
-            }
-            return this;
-        }
+    remove:function(){
+      for(var i = 0; i < arguments.length; i++){
+        var p = this.values.indexOf(arguments[i]);
+        if(p == -1) continue;
+        this.values.splice(p,1);
+      }
+      return this;
     }
+  }
 );
 ```
-这段长代码欢迎大家测试检测：（chrome: Uncaught TypeError: undefined is not a function,FF:TypeError: AbstractSet.extend is not a function）
-
-欢迎指正。
 
 ## 9.8 ECMAScript5中的类
 
-ECMAScript5给属性特性增加了方法（getter、setter、可枚举性、可写性和可配置性），而且增加了对象的可扩展性的限制。这些方法在6.6节，6.7节和6.8.iii都有详细的讨论，然而这些方法非常适合用于类定义。下面几节讲述了如何使用ECMAScript5的特性使类更加健壮。
+ECMAScript5给属性特性增加了方法（getter、setter、可枚举性、可写性和可配置性），而且增加了对象的可扩展性的限制。这些方法在6.6节，6.7节和6.8.3都有详细的讨论，然而这些方法非常适合用于类定义。下面几节讲述了如何使用 ECMAScript 5 的特性使类更加健壮。
 
 ### 9.8.1 让属性不可枚举
 
-在9.6.i中Set类使用了一个小技巧，将对象存储为“集合成员”：它给添加至这个“集合”的任意对象定义了“对象id”属性.之后如果在for/in循环中对这个对象 做遍历，这个新添加的属性（对象id属性）也会遍历到。ECMScript5可以设置属性为“不可枚举”（nonenumerable）来让属性不会遍历到。下面的例子展示了如何通过Object.defineProperty()来做到这一点。同时也展示了如何定义一个getter函数以检测对象是否是可以扩展的（extensible）。
+在9.6.1中Set类使用了一个小技巧，将对象存储为“集合成员”：它给添加至这个“集合”的任意对象定义了“对象id”属性.之后如果在for/in循环中对这个对象 做遍历，这个新添加的属性（对象id属性）也会遍历到。ECMScript5可以设置属性为“不可枚举”（nonenumerable）来让属性不会遍历到。下面的例子展示了如何通过`Object.defineProperty()`来做到这一点。同时也展示了如何定义一个getter函数以检测对象是否是可以扩展的（extensible）。
 
 ```js
 /**
@@ -7456,32 +7455,32 @@ ECMAScript5给属性特性增加了方法（getter、setter、可枚举性、可
 //定义一个不可枚举的属性objectId,它可以被所有对象继承，当读取这个属性时，调用getter函数
 //它没有定义setter，因此它是只读的，而且它是不可配置的，因此它是不能删除的
 Object.defineProperty(Object.prototype, "objectId", {
-    get: idGetter, //取值器
-    enumerable: false, //不可枚举
-    configurable: false //不可删除
+  get: idGetter, //取值器
+  enumerable: false, //不可枚举
+  configurable: false //不可删除
 });
 //当读取objectId的时候直接调用getter函数
 function idGetter() { //getter函数返回该id
-    if (!(idprop in this)){ //如果这个对象中不存在id
-            if (!Object.isExtensible(this)) //并且可以增加属性
-                throw Error("can not define id for none extensible objects");
-            Object.defineProperty(this, idprop, {
-                value: nextid++, //给它一个值
-                writable: false, //只读的
-                enumerable: false, //不可枚举的
-                configurable: false //不可删除的
-            });
-        }
-        return this[idprop]; //返回已有活新的值
-    };
-    // idGetter()用到了这些变量，这些都属于私有变量
-    var idprop = "|**objectId**|"; //假设这个属性没有用到
-    var nextid = 1; //给它设定初始值
+  if (!(idprop in this)){ //如果这个对象中不存在id
+      if (!Object.isExtensible(this)) //并且可以增加属性
+        throw Error("can not define id for none extensible objects");
+      Object.defineProperty(this, idprop, {
+        value: nextid++, //给它一个值
+        writable: false, //只读的
+        enumerable: false, //不可枚举的
+        configurable: false //不可删除的
+      });
+    }
+    return this[idprop]; //返回已有活新的值
+  };
+  // idGetter()用到了这些变量，这些都属于私有变量
+  var idprop = "|**objectId**|"; //假设这个属性没有用到
+  var nextid = 1; //给它设定初始值
 }()); //包装函数立即执行
 ```
 ### 9.8.2 定义不可变的类
 
-除了可以设置属性为不可枚举的，ECMAScript5还可以设置属性为只读的，当我们希望类的实例都是不可变的，这个特性非常有帮助，下面的例子使用Object.defineProperties()和Object.create()定义不可变的Range类.它同样使用Object.defineProperties()来为类创建原型对象，并将原型对象的实例方法设置为不可枚举的，就想内置类的方法一样。不仅如此，它还将这些实例方法设置为“只读”和“不可删除”，这样就可以防止对类做任何修改（monkey-patching:是指修改现有对象的原型，在javascript中，修改对象的原型就相当于修改了实例化的类。）。
+除了可以设置属性为不可枚举的， ECMAScript 5 还可以设置属性为只读的，当我们希望类的实例都是不可变的，这个特性非常有帮助，下面的例子使用`Object.defineProperties()`和`Object.create()`定义不可变的Range类.它同样使用`Object.defineProperties()`来为类创建原型对象，并将原型对象的实例方法设置为不可枚举的，就想内置类的方法一样。不仅如此，它还将这些实例方法设置为“只读”和“不可删除”，这样就可以防止对类做任何修改（monkey-patching:是指修改现有对象的原型，在javascript中，修改对象的原型就相当于修改了实例化的类。）。
 
 最后本例子展示了一个有趣的技巧，其中实现的构造函数也可用作工厂函数，这样不论调用函数之前是否带有new关键字，都可以正确的创建实例。
 
@@ -7532,7 +7531,8 @@ Object.defineProperties(Range2.prototype,{
 var c = Range2(100,22); //
 console.log(c.toString()) //=> (100...22)
 ```
-上面的例子用到了Object.defineProperties()和Object.create()定义不可变的和不可枚举的属性，这两个方法非常强大，但属性描述符对象让代码的可读性变得更差。另一种改进的做法是将修个这个已定义属性的特性操作定义为一个工具函数，下面的例子就展示了这样的练个工具函数：
+
+上面的例子用到了`Object.defineProperties()`和`Object.create()`定义不可变的和不可枚举的属性，这两个方法非常强大，但属性描述符对象让代码的可读性变得更差。另一种改进的做法是将修个这个已定义属性的特性操作定义为一个工具函数，下面的例子就展示了这样的练个工具函数：
 
 ```js
 /**
@@ -7563,7 +7563,8 @@ props.forEach(function(n){//将它们设置为不可枚举的
 return o;
 }
 ```
-Object.defineProperty()和Object.defineProperties()可以用来创建新属性，也可以修改已有的属性特征。当用它们用来创建新的属性时，默认的属性特性值都是false。但当它们修改意见存在的属性是，默认的值任然保持不不变。比如在上面修改枚举属性的hideProps()函数，只指定了enumerable特性，因为只想修改这个属性。
+
+`Object.defineProperty()`和`Object.defineProperties()`可以用来创建新属性，也可以修改已有的属性特征。当用它们用来创建新的属性时，默认的属性特性值都是false。但当它们修改意见存在的属性是，默认的值任然保持不不变。比如在上面修改枚举属性的`hideProps()`函数，只指定了 enumerable 特性，因为只想修改这个属性。
 
 使用这些工具函数，就可以充分的利用ECMAScript5特性来实现一个不可变的类，而且不用动态的修改这个类，下面的例子中不可变的Rang3就用到了刚才定义的工具函数。
 
@@ -7584,9 +7585,10 @@ Range3.prototype = hideProps({//使用不可枚举的属性来定义原型
     toString:function(){return "(" + this.from + "..." + this.to + ")";}
 });
 ```
+
 ### 9.8.3 封装对象状态
 
-如9.6.iiiiii所示构造函数中的变量和参数都可以用作它创建的对象的私有状态。该方法和在ECMAScript3中的一个缺点是，访问这些私有状态存取器方法是可以替换的。在ECMScript5中可以通过定义存取器属性getter和setter方法将状态变量更健壮的封装起来，这两个方法是无法删除的，如下:
+如9.6.6所示构造函数中的变量和参数都可以用作它创建的对象的私有状态。该方法和在ECMAScript3中的一个缺点是，访问这些私有状态存取器方法是可以替换的。在ECMScript5中可以通过定义存取器属性getter和setter方法将状态变量更健壮的封装起来，这两个方法是无法删除的，如下:
 
 ```js
 /**
@@ -7594,82 +7596,89 @@ Range3.prototype = hideProps({//使用不可枚举的属性来定义原型
   **/
   //这个版本的Range类是可变的，但将端点变量进行了狂好的封装。但是端点大小顺序还是固定的：from <= to
 function Range(from, to){
-    //from大于to
+  //from大于to
 if (from > to) throw new Error("from mustbe <= to");
-  //定义存取器方法以维持不变
+//定义存取器方法以维持不变
 function getFrom() {
-    return from;
+  return from;
 }
 
 function getTo() {
-    return to;
+  return to;
 }
 
 function setFrom(f){//设置from的值时，不允许from大于to
-    if (f <= to) form = f;
-    else throw new Error("from mustbe <= to");
+  if (f <= to) form = f;
+  else throw new Error("from mustbe <= to");
 }
 
 function setTo(t){//设置to的值时，不允许to小于from
-    if(t >= form) to = t;
-    else throw new Error("to mustbe >= from");
+  if(t >= form) to = t;
+  else throw new Error("to mustbe >= from");
 }
-              //将使用取值器的属性设置为可枚举并且不可配置之的。
+//将使用取值器的属性设置为可枚举并且不可配置之的。
 Object.defineProperties(this, {
-    from: {
-        get: getFrom,
-        set: setFrom,
-        enumerable: ture,
-        configurable: false
-    },
-    to: {
-        get: getTo,
-        set: setTo,
-        enumerable: ture,
-        configurable: false
-    }
+  from: {
+    get: getFrom,
+    set: setFrom,
+    enumerable: ture,
+    configurable: false
+  },
+  to: {
+    get: getTo,
+    set: setTo,
+    enumerable: ture,
+    configurable: false
+  }
 });
 }
 //和前面的例子相比，原型对象没有做任何修改
 //实例方法可以像读取普通的属性一样读取from和to
 Range.prototype = hideProps({
-    constructor:Range,
-    includes:function(x){return this.from <= x && x <= this.to;},
-    foreach:function(f){for(var x = Math.ceil(this.from);x <= this.to; x++) f(x);},
-    toString:function(){return "(" + this.from + "..." + this.to + ")";}
+  constructor:Range,
+  includes:function(x){return this.from <= x && x <= this.to;},
+  foreach:function(f){for(var x = Math.ceil(this.from);x <= this.to; x++) f(x);},
+  toString:function(){return "(" + this.from + "..." + this.to + ")";}
 });
 ```
 ### 9.8.4 防止类的扩展
 
-通常认为，通过给原型对象添加方法可以动态地对类进行扩展，这是javascript本身的特性，在ECMAScript5中根据需要对此特性加以限制。Object.preventExtensions()可以将对象设置为不可扩展的（6.8.iii节）也就是说不能给对象添加任何新属性。Object.seal()则更加强大，它除了能阻止用户给添加新属性，还能将当前已有的属性设置为不可配置的，这样就不能删除这些属性了（但不可配置的属性可以是可写的，也可以抓换为只读属性）。可以通过这样语句简单的代码来阻止对Object.prototype的扩展：
+通常认为，通过给原型对象添加方法可以动态地对类进行扩展，这是javascript本身的特性，在ECMAScript5中根据需要对此特性加以限制。`Object.preventExtensions()`可以将对象设置为不可扩展的（6.8.3节）也就是说不能给对象添加任何新属性。Object.seal()则更加强大，它除了能阻止用户给添加新属性，还能将当前已有的属性设置为不可配置的，这样就不能删除这些属性了（但不可配置的属性可以是可写的，也可以抓换为只读属性）。可以通过这样语句简单的代码来阻止对`Object.prototype`的扩展：
 
- Object.seal(Object.prototype)
+```js
+Object.seal(Object.prototype)
+```
+
 javascript的另外一个动态特性是“对象的方法可以随时替换”（或称为“monkey-patch”）:
 
 ```js
 var oiginal_sort_method = Array.prototype.sort;
 Array.prototype.sort = function(){
-    var start =new Date();
-    oiginal_sort_method.apply(this,arguments);
-    var end = new Date();
-    console.log("Array sort took" + (end - start) + "milliseconds.");
+  var start =new Date();
+  oiginal_sort_method.apply(this,arguments);
+  var end = new Date();
+  console.log("Array sort took" + (end - start) + "milliseconds.");
 };
 ```
-可以通过将实例方法设置为只读来防止这类修改，一种方法就是使用上面代码所定义的freezeProps(),它的功能和Object.seal()完全一样，它同样会把所有属性都设置为只读和不可配置的。
 
-理解类的只读属性的特性至观重要。如果对象o继承了只读属性p，那么给o.p的赋值操作将会失败，就不会给o创建新属性。如果你想重写一个继承来的只读属性，就必须使用Object.defineProperty()和Object.defineProperties()或Object.create()来创建这个新属性。也就是说，如果将类的实例方法设置为只读的，那么重写它的子类的这些方法的难度会更大。
+可以通过将实例方法设置为只读来防止这类修改，一种方法就是使用上面代码所定义的`freezeProps()`,它的功能和`Object.seal()`完全一样，它同样会把所有属性都设置为只读和不可配置的。
 
-这种锁定原型对象的做法往往没有必要，但的确有一些场景是需要阻止对象的扩展的。回想一下enumeration()，这是一个类工厂函数。这个函数将枚举和数组是表示枚举实例的正式实例列表，是可以执行“冻结”（freezing）操作的，这样就不能给他添加新的实例，已有的实例也无法删除或修改。可以给enumeration()函数添加几行简单的代码：
+理解类的只读属性的特性至观重要。如果对象o继承了只读属性p，那么给o.p的赋值操作将会失败，就不会给o创建新属性。如果你想重写一个继承来的只读属性，就必须使用`Object.defineProperty()`和`Object.defineProperties()`或`Object.create()`来创建这个新属性。也就是说，如果将类的实例方法设置为只读的，那么重写它的子类的这些方法的难度会更大。
 
-        Object.freeze(enumeration.values);
-        Object.freeze(enumeration);
-需要注意的是，通过在枚举类型中调用Object.freeze()，在（9.8.i）中定义的objectId属性之后也无法使用了，这个问题的解决办法是，在枚举类型被“冻结”之前读取一次它的objectId属性（调用潜在的存取器方法并设置内部属性）。
+这种锁定原型对象的做法往往没有必要，但的确有一些场景是需要阻止对象的扩展的。回想一下`enumeration()`，这是一个类工厂函数。这个函数将枚举和数组是表示枚举实例的正式实例列表，是可以执行“冻结”（freezing）操作的，这样就不能给他添加新的实例，已有的实例也无法删除或修改。可以给`enumeration()`函数添加几行简单的代码：
+
+```js
+Object.freeze(enumeration.values);
+Object.freeze(enumeration);
+```
+
+需要注意的是，通过在枚举类型中调用`Object.freeze()`，在（9.8.1）中定义的objectId属性之后也无法使用了，这个问题的解决办法是，在枚举类型被“冻结”之前读取一次它的objectId属性（调用潜在的存取器方法并设置内部属性）。
 
 ### 9.8.5 子类和ECMAScript5
 
-在下面的例子ECMAScript5特的特性实现子类。这里使用AbstractSet类中的AbstractWritableSet类做进一步说明，来定义这类类的子类StringSet。下面这个例子的最大的特点是使用Object.create()创建原型对象，这个原型对象继承自父类的原型，同时给新创建的对象定义属性。这种实现方法的困难之处在于，正如上文所提到的，它需要使用难看的属性描述符。
+在下面的例子ECMAScript5特的特性实现子类。这里使用AbstractSet类中的AbstractWritableSet类做进一步说明，来定义这类类的子类StringSet。下面这个例子的最大的特点是使用`Object.create()`创建原型对象，这个原型对象继承自父类的原型，同时给新创建的对象定义属性。这种实现方法的困难之处在于，正如上文所提到的，它需要使用难看的属性描述符。
 
-这个例子中另外一个有趣之处在于，使用Object.create()创建对象时传入了参数null,这个创建的对象没有任何继承任何成员，这个对象用来存储集合的成员，同时，这个对象没有原型，这样我们就能对它直接使用in运算符（使用in运算符可以对对象成员进行遍历，包括对原型对象中的非内置成员进行遍历。）而不使用hasOwnProperty()方法。
+这个例子中另外一个有趣之处在于，使用`Object.create()`创建对象时传入了参数null,这个创建的对象没有任何继承任何成员，这个对象用来存储集合的成员，同时，这个对象没有原型，这样我们就能对它直接使用in运算符（使用in运算符可以对对象成员进行遍历，包括对原型对象中的非内置成员进行遍历。）而不使用`hasOwnProperty()`方法。
 
 ```js
 /**
@@ -7714,7 +7723,7 @@ StringSet.prototype = Object.create(AbstractEnumerableSet.prototype,{
 ```
 ### 9.8.6 属性描述符
 
-6.7节讨论了ECMAScript5中的属性描述符，但没有给出他们的示例代码，本节给出一个例子，来讲述基于ECMAscript5如何对属性进行各种操作。下面的例子中给Object.prototype添加了properties()方法（这个方法是不可枚举的）。这个方法的返回值是一个对象，用于表示属性的列表，并定义了有用的方法用来输出属性和属性特征（对于调试非常有用），用来获得属性描述符（当复制属性时同时复制属性特性时非常有用）以及用来设置属性的特征（是上文定义的hideProps()和freezeProps()函数不错的替代方案）。这个例子展示了ECMAScript5的大多数属性相关的特性。同时使用了一种模块编程技术，这将在下一节讨论。
+6.7节讨论了ECMAScript5中的属性描述符，但没有给出他们的示例代码，本节给出一个例子，来讲述基于ECMAscript5如何对属性进行各种操作。下面的例子中给Object.prototype添加了`properties()`方法（这个方法是不可枚举的）。这个方法的返回值是一个对象，用于表示属性的列表，并定义了有用的方法用来输出属性和属性特征（对于调试非常有用），用来获得属性描述符（当复制属性时同时复制属性特性时非常有用）以及用来设置属性的特征（是上文定义的`hideProps()`和`freezeProps()`函数不错的替代方案）。这个例子展示了ECMAScript5的大多数属性相关的特性。同时使用了一种模块编程技术，这将在下一节讨论。
 
 ```js
 /**
@@ -7813,7 +7822,7 @@ StringSet.prototype = Object.create(AbstractEnumerableSet.prototype,{
 
 将代码组织到类中的一个重要原因是，让代码更加“模块化”，可以在很多不同场景中实现代码的重用。但类不是唯一的模块化代码方式。一般来讲，模块是一个独立的javascript文件。模块文件可以包含一个类定义、一组相关的类、一个使用函数库或者是一些待执行的代码。只要以模块的形式编写代码。任何javascript代码段就可以当做一个模块（作者这里的表述是围绕“模块是一个可重用的代码段”这一观念，不论是代码法结构上解藕，还是将代码拆分至不同的文件中，只要用某种方式将代码“分离”，就认为是一个模块，因此作者可以说任何代码都可以处理为一个模块）。javascript中并没有定义用于支持模块的语言结构（但imports和exports的确是javascript保留的关键字，因此javascript的未来版本可能会支持），这也意味着在javascript中编写模块化的代码更多是遵循某一种代码约定。
 
-很多javascript库和客户端编程框架都包含一些模块系统。比如Dojo工具包和google的Closure库定义了provide()和require()函数，用以声明和加载模块。并且，commonJS服务器端javascript标准规范（参照commonjs.org）创建一个模块规范，后者同样使用require()函数。这种模块系统通常用来处理模块加载和依赖性管理。如果使用这些框架，则必须按照框架提供的模块编写约定来定义模块。本节仅对模块约定做一些简单的讨论。
+很多javascript库和客户端编程框架都包含一些模块系统。比如Dojo工具包和google的Closure库定义了`provide()`和`require()`函数，用以声明和加载模块。并且，commonJS服务器端javascript标准规范（参照commonjs.org）创建一个模块规范，后者同样使用`require()`函数。这种模块系统通常用来处理模块加载和依赖性管理。如果使用这些框架，则必须按照框架提供的模块编写约定来定义模块。本节仅对模块约定做一些简单的讨论。
 
 模块化的目标是支持大规模程序的开发，处理分散源中代码的组装，并且能让代码正确的运行，哪怕包含了作者所部期望出现的模块代码，也可以正确执行代码。为了做到这一点，不同的模块必须避免修改全局执行执行上下文，因此后续模块应当在它们所期望的运行元素（或接近原始）上下文中执行（这里的“原始上下文”是指调用模块时所在的上下文，可能处在一个很深的闭包中，但这个模块的逻辑不应该影响到其他上下文特别是全局上下文。）。这实际上意味着模块应当尽可能少地定义全局标识。理想状况是，所有模块都不应当定义超过一个（全局标识）。
 
@@ -7821,39 +7830,57 @@ StringSet.prototype = Object.create(AbstractEnumerableSet.prototype,{
 
 ### 9.9.1 用作命名空间的对象
 
-在模块创建过程中避免污染全局变量的一种方法是只有一个对象作为命名空间。它将函数和值作为命名空间对象属性存储起来（可以通过全局变量引用），而不是定义全局函数和变量。拿例子Set类说，它定义了一个全局构造函数Set()。然后给这个类定义了很多实例方法，但将这些实例方法存储为Set.prototype的属性，因此这些方法不是全局的。实例代码也包含一个_v2s工具函数，但也没有定义它为全局函数，而是把它存储为Set的属性。
+在模块创建过程中避免污染全局变量的一种方法是只有一个对象作为命名空间。它将函数和值作为命名空间对象属性存储起来（可以通过全局变量引用），而不是定义全局函数和变量。拿例子Set类说，它定义了一个全局构造函数`Set()`。然后给这个类定义了很多实例方法，但将这些实例方法存储为Set.prototype的属性，因此这些方法不是全局的。实例代码也包含一个`_v2s()`工具函数，但也没有定义它为全局函数，而是把它存储为Set的属性。
 
 接下来看一下原来的AbstractSet类的例子，这个例子定义了很多抽象类和非抽象类。每个类都只包含一个全局标识，但这个模块（这个javascript文件）定义了很少的全局变量。基于这种“保持干净的全局命名空间”的观点，一种好的做法是将“集合”类定义为一个单独的全局对象：
 
+```js
 var sets = {};
- 这个sets对象是模块的命名空间，并将每个“集合”类都定义为这个对象的属性：
+```
 
+这个sets对象是模块的命名空间，并将每个“集合”类都定义为这个对象的属性：
+
+```js
 set.SingletonSet = sets.AbstractEnumerableSet.extend(...);
+```
+
 如果想使用这样定义的类，需要通过命名空间来调用所需的构造函数：
 
+```js
 var s = new sets.SingletonSet(1);
+```
+
 模块的作者并不知道它的模块会和那些其他的模块一起构造，因此尤为注意这些命名空间的用法带来的命名冲突。然而，使用这个模块的开发者是知道它用了那些模块。用到了那些名字的。程序员并不一定要严格遵循命名空间的写法，只须将常用的值“导入”到全局命名空间中。程序员如果要检测使用set命名空中的set类，可以这样将它导入：
 
-            var Set = sets.Set; //将Set导入到全局命名空间中
-            var s = new Set(1,2,4); //这样每次使用它就不必添加set前缀了
+```js
+var Set = sets.Set; //将Set导入到全局命名空间中
+var s = new Set(1,2,4); //这样每次使用它就不必添加set前缀了
+```
+
 有时模块作者会使用更深层次嵌套的命名空间。如果sets模块是另外一组更强大的模块集合的话，它的命名空间可能是collections.sets,模块的代码开始这样写：
 
-            var collections; //声明(或者重新声明)这个全局变量
-            if (!collections) //如果它原本不存在
-                collections = {}; //创建一个顶层的命名空间对象
-            collections.sets = {} //将set命名空间创建在它的内部
-                //在collections.sets内定义set类
-            collections.sets.AbstractSet = function() {...}
-最顶层的命名空间往往采用表示创建模块的作者或组织，并避免命名空间的命名冲突。比如google的Clossure库在它的命名空间goog.structs中定义了Set类。每个开发者都反转互联网域名的组成部分，这样创建的命名空间是全局伟业的。一般不会其他模块者采用，比如我的网站是ahthw.com，我们可以通过命名空间来发布我的sets模块com.ahthw.collections.sets
+```js
+var collections; //声明(或者重新声明)这个全局变量
+if (!collections) //如果它原本不存在
+    collections = {}; //创建一个顶层的命名空间对象
+collections.sets = {} //将set命名空间创建在它的内部
+    //在collections.sets内定义set类
+collections.sets.AbstractSet = function() {...}
+```
+
+最顶层的命名空间往往采用表示创建模块的作者或组织，并避免命名空间的命名冲突。比如google的Clossure库在它的命名空间goog.structs中定义了Set类。每个开发者都反转互联网域名的组成部分，这样创建的命名空间是全局伟业的。一般不会其他模块者采用，比如我的网站是ahthw.com，我们可以通过命名空间来发布我的sets模块`com.ahthw.collections.sets`。
 
 使用很长的命名空间来导入模块的方式非常重要，然而程序员往往将整个模块导入全局命名空间，而不是导入(命名空间的某个)单独的类。
 
-var sets =com.ahthw.collections.sets
+```js
+var sets = com.ahthw.collections.sets
+```
+
 按照约定，模块的文件名应当和命名空间匹配。sets模块应当保存在sets.js中。如果这个模块使用命名空间collections.sets，那么这个文件应当保存在目录collections/下（这个目录应该还有另外一个文件maps.js）。并且使用命名空间com.ahthw.collections.sets模块应该在文件com/ahthw/collections/sets.js中。
 
 ### 9.9.2 作为私有命名空间的函数
 
-模块对外导出一些公用的API,这些API是给其它程序员使用的。它包括函数、类、属性和方法。但模块的实现往往需要一些额外的辅助函数和方法，这些函数和方法并不需要在模块外部可见。比如Set._v2s()函数，模块的作者不希望Set类的用户在某时候调用这个函数，因此这个方法最好在类的外部是不可访问的。
+模块对外导出一些公用的API,这些API是给其它程序员使用的。它包括函数、类、属性和方法。但模块的实现往往需要一些额外的辅助函数和方法，这些函数和方法并不需要在模块外部可见。比如`Set._v2s()`函数，模块的作者不希望Set类的用户在某时候调用这个函数，因此这个方法最好在类的外部是不可访问的。
 
 可以通过将模块(本例中的Set类)定义在某个函数的内部来实现，正如8.5节描述的一样，在一个函数中定义的变量和函数都属于函数的局部成员，在函数的外部是不可见的。实际上，可以将这个函数作用域用作模块的私有命名空间。(有时候称为“模块函数”)，下面的例子展示了如何使用“模块函数”来实现Set类：
 
@@ -7896,6 +7923,7 @@ var Set = (function invocation(){
     return Set;
 }());
 ```
+
 注意，这里我们使用了立即执行的匿名函数，这在javascript中是一种惯用法。如果想让代码在一个私有命名空间中运行，只须给这段代码加上前缀“(function(){"和后缀"}())”开始的左园括号确保这是一个函数表达式，而不是函数定义语句，因此可以给该前缀加上一个函数名来让代码变得更加清晰。在上面的例子中，使用了名字“invocation”用来强调这个函数应当在定义之后立即执行。名字“namespace”也可以用来强调这个函数被用作命名空间。
 
 一旦将模块代码封装进一个函数，就需要一些方法导出公用API，以便在模块函数的外部调用它们。在上面的例子中，模块函数返回构造函数，这个构造函数随后赋值给一个全局变量。将值返回已经清楚的表明API已经导出早函数作用域之外。如果模块API包含多个单元，则它库返回命名空间对象。对于sets模块历来是，可以将代码写成这样：
@@ -7921,6 +7949,7 @@ collections.sets = (function namespace(){
     };
 }());
 ```
+
 令一种类似技术是将模块函数当做构造函数，通过new来调用，通过将它们（构造函数创建的新实例）赋值给this来将其导出（使用构造函数和模块函数来实现私有成员的原理是一模一样的，只是调用的方式不一样）：
 
 ```js
@@ -7935,6 +7964,7 @@ collections.sets = (new Function namespace(){
     //注意，这里没有返回值
 }())
 ```
+
 作为替代方案，如果已经定义了全局命名对象，这个模块函数可以直接设置那个对象的属性，不返回任何内容。
 
 ```js
@@ -7951,7 +7981,8 @@ collections.sets = {};
     //导出的操作已经执行了，这里就不需要在写return语句了
 }());
 ```
-有些框架已经实现了模块加载的功能，其中包括其他一些导出模块API的方法。比如：使用provides()函数来注册其API,提供exports对象用以存储模块API.由于javascript目前还不具备模块管理的能力。因此应当根据使用的框架和工具包来选择合适的模块创建和导出API方式。
+
+有些框架已经实现了模块加载的功能，其中包括其他一些导出模块API的方法。比如：使用`provides()`函数来注册其API,提供exports对象用以存储模块API.由于javascript目前还不具备模块管理的能力。因此应当根据使用的框架和工具包来选择合适的模块创建和导出API方式。
 
 # 第10章 正则表达式的模式匹配
 # 第11章 JavaScript的子集和扩展
