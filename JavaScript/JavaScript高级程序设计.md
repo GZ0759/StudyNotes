@@ -3040,7 +3040,9 @@ alert(colors.toPipedString()); //"red|blue|green"
 function Person(name, age, job){
   //创建要返回的对象
   var o = new Object();
+
   //可以在这里定义私有变量和函数
+
   //添加方法
   o.sayName = function(){
     alert(name);
@@ -3179,8 +3181,10 @@ SuperType.prototype.getSuperValue = function(){
 function SubType(){
   this.subproperty = false;
 }
+
 //继承了 SuperType
 SubType.prototype = new SuperType();
+
 //使用字面量添加新方法，会导致上一行代码无效
 SubType.prototype = {
   getSubValue : function (){
@@ -3206,10 +3210,11 @@ function SuperType(){
 }
 function SubType(){
 }
+
 //继承了 SuperType
 SubType.prototype = new SuperType();
-var instance1 = new SubType();
 
+var instance1 = new SubType();
 instance1.colors.push("black");
 alert(instance1.colors); //"red,blue,green,black"
 
@@ -3219,7 +3224,7 @@ alert(instance2.colors); //"red,blue,green,black"
 
 这个例子中的 SuperType 构造函数定义了一个 colors 属性，该属性包含一个数组（引用类型值）。SuperType 的每个实例都会有各自包含自己数组的 colors 属性。当 SubType 通过原型链继承了SuperType 之后，`SubType.prototype` 就变成了 SuperType 的一个实例，因此它也拥有了一个它自己的 colors 属性——就跟专门创建了一个 `SubType.prototype.colors` 属性一样。但结果是什么呢？结果是 SubType 的所有实例都会共享这一个 colors 属性。 而我们对 `instance1.colors` 的修改能够通过 `instance2.colors` 反映出来，就已经充分证实了这一点。
 
-原型链的第二个问题是：在创建子类型的实例时，不能向超类型的构造函数中传递参数。实际上，应该说是没有办法在不影响所有对象实例的情况下，给超类型的构造函数传递参数。有鉴于此，再加上前面刚刚讨论过的由于原型中包含引用类型值所带来的问题，实践中很少会单独使用原型链
+原型链的第二个问题是：在创建子类型的实例时，不能向超类型的构造函数中传递参数。实际上，应该说是没有办法在不影响所有对象实例的情况下，给超类型的构造函数传递参数。有鉴于此，再加上前面刚刚讨论过的由于原型中包含引用类型值所带来的问题，实践中很少会单独使用原型链。
 
 ### 6.3.2 借用构造函数
 
@@ -3233,6 +3238,7 @@ function SubType(){
   //继承了 SuperType
   SuperType.call(this);
 }
+
 var instance1 = new SubType();
 instance1.colors.push("black");
 alert(instance1.colors); //"red,blue,green,black"
@@ -3285,17 +3291,21 @@ function SubType(name, age){
   SuperType.call(this, name);
   this.age = age;
 }
+
 //继承方法
 SubType.prototype = new SuperType();
 SubType.prototype.constructor = SubType;
+
 SubType.prototype.sayAge = function(){
   alert(this.age);
 };
+
 var instance1 = new SubType("Nicholas", 29);
 instance1.colors.push("black");
 alert(instance1.colors); //"red,blue,green,black"
 instance1.sayName(); //"Nicholas";
 instance1.sayAge(); //29
+
 var instance2 = new SubType("Greg", 27);
 alert(instance2.colors); //"red,blue,green"
 instance2.sayName(); //"Greg";
@@ -3335,7 +3345,7 @@ yetAnotherPerson.friends.push('Barbie');
 alert(person.friends);    //'wesley,fox,Rob,Barbie'
 ```
 
-克罗克福德主张的这种原型式继承，要求你必须有一个对象可以作为另一个对象的基础。如果有这么一个对象的话，可以把它传递给`object()`函数，然后再根据具体需求对得到的对象加以修改即可。在这个例子中，可以作为另一个对象基础的是 person 对象，于是我们把它传入到`object()`函数中，然后该函数就会返回一个新对象。这个新对象将 person 作为原型，所以它的原型中就包含一个基本类型值属性和一个引用类型值属性。这意味着 `person.friends` 不仅属于 person 所有，而且也会被 anotherPerson以及 yetAnotherPerson 共享。实际上，这就相当于又创建了 person 对象的两个副本。
+克罗克福德主张的这种原型式继承，要求你必须有一个对象可以作为另一个对象的基础。如果有这么一个对象的话，可以把它传递给`object()`函数，然后再根据具体需求对得到的对象加以修改即可。在这个例子中，可以作为另一个对象基础的是 person 对象，于是我们把它传入到`object()`函数中，然后该函数就会返回一个新对象。这个新对象将 person 作为原型，所以它的原型中就包含一个基本类型值属性和一个引用类型值属性。这意味着 `person.friends` 不仅属于 person 所有，而且也会被 anotherPerson 以及 yetAnotherPerson 共享。实际上，这就相当于又创建了 person 对象的两个副本。
 
 ECMAScript 5 通过新增 `Object.create()`方法规范化了原型式继承。这个方法接收两个参数：一个用作新对象原型的对象和（可选的）一个为新对象定义额外属性的对象。在传入一个参数的情况下，`Object.create()`与`object()`方法的行为相同。
 
@@ -3344,12 +3354,15 @@ var person = {
   name: "Nicholas",
   friends: ["Shelby", "Court", "Van"]
 };
+
 var anotherPerson = Object.create(person);
 anotherPerson.name = "Greg";
 anotherPerson.friends.push("Rob");
+
 var yetAnotherPerson = Object.create(person);
 yetAnotherPerson.name = "Linda";
 yetAnotherPerson.friends.push("Barbie");
+
 alert(person.friends); //"Shelby,Court,Van,Rob,Barbie"
 ```
 
@@ -3378,7 +3391,7 @@ var anotherPerson = Object.create(person, {
 
 ```js
 function createAnother(original) {
-  var clone =object(original); //通过调用函数创建一个新对象
+  var clone = object(original); //通过调用函数创建一个新对象
   clone.sayHi = function() {   //以某种方式来增强这个对象
     console.log("Hi");
   };
@@ -3386,18 +3399,18 @@ function createAnother(original) {
 }
 ```
 
-在这个例子中， createAnother()函数接收了一个参数，也就是将要作为新对象基础的对象。然后，把这个对象（original）传递给`object()`函数，将返回的结果赋值给 clone。再为 clone 对象添加一个新方法 sayHi()，最后返回 clone 对象。可以像下面这样来使用 createAnother()函数：
+在这个例子中，`createAnother()`函数接收了一个参数，也就是将要作为新对象基础的对象。然后，把这个对象（original）传递给`object()`函数，将返回的结果赋值给 clone。再为 clone 对象添加一个新方法`sayHi()`，最后返回 clone 对象。可以像下面这样来使用`createAnother()`函数：
 
 ```js
 var person = {
-name: "Nicholas",
-friends: ["Shelby", "Court", "Van"]
+  name: "Nicholas",
+  friends: ["Shelby", "Court", "Van"]
 };
 var anotherPerson = createAnother(person);
 anotherPerson.sayHi(); //"hi"
 ```
 
-这个例子中的代码基于 person 返回了一个新对象——anotherPerson。新对象不仅具有 person的所有属性和方法，而且还有自己的 sayHi()方法。
+这个例子中的代码基于 person 返回了一个新对象——anotherPerson。新对象不仅具有 person的所有属性和方法，而且还有自己的`sayHi()`方法。
 
 在主要考虑对象而不是自定义类型和构造函数的情况下，寄生式继承也是一种有用的模式。前面示范继承模式时使用的`object()`函数不是必需的；任何能够返回新对象的函数都适用于此模式。
 
@@ -3409,41 +3422,80 @@ anotherPerson.sayHi(); //"hi"
 
 ```js
 function SuperType(name){
-this.name = name;
-this.colors = ["red", "blue", "green"];
+  this.name = name;
+  this.colors = ["red", "blue", "green"];
 }
 SuperType.prototype.sayName = function(){
-alert(this.name);
+  alert(this.name);
 };
+
 function SubType(name, age){
-SuperType.call(this, name); //第二次调用 SuperType()
-this.age = age;
+  SuperType.call(this, name); //第二次调用 SuperType()
+  this.age = age;
 }
+
 SubType.prototype = new SuperType(); //第一次调用 SuperType()
 SubType.prototype.constructor = SubType;
+
 SubType.prototype.sayAge = function(){
 alert(this.age);
 };
 ```
 
-加粗字体的行中是调用 SuperType 构造函数的代码。在第一次调用 SuperType 构造函数时，SubType.prototype 会得到两个属性： name 和 colors；它们都是 SuperType 的实例属性，只不过现在位于 SubType 的原型中。当调用 SubType 构造函数时，又会调用一次 SuperType 构造函数，这一次又在新对象上创建了实例属性 name 和 colors。于是，这两个属性就屏蔽了原型中的两个同名属性。图 6-6 展示了上述过程。
+加粗字体的行中是调用 SuperType 构造函数的代码。在第一次调用 SuperType 构造函数时， SubType.prototype 会得到两个属性： name 和 colors；它们都是 SuperType 的实例属性，只不过现在位于 SubType 的原型中。当调用 SubType 构造函数时，又会调用一次 SuperType 构造函数，这一次又在新对象上创建了实例属性 name 和 colors。于是，这两个属性就屏蔽了原型中的两个同名属性。图 6-6 展示了上述过程。
+
 如图 6-6 所示，有两组 name 和 colors 属性：一组在实例上，一组在 SubType 原型中。这就是调用两次 SuperType 构造函数的结果。好在我们已经找到了解决这个问题方法——寄生组合式继承。所谓寄生组合式继承，即通过借用构造函数来继承属性，通过原型链的混成形式来继承方法。其背后的基本思路是：不必为了指定子类型的原型而调用超类型的构造函数，我们所需要的无非就是超类型原型的一个副本而已。本质上，就是使用寄生式继承来继承超类型的原型，然后再将结果指定给子类型的原型。寄生组合式继承的基本模式如下所示。
 
 ```js
 function inheritPrototype(subType, superType){
-var prototype = object(superType.prototype); //创建对象
-prototype.constructor = subType; //增强对象
-subType.prototype = prototype; //指定对象
+  var prototype = object(superType.prototype); //创建对象
+  prototype.constructor = subType; //增强对象
+  subType.prototype = prototype; //指定对象
 }
 ```
 
-这个示例中的 inheritPrototype()函数实现了寄生组合式继承的最简单形式。这个函数接收两个参数：子类型构造函数和超类型构造函数。在函数内部，第一步是创建超类型原型的一个副本。第二步是为创建的副本添加 constructor 属性，从而弥补因重写原型而失去的默认的 constructor 属性。最后一步，将新创建的对象（即副本）赋值给子类型的原型。这样，我们就可以用调用 inheritPrototype()函数的语句，去替换前面例子中为子类型原型赋值的语句了，例如：
+这个示例中的 `inheritPrototype()`函数实现了寄生组合式继承的最简单形式。这个函数接收两个参数：子类型构造函数和超类型构造函数。在函数内部，第一步是创建超类型原型的一个副本。第二步是为创建的副本添加 constructor 属性，从而弥补因重写原型而失去的默认的 constructor 属性。最后一步，将新创建的对象（即副本）赋值给子类型的原型。这样，我们就可以用调用 `inheritPrototype()`函数的语句，去替换前面例子中为子类型原型赋值的语句了，例如：
 
-这个例子的高效率体现在它只调用了一次 SuperType 构造函数，并且因此避免了在 SubType.prototype 上面创建不必要的、多余的属性。与此同时，原型链还能保持不变；因此，还能够正常使用instanceof 和 isPrototypeOf()。开发人员普遍认为寄生组合式继承是引用类型最理想的继承范式。
+```js
+function SuperType(name){
+  this.name = name;
+  this.colors = ["red", "blue", "green"];
+}
+SuperType.prototype.sayName = function(){
+  alert(this.name);
+};
 
-> YUI 的 YAHOO.lang.extend()方法采用了寄生组合继承，从而让这种模式首次出现在了一个应用非常广泛的 JavaScript 库中。要了解有关 YUI 的更多信息，请访问http://developer. yahoo.com/yui/。
+function SubType(name, age){
+  SuperType.call(this, name);
+  this.age = age;
+}
 
-6.4　小结　
+inheritPrototype(SubType, SuperType);
+
+SubType.prototype.sayAge = function(){
+  alert(this.age);
+};
+```
+
+这个例子的高效率体现在它只调用了一次 SuperType 构造函数，并且因此避免了在 SubType.prototype 上面创建不必要的、多余的属性。与此同时，原型链还能保持不变；因此，还能够正常使用instanceof 和 `isPrototypeOf()`。开发人员普遍认为寄生组合式继承是引用类型最理想的继承范式。
+
+> YUI 的`YAHOO.lang.extend()`方法采用了寄生组合继承，从而让这种模式首次出现在了一个应用非常广泛的 JavaScript 库中。要了解有关 YUI 的更多信息，请访问[链接](http://developer.yahoo.com/yui/)。
+
+## 6.4 小结　
+
+ECMAScript 支持面向对象（OO）编程，但不使用类或者接口。对象可以在代码执行过程中创建和增强，因此具有动态性而非严格定义的实体。在没有类的情况下，可以采用下列模式创建对象。
+
++ 工厂模式，使用简单的函数创建对象，为对象添加属性和方法，然后返回对象。这个模式后来被构造函数模式所取代。
++ 构造函数模式，可以创建自定义引用类型，可以像创建内置对象实例一样使用 new 操作符。不过，构造函数模式也有缺点，即它的每个成员都无法得到复用，包括函数。由于函数可以不局限于任何对象（即与对象具有松散耦合的特点），因此没有理由不在多个对象间共享函数。
++ 原型模式，使用构造函数的 prototype 属性来指定那些应该共享的属性和方法。组合使用构造函数模式和原型模式时，使用构造函数定义实例属性，而使用原型定义共享的属性和方法。
+
+JavaScript 主要通过原型链实现继承。原型链的构建是通过将一个类型的实例赋值给另一个构造函数的原型实现的。这样，子类型就能够访问超类型的所有属性和方法，这一点与基于类的继承很相似。原型链的问题是对象实例共享所有继承的属性和方法，因此不适宜单独使用。解决这个问题的技术是借用构造函数，即在子类型构造函数的内部调用超类型构造函数。这样就可以做到每个实例都具有自己的属性，同时还能保证只使用构造函数模式来定义类型。使用最多的继承模式是组合继承，这种模式使用原型链继承共享的属性和方法，而通过借用构造函数继承实例属性。
+
+此外，还存在下列可供选择的继承模式。
+
++ 原型式继承，可以在不必预先定义构造函数的情况下实现继承，其本质是执行对给定对象的浅复制。而复制得到的副本还可以得到进一步改造。
++ 寄生式继承，与原型式继承非常相似，也是基于某个对象或某些信息创建一个对象，然后增强对象，最后返回对象。为了解决组合继承模式由于多次调用超类型构造函数而导致的低效率问题，可以将这个模式与组合继承一起使用。
++ 寄生组合式继承，集寄生式继承和组合继承的优点与一身，是实现基于类型继承的最有效方式。
 
 # 第7章 函数表达式
 
