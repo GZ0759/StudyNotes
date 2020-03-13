@@ -4215,7 +4215,7 @@ JavaScript 中的函数表达式和闭包都是极其有用的特性，利用它
 
 # 第8章 BOM　
 
-BOM 浏览器对象模型是 Web 中使用 JavaScript 最重要的内容，BOM 提供了很多对象，用于访问浏览器的功能，这些功能与任何网页内容无关。
+ECMAScript 是 JavaScript 的核心，但如果要在 Web 中使用 JavaScript，那么 BOM（浏览器对象模型）则无疑才是真正的核心。 BOM 提供了很多对象，用于访问浏览器的功能，这些功能与任何网页内容无关。多年来，缺少事实上的规范导致 BOM 既有意思又有问题，因为浏览器提供商会按照各自的想法随意去扩展它。于是，浏览器之间共有的对象就成为了事实上的标准。这些对象在浏览器中得以存在，很大程度上是由于它们提供了与浏览器的互操作性。 W3C 为了把浏览器中 JavaScript 最基本的部分标准化，已经将 BOM 的主要方面纳入了 HTML5 的规范中。
 
 ## 8.1 window对象 
 
@@ -4558,11 +4558,15 @@ History 对象保存着用户上网的历史记录，从窗口被打开的那一
 
 # 第10章 DOM　
 
-DOM是文档对象模型，是针对HTML和XML文档的一个API应用程序编程接口，描述了一个层次化的节点树，允许开发人员添加、移除和修改页面的某一部分。现在它已经成为表现和操作页面标记的真正的跨平台、语言中立的方式。
+DOM（文档对象模型）是针对 HTML 和 XML 文档的一个 API（应用程序编程接口）。 DOM 描绘了一个层次化的节点树，允许开发人员添加、移除和修改页面的某一部分。 DOM 脱胎于 Netscape 及微软公司创始的 DHTML（动态 HTML），但现在它已经成为表现和操作页面标记的真正的跨平台、语言中立的方式。
+
+1998 年 10 月 DOM1 级规范成为 W3C 的推荐标准，为基本的文档结构及查询提供了接口。本章主要讨论与浏览器中的 HTML 页面相关的 DOM1 级的特性和应用，以及 JavaScript 对 DOM1 级的实现。IE、 Firefox、 Safari、 Chrome 和 Opera 都非常完善地实现了 DOM。
+
+> 注意， IE 中的所有 DOM 对象都是以 COM 对象的形式实现的。这意味着 IE 中的 DOM 对象与原生 JavaScript 对象的行为或活动特点并不一致。本章将较多地谈及这些差异。
 
 ## 10.1 节点层次 
 
-节点分为几种不同的类型，每种类型分别表示文档中不同的信息以（或）标记。每个节点都拥有各自的特点、数据和方法，另外也与其他节点存在某种关系。节点之间的关系构成了层次，而所有页面标记则表现为一个以特定节点为根节点的树形结构。
+DOM 可以将任何 HTML 或 XML 文档描绘成一个由多层节点构成的结构。节点分为几种不同的类型，每种类型分别表示文档中不同的信息及（或）标记。每个节点都拥有各自的特点、数据和方法，另外也与其他节点存在某种关系。节点之间的关系构成了层次，而所有页面标记则表现为一个以特定节点为根节点的树形结构。以下面的 HTML 为例：
 
 ```html
 <html>
@@ -4579,9 +4583,13 @@ DOM是文档对象模型，是针对HTML和XML文档的一个API应用程序编�
 
 每一段标记都可以通过树中的一个节点来表示： HTML 元素通过元素节点表示，特性（attribute）通过特性节点表示，文档类型通过文档类型节点表示，而注释则通过注释节点表示。总共有 12 种节点类型，这些类型都继承自一个基类型。
 
-Node类型。DOM1级定义的一个Node接口，该接口将由DOM衷的所有节点类型实现，这个接口在JavaScript中是作为Node类型实现的。JavaScript中的所有节点类型都继承自Node类型，因此所有节点类型都共享者相同的基本属性和方法。
+### 10.1.1 Node类型
 
-每个节点都有一个nodeType，用于表明节点的类型，节点类型由定义的12个数值常量表示。由于IE没有公开Node类型的构造函数，为了确保跨浏览器兼容，最好将nodeType属性与数字值进行比较。
+DOM1 级定义的一个 Node 接口，该接口将由 DOM 中的所有节点类型实现，这个接口在JavaScript中是作为 Node 类型实现的。JavaScript中的所有节点类型都继承自 Node 类型，因此所有节点类型都共享者相同的基本属性和方法。
+
+每个节点都有一个 nodeType ，用于表明节点的类型，节点类型由定义的12个数值常量表示。由于 IE 没有公开 Node 类型的构造函数，为了确保跨浏览器兼容，最好将 nodeType 属性与数字值进行比较。
+
+每个节点都有一个 nodeType 属性，用于表明节点的类型。节点类型由在 Node 类型中定义的下列 12 个数值常量来表示，任何节点类型必居其一：
 
 - Node.ELEMENT_NODE(1)；
 - Node.ATTRIBUTE_NODE(2)；
@@ -4596,9 +4604,27 @@ Node类型。DOM1级定义的一个Node接口，该接口将由DOM衷的所有�
 - Node.DOCUMENT_FRAGMENT_NODE(11)；
 - Node.NOTATION_NODE(12)。
 
-nodeName 和 nodeValue 属性。
+通过比较上面这些常量，可以很容易地确定节点的类型，例如：
 
-要了解节点的具体信息，可以使用 nodeName 和 nodeValue 两个属性。对于元素节点， nodeName 中保存的始终都是元素的标签名，而 nodeValue 的值则始终为 null。
+```js
+if (someNode.nodeType == Node.ELEMENT_NODE){ //在 IE 中无效
+  alert("Node is an element.");
+}
+```
+
+由于 IE 没有公开 Node 类型的构造函数，因此上面的代码在 IE 中会导致错误。为了确保跨浏览器兼容，最好还是将 nodeType 属性与数字值进行比较，如下所示：
+
+```js
+if (someNode.nodeType == 1){ //适用于所有浏览器
+  alert("Node is an element.");
+}
+```
+
+并不是所有节点类型都受到 Web 浏览器的支持。开发人员最常用的就是元素和文本节点。本章后面将详细讨论每个节点类型的受支持情况及使用方法。
+
+**1. nodeName 和 nodeValue 属性**
+
+要了解节点的具体信息，可以使用 nodeName 和 nodeValue 这两个属性。这两个属性的值完全取决于节点的类型。在使用这两个值以前，最好是像下面这样先检测一下节点的类型。
 
 ```js
 if (someNode.nodeType == 1){
@@ -4606,7 +4632,9 @@ if (someNode.nodeType == 1){
 }
 ```
 
-节点关系。
+在这个例子中，首先检查节点类型，看它是不是一个元素。如果是，则取得并保存 nodeName 的值。对于元素节点， nodeName 中保存的始终都是元素的标签名，而 nodeValue 的值则始终为 null。
+
+**2. 节点关系**
 
 文档中所有的节点之间都存在这样或那样的关系。每个节点都有一个 childNodes 属性，其中保存着一个 NOdeList 数组对象，用于保存一组有序的节点，可以通过位置来访问这些节点。但是它不是 Array 的实例，它实际上是基于 DOM 结构动态执行查询的结果，DOM 结构的变化能够自动反应在 NodeList 对象中，因此 NodeList 是有生命、有呼吸的对象，而不是一张快照。如果要访问保存在 NodeList 中的节点，可以通过方括号，也可以使用`item()`方法。
 
@@ -4616,7 +4644,9 @@ if (someNode.nodeType == 1){
 
 其它方法，cloneNode()用于创建调用这个方法的节点的一个完全相同的副本，只接受一个是否执行深复制的布尔值参数，深复制也就是复制节点以及整个子节点树，浅复制也就只复制节点本身。复制后的副本属于文档所有，但是还没有自己的位置。最后一个方法是normalize()方法，这个方法唯一的作用Iushi处理文档树中的文本节点。
 
-Document类型。JavaScript通过Document表示文档，即document为文档对象。在浏览器中document对象是HTMLDocument的一个实例，表示整个HTML页面；同时也是window对象的一个属性，可以作为全局对象来访问。规定的Document节点的子节点可以是DocumentType、Element、ProcessingInstruction或Comment，但还有两个内置的访问其子节点的快捷方式：documentElement属性（指向HTML页面的`<html>`元素）、childNode。作为HTMLDocument的实例，document对象还有一个body属性，直接指向`<body>`元素。
+### 10.1.2 Document类型
+
+JavaScript通过Document表示文档，即document为文档对象。在浏览器中document对象是HTMLDocument的一个实例，表示整个HTML页面；同时也是window对象的一个属性，可以作为全局对象来访问。规定的Document节点的子节点可以是DocumentType、Element、ProcessingInstruction或Comment，但还有两个内置的访问其子节点的快捷方式：documentElement属性（指向HTML页面的`<html>`元素）、childNode。作为HTMLDocument的实例，document对象还有一个body属性，直接指向`<body>`元素。
 
 作为HTMLDocument的一个实例，document对象还有一些标准的Document对象所没有的属性，title属性包含着`<title>`元素中的文本，显示在浏览器窗口的标题栏或标签页上。还有三个对网页的请求有关的属性：URL、domain和referrer，第一个属性中包含页面完整的URL、第二个属性只包含页面的域名，而最后一个属性则保存着链接到当前页面的那个页面的URL，没有来源页面则包含空字符串。所有这些信息都存在于请求的HTTP头部，只不过是通过这些属性让我们能够在JavaScript中访问它们。
 
@@ -4628,7 +4658,9 @@ document对象还有一些特殊的集合，这些集合都是HTMLCollection对�
 
 文档写入。将输出流写入网页中的能力体现在下列4个方法：write().writenln()、open()和close()。前两个方法接受一个字符串参数，即要写入到输入流中的文本，第一个原样写入，第二个会在字符串的末尾添加一个换行符。还可以使用这两个方法动态地包含外部资源。
 
-Element类型。Element类型用于表现XML或HTML元素，提供了对元素标签名、子节点及特性的访问。要访问元素的标签名，可以使用nodeName属性，也可以使用tagName属性，在HTML中标签名始终都以全部大写表示。所有HTML元素都由HTMLElement类型标识，不是直接通过这个类型，也是通过它的子类型来表示。HTMLElement类型直接继承Element并添加了一些属性，例如id、title、lang、dir、classname等，但这些属性的修改不是一定会在页面中直观地表现出来。
+### 10.1.3 Element类型
+
+Element类型用于表现XML或HTML元素，提供了对元素标签名、子节点及特性的访问。要访问元素的标签名，可以使用nodeName属性，也可以使用tagName属性，在HTML中标签名始终都以全部大写表示。所有HTML元素都由HTMLElement类型标识，不是直接通过这个类型，也是通过它的子类型来表示。HTMLElement类型直接继承Element并添加了一些属性，例如id、title、lang、dir、classname等，但这些属性的修改不是一定会在页面中直观地表现出来。
 
 取得特性。每个元素都有一或多个特性，这些特性的用途是给出相应元素或其内容的附加信息，操作特性的DOM方法主要有三个，分别是getAttribute()、setAttribute()和removeAttribute()，通过第一个方法可以取得存在或自定义特性的值，但是注意特性的名称是不区分大小写的。有两类特殊的特性，它们虽然有对应的属性名，但属性的值与通过getAttribute()返回的值并不相同，第一类就是style，用于通过CSS为元素指定样式，前者是对象，后者是返回CSS文本；第二类是onclick这样的事件处理程序，前者是JavaScript函数，而后者返回的是相应代码的字符串。
 
@@ -4638,25 +4670,47 @@ attributes属性。Element类型是使用attributes属性的唯一一个DOM节�
 
 元素可以有任意数目的子节点和后代节点，元素的childNodes属性中包含了它的所有子节点，这些子节点有可能是元素、文本节点、注释或处理指令。如果元素之间有空白符，也算做文本节点，因此执行某项操作以前，通常都要先检查一下nodeType属性。
 
-Text类型。文本节点由Text类型标识，包含的是可以按照自勉解释得纯文本内容。纯文本中可以包含转义后的HTML字符，但不能包含HTML代码。可以使用Document.createTextNode()创建新文本节点，这个方法接受一个参数，即要插入节点的文本，与设置已有文本节点的值一样（使用nodeValue属性），作为参数的文本也将按照HTML或XML的格式进行编码。一个能够将相邻文本节点合并的方法normalize()，结果节点的nodeValue等于将合并前每个文本节点的nodeValue值拼接起来的值。浏览器在解析文档时永远不会创建相邻的文本节点，合并的情况只会作为执行DOM操作的结果出现。Text类型提供了一个作用与合并节点相反的方法：splitText()，这个方法会将一个文本节点分成两个文本节点。
+### 10.1.4 Text类型
 
-Comment类型。注释在DOM中是通过Comment类型来表示的。这个类型和Text类型继承自相同的基类，因此它拥有除splitText()之外的所有字符串操作方法。
+文本节点由Text类型标识，包含的是可以按照自勉解释得纯文本内容。纯文本中可以包含转义后的HTML字符，但不能包含HTML代码。可以使用Document.createTextNode()创建新文本节点，这个方法接受一个参数，即要插入节点的文本，与设置已有文本节点的值一样（使用nodeValue属性），作为参数的文本也将按照HTML或XML的格式进行编码。一个能够将相邻文本节点合并的方法normalize()，结果节点的nodeValue等于将合并前每个文本节点的nodeValue值拼接起来的值。浏览器在解析文档时永远不会创建相邻的文本节点，合并的情况只会作为执行DOM操作的结果出现。Text类型提供了一个作用与合并节点相反的方法：splitText()，这个方法会将一个文本节点分成两个文本节点。
 
-CDATASection类型。只针对基于XML的文档，表示的是CDATA区域。
+### 10.1.5 Comment类型
 
-DocumentType类型，包含着与文档的doctype有关的所有信息。在DOM1级中，DocumentType对象不能动态创建，只能通过解析文档代码的方式来创建。DocumentFragment类型，在文档中没有对应的标记，是一种“轻量级”的文档，可以包含和控制节点，但不会像完整的文档那样占用额外的资源，执会作为一个“仓库”使用。
+注释在DOM中是通过Comment类型来表示的。这个类型和Text类型继承自相同的基类，因此它拥有除splitText()之外的所有字符串操作方法。
 
-Attr类型。元素的特性在DOM中以Attr类型来表示，在所有浏览器中都可以访问Attr类型的构造函数和原型。从技术角度讲，特性就是存在于元素的attributes属性中的节点。尽管它们也是节点，但特性从来不被认为是DOM文档树的一部分，开发人员最常使用的是getAttribute()、setAttribute()和removeAttribute()方法，很少直接引用特性节点。
+### 10.1.6 CDATASection类型
+
+只针对基于XML的文档，表示的是CDATA区域。
+
+### 10.1.7 DocumentType类型
+
+包含着与文档的doctype有关的所有信息。在DOM1级中，DocumentType对象不能动态创建，只能通过解析文档代码的方式来创建。
+
+### 10.1.8 DocumentFragment类型
+
+在文档中没有对应的标记，是一种“轻量级”的文档，可以包含和控制节点，但不会像完整的文档那样占用额外的资源，执会作为一个“仓库”使用。
+
+### 10.1.9 Attr类型
+
+元素的特性在DOM中以Attr类型来表示，在所有浏览器中都可以访问Attr类型的构造函数和原型。从技术角度讲，特性就是存在于元素的attributes属性中的节点。尽管它们也是节点，但特性从来不被认为是DOM文档树的一部分，开发人员最常使用的是getAttribute()、setAttribute()和removeAttribute()方法，很少直接引用特性节点。
 
 ## 10.2 DOM操作技术 
 
-动态脚本。使用`<script>`元素可以向页面中插入JavaScript代码，一种方式是通过其src特性包含外部文件，另一种方式就是用这个元素本身来包含代码。动态脚本，指的是在页面加载时不存在，但将来的某一时刻通过修改DOM动态添加的脚本，一般有两种方式，插入外部文件和直接插入JavaScript代码。
+### 10.2.1 动态脚本
 
-动态样式。动态样式是指在页面刚加载时不存在的样式，动态样式是在页面加载完成后动态添加到页面中的，能够把CSS样式包含到HTML页面中的元素有两个。其中`<link>`元素用于包含来自外部的文件，而`<style>`元素用于指定嵌入的样式。
+使用`<script>`元素可以向页面中插入JavaScript代码，一种方式是通过其src特性包含外部文件，另一种方式就是用这个元素本身来包含代码。动态脚本，指的是在页面加载时不存在，但将来的某一时刻通过修改DOM动态添加的脚本，一般有两种方式，插入外部文件和直接插入JavaScript代码。
 
-动态表格。为了方便构建表格，HTML DOM还为`<table>`、`<tbody>`和`<tr>`元素添加了一些属性和方法。例如caption、tBodies、tFoot、tHead、rows、`creatTHead()`、`creatTFoot()`等。
+### 10.2.2 动态样式
 
-使用NodeList时应该尽量避免访问的次数，因为每次访问，都会运行一次基于文档的查询。其中NodeList、NamedNodeMap、HTMLCollection三个集合都是“动态”的，每次文档结构发生变化时，它们都会得到更新。
+动态样式是指在页面刚加载时不存在的样式，动态样式是在页面加载完成后动态添加到页面中的，能够把CSS样式包含到HTML页面中的元素有两个。其中`<link>`元素用于包含来自外部的文件，而`<style>`元素用于指定嵌入的样式。
+
+### 10.2.3 操作表格
+
+为了方便构建表格，HTML DOM还为`<table>`、`<tbody>`和`<tr>`元素添加了一些属性和方法。例如caption、tBodies、tFoot、tHead、rows、`creatTHead()`、`creatTFoot()`等。
+
+### 10.2.4 使用NodeList
+
+应该尽量避免访问的次数，因为每次访问，都会运行一次基于文档的查询。其中NodeList、NamedNodeMap、HTMLCollection三个集合都是“动态”的，每次文档结构发生变化时，它们都会得到更新。
 
 10.3　小结　
 
