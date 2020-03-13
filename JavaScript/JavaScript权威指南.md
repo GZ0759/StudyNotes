@@ -3236,7 +3236,7 @@ var o1 = Object.create({
 });  // o1继承了属性x和y
 ```
 
-可以通过传入参数null来创建一个没有原型的新对象，但通过这种方式创建的对象不会继承任何东西，甚至不包括基础方法，比如`toString()`，也就是说，它将不能和“+”运算符一起正常工作：
+可以通过传入参数 null 来创建一个没有原型的新对象，但通过这种方式创建的对象不会继承任何东西，甚至不包括基础方法，比如`toString()`，也就是说，它将不能和“+”运算符一起正常工作：
 
 ```js
 var o2 = Object.create(null);  // o2不继承任何属性和方法
@@ -3310,9 +3310,9 @@ object["property"]
 
 第一种语法使用点运算符和一个标识符，这和C和Java中访问一个结构体或对象的静态字段非常类似。第二种语法使用方括号和一个字符串，看起来更像数组，只是这个数组元素是通过字符串索引而不是数字索引。这种数组就是我们所说的关联数组（associative array），也称做散列、映射或字典（dictionary）。JavaScript对象都是关联数组，本节将讨论它的重要性。
 
-在C、C++和Java和一些强类型(strong typed)语言中，对象只能拥有固定数目的属性，并且这些属性名称必须提前定义好。由于JavaScript是弱类型语言，因此不必遵循这条规定，在任何对象中程序都可以创建任意数量的属性。但当通过点运算符`.`访问对象的属性时，属性名用一个标识符来表示。标识符必须直接出现在JavaScript程序中，它们不是数据类型，因此程序无法修改它们。
+在C、C++和Java和一些强类型（strong typed）语言中，对象只能拥有固定数目的属性，并且这些属性名称必须提前定义好。由于JavaScript是弱类型语言，因此不必遵循这条规定，在任何对象中程序都可以创建任意数量的属性。但当通过点运算符`.`访问对象的属性时，属性名用一个标识符来表示。标识符必须直接出现在JavaScript程序中，它们不是数据类型，因此程序无法修改它们。
 
-反过来讲，当通过`[]`来访问对象的属性时，属性名通过字符串来表示。字符串是JavaScript的数据类型，在程序运行时可以修改和创建它们。因此，可以在JavaScript中使用下面这种代码：
+反过来讲，当通过`[]`来访问对象的属性时，属性名通过字符串来表示。字符串是 JavaScript 的数据类型，在程序运行时可以修改和创建它们。因此，可以在 JavaScript 中使用下面这种代码：
 
 ```js
 var addr = "";
@@ -3349,7 +3349,7 @@ function getvalue(protfolio) {
 
 ### 6.2.2 继承
 
-JavaScript对象具有“自有属性”（own property），也有一些属性是从原型对象继承而来的。为了更好地理解这种继承，必须更深入地了解属性访问的细节。本节中的许多示例代码借用了例6-1中的`inherit()`函数，通过给它传入指定原型对象来创建实例。
+JavaScript对象具有“自有属性”（own property），也有一些属性是从原型对象继承而来的。为了更好地理解这种继承，必须更深入地了解属性访问的细节。本节中的许多示例代码借用了例 6.1 中的`inherit()`函数，通过给它传入指定原型对象来创建实例。
 
 假设要查询对象o的属性x，如果o中不存在x，那么将会继续在o的原型对象中查询属性x。如果原型对象中也没有x，但这个原型对象也有原型，那么继续在这个原型对象的原型上执行查询，直到找到x或者查找到一个原型是 null 的对象为止。可以看到，对象的原型属性构成了一个“链”，通过这个“链”可以实现属性的继承。
 
@@ -3553,7 +3553,7 @@ for(p in o)  // 遍历属性
 console.log(p);   // 输出x、y和z 不会输出toString
 ```
 
-有许多实用工具库给Object.prototype添加了新的方法或属性，这些方法和属性可以被所有对象继承并使用。然而在ECMAScript 5标准之前，这些新添加的方法是不能定义为不可枚举的，因此它们都可以在for/in循环中枚举出来。为了避免这种情况，需要过滤for/in循环返回的属性，下面两种方式是最常见的：
+有许多实用工具库给`Object.prototype`添加了新的方法或属性，这些方法和属性可以被所有对象继承并使用。然而在ECMAScript 5标准之前，这些新添加的方法是不能定义为不可枚举的，因此它们都可以在for/in循环中枚举出来。为了避免这种情况，需要过滤for/in循环返回的属性，下面两种方式是最常见的：
 
 ```js
  for(p in o){
@@ -3572,18 +3572,17 @@ for(p in o){
 *如果o和p中含有同名属性，则覆盖o中的属性
 *这个函数并不处理getter和setter以及复制属性
 */
-
 function extend(o, p) {
   for (prop in p) { //遍历p中所有的属性
     o[prop] = p[prop]; //将遍历属性添加至o中
   }
   return o;
 }
+
 /*将p中可枚举的属性复制至o中，并返回o
 * 如果o和p有同名属性，o中的属性将不受影响
 * 这个函数并不处理getter和setter以及复制属性
 */
-
 function merge(o, p) {
   for (prop in p) { //遍历p中所有的元素
     if (o.hasOwnProperty[prop]) continue; //过滤掉已在o中存在的属性
@@ -3644,11 +3643,11 @@ function keys(o) {
 }
 ```
 
-除了for/in循环之外，ECMAScript 5定义了两个用以枚举属性名称的函数。第一个是`Object.keys()`，它返回一个数组，这个数组由对象中可枚举的自有属性的名称组成，它的工作原理和例6-2中的工具函数`keys()`类似。ECMAScript 5中第二个枚举属性的函数是`Object.getOwnPropertyNames()`，它和`Ojbect.keys()`类似，只是它返回对象的所有自有属性的名称，而不仅仅是可枚举的属性。在ECMAScript 3中是无法实现的类似的函数的，因为ECMAScript3中没有提供任何方法来获取对象不可枚举的属性。
+除了for/in循环之外，ECMAScript 5定义了两个用以枚举属性名称的函数。第一个是`Object.keys()`，它返回一个数组，这个数组由对象中可枚举的自有属性的名称组成，它的工作原理和例6-2中的工具函数`keys()`类似。ECMAScript 5中第二个枚举属性的函数是`Object.getOwnPropertyNames()`，它和`Ojbect.keys()`类似，只是它返回对象的所有自有属性的名称，而不仅仅是可枚举的属性。在ECMAScript 3中是无法实现的类似的函数的，因为 ECMAScript 3 中没有提供任何方法来获取对象不可枚举的属性。
 
 ## 6.6 属性getter和setter 
 
-我们知道，对象属性是由名字、值和一组特性（attribute）构成的。在ECMAScript 5中，属性值可以用一个或两个方法替代，这两个方法就是getter和setter。由getter和setter定义的属性称做“存取器属性”（accessorproperty），它不同于“数据属性”（data property），数据属性只有一个简单的值。
+对象属性是由名字、值和一组特性（attribute）构成的。在ECMAScript 5中，属性值可以用一个或两个方法替代，这两个方法就是getter和setter。由getter和setter定义的属性称做“存取器属性”（accessorproperty），它不同于“数据属性”（data property），数据属性只有一个简单的值。
 
 当程序查询存取器属性的值时，JavaScript调用getter方法（无参数）。这个方法的返回值就是属性存取表达式的值。当程序设置一个存取器属性的值时，JavaScript调用setter方法，将赋值表达式右侧的值当做参数传入setter。从某种意义上讲，这个方法负责“设置”属性值。可以忽略setter方法的返回值。
 
@@ -3746,14 +3745,14 @@ var random = {
 
 ## 6.7 属性的特性 
 
-除了包含名字和值之外，属性还包含一些标识它们可写、可枚举和可配置的特性。在ECMAScript 3中无法设置这些特性，所有通过 ECMAScript 3 的程序创建的属性都是可写的、可枚举的和可配置的，且无法对这些特性做修改。本节将讲述ECMAScript5中查询和设置这些属性特性的API。这些API对于库的开发者来说非常重要，因为：
+除了包含名字和值之外，属性还包含一些标识它们可写、可枚举和可配置的特性。在 ECMAScript 3 中无法设置这些特性，所有通过 ECMAScript 3 的程序创建的属性都是可写的、可枚举的和可配置的，且无法对这些特性做修改。本节将讲述 ECMAScript 5 中查询和设置这些属性特性的API。这些API对于库的开发者来说非常重要，因为：
 
 - 可以通过这些API给原型对象添加方法，并将它们设置成不可枚举的，这让它们看起来更像内置方法。
 - 可以通过这些API给对象定义不能修改或删除的属性，借此“锁定”这个对象。
 
-在本节里，我们将存取器属性的getter和setter方法看成是属性的特性。按照这个逻辑，我们也可以把数据属性的值同样看做属性的特性。因此，可以认为一个属性包含一个名字和4个特性。数据属性的4个特性分别是它的值（value）、可写性（writable）、可枚举性（enumerable）和可配置性（configurable）。存取器属性不具有值（value）特性和可写性，它们的可写性是由setter方法存在与否决定的。因此存取器属性的4个特性是读取（get）、写入（set）、可枚举性和可配置性。
+在本节里，我们将存取器属性的 getter 和 setter 方法看成是属性的特性。按照这个逻辑，我们也可以把数据属性的值同样看做属性的特性。因此，可以认为一个属性包含一个名字和4个特性。数据属性的4个特性分别是它的值（value）、可写性（writable）、可枚举性（enumerable）和可配置性（configurable）。存取器属性不具有值（value）特性和可写性，它们的可写性是由 setter 方法存在与否决定的。因此存取器属性的4个特性是读取（get）、写入（set）、可枚举性和可配置性。
 
-为了实现属性特性的查询和设置操作，ECMAScript 5中定义了一个名为“属性描述符”（property descriptor）的对象，这个对象代表那4个特性。描述符对象的属性和它们所描述的属性特性是同名的。因此，数据属性的描述符对象的属性有value、writable、enumerable和configurable。存取器属性的描述符对象则用get属性和set属性代替value和writable。其中writable、enumerable和configurable都是布尔值，当然，get属性和set属性是函数值。
+为了实现属性特性的查询和设置操作，ECMAScript 5中定义了一个名为“属性描述符”（property descriptor）的对象，这个对象代表那4个特性。描述符对象的属性和它们所描述的属性特性是同名的。因此，数据属性的描述符对象的属性有 value 、 writable 、 enumerable 和 configurable 。存取器属性的描述符对象则用 get 属性和 set 属性代替 value 和 writable 。其中writable、enumerable和configurable都是布尔值，当然，get属性和set属性是函数值。
 
 通过调用`Object.getOwnPropertyDescriptor()`可以获得某个对象特定属性的属性描述符：
 
@@ -3775,30 +3774,45 @@ Object.getOwnPropertyDescriptor({}, "toString"); //undefined 继承属性
 要想设置属性的特性，或者想让新建属性具有某种特性，则需要调用`Object.definePeoperty()`，传入要修改的对象、要创建或修改的属性的名称以及属性描述符对象：
 
 ```js
-var o = {}; //空对象
-//添加一个不可枚举的数据属性x，并赋值1
-Object.defineProperty(o,"x",{value:1,writable:true,enumerable:false,configurable:true});
+// 空对象
+var o = {}; 
+// 添加一个不可枚举的数据属性x，并赋值1
+Object.defineProperty(o, "x", {
+  value:1,
+  writable:true,
+  enumerable:false,
+  configurable:true
+});
 // {value: 1, writable: true, enumerable: false, configurable: true}
-Object.getOwnPropertyDescriptor(o,"x");
+Object.getOwnPropertyDescriptor(o, "x");
 
-//属性是存在的，但不可枚举
-o.x; //=> 1
-Object.keys(o) //=> [];
+// 属性是存在的，但不可枚举
+o.x; // => 1
+Object.keys(o) // => [];
 
-//现在对属性x修改，让它只变为只读
-Object.defineProperty(o,"x",{writable:false});
+// 现在对属性x修改，让它只变为只读
+Object.defineProperty(o, "x", {
+  writable:false
+});
 
-//试图改变这个属性的值
-o.x=2; //操作失败但不报错，严格模式中会抛出类型错误的异常
-o.x //=> 1
+// 试图改变这个属性的值
+// 操作失败但不报错，严格模式中会抛出类型错误的异常
+o.x = 2; 
+o.x // => 1
 
-//属性依然是可配置的，因此可以通过这样的方式进行修改：
-Object.defineProperty(o,"x",{value:2});
-o.x //=>2
+// 属性依然是可配置的，因此可以通过这样的方式进行修改：
+Object.defineProperty(o, "x", {
+  value:2
+});
+o.x // =>2
 
-//现在讲x从数据属性修改为存取器属性
-Object.defineProperty(o,"x",{get: function(){return 9;} });
-o.x //=>9
+// 现在讲x从数据属性修改为存取器属性
+Object.defineProperty(o, "x", {
+  get: function(){
+    return 9;
+  } 
+});
+o.x // =>9
 ```
 
 传入`Object.defineProperty()`的属性描述符对象不必包含所有4个特性。对于新创建的属性来说，默认的特性值是false或undefined。对于修改的已有属性来说，默认的特性值没有做任何修改。注意，这个方法要么修改已有属性要么新建自有属性，但不能修改继承属性。
@@ -3810,15 +3824,15 @@ var p = Object.defineProperties({},{
   x: {value:1, writable:true, enumerable:true, configurable:true},
   y: {value:1, writable:true, enumerable:true, configurable:true},
   r: {
-      get: function(){
-        return Math.sqrt(this.x*this.x + this.y*this.y)},enumerable:true,configurable:true
+    get: function(){
+      return Math.sqrt(this.x*this.x + this.y*this.y)},enumerable:true,configurable:true
   }
 });
 ```
 
 这段代码从一个空对象开始，然后给它添加两个数据属性和一个只读存取器属性。最终`Object.defineProperties()`返回修改后的对象（和`Object.defineProperty()`一样）。
 
-对于那些不允许创建或修改的属性来说，如果用`Object.defineProperty()`和`Object. defineProperties()`对其操作（新建或修改）就会抛出类型错误异常，比如，给一个不可扩展的对象新增属性就会抛出类型错误异常。造成这些方法抛出类型错误异常的其他原因则和特性本身相关。可写性控制着对值特性的修改。可配置性控制着对其他特性（包括属性是否可以删除）的修改。然而规则远不止这么简单，例如，如果属性是可配置的话，则可以修改不可写属性的值。同样，如果属性是不可配置的，仍然可以将可写属性修改为不可写属性。下面是完整的规则，任何对Object. defineProperty()或`Object.defineProperties()`违反规则的使用都会抛出类型错误异常：
+对于那些不允许创建或修改的属性来说，如果用`Object.defineProperty()`和`Object.defineProperties()`对其操作（新建或修改）就会抛出类型错误异常，比如，给一个不可扩展的对象新增属性就会抛出类型错误异常。造成这些方法抛出类型错误异常的其他原因则和特性本身相关。可写性控制着对值特性的修改。可配置性控制着对其他特性（包括属性是否可以删除）的修改。然而规则远不止这么简单，例如，如果属性是可配置的话，则可以修改不可写属性的值。同样，如果属性是不可配置的，仍然可以将可写属性修改为不可写属性。下面是完整的规则，任何对`Object. defineProperty()`或`Object.defineProperties()`违反规则的使用都会抛出类型错误异常：
 
 - 如果对象是不可扩展的，则可以编辑已有的自有属性，但不能给它添加新属性。
 - 如果属性是不可配置的，则不能修改它的可配置性和可枚举性。
@@ -3927,9 +3941,9 @@ classOf(new f())  // => "Object"
 
 ### 6.8.3 可扩展性
 
-对象的可扩展性用以表示是否可以给对象添加新属性。所有内置对象和自定义对象都是显式可扩展的，宿主对象的可扩展性是由JavaScript引擎定义的。在ECMAScript 5中，所有的内置对象和自定义对象都是可扩展的，除非将它们转换为不可扩展的，同样，宿主对象的可扩展性也是由实现ECMAScript5的JavaScript引擎定义的。
+对象的可扩展性用以表示是否可以给对象添加新属性。所有内置对象和自定义对象都是显式可扩展的，宿主对象的可扩展性是由 JavaScript 引擎定义的。在ECMAScript 5中，所有的内置对象和自定义对象都是可扩展的，除非将它们转换为不可扩展的，同样，宿主对象的可扩展性也是由实现 ECMAScript 5 的 JavaScript 引擎定义的。
 
-ECMAScript 5定义了用来查询和设置对象可扩展性的函数。通过将对象传入`Object.esExtensible()`，来判断该对象是否是可扩展的。如果想将对象转换为不可扩展的，需要调用`Object.preventExtensions()`，将待转换的对象作为参数传进去。注意，一旦将对象转换为不可扩展的，就无法再将其转换回可扩展的了。同样需要注意的是，`preventExtensions()`只影响到对象本身的可扩展性。如果给一个不可扩展的对象的原型添加属性，这个不可扩展的对象同样会继承这些新属性。
+ECMAScript 5 定义了用来查询和设置对象可扩展性的函数。通过将对象传入`Object.isExtensible()`，来判断该对象是否是可扩展的。如果想将对象转换为不可扩展的，需要调用`Object.preventExtensions()`，将待转换的对象作为参数传进去。注意，一旦将对象转换为不可扩展的，就无法再将其转换回可扩展的了。同样需要注意的是，`preventExtensions()`只影响到对象本身的可扩展性。如果给一个不可扩展的对象的原型添加属性，这个不可扩展的对象同样会继承这些新属性。
 
 可扩展属性的目的是将对象“锁定”，以避免外界的干扰。对象的可扩展性通常和属性的可配值性与可写性配合使用，ECMAScript 5定义的一些函数可以更方便地设置多种属性。
 
