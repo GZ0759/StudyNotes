@@ -3658,7 +3658,7 @@ function keys(o) {
 ```js
 var o = { 
   // 普通数据属性
-  data_prop: value;
+  data_prop: value,
 
   // 存取器属性都是成对定义的函数
   get accessor_prop() { /*这里是函数体*/ },
@@ -3974,7 +3974,7 @@ s = JSON.stringify(o);
 p = JSON.parse(s) 
 ```
 
-JSON的语法是JavaScript语法的子集，它并不能表示JavaScript里的所有值。支持对象、数组、字符串、无穷大数字、true、false和null，并且它们可以序列化和还原。NaN、Infinity和-Infinity序列化的结果是null，日期对象序列化的结果是ISO格式的日期字符串（参照`Date.toJSON()`函数），但`JSON.parse()`依然保留它们的字符串形态，而不会将它们还原为原始日期对象。函数、RegExp、Error对象和undefined值不能序列化和还原。`JSON.stringify()`只能序列化对象可枚举的自有属性。对于一个不能序列化的属性来说，在序列化后的输出字符串中会将这个属性省略掉。`JSON.stringify()`和`JSON.parse()`都可以接收第二个可选参数，通过传入需要序列化或还原的属性列表来定制自定义的序列化或还原操作
+JSON的语法是JavaScript语法的子集，它并不能表示JavaScript里的所有值。支持对象、数组、字符串、无穷大数字、true、false和null，并且它们可以序列化和还原。NaN、Infinity和-Infinity序列化的结果是null，日期对象序列化的结果是ISO格式的日期字符串（参照`Date.toJSON()`函数），但`JSON.parse()`依然保留它们的字符串形态，而不会将它们还原为原始日期对象。函数、RegExp、Error对象和undefined值不能序列化和还原。`JSON.stringify()`只能序列化对象可枚举的自有属性。对于一个不能序列化的属性来说，在序列化后的输出字符串中会将这个属性省略掉。`JSON.stringify()`和`JSON.parse()`都可以接收第二个可选参数，通过传入需要序列化或还原的属性列表来定制自定义的序列化或还原操作。
 
 ## 6.10 对象方法 
 
