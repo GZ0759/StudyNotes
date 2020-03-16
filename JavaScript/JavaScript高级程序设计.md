@@ -5142,40 +5142,559 @@ if (element.tagName.toLowerCase() == "div"){ //这样最好（适用于任何文
 > 可以在任何浏览器中通过脚本访问 Element 类型的构造函数及原型，包括 IE8 及
 之前版本。在 Safari 2 之前版本和 Opera 8 之前的版本中，不能访问 Element 类型的构造函数。
 
+**2. 取得特性**
 
+每个元素都有一或多个特性，这些特性的用途是给出相应元素或其内容的附加信息。操作特性的DOM 方法主要有三个，分别是`getAttribute()`、 `setAttribute()`和 `removeAttribute()`。这三个方法可以针对任何特性使用，包括那些以 HTMLElement 类型属性的形式定义的特性。来看下面的例子：
 
+```js
+var div = document.getElementById("myDiv");
+alert(div.getAttribute("id")); //"myDiv"
+alert(div.getAttribute("class")); //"bd"
+alert(div.getAttribute("title")); //"Body text"
+alert(div.getAttribute("lang")); //"en"
+alert(div.getAttribute("dir")); //"ltr"
+```
 
-取得特性。每个元素都有一或多个特性，这些特性的用途是给出相应元素或其内容的附加信息，操作特性的DOM方法主要有三个，分别是getAttribute()、setAttribute()和removeAttribute()，通过第一个方法可以取得存在或自定义特性的值，但是注意特性的名称是不区分大小写的。有两类特殊的特性，它们虽然有对应的属性名，但属性的值与通过getAttribute()返回的值并不相同，第一类就是style，用于通过CSS为元素指定样式，前者是对象，后者是返回CSS文本；第二类是onclick这样的事件处理程序，前者是JavaScript函数，而后者返回的是相应代码的字符串。
+注意，传递给`getAttribute()`的特性名与实际的特性名相同。因此要想得到 class 特性值，应该传入"class"而不是"className"，后者只有在通过对象属性访问特性时才用。如果给定名称的特性不存在， `getAttribute()`返回 null。通过 `getAttribute()`方法也可以取得自定义特性（即标准 HTML 语言中没有的特性）的值，以下面的元素为例：
 
-attributes属性。Element类型是使用attributes属性的唯一一个DOM节点类型。这个属性包含一个NamedNodeMap，与NodeList类似，也是一个“动态”的集合。一般attributes属性可以用来遍历元素的特性。
+```html
+<div id="myDiv" my_special_attribute="hello!"></div>
+```
 
-创建元素。使用document.creatElement()方法可以创建新元素。这个方法只接受一个参数，即要创建元素的标签名。它同时也为新元素设置了ownerDocument属性，此时可以操作元素的特性，为它添加更多子节点。
+这个元素包含一个名为 my_special_attribute 的自定义特性，它的值是"hello!"。可以像取得其他特性一样取得这个值，如下所示：
 
-元素可以有任意数目的子节点和后代节点，元素的childNodes属性中包含了它的所有子节点，这些子节点有可能是元素、文本节点、注释或处理指令。如果元素之间有空白符，也算做文本节点，因此执行某项操作以前，通常都要先检查一下nodeType属性。
+```js
+var value = div.getAttribute("my_special_attribute");
+```
+
+不过，特性的名称是不区分大小写的，即"ID"和"id"代表的都是同一个特性。另外也要注意，根据 HTML5 规范，自定义特性应该加上 data-前缀以便验证。任何元素的所有特性，也都可以通过 DOM 元素本身的属性来访问。当然， HTMLElement 也会有 5 个属性与相应的特性一一对应。不过，只有公认的（非自定义的）特性才会以属性的形式添加到 DOM 对象中。以下面的元素为例：
+
+```js
+<div id="myDiv" align="left" my_special_attribute="hello!"></div>
+```
+
+因为 id 和 align 在 HTML 中是`<div>`的公认特性，因此该元素的 DOM 对象中也将存在对应的属性。不过，自定义特性 my_special_attribute 在 Safari、 Opera、 Chrome 及 Firefox 中是不存在的；但 IE 却会为自定义特性也创建属性，如下面的例子所示：
+
+```js
+alert(div.id); //"myDiv"
+alert(div.my_special_attribute); //undefined（ IE 除外）
+alert(div.align); //"left"
+```
+
+有两类特殊的特性，它们虽然有对应的属性名，但属性的值与通过`getAttribute()`返回的值并不相同。第一类特性就是 style，用于通过 CSS 为元素指定样式。在通过`getAttribute()`访问时，返回的 style 特性值中包含的是 CSS 文本，而通过属性来访问它则会返回一个对象。由于 style 属性是用于以编程方式访问元素样式的（本章后面讨论），因此并没有直接映射到 style 特性。
+
+第二类与众不同的特性是 onclick 这样的事件处理程序。当在元素上使用时， onclick 特性中包含的是 JavaScript 代码，如果通过`getAttribute()`访问，则会返回相应代码的字符串。而在访问 onclick 属性时，则会返回一个 JavaScript 函数（如果未在元素中指定相应特性，则返回 null）。这是因为 onclick 及其他事件处理程序属性本身就应该被赋予函数值。
+
+由于存在这些差别，在通过 JavaScript 以编程方式操作 DOM 时，开发人员经常不使用`getAttribute()`，而是只使用对象的属性。只有在取得自定义特性值的情况下，才会使用`getAttribute()`方法。在 IE7 及以前版本中，通过`getAttribute()`方法访问 style 特性或 onclick 这样的事件处理特性时，返回的值与属性的值相同。换句话说， `getAttribute("style")`返回一个对象，而` getAttribute("onclick")`返回一个函数。虽然 IE8 已经修复了这个bug，但不同IE版本间的不一致性，也是导致开发人员不使`getAttribute()`访问HTML特性的一个原因。
+
+**3. 设置特性**
+
+与 `getAttribute()`对应的方法是 `setAttribute()`，这个方法接受两个参数：要设置的特性名和值。如果特性已经存在，`setAttribute()`会以指定的值替换现有的值；如果特性不存在，`setAttribute()`则创建该属性并设置相应的值。来看下面的例子：
+
+```js
+div.setAttribute("id", "someOtherId");
+div.setAttribute("class", "ft");
+div.setAttribute("title", "Some other text");
+div.setAttribute("lang","fr");
+div.setAttribute("dir", "rtl");
+```
+
+通过 `setAttribute()`方法既可以操作 HTML 特性也可以操作自定义特性。通过这个方法设置的特性名会被统一转换为小写形式，即"ID"最终会变成"id"。
+
+因为所有特性都是属性，所以直接给属性赋值可以设置特性的值，如下所示。
+
+```js
+div.id = "someOtherId";
+div.align = "left";
+```
+
+不过，像下面这样为 DOM 元素添加一个自定义的属性，该属性不会自动成为元素的特性。
+
+```js
+div.mycolor = "red";
+alert(div.getAttribute("mycolor")); //null（ IE 除外）
+```
+
+这个例子添加了一个名为 mycolor 的属性并将它的值设置为"red"。在大多数浏览器中，这个属性都不会自动变成元素的特性，因此想通过 `getAttribute()`取得同名特性的值，结果会返回 null。可是，自定义属性在 IE 中会被当作元素的特性，反之亦然。
+
+> 在 IE7 及以前版本中，`setAttribute()`存在一些异常行为。通过这个方法设置 class 和 style 特性，没有任何效果，而使用这个方法设置事件处理程序特性时也一样。尽管到了 IE8 才解决这些问题，但我们还是推荐通过属性来设置特性。
+
+要介绍的最后一个方法是 `removeAttribute()`，这个方法用于彻底删除元素的特性。调用这个方法不仅会清除特性的值，而且也会从元素中完全删除特性，如下所示：
+
+```js
+div.removeAttribute("class");
+```
+
+这个方法并不常用，但在序列化 DOM 元素时，可以通过它来确切地指定要包含哪些特性。
+
+> IE6 及以前版本不支持 `removeAttribute()`。
+
+**4. attributes 属性**
+
+Element 类型是使用 attributes 属性的唯一一个 DOM 节点类型。attributes 属性中包含一个 NamedNodeMap ，与 NodeList 类似，也是一个“动态”的集合。元素的每一个特性都由一个 Attr 节点表示，每个节点都保存在 NamedNodeMap 对象中。 NamedNodeMap 对象拥有下列方法。
+
+- getNamedItem(name)：返回 nodeName 属性等于 name 的节点；
+- removeNamedItem(name)：从列表中移除 nodeName 属性等于 name 的节点；
+- setNamedItem(node)：向列表中添加节点，以节点的 nodeName 属性为索引；
+- item(pos)：返回位于数字 pos 位置处的节点。
+
+attributes 属性中包含一系列节点，每个节点的 nodeName 就是特性的名称， 而节点的 nodeValue 就是特性的值。要取得元素的 id 特性，可以使用以下代码。
+
+```js
+var id = element.attributes.getNamedItem("id").nodeValue;
+```
+
+以下是使用方括号语法通过特性名称访问节点的简写方式。
+
+```js
+var id = element.attributes["id"].nodeValue;
+```
+
+也可以使用这种语法来设置特性的值，即先取得特性节点，然后再将其 nodeValue 设置为新值，如下所示。
+
+```js
+element.attributes["id"].nodeValue = "someOtherId";
+```
+
+调用 `removeNamedItem()`方法与在元素上调用 `removeAttribute()`方法的效果相同——直接删除具有给定名称的特性。下面的例子展示了两个方法间唯一的区别，即 `removeNamedItem()`返回表示被删除特性的 Attr 节点。
+
+```js
+var oldAttr = element.attributes.removeNamedItem("id");
+```
+
+最后， `setNamedItem()`是一个很不常用的方法，通过这个方法可以为元素添加一个新特性，为此需要为它传入一个特性节点，如下所示。
+
+```js
+element.attributes.setNamedItem(newAttr);
+```
+
+一般来说，由于前面介绍的 attributes 的方法不够方便，因此开发人员更多的会使用`getAttribute()`、`removeAttribute()`和`setAttribute()`方法。
+
+不过，如果想要遍历元素的特性， attributes 属性倒是可以派上用场。在需要将 DOM 结构序列化为 XML 或 HTML 字符串时，多数都会涉及遍历元素特性。以下代码展示了如何迭代元素的每一个特性，然后将它们构造成`name="value" name="value"`这样的字符串格式。
+
+```js
+function outputAttributes(element){
+  var pairs = new Array(),
+  attrName,
+  attrValue,
+  i,
+  len;
+  for (i=0, len=element.attributes.length; i < len; i++){
+    attrName = element.attributes[i].nodeName;
+    attrValue = element.attributes[i].nodeValue;
+    pairs.push(attrName + "=\"" + attrValue + "\"");
+  }
+  return pairs.join(" ");
+}
+```
+
+这个函数使用了一个数组来保存名值对，最后再以空格为分隔符将它们拼接起来（这是序列化长字符串时的一种常用技巧）。通过` attributes.length` 属性， for 循环会遍历每个特性，将特性的名称和值输出为字符串。关于以上代码的运行结果，以下是两点必要的说明。
+
+- 针对 attributes 对象中的特性，不同浏览器返回的顺序不同。这些特性在 XML 或 HTML 代码中出现的先后顺序，不一定与它们出现在 attributes 对象中的顺序一致。
+- IE7 及更早的版本会返回 HTML 元素中所有可能的特性，包括没有指定的特性。换句话说，返回 100 多个特性的情况会很常见。
+
+针对 IE7 及更早版本中存在的问题，可以对上面的函数加以改进，让它只返回指定的特性。每个特性节点都有一个名为 specified 的属性，这个属性的值如果为 true，则意味着要么是在 HTML 中指定了相应特性，要么是通过`setAttribute()`方法设置了该特性。在 IE 中，所有未设置过的特性的该属性值都为 false，而在其他浏览器中根本不会为这类特性生成对应的特性节点（因此，在这些浏览器中，任何特性节点的 specified 值始终为 true）。改进后的代码如下所示。
+
+```js
+function outputAttributes(element){
+  var pairs = new Array(),
+  attrName,
+  attrValue,
+  i,
+  len;
+  for (i=0, len=element.attributes.length; i < len; i++){
+    attrName = element.attributes[i].nodeName;
+    attrValue = element.attributes[i].nodeValue;
+    if (element.attributes[i].specified) {
+      pairs.push(attrName + "=\"" + attrValue + "\"");
+    }
+  }
+  return pairs.join(" ");
+}
+```
+
+这个经过改进的函数可以确保即使在 IE7 及更早的版本中，也会只返回指定的特性。
+
+**5. 创建元素**
+
+使用`document.createElement()`方法可以创建新元素。这个方法只接受一个参数，即要创建元素的标签名。这个标签名在 HTML 文档中不区分大小写，而在 XML（包括 XHTML）文档中，则是区分大小写的。例如，使用下面的代码可以创建一个`<div>`元素。
+
+```js
+var div = document.createElement("div");
+```
+
+在使用`createElement()`方法创建新元素的同时，也为新元素设置了 ownerDocuemnt 属性。此时，还可以操作元素的特性，为它添加更多子节点，以及执行其他操作。来看下面的例子。
+
+```js
+div.id = "myNewDiv";
+div.className = "box";
+```
+
+在新元素上设置这些特性只是给它们赋予了相应的信息。由于新元素尚未被添加到文档树中，因此设置这些特性不会影响浏览器的显示。要把新元素添加到文档树，可以使用`appendChild()`、`insertBefore()`或`replaceChild()`方法。下面的代码会把新创建的元素添加到文档的`<body>`元素中。
+
+```js
+document.body.appendChild(div);
+```
+
+一旦将元素添加到文档树中，浏览器就会立即呈现该元素。此后，对这个元素所作的任何修改都会实时反映在浏览器中。
+
+在 IE 中可以以另一种方式使用`createElement()`，即为这个方法传入完整的元素标签，也可以包含属性，如下面的例子所示。
+
+```js
+var div = document.createElement("<div id=\"myNewDiv\" class=\"box\"></div >");
+```
+
+这种方式有助于避开在 IE7 及更早版本中动态创建元素的某些问题。下面是已知的一些这类问题。
+
+- 不能设置动态创建的`<iframe>`元素的 name 特性。
+- 不能通过表单的`reset()`方法重设动态创建的`<input>`元素（第 13 章将讨论`reset()`方法）
+- 动态创建的 type 特性值为"reset"的`<buttou>`元素重设不了表单。
+- 动态创建的一批 name 相同的单选按钮彼此毫无关系。 name 值相同的一组单选按钮本来应该用于表示同一选项的不同值，但动态创建的一批这种单选按钮之间却没有这种关系。
+
+上述所有问题都可以通过在`createElement()`中指定完整的 HTML 标签来解决，如下面的例子所示。
+
+```js
+if (client.browser.ie && client.browser.ie <=7){
+  //创建一个带 name 特性的 iframe 元素
+  var iframe = document.createElement("<iframe name=\"myframe\"></iframe>");
+
+  //创建 input 元素
+  var input = document.createElement("<input type=\"checkbox\">");
+
+  //创建 button 元素
+  var button = document.createElement("<button type=\"reset\"></button>");
+
+  //创建单选按钮
+  var radio1 = document.createElement("<input type=\"radio\" name=\"choice\" "＋
+  "value=\"1\">");
+  var radio2 = document.createElement("<input type=\"radio\" name=\"choice\" "＋
+  "value=\"2\">");
+}
+```
+
+与使用`createElement()`的惯常方式一样，这样的用法也会返回一个 DOM 元素的引用。可以将这个引用添加到文档中，也可以对其加以增强。但是，由于这样的用法要求使用浏览器检测，因此我们建议只在需要避开 IE 及更早版本中上述某个问题的情况下使用。其他浏览器都不支持这种用法。
+
+**6. 元素的子节点**
+
+元素可以有任意数目的子节点和后代节点，因为元素可以是其他元素的子节点。元素的childNodes 属性中包含了它的所有子节点，这些子节点有可能是元素、文本节点、注释或处理指令。
+
+不同浏览器在看待这些节点方面存在显著的不同，以下面的代码为例。
+
+```html
+<ul id="myList">
+  <li>Item 1</li>
+  <li>Item 2</li>
+  <li>Item 3</li>
+</ul>
+```
+
+如果是 IE 来解析这些代码，那么`<ul>`元素会有 3 个子节点，分别是 3 个`<li>`元素。但如果是在其他浏览器中， `<ul>`元素都会有 7 个元素，包括 3 个`<li>`元素和 4 个文本节点（表示`<li>`元素之间的空白符）。如果像下面这样将元素间的空白符删除，那么所有浏览器都会返回相同数目的子节点。
+
+```js
+<ul id="myList"><li>Item 1</li><li>Item 2</li><li>Item 3</li></ul>
+```
+
+对于这段代码，`<ul>`元素在任何浏览器中都会包含 3 个子节点。如果需要通过 childNodes 属性遍历子节点，那么一定不要忘记浏览器间的这一差别。这意味着在执行某项操作以前，通常都要先检查一下 nodeTpye 属性，如下面的例子所示。
+
+```js
+for (var i=0, len=element.childNodes.length; i < len; i++){
+  if (element.childNodes[i].nodeType == 1){
+    //执行某些操作
+  }
+}
+```
+
+这个例子会循环遍历特定元素的每一个子节点，然后只在子节点的 nodeType 等于 1（表示是元素节点）的情况下，才会执行某些操作。
+
+如果想通过某个特定的标签名取得子节点或后代节点该怎么办呢？实际上，元素也支持`getElementsByTagName()`方法。在通过元素调用这个方法时，除了搜索起点是当前元素之外，其他方面都跟通过 document 调用这个方法相同，因此结果只会返回当前元素的后代。例如，要想取得前面`<ul>`元素中包含的所有`<li>`元素，可以使用下列代码。
+
+```js
+var ul = document.getElementById("myList");
+var items = ul.getElementsByTagName("li");
+```
+
+要注意的是，这里`<ul>`的后代中只包含直接子元素。不过，如果它包含更多层次的后代元素，那么各个层次中包含的`<li>`元素也都会返回。
 
 ### 10.1.4 Text类型
 
-文本节点由Text类型标识，包含的是可以按照自勉解释得纯文本内容。纯文本中可以包含转义后的HTML字符，但不能包含HTML代码。可以使用Document.createTextNode()创建新文本节点，这个方法接受一个参数，即要插入节点的文本，与设置已有文本节点的值一样（使用nodeValue属性），作为参数的文本也将按照HTML或XML的格式进行编码。一个能够将相邻文本节点合并的方法normalize()，结果节点的nodeValue等于将合并前每个文本节点的nodeValue值拼接起来的值。浏览器在解析文档时永远不会创建相邻的文本节点，合并的情况只会作为执行DOM操作的结果出现。Text类型提供了一个作用与合并节点相反的方法：splitText()，这个方法会将一个文本节点分成两个文本节点。
+文本节点由 Text 类型表示，包含的是可以照字面解释的纯文本内容。纯文本中可以包含转义后的 HTML 字符，但不能包含 HTML 代码。 Text 节点具有以下特征：
+
+- nodeType 的值为 3；
+- nodeName 的值为"#text"；
+- nodeValue 的值为节点所包含的文本；
+- parentNode 是一个 Element；
+- 不支持（没有）子节点。
+
+可以通过 nodeValue 属性或 data 属性访问 Text 节点中包含的文本，这两个属性中包含的值相同。对 nodeValue 的修改也会通过 data 反映出来，反之亦然。使用下列方法可以操作节点中的文本。
+
+- `appendData(text)`：将 text 添加到节点的末尾。
+- `deleteData(offset, count)`：从 offset 指定的位置开始删除 count 个字符。
+- `insertData(offset, text)`：在 offset 指定的位置插入 text。
+- `replaceData(offset, count, text)`：用 text 替换从 offset 指定的位置开始到 offset+count 为止处的文本。
+- `splitText(offset)`：从 offset 指定的位置将当前文本节点分成两个文本节点。
+- `substringData(offset, count)`：提取从 offset 指定的位置开始到 offset+count 为止处的字符串。
+
+除了这些方法之外，文本节点还有一个 length 属性，保存着节点中字符的数目。而且，`nodeValue.length` 和 `data.length` 中也保存着同样的值。
+
+在默认情况下，每个可以包含内容的元素最多只能有一个文本节点，而且必须确实有内容存在。来看几个例子。
+
+```html
+<!-- 没有内容，也就没有文本节点 -->
+<div></div>
+<!-- 有空格，因而有一个文本节点 -->
+<div> </div>
+<!-- 有内容，因而有一个文本节点 -->
+<div>Hello World!</div>
+```
+
+上面代码给出的第一个`<div>`元素没有内容，因此也就不存在文本节点。开始与结束标签之间只要存在内容，就会创建一个文本节点。因此，第二个`<div>`元素中虽然只包含一个空格，但仍然有一个文本子节点；文本节点的 nodeValue 值是一个空格。第三个`<div>`也有一个文本节点，其 nodeValue 的值为"Hello World!"。可以使用以下代码来访问这些文本子节点。
+
+```js
+var textNode = div.firstChild; //或者 div.childNodes[0]
+```
+
+在取得了文本节点的引用后，就可以像下面这样来修改它了。
+
+```js
+div.firstChild.nodeValue = "Some other message";
+```
+
+如果这个文本节点当前存在于文档树中，那么修改文本节点的结果就会立即得到反映。另外，在修改文本节点时还要注意，此时的字符串会经过 HTML（或 XML，取决于文档类型）编码。换句话说，小于号、大于号或引号都会像下面的例子一样被转义。
+
+```js
+//输出结果是"Some &lt;strong&gt;other&lt;/strong&gt; message"
+div.firstChild.nodeValue = "Some <strong>other</strong> message";
+```
+
+应该说，这是在向 DOM 文档中插入文本之前，先对其进行 HTML 编码的一种有效方式。
+
+> 在 IE8、 Firefox、 Safari、 Chrome 和 Opera 中，可以通过脚本访问 Text 类型的构造函数和原型。
+
+**1. 创建文本节点**
+
+可以使用 `document.createTextNode()`创建新文本节点，这个方法接受一个参数——要插入节点中的文本。与设置已有文本节点的值一样，作为参数的文本也将按照 HTML 或 XML 的格式进行编码。
+
+```js
+var textNode = document.createTextNode("<strong>Hello</strong> world!");
+```
+
+在创建新文本节点的同时，也会为其设置 ownerDocument 属性。不过，除非把新节点添加到文档树中已经存在的节点中，否则我们不会在浏览器窗口中看到新节点。下面的代码会创建一个`<div>`元素并向其中添加一条消息。
+
+```js
+var element = document.createElement("div");
+element.className = "message";
+var textNode = document.createTextNode("Hello world!");
+element.appendChild(textNode);
+document.body.appendChild(element);
+```
+
+这个例子创建了一个新`<div>`元素并为它指定了值为"message"的 class 特性。然后，又创建了一个文本节点，并将其添加到前面创建的元素中。最后一步，就是将这个元素添加到了文档的`<body>`元素中，这样就可以在浏览器中看到新创建的元素和文本节点了。
+
+一般情况下，每个元素只有一个文本子节点。不过，在某些情况下也可能包含多个文本子节点，如下面的例子所示。
+
+```js
+var element = document.createElement("div");
+element.className = "message";
+var textNode = document.createTextNode("Hello world!");
+element.appendChild(textNode);
+var anotherTextNode = document.createTextNode("Yippee!");
+element.appendChild(anotherTextNode);
+document.body.appendChild(element);
+```
+
+如果两个文本节点是相邻的同胞节点，那么这两个节点中的文本就会连起来显示，中间不会有空格。
+
+**2. 规范化文本节点**
+
+DOM 文档中存在相邻的同胞文本节点很容易导致混乱，因为分不清哪个文本节点表示哪个字符串。另外， DOM 文档中出现相邻文本节点的情况也不在少数，于是就催生了一个能够将相邻文本节点合并的方法。这个方法是由 Node 类型定义的（因而在所有节点类型中都存在），名叫 `normalize()`。如果在一个包含两个或多个文本节点的父元素上调用 `normalize()`方法，则会将所有文本节点合并成一个节点，结果节点的 nodeValue 等于将合并前每个文本节点的 nodeValue 值拼接起来的值。来看一个
+例子。
+
+```js
+var element = document.createElement("div");
+element.className = "message";
+var textNode = document.createTextNode("Hello world!");
+element.appendChild(textNode);
+var anotherTextNode = document.createTextNode("Yippee!");
+element.appendChild(anotherTextNode);
+document.body.appendChild(element);
+alert(element.childNodes.length); //2
+element.normalize();
+alert(element.childNodes.length); //1
+alert(element.firstChild.nodeValue); // "Hello world!Yippee!"
+```
+
+浏览器在解析文档时永远不会创建相邻的文本节点。这种情况只会作为执行 DOM 操作的结果出现。
+
+> 在某些情况下，执行 `normalize()`方法会导致 IE6 崩溃。不过，在 IE6 后来的补丁中，可能已经修复了这个问题（未经证实）。 IE7 及更高版本中不存在这个问题。
+
+**3. 分割文本节点**
+
+Text 类型提供了一个作用与 `normalize()`相反的方法：`splitText()`。这个方法会将一个文本节点分成两个文本节点，即按照指定的位置分割 nodeValue 值。原来的文本节点将包含从开始到指定位置之前的内容，新文本节点将包含剩下的文本。这个方法会返回一个新文本节点，该节点与原节点的 parentNode 相同。来看下面的例子。
+
+```js
+var element = document.createElement("div");
+element.className = "message";
+var textNode = document.createTextNode("Hello world!");
+element.appendChild(textNode);
+document.body.appendChild(element);
+
+var newNode = element.firstChild.splitText(5);
+alert(element.firstChild.nodeValue); //"Hello"
+alert(newNode.nodeValue); //" world!"
+alert(element.childNodes.length); //2
+```
+
+在这个例子中，包含"Hello world!"的文本节点被分割为两个文本节点，从位置 5 开始。位置 5是"Hello"和"world!"之间的空格，因此原来的文本节点将包含字符串"Hello"，而新文本节点将包含文本"world!"（包含空格）。
+
+分割文本节点是从文本节点中提取数据的一种常用 DOM 解析技术。
 
 ### 10.1.5 Comment类型
 
-注释在DOM中是通过Comment类型来表示的。这个类型和Text类型继承自相同的基类，因此它拥有除splitText()之外的所有字符串操作方法。
+注释在 DOM 中是通过 Comment 类型来表示的。 Comment 节点具有下列特征：
+
+- nodeType 的值为 8；
+- nodeName 的值为"#comment"；
+- nodeValue 的值是注释的内容；
+- parentNode 可能是 Document 或 Element；
+- 不支持（没有）子节点。
+
+Comment 类型与 Text 类型继承自相同的基类，因此它拥有除`splitText()`之外的所有字符串操作方法。与 Text 类型相似，也可以通过 nodeValue 或 data 属性来取得注释的内容。
+
+注释节点可以通过其父节点来访问，以下面的代码为例。
+
+```html
+<div id="myDiv"><!--A comment --></div>
+```
+
+在此，注释节点是`<div>`元素的一个子节点，因此可以通过下面的代码来访问它。
+
+```js
+var div = document.getElementById("myDiv");
+var comment = div.firstChild;
+alert(comment.data); //"A comment"
+```
+
+另外，使用 `document.createComment()`并为其传递注释文本也可以创建注释节点，如下面的例子所示。
+
+```js
+var comment = document.createComment("A comment ");
+```
+
+显然，开发人员很少会创建和访问注释节点，因为注释节点对算法鲜有影响。此外，浏览器也不会识别位于`</html>`标签后面的注释。如果要访问注释节点，一定要保证它们是`<html>`元素的后代（即位于`<html>`和`</html>`之间）。
+
+> 在 Firefox、 Safari、 Chrome 和 Opera 中，可以访问 Comment 类型的构造函数和原型。在 IE8 中，注释节点被视作标签名为"!"的元素。也就是说，使用`getElementsByTagName()`可以取得注释节点。尽管 IE9 没有把注释当成元素，但它仍然通过一个名为 HTMLCommentElement 的构造函数来表示注释。
 
 ### 10.1.6 CDATASection类型
 
-只针对基于XML的文档，表示的是CDATA区域。
+CDATASection 类型只针对基于 XML 的文档，表示的是 CDATA 区域。与 Comment 类似， CDATASection 类型继承自 Text 类型，因此拥有除`splitText()`之外的所有字符串操作方法。CDATASection 节点具有下列特征：
+
+- nodeType 的值为 4；
+- nodeName 的值为"#cdata-section"；
+- nodeValue 的值是 CDATA 区域中的内容；
+- parentNode 可能是 Document 或 Element；
+- 不支持（没有）子节点。
+
+CDATA 区域只会出现在 XML 文档中，因此多数浏览器都会把 CDATA 区域错误地解析为 Comment 或 Element。以下面的代码为例：
+
+```html
+<div id="myDiv"><![CDATA[This is some content.]]></div>
+```
+
+这个例子中的`<div>`元素应该包含一个 CDATASection 节点。可是，四大主流浏览器无一能够这样解析它。即使对于有效的 XHTML 页面，浏览器也没有正确地支持嵌入的 CDATA 区域。
+
+在真正的 XML 文档中，可以使用`document.createCDataSection()`来创建 CDATA 区域，只需为其传入节点的内容即可。
+
+> 在 Firefox、 Safari、 Chrome 和 Opera 中，可以访问 CDATASection 类型的构造函数和原型。 IE9 及之前版本不支持这个类型。
 
 ### 10.1.7 DocumentType类型
 
-包含着与文档的doctype有关的所有信息。在DOM1级中，DocumentType对象不能动态创建，只能通过解析文档代码的方式来创建。
+DocumentType 类型在 Web 浏览器中并不常用，仅有 Firefox、 Safari 和 Opera 支持它。 DocumentType 包含着与文档的 doctype 有关的所有信息，它具有下列特征：
+
+- nodeType 的值为 10；
+- nodeName 的值为 doctype 的名称；
+- nodeValue 的值为 null；
+- parentNode 是 Document；
+- 不支持（没有）子节点。
+
+在 DOM1 级中， DocumentType 对象不能动态创建，而只能通过解析文档代码的方式来创建。支持它的浏览器会把 DocumentType 对象保存在 `document.doctype` 中 。 DOM1 级描述了DocumentType 对象的 3 个属性： name、 entities 和 notations。其中， name 表示文档类型的名称；entities 是由文档类型描述的实体的 NamedNodeMap 对象； notations 是由文档类型描述的符号的NamedNodeMap 对象。通常，浏览器中的文档使用的都是 HTML 或 XHTML 文档类型，因而 entities和 notations 都是空列表（列表中的项来自行内文档类型声明）。但不管怎样，只有 name 属性是有用的。这个属性中保存的是文档类型的名称，也就是出现在`<!DOCTYPE`之后的文本。以下面严格型 HTML 4.01 的文档类型声明为例：
+
+```js
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+"http://www.w3.org/TR/html4/strict.dtd">
+```
+
+DocumentType 的 name 属性中保存的就是"HTML"：
+
+```js
+alert(document.doctype.name); //"HTML"
+```
+
+IE 及更早版本不支持 DocumentType，因此 `document.doctype` 的值始终都等于 null。可是，这些浏览器会把文档类型声明错误地解释为注释，并且为它创建一个注释节点。 IE9 会给`document.doctype`赋正确的对象，但仍然不支持访问 DocumentType 类型。
 
 ### 10.1.8 DocumentFragment类型
 
-在文档中没有对应的标记，是一种“轻量级”的文档，可以包含和控制节点，但不会像完整的文档那样占用额外的资源，执会作为一个“仓库”使用。
+在所有节点类型中，只有 DocumentFragment 在文档中没有对应的标记。 DOM 规定文档片段（document fragment）是一种“轻量级”的文档，可以包含和控制节点，但不会像完整的文档那样占用额外的资源。 DocumentFragment 节点具有下列特征：
+
+- nodeType 的值为 11；
+- nodeName 的值为"#document-fragment"；
+- nodeValue 的值为 null；
+- parentNode 的值为 null；
+- 子节点可以是 Element、 ProcessingInstruction、 Comment、 Text、 CDATASection 或 EntityReference。
+
+虽然不能把文档片段直接添加到文档中，但可以将它作为一个“仓库”来使用，即可以在里面保存将来可能会添加到文档中的节点。要创建文档片段，可以使用 `document.createDocumentFragment()`方法，如下所示：
+
+```js
+var fragment = document.createDocumentFragment();
+```
+
+文档片段继承了 Node 的所有方法，通常用于执行那些针对文档的 DOM 操作。如果将文档中的节点添加到文档片段中，就会从文档树中移除该节点，也不会从浏览器中再看到该节点。添加到文档片段中的新节点同样也不属于文档树。可以通过 `appendChild()`或 `insertBefore()`将文档片段中内容添加到文档中。在将文档片段作为参数传递给这两个方法时，实际上只会将文档片段的所有子节点添加到相应位置上；文档片段本身永远不会成为文档树的一部分。来看下面的 HTML 示例代码：
+
+```js
+<ul id="myList"></ul>
+```
+
+假设我们想为这个`<ul>`元素添加 3 个列表项。如果逐个地添加列表项，将会导致浏览器反复渲染（呈现）新信息。为避免这个问题，可以像下面这样使用一个文档片段来保存创建的列表项，然后再一次性将它们添加到文档中。
+
+```js
+var fragment = document.createDocumentFragment();
+var ul = document.getElementById("myList");
+var li = null;
+for (var i=0; i < 3; i++){
+  li = document.createElement("li");
+  li.appendChild(document.createTextNode("Item " + (i+1)));
+  fragment.appendChild(li);
+}
+ul.appendChild(fragment);
+```
+
+在这个例子中，我们先创建一个文档片段并取得了对`<ul>`元素的引用。然后，通过 for 循环创建3 个列表项，并通过文本表示它们的顺序。为此，需要分别创建`<li>`元素、创建文本节点，再把文本节点添加到`<li>`元素。接着使用` appendChild()`将`<li>`元素添加到文档片段中。循环结束后，再调用`appendChild()`并传入文档片段，将所有列表项添加到`<ul>`元素中。此时，文档片段的所有子节点都被删除并转移到了`<ul>`元素中。
 
 ### 10.1.9 Attr类型
 
-元素的特性在DOM中以Attr类型来表示，在所有浏览器中都可以访问Attr类型的构造函数和原型。从技术角度讲，特性就是存在于元素的attributes属性中的节点。尽管它们也是节点，但特性从来不被认为是DOM文档树的一部分，开发人员最常使用的是getAttribute()、setAttribute()和removeAttribute()方法，很少直接引用特性节点。
+元素的特性在 DOM 中以 Attr 类型来表示。在所有浏览器中（包括 IE8），都可以访问 Attr 类型的构造函数和原型。从技术角度讲，特性就是存在于元素的 attributes 属性中的节点。特性节点具有下列特征：
+
+- nodeType 的值为 2；
+- nodeName 的值是特性的名称；
+- nodeValue 的值是特性的值；
+- parentNode 的值为 null；
+- 在 HTML 中不支持（没有）子节点；
+- 在 XML 中子节点可以是 Text 或 EntityReference。
+
+尽管它们也是节点，但特性却不被认为是 DOM 文档树的一部分。开发人员最常使用的是 `getAttribute()`、 `setAttribute()`和 `remveAttribute()`方法，很少直接引用特性节点。
+
+Attr 对象有 3 个属性： name、 value 和 specified。其中， name 是特性名称（与 nodeName 的值相同）， value 是特性的值（与 nodeValue 的值相同），而 specified 是一个布尔值，用以区别特
+性是在代码中指定的，还是默认的。使用 `document.createAttribute()`并传入特性的名称可以创建新的特性节点。例如，要为元素添加 align 特性，可以使用下列代码：
+
+```js
+var attr = document.createAttribute("align");
+attr.value = "left";
+element.setAttributeNode(attr);
+alert(element.attributes["align"].value); //"left"
+alert(element.getAttributeNode("align").value); //"left"
+alert(element.getAttribute("align")); //"left"
+```
+
+这个例子创建了一个新的特性节点。由于在调用 `createAttribute()`时已经为 name 属性赋了值，所以后面就不必给它赋值了。之后，又把 value 属性的值设置为"left"。为了将新创建的特性添加到元素中，必须使用元素的 `setAttributeNode()`方法。添加特性之后，可以通过下列任何方式访问该特性： attributes 属性、 `getAttributeNode()`方法以及 `getAttribute()`方法。其中， attributes和` getAttributeNode()`都会返回对应特性的 Attr 节点，而 `getAttribute()`则只返回特性的值。我们并不建议直接访问特性节点。实际上，使用 `getAttribute()`、`setAttribute()`和 `removeAttribute()`方法远比操作特性节点更为方便。
 
 ## 10.2 DOM操作技术 
 
