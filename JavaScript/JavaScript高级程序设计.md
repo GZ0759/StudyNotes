@@ -6071,9 +6071,15 @@ DOM 由各种节点构成，简要总结如下。
 
 # 第11章 DOM扩展
 
-对DOM的两个主要的扩展是SelectorsAPI和HTML5，这两个扩展都来源自开发社区。还有一个Element Traversal规范，主要用于元素遍历，另外还有一些专有扩展。
+尽管 DOM 作为 API 已经非常完善了，但为了实现更多的功能，仍然会有一些标准或专有的扩展。 2008 年之前，浏览器中几乎所有的 DOM 扩展都是专有的。此后， W3C 着手将一些已经成为事实标准的专有扩展标准化并写入规范当中。
+
+对 DOM 的两个主要的扩展是 Selectors API（选择符 API）和 HTML5。这两个扩展都源自开发社区，而将某些常见做法及 API 标准化一直是众望所归。此外，还有一个不那么引人瞩目的 Element Traversal（元素遍历）规范，为 DOM 添加了一些属性。虽然前述两个主要规范（特别是 HTML5）已经涵盖了大量的 DOM 扩展，但专有扩展依然存在。本章也会介绍专有的 DOM 扩展。
 
 ## 11.1 选择符API 
+
+### 11.1.1 querySelector()方法
+### 11.1.2 querySelectorAll()方法
+### 11.1.3 matchesSelector()方法
 
 Selectors API Level 1的核心就是两个方法：`querySelector()`和`querySelectorAll()`，通过CSS选择符查询DOM文档取得元素的引用。如果接受一个CSS选择符，第一个方法会返回与该模式匹配的第一个元素，没有找到则返回null；第二个方法返回的是一个NOdeList的实例，没有找到则NodeList为空。要取得返回的NOdeList中的每一个元素，可以使用item方法，也可以使用方括号语法。Selectors API Level 2规范为Element类型新增了一个方法`matchSelector()`方法，其接收一个参数CSS选择符，吐过调用元素与该选择符匹配，返回true，否则返回false。
 
@@ -6082,6 +6088,14 @@ Selectors API Level 1的核心就是两个方法：`querySelector()`和`querySel
 为了弥补IE9及之前版本对于元素间的空格不会返回文本节点，新定义了一组属性，只用于返回相应的子元素但不包括文本节点和注释，因此是元素办。例如firstElementChild指向第一个元素，是firstChild的元素版。因此遍历元素更加简洁，不用测试元素的nodeType值。
 
 ## 11.3 HTML5 
+
+### 11.3.1 与类相关的扩充
+### 11.3.2 焦点管理
+### 11.3.3 HTMLDocument的变化
+### 11.3.4 字符集属性
+### 11.3.5 自定义数据属性
+### 11.3.6 插入标记
+### 11.3.7 scrollIntoView()方法
 
 与类相关的扩充。可以通过document对象以及所有HTML元素调用getElementByClassName()方法，该方法接收一个参数，即一个包含一或多个类名的字符串，返回带有指定类的所有元素的NOdeList，传入多个类名时，类名的先后顺序不重要。HTML5新增了一种操作类名的方式，可以让操作更简单也更安全，那就是为所有元素添加classList属性。这个classList属性是新集合类型DOMTokenList的实例，这个新类型还定义如下方法：add()、contains()、remove()、toggle()。有了classList属性，不用完全重写元素的class属性。
 
@@ -6103,9 +6117,16 @@ scrollIntoView()方法，可以在所有HTML元素上调用，通过滚动浏览
 
 ## 11.4 专有扩展 
 
+### 11.4.1 文档模式
+### 11.4.2 children属性
+### 11.4.3 contains()方法
+### 11.4.4 插入文本
+### 11.4.5 滚动
+
+
 浏览器开发商如果发现某项功能有缺失，会一如既往地向DOM中添加专有扩展，以弥补功能上的不足。
 
-11.5　小结　
+## 11.5 小结　
 
 # 第12章 DOM2和DOM3　
 
