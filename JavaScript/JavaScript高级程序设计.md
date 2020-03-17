@@ -4824,7 +4824,7 @@ var body = document.body; //取得对<body>的引用
 
 所有浏览器都支持 `document.documentElement` 和 `document.body` 属性。
 
-Document 另一个可能的子节点是 DocumentType。通常将`<!DOCTYPE>`标签看成一个与文档其他部分不同的实体，可以通过 doctype 属性（在浏览器中是 document.doctype）来访问它的信息。
+Document 另一个可能的子节点是 DocumentType 。通常将`<!DOCTYPE>`标签看成一个与文档其他部分不同的实体，可以通过 doctype 属性（在浏览器中是 document.doctype）来访问它的信息。
 
 ```js
 var doctype = document.doctype; //取得对<!DOCTYPE>的引用
@@ -4901,15 +4901,15 @@ document.domain = "wrox.com"; // 松散的（成功）
 document.domain = "p2p.wrox.com"; // 紧绷的（出错！）
 ```
 
-所有浏览器中都存在这个限制，但 IE8 是实现这一限制的最早的 IE 版本
+所有浏览器中都存在这个限制，但 IE8 是实现这一限制的最早的 IE 版本。
 
 **3. 查找元素**
 
 说到最常见的 DOM 应用， 恐怕就要数取得特定的某个或某组元素的引用，然后再执行一些操作了。取得元素的操作可以使用 document 对象的几个方法来完成。其中， Document 类型为此提供了两个方法： `getElementById()`和 `getElementsByTagName()`。
 
-第一个方法， `getElementById()`，接收一个参数：要取得的元素的 ID。如果找到相应的元素则返回该元素，如果不存在带有相应 ID 的元素，则返回 null。注意，这里的 ID 必须与页面中元素的 id特性（ attribute）严格匹配，包括大小写。以下面的元素为例。
+第一个方法， `getElementById()`，接收一个参数：要取得的元素的 ID。如果找到相应的元素则返回该元素，如果不存在带有相应 ID 的元素，则返回 null。注意，这里的 ID 必须与页面中元素的 id 特性（attribute）严格匹配，包括大小写。以下面的元素为例。
 
-```js
+```html
 <div id="myDiv">Some text</div>
 ```
 
@@ -4926,6 +4926,7 @@ var div = document.getElementById("mydiv"); //无效的 ID（在 IE7 及更早�
 ```
 
 IE8 及较低版本不区分 ID 的大小写，因此"myDiv"和"mydiv"会被当作相同的元素 ID。
+
 如果页面中多个元素的 ID 值相同，`getElementById()`只返回文档中第一次出现的元素。 IE7 及较低版本还为此方法添加了一个有意思的“怪癖”： name 特性与给定 ID 匹配的表单元素（`<input>`、`<textarea>`、 `<button>`及`<select>`）也会被该方法返回。如果有哪个表单元素的 name 特性等于指定的 ID，而且该元素在文档中位于带有给定 ID 的元素前面，那么 IE 就会返回那个表单元素。来看下面的例子。
 
 ```js
@@ -4933,13 +4934,15 @@ IE8 及较低版本不区分 ID 的大小写，因此"myDiv"和"mydiv"会被当�
 <div id="myElement">A div</div>
 ```
 
-基于这段 HTML 代码，在 IE7 中调用 `document.getElementById("myElement")`，结果会返回`<input>`元素；而在其他所有浏览器中，都会返回对`<div>`元素的引用。为了避免 IE 中存在的这个问题，最好的办法是不让表单字段的 name 特性与其他元素的 ID 相同。另一个常用于取得元素引用的方法是 `getElementsByTagName()`。这个方法接受一个参数，即要取得元素的标签名，而返回的是包含零或多个元素的 NodeList。在 HTML 文档中，这个方法会返回一个 HTMLCollection 对象，作为一个“动态”集合，该对象与 NodeList 非常类似。例如，下列代码会取得页面中所有的`<img>`元素，并返回一个 HTMLCollection。
+基于这段 HTML 代码，在 IE7 中调用 `document.getElementById("myElement")`，结果会返回`<input>`元素；而在其他所有浏览器中，都会返回对`<div>`元素的引用。为了避免 IE 中存在的这个问题，最好的办法是不让表单字段的 name 特性与其他元素的 ID 相同。
+
+另一个常用于取得元素引用的方法是 `getElementsByTagName()`。这个方法接受一个参数，即要取得元素的标签名，而返回的是包含零或多个元素的 NodeList。在 HTML 文档中，这个方法会返回一个 HTMLCollection 对象，作为一个“动态”集合，该对象与 NodeList 非常类似。例如，下列代码会取得页面中所有的`<img>`元素，并返回一个 HTMLCollection。
 
 ```js
 var images = document.getElementsByTagName("img");
 ```
 
-这行代码会将一个 HTMLCollection 对象保存在 images 变量中。与 NodeList 对象类似，可以使用方括号语法或 `item()`方法来访问 HTMLCollection 对象中的项。而这个对象中元素的数量则可以通过其 length 属性取得，如下面的例子所示。
+这行代码会将一个 HTMLCollection 对象保存在 images 变量中。与 NodeList 对象类似，可以使用方括号语法或`item()`方法来访问 HTMLCollection 对象中的项。而这个对象中元素的数量则可以通过其 length 属性取得，如下面的例子所示。
 
 ```js
 alert(images.length); //输出图像的数量
@@ -4947,7 +4950,7 @@ alert(images[0].src); //输出第一个图像元素的 src 特性
 alert(images.item(0).src); //输出第一个图像元素的 src 特性
 ```
 
-HTMLCollection 对象还有一个方法，叫做 `namedItem()`，使用这个方法可以通过元素的 name 特性取得集合中的项。例如，假设上面提到的页面中包含如下`<img>`元素：
+HTMLCollection 对象还有一个方法，叫做`namedItem()`，使用这个方法可以通过元素的 name 特性取得集合中的项。例如，假设上面提到的页面中包含如下`<img>`元素：
 
 ```js
 <img src="myimage.gif" name="myImage">
@@ -4975,7 +4978,7 @@ var allElements = document.getElementsByTagName("*");
 
 虽然标准规定标签名需要区分大小写，但为了最大限度地与既有 HTML 页面兼容，传给 `getElementsByTagName()`的标签名是不需要区分大小写的。但对于 XML 页面而言（包括 XHTML）， `getElementsByTagName()`方法就会区分大小写。
 
-第三个方法，也是只有 HTMLDocument 类型才有的方法，是 `getElementsByName()`。顾名思义，这个方法会返回带有给定 name 特性的所有元素。最常使用 `getElementsByName()`方法的情况是取得单选按钮；为了确保发送给浏览器的值正确无误，所有单选按钮必须具有相同的 name 特性，如下面的例子所示。
+第三个方法，也是只有 HTMLDocument 类型才有的方法，是 `getElementsByName()`。顾名思义，这个方法会返回带有给定 name 特性的所有元素。最常使用`getElementsByName()`方法的情况是取得单选按钮；为了确保发送给浏览器的值正确无误，所有单选按钮必须具有相同的 name 特性，如下面的例子所示。
 
 ```html
 <fieldset>
@@ -5060,7 +5063,7 @@ var hasXmlDom = document.implementation.hasFeature("XML", "1.0");
 </html>
 ```
 
-即使这个文件看起来没错，但字符串`</script>`将被解释为与外部的`<script>`标签匹配，结果文本");将会出现在页面中。为避免这个问题，只需加入转义字符\即可；第 2 章也曾经提及这个问题，解决方案如下。
+即使这个文件看起来没错，但字符串`</script>`将被解释为与外部的`<script>`标签匹配，结果文本`);`将会出现在页面中。为避免这个问题，只需加入转义字符`\`即可；第 2 章也曾经提及这个问题，解决方案如下。
 
 ```html
 <html>
@@ -5139,8 +5142,7 @@ if (element.tagName.toLowerCase() == "div"){ //这样最好（适用于任何文
 
 这个例子展示了围绕 tagName 属性的两次比较操作。第一次比较非常容易出错，因为其代码在 HTML 文档中不管用。第二次比较将标签名转换成了全部小写，是我们推荐的做法，因为这种做法适用于 HTML 文档，也适用于 XML 文档。
 
-> 可以在任何浏览器中通过脚本访问 Element 类型的构造函数及原型，包括 IE8 及
-之前版本。在 Safari 2 之前版本和 Opera 8 之前的版本中，不能访问 Element 类型的构造函数。
+> 可以在任何浏览器中通过脚本访问 Element 类型的构造函数及原型，包括 IE8 及之前版本。在 Safari 2 之前版本和 Opera 8 之前的版本中，不能访问 Element 类型的构造函数。
 
 **2. 取得特性**
 
@@ -5376,7 +5378,7 @@ if (client.browser.ie && client.browser.ie <=7){
 
 **6. 元素的子节点**
 
-元素可以有任意数目的子节点和后代节点，因为元素可以是其他元素的子节点。元素的childNodes 属性中包含了它的所有子节点，这些子节点有可能是元素、文本节点、注释或处理指令。
+元素可以有任意数目的子节点和后代节点，因为元素可以是其他元素的子节点。元素的 childNodes 属性中包含了它的所有子节点，这些子节点有可能是元素、文本节点、注释或处理指令。
 
 不同浏览器在看待这些节点方面存在显著的不同，以下面的代码为例。
 
@@ -5719,8 +5721,7 @@ script.src = "client.js";
 document.body.appendChild(script);
 ```
 
-显然，这里的 DOM 代码如实反映了相应的 HTML 代码。不过，在执行最后一行代码把`<script>`
-元素添加到页面中之前，是不会下载外部文件的。也可以把这个元素添加到`<head>`元素中，效果相同。整个过程可以使用下面的函数来封装：
+显然，这里的 DOM 代码如实反映了相应的 HTML 代码。不过，在执行最后一行代码把`<script>`元素添加到页面中之前，是不会下载外部文件的。也可以把这个元素添加到`<head>`元素中，效果相同。整个过程可以使用下面的函数来封装：
 
 ```js
 function loadScript(url){
@@ -5758,7 +5759,7 @@ script.appendChild(document.createTextNode("function sayHi(){alert('hi');}"));
 document.body.appendChild(script);
 ```
 
-在 Firefox、 Safari、 Chrome 和 Opera 中，这些 DOM 代码可以正常运行。但在 IE 中，则会导致错误。IE 将`<script>`视为一个特殊的元素，不允许 DOM 访问其子节点。不过，可以使用`<script>`元素的text 属性来指定 JavaScript 代码，像下面的例子这样：
+在 Firefox、 Safari、 Chrome 和 Opera 中，这些 DOM 代码可以正常运行。但在 IE 中，则会导致错误。IE 将`<script>`视为一个特殊的元素，不允许 DOM 访问其子节点。不过，可以使用`<script>`元素的 text 属性来指定 JavaScript 代码，像下面的例子这样：
 
 ```js
 var script = document.createElement("script");
@@ -5781,9 +5782,7 @@ try {
 document.body.appendChild(script);
 ```
 
-这里，首先尝试标准的 DOM 文本节点方法，因为除了 IE（在 IE 中会导致抛出错误），所有浏览器
-都支持这种方式。如果这行代码抛出了错误，那么说明是 IE，于是就必须使用 text 属性了。整个过程
-可以用以下函数来表示：
+这里，首先尝试标准的 DOM 文本节点方法，因为除了 IE（在 IE 中会导致抛出错误），所有浏览器都支持这种方式。如果这行代码抛出了错误，那么说明是 IE，于是就必须使用 text 属性了。整个过程可以用以下函数来表示：
 
 ```js
 function loadScriptString(code){
@@ -5804,16 +5803,15 @@ function loadScriptString(code){
 loadScriptString("function sayHi(){alert('hi');}");
 ```
 
-以这种方式加载的代码会在全局作用域中执行，而且当脚本执行后将立即可用。实际上，这样执行
-代码与在全局作用域中把相同的字符串传递给 `eval()`是一样的。
+以这种方式加载的代码会在全局作用域中执行，而且当脚本执行后将立即可用。实际上，这样执行代码与在全局作用域中把相同的字符串传递给 `eval()`是一样的。
 
 ### 10.2.2 动态样式
 
-能够把 CSS 样式包含到 HTML 页面中的元素有两个。其中， `<link>`元素用于包含来自外部的文件，而`<style>`元素用于指定嵌入的样式。与动态脚本类似，所谓动态样式是指在页面刚加载时不存在的样式；动态样式是在页面加载完成后动态添加到页面中的。
+能够把 CSS 样式包含到 HTML 页面中的元素有两个。其中，`<link>`元素用于包含来自外部的文件，而`<style>`元素用于指定嵌入的样式。与动态脚本类似，所谓动态样式是指在页面刚加载时不存在的样式；动态样式是在页面加载完成后动态添加到页面中的。
 
 我们以下面这个典型的`<link>`元素为例：
 
-```js
+```html
 <link rel="stylesheet" type="text/css" href="styles.css">
 ```
 
@@ -5935,9 +5933,11 @@ loadStyleString("body{background-color:red}");
 var table = document.createElement("table");
 table.border = 1;
 table.width = "100%";
+
 //创建 tbody
 var tbody = document.createElement("tbody");
 table.appendChild(tbody);
+
 //创建第一行
 var row1 = document.createElement("tr");
 tbody.appendChild(row1);
@@ -5947,6 +5947,7 @@ row1.appendChild(cell1_1);
 var cell2_1 = document.createElement("td");
 cell2_1.appendChild(document.createTextNode("Cell 2,1"));
 row1.appendChild(cell2_1);
+
 //创建第二行
 var row2 = document.createElement("tr");
 tbody.appendChild(row2);
@@ -5956,6 +5957,7 @@ row2.appendChild(cell1_2);
 var cell2_2= document.createElement("td");
 cell2_2.appendChild(document.createTextNode("Cell 2,2"));
 row2.appendChild(cell2_2);
+
 //将表格添加到文档主体中
 document.body.appendChild(table);
 ```
@@ -5995,34 +5997,38 @@ document.body.appendChild(table);
 var table = document.createElement("table");
 table.border = 1;
 table.width = "100%";
+
 //创建 tbody
 var tbody = document.createElement("tbody");
 table.appendChild(tbody);
+
 //创建第一行
 tbody.insertRow(0);
 tbody.rows[0].insertCell(0);
 tbody.rows[0].cells[0].appendChild(document.createTextNode("Cell 1,1"));
 tbody.rows[0].insertCell(1);
 tbody.rows[0].cells[1].appendChild(document.createTextNode("Cell 2,1"));
+
 //创建第二行
 tbody.insertRow(1);
 tbody.rows[1].insertCell(0);
 tbody.rows[1].cells[0].appendChild(document.createTextNode("Cell 1,2"));
 tbody.rows[1].insertCell(1);
 tbody.rows[1].cells[1].appendChild(document.createTextNode("Cell 2,2"));
+
 //将表格添加到文档主体中
 document.body.appendChild(table);
 ```
 
-在这次的代码中，创建`<table>`和`<tbody>`的代码没有变化。不同的是创建两行的部分，其中使用了 HTML DOM 定义的表格属性和方法。在创建第一行时，通过`<tbody>`元素调用了 insertRow()方法，传入了参数 0——表示应该将插入的行放在什么位置上。执行这一行代码后，就会自动创建一行并将其插入到`<tbody>`元素的位置 0 上，因此就可以马上通过 tbody.rows[0]来引用新插入的行。
+在这次的代码中，创建`<table>`和`<tbody>`的代码没有变化。不同的是创建两行的部分，其中使用了 HTML DOM 定义的表格属性和方法。在创建第一行时，通过`<tbody>`元素调用了`insertRow()`方法，传入了参数 0——表示应该将插入的行放在什么位置上。执行这一行代码后，就会自动创建一行并将其插入到`<tbody>`元素的位置 0 上，因此就可以马上通过`tbody.rows[0]`来引用新插入的行。
 
-创建单元格的方式也十分相似，即通过`<tr>`元素调用 insertCell()方法并传入放置单元格的位置。然后，就可以通过 tbody.rows[0].cells[0]来引用新插入的单元格，因为新创建的单元格被插入到了这一行的位置 0 上。
+创建单元格的方式也十分相似，即通过`<tr>`元素调用`insertCell()`方法并传入放置单元格的位置。然后，就可以通过`tbody.rows[0].cells[0]`来引用新插入的单元格，因为新创建的单元格被插入到了这一行的位置 0 上。
 
 总之，使用这些属性和方法创建表格的逻辑性更强，也更容易看懂，尽管技术上这两套代码都是正确的。
 
 ### 10.2.4 使用NodeList
 
-理解 NodeList 及其“近亲” NamedNodeMap 和 HTMLCollection，是从整体上透彻理解 DOM 的关键所在。这三个集合都是“动态的”；换句话说，每当文档结构发生变化时，它们都会得到更新。因此，它们始终都会保存着最新、最准确的信息。从本质上说，所有 NodeList 对象都是在访问 DOM 文档时实时运行的查询。例如，下列代码会导致无限循环：
+理解 NodeList 及其“近亲” NamedNodeMap 和 HTMLCollection ，是从整体上透彻理解 DOM 的关键所在。这三个集合都是“动态的”；换句话说，每当文档结构发生变化时，它们都会得到更新。因此，它们始终都会保存着最新、最准确的信息。从本质上说，所有 NodeList 对象都是在访问 DOM 文档时实时运行的查询。例如，下列代码会导致无限循环：
 
 ```js
 var divs = document.getElementsByTagName("div"),
@@ -6077,42 +6083,164 @@ DOM 由各种节点构成，简要总结如下。
 
 ## 11.1 选择符API 
 
+众多 JavaScript 库中最常用的一项功能，就是根据 CSS 选择符选择与某个模式匹配的 DOM 元素。实际上， [jQuery](www.jquery.com)的核心就是通过 CSS 选择符查询 DOM 文档取得元素的引用，从而抛开了`getElementById()`和`getElementsByTagName()`。
+
+[Selectors API](www.w3.org/TR/selectors-api/)是由 W3C 发起制定的一个标准，致力于让浏览器原生支持 CSS 查询。所有实现这一功能的 JavaScript 库都会写一个基础的 CSS 解析器，然后再使用已有的 DOM 方法查询文档并找到匹配的节点。尽管库开发人员在不知疲倦地改进这一过程的性能，但到头来都只能通过运行 JavaScript 代码来完成查询操作。而把这个功能变成原生 API 之后，解析和树查询操作可以在浏览器内部通过编译后的代码来完成，极大地改善了性能。
+
+Selectors API Level 1 的核心是两个方法：`querySelector()`和`querySelectorAll()`。在兼容的浏览器中，可以通过 Document 及 Element 类型的实例调用它们。目前已完全支持 Selectors API Level 1 的浏览器有 IE 8+、 Firefox 3.5+、 Safari 3.1+、 Chrome 和 Opera 10+。
+
 ### 11.1.1 querySelector()方法
+
+`querySelector()`方法接收一个 CSS 选择符，返回与该模式匹配的第一个元素，如果没有找到匹配的元素，返回 null。请看下面的例子。
+
+```js
+//取得 body 元素
+var body = document.querySelector("body");
+//取得 ID 为"myDiv"的元素
+var myDiv = document.querySelector("#myDiv");
+//取得类为"selected"的第一个元素
+var selected = document.querySelector(".selected");
+//取得类为"button"的第一个图像元素
+var img = document.body.querySelector("img.button");
+```
+
+通过 Document 类型调用 `querySelector()`方法时，会在文档元素的范围内查找匹配的元素。而通过 Element 类型调用 `querySelector()`方法时，只会在该元素后代元素的范围内查找匹配的元素。
+
+CSS 选择符可以简单也可以复杂，视情况而定。如果传入了不被支持的选择符， `querySelector()`会抛出错误。
+
 ### 11.1.2 querySelectorAll()方法
+
+`querySelectorAll()`方法接收的参数与 `querySelector()`方法一样，都是一个 CSS 选择符，但返回的是所有匹配的元素而不仅仅是一个元素。这个方法返回的是一个 NodeList 的实例。
+
+具体来说，返回的值实际上是带有所有属性和方法的 NodeList，而其底层实现则类似于一组元素的快照，而非不断对文档进行搜索的动态查询。这样实现可以避免使用 NodeList 对象通常会引起的大
+多数性能问题。
+
+只要传给 `querySelectorAll()`方法的 CSS 选择符有效，该方法都会返回一个 NodeList 对象，而不管找到多少匹配的元素。如果没有找到匹配的元素， NodeList 就是空的。
+
+与 `querySelector()`类似，能够调用 `querySelectorAll()`方法的类型包括 Document、DocumentFragment 和 Element。下面是几个例子。
+
+```js
+//取得某<div>中的所有<em>元素（类似于 getElementsByTagName("em")）
+var ems = document.getElementById("myDiv").querySelectorAll("em");
+
+//取得类为"selected"的所有元素
+var selecteds = document.querySelectorAll(".selected");
+
+//取得所有<p>元素中的所有<strong>元素
+var strongs = document.querySelectorAll("p strong");
+```
+
+要取得返回的 NodeList 中的每一个元素，可以使用`item()`方法，也可以使用方括号语法，比如：
+
+```js
+var i, len, strong;
+for (i=0, len=strongs.length; i < len; i++){
+  strong = strongs[i]; //或者 strongs.item(i)
+  strong.className = "important";
+}
+```
+
+同样与 `querySelector()`类似，如果传入了浏览器不支持的选择符或者选择符中有语法错误，`querySelectorAll()`会抛出错误。
+
 ### 11.1.3 matchesSelector()方法
 
-Selectors API Level 1的核心就是两个方法：`querySelector()`和`querySelectorAll()`，通过CSS选择符查询DOM文档取得元素的引用。如果接受一个CSS选择符，第一个方法会返回与该模式匹配的第一个元素，没有找到则返回null；第二个方法返回的是一个NOdeList的实例，没有找到则NodeList为空。要取得返回的NOdeList中的每一个元素，可以使用item方法，也可以使用方括号语法。Selectors API Level 2规范为Element类型新增了一个方法`matchSelector()`方法，其接收一个参数CSS选择符，吐过调用元素与该选择符匹配，返回true，否则返回false。
+Selectors API Level 2 规范为 Element 类型新增了一个方法`matchesSelector()`。这个方法接收一个参数，即 CSS 选择符，如果调用元素与该选择符匹配，返回 true；否则，返回 false。看例子。
+
+```js
+if (document.body.matchesSelector("body.page1")){
+  //true
+}
+```
+
+在取得某个元素引用的情况下，使用这个方法能够方便地检测它是否会被 `querySelector()`或`querySelectorAll()`方法返回。
+
+截至 2011 年年中，还没有浏览器支持`matchesSelector()`方法；不过，也有一些实验性的实现。IE 9+通过`msMatchesSelector()`支持该方法，Firefox 3.6+通过 `mozMatchesSelector()`支持该方法，Safari 5+和 Chrome 通过 `webkitMatchesSelector()`支持该方法。因此，如果你想使用这个方法，最好是编写一个包装函数。
+
+```js
+function matchesSelector(element, selector){
+  if (element.matchesSelector){
+    return element.matchesSelector(selector);
+  } else if (element.msMatchesSelector){
+    return element.msMatchesSelector(selector);
+  } else if (element.mozMatchesSelector){
+    return element.mozMatchesSelector(selector);
+  } else if (element.webkitMatchesSelector){
+    return element.webkitMatchesSelector(selector);
+  } else {
+    throw new Error("Not supported.");
+  }
+}
+if (matchesSelector(document.body, "body.page1")){
+  //执行操作
+}
+```
 
 ## 11.2 元素遍历 
 
-为了弥补IE9及之前版本对于元素间的空格不会返回文本节点，新定义了一组属性，只用于返回相应的子元素但不包括文本节点和注释，因此是元素办。例如firstElementChild指向第一个元素，是firstChild的元素版。因此遍历元素更加简洁，不用测试元素的nodeType值。
+对于元素间的空格， IE9 及之前版本不会返回文本节点，而其他所有浏览器都会返回文本节点。这样，就导致了在使用 childNodes 和 firstChild 等属性时的行为不一致。为了弥补这一差异，而同时又保持 DOM 规范不变， [Element Traversal 规范](www.w3.org/TR/ElementTraversal/)新定义了一组属性。Element Traversal API 为 DOM 元素添加了以下 5 个属性。
+
+- childElementCount：返回子元素（不包括文本节点和注释）的个数。
+- firstElementChild：指向第一个子元素； firstChild 的元素版。
+- lastElementChild：指向最后一个子元素； lastChild 的元素版。
+- previousElementSibling：指向前一个同辈元素； previousSibling 的元素版。
+- nextElementSibling：指向后一个同辈元素； nextSibling 的元素版。
+
+支持的浏览器为 DOM 元素添加了这些属性，利用这些元素不必担心空白文本节点，从而可以更方便地查找 DOM 元素了。
+
+下面来看一个例子。过去，要跨浏览器遍历某元素的所有子元素，需要像下面这样写代码。
+
+```js
+var i,
+len,
+child = element.firstChild;
+while(child != element.lastChild){
+  if (child.nodeType == 1){ //检查是不是元素
+    processChild(child);
+  }
+  child = child.nextSibling;
+}
+```
+
+而使用 Element Traversal 新增的元素，代码会更简洁。
+
+```js
+var i,
+len,
+child = element.firstElementChild;
+while(child != element.lastElementChild){
+  processChild(child); //已知其是元素
+  child = child.nextElementSibling;
+}
+```
+
+支持 Element Traversal 规范的浏览器有 IE 9+、 Firefox 3.5+、 Safari 4+、 Chrome 和 Opera 10+。
 
 ## 11.3 HTML5 
 
 ### 11.3.1 与类相关的扩充
-### 11.3.2 焦点管理
-### 11.3.3 HTMLDocument的变化
-### 11.3.4 字符集属性
-### 11.3.5 自定义数据属性
-### 11.3.6 插入标记
-### 11.3.7 scrollIntoView()方法
 
 与类相关的扩充。可以通过document对象以及所有HTML元素调用getElementByClassName()方法，该方法接收一个参数，即一个包含一或多个类名的字符串，返回带有指定类的所有元素的NOdeList，传入多个类名时，类名的先后顺序不重要。HTML5新增了一种操作类名的方式，可以让操作更简单也更安全，那就是为所有元素添加classList属性。这个classList属性是新集合类型DOMTokenList的实例，这个新类型还定义如下方法：add()、contains()、remove()、toggle()。有了classList属性，不用完全重写元素的class属性。
 
-焦点管理。HTML5也添加了辅助管理DOM焦点的功能，首先是document.activeElement属性，这个属性始终会引用DOM中当前获得了焦点的元素，默认情况下文档刚刚加载完成时保存的是document.body元素的引用。另外就是新增了Document.hasFocus()方法，用于确定文档是否获得了焦点，从而用到用户是不是正在与页面交互。
 
+### 11.3.2 焦点管理
+焦点管理。HTML5也添加了辅助管理DOM焦点的功能，首先是document.activeElement属性，这个属性始终会引用DOM中当前获得了焦点的元素，默认情况下文档刚刚加载完成时保存的是document.body元素的引用。另外就是新增了Document.hasFocus()方法，用于确定文档是否获得了焦点，从而用到用户是不是正在与页面交互。
+### 11.3.3 HTMLDocument的变化
 HTMLDocument的变化。readyState属性有loading和complete两个可能的值，通过它来实现指示文档已经加载完成的指示器。cinpatMOde属性就是为了告诉开发人员浏览器采用了哪种渲染模式。head属性，引用文档的`<head>`元素。
 
+### 11.3.4 字符集属性
 字符集属性。其中charset属性表示文档中实际使用的字符集，也可以用来指定新字符集。默认情况下，这个属性的值是“UTF-16”，但可以通过`<meta>`元素，响应头部或直接设置charset属性修改这个值。另一个属性是defaultCharset，表示根据默认浏览器以及操作系统的设置，当前文档默认的字符集应该是什么。
 
+### 11.3.5 自定义数据属性
 自定义数据属性。HTML5规定可以为元素添加非标准的属性，但要添加前缀data-，目的是为元素提供与渲染无关的信息，或者提供语义信息，并且可以通过元素dataset属性来访问自定义属性的值。
 
+### 11.3.6 插入标记
 插入标记的技术，直接插入HTML字符串不仅简单，速度也更快。在读模式下，innerHTML属性返回与调用元素的所有子节点，包括元素、注释和文本节点对应的HTML标记。在写模式下，它会根据指定的值创建新的DOM树，然后用这个DOM树完全替换调用元素原先的所有子节点。但是，不同浏览器返回的文本格式会有所不同。为innerHTML设置的包含HTML的字符串值与解析后innerHTML的值大不相同。在大多数浏览器中，通过innerHTML插入`<script>`元素并不会执行其中的脚本。
 
 outerHTML属性。在读模式下，返回调用它的元素以及所有子节点的HTML标签，在写模式下，outerHTML会根据指定的HTML字符串创建新的DOM子树，然后用这个DOM子树完全替换调用元素。
 
 方法。它接收两个参数，插入位置和要插入的HTML文本。第一个参数必须是下列值之一：beforebegin、afterbegin、beforeend、afterend，这些值必须是小写形式。
 
+### 11.3.7 scrollIntoView()方法
 scrollIntoView()方法，可以在所有HTML元素上调用，通过滚动浏览器窗口或某个容器元素，调用元素就可以出现在窗口中。
 
 ## 11.4 专有扩展 
