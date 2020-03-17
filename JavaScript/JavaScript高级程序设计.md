@@ -6221,7 +6221,6 @@ while(child != element.lastElementChild){
 
 与类相关的扩充。可以通过document对象以及所有HTML元素调用getElementByClassName()方法，该方法接收一个参数，即一个包含一或多个类名的字符串，返回带有指定类的所有元素的NOdeList，传入多个类名时，类名的先后顺序不重要。HTML5新增了一种操作类名的方式，可以让操作更简单也更安全，那就是为所有元素添加classList属性。这个classList属性是新集合类型DOMTokenList的实例，这个新类型还定义如下方法：add()、contains()、remove()、toggle()。有了classList属性，不用完全重写元素的class属性。
 
-
 ### 11.3.2 焦点管理
 焦点管理。HTML5也添加了辅助管理DOM焦点的功能，首先是document.activeElement属性，这个属性始终会引用DOM中当前获得了焦点的元素，默认情况下文档刚刚加载完成时保存的是document.body元素的引用。另外就是新增了Document.hasFocus()方法，用于确定文档是否获得了焦点，从而用到用户是不是正在与页面交互。
 ### 11.3.3 HTMLDocument的变化
