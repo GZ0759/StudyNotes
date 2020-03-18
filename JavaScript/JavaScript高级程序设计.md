@@ -3,6 +3,252 @@
 > 2012年3月第一次出版  
 > [看云笔记](https://www.kancloud.cn/crossken/professional_js_web_developers/207402)
 
+- [第1章 JavaScript简介](#%e7%ac%ac1%e7%ab%a0-javascript%e7%ae%80%e4%bb%8b)
+  - [1.2 JavaScript实现](#12-javascript%e5%ae%9e%e7%8e%b0)
+- [第2章 在HTML中使用JavaScript](#%e7%ac%ac2%e7%ab%a0-%e5%9c%a8html%e4%b8%ad%e4%bd%bf%e7%94%a8javascript)
+  - [2.1 `<script>`元素](#21-script%e5%85%83%e7%b4%a0)
+  - [2.2 嵌入代码与外部文件](#22-%e5%b5%8c%e5%85%a5%e4%bb%a3%e7%a0%81%e4%b8%8e%e5%a4%96%e9%83%a8%e6%96%87%e4%bb%b6)
+  - [2.3 文档模式](#23-%e6%96%87%e6%a1%a3%e6%a8%a1%e5%bc%8f)
+  - [2.4 `<noscript>`元素](#24-noscript%e5%85%83%e7%b4%a0)
+- [第3章 基本概念](#%e7%ac%ac3%e7%ab%a0-%e5%9f%ba%e6%9c%ac%e6%a6%82%e5%bf%b5)
+  - [3.1 语法](#31-%e8%af%ad%e6%b3%95)
+    - [3.1.1 区分大小写](#311-%e5%8c%ba%e5%88%86%e5%a4%a7%e5%b0%8f%e5%86%99)
+    - [3.1.2 标识符](#312-%e6%a0%87%e8%af%86%e7%ac%a6)
+    - [3.1.3 注释](#313-%e6%b3%a8%e9%87%8a)
+    - [3.1.4 严格模式](#314-%e4%b8%a5%e6%a0%bc%e6%a8%a1%e5%bc%8f)
+    - [3.1.5 语句](#315-%e8%af%ad%e5%8f%a5)
+  - [3.2 关键字和保留字](#32-%e5%85%b3%e9%94%ae%e5%ad%97%e5%92%8c%e4%bf%9d%e7%95%99%e5%ad%97)
+  - [3.3 变量](#33-%e5%8f%98%e9%87%8f)
+  - [3.4 数据类型](#34-%e6%95%b0%e6%8d%ae%e7%b1%bb%e5%9e%8b)
+    - [3.4.1 typeof 操作符](#341-typeof-%e6%93%8d%e4%bd%9c%e7%ac%a6)
+    - [3.4.2 Undefined 类型](#342-undefined-%e7%b1%bb%e5%9e%8b)
+    - [3.4.3 Null 类型](#343-null-%e7%b1%bb%e5%9e%8b)
+    - [3.4.4 Boolean 类型](#344-boolean-%e7%b1%bb%e5%9e%8b)
+    - [3.4.5 Number 类型](#345-number-%e7%b1%bb%e5%9e%8b)
+    - [3.4.6 String 类型](#346-string-%e7%b1%bb%e5%9e%8b)
+    - [3.4.7 Object 类型](#347-object-%e7%b1%bb%e5%9e%8b)
+  - [3.5 操作符](#35-%e6%93%8d%e4%bd%9c%e7%ac%a6)
+    - [3.5.1 一元操作符](#351-%e4%b8%80%e5%85%83%e6%93%8d%e4%bd%9c%e7%ac%a6)
+    - [3.5.2 位操作符](#352-%e4%bd%8d%e6%93%8d%e4%bd%9c%e7%ac%a6)
+    - [3.5.3 布尔操作符](#353-%e5%b8%83%e5%b0%94%e6%93%8d%e4%bd%9c%e7%ac%a6)
+    - [3.5.4 乘性操作符](#354-%e4%b9%98%e6%80%a7%e6%93%8d%e4%bd%9c%e7%ac%a6)
+    - [3.5.5 加性操作符](#355-%e5%8a%a0%e6%80%a7%e6%93%8d%e4%bd%9c%e7%ac%a6)
+    - [3.5.6 关系操作符](#356-%e5%85%b3%e7%b3%bb%e6%93%8d%e4%bd%9c%e7%ac%a6)
+    - [3.5.7 相等操作符](#357-%e7%9b%b8%e7%ad%89%e6%93%8d%e4%bd%9c%e7%ac%a6)
+    - [3.5.8 条件操作符](#358-%e6%9d%a1%e4%bb%b6%e6%93%8d%e4%bd%9c%e7%ac%a6)
+    - [3.5.9 赋值操作符](#359-%e8%b5%8b%e5%80%bc%e6%93%8d%e4%bd%9c%e7%ac%a6)
+    - [3.5.10 逗号操作符](#3510-%e9%80%97%e5%8f%b7%e6%93%8d%e4%bd%9c%e7%ac%a6)
+  - [3.6 语句](#36-%e8%af%ad%e5%8f%a5)
+    - [3.6.1 if语句](#361-if%e8%af%ad%e5%8f%a5)
+    - [3.6.2 do-while语句](#362-do-while%e8%af%ad%e5%8f%a5)
+    - [3.6.3 while语句](#363-while%e8%af%ad%e5%8f%a5)
+    - [3.6.4 for语句](#364-for%e8%af%ad%e5%8f%a5)
+    - [3.6.5 for-in语句](#365-for-in%e8%af%ad%e5%8f%a5)
+    - [3.6.6 label语句](#366-label%e8%af%ad%e5%8f%a5)
+    - [3.6.7 break和continue语句](#367-break%e5%92%8ccontinue%e8%af%ad%e5%8f%a5)
+    - [3.6.8 with语句](#368-with%e8%af%ad%e5%8f%a5)
+    - [3.6.9 switch语句](#369-switch%e8%af%ad%e5%8f%a5)
+  - [3.7 函数](#37-%e5%87%bd%e6%95%b0)
+    - [3.7.1 理解参数](#371-%e7%90%86%e8%a7%a3%e5%8f%82%e6%95%b0)
+    - [3.7.2 没有重载](#372-%e6%b2%a1%e6%9c%89%e9%87%8d%e8%bd%bd)
+  - [3.8 小结](#38-%e5%b0%8f%e7%bb%93)
+- [第4章 变量、作用域和内存问题](#%e7%ac%ac4%e7%ab%a0-%e5%8f%98%e9%87%8f%e4%bd%9c%e7%94%a8%e5%9f%9f%e5%92%8c%e5%86%85%e5%ad%98%e9%97%ae%e9%a2%98)
+  - [4.1 基本类型和引用类型的值](#41-%e5%9f%ba%e6%9c%ac%e7%b1%bb%e5%9e%8b%e5%92%8c%e5%bc%95%e7%94%a8%e7%b1%bb%e5%9e%8b%e7%9a%84%e5%80%bc)
+  - [4.2 执行环境及作用域](#42-%e6%89%a7%e8%a1%8c%e7%8e%af%e5%a2%83%e5%8f%8a%e4%bd%9c%e7%94%a8%e5%9f%9f)
+  - [4.3 垃圾收集](#43-%e5%9e%83%e5%9c%be%e6%94%b6%e9%9b%86)
+  - [4.4 小结](#44-%e5%b0%8f%e7%bb%93)
+- [第5章 引用类型](#%e7%ac%ac5%e7%ab%a0-%e5%bc%95%e7%94%a8%e7%b1%bb%e5%9e%8b)
+  - [5.1 Object类型](#51-object%e7%b1%bb%e5%9e%8b)
+  - [5.2 Array类型](#52-array%e7%b1%bb%e5%9e%8b)
+    - [5.2.1 检查数组](#521-%e6%a3%80%e6%9f%a5%e6%95%b0%e7%bb%84)
+    - [5.2.2 转换方法](#522-%e8%bd%ac%e6%8d%a2%e6%96%b9%e6%b3%95)
+    - [5.2.3 栈方法](#523-%e6%a0%88%e6%96%b9%e6%b3%95)
+    - [5.2.4 队列方法](#524-%e9%98%9f%e5%88%97%e6%96%b9%e6%b3%95)
+    - [5.2.5 重排序方法](#525-%e9%87%8d%e6%8e%92%e5%ba%8f%e6%96%b9%e6%b3%95)
+    - [5.2.6 操作方法](#526-%e6%93%8d%e4%bd%9c%e6%96%b9%e6%b3%95)
+    - [5.2.7 位置方法](#527-%e4%bd%8d%e7%bd%ae%e6%96%b9%e6%b3%95)
+    - [5.2.8 迭代方法](#528-%e8%bf%ad%e4%bb%a3%e6%96%b9%e6%b3%95)
+    - [5.2.9 归并方法](#529-%e5%bd%92%e5%b9%b6%e6%96%b9%e6%b3%95)
+  - [5.3 Date类型](#53-date%e7%b1%bb%e5%9e%8b)
+  - [5.4 RegExp类型](#54-regexp%e7%b1%bb%e5%9e%8b)
+  - [5.5 Function类型](#55-function%e7%b1%bb%e5%9e%8b)
+    - [5.1 没有重载（深入理解）](#51-%e6%b2%a1%e6%9c%89%e9%87%8d%e8%bd%bd%e6%b7%b1%e5%85%a5%e7%90%86%e8%a7%a3)
+    - [5.2 函数声明与函数表达式](#52-%e5%87%bd%e6%95%b0%e5%a3%b0%e6%98%8e%e4%b8%8e%e5%87%bd%e6%95%b0%e8%a1%a8%e8%be%be%e5%bc%8f)
+    - [5.3 作为值的函数](#53-%e4%bd%9c%e4%b8%ba%e5%80%bc%e7%9a%84%e5%87%bd%e6%95%b0)
+    - [5.4 函数的内部属性](#54-%e5%87%bd%e6%95%b0%e7%9a%84%e5%86%85%e9%83%a8%e5%b1%9e%e6%80%a7)
+    - [5.5.5 函数属性和方法](#555-%e5%87%bd%e6%95%b0%e5%b1%9e%e6%80%a7%e5%92%8c%e6%96%b9%e6%b3%95)
+  - [5.6 基本包装类型](#56-%e5%9f%ba%e6%9c%ac%e5%8c%85%e8%a3%85%e7%b1%bb%e5%9e%8b)
+    - [5.6.1 Boolean类型](#561-boolean%e7%b1%bb%e5%9e%8b)
+    - [5.6.2 Number类型](#562-number%e7%b1%bb%e5%9e%8b)
+    - [5.6.3 String类型](#563-string%e7%b1%bb%e5%9e%8b)
+      - [5.6.3.1 字符方法](#5631-%e5%ad%97%e7%ac%a6%e6%96%b9%e6%b3%95)
+      - [5.6.3.2 字符串操作方法](#5632-%e5%ad%97%e7%ac%a6%e4%b8%b2%e6%93%8d%e4%bd%9c%e6%96%b9%e6%b3%95)
+      - [5.6.3.3 字符串位置方法](#5633-%e5%ad%97%e7%ac%a6%e4%b8%b2%e4%bd%8d%e7%bd%ae%e6%96%b9%e6%b3%95)
+      - [5.6.3.4 trim()方法](#5634-trim%e6%96%b9%e6%b3%95)
+      - [5.6.3.5 字符串大小写转换方法](#5635-%e5%ad%97%e7%ac%a6%e4%b8%b2%e5%a4%a7%e5%b0%8f%e5%86%99%e8%bd%ac%e6%8d%a2%e6%96%b9%e6%b3%95)
+      - [5.6.3.6 字符串的模式匹配方法](#5636-%e5%ad%97%e7%ac%a6%e4%b8%b2%e7%9a%84%e6%a8%a1%e5%bc%8f%e5%8c%b9%e9%85%8d%e6%96%b9%e6%b3%95)
+      - [5.6.3.7 localeCompare()方法](#5637-localecompare%e6%96%b9%e6%b3%95)
+      - [5.6.3.8 fromCharCode()方法](#5638-fromcharcode%e6%96%b9%e6%b3%95)
+      - [5.6.3.9 HTML()方法](#5639-html%e6%96%b9%e6%b3%95)
+  - [5.7 单体内置对象](#57-%e5%8d%95%e4%bd%93%e5%86%85%e7%bd%ae%e5%af%b9%e8%b1%a1)
+  - [5.8 小结](#58-%e5%b0%8f%e7%bb%93)
+- [第6章 面向对象的程序设计](#%e7%ac%ac6%e7%ab%a0-%e9%9d%a2%e5%90%91%e5%af%b9%e8%b1%a1%e7%9a%84%e7%a8%8b%e5%ba%8f%e8%ae%be%e8%ae%a1)
+  - [6.1 理解对象](#61-%e7%90%86%e8%a7%a3%e5%af%b9%e8%b1%a1)
+    - [6.1.1 属性类型](#611-%e5%b1%9e%e6%80%a7%e7%b1%bb%e5%9e%8b)
+    - [6.1.2 定义多个属性](#612-%e5%ae%9a%e4%b9%89%e5%a4%9a%e4%b8%aa%e5%b1%9e%e6%80%a7)
+    - [6.1.3 读取属性的特性](#613-%e8%af%bb%e5%8f%96%e5%b1%9e%e6%80%a7%e7%9a%84%e7%89%b9%e6%80%a7)
+  - [6.2 创建对象](#62-%e5%88%9b%e5%bb%ba%e5%af%b9%e8%b1%a1)
+    - [6.2.1 工厂模式](#621-%e5%b7%a5%e5%8e%82%e6%a8%a1%e5%bc%8f)
+    - [6.2.2 构造函数模式](#622-%e6%9e%84%e9%80%a0%e5%87%bd%e6%95%b0%e6%a8%a1%e5%bc%8f)
+    - [6.2.3 原型模式](#623-%e5%8e%9f%e5%9e%8b%e6%a8%a1%e5%bc%8f)
+    - [6.2.4 组合使用构造函数模式和原型模式](#624-%e7%bb%84%e5%90%88%e4%bd%bf%e7%94%a8%e6%9e%84%e9%80%a0%e5%87%bd%e6%95%b0%e6%a8%a1%e5%bc%8f%e5%92%8c%e5%8e%9f%e5%9e%8b%e6%a8%a1%e5%bc%8f)
+    - [6.2.5 动态原型模式](#625-%e5%8a%a8%e6%80%81%e5%8e%9f%e5%9e%8b%e6%a8%a1%e5%bc%8f)
+    - [6.2.6 寄生构造函数模式](#626-%e5%af%84%e7%94%9f%e6%9e%84%e9%80%a0%e5%87%bd%e6%95%b0%e6%a8%a1%e5%bc%8f)
+    - [6.2.7 稳妥构造函数模式](#627-%e7%a8%b3%e5%a6%a5%e6%9e%84%e9%80%a0%e5%87%bd%e6%95%b0%e6%a8%a1%e5%bc%8f)
+  - [6.3 继承](#63-%e7%bb%a7%e6%89%bf)
+    - [6.3.1 原型链](#631-%e5%8e%9f%e5%9e%8b%e9%93%be)
+    - [6.3.2 借用构造函数](#632-%e5%80%9f%e7%94%a8%e6%9e%84%e9%80%a0%e5%87%bd%e6%95%b0)
+    - [6.3.3 组合继承](#633-%e7%bb%84%e5%90%88%e7%bb%a7%e6%89%bf)
+    - [6.3.4 原型式继承](#634-%e5%8e%9f%e5%9e%8b%e5%bc%8f%e7%bb%a7%e6%89%bf)
+    - [6.3.5 寄生式继承](#635-%e5%af%84%e7%94%9f%e5%bc%8f%e7%bb%a7%e6%89%bf)
+    - [6.3.6 寄生组合式继承](#636-%e5%af%84%e7%94%9f%e7%bb%84%e5%90%88%e5%bc%8f%e7%bb%a7%e6%89%bf)
+  - [6.4 小结](#64-%e5%b0%8f%e7%bb%93)
+- [第7章 函数表达式](#%e7%ac%ac7%e7%ab%a0-%e5%87%bd%e6%95%b0%e8%a1%a8%e8%be%be%e5%bc%8f)
+  - [7.1 递归](#71-%e9%80%92%e5%bd%92)
+  - [7.2 闭包](#72-%e9%97%ad%e5%8c%85)
+    - [7.2.1 闭包与变量](#721-%e9%97%ad%e5%8c%85%e4%b8%8e%e5%8f%98%e9%87%8f)
+    - [7.2.2 关于this对象](#722-%e5%85%b3%e4%ba%8ethis%e5%af%b9%e8%b1%a1)
+    - [7.2.3 内存泄漏](#723-%e5%86%85%e5%ad%98%e6%b3%84%e6%bc%8f)
+  - [7.3 模仿块级作用域](#73-%e6%a8%a1%e4%bb%bf%e5%9d%97%e7%ba%a7%e4%bd%9c%e7%94%a8%e5%9f%9f)
+  - [7.4 私有变量](#74-%e7%a7%81%e6%9c%89%e5%8f%98%e9%87%8f)
+    - [7.4.1 静态私有变量](#741-%e9%9d%99%e6%80%81%e7%a7%81%e6%9c%89%e5%8f%98%e9%87%8f)
+    - [7.4.2 模块模式](#742-%e6%a8%a1%e5%9d%97%e6%a8%a1%e5%bc%8f)
+    - [7.4.3 增强的模块模式](#743-%e5%a2%9e%e5%bc%ba%e7%9a%84%e6%a8%a1%e5%9d%97%e6%a8%a1%e5%bc%8f)
+  - [7.5 小结](#75-%e5%b0%8f%e7%bb%93)
+- [第8章 BOM](#%e7%ac%ac8%e7%ab%a0-bom)
+  - [8.1 window对象](#81-window%e5%af%b9%e8%b1%a1)
+    - [8.1.1 全局作用域](#811-%e5%85%a8%e5%b1%80%e4%bd%9c%e7%94%a8%e5%9f%9f)
+    - [8.1.2 窗口关系及框架](#812-%e7%aa%97%e5%8f%a3%e5%85%b3%e7%b3%bb%e5%8f%8a%e6%a1%86%e6%9e%b6)
+    - [8.1.3 窗口位置](#813-%e7%aa%97%e5%8f%a3%e4%bd%8d%e7%bd%ae)
+    - [8.1.4 窗口大小](#814-%e7%aa%97%e5%8f%a3%e5%a4%a7%e5%b0%8f)
+    - [8.1.5 导航和打开窗口](#815-%e5%af%bc%e8%88%aa%e5%92%8c%e6%89%93%e5%bc%80%e7%aa%97%e5%8f%a3)
+    - [8.1.6 间歇调用和超时调用](#816-%e9%97%b4%e6%ad%87%e8%b0%83%e7%94%a8%e5%92%8c%e8%b6%85%e6%97%b6%e8%b0%83%e7%94%a8)
+    - [8.1.7 系统对话框](#817-%e7%b3%bb%e7%bb%9f%e5%af%b9%e8%af%9d%e6%a1%86)
+  - [8.2 location对象](#82-location%e5%af%b9%e8%b1%a1)
+    - [8.2.1 查询字符串参数](#821-%e6%9f%a5%e8%af%a2%e5%ad%97%e7%ac%a6%e4%b8%b2%e5%8f%82%e6%95%b0)
+    - [8.2.2 位置操作](#822-%e4%bd%8d%e7%bd%ae%e6%93%8d%e4%bd%9c)
+  - [8.3 navigator对象](#83-navigator%e5%af%b9%e8%b1%a1)
+  - [8.4 screen对象](#84-screen%e5%af%b9%e8%b1%a1)
+  - [8.5 history对象](#85-history%e5%af%b9%e8%b1%a1)
+- [第9章 客户端检测](#%e7%ac%ac9%e7%ab%a0-%e5%ae%a2%e6%88%b7%e7%ab%af%e6%a3%80%e6%b5%8b)
+  - [9.1 能力检测](#91-%e8%83%bd%e5%8a%9b%e6%a3%80%e6%b5%8b)
+  - [9.2 怪癖检测](#92-%e6%80%aa%e7%99%96%e6%a3%80%e6%b5%8b)
+  - [9.3 用户代理检测](#93-%e7%94%a8%e6%88%b7%e4%bb%a3%e7%90%86%e6%a3%80%e6%b5%8b)
+- [第10章 DOM](#%e7%ac%ac10%e7%ab%a0-dom)
+  - [10.1 节点层次](#101-%e8%8a%82%e7%82%b9%e5%b1%82%e6%ac%a1)
+    - [10.1.1 Node类型](#1011-node%e7%b1%bb%e5%9e%8b)
+    - [10.1.2 Document类型](#1012-document%e7%b1%bb%e5%9e%8b)
+    - [10.1.3 Element类型](#1013-element%e7%b1%bb%e5%9e%8b)
+    - [10.1.4 Text类型](#1014-text%e7%b1%bb%e5%9e%8b)
+    - [10.1.5 Comment类型](#1015-comment%e7%b1%bb%e5%9e%8b)
+    - [10.1.6 CDATASection类型](#1016-cdatasection%e7%b1%bb%e5%9e%8b)
+    - [10.1.7 DocumentType类型](#1017-documenttype%e7%b1%bb%e5%9e%8b)
+    - [10.1.8 DocumentFragment类型](#1018-documentfragment%e7%b1%bb%e5%9e%8b)
+    - [10.1.9 Attr类型](#1019-attr%e7%b1%bb%e5%9e%8b)
+  - [10.2 DOM操作技术](#102-dom%e6%93%8d%e4%bd%9c%e6%8a%80%e6%9c%af)
+    - [10.2.1 动态脚本](#1021-%e5%8a%a8%e6%80%81%e8%84%9a%e6%9c%ac)
+    - [10.2.2 动态样式](#1022-%e5%8a%a8%e6%80%81%e6%a0%b7%e5%bc%8f)
+    - [10.2.3 操作表格](#1023-%e6%93%8d%e4%bd%9c%e8%a1%a8%e6%a0%bc)
+    - [10.2.4 使用NodeList](#1024-%e4%bd%bf%e7%94%a8nodelist)
+  - [10.3 小结](#103-%e5%b0%8f%e7%bb%93)
+- [第11章 DOM扩展](#%e7%ac%ac11%e7%ab%a0-dom%e6%89%a9%e5%b1%95)
+  - [11.1 选择符API](#111-%e9%80%89%e6%8b%a9%e7%ac%a6api)
+    - [11.1.1 querySelector()方法](#1111-queryselector%e6%96%b9%e6%b3%95)
+    - [11.1.2 querySelectorAll()方法](#1112-queryselectorall%e6%96%b9%e6%b3%95)
+    - [11.1.3 matchesSelector()方法](#1113-matchesselector%e6%96%b9%e6%b3%95)
+  - [11.2 元素遍历](#112-%e5%85%83%e7%b4%a0%e9%81%8d%e5%8e%86)
+  - [11.3 HTML5](#113-html5)
+    - [11.3.1 与类相关的扩充](#1131-%e4%b8%8e%e7%b1%bb%e7%9b%b8%e5%85%b3%e7%9a%84%e6%89%a9%e5%85%85)
+    - [11.3.2 焦点管理](#1132-%e7%84%a6%e7%82%b9%e7%ae%a1%e7%90%86)
+    - [11.3.3 HTMLDocument的变化](#1133-htmldocument%e7%9a%84%e5%8f%98%e5%8c%96)
+    - [11.3.4 字符集属性](#1134-%e5%ad%97%e7%ac%a6%e9%9b%86%e5%b1%9e%e6%80%a7)
+    - [11.3.5 自定义数据属性](#1135-%e8%87%aa%e5%ae%9a%e4%b9%89%e6%95%b0%e6%8d%ae%e5%b1%9e%e6%80%a7)
+    - [11.3.6 插入标记](#1136-%e6%8f%92%e5%85%a5%e6%a0%87%e8%ae%b0)
+    - [11.3.7 scrollIntoView()方法](#1137-scrollintoview%e6%96%b9%e6%b3%95)
+  - [11.4 专有扩展](#114-%e4%b8%93%e6%9c%89%e6%89%a9%e5%b1%95)
+    - [11.4.1 文档模式](#1141-%e6%96%87%e6%a1%a3%e6%a8%a1%e5%bc%8f)
+    - [11.4.2 children属性](#1142-children%e5%b1%9e%e6%80%a7)
+    - [11.4.3 contains()方法](#1143-contains%e6%96%b9%e6%b3%95)
+    - [11.4.4 插入文本](#1144-%e6%8f%92%e5%85%a5%e6%96%87%e6%9c%ac)
+    - [11.4.5 滚动](#1145-%e6%bb%9a%e5%8a%a8)
+  - [11.5 小结](#115-%e5%b0%8f%e7%bb%93)
+- [第12章 DOM2和DOM3](#%e7%ac%ac12%e7%ab%a0-dom2%e5%92%8cdom3)
+  - [12.1 DOM变化](#121-dom%e5%8f%98%e5%8c%96)
+    - [12.1.1 针对XML命名空间的变化](#1211-%e9%92%88%e5%af%b9xml%e5%91%bd%e5%90%8d%e7%a9%ba%e9%97%b4%e7%9a%84%e5%8f%98%e5%8c%96)
+    - [12.1.2 其他方面的变化](#1212-%e5%85%b6%e4%bb%96%e6%96%b9%e9%9d%a2%e7%9a%84%e5%8f%98%e5%8c%96)
+  - [12.2 样式](#122-%e6%a0%b7%e5%bc%8f)
+    - [12.2.1 访问元素的样式](#1221-%e8%ae%bf%e9%97%ae%e5%85%83%e7%b4%a0%e7%9a%84%e6%a0%b7%e5%bc%8f)
+    - [12.2.2 操作样式表](#1222-%e6%93%8d%e4%bd%9c%e6%a0%b7%e5%bc%8f%e8%a1%a8)
+    - [12.2.3 元素大小](#1223-%e5%85%83%e7%b4%a0%e5%a4%a7%e5%b0%8f)
+  - [12.3 遍历](#123-%e9%81%8d%e5%8e%86)
+    - [12.3.1 NodeIterator](#1231-nodeiterator)
+    - [12.3.2 TreeWalker](#1232-treewalker)
+  - [12.4 范围](#124-%e8%8c%83%e5%9b%b4)
+    - [12.4.1 DOM中的范围](#1241-dom%e4%b8%ad%e7%9a%84%e8%8c%83%e5%9b%b4)
+    - [12.4.2 IE8 及更早版本中的范围](#1242-ie8-%e5%8f%8a%e6%9b%b4%e6%97%a9%e7%89%88%e6%9c%ac%e4%b8%ad%e7%9a%84%e8%8c%83%e5%9b%b4)
+  - [12.5 小结](#125-%e5%b0%8f%e7%bb%93)
+- [第13章 事件](#%e7%ac%ac13%e7%ab%a0-%e4%ba%8b%e4%bb%b6)
+  - [13.1 事件流](#131-%e4%ba%8b%e4%bb%b6%e6%b5%81)
+  - [13.2 事件处理程序](#132-%e4%ba%8b%e4%bb%b6%e5%a4%84%e7%90%86%e7%a8%8b%e5%ba%8f)
+  - [13.3 事件对象](#133-%e4%ba%8b%e4%bb%b6%e5%af%b9%e8%b1%a1)
+  - [13.4 事件类型](#134-%e4%ba%8b%e4%bb%b6%e7%b1%bb%e5%9e%8b)
+    - [13.4.1 UI事件。](#1341-ui%e4%ba%8b%e4%bb%b6)
+    - [13.4.2 焦点事件。](#1342-%e7%84%a6%e7%82%b9%e4%ba%8b%e4%bb%b6)
+    - [13.4.3 鼠标与滚轮事件。](#1343-%e9%bc%a0%e6%a0%87%e4%b8%8e%e6%bb%9a%e8%bd%ae%e4%ba%8b%e4%bb%b6)
+    - [13.4.4 键盘与文本事件。](#1344-%e9%94%ae%e7%9b%98%e4%b8%8e%e6%96%87%e6%9c%ac%e4%ba%8b%e4%bb%b6)
+    - [13.4.5 复合事件。](#1345-%e5%a4%8d%e5%90%88%e4%ba%8b%e4%bb%b6)
+    - [13.4.6 变动事件。](#1346-%e5%8f%98%e5%8a%a8%e4%ba%8b%e4%bb%b6)
+    - [13.4.7 HTML5事件。](#1347-html5%e4%ba%8b%e4%bb%b6)
+    - [13.4.8 设备事件。](#1348-%e8%ae%be%e5%a4%87%e4%ba%8b%e4%bb%b6)
+    - [13.4.9 触摸与手势事件。](#1349-%e8%a7%a6%e6%91%b8%e4%b8%8e%e6%89%8b%e5%8a%bf%e4%ba%8b%e4%bb%b6)
+  - [13.5 内存和性能](#135-%e5%86%85%e5%ad%98%e5%92%8c%e6%80%a7%e8%83%bd)
+  - [13.6 模拟事件](#136-%e6%a8%a1%e6%8b%9f%e4%ba%8b%e4%bb%b6)
+- [第14章 表单脚本](#%e7%ac%ac14%e7%ab%a0-%e8%a1%a8%e5%8d%95%e8%84%9a%e6%9c%ac)
+  - [14.1 表单的基础知识](#141-%e8%a1%a8%e5%8d%95%e7%9a%84%e5%9f%ba%e7%a1%80%e7%9f%a5%e8%af%86)
+  - [14.2 文本框脚本](#142-%e6%96%87%e6%9c%ac%e6%a1%86%e8%84%9a%e6%9c%ac)
+  - [14.3 选择框脚本](#143-%e9%80%89%e6%8b%a9%e6%a1%86%e8%84%9a%e6%9c%ac)
+  - [14.4 表单序列化](#144-%e8%a1%a8%e5%8d%95%e5%ba%8f%e5%88%97%e5%8c%96)
+  - [14.5 富文本编辑](#145-%e5%af%8c%e6%96%87%e6%9c%ac%e7%bc%96%e8%be%91)
+- [第15章 使用Canvas绘图](#%e7%ac%ac15%e7%ab%a0-%e4%bd%bf%e7%94%a8canvas%e7%bb%98%e5%9b%be)
+  - [15.1 基本用法](#151-%e5%9f%ba%e6%9c%ac%e7%94%a8%e6%b3%95)
+  - [15.2 2D上下文](#152-2d%e4%b8%8a%e4%b8%8b%e6%96%87)
+  - [15.3 WebGL](#153-webgl)
+- [第16章 HTML5脚本编程](#%e7%ac%ac16%e7%ab%a0-html5%e8%84%9a%e6%9c%ac%e7%bc%96%e7%a8%8b)
+  - [16.1 跨文档消息传递](#161-%e8%b7%a8%e6%96%87%e6%a1%a3%e6%b6%88%e6%81%af%e4%bc%a0%e9%80%92)
+  - [16.2 原生拖放](#162-%e5%8e%9f%e7%94%9f%e6%8b%96%e6%94%be)
+  - [16.3 媒体元素](#163-%e5%aa%92%e4%bd%93%e5%85%83%e7%b4%a0)
+  - [16.4 历史状态管理](#164-%e5%8e%86%e5%8f%b2%e7%8a%b6%e6%80%81%e7%ae%a1%e7%90%86)
+- [第17章 错误处理与调试](#%e7%ac%ac17%e7%ab%a0-%e9%94%99%e8%af%af%e5%a4%84%e7%90%86%e4%b8%8e%e8%b0%83%e8%af%95)
+  - [17.1 浏览器报告的错误](#171-%e6%b5%8f%e8%a7%88%e5%99%a8%e6%8a%a5%e5%91%8a%e7%9a%84%e9%94%99%e8%af%af)
+  - [17.2 错误处理](#172-%e9%94%99%e8%af%af%e5%a4%84%e7%90%86)
+  - [17.3 调试技术](#173-%e8%b0%83%e8%af%95%e6%8a%80%e6%9c%af)
+  - [17.4 常见的IE错误](#174-%e5%b8%b8%e8%a7%81%e7%9a%84ie%e9%94%99%e8%af%af)
+- [第19章 E4X](#%e7%ac%ac19%e7%ab%a0-e4x)
+- [第20章 JSON](#%e7%ac%ac20%e7%ab%a0-json)
+  - [20.1 语法](#201-%e8%af%ad%e6%b3%95)
+  - [20.2 解析与序列化](#202-%e8%a7%a3%e6%9e%90%e4%b8%8e%e5%ba%8f%e5%88%97%e5%8c%96)
+- [第21章 Ajax与Comet](#%e7%ac%ac21%e7%ab%a0-ajax%e4%b8%8ecomet)
+  - [21.1 XMLHttpRequest对象](#211-xmlhttprequest%e5%af%b9%e8%b1%a1)
+  - [21.2 XMLHttpRequest 2级](#212-xmlhttprequest-2%e7%ba%a7)
+  - [21.3 进度事件](#213-%e8%bf%9b%e5%ba%a6%e4%ba%8b%e4%bb%b6)
+  - [21.4 跨源资源共享](#214-%e8%b7%a8%e6%ba%90%e8%b5%84%e6%ba%90%e5%85%b1%e4%ba%ab)
+  - [21.5 其他跨域技术](#215-%e5%85%b6%e4%bb%96%e8%b7%a8%e5%9f%9f%e6%8a%80%e6%9c%af)
+  - [21.6 安全](#216-%e5%ae%89%e5%85%a8)
+- [第23章 离线应用与客户端存储](#%e7%ac%ac23%e7%ab%a0-%e7%a6%bb%e7%ba%bf%e5%ba%94%e7%94%a8%e4%b8%8e%e5%ae%a2%e6%88%b7%e7%ab%af%e5%ad%98%e5%82%a8)
+  - [23.1 离线检测](#231-%e7%a6%bb%e7%ba%bf%e6%a3%80%e6%b5%8b)
+  - [23.2 应用缓存](#232-%e5%ba%94%e7%94%a8%e7%bc%93%e5%ad%98)
+  - [23.3 数据存储](#233-%e6%95%b0%e6%8d%ae%e5%ad%98%e5%82%a8)
+
 # 第1章 JavaScript简介　
 
 JavaScript 诞生于 1995 年。当时，它的主要目的是处理以前由服务器端语言（如 Perl）负责的一些输入验证操作。
@@ -6241,19 +6487,13 @@ var allCurrentUsernames = document.getElementsByClassName("username current");
 var selected = document.getElementById("myDiv").getElementsByClassName("selected");
 ```
 
-调用这个方法时，只有位于调用元素子树中的元素才会返回。在 document 对象上调用
-`getElementsByClassName()`始终会返回与类名匹配的所有元素，在元素上调用该方法就只会返回后
-代元素中匹配的元素。
+调用这个方法时，只有位于调用元素子树中的元素才会返回。在 document 对象上调用`getElementsByClassName()`始终会返回与类名匹配的所有元素，在元素上调用该方法就只会返回后代元素中匹配的元素。
 
-使用这个方法可以更方便地为带有某些类的元素添加事件处理程序，从而不必再局限于使用 ID 或标
-签名。 不过别忘了，因为返回的对象是 NodeList， 所以使用这个方法与使用 `getElementsByTagName()`以及其他返回 NodeList 的 DOM 方法都具有同样的性能问题。
-支持`getElementsByClassName()`方法的浏览器有 IE 9+、 Firefox 3+、 Safari 3.1+、 Chrome 和 Opera 9.5+。
+使用这个方法可以更方便地为带有某些类的元素添加事件处理程序，从而不必再局限于使用 ID 或标签名。 不过别忘了，因为返回的对象是 NodeList， 所以使用这个方法与使用 `getElementsByTagName()`以及其他返回 NodeList 的 DOM 方法都具有同样的性能问题。支持`getElementsByClassName()`方法的浏览器有 IE 9+、 Firefox 3+、 Safari 3.1+、 Chrome 和 Opera 9.5+。
 
 **2. classList 属性**
 
-在操作类名时，需要通过 className 属性添加、删除和替换类名。因为 className 中是一个字
-符串，所以即使只修改字符串一部分，也必须每次都设置整个字符串的值。比如，以下面的 HTML 代
-码为例。
+在操作类名时，需要通过 className 属性添加、删除和替换类名。因为 className 中是一个字符串，所以即使只修改字符串一部分，也必须每次都设置整个字符串的值。比如，以下面的 HTML 代码为例。
 
 ```js
 <div class="bd user disabled">...</div>
@@ -6282,12 +6522,9 @@ classNames.splice(i,1);
 div.className = classNames.join(" ");
 ```
 
-为了从`<div>`元素的 class 属性中删除"user"，以上这些代码都是必需的。必须得通过类似的算
-法替换类名并确认元素中是否包含该类名。添加类名可以通过拼接字符串完成，但必须要通过检测确定
-不会多次添加相同的类名。很多 JavaScript 库都实现了这个方法，以简化这些操作。
+为了从`<div>`元素的 class 属性中删除"user"，以上这些代码都是必需的。必须得通过类似的算法替换类名并确认元素中是否包含该类名。添加类名可以通过拼接字符串完成，但必须要通过检测确定不会多次添加相同的类名。很多 JavaScript 库都实现了这个方法，以简化这些操作。
 
-HTML5 新增了一种操作类名的方式，可以让操作更简单也更安全，那就是为所有元素添加
-classList 属性。这个 classList 属性是新集合类型 DOMTokenList 的实例。与其他 DOM 集合类似， DOMTokenList 有一个表示自己包含多少元素的 length 属性，而要取得每个元素可以使用 `item()`方法，也可以使用方括号语法。此外，这个新类型还定义如下方法。
+HTML5 新增了一种操作类名的方式，可以让操作更简单也更安全，那就是为所有元素添加classList 属性。这个 classList 属性是新集合类型 DOMTokenList 的实例。与其他 DOM 集合类似， DOMTokenList 有一个表示自己包含多少元素的 length 属性，而要取得每个元素可以使用`item()`方法，也可以使用方括号语法。此外，这个新类型还定义如下方法。
 
 - add(value)：将给定的字符串值添加到列表中。如果值已经存在，就不添加了。
 - contains(value)：表示列表中是否存在给定的值，如果存在则返回 true，否则返回 false。
@@ -6300,36 +6537,36 @@ classList 属性。这个 classList 属性是新集合类型 DOMTokenList 的实
 div.classList.remove("user");
 ```
 
-以上代码能够确保其他类名不受此次修改的影响。其他方法也能极大地减少类似基本操作的复杂
-性，如下面的例子所示。
+以上代码能够确保其他类名不受此次修改的影响。其他方法也能极大地减少类似基本操作的复杂性，如下面的例子所示。
 
 ```js
-//删除"disabled"类
+// 删除"disabled"类
 div.classList.remove("disabled");
-//添加"current"类
+
+// 添加"current"类
 div.classList.add("current");
-//切换"user"类
+
+// 切换"user"类
 div.classList.toggle("user");
-//确定元素中是否包含既定的类名
+
+// 确定元素中是否包含既定的类名
 if (div.classList.contains("bd") && !div.classList.contains("disabled")){
-  //执行操作
-)
-//迭代类名
+  // 执行操作
+}
+
+// 迭代类名
 for (var i=0, len=div.classList.length; i < len; i++){
   doSomething(div.classList[i]);
 }
 ```
 
-有了 classList 属性，除非你需要全部删除所有类名，或者完全重写元素的 class 属性，否则也
-就用不到 className 属性了。
+有了 classList 属性，除非你需要全部删除所有类名，或者完全重写元素的 class 属性，否则也就用不到 className 属性了。
 
 支持 classList 属性的浏览器有 Firefox 3.6+和 Chrome。
 
 ### 11.3.2 焦点管理
 
-HTML5 也添加了辅助管理 DOM 焦点的功能。首先就是 document.activeElement 属性，这个
-属性始终会引用 DOM 中当前获得了焦点的元素。元素获得焦点的方式有页面加载、用户输入（通常是
-通过按 Tab 键）和在代码中调用 `focus()`方法。来看几个例子。
+HTML5 也添加了辅助管理 DOM 焦点的功能。首先就是 `document.activeElement` 属性，这个属性始终会引用 DOM 中当前获得了焦点的元素。元素获得焦点的方式有页面加载、用户输入（通常是通过按 Tab 键）和在代码中调用 `focus()`方法。来看几个例子。
 
 ```js
 var button = document.getElementById("myButton");
@@ -6337,8 +6574,7 @@ button.focus();
 alert(document.activeElement === button); //true
 ```
 
-默认情况下，文档刚刚加载完成时， document.activeElement 中保存的是 document.body 元
-素的引用。文档加载期间， document.activeElement 的值为 null。
+默认情况下，文档刚刚加载完成时， `document.activeElement` 中保存的是 document.body 元素的引用。文档加载期间， `document.activeElement` 的值为 null。
 
 另外就是新增了 `document.hasFocus()`方法，这个方法用于确定文档是否获得了焦点。
 
@@ -6350,29 +6586,22 @@ alert(document.hasFocus()); //true
 
 通过检测文档是否获得了焦点，可以知道用户是不是正在与页面交互。
 
-查询文档获知哪个元素获得了焦点，以及确定文档是否获得了焦点，这两个功能最重要的用途是提
-高 Web 应用的无障碍性。无障碍 Web 应用的一个主要标志就是恰当的焦点管理，而确切地知道哪个元
-素获得了焦点是一个极大的进步，至少我们不用再像过去那样靠猜测了。
+查询文档获知哪个元素获得了焦点，以及确定文档是否获得了焦点，这两个功能最重要的用途是提高 Web 应用的无障碍性。无障碍 Web 应用的一个主要标志就是恰当的焦点管理，而确切地知道哪个元素获得了焦点是一个极大的进步，至少我们不用再像过去那样靠猜测了。
 
 实现了这两个属性的浏览器的包括 IE 4+、 Firefox 3+、 Safari 4+、 Chrome 和 Opera 8+。
 
 ### 11.3.3 HTMLDocument的变化
 
-HTML5 扩展了 HTMLDocument，增加了新的功能。与 HTML5 中新增的其他 DOM 扩展类似，这些
-变化同样基于那些已经得到很多浏览器完美支持的专有扩展。所以，尽管这些扩展被写入标准的时间相
-对不长，但很多浏览器很早就已经支持这些功能了。
+HTML5 扩展了 HTMLDocument，增加了新的功能。与 HTML5 中新增的其他 DOM 扩展类似，这些变化同样基于那些已经得到很多浏览器完美支持的专有扩展。所以，尽管这些扩展被写入标准的时间相对不长，但很多浏览器很早就已经支持这些功能了。
 
 **1. readyState 属性**
 
-IE4 最早为 document 对象引入了 readyState 属性。然后，其他浏览器也都陆续添加这个属性，
-最终 HTML5 把这个属性纳入了标准当中。 Document 的 readyState 属性有两个可能的值：
+IE4 最早为 document 对象引入了 readyState 属性。然后，其他浏览器也都陆续添加这个属性，最终 HTML5 把这个属性纳入了标准当中。 Document 的 readyState 属性有两个可能的值：
 
 - loading，正在加载文档；
 - complete，已经加载完文档。
 
-使用 document.readyState 的最恰当方式，就是通过它来实现一个指示文档已经加载完成的指
-示器。在这个属性得到广泛支持之前，要实现这样一个指示器，必须借助 onload 事件处理程序设置一
-个标签，表明文档已经加载完毕。 document.readyState 属性的基本用法如下。
+使用 `document.readyState` 的最恰当方式，就是通过它来实现一个指示文档已经加载完成的指示器。在这个属性得到广泛支持之前，要实现这样一个指示器，必须借助 onload 事件处理程序设置一个标签，表明文档已经加载完毕。 `document.readyState` 属性的基本用法如下。
 
 ```js
 if (document.readyState == "complete"){
@@ -6384,8 +6613,7 @@ if (document.readyState == "complete"){
 
 **2. 兼容模式**
 
-自从 IE6 开始区分渲染页面的模式是标准的还是混杂的，检测页面的兼容模式就成为浏览器的必要
-功能。 IE 为此给 document 添加了一个名为 compatMode 的属性，这个属性就是为了告诉开发人员浏览器采用了哪种渲染模式。就像下面例子中所展示的那样，在标准模式下， `document.compatMode` 的值等于"CSS1Compat"，而在混杂模式下， `document.compatMode` 的值等于"BackCompat"。
+自从 IE6 开始区分渲染页面的模式是标准的还是混杂的，检测页面的兼容模式就成为浏览器的必要功能。 IE 为此给 document 添加了一个名为 compatMode 的属性，这个属性就是为了告诉开发人员浏览器采用了哪种渲染模式。就像下面例子中所展示的那样，在标准模式下， `document.compatMode` 的值等于"CSS1Compat"，而在混杂模式下， `document.compatMode` 的值等于"BackCompat"。
 
 ```js
 if (document.compatMode == "CSS1Compat"){
@@ -6399,8 +6627,7 @@ if (document.compatMode == "CSS1Compat"){
 
 **3. head 属性**
 
-作为对 `document.body` 引用文档的`<body>`元素的补充， HTML5 新增了 document.head`属性，
-引用文档的`<head>`元素。要引用文档的`<head>`元素，可以结合使用这个属性和另一种后备方法。
+作为对 `document.body` 引用文档的`<body>`元素的补充， HTML5 新增了`document.head`属性，引用文档的`<head>`元素。要引用文档的`<head>`元素，可以结合使用这个属性和另一种后备方法。
 
 ```js
 var head = document.head || document.getElementsByTagName("head")[0];
@@ -6412,18 +6639,14 @@ var head = document.head || document.getElementsByTagName("head")[0];
 
 ### 11.3.4 字符集属性
 
-HTML5 新增了几个与文档字符集有关的属性。其中， charset 属性表示文档中实际使用的字符集，
-也可以用来指定新字符集。默认情况下，这个属性的值为"UTF-16"，但可以通过`<meta>`元素、响应头
-部或直接设置 charset 属性修改这个值。来看一个例子。
+HTML5 新增了几个与文档字符集有关的属性。其中， charset 属性表示文档中实际使用的字符集，也可以用来指定新字符集。默认情况下，这个属性的值为"UTF-16"，但可以通过`<meta>`元素、响应头部或直接设置 charset 属性修改这个值。来看一个例子。
 
 ```js
 alert(document.charset); //"UTF-16"
 document.charset = "UTF-8";
 ```
 
-另一个属性是 defaultCharset，表示根据默认浏览器及操作系统的设置，当前文档默认的字符集
-应该是什么。如果文档没有使用默认的字符集，那 charset 和 defaultCharset 属性的值可能会不一
-样，例如：
+另一个属性是 defaultCharset，表示根据默认浏览器及操作系统的设置，当前文档默认的字符集应该是什么。如果文档没有使用默认的字符集，那 charset 和 defaultCharset 属性的值可能会不一样，例如：
 
 ```js
 if (document.charset != document.defaultCharset){
@@ -6431,25 +6654,19 @@ if (document.charset != document.defaultCharset){
 }
 ```
 
-通过这两个属性可以得到文档使用的字符编码的具体信息，也能对字符编码进行准确地控制。运行
-适当的情况下，可以保证用户正常查看页面或使用应用。
+通过这两个属性可以得到文档使用的字符编码的具体信息，也能对字符编码进行准确地控制。运行适当的情况下，可以保证用户正常查看页面或使用应用。
 
-支持 document.charset 属性的浏览器有 IE、 Firefox、 Safari、 Opera 和 Chrome。支持
-document.defaultCharset 属性的浏览器有 IE、 Safari 和 Chrome。
+支持 `document.charset` 属性的浏览器有 IE、 Firefox、 Safari、 Opera 和 Chrome。支持 `document.defaultCharset` 属性的浏览器有 IE、 Safari 和 Chrome。
 
 ### 11.3.5 自定义数据属性
 
-HTML5 规定可以为元素添加非标准的属性，但要添加前缀 data-，目的是为元素提供与渲染无关的
-信息，或者提供语义信息。这些属性可以任意添加、随便命名，只要以`data-`开头即可。来看一个例子。
+HTML5 规定可以为元素添加非标准的属性，但要添加前缀 data-，目的是为元素提供与渲染无关的信息，或者提供语义信息。这些属性可以任意添加、随便命名，只要以`data-`开头即可。来看一个例子。
 
 ```js
 <div id="myDiv" data-appId="12345" data-myname="Nicholas"></div>
 ```
 
-添加了自定义属性之后，可以通过元素的 dataset 属性来访问自定义属性的值。 dataset 属性的
-值是 DOMStringMap 的一个实例，也就是一个名值对儿的映射。在这个映射中，每个 data-name 形式
-的属性都会有一个对应的属性，只不过属性名没有 data-前缀（比如，自定义属性是 data-myname，
-那映射中对应的属性就是 myname）。还是看一个例子吧。
+添加了自定义属性之后，可以通过元素的 dataset 属性来访问自定义属性的值。 dataset 属性的值是 DOMStringMap 的一个实例，也就是一个名值对儿的映射。在这个映射中，每个 data-name 形式的属性都会有一个对应的属性，只不过属性名没有 data-前缀（比如，自定义属性是 data-myname，那映射中对应的属性就是 myname）。还是看一个例子吧。
 
 ```js
 //本例中使用的方法仅用于演示
@@ -6466,23 +6683,17 @@ if (div.dataset.myname){
 }
 ```
 
-如果需要给元素添加一些不可见的数据以便进行其他处理，那就要用到自定义数据属性。在跟踪链
-接或混搭应用中，通过自定义数据属性能方便地知道点击来自页面中的哪个部分。
+如果需要给元素添加一些不可见的数据以便进行其他处理，那就要用到自定义数据属性。在跟踪链接或混搭应用中，通过自定义数据属性能方便地知道点击来自页面中的哪个部分。
 
 在编写本书时，支持自定义数据属性的浏览器有 Firefox 6+和 Chrome。
 
 ### 11.3.6 插入标记
 
-虽然 DOM 为操作节点提供了细致入微的控制手段，但在需要给文档插入大量新 HTML 标记的情况
-下，通过 DOM 操作仍然非常麻烦，因为不仅要创建一系列 DOM 节点，而且还要小心地按照正确的顺
-序把它们连接起来。相对而言，使用插入标记的技术，直接插入 HTML 字符串不仅更简单，速度也更
-快。以下与插入标记相关的 DOM 扩展已经纳入了 HTML5 规范。
+虽然 DOM 为操作节点提供了细致入微的控制手段，但在需要给文档插入大量新 HTML 标记的情况下，通过 DOM 操作仍然非常麻烦，因为不仅要创建一系列 DOM 节点，而且还要小心地按照正确的顺序把它们连接起来。相对而言，使用插入标记的技术，直接插入 HTML 字符串不仅更简单，速度也更快。以下与插入标记相关的 DOM 扩展已经纳入了 HTML5 规范。
 
 **1. innerHTML 属性**
 
-在读模式下， innerHTML 属性返回与调用元素的所有子节点（包括元素、注释和文本节点）对应
-的 HTML 标记。在写模式下， innerHTML 会根据指定的值创建新的 DOM 树，然后用这个 DOM 树完全
-替换调用元素原先的所有子节点。下面是一个例子。
+在读模式下， innerHTML 属性返回与调用元素的所有子节点（包括元素、注释和文本节点）对应的 HTML 标记。在写模式下， innerHTML 会根据指定的值创建新的 DOM 树，然后用这个 DOM 树完全替换调用元素原先的所有子节点。下面是一个例子。
 
 ```html
 <div id="content">
@@ -6508,10 +6719,7 @@ if (div.dataset.myname){
 
 但是，不同浏览器返回的文本格式会有所不同。IE 和 Opera 会将所有标签转换为大写形式，而 Safari、 Chrome 和 Firefox 则会原原本本地按照原先文档中（或指定这些标签时）的格式返回 HTML，包括空格和缩进。不要指望所有浏览器返回的 innerHTML 值完全相同。
 
-在写模式下， innerHTML 的值会被解析为 DOM 子树，替换调用元素原来的所有子节点。因为它的
-值被认为是 HTML，所以其中的所有标签都会按照浏览器处理 HTML 的标准方式转换为元素（同样，
-这里的转换结果也因浏览器而异）。如果设置的值仅是文本而没有 HTML 标签，那么结果就是设置纯文
-本，如下所示。
+在写模式下， innerHTML 的值会被解析为 DOM 子树，替换调用元素原来的所有子节点。因为它的值被认为是 HTML，所以其中的所有标签都会按照浏览器处理 HTML 的标准方式转换为元素（同样，这里的转换结果也因浏览器而异）。如果设置的值仅是文本而没有 HTML 标签，那么结果就是设置纯文本，如下所示。
 
 ```js
 div.innerHTML = "Hello world!";
@@ -6526,29 +6734,21 @@ div.innerHTML = "Hello & welcome, <b>\"reader\"!</b>";
 
 以上操作得到的结果如下：
 
-```js
+```html
 <div id="content">Hello &amp; welcome, <b>&quot;reader&quot;!</b></div>
 ```
 
 设置了 innerHTML 之后，可以像访问文档中的其他节点一样访问新创建的节点。
 
+> 为 innerHTML 设置 HTML 字符串后，浏览器会将这个字符串解析为相应的 DOM 树。因此设置了 innerHTML 之后，再从中读取 HTML 字符串，会得到与设置时不一样的结果。原因在于返回的字符串是根据原始 HTML 字符串创建的 DOM 树经过序列化之后的结果。
 
-> 为 innerHTML 设置 HTML 字符串后，浏览器会将这个字符串解析为相应的 DOM
-树。因此设置了 innerHTML 之后，再从中读取 HTML 字符串，会得到与设置时不一
-样的结果。原因在于返回的字符串是根据原始 HTML 字符串创建的 DOM 树经过序列
-化之后的结果。
-
-使用 innerHTML 属性也有一些限制。比如，在大多数浏览器中，通过 innerHTML 插入`<script>`
-元素并不会执行其中的脚本。 IE8 及更早版本是唯一能在这种情况下执行脚本的浏览器，但必须满足一
-些条件。一是必须为`<script>`元素指定 defer 属性，二是`<script>`元素必须位于（微软所谓的）“有作用域的元素”（ scoped element）之后。 `<script>`元素被认为是“无作用域的元素”（ NoScope element），也就是在页面中看不到的元素，与`<style>`元素或注释类似。如果通过 innerHTML 插入的字符串开头就是一个“无作用域的元素”，那么 IE 会在解析这个字符串前先删除该元素。换句话说，以下代码达不到目的：
+使用 innerHTML 属性也有一些限制。比如，在大多数浏览器中，通过 innerHTML 插入`<script>`元素并不会执行其中的脚本。 IE8 及更早版本是唯一能在这种情况下执行脚本的浏览器，但必须满足一些条件。一是必须为`<script>`元素指定 defer 属性，二是`<script>`元素必须位于（微软所谓的）“有作用域的元素”（ scoped element）之后。 `<script>`元素被认为是“无作用域的元素”（ NoScope element），也就是在页面中看不到的元素，与`<style>`元素或注释类似。如果通过 innerHTML 插入的字符串开头就是一个“无作用域的元素”，那么 IE 会在解析这个字符串前先删除该元素。换句话说，以下代码达不到目的：
 
 ```js
 div.innerHTML = "<script defer>alert('hi');<\/script>"; //无效
 ```
 
-此时， innerHTML 字符串一开始（而且整个）就是一个“无作用域的元素”，所以这个字符串会变
-成空字符串。如果想插入这段脚本，必须在前面添加一个“有作用域的元素”，可以是一个文本节点，
-也可以是一个没有结束标签的元素如`<input>`。例如，下面这几行代码都可以正常执行：
+此时， innerHTML 字符串一开始（而且整个）就是一个“无作用域的元素”，所以这个字符串会变成空字符串。如果想插入这段脚本，必须在前面添加一个“有作用域的元素”，可以是一个文本节点，也可以是一个没有结束标签的元素如`<input>`。例如，下面这几行代码都可以正常执行：
 
 ```js
 div.innerHTML = "_<script defer>alert('hi');<\/script>";
@@ -6556,34 +6756,25 @@ div.innerHTML = "<div>&nbsp;</div><script defer>alert('hi');<\/script>";
 div.innerHTML = "<input type=\"hidden\"><script defer>alert('hi');<\/script>";
 ```
 
-第一行代码会在`<script>`元素前插入一个文本节点。事后，为了不影响页面显示，你可能需要移
-除这个文本节点。第二行代码采用的方法类似，只不过使用的是一个包含非换行空格的`<div>`元素。如
-果仅仅插入一个空的`<div>`元素，还是不行；必须要包含一点儿内容，浏览器才会创建文本节点。同样，为了不影响页面布局，恐怕还得移除这个节点。第三行代码使用的是一个隐藏的`<input>`域，也能达到相同的效果。不过，由于隐藏的`<input>`域不影响页面布局，因此这种方式在大多数情况下都是首选。大多数浏览器都支持以直观的方式通过 innerHTML 插入`<style>`元素，例如：
+第一行代码会在`<script>`元素前插入一个文本节点。事后，为了不影响页面显示，你可能需要移除这个文本节点。第二行代码采用的方法类似，只不过使用的是一个包含非换行空格的`<div>`元素。如果仅仅插入一个空的`<div>`元素，还是不行；必须要包含一点儿内容，浏览器才会创建文本节点。同样，为了不影响页面布局，恐怕还得移除这个节点。第三行代码使用的是一个隐藏的`<input>`域，也能达到相同的效果。不过，由于隐藏的`<input>`域不影响页面布局，因此这种方式在大多数情况下都是首选。大多数浏览器都支持以直观的方式通过 innerHTML 插入`<style>`元素，例如：
 
 ```js
 div.innerHTML = "<style type=\"text/css\">body {background-color: red; }</style>";
 ```
 
-但在 IE8 及更早版本中， `<style>`也是一个“没有作用域的元素”，因此必须像下面这样给它前置
-一个“有作用域的元素”：
+但在 IE8 及更早版本中， `<style>`也是一个“没有作用域的元素”，因此必须像下面这样给它前置一个“有作用域的元素”：
 
 ```js
 div.innerHTML = "_<style type=\"text/css\">body {background-color: red; }</style>";
 div.removeChild(div.firstChild);
 ```
 
-并不是所有元素都支持 innerHTML 属性。不支持 innerHTML 的元素有： `<col>`、 `<colgroup>`、
-`<frameset>`、 `<head>`、 `<html>`、 `<style>`、 `<table>`、 `<tbody>`、 `<thead>`、 `<tfoot>`和`<tr>`。此外，在 IE8 及更早版本中，` <title>`元素也没有 innerHTML 属性。
+并不是所有元素都支持 innerHTML 属性。不支持 innerHTML 的元素有： `<col>`、 `<colgroup>`、`<frameset>`、 `<head>`、 `<html>`、 `<style>`、 `<table>`、 `<tbody>`、 `<thead>`、 `<tfoot>`和`<tr>`。此外，在 IE8 及更早版本中，` <title>`元素也没有 innerHTML 属性。
 
-> Firefox 对在内容类型为 application/xhtml+xml 的 XHTML 文档中设置 innerHTML
-有严格的限制。在 XHTML 文档中使用 innerHTML 时， XHTML 代码必须完全符合
-要求。如果代码格式不正确，设置 innerHTML 将会静默地失败。
+> Firefox 对在内容类型为 application/xhtml+xml 的 XHTML 文档中设置 innerHTML有严格的限制。在 XHTML 文档中使用 innerHTML 时， XHTML 代码必须完全符合要求。如果代码格式不正确，设置 innerHTML 将会静默地失败。
 
-
-无论什么时候，只要使用 innerHTML 从外部插入 HTML，都应该首先以可靠的方式处理 HTML。
-IE8 为此提供了 `window.toStaticHTML()`方法，这个方法接收一个参数，即一个 HTML 字符串；返回
-一个经过无害处理后的版本——从源 HTML 中删除所有脚本节点和事件处理程序属性。下面就是一个
-例子：
+无论什么时候，只要使用 innerHTML 从外部插入 HTML，都应该首先以可靠的方式处理 HTML。IE8 为此提供了 `window.toStaticHTML()`方法，这个方法接收一个参数，即一个 HTML 字符串；返回
+一个经过无害处理后的版本——从源 HTML 中删除所有脚本节点和事件处理程序属性。下面就是一个例子：
 
 ```js
 var text = "<a href=\"#\" onclick=\"alert('hi')\">Click Me</a>";
@@ -6591,15 +6782,11 @@ var sanitized = window.toStaticHTML(text); //Internet Explorer 8 only
 alert(sanitized); //"<a href=\"#\">Click Me</a>"
 ```
 
-这个例子将一个 HTML 链接字符串传给了 `toStaticHTML()`方法，得到的无害版本中去掉了
-onclick 属性。虽然目前只有 IE8 原生支持这个方法，但我们还是建议读者在通过 innerHTML 插入代
-码之前，尽可能先手工检查一下其中的文本内容。
+这个例子将一个 HTML 链接字符串传给了`toStaticHTML()`方法，得到的无害版本中去掉了 onclick 属性。虽然目前只有 IE8 原生支持这个方法，但我们还是建议读者在通过 innerHTML 插入代码之前，尽可能先手工检查一下其中的文本内容。
 
 **2. outerHTML 属性**
 
-在读模式下， outerHTML 返回调用它的元素及所有子节点的 HTML 标签。 在写模式下， outerHTML
-会根据指定的 HTML 字符串创建新的 DOM 子树，然后用这个 DOM 子树完全替换调用元素。下面是一
-个例子。
+在读模式下， outerHTML 返回调用它的元素及所有子节点的 HTML 标签。 在写模式下， outerHTML 会根据指定的 HTML 字符串创建新的 DOM 子树，然后用这个 DOM 子树完全替换调用元素。下面是一个例子。
 
 ```html
 <div id="content">
@@ -6612,9 +6799,7 @@ onclick 属性。虽然目前只有 IE8 原生支持这个方法，但我们还�
 </div>
 ```
 
-如果在`<div>`元素上调用 outerHTML，会返回与上面相同的代码，包括`<div>`本身。不过，由于浏
-览器解析和解释 HTML 标记的不同，结果也可能会有所不同。（这里的不同与使用 innerHTML 属性时
-存在的差异性质是一样的。）
+如果在`<div>`元素上调用 outerHTML，会返回与上面相同的代码，包括`<div>`本身。不过，由于浏览器解析和解释 HTML 标记的不同，结果也可能会有所不同。（这里的不同与使用 innerHTML 属性时存在的差异性质是一样的。）
 
 使用 outerHTML 属性以下面这种方式设置值：
 
@@ -6636,41 +6821,36 @@ div.parentNode.replaceChild(p, div);
 
 **3. insertAdjacentHTML()方法**
 
-插入标记的最后一个新增方式是 `insertAdjacentHTML()`方法。这个方法最早也是在IE中出现的，
-它接收两个参数：插入位置和要插入的 HTML 文本。第一个参数必须是下列值之一：
+插入标记的最后一个新增方式是 `insertAdjacentHTML()`方法。这个方法最早也是在IE中出现的，它接收两个参数：插入位置和要插入的 HTML 文本。第一个参数必须是下列值之一：
 
 - "beforebegin"，在当前元素之前插入一个紧邻的同辈元素；
 - "afterbegin"， 在当前元素之下插入一个新的子元素或在第一个子元素之前再插入新的子元素；
 - "beforeend"， 在当前元素之下插入一个新的子元素或在最后一个子元素之后再插入新的子元素；
 - "afterend"，在当前元素之后插入一个紧邻的同辈元素。
 
-注意，这些值都必须是小写形式。第二个参数是一个 HTML 字符串（与 innerHTML 和 outerHTML
-的值相同），如果浏览器无法解析该字符串，就会抛出错误。以下是这个方法的基本用法示例。
+注意，这些值都必须是小写形式。第二个参数是一个 HTML 字符串（与 innerHTML 和 outerHTML 的值相同），如果浏览器无法解析该字符串，就会抛出错误。以下是这个方法的基本用法示例。
 
 ```js
 //作为前一个同辈元素插入
 element.insertAdjacentHTML("beforebegin", "<p>Hello world!</p>");
+
 //作为第一个子元素插入
 element.insertAdjacentHTML("afterbegin", "<p>Hello world!</p>");
+
 //作为最后一个子元素插入
 element.insertAdjacentHTML("beforeend", "<p>Hello world!</p>");
+
 //作为后一个同辈元素插入
 element.insertAdjacentHTML("afterend", "<p>Hello world!</p>");
 ```
 
-支持 `insertAdjacentHTML()`方法的浏览器有 IE、 Firefox 8+、 Safari、 Opera 和 Chrome。
+支持`insertAdjacentHTML()`方法的浏览器有 IE、 Firefox 8+、 Safari、 Opera 和 Chrome。
 
 **4. 内存与性能问题**
 
-使用本节介绍的方法替换子节点可能会导致浏览器的内存占用问题，尤其是在 IE 中，问题更加明
-显。在删除带有事件处理程序或引用了其他 JavaScript 对象子树时，就有可能导致内存占用问题。假设
-某个元素有一个事件处理程序（或者引用了一个 JavaScript 对象作为属性），在使用前述某个属性将该元素从文档树中删除后，元素与事件处理程序（或 JavaScript 对象）之间的绑定关系在内存中并没有一并删除。如果这种情况频繁出现，页面占用的内存数量就会明显增加。因此，在使用 innerHTML、
-outerHTML 属性和 `insertAdjacentHTML()`方法时，最好先手工删除要被替换的元素的所有事件处理
-程序和 JavaScript 对象属性（第 13 章将进一步讨论事件处理程序）。
+使用本节介绍的方法替换子节点可能会导致浏览器的内存占用问题，尤其是在 IE 中，问题更加明显。在删除带有事件处理程序或引用了其他 JavaScript 对象子树时，就有可能导致内存占用问题。假设某个元素有一个事件处理程序（或者引用了一个 JavaScript 对象作为属性），在使用前述某个属性将该元素从文档树中删除后，元素与事件处理程序（或 JavaScript 对象）之间的绑定关系在内存中并没有一并删除。如果这种情况频繁出现，页面占用的内存数量就会明显增加。因此，在使用 innerHTML、 outerHTML 属性和 `insertAdjacentHTML()`方法时，最好先手工删除要被替换的元素的所有事件处理程序和 JavaScript 对象属性（第 13 章将进一步讨论事件处理程序）。
 
-不过，使用这几个属性——特别是使用 innerHTML，仍然还是可以为我们提供很多便利的。一般
-来说，在插入大量新 HTML 标记时，使用 innerHTML 属性与通过多次 DOM 操作先创建节点再指定它
-们之间的关系相比，效率要高得多。这是因为在设置 innerHTML 或 outerHTML 时，就会创建一个 HTML 解析器。这个解析器是在浏览器级别的代码（通常是 C++编写的）基础上运行的，因此比执行 JavaScript 快得多。不可避免地，创建和销毁 HTML 解析器也会带来性能损失，所以最好能够将设置 innerHTML 或 outerHTML 的次数控制在合理的范围内。例如，下列代码使用 innerHTML 创建了很多列表项：
+不过，使用这几个属性——特别是使用 innerHTML，仍然还是可以为我们提供很多便利的。一般来说，在插入大量新 HTML 标记时，使用 innerHTML 属性与通过多次 DOM 操作先创建节点再指定它们之间的关系相比，效率要高得多。这是因为在设置 innerHTML 或 outerHTML 时，就会创建一个 HTML 解析器。这个解析器是在浏览器级别的代码（通常是 C++编写的）基础上运行的，因此比执行 JavaScript 快得多。不可避免地，创建和销毁 HTML 解析器也会带来性能损失，所以最好能够将设置 innerHTML 或 outerHTML 的次数控制在合理的范围内。例如，下列代码使用 innerHTML 创建了很多列表项：
 
 ```js
 for (var i=0, len=values.length; i < len; i++){
@@ -6678,9 +6858,7 @@ for (var i=0, len=values.length; i < len; i++){
 }
 ```
 
-这种每次循环都设置一次 innerHTML 的做法效率很低。而且，每次循环还要从 innerHTML 中读
-取一次信息，就意味着每次循环要访问两次 innerHTML。最好的做法是单独构建字符串，然后再一次
-性地将结果字符串赋值给 innerHTML，像下面这样：
+这种每次循环都设置一次 innerHTML 的做法效率很低。而且，每次循环还要从 innerHTML 中读取一次信息，就意味着每次循环要访问两次 innerHTML。最好的做法是单独构建字符串，然后再一次性地将结果字符串赋值给 innerHTML，像下面这样：
 
 ```js
 var itemsHtml = "";
@@ -6694,22 +6872,16 @@ ul.innerHTML = itemsHtml;
 
 ### 11.3.7 scrollIntoView()方法
 
-如何滚动页面也是 DOM 规范没有解决的一个问题。为了解决这个问题，浏览器实现了一些方法，
-以方便开发人员更好地控制页面滚动。在各种专有方法中， HTML5 最终选择了 `scrollIntoView()`作
-为标准方法。
+如何滚动页面也是 DOM 规范没有解决的一个问题。为了解决这个问题，浏览器实现了一些方法，以方便开发人员更好地控制页面滚动。在各种专有方法中， HTML5 最终选择了 `scrollIntoView()`作为标准方法。
 
-`scrollIntoView()`可以在所有 HTML 元素上调用，通过滚动浏览器窗口或某个容器元素，调用
-元素就可以出现在视口中。如果给这个方法传入 true 作为参数，或者不传入任何参数，那么窗口滚动
-之后会让调用元素的顶部与视口顶部尽可能平齐。如果传入 false 作为参数，调用元素会尽可能全部
-出现在视口中，（可能的话，调用元素的底部会与视口顶部平齐。）不过顶部不一定平齐，例如：
+`scrollIntoView()`可以在所有 HTML 元素上调用，通过滚动浏览器窗口或某个容器元素，调用元素就可以出现在视口中。如果给这个方法传入 true 作为参数，或者不传入任何参数，那么窗口滚动之后会让调用元素的顶部与视口顶部尽可能平齐。如果传入 false 作为参数，调用元素会尽可能全部出现在视口中，（可能的话，调用元素的底部会与视口顶部平齐。）不过顶部不一定平齐，例如：
 
 ```js
 //让元素可见
 document.forms[0].scrollIntoView();
 ```
 
-当页面发生变化时，一般会用这个方法来吸引用户的注意力。实际上，为某个元素设置焦点也会导
-致浏览器滚动并显示出获得焦点的元素。
+当页面发生变化时，一般会用这个方法来吸引用户的注意力。实际上，为某个元素设置焦点也会导致浏览器滚动并显示出获得焦点的元素。
 
 支持 `scrollIntoView()`方法的浏览器有 IE、 Firefox、 Safari 和 Opera。
 
@@ -6725,27 +6897,17 @@ document.forms[0].scrollIntoView();
 
 ## 11.5 小结　
 
-虽然 DOM 为与 XML 及 HTML 文档交互制定了一系列核心 API，但仍然有几个规范对标准的 DOM
-进行了扩展。这些扩展中有很多原来是浏览器专有的，但后来成为了事实标准，于是其他浏览器也都提
-供了相同的实现。本章介绍的三个这方面的规范如下。
+虽然 DOM 为与 XML 及 HTML 文档交互制定了一系列核心 API，但仍然有几个规范对标准的 DOM进行了扩展。这些扩展中有很多原来是浏览器专有的，但后来成为了事实标准，于是其他浏览器也都提供了相同的实现。本章介绍的三个这方面的规范如下。
 
-- Selectors API，定义了两个方法，让开发人员能够基于 CSS 选择符从 DOM 中取得元素，这两个
-方法是 querySelector()和 querySelectorAll()。
-- Element Traversal，为 DOM 元素定义了额外的属性，让开发人员能够更方便地从一个元素跳到
-另一个元素。之所以会出现这个扩展，是因为浏览器处理 DOM 元素间空白符的方式不一样。
-- HTML5，为标准的 DOM 定义了很多扩展功能。其中包括在 innerHTML 属性这样的事实标准基
-础上提供的标准定义，以及为管理焦点、设置字符集、滚动页面而规定的扩展 API。
+- Selectors API，定义了两个方法，让开发人员能够基于 CSS 选择符从 DOM 中取得元素，这两个方法是`querySelector()`和`querySelectorAll()`。
+- Element Traversal，为 DOM 元素定义了额外的属性，让开发人员能够更方便地从一个元素跳到另一个元素。之所以会出现这个扩展，是因为浏览器处理 DOM 元素间空白符的方式不一样。
+- HTML5，为标准的 DOM 定义了很多扩展功能。其中包括在 innerHTML 属性这样的事实标准基础上提供的标准定义，以及为管理焦点、设置字符集、滚动页面而规定的扩展 API。
 
-虽然目前 DOM 扩展的数量还不多，但随着 Web 技术的发展，相信一定还会涌现出更多扩展来。很
-多浏览器都在试验专有的扩展，而这些扩展一旦获得认可，就能成为“伪”标准，甚至会被收录到规范
-的更新版本中。
+虽然目前 DOM 扩展的数量还不多，但随着 Web 技术的发展，相信一定还会涌现出更多扩展来。很多浏览器都在试验专有的扩展，而这些扩展一旦获得认可，就能成为“伪”标准，甚至会被收录到规范的更新版本中。
 
 # 第12章 DOM2和DOM3　
 
-DOM1 级主要定义的是 HTML 和 XML 文档的底层结构。 DOM2 和 DOM3 级则在这个结构
-的基础上引入了更多的交互能力，也支持了更高级的 XML 特性。为此， DOM2 和 DOM3
-级分为许多模块（模块之间具有某种关联），分别描述了 DOM 的某个非常具体的子集。这些模块
-如下。
+DOM1 级主要定义的是 HTML 和 XML 文档的底层结构。 DOM2 和 DOM3 级则在这个结构的基础上引入了更多的交互能力，也支持了更高级的 XML 特性。为此， DOM2 和 DOM3 级分为许多模块（模块之间具有某种关联），分别描述了 DOM 的某个非常具体的子集。这些模块如下。
 
 - DOM2 级核心（ DOM Level 2 Core）：在 1 级核心基础上构建，为节点添加了更多方法和属性。
 - DOM2 级视图（ DOM Level 2 Views）：为文档定义了基于样式信息的不同视图。
@@ -6757,13 +6919,40 @@ DOM1 级主要定义的是 HTML 和 XML 文档的底层结构。 DOM2 和 DOM3 �
 新接口。
 
 本章探讨除“DOM2 级事件”之外的所有模块，“DOM2 级事件”模块将在第 13 章进行全面讲解。
-DOM3 级又增加了“XPath”模块和“加载与保存”（ Load and Save）模块。这些模块将在第 18 章讨论。
+
+> DOM3 级又增加了“XPath”模块和“加载与保存”（ Load and Save）模块。这些模块将在第 18 章讨论。
 
 ## 12.1 DOM变化 
 
-针对XML命名空间的变化。其它方面的变化，DocumentType类型的变化，Document类型的变化、NOde类型的变化、框架的变化。
+DOM2 级和 3 级的目的在于扩展 DOM API，以满足操作 XML 的所有需求，同时提供更好的错误处理及特性检测能力。从某种意义上讲，实现这一目的很大程度意味着对命名空间的支持。“DOM2 级核心”没有引入新类型，它只是在 DOM1 级的基础上通过增加新方法和新属性来增强了既有类型。“DOM3级核心”同样增强了既有类型，但也引入了一些新类型。
+
+类似地，“DOM2 级视图”和“DOM2 级 HTML”模块也增强了 DOM 接口，提供了新的属性和方法。由于这两个模块很小，因此我们将把它们与“DOM2 级核心”放在一起，讨论基本 JavaScript 对象的变化。可以通过下列代码来确定浏览器是否支持这些 DOM 模块。
+
+```js
+var supportsDOM2Core = document.implementation.hasFeature("Core", "2.0");
+var supportsDOM3Core = document.implementation.hasFeature("Core", "3.0");
+var supportsDOM2HTML = document.implementation.hasFeature("HTML", "2.0");
+var supportsDOM2Views = document.implementation.hasFeature("Views", "2.0");
+var supportsDOM2XML = document.implementation.hasFeature("XML", "2.0");
+```
+
+本章只讨论那些已经有浏览器实现的部分，任何浏览器都没有实现的部分将不作讨论。
+
+### 12.1.1 针对XML命名空间的变化
+### 12.1.2 其他方面的变化
 
 ## 12.2 样式 
+
+在 HTML 中定义样式的方式有 3 种：通过`<link/>`元素包含外部样式表文件、使用`<style/>`元素定义嵌入式样式，以及使用 style 特性定义针对特定元素的样式。“DOM2 级样式”模块围绕这 3 种应用样式的机制提供了一套 API。要确定浏览器是否支持 DOM2 级定义的 CSS 能力，可以使用下列代码。
+
+```js
+var supportsDOM2CSS = document.implementation.hasFeature("CSS", "2.0");
+var supportsDOM2CSS2 = document.implementation.hasFeature("CSS2", "2.0");
+```
+
+### 12.2.1 访问元素的样式
+### 12.2.2 操作样式表
+### 12.2.3 元素大小
 
 任何支持style特性的HTML元素在JavaScript中都有一个对应的style属性。这个style对象是CSSStyleDeclaration的实例，包含着通过HTML的style特性指定的所有样式信息，但不包含与外部样式表或嵌入样式表经层叠而来的样式。对于使用短划线的CSS属性名，必须将其转换成驼峰大小写的形式，才能通过JavaScript来访问。由于在JavaScript中float是保留字，因此不能作为属性名，所以改成cssFloat。同时还定义了一些属性和方法，可以修改样式，例如cssText属性可以访问style特性中的CSS代码，这是为元素应用多项变化最快捷的方式，因为可以一次性地应用所有变化。设置length属性的木笔，就是将其与item()方法配套使用，以便迭代在元素中定义的CSS属性，同时可以使用`getPropertyValue()`和`getPropertyCSSValue()`方法获得属性值。前者获得字符串，后者获得包含两个属性的CSSValue对象。计算的样可以使用getComputedStyle()方法，这个方法接受两个参数：要取得计算样式的元素和一个伪元素字符串。如果不需要伪元素信息，第二个参数可以是null，返回的是一个CSSStyleDeclaration对象（与style属性的类型相同），其中包含当前元素的所有计算的样式，所有计算的样式都是只读的。
 
@@ -6775,9 +6964,43 @@ CSS规则。CSSRule对象表示样式表中的每一条规则，是一个供其�
 
 ## 12.3 遍历 
 
+“DOM2 级遍历和范围”模块定义了两个用于辅助完成顺序遍历 DOM 结构的类型： NodeIterator 和 TreeWalker。这两个类型能够基于给定的起点对 DOM 结构执行深度优先（depth-first）的遍历操作。在与 DOM 兼容的浏览器中（Firefox 1 及更高版本、 Safari 1.3 及更高版本、 Opera 7.6 及更高版本、 Chrome0.2 及更高版本），都可以访问到这些类型的对象。 IE 不支持 DOM 遍历。使用下列代码可以检测浏览器对 DOM2 级遍历能力的支持情况。
+
+```js
+var supportsTraversals = document.implementation.hasFeature("Traversal", "2.0");
+var supportsNodeIterator = (typeof document.createNodeIterator == "function");
+var supportsTreeWalker = (typeof document.createTreeWalker == "function");
+```
+
+如前所述， DOM 遍历是深度优先的 DOM 结构遍历，也就是说，移动的方向至少有两个（取决于使用的遍历类型）。遍历以给定节点为根，不可能向上超出 DOM 树的根节点。以下面的 HTML 页面为例。
+
+```html
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Example</title>
+  </head>
+  <body>
+    <p><b>Hello</b> world!</p>
+  </body>
+</html>
+```
+
+任何节点都可以作为遍历的根节点。如果假设`<body>`元素为根节点，那么遍历的第一步就是访问`<p>`元素，然后再访问同为`<body>`元素后代的两个文本节点。不过，这次遍历永远不会到达`<html>`、 `<head>`元素，也不会到达不属于`<body>`元素子树的任何节点。而以 document 为根节点的遍历则可以访问到文档中的全部节点。图 12-5 展示了对以 document 为根节点的 DOM 树进行深度优先遍历的先后顺序。
+
+从 document 开始依序向前，访问的第一个节点是 document，访问的最后一个节点是包含"world!"的文本节点。从文档最后的文本节点开始，遍历可以反向移动到 DOM 树的顶端。此时，访问的第一个节点是包含"Hello"的文本节点，访问的最后一个节点是 document 节点。 NodeIterator 和 TreeWalker 都以这种方式执行遍历。
+
+### 12.3.1 NodeIterator
+### 12.3.2 TreeWalker
+
 “DOM2级遍历和范围”模块定义了两个用于辅助完成顺序遍历DOM结构的类型：NodeIterator和TreeWalker，这两个类型能够基于给定的起点对DOM结构执行深度优先的遍历操作。NodeIterator类型是两者中比较简单的一个，可以使用document.creatNodeIterator()方法创建它的新实例，这个方法接收4个参数，通过filter参数来指定自定义的NodeFilter对象，或者指定一个功能类似节点过滤器的函数。每个NodeFilter对象只有一个方法，即acceptNode()方法。NodeIterator类型的两个主要方法是nextNode()和previousNode()，在深度优先的DOM子树遍历中，前者表示向前前进一步，后者用于向后后退一步。TreeWalker是NOdeIterator的一个更高级的版本，除了包括nextNode()和previousNode()在内的相同的功能之外，这个类型还提供了下列用于在不同方向上遍历DOM结构的方法：parentNode()、firstChild()、lastChild()、nextSibling()、previousSibling()，创建TreeWalker对象要使用document.createTreeWalker()方法，这个方法也是接受和上面一个方法相同的四个参数。TreeWalker类型还有一个属性，名为currentNode，表示任何遍历方法在上一次遍历中返回的节点。
 
 ## 12.4 范围
+
+为了让开发人员更方便地控制页面，“DOM2 级遍历和范围”模块定义了“范围”（range）接口。通过范围可以选择文档中的一个区域，而不必考虑节点的界限（选择在后台完成，对用户是不可见的）。在常规的 DOM 操作不能更有效地修改文档时，使用范围往往可以达到目的。 Firefox、 Opera、 Safari 和Chrome 都支持 DOM 范围。 IE 以专有方式实现了自己的范围特性。
+
+### 12.4.1 DOM中的范围
+### 12.4.2 IE8 及更早版本中的范围
 
 “DOM2级遍历和范围”模块定义了“范围”接口，通过范围可以选择文档中的一个区域，而不必考虑节点的界限。与节点类似，新创建的范围也直接与创建它的文档关联在一起，不能用于其他文档。每个范围由一个Range类型的实例表示，这个实例拥有很多属性和方法。
 
@@ -6795,7 +7018,25 @@ CSS规则。CSSRule对象表示样式表中的每一条规则，是一个供其�
 
 复制DOM范围。可以使用cloneRange()方法复制范围，这个方法会创建调用它的范围的一个副本。清理DOM范围。在使用完范围之后，最好是调用detach()方法，以便从创建范围的文档中分离出该范围。调用detach()之后，就可以放心地接触对范围的引用，从而让垃圾回收机制回收其内存了。
 
-12.5　小结　
+## 12.5 小结　
+
+DOM2 级规范定义了一些模块，用于增强 DOM1 级。“DOM2 级核心”为不同的 DOM 类型引入了一些与 XML 命名空间有关的方法。这些变化只在使用 XML 或 XHTML 文档时才有用；对于 HTML 文档没有实际意义。除了与 XML 命名空间有关的方法外，“DOM2 级核心”还定义了以编程方式创建Document 实例的方法，也支持了创建 DocumentType 对象。
+
+“DOM2 级样式”模块主要针对操作元素的样式信息而开发，其特性简要总结如下。
+
++ 每个元素都有一个关联的 style 对象，可以用来确定和修改行内的样式。
++ 要确定某个元素的计算样式（包括应用给它的所有 CSS 规则），可以使用`getComputedStyle()`方法。
++ IE 不支持`getComputedStyle()`方法，但为所有元素都提供了能够返回相同信息 currentStyle属性。
++ 可以通过 document.styleSheets 集合访问样式表。
++ 除 IE 之外的所有浏览器都支持针对样式表的这个接口， IE 也为几乎所有相应的 DOM 功能提供了自己的一套属性和方法。
+
+“DOM2 级遍历和范围”模块提供了与 DOM 结构交互的不同方式，简要总结如下。
+
++ 遍历即使用 NodeIterator 或 TreeWalker 对 DOM 执行深度优先的遍历。
++ NodeIterator 是一个简单的接口，只允许以一个节点的步幅前后移动。而 TreeWalker 在提供相同功能的同时，还支持在 DOM 结构的各个方向上移动，包括父节点、同辈节点和子节点等方向。
++ 范围是选择 DOM 结构中特定部分，然后再执行相应操作的一种手段。
++ 使用范围选区可以在删除文档中某些部分的同时，保持文档结构的格式良好，或者复制文档中的相应部分。
++ IE8 及更早版本不支持“DOM2 级遍历和范围”模块，但它提供了一个专有的文本范围对象，可以用来完成简单的基于文本的范围操作。 IE9 完全支持 DOM 遍历。
 
 # 第13章 事件　
 
