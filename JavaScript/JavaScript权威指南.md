@@ -547,7 +547,7 @@ function highlight(e) {   // 通过设置CSS类来高亮显示e
 // "load"事件只有在文档加载完成后才会触发
 //通常需要等待load事件发生后才开始执行JavaScript代码
 window.onload = function() { // 当文档加载完成时执行这里的代码
-    // 找到文档中所有的<img>标签
+    // 找到文档中所有的`<img>`标签
     var images = document.getElementsByTagName("img");
 
     // 遍历 images，给每个节点的"click"事件添加事件处理程序
@@ -2465,7 +2465,7 @@ x;        // 运行时出错，没有定义x
 
 void是一元运算符，它出现在操作数之前，操作数可以是任意类型。这个运算符并不是经常使用：操作数会照常计算，但忽略计算结果并返回undefined。由于void会忽略操作数的值，因此在操作数具有副作用的时候使用void来让程序更具语义。
 
-这个运算符最常用在客户端的URL——javascript:URL中，在URL中可以写带有副作用的表达式，而void则让浏览器不必显示这个表达式的计算结果。例如，经常在HTML代码中的`<a>`标签里使用void运算符：
+这个运算符最常用在客户端的URL——javascript:URL中，在URL中可以写带有副作用的表达式，而void则让浏览器不必显示这个表达式的计算结果。例如，经常在HTML代码中的``<a>``标签里使用void运算符：
 
 ```js
 <a href="javascript:void window.open();">new</a>
@@ -8262,197 +8262,231 @@ collections.sets = {};
 - 如何通过创建、插入和删除节点来修改文档结构。
 - 如何与HTML表单一起工作。
 
-本章最后一节涵盖其他各种文档特性，包含referrer属性、write()方法和查询当前文档中选取的文档文本的技术等。
+本章最后一节涵盖其他各种文档特性，包含referrer属性、`write()`方法和查询当前文档中选取的文档文本的技术等。
 
 ## 15.1 DOM概览
 
-文档对象模型（DOM）是表示和操作HTML和XML文档内容的基础API。API不是特别复杂，但是需要理解大量的架构细节。首先，应该理解HTML或XML文档的嵌套元素在DOM树对象中的表示。HTML文档的树状结构包含表示HTML标签或元素（如<body>、<p>）和表示文本字符串的节点，它也可能包含表示HTML注释的节点。考虑以下简单的HTML文档：
+文档对象模型（DOM）是表示和操作HTML和XML文档内容的基础API。API不是特别复杂，但是需要理解大量的架构细节。首先，应该理解HTML或XML文档的嵌套元素在DOM树对象中的表示。HTML文档的树状结构包含表示HTML标签或元素（如`<body>``、<p>`）和表示文本字符串的节点，它也可能包含表示HTML注释的节点。考虑以下简单的HTML文档：
 
-```
-            <html>
-                <head>
-                    <title>title name</title>
-                </head>
-                <body>
-                    <h1>an html Document</h1>
-                    <p>this is a <i>simple</i>docuent</p>
-                </body>
-            </html>    
+```html
+<html>
+  <head>
+    <title>title name</title>
+  </head>
+  <body>
+    <h1>an html Document</h1>
+    <p>this is a <i>simple</i>docuent</p>
+  </body>
+</html>    
 ```
 
 如果还未熟悉计算机编程中的树状结构，借用家谱图来形容是比较有用的方法。在一个节点之上的直接节点是其父节点，在其下一层的直接节点是其子节点。在同一层上具有相同父节点的节点是兄弟节点。在一个节点之下的所有层级的一组节点是其后代节点。一个节点的任何父节点、祖父节点和其上层的所有节点是祖先节点。
 
-图15-1中的每个方框是文档的一个节点，它表示一个Node对象。我们将在后续几节中讨论Node的属性和方法，并且可以在第四部分查找这些属性和方法。注意，图15-1包含3种不同类型的节点。树形的根部是Document节点，它代表整个文档。代表HTML元素的节点是Element节点，代表文本的节点是Text节点。Document、Element和Text是Node的子类，在第四部分中它们有自己的条目。Document和Element是两个重要的DOM类，本章大部分内容将阐述它们的属性和方法。
+图15-1中的每个方框是文档的一个节点，它表示一个 Node 对象。我们将在后续几节中讨论 Node 的属性和方法，并且可以在第四部分查找这些属性和方法。注意，图15-1包含3种不同类型的节点。树形的根部是 Document 节点，它代表整个文档。代表 HTML 元素的节点是 Element 节点，代表文本的节点是 Text 节点。 Document 、 Element 和 Text 是 Node 的子类，在第四部分中它们有自己的条目。 Document 和 Element 是两个重要的 DOM 类，本章大部分内容将阐述它们的属性和方法。
 
-图15-2展示了Node及其在类型层次结构中的子类型。注意，通用的Document和Element类型与HTMLDocument和HTMLElement类型之间是有严格的区别的。Document类型代表一个HTML或XML文档，Element类型代表该文档中的一个元素。HTMLDocument和HTMLElement子类只是针对于HTML文档和元素。此书中，我们经常使用通用类名Document和Element，甚至在指代HTML文档时也不例外。在第四部分中也是如此：HTMLDocument和HTMLElement类型的属性和方法记录于Document和Element参考页中。
+图15-2展示了 Node 及其在类型层次结构中的子类型。注意，通用的 Document 和 Element 类型与 HTMLDocument 和 HTMLElement 类型之间是有严格的区别的。 Document 类型代表一个 HTML 或 XML 文档， Element 类型代表该文档中的一个元素。 HTMLDocument 和 HTMLElement 子类只是针对于 HTML 文档和元素。此书中，我们经常使用通用类名 Document 和 Element ，甚至在指代 HTML 文档时也不例外。在第四部分中也是如此： HTMLDocument 和 HTMLElement 类型的属性和方法记录于 Document 和 Element 参考页中。
 
-值得注意的是，在图15-2中有HTMLElement的很多子类型代表HTML元素的具体类型。每个类型定义多个 JavaScript 属性，它们对应具体的元素或元素组（参照15.4.1节）的HTML属性。有些具体元素类也定义额外的属性和方法，它们并不是简单地映射HTML语法。第四部分涵盖这些类型及其额外的特性。
+值得注意的是，在图15-2中有 HTMLElement 的很多子类型代表 HTML 元素的具体类型。每个类型定义多个 JavaScript 属性，它们对应具体的元素或元素组（参照15.4.1节）的HTML属性。有些具体元素类也定义额外的属性和方法，它们并不是简单地映射 HTML 语法。第四部分涵盖这些类型及其额外的特性。
 
-最后，请注意图15-2也展示了到目前为止还未提及的一些节点类型。Comment节点代表HTML或XML的注释。由于注释基本上是文本字符串，因此它们很像表示文档中显示文本的Text节点。CharacterData通常是Text和Comment的祖先，它定义这两种节点所共享的方法。Attr节点类型代表XML或HTML属性，但它几乎从不使用，因为和文档节点不同，Element类型定义了将属性当做“名/值”对使用的方法。DocumentFragment类（未在图15-2上显示）在实际文档中并不存在的一种节点：它代表一系列没有常规父节点的节点。对一些文档操作来说DocumentFragment非常有用，15.6.4节涵盖这部分内容。DOM也定义了一些不经常使用的类型，如像代表doctype声明和XML处理指令等类型。
+最后，请注意图15-2也展示了到目前为止还未提及的一些节点类型。 Comment 节点代表 HTML 或 XML 的注释。由于注释基本上是文本字符串，因此它们很像表示文档中显示文本的 Text 节点。 CharacterData 通常是 Text 和 Comment 的祖先，它定义这两种节点所共享的方法。 Attr 节点类型代表 XML 或 HTML 属性，但它几乎从不使用，因为和文档节点不同， Element 类型定义了将属性当做“名/值”对使用的方法。 DocumentFragment 类（未在图15-2上显示）在实际文档中并不存在的一种节点：它代表一系列没有常规父节点的节点。对一些文档操作来说 DocumentFragment 非常有用，15.6.4节涵盖这部分内容。 DOM 也定义了一些不经常使用的类型，如像代表 doctype 声明和XML处理指令等类型。
 
 ## 15.2 选取文档元素
 
-大多数客户端 JavaScript 程序运行时总是在操作一个或多个文档元素。当这些程序启动时，可以使用全局变量document来引用Document对象。但是，为了操作文档中的元素，必须通过某种方式获得或选取这些引用文档元素的Element对象。DOM定义许多方式来选取元素，查询文档的一个或多个元素有如下方法：
-- 用指定的id属性；
-- 用指定的name属性；用指定的标签名字；
-- 用指定的CSS类；
-- 匹配指定的CSS选择器。
+大多数客户端 JavaScript 程序运行时总是在操作一个或多个文档元素。当这些程序启动时，可以使用全局变量 document 来引用 Document 对象。但是，为了操作文档中的元素，必须通过某种方式获得或选取这些引用文档元素的 Element 对象。 DOM 定义许多方式来选取元素，查询文档的一个或多个元素有如下方法：
 
-### 15.2.1 通过指定的ID属性
+- 用指定的 id 属性；
+- 用指定的 name 属性；用指定的标签名字；
+- 用指定的 CSS 类；
+- 匹配指定的 CSS 选择器。
 
-任何HTML元素可以有一个id属性，在文档中该值必须唯一，即同一个文档中的两个元素不能有相同的ID。可以用Document对象的getElementById()方法选取一个基于唯一ID的元素。此方法我们在第13章和第14章都已经使用过了：
+### 15.2.1 通过ID选取元素
 
+任何HTML元素可以有一个 id 属性，在文档中该值必须唯一，即同一个文档中的两个元素不能有相同的 ID 。可以用 Document 对象的`getElementById()`方法选取一个基于唯一ID的元素。此方法我们在第13章和第14章都已经使用过了：
+
+```js
 var section1 = document.getElementById("section1")
-
-这是最简单和常用的选取元素的方法。如果想要操作某一组指定的文档元素，提供这些元素的id属性值，并使用ID查找这些Element对象。如果需要通过ID查找多个元素，会发现例15-1中的getElements()函数非常有用：
-
-```
-            /**
-             * 函数接受任意多的字符串参数
-             * 每个参数将当做元素的id传给document.getElementById()
-             * 返回一个对象，它把这些id映射到对应的Element对象
-             * 如任何一个id对应的元素未定义，则抛出一个Error对象
-             **/
-            function getElement( /*ID(s)*/ ) {
-                var elements = {}; //开始是一个map映射对象
-                for (var i = 0; arguments.length; i++) { //循环每个参数
-                    var id = arguments[i]; //参数是元素的id
-                    var elt = document.getElementById(id); //查找元素
-                    if (elt == null)
-                        throw new Error("No element with id: " + id); //抛出异常
-                    elements[id] = elt; //id和元素之间的映射
-                }
-                return elements; //对于元素映射返回id
-            }
 ```
 
-在低于IE 8版本的浏览器中，getElementById()对匹配元素的ID不区分大小写，而且也返回匹配name属性的元素。
+这是最简单和常用的选取元素的方法。如果想要操作某一组指定的文档元素，提供这些元素的 id 属性值，并使用 ID 查找这些Element对象。如果需要通过 ID 查找多个元素，会发现例15-1中的`getElements()`函数非常有用：
 
-### 15.2.2 通过指定的name属性
+```js
+/**
+  * 函数接受任意多的字符串参数
+  * 每个参数将当做元素的id传给document.getElementById()
+  * 返回一个对象，它把这些id映射到对应的Element对象
+  * 如任何一个id对应的元素未定义，则抛出一个Error对象
+  **/
+function getElements( /*ID(s)*/ ) {
+  var elements = {}; //开始是一个map映射对象
+  for (var i = 0; arguments.length; i++) { //循环每个参数
+    var id = arguments[i]; //参数是元素的id
+    var elt = document.getElementById(id); //查找元素
+    if (elt == null)
+        throw new Error("No element with id: " + id); //抛出异常
+    elements[id] = elt; //id和元素之间的映射
+  }
+  return elements; //对于元素映射返回id
+}
+```
 
-HTML的name属性最初打算为表单元素分配名字，在表单数据提交到服务器时使用该属性的值。类似id属性，name是给元素分配名字，但是区别于id，name属性的值不是必须唯一：多个元素可能有同样的名字，在表单中，单选和复选按钮通常是这种情况。而且，和id不一样的是name属性只在少数HTML元素中有效，包括表单、表单元素、<iframe>和<img>元素。
+在低于IE 8版本的浏览器中，`getElementById()`对匹配元素的 ID 不区分大小写，而且也返回匹配 name 属性的元素。
 
-基于name属性的值选取HTML元素，可以使用Document对象的getElementsByName()方法。
+### 15.2.2 通过名字选取元素
 
-            var radiobuttons = document.getElementsByName("favorite_color");
+HTML的name属性最初打算为表单元素分配名字，在表单数据提交到服务器时使用该属性的值。类似 id 属性， name 是给元素分配名字，但是区别于 id ， name 属性的值不是必须唯一：多个元素可能有同样的名字，在表单中，单选和复选按钮通常是这种情况。而且，和 id 不一样的是 name 属性只在少数 HTML 元素中有效，包括表单、表单元素、`<iframe>`和`<img>`元素。
 
-getElementsByName()定义在HTMLDocument类中，而不在Document类中，所以它只针对HTML文档可用，在XML文档中不可用。它返回一个NodeList对象，后者的行为类似一个包含若干Element对象的只读数组。在IE中，getElementsByName()也返回id属性匹配指定值的元素。为了兼容，应该小心谨慎，不要将同样的字符串同时用做名字和ID。
+基于 name 属性的值选取 HTML 元素，可以使用 Document 对象的`getElementsByName()`方法。
 
-在14.7节中我们看到，为某些HTML元素设置name属性值将自动为Window对象中创建对应的属性，对Document对象也类似。为<form>、<img>、<iframe>、<applet>、<embed>或<object>元素（其中只有<object>元素没有后备对象）设置name属性值，即在Document对象中创建以此name属性值为名字的属性（当然，假设此文档还没有该名字的属性）。
+```js
+var radiobuttons = document.getElementsByName("favorite_color");
+```
 
-如果给定的名字只有一个元素，自动创建的文档属性对应的该值是元素本身。如果有多个元素，该文档属性的值是一个NodeList对象，它表现为一个包含这些元素的数组。如14.7节所示，为若干命名<iframe>元素所创建的文档属性比较特殊：它们指代这些框架的Window对象而不是Element对象。
+`getElementsByName()`定义在 HTMLDocument 类中，而不在 Document 类中，所以它只针对 HTML 文档可用，在XML文档中不可用。它返回一个 NodeList 对象，后者的行为类似一个包含若干 Element 对象的只读数组。在 IE 中，`getElementsByName()`也返回 id 属性匹配指定值的元素。为了兼容，应该小心谨慎，不要将同样的字符串同时用做名字和 ID 。
 
-这就意味着有些元素可以作为Document属性仅通过名字来选取：
+在14.7节中我们看到，为某些 HTML 元素设置 name 属性值将自动为 Window 对象中创建对应的属性，对 Document 对象也类似。为`<form>`、`<img>`、`<iframe>`、`<applet>`、`<embed>`或`<object>`元素（其中只有`<object>`元素没有后备对象）设置 name 属性值，即在 Document 对象中创建以此 name 属性值为名字的属性（当然，假设此文档还没有该名字的属性）。
 
-                 //征对<form name="shipping">元素，得到Element对象
-                var form = document.shipping;
+如果给定的名字只有一个元素，自动创建的文档属性对应的该值是元素本身。如果有多个元素，该文档属性的值是一个 NodeList 对象，它表现为一个包含这些元素的数组。如14.7节所示，为若干命名`<iframe>`元素所创建的文档属性比较特殊：它们指代这些框架的 Window 对象而不是 Element 对象。
 
-在14.7节介绍了为什么不要用为窗口对象自动创建的属性，这同样适用于为文档对象自动创建的属性。如果需要查找命名的元素，最好显式地调用getElementsByName()来查找它们。
+这就意味着有些元素可以作为 Document 属性仅通过名字来选取：
 
-### 15.2.3 通过制定的标签名字
+```js
+//征对<form name="shipping">元素，得到Element对象
+var form = document.shipping;
+```
 
-Document对象的getElementsByTagName()方法可用来选取指定类型（标签名）的所有HTML或XML元素。例如，如下代码，在文档中获得包含所有<span>元素的只读的类数组对象：
+在14.7节介绍了为什么不要用为窗口对象自动创建的属性，这同样适用于为文档对象自动创建的属性。如果需要查找命名的元素，最好显式地调用`getElementsByName()`来查找它们。
 
-                var spans = document.getElementsByTagName("span");
+### 15.2.3 通过标签名选取元素
 
+Document 对象的`getElementsByTagName()`方法可用来选取指定类型（标签名）的所有 HTML 或 XML 元素。例如，如下代码，在文档中获得包含所有`<span>`元素的只读的类数组对象：
 
-类似于getElementsByName()，getElementsByTagName()返回一个NodeList对象（关于NodeList类，见本节的补充信息）。在NodeList中返回的元素按照在文档中的顺序排序的，所以可用如下代码选取文档中的第一个<p>元素：
+```js
+var spans = document.getElementsByTagName("span");
+```
 
-                var firstspan = document.getElementsByTagName("span")[0];
+类似于`getElementsByName()`，`getElementsByTagName()`返回一个 NodeList 对象（关于 NodeList 类，见本节的补充信息）。在 NodeList 中返回的元素按照在文档中的顺序排序的，所以可用如下代码选取文档中的第一个`<p>`元素：
 
+```js
+var firstspan = document.getElementsByTagName("span")[0];
+```
 
-HTML标签是不区分大小写的，当在HTML文档中使用getElementsByTagName()时，它进行不区分大小写的标签名比较。例如，上述的变量span将包含所有写成<SPAN>的span标签。
+HTML 标签是不区分大小写的，当在 HTML 文档中使用`getElementsByTagName()`时，它进行不区分大小写的标签名比较。例如，上述的变量 span 将包含所有写成`<SPAN>`的 span 标签。
 
-给getElementsByTagName()传递通配符参数“*”将获得一个代表文档中所有元素的NodeList对象。
+给`getElementsByTagName()`传递通配符参数`*`将获得一个代表文档中所有元素的 NodeList 对象。
 
-Element类也定义getElementsByTagName()方法，其原理和Document版本的一样，但是它只选取调用该方法的元素的后代元素。因此，要查找文档中第一个<p>元素里面的所有<span>元素，代码如下：
+Element 类也定义`getElementsByTagName()`方法，其原理和 Document 版本的一样，但是它只选取调用该方法的元素的后代元素。因此，要查找文档中第一个`<p>`元素里面的所有`<span>`元素，代码如下：
 
-            var firstpara = document.getElementsByTagName("p")[0];
-            var firstParaSpan = firstpara.getElementsByTagName("span");
+```js
+var firstpara = document.getElementsByTagName("p")[0];
+var firstParaSpan = firstpara.getElementsByTagName("span");
+```
 
-由于历史的原因，HTMLDocument类定义一些快捷属性来访问各种各样的节点。例如，images、forms和links等属性指向行为类似只读数组的<img>、<form>和<a>（但只包含那些有href属性的<a>标签）元素集合。这些属性指代HTMLCollection对象，它们很像NodeList对象，但是除此之外它们可以用元素的ID或名字来索引。早些时候，我们已经看到用如下的表达式来引用一个命名的<form>元素：
+由于历史的原因， HTMLDocument 类定义一些快捷属性来访问各种各样的节点。例如，images、forms和links等属性指向行为类似只读数组的`<img>`、`<form>`和`<a>`（但只包含那些有href属性的`<a>`标签）元素集合。这些属性指代 HTMLCollection 对象，它们很像 NodeList 对象，但是除此之外它们可以用元素的 ID 或名字来索引。早些时候，我们已经看到用如下的表达式来引用一个命名的`<form>`元素：
 
+```js
 document.shiping;
+```
 
-用document.forms属性也可以更具体地引用命名（或有ID的）表单，如下：
+用 document.forms 属性也可以更具体地引用命名（或有ID的）表单，如下：
 
+```js
 document.forms.shipping
+```
 
-HTMLDocument也定义embeds和plugins属性，它们是同义词，都是HTMLCollection类型的<embed>元素的集合。anchors是非标准属性，它指代有一个name属性的<a>元素而并不是一个href属性。scripts在HTML5中是标准属性，它是HTMLCollection类型的<script>元素的集合，但是在写本书的时候，它还未普遍实现。
+HTMLDocument 也定义 embeds 和 plugins 属性，它们是同义词，都是 HTMLCollection 类型的`<embed>`元素的集合。anchors 是非标准属性，它指代有一个 name 属性的`<a>`元素而并不是一个 href 属性。 scripts 在 HTML5 中是标准属性，它是 HTMLCollection 类型的`<script>`元素的集合，但是在写本书的时候，它还未普遍实现。
 
-HTMLDocument对象还定义两个属性，它们指代特殊的单个元素而不是元素的集合。document.body是一个HTML文档的<body>元素，document.head是<head>元素。这些属性总是会定义：如果文档源代码未显式地包含<head>和<body>元素，浏览器将隐式地创建它们。Document类的documentElement属性指代文档的根元素。在HTML文档中，它总是指代<html>元素。
+HTMLDocument 对象还定义两个属性，它们指代特殊的单个元素而不是元素的集合。`document.body`是一个HTML文档的`<body>`元素，`document.head`是`<head>`元素。这些属性总是会定义：如果文档源代码未显式地包含`<head>`和`<body>`元素，浏览器将隐式地创建它们。 Document 类的 documentElement 属性指代文档的根元素。在 HTML 文档中，它总是指代`<html>`元素。
 
 ### 15.2.4 通过CSS类选取元素
 
-HTML元素的class属性值是一个以空格隔开的列表，可以为空或包含多个标识符。它描述一种方法来定义多组相关的文档元素：在它们的class属性中有相同标识符的任何元素属于该组的一部分。在 JavaScript 中class是保留字，所以客户端 JavaScript 使用className属性来保存HTML的class属性值。class属性通常与CSS样式表一起使用，对某组内的所有元素应用相同的样式，在第16章中将再次看到它。尽管如此，HTML定义了getElementsByClassName()方法，它基于其class属性值中的标识符来选取成组的文档元素。
+HTML 元素的 class 属性值是一个以空格隔开的列表，可以为空或包含多个标识符。它描述一种方法来定义多组相关的文档元素：在它们的 class 属性中有相同标识符的任何元素属于该组的一部分。在 JavaScript 中 class 是保留字，所以客户端 JavaScript 使用 className 属性来保存 HTML 的 class 属性值。 class 属性通常与 CSS 样式表一起使用，对某组内的所有元素应用相同的样式，在第16章中将再次看到它。尽管如此， HTML 定义了`getElementsByClassName()`方法，它基于其 class 属性值中的标识符来选取成组的文档元素。
 
-    // 找到所有class属性值为"warning"的元素
-            var warnings = document.getElementsByClassName("warning");
-             // 查找奕log命名且包含有"error"和"fatal"类的元素的所有后端
-            var log = document.getElementById("log");
-            var total = log.getElementsByClassName("error fatal");
+```js
+// 找到所有class属性值为"warning"的元素
+var warnings = document.getElementsByClassName("warning");
+// 查找奕log命名且包含有"error"和"fatal"类的元素的所有后端
+var log = document.getElementById("log");
+var total = log.getElementsByClassName("error fatal");
+```
 
-类似getElementsByTagName()，在HTML文档和HTML元素上都可以调用getElementsByClassName()，它的返回值是一个实时的NodeList对象，包含文档或元素所有匹配的后代节点。getElementsByClassName()只需要一个字符串参数，但是该字符串可以由多个空格隔开的标识符组成。只有当元素的class属性值包含所有指定的标识符时才匹配，但是标识符的顺序是无关紧要的。注意，class属性和getElementsByClassName()方法的类标识符之间都是用空格隔开的，而不是逗号。如下是使用getElementsByClassName()的一些例子：
+类似`getElementsByTagName()`，在HTML文档和HTML元素上都可以调用`getElementsByClassName()`，它的返回值是一个实时的NodeList对象，包含文档或元素所有匹配的后代节点。`getElementsByClassName()`只需要一个字符串参数，但是该字符串可以由多个空格隔开的标识符组成。只有当元素的class属性值包含所有指定的标识符时才匹配，但是标识符的顺序是无关紧要的。注意，class属性和`getElementsByClassName()`方法的类标识符之间都是用空格隔开的，而不是逗号。如下是使用`getElementsByClassName()`的一些例子：
 
-如今的Web浏览器依赖于文档开头处对<!DOCTYPE>声明的严格程度来选择“怪异模式”或“标准模式”方式显示HTML文档。怪异模式是为了向后兼容性而存在的，其中一个怪异行为就是在class属性中和CSS样式表中的类标识符不区分大小写。getElementsByClassName()方法使用样式表的匹配算法。如果文档以怪异模式渲染，该方法将执行不区分大小写的字符串比较；否则，该比较区分大小写。
+```js
+// 找到所有class属性值为"warning"的元素
+var warnings = document.getElementsByClassName("warning");
 
-在写本书这段时间内，除了IE 8及其较低的版本，getElementsByClassName()在所有当前的浏览器中都实现了。IE 8确实支持querySelectorAll()方法，下一节会介绍它，而getElementsByClassName()方法是可以在其之上实现的。
+// 查找以log命名且包含有"error"和"fatal"类的元素的所有后代
+var log = document.getElementById("log");
+var total = log.getElementsByClassName("error fatal");
+```
+
+如今的Web浏览器依赖于文档开头处对`<!DOCTYPE>`声明的严格程度来选择“怪异模式”或“标准模式”方式显示HTML文档。怪异模式是为了向后兼容性而存在的，其中一个怪异行为就是在class属性中和CSS样式表中的类标识符不区分大小写。`getElementsByClassName()`方法使用样式表的匹配算法。如果文档以怪异模式渲染，该方法将执行不区分大小写的字符串比较；否则，该比较区分大小写。
+
+在写本书这段时间内，除了IE 8及其较低的版本，`getElementsByClassName()`在所有当前的浏览器中都实现了。IE 8确实支持`querySelectorAll()`方法，下一节会介绍它，而`getElementsByClassName()`方法是可以在其之上实现的。
 
 ### 15.2.5 通过CSS选择器选取元素
 
 CSS样式表有一种非常强大的语法，那就是选择器，它用来描述文档中的若干或多组元素。CSS选择器语法的全部细节介绍超出了本书的范围，但是这里有一些例子来说明基本的语法。元素可以用ID、标签名或类来描述：
 
-            #nav //id="nav"的元素
-            div //所有的<div>元素
-            .warning //所有早class属性值包含了“waring”的元素
-更一般地，元素可以给予属性值来选取
-
-            p[lang = "fr"] //所有使用语法段落，如：<p lang="fr">
-            * [name = "x"] //所有包含name = "x"属性的元素
-这些基本的选择器可以组合使用：
-
-            span.fatal.error //其class中 包含"fatal"和"error"的所有<span>元素
-             span[lang = "fr"].warning //所有使用语法且class中包含"warning"的<span>元素
-选择器可以指定文档结构：
-
-        #log span //id="log"元素中所有的<span>元素
-        #log>span //id="log"元素的子元素中的所有<span>元素
-        body>h1:first-child //<body>的子元素中的第一个<h1>元素
-选择器可以组合起来选取多个或多组元素
-
-    div,#log //所有的元素，以及id="log"的元素
+```js
+#nav //id="nav"的元素
+div //所有的<div>元素
+.warning //所有早class属性值包含了“waring”的元素
+```
 
 更一般地，元素可以基于属性值来选取：
 
+```js
+p[lang = "fr"] //所有使用语法段落，如：<p lang="fr">
+* [name = "x"] //所有包含name = "x"属性的元素
+```
+
 这些基本的选择器可以组合使用：
+
+```js
+span.fatal.error //其class中 包含"fatal"和"error"的所有<span>元素
+span[lang = "fr"].warning //所有使用语法且class中包含"warning"的<span>元素
+```
 
 选择器可以指定文档结构：
 
+```js
+#log span //id="log"元素中所有的<span>元素
+#log>span //id="log"元素的子元素中的所有<span>元素
+body>h1:first-child //<body>的子元素中的第一个<h1>元素
+```
+
 选择器可以组合起来选取多个或多组元素：
 
-如你所见，CSS选择器可以使用上述所有方法选取元素：通过ID、名字、标签名和类名。与CSS3选择器的标准化一起的另一个称做“选择器API”的W3C标准定义了获取匹配一个给定选择器的元素的 JavaScript 方法。该API的关键是Document方法querySelectorAll()。它接受包含一个CSS选择器的字符串参数，返回一个表示文档中匹配选择器的所有元素的NodeList对象。与前面描述的选取元素的方法不同，querySelectorAll()返回的NodeList对象并不是实时的：它包含在调用时刻选择器所匹配的元素，但它并不更新后续文档的变化。如果没有匹配的元素，querySelectorAll()将返回一个空的NodeList对象。如果选择器字符串非法，querySelectorAll()将抛出一个异常。
+```js
+div,#log //所有的元素，以及id="log"的元素
+```
 
-除了querySelectorAll()，文档对象还定义了querySelector()方法。与querySelectorAll()的工作原理类似，但它只是返回第一个匹配的元素（以文档顺序）或者如果没有匹配的元素就返回null。
+如你所见， CSS 选择器可以使用上述所有方法选取元素：通过ID、名字、标签名和类名。与CSS3选择器的标准化一起的另一个称做“选择器API”的W3C标准定义了获取匹配一个给定选择器的元素的 JavaScript 方法。该API的关键是 Document 方法`querySelectorAll()`。它接受包含一个 CSS 选择器的字符串参数，返回一个表示文档中匹配选择器的所有元素的 NodeList 对象。与前面描述的选取元素的方法不同，`querySelectorAll()`返回的 NodeList 对象并不是实时的：它包含在调用时刻选择器所匹配的元素，但它并不更新后续文档的变化。如果没有匹配的元素，`querySelectorAll()`将返回一个空的 NodeList 对象。如果选择器字符串非法，`querySelectorAll()`将抛出一个异常。
 
-这两个方法在Element节点中也有定义（并且也在DocumentFragment节点中，见15.6.4节）。在元素上调用时，指定的选择器仍然在整个文档中进行匹配，然后过滤出结果集以便它只包含指定元素的后代元素。这看起来是违反常规的，因为它意味着选择器字符串能包含元素的祖先而不仅仅是上述所匹配的元素。
+除了`querySelectorAll()`，文档对象还定义了`querySelector()`方法。与`querySelectorAll()`的工作原理类似，但它只是返回第一个匹配的元素（以文档顺序）或者如果没有匹配的元素就返回null。
 
-注意，CSS定义了“:first-line”和“:first-letter”等伪元素。在CSS中，它们匹配文本节点的一部分而不是实际元素。如果和querySelectorAll()或querySelector()一起使用它们是不匹配的。而且，很多浏览器会拒绝返回“:link”和“:visited”等伪类的匹配结果，因为这会泄露用户的浏览历史记录。
+这两个方法在 Element 节点中也有定义（并且也在DocumentFragment节点中，见15.6.4节）。在元素上调用时，指定的选择器仍然在整个文档中进行匹配，然后过滤出结果集以便它只包含指定元素的后代元素。这看起来是违反常规的，因为它意味着选择器字符串能包含元素的祖先而不仅仅是上述所匹配的元素。
 
-所有当前的浏览器都支持querySelector()和querySelectorAll()方法。但是注意，这些方法的规范并不要求支持CSS3选择器：鼓励浏览器支持和在样式表中一样的选择器集合。当前的浏览器除了IE都支持CSS3选择器。IE 7和8支持CSS2选择器。（期望IE 9能支持CSS3选择器。）
+注意，CSS定义了“:first-line”和“:first-letter”等伪元素。在CSS中，它们匹配文本节点的一部分而不是实际元素。如果和`querySelectorAll()`或`querySelector()`一起使用它们是不匹配的。而且，很多浏览器会拒绝返回“:link”和“:visited”等伪类的匹配结果，因为这会泄露用户的浏览历史记录。
 
-querySelectorAll()是终极的选取元素的方法：它是一种非常强大的技术，通过它客户端 JavaScript 程序能够选择它们想要操作的元素。幸运的是，甚至在没有querySelectorAll()的原生支持的浏览器中也可以使用CSS选择器。jQuery库（见第19章）使用这种基于CSS选择器的查询作为它的核心编程范式。基于jQuery的Web应用程序使用一个轻便的、跨浏览器的、和querySelectorAll()等效的方法，命名为$()。
+所有当前的浏览器都支持`querySelector()`和`querySelectorAll()`方法。但是注意，这些方法的规范并不要求支持CSS3选择器：鼓励浏览器支持和在样式表中一样的选择器集合。当前的浏览器除了IE都支持CSS3选择器。IE 7和8支持CSS2选择器。（期望IE 9能支持CSS3选择器。）
 
-jQuery的CSS选择器匹配代码已经作为一个独立的标准库提出来并发布了，命名为Sizzle。它已经被Dojo和其他一些客户端库所采纳。使用一个类似Sizzle的库（或一个包含Sizzle的库）的好处就是在老式浏览器中选取元素也能正常工作，并保证一个基准的选择器集合在所有的浏览器中都能运行。
+`querySelectorAll()`是终极的选取元素的方法：它是一种非常强大的技术，通过它客户端 JavaScript 程序能够选择它们想要操作的元素。幸运的是，甚至在没有`querySelectorAll()`的原生支持的浏览器中也可以使用 CSS 选择器。jQuery库（见第19章）使用这种基于 CSS 选择器的查询作为它的核心编程范式。基于jQuery的Web应用程序使用一个轻便的、跨浏览器的、和`querySelectorAll()`等效的方法，命名为`$()`。
+
+jQuery的 CSS 选择器匹配代码已经作为一个独立的标准库提出来并发布了，命名为Sizzle。它已经被Dojo和其他一些客户端库所采纳。使用一个类似Sizzle的库（或一个包含Sizzle的库）的好处就是在老式浏览器中选取元素也能正常工作，并保证一个基准的选择器集合在所有的浏览器中都能运行。
 
 ### 15.2.6 document.all[]
 
-在DOM标准化之前，IE 4引入了document.all[]集合来表示所有文档中的元素（除了Text节点）。document.all[]已经被标准的方法（如getElementById()和getElementsByTagName()）等所取代，现在已经废弃不应该再使用了。但是，在引入之时它是革命性的，它在以各种方式使用的已有代码中仍然可以看到：
+在DOM标准化之前，IE 4引入了`document.all[]`集合来表示所有文档中的元素（除了Text节点）。`document.all[]`已经被标准的方法（如`getElementById()`和`getElementsByTagName()`）等所取代，现在已经废弃不应该再使用了。但是，在引入之时它是革命性的，它在以各种方式使用的已有代码中仍然可以看到：
 
-             document.all[0] //文档中的第一个元素
-                     document.all["nav"] //id或name为"nav"的元素(或多个元素)
-                     document.all.nav //同上
-                     document.all.tags("div") //文档中的所有div元素
-                     document.all.tags("p")[0] //文档中的第一个<p>元素
+```js
+document.all[0] //文档中的第一个元素
+document.all["nav"] //id或name为"nav"的元素(或多个元素)
+document.all.nav //同上
+document.all.tags("div") //文档中的所有div元素
+document.all.tags("p")[0] //文档中的第一个<p>元素
+```
 
 ## 15.3 文档结构和遍历
 
@@ -8460,321 +8494,337 @@ jQuery的CSS选择器匹配代码已经作为一个独立的标准库提出来�
 
 ## 15.3.1 作为节点树的文档
 
-Document对象、它的Element对象和文档中表示文本的Text对象都是Node对象。Node定义了以下重要的属性：
+Document 对象、它的 Element 对象和文档中表示文本的 Text 对象都是 Node 对象。Node定义了以下重要的属性：
 
+- parentNode：该节点的父节点，或者针对类似Document对象应该是null，因为它没有父节点。
+- childNodes：只读的类数组对象（NodeList对象），它是该节点的子节点的实时表示。
+- firstChild、lastChild：该节点的子节点中的第一个和最后一个，如果该节点没有子节点则为null。
+- nextSibling、previoursSibling：该节点的兄弟节点中的前一个和下一个。具有相同父节点的两个节点为兄弟节点。节点的顺序反映了它们在文档中出现的顺序。这两个属性将节点之间以双向链表的形式连接起来。
+- nodeType：该节点的类型。9代表Document节点，1代表Element节点，3代表Text节点，8代表Comment节点，11代表DocumentFragment节点。
+- nodeValue：Text节点或Comment节点的文本内容。
+- nodeName：元素的标签名，以大写形式表示。
 
-- parentNode该节点的父节点，或者针对类似Document对象应该是null，因为它没有父节点。
-- childNodes只读的类数组对象（NodeList对象），它是该节点的子节点的实时表示。firstChild、
-- lastChild该节点的子节点中的第一个和最后一个，如果该节点没有子节点则为null。nextSibling、
-- previoursSibling该节点的兄弟节点中的前一个和下一个。具有相同父节点的两个节点为兄弟节点。节点的顺序反映了它们在文档中出现的顺序。这两个属性将节点之间以双向链表的形式连接起来。
-- nodeType该节点的类型。9代表Document节点，1代表Element节点，3代表Text节点，8代表Comment节点，11代表DocumentFragment节点。
-- nodeValueText节点或Comment节点的文本内容。
-- nodeName元素的标签名，以大写形式表示。使用这些Node属性，可以用以下类似的表达式得到文档的第一个子节点下面的第二个子节点的引用：
+使用这些 Node 属性，可以用以下类似的表达式得到文档的第一个子节点下面的第二个子节点的引用：
 
 假设上述提到的文档代码如下：
 
-            document.childNodes[0].childNodes[1];
-            document.firstChild.firstChild.nextSibling;
+```js
+document.childNodes[0].childNodes[1];
+document.firstChild.firstChild.nextSibling;
+```
+
 假如上述的代码如下：
 
-```
-        <html>
-            <head>
-            <title>test</title>
-            </head>
-            <body>
-                hello world!
-            </body>
-        </html>
+```html
+<html>
+  <head>
+    <title>test</title>
+  </head>
+  <body>
+    hello world!
+  </body>
+</html>
 ```
 
-那么第一个子节点下面的第二个子节点就是<body>元素，它的nodeType为1，nodeName为“BODY”。
+那么第一个子节点下面的第二个子节点就是`<body>`元素，它的 nodeType 为1， nodeName 为“BODY”。
 
-但请注意，该API对文档文本的变化及其敏感。例如，如果修改了文档，在<html>和<head>标签之间插入一个新行，那么表示该新行的Text节点就是文档的第一个子节点下面的第一个子节点，并且<head>元素就是第二个子节点而不是<body>元素了。
+但请注意，该API对文档文本的变化及其敏感。例如，如果修改了文档，在`<html>`和`<head>`标签之间插入一个新行，那么表示该新行的Text节点就是文档的第一个子节点下面的第一个子节点，并且`<head>`元素就是第二个子节点而不是`<body>`元素了。
 
 ## 15.3.2 作为元素树的文档
 
-当将主要的兴趣点集中在文档中的元素上而非它们之间的文本（和它们之间的空白）上时，我们可以使用另外一个更有用的API。它将文档看做是Element对象树，忽略部分文档：Text和Comment节点。
+当将主要的兴趣点集中在文档中的元素上而非它们之间的文本（和它们之间的空白）上时，我们可以使用另外一个更有用的API。它将文档看做是 Element 对象树，忽略部分文档：Text和Comment节点。
 
-该API的第一部分是Element对象的children属性。类似ChildNodes，它也是一个NodeList对象，但不同的是children列表只包含Element对象。children并非标准属性，但是它在所有当前的浏览器中都能工作。IE已经实现有一段很长的时间了，其他大多数浏览器也已如法炮制。最后采纳它的主流浏览器是Firefox3.5。
+该API的第一部分是 Element 对象的 children 属性。类似ChildNodes，它也是一个NodeList对象，但不同的是 children 列表只包含 Element 对象。 children 并非标准属性，但是它在所有当前的浏览器中都能工作。IE已经实现有一段很长的时间了，其他大多数浏览器也已如法炮制。最后采纳它的主流浏览器是Firefox3.5。
 
-注意，Text和Comment节点没有children属性，它意味着上述Node.parentNode属性不可能返回Text或Comment节点。任何Element的parentNode总是另一个Element，或者，追溯到树根的Document或DocumentFragment节点。
+注意，Text和Comment节点没有 children 属性，它意味着上述`Node.parentNode`属性不可能返回Text或Comment节点。任何 Element 的parentNode总是另一个 Element ，或者，追溯到树根的Document或DocumentFragment节点。
 
-基于元素的文档遍历API的第二部分是Element属性，后者类似Node对象的子属性和兄弟属性：
+基于元素的文档遍历API的第二部分是 Element 属性，后者类似Node对象的子属性和兄弟属性：
 
-- firstElementChild, lastElementChild类似firstChild和lastChild，但只代表子Element。
-- nextElementSibling, previousElementSibling类似nextSibling和previousSibling，但只代表兄弟Element。
-- childElementCount子元素的数量。返回的值和children.length值相等。子元素和兄弟元素的属性是标准属性，并在除了IE之外的浏览器中都已实现。
+- firstElementChild, lastElementChild：类似firstChild和lastChild，但只代表子Element。
+- nextElementSibling, previousElementSibling：类似nextSibling和previousSibling，但只代表兄弟Element。
+- childElementCount：子元素的数量。返回的值和`children.length`值相等。子元素和兄弟元素的属性是标准属性，并在除了IE之外的浏览器中都已实现。
 
 由于逐个元素的文档遍历的API并未完全标准化，我们仍然可以通过像例15-2中可移植的遍历函数那样来实现这种功能： 
 
-```
-             /*****可移植的遍历函数******/
-            
-            /**
-             * 返回元素e的第n层祖先元素，如果不存在此类祖先或祖先不是Element，例如（Document或者DocumentFragment）则返回null
-             * 如果n为0，则返回e本身，如果n为1（或省略），则返回父元素。如果n为2，则返回祖父元素，依次类推
-             **/
-            function parent(e, n) {
-                    if (n === undefined) n = 1;
-                    while (n-- && e) e = e.parentNode;
-                    if (!e || e.nodeType !== 1) return null;
-                    return e;
-                }
-            
-            
-                /**
-                 *返回元素e的第n个兄弟元素，如果n为正，返回后续的第n个兄弟元素；
-                 * 如果n为负，返回前面n个兄弟元素，如果n为零，返回e本身
-                 **/
-            function sibling(e, n) {
-                    while (e && n !== 0) { //如果e未定义，立刻返回它
-                        if (n > 0) { //查找后续的兄弟元素
-                            if (e.nextElementSibling) e = e.nextElementSibling;
-                            else {
-                                for (e = e.nextSibling; e && e.nodeType !== 1; e = e.nextSibling)
-                                /*空循环*/
-                                ;
-                            }
-                            n--;
-                        } else { //查找前边的兄弟元素
-                            if (e.previousElementSibling) e = e.previousElementSibling;
-                            else {
-                                for (e = e.previousElementSibling; e && e.nodeType !== 1; e = e.previousElementSibling)
-                                /*空循环*/
-                                ;
-                            }
-                            n++
-                        }
-                    }
-                    return e;
-                }
-            
-            
-                /**
-                 * 返回元素e的第n代子元素，如果不存在则为null
-                 * 负值n代表从后往前计数，0表示第一个子元素，而-1代表最后一个，-2代表倒数第二，依次类推
-                 **/
-            function child(e, n) {
-                if (e.children) { //如果children数组存在
-                    if (n < 0) n += e.children.length; //转换负的n为数组索引
-                    if (n < 0) return null; //如果它仍为负，说明没有子元素
-                    return e.children[n]; //返回值指定的子元素
-                }
-                //如果e没有children数组，找到第一个字元素并向前数，或找到最后一个子元素并往回鼠
-                if (n >= 0) { //非负，从第一个元素向前数
-                    //找到e的第一个子元素
-                    if (e.firstElementChild) e = e.firstElementChild;
-                    else {
-                        for (e = e.firstElementChild; e && e.nodeType !== 1; e = e.nextSibling)
-                        /*空循环*/
-                        ;
-                    }
-                    return sibling(e, n); //返回第一个子元素的第n个兄弟严肃
-                } else { //n为负数，从第一个元素往回数
-                    if (e.lastElementChild) e = e.lastElementChild;
-                    else {
-                        for (e.lastElementChild; e && e.nodeType !== 1; e = e.previousElementSibling)
-                        /*空循环*/
-                        ;
-                    }
-                    return sibling(e, n + 1); //+1来转化最后1个子元素的最后1个兄弟元素
-                }
-            }
+```js
+/*****可移植的遍历函数******/
+
+/**
+* 返回元素e的第n层祖先元素，如果不存在此类祖先或祖先不是Element，例如（Document或者DocumentFragment）则返回null
+* 如果n为0，则返回e本身，如果n为1（或省略），则返回父元素。如果n为2，则返回祖父元素，依次类推
+**/
+function parent(e, n) {
+      if (n === undefined) n = 1;
+      while (n-- && e) e = e.parentNode;
+      if (!e || e.nodeType !== 1) return null;
+      return e;
+  }
+
+
+  /**
+    *返回元素e的第n个兄弟元素，如果n为正，返回后续的第n个兄弟元素；
+    * 如果n为负，返回前面n个兄弟元素，如果n为零，返回e本身
+    **/
+function sibling(e, n) {
+      while (e && n !== 0) { //如果e未定义，立刻返回它
+          if (n > 0) { //查找后续的兄弟元素
+              if (e.nextElementSibling) e = e.nextElementSibling;
+              else {
+                  for (e = e.nextSibling; e && e.nodeType !== 1; e = e.nextSibling)
+                  /*空循环*/
+                  ;
+              }
+              n--;
+          } else { //查找前边的兄弟元素
+              if (e.previousElementSibling) e = e.previousElementSibling;
+              else {
+                  for (e = e.previousElementSibling; e && e.nodeType !== 1; e = e.previousElementSibling)
+                  /*空循环*/
+                  ;
+              }
+              n++
+          }
+      }
+      return e;
+  }
+
+
+  /**
+    * 返回元素e的第n代子元素，如果不存在则为null
+    * 负值n代表从后往前计数，0表示第一个子元素，而-1代表最后一个，-2代表倒数第二，依次类推
+    **/
+function child(e, n) {
+  if (e.children) { //如果children数组存在
+      if (n < 0) n += e.children.length; //转换负的n为数组索引
+      if (n < 0) return null; //如果它仍为负，说明没有子元素
+      return e.children[n]; //返回值指定的子元素
+  }
+  //如果e没有children数组，找到第一个字元素并向前数，或找到最后一个子元素并往回鼠
+  if (n >= 0) { //非负，从第一个元素向前数
+      //找到e的第一个子元素
+      if (e.firstElementChild) e = e.firstElementChild;
+      else {
+          for (e = e.firstElementChild; e && e.nodeType !== 1; e = e.nextSibling)
+          /*空循环*/
+          ;
+      }
+      return sibling(e, n); //返回第一个子元素的第n个兄弟严肃
+  } else { //n为负数，从第一个元素往回数
+      if (e.lastElementChild) e = e.lastElementChild;
+      else {
+          for (e.lastElementChild; e && e.nodeType !== 1; e = e.previousElementSibling)
+          /*空循环*/
+          ;
+      }
+      return sibling(e, n + 1); //+1来转化最后1个子元素的最后1个兄弟元素
+  }
+}
 ```
 
 ## 15.4 属性
 
-HTML元素由一个标签和一组称为属性（attribute）的名/值对组成。例如，<a>元素定义了一个超链接，它的href属性值作为链接的目的地址。HTML元素的属性值在代表这些元素的HTMLElement对象的属性（property）中是可用的。DOM还定义了另外的API来获取或设置XML属性值和非标准的HTML属性。详细信息见以下各节。
+HTML元素由一个标签和一组称为属性（attribute）的名/值对组成。例如，`<a>`元素定义了一个超链接，它的href属性值作为链接的目的地址。HTML元素的属性值在代表这些元素的HTMLElement对象的属性（property）中是可用的。DOM还定义了另外的API来获取或设置XML属性值和非标准的HTML属性。详细信息见以下各节。
 
 ## 15.4.1 HTML作为Element的属性
 
-表示HTML文档元素的HTMLElement对象定义了读/写属性，它们映射了元素的HTML属性。HTMLElement定义了通用的HTTP属性（如id、标题lang和dir）的属性，以及事件处理程序属性（如onclick）。特定的Element子类型为其元素定义了特定的属性。例如，查询一张图片的URL，可以使用表示<img>元素的HTMLElement对象的src属性：
+表示HTML文档元素的HTMLElement对象定义了读/写属性，它们映射了元素的HTML属性。HTMLElement定义了通用的HTTP属性（如id、标题lang和dir）的属性，以及事件处理程序属性（如onclick）。特定的Element子类型为其元素定义了特定的属性。例如，查询一张图片的URL，可以使用表示`<img>`元素的HTMLElement对象的src属性：
 
-同样地，可以为一个<form>元素设置表单提交的属性，代码如下：
+同样地，可以为一个`<form>`元素设置表单提交的属性，代码如下：
 
-            var image = document.getElementById("myimage");
-            var imgurl = image.src;//src是图片的url
-            image.id === "myimage"; //true
-相似地，你通过下面这样的代码设置<form>元素提交的属性：
+```js
+var image = document.getElementById("myimage");
+var imgurl = image.src;//src是图片的url
+image.id === "myimage"; //true
+```
 
-        var f = document.forms[0]; // First <form> in the document
-        f.action = "http://www.example.com/submit.php"; // Set URL to submit it to.
-        f.method = "POST";
+相似地，你通过下面这样的代码设置`<form>`元素提交的属性：
+
+```js
+var f = document.forms[0]; // First <form> in the document
+f.action = "http://www.example.com/submit.php"; // Set URL to submit it to.
+f.method = "POST";
+```
 
 HTML属性名不区分大小写，但 JavaScript 属性名则大小写敏感。从HTML属性名转换到 JavaScript 属性名应该采用小写。但是，如果属性名包含不止一个单词，则将除了第一个单词以外的单词的首字母大写，例如：defaultChecked和tabIndex。
 
-有些HTML属性名在 JavaScript 中是保留字。对于这些属性，一般的规则是为属性名加前缀“html”。例如，HTML的for属性（<lable>元素）在 JavaScript 中变为htmlFor属性。“class”在 JavaScript 中是保留字（但还未使用），它是HTML非常重要的class属性，是上面规则的一个例外：在 JavaScript 代码中它变为className。我们将在第16章中再次见到className属性。
+有些HTML属性名在 JavaScript 中是保留字。对于这些属性，一般的规则是为属性名加前缀“html”。例如，HTML的for属性（`<lable>`元素）在 JavaScript 中变为htmlFor属性。“class”在 JavaScript 中是保留字（但还未使用），它是HTML非常重要的class属性，是上面规则的一个例外：在 JavaScript 代码中它变为className。我们将在第16章中再次见到className属性。
 
-表示HTML属性的值通常是字符串。当属性为布尔值或数值（例如，<input>元素的defaultChecked和maxLength属性），属性也是布尔值或数值，而不是字符串。事件处理程序属性值总是为Function对象（或null）。HTML5规范定义了一个新的属性（如<input>和相关元素的form属性）用以将元素ID转换为实际的Element对象。最后，任何HTML元素的style属性值是CSSStyleDeclaration对象，而不是字符串。我们将在第16章中看到关于这个重要属性的更多信息。
+表示HTML属性的值通常是字符串。当属性为布尔值或数值（例如，`<input>`元素的defaultChecked和maxLength属性），属性也是布尔值或数值，而不是字符串。事件处理程序属性值总是为Function对象（或null）。HTML5规范定义了一个新的属性（如`<input>`和相关元素的form属性）用以将元素ID转换为实际的Element对象。最后，任何HTML元素的style属性值是CSSStyleDeclaration对象，而不是字符串。我们将在第16章中看到关于这个重要属性的更多信息。
 
 注意，这个基于属性的API用来获取和设置属性值，但没有定义任何从元素中删除属性的方法。奇怪的是，delete操作符也无法完成此目的。下一节描述一种可以实现此目的的方法。
 
-
 ## 15.4.2 获取和设置非标准的属性
 
-如上所述，HTMLElement和其子类型定义了一些属性，它们对应于元素的标准HTML属性。Element类型还定义了getAttribute()和setAttribute()方法来查询和设置非标准的HTML属性，也可用来查询和设置XML文档中元素上的属性。
+如上所述，HTMLElement和其子类型定义了一些属性，它们对应于元素的标准HTML属性。Element类型还定义了`getAttribute()`和`setAttribute()`方法来查询和设置非标准的HTML属性，也可用来查询和设置XML文档中元素上的属性。
 
-        var image = document.images[0];
-        var width = parseInt(image.getAttribute("width"));
-        image.setAttribute("class","firstImage");
+```js
+var image = document.images[0];
+var width = parseInt(image.getAttribute("width"));
+image.setAttribute("class","firstImage");
+```
 
-上述代码给出了这些方法和前面的基于属性的API之间两个重要的区别。首先，属性值都被看做是字符串。getAttribute()不返回数值、布尔值或对象。其次，方法使用标准属性名，甚至当这些名称为 JavaScript 保留字时也不例外。对HTML元素来说，属性名不区分大小写。
+上述代码给出了这些方法和前面的基于属性的API之间两个重要的区别。首先，属性值都被看做是字符串。`getAttribute()`不返回数值、布尔值或对象。其次，方法使用标准属性名，甚至当这些名称为 JavaScript 保留字时也不例外。对HTML元素来说，属性名不区分大小写。
 
-Element类型还定义了两个相关的方法，hasAttribute()和removeAttribute()，它们用来检测命名属性是否存在和完全删除属性。当属性为布尔值时这些方法特别有用：有些属性（如HTML的表单元素的disabled属性）在一个元素中是否存在是重点关键，而其值却无关紧要。
+Element类型还定义了两个相关的方法，`hasAttribute()`和`removeAttribute()`，它们用来检测命名属性是否存在和完全删除属性。当属性为布尔值时这些方法特别有用：有些属性（如HTML的表单元素的disabled属性）在一个元素中是否存在是重点关键，而其值却无关紧要。
 
-如果操作包含来自其他命名空间中属性的XML文档，可以使用这4个方法的命名空间版本：getAttributeNS()、setAttributeNS()、hasAttributeNS()和removeAttributeNS()。这些方法需要两个属性名字符串作为参数，而不是一个。第一个是标识命名空间的URI，第二个通常是属性的本地名字，在命名空间中是无效的。但特别地，setAttributeNS()的第二个参数应该是属性的有效名字，它包含命名空间的前缀。可以在本书的第四部分中阅读更多关于命名空间识别的属性的方法。
+如果操作包含来自其他命名空间中属性的XML文档，可以使用这4个方法的命名空间版本：`getAttributeNS()`、`setAttributeNS()`、`hasAttributeNS()`和`removeAttributeNS()`。这些方法需要两个属性名字符串作为参数，而不是一个。第一个是标识命名空间的URI，第二个通常是属性的本地名字，在命名空间中是无效的。但特别地，`setAttributeNS()`的第二个参数应该是属性的有效名字，它包含命名空间的前缀。可以在本书的第四部分中阅读更多关于命名空间识别的属性的方法。
 
 ## 15.4.3 数据集属性
 
-有时候在HTML元素上绑定一些额外的信息也是很有帮助的，当 JavaScript 选取这些元素并以某种方式操纵这些信息时就是很典型的情况。有时可以通过给class属性添加特殊的标识符来完成。其他时候针对更复杂的数据，客户端程序员会借助使用非标准的属性。如上所述，可以使用getAttribute()和setAttribute()来读和写非标准属性的值。但为此而付出的代价是文档将不再是合法有效的HTML。
+有时候在HTML元素上绑定一些额外的信息也是很有帮助的，当 JavaScript 选取这些元素并以某种方式操纵这些信息时就是很典型的情况。有时可以通过给class属性添加特殊的标识符来完成。其他时候针对更复杂的数据，客户端程序员会借助使用非标准的属性。如上所述，可以使用`getAttribute()`和`setAttribute()`来读和写非标准属性的值。但为此而付出的代价是文档将不再是合法有效的HTML。
 
-HTML5提供了一个解决方案。在HTML5文档中，任意以“data-”为前缀的小写的属性名字都是合法的。这些“数据集属性”将不会对其元素的表现产生影响，它们定义了一种标准的、附加额外数据的方法，并不是在文档合法性上做出让步。
+HTML5 提供了一个解决方案。在HTML5文档中，任意以“data-”为前缀的小写的属性名字都是合法的。这些“数据集属性”将不会对其元素的表现产生影响，它们定义了一种标准的、附加额外数据的方法，并不是在文档合法性上做出让步。
 
-HTML5还在Element对象上定义了dataset属性。该属性指代一个对象，它的各个属性对应于去掉前缀的data-属性。因此dataset.x应该保存data-x属性的值。带连字符的属性对应于驼峰命名法属性名：data-jquery-test属性就变成dataset.jqueryTest属性。
+HTML5 还在Element对象上定义了dataset属性。该属性指代一个对象，它的各个属性对应于去掉前缀的data-属性。因此dataset.x应该保存data-x属性的值。带连字符的属性对应于驼峰命名法属性名：`data-jquery-test`属性就变成`dataset.jqueryTest`属性。
 
 看一个更具体的例子，假设文档包含如下标记：
 
-        <span class="sparkline" data-ymin="0" data-ymax="10">
-         1 1 1 2 2 3 4 5 5 4 3 5 6 7 7 4 2 1
-        </span>
+```js
+<span class="sparkline" data-ymin="0" data-ymax="10">
+1 1 1 2 2 3 4 5 5 4 3 5 6 7 7 4 2 1
+</span>
+```
 
 火花线（sparkline）是个小图案——通常是一条线——设计用来在文本流中显示。为了生成一条火花线，也许可以同如下代码提取上述dataset属性的值：
 
-```
-             //假设ES5 Array.map() 方法 (或类似的方法）有定义
-            var sparklines = document.getElementsByClassName("sparkline");
-            var dataset = sparklines[i].dataset;
-            var ymin = parseFloat(dataset.ymin);
-            var ymax = parseFloat(dataset.ymax);
-            var data = sparklines[i].textContent.split(" ").map(parseFloat);
-            for (var i = 0; i < sparklines.length; i++) {
-                drawSparkline(sparklines[i], ymin, ymax, data); // 该方法未实现
-            }
+```js
+//假设ES5 Array.map() 方法 (或类似的方法）有定义
+var sparklines = document.getElementsByClassName("sparkline");
+var dataset = sparklines[i].dataset;
+var ymin = parseFloat(dataset.ymin);
+var ymax = parseFloat(dataset.ymax);
+var data = sparklines[i].textContent.split(" ").map(parseFloat);
+for (var i = 0; i < sparklines.length; i++) {
+  drawSparkline(sparklines[i], ymin, ymax, data); // 该方法未实现
+}
 ```
 
 在写本书的这段时间中，dataset属性还没有在当前的浏览器中实现，上述代码应该写成这样：
 
-```
-            var sparklines = document.getElementsByClassName("sparkline");
-            for (var i = 0; i < sparklines.length; i++) {
-                var elt = sparklines[i];
-                var ymin = parseFloat(elt.getAttribute("data-ymin"));
-                var ymin = parseFloat(elt.getAttribute("data-ymax"));
-                var points = elt.getAttribute("data-points");
-                var data = elt.textContent.split(" ").map(parseFloat);
-                drawSparkline(elt, ymin, ymax, data); // 此方法未实现
-            }
+```js
+var sparklines = document.getElementsByClassName("sparkline");
+for (var i = 0; i < sparklines.length; i++) {
+  var elt = sparklines[i];
+  var ymin = parseFloat(elt.getAttribute("data-ymin"));
+  var ymin = parseFloat(elt.getAttribute("data-ymax"));
+  var points = elt.getAttribute("data-points");
+  var data = elt.textContent.split(" ").map(parseFloat);
+  drawSparkline(elt, ymin, ymax, data); // 此方法未实现
+}
 ```
 
 注意，dataset属性是（或将是，当实现以后）元素的data-属性的实时、双向接口。设置或删除dataset的一个属性就等同于设置或移除对应元素的data-属性。
 
-上述例子中的drawSparkline()函数是虚构的，但例21-13给出了用<canvas>元素绘制类似火花线的标记代码。
+上述例子中的`drawSparkline()`函数是虚构的，但例21-13给出了用`<canvas>`元素绘制类似火花线的标记代码。
 
 ## 15.4.4 作为Attr节点的属性
 
 还有一种使用Element的属性的方法。Node类型定义了attributes属性。针对非Element对象的任何节点，该属性为null。对于Element对象，attributes属性是只读的类数组对象，它代表元素的所有属性。类似NodeLists，attributes对象也是实时的。它可以用数字索引访问，这意味着可以枚举元素的所有属性。并且，它也可以用属性名索引：
 
-            document.body.attributes[0]; //<body>元素的第一个属性
-            document.body.attributes.bgColor //<body>元素的bgColor属性
-            document.body.attributes["ONLOAD"] //<body>元素的onload属性
+```js
+document.body.attributes[0]; //<body>元素的第一个属性
+document.body.attributes.bgColor //<body>元素的bgColor属性
+document.body.attributes["ONLOAD"] //<body>元素的onload属性
+```
 
 当索引attributes对象时得到的值是Attr对象。Attr对象一类特殊的Node，但从来不会像Node一样去用。Attr的name和value属性返回该属性的名字和值。
 
 ## 15.5 元素的内容
 
-再看一下图15-1，并问自己一个问题：<p>元素的“内容”是什么？回答这个问题也许有3个方法：
+再看一下图15-1，并问自己一个问题：`<p>`元素的“内容”是什么？回答这个问题也许有3个方法：
 
-- 内容是HTML字符串“This is a<i>simple</i>document”。
-- 内容是纯文本字符串“This is a simple document”。
+- 内容是HTML字符串`This is a<i>simple</i>document`。
+- 内容是纯文本字符串`This is a simple document`。
 - 内容是一个Text节点、一个包含了一个Text子节点的Element节点和另外一个Text节点。
 
 每一种回答都有效，并且各有千秋。后面几节解释如何使用HTML表示、纯文本表示和元素内容的树状表示。
 
 ## 15.5.1 作为HTML的元素内容
 
-读取Element的innerHTML属性作为字符串标记返回那个元素的内容。在元素上设置该属性调用了Web浏览器的解析器，用新字符串内容的解析展现形式替换元素当前内容。（不要管它的名字，除了在HTML元素上，innerHTML也可以在XML元素上使用。）
+读取Element的 innerHTML 属性作为字符串标记返回那个元素的内容。在元素上设置该属性调用了Web浏览器的解析器，用新字符串内容的解析展现形式替换元素当前内容。（不要管它的名字，除了在HTML元素上， innerHTML 也可以在XML元素上使用。）
 
-Web浏览器很擅长解析HTML，通常设置innerHTML效率非常高，甚至在指定的值需要解析时效率也是相当不错。但注意，对innerHTML属性用“+=”操作符重复追加一小段文本通常效率低下，因为它既要序列化又要解析。
+Web浏览器很擅长解析HTML，通常设置 innerHTML 效率非常高，甚至在指定的值需要解析时效率也是相当不错。但注意，对 innerHTML 属性用“+=”操作符重复追加一小段文本通常效率低下，因为它既要序列化又要解析。
 
-innerHTML是在IE 4中引入的。虽然所有的浏览器都支持它已经有很长一段时间了，但随着HTML5的到来它才变得标准化。HTML5说innerHTML应该在Document节点以及Element节点上工作正常，但这还未被普遍地支持。
+innerHTML 是在IE 4中引入的。虽然所有的浏览器都支持它已经有很长一段时间了，但随着HTML5的到来它才变得标准化。HTML5说 innerHTML 应该在Document节点以及Element节点上工作正常，但这还未被普遍地支持。
 
-HTML5还标准化了outerHTML属性。当查询outerHTML时，返回的HTML或XML标记的字符串包含被查询元素的开头和结尾标签。当设置元素的outerHTML时，元素本身被新的内容所替换。只有Element节点定义了outerHTML属性，Document节点则无。在写本书的这段时间里，outerHTML在除了Firefox的所有当前浏览器中都支持。（见本章后面的例15-5，基于innerHTML实现outerHTML。）
+HTML5还标准化了 outerHTML 属性。当查询 outerHTML 时，返回的HTML或XML标记的字符串包含被查询元素的开头和结尾标签。当设置元素的 outerHTML 时，元素本身被新的内容所替换。只有Element节点定义了 outerHTML 属性，Document节点则无。在写本书的这段时间里， outerHTML 在除了Firefox的所有当前浏览器中都支持。（见本章后面的例15-5，基于 innerHTML 实现outerHTML。）
 
-IE引入的另一个特性是insertAdjacentHTML()方法，它将在HTML5中标准化，它将任意的HTML标记字符串插入到指定的元素“相邻”的位置。标记是该方法的第二个参数，并且“相邻”的精确含义依赖于第一个参数的值。第一个参数为具有以下值之一的字符串：“beforebegin”、“afterbegin”、“beforeend”和“afterend”。这些值对应的插入点如图15-3所示。
+IE引入的另一个特性是`insertAdjacentHTML()`方法，它将在HTML5中标准化，它将任意的HTML标记字符串插入到指定的元素“相邻”的位置。标记是该方法的第二个参数，并且“相邻”的精确含义依赖于第一个参数的值。第一个参数为具有以下值之一的字符串：“beforebegin”、“afterbegin”、“beforeend”和“afterend”。这些值对应的插入点如图15-3所示。
 
-图15-3：insertAdjacentHTML()的插入点insertAdjacentHTML()在当前版本的Firefox中不支持。本章后面的内容，例15-6展示了如何用innerHTML属性实现insertAdjacentHTML()，也展示了如何写出不需要一个字符串参数来指定插入点的HTML插入方法。
+图15-3：`insertAdjacentHTML()`的插入点`insertAdjacentHTML()`在当前版本的Firefox中不支持。本章后面的内容，例15-6展示了如何用 innerHTML 属性实现`insertAdjacentHTML()`，也展示了如何写出不需要一个字符串参数来指定插入点的HTML插入方法。
 
 ## 15.5.2 作为纯文本的元素内容
 
 有时需要查询纯文本形式的元素内容，或者在文档中插入纯文本（不必转义HTML标记中使用的尖括号和&符号）。标准的方法是用Node的textContent属性来实现：
 
-        var para = document.getElementsByTagName("p")[0];
-        var text = para.textContent; //'this is a simple document'
-        para.textContent = "hello world!" //修改段落内容
+```js
+var para = document.getElementsByTagName("p")[0];
+var text = para.textContent; //'this is a simple document'
+para.textContent = "hello world!" //修改段落内容
+```
 
 textContent属性在除了IE的所有当前的浏览器中都支持。在IE中，可以用Element的innerText属性来代替。微软在IE 4中引入了innerText属性，它在除了Firefox的所有当前浏览器中都支持。
 
 textContent和innerText属性非常相似，通常可以互相替换使用。不过要小心空元素（在 JavaScript 中字符串""是假值）和未定义的属性之间的区别：
 
-```
-            /**
-             *一个参数，返回元素的textContent或innerText
-             * 两个参数，用value值代替参数设置元素的textContent或innerText
-             **/
-            function textContent(element, value) {
-                var content = element.textContent; //检测textContent是否定义
-                if (value === undefined) { //没传递value,因此返回当前文本
-                    if (content !== undefined) return content;
-                    else return element.innerText;
-                } else { //传递value,设置文本
-                    if (content !== undefined) element.textContent = value;
-                    else element.innerText = value;
-                }
-            }
+```js
+/**
+*一个参数，返回元素的textContent或innerText
+* 两个参数，用value值代替参数设置元素的textContent或innerText
+**/
+function textContent(element, value) {
+  var content = element.textContent; //检测textContent是否定义
+  if (value === undefined) { //没传递value,因此返回当前文本
+    if (content !== undefined) return content;
+    else return element.innerText;
+  } else { //传递value,设置文本
+    if (content !== undefined) element.textContent = value;
+    else element.innerText = value;
+  }
+}
 ```
 
-textContent属性就是将指定元素的所有后代Text节点简单地串联在一起。innerText没有一个明确指定的行为，但是和textContent有一些不同。innerText不返回<script>元素的内容。它忽略多余的空白，并试图保留表格格式。同时，innerText针对某些表格元素（如<table>、<tbody>和<tr>）是只读的属性。
+textContent 属性就是将指定元素的所有后代Text节点简单地串联在一起。innerText没有一个明确指定的行为，但是和 textContent 有一些不同。innerText不返回<`script>`元素的内容。它忽略多余的空白，并试图保留表格格式。同时，innerText针对某些表格元素（如`<table>`、`<tbody>`和`<tr>`）是只读的属性。
 
 ## 15.5.3 作为Text节点的元素内容
 
 另一种方法处理元素的内容来是当做一个子节点列表，每个子节点可能有它自己的一组子节点。当考虑元素的内容时，通常感兴趣的是它的Text节点。在XML文档中，你也必须准备好处理CDATASection节点——它是Text的子类型，代表了CDATA段的内容。
 
-例15-3展示了一个textContent()函数，它递归地遍历元素的子节点，然后连接后代节点中所有的Text节点的文本。为了理解代码，回想一下nodeValue属性（定义在Node类型中），它保存Text节点的内容。
+例15-3展示了一个`textContent()`函数，它递归地遍历元素的子节点，然后连接后代节点中所有的Text节点的文本。为了理解代码，回想一下 nodeValue 属性（定义在Node类型中），它保存Text节点的内容。
 
-```
-             /**查找元素的后代节点中所有的Text节点**/
-             //返回元素e的纯文本内容，递归进入其子元素
-             //该方法的效果类似于textContent属性
-            function textContent(e) {
-                var child, type, s = ""; //s保存所有字节点文本
-                for (child = e.firstChild; child != null; child = child.nextSibling) {
-                    type = child.nodeType;
-                    if (type === 3 || type === 4) //text和CDATASection节点
-                        s += child.nodeValue;
-                    else if (type === 1)
-                        s += textContent(child);
-                }
-                return s;
-            }
-```
-
-nodeValue属性可以读/写，设置它可以改变Text或CDATASection节点所显示的内容。Text和CDATASection都是CharacterData的子类型，可以在第四部分查看相关信息。CharacterData定义了data属性，它和nodeValue的文本相同。以下函数通过设置data属性将Text节点的内容转换成大写形式：
-
-```
-             //递归把n的后代子节点中的所有Text节点内容转换为大写形式
-            cd = document.getElementsByTagName("p")[0];
-
-            function upCase(n) {
-                if (n.nodeType == 3 || n.nodeType == 4) //如果n是Text或CDATA节点
-                    n.data = n.data.toUpperCase(); //转换为大写
-                else
-                    for (var i = 0; i < n.childNodes.length; i++)
-                        upCase(n.childNodes[i]);
-            }
+```js
+/**查找元素的后代节点中所有的Text节点**/
+//返回元素e的纯文本内容，递归进入其子元素
+//该方法的效果类似于textContent属性
+function textContent(e) {
+  var child, type, s = ""; //s保存所有字节点文本
+  for (child = e.firstChild; child != null; child = child.nextSibling) {
+    type = child.nodeType;
+    if (type === 3 || type === 4) //text和CDATASection节点
+      s += child.nodeValue;
+    else if (type === 1)
+      s += textContent(child);
+  }
+  return s;
+}
 ```
 
-CharacterData还定义了一些在Text或CDATASection节点中不太常用的方法来添加、删除、插入和替换文本。除了修改已存在Text节点的内容，还可以在Element中插入全新的Text节点或用新Text节点来替换已有节点。创建、插入和删除节点就是下一节的主题。
+nodeValue 属性可以读/写，设置它可以改变 Text 或 CDATASection 节点所显示的内容。 Text 和 CDATASection 都是 CharacterData 的子类型，可以在第四部分查看相关信息。 CharacterData 定义了data属性，它和 nodeValue 的文本相同。以下函数通过设置data属性将Text节点的内容转换成大写形式：
+
+```js
+//递归把n的后代子节点中的所有Text节点内容转换为大写形式
+cd = document.getElementsByTagName("p")[0];
+
+function upCase(n) {
+  if (n.nodeType == 3 || n.nodeType == 4) //如果n是Text或CDATA节点
+    n.data = n.data.toUpperCase(); //转换为大写
+  else
+    for (var i = 0; i < n.childNodes.length; i++)
+      upCase(n.childNodes[i]);
+}
+```
+
+CharacterData 还定义了一些在 Text 或 CDATASection 节点中不太常用的方法来添加、删除、插入和替换文本。除了修改已存在Text节点的内容，还可以在 Element 中插入全新的Text节点或用新 Text 节点来替换已有节点。创建、插入和删除节点就是下一节的主题。
 
 ## 15.6 创建、插入和删除节点
 ## 15.6.1 创建节点
