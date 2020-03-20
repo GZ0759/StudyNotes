@@ -9300,7 +9300,7 @@ function getElementPosition(e){
 除了这些名字以offset开头的属性以外，所有的文档元素定义了其他两组属性，其名称一组以client开头，另一组以scroll开头。即，每个HTML元素都有以下这些属性：
 
 | offsetWidth  | clientWidth  | scrollWidth  |
-|--------------|--------------|--------------|
+|:-------------|:-------------|:-------------|
 | offsetHeight | clientHeight | scrollHeight |
 | offsetLeft   | clientLeft   | scrollLeft   |
 | offsetTop    | clientTop    | scrollTop    |
@@ -9706,7 +9706,7 @@ function link() {
 不同的浏览器实现了不同的编辑命令组合。只有一少部分命令得到了很好的支持，如“bold”、“italic”、“createlink”、“undo”和“redo”等。在写本书这段时间里HTML5草案定义了以下命令。但由于它们并没有被普遍地支持，这里就不做详细的文档记录：
 
 | blod          | insertLineBreak     | slectAll    |
-|---------------|---------------------|-------------|
+|:--------------|:--------------------|:------------|
 | createLink    | insertOrderedList   | subscript   |
 | delete        | insertUnorderedList | superscript |
 | formatBlock   | insertParagraph     | undo        |
