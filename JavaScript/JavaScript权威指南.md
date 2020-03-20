@@ -8834,225 +8834,235 @@ CharacterData 还定义了一些在 Text 或 CDATASection 节点中不太常用�
 
 我们已经看到用 HTML 和纯文本字符串如何来查询和修改文档内容，也已经看到我们能够遍历 Document 来检查组成 Document 的每个 Element 和 Text 节点。在每个节点级别修改文档也是有可能的。 Document 类型定义了创建 Element 和 Text 对象的方法， Node 类型定义了在节点树中插入、删除和替换的方法。例13-4展示了节点的创建和插入，这里复制了这个简短的示例：
 
-            function loadsync(url){
-                var hand = document.getElementsByTagName("head")[0];
-                var s = document.createElement("script");
-                s.src = url;
-                hand.appendChild(s);
-            }
+```js
+function loadsync(url){
+  var hand = document.getElementsByTagName("head")[0];
+  var s = document.createElement("script");
+  s.src = url;
+  hand.appendChild(s);
+}
+```
 
 以下小节包含了节点创建、插入和删除的更多细节和具体例子，也包含在操作多个节点时的一种捷径：使用 DocumentFragment 。
 
-## 15.6.1 创建节点
+### 15.6.1 创建节点
 
 如以上代码所示，创建新的 Element 节点可以使用 Document 对象的`createElement()`方法。给方法传递元素的标签名：对 HTML 文档来说该名字不区分大小写，对XML文档则区分大小写。
 
 Text节点用类似的方法创建：
 
-            var newnode = document.createTextNode("Text node");
-            var newelement = document.createElement("p");
-
-Document也定义了一些其他的工厂方法，如不经常使用的createComment()。在15.6.4节中使用了createDocumentFragment()方法。在使用了XML命名空间的文档中，可以使用createElementNS()来同时指定命名空间的URI和待创建的Element的标签名字。
-
-另一种创建新文档节点的方法是复制已存在的节点。每个节点有一个cloneNode()方法来返回该节点的一个全新副本。给方法传递参数true也能够递归地复制所有的后代节点，或传递参数false只是执行一个浅复制。在除了IE的其他浏览器中，Document对象还定义了一个类似的方法叫importNode()。如果给它传递另一个文档的一个节点，它将返回一个适合本文档插入的节点的副本。传递true作为第二个参数，该方法将递归地导入所有的后代节点。
-
-## 15.6.2 插入节点
-
-一旦有了一个新节点，就可以用Node的方法appendChild()或insertBefore()将它插入到文档中。appendChild()是在需要插入的Element节点上调用的，它插入指定的节点使其成为那个节点的最后一个子节点。
-
-insertBefore()就像appendChild()一样，除了它接受两个参数。第一个参数就是待插入的节点，第二个参数是已存在的节点，新节点将插入该节点的前面。该方法应该是在新节点的父节点上调用，方法的第二个参数必须是该父节点的子节点。如果传递null作为第二个参数，insertBefore()的行为类似appendChild()，它将节点插入在最后。
-
-这是一个在数字索引的位置插入节点的简单函数。它同时展示了appendChild()和insertBefore()方法：
-
-```
-             //将child节点插入到parent中，使其成为第n个子节点
-            function inserAt(parent, child, n)
-            if (n < 0 || n > parent.childNodes.length) throw new Error("invalid index");
-            else if (n == parent.childNodes.length) parent.appendChild(child);
-            else parent.insertBefore(child, parent.childNodes[0]);
+```js
+var newnode = document.createTextNode("Text node");
+var newelement = document.createElement("p");
 ```
 
-如果调用appendChild()或insertBefore()将已存在文档中的一个节点再次插入，那个节点将自动从它当前的位置删除并在新的位置重新插入：没有必要显式删除该节点。例15-4展示了一个函数，基于表格指定列中单元格的值来进行行排序。它没有创建任何新的节点，只是用appendChild()来改变已存在节点的顺序罢了。
+Document也定义了一些其他的工厂方法，如不经常使用的`createComment()`。在15.6.4节中使用了`createDocumentFragment()`方法。在使用了XML命名空间的文档中，可以使用`createElementNS()`来同时指定命名空间的URI和待创建的Element的标签名字。
 
-```
-             /**表格的排序**/
-             //根据指定表格每行第n个单元格的值，对第一个<tbody>中的进行排序
-             //如果存在comparator函数则使用它，否则按字母表顺序比较
-            function sortrows(table, n, comparator) {
-                    var tbody = table.tBodies[0]; //第一个<tbody>,可能是隐式窗口的
-                    var rows = tbody.getElementsByTagName("tr"); //tbody中所有行
-                    rows = Array.prototype.slice.call(rows, 0); //真实的数组
-                    //基于第n个<td>元素的值对行排序
-                    rows.sort(function(row1, row2) {
-                        var cell1 = row1.getElementsByTagName("td")[n]; //获得第n个单元格
-                        var cell2 = row2.getElementsByTagName("td")[n]; //两行都是
-                        var val1 = cell1.textContent || cell1.innerText; //获得文本内容
-                        var val2 = cell2.textContent || cell2.innerText; //同上，两单格都是
-                        if (comparator) return comparator(val1, val2); //    进行比较
-                        if (val1 < val2) return -1;
-                        else if (val1 > val2) return 1;
-                        else return 0;
-                    });
-                    //在tobody中按他们的顺序把行添加到最后
-                    //这将自动把它们从当前位置移走，故没必要预先删除它们
-                    //如果<tbody>还包含除了<tr>的任何其他元素，这些节点都将会悬浮到顶部位置
-                    for (var i = 0; i < rows.length; i++) tbody.appendChild(rows[i]);
-                }
-                //查找表格的<th>元素，假设只有一行，它们可以单击
-                //以便单击列标题，按列对行排序。
+另一种创建新文档节点的方法是复制已存在的节点。每个节点有一个`cloneNode()`方法来返回该节点的一个全新副本。给方法传递参数true也能够递归地复制所有的后代节点，或传递参数false只是执行一个浅复制。在除了IE的其他浏览器中，Document对象还定义了一个类似的方法叫`importNode()`。如果给它传递另一个文档的一个节点，它将返回一个适合本文档插入的节点的副本。传递true作为第二个参数，该方法将递归地导入所有的后代节点。
 
-            function makeSortable(table) {
-                var headers = table.getElementsByTagName("th");
-                for (var i = 0; i < headers.length; i++) {
-                    (function(n) { //嵌套函数来创建本地域
-                        headers[i].onclick = function() {
-                            sortrows(table, n);
-                        };
-                    }(i)); //将i的全局变量赋值给局部变量n
-                }
-            }
+### 15.6.2 插入节点
+
+一旦有了一个新节点，就可以用Node的方法`appendChild()`或`insertBefore()`将它插入到文档中。`appendChild()`是在需要插入的Element节点上调用的，它插入指定的节点使其成为那个节点的最后一个子节点。
+
+`insertBefore()`就像`appendChild()`一样，除了它接受两个参数。第一个参数就是待插入的节点，第二个参数是已存在的节点，新节点将插入该节点的前面。该方法应该是在新节点的父节点上调用，方法的第二个参数必须是该父节点的子节点。如果传递null作为第二个参数，`insertBefore()`的行为类似`appendChild()`，它将节点插入在最后。
+
+这是一个在数字索引的位置插入节点的简单函数。它同时展示了`appendChild()`和`insertBefore()`方法：
+
+```js
+// 将child节点插入到parent中，使其成为第n个子节点
+function inserAt(parent, child, n)
+if (n < 0 || n > parent.childNodes.length) throw new Error("invalid index");
+else if (n == parent.childNodes.length) parent.appendChild(child);
+else parent.insertBefore(child, parent.childNodes[n]);
 ```
 
-## 15.6.3 删除和替换节点
+如果调用`appendChild()`或`insertBefore()`将已存在文档中的一个节点再次插入，那个节点将自动从它当前的位置删除并在新的位置重新插入：没有必要显式删除该节点。例15-4展示了一个函数，基于表格指定列中单元格的值来进行行排序。它没有创建任何新的节点，只是用`appendChild()`来改变已存在节点的顺序罢了。
 
-removeChild()方法是从文档树中删除一个节点。但是请小心：该方法不是在待删除的节点上调用，而是（就像其名字的一部分“child”所暗示的一样）在其父节点上调用。在父节点上调用该方法，并将需要删除的子节点作为方法参数传递给它。在文档中删除n节点，代码可以这样写：
+```js
+/**表格的排序**/
+//根据指定表格每行第n个单元格的值，对第一个<tbody>中的进行排序
+//如果存在comparator函数则使用它，否则按字母表顺序比较
+function sortrows(table, n, comparator) {
+  var tbody = table.tBodies[0]; //第一个<tbody>,可能是隐式窗口的
+  var rows = tbody.getElementsByTagName("tr"); //tbody中所有行
+  rows = Array.prototype.slice.call(rows, 0); //真实的数组
+  //基于第n个<td>元素的值对行排序
+  rows.sort(function(row1, row2) {
+    var cell1 = row1.getElementsByTagName("td")[n]; //获得第n个单元格
+    var cell2 = row2.getElementsByTagName("td")[n]; //两行都是
+    var val1 = cell1.textContent || cell1.innerText; //获得文本内容
+    var val2 = cell2.textContent || cell2.innerText; //同上，两单格都是
+    if (comparator) return comparator(val1, val2); //    进行比较
+    if (val1 < val2) return -1;
+    else if (val1 > val2) return 1;
+    else return 0;
+  });
+  //在tobody中按他们的顺序把行添加到最后
+  //这将自动把它们从当前位置移走，故没必要预先删除它们
+  //如果<tbody>还包含除了<tr>的任何其他元素，这些节点都将会悬浮到顶部位置
+  for (var i = 0; i < rows.length; i++) tbody.appendChild(rows[i]);
+}
 
-        n.parentNode.removeChild(n);
-
-replaceChild()方法删除一个子节点并用一个新的节点取而代之。在父节点上调用该方法，第一个参数是新节点，第二个参数是需要代替的节点。例如，用一个文本字符串来替换节点n，代码可以这样写：
-
-        n.parentNode.replaceChild(document.createTextNode("[redactd]"),n);
-
-以下函数展示了replaceChild()的另一种用法：
-
+//查找表格的<th>元素，假设只有一行，它们可以单击
+//以便单击列标题，按列对行排序。
+function makeSortable(table) {
+  var headers = table.getElementsByTagName("th");
+  for (var i = 0; i < headers.length; i++) {
+    (function(n) { //嵌套函数来创建本地域
+      headers[i].onclick = function() {
+        sortrows(table, n);
+      };
+    }(i)); //将i的全局变量赋值给局部变量n
+}
+}
 ```
-            function embolden(n) {
-                //假设参数为字符串而不是节点，将其当做元素的id
-                if (typeof n == "string") n = document.getElementById(n);
-                var parent = n.parentNode; // 获得n的父节点
-                var b = document.createElement("b"); //创建一个b元素
-                parent.replaceChild(b, n); //使用<b>元素替换节点n
-                b.appendChild(n); //使你成为<b>元素的子节点
-            }
+
+### 15.6.3 删除和替换节点
+
+`removeChild()`方法是从文档树中删除一个节点。但是请小心：该方法不是在待删除的节点上调用，而是（就像其名字的一部分“child”所暗示的一样）在其父节点上调用。在父节点上调用该方法，并将需要删除的子节点作为方法参数传递给它。在文档中删除n节点，代码可以这样写：
+
+```js
+n.parentNode.removeChild(n);
 ```
 
-15.5.1节介绍过元素的outerHTML属性，也解释过在当前版本的Firefox中还未实现它。例15-5展示了在Firefox中（和其他任何支持innerHTML的浏览器，要有一个可扩展的Element.prototype对象，还要有一些方法来定义属性的getter和setter）如何来实现该属性。同时代码也展示了removeChild()和cloneNode()方法的实际用法。
+`replaceChild()`方法删除一个子节点并用一个新的节点取而代之。在父节点上调用该方法，第一个参数是新节点，第二个参数是需要代替的节点。例如，用一个文本字符串来替换节点n，代码可以这样写：
 
+```js
+n.parentNode.replaceChild(document.createTextNode("[redactd]"),n);
 ```
-             /**使用innerHTML实现outerHTML属性**/
-             //为那些不支持它的浏览器实现outerHTML属性
-             //假设浏览器的确支持innerHTML，并有个可扩展的Element.prototype
-             //并且可以定义getter和setter
-            (function() {
-                    //如果outer存在，直接返回
-                    if (document.createElement("div").outerHTML) return;
-                    //返回this所引用元素的外部HTML
-                    function outerHTMLGetter() {
-                            var container = document.createElement("div"); //虚拟元素
-                            container.appendChild(this.cloneNode(true)); //复制到虚拟节点
-                            return container.innerHTML; //返回虚拟节点的innerHTML
-                        }
-                        //用指定的值设置元素的外部的HTML
 
-                    function outerHTMLSetter(value) {
-                            //创建一个虚拟元素，设置其内容为指定的值
-                            var container = document.createElement("div");
-                            container.innerHTML = value;
-                            //将虚拟元素的节点全部移动到文档中
-                            while (container.firstChild) //循环知道container没有子节点为止
-                                this.parentNode.insertBefore(container.firstChild, this);
-                            //删除被取代的节点
-                            this.parentNode.removeChild(this);
-                        }
-                        //现在使用着两个函数作为所有Element对象的outerHTML属性的getter和setter
-                        //如果它存在则使用ECMAScript5的Object.defineProperty()方法
-                        //否则，退而求其次，使用__defineProperty__()和__definedSetter__()
-                    if (Object.defineProperty) {
-                        Object.defineProperty(Element.prototype, "outerHTML", {
-                            get: outerHTMLGetter,
-                            set: outerHTMLSetter,
-                            enumerable: false,
-                            configurable: true
-                        });
-                    } else {
-                        Element.prototype.__defineGetter__("outerHTML", outerHTMLGetter);
-                        Element.prototype.__defineSetter__("outerHTML", outerHTMLSetter);
-                    }
-                }
-                ());
+以下函数展示了`replaceChild()`的另一种用法：
+
+```js
+function embolden(n) {
+  // 假设参数为字符串而不是节点，将其当做元素的id
+  if (typeof n == "string") n = document.getElementById(n);
+  var parent = n.parentNode; // 获得n的父节点
+  var b = document.createElement("b"); //创建一个b元素
+  parent.replaceChild(b, n); // 使用<b>元素替换节点n
+  b.appendChild(n); // 使你成为<b>元素的子节点
+}
+```
+
+15.5.1节介绍过元素的outerHTML属性，也解释过在当前版本的Firefox中还未实现它。例15-5展示了在Firefox中（和其他任何支持innerHTML的浏览器，要有一个可扩展的`Element.prototype`对象，还要有一些方法来定义属性的getter和setter）如何来实现该属性。同时代码也展示了`removeChild()`和`cloneNode()`方法的实际用法。
+
+```js
+/**使用innerHTML实现outerHTML属性**/
+//为那些不支持它的浏览器实现outerHTML属性
+//假设浏览器的确支持innerHTML，并有个可扩展的Element.prototype
+//并且可以定义getter和setter
+(function() {
+  //如果outer存在，直接返回
+  if (document.createElement("div").outerHTML) return;
+  //返回this所引用元素的外部HTML
+  function outerHTMLGetter() {
+    var container = document.createElement("div"); //虚拟元素
+    container.appendChild(this.cloneNode(true)); //复制到虚拟节点
+    return container.innerHTML; //返回虚拟节点的innerHTML
+  }
+
+  //用指定的值设置元素的外部的HTML
+  function outerHTMLSetter(value) {
+    //创建一个虚拟元素，设置其内容为指定的值
+    var container = document.createElement("div");
+    container.innerHTML = value;
+    //将虚拟元素的节点全部移动到文档中
+    while (container.firstChild) //循环知道container没有子节点为止
+      this.parentNode.insertBefore(container.firstChild, this);
+    //删除被取代的节点
+    this.parentNode.removeChild(this);
+  }
+
+  //现在使用着两个函数作为所有Element对象的outerHTML属性的getter和setter
+  //如果它存在则使用ECMAScript5的Object.defineProperty()方法
+  //否则，退而求其次，使用__defineProperty__()和__definedSetter__()
+  if (Object.defineProperty) {
+    Object.defineProperty(Element.prototype, "outerHTML", {
+      get: outerHTMLGetter,
+      set: outerHTMLSetter,
+      enumerable: false,
+      configurable: true
+    });
+  } else {
+    Element.prototype.__defineGetter__("outerHTML", outerHTMLGetter);
+    Element.prototype.__defineSetter__("outerHTML", outerHTMLSetter);
+  }
+}
+());
 ```
 
 ### 15.6.4 使用DocumentFragment
 
 DocumentFragment是一种特殊的Node，它作为其他节点的一个临时的容器。像这样创建一个DocumentFragment：
 
+```js
 var frag = document.createDocumentFragment();
-
-
-像Document节点一样，DocumentFragment是独立的，而不是任何其他文档的一部分。它的parentNode总是为null。但类似Element，它可以有任意多的子节点，可以用appendChild()、insertBefore()等方法来操作它们。
-
-DocumentFragment的特殊之处在于它使得一组节点被当做一个节点看待：如果给appendChild()、insertBefore()或replaceChild()传递一个DocumentFragment，其实是将该文档片段的所有子节点插入到文档中，而非片段本身。（文档片段的子节点从片段移动到文档中，文档片段清空以便重用。）以下函数使用DocumentFragment来倒序排列一个节点的子节点：
-
-```
-             //倒序排列节点n的子节点
-            function reverseDome(n) {
-                //创建一个DocumentFragment()
-                var f = document.createDocumentFragment();
-                //从后至前循环子节点，将每一个字节点移动到文档片段中
-                //n的最后一个子节点变成第一个子节点
-                //注意，给f添加一个节点，该节点自动会从n中删除
-                while (n.lastChild) f.appendChild(n.lastChild);
-                
-                //最后将所有的子节点一次移动回n中
-                n.appendChild(f);
-            }
 ```
 
-例15-6使用innerHTML属性和DocumentFragment实现insertAdjacentHTML()方法（见15.5.1节）。它还定义一些名字更符合逻辑的HTML插入函数，可以替换让人迷惑的insertAdjacentHTML()API。内部工具函数fragment()可能是代码中最有用的部分：它返回一个对指定HTML字符串文本进行解析后的DocumentFragment。
+像Document节点一样，DocumentFragment是独立的，而不是任何其他文档的一部分。它的parentNode总是为null。但类似Element，它可以有任意多的子节点，可以用`appendChild()`、`insertBefore()`等方法来操作它们。
 
+DocumentFragment的特殊之处在于它使得一组节点被当做一个节点看待：如果给`appendChild()`、`insertBefore()`或`replaceChild()`传递一个DocumentFragment，其实是将该文档片段的所有子节点插入到文档中，而非片段本身。（文档片段的子节点从片段移动到文档中，文档片段清空以便重用。）以下函数使用DocumentFragment来倒序排列一个节点的子节点：
+
+```js
+//倒序排列节点n的子节点
+function reverseDome(n) {
+  //创建一个DocumentFragment()
+  var f = document.createDocumentFragment();
+  //从后至前循环子节点，将每一个字节点移动到文档片段中
+  //n的最后一个子节点变成第一个子节点
+  //注意，给f添加一个节点，该节点自动会从n中删除
+  while (n.lastChild) f.appendChild(n.lastChild);
+  
+  //最后将所有的子节点一次移动回n中
+  n.appendChild(f);
+}
 ```
-             /**用innerHTML实现insertAdjacentHTML**/
-             //本模块为不支持它的浏览器定义了Element.insertAdjacentHTML
-             //还定义了一些可移植的HTML插入函数，它们的名字比insertAdjacentHTML更符合逻辑
-             //Insert.before、Insert.after、Insert.atStart和Insert.atEnd
-            var Insert = (function() {
-                //如果命名空间有原生的insertAdjacentHTML.在4个函数名更名了的HTML使用它。
-                if (document.createElement("div").insertAdjacentHTML) {
-                    return {
-                        before:function(e, h) {e.insertAdjacentHTML("beforebegin", h);},
-                        after:function(e, h) {e.insertAdjacentHTML("afterend", h);},
-                        atStart:function(e, h) {e.insertAdjacentHTML("afterbegin", h);},
-                        atEnd:function(e, h) {e.insertAdjacentHTML("beforeend");}
-                    };
-                }
-                //否则，无元素的insertAdjacentHTML同样实现4个插入函数，并定义insertAdjacentHTML
-                //首先，定义一个工具函数，传入HTML字符串，返回一个DocumentFragment
-                //包含解析后的HTML的表示
-                function fragment(html) {
-                    var elt = document.createElement("div"); //创建空元素
-                    var frag = document.createDocumentFragment(); //创建文本片段
-                    elt.innerHTML = html; //设置元素内容
-                    while (elt.firstChild) //移动所有的节点
-                        frag.appendChild(elt.firstChild); //从elt到frag
-                    return frag; //返回frag
-                }
-                var Insert = {
-                    before:function(elt, html) {elt.parentNode.insertBefore(fragment(html), elt);},
-                    after:function(elt, html) {elt.parentNode.insertBefore(fragment(html), elt.nextSibling);},
-                    atStart: function(elt, html) {elt.insertBefore(fragment(html), elt.firstChild);},
-                    atEnd: function(elt, html) {elt.appendChild(fragment(html));}
-                    };
-                    //基于以上函数实现insertAdacentHTMLs
-                    Element.prototype.insertAdjacentHTML = function(pos, html) {
-                        switch(pos.toLowerCase()) {
-                            case "beforebegin":return Insert.before(this.html);
-                            case "afterend":return Insert.after(this.html);
-                            case "afterbegin":return Insert.atStart(this, html);
-                            case "beforeend":return Isert.atEnd(this, html);
-                        }        
-                    };
-                        return Insert; //最后返回4个插入函数
-            }());
+
+例15-6使用innerHTML属性和DocumentFragment实现`insertAdjacentHTML()`方法（见15.5.1节）。它还定义一些名字更符合逻辑的HTML插入函数，可以替换让人迷惑的`insertAdjacentHTML()`API。内部工具函数`fragment()`可能是代码中最有用的部分：它返回一个对指定HTML字符串文本进行解析后的DocumentFragment。
+
+```js
+/**用innerHTML实现insertAdjacentHTML**/
+//本模块为不支持它的浏览器定义了Element.insertAdjacentHTML
+//还定义了一些可移植的HTML插入函数，它们的名字比insertAdjacentHTML更符合逻辑
+//Insert.before、Insert.after、Insert.atStart和Insert.atEnd
+var Insert = (function() {
+  //如果命名空间有原生的insertAdjacentHTML.在4个函数名更名了的HTML使用它。
+  if (document.createElement("div").insertAdjacentHTML) {
+    return {
+      before:function(e, h) {e.insertAdjacentHTML("beforebegin", h);},
+      after:function(e, h) {e.insertAdjacentHTML("afterend", h);},
+      atStart:function(e, h) {e.insertAdjacentHTML("afterbegin", h);},
+      atEnd:function(e, h) {e.insertAdjacentHTML("beforeend");}
+    };
+  }
+  //否则，无元素的insertAdjacentHTML同样实现4个插入函数，并定义insertAdjacentHTML
+  //首先，定义一个工具函数，传入HTML字符串，返回一个DocumentFragment
+  //包含解析后的HTML的表示
+  function fragment(html) {
+    var elt = document.createElement("div"); //创建空元素
+    var frag = document.createDocumentFragment(); //创建文本片段
+    elt.innerHTML = html; //设置元素内容
+    while (elt.firstChild) //移动所有的节点
+      frag.appendChild(elt.firstChild); //从elt到frag
+    return frag; //返回frag
+  }
+  var Insert = {
+    before:function(elt, html) {elt.parentNode.insertBefore(fragment(html), elt);},
+    after:function(elt, html) {elt.parentNode.insertBefore(fragment(html), elt.nextSibling);},
+    atStart: function(elt, html) {elt.insertBefore(fragment(html), elt.firstChild);},
+    atEnd: function(elt, html) {elt.appendChild(fragment(html));}
+  };
+  //基于以上函数实现insertAdacentHTMLs
+  Element.prototype.insertAdjacentHTML = function(pos, html) {
+    switch(pos.toLowerCase()) {
+      case "beforebegin":return Insert.before(this.html);
+      case "afterend":return Insert.after(this.html);
+      case "afterbegin":return Insert.atStart(this, html);
+      case "beforeend":return Isert.atEnd(this, html);
+    }        
+  };
+  return Insert; //最后返回4个插入函数
+}());
 ```
 
 
@@ -9060,204 +9070,207 @@ DocumentFragment的特殊之处在于它使得一组节点被当做一个节点�
 
 例15-7说明了如何为文档动态地创建一个目录表。它展示了上一节所描述的文档脚本化的很多概念：元素选取、文档遍历、元素属性设置、innerHTML属性设置和在文档中创建与插入新节点等。本例注释详尽，理解代码应该不会有问题。
 
-```
-             /**一个动态自动生成的目录表**/
-            /**
-             * 这个 模块注册一个可在页面加载完成后自动运行的匿名函数。当执行这个函数时会去文档中查找id为“TOC”的元素
-             *
-             * 生成的TOC目录应该具有自己的css样式。这个目录区域的样式className设置为“TOCEntry”
-             * 统一我们为不同层级的目录模板标题定义不同的样式。<h1>标签生成的标题className为“TOCLevel1”，<h2>标签生成的标题className为"TOCLevel2",依次类推
-             *段编号的样式为“TOCSectNum”
-             * 这个模块需要onLoad()工具函数
-             **/
-                (function() { //匿名函数定义了一个局部作用域
-                //查找TOC容器元素
-                //如果不存在，则在文档开头处新建一个
-                var toc = document.getElementById("TOC");
-                if (!toc) {
-                    toc = document.createElement("div");
-                    toc.id = "TOC"
-                    document.body.insertBefore(toc, document.body.firstChild);
-                }
-                //查找所有的标题元素
-                var headings;
-                if (document.querySelectorAll) //我们能否使用这个简单的方法？
-                    headings = document.querySelectorAll("h1,h2,h3,h4,h5,h6");
-                else //否则查找的方法稍微复杂些
-                    headings = findHeadings(document.body, []);
-                //递归遍历document的body，查找元素
-                function findHeadings(root, sects) {
-                        for (var c = root.firstChild; c != null; c = c.nextSibling) {
-                            if (c.nodeType !== 1) continue;
-                            if (c.tagName.length == 2 && c.tagName.charAt(0) == "H")
-                                sects.push(c);
-                            else
-                                findHeadings(c, sects);
-                        }
-                        return sects;
-                    }
-                    //初始化一个数组来保持跟踪章节好
-                var sectionNumbers = [0, 0, 0, 0, 0, 0];
-                //现在循环已经找到的标题元素
-                for (var h = 0; h < headings.length; h++) {
-                    var heading = headings[h];
-                    //跳过在TOC容器中的标题元素
-                    if (heading.parentNode == toc) continue;
-                    //判定标题的级别
-                    var level = parseInt(heading.tagName.charAt(1));
-                    if (isNaN(level) || level < 1 || level > 6) continue;
-                    
-                    //对于重要的标题级别增加sectionNumber对于的数字
-                    //重置所有标题比它级别低的数字为零
-                    sectionNumbers[level-1]++;
-                    for(var i = level; i<6;i++) sectionNumbers[i] =0;
-                    
-                    //现在讲所有标题级别的章节号组合产生一个章节号，如2.3.1
-                    var sectionNumber = sectionNumbers.slice(0,level).join(".")
-                    
-                    //为标题级别增加章节号
-                    //把数字放在<span>中，是的其可以用样式修饰
-                    var span = document.createElement("span");
-                    span.calssName = "TOCSectNum";
-                    span.innerHTML =sectionNumber;
-                    heading.insertBefore(span,heading.firstChild);
-                    
-                    //用命名的锚点将标题包起来，以便它增加链接
-                    var anchor = document.createElement("a");
-                    anchor.name = "TOC"+ sectionNumber;
-                    heading.parentNode.insertBefore(anchor,heading);
-                    anchor.appendChild(heading);
-                    
-                    //现在为该节点创建一个链接
-                    var link = document.createElement("a");
-                    link.href = "#TOC" + sectionNumber;//链接目标的地址
-                    link.innerHTML = heading.innerHTML;//链接文本与实际标题一致
-                    
-                    //将链接放在一个div中，div用于基于级别名字的样式修饰
-                    var entry = document.createElement("div");
-                    entry.className = "TOCEntry TOCLevel" +level;
-                    
-                    entry.appendChild(link);
-                    //改div添加到TOC容器
-                    toc.appendChild(entry)
-                    
-                }
-            }); 
+```js
+/**一个动态自动生成的目录表**/
+/**
+* 这个 模块注册一个可在页面加载完成后自动运行的匿名函数。当执行这个函数时会去文档中查找id为“TOC”的元素
+*
+* 生成的TOC目录应该具有自己的css样式。这个目录区域的样式className设置为“TOCEntry”
+* 统一我们为不同层级的目录模板标题定义不同的样式。<h1>标签生成的标题className为“TOCLevel1”，<h2>标签生成的标题className为"TOCLevel2",依次类推
+*段编号的样式为“TOCSectNum”
+* 这个模块需要onLoad()工具函数
+**/
+(function() { //匿名函数定义了一个局部作用域
+  //查找TOC容器元素
+  //如果不存在，则在文档开头处新建一个
+  var toc = document.getElementById("TOC");
+  if (!toc) {
+    toc = document.createElement("div");
+    toc.id = "TOC"
+    document.body.insertBefore(toc, document.body.firstChild);
+  }
+  //查找所有的标题元素
+  var headings;
+  if (document.querySelectorAll) //我们能否使用这个简单的方法？
+    headings = document.querySelectorAll("h1,h2,h3,h4,h5,h6");
+  else //否则查找的方法稍微复杂些
+    headings = findHeadings(document.body, []);
+  //递归遍历document的body，查找元素
+  function findHeadings(root, sects) {
+    for (var c = root.firstChild; c != null; c = c.nextSibling) {
+      if (c.nodeType !== 1) continue;
+      if (c.tagName.length == 2 && c.tagName.charAt(0) == "H")
+        sects.push(c);
+      else
+        findHeadings(c, sects);
+    }
+    return sects;
+  }
+  //初始化一个数组来保持跟踪章节好
+  var sectionNumbers = [0, 0, 0, 0, 0, 0];
+  //现在循环已经找到的标题元素
+  for (var h = 0; h < headings.length; h++) {
+    var heading = headings[h];
+    //跳过在TOC容器中的标题元素
+    if (heading.parentNode == toc) continue;
+    //判定标题的级别
+    var level = parseInt(heading.tagName.charAt(1));
+    if (isNaN(level) || level < 1 || level > 6) continue;
+    
+    //对于重要的标题级别增加sectionNumber对于的数字
+    //重置所有标题比它级别低的数字为零
+    sectionNumbers[level-1]++;
+    for(var i = level; i<6;i++) sectionNumbers[i] =0;
+    
+    //现在讲所有标题级别的章节号组合产生一个章节号，如2.3.1
+    var sectionNumber = sectionNumbers.slice(0,level).join(".")
+    
+    //为标题级别增加章节号
+    //把数字放在<span>中，是的其可以用样式修饰
+    var span = document.createElement("span");
+    span.calssName = "TOCSectNum";
+    span.innerHTML =sectionNumber;
+    heading.insertBefore(span,heading.firstChild);
+    
+    //用命名的锚点将标题包起来，以便它增加链接
+    var anchor = document.createElement("a");
+    anchor.name = "TOC"+ sectionNumber;
+    heading.parentNode.insertBefore(anchor,heading);
+    anchor.appendChild(heading);
+    
+    //现在为该节点创建一个链接
+    var link = document.createElement("a");
+    link.href = "#TOC" + sectionNumber;//链接目标的地址
+    link.innerHTML = heading.innerHTML;//链接文本与实际标题一致
+    
+    //将链接放在一个div中，div用于基于级别名字的样式修饰
+    var entry = document.createElement("div");
+    entry.className = "TOCEntry TOCLevel" +level;
+    
+    entry.appendChild(link);
+    //改div添加到TOC容器
+    toc.appendChild(entry)
+  }
+}); 
 ```
 
 ## 15.8 文档和元素的几何形状和滚动
 
 在本章中，到目前为止我们考虑的文档被看做是元素和文本节点的抽象树。但是当浏览器在窗口中渲染文档时，它创建文档的一个视觉表现层，在那里每个元素有自己的位置和尺寸。通常，Web应用程序可以将文档看做是元素的树，并且不用关心在屏幕上这些元素是如何渲染的。但有时，判定一个元素精确的几个形状也是非常有必要的。例如，将在第16章中看到利用CSS为元素指定位置。如果想用CSS动态定位一个元素（如工具提示或插图）到某个已经由浏览器定位后的普通元素的旁边，首先需要判定那个元素的当前位置。
 
-本节阐述了在浏览器窗口中完成文档的布局以后，怎样才能在抽象的基于树的文档模型与几何形状的基于坐标的视图之间来回变换。本节描述的属性和方法已经在浏览器中实现了有相当长的一段时间了（虽然有些是IE特有的，有些直到IE 9才实现）。在写本书的这段时间里，它们通过了W3C的标准化流程，作为CSSOM-View模块（参见 http://www.w3.org/TR/cssom-view/）。
+本节阐述了在浏览器窗口中完成文档的布局以后，怎样才能在抽象的基于树的文档模型与几何形状的基于坐标的视图之间来回变换。本节描述的属性和方法已经在浏览器中实现了有相当长的一段时间了（虽然有些是IE特有的，有些直到IE 9才实现）。在写本书的这段时间里，它们通过了W3C的标准化流程，作为[CSSOM-View模块](http://www.w3.org/TR/cssom-view/)。
 
 ### 15.8.1 文档坐标和视口坐标
 
-元素的位置是以像素来度量的，向右代表X坐标的增加，向下代表Y坐标的增加。但是，有两个不同的点作为坐标系的原点：元素的X和Y坐标可以相对于文档的左上角或者相对于在其中显示文档的视口的左上角。在顶级窗口和标签页中，“视口”只是实际显示文档内容的浏览器的一部分：它不包括浏览器“外壳”（如菜单、工具条和标签页）。针对框架页中显示的文档，视口是定义了框架页的<iframe>元素。无论在何种情况下，当讨论元素的位置时，必须弄清楚所使用的坐标是文档坐标还是视口坐标。（注意，视口坐标有时也叫做窗口坐标。）
+元素的位置是以像素来度量的，向右代表X坐标的增加，向下代表Y坐标的增加。但是，有两个不同的点作为坐标系的原点：元素的X和Y坐标可以相对于文档的左上角或者相对于在其中显示文档的视口的左上角。在顶级窗口和标签页中，“视口”只是实际显示文档内容的浏览器的一部分：它不包括浏览器“外壳”（如菜单、工具条和标签页）。针对框架页中显示的文档，视口是定义了框架页的`<iframe>`元素。无论在何种情况下，当讨论元素的位置时，必须弄清楚所使用的坐标是文档坐标还是视口坐标。（注意，视口坐标有时也叫做窗口坐标。）
 
-如果文档比视口要小，或者说它还未出现滚动，则文档的左上角就是视口的左上角，文档和视口坐标系统是同一个。但是，一般来说，要在两种坐标系之间互相转换，必须加上或减去滚动的偏移量（scrol l offset）。例如，在文档坐标中如果一个元素的Y坐标是200像素，并且用户已经把浏览器向下滚动75像素，那么视口坐标中元素的Y坐标是125像素。同样，在视口坐标中如果一个元素的X坐标是400像素，并且用户已经水平滚动了视口200像素，那么文档坐标中元素的X坐标是600像素。
+如果文档比视口要小，或者说它还未出现滚动，则文档的左上角就是视口的左上角，文档和视口坐标系统是同一个。但是，一般来说，要在两种坐标系之间互相转换，必须加上或减去滚动的偏移量（scroll offset）。例如，在文档坐标中如果一个元素的Y坐标是200像素，并且用户已经把浏览器向下滚动75像素，那么视口坐标中元素的Y坐标是125像素。同样，在视口坐标中如果一个元素的X坐标是400像素，并且用户已经水平滚动了视口200像素，那么文档坐标中元素的X坐标是600像素。
 
 文档坐标比视口坐标更加基础，并且在用户滚动时它们不会发生变化。不过，在客户端编程中使用视口坐标是非常常见的。当使用CSS指定元素的位置时运用了文档坐标（见第16章）。但是，最简单的查询元素位置的方法（见15.8.2节）返回视口坐标中的位置。类似地，当为鼠标事件注册事件处理程序函数时，报告的鼠标指针的坐标是在视口坐标系中的。
 
-为了在坐标系之间互相转换，我们需要判定浏览器窗口的滚动条的位置。Window对象的pageXOffset和pageYOffset属性在所有的浏览器中提供这些值，除了IE 8及更早的版本以外。IE（和所有现代浏览器）也可以通过scrollLeft和scrollTop属性来获得滚动条的位置。令人迷惑的是，正常情况下通过查询文档的根节点（document.documentElement）来获取这些属性值，但在怪异模式下（见13.4.4节），必须在文档的<body>元素（document.body）上查询它们。例15-8显示了如何简便地查询滚动条的位置。
+为了在坐标系之间互相转换，我们需要判定浏览器窗口的滚动条的位置。Window对象的 pageXOffset 和 pageYOffset 属性在所有的浏览器中提供这些值，除了IE 8及更早的版本以外。IE（和所有现代浏览器）也可以通过 scrollLeft 和 scrollTop 属性来获得滚动条的位置。令人迷惑的是，正常情况下通过查询文档的根节点（document.documentElement）来获取这些属性值，但在怪异模式下（见13.4.4节），必须在文档的`<body>`元素（document.body）上查询它们。例15-8显示了如何简便地查询滚动条的位置。
 
-```
+```js
 /*查询窗口滚动条的位置*/
 //以一个对象的x和y属性的方法返回滚动条的偏移量
 function getScrollOffsets(w) {
-    //使用指定才窗口，如果不带参数则使用当前窗口
-    w = w || window;
+  //使用指定才窗口，如果不带参数则使用当前窗口
+  w = w || window;
 
-    //除了IE8及更早的版本以外，其它的浏览器都能用
-    if (w.pageXOffset != null) return {x: w.pageXOffset, y:w.pageYOffset};
+  //除了IE8及更早的版本以外，其它的浏览器都能用
+  if (w.pageXOffset != null) return {x: w.pageXOffset, y:w.pageYOffset};
 
-    //对标准模式下的IE，或任何浏览器
-    var d = w.document;
-    if (document.compatMode == "CSS1Compat")
-        return {x:d.documentElement.scrollLeft, y:d.documentElement.scrollTop};
+  //对标准模式下的IE，或任何浏览器
+  var d = w.document;
+  if (document.compatMode == "CSS1Compat")
+    return {x:d.documentElement.scrollLeft, y:d.documentElement.scrollTop};
 
-    //怪异模式下的浏览器
-    return { x: d.body.scrollLeft, y: d.body.scrollTop };
+  //怪异模式下的浏览器
+  return { x: d.body.scrollLeft, y: d.body.scrollTop };
 }
 ```
 
 有时能够判定视口的尺寸也是非常有用的——例如，为了确定文档的哪些部分是当前可见的。利用滚动偏移量查询视口尺寸的简单方法在IE 8及更早的版本中无法工作，而且该技术在IE中的运行方式还要取决于浏览器是处于怪异模式还是标准模式。例15-9介绍了如何简便地查询视口尺寸。注意，它和例15-8的代码是如此相似。
 
-```
-             /*查询窗口的视口尺寸*/
-             //作为一个对象的w和h属性返回视口的尺寸
-            function getViewportSize(w) {
-                //使用指定的窗口，如果不带参数则使用当前窗口
-                w = w || window;
-                //除了ie8和更早的版本，其它浏览器都能用
-                if (w.innerWidth != null) return {
-                    w: w.innerWidth,
-                    h: w.innerHeight
-                };
-                //对于标准模式下的IE或其任何浏览器
-                var d = w.document;
-                if (document.compatMode == "CSS1Compat")
-                    return {
-                        w: d.documentElement.clientWidth,
-                        h: d.documentElement.clientHeight
-                    };
-                //对于怪异模式下的浏览器
-                return{w:d.body.clientWidth,h:d.body.clientHeight};
-            }
+```js
+/*查询窗口的视口尺寸*/
+//作为一个对象的w和h属性返回视口的尺寸
+function getViewportSize(w) {
+  //使用指定的窗口，如果不带参数则使用当前窗口
+  w = w || window;
+  //除了ie8和更早的版本，其它浏览器都能用
+  if (w.innerWidth != null) return {
+    w: w.innerWidth,
+    h: w.innerHeight
+  };
+  //对于标准模式下的IE或其任何浏览器
+  var d = w.document;
+  if (document.compatMode == "CSS1Compat")
+    return {
+      w: d.documentElement.clientWidth,
+      h: d.documentElement.clientHeight
+    };
+  //对于怪异模式下的浏览器
+  return{w:d.body.clientWidth,h:d.body.clientHeight};
+}
 ```
 
 上述两个例子已经用到了scrollLeft、scrollTop、clientWidth和clientHeight属性。我们将在15.8.5节中再次遇到这些属性。
 
 ### 15.8.2 查询元素的几何尺寸
 
-判定一个元素的尺寸和位置最简单的方法是调用它的getBoundingClientRect()方法。该方法是在IE 5中引入的，而现在当前的所有浏览器都实现了。它不需要参数，返回一个有left、right、top和bottom属性的对象。left和top属性表示元素的左上角的X和Y坐标，right和bottom属性表示元素的右下角的X和Y坐标。
+判定一个元素的尺寸和位置最简单的方法是调用它的`getBoundingClientRect()`方法。该方法是在IE 5中引入的，而现在当前的所有浏览器都实现了。它不需要参数，返回一个有left、right、top和bottom属性的对象。left和top属性表示元素的左上角的X和Y坐标，right和bottom属性表示元素的右下角的X和Y坐标。
 
-这个方法返回元素在视口坐标中的位置。（getBoundingClientRect()方法名中的“Client”是一种间接指代，它就是Web浏览器客户端 ——专指它定义的窗口或视口。）为了转化为甚至用户滚动浏览器窗口以后仍然有效的文档坐标，需要加上滚动的偏移量：
+这个方法返回元素在视口坐标中的位置。（`getBoundingClientRect()`方法名中的“Client”是一种间接指代，它就是Web浏览器客户端 ——专指它定义的窗口或视口。）为了转化为甚至用户滚动浏览器窗口以后仍然有效的文档坐标，需要加上滚动的偏移量：
 
-            var box = e.getBoundingClientRect(); //获得视口在坐标中的位置
-            var offsets = getScrollOffsets(); //上面定义的工具函数
-            var x = box.left + offsets.x;
-            var y = box.top + offsets.y;
+```js
+var box = e.getBoundingClientRect(); //获得视口在坐标中的位置
+var offsets = getScrollOffsets(); //上面定义的工具函数
+var x = box.left + offsets.x;
+var y = box.top + offsets.y;
+```
 
 在很多浏览器（和W3C标准）中，getBoundingClientRect()返回的对象还包含width和height属性，但是在原始的IE中未实现。为了简便起见，可以这样计算元素的width和height：
 
-            var box = e.getBoundingClientRect(); //获得视口在坐标中的位置
-            var w = box.width || (box.right - box.left);
-            var h = box.height || (box.bottom - box.top);
+```js
+var box = e.getBoundingClientRect(); //获得视口在坐标中的位置
+var w = box.width || (box.right - box.left);
+var h = box.height || (box.bottom - box.top);
+```
 
-在第16章中将学到元素内容被一块可选的空白区域所包围，叫做内边距。内边距被边框所包围，边框被外边距所包围。内边距、边框和外边距都是可选的。getBoundingClientRect()所返回的坐标包含元素的边框和内边距，但不包含元素的外边距。
+在第16章中将学到元素内容被一块可选的空白区域所包围，叫做内边距。内边距被边框所包围，边框被外边距所包围。内边距、边框和外边距都是可选的。`getBoundingClientRect()`所返回的坐标包含元素的边框和内边距，但不包含元素的外边距。
 
-如果getBoundingClientRect()方法名中的“Client”指定了返回的矩形的坐标系，那么方法名中的“Bounding”做何解释呢？浏览器在布局时块状元素（如图片、段落和<div>元素等）总是为矩形。但是，内联元素（如<span>、<code>和<b>等）可能跨了多行，因此可能由多个矩形组成。想象一下，例如，一些被断成两行的斜体文本（用<i>和</i>标签标记的）。它的形状是由第一行的右边部分和第二行的左边部分两个矩形组成的（假设文本顺序是从左向右）。如果在内联元素上调用getBoundingClientRect()，它返回“边界矩形”。对于如上描述的<i>元素，边界矩形会包含整整两行的宽度。
+如果`getBoundingClientRect()`方法名中的“Client”指定了返回的矩形的坐标系，那么方法名中的“Bounding”做何解释呢？浏览器在布局时块状元素（如图片、段落和`<div>`元素等）总是为矩形。但是，内联元素（如`<span>`、`<code>`和`<b>`等）可能跨了多行，因此可能由多个矩形组成。想象一下，例如，一些被断成两行的斜体文本（用`<i>`和`</i`>标签标记的）。它的形状是由第一行的右边部分和第二行的左边部分两个矩形组成的（假设文本顺序是从左向右）。如果在内联元素上调用`getBoundingClientRect()`，它返回“边界矩形”。对于如上描述的`<i>`元素，边界矩形会包含整整两行的宽度。
 
-如果想查询内联元素每个独立的矩形，调用getClientRects()方法来获得一个只读的类数组对象，它的每个元素类似于getBoundingClientRect()返回的矩形对象。
+如果想查询内联元素每个独立的矩形，调用`getClientRects()`方法来获得一个只读的类数组对象，它的每个元素类似于`getBoundingClientRect()`返回的矩形对象。
 
-我们已经见过如getElementsByTagName()这样的DOM方法返回的结果是“实时的”，当文档变化时这些结果能自动更新。但getBoundingClientRect()和getClientRects()所返回的矩形对象（和矩形对象列表）并不是实时的。它们只是调用方法时文档视觉状态的静态快照，在用户滚动或改变浏览器窗口大小时不会更新它们。
+我们已经见过如`getElementsByTagName()`这样的DOM方法返回的结果是“实时的”，当文档变化时这些结果能自动更新。但`getBoundingClientRect()`和`getClientRects()`所返回的矩形对象（和矩形对象列表）并不是实时的。它们只是调用方法时文档视觉状态的静态快照，在用户滚动或改变浏览器窗口大小时不会更新它们。
 
 ### 15.8.3 判定元素在某点
 
-getBoundingClientRect()方法使我们能在视口中判定元素的位置。但有时我们想反过来，判定在视口中的指定位置上有什么元素。这可以用Document对象的elementFromPoint()方法来判定。传递X和Y坐标（使用视口坐标而非文档坐标），该方法返回在指定位置的一个元素。在写本书的这段时间里，选取元素的算法还未详细指定，但是该方法的意图就是它返回在那个点的最里面的和最上面的（见16.2.1节中CSS的z-index属性）元素。如果指定的点在视口以外，elementFromPoint()返回null，即使该点在转换为文档坐标后是完美有效的，返回值也一样。
+`getBoundingClientRect()`方法使我们能在视口中判定元素的位置。但有时我们想反过来，判定在视口中的指定位置上有什么元素。这可以用Document对象的`elementFromPoint()`方法来判定。传递X和Y坐标（使用视口坐标而非文档坐标），该方法返回在指定位置的一个元素。在写本书的这段时间里，选取元素的算法还未详细指定，但是该方法的意图就是它返回在那个点的最里面的和最上面的（见16.2.1节中CSS的z-index属性）元素。如果指定的点在视口以外，`elementFromPoint()`返回null，即使该点在转换为文档坐标后是完美有效的，返回值也一样。
 
-elementFromPoint()方法看上去很有用，典型的案例是将鼠标指针的坐标传递给它来判定鼠标在哪个元素上。但是，我们将在第17章学到，鼠标事件对象已经在target属性中包含了这些信息。因此，实际上elementFromPoint()不经常使用。
+`elementFromPoint()`方法看上去很有用，典型的案例是将鼠标指针的坐标传递给它来判定鼠标在哪个元素上。但是，我们将在第17章学到，鼠标事件对象已经在target属性中包含了这些信息。因此，实际上`elementFromPoint()`不经常使用。
 
 ### 15.8.4 滚动
 
-例15-8展示了如何在浏览器窗口中查询滚动条的位置。该例子中的scrollLeft和scrollTop属性可以用来设置让浏览器滚动，但有一种更简单的方法从JavaScript最早的时期开始就支持的。Window对象的scrollTop()方法（和其同义词scroll()）接受一个点的X和Y坐标（文档坐标），并作为滚动条的偏移量设置它们。也就是，窗口滚动到指定的点出现在视口的左上角。如果指定的点太接近于文档的下边缘或右边缘，浏览器将尽量保证它和视口的左上角之间最近，但是无法达到一致。以下代码滚动浏览器到文档最下面的页面可见：
+例15-8展示了如何在浏览器窗口中查询滚动条的位置。该例子中的scrollLeft和scrollTop属性可以用来设置让浏览器滚动，但有一种更简单的方法从JavaScript最早的时期开始就支持的。Window对象的`scrollTop()`方法（和其同义词`scroll()`）接受一个点的X和Y坐标（文档坐标），并作为滚动条的偏移量设置它们。也就是，窗口滚动到指定的点出现在视口的左上角。如果指定的点太接近于文档的下边缘或右边缘，浏览器将尽量保证它和视口的左上角之间最近，但是无法达到一致。以下代码滚动浏览器到文档最下面的页面可见：
 
-Window的scrollBy()方法和scroll()和scrollTo()类似，但是它的参数是相对的，并在当前滚动条的偏移量上增加。例如，快速阅读者可能会喜欢这样的书签（见13.2.5节）：
+Window的`scrollBy()`方法和`scroll()`和`scrollTo()`类似，但是它的参数是相对的，并在当前滚动条的偏移量上增加。例如，快速阅读者可能会喜欢这样的书签（见13.2.5节）：
 
 
-通常，除了滚动到文档中用数字表示的位置，我们只是想它滚动使得文档中的某个元素可见。可以利用getBoundingClientRect()计算元素的位置，并转换为文档坐标，然后用scrollTo()方法达到目的。但是在需要显示的HTML元素上调用scrollIntoView()方法更加方便。该方法保证了元素能在视口中可见。默认情况下，它试图将元素的上边缘放在或尽量接近视口的上边缘。如果只传递false作为参数，它将试图将元素的下边缘放在或尽量接近视口的下边缘。只要有助于元素在视口内可见，浏览器也会水平滚动视口。
+通常，除了滚动到文档中用数字表示的位置，我们只是想它滚动使得文档中的某个元素可见。可以利用`getBoundingClientRect()`计算元素的位置，并转换为文档坐标，然后用`scrollTo()`方法达到目的。但是在需要显示的HTML元素上调用`scrollIntoView()`方法更加方便。该方法保证了元素能在视口中可见。默认情况下，它试图将元素的上边缘放在或尽量接近视口的上边缘。如果只传递false作为参数，它将试图将元素的下边缘放在或尽量接近视口的下边缘。只要有助于元素在视口内可见，浏览器也会水平滚动视口。
 
-scrollIntoView()的行为与设置window.location.hash为一个命名锚点（<a name="">元素）的名字后浏览器产生的行为类似。
+`scrollIntoView()`的行为与设置`window.location.hash`为一个命名锚点（`<a name="">`元素）的名字后浏览器产生的行为类似。
 
 ### 15.8.5 关于元素尺寸、位置和溢出的更多信息
 
-getBoundingClientRect()方法在所有当前的浏览器上都有定义，但如果需要支持老式浏览器，不能依靠此方法而必须使用更老的技术来判定元素的尺寸和位置。元素的尺寸比较简单：任何HTML元素的只读属性offsetWidth和offsetHeight以CSS像素返回它的屏幕尺寸。返回的尺寸包含元素的边框和内边距，除去了外边距。
+`getBoundingClientRect()`方法在所有当前的浏览器上都有定义，但如果需要支持老式浏览器，不能依靠此方法而必须使用更老的技术来判定元素的尺寸和位置。元素的尺寸比较简单：任何HTML元素的只读属性offsetWidth和offsetHeight以CSS像素返回它的屏幕尺寸。返回的尺寸包含元素的边框和内边距，除去了外边距。
 
 所有HTML元素拥有offsetLeft和offsetTop属性来返回元素的X和Y坐标。对于很多元素，这些值是文档坐标，并直接指定元素的位置。但对于已定位元素的后代元素和一些其他元素（如表格单元），这些属性返回的坐标是相对于祖先元素的而非文档。offsetParent属性指定这些属性所相对的父元素。如果offsetParent为null，这些属性都是文档坐标，因此，一般来说，用offsetLeft和offsetTop来计算元素e的位置需要一个循环：
 
 
-通过循环offsetParent对象链来累加偏移量，该函数计算指定元素的文档坐标。（回想一下getBoundingClientRect()返回的是视口坐标。）这里不能对元素的位置就一锤定音，尽管如此——这个getElementPosition()函数也不总是计算正确的值，下面看看如何来修复它。
+通过循环offsetParent对象链来累加偏移量，该函数计算指定元素的文档坐标。（回想一下`getBoundingClientRect()`返回的是视口坐标。）这里不能对元素的位置就一锤定音，尽管如此——这个`getElementPosition()`函数也不总是计算正确的值，下面看看如何来修复它。
 
 
 除了这些名字以offset开头的属性以外，所有的文档元素定义了其他两组属性，其名称一组以client开头，另一组以scroll开头。即，每个HTML元素都有以下这些属性：
@@ -9265,39 +9278,39 @@ getBoundingClientRect()方法在所有当前的浏览器上都有定义，但如
 
 为了理解这些client和scroll属性，你需要知道HTML元素的实际内容有可能比分配用来容纳内容的盒子更大，因此单个元素可能有滚动条（见16.2.6节中CSS的overflow属性）。内容区域是视口，就像浏览器的窗口，当实际内容比视口更大时，需要把元素的滚动条位置考虑进去。
 
-clientWidth和clientHeight类似offsetWidth和offsetHeight，不同的是它们不包含边框大小，只包含内容和它的内边距。同时，如果浏览器在内边距和边框之间添加了滚动条，clientWidth和clientHeight在其返回值中也不包含滚动条。注意，对于类似<i>、<code>和<span>这些内联元素，clientWidth和clientHeight总是返回0。
+clientWidth和clientHeight类似offsetWidth和offsetHeight，不同的是它们不包含边框大小，只包含内容和它的内边距。同时，如果浏览器在内边距和边框之间添加了滚动条，clientWidth和clientHeight在其返回值中也不包含滚动条。注意，对于类似`<i>`、`<code>`和`<span>`这些内联元素，clientWidth和clientHeight总是返回0。
 
-在例15-9的getViewportSize()方法中使用了clientWidth和clientHeight。有一个特殊的案例，在文档的根元素上查询这些属性时，它们的返回值和窗口的innerWidth和innerHeight属性值相等。
+在例15-9的`getViewportSize()`方法中使用了clientWidth和clientHeight。有一个特殊的案例，在文档的根元素上查询这些属性时，它们的返回值和窗口的innerWidth和innerHeight属性值相等。
 
 
 clientLeft和clientTop属性没什么用：它们返回元素的内边距的外边缘和它的边框的外边缘之间的水平距离和垂直距离，通常这些值就等于左边和上边的边框宽度。但是如果元素有滚动条，并且浏览器将这些滚动条放置在左侧或顶部（可这不太常见），clientLeft和clientTop也就包含了滚动条的宽度。对于内联元素，clientLeft和clientTop总是为0。
 
 scrollWidth和scrollHeight是元素的内容区域加上它的内边距再加上任何溢出内容的尺寸。当内容正好和内容区域匹配而没有溢出时，这些属性与clientWidth和clientHeight是相等的。但当溢出时，它们就包含溢出的内容，返回值比clientWidth和clientHeight要大。
 
-最后，scrollLeft和scrollTop指定元素的滚动条的位置。在getScrollOffsets()方法（例15-8）中在文档的根元素上我们查询过它们。注意，scrollLeft和scrollTop是可写的属性，通过设置它们来让元素中的内容滚动。（HTML元素并没有类似Window对象的scrollTo()方法。）
+最后，scrollLeft和scrollTop指定元素的滚动条的位置。在`getScrollOffsets()`方法（例15-8）中在文档的根元素上我们查询过它们。注意，scrollLeft和scrollTop是可写的属性，通过设置它们来让元素中的内容滚动。（HTML元素并没有类似Window对象的`scrollTo()`方法。）
 
-当文档包含可滚动的且有溢出内容的元素时，上述定义的getElementPosition()方法就不能正常工作了，因为它没有把滚动条考虑进去。这里有一个修改版，它从累计的偏移量中减去了滚动条的位置，这样一来，将返回的位置从文档坐标转换为视口坐标。
+当文档包含可滚动的且有溢出内容的元素时，上述定义的`getElementPosition()`方法就不能正常工作了，因为它没有把滚动条考虑进去。这里有一个修改版，它从累计的偏移量中减去了滚动条的位置，这样一来，将返回的位置从文档坐标转换为视口坐标。
 
-在现代浏览器中，getElementPos()方法的返回值和getBoundingClientRect()的返回值一样（但是更低效）。理论上，如getElementPos()这样的函数可以在不支持getBoundingClientRect()的浏览器中使用。但实际上，不支持getBoundingClientRect()的浏览器在元素位置方面有很多的不兼容性，像这样如此简陋的函数无法可靠地工作。实际类似jQuery这样的客户端类库包含了一些函数来计算元素的位置，它们扩充了这个基本的位置计算算法，修复了一系列浏览器特定的bug。如果需要代码在所有不支持getBoundingClientRect()的浏览器中正确计算元素的位置，你很可能需要像jQuery这样的类库。
+在现代浏览器中，getElementPos()方法的返回值和`getBoundingClientRect()`的返回值一样（但是更低效）。理论上，如`getElementPos()`这样的函数可以在不支持`getBoundingClientRect()`的浏览器中使用。但实际上，不支持`getBoundingClientRect()`的浏览器在元素位置方面有很多的不兼容性，像这样如此简陋的函数无法可靠地工作。实际类似jQuery这样的客户端类库包含了一些函数来计算元素的位置，它们扩充了这个基本的位置计算算法，修复了一系列浏览器特定的bug。如果需要代码在所有不支持`getBoundingClientRect()`的浏览器中正确计算元素的位置，你很可能需要像jQuery这样的类库。
 
 ## 15.9 HTML表单
 
-HTML的<form>元素和各种各样的表单输入元素（如<input>、<select>和<button>）在客户端编程中有着重要的地位。这些HTML元素可以追溯到Web的最开始，比JavaScript本身更早。HTML表单就是第一代Web应用程序背后的运作机制，它根本就不需要JavaScript。用户的输入从表单元素来收集；表单将这些输入递交给服务器；服务器处理输入并生成一个新的HTML页面（通常有一个新的表单元素）显示在客户端。
+HTML的`<form>`元素和各种各样的表单输入元素（如`<input>`、`<select>`和`<button>`）在客户端编程中有着重要的地位。这些HTML元素可以追溯到Web的最开始，比JavaScript本身更早。HTML表单就是第一代Web应用程序背后的运作机制，它根本就不需要JavaScript。用户的输入从表单元素来收集；表单将这些输入递交给服务器；服务器处理输入并生成一个新的HTML页面（通常有一个新的表单元素）显示在客户端。
 
 即使当整个表单数据都是由客户端JavaScript来处理并不会提交到服务器时，HTML表单元素仍然是收集用户数据很好的方法。在服务端程序中，表单必须要有一个“提交”按钮，否则它就没有用处。另一方面，在客户端编程中，“提交”按钮不是必须的（虽然它可能仍然有用）。服务端程序是基于表单提交动作的——它们按表单大小的块处理数据——这限制了它们的交互性。客户端程序是基于事件的——它们可以对单独的表单元素上的事件做出响应——这使得它们有更好的响应度。例如，在用户打字时客户端程序就能校验输入的有效性。或者通过单击一个复选框来启用一组选项，也就是说当复选框被选中时那组选项才有意义。
 
 
 以下小节阐述了用HTML表单如何做到这些事情。表单由HTML元素组成，就像HTML文档的其他部分一样，并且可以用本章中介绍过的DOM技术来操作它们。但是表单是第一批脚本化的元素，在最早的客户端编程中它们还支持比DOM更早的一些其他的API。
 
-请注意，本节是关于脚本化HTML表单，而不是HTML本身。假设你已经对用于定义表单的HTML元素（<input>、<textarea>、<select>等）有一定的了解。尽管如此，表15-1列出了最常使用的表单元素。更详细的内容请参考第四部分中的表单和表单元素API，在Form、Input、Option、Select和TextArea下面。
+请注意，本节是关于脚本化HTML表单，而不是HTML本身。假设你已经对用于定义表单的HTML元素（`<input>`、`<textarea>`、`<select>`等）有一定的了解。尽管如此，表15-1列出了最常使用的表单元素。更详细的内容请参考第四部分中的表单和表单元素API，在Form、Input、Option、Select和TextArea下面。
 
 ### 15.9.1 选取表单和表单元素
 
-表单和它们所包含的元素可以用如getElementById()和getElementsByTagName()等标准的方法从文档中来选取：
+表单和它们所包含的元素可以用如`getElementById()`和`getElementsByTagName()`等标准的方法从文档中来选取：
 
-在支持querySelectorAll()的浏览器中，从一个表单中选取所有的单选按钮或所有同名的元素的代码如下：
+在支持`querySelectorAll()`的浏览器中，从一个表单中选取所有的单选按钮或所有同名的元素的代码如下：
 
-尽管如此，如同在14.7节、15.2.2节和15.2.3节所描述的，有name或id属性的<form>元素能够通过很多方法来选取。name="address"属性的<form>可以用以下任何方法来选取：
+尽管如此，如同在14.7节、15.2.2节和15.2.3节所描述的，有name或id属性的`<form>`元素能够通过很多方法来选取。name="address"属性的`<form>`可以用以下任何方法来选取：
 
 15.2.3节阐述了document.forms是一个HTMLCollection对象，可以通过数字序号或id或name来选取表单元素。Form对象本身的行为类似于多个表单元素组成的HTMLCollection集合，也可以通过name或数字序号来索引。如果名为“address”的表单的第一个元素的name是“street”，可以使用以下任何一种表达式来引用该元素：
 
@@ -9307,46 +9320,46 @@ HTML的<form>元素和各种各样的表单输入元素（如<input>、<select>�
 
 对于该表单，用如下代码来引用单选按钮元素数组：
 
-注意，<form>元素本身有一个HTML属性和对应的JavaScript属性叫“method”，所以在此案例中，必须要用该表单的elements属性而非直接访问method属性。为了判定用户选取哪种运输方式，需要遍历数组中的表单元素并检测它们的checked属性：
+注意，`<form>`元素本身有一个HTML属性和对应的JavaScript属性叫“method”，所以在此案例中，必须要用该表单的elements属性而非直接访问method属性。为了判定用户选取哪种运输方式，需要遍历数组中的表单元素并检测它们的checked属性：
 
 在下一节中可以看到更多表单元素的属性，如checked和value。
 
 ### 15.9.2 表单和元素的属性
 
-上面描述的elements[]数组是Form对象中最有趣的属性。Form对象中的其他属性相对没有如此重要。action、encoding、method和target属性（property）直接对应于<form>元素的action、encoding、method和target等HTML属性（attribute）。这些属性都控制了表单是如何来提交数据到Web服务器并如何显示的。客户端JavaScript能够设置这些属性值，不过仅当表单真的会将数据提交到一个服务端程序时它们才有用。
+上面描述的`elements[]`数组是Form对象中最有趣的属性。Form对象中的其他属性相对没有如此重要。action、encoding、method和target属性（property）直接对应于`<form>`元素的action、encoding、method和target等HTML属性（attribute）。这些属性都控制了表单是如何来提交数据到Web服务器并如何显示的。客户端JavaScript能够设置这些属性值，不过仅当表单真的会将数据提交到一个服务端程序时它们才有用。
 
-在JavaScript产生之前，要用一个专用的“提交”按钮来提交表单，用一个专用的“重置”按钮来重置各表单元素的值。JavaScript的Form对象支持两个方法：submit()和reset()，它们完成同样的目的。调用Form对象的submit()方法来提交表单，调用reset()方法来重置表单元素的值。
+在JavaScript产生之前，要用一个专用的“提交”按钮来提交表单，用一个专用的“重置”按钮来重置各表单元素的值。JavaScript的Form对象支持两个方法：`submit()`和`reset()`，它们完成同样的目的。调用Form对象的`submit()`方法来提交表单，调用`reset()`方法来重置表单元素的值。
 
 所有（或多数）表单元素通常都有以下属性。如果一些元素有其他专用的属性，会在后面单独考虑各种类型的表单元素时描述它们：
 
 - type标识表单元素类型的只读的字符串。针对用<input>标签定义的表单元素而言，就是其type属性的值。其他表单元素（如<textarea>和<select>）定义type属性是为了轻松地标识它们，与<input>元素在类型检测时互相区别。表15-1的第二列给出了各个表单元素此属性的值。
-- form对包含元素的Form对象的只读引用，或者如果元素没有包含在一个<form>元素中则其值为null。
+- form对包含元素的Form对象的只读引用，或者如果元素没有包含在一个`<form>`元素中则其值为null。
 - name只读的字符串，由HTML属性name指定。
 - value可读/写的字符串，指定了表单元素包含或代表的“值”。它就是当提交表单时发送到Web服务器的字符串，也是JavaScript程序有时候会感兴趣的内容。针对Text和Textarea元素，该属性值包含了用户输入的文本。针对用<input>标签创建的按钮元素（除了用<button>标签创建的按钮），该属性值指定了按钮显示的文本。但是，针对单选和复选按钮元素，该属性用户不可见也不能编辑。它仅是用HTML的value属性来设置的一个字符串。它在表单提交时使用，但在关联表单元素的额外数据时也很有用。在本章后面关于不同类目的表单元素小节中将深入讨论value属性。
 
 ### 15.9.3 表单和元素的事件处理程序
 
-每个Form元素都有一个onsubmit事件处理程序来侦测表单提交，还有一个onreset事件处理程序来侦测表单重置。表单提交前调用onsubmit程序；它通过返回false能够取消提交动作。这给JavaScript程序一个机会来检查用户的输入错误，目的是为了避免不完整或无效的数据通过网络提交到服务端程序。注意，onsubmit事件处理程序只能通过单击“提交”按钮来触发。直接调用表单的submit()方法不触发onsubmit事件处理程序。
+每个Form元素都有一个onsubmit事件处理程序来侦测表单提交，还有一个onreset事件处理程序来侦测表单重置。表单提交前调用onsubmit程序；它通过返回false能够取消提交动作。这给JavaScript程序一个机会来检查用户的输入错误，目的是为了避免不完整或无效的数据通过网络提交到服务端程序。注意，onsubmit事件处理程序只能通过单击“提交”按钮来触发。直接调用表单的`submit()`方法不触发onsubmit事件处理程序。
 
 onreset事件处理程序和onsubmit是类似的。它在表单重置之前调用，通过返回false能够阻止表单元素被重置。在表单中很少需要“重置”按钮，但如果有，你可能需要提醒用户来确认是否重置：
 
-类似onsubmit事件处理程序，onreset只能通过单击“重置”按钮来触发。直接调用表单的reset()方法不触发onreset事件处理程序。
+类似onsubmit事件处理程序，onreset只能通过单击“重置”按钮来触发。直接调用表单的`reset()`方法不触发onreset事件处理程序。
 
 当用户与表单元素交互时它们往往会触发click或change事件，通过定义onclick或onchange事件处理程序可以处理这些事件。表15-1的第三列给出了各个表单元素主要的事件处理程序。一般来说，当按钮表单元素激活（甚至当通过键盘而不是实际的鼠标单击发生激活）时它们会触发click事件。当用户改变其他表单元素所代表的值时它们会触发change事件。当用户在一个文本域输入文本或从下拉列表中选择了一个选项后就发生这样的改变。注意，在一个文本域中该事件不是每次用户输入一个键值时都会触发。它仅当用户改变了元素的值然后将焦点移到其他元素上时才会触发。也就是说，调用该事件处理程序就意味着一个完整的改变。单选按钮和复选框都有一个状态标识，它们的click和change事件都会触发；两个之中change事件更加有用。
 
 表单元素在收到键盘的焦点时也会触发focus事件，失去焦点时会触发blur事件。
 
-关于事件处理程序有一点非常重要，在事件处理程序代码中关键字this是触发该事件的文档元素的一个引用（我们将在第17章中再次讨论）。既然在<form>元素中的元素都有一个form属性引用了该包含的表单，这些元素的事件处理程序总是能够通过this.form来得到Form对象的引用。更进一步，这意味着某个表单元素的事件处理程序能够通过this.form.x得到该表单中以x命名的元素。
+关于事件处理程序有一点非常重要，在事件处理程序代码中关键字this是触发该事件的文档元素的一个引用（我们将在第17章中再次讨论）。既然在`<form>`元素中的元素都有一个form属性引用了该包含的表单，这些元素的事件处理程序总是能够通过this.form来得到Form对象的引用。更进一步，这意味着某个表单元素的事件处理程序能够通过`this.form.x`得到该表单中以x命名的元素。
 
 ### 15.9.4 按钮
 
-按钮是最常用的表单元素之一，因为它们是一种视觉上明确让用户触发某种脚本动作的方法。按钮元素本身没有默认的行为，除非它有onclick事件处理程序，否则它并没有什么用处。以<input>元素定义的按钮会将value属性值以纯文本显示。以<button>元素定义的按钮会将元素的一切内容显示出来。
+按钮是最常用的表单元素之一，因为它们是一种视觉上明确让用户触发某种脚本动作的方法。按钮元素本身没有默认的行为，除非它有onclick事件处理程序，否则它并没有什么用处。以`<input>`元素定义的按钮会将value属性值以纯文本显示。以`<button>`元素定义的按钮会将元素的一切内容显示出来。
 
 注意，超级链接与按钮一样提供了onclick事件处理程序。当onclick事件所触发的动作可以概念化为“跟随此链接”时就用一个链接；否则，用按钮。
 
 提交和重置元素本就是按钮，不同的是它们有与之相关联的默认动作（表单的提交和重置）。如果onclick事件处理程序返回false，这些按钮的默认动作就不再执行了。可以使用提交元素的onclick事件处理程序来执行表单校验，但是更为常用的是使用Form对象本身的onsubmit事件处理程序来执行表单校验。
 
-本书第四部分未包含按钮。关于所有按钮表单元素的详细内容请参看input项，它包含了用<button>元素创建的按钮。
+本书第四部分未包含按钮。关于所有按钮表单元素的详细内容请参看input项，它包含了用`<button>`元素创建的按钮。
 
 ### 15.9.5 开关按钮
 
@@ -9354,7 +9367,7 @@ onreset事件处理程序和onsubmit是类似的。它在表单重置之前调�
 
 单选和复选框元素都定义了checked属性。该属性是可读/写的布尔值，它指定了元素当前是否选中。defaultChecked属性也是布尔值，它是HTML属性checked的值；它指定了元素在第一次加载页面时是否选中。
 
-单选和复选框元素本身不显示任何文本，它们通常和相邻的HTML文本一起显示（或与<label>元素相关联）。这意味着设置复选框或单选元素的value属性不改变元素的视觉表现。设置value只改变提交表单时发送到Web服务器的字符串。
+单选和复选框元素本身不显示任何文本，它们通常和相邻的HTML文本一起显示（或与`<label>`元素相关联）。这意味着设置复选框或单选元素的value属性不改变元素的视觉表现。设置value只改变提交表单时发送到Web服务器的字符串。
 
 当用户单击单选或复选开关按钮，单选或复选框元素触发onclick事件。如果由于单击开关按钮改变了它的状态，它也触发onchange事件。（但注意，当用户单击其他单选按钮而导致这个单选按钮状态的改变，后者不触发onchange事件。）
 
@@ -9366,29 +9379,29 @@ onreset事件处理程序和onsubmit是类似的。它在表单重置之前调�
 
 文本输入域的onchange事件处理程序是在用户输入新的文本或编辑已存在的文本时触发，它表明用户完成了编辑并将焦点移出了文本域。
 
-Textarea元素类似文本输入域元素，不同的是它允许用户输入（和JavaScript程序显示）多行文本。Textarea元素用<textarea>标签来创建，与用<input>标签创建的文本域在语法上有显著的区别。（见第四部分的TextArea。）尽管如此，两种元素的行为非常类似。如同针对Text元素一样，可以用Textarea元素的value属性和onchange事件处理程序。
+Textarea元素类似文本输入域元素，不同的是它允许用户输入（和JavaScript程序显示）多行文本。Textarea元素用`<textarea>`标签来创建，与用`<input>`标签创建的文本域在语法上有显著的区别。（见第四部分的TextArea。）尽管如此，两种元素的行为非常类似。如同针对Text元素一样，可以用Textarea元素的value属性和onchange事件处理程序。
 
-<input type="password">元素在用户输入时显示为星号，它修改了输入的文本。其名字表明，用户输入密码时不用担心他背后的人能看到，这很有用。注意，密码输入元素只能防止眼睛窥视，但在提交表单时输入未经任何加密（除非通过安全的HTTPS连接提交它），当在网络上传输时它可能被看见。
+`<input type="password">`元素在用户输入时显示为星号，它修改了输入的文本。其名字表明，用户输入密码时不用担心他背后的人能看到，这很有用。注意，密码输入元素只能防止眼睛窥视，但在提交表单时输入未经任何加密（除非通过安全的HTTPS连接提交它），当在网络上传输时它可能被看见。
 
-最后，<input type="file">元素将用户输入待上传到Web服务器的文件的名称。它由一个文本域和一个单击打开文件选择对话框的按钮所组成。该文件选取元素拥有onchange事件处理程序，就像普通的输入域一样。但不同的是它的value属性是只读的。这个防止恶意的JavaScript程序欺骗用户上传本意不想共享的文件。
+最后，`<input type="file">`元素将用户输入待上传到Web服务器的文件的名称。它由一个文本域和一个单击打开文件选择对话框的按钮所组成。该文件选取元素拥有onchange事件处理程序，就像普通的输入域一样。但不同的是它的value属性是只读的。这个防止恶意的JavaScript程序欺骗用户上传本意不想共享的文件。
 
 不同的文本输入元素定义onkeypress、onkeydown和onkeyup事件处理程序。可以从onkeypress或onkeydown事件处理程序返回false，防止记录用户的按键。这很有用，例如，如果希望强制用户在特定文本输入域中仅输入数字。该技术的说明参见例17-6。
 
 ### 15.9.7 选择框和选项元素
 
-Select元素表示用户可以做出选择的一组选项（用Option元素表示）。浏览器通常将其渲染为下拉菜单的形式，但当指定其size属性值大于1时，它将显示为列表中的选项（可能有滚动）。Select元素能以两种不同的方式运作，这取决于它的type属性值是如何设置的。如果<select>元素有multiple属性，也就是Select对象的type属性值为“select-multiple”，那就允许用户选取多个选项。否则，如果没有多选属性，那只能选取单个选项，它的type属性值为“select-one”。
+Select元素表示用户可以做出选择的一组选项（用Option元素表示）。浏览器通常将其渲染为下拉菜单的形式，但当指定其size属性值大于1时，它将显示为列表中的选项（可能有滚动）。Select元素能以两种不同的方式运作，这取决于它的type属性值是如何设置的。如果`<select>`元素有multiple属性，也就是Select对象的type属性值为“select-multiple”，那就允许用户选取多个选项。否则，如果没有多选属性，那只能选取单个选项，它的type属性值为“select-one”。
 
-某种程度上“select-multiple”元素与一组复选框元素类似，“select-one”元素和一组单选元素类似。但是，由Select元素显示的选项并不是开关按钮：它们由<option>元素定义。Select元素定义了options属性，它是一个包含了多个Option元素的类数组对象。
+某种程度上“select-multiple”元素与一组复选框元素类似，“select-one”元素和一组单选元素类似。但是，由Select元素显示的选项并不是开关按钮：它们由`<option>`元素定义。Select元素定义了options属性，它是一个包含了多个Option元素的类数组对象。
 
-当用户选取或取消选取一个选项时，Select元素触发onchange事件处理程序。针对“select-one”Select元素，它的可读/写属性selectedIndex指定了哪个选项当前被选中。针对“select-multiple”元素，单个selectedIndex属性不足以表示被选中的一组选项。在这种情况下，要判定哪些选项被选中，就必须遍历options[]数组的元素，并检测每个Option对象的selected属性值。
+当用户选取或取消选取一个选项时，Select元素触发onchange事件处理程序。针对“select-one”Select元素，它的可读/写属性selectedIndex指定了哪个选项当前被选中。针对“select-multiple”元素，单个selectedIndex属性不足以表示被选中的一组选项。在这种情况下，要判定哪些选项被选中，就必须遍历`options[]`数组的元素，并检测每个Option对象的selected属性值。
 
 除了其selected属性，每个Option对象有一个text属性，它指定了在Select元素中的选项所显示的纯文本字符串。设置该属性可以改变显示给用户的文本。value属性指定了在提交表单时发送到Web服务器的文本字符串，它也是可读/写的。甚至在写纯客户端程序并且不可能有表单提交时，value属性（或它所对应的HTML属性value）是用来保存任何数据的好地方，在用户选取特定的选项时可以使用这些数据。注意，Option元素并没有与表单相关的事件处理程序：用包含Select元素的onchange事件处理程序来代替。
 
-除了设置Option对象的text属性以外，使用options属性的特殊功能可以动态改变显示在Select元素中的选项，这些功能可以追溯到最早期的客户端编程。通过设置options. length为一个希望的值可以截断Option元素数组，而设置options.length为0可以从Select元素中移除所有的选项。设置options[]数组中某点的值为null可以从Select元素中移除单个Option对象。这将删除该Option对象，options[]数组中高端的元素自动移下来填补空缺。
+除了设置Option对象的text属性以外，使用options属性的特殊功能可以动态改变显示在Select元素中的选项，这些功能可以追溯到最早期的客户端编程。通过设置options. length为一个希望的值可以截断Option元素数组，而设置options.length为0可以从Select元素中移除所有的选项。设置`options[]`数组中某点的值为null可以从Select元素中移除单个Option对象。这将删除该Option对象，`options[]`数组中高端的元素自动移下来填补空缺。
 
-为Select元素增加一个新的选项，首先用Option()构造函数创建一个Option对象，然后将其添加到options[]属性中，代码如下：
+为Select元素增加一个新的选项，首先用`Option()`构造函数创建一个Option对象，然后将其添加到`options[]`属性中，代码如下：
 
-请牢记一点，这些专用的Select元素的API已经很老了。可以用那些标准的调用更明确地插入和移除选项元素：Document.`createElement()`、Node.insertBefore()、Node. removeChild()等。
+请牢记一点，这些专用的Select元素的API已经很老了。可以用那些标准的调用更明确地插入和移除选项元素：Document.`createElement()`、Node.`insertBefore()`、Node. `removeChild()`等。
 
 ## 15.10 其它文档特性
 
@@ -9403,45 +9416,45 @@ Select元素表示用户可以做出选择的一组选项（用Option元素表�
 - lastModified包含文档修改时间的字符串。
 - location与Window对象的location属性引用同一个Location对象。
 - referrer如果有，它表示浏览器导航到当前链接的上一个文档。该属性值和HTTP的Referer头信息的内容相同，只是拼写上有两个r。
-- title文档的<title>和</title>标签之间的内容。
+- title文档的`<title>`和`</title>`标签之间的内容。
 
 URL文档的URL，只读字符串而不是Location对象。该属性值与location.href的初始值相同，只是不包含Location对象的动态变化。例如，如果用户在文档中导向到一个新的片段，location.href会发生变化，但是document.URL则不会。
 
 referrer是这些属性中最有趣的属性之一：它包含用户链接到当前文档的上一个文档的URL。可以用如下代码来使用该属性：
 
-上述代码中使用的document.write()方法将是下一节的主题。
+上述代码中使用的`document.write()`方法将是下一节的主题。
 
 ### 15.10.2 document.write()方法
 
-document.write()方法是其中一个由Netscape 2浏览器实现的非常早期的脚本化API。它曾在DOM之前就被很好地引入了，也曾是在文档中显示计算后的文本的唯一方法。新代码中已经不再需要它了，但在已有的代码中你还能不时地看到该方法。
+`document.write()`方法是其中一个由Netscape 2浏览器实现的非常早期的脚本化API。它曾在DOM之前就被很好地引入了，也曾是在文档中显示计算后的文本的唯一方法。新代码中已经不再需要它了，但在已有的代码中你还能不时地看到该方法。
 
-document.write()会将其字符串参数连接起来，然后将结果字符串插入到文档中调用它的脚本元素的位置。当脚本执行结束，浏览器解析生成的输出并显示它。例如，以下代码使用write()动态把信息输出到一个静态的HTML文档中：
+`document.write()`会将其字符串参数连接起来，然后将结果字符串插入到文档中调用它的脚本元素的位置。当脚本执行结束，浏览器解析生成的输出并显示它。例如，以下代码使用`write()`动态把信息输出到一个静态的HTML文档中：
 
-只有在解析文档时才能使用write()方法输出HTML到当前文档中，理解这点非常重要。也就是说能够在<script>元素中的顶层代码中调用document.write()，就是因为这些脚本的执行是文档解析流程的一部分。如果将document.write()放在一个函数的定义中，而该函数的调用是从一个事件处理程序中发起的，产生的结果未必是你想要的——事实上，它会擦除当前文档和它包含的脚本！（马上你将看到为什么。）同理，在设置了defer或async属性的脚本中不要使用document.write()。
+只有在解析文档时才能使用`write()`方法输出HTML到当前文档中，理解这点非常重要。也就是说能够在`<script>`元素中的顶层代码中调用`document.write()`，就是因为这些脚本的执行是文档解析流程的一部分。如果将`document.write()`放在一个函数的定义中，而该函数的调用是从一个事件处理程序中发起的，产生的结果未必是你想要的——事实上，它会擦除当前文档和它包含的脚本！（马上你将看到为什么。）同理，在设置了defer或async属性的脚本中不要使用`document.write()`。
 
-第13章中的例13-3以这种方式使用了document.write()来产生更加复杂的输出。
+第13章中的例13-3以这种方式使用了`document.write()`来产生更加复杂的输出。
 
-还可以使用write()方法在其他的窗口或框架页中来创建整个全新文档。（但是，当有多个窗口或框架页时，必须注意不要违反同源策略。）第一次调用其他文档的write()方法即会擦除该文档的所有内容。可以多次调用write()来逐步建立新文档的内容。传递给write()的内容可能缓存起来（并且不会显示）直到调用文档对象的close()方法来结束该写序列。本质上这告诉HTML解析器文档已经达到了文件的末尾，应该结束解析并显示新文档。
+还可以使用`write()`方法在其他的窗口或框架页中来创建整个全新文档。（但是，当有多个窗口或框架页时，必须注意不要违反同源策略。）第一次调用其他文档的`write()`方法即会擦除该文档的所有内容。可以多次调用`write()`来逐步建立新文档的内容。传递给`write()`的内容可能缓存起来（并且不会显示）直到调用文档对象的`close()`方法来结束该写序列。本质上这告诉HTML解析器文档已经达到了文件的末尾，应该结束解析并显示新文档。
 
-值得一提的是Document对象还支持writeln()方法，除了在其参数的输出之后追加一个换行符以外它和write()方法完全一样。例如，在<pre>元素内输出预格式化的文本时这非常有用。
+值得一提的是Document对象还支持`writeln()`方法，除了在其参数的输出之后追加一个换行符以外它和`write()`方法完全一样。例如，在`<pre>`元素内输出预格式化的文本时这非常有用。
 
-在当今的代码中document.write()方法并不常用：innerHTML属性和其他DOM技术提供了更好的方法来为文档增加内容。另一方面，某些算法的确使得它们本身成为很好的流式I/O API，如同write()方法提供的API一样。如果你正在书写在运行时计算和输出文本的代码，可能会对例15-10感兴趣，它利用指定元素的innerHTML属性包装了简单的write()和close()方法。
+在当今的代码中document.`write()`方法并不常用：innerHTML属性和其他DOM技术提供了更好的方法来为文档增加内容。另一方面，某些算法的确使得它们本身成为很好的流式I/O API，如同`write()`方法提供的API一样。如果你正在书写在运行时计算和输出文本的代码，可能会对例15-10感兴趣，它利用指定元素的innerHTML属性包装了简单的`write()`和`close()`方法。
 
 ### 15.10.3 查询选取的文本
 
 有时判定用户在文档中选取了哪些文本非常有用。可以用类似如下的函数达到目的：
 
 
-标准的window.getSelection()方法返回一个Selection对象，后者描述了当前选取的一系列一个或多个Range对象。Selection和Range定义了一个不太常用的较为复杂的API，本书中并没有文档记录。toString()方法是Selection对象中最重要的也广泛实现了（除了IE）的特性，它返回选取的纯文本内容。
+标准的`window.getSelection()`方法返回一个Selection对象，后者描述了当前选取的一系列一个或多个Range对象。Selection和Range定义了一个不太常用的较为复杂的API，本书中并没有文档记录。toString()方法是Selection对象中最重要的也广泛实现了（除了IE）的特性，它返回选取的纯文本内容。
 
 IE定义了一个不同的API，它在本书中也没有文档记录。document.selection对象代表了用户的选择。该对象的createRange()方法返回IE特有的TextRange对象，它的text属性包含了选取的文本。
 
 如上的代码在书签工具（见13.2.5节）中特别有用，它操作选取的文本，然后利用搜索引擎或参考站点查找某个单词。例如，如下HTML链接在Wikipedia上查找当前选取的文本。收藏书签后，该链接和它包含的JavaScript URL就变成了一个书签工具：
 
 
-上述展示的查询选取代码的兼容性不佳：Window对象的getSelection()方法无法返回那些表单元素<input>或<textarea>内部选中的文本，它只返回在文档主体本身中选取的文本。另一方面，IE的document.selection属性可以返回文档中任意地方选取的文本。
+上述展示的查询选取代码的兼容性不佳：Window对象的getSelection()方法无法返回那些表单元素`<input>`或`<textarea>`内部选中的文本，它只返回在文档主体本身中选取的文本。另一方面，IE的document.selection属性可以返回文档中任意地方选取的文本。
 
-从文本输入域或<textarea>元素中获取选取的文本可使用以下代码：
+从文本输入域或`<textarea>`元素中获取选取的文本可使用以下代码：
 
 
 IE8以及更早版本的浏览器不支持selectionStart和selectionEnd属性。
@@ -9453,17 +9466,17 @@ IE8以及更早版本的浏览器不支持selectionStart和selectionEnd属性。
 有两种方法来启用编辑功能。其一，设置任何标签的HTMLcontenteditable属性；其二，设置对应元素的JavaScript contenteditable属性；这都将使得元素的内容变成可编辑。当用户单击该元素的内容时就会出现插入光标，用户敲击键盘就可以插入其中。如以下代码，一个HTML元素创建了一个可编辑的区域：
 
 
-浏览器可能为表单字段和contenteditable元素支持自动拼写检查。在支持该功能的浏览器中，检查可能默认开启或关闭。为元素添加spellcheck属性来显式开启拼写检查，而使用spellcheck=false来显式关闭该功能（例如，当一个<textarea>将显示源代码或其他内容包含了字典里找不到的标识符时）。
+浏览器可能为表单字段和contenteditable元素支持自动拼写检查。在支持该功能的浏览器中，检查可能默认开启或关闭。为元素添加spellcheck属性来显式开启拼写检查，而使用spellcheck=false来显式关闭该功能（例如，当一个`<textarea>`将显示源代码或其他内容包含了字典里找不到的标识符时）。
 
-将Document对象的designMode属性设置为字符串“on”使得整个文档可编辑。（设置为“off”将恢复为只读文档。）designMode属性并没有对应的HTML属性。如下代码使得<iframe>内部的文档可编辑（注意，这里用了例13-5中的onLoad()函数）：
-
-
-所有当今的浏览器都支持contenteditable和designMode属性。但是，当谈到它们实际的可编辑行为时，它们是不太兼容的。所有的浏览器都允许插入与删除文本并用鼠标与键盘移动光标。在所有的浏览器中，Enter键另起一行，但不同的浏览器生成了不同的标记。有些开始了新的段落，而其他的只是插入一个<br/>元素。
-
-有些浏览器允许键盘快捷键（如Ctrl+B）来加粗当前选中的文本。在其他浏览器（如Firefox）中，标准的字处理快捷键（如Ctrl+B和Ctrl+I）被绑定到浏览器相关的其他功能上了而无法应用到文本编辑器上。浏览器定义了多项文本编辑命令，大部分没有键盘快捷键。为了执行这些命令，应该使用Document对象的execCommand()方法。（注意，这是Document的方法，而不是设置了contenteditable属性的元素的方法。如果文档中有多个可编辑的元素，命令将自动应用到选区或插入光标所在那个元素上。）用execCommand()执行的命令名字都是如“bold”、“subscript”、“justifycenter”或“insertimage”之类的字符串。命令名是execCommand()的第一个参数。有些命令还需要一个值参数——例如，“createlink”需要一个超级链接URL。理论上，如果execCommand()的第二个参数为true，浏览器会自动提示用户输入所需值。但为了提高可移植性，你应该提示用户输入，并传递false作为第二参数，传递用户输入的值作为第三个参数。
+将Document对象的designMode属性设置为字符串“on”使得整个文档可编辑。（设置为“off”将恢复为只读文档。）designMode属性并没有对应的HTML属性。如下代码使得`<iframe>`内部的文档可编辑（注意，这里用了例13-5中的`onLoad()`函数）：
 
 
-execCommand()所支持的命令通常是由工具栏上的按钮触发的。当要触发的命令不可用时，良好的UI会使对应的按钮无效。可以给document.queryCommandSupport()传递命令名来查询浏览器是否支持该命令。调用document.queryCommandEnabled()来查询当前所使用的命令。（例如，一条需要文本选择区域的命令在无选区的情况下有可能是无效的。）有一些命令如“bold”和“italic”有一个布尔值状态，开或关取决于当前选区或光标的位置。这些命令通常用工具栏上的开关按钮表示。要判定这些命令的当前状态可以使用document.queryCommandState()。最后，有些命令（如“fontname”）有一个相关联的值（字体系列名）。用document.queryCommandValue()查询该值。如果当前选取的文本使用了两种不同的字体，“fontname”的查询结果是不确定的。使用document. queryCommandIndeterm()来检测这种情况。
+所有当今的浏览器都支持contenteditable和designMode属性。但是，当谈到它们实际的可编辑行为时，它们是不太兼容的。所有的浏览器都允许插入与删除文本并用鼠标与键盘移动光标。在所有的浏览器中，Enter键另起一行，但不同的浏览器生成了不同的标记。有些开始了新的段落，而其他的只是插入一个`<br/>`元素。
+
+有些浏览器允许键盘快捷键（如Ctrl+B）来加粗当前选中的文本。在其他浏览器（如Firefox）中，标准的字处理快捷键（如Ctrl+B和Ctrl+I）被绑定到浏览器相关的其他功能上了而无法应用到文本编辑器上。浏览器定义了多项文本编辑命令，大部分没有键盘快捷键。为了执行这些命令，应该使用Document对象的`execCommand()`方法。（注意，这是Document的方法，而不是设置了contenteditable属性的元素的方法。如果文档中有多个可编辑的元素，命令将自动应用到选区或插入光标所在那个元素上。）用`execCommand()`执行的命令名字都是如“bold”、“subscript”、“justifycenter”或“insertimage”之类的字符串。命令名是`execCommand()`的第一个参数。有些命令还需要一个值参数——例如，“createlink”需要一个超级链接URL。理论上，如果`execCommand()`的第二个参数为true，浏览器会自动提示用户输入所需值。但为了提高可移植性，你应该提示用户输入，并传递false作为第二参数，传递用户输入的值作为第三个参数。
+
+
+`execCommand()`所支持的命令通常是由工具栏上的按钮触发的。当要触发的命令不可用时，良好的UI会使对应的按钮无效。可以给`document.queryCommandSupport()`传递命令名来查询浏览器是否支持该命令。调用`document.queryCommandEnabled()`来查询当前所使用的命令。（例如，一条需要文本选择区域的命令在无选区的情况下有可能是无效的。）有一些命令如“bold”和“italic”有一个布尔值状态，开或关取决于当前选区或光标的位置。这些命令通常用工具栏上的开关按钮表示。要判定这些命令的当前状态可以使用`document.queryCommandState()`。最后，有些命令（如“fontname”）有一个相关联的值（字体系列名）。用`document.queryCommandValue()`查询该值。如果当前选取的文本使用了两种不同的字体，“fontname”的查询结果是不确定的。使用`document. queryCommandIndeterm()`来检测这种情况。
 
 不同的浏览器实现了不同的编辑命令组合。只有一少部分命令得到了很好的支持，如“bold”、“italic”、“createlink”、“undo”和“redo”等。在写本书这段时间里HTML5草案定义了以下命令。但由于它们并没有被普遍地支持，这里就不做详细的文档记录：
 
