@@ -9226,7 +9226,7 @@ function getViewportSize(w) {
 ```js
 var box = e.getBoundingClientRect(); //获得视口在坐标中的位置
 var offsets = getScrollOffsets(); //上面定义的工具函数
-var x = box.left + offsets.x;
+var x = box.left + offsets.x; // 转换为文档坐标
 var y = box.top + offsets.y;
 ```
 
@@ -9256,8 +9256,22 @@ var h = box.height || (box.bottom - box.top);
 
 例15-8展示了如何在浏览器窗口中查询滚动条的位置。该例子中的scrollLeft和scrollTop属性可以用来设置让浏览器滚动，但有一种更简单的方法从JavaScript最早的时期开始就支持的。Window对象的`scrollTop()`方法（和其同义词`scroll()`）接受一个点的X和Y坐标（文档坐标），并作为滚动条的偏移量设置它们。也就是，窗口滚动到指定的点出现在视口的左上角。如果指定的点太接近于文档的下边缘或右边缘，浏览器将尽量保证它和视口的左上角之间最近，但是无法达到一致。以下代码滚动浏览器到文档最下面的页面可见：
 
+```js
+//获得文档和视口的高度，offsetHeight会在下面解释
+var documentHeight = document.documentElement.offsetHeight;
+var viewportHeight = windows.innerHeight; //或使用上面的getViewportSize()
+//然后，滚动让最后一页在视口中可见
+window.scrollTo(0, documentHeight - viewportHeight);
+```
+
 Window的`scrollBy()`方法和`scroll()`和`scrollTo()`类似，但是它的参数是相对的，并在当前滚动条的偏移量上增加。例如，快速阅读者可能会喜欢这样的书签（见13.2.5节）：
 
+```js
+//每200毫秒向下滚动10像素。注意，它无法关闭
+javascript:void setInterval(function() {
+  scrollBy(0,10)
+}, 200)
+```
 
 通常，除了滚动到文档中用数字表示的位置，我们只是想它滚动使得文档中的某个元素可见。可以利用`getBoundingClientRect()`计算元素的位置，并转换为文档坐标，然后用`scrollTo()`方法达到目的。但是在需要显示的HTML元素上调用`scrollIntoView()`方法更加方便。该方法保证了元素能在视口中可见。默认情况下，它试图将元素的上边缘放在或尽量接近视口的上边缘。如果只传递false作为参数，它将试图将元素的下边缘放在或尽量接近视口的下边缘。只要有助于元素在视口内可见，浏览器也会水平滚动视口。
 
@@ -9269,19 +9283,33 @@ Window的`scrollBy()`方法和`scroll()`和`scrollTo()`类似，但是它的参�
 
 所有HTML元素拥有offsetLeft和offsetTop属性来返回元素的X和Y坐标。对于很多元素，这些值是文档坐标，并直接指定元素的位置。但对于已定位元素的后代元素和一些其他元素（如表格单元），这些属性返回的坐标是相对于祖先元素的而非文档。offsetParent属性指定这些属性所相对的父元素。如果offsetParent为null，这些属性都是文档坐标，因此，一般来说，用offsetLeft和offsetTop来计算元素e的位置需要一个循环：
 
+```js
+function getElementPosition(e){
+  var x = 0, y = 0;
+  while(e != null){
+    x += e.offsetLeft;
+    y += e.offsetTop;
+    e = e.offsetParent;
+  }
+  return {x:x, y:y};
+}
+```
 
 通过循环offsetParent对象链来累加偏移量，该函数计算指定元素的文档坐标。（回想一下`getBoundingClientRect()`返回的是视口坐标。）这里不能对元素的位置就一锤定音，尽管如此——这个`getElementPosition()`函数也不总是计算正确的值，下面看看如何来修复它。
 
-
 除了这些名字以offset开头的属性以外，所有的文档元素定义了其他两组属性，其名称一组以client开头，另一组以scroll开头。即，每个HTML元素都有以下这些属性：
 
+offsetWidth    clientWidth    scrollWidth
+offsetHeight   clientHeight   scrollHeight
+offsetLeft     clientLeft     scrollLeft
+offsetTop      clientTop      scrollTop
+offsetParent
 
 为了理解这些client和scroll属性，你需要知道HTML元素的实际内容有可能比分配用来容纳内容的盒子更大，因此单个元素可能有滚动条（见16.2.6节中CSS的overflow属性）。内容区域是视口，就像浏览器的窗口，当实际内容比视口更大时，需要把元素的滚动条位置考虑进去。
 
 clientWidth和clientHeight类似offsetWidth和offsetHeight，不同的是它们不包含边框大小，只包含内容和它的内边距。同时，如果浏览器在内边距和边框之间添加了滚动条，clientWidth和clientHeight在其返回值中也不包含滚动条。注意，对于类似`<i>`、`<code>`和`<span>`这些内联元素，clientWidth和clientHeight总是返回0。
 
 在例15-9的`getViewportSize()`方法中使用了clientWidth和clientHeight。有一个特殊的案例，在文档的根元素上查询这些属性时，它们的返回值和窗口的innerWidth和innerHeight属性值相等。
-
 
 clientLeft和clientTop属性没什么用：它们返回元素的内边距的外边缘和它的边框的外边缘之间的水平距离和垂直距离，通常这些值就等于左边和上边的边框宽度。但是如果元素有滚动条，并且浏览器将这些滚动条放置在左侧或顶部（可这不太常见），clientLeft和clientTop也就包含了滚动条的宽度。对于内联元素，clientLeft和clientTop总是为0。
 
@@ -9291,6 +9319,24 @@ scrollWidth和scrollHeight是元素的内容区域加上它的内边距再加上
 
 当文档包含可滚动的且有溢出内容的元素时，上述定义的`getElementPosition()`方法就不能正常工作了，因为它没有把滚动条考虑进去。这里有一个修改版，它从累计的偏移量中减去了滚动条的位置，这样一来，将返回的位置从文档坐标转换为视口坐标。
 
+```js
+function getElementPos(elt){
+  var x = 0, y = 0;
+  //循环以累加偏移量
+  for(var e = elt; e != null; e = e.offsetParent){
+    x += e.offsetLeft;
+    y += e.offsetTop;
+  }
+  //再次循环所有的祖先元素，减去滚动的偏移量
+  //这也减去了主滚动条，并转换为视口坐标
+  for(var e = elt.parentNode; e != null && e.nodeType == 1; e = e.parentNode) {
+    x -= e.scrollLeft;
+    y -= e.scrollTop;
+  }
+  return {x:x, y:y};
+}
+```
+
 在现代浏览器中，getElementPos()方法的返回值和`getBoundingClientRect()`的返回值一样（但是更低效）。理论上，如`getElementPos()`这样的函数可以在不支持`getBoundingClientRect()`的浏览器中使用。但实际上，不支持`getBoundingClientRect()`的浏览器在元素位置方面有很多的不兼容性，像这样如此简陋的函数无法可靠地工作。实际类似jQuery这样的客户端类库包含了一些函数来计算元素的位置，它们扩充了这个基本的位置计算算法，修复了一系列浏览器特定的bug。如果需要代码在所有不支持`getBoundingClientRect()`的浏览器中正确计算元素的位置，你很可能需要像jQuery这样的类库。
 
 ## 15.9 HTML表单
@@ -9299,28 +9345,94 @@ HTML的`<form>`元素和各种各样的表单输入元素（如`<input>`、`<sel
 
 即使当整个表单数据都是由客户端JavaScript来处理并不会提交到服务器时，HTML表单元素仍然是收集用户数据很好的方法。在服务端程序中，表单必须要有一个“提交”按钮，否则它就没有用处。另一方面，在客户端编程中，“提交”按钮不是必须的（虽然它可能仍然有用）。服务端程序是基于表单提交动作的——它们按表单大小的块处理数据——这限制了它们的交互性。客户端程序是基于事件的——它们可以对单独的表单元素上的事件做出响应——这使得它们有更好的响应度。例如，在用户打字时客户端程序就能校验输入的有效性。或者通过单击一个复选框来启用一组选项，也就是说当复选框被选中时那组选项才有意义。
 
-
 以下小节阐述了用HTML表单如何做到这些事情。表单由HTML元素组成，就像HTML文档的其他部分一样，并且可以用本章中介绍过的DOM技术来操作它们。但是表单是第一批脚本化的元素，在最早的客户端编程中它们还支持比DOM更早的一些其他的API。
 
 请注意，本节是关于脚本化HTML表单，而不是HTML本身。假设你已经对用于定义表单的HTML元素（`<input>`、`<textarea>`、`<select>`等）有一定的了解。尽管如此，表15-1列出了最常使用的表单元素。更详细的内容请参考第四部分中的表单和表单元素API，在Form、Input、Option、Select和TextArea下面。
+
+| HTML元素 | 类型属性 | 事件处理程序 | 描述和事件 |
+|---|---|---|---|
+| input type="button"或button type="button" | "button" | onclick | 按钮 |
+| input type="checkbox" | "checkbox" | onchange | 复选按钮 |
+| input type="file" | "file" | onchange | 载入web服务器的文件的文件名输入域；它的value是只读的 |
+| input type="hidden" | "hidden" | none | 数据由表单提交，但对用户不可见 |
+| option | none | none | Select对象中的单个选项，事件处理程序在select对象上，而非单独的Option对象上 |
+| input type="password" | "password" | onchange | 密码输入框，输入的字符不可见 |
+| input type="radio" | "radio" | onchange | 单选按钮，只能选一个 |
+| input type="reset"或button type="reset" | "reset" | onclick | 重置表单的按钮 |
+| select | "select-one" | onchange | 选项只能单选的列表或选项可多选的下拉菜单，另见option |
+| select multiple | select-multiple | onchange | 选项可以多选的列表，另见option |
+| input type="submit"或button type="sumit" | "submit" | onclick | 表单提交按钮 |
+| input type="text" | "text" | onchange | 单行文本输入域；type属性缺少或无法识别时，默认的input元素 |
+| textarea | "textarea" | onchange | 多行文本输入域 |
+
 
 ### 15.9.1 选取表单和表单元素
 
 表单和它们所包含的元素可以用如`getElementById()`和`getElementsByTagName()`等标准的方法从文档中来选取：
 
+```js
+var fields = document.getElementById("address").getElementsByTagName("input");
+```
+
 在支持`querySelectorAll()`的浏览器中，从一个表单中选取所有的单选按钮或所有同名的元素的代码如下：
+
+```js
+//id为"shipping"的表单中的单选按钮
+document.querySelectorAll('#shipping input[type="radio"]');
+//id为"shipping"的表单中所有name为"method"的单选按钮
+document.qierySelectorAll('#shipping input[type="radio"][name="method"]')
+```
 
 尽管如此，如同在14.7节、15.2.2节和15.2.3节所描述的，有name或id属性的`<form>`元素能够通过很多方法来选取。name="address"属性的`<form>`可以用以下任何方法来选取：
 
+```js
+window.address //不可靠，不要使用
+document.address //仅当表单有name属性时可用
+document.forms.address //仅当方法有name或id的表单
+document.forms[n] //不可靠：n是表单的序号
+```
+
 15.2.3节阐述了document.forms是一个HTMLCollection对象，可以通过数字序号或id或name来选取表单元素。Form对象本身的行为类似于多个表单元素组成的HTMLCollection集合，也可以通过name或数字序号来索引。如果名为“address”的表单的第一个元素的name是“street”，可以使用以下任何一种表达式来引用该元素：
+
+```js
+document.forms.address[0];
+document.forms.address.street;
+document.address.street //当有name = "address",而不是id="address"
+```
 
 如果要明确地选取一个表单元素，可以索引表单对象的elements属性：
 
+```js
+document.forms.address.elements[0]
+document.forms.address.elements.street
+```
+
 一般来说指定文档元素的方法用id属性要比name属性更佳。但是，name属性在HTML表单提交中有特殊的目的，它在表单中较为常用，在其他元素较少使用。它应用于相关的复选按钮组和强制共享name属性值的、互斥的单选按钮组。请记住，当用name来索引一个HTMLCollection对象并且它包含多个元素来共享name时，返回值是一个类数组对象，它包含所有匹配的元素。考虑以下表单，它包含多个单选按钮来选择运输方式：
+
+```js
+<form name="shipping">
+  <fieldset>
+    <legend>shipping method</legend>
+    <label><input type="radio" name="method" value="1st">第一次</label>
+    <label><input type="radio" name="method" value="2day">第二次</label>
+    <label><input type="radio" name="method" value="3rd">第三次</label>
+  </fieldset>
+</form>
+```
 
 对于该表单，用如下代码来引用单选按钮元素数组：
 
+```js
+var methods = document.forms.shipping.elements.method;
+```
+
 注意，`<form>`元素本身有一个HTML属性和对应的JavaScript属性叫“method”，所以在此案例中，必须要用该表单的elements属性而非直接访问method属性。为了判定用户选取哪种运输方式，需要遍历数组中的表单元素并检测它们的checked属性：
+
+```js
+var shipping_method;
+for (var i = 0; i < methods.length; i++)
+  if (methods[i].checked) shipping_method = method[i].value;
+```
 
 在下一节中可以看到更多表单元素的属性，如checked和value。
 
@@ -9332,16 +9444,24 @@ HTML的`<form>`元素和各种各样的表单输入元素（如`<input>`、`<sel
 
 所有（或多数）表单元素通常都有以下属性。如果一些元素有其他专用的属性，会在后面单独考虑各种类型的表单元素时描述它们：
 
-- type标识表单元素类型的只读的字符串。针对用<input>标签定义的表单元素而言，就是其type属性的值。其他表单元素（如<textarea>和<select>）定义type属性是为了轻松地标识它们，与<input>元素在类型检测时互相区别。表15-1的第二列给出了各个表单元素此属性的值。
-- form对包含元素的Form对象的只读引用，或者如果元素没有包含在一个`<form>`元素中则其值为null。
-- name只读的字符串，由HTML属性name指定。
-- value可读/写的字符串，指定了表单元素包含或代表的“值”。它就是当提交表单时发送到Web服务器的字符串，也是JavaScript程序有时候会感兴趣的内容。针对Text和Textarea元素，该属性值包含了用户输入的文本。针对用<input>标签创建的按钮元素（除了用<button>标签创建的按钮），该属性值指定了按钮显示的文本。但是，针对单选和复选按钮元素，该属性用户不可见也不能编辑。它仅是用HTML的value属性来设置的一个字符串。它在表单提交时使用，但在关联表单元素的额外数据时也很有用。在本章后面关于不同类目的表单元素小节中将深入讨论value属性。
+- type：标识表单元素类型的只读的字符串。针对用<input>标签定义的表单元素而言，就是其type属性的值。其他表单元素（如<textarea>和<select>）定义type属性是为了轻松地标识它们，与<input>元素在类型检测时互相区别。表15-1的第二列给出了各个表单元素此属性的值。
+- form：对包含元素的Form对象的只读引用，或者如果元素没有包含在一个`<form>`元素中则其值为null。
+- name：只读的字符串，由HTML属性name指定。
+- value：可读/写的字符串，指定了表单元素包含或代表的“值”。它就是当提交表单时发送到Web服务器的字符串，也是JavaScript程序有时候会感兴趣的内容。针对Text和Textarea元素，该属性值包含了用户输入的文本。针对用<input>标签创建的按钮元素（除了用<button>标签创建的按钮），该属性值指定了按钮显示的文本。但是，针对单选和复选按钮元素，该属性用户不可见也不能编辑。它仅是用HTML的value属性来设置的一个字符串。它在表单提交时使用，但在关联表单元素的额外数据时也很有用。在本章后面关于不同类目的表单元素小节中将深入讨论value属性。
 
 ### 15.9.3 表单和元素的事件处理程序
 
 每个Form元素都有一个onsubmit事件处理程序来侦测表单提交，还有一个onreset事件处理程序来侦测表单重置。表单提交前调用onsubmit程序；它通过返回false能够取消提交动作。这给JavaScript程序一个机会来检查用户的输入错误，目的是为了避免不完整或无效的数据通过网络提交到服务端程序。注意，onsubmit事件处理程序只能通过单击“提交”按钮来触发。直接调用表单的`submit()`方法不触发onsubmit事件处理程序。
 
 onreset事件处理程序和onsubmit是类似的。它在表单重置之前调用，通过返回false能够阻止表单元素被重置。在表单中很少需要“重置”按钮，但如果有，你可能需要提醒用户来确认是否重置：
+
+```
+<form...
+    onreset="return confirm('Really erase ALL input and start over?')">
+  ...
+  <button type="reset">Clear and Start Over</button>
+</form>
+```
 
 类似onsubmit事件处理程序，onreset只能通过单击“重置”按钮来触发。直接调用表单的`reset()`方法不触发onreset事件处理程序。
 
@@ -9377,6 +9497,10 @@ onreset事件处理程序和onsubmit是类似的。它在表单重置之前调�
 
 在HTML5中，placeholder属性指定了用户输入前在输入域中显示的提示信息：
 
+```html
+Arrival Date: <input type="text" name="arrival" placeholder="yyyy-mm-dd">
+```
+
 文本输入域的onchange事件处理程序是在用户输入新的文本或编辑已存在的文本时触发，它表明用户完成了编辑并将焦点移出了文本域。
 
 Textarea元素类似文本输入域元素，不同的是它允许用户输入（和JavaScript程序显示）多行文本。Textarea元素用`<textarea>`标签来创建，与用`<input>`标签创建的文本域在语法上有显著的区别。（见第四部分的TextArea。）尽管如此，两种元素的行为非常类似。如同针对Text元素一样，可以用Textarea元素的value属性和onchange事件处理程序。
@@ -9401,6 +9525,17 @@ Select元素表示用户可以做出选择的一组选项（用Option元素表�
 
 为Select元素增加一个新的选项，首先用`Option()`构造函数创建一个Option对象，然后将其添加到`options[]`属性中，代码如下：
 
+```js
+//创建一个新的属性
+var zaire = new Option("Zaire", // text属性
+  "zaire", //value属性
+  false, //defaultSelected属性
+  false); //selected属性
+//通过添加到options数组中，在Select元素中现在改选项
+var countries = document.address.country;//得到Select对象
+countries.options[countries.options.length] = zaire;
+```
+
 请牢记一点，这些专用的Select元素的API已经很老了。可以用那些标准的调用更明确地插入和移除选项元素：Document.`createElement()`、Node.`insertBefore()`、Node. `removeChild()`等。
 
 ## 15.10 其它文档特性
@@ -9411,16 +9546,28 @@ Select元素表示用户可以做出选择的一组选项（用Option元素表�
 
 本章已经介绍的Document的属性有body、documentElement和forms等这些特殊的文档元素。文档还定义了一些其他有趣的属性：
 
-- cookie允许JavaScript程序读、写HTTP cookie的特殊的属性。第20章涵盖该属性。
-- domain该属性允许当Web页面之间交互时，相同域名下互相信任的Web服务器之间协作放宽同源策略安全限制（见13.6.2节）。
-- lastModified包含文档修改时间的字符串。
-- location与Window对象的location属性引用同一个Location对象。
-- referrer如果有，它表示浏览器导航到当前链接的上一个文档。该属性值和HTTP的Referer头信息的内容相同，只是拼写上有两个r。
-- title文档的`<title>`和`</title>`标签之间的内容。
-
-URL文档的URL，只读字符串而不是Location对象。该属性值与location.href的初始值相同，只是不包含Location对象的动态变化。例如，如果用户在文档中导向到一个新的片段，location.href会发生变化，但是document.URL则不会。
+- cookie：允许JavaScript程序读、写HTTP cookie的特殊的属性。第20章涵盖该属性。
+- domain：该属性允许当Web页面之间交互时，相同域名下互相信任的Web服务器之间协作放宽同源策略安全限制（见13.6.2节）。
+- lastModified：包含文档修改时间的字符串。
+- location：与Window对象的location属性引用同一个Location对象。
+- referrer：如果有，它表示浏览器导航到当前链接的上一个文档。该属性值和HTTP的Referer头信息的内容相同，只是拼写上有两个r。
+- title：文档的`<title>`和`</title>`标签之间的内容。
+- URL：文档的URL，只读字符串而不是Location对象。该属性值与location.href的初始值相同，只是不包含Location对象的动态变化。例如，如果用户在文档中导向到一个新的片段，location.href会发生变化，但是document.URL则不会。
 
 referrer是这些属性中最有趣的属性之一：它包含用户链接到当前文档的上一个文档的URL。可以用如下代码来使用该属性：
+
+```js
+if (document.referrer.indexOf("http://www.google.com/search?") == 0) {
+  var args = document.referrer.substring(ref.indexOf("?") + 1).split("&");
+  for (var i = 0; i < args.length; i++) {
+    if (args[i].substring(0, 2) == "q=") {
+      document.write("<p>welcome google User.");
+      document.write("You searched for:" + unescape(args[i].substring(2)).replace('+', ''))
+        break;
+    }
+  }
+}
+```
 
 上述代码中使用的`document.write()`方法将是下一节的主题。
 
@@ -9429,6 +9576,16 @@ referrer是这些属性中最有趣的属性之一：它包含用户链接到当
 `document.write()`方法是其中一个由Netscape 2浏览器实现的非常早期的脚本化API。它曾在DOM之前就被很好地引入了，也曾是在文档中显示计算后的文本的唯一方法。新代码中已经不再需要它了，但在已有的代码中你还能不时地看到该方法。
 
 `document.write()`会将其字符串参数连接起来，然后将结果字符串插入到文档中调用它的脚本元素的位置。当脚本执行结束，浏览器解析生成的输出并显示它。例如，以下代码使用`write()`动态把信息输出到一个静态的HTML文档中：
+
+```js
+<script>
+  document.write("<p>Document title:" + document.title);
+  document.write("<br>URL:" + document.URL);
+  document.write("<br>Referred by:" + document.referrer);
+  document.write("<br>Modified on:" + document.lastModified);
+  document.write("<br>Accessed on:" + new Date());
+</script>
+```
 
 只有在解析文档时才能使用`write()`方法输出HTML到当前文档中，理解这点非常重要。也就是说能够在`<script>`元素中的顶层代码中调用`document.write()`，就是因为这些脚本的执行是文档解析流程的一部分。如果将`document.write()`放在一个函数的定义中，而该函数的调用是从一个事件处理程序中发起的，产生的结果未必是你想要的——事实上，它会擦除当前文档和它包含的脚本！（马上你将看到为什么。）同理，在设置了defer或async属性的脚本中不要使用`document.write()`。
 
@@ -9440,10 +9597,42 @@ referrer是这些属性中最有趣的属性之一：它包含用户链接到当
 
 在当今的代码中document.`write()`方法并不常用：innerHTML属性和其他DOM技术提供了更好的方法来为文档增加内容。另一方面，某些算法的确使得它们本身成为很好的流式I/O API，如同`write()`方法提供的API一样。如果你正在书写在运行时计算和输出文本的代码，可能会对例15-10感兴趣，它利用指定元素的innerHTML属性包装了简单的`write()`和`close()`方法。
 
+```js
+/*征对innerHTML属性的流式API*/
+//设置元素的innerHTML定义简单的“流式”API
+function ElementStream(elt) {
+  if (typeof elt === "string")
+    elt = document.getElementById(elt);
+  this.elt = elt;
+  this.buffer = "";
+}
+//连接所有的参数，添加到缓存中
+ElementStream.prototype.wirte = function() {
+  this.buffer += Array.prototype.join.call(arguments, "");
+};
+//类似write(),只是添加了换行符
+ElementStream.prototype.writeln = function() {
+  this.buffer += Array.prototype.join.call(arguments, "") + "\n";
+};
+//从缓存中设置元素的内容，然后清空缓存
+ElementStream.prototype.close = function() {
+  this.elt.innerHTML = this.buffer;
+  this.buffer = "";
+};
+```
+
 ### 15.10.3 查询选取的文本
 
 有时判定用户在文档中选取了哪些文本非常有用。可以用类似如下的函数达到目的：
 
+```js
+function getSelectedText() {
+  if (window.getSelection) //HTML5标准API
+    return window.getSelection().toString();
+  else if (document.selection) //IE独有技术
+    return document.selection.createRange().text;
+}
+```
 
 标准的`window.getSelection()`方法返回一个Selection对象，后者描述了当前选取的一系列一个或多个Range对象。Selection和Range定义了一个不太常用的较为复杂的API，本书中并没有文档记录。toString()方法是Selection对象中最重要的也广泛实现了（除了IE）的特性，它返回选取的纯文本内容。
 
@@ -9451,11 +9640,22 @@ IE定义了一个不同的API，它在本书中也没有文档记录。document.
 
 如上的代码在书签工具（见13.2.5节）中特别有用，它操作选取的文本，然后利用搜索引擎或参考站点查找某个单词。例如，如下HTML链接在Wikipedia上查找当前选取的文本。收藏书签后，该链接和它包含的JavaScript URL就变成了一个书签工具：
 
+```js
+<a href="javascript: var q;
+    if (window.getSelection) q = window.getSelection().toString();
+    else if (document.selection) q = document.selection.createRange().text;
+    void window.open('https://www.baidu.com/s?wd=' + q)">
+  选取后点击链接查找
+  </a>
+```
 
 上述展示的查询选取代码的兼容性不佳：Window对象的getSelection()方法无法返回那些表单元素`<input>`或`<textarea>`内部选中的文本，它只返回在文档主体本身中选取的文本。另一方面，IE的document.selection属性可以返回文档中任意地方选取的文本。
 
 从文本输入域或`<textarea>`元素中获取选取的文本可使用以下代码：
 
+```js
+elt.value.substring(elt.selectionStart,elt.selectionEnd);
+```
 
 IE8以及更早版本的浏览器不支持selectionStart和selectionEnd属性。
 
@@ -9465,20 +9665,53 @@ IE8以及更早版本的浏览器不支持selectionStart和selectionEnd属性。
 
 有两种方法来启用编辑功能。其一，设置任何标签的HTMLcontenteditable属性；其二，设置对应元素的JavaScript contenteditable属性；这都将使得元素的内容变成可编辑。当用户单击该元素的内容时就会出现插入光标，用户敲击键盘就可以插入其中。如以下代码，一个HTML元素创建了一个可编辑的区域：
 
+```js
+<div id="editor" contenteditable>
+click to edit
+</div>
+```
 
 浏览器可能为表单字段和contenteditable元素支持自动拼写检查。在支持该功能的浏览器中，检查可能默认开启或关闭。为元素添加spellcheck属性来显式开启拼写检查，而使用spellcheck=false来显式关闭该功能（例如，当一个`<textarea>`将显示源代码或其他内容包含了字典里找不到的标识符时）。
 
 将Document对象的designMode属性设置为字符串“on”使得整个文档可编辑。（设置为“off”将恢复为只读文档。）designMode属性并没有对应的HTML属性。如下代码使得`<iframe>`内部的文档可编辑（注意，这里用了例13-5中的`onLoad()`函数）：
 
+```js
+<iframe id="editor" src="about:blank"></iframe> // 空iframe
+<script>
+onload = function() {
+  var editor = document.getElementById("editor");
+  editor.contentDocument.designMode = "on"; //开启编辑
+}
+</script>
+```
 
 所有当今的浏览器都支持contenteditable和designMode属性。但是，当谈到它们实际的可编辑行为时，它们是不太兼容的。所有的浏览器都允许插入与删除文本并用鼠标与键盘移动光标。在所有的浏览器中，Enter键另起一行，但不同的浏览器生成了不同的标记。有些开始了新的段落，而其他的只是插入一个`<br/>`元素。
 
 有些浏览器允许键盘快捷键（如Ctrl+B）来加粗当前选中的文本。在其他浏览器（如Firefox）中，标准的字处理快捷键（如Ctrl+B和Ctrl+I）被绑定到浏览器相关的其他功能上了而无法应用到文本编辑器上。浏览器定义了多项文本编辑命令，大部分没有键盘快捷键。为了执行这些命令，应该使用Document对象的`execCommand()`方法。（注意，这是Document的方法，而不是设置了contenteditable属性的元素的方法。如果文档中有多个可编辑的元素，命令将自动应用到选区或插入光标所在那个元素上。）用`execCommand()`执行的命令名字都是如“bold”、“subscript”、“justifycenter”或“insertimage”之类的字符串。命令名是`execCommand()`的第一个参数。有些命令还需要一个值参数——例如，“createlink”需要一个超级链接URL。理论上，如果`execCommand()`的第二个参数为true，浏览器会自动提示用户输入所需值。但为了提高可移植性，你应该提示用户输入，并传递false作为第二参数，传递用户输入的值作为第三个参数。
 
+```js
+function bold() {
+  document.execCommand("blod", false, url);
+}
+
+function link() {
+  var url = prompt("输入link描述");
+  if (url) document.execCommand("createlink", false, url)
+}
+```
 
 `execCommand()`所支持的命令通常是由工具栏上的按钮触发的。当要触发的命令不可用时，良好的UI会使对应的按钮无效。可以给`document.queryCommandSupport()`传递命令名来查询浏览器是否支持该命令。调用`document.queryCommandEnabled()`来查询当前所使用的命令。（例如，一条需要文本选择区域的命令在无选区的情况下有可能是无效的。）有一些命令如“bold”和“italic”有一个布尔值状态，开或关取决于当前选区或光标的位置。这些命令通常用工具栏上的开关按钮表示。要判定这些命令的当前状态可以使用`document.queryCommandState()`。最后，有些命令（如“fontname”）有一个相关联的值（字体系列名）。用`document.queryCommandValue()`查询该值。如果当前选取的文本使用了两种不同的字体，“fontname”的查询结果是不确定的。使用`document. queryCommandIndeterm()`来检测这种情况。
 
 不同的浏览器实现了不同的编辑命令组合。只有一少部分命令得到了很好的支持，如“bold”、“italic”、“createlink”、“undo”和“redo”等。在写本书这段时间里HTML5草案定义了以下命令。但由于它们并没有被普遍地支持，这里就不做详细的文档记录：
+
+| blod          | insertLineBreak     | slectAll    |
+| createLink    | insertOrderedList   | subscript   |
+| delete        | insertUnorderedList | superscript |
+| formatBlock   | insertParagraph     | undo        |
+| forwardDelete | insertText          | unlink      |
+| insertImage   | italic              | unselect    |
+| insertHTML    | redo                |             |
+
 
 如果Web应用程序需要富文本编辑器功能，很可能需要采纳一个预先构建的解决浏览器之间的各种差异的解决方案。在网上可以找到很多这样的编辑器组件。值得注意的是，浏览器内置的编辑功能对用户输入少量的富文本来说是足够强大了，但要解决所有种类的文档的编辑来说还是过于简陋了。特别要注意，这些编辑器生成的HTML标记很可能是杂乱无章的。
 
