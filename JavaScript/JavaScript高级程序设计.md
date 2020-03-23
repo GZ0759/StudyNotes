@@ -7592,7 +7592,7 @@ function getViewport(){
 
 scrollWidth 和 scrollHeight 主要用于确定元素内容的实际大小。例如，通常认为`<html>`元素是在 Web 浏览器的视口中滚动的元素（ IE6 之前版本运行在混杂模式下时是`<body>`元素）。因此，带有垂直滚动条的页面总高度就是 document.documentElement.scrollHeight。
 
-对于不包含滚动条的页面而言 ， scrollWidth 和 scrollHeight 与 clientWidth 和 clientHeight 之间的关系并不十分清晰。在这种情况下，基于 document.documentElement 查看这些属性会在不同浏览器间发现一些不一致性问题，如下所述。
+对于不包含滚动条的页面而言 ， scrollWidth 和 scrollHeight 与 clientWidth 和 clientHeight 之间的关系并不十分清晰。在这种情况下，基于 `document.documentElement` 查看这些属性会在不同浏览器间发现一些不一致性问题，如下所述。
 
 - Firefox 中这两组属性始终都是相等的，但大小代表的是文档内容区域的实际尺寸，而非视口的尺寸。
 - Opera、 Safari 3.1 及更高版本、 Chrome 中的这两组属性是有差别的，其中 scrollWidth 和 scrollHeight 等于视口大小，而 clientWidth 和 clientHeight 等于文档内容区域的大小。
@@ -7605,7 +7605,7 @@ var docHeight = Math.max(document.documentElement.scrollHeight, document.documen
 var docWidth = Math.max(document.documentElement.scrollWidth, document.documentElement.clientWidth);
 ```
 
-注意，对于运行在混杂模式下的 IE，则需要用 document.body 代替 document.documentElement。通过 scrollLeft 和 scrollTop 属性既可以确定元素当前滚动的状态，也可以设置元素的滚动位置。在元素尚未被滚动时，这两个属性的值都等于 0。如果元素被垂直滚动了，那么 scrollTop 的值会大于 0，且表示元素上方不可见内容的像素高度。如果元素被水平滚动了，那么 scrollLeft 的值会大于 0，且表示元素左侧不可见内容的像素宽度。这两个属性都是可以设置的，因此将元素的scrollLeft 和 scrollTop 设置为 0，就可以重置元素的滚动位置。下面这个函数会检测元素是否位于顶部，如果不是就将其回滚到顶部。
+注意，对于运行在混杂模式下的 IE，则需要用 `document.body` 代替 `document.documentElement`。通过 scrollLeft 和 scrollTop 属性既可以确定元素当前滚动的状态，也可以设置元素的滚动位置。在元素尚未被滚动时，这两个属性的值都等于 0。如果元素被垂直滚动了，那么 scrollTop 的值会大于 0，且表示元素上方不可见内容的像素高度。如果元素被水平滚动了，那么 scrollLeft 的值会大于 0，且表示元素左侧不可见内容的像素宽度。这两个属性都是可以设置的，因此将元素的scrollLeft 和 scrollTop 设置为 0，就可以重置元素的滚动位置。下面这个函数会检测元素是否位于顶部，如果不是就将其回滚到顶部。
 
 ```js
 function scrollToTop(element){
@@ -7623,14 +7623,14 @@ IE、 Firefox 3+、 Safari 4+、 Opera 9.5 及 Chrome 为每个元素都提供�
 
 ```js
 function getBoundingClientRect(element){
-if (typeof arguments.callee.offset != "number"){
-  var scrollTop = document.documentElement.scrollTop;
-  var temp = document.createElement("div");
-    temp.style.cssText = "position:absolute;left:0;top:0;";
-    document.body.appendChild(temp);
-    arguments.callee.offset = -temp.getBoundingClientRect().top - scrollTop;
-    document.body.removeChild(temp);
-    temp = null;
+  if (typeof arguments.callee.offset != "number"){
+    var scrollTop = document.documentElement.scrollTop;
+    var temp = document.createElement("div");
+      temp.style.cssText = "position:absolute;left:0;top:0;";
+      document.body.appendChild(temp);
+      arguments.callee.offset = -temp.getBoundingClientRect().top - scrollTop;
+      document.body.removeChild(temp);
+      temp = null;
   }
   var rect = element.getBoundingClientRect();
   var offset = arguments.callee.offset;
@@ -7645,7 +7645,7 @@ if (typeof arguments.callee.offset != "number"){
 
 这个函数使用了它自身的属性来确定是否要对坐标进行调整。第一步是检测属性是否有定义，如果没有就定义一个。最终的 offset 会被设置为新元素上坐标的负值，实际上就是在 IE 中设置为2，在Firefox 和 Opera 中设置为0。为此，需要创建一个临时的元素，将其位置设置在(0,0)，然后再调用其`getBoundingClientRect()`。而之所以要减去视口的 scrollTop，是为了防止调用这个函数时窗口被滚动了。这样编写代码，就无需每次调用这个函数都执行两次 `getBoundingClientRect()`了。接下来，再在传入的元素上调用这个方法并基于新的计算公式创建一个对象。
 
-对于不支持 `getBoundingClientRect()`的浏览器，可以通过其他手段取得相同的信息。一般来说， right 和 left 的差值与 offsetWidth 的值相等，而 bottom 和 top 的差值与 offsetHeight 相等。而且， left 和 top 属性大致等于使用本章前面定义的 getElementLeft()和 getElementTop() 函数取得的值。综合上述，就可以创建出下面这个跨浏览器的函数：
+对于不支持 `getBoundingClientRect()`的浏览器，可以通过其他手段取得相同的信息。一般来说， right 和 left 的差值与 offsetWidth 的值相等，而 bottom 和 top 的差值与 offsetHeight 相等。而且， left 和 top 属性大致等于使用本章前面定义的 `getElementLeft()`和 `getElementTop()` 函数取得的值。综合上述，就可以创建出下面这个跨浏览器的函数：
 
 ```js
 function getBoundingClientRect(element){
