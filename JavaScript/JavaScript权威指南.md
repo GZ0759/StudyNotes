@@ -8538,7 +8538,7 @@ document.firstChild.firstChild.nextSibling;
 
 该 API 的第一部分是 Element 对象的 children 属性。类似 ChildNodes ，它也是一个 NodeList 对象，但不同的是 children 列表只包含 Element 对象。 children 并非标准属性，但是它在所有当前的浏览器中都能工作。IE已经实现有一段很长的时间了，其他大多数浏览器也已如法炮制。最后采纳它的主流浏览器是Firefox3.5。
 
-注意，Text和Comment节点没有 children 属性，它意味着上述`Node.parentNode`属性不可能返回Text或Comment节点。任何 Element 的 parentNode 总是另一个 Element ，或者，追溯到树根的 Document 或 DocumentFragment 节点。
+注意， Text 和 Comment 节点没有 children 属性，它意味着上述`Node.parentNode`属性不可能返回Text或Comment节点。任何 Element 的 parentNode 总是另一个 Element ，或者，追溯到树根的 Document 或 DocumentFragment 节点。
 
 基于元素的文档遍历 API 的第二部分是 Element 属性，后者类似Node对象的子属性和兄弟属性：
 
@@ -8628,7 +8628,7 @@ HTML 元素由一个标签和一组称为属性（attribute）的名/值对组�
 
 ### 15.4.1 HTML作为Element的属性
 
-表示HTML文档元素的HTMLElement对象定义了读/写属性，它们映射了元素的HTML属性。HTMLElement定义了通用的HTTP属性（如id、标题lang和dir）的属性，以及事件处理程序属性（如onclick）。特定的Element子类型为其元素定义了特定的属性。例如，查询一张图片的URL，可以使用表示`<img>`元素的HTMLElement对象的src属性：
+表示HTML文档元素的 HTMLElement 对象定义了读/写属性，它们映射了元素的HTML属性。 HTMLElement 定义了通用的HTTP属性（如id、标题lang和dir）的属性，以及事件处理程序属性（如onclick）。特定的Element子类型为其元素定义了特定的属性。例如，查询一张图片的URL，可以使用表示`<img>`元素的 HTMLElement 对象的src属性：
 
 同样地，可以为一个`<form>`元素设置表单提交的属性，代码如下：
 
@@ -8734,7 +8734,7 @@ document.body.attributes["ONLOAD"] //<body>元素的onload属性
 
 再看一下图15-1，并问自己一个问题：`<p>`元素的“内容”是什么？回答这个问题也许有3个方法：
 
-- 内容是HTML字符串`This is a<i>simple</i>document`。
+- 内容是 HTML 字符串`This is a<i>simple</i>document`。
 - 内容是纯文本字符串`This is a simple document`。
 - 内容是一个 Text 节点、一个包含了一个 Text 子节点的 Element 节点和另外一个 Text 节点。
 
@@ -8744,13 +8744,13 @@ document.body.attributes["ONLOAD"] //<body>元素的onload属性
 
 读取 Element 的 innerHTML 属性作为字符串标记返回那个元素的内容。在元素上设置该属性调用了Web浏览器的解析器，用新字符串内容的解析展现形式替换元素当前内容。（不要管它的名字，除了在HTML元素上， innerHTML 也可以在XML元素上使用。）
 
-Web浏览器很擅长解析HTML，通常设置 innerHTML 效率非常高，甚至在指定的值需要解析时效率也是相当不错。但注意，对 innerHTML 属性用“+=”操作符重复追加一小段文本通常效率低下，因为它既要序列化又要解析。
+Web 浏览器很擅长解析 HTML ，通常设置 innerHTML 效率非常高，甚至在指定的值需要解析时效率也是相当不错。但注意，对 innerHTML 属性用“+=”操作符重复追加一小段文本通常效率低下，因为它既要序列化又要解析。
 
-innerHTML 是在 IE4 中引入的。虽然所有的浏览器都支持它已经有很长一段时间了，但随着HTML5的到来它才变得标准化。HTML5说 innerHTML 应该在Document节点以及 Element 节点上工作正常，但这还未被普遍地支持。
+innerHTML 是在 IE4 中引入的。虽然所有的浏览器都支持它已经有很长一段时间了，但随着 HTML5 的到来它才变得标准化。 HTML5 说 innerHTML 应该在Document节点以及 Element 节点上工作正常，但这还未被普遍地支持。
 
-HTML5还标准化了 outerHTML 属性。当查询 outerHTML 时，返回的HTML或XML标记的字符串包含被查询元素的开头和结尾标签。当设置元素的 outerHTML 时，元素本身被新的内容所替换。只有 Element 节点定义了 outerHTML 属性，Document节点则无。在写本书的这段时间里， outerHTML 在除了Firefox的所有当前浏览器中都支持。（见本章后面的例15-5，基于 innerHTML 实现outerHTML。）
+HTML5 还标准化了 outerHTML 属性。当查询 outerHTML 时，返回的HTML或XML标记的字符串包含被查询元素的开头和结尾标签。当设置元素的 outerHTML 时，元素本身被新的内容所替换。只有 Element 节点定义了 outerHTML 属性，Document节点则无。在写本书的这段时间里， outerHTML 在除了Firefox的所有当前浏览器中都支持。（见本章后面的例15-5，基于 innerHTML 实现outerHTML。）
 
-IE 引入的另一个特性是`insertAdjacentHTML()`方法，它将在HTML5中标准化，它将任意的HTML标记字符串插入到指定的元素“相邻”的位置。标记是该方法的第二个参数，并且“相邻”的精确含义依赖于第一个参数的值。第一个参数为具有以下值之一的字符串：“beforebegin”、“afterbegin”、“beforeend”和“afterend”。这些值对应的插入点如图15-3所示。
+IE 引入的另一个特性是`insertAdjacentHTML()`方法，它将在 HTML5 中标准化，它将任意的HTML标记字符串插入到指定的元素“相邻”的位置。标记是该方法的第二个参数，并且“相邻”的精确含义依赖于第一个参数的值。第一个参数为具有以下值之一的字符串：“beforebegin”、“afterbegin”、“beforeend”和“afterend”。这些值对应的插入点如图15-3所示。
 
 图15-3：`insertAdjacentHTML()`的插入点`insertAdjacentHTML()`在当前版本的Firefox中不支持。本章后面的内容，例15-6展示了如何用 innerHTML 属性实现`insertAdjacentHTML()`，也展示了如何写出不需要一个字符串参数来指定插入点的HTML插入方法。
 
@@ -8792,7 +8792,7 @@ textContent 属性就是将指定元素的所有后代 Text 节点简单地串�
 
 ### 15.5.3 作为Text节点的元素内容
 
-另一种方法处理元素的内容来是当做一个子节点列表，每个子节点可能有它自己的一组子节点。当考虑元素的内容时，通常感兴趣的是它的Text节点。在 XML 文档中，你也必须准备好处理 CDATASection 节点——它是 Text 的子类型，代表了 CDATA 段的内容。
+另一种方法处理元素的内容来是当做一个子节点列表，每个子节点可能有它自己的一组子节点。当考虑元素的内容时，通常感兴趣的是它的 Text 节点。在 XML 文档中，你也必须准备好处理 CDATASection 节点——它是 Text 的子类型，代表了 CDATA 段的内容。
 
 例15-3展示了一个`textContent()`函数，它递归地遍历元素的子节点，然后连接后代节点中所有的 Text 节点的文本。为了理解代码，回想一下 nodeValue 属性（定义在Node类型中），它保存 Text 节点的内容。
 
@@ -8856,13 +8856,13 @@ var newnode = document.createTextNode("Text node");
 var newelement = document.createElement("p");
 ```
 
-Document也定义了一些其他的工厂方法，如不经常使用的`createComment()`。在15.6.4节中使用了`createDocumentFragment()`方法。在使用了XML命名空间的文档中，可以使用`createElementNS()`来同时指定命名空间的URI和待创建的Element的标签名字。
+Document 也定义了一些其他的工厂方法，如不经常使用的`createComment()`。在15.6.4节中使用了`createDocumentFragment()`方法。在使用了XML命名空间的文档中，可以使用`createElementNS()`来同时指定命名空间的URI和待创建的 Element 的标签名字。
 
-另一种创建新文档节点的方法是复制已存在的节点。每个节点有一个`cloneNode()`方法来返回该节点的一个全新副本。给方法传递参数true也能够递归地复制所有的后代节点，或传递参数false只是执行一个浅复制。在除了IE的其他浏览器中，Document对象还定义了一个类似的方法叫`importNode()`。如果给它传递另一个文档的一个节点，它将返回一个适合本文档插入的节点的副本。传递true作为第二个参数，该方法将递归地导入所有的后代节点。
+另一种创建新文档节点的方法是复制已存在的节点。每个节点有一个`cloneNode()`方法来返回该节点的一个全新副本。给方法传递参数true也能够递归地复制所有的后代节点，或传递参数false只是执行一个浅复制。在除了 IE 的其他浏览器中，Document 对象还定义了一个类似的方法叫`importNode()`。如果给它传递另一个文档的一个节点，它将返回一个适合本文档插入的节点的副本。传递true作为第二个参数，该方法将递归地导入所有的后代节点。
 
 ### 15.6.2 插入节点
 
-一旦有了一个新节点，就可以用Node的方法`appendChild()`或`insertBefore()`将它插入到文档中。`appendChild()`是在需要插入的Element节点上调用的，它插入指定的节点使其成为那个节点的最后一个子节点。
+一旦有了一个新节点，就可以用Node的方法`appendChild()`或`insertBefore()`将它插入到文档中。`appendChild()`是在需要插入的 Element 节点上调用的，它插入指定的节点使其成为那个节点的最后一个子节点。
 
 `insertBefore()`就像`appendChild()`一样，除了它接受两个参数。第一个参数就是待插入的节点，第二个参数是已存在的节点，新节点将插入该节点的前面。该方法应该是在新节点的父节点上调用，方法的第二个参数必须是该父节点的子节点。如果传递null作为第二个参数，`insertBefore()`的行为类似`appendChild()`，它将节点插入在最后。
 
@@ -8993,15 +8993,15 @@ function embolden(n) {
 
 ### 15.6.4 使用DocumentFragment
 
-DocumentFragment是一种特殊的Node，它作为其他节点的一个临时的容器。像这样创建一个DocumentFragment：
+DocumentFragment 是一种特殊的Node，它作为其他节点的一个临时的容器。像这样创建一个 DocumentFragment ：
 
 ```js
 var frag = document.createDocumentFragment();
 ```
 
-像Document节点一样，DocumentFragment是独立的，而不是任何其他文档的一部分。它的parentNode总是为null。但类似Element，它可以有任意多的子节点，可以用`appendChild()`、`insertBefore()`等方法来操作它们。
+像 Document 节点一样， DocumentFragment 是独立的，而不是任何其他文档的一部分。它的parentNode总是为null。但类似Element，它可以有任意多的子节点，可以用`appendChild()`、`insertBefore()`等方法来操作它们。
 
-DocumentFragment的特殊之处在于它使得一组节点被当做一个节点看待：如果给`appendChild()`、`insertBefore()`或`replaceChild()`传递一个DocumentFragment，其实是将该文档片段的所有子节点插入到文档中，而非片段本身。（文档片段的子节点从片段移动到文档中，文档片段清空以便重用。）以下函数使用DocumentFragment来倒序排列一个节点的子节点：
+DocumentFragment 的特殊之处在于它使得一组节点被当做一个节点看待：如果给`appendChild()`、`insertBefore()`或`replaceChild()`传递一个 DocumentFragment ，其实是将该文档片段的所有子节点插入到文档中，而非片段本身。（文档片段的子节点从片段移动到文档中，文档片段清空以便重用。）以下函数使用 DocumentFragment 来倒序排列一个节点的子节点：
 
 ```js
 //倒序排列节点n的子节点
@@ -9018,7 +9018,7 @@ function reverseDome(n) {
 }
 ```
 
-例15-6使用innerHTML属性和DocumentFragment实现`insertAdjacentHTML()`方法（见15.5.1节）。它还定义一些名字更符合逻辑的HTML插入函数，可以替换让人迷惑的`insertAdjacentHTML()`API。内部工具函数`fragment()`可能是代码中最有用的部分：它返回一个对指定HTML字符串文本进行解析后的DocumentFragment。
+例15-6使用 innerHTML 属性和 DocumentFragment 实现`insertAdjacentHTML()`方法（见15.5.1节）。它还定义一些名字更符合逻辑的HTML插入函数，可以替换让人迷惑的`insertAdjacentHTML()`API。内部工具函数`fragment()`可能是代码中最有用的部分：它返回一个对指定HTML字符串文本进行解析后的DocumentFragment。
 
 ```js
 /**用innerHTML实现insertAdjacentHTML**/
@@ -9072,30 +9072,30 @@ var Insert = (function() {
 
 ```js
 /**一个动态自动生成的目录表**/
-/**
-* 这个 模块注册一个可在页面加载完成后自动运行的匿名函数。当执行这个函数时会去文档中查找id为“TOC”的元素
+/* *
+* 这个模块注册一个可在页面加载完成后自动运行的匿名函数。当执行这个函数时会去文档中查找id为“TOC”的元素
 *
 * 生成的TOC目录应该具有自己的css样式。这个目录区域的样式className设置为“TOCEntry”
 * 统一我们为不同层级的目录模板标题定义不同的样式。<h1>标签生成的标题className为“TOCLevel1”，<h2>标签生成的标题className为"TOCLevel2",依次类推
 *段编号的样式为“TOCSectNum”
 * 这个模块需要onLoad()工具函数
-**/
-(function() { //匿名函数定义了一个局部作用域
-  //查找TOC容器元素
-  //如果不存在，则在文档开头处新建一个
+* */
+(function() { // 匿名函数定义了一个局部作用域
+  // 查找TOC容器元素
+  // 如果不存在，则在文档开头处新建一个
   var toc = document.getElementById("TOC");
   if (!toc) {
     toc = document.createElement("div");
     toc.id = "TOC"
     document.body.insertBefore(toc, document.body.firstChild);
   }
-  //查找所有的标题元素
+  // 查找所有的标题元素
   var headings;
-  if (document.querySelectorAll) //我们能否使用这个简单的方法？
-    headings = document.querySelectorAll("h1,h2,h3,h4,h5,h6");
-  else //否则查找的方法稍微复杂些
+  if (document.querySelectorAll) // 我们能否使用这个简单的方法？
+    headings = document.querySelectorAll("h1, h2, h3, h4, h5, h6");
+  else // 否则查找的方法稍微复杂些
     headings = findHeadings(document.body, []);
-  //递归遍历document的body，查找元素
+  // 递归遍历document的body，查找元素
   function findHeadings(root, sects) {
     for (var c = root.firstChild; c != null; c = c.nextSibling) {
       if (c.nodeType !== 1) continue;
@@ -9106,49 +9106,49 @@ var Insert = (function() {
     }
     return sects;
   }
-  //初始化一个数组来保持跟踪章节好
+  // 初始化一个数组来保持跟踪章节好
   var sectionNumbers = [0, 0, 0, 0, 0, 0];
-  //现在循环已经找到的标题元素
+  // 现在循环已经找到的标题元素
   for (var h = 0; h < headings.length; h++) {
     var heading = headings[h];
-    //跳过在TOC容器中的标题元素
+    // 跳过在TOC容器中的标题元素
     if (heading.parentNode == toc) continue;
-    //判定标题的级别
+    // 判定标题的级别
     var level = parseInt(heading.tagName.charAt(1));
     if (isNaN(level) || level < 1 || level > 6) continue;
     
-    //对于重要的标题级别增加sectionNumber对于的数字
-    //重置所有标题比它级别低的数字为零
+    // 对于重要的标题级别增加sectionNumber对于的数字
+    // 重置所有标题比它级别低的数字为零
     sectionNumbers[level-1]++;
     for(var i = level; i<6;i++) sectionNumbers[i] =0;
     
-    //现在讲所有标题级别的章节号组合产生一个章节号，如2.3.1
+    // 现在讲所有标题级别的章节号组合产生一个章节号，如2.3.1
     var sectionNumber = sectionNumbers.slice(0,level).join(".")
     
-    //为标题级别增加章节号
-    //把数字放在<span>中，是的其可以用样式修饰
+    // 为标题级别增加章节号
+    // 把数字放在<span>中，是的其可以用样式修饰
     var span = document.createElement("span");
     span.calssName = "TOCSectNum";
     span.innerHTML =sectionNumber;
     heading.insertBefore(span,heading.firstChild);
     
-    //用命名的锚点将标题包起来，以便它增加链接
+    // 用命名的锚点将标题包起来，以便它增加链接
     var anchor = document.createElement("a");
     anchor.name = "TOC"+ sectionNumber;
     heading.parentNode.insertBefore(anchor,heading);
     anchor.appendChild(heading);
     
-    //现在为该节点创建一个链接
+    // 现在为该节点创建一个链接
     var link = document.createElement("a");
-    link.href = "#TOC" + sectionNumber;//链接目标的地址
-    link.innerHTML = heading.innerHTML;//链接文本与实际标题一致
+    link.href = "#TOC" + sectionNumber; // 链接目标的地址
+    link.innerHTML = heading.innerHTML; // 链接文本与实际标题一致
     
-    //将链接放在一个div中，div用于基于级别名字的样式修饰
+    // 将链接放在一个div中，div用于基于级别名字的样式修饰
     var entry = document.createElement("div");
     entry.className = "TOCEntry TOCLevel" +level;
     
     entry.appendChild(link);
-    //改div添加到TOC容器
+    // 改div添加到TOC容器
     toc.appendChild(entry)
   }
 }); 
