@@ -8777,7 +8777,7 @@ EventUtil.addHandler(btn, "click", handler);
 EventUtil.removeHandler(btn, "click", handler);
 ```
 
-`addHandler()`和 `removeHandler()`没有考虑到所有的浏览器问题，例如在 IE 中的作用域问题。不过，使用它们添加和移除事件处理程序还是足够了。此外还要注意， DOM0 级对每个事件只支持一个事件处理程序。好在，只支持 DOM0 级的浏览器已经没有那么多了，因此这对你而言应该不是什么问题。
+`addHandler()`和 `removeHandler()`没有考虑到所有的浏览器问题，例如在 IE 中的作用域问题。不过，使用它们添加和移除事件处理程序还是足够了。此外还要注意， DOM0 级对每个事件只支持一个事件处理程序。好在，只支持 DOM0 级的浏览器已经没有那么多了，因此这对你而言应该不是什么问题。:
 
 ## 13.3 事件对象 
 
