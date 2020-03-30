@@ -8896,7 +8896,7 @@ btn.onmouseout = handler;
 
 这个例子定义了一个名为 handler 的函数，用于处理 3 种事件： click、 mouseover 和 mouseout。当单击按钮时，会出现一个与前面例子中一样的警告框。当按钮移动到按钮上面时，背景颜色应该会变成红色，而当鼠标移动出按钮的范围时，背景颜色应该会恢复为默认值。这里通过检测 event.type 属性，让函数能够确定发生了什么事件，并执行相应的操作。
 
-要阻止特定事件的默认行为，可以使用 preventDefault()方法。例如，链接的默认行为就是在被单击时会导航到其 href 特性指定的 URL。如果你想阻止链接导航这一默认行为，那么通过链接的onclick 事件处理程序可以取消它，如下面的例子所示。
+要阻止特定事件的默认行为，可以使用 `preventDefault()`方法。例如，链接的默认行为就是在被单击时会导航到其 href 特性指定的 URL。如果你想阻止链接导航这一默认行为，那么通过链接的onclick 事件处理程序可以取消它，如下面的例子所示。
 
 ```js
 var link = document.getElementById("myLink");
@@ -8942,9 +8942,177 @@ document.body.onclick = function(event){
 > 只有在事件处理程序执行期间， event 对象才会存在；一旦事件处理程序执行完成， event 对象就会被销毁。
 
 ### 13.3.2 IE中的事件对象
+
+与访问 DOM 中的 event 对象不同，要访问 IE 中的 event 对象有几种不同的方式，取决于指定事件处理程序的方法。在使用 DOM0 级方法添加事件处理程序时， event 对象作为 window 对象的一个属性存在。来看下面的例子。
+
+```js
+var btn = document.getElementById("myBtn");
+btn.onclick = function(){
+  var event = window.event;
+  alert(event.type); //"click"
+};
+```
+
+在此，我们通过 window.event 取得了 event 对象，并检测了被触发事件的类型（IE 中的 type 属性与 DOM 中的 type 属性是相同的）。可是，如果事件处理程序是使用 `attachEvent()`添加的，那么就会有一个 event 对象作为参数被传入事件处理程序函数中，如下所示。
+
+```js
+var btn = document.getElementById("myBtn");
+btn.attachEvent("onclick", function(event){
+  alert(event.type); //"click"
+});
+```
+
+在像这样使用 `attachEvent()`的情况下，也可以通过 window 对象来访问 event 对象，就像使用DOM0 级方法时一样。不过为方便起见，同一个对象也会作为参数传递。
+
+如果是通过 HTML 特性指定的事件处理程序，那么还可以通过一个名叫 event 的变量来访问 event 对象（与 DOM 中的事件模型相同）。再看一个例子。
+
+```js
+<input type="button" value="Click Me" onclick="alert(event.type)">
+```
+
+IE 的 event 对象同样也包含与创建它的事件相关的属性和方法。其中很多属性和方法都有对应的或者相关的 DOM 属性和方法。与 DOM 的 event 对象一样，这些属性和方法也会因为事件类型的不同而不同，但所有事件对象都会包含下表所列的属性和方法。
+
+因为事件处理程序的作用域是根据指定它的方式来确定的，所以不能认为 this 会始终等于事件目标。故而，最好还是使用 event.srcElement 比较保险。例如：
+
+```js
+var btn = document.getElementById("myBtn");
+btn.onclick = function(){
+  alert(window.event.srcElement === this); //true
+};
+btn.attachEvent("onclick", function(event){
+  alert(event.srcElement === this); //false
+});
+```
+
+在第一个事件处理程序中（使用 DOM0 级方法指定的）， srcElement 属性等于 this，但在第二个事件处理程序中，这两者的值不相同。
+
+如前所述， returnValue 属性相当于 DOM 中的 `preventDefault()`方法，它们的作用都是取消给定事件的默认行为。只要将 returnValue 设置为 false，就可以阻止默认行为。来看下面的例子。
+
+```js
+var link = document.getElementById("myLink");
+link.onclick = function(){
+  window.event.returnValue = false;
+};
+```
+
+这个例子在 onclick 事件处理程序中使用 returnValue 达到了阻止链接默认行为的目的。与 DOM 不同的是，在此没有办法确定事件是否能被取消。
+
+相应地， cancelBubble 属性与 DOM 中的 `stopPropagation()`方法作用相同，都是用来停止事件冒泡的。由于 IE 不支持事件捕获，因而只能取消事件冒泡；但 `stopPropagatioin()`可以同时取消事件捕获和冒泡。例如：
+
+```js
+var btn = document.getElementById("myBtn");
+btn.onclick = function(){
+  alert("Clicked");
+  window.event.cancelBubble = true;
+};
+document.body.onclick = function(){
+  alert("Body clicked");
+};
+```
+
+通过在 onclick 事件处理程序中将 cancelBubble 设置为 true，就可阻止事件通过冒泡而触发 document.body 中注册的事件处理程序。结果，在单击按钮之后，只会显示一个警告框。
+
 ### 13.3.3 跨浏览器的事件对象
 
+虽然 DOM 和 IE 中的 event 对象不同，但基于它们之间的相似性依旧可以拿出跨浏览器的方案来。IE 中 event 对象的全部信息和方法 DOM 对象中都有，只不过实现方式不一样。不过，这种对应关系让实现两种事件模型之间的映射非常容易。可以对前面介绍的 EventUtil 对象加以增强，添加如下方法以求同存异。
+
+```js
+var EventUtil = {
+  addHandler: function(element, type, handler){
+    //省略的代码
+  },
+  getEvent: function(event){
+    return event ? event : window.event;
+  },
+  getTarget: function(event){
+    return event.target || event.srcElement;
+  },
+  preventDefault: function(event){
+  if (event.preventDefault){
+    event.preventDefault();
+  } else {
+    event.returnValue = false;
+  }
+  },
+  removeHandler: function(element, type, handler){
+    //省略的代码
+  },
+  stopPropagation: function(event){
+    if (event.stopPropagation){
+      event.stopPropagation();
+    } else {
+      event.cancelBubble = true;
+    }
+  }
+};
+```
+
+以上代码显示，我们为 EventUtil 添加了 4 个新方法。第一个是 `getEvent()`，它返回对 event 对象的引用。考虑到 IE 中事件对象的位置不同，可以使用这个方法来取得 event 对象，而不必担心指定事件处理程序的方式。在使用这个方法时，必须假设有一个事件对象传入到事件处理程序中，而且要把该变量传给这个方法，如下所示。
+
+```js
+btn.onclick = function(event){
+  event = EventUtil.getEvent(event);
+};
+```
+
+在兼容 DOM 的浏览器中， event 变量只是简单地传入和返回。而在 IE 中， event 参数是未定义的（undefined），因此就会返回 window.event。将这一行代码添加到事件处理程序的开头，就可以确保随时都能使用 event 对象，而不必担心用户使用的是什么浏览器。
+
+第二个方法是 `getTarget()`，它返回事件的目标。在这个方法内部，会检测 event 对象的 target 属性，如果存在则返回该属性的值；否则，返回 srcElement 属性的值。可以像下面这样使用这个方法。
+
+```js
+btn.onclick = function(event){
+  event = EventUtil.getEvent(event);
+  var target = EventUtil.getTarget(event);
+};
+```
+
+第三个方法是 `preventDefault()`，用于取消事件的默认行为。在传入 event 对象后，这个方法
+会检查是否存在 `preventDefault()`方法，如果存在则调用该方法。如果 `preventDefault()`方法不
+存在，则将 returnValue 设置为 false。下面是使用这个方法的例子。
+
+```js
+var link = document.getElementById("myLink");
+link.onclick = function(event){
+  event = EventUtil.getEvent(event);
+  EventUtil.preventDefault(event);
+};
+```
+
+以上代码可以确保在所有浏览器中单击该链接都不会打开另一个页面。首先，使用 `EventUtil.getEvent()`取得 event 对象，然后将其传入到 EventUtil.`preventDefault()`以取消默认行为。
+
+第四个方法是 `stopPropagation()`，其实现方式类似。首先尝试使用 DOM 方法阻止事件流，否则就使用 cancelBubble 属性。下面看一个例子。
+
+```js
+var btn = document.getElementById("myBtn");
+btn.onclick = function(event){
+alert("Clicked");
+event = EventUtil.getEvent(event);
+EventUtil.stopPropagation(event);
+};
+document.body.onclick = function(event){
+alert("Body clicked");
+};
+```
+
+在此，首先使用 EventUtil.`getEvent()`取得了 event 对象，然后又将其传入到 `EventUtil.stopPropagation()`。别忘了由于 IE 不支持事件捕获，因此这个方法在跨浏览器的情况下，也只能用来阻止事件冒泡。
+
 ## 13.4 事件类型
+
+Web 浏览器中可能发生的事件有很多类型。如前所述，不同的事件类型具有不同的信息，而“DOM3级事件”规定了以下几类事件。
+
+- UI（User Interface，用户界面）事件，当用户与页面上的元素交互时触发；
+- 焦点事件，当元素获得或失去焦点时触发；
+- 鼠标事件，当用户通过鼠标在页面上执行操作时触发；
+- 滚轮事件，当使用鼠标滚轮（或类似设备）时触发；
+- 文本事件，当在文档中输入文本时触发；
+- 键盘事件，当用户通过键盘在页面上执行操作时触发；
+- 合成事件，当为 IME（Input Method Editor，输入法编辑器）输入字符时触发；
+- 变动（mutation）事件，当底层 DOM 结构发生变化时触发。
+- 变动名称事件，当元素或属性名变动时触发。此类事件已经被废弃，没有任何浏览器实现它们，因此本章不做介绍。
+
+除了这几类事件之外， HTML5 也定义了一组事件，而有些浏览器还会在 DOM 和 BOM 中实现其他专有事件。这些专有的事件一般都是根据开发人员需求定制的，没有什么规范，因此不同浏览器的实现有可能不一致。
+
+DOM3 级事件模块在 DOM2 级事件模块基础上重新定义了这些事件，也添加了一些新事件。包括IE9 在内的所有主流浏览器都支持 DOM2 级事件。 IE9 也支持 DOM3 级事件。
 
 “DOM3级事件”规定了以下几类事件：UI事件、焦点事件、鼠标事件、滚轮事件、文本事件、键盘事件、合成事件、变动事件、变动名称事件。
 
