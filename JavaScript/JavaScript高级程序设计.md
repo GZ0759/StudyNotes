@@ -6950,8 +6950,7 @@ var firstChild = element.children[0];
 ### 11.4.3 contains()方法
 
 在实际开发中，经常需要知道某个节点是不是另一个节点的后代。 IE 为此率先引入了 contains() 方法，以便不通过在 DOM 文档树中查找即可获得这个信息。调用 contains()方法的应该是祖先节点，
-也就是搜索开始的节点，这个方法接收一个参数，即要检测的后代节点。如果被检测的节点是后代节点，
-该方法返回 true；否则，返回 false。以下是一个例子：
+也就是搜索开始的节点，这个方法接收一个参数，即要检测的后代节点。如果被检测的节点是后代节点，该方法返回 true；否则，返回 false。以下是一个例子：
 
 ```js
 alert(document.documentElement.contains(document.body)); //true
