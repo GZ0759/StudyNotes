@@ -6358,8 +6358,7 @@ CSS 选择符可以简单也可以复杂，视情况而定。如果传入了不�
 
 `querySelectorAll()`方法接收的参数与 `querySelector()`方法一样，都是一个 CSS 选择符，但返回的是所有匹配的元素而不仅仅是一个元素。这个方法返回的是一个 NodeList 的实例。
 
-具体来说，返回的值实际上是带有所有属性和方法的 NodeList，而其底层实现则类似于一组元素的快照，而非不断对文档进行搜索的动态查询。这样实现可以避免使用 NodeList 对象通常会引起的大
-多数性能问题。
+具体来说，返回的值实际上是带有所有属性和方法的 NodeList，而其底层实现则类似于一组元素的快照，而非不断对文档进行搜索的动态查询。这样实现可以避免使用 NodeList 对象通常会引起的大多数性能问题。
 
 只要传给 `querySelectorAll()`方法的 CSS 选择符有效，该方法都会返回一个 NodeList 对象，而不管找到多少匹配的元素。如果没有找到匹配的元素， NodeList 就是空的。
 
@@ -6380,7 +6379,7 @@ var strongs = document.querySelectorAll("p strong");
 
 ```js
 var i, len, strong;
-for (i=0, len=strongs.length; i < len; i++){
+for (i = 0, len = strongs.length; i < len; i++){
   strong = strongs[i]; //或者 strongs.item(i)
   strong.className = "important";
 }
@@ -6437,7 +6436,7 @@ if (matchesSelector(document.body, "body.page1")){
 
 ```js
 var i,
-len,
+  len,
 child = element.firstChild;
 while(child != element.lastChild){
   if (child.nodeType == 1){ //检查是不是元素
@@ -6451,7 +6450,7 @@ while(child != element.lastChild){
 
 ```js
 var i,
-len,
+  len,
 child = element.firstElementChild;
 while(child != element.lastElementChild){
   processChild(child); //已知其是元素
@@ -6524,7 +6523,7 @@ div.className = classNames.join(" ");
 
 为了从`<div>`元素的 class 属性中删除"user"，以上这些代码都是必需的。必须得通过类似的算法替换类名并确认元素中是否包含该类名。添加类名可以通过拼接字符串完成，但必须要通过检测确定不会多次添加相同的类名。很多 JavaScript 库都实现了这个方法，以简化这些操作。
 
-HTML5 新增了一种操作类名的方式，可以让操作更简单也更安全，那就是为所有元素添加classList 属性。这个 classList 属性是新集合类型 DOMTokenList 的实例。与其他 DOM 集合类似， DOMTokenList 有一个表示自己包含多少元素的 length 属性，而要取得每个元素可以使用`item()`方法，也可以使用方括号语法。此外，这个新类型还定义如下方法。
+HTML5 新增了一种操作类名的方式，可以让操作更简单也更安全，那就是为所有元素添加 classList 属性。这个 classList 属性是新集合类型 DOMTokenList 的实例。与其他 DOM 集合类似， DOMTokenList 有一个表示自己包含多少元素的 length 属性，而要取得每个元素可以使用`item()`方法，也可以使用方括号语法。此外，这个新类型还定义如下方法。
 
 - add(value)：将给定的字符串值添加到列表中。如果值已经存在，就不添加了。
 - contains(value)：表示列表中是否存在给定的值，如果存在则返回 true，否则返回 false。
