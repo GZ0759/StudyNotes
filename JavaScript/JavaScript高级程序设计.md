@@ -6905,8 +6905,7 @@ IE8 引入了一个新的概念叫“文档模式”（document mode）。页面
 ```
 
 注意，这里 IE 的版本（IEVersion）有以下一些不同的值，而且这些值并不一定与上述 4 种文档模式对应。
-- Edge：始终以最新的文档模式来渲染页面。忽略文档类型声明。对于 IE8，始终保持以 IE8 标
-准模式渲染页面。对于 IE9，则以 IE9 标准模式渲染页面。
+- Edge：始终以最新的文档模式来渲染页面。忽略文档类型声明。对于 IE8，始终保持以 IE8 标准模式渲染页面。对于 IE9，则以 IE9 标准模式渲染页面。
 - EmulateIE9：如果有文档类型声明，则以 IE9 标准模式渲染页面，否则将文档模式设置为 IE5。
 - EmulateIE8：如果有文档类型声明，则以 IE8 标准模式渲染页面，否则将文档模式设置为 IE5。
 - EmulateIE7：如果有文档类型声明，则以 IE7 标准模式渲染页面，否则将文档模式设置为 IE5。
@@ -6927,9 +6926,7 @@ IE8 引入了一个新的概念叫“文档模式”（document mode）。页面
 <meta http-equiv="X-UA-Compatible" content="IE=7">
 ```
 
-没有规定说必须在页面中设置 X-UA-Compatible。默认情况下，浏览器会通过文档类型声明来确定是使用最佳的可用文档模式，还是使用混杂模式。
-通过 document.documentMode 属性可以知道给定页面使用的是什么文档模式。这个属性是 IE8
-中新增的，它会返回使用的文档模式的版本号（在 IE9 中，可能返回的版本号为 5、 7、 8、 9）：
+没有规定说必须在页面中设置 X-UA-Compatible。默认情况下，浏览器会通过文档类型声明来确定是使用最佳的可用文档模式，还是使用混杂模式。通过 document.documentMode 属性可以知道给定页面使用的是什么文档模式。这个属性是 IE8 中新增的，它会返回使用的文档模式的版本号（在 IE9 中，可能返回的版本号为 5、 7、 8、 9）：
 
 ```js
 var mode = document.documentMode;
@@ -6948,8 +6945,7 @@ var childCount = element.children.length;
 var firstChild = element.children[0];
 ```
 
-支持 children 属性的浏览器有 IE5、 Firefox 3.5、 Safari 2（但有 bug）、 Safari 3（完全支持）、 Opera8
-和 Chrome（所有版本）。 IE8 及更早版本的 children 属性中也会包含注释节点，但 IE9 之后的版本则只返回元素节点。
+支持 children 属性的浏览器有 IE5、 Firefox 3.5、 Safari 2（但有 bug）、 Safari 3（完全支持）、 Opera8 和 Chrome（所有版本）。 IE8 及更早版本的 children 属性中也会包含注释节点，但 IE9 之后的版本则只返回元素节点。
 
 ### 11.4.3 contains()方法
 
