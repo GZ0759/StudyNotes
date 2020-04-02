@@ -10547,199 +10547,141 @@ document.addEventListener("gesturechange", handleGestureEvent, false);
 
 ## 13.5 内存和性能 
 
-由于事件处理程序可以为现代 Web 应用程序提供交互能力，因此许多开发人员会不分青红皂白地
-向页面中添加大量的处理程序。在创建 GUI 的语言（如 C#）中，为 GUI 中的每个按钮添加一个 onclick 事件处理程序是司空见惯的事，而且这样做也不会导致什么问题。可是在 JavaScript 中，添加到页面上的事件处理程序数量将直接关系到页面的整体运行性能。导致这一问题的原因是多方面的。首先，每个函数都是对象，都会占用内存；内存中的对象越多，性能就越差。其次，必须事先指定所有事件处理程序而导致的 DOM 访问次数，会延迟整个页面的交互就绪时间。事实上，从如何利用好事件处理程序的角度出发，还是有一些方法能够提升性能的。
+由于事件处理程序可以为现代 Web 应用程序提供交互能力，因此许多开发人员会不分青红皂白地向页面中添加大量的处理程序。在创建 GUI 的语言（如 C#）中，为 GUI 中的每个按钮添加一个 onclick 事件处理程序是司空见惯的事，而且这样做也不会导致什么问题。可是在 JavaScript 中，添加到页面上的事件处理程序数量将直接关系到页面的整体运行性能。导致这一问题的原因是多方面的。首先，每个函数都是对象，都会占用内存；内存中的对象越多，性能就越差。其次，必须事先指定所有事件处理程序而导致的 DOM 访问次数，会延迟整个页面的交互就绪时间。事实上，从如何利用好事件处理程序的角度出发，还是有一些方法能够提升性能的。
 
 ### 13.5.1 事件委托
 
-对“事件处理程序过多”问题的解决方案就是事件委托。事件委托利用了事件冒泡，只指定一个事
-件处理程序，就可以管理某一类型的所有事件。例如， click 事件会一直冒泡到 document 层次。也就
-是说，我们可以为整个页面指定一个 onclick 事件处理程序，而不必给每个可单击的元素分别添加事
-件处理程序。以下面的 HTML 代码为例。
+对“事件处理程序过多”问题的解决方案就是事件委托。事件委托利用了事件冒泡，只指定一个事件处理程序，就可以管理某一类型的所有事件。例如， click 事件会一直冒泡到 document 层次。也就是说，我们可以为整个页面指定一个 onclick 事件处理程序，而不必给每个可单击的元素分别添加事件处理程序。以下面的 HTML 代码为例。
 
 ```html
 <ul id="myLinks">
-<li id="goSomewhere">Go somewhere</li>
-<li id="doSomething">Do something</li>
-<li id="sayHi">Say hi</li>
+  <li id="goSomewhere">Go somewhere</li>
+  <li id="doSomething">Do something</li>
+  <li id="sayHi">Say hi</li>
 </ul>
 ```
 
-其中包含 3 个被单击后会执行操作的列表项。按照传统的做法，需要像下面这样为它们添加 3 个事
-件处理程序。
+其中包含 3 个被单击后会执行操作的列表项。按照传统的做法，需要像下面这样为它们添加 3 个事件处理程序。
 
 ```js
 var item1 = document.getElementById("goSomewhere");
 var item2 = document.getElementById("doSomething");
 var item3 = document.getElementById("sayHi");
 EventUtil.addHandler(item1, "click", function(event){
-location.href = "http://www.wrox.com";
+  n.href = "http://www.wrox.com";
 });
-EventUtil.addHandler(item2, "click", function(event){
-document.title = "I changed the document's title";
+  EventUtil.addHandler(item2, "click", function(event){
+  document.title = "I changed the document's title";
 });
-EventUtil.addHandler(item3, "click", function(event){
-alert("hi");
+  EventUtil.addHandler(item3, "click", function(event){
+  alert("hi");
 });
 ```
 
-如果在一个复杂的 Web 应用程序中，对所有可单击的元素都采用这种方式，那么结果就会有数不
-清的代码用于添加事件处理程序。此时，可以利用事件委托技术解决这个问题。使用事件委托，只需在
-DOM 树中尽量最高的层次上添加一个事件处理程序，如下面的例子所示。
+如果在一个复杂的 Web 应用程序中，对所有可单击的元素都采用这种方式，那么结果就会有数不清的代码用于添加事件处理程序。此时，可以利用事件委托技术解决这个问题。使用事件委托，只需在 DOM 树中尽量最高的层次上添加一个事件处理程序，如下面的例子所示。
 
 ```js
 var list = document.getElementById("myLinks");
 EventUtil.addHandler(list, "click", function(event){
-event = EventUtil.getEvent(event);
-var target = EventUtil.getTarget(event);
-switch(target.id){
-case "doSomething":
-document.title = "I changed the document's title";
-break;
-case "goSomewhere":
-location.href = "http://www.wrox.com";
-break;
-case "sayHi":
-alert("hi");
-break;
-}
+  event = EventUtil.getEvent(event);
+  var target = EventUtil.getTarget(event);
+  switch(target.id){
+    case "doSomething":
+      document.title = "I changed the document's title";
+      break;
+    case "goSomewhere":
+      location.href = "http://www.wrox.com";
+      break;
+    case "sayHi":
+      alert("hi");
+      break;
+  }
 });
 ```
 
-在这段代码里，我们使用事件委托只为<ul>元素添加了一个 onclick 事件处理程序。由于所有列
-表项都是这个元素的子节点，而且它们的事件会冒泡，所以单击事件最终会被这个函数处理。我们知道，
-事件目标是被单击的列表项，故而可以通过检测 id 属性来决定采取适当的操作。与前面未使用事件委
-托的代码比一比，会发现这段代码的事前消耗更低，因为只取得了一个 DOM 元素，只添加了一个事件
-处理程序。虽然对用户来说最终的结果相同，但这种技术需要占用的内存更少。所有用到按钮的事件（多
-数鼠标事件和键盘事件）都适合采用事件委托技术。
+在这段代码里，我们使用事件委托只为`<ul>`元素添加了一个 onclick 事件处理程序。由于所有列表项都是这个元素的子节点，而且它们的事件会冒泡，所以单击事件最终会被这个函数处理。我们知道，事件目标是被单击的列表项，故而可以通过检测 id 属性来决定采取适当的操作。与前面未使用事件委托的代码比一比，会发现这段代码的事前消耗更低，因为只取得了一个 DOM 元素，只添加了一个事件处理程序。虽然对用户来说最终的结果相同，但这种技术需要占用的内存更少。所有用到按钮的事件（多数鼠标事件和键盘事件）都适合采用事件委托技术。
 
-如果可行的话，也可以考虑为 document 对象添加一个事件处理程序，用以处理页面上发生的某种
-特定类型的事件。这样做与采取传统的做法相比具有如下优点。
+如果可行的话，也可以考虑为 document 对象添加一个事件处理程序，用以处理页面上发生的某种特定类型的事件。这样做与采取传统的做法相比具有如下优点。
 
-- document 对象很快就可以访问，而且可以在页面生命周期的任何时点上为它添加事件处理程序
-（无需等待 DOMContentLoaded 或 load 事件）。换句话说，只要可单击的元素呈现在页面上，
-就可以立即具备适当的功能。
-- 在页面中设置事件处理程序所需的时间更少。只添加一个事件处理程序所需的 DOM 引用更少，
-所花的时间也更少。
+- document 对象很快就可以访问，而且可以在页面生命周期的任何时点上为它添加事件处理程序（无需等待 DOMContentLoaded 或 load 事件）。换句话说，只要可单击的元素呈现在页面上，就可以立即具备适当的功能。
+- 在页面中设置事件处理程序所需的时间更少。只添加一个事件处理程序所需的 DOM 引用更少，所花的时间也更少。
 - 整个页面占用的内存空间更少，能够提升整体性能。
 
-最适合采用事件委托技术的事件包括 click、mousedown、mouseup、keydown、keyup 和 keypress。
-虽然 mouseover 和 mouseout 事件也冒泡，但要适当处理它们并不容易，而且经常需要计算元素的位置。（因为当鼠标从一个元素移到其子节点时，或者当鼠标移出该元素时，都会触发 mouseout 事件。）
+最适合采用事件委托技术的事件包括 click、mousedown、mouseup、keydown、keyup 和 keypress。虽然 mouseover 和 mouseout 事件也冒泡，但要适当处理它们并不容易，而且经常需要计算元素的位置。（因为当鼠标从一个元素移到其子节点时，或者当鼠标移出该元素时，都会触发 mouseout 事件。）
 
 ### 13.5.2 移除事件处理程序
 
-每当将事件处理程序指定给元素时，运行中的浏览器代码与支持页面交互的 JavaScript 代码之间就
-会建立一个连接。这种连接越多，页面执行起来就越慢。如前所述，可以采用事件委托技术，限制建立
-的连接数量。另外，在不需要的时候移除事件处理程序，也是解决这个问题的一种方案。内存中留有那
-些过时不用的“空事件处理程序”（ dangling event handler），也是造成 Web 应用程序内存与性能问题的主要原因。
+每当将事件处理程序指定给元素时，运行中的浏览器代码与支持页面交互的 JavaScript 代码之间就会建立一个连接。这种连接越多，页面执行起来就越慢。如前所述，可以采用事件委托技术，限制建立的连接数量。另外，在不需要的时候移除事件处理程序，也是解决这个问题的一种方案。内存中留有那些过时不用的“空事件处理程序”（ dangling event handler），也是造成 Web 应用程序内存与性能问题的主要原因。
 
-在两种情况下，可能会造成上述问题。第一种情况就是从文档中移除带有事件处理程序的元素时。
-这可能是通过纯粹的 DOM 操作，例如使用 removeChild()和 replaceChild()方法，但更多地是发
-生在使用 innerHTML 替换页面中某一部分的时候。如果带有事件处理程序的元素被 innerHTML 删除
-了，那么原来添加到元素中的事件处理程序极有可能无法被当作垃圾回收。来看下面的例子。
+在两种情况下，可能会造成上述问题。第一种情况就是从文档中移除带有事件处理程序的元素时。这可能是通过纯粹的 DOM 操作，例如使用 `removeChild()`和 `replaceChild()`方法，但更多地是发生在使用 innerHTML 替换页面中某一部分的时候。如果带有事件处理程序的元素被 innerHTML 删除了，那么原来添加到元素中的事件处理程序极有可能无法被当作垃圾回收。来看下面的例子。
 
 ```html
 <div id="myDiv">
-<input type="button" value="Click Me" id="myBtn">
+  <input type="button" value="Click Me" id="myBtn">
 </div>
 <script type="text/javascript">
 var btn = document.getElementById("myBtn");
 btn.onclick = function(){
-//先执行某些操作
-document.getElementById("myDiv").innerHTML = "Processing..."; //麻烦了！
+  //先执行某些操作
+  document.getElementById("myDiv").innerHTML = "Processing..."; //麻烦了！
 };
 </script>
 ```
 
-这里，有一个按钮被包含在<div>元素中。为避免双击，单击这个按钮时就将按钮移除并替换成一
-条消息；这是网站设计中非常流行的一种做法。但问题在于，当按钮被从页面中移除时，它还带着一个
-事件处理程序呢。在<div>元素上设置 innerHTML 可以把按钮移走，但事件处理程序仍然与按钮保持
-着引用关系。有的浏览器（尤其是 IE）在这种情况下不会作出恰当地处理，它们很有可能会将对元素和
-对事件处理程序的引用都保存在内存中。如果你知道某个元素即将被移除，那么最好手工移除事件处理
-程序，如下面的例子所示。
+这里，有一个按钮被包含在`<div>`元素中。为避免双击，单击这个按钮时就将按钮移除并替换成一条消息；这是网站设计中非常流行的一种做法。但问题在于，当按钮被从页面中移除时，它还带着一个事件处理程序呢。在`<div>`元素上设置 innerHTML 可以把按钮移走，但事件处理程序仍然与按钮保持着引用关系。有的浏览器（尤其是 IE）在这种情况下不会作出恰当地处理，它们很有可能会将对元素和对事件处理程序的引用都保存在内存中。如果你知道某个元素即将被移除，那么最好手工移除事件处理程序，如下面的例子所示。
 
 ```html
 <div id="myDiv">
-<input type="button" value="Click Me" id="myBtn">
+  <input type="button" value="Click Me" id="myBtn">
 </div>
 <script type="text/javascript">
 var btn = document.getElementById("myBtn");
 btn.onclick = function(){
-//先执行某些操作
-btn.onclick = null; //移除事件处理程序
-document.getElementById("myDiv").innerHTML = "Processing...";
+  //先执行某些操作
+  btn.onclick = null; //移除事件处理程序
+  document.getElementById("myDiv").innerHTML = "Processing...";
 };
 </script>
 ```
 
-在此，我们在设置<div>的 innerHTML 属性之前，先移除了按钮的事件处理程序。这样就确保了
-内存可以被再次利用，而从 DOM 中移除按钮也做到了干净利索。
+在此，我们在设置`<div>`的 innerHTML 属性之前，先移除了按钮的事件处理程序。这样就确保了内存可以被再次利用，而从 DOM 中移除按钮也做到了干净利索。
 
 注意，在事件处理程序中删除按钮也能阻止事件冒泡。目标元素在文档中是事件冒泡的前提。
 
-> 采用事件委托也有助于解决这个问题。如果事先知道将来有可能使用 innerHTML
-替换掉页面中的某一部分，那么就可以不直接把事件处理程序添加到该部分的元素
-中。而通过把事件处理程序指定给较高层次的元素，同样能够处理该区域中的事件。
+> 采用事件委托也有助于解决这个问题。如果事先知道将来有可能使用 innerHTML 替换掉页面中的某一部分，那么就可以不直接把事件处理程序添加到该部分的元素中。而通过把事件处理程序指定给较高层次的元素，同样能够处理该区域中的事件。
 
-导致“空事件处理程序”的另一种情况，就是卸载页面的时候。毫不奇怪， IE8 及更早版本在这种
-情况下依然是问题最多的浏览器，尽管其他浏览器或多或少也有类似的问题。如果在页面被卸载之前没
-有清理干净事件处理程序，那它们就会滞留在内存中。每次加载完页面再卸载页面时（可能是在两个页
-面间来回切换，也可以是单击了“刷新”按钮），内存中滞留的对象数目就会增加，因为事件处理程序
-占用的内存并没有被释放。
+导致“空事件处理程序”的另一种情况，就是卸载页面的时候。毫不奇怪， IE8 及更早版本在这种情况下依然是问题最多的浏览器，尽管其他浏览器或多或少也有类似的问题。如果在页面被卸载之前没有清理干净事件处理程序，那它们就会滞留在内存中。每次加载完页面再卸载页面时（可能是在两个页面间来回切换，也可以是单击了“刷新”按钮），内存中滞留的对象数目就会增加，因为事件处理程序占用的内存并没有被释放。
 
-一般来说，最好的做法是在页面卸载之前，先通过 onunload 事件处理程序移除所有事件处理程序。
-在此，事件委托技术再次表现出它的优势——需要跟踪的事件处理程序越少，移除它们就越容易。对这
-种类似撤销的操作，我们可以把它想象成：只要是通过 onload 事件处理程序添加的东西，最后都要通
-过 onunload 事件处理程序将它们移除。
+一般来说，最好的做法是在页面卸载之前，先通过 onunload 事件处理程序移除所有事件处理程序。在此，事件委托技术再次表现出它的优势——需要跟踪的事件处理程序越少，移除它们就越容易。对这种类似撤销的操作，我们可以把它想象成：只要是通过 onload 事件处理程序添加的东西，最后都要通过 onunload 事件处理程序将它们移除。
 
-> 不要忘了，使用 onunload 事件处理程序意味着页面不会被缓存在 bfcache 中。
-如果你在意这个问题，那么就只能在 IE 中通过 onunload 来移除事件处理程序了。
+> 不要忘了，使用 onunload 事件处理程序意味着页面不会被缓存在 bfcache 中。如果你在意这个问题，那么就只能在 IE 中通过 onunload 来移除事件处理程序了。
 
 ## 13.6 模拟事件
 
-事件，就是网页中某个特别值得关注的瞬间。事件经常由用户操作或通过其他浏览器功能来触发。
-但很少有人知道，也可以使用 JavaScript 在任意时刻来触发特定的事件，而此时的事件就如同浏览器创
-建的事件一样。也就是说，这些事件该冒泡还会冒泡，而且照样能够导致浏览器执行已经指定的处理它
-们的事件处理程序。在测试 Web 应用程序，模拟触发事件是一种极其有用的技术。 DOM2 级规范为此
-规定了模拟特定事件的方式， IE9、 Opera、 Firefox、 Chrome 和 Safari 都支持这种方式。 IE 有它自己模拟事件的方式。
+事件，就是网页中某个特别值得关注的瞬间。事件经常由用户操作或通过其他浏览器功能来触发。但很少有人知道，也可以使用 JavaScript 在任意时刻来触发特定的事件，而此时的事件就如同浏览器创建的事件一样。也就是说，这些事件该冒泡还会冒泡，而且照样能够导致浏览器执行已经指定的处理它们的事件处理程序。在测试 Web 应用程序，模拟触发事件是一种极其有用的技术。 DOM2 级规范为此规定了模拟特定事件的方式， IE9、 Opera、 Firefox、 Chrome 和 Safari 都支持这种方式。 IE 有它自己模拟事件的方式。
 
 ### 13.6.1 DOM中的事件模拟
 
-可以在 document 对象上使用 createEvent()方法创建 event 对象。这个方法接收一个参数，即
-表示要创建的事件类型的字符串。在 DOM2 级中，所有这些字符串都使用英文复数形式，而在 DOM3
-级中都变成了单数。这个字符串可以是下列几字符串之一。
+可以在 document 对象上使用 `createEvent()`方法创建 event 对象。这个方法接收一个参数，即表示要创建的事件类型的字符串。在 DOM2 级中，所有这些字符串都使用英文复数形式，而在 DOM3 级中都变成了单数。这个字符串可以是下列几字符串之一。
 
 - UIEvents：一般化的 UI 事件。 鼠标事件和键盘事件都继承自 UI 事件。 DOM3 级中是 UIEvent。
 - MouseEvents：一般化的鼠标事件。 DOM3 级中是 MouseEvent。
 - MutationEvents：一般化的 DOM 变动事件。 DOM3 级中是 MutationEvent。
-- HTMLEvents：一般化的 HTML 事件。没有对应的 DOM3 级事件（ HTML 事件被分散到其他类
-别中）。
+- HTMLEvents：一般化的 HTML 事件。没有对应的 DOM3 级事件（ HTML 事件被分散到其他类别中）。
 
-要注意的是，“DOM2 级事件”并没有专门规定键盘事件，后来的“DOM3 级事件”中才正式将其
-作为一种事件给出规定。 IE9 是目前唯一支持 DOM3 级键盘事件的浏览器。不过，在其他浏览器中，在
-现有方法的基础上，可以通过几种方式来模拟键盘事件。
+要注意的是，“DOM2 级事件”并没有专门规定键盘事件，后来的“DOM3 级事件”中才正式将其作为一种事件给出规定。 IE9 是目前唯一支持 DOM3 级键盘事件的浏览器。不过，在其他浏览器中，在现有方法的基础上，可以通过几种方式来模拟键盘事件。
 
-在创建了 event 对象之后，还需要使用与事件有关的信息对其进行初始化。每种类型的 event 对
-象都有一个特殊的方法，为它传入适当的数据就可以初始化该 event 对象。不同类型的这个方法的名
-字也不相同，具体要取决于 createEvent()中使用的参数。
+在创建了 event 对象之后，还需要使用与事件有关的信息对其进行初始化。每种类型的 event 对象都有一个特殊的方法，为它传入适当的数据就可以初始化该 event 对象。不同类型的这个方法的名字也不相同，具体要取决于 `createEvent()`中使用的参数。
 
-模拟事件的最后一步就是触发事件。这一步需要使用 dispatchEvent()方法，所有支持事件的
-DOM 节点都支持这个方法。调用 dispatchEvent()方法时，需要传入一个参数，即表示要触发事件
-的 event 对象。触发事件之后，该事件就跻身“官方事件”之列了，因而能够照样冒泡并引发相应事
-件处理程序的执行。
+模拟事件的最后一步就是触发事件。这一步需要使用 `dispatchEvent()`方法，所有支持事件的DOM 节点都支持这个方法。调用 `dispatchEvent()`方法时，需要传入一个参数，即表示要触发事件的 event 对象。触发事件之后，该事件就跻身“官方事件”之列了，因而能够照样冒泡并引发相应事件处理程序的执行。
 
 **1. 模拟鼠标事件**
 
-创建新的鼠标事件对象并为其指定必要的信息，就可以模拟鼠标事件。创建鼠标事件对象的方法是
-为 createEvent()传入字符串"MouseEvents"。返回的对象有一个名为 initMouseEvent()方法，
-用于指定与该鼠标事件有关的信息。这个方法接收 15 个参数，分别与鼠标事件中每个典型的属性一一
-对应；这些参数的含义如下。
+创建新的鼠标事件对象并为其指定必要的信息，就可以模拟鼠标事件。创建鼠标事件对象的方法是为 createEvent()传入字符串"MouseEvents"。返回的对象有一个名为 initMouseEvent()方法，用于指定与该鼠标事件有关的信息。这个方法接收 15 个参数，分别与鼠标事件中每个典型的属性一一对应；这些参数的含义如下。
 
 - type（字符串）：表示要触发的事件类型，例如"click"。
-- bubbles（布尔值）：表示事件是否应该冒泡。为精确地模拟鼠标事件，应该把这个参数设置为
-true。
-- cancelable（布尔值）：表示事件是否可以取消。为精确地模拟鼠标事件，应该把这个参数设
-置为 true。
+- bubbles（布尔值）：表示事件是否应该冒泡。为精确地模拟鼠标事件，应该把这个参数设置为true。
+- cancelable（布尔值）：表示事件是否可以取消。为精确地模拟鼠标事件，应该把这个参数设置为 true。
 - view（ AbstractView）：与事件关联的视图。这个参数几乎总是要设置为 document.defaultView。
 - detail（整数）： 与事件有关的详细信息。这个值一般只有事件处理程序使用，但通常都设置为 0。
 - screenX（整数）：事件相对于屏幕的 X 坐标。
@@ -10751,13 +10693,9 @@ true。
 - shiftKey（布尔值）：表示是否按下了 Shift 键。默认值为 false。
 - metaKey（布尔值）：表示是否按下了 Meta 键。默认值为 false。
 - button（整数）：表示按下了哪一个鼠标键。默认值为 0。
-- relatedTarget（对象）： 表示与事件相关的对象。这个参数只在模拟 mouseover 或 mouseout
-时使用。
+- relatedTarget（对象）： 表示与事件相关的对象。这个参数只在模拟 mouseover 或 mouseout 时使用。
 
-显而易见， initMouseEvent()方法的这些参数是与鼠标事件的 event 对象所包含的属性一一对
-应的。其中，前 4 个参数对正确地激发事件至关重要，因为浏览器要用到这些参数；而剩下的所有参数
-只有在事件处理程序中才会用到。当把 event 对象传给 dispatchEvent()方法时，这个对象的 target
-属性会自动设置。下面，我们就通过一个例子来了解如何模拟对按钮的单击事件。
+显而易见， initMouseEvent()方法的这些参数是与鼠标事件的 event 对象所包含的属性一一对应的。其中，前 4 个参数对正确地激发事件至关重要，因为浏览器要用到这些参数；而剩下的所有参数只有在事件处理程序中才会用到。当把 event 对象传给 dispatchEvent()方法时，这个对象的 target 属性会自动设置。下面，我们就通过一个例子来了解如何模拟对按钮的单击事件。
 
 ```js
 var btn = document.getElementById("myBtn");
@@ -10774,22 +10712,16 @@ btn.dispatchEvent(event);
 
 **2. 模拟键盘事件**
 
-前面曾经提到过，“DOM2 级事件”中没有就键盘事件作出规定，因此模拟键盘事件并没有现成的
-思路可循。“DOM2 级事件”的草案中本来包含了键盘事件，但在定稿之前又被删除了； Firefox 根据其
-草案实现了键盘事件。需要提请大家注意的是，“DOM3 级事件”中的键盘事件与曾包含在“DOM2 级
-事件”草案中的键盘事件有很大区别。
+前面曾经提到过，“DOM2 级事件”中没有就键盘事件作出规定，因此模拟键盘事件并没有现成的思路可循。“DOM2 级事件”的草案中本来包含了键盘事件，但在定稿之前又被删除了； Firefox 根据其草案实现了键盘事件。需要提请大家注意的是，“DOM3 级事件”中的键盘事件与曾包含在“DOM2 级事件”草案中的键盘事件有很大区别。
 
-DOM3 级规定，调用 createEvent()并传入"KeyboardEvent"就可以创建一个键盘事件。返回的
-事件对象会包含一个 initKeyEvent()方法，这个方法接收下列参数。
+DOM3 级规定，调用 createEvent()并传入"KeyboardEvent"就可以创建一个键盘事件。返回的事件对象会包含一个 initKeyEvent()方法，这个方法接收下列参数。
 
 - type（字符串）：表示要触发的事件类型，如"keydown"。
 - bubbles（布尔值）：表示事件是否应该冒泡。为精确模拟鼠标事件，应该设置为 true。
 - cancelable（布尔值）：表示事件是否可以取消。为精确模拟鼠标事件，应该设置为 true。
-- view （ AbstractView ）：与事件关联的视图。这个参数几乎总是要设置为 document.
-defaultView。
+- view （ AbstractView ）：与事件关联的视图。这个参数几乎总是要设置为 document.defaultView。
 - key（布尔值）：表示按下的键的键码。
-- location（整数）：表示按下了哪里的键。 0 表示默认的主键盘， 1 表示左， 2 表示右， 3 表示
-数字键盘， 4 表示移动设备（即虚拟键盘）， 5 表示手柄。
+- location（整数）：表示按下了哪里的键。 0 表示默认的主键盘， 1 表示左， 2 表示右， 3 表示数字键盘， 4 表示移动设备（即虚拟键盘）， 5 表示手柄。
 - modifiers（字符串）：空格分隔的修改键列表，如"Shift"。
 - repeat（整数）：在一行中按了这个键多少次。
 
@@ -10800,21 +10732,18 @@ var textbox = document.getElementById("myTextbox"),
 event;
 //以 DOM3 级方式创建事件对象
 if (document.implementation.hasFeature("KeyboardEvents", "3.0")){
-event = document.createEvent("KeyboardEvent");
-//初始化事件对象
-event.initKeyboardEvent("keydown", true, true, document.defaultView, "a",
-0, "Shift", 0);
+  event = document.createEvent("KeyboardEvent");
+  //初始化事件对象
+  event.initKeyboardEvent("keydown", true, true, document.defaultView, "a",
+  0, "Shift", 0);
 }
 //触发事件
 textbox.dispatchEvent(event);
 ```
 
-这 个 例 子 模 拟 的 是 按 住 Shift 的 同 时 又 按 下 A 键 。 在 使 用 document.createEvent
-("KeyboardEvent")之前，应该先检测浏览器是否支持 DOM3 级事件；其他浏览器返回一个非标准的
-KeyboardEvent 对象。
+这个例子模拟的是按住Shift的同时又按下A键。在使用 `document.createEvent("KeyboardEvent")`之前，应该先检测浏览器是否支持 DOM3 级事件；其他浏览器返回一个非标准的 KeyboardEvent 对象。
 
-在 Firefox 中，调用 createEvent()并传入"KeyEvents"就可以创建一个键盘事件。返回的事件
-对象会包含一个 initKeyEvent()方法，这个方法接受下列 10 个参数。
+在 Firefox 中，调用 createEvent()并传入"KeyEvents"就可以创建一个键盘事件。返回的事件对象会包含一个 initKeyEvent()方法，这个方法接受下列 10 个参数。
 
 - type（字符串）：表示要触发的事件类型，如"keydown"。
 - bubbles（布尔值）：表示事件是否应该冒泡。为精确模拟鼠标事件，应该设置为 true。
@@ -10824,10 +10753,8 @@ KeyboardEvent 对象。
 - altKey（布尔值）：表示是否按下了 Alt 键。默认值为 false。
 - shiftKey（布尔值）：表示是否按下了 Shift 键。默认值为 false。
 - metaKey（布尔值）：表示是否按下了 Meta 键。默认值为 false。
-- keyCode（整数）：被按下或释放的键的键码。这个参数对 keydown 和 keyup 事件有用，默认
-值为 0。
-- charCode（整数）：通过按键生成的字符的 ASCII 编码。这个参数对 keypress 事件有用，默
-认值为 0。
+- keyCode（整数）：被按下或释放的键的键码。这个参数对 keydown 和 keyup 事件有用，默认值为 0。
+- charCode（整数）：通过按键生成的字符的 ASCII 编码。这个参数对 keypress 事件有用，默认值为 0。
 
 将创建的 event 对象传入到 dispatchEvent()方法就可以触发键盘事件，如下面的例子所示。
 
@@ -10843,11 +10770,9 @@ false, false, 65, 65);
 textbox.dispatchEvent(event);
 ```
 
-在 Firefox 中运行上面的代码，会在指定的文本框中输入字母 A。同样，也可以依此模拟 keyup 和
-keydown 事件。
+在 Firefox 中运行上面的代码，会在指定的文本框中输入字母 A。同样，也可以依此模拟 keyup 和 keydown 事件。
 
-在其他浏览器中，则需要创建一个通用的事件，然后再向事件对象中添加键盘事件特有的信息。
-例如：
+在其他浏览器中，则需要创建一个通用的事件，然后再向事件对象中添加键盘事件特有的信息。例如：
 
 ```js
 var textbox = document.getElementById("myTextbox");
@@ -10866,18 +10791,11 @@ event.charCode = 65;
 textbox.dispatchEvent(event);
 ```
 
-以上代码首先创建了一个通用事件，然后调用 initEvent()对其进行初始化，最后又为其添加了
-键盘事件的具体信息。在此必须要使用通用事件，而不能使用 UI 事件，因为 UI 事件不允许向 event
-对象中再添加新属性（ Safari 除外）。像这样模拟事件虽然会触发键盘事件，但却不会向文本框中写入文
-本，这是由于无法精确模拟键盘事件所造成的。
+以上代码首先创建了一个通用事件，然后调用 initEvent()对其进行初始化，最后又为其添加了键盘事件的具体信息。在此必须要使用通用事件，而不能使用 UI 事件，因为 UI 事件不允许向 event 对象中再添加新属性（ Safari 除外）。像这样模拟事件虽然会触发键盘事件，但却不会向文本框中写入文本，这是由于无法精确模拟键盘事件所造成的。
 
 **3. 模拟其他事件**
 
-虽然鼠标事件和键盘事件是在浏览器中最经常模拟的事件，但有时候同样需要模拟变动事件和
-HTML 事 件 。 要 模 拟 变 动 事 件 ， 可 以 使 用 createEvent("MutationEvents") 创 建 一 个 包 含
-initMutationEvent()方 法 的 变 动 事 件 对 象 。 这 个 方 法 接 受 的 参 数 包 括 ： type、 bubbles 、
-cancelable、 relatedNode、 preValue、 newValue、 attrName 和 attrChange。下面来看一个模
-拟变动事件的例子。
+虽然鼠标事件和键盘事件是在浏览器中最经常模拟的事件，但有时候同样需要模拟变动事件和 HTML 事件。要模拟变动事件，可以使用 createEvent("MutationEvents") 创建一个包含initMutationEvent()方法的变动事件对象。这个方法接受的参数包括： type、 bubbles 、 cancelable、 relatedNode、 preValue、 newValue、 attrName 和 attrChange。下面来看一个模拟变动事件的例子。
 
 ```js
 var event = document.createEvent("MutationEvents");
@@ -10885,11 +10803,9 @@ event.initMutationEvent("DOMNodeInserted", true, false, someNode, "","","",0);
 target.dispatchEvent(event);
 ```
 
-以上代码模拟了 DOMNodeInserted 事件。其他变动事件也都可以照这个样子来模拟，只要改一改
-参数就可以了。
+以上代码模拟了 DOMNodeInserted 事件。其他变动事件也都可以照这个样子来模拟，只要改一改参数就可以了。
 
-要模拟 HTML 事件，同样需要先创建一个 event 对象——通过 createEvent("HTMLEvents")，
-然后再使用这个对象的 initEvent()方法来初始化它即可，如下面的例子所示。
+要模拟 HTML 事件，同样需要先创建一个 event 对象——通过 createEvent("HTMLEvents")，然后再使用这个对象的 initEvent()方法来初始化它即可，如下面的例子所示。
 
 ```js
 var event = document.createEvent("HTMLEvents");
@@ -10903,9 +10819,7 @@ target.dispatchEvent(event);
 
 **4. 自定义 DOM 事件**
 
-DOM3 级还定义了“自定义事件”。自定义事件不是由 DOM 原生触发的，它的目的是让开发人员
-创建自己的事件。要创建新的自定义事件，可以调用 createEvent("CustomEvent")。返回的对象有
-一个名为 initCustomEvent()的方法，接收如下 4 个参数。
+DOM3 级还定义了“自定义事件”。自定义事件不是由 DOM 原生触发的，它的目的是让开发人员创建自己的事件。要创建新的自定义事件，可以调用 createEvent("CustomEvent")。返回的对象有一个名为 initCustomEvent()的方法，接收如下 4 个参数。
 
 - type（字符串）：触发的事件类型，例如"keydown"。
 - bubbles（布尔值）：表示事件是否应该冒泡。
@@ -10918,33 +10832,25 @@ DOM3 级还定义了“自定义事件”。自定义事件不是由 DOM 原生�
 var div = document.getElementById("myDiv"),
 event;
 EventUtil.addHandler(div, "myevent", function(event){
-alert("DIV: " + event.detail);
+  alert("DIV: " + event.detail);
 });
 EventUtil.addHandler(document, "myevent", function(event){
-alert("DOCUMENT: " + event.detail);
+  alert("DOCUMENT: " + event.detail);
 });
 if (document.implementation.hasFeature("CustomEvents", "3.0")){
-event = document.createEvent("CustomEvent");
-event.initCustomEvent("myevent", true, false, "Hello world!");
-div.dispatchEvent(event);
+  event = document.createEvent("CustomEvent");
+  event.initCustomEvent("myevent", true, false, "Hello world!");
+  div.dispatchEvent(event);
 }
 ```
 
-这个例子创建了一个冒泡事件"myevent"。而 event.detail 的值被设置成了一个简单的字符串，
-然后在<div>元素和 document 上侦听这个事件。因为 initCustomEvent()方法已经指定这个事件应
-该冒泡，所以浏览器会负责将事件向上冒泡到 document。
+这个例子创建了一个冒泡事件"myevent"。而 event.detail 的值被设置成了一个简单的字符串，然后在`<div>`元素和 document 上侦听这个事件。因为 initCustomEvent()方法已经指定这个事件应该冒泡，所以浏览器会负责将事件向上冒泡到 document。
+
 支持自定义 DOM 事件的浏览器有 IE9+和 Firefox 6+。
 
 ### 13.6.2 IE中的事件模拟
 
-在 IE8 及之前版本中模拟事件与在 DOM 中模拟事件的思路相似：先创建 event 对象，然后为其指
-定相应的信息，然后再使用该对象来触发事件。当然， IE 在实现每个步骤时都采用了不一样的方式。
-调用 document.createEventObject()方法可以在 IE 中创建 event 对象。但与 DOM 方式不同
-的是，这个方法不接受参数，结果会返回一个通用的 event 对象。然后，你必须手工为这个对象添加
-所有必要的信息（没有方法来辅助完成这一步骤）。最后一步就是在目标上调用 fireEvent()方法，这
-个方法接受两个参数：事件处理程序的名称和 event 对象。在调用 fireEvent()方法时，会自动为
-event 对象添加 srcElement 和 type 属性；其他属性则都是必须通过手工添加的。换句话说，模拟任
-何 IE 支持的事件都采用相同的模式。例如，下面的代码模拟了在一个按钮上触发 click 事件过程。
+在 IE8 及之前版本中模拟事件与在 DOM 中模拟事件的思路相似：先创建 event 对象，然后为其指定相应的信息，然后再使用该对象来触发事件。当然， IE 在实现每个步骤时都采用了不一样的方式。调用 document.createEventObject()方法可以在 IE 中创建 event 对象。但与 DOM 方式不同的是，这个方法不接受参数，结果会返回一个通用的 event 对象。然后，你必须手工为这个对象添加所有必要的信息（没有方法来辅助完成这一步骤）。最后一步就是在目标上调用 fireEvent()方法，这个方法接受两个参数：事件处理程序的名称和 event 对象。在调用 fireEvent()方法时，会自动为event 对象添加 srcElement 和 type 属性；其他属性则都是必须通过手工添加的。换句话说，模拟任何 IE 支持的事件都采用相同的模式。例如，下面的代码模拟了在一个按钮上触发 click 事件过程。
 
 ```js
 var btn = document.getElementById("myBtn");
@@ -10963,9 +10869,7 @@ event.button = 0;
 btn.fireEvent("onclick", event);
 ```
 
-这个例子先创建了一个 event 对象，然后又用一些信息对其进行了初始化。注意，这里可以为对
-象随意添加属性，不会有任何限制——即使添加的属性 IE8 及更早版本并不支持也无所谓。在此添加的
-属性对事件没有什么影响，因为只有事件处理程序才会用到它们。
+这个例子先创建了一个 event 对象，然后又用一些信息对其进行了初始化。注意，这里可以为对象随意添加属性，不会有任何限制——即使添加的属性 IE8 及更早版本并不支持也无所谓。在此添加的属性对事件没有什么影响，因为只有事件处理程序才会用到它们。
 
 采用相同的模式也可以模拟触发 keypress 事件，如下面的例子所示。
 
@@ -10982,27 +10886,19 @@ event.keyCode = 65;
 textbox.fireEvent("onkeypress", event);
 ```
 
-由于鼠标事件、键盘事件以及其他事件的 event 对象并没有什么不同，所以可以使用通用对象来
-触发任何类型的事件。不过， 正如在 DOM中模拟键盘事件一样，运行这个例子也不会因模拟了keypress
-而在文本框中看到任何字符，即使触发了事件处理程序也没有用。
+由于鼠标事件、键盘事件以及其他事件的 event 对象并没有什么不同，所以可以使用通用对象来触发任何类型的事件。不过， 正如在 DOM中模拟键盘事件一样，运行这个例子也不会因模拟了 keypress 而在文本框中看到任何字符，即使触发了事件处理程序也没有用。
 
 ## 13.7　小结
 
-事件是将 JavaScript 与网页联系在一起的主要方式。“DOM3 级事件”规范和 HTML5 定义了常见的
-大多数事件。即使有规范定义了基本事件，但很多浏览器仍然在规范之外实现了自己的专有事件，从而
-为开发人员提供更多掌握用户交互的手段。有些专有事件与特定设备关联，例如移动 Safari 中的
-orientationchange 事件就是特定关联 iOS 设备的。
+事件是将 JavaScript 与网页联系在一起的主要方式。“DOM3 级事件”规范和 HTML5 定义了常见的大多数事件。即使有规范定义了基本事件，但很多浏览器仍然在规范之外实现了自己的专有事件，从而为开发人员提供更多掌握用户交互的手段。有些专有事件与特定设备关联，例如移动 Safari 中的 orientationchange 事件就是特定关联 iOS 设备的。
 
 在使用事件时，需要考虑如下一些内存与性能方面的问题。
 
-- 有必要限制一个页面中事件处理程序的数量，数量太多会导致占用大量内存，而且也会让用户
-感觉页面反应不够灵敏。
+- 有必要限制一个页面中事件处理程序的数量，数量太多会导致占用大量内存，而且也会让用户感觉页面反应不够灵敏。
 - 建立在事件冒泡机制之上的事件委托技术，可以有效地减少事件处理程序的数量。
 - 建议在浏览器卸载页面之前移除页面中的所有事件处理程序。
 
-可以使用 JavaScript 在浏览器中模拟事件。“DOM2 级事件”和“DOM3 级事件”规范规定了模拟事
-件的方法，为模拟各种有定义的事件提供了方便。此外，通过组合使用一些技术，还可以在某种程度上
-模拟键盘事件。 IE8 及之前版本同样支持事件模拟，只不过模拟的过程有些差异。
+可以使用 JavaScript 在浏览器中模拟事件。“DOM2 级事件”和“DOM3 级事件”规范规定了模拟事件的方法，为模拟各种有定义的事件提供了方便。此外，通过组合使用一些技术，还可以在某种程度上模拟键盘事件。 IE8 及之前版本同样支持事件模拟，只不过模拟的过程有些差异。
 
 事件是 JavaScript 中最重要的主题之一，深入理解事件的工作机制以及它们对性能的影响至关重要。
 
