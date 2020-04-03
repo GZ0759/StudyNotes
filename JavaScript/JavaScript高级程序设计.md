@@ -6964,7 +6964,7 @@ alert(document.documentElement.contains(document.body)); //true
 
 这个例子测试了`<body>`元素是不是`<html>`元素的后代，在格式正确的 HTML 页面中，以上代码返回 true。支持 `contains()`方法的浏览器有 IE、 Firefox 9+、 Safari、 Opera 和 Chrome。
 
-使用 DOM Level 3 compareDocumentPosition()也能够确定节点间的关系。支持这个方法的浏览器有 IE9+、 Firefox、 Safari、 Opera 9.5+和 Chrome。如前所述，这个方法用于确定两个节点间的关系，返回一个表示该关系的位掩码（bitmask）。下表列出了这个位掩码的值。
+使用 DOM Level 3 `compareDocumentPosition()`也能够确定节点间的关系。支持这个方法的浏览器有 IE9+、 Firefox、 Safari、 Opera 9.5+和 Chrome。如前所述，这个方法用于确定两个节点间的关系，返回一个表示该关系的位掩码（bitmask）。下表列出了这个位掩码的值。
 
 | 掩码 | 节点关系 |
 |---|---|
@@ -6974,7 +6974,7 @@ alert(document.documentElement.contains(document.body)); //true
 | 8 | 包含（给定的节点是参考节点的祖先） |
 | 16 | 被包含（给定的节点是参考节点的后代） |
 
-为模仿 `contains()`方法，应该关注的是掩码 16。可以对 compareDocumentPosition()的结果执行按位与，以确定参考节点（调用 compareDocumentPosition()方法的当前节点）是否包含给定的节点（传入的节点）。来看下面的例子：
+为模仿 `contains()`方法，应该关注的是掩码 16。可以对 `compareDocumentPosition()`的结果执行按位与，以确定参考节点（调用 `compareDocumentPosition()`方法的当前节点）是否包含给定的节点（传入的节点）。来看下面的例子：
 
 ```js
 var result = document.documentElement.compareDocumentPosition(document.body);
@@ -7008,7 +7008,7 @@ function contains(refNode, otherNode){
 
 这个函数组合使用了三种方式来确定一个节点是不是另一个节点的后代。函数的第一个参数是参考节点，第二个参数是要检查的节点。在函数体内，首先检测 refNode 中是否存在 `contains()`方法（能力检测）。这一部分代码还检查了当前浏览器所用的 WebKit 版本号。如果方法存在而且不是 WebKit（!client.engine.webkit），则继续执行代码。 否则， 如果浏览器是 WebKit 且至少是 Safari 3（WebKit 版本号为 522 或更高），那么也可以继续执行代码。在 WebKit 版本号小于 522 的 Safari 浏览器中，`contains()`方法不能正常使用。
 
-接下来检查是否存在 compareDocumentPosition()方法，而函数的最后一步则是自 otherNode 开始向上遍历 DOM 结构，以递归方式取得 parentNode，并检查其是否与 refNode 相等。在文档树的顶端， parentNode 的值等于 null，于是循环结束。这是针对旧版本 Safari 设计的一个后备策略。
+接下来检查是否存在 `compareDocumentPosition()`方法，而函数的最后一步则是自 otherNode 开始向上遍历 DOM 结构，以递归方式取得 parentNode，并检查其是否与 refNode 相等。在文档树的顶端， parentNode 的值等于 null，于是循环结束。这是针对旧版本 Safari 设计的一个后备策略。
 
 ### 11.4.4 插入文本
 
@@ -7120,13 +7120,13 @@ div.parentNode.replaceChild(text, div);
 
 ### 11.4.5 滚动
 
-如前所述， HTML5 之前的规范并没有就与页面滚动相关的 API 做出任何规定。但 HTML5 在将scrollIntoView()纳入规范之后，仍然还有其他几个专有方法可以在不同的浏览器中使用。下面列出的几个方法都是对 HTMLElement 类型的扩展，因此在所有元素中都可以调用。
+如前所述， HTML5 之前的规范并没有就与页面滚动相关的 API 做出任何规定。但 HTML5 在将`scrollIntoView()`纳入规范之后，仍然还有其他几个专有方法可以在不同的浏览器中使用。下面列出的几个方法都是对 HTMLElement 类型的扩展，因此在所有元素中都可以调用。
 
-- scrollIntoViewIfNeeded(alignCenter)：只在当前元素在视口中不可见的情况下，才滚动浏览器窗口或容器元素，最终让它可见。如果当前元素在视口中可见，这个方法什么也不做。如果将可选的 alignCenter 参数设置为 true，则表示尽量将元素显示在视口中部（垂直方向）。Safari 和 Chrome 实现了这个方法。
-- scrollByLines(lineCount)：将元素的内容滚动指定的行高， lineCount 值可以是正值，也可以是负值。 Safari 和 Chrome 实现了这个方法。
-- scrollByPages(pageCount)：将元素的内容滚动指定的页面高度，具体高度由元素的高度决定。 Safari 和 Chrome 实现了这个方法。
+- `scrollIntoViewIfNeeded(alignCenter)`：只在当前元素在视口中不可见的情况下，才滚动浏览器窗口或容器元素，最终让它可见。如果当前元素在视口中可见，这个方法什么也不做。如果将可选的 alignCenter 参数设置为 true，则表示尽量将元素显示在视口中部（垂直方向）。Safari 和 Chrome 实现了这个方法。
+- `scrollByLines(lineCount)`：将元素的内容滚动指定的行高， lineCount 值可以是正值，也可以是负值。 Safari 和 Chrome 实现了这个方法。
+- `scrollByPages(pageCount)`：将元素的内容滚动指定的页面高度，具体高度由元素的高度决定。 Safari 和 Chrome 实现了这个方法。
 
-希望大家要注意的是， scrollIntoView()和 scrollIntoViewIfNeeded()的作用对象是元素的容器，而 scrollByLines()和 scrollByPages()影响的则是元素自身。下面还是来看几个示例吧。
+希望大家要注意的是， `scrollIntoView()`和 `scrollIntoViewIfNeeded()`的作用对象是元素的容器，而 `scrollByLines()`和 `scrollByPages()`影响的则是元素自身。下面还是来看几个示例吧。
 
 ```js
 //将页面主体滚动 5 行
@@ -7137,7 +7137,7 @@ document.images[0].scrollIntoViewIfNeeded();
 document.body.scrollByPages(-1);
 ```
 
-由于 scrollIntoView()是唯一一个所有浏览器都支持的方法，因此还是这个方法最常用。
+由于 `scrollIntoView()`是唯一一个所有浏览器都支持的方法，因此还是这个方法最常用。
 
 ## 11.5 小结　
 
