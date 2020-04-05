@@ -9897,13 +9897,1123 @@ Safari产生的手势事件用于两个手指的缩放和旋转手势。当手�
 当设备允许用户从竖屏旋转到横屏模式时会在Window对象上触发orientationchanged事件，该事件传递的事件对象本身没有用。但是，在移动版的Safari中，Window对象的orientation属性能给出当前方位，其值是0、90、180或-90。
 
 ## 17.2 注册事件处理程序
+
+注册事件处理程序有两种基本方式。第一种方式出现在Web初期，给事件目标对象或文档元素设置属性。第二种方式更新并且更通用，是将事件处理程序传递给对象或元素的一个方法。但复杂的是，每种技术都有两个版本。可以在JavaScript代码中设置事件处理程序为对象属性，或对于文档元素，可以在HTML中直接设置相应属性。对于通过方法调用的处理程序注册，有一个标准方法，命名为`addEventListener()`，除IE8及以前版本之外，所有浏览器都支持这种方式，而IE 9之前的IE版本支持的是一个叫`attachEvent()`的不同方法。
+
+### 17.2.1 设置JavaScript对象属性为事件处理程序
+
+注册事件处理程序最简单的方式就是通过设置事件目标的属性为所需事件处理程序函数。按照约定，事件处理程序属性的名字由“on”后面跟着事件名组成：onclick、onchange、onload、onmouseover等。注意这些属性名是区分大小写的，所有都是小写，即使事件类型是由多个词组成（比如“readystatechange”）。下面是两个事件处理程序注册示例：
+
+```js
+// 设置Window对象的unload属性为一个函数
+// 该函数是事件处理程序，当文档加载完毕时调用它
+window.onload = function() {
+  // 查找一个<form>元素
+  var elt = document.getElementById("shipping_address");
+  // 注册事件处理程序函数
+  // 在表单提交之前调用它
+  elt.onsubmit = function() { return validate(this); }
+}
+```
+
+这种事件处理程序注册技术适用于所有浏览器的所有常用事件类型。一般情况下，所有广泛实现的Web API定义的事件都允许通过设置事件处理程序属性来注册处理程序。
+
+事件处理程序属性的缺点是其设计都是围绕着假设每个事件目标对于每种事件类型将最多只有一个处理程序。如果想编写能够在任意文档中都能使用的脚本库代码，更好的方式是使用一种不修改或覆盖任何已有注册处理程序的技术（比如`addEventListener()`）。
+
+### 17.2.2 设置HTML标签属性为事件处理程序
+
+用于设置的文档元素事件处理程序属性（property）也能换成对应HTML标签的属性（attribute）。如果这样做，属性值应该是JavaScript代码字符串。这段代码应该是事件处理程序函数的主体，而非完整的函数声明。也就是说，HTML事件处理程序代码不应该用大括号包围且使用function关键字作为前缀。例如：
+
+```html
+<button onclick="alert('Thank you');">Click Here</button>
+```
+
+如果HTML事件处理程序属性包含多条JavaScript语句，要记住必须使用分号分隔这些语句或断开属性值使其跨多行。
+
+某些事件类型通常直接在浏览器而非任何特定文档元素上触发。在JavaScript中，这些事件处理程序在Window对象上注册。在HTML中，会把它们放到`<body>`标签上，但浏览器会在Window对象上注册它们。下面是HTML5规范草案定义的这类事件处理程序的完整列表：
+
+onafterprint onfocus ononline onresize
+onbeforeprint onhashchange onpagehide onstorage
+onbeforeunload onload onpageshow onundo
+onblur onmessage onpopstate onunload
+onerror onoffline onredo
+
+当指定一串JavaScript代码作为HTML事件处理程序属性的值时，浏览器会把代码串转换为类似如下的函数中：
+
+```js
+function(event) {
+  with(document) {
+    with(this.form || {}) {
+      with(this) {
+        /* your code here */
+      }
+    }
+  }
+}
+```
+
+如果浏览器支持ES5，它将在非严格模式下定义这个函数（见5.7.3节）。当仔细研究17.3节的事件处理程序调用时，我们将看到关于event参数和with语句的更多内容。
+
+客户端编程的通用风格是保持HTML内容和JavaScript行为分离，遵循这条规则的程序员应禁止（或至少避免）使用HTML事件处理程序属性，因为这些属性直接混合了JavaScript和HTML。
+
+### 17.2.3 addEventListener()
+
+在除IE8及之前版本外的所有浏览器都支持的标准事件模型中，任何能成为事件目标的对象——这些对象包括Window对象、Document对象和所有文档元素——都定义了一个名叫`addEventListener()`的方法，使用这个方法可以为事件目标注册事件处理程序。`addEventListener()`接受三个参数。第一个是要注册处理程序的事件类型，这个事件类型（或名字）是字符串，但它不应该包括用于设置事件处理程序属性的前缀“on”。第二个参数是当指定类型的事件发生时应该调用的函数。最后一个参数是布尔值。通常情况下，会给这个参数传递false。如果相反传递了true，那么函数将注册为捕获事件处理程序，并在事件不同的调度阶段调用。17.3.6节涵盖事件捕获。你应该可以忽略第三个参数并无须传递false，同时规范最终应该会改变从而允许这么做，但在写本章时，忽略这个参数会在当前某些浏览器中出错。
+
+下面这段代码在`<button>`元素上注册了click事件的两个处理程序。注意所用两个技术之间的不同：
+
+```html
+<button id="mybutton">Click me</button>
+<script>
+var b = document.getElementById("mybutton");
+b.onclick = function() { alert("Thanks for clicking me!"); };
+b.addEventListener("click", function() { alert("Thanks again!"); }, false);
+</script>
+```
+
+用“click”作为第一个参数调用`addEventListener()`不会影响onclick属性的值。在前面的代码中，单击按钮会产生两个`alert()`对话框。更重要的是，能通过多次调用`addEventListener()`为同一个对象注册同一事件类型的多个处理程序函数。当对象上发生事件时，所有该事件类型的注册处理程序都会按照注册的顺序调用。使用相同的参数在同一个对象上多次调用`addEventListener()`是没用的，处理程序仍然只注册一次，同时重复调用也不会改变调用处理程序的顺序。
+
+相对`addEventListener()`的是`removeEventListener()`方法，它同样有三个参数，从对象中删除事件处理程序函数而非添加，它常用于临时注册事件处理程序，然后不久就删除它。例如，当你要得到mousedown事件时，可以为mousemove和mouseup事件注册临时捕获事件处理程序来看看用户是否拖动鼠标。当mouseup事件到来后，可以注销这些事件处理程序。在这种情况下，事件处理程序移除代码如下所示：
+
+```js
+document.removeEventListener("mousemove", handleMouseMove, true);
+document.removeEventListener("mouseup", handleMouseUp, true);
+```
+
+### 17.2.4 attachEvent()
+
+IE9之前的IE不支持`addEventListener()`和`removeEventListener()`。IE5及以后版本定义了类似的方法`attachEvent()`和`detachEvent()`。
+
+`attachEvent()`和`detachEvent()`方法的工作原理与`addEventListener()`和`removeEventListener()`类似，但有如下例外：
+- IE方法的第一个参数使用了带“on”前缀的事件处理程序属性名，而非没有前缀的事件类型。例如，当给`addEventListener()`传递“click”时，要给`attachEvent()`传递“onclick”。
+- 因为IE事件模型不支持事件捕获，所以`attachEvent()`和`detachEvent()`要求只有两个参数：事件类型和处理程序函数。
+- `attachEvent()`允许相同的事件处理程序函数注册多次。当特定的事件类型发生时，注册函数的调用次数和注册次数一样。
+
+经常可以看到的事件处理程序注册代码是在支持`addEventListener()`的浏览器中就调用它，否则就用`attachEvent()`：
+
+```js
+var b = document.getElementById("mybutton");
+var handler = function() { alert("Thanks!"); };
+if (b.addEventListener)
+  b.addEventListener("click", handler, false);
+else if (b.attachEvent)
+  b.attachEvent("onclick", handler);
+```
+
 ## 17.3 事件处理程序的调用
+
+一旦注册了事件处理程序，浏览器就会在指定对象上发生指定类型事件时自动调用它。本节会详细介绍事件处理程序的调用，说明事件处理程序的参数、调用上下文（this值）、调用作用域和事件处理程序返回值的意义。遗憾的是，这些内容中的一部分在IE8及以前版本中和在其他浏览器中是不同的。
+
+除了介绍单个处理程序如何调用，本节也会说明事件传播的机制，即单个事件如何能在原始事件目标和文档的容器元素上触发多个处理程序的调用。
+
+### 17.3.1 事件处理程序的参数
+
+通常调用事件处理程序时把事件对象作为它们的一个参数（有一个例外，后面会介绍）。事件对象的属性提供了有关事件的详细信息。例如，type属性指定了发生的事件类型。17.1节提到了各种事件类型的一些其他事件对象属性。
+
+在IE8及以前版本中，通过设置属性注册事件处理程序，当调用它们时并未传递事件对象。取而代之，需要通过全局对象window.event来获得事件对象。出于互通性，你能像如下那样编写事件处理程序，这样如果没有参数就使用window.event：
+
+```js
+function handler(event) {
+  event = event || window.event;
+  // Handler code goes here
+}
+```
+
+向使用`attachEvent()`注册的事件处理程序传递事件对象，但它们也能使用window. event。
+
+记得17.2.2节中的介绍，当通过设置HTML属性注册事件处理程序时，浏览器会把JavaScript编码转换到一个函数中。非IE浏览器使用event参数来构造函数，而IE在构造函数时没有要求参数。如果在这样的函数中使用event标识符，那么引用的正是window. event。在这两种情况下，HTML事件处理程序都能作为event引用事件对象。
+
+### 17.3.2 事件处理程序的运行环境
+
+当通过设置属性注册事件处理程序时，这看起来好像是在文档元素上定义了新方法：
+
+```js
+e.onclick = function() { /* handler code */ };
+```
+
+事件处理程序在事件目标上定义，所以它们作为这个对象的方法来调用（后面会介绍一个和IE相关的例外）并不出人意料。这就是说，在事件处理程序内，this关键字指的是事件目标。
+
+甚至当使用`addEventListener()`注册时，调用的处理程序使用事件目标作为它们的this值。但是，对于`attachEvent()`来讲这是不对的：使用`attachEvent()`注册的处理程序作为函数调用，它们的this值是全局（Window）对象。可以用如下代码来解决这个问题：
+
+```js
+/*
+* 在指定的事件目标上注册用于处理指定类型事件的指定处理程序函数
+* 确保处理程序一直作为事件目标的方法调用
+*/
+function addEvent(target, type, handler) {
+  if (target.addEventListener)
+    target.addEventListener(type, handler, false);
+  else
+    target.attachEvent("on" + type,
+      function(event) {
+        // 把处理程序作为事件目标的方法调用
+        // 传递事件对象
+        return handler.call(target, event);
+      });
+}
+```
+
+注意使用这个方法注册的事件处理程序不能删除，因为传递给`attachEvent()`的包装函数没有保留下来传递给`detachEvent()`。
+
+### 17.3.3 事件处理程序的作用域
+
+像所有的JavaScript函数一样，事件处理程序从词法上讲也是作用域。它们在其定义时的作用域而非调用时的作用域中执行，并且它们能存取那个作用域中的任何一个本地变量。例如，之前的`addEvent()`函数就证明过。
+
+但是，通过HTML属性来注册事件处理程序是一个例外。它们被转换为能存取全局变量的顶级函数而非任何本地变量。但因为历史原因，它们运行在一个修改后的作用域链中。通过HTML属性定义的事件处理程序能好像本地变量一样使用目标对象、容器`<form>`对象（如果有）和Document对象的属性。17.2.2节展示了如何从HTML事件处理程序属性中创建事件处理程序函数，以及其代码近似于使用with语句修改后的作用域链。
+
+HTML属性最不自然的地方包括冗长的代码串和修改后的作用域链允许有用的快捷方式。可以使用tagName替代this.tagName，使用`getElementById()`替代document. `getElementById()`。并且，对于`<form>`中的文档元素，能通过ID引用任何其他的表单元素，例如，用zipcode替代this.form.zipcode。
+
+另一方面，HTML事件处理程序中修改的作用域链是陷阱之源，因为作用域链中每个对象的属性在全局对象中都有相同名字的属性。例如，由于Document对象定义（很少使用）`open()`方法，因此HTML事件处理程序想调用Window对象的`open()`方法就必须显式地写window.open而不是open。表单有类似的问题但破坏性更大，因为表单元素的名字和ID在包含的表单元素上定义属性（见15.9.1节）。例如，如果表单包含一个ID是“location”的元素，那么要是表单的所有HTML事件处理程序想引用window的location对象，就必须使用window.location而不能是location。
+
+### 17.3.4 事件处理程序的返回值
+
+通过设置对象属性或HTML属性注册事件处理程序的返回值有时是非常有意义的。通常情况下，返回值false就是告诉浏览器不要执行这个事件相关的默认操作。例如，表单提交按钮的onclick事件处理程序能返回false阻止浏览器提交表单。（当用户的输入在客户端验证失败时，这是有用的。）类似地，如果用户输入不合适的字符，输入域上的onkeypress事件处理程序能通过返回false来过滤键盘输入。（例17-6就是用这种方式过滤键盘输入。）
+
+Window对象的onbeforeunload事件处理程序的返回值也非常有意义。当浏览器将要跳转到新页面时触发这个事件。如果事件处理程序返回一个字符串，那么它将出现在询问用户是否想离开当前页面的标准对话框中。
+
+理解事件处理程序的返回值只对通过属性注册的处理程序才有意义这非常重要。接下来我们将看到使用`addEventListener()`或`attachEvent()`注册事件处理程序转而必须调用`preventDefault()`方法或设置事件对象的returnValue属性。
+
+### 17.3.5 调用顺序
+
+文档元素或其他对象可以为指定事件类型注册多个事件处理程序。当适当的事件发生时，浏览器必须按照如下规则调用所有的事件处理程序：
+- 通过设置对象属性或HTML属性注册的处理程序一直优先调用。
+- 使用`addEventListener()`注册的处理程序按照它们的注册顺序调用。
+- 使用`attachEvent()`注册的处理程序可能按照任何顺序调用，所以代码不应该依赖于调用顺序。
+
+### 17.3.6 事件传播
+
+当事件目标是Window对象或其他一些单独对象（比如XMLHttpRequest）时，浏览器简单地通过调用对象上适当的处理程序响应事件。当事件目标是文档或文档元素时，情况比较复杂。
+
+在调用在目标元素上注册的事件处理函数后，大部分事件会“冒泡”到DOM树根。调用目标的父元素的事件处理程序，然后调用在目标的祖父元素上注册的事件处理程序。这会一直到Document对象，最后到达Window对象。事件冒泡为在大量单独文档元素上注册处理程序提供了替代方案，即在共同的祖先元素上注册一个处理程序来处理所有的事件。例如，可以在`<form>`元素上注册“change”事件处理程序来取代在表单的每个元素上注册“change”事件处理程序。
+
+发生在文档元素上的大部分事件都会冒泡，值得注意的例外是focus、blur和scroll事件。文档元素上的load事件会冒泡，但它会在Document对象上停止冒泡而不会传播到Window对象。只有当整个文档都加载完毕时才会触发Window对象的load事件。
+
+事件冒泡是事件传播的第三个“阶段”。目标对象本身的事件处理程序调用是第二个阶段。第一个阶段甚至发生在目标处理程序调用之前，称为“捕获”阶段。回顾之前`addEventListener()`把一个布尔值作为其第三个参数。如果这个参数是true，那么事件处理程序被注册为捕获事件处理程序，它会在事件传播的第一个阶段调用。事件冒泡得到广泛的支持，它能用在包括IE在内的所有浏览器中，且无论事件处理程序用哪种方式注册（除非它们被注册为捕获事件处理程序）。而事件捕获只能用于以`addEventListener()`注册且第三个参数是true的事件处理程序中。这意味着事件捕获无法在IE9之前的IE中使用，所以在写本章时，它还不是通用的技术。
+
+事件传播的捕获阶段像反向的冒泡阶段。最先调用Window对象的捕获处理程序，然后是Document对象的捕获处理程序，接着是body对象的，再然后是DOM树向下，以此类推，直到调用事件目标的父元素的捕获事件处理程序。在目标对象本身上注册的捕获事件处理程序不会被调用。
+
+事件捕获提供了在事件没有送达目标之前查看它们的机会。事件捕获能用于程序调试，或用于后面介绍的事件取消技术，过滤掉事件从而使目标事件处理程序绝不会被调用。事件捕获常用于处理鼠标拖放，因为要处理拖放事件的位置不能是这个元素内部的子元素。请看例17-2。
+
+### 17.3.7 事件取消
+
+17.3.4节介绍了用属性注册的事件处理程序的返回值能用于取消事件的浏览器默认操作。在支持`addEventListener()`的浏览器中，也能通过调用事件对象的`preventDefault()`方法取消事件的默认操作。不过，在IE9之前的IE中，可以通过设置事件对象的returnValue属性为false来达到同样的效果。下面的代码假设一个事件处理程序，它使用全部三种取消技术：
+
+```js
+function cancelHandler(event) {
+  var event = event || window.event; // For IE
+  /* 这里是处理事件的代码 */
+  // 现在徐晓事件相关的默认行为
+  if (event.preventDefault) event.preventDefault(); // 标准技术
+  if (event.returnValue) event.returnValue = false; // IE
+  return false; // 用于处理使用对象属性注册的处理程序
+}
+```
+
+当前的DOM事件模型草案定义了Event对象属性defaultPrevented。它尚未得到广泛支持，但其目的是常态下这个属性是false，但如果`preventDefaut()`被调用则它将变成true。
+
+取消事件相关的默认操作只是事件取消中的一种，我们也能取消事件传播。在支持`addEventListener()`的浏览器中，可以调用事件对象的一个`stopPropagation()`方法以阻止事件的继续传播。如果在同一对象上定义了其他处理程序，剩下的处理程序将依旧被调用，但调用`stopPropagation()`之后任何其他对象上的事件处理程序将不会被调用。`stopPropagation()`方法可以在事件传播期间的任何时间调用，它能工作在捕获期阶段、事件目标本身中和冒泡阶段。
+
+IE9之前的IE不支持`stopPropagation()`方法。相反，IE事件对象有一个cancelBubble属性，设置这个属性为true能阻止事件进一步传播。（IE8及之前版本不支持事件传播的捕获阶段，所以冒泡是唯一待取消的事件传播。）
+
+当前的DOM事件规范草案在Event对象上定义另一个方法，命名为`stopImmediatePropagation()`。类似`stopPropagation()`，这个方法阻止了任何其他对象的事件传播，但也阻止了在相同对象上注册的任何其他事件处理程序的调用。在写本章时，某些浏览器支持`stopImmediatePropagation()`，但另外的都不支持。一些像jQuery和YUI之类的工具库定义了跨平台的`stopImmediatePropagation()`方法。
+
 ## 17.4 文档加载事件
+
+现在已经介绍了JavaScript事件处理的基本原理，我们将开始深入探索具体事件类别，本节将从文档load事件开始。
+
+大部分Web应用都需要Web浏览器通知它们文档加载完毕和为操作准备就绪的时间。Window对象的load事件就是为了这个目的，第13章详细地讨论过它，同时那章的示例13-5使用了`onLoad()`工具函数。load事件直到文档和所有图片加载完毕时才发生。然而，在文档完全解析之后但在所有图片全部加载完毕之前开始运行脚本通常是安全的，所以如果基于“load”发生之前的事件触发脚本会提升Web应用的启动时间。
+
+当文档加载解析完毕且所有延迟（deferred）脚本都执行完毕时会触发DOMContentLoaded事件，此时图片和异步（async）脚本可能依旧在加载，但是文档已经为操作准备就绪了。（13.3.1节介绍过延迟脚本和异步脚本。）Firefox引入了这个事件，然后它被包括Microsoft的IE9在内的所有其他浏览器厂商采用。尽管其名字中有“DOM”，并属于3级DOM事件标准的一部分，但HTML5标准化了它。
+
+正如13.3.4节所述，document.readyState属性随着文档加载过程而变。在IE中，每次状态改变都伴随着Document对象上的readystatechange事件，当IE接收到“complete”状态时使用这个事件来做判断是可行的。HTML5标准化了readystatechange事件，但它仅在load事件之前立即触发，所以目前尚不清楚监听“readystatechange”取代“load”会带来多大好处。
+
+例17-1定义了`whenReady()`函数，它非常像示例13-5的`onLoad()`函数。当文档为操作准备就绪时，传递给`whenReady()`的函数将会作为Document对象的方法调用。和之前的`onLoad()`函数不同，`whenReady()`监听DOMContentLoaded和readystatechange事件，而使用load事件仅仅是为了兼容那些不支持之前事件的较老浏览器。接下来本节及后面章节的一些例子都使用`whenReady()`函数。
+
+```js
+/*
+* Pass a function to whenReady() and it will be invoked (as a method of the
+* document) when the document is parsed and ready for manipulation. Registered
+* functions are triggered by the first DOMContentLoaded, readystatechange, or
+* load event that occurs. Once the document is ready and all functions have
+* been invoked, any functions passed to whenReady() will be invoked
+* immediately.
+*/
+var whenReady = (function() { // This function returns the whenReady() function
+  var funcs = []; // The functions to run when we get an event
+  var ready = false; // Switches to true when the handler is triggered
+  // The event handler invoked when the document becomes ready
+  function handler(e) {
+    // If we've already run once, just return
+    if (ready) return;
+    // If this was a readystatechange event where the state changed to
+    // something other than "complete", then we're not ready yet
+    if (e.type === "readystatechange" && document.readyState !== "complete")
+      return;
+    // Run all registered functions.
+    // Note that we look up funcs.length each time, in case calling
+    // one of these functions causes more functions to be registered.
+    for(var i = 0; i < funcs.length; i++)
+      funcs[i].call(document);
+    // Now set the ready flag to true and forget the functions
+    ready = true;
+    funcs = null;
+  }
+  // Register the handler for any event we might receive
+  if (document.addEventListener) {
+    document.addEventListener("DOMContentLoaded", handler, false);
+    document.addEventListener("readystatechange", handler, false);
+    window.addEventListener("load", handler, false);
+  }
+  else if (document.attachEvent) {
+    document.attachEvent("onreadystatechange", handler);
+    window.attachEvent("onload", handler);
+  }
+  // Return the whenReady function
+  return function whenReady(f) {
+    if (ready) f.call(document); // If already ready, just run it
+    else funcs.push(f); // Otherwise, queue it for later.
+  }
+}());
+```
+
 ## 17.5 鼠标事件
+
+与鼠标相关的事件有不少，表17-1全部把它们列出了。除“mouseenter”和“mouseleave”外的所有鼠标事件都能冒泡。链接和提交按钮上的click事件都有默认操作且能够阻止。可以取消上下文菜单事件来阻止显示上下文菜单，但一些浏览器有配置选项导致不能取消上下文菜单。
+
+| Type | Description |
+|---|---|
+| click | A higher-level event fired when the user presses and releases a mouse button or otherwise “activates” an element. |
+| contextmenu | A cancelable event fired when a contextmenu is about to be popped up. Current browsers display context menus on right mouse clicks, so this event can also be used like the click event. |
+| dblclick | Fired when the user double-clicks the mouse |
+| mousedown | Fired when the user presses a mouse button |
+| mouseup | Fired when the user releases a mouse button |
+| mousemove | Fired when the user moves the mouse. |
+| mouseover | Fired when the mouse enters an element.relatedTarget(orfromElementin IE); specifies what element the mouse is coming from. |
+| mouseout | Fired when the mouse leaves an element. relatedTarget (or toElement in IE); specifies what element the mouse is going to. |
+| mouseenter | Like “mouseover”, but does not bubble. Introduced by IE and standardized in HTML5 but not yet widely implemented. |
+| mouseleave | Like “mouseout”, but does not bubble. Introduced by IE and standardized in HTML5 but not yet widely implemented. |
+
+传递给鼠标事件处理程序的事件对象有clientX和clientY属性，它们指定了鼠标指针相对于包含窗口的坐标。加入窗口的滚动偏移量（见示例15-8）就可以把鼠标位置转换成文档坐标。
+
+altKey、ctrlKey、metaKey和shiftKey属性指定了当事件发生时是否有各种键盘辅助键按下。例如，这让你能够区分普通单击和按着Shift键的单击。
+
+button属性指定当事件发生时哪个鼠标按键按下，但是，不同浏览器给这个属性赋不同的值，所以它很难用，更多详细信息请看Event参考页。某些浏览器只在单击左键时才触发click事件，所以如果需要探测其他键的单击需要监听mousedown和mouseup事件。通常contextmenu事件发生的标志是右击，但如上所述，当事件发生时可能无法阻止上下文菜单的显示。
+
+鼠标事件对象有一些其他的鼠标特定属性，但它们并不常用，具体请看Event参考页的列表。
+
+例17-2展示了JavaScript函数`drag()`，它会在mousedown事件处理程序中调用，其允许用户拖放绝对定位的文档元素。`drag()`能够在DOM和IE事件模型中运行。
+
+`drag()`接受两个参数。第一个是要拖动的元素，它可以是发生mousedown事件的元素或包含元素（例如，你可能允许用户拖动的元素看起来像标题栏，而拖动的包含元素像窗口）。然而，无论是哪种情况，它必须是使用CSS position属性绝对定位的文档元素。第二个参数是触发mousedown事件的事件对象。下面是一个使用`drag()`的简单例子，它定义了用户在按下Shift键时能够拖动的`<img>`：
+
+```html
+<img src="draggable.gif"
+  style="position:absolute; left:100px; top:100px;"
+  onmousedown="if (event.shiftKey) drag(this, event);">
+```
+
+`drag()`函数把mousedown事件发生的位置转换为文档坐标，这是为了计算鼠标指针到正在移动的元素左上角之间的距离。示例15-8使用getScrollOffsets`()`帮助坐标转换。然后，`drag()`注册了接着mousedown事件发生的mousemove和mouseup事件的事件处理程序。mousemove事件处理程序用于响应文档元素的移动，而mouseup事件处理程序用于注销自己和mousemove事件处理程序。
+
+值得注意的是mousemove和mouseup处理程序注册为捕获事件处理程序。这是因为用户可能移动鼠标比其后的文档元素更快，如果这种情况发生，某些mousemove事件会发生在原始目标元素之外。没有捕获，这些事件将无法分派正确的处理程序。IE事件模型无法像标准事件模型那样提供事件捕获，但它在这种情况下有一个专门用于捕获鼠标事件的setCapture`()`方法。下面的示例代码会展示它是如何工作的。
+
+最后，注意`drag()`中定义的moveHandler`()`和upHandler`()`函数。由于在嵌套的作用域中定义它们，因此它们能使用`drag()`的参数和本地变量，这将大大简化它们的实现。
+
+```js
+/**
+* Drag.js: drag absolutely positioned HTML elements.
+*
+* This module defines a single drag() function that is designed to be called
+* from an onmousedown event handler. Subsequent mousemove events will
+* move the specified element. A mouseup event will terminate the drag.
+* This implementation works with both the standard and IE event models.
+* It requires the getScrollOffsets() function from elsewhere in this book.
+*
+* Arguments:
+*
+* elementToDrag: the element that received the mousedown event or
+* some containing element. It must be absolutely positioned. Its
+* style.left and style.top values will be changed based on the user's
+* drag.
+*
+* event: the Event object for the mousedown event.
+**/
+function drag(elementToDrag, event) {
+  // The initial mouse position, converted to document coordinates
+  var scroll = getScrollOffsets(); // A utility function from elsewhere
+  var startX = event.clientX + scroll.x;
+  var startY = event.clientY + scroll.y;
+  // The original position (in document coordinates) of the element
+  // that is going to be dragged. Since elementToDrag is absolutely
+  // positioned, we assume that its offsetParent is the document body.
+  var origX = elementToDrag.offsetLeft;
+  var origY = elementToDrag.offsetTop;
+  // Compute the distance between the mouse down event and the upper-left
+  // corner of the element. We'll maintain this distance as the mouse moves.
+  var deltaX = startX - origX;
+  var deltaY = startY - origY;
+  // Register the event handlers that will respond to the mousemove events
+  // and the mouseup event that follow this mousedown event.
+  if (document.addEventListener) { // Standard event model
+    // Register capturing event handlers on the document
+    document.addEventListener("mousemove", moveHandler, true);
+    document.addEventListener("mouseup", upHandler, true);
+  }
+  else if (document.attachEvent) { // IE Event Model for IE5-8
+    // In the IE event model, we capture events by calling
+    // setCapture() on the element to capture them.
+    elementToDrag.setCapture();
+    elementToDrag.attachEvent("onmousemove", moveHandler);
+    elementToDrag.attachEvent("onmouseup", upHandler);
+    // Treat loss of mouse capture as a mouseup event.
+    elementToDrag.attachEvent("onlosecapture", upHandler);
+  }
+  // We've handled this event. Don't let anybody else see it.
+  if (event.stopPropagation) event.stopPropagation(); // Standard model
+  else event.cancelBubble = true; // IE
+  // Now prevent any default action.
+  if (event.preventDefault) event.preventDefault(); // Standard model
+  else event.returnValue = false; // IE
+  /**
+  * This is the handler that captures mousemove events when an element
+  * is being dragged. It is responsible for moving the element.
+  **/
+  function moveHandler(e) {
+    if (!e) e = window.event; // IE event Model
+    // Move the element to the current mouse position, adjusted by the
+    // position of the scrollbars and the offset of the initial click.
+    var scroll = getScrollOffsets();
+    elementToDrag.style.left = (e.clientX + scroll.x - deltaX) + "px";
+    elementToDrag.style.top = (e.clientY + scroll.y - deltaY) + "px";
+    // And don't let anyone else see this event.
+    if (e.stopPropagation) e.stopPropagation(); // Standard
+    else e.cancelBubble = true; // IE
+  }
+  /**
+  * This is the handler that captures the final mouseup event that
+  * occurs at the end of a drag.
+  **/
+  function upHandler(e) {
+    if (!e) e = window.event; // IE Event Model
+    // Unregister the capturing event handlers.
+    if (document.removeEventListener) { // DOM event model
+      document.removeEventListener("mouseup", upHandler, true);
+      document.removeEventListener("mousemove", moveHandler, true);
+    }
+    else if (document.detachEvent) { // IE 5+ Event Model
+      elementToDrag.detachEvent("onlosecapture", upHandler);
+      elementToDrag.detachEvent("onmouseup", upHandler);
+      elementToDrag.detachEvent("onmousemove", moveHandler);
+      elementToDrag.releaseCapture();
+    }
+    // And don't let the event propagate any further.
+    if (e.stopPropagation) e.stopPropagation(); // Standard model
+    else e.cancelBubble = true; // IE
+  }
+}
+```
+
+下面的代码展示了在HTML文件中如何使用`drag()`（它是示例16-2带拖动功能的简化版）：
+
+```html
+<script src="getScrollOffsets.js"></script> <!-- drag() requires this -->
+<script src="Drag.js"></script> <!-- defines drag() -->
+<!-- The element to be dragged -->
+<div style="position:absolute; left:100px; top:100px; width:250px;
+  background-color: white; border: solid black;">
+  <!-- The "titlebar" to drag it with. Note the onmousedown attribute. -->
+  <div style="background-color: gray; border-bottom: dotted black;
+      padding: 3px; font-family: sans-serif; font-weight: bold;"
+    onmousedown="drag(this.parentNode, event);">
+    Drag Me <!-- The content of the titlebar -->
+  </div>
+  <!-- Content of the draggable element -->
+  <p>This is a test. Testing, testing, testing.</p><p>Test</p><p>Test</p>
+</div>
+```
+
+这里的关键是内部`<div>`元素的onmousedown属性。注意，它使用this.parentNode指定整个容器元素将被拖动。
+
 ## 17.6 鼠标滚轮事件
+
+所有的现代浏览器都支持鼠标滚轮，并在用户滚动滚轮时触发事件。浏览器通常使用鼠标滚轮滚动或缩放文档，但可以通过取消mousewheel事件来阻止这些默认操作。
+
+有一些互用性问题影响滚轮事件，但编写跨平台的代码依旧可行。在写本章时，除Firefox之外的所有浏览器都支持“mousewheel”事件，但Firefox使用“DOMMouseScroll”，而3级DOM事件规范草案建议使用事件名“wheel”替代“mousewheel”。除了事件名的不同，向各种事件传递的事件对象也使用了不同的属性名来指定滚轮发生的旋转量。最后注意，基础硬件也会导致鼠标滚轮之间的区别。某些硬件允许向前向后的一维滚动，而另一些（尤其是在Mac上）也允许向左向右滚动（在这些鼠标上，“滚轮”其实是轨迹球）。3级DOM规范草案甚至包括支持三维鼠标“滚轮”，除了上下左右，它还能报告顺时针或逆时针旋转。
+
+传递给“mousewheel”处理程序的事件对象有wheelDelta属性，其指定用户滚动滚轮有多远。远离用户方向的一次鼠标滚轮“单击”的wheelDelta值通常是120，而接近用户方向的一次“单击”的值是-120。在Safari和Chrome中，为了支持使用二维轨迹球而非一维滚轮的Apple鼠标，除了wheelDelta属性外，事件对象还有wheelDeltaX和wheelDeltaY，而wheelDelta和wheelDeltaY的值一直相同。
+
+在Firefox中，可以使用非标准的DOMMouseScroll事件取代mousewheel，使用事件对象的detail属性取代wheelDelta。但是，detail属性值的缩放比率和正负符号不同于wheelDelta，detail值乘以-40和wheelDelta值相等。
+
+在写本章时，3级DOM事件规范草案标准定义了wheel事件作为mousewheel和DOMMouseScroll的标准版本。传递给wheel事件处理程序的事件对象将有deltaX、deltaY和deltaZ属性，以指定三个维度的旋转。这些值必须乘以-120才和mousewheel事件的wheelDelta值和正负符号相匹配。
+
+对于所有这些事件类型来说，其事件对象就像鼠标事件对象：它包括鼠标指针的坐标和键盘辅助键的状态。
+
+例17-3演示了如何使用鼠标滚轮事件和如何实现跨平台的互用性。它定义了`enclose()`函数在一个较大的内容元素（比如图片）周围包装了一个指定尺寸的“窗体”或“视口”，并定义了鼠标滚轮事件处理程序让用户既能在视口内移动内容元素也能调整视口大小。可以像下面这样在代码中使用`enclose()`函数：
+
+```html
+<script src="whenReady.js"></script>
+<script src="Enclose.js"></script>
+<script>
+whenReady(function() {
+  enclose(document.getElementById("content"),400,200,-200,-300);
+});
+</script>
+<style>div.enclosure { border: solid black 10px; margin: 10px; }</style>
+<img id="content" src="testimage.jpg"/>
+```
+
+为了能够在所有常用浏览器中正确地工作，例17-3必须执行一些浏览器测试（参见13.4.5节）。这个示例提前使用了3级DOM事件规范草案，包括在代码中使用了wheel事件，当浏览器实现它时即可使用[插图]。它也包含未来的一些证明，当Firefox开始支持wheel或mousewheel事件时就停止使用DOMMouseScroll。注意，例17-3也是演示元素几何形状和CSS定位技术的示例，这些技术会在15.8节和16.2.1节中说明。
+
+```js
+// Enclose the content element in a frame or viewport of the specified width
+// and height (minimum 50x50). The optional contentX and contentY arguments
+// specify the initial offset of the content relative to the frame. (If
+// specified, they must be <= 0.) The frame has mousewheel event handlers that
+// allow the user to pan the element, and to shrink or enlarge the frame.
+function enclose(content, framewidth, frameheight, contentX, contentY) {
+  // These arguments aren't just the initial values: they maintain the
+  // current state and are used and modified by the mousewheel handler.
+  framewidth = Math.max(framewidth, 50);
+  frameheight = Math.max(frameheight, 50);
+  contentX = Math.min(contentX, 0) || 0;
+  contentY = Math.min(contentY, 0) || 0;
+  // Create the frame element and set a CSS classname and styles
+  var frame = document.createElement("div");
+  frame.className = "enclosure"; // So we can define styles in a stylesheet
+  frame.style.width = framewidth + "px"; // Set the frame size.
+  frame.style.height = frameheight + "px";
+  frame.style.overflow = "hidden"; // No scrollbars, no overflow
+  frame.style.boxSizing = "border-box"; // Border-box simplifies the
+  frame.style.webkitBoxSizing = "border-box"; // calculations for resizing
+  frame.style.MozBoxSizing = "border-box"; // the frame.
+  // Put the frame in the document and move the content elt into the frame.
+  content.parentNode.insertBefore(frame, content);
+  frame.appendChild(content);
+  // Position the element relative to the frame
+  content.style.position = "relative";
+  content.style.left = contentX + "px";
+  content.style.top = contentY + "px";
+  // We'll need to work around some browser-specific quirks below
+  var isMacWebkit = (navigator.userAgent.indexOf("Macintosh") !== -1 &&
+  navigator.userAgent.indexOf("WebKit") !== -1);
+  var isFirefox = (navigator.userAgent.indexOf("Gecko") !== -1);
+  // Register mousewheel event handlers.
+  frame.onwheel = wheelHandler; // Future browsers
+  frame.onmousewheel = wheelHandler; // Most current browsers
+  if (isFirefox) // Firefox only
+  frame.addEventListener("DOMMouseScroll", wheelHandler, false);
+  function wheelHandler(event) {
+  var e = event || window.event; // Standard or IE event object
+  // Extract the amount of rotation from the event object, looking
+  // for properties of a wheel event object, a mousewheel event object
+  // (in both its 2D and 1D forms), and the Firefox DOMMouseScroll event.
+  // Scale the deltas so that one "click" toward the screen is 30 pixels.
+  // If future browsers fire both "wheel" and "mousewheel" for the same
+  // event, we'll end up double-counting it here. Hopefully, however,
+  // cancelling the wheel event will prevent generation of mousewheel.
+  var deltaX = e.deltaX*-30 || // wheel event
+  e.wheelDeltaX/4 || // mousewheel
+  0; // property not defined
+  var deltaY = e.deltaY*-30 || // wheel event
+  e.wheelDeltaY/4 || // mousewheel event in Webkit
+  (e.wheelDeltaY===undefined && // if there is no 2D property then
+  e.wheelDelta/4) || // use the 1D wheel property
+  e.detail*-10 || // Firefox DOMMouseScroll event
+  0; // property not defined
+  // Most browsers generate one event with delta 120 per mousewheel click.
+  // On Macs, however, the mousewheels seem to be velocity-sensitive and
+  // the delta values are often larger multiples of 120, at
+  // least with the Apple Mouse. Use browser-testing to defeat this.
+  if (isMacWebkit) {
+  deltaX /= 30;
+  deltaY /= 30;
+  }
+  // If we ever get a mousewheel or wheel event in (a future version of)
+  // Firefox, then we don't need DOMMouseScroll anymore.
+  if (isFirefox && e.type !== "DOMMouseScroll")
+  frame.removeEventListener("DOMMouseScroll", wheelHandler, false);
+  // Get the current dimensions of the content element
+  var contentbox = content.getBoundingClientRect();
+  var contentwidth = contentbox.right - contentbox.left;
+  var contentheight = contentbox.bottom - contentbox.top;
+  if (e.altKey) { // If Alt key is held down, resize the frame
+  if (deltaX) {
+  framewidth -= deltaX; // New width, but not bigger than the
+  framewidth = Math.min(framwidth, contentwidth); // content
+  framewidth = Math.max(framewidth,50); // and no less than 50.
+  frame.style.width = framewidth + "px"; // Set it on frame
+  }
+  if (deltaY) {
+  frameheight -= deltaY; // Do the same for the frame height
+  frameheight = Math.min(frameheight, contentheight);
+  frameheight = Math.max(frameheight-deltaY, 50);
+  frame.style.height = frameheight + "px";
+  }
+  }
+  else { // Without the Alt modifier, pan the content within the frame
+  if (deltaX) {
+  // Don't scroll more than this
+  var minoffset = Math.min(framewidth-contentwidth, 0);
+  // Add deltaX to contentX, but don't go lower than minoffset
+  contentX = Math.max(contentX + deltaX, minoffset);
+  contentX = Math.min(contentX, 0); // or higher than 0
+  content.style.left = contentX + "px"; // Set new offset
+  }
+  if (deltaY) {
+  var minoffset = Math.min(frameheight - contentheight, 0);
+  // Add deltaY to contentY, but don't go lower than minoffset
+  contentY = Math.max(contentY + deltaY, minoffset);
+  contentY = Math.min(contentY, 0); // Or higher than 0
+  content.style.top = contentY + "px"; // Set the new offset.
+  }
+  }
+  // Don't let this event bubble. Prevent any default action.
+  // This stops the browser from using the mousewheel event to scroll
+  // the document. Hopefully calling preventDefault() on a wheel event
+  // will also prevent the generation of a mousewheel event for the
+  // same rotation.
+  if (e.preventDefault) e.preventDefault();
+  if (e.stopPropagation) e.stopPropagation();
+  e.cancelBubble = true; // IE events
+  e.returnValue = false; // IE events
+  return false;
+  }
+}
+```
+
 ## 17.7 拖放事件
+
+例17-2展示了如何在应用中响应鼠标拖动。使用像那样的技术允许在网页中拖起和“放置”元素，但真正的“拖放”是另一回事。拖放（Drag-and-Drop，DnD）是在“拖放源（drag source）”和“拖放目标（drop target）”之间传输数据的用户界面，它可以存在相同应用之间也可是不同应用之间。拖放是复杂的人机交互，用于实现拖放的API总是很复杂：
+
+- 它们必须和底层OS结合，使它们能够在不相关的应用间工作。
+- 它们必须适用于“移动”、“复制”和“链接”数据传输操作，允许拖放源和拖放目标通过设置限制允许的操作，然后让用户选择（通常使用键盘辅助键）许可设置。
+- 它们必须为拖放源提供一种方式指定待拖动的图标或图像。
+- 它们必须为拖放源和拖放目标的DnD交互过程提供基于事件的通知。
+
+在Microsoft在IE的早期版本引入了DnD API。它并不是精心设计且良好归档的API，但其他浏览器都尝试复制它，且HTML5标准化了类似IE DnD API的东西并增加了使API更易于使用的新特性。在写本章时，这些新的易于使用的DnD API尚未实现，所以本节包括了IE API来表示对HTM5标准祝福。
+
+IE DnD API难以使用以及当前浏览器的不同实现使得无法共同使用API一些较复杂的部分，但它允许Web应用像普通的桌面应用一样参与应用间DnD。浏览器一直能够实现简单的DnD。如果在Web浏览器中选择了文本，非常容易把文本拖到字处理器中。同时如果在字处理器中选择一个URL，你能把它拖到浏览器中并使浏览器访问这个URL。本节演示了如何创建自定义拖放源和自定义拖放目标，前者传输数据而不是其文本内容，后者以某种方式响应拖放数据而不是仅显示它。
+
+DnD总是基于事件且JavaScript API包含两个事件集，一个在拖放源上触发，另一个在拖放目标上触发。所有传递给DnD事件处理程序的事件对象都类似鼠标事件对象，另外它拥有dataTransfer属性。这个属性引用DataTransfer对象，该对象定义DnD API的方法和属性。
+
+拖放源事件相当简单，我们就从它们开始。任何有HTML draggable属性的文档元素都是拖放源。当用户开始用鼠标在拖放源上拖动时，浏览器并没有选择元素内容，相反，它在这个元素上触发dragstart事件。这个事件的处理程序就调用`dataTransfer.setData()`指定当前可用的拖放源数据（和数据类型）。（当新的HTML5 API实现时，可以用`dataTransfer.items.add()`代替。）这个事件处理程序也可以设置dataTransfer. effectAllowed来指定支持“移动”、“复制”和“链接”传输操作中的几种，同时它可以调用`dataTransfer.setDragImage()`或`dataTransfer.addElement()`（在那些支持这些方法的浏览器中）指定图片或文档元素用做拖动时的视觉表现。
+
+在拖动的过程中，浏览器在拖放源上触发拖动事件。如果想更新拖动图片或修改提供的数据，可以监听这些事件，但一般不需要注册“拖动”事件处理程序。
+
+当放置数据发生时会触发dragend事件。如果拖放源支持“移动”操作，它就会检查dataTransfer.dropEffect去看看是否实际执行了移动操作。如果执行了，数据就被传输到其他地方，你应该从拖放源中删除它。
+
+实现简单的自定义拖放源只需要dragstart事件。例17-4就是这样的例子，它在`<span>`元素中用“hh:mm”格式显示当前时间，并每分钟更新一次时间。假设这是示例要做的一切，用户能选择时钟中显示的文本，然后拖动这个时间。但在这个例子中JavaScript代码通过设置时钟元素的draggable属性为true和定义ondragstart事件处理程序函数来使得时钟成为自定义拖放源。事件处理程序使用`dataTransfer.setData()`指定一个完整的时间戳字符串（包括日期、秒和时区信息）作为待拖动的数据。它还调用`dataTransfer. setDragIcon()`指定待拖动的图片（一个时钟图标）。
+
+```html
+<script src="whenReady.js"></script>
+<script>
+whenReady(function() {
+  var clock = document.getElementById("clock"); // The clock element
+  var icon = new Image(); // An image to drag
+  icon.src = "clock-icon.png"; // Image URL
+  // Display the time once every minute
+  function displayTime() {
+  var now = new Date(); // Get current time
+  var hrs = now.getHours(), mins = now.getMinutes();
+  if (mins < 10) mins = "0" + mins;
+  clock.innerHTML = hrs + ":" + mins; // Display current time
+  setTimeout(displayTime, 60000); // Run again in 1 minute
+  }
+  displayTime();
+  // Make the clock draggable
+  // We can also do this with an HTML attribute: <span draggable="true">...
+  clock.draggable = true;
+  // Set up drag event handlers
+  clock.ondragstart = function(event) {
+  var event = event || window.event; // For IE compatability
+  // The dataTransfer property is key to the drag-and-drop API
+  var dt = event.dataTransfer;
+  // Tell the browser what is being dragged.
+  // The Date() constructor used as a function returns a timestamp string
+  dt.setData("Text", Date() + "\n");
+  // Tell the browser to drag our icon to represent the timestamp, in
+  // browsers that support that. Without this line, the browser may
+  // use an image of the clock text as the value to drag.
+  if (dt.setDragImage) dt.setDragImage(icon, 0, 0);
+  };
+});
+</script>
+<style>
+#clock { /* Make the clock look nice */
+  font: bold 24pt sans; background: #ddf; padding: 10px;
+  border: solid black 2px; border-radius: 10px;
+}
+</style>
+<h1>Drag timestamps from the clock</h1>
+<span id="clock"></span> <!-- The time is displayed here -->
+<textarea cols=60 rows=20></textarea> <!-- You can drop timestamps here -->
+```
+
+拖放目标比拖放源更棘手。任何文档元素都可以是拖放目标，这不需要像拖放源一样设置HTML属性，只需要简单地定义合适的事件监听程序。（但是使用新的HTML5 DnD API，将可以在拖放目标上定义dropzone属性来取代定义后面介绍的一部分事件处理程序。）有4个事件在拖放目标上触发。当拖放对象（draggedobject）进入文档元素时，浏览器在这个元素上触发dragenter事件。拖放目标应该使用dataTransfer.types属性确定拖放对象的可用数据是否是它能理解的格式。（也可以检查dataTransfer. effectAllowed确保拖放源和拖放目标同意使用移动、复制和链接操作中的一个。）如果检查成功，拖放目标必须要让用户和浏览器都知道它对放置感兴趣。可以通过改变它的边框或背景颜色来向用户反馈。令人吃惊的是，拖放目标通过取消事件来告知浏览器它对放置感兴趣。
+
+如果元素不取消浏览器发送给它的dragenter事件，浏览器将不会把它作为这次拖放的拖放目标，并不会向它再发送任何事件。但如果拖放目标取消了dragenter事件，浏览器将发送dragover事件表示用户继续在目标上拖动对象。再一次令人吃惊的是，拖放目标必须监听且取消所有这些事情来表明它继续对放置感兴趣。如果拖放目标想指定它只允许移动、复制或链接操作，它应该使用dragover事件处理程序来设置dataTransfrer. dropEffect。
+
+如果用户移动拖放对象离开通过取消事件表明有兴趣的拖放目标，那么在拖放目标上将触发dragleave事件。这个事件的处理程序应该恢复元素的边框或背景颜色或取消任何其他为响应dragenter事件而执行的可视化反馈。遗憾的是，dragenter和dragleave事件会冒泡，如果拖放目标内部有嵌套元素，想知道dragleave事件表示拖放对象从拖放目标离开到目标外的事件还是到目标内的事件非常困难。
+
+最后，如果用户把拖放对象放置到拖放目标上，在拖放目标上会触发drop事件。这个事件的处理程序应该使用`dataTransfer.getData()`获取传输的数据并做一些适当的处理。另外，如果用户在拖放目标放置一或多个文件，dataTransfer.files属性将是一个类数组的File对象。（见例18-11的说明。）使用新的HTML5 API，drop事件处理程序将能遍历dataTransfer.items[]的元素去检查文件和非文件数据。
+
+例17-5演示如何使`<ul>`元素成为拖放目标，同时如何使它们中的`<li>`元素成为拖放源。这个示例是一段不唐突的JavaScript代码，它查找class属性包含“dnd”的`<ul>`元素，在它找到的此类列表上注册DnD事件处理程序。这些事件处理程序使列表本身成为拖放目标，在这个列表上放置的任何文本会变成新的列表项并插入到列表尾部。这些事件处理程序也监听列表项的拖动，使得每个列表项的文本可用于传输。拖放源事件处理程序允许“复制”和“移动”操作，并在移动操作下放置对象时会删除原有列表项。（但是，请注意并不是所有的浏览器都支持移动操作。）
+
+```js
+/*
+* The DnD API is quite complicated, and browsers are not fully interoperable.
+* This example gets the basics right, but each browser is a little different
+* and each one seems to have its own unique bugs. This code does not attempt
+* browser-specific workarounds.
+*/
+whenReady(function() { // Run this function when the document is ready
+  // Find all <ul class='dnd'> elements and call the dnd() function on them
+  var lists = document.getElementsByTagName("ul");
+  var regexp = /\bdnd\b/;
+  for(var i = 0; i < lists.length; i++)
+  if (regexp.test(lists[i].className)) dnd(lists[i]);
+  // Add drag-and-drop handlers to a list element
+  function dnd(list) {
+  var original_class = list.className; // Remember original CSS class
+  var entered = 0; // Track enters and leaves
+  // This handler is invoked when a drag first enters the list. It checks
+  // that the drag contains data in a format it can process and, if so,
+  // returns false to indicate interest in a drop. In that case, it also
+  // highlights the drop target to let the user know of that interest.
+  list.ondragenter = function(e) {
+  e = e || window.event; // Standard or IE event
+  var from = e.relatedTarget;
+  // dragenter and dragleave events bubble, which makes it tricky to
+  // know when to highlight or unhighlight the element in a case like
+  // this where the <ul> element has <li> children. In browsers that
+  // define relatedTarget we can track that.
+  // Otherwise, we count enter/leave pairs
+  // If we entered from outside the list or if
+  // this is the first entrance then we need to do some stuff
+  entered++;
+  if ((from && !ischild(from, list)) || entered == 1) {
+  // All the DnD info is in this dataTransfer object
+  var dt = e.dataTransfer;
+  // The dt.types object lists the types or formats that the data
+  // being dragged is available in. HTML5 says the type has a
+  // contains() method. In some browsers it is an array with an
+  // indexOf method. In IE8 and before, it simply doesn't exist.
+  var types = dt.types; // What formats data is available in
+  // If we don't have any type data or if data is
+  // available in plain text format, then highlight the
+  // list to let the user know we're listening for drop
+  // and return false to let the browser know.
+  if (!types || // IE
+  (types.contains && types.contains("text/plain")) || //HTML5
+  (types.indexOf && types.indexOf("text/plain")!=-1)) //Webkit
+  {
+  list.className = original_class + " droppable";
+  return false;
+  }
+  // If we don't recognize the data type, we don't want a drop
+  return; // without canceling
+  }
+  return false; // If not the first enter, we're still interested
+  };
+  // This handler is invoked as the mouse moves over the list.
+  // We have to define this handler and return false or the drag
+  // will be canceled.
+  list.ondragover = function(e) { return false; };
+  // This handler is invoked when the drag moves out of the list
+  // or out of one of its children. If we are actually leaving the list
+  // (not just going from one list item to another), then unhighlight it.
+  list.ondragleave = function(e) {
+  e = e || window.event;
+  var to = e.relatedTarget;
+  // If we're leaving for something outside the list or if this leave
+  // balances out the enters, then unhighlight the list
+  entered--;
+  if ((to && !ischild(to,list)) || entered <= 0) {
+  list.className = original_class;
+  entered = 0;
+  }
+  return false;
+  };
+  // This handler is invoked when a drop actually happens.
+  // We take the dropped text and make it into a new <li> element
+  list.ondrop = function(e) {
+  e = e || window.event; // Get the event
+  // Get the data that was dropped in plain text format.
+  // "Text" is a nickname for "text/plain".
+  // IE does not support "text/plain", so we use "Text" here.
+  var dt = e.dataTransfer; // dataTransfer object
+  var text = dt.getData("Text"); // Get dropped data as plain text.
+  // If we got some text, turn it into a new item at list end.
+  if (text) {
+  var item = document.createElement("li"); // Create new <li>
+  item.draggable = true; // Make it draggable
+  item.appendChild(document.createTextNode(text)); // Add text
+  list.appendChild(item); // Add it to the list
+  // Restore the list's original style and reset the entered count
+  list.className = original_class;
+  entered = 0;
+  return false;
+  }
+  };
+  // Make all items that were originally in the list draggable
+  var items = list.getElementsByTagName("li");
+  for(var i = 0; i < items.length; i++)
+  items[i].draggable = true;
+  // And register event handlers for dragging list items.
+  // Note that we put these handlers on the list and let events
+  // bubble up from the items.
+  // This handler is invoked when a drag is initiated within the list.
+  list.ondragstart = function(e) {
+  var e = e || window.event;
+  var target = e.target || e.srcElement;
+  // If it bubbled up from something other than a <li>, ignore it
+  if (target.tagName !== "LI") return false;
+  // Get the all-important dataTransfer object
+  var dt = e.dataTransfer;
+  // Tell it what data we have to drag and what format it is in
+  dt.setData("Text", target.innerText || target.textContent);
+  // Tell it we know how to allow copies or moves of the data
+  dt.effectAllowed = "copyMove";
+  };
+  // This handler is invoked after a successful drop occurs
+  list.ondragend = function(e) {
+  e = e || window.event;
+  var target = e.target || e.srcElement;
+  // If the drop was a move, then delete the list item.
+  // In IE8, this will be "none" unless you explicitly set it to
+  // move in the ondrop handler above. But forcing it to "move" for
+  // IE prevents other browsers from giving the user a choice of a
+  // copy or move operation.
+  if (e.dataTransfer.dropEffect === "move")
+  target.parentNode.removeChild(target);
+  }
+  // This is the utility function we used in ondragenter and ondragleave.
+  // Return true if a is a child of b.
+  function ischild(a,b) {
+  for(; a; a = a.parentNode) if (a === b) return true;
+  return false;
+  }
+  }
+});
+```
+
 ## 17.8 文本事件
+
+浏览器有3个传统的键盘输入事件。keydown事件和keyup事件是低级事件，下一节会介绍。不过，keypress事件是较高级的事件，它表示产生了一个可打印字符。3级DOM事件规范草案定义一个更通用的textinput事件，不管来源（例如：键盘、粘贴或拖放形式的数据传输、亚洲语言输入法、声音或手写识别系统），无论何时用户输入文本时都会触发它。在写本章时，textinput事件尚未得到支持，但Webkit浏览器支持一个非常类似的“textInput”（使用大写字母I）事件。
+
+建议中的textinput事件和已经实现的textInput事件都传递一个简单的事件对象，它有一个用于保存输入文本的data属性。（另一个属性inputMethod是建议用于指定输入源，但它尚未实现。）对于键盘输入，data属性通常只保存单个字符，但其他输入源通常可能包含多个字符。
+
+通过keypress事件传递的对象更加混乱。一个keypress事件表示输入的单个字符。事件对象以数字Unicode编码的形式指定字符，所以必须用String.fromCharCode`()`把它转换成字符串。在大多数浏览器中，事件对象的keyCode属性指定了输入字符的编码。但是由于历史的原因，Firefox使用的是charCode属性。大多数浏览器只在当产生可打印字符时触发keypress事件。但是Firefox在产生非打印字符时也触发keypress事件。为了检测这种情况（这样就能忽略非打印字符），可以查找有charCode属性但值为0的事件对象。
+
+可以通过取消textinput、textInput和keypress事件来阻止字符输入，这意味着可以使用这些事件来过滤输入。例如，你可能想阻止用户在只接受数字数据的域中输入字母。例17-6是一段不唐突的JavaScript代码模块，它恰好实现了这种过滤。它查找有额外属性（非标准）data-allowed-chars的`<input type=text>`元素。这个模块在这类文本输入域上注册了textinput、textInput和keypress事件的处理程序来限制用户只能输入出现在许可属性值中的字符。例17-6顶部注释的开头部分包含使用这个模块的一些HTML代码示例。
+
+```js
+/**
+* InputFilter.js: unobtrusive filtering of keystrokes for <input> elements
+*
+* This module finds all <input type="text"> elements in the document that
+* have an "data-allowed-chars" attribute. It registers keypress, textInput, and
+* textinput event handlers for any such element to restrict the user's input
+* so that only characters that appear in the value of the attribute may be
+* entered. If the <input> element also has an attribute named "data-messageid",
+* the value of that attribute is taken to be the id of another document
+* element. If the user types a character that is not allowed, the message
+* element is made visible. If the user types a character that is allowed, the
+* message element is hidden. This message id element is intended to offer
+* an explanation to the user of why her keystroke was rejected. It should
+* typically be styled with CSS so that it is initially invisible.
+*
+* Here is sample HTML that uses this module.
+* Zipcode: <input id="zip" type="text"
+* data-allowed-chars="0123456789" data-messageid="zipwarn">
+* <span id="zipwarn" style="color:red;visibility:hidden">Digits only</span>
+*
+* This module is purely unobtrusive: it does not define any symbols in
+* the global namespace.
+*/
+whenReady(function () { // Run this function when the document is loaded
+  // Find all <input> elements
+  var inputelts = document.getElementsByTagName("input");
+  // Loop through them all
+  for(var i = 0 ; i < inputelts.length; i++) {
+  var elt = inputelts[i];
+  // Skip those that aren't text fields or that don't have
+  // a data-allowed-chars attribute.
+  if (elt.type != "text" || !elt.getAttribute("data-allowed-chars"))
+  continue;
+  // Register our event handler function on this input element
+  // keypress is a legacy event handler that works everywhere.
+  // textInput (mixed-case) is supported by Safari and Chrome in 2010.
+  // textinput (lowercase) is the version in the DOM Level 3 Events draft.
+  if (elt.addEventListener) {
+  elt.addEventListener("keypress", filter, false);
+  elt.addEventListener("textInput", filter, false);
+  elt.addEventListener("textinput", filter, false);
+  }
+  else { // textinput not supported versions of IE w/o addEventListener()
+  elt.attachEvent("onkeypress", filter);
+  }
+  }
+  // This is the keypress and textInput handler that filters the user's input
+  function filter(event) {
+  // Get the event object and the target element target
+  var e = event || window.event; // Standard or IE model
+  var target = e.target || e.srcElement; // Standard or IE model
+  var text = null; // The text that was entered
+  // Get the character or text that was entered
+  if (e.type === "textinput" || e.type === "textInput") text = e.data;
+  else { // This was a legacy keypress event
+  // Firefox uses charCode for printable key press events
+  var code = e.charCode || e.keyCode;
+  // If this keystroke is a function key of any kind, do not filter it
+  if (code < 32 || // ASCII control character
+  e.charCode == 0 || // Function key (Firefox only)
+  e.ctrlKey || e.altKey) // Modifier key held down
+  return; // Don't filter this event
+  // Convert character code into a string
+  var text = String.fromCharCode(code);
+  }
+  // Now look up information we need from this input element
+  var allowed = target.getAttribute("data-allowed-chars"); // Legal chars
+  var messageid = target.getAttribute("data-messageid"); // Message id
+  if (messageid) // If there is a message id, get the element
+  var messageElement = document.getElementById(messageid);
+  // Loop through the characters of the input text
+  for(var i = 0; i < text.length; i++) {
+  var c = text.charAt(i);
+  if (allowed.indexOf(c) == -1) { // Is this a disallowed character?
+  // Display the message element, if there is one
+  if (messageElement) messageElement.style.visibility = "visible";
+  // Cancel the default action so the text isn't inserted
+  if (e.preventDefault) e.preventDefault();
+  if (e.returnValue) e.returnValue = false;
+  return false;
+  }
+  }
+  // If all the characters were legal, hide the message if there is one.
+  if (messageElement) messageElement.style.visibility = "hidden";
+  }
+});
+```
+
+keypress和textinput事件是在新输入的文本真正插入到聚焦的文档元素前触发，这就是这些事件处理程序能够取消事件和阻止文本插入的原因。浏览器也实现了在文本插入到元素后才触发的input事件类型input。虽然这些事件不能取消，不能指定其事件对象中的最新文本，但它们能以某种形式提供元素文本内容发生改变的通知。例如，如果想确保输入框中输入的任何文本都是大写，那么可以像如下这样使用input事件：
+
+```html
+姓氏: <input type="text" oninput="this.value = this.value.toUpperCase();">
+```
+
+HTML5标准化了input事件，除IE外的所有浏览器都支持它。在IE中，可以使用不标准的propertychange事件检测文本输入元素的value属性改变来实现相似的效果。例17-7展示可以用一种跨平台的方式强制所有输入都大写。
+
+```js
+function forceToUpperCase(element) {
+  if (typeof element === "string") element = document.getElementById(element);
+  element.oninput = upcase;
+  element.onpropertychange = upcaseOnPropertyChange;
+  // Easy case: the handler for the input event
+  function upcase(event) { this.value = this.value.toUpperCase(); }
+  // Hard case: the handler for the propertychange event
+  function upcaseOnPropertyChange(event) {
+  var e = event || window.event;
+  // If the value property changed
+  if (e.propertyName === "value") {
+  // Remove onpropertychange handler to avoid recursion
+  this.onpropertychange = null;
+  // Change the value to all uppercase
+  this.value = this.value.toUpperCase();
+  // And restore the original propertychange handler
+  this.onpropertychange = upcaseOnPropertyChange;
+  }
+  }
+}
+```
+
 ## 17.9 键盘事件
+
+当用户在键盘上按下或释放按键时，会发生keydown和keyup事件。它们由辅助键、功能键和字母数字键产生如果用户按键时间足够长会导致它开始重复，那么在keyup事件到达之前会收到多个keydown事件。
+
+这些事件相关的事件对象都有数字属性keyCode，指定了按下的键是哪个。对于产生可打印字符的按键，keyCode值是按键上出现的主要字符的Unicode编码。无论Shift键处于什么状态，字母键总是产生大写keyCode值，这是因为它们出现在物理键盘上。类似地，即使为了输入标点字符而按下了Shift键，但数字键产生的keyCode值就是出现在对应键上的数字。对于不可打印键，keyCode属性将是一些其他值。keyCode值尚未标准化，但适当的跨浏览器兼容性是可行的。例17-8包含一个从keyCode值到功能键名字的映射。
+
+类似鼠标事件对象，键盘事件对象有altKey、ctrlKey、metakey和shiftKey属性，当事件发生时，如果对应的辅助键被按下，那么它们会被设置为true。
+
+keydown和keyup事件及keyCode属性已经使用了十多年，但从未标准化。3级DOM事件规范草案标准化了keydown和keyup事件类型，但没有尝试标准化keyCode。相反，它定义了新属性key，它会以字符串的形式包含键名。如果按键对应的是一个可打印字符，那么key属性将仅仅是这个可打印字符。如果按键是功能键，那么key属性将是像“F2”、“Home”或“Left”这样的值。
+
+在写本章时，3级DOM事件的key属性尚未在任何浏览器中实现。但是，像Safari和Chrome这类基于Webkit的浏览器为这些事件的事件对象定义了一个keyIdentifier属性。类似key，keyIdentifier是字符串而非数字，并且对于功能键，它是像“Shift”、“Enter”这样有用的值。对于可打印字符，该属性保存了这个字符的Unicode编码的字符串表示形式，其用处要小一些。例如，对于A键，它是“U+0041”。
+
+例17-8定义了一个Keymap类，把像“PageUp”、“Alt_Z”和“ctrl+alt+shift+F5”这些按键标识符映射到JavaScript函数，这些函数会作为按键的响应而调用。以JavaScript对象的形式把按键的绑定传给Keymap`()`构造函数，在对象中属性名是按键标识符，而属性值是处理程序函数。使用bind`()`和unbind`()`方法添加和移除绑定。使用install`()`方法在HTML元素（通常是Document对象）上配置Keymap。通过在元素上注册keydown事件处理程序配置Keymap。每次键被按下，处理程序检查是否有与按键相关的函数。如果有，就调用它。在keydown事件处理程序中如果能定义3级DOM事件的key属性就会优先使用它。如果没有，它会查找Webkit的keyIdentifier属性然后使用它。否则，它退回使用不标准的keyCode属性。例17-8开头有段很长的注释来解释这个模块的更多详细信息。
+
+```js
+/*
+* Keymap.js: bind key events to handler functions.
+*
+* This module defines a Keymap class. An instance of this class represents a
+* mapping of key identifiers (defined below) to handler functions. A Keymap
+* can be installed on an HTML element to handle keydown events. When such an
+* event occurs, the Keymap uses its mapping to invoke the appropriate handler.
+*
+* When you create a Keymap, you can pass a JavaScript object that represents
+* the initial set of bindings for the Keymap. The property names of this object
+* are key identifers, and the property values are the handler functions.
+* After a Keymap has been created, you can add new bindings by passing a key
+* identifer and handler function to the bind() method. You can remove a
+* binding by passing a key identifier to the unbind() method.
+*
+* To make use of a Keymap, call its install() method, passing an HTML element,
+* such as the document object. install() adds an onkeydown event handler to
+* the specified object. When this handler is invoked, it determines the key
+* identifier of the pressed key and invokes the handler function, if any,
+* bound to that key identifier. A single Keymap may be installed on more than
+* one HTML element.
+*
+* Key Identifiers
+*
+* A key identifier is a case-insensitive string representation of a key plus
+* any modifier keys that are held down at the same time. The key name is
+* usually the (unshifted) text on the key. Legal key names include "A", "7",
+* "F2", "PageUp", "Left", "Backspace", and "Esc".
+*
+* See the Keymap.keyCodeToKeyName object in this module for a list of names.
+* These are a subset of the names defined by the DOM Level 3 standard and
+* this class will use the key property of the event object when implemented.
+*
+* A key identifier may also include modifier key prefixes. These prefixes are
+* Alt, Ctrl, Meta, and Shift. They are case-insensitive, and must be separated
+* from the key name and from each other with spaces or with an underscore,
+* hyphen, or +. For example: "SHIFT+A", "Alt_F2", "meta-v", and "ctrl alt left".
+* On Macs, Meta is the Command key and Alt is the Option key. Some browsers
+* map the Windows key to the Meta modifier.
+*
+* Handler Functions
+*
+* Handlers are invoked as methods of the document or document element on which
+* the keymap is installed and are passed two arguments:
+* 1) the event object for the keydown event
+* 2) the key identifier of the key that was pressed
+* The handler return value becomes the return value of the keydown handler.
+* If a handler function returns false, the keymap will stop bubbling and
+* cancel any default action associated with the keydown event.
+*
+* Limitations
+*
+* It is not possible to bind a handler function to all keys. The operating
+* system traps some key sequences (Alt-F4, for example). And the browser
+* itself may trap others (Ctrl-S, for example). This code is browser, OS,
+* and locale-dependent. Function keys and modified function keys work well,
+* and unmodified alphanumeric keys work well. The combination of Ctrl and Alt
+* with alphanumeric characters is less robust.
+*
+* Most punctuation characters that do not require the Shift key (`=[];',./\
+* but not hyphen) on standard US keyboard layouts are supported. But they are
+* not particularly portable to other keyboard layouts and should be avoided.
+*/
+// This is the constructor function
+function Keymap(bindings) {
+  this.map = {}; // Define the key identifier->handler map
+  if (bindings) { // Copy initial bindings into it
+  for(name in bindings) this.bind(name, bindings[name]);
+  }
+}
+// Bind the specified key identifier to the specified handler function
+Keymap.prototype.bind = function(key, func) {
+  this.map[Keymap.normalize(key)] = func;
+};
+// Delete the binding for the specified key identifier
+Keymap.prototype.unbind = function(key) {
+  delete this.map[Keymap.normalize(key)];
+};
+// Install this Keymap on the specified HTML element
+Keymap.prototype.install = function(element) {
+  // This is the event-handler function
+  var keymap = this;
+  function handler(event) { return keymap.dispatch(event, element); }
+  // Now install it
+  if (element.addEventListener)
+  element.addEventListener("keydown", handler, false);
+  else if (element.attachEvent)
+  element.attachEvent("onkeydown", handler);
+};
+// This method dispatches key events based on the keymap bindings.
+Keymap.prototype.dispatch = function(event, element) {
+  // We start off with no modifiers and no key name
+  var modifiers = ""
+  var keyname = null;
+  // Build the modifier string in canonical lowercase alphabetical order.
+  if (event.altKey) modifiers += "alt_";
+  if (event.ctrlKey) modifiers += "ctrl_";
+  if (event.metaKey) modifiers += "meta_";
+  if (event.shiftKey) modifiers += "shift_";
+  // The keyname is easy if the DOM Level 3 key property is implemented:
+  if (event.key) keyname = event.key;
+  // Use the keyIdentifier on Safari and Chrome for function key names
+  else if (event.keyIdentifier && event.keyIdentifier.substring(0,2) !== "U+")
+  keyname = event.keyIdentifier;
+  // Otherwise, use the keyCode property and the code-to-name map below
+  else keyname = Keymap.keyCodeToKeyName[event.keyCode];
+  // If we couldn't figure out a key name, just return and ignore the event.
+  if (!keyname) return;
+  // The canonical key id is modifiers plus lowercase key name
+  var keyid = modifiers + keyname.toLowerCase();
+  // Now see if the key identifier is bound to anything
+  var handler = this.map[keyid];
+  if (handler) { // If there is a handler for this key, handle it
+  // Invoke the handler function
+  var retval = handler.call(element, event, keyid);
+  // If the handler returns false, cancel default and prevent bubbling
+  if (retval === false) {
+  if (event.stopPropagation) event.stopPropagation(); // DOM model
+  else event.cancelBubble = true; // IE model
+  if (event.preventDefault) event.preventDefault(); // DOM
+  else event.returnValue = false; // IE
+  }
+  // Return whatever the handler returned
+  return retval;
+  }
+};
+// Utility function to convert a key identifier to canonical form.
+// On non-Macintosh hardware, we could map "meta" to "ctrl" here, so that
+// Meta-C would be "Command-C" on the Mac and "Ctrl-C" everywhere else.
+Keymap.normalize = function(keyid) {
+  keyid = keyid.toLowerCase(); // Everything lowercase
+  var words = keyid.split(/\s+|[\-+_]/); // Split modifiers from name
+  var keyname = words.pop(); // keyname is the last word
+  keyname = Keymap.aliases[keyname] || keyname; // Is it an alias?
+  words.sort(); // Sort remaining modifiers
+  words.push(keyname); // Add the normalized name back
+  return words.join("_"); // Concatenate them all
+};
+Keymap.aliases = { // Map common key aliases to their "official"
+  "escape":"esc", // key names used by DOM Level 3 and by
+  "delete":"del", // the key code to key name map below.
+  "return":"enter", // Both keys and values must be lowercase here.
+  "ctrl":"control",
+  "space":"spacebar",
+  "ins":"insert"
+};
+// The legacy keyCode property of the keydown event object is not standardized
+// But the following values seem to work for most browsers and OSes.
+Keymap.keyCodeToKeyName = {
+  // Keys with words or arrows on them
+  8:"Backspace", 9:"Tab", 13:"Enter", 16:"Shift", 17:"Control", 18:"Alt",
+  19:"Pause", 20:"CapsLock", 27:"Esc", 32:"Spacebar", 33:"PageUp",
+  34:"PageDown", 35:"End", 36:"Home", 37:"Left", 38:"Up", 39:"Right",
+  40:"Down", 45:"Insert", 46:"Del",
+  // Number keys on main keyboard (not keypad)
+  48:"0",49:"1",50:"2",51:"3",52:"4",53:"5",54:"6",55:"7",56:"8",57:"9",
+  // Letter keys. Note that we don't distinguish upper and lower case
+  65:"A", 66:"B", 67:"C", 68:"D", 69:"E", 70:"F", 71:"G", 72:"H", 73:"I",
+  74:"J", 75:"K", 76:"L", 77:"M", 78:"N", 79:"O", 80:"P", 81:"Q", 82:"R",
+  83:"S", 84:"T", 85:"U", 86:"V", 87:"W", 88:"X", 89:"Y", 90:"Z",
+  // Keypad numbers and punctuation keys. (Opera does not support these.)
+  96:"0",97:"1",98:"2",99:"3",100:"4",101:"5",102:"6",103:"7",104:"8",105:"9",
+  106:"Multiply", 107:"Add", 109:"Subtract", 110:"Decimal", 111:"Divide",
+  // Function keys
+  112:"F1", 113:"F2", 114:"F3", 115:"F4", 116:"F5", 117:"F6",
+  118:"F7", 119:"F8", 120:"F9", 121:"F10", 122:"F11", 123:"F12",
+  124:"F13", 125:"F14", 126:"F15", 127:"F16", 128:"F17", 129:"F18",
+  130:"F19", 131:"F20", 132:"F21", 133:"F22", 134:"F23", 135:"F24",
+  // Punctuation keys that don't require holding down Shift
+  // Hyphen is nonportable: FF returns same code as Subtract
+  59:";", 61:"=", 186:";", 187:"=", // Firefox and Opera return 59,61
+  188:",", 190:".", 191:"/", 192:"`", 219:"[", 220:"\\", 221:"]", 222:"'"
+};
+```
 
 # 第18章 脚本化HTTP
 # 第19章 jQuery类库
