@@ -9114,7 +9114,7 @@ document.body.onclick = function(event){
 };
 ```
 
-当单击这个例子中的按钮时， this 和 currentTarget 都等于 document.body，因为事件处理程序是注册到这个元素上的。然而， target 元素却等于按钮元素，因为它是 click 事件真正的目标。由于按钮上并没有注册事件处理程序，结果 click 事件就冒泡到了 document.body，在那里事件才得到了处理。
+当单击这个例子中的按钮时， this 和 currentTarget 都等于 `document.body`，因为事件处理程序是注册到这个元素上的。然而， target 元素却等于按钮元素，因为它是 click 事件真正的目标。由于按钮上并没有注册事件处理程序，结果 click 事件就冒泡到了 `document.body`，在那里事件才得到了处理。
 
 在需要通过一个函数处理多个事件时，可以使用 type 属性。例如：
 
@@ -9223,7 +9223,7 @@ IE 的 event 对象同样也包含与创建它的事件相关的属性和方法�
 | srcElement | Element | 只读 | 事件的目标(与DOm中的target属性相同) |
 | type | String | 只读 | 被触发的事件的类型 |
 
-因为事件处理程序的作用域是根据指定它的方式来确定的，所以不能认为 this 会始终等于事件目标。故而，最好还是使用 event.srcElement 比较保险。例如：
+因为事件处理程序的作用域是根据指定它的方式来确定的，所以不能认为 this 会始终等于事件目标。故而，最好还是使用 `event.srcElement` 比较保险。例如：
 
 ```js
 var btn = document.getElementById("myBtn");
@@ -9279,11 +9279,11 @@ var EventUtil = {
     return event.target || event.srcElement;
   },
   preventDefault: function(event){
-  if (event.preventDefault){
-    event.preventDefault();
-  } else {
-    event.returnValue = false;
-  }
+    if (event.preventDefault){
+      event.preventDefault();
+    } else {
+      event.returnValue = false;
+    }
   },
   removeHandler: function(element, type, handler){
     //省略的代码
@@ -10811,13 +10811,14 @@ document.addEventListener("gesturechange", handleGestureEvent, false);
 var item1 = document.getElementById("goSomewhere");
 var item2 = document.getElementById("doSomething");
 var item3 = document.getElementById("sayHi");
+
 EventUtil.addHandler(item1, "click", function(event){
   n.href = "http://www.wrox.com";
 });
-  EventUtil.addHandler(item2, "click", function(event){
+EventUtil.addHandler(item2, "click", function(event){
   document.title = "I changed the document's title";
 });
-  EventUtil.addHandler(item3, "click", function(event){
+EventUtil.addHandler(item3, "click", function(event){
   alert("hi");
 });
 ```
