@@ -9162,56 +9162,71 @@ var Insert = (function() {
 
 ### 15.8.1 文档坐标和视口坐标
 
-元素的位置是以像素来度量的，向右代表X坐标的增加，向下代表Y坐标的增加。但是，有两个不同的点作为坐标系的原点：元素的X和Y坐标可以相对于文档的左上角或者相对于在其中显示文档的视口的左上角。在顶级窗口和标签页中，“视口”只是实际显示文档内容的浏览器的一部分：它不包括浏览器“外壳”（如菜单、工具条和标签页）。针对框架页中显示的文档，视口是定义了框架页的`<iframe>`元素。无论在何种情况下，当讨论元素的位置时，必须弄清楚所使用的坐标是文档坐标还是视口坐标。（注意，视口坐标有时也叫做窗口坐标。）
+元素的位置是以像素来度量的，向右代表 X 坐标的增加，向下代表 Y 坐标的增加。但是，有两个不同的点作为坐标系的原点：元素的 X 和 Y 坐标可以相对于文档的左上角或者相对于在其中显示文档的视口的左上角。在顶级窗口和标签页中，“视口”只是实际显示文档内容的浏览器的一部分：它不包括浏览器“外壳”（如菜单、工具条和标签页）。针对框架页中显示的文档，视口是定义了框架页的`<iframe>`元素。无论在何种情况下，当讨论元素的位置时，必须弄清楚所使用的坐标是文档坐标还是视口坐标。（注意，视口坐标有时也叫做窗口坐标。）
 
 如果文档比视口要小，或者说它还未出现滚动，则文档的左上角就是视口的左上角，文档和视口坐标系统是同一个。但是，一般来说，要在两种坐标系之间互相转换，必须加上或减去滚动的偏移量（scroll offset）。例如，在文档坐标中如果一个元素的Y坐标是200像素，并且用户已经把浏览器向下滚动75像素，那么视口坐标中元素的Y坐标是125像素。同样，在视口坐标中如果一个元素的X坐标是400像素，并且用户已经水平滚动了视口200像素，那么文档坐标中元素的X坐标是600像素。
 
 文档坐标比视口坐标更加基础，并且在用户滚动时它们不会发生变化。不过，在客户端编程中使用视口坐标是非常常见的。当使用CSS指定元素的位置时运用了文档坐标（见第16章）。但是，最简单的查询元素位置的方法（见15.8.2节）返回视口坐标中的位置。类似地，当为鼠标事件注册事件处理程序函数时，报告的鼠标指针的坐标是在视口坐标系中的。
 
-为了在坐标系之间互相转换，我们需要判定浏览器窗口的滚动条的位置。Window对象的 pageXOffset 和 pageYOffset 属性在所有的浏览器中提供这些值，除了IE 8及更早的版本以外。IE（和所有现代浏览器）也可以通过 scrollLeft 和 scrollTop 属性来获得滚动条的位置。令人迷惑的是，正常情况下通过查询文档的根节点（document.documentElement）来获取这些属性值，但在怪异模式下（见13.4.4节），必须在文档的`<body>`元素（document.body）上查询它们。例15-8显示了如何简便地查询滚动条的位置。
+为了在坐标系之间互相转换，我们需要判定浏览器窗口的滚动条的位置。 Window 对象的 pageXOffset 和 pageYOffset 属性在所有的浏览器中提供这些值，除了IE 8及更早的版本以外。IE（和所有现代浏览器）也可以通过 scrollLeft 和 scrollTop 属性来获得滚动条的位置。令人迷惑的是，正常情况下通过查询文档的根节点（`document.documentElement`）来获取这些属性值，但在怪异模式下（见13.4.4节），必须在文档的`<body>`元素（`document.body`）上查询它们。例15-8显示了如何简便地查询滚动条的位置。
 
 ```js
 /*查询窗口滚动条的位置*/
-//以一个对象的x和y属性的方法返回滚动条的偏移量
+
+// 以一个对象的x和y属性的方法返回滚动条的偏移量
 function getScrollOffsets(w) {
-  //使用指定才窗口，如果不带参数则使用当前窗口
+  // 使用指定才窗口，如果不带参数则使用当前窗口
   w = w || window;
 
-  //除了IE8及更早的版本以外，其它的浏览器都能用
-  if (w.pageXOffset != null) return {x: w.pageXOffset, y:w.pageYOffset};
+  // 除了IE8及更早的版本以外，其它的浏览器都能用
+  if (w.pageXOffset != null) 
+    return {
+      x: w.pageXOffset, y: w.pageYOffset
+    };
 
-  //对标准模式下的IE，或任何浏览器
+  // 对标准模式下的IE，或任何浏览器
   var d = w.document;
   if (document.compatMode == "CSS1Compat")
-    return {x:d.documentElement.scrollLeft, y:d.documentElement.scrollTop};
+    return {
+      x: d.documentElement.scrollLeft, y: d.documentElement.scrollTop
+    };
 
-  //怪异模式下的浏览器
-  return { x: d.body.scrollLeft, y: d.body.scrollTop };
+  // 怪异模式下的浏览器
+  return { 
+    x: d.body.scrollLeft, y: d.body.scrollTop 
+  };
 }
 ```
 
-有时能够判定视口的尺寸也是非常有用的——例如，为了确定文档的哪些部分是当前可见的。利用滚动偏移量查询视口尺寸的简单方法在IE 8及更早的版本中无法工作，而且该技术在IE中的运行方式还要取决于浏览器是处于怪异模式还是标准模式。例15-9介绍了如何简便地查询视口尺寸。注意，它和例15-8的代码是如此相似。
+有时能够判定视口的尺寸也是非常有用的——例如，为了确定文档的哪些部分是当前可见的。利用滚动偏移量查询视口尺寸的简单方法在 IE 8 及更早的版本中无法工作，而且该技术在 IE 中的运行方式还要取决于浏览器是处于怪异模式还是标准模式。例15-9介绍了如何简便地查询视口尺寸。注意，它和例15-8的代码是如此相似。
 
 ```js
 /*查询窗口的视口尺寸*/
-//作为一个对象的w和h属性返回视口的尺寸
+
+// 作为一个对象的w和h属性返回视口的尺寸
 function getViewportSize(w) {
-  //使用指定的窗口，如果不带参数则使用当前窗口
+  // 使用指定的窗口，如果不带参数则使用当前窗口
   w = w || window;
-  //除了ie8和更早的版本，其它浏览器都能用
-  if (w.innerWidth != null) return {
-    w: w.innerWidth,
-    h: w.innerHeight
-  };
-  //对于标准模式下的IE或其任何浏览器
+
+  // 除了ie8和更早的版本，其它浏览器都能用
+  if (w.innerWidth != null) 
+    return {
+      w: w.innerWidth,
+      h: w.innerHeight
+    };
+
+  // 对于标准模式下的IE或其任何浏览器
   var d = w.document;
   if (document.compatMode == "CSS1Compat")
     return {
       w: d.documentElement.clientWidth,
       h: d.documentElement.clientHeight
     };
-  //对于怪异模式下的浏览器
-  return{w:d.body.clientWidth,h:d.body.clientHeight};
+
+  // 对于怪异模式下的浏览器
+  return{
+    w: d.body.clientWidth, h: d.body.clientHeight
+  };
 }
 ```
 
@@ -9219,18 +9234,18 @@ function getViewportSize(w) {
 
 ### 15.8.2 查询元素的几何尺寸
 
-判定一个元素的尺寸和位置最简单的方法是调用它的`getBoundingClientRect()`方法。该方法是在IE 5中引入的，而现在当前的所有浏览器都实现了。它不需要参数，返回一个有left、right、top和bottom属性的对象。left和top属性表示元素的左上角的X和Y坐标，right和bottom属性表示元素的右下角的X和Y坐标。
+判定一个元素的尺寸和位置最简单的方法是调用它的`getBoundingClientRect()`方法。该方法是在 IE 5 中引入的，而现在当前的所有浏览器都实现了。它不需要参数，返回一个有 left 、 right 、 top 和 bottom 属性的对象。 left 和 top 属性表示元素的左上角的X和Y坐标， right 和 bottom 属性表示元素的右下角的X和Y坐标。
 
 这个方法返回元素在视口坐标中的位置。（`getBoundingClientRect()`方法名中的“Client”是一种间接指代，它就是Web浏览器客户端 ——专指它定义的窗口或视口。）为了转化为甚至用户滚动浏览器窗口以后仍然有效的文档坐标，需要加上滚动的偏移量：
 
 ```js
-var box = e.getBoundingClientRect(); //获得视口在坐标中的位置
-var offsets = getScrollOffsets(); //上面定义的工具函数
+var box = e.getBoundingClientRect(); // 获得视口在坐标中的位置
+var offsets = getScrollOffsets(); // 上面定义的工具函数
 var x = box.left + offsets.x; // 转换为文档坐标
 var y = box.top + offsets.y;
 ```
 
-在很多浏览器（和W3C标准）中，getBoundingClientRect()返回的对象还包含width和height属性，但是在原始的IE中未实现。为了简便起见，可以这样计算元素的width和height：
+在很多浏览器（和 W3C 标准）中，`getBoundingClientRect()`返回的对象还包含 width 和 height 属性，但是在原始的IE中未实现。为了简便起见，可以这样计算元素的 width 和 height ：
 
 ```js
 var box = e.getBoundingClientRect(); //获得视口在坐标中的位置
@@ -9244,44 +9259,45 @@ var h = box.height || (box.bottom - box.top);
 
 如果想查询内联元素每个独立的矩形，调用`getClientRects()`方法来获得一个只读的类数组对象，它的每个元素类似于`getBoundingClientRect()`返回的矩形对象。
 
-我们已经见过如`getElementsByTagName()`这样的DOM方法返回的结果是“实时的”，当文档变化时这些结果能自动更新。但`getBoundingClientRect()`和`getClientRects()`所返回的矩形对象（和矩形对象列表）并不是实时的。它们只是调用方法时文档视觉状态的静态快照，在用户滚动或改变浏览器窗口大小时不会更新它们。
+我们已经见过如`getElementsByTagName()`这样的 DOM 方法返回的结果是“实时的”，当文档变化时这些结果能自动更新。但`getBoundingClientRect()`和`getClientRects()`所返回的矩形对象（和矩形对象列表）并不是实时的。它们只是调用方法时文档视觉状态的静态快照，在用户滚动或改变浏览器窗口大小时不会更新它们。
 
 ### 15.8.3 判定元素在某点
 
-`getBoundingClientRect()`方法使我们能在视口中判定元素的位置。但有时我们想反过来，判定在视口中的指定位置上有什么元素。这可以用Document对象的`elementFromPoint()`方法来判定。传递X和Y坐标（使用视口坐标而非文档坐标），该方法返回在指定位置的一个元素。在写本书的这段时间里，选取元素的算法还未详细指定，但是该方法的意图就是它返回在那个点的最里面的和最上面的（见16.2.1节中CSS的z-index属性）元素。如果指定的点在视口以外，`elementFromPoint()`返回null，即使该点在转换为文档坐标后是完美有效的，返回值也一样。
+`getBoundingClientRect()`方法使我们能在视口中判定元素的位置。但有时我们想反过来，判定在视口中的指定位置上有什么元素。这可以用Document对象的`elementFromPoint()`方法来判定。传递 X 和 Y 坐标（使用视口坐标而非文档坐标），该方法返回在指定位置的一个元素。在写本书的这段时间里，选取元素的算法还未详细指定，但是该方法的意图就是它返回在那个点的最里面的和最上面的（见16.2.1节中CSS的z-index属性）元素。如果指定的点在视口以外，`elementFromPoint()`返回null，即使该点在转换为文档坐标后是完美有效的，返回值也一样。
 
 `elementFromPoint()`方法看上去很有用，典型的案例是将鼠标指针的坐标传递给它来判定鼠标在哪个元素上。但是，我们将在第17章学到，鼠标事件对象已经在target属性中包含了这些信息。因此，实际上`elementFromPoint()`不经常使用。
 
 ### 15.8.4 滚动
 
-例15-8展示了如何在浏览器窗口中查询滚动条的位置。该例子中的scrollLeft和scrollTop属性可以用来设置让浏览器滚动，但有一种更简单的方法从JavaScript最早的时期开始就支持的。Window对象的`scrollTop()`方法（和其同义词`scroll()`）接受一个点的X和Y坐标（文档坐标），并作为滚动条的偏移量设置它们。也就是，窗口滚动到指定的点出现在视口的左上角。如果指定的点太接近于文档的下边缘或右边缘，浏览器将尽量保证它和视口的左上角之间最近，但是无法达到一致。以下代码滚动浏览器到文档最下面的页面可见：
+例15-8展示了如何在浏览器窗口中查询滚动条的位置。该例子中的 scrollLeft 和 scrollTop 属性可以用来设置让浏览器滚动，但有一种更简单的方法从 JavaScript 最早的时期开始就支持的。 Window 对象的`scrollTop()`方法（和其同义词`scroll()`）接受一个点的X和Y坐标（文档坐标），并作为滚动条的偏移量设置它们。也就是，窗口滚动到指定的点出现在视口的左上角。如果指定的点太接近于文档的下边缘或右边缘，浏览器将尽量保证它和视口的左上角之间最近，但是无法达到一致。以下代码滚动浏览器到文档最下面的页面可见：
 
 ```js
-//获得文档和视口的高度，offsetHeight会在下面解释
+// 获得文档和视口的高度，offsetHeight会在下面解释
 var documentHeight = document.documentElement.offsetHeight;
-var viewportHeight = windows.innerHeight; //或使用上面的getViewportSize()
-//然后，滚动让最后一页在视口中可见
+var viewportHeight = windows.innerHeight; // 或使用上面的getViewportSize()
+
+// 然后，滚动让最后一页在视口中可见
 window.scrollTo(0, documentHeight - viewportHeight);
 ```
 
-Window的`scrollBy()`方法和`scroll()`和`scrollTo()`类似，但是它的参数是相对的，并在当前滚动条的偏移量上增加。例如，快速阅读者可能会喜欢这样的书签（见13.2.5节）：
+Window 的`scrollBy()`方法和`scroll()`和`scrollTo()`类似，但是它的参数是相对的，并在当前滚动条的偏移量上增加。例如，快速阅读者可能会喜欢这样的书签（见13.2.5节）：
 
 ```js
 //每200毫秒向下滚动10像素。注意，它无法关闭
-javascript:void setInterval(function() {
-  scrollBy(0,10)
+javascript: void setInterval(function() {
+  scrollBy(0, 10)
 }, 200)
 ```
 
-通常，除了滚动到文档中用数字表示的位置，我们只是想它滚动使得文档中的某个元素可见。可以利用`getBoundingClientRect()`计算元素的位置，并转换为文档坐标，然后用`scrollTo()`方法达到目的。但是在需要显示的HTML元素上调用`scrollIntoView()`方法更加方便。该方法保证了元素能在视口中可见。默认情况下，它试图将元素的上边缘放在或尽量接近视口的上边缘。如果只传递false作为参数，它将试图将元素的下边缘放在或尽量接近视口的下边缘。只要有助于元素在视口内可见，浏览器也会水平滚动视口。
+通常，除了滚动到文档中用数字表示的位置，我们只是想它滚动使得文档中的某个元素可见。可以利用`getBoundingClientRect()`计算元素的位置，并转换为文档坐标，然后用`scrollTo()`方法达到目的。但是在需要显示的 HTML 元素上调用`scrollIntoView()`方法更加方便。该方法保证了元素能在视口中可见。默认情况下，它试图将元素的上边缘放在或尽量接近视口的上边缘。如果只传递 false 作为参数，它将试图将元素的下边缘放在或尽量接近视口的下边缘。只要有助于元素在视口内可见，浏览器也会水平滚动视口。
 
 `scrollIntoView()`的行为与设置`window.location.hash`为一个命名锚点（`<a name="">`元素）的名字后浏览器产生的行为类似。
 
 ### 15.8.5 关于元素尺寸、位置和溢出的更多信息
 
-`getBoundingClientRect()`方法在所有当前的浏览器上都有定义，但如果需要支持老式浏览器，不能依靠此方法而必须使用更老的技术来判定元素的尺寸和位置。元素的尺寸比较简单：任何HTML元素的只读属性offsetWidth和offsetHeight以CSS像素返回它的屏幕尺寸。返回的尺寸包含元素的边框和内边距，除去了外边距。
+`getBoundingClientRect()`方法在所有当前的浏览器上都有定义，但如果需要支持老式浏览器，不能依靠此方法而必须使用更老的技术来判定元素的尺寸和位置。元素的尺寸比较简单：任何 HTML 元素的只读属性 offsetWidth 和 offsetHeight 以 CSS 像素返回它的屏幕尺寸。返回的尺寸包含元素的边框和内边距，除去了外边距。
 
-所有HTML元素拥有offsetLeft和offsetTop属性来返回元素的X和Y坐标。对于很多元素，这些值是文档坐标，并直接指定元素的位置。但对于已定位元素的后代元素和一些其他元素（如表格单元），这些属性返回的坐标是相对于祖先元素的而非文档。offsetParent属性指定这些属性所相对的父元素。如果offsetParent为null，这些属性都是文档坐标，因此，一般来说，用offsetLeft和offsetTop来计算元素e的位置需要一个循环：
+所有 HTML 元素拥有 offsetLeft 和 offsetTop 属性来返回元素的 X 和 Y 坐标。对于很多元素，这些值是文档坐标，并直接指定元素的位置。但对于已定位元素的后代元素和一些其他元素（如表格单元），这些属性返回的坐标是相对于祖先元素的而非文档。 offsetParent 属性指定这些属性所相对的父元素。如果 offsetParent 为 null ，这些属性都是文档坐标，因此，一般来说，用 offsetLeft 和 offsetTop 来计算元素 e 的位置需要一个循环：
 
 ```js
 function getElementPosition(e){
@@ -9291,32 +9307,33 @@ function getElementPosition(e){
     y += e.offsetTop;
     e = e.offsetParent;
   }
-  return {x:x, y:y};
+  return {x: x, y: y};
 }
 ```
 
-通过循环offsetParent对象链来累加偏移量，该函数计算指定元素的文档坐标。（回想一下`getBoundingClientRect()`返回的是视口坐标。）这里不能对元素的位置就一锤定音，尽管如此——这个`getElementPosition()`函数也不总是计算正确的值，下面看看如何来修复它。
+通过循环 offsetParent 对象链来累加偏移量，该函数计算指定元素的文档坐标。（回想一下`getBoundingClientRect()`返回的是视口坐标。）这里不能对元素的位置就一锤定音，尽管如此——这个`getElementPosition()`函数也不总是计算正确的值，下面看看如何来修复它。
 
-除了这些名字以offset开头的属性以外，所有的文档元素定义了其他两组属性，其名称一组以client开头，另一组以scroll开头。即，每个HTML元素都有以下这些属性：
+除了这些名字以 offset 开头的属性以外，所有的文档元素定义了其他两组属性，其名称一组以 client 开头，另一组以 scroll 开头。即，每个 HTML 元素都有以下这些属性：
 
-| offsetWidth  | clientWidth  | scrollWidth  |
-|:-------------|:-------------|:-------------|
+| offset | client | scroll |
+|---|---|---|
+| offsetWidth | clientWidth | scrollWidth |
 | offsetHeight | clientHeight | scrollHeight |
-| offsetLeft   | clientLeft   | scrollLeft   |
-| offsetTop    | clientTop    | scrollTop    |
-| offsetParent |              |              |
+| offsetLeft | clientLeft | scrollLeft |
+| offsetTop | clientTop | scrollTop |
+| offsetParent |  |  |
 
-为了理解这些client和scroll属性，你需要知道HTML元素的实际内容有可能比分配用来容纳内容的盒子更大，因此单个元素可能有滚动条（见16.2.6节中CSS的overflow属性）。内容区域是视口，就像浏览器的窗口，当实际内容比视口更大时，需要把元素的滚动条位置考虑进去。
+为了理解这些 client 和 scroll 属性，你需要知道 HTML 元素的实际内容有可能比分配用来容纳内容的盒子更大，因此单个元素可能有滚动条（见16.2.6节中CSS的overflow属性）。内容区域是视口，就像浏览器的窗口，当实际内容比视口更大时，需要把元素的滚动条位置考虑进去。
 
-clientWidth和clientHeight类似offsetWidth和offsetHeight，不同的是它们不包含边框大小，只包含内容和它的内边距。同时，如果浏览器在内边距和边框之间添加了滚动条，clientWidth和clientHeight在其返回值中也不包含滚动条。注意，对于类似`<i>`、`<code>`和`<span>`这些内联元素，clientWidth和clientHeight总是返回0。
+clientWidth 和 clientHeight 类似 offsetWidth 和 offsetHeight ，不同的是它们不包含边框大小，只包含内容和它的内边距。同时，如果浏览器在内边距和边框之间添加了滚动条， clientWidth 和 clientHeight 在其返回值中也不包含滚动条。注意，对于类似`<i>`、`<code>`和`<span>`这些内联元素， clientWidth 和 clientHeight 总是返回0。
 
-在例15-9的`getViewportSize()`方法中使用了clientWidth和clientHeight。有一个特殊的案例，在文档的根元素上查询这些属性时，它们的返回值和窗口的innerWidth和innerHeight属性值相等。
+在例15-9的`getViewportSize()`方法中使用了 clientWidth 和 clientHeight 。有一个特殊的案例，在文档的根元素上查询这些属性时，它们的返回值和窗口的 innerWidth 和 innerHeight 属性值相等。
 
-clientLeft和clientTop属性没什么用：它们返回元素的内边距的外边缘和它的边框的外边缘之间的水平距离和垂直距离，通常这些值就等于左边和上边的边框宽度。但是如果元素有滚动条，并且浏览器将这些滚动条放置在左侧或顶部（可这不太常见），clientLeft和clientTop也就包含了滚动条的宽度。对于内联元素，clientLeft和clientTop总是为0。
+clientLeft 和 clientTop 属性没什么用：它们返回元素的内边距的外边缘和它的边框的外边缘之间的水平距离和垂直距离，通常这些值就等于左边和上边的边框宽度。但是如果元素有滚动条，并且浏览器将这些滚动条放置在左侧或顶部（可这不太常见）， clientLeft 和 clientTop 也就包含了滚动条的宽度。对于内联元素， clientLeft 和 clientTop 总是为0。
 
-scrollWidth和scrollHeight是元素的内容区域加上它的内边距再加上任何溢出内容的尺寸。当内容正好和内容区域匹配而没有溢出时，这些属性与clientWidth和clientHeight是相等的。但当溢出时，它们就包含溢出的内容，返回值比clientWidth和clientHeight要大。
+scrollWidth 和 scrollHeight 是元素的内容区域加上它的内边距再加上任何溢出内容的尺寸。当内容正好和内容区域匹配而没有溢出时，这些属性与 clientWidth 和 clientHeight 是相等的。但当溢出时，它们就包含溢出的内容，返回值比 clientWidth 和 clientHeight 要大。
 
-最后，scrollLeft和scrollTop指定元素的滚动条的位置。在`getScrollOffsets()`方法（例15-8）中在文档的根元素上我们查询过它们。注意，scrollLeft和scrollTop是可写的属性，通过设置它们来让元素中的内容滚动。（HTML元素并没有类似Window对象的`scrollTo()`方法。）
+最后， scrollLeft 和 scrollTop 指定元素的滚动条的位置。在`getScrollOffsets()`方法（例15-8）中在文档的根元素上我们查询过它们。注意，scrollLeft和scrollTop是可写的属性，通过设置它们来让元素中的内容滚动。（HTML元素并没有类似Window对象的`scrollTo()`方法。）
 
 当文档包含可滚动的且有溢出内容的元素时，上述定义的`getElementPosition()`方法就不能正常工作了，因为它没有把滚动条考虑进去。这里有一个修改版，它从累计的偏移量中减去了滚动条的位置，这样一来，将返回的位置从文档坐标转换为视口坐标。
 
@@ -9338,7 +9355,7 @@ function getElementPos(elt){
 }
 ```
 
-在现代浏览器中，getElementPos()方法的返回值和`getBoundingClientRect()`的返回值一样（但是更低效）。理论上，如`getElementPos()`这样的函数可以在不支持`getBoundingClientRect()`的浏览器中使用。但实际上，不支持`getBoundingClientRect()`的浏览器在元素位置方面有很多的不兼容性，像这样如此简陋的函数无法可靠地工作。实际类似jQuery这样的客户端类库包含了一些函数来计算元素的位置，它们扩充了这个基本的位置计算算法，修复了一系列浏览器特定的bug。如果需要代码在所有不支持`getBoundingClientRect()`的浏览器中正确计算元素的位置，你很可能需要像jQuery这样的类库。
+在现代浏览器中，`getElementPos()`方法的返回值和`getBoundingClientRect()`的返回值一样（但是更低效）。理论上，如`getElementPos()`这样的函数可以在不支持`getBoundingClientRect()`的浏览器中使用。但实际上，不支持`getBoundingClientRect()`的浏览器在元素位置方面有很多的不兼容性，像这样如此简陋的函数无法可靠地工作。实际类似jQuery这样的客户端类库包含了一些函数来计算元素的位置，它们扩充了这个基本的位置计算算法，修复了一系列浏览器特定的bug。如果需要代码在所有不支持`getBoundingClientRect()`的浏览器中正确计算元素的位置，你很可能需要像jQuery这样的类库。
 
 ## 15.9 HTML表单
 
