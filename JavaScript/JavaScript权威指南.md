@@ -3271,24 +3271,24 @@ while(test) {
 
 ### 5.7.1 with语句
 
-3.10.3节讨论了作用域链（scope chain），一个可以按序检索的对象列表，通过它可以进行变量名解析。with语句用于临时扩展作用域链，它具有如下的语法：
+3.10.3节讨论了作用域链（scope chain），一个可以按序检索的对象列表，通过它可以进行变量名解析。 with 语句用于临时扩展作用域链，它具有如下的语法：
 
 ```js
 with (object)
-statement
+  statement
 ```
 
-这条语句将object添加到作用域链的头部，然后执行statement，最后把作用域链恢复到原始状态。
+这条语句将 object 添加到作用域链的头部，然后执行 statement ，最后把作用域链恢复到原始状态。
 
-在严格模式中（参照5.7.3节）是禁止使用with语句的，并且在非严格模式里也是不推荐使用with语句的，尽可能避免使用with语句。那些使用with语句的JavaScript代码非常难于优化，并且同没有使用with语句的代码相比，它运行得更慢。
+在严格模式中（参照5.7.3节）是禁止使用 with 语句的，并且在非严格模式里也是不推荐使用 with 语句的，尽可能避免使用 with 语句。那些使用 with 语句的JavaScript代码非常难于优化，并且同没有使用 with 语句的代码相比，它运行得更慢。
 
-在对象嵌套层次很深的时候通常会使用with语句来简化代码编写。例如，在客户端JavaScript中，可能会使用类似下面这种表达式来访问一个HTML表单中的元素：
+在对象嵌套层次很深的时候通常会使用 with 语句来简化代码编写。例如，在客户端 JavaScript 中，可能会使用类似下面这种表达式来访问一个HTML表单中的元素：
 
 ```js
 document.forms[0].address.value
 ```
 
-如果这种表达式在代码中多次出现，则可以使用with语句将form对象添加至作用域链的顶层：
+如果这种表达式在代码中多次出现，则可以使用 with 语句将 form 对象添加至作用域链的顶层：
 
 ```js
 with(document.forms[0]){
@@ -3299,7 +3299,7 @@ with(document.forms[0]){
 }
 ```
 
-这种方法减少了大量的输入，不用再为每个属性名添加`document.forms[0]`前缀。这个对象临时挂载在作用域链上，当JavaScript需要解析诸如address的标识符时，就会自动在这个对象中查找。当然，不使用with语句的等价代码可以写成这样：
+这种方法减少了大量的输入，不用再为每个属性名添加`document.forms[0]`前缀。这个对象临时挂载在作用域链上，当 JavaScript 需要解析诸如 address 的标识符时，就会自动在这个对象中查找。当然，不使用 with 语句的等价代码可以写成这样：
 
 ```js
 var f = document.forms[0];
@@ -3314,7 +3314,7 @@ f.email.value = "";
 with(o) x = 1;
 ```
 
-如果对象o有一个属性x，那么这行代码给这个属性赋值为1。但如果o中没有定义属性x，这段代码和不使用with语句的代码`x=1`是一模一样的。它给一个局部变量或者全局变量x赋值，或者创建全局对象的一个新属性。with语句提供了一种读取o的属性的快捷方式，但它并不能创建o的属性。
+如果对象 o 有一个属性 x ，那么这行代码给这个属性赋值为1。但如果 o 中没有定义属性 x ，这段代码和不使用 with 语句的代码`x=1`是一模一样的。它给一个局部变量或者全局变量 x 赋值，或者创建全局对象的一个新属性。 with 语句提供了一种读取 o 的属性的快捷方式，但它并不能创建 o 的属性。
 
 ### 5.7.2 debugger语句
 
@@ -8286,9 +8286,9 @@ collections.sets = {};
 
 图15-2展示了 Node 及其在类型层次结构中的子类型。注意，通用的 Document 和 Element 类型与 HTMLDocument 和 HTMLElement 类型之间是有严格的区别的。 Document 类型代表一个 HTML 或 XML 文档， Element 类型代表该文档中的一个元素。 HTMLDocument 和 HTMLElement 子类只是针对于 HTML 文档和元素。此书中，我们经常使用通用类名 Document 和 Element ，甚至在指代 HTML 文档时也不例外。在第四部分中也是如此： HTMLDocument 和 HTMLElement 类型的属性和方法记录于 Document 和 Element 参考页中。
 
-值得注意的是，在图15-2中有 HTMLElement 的很多子类型代表 HTML 元素的具体类型。每个类型定义多个 JavaScript 属性，它们对应具体的元素或元素组（参照15.4.1节）的HTML属性。有些具体元素类也定义额外的属性和方法，它们并不是简单地映射 HTML 语法。第四部分涵盖这些类型及其额外的特性。
+值得注意的是，在图15-2中有 HTMLElement 的很多子类型代表 HTML 元素的具体类型。每个类型定义多个 JavaScript 属性，它们对应具体的元素或元素组（参照15.4.1节）的 HTML 属性。有些具体元素类也定义额外的属性和方法，它们并不是简单地映射 HTML 语法。第四部分涵盖这些类型及其额外的特性。
 
-最后，请注意图15-2也展示了到目前为止还未提及的一些节点类型。 Comment 节点代表 HTML 或 XML 的注释。由于注释基本上是文本字符串，因此它们很像表示文档中显示文本的 Text 节点。 CharacterData 通常是 Text 和 Comment 的祖先，它定义这两种节点所共享的方法。 Attr 节点类型代表 XML 或 HTML 属性，但它几乎从不使用，因为和文档节点不同， Element 类型定义了将属性当做“名/值”对使用的方法。 DocumentFragment 类（未在图15-2上显示）在实际文档中并不存在的一种节点：它代表一系列没有常规父节点的节点。对一些文档操作来说 DocumentFragment 非常有用，15.6.4节涵盖这部分内容。 DOM 也定义了一些不经常使用的类型，如像代表 doctype 声明和XML处理指令等类型。
+最后，请注意图15-2也展示了到目前为止还未提及的一些节点类型。 Comment 节点代表 HTML 或 XML 的注释。由于注释基本上是文本字符串，因此它们很像表示文档中显示文本的 Text 节点。 CharacterData 通常是 Text 和 Comment 的祖先，它定义这两种节点所共享的方法。 Attr 节点类型代表 XML 或 HTML 属性，但它几乎从不使用，因为和文档节点不同， Element 类型定义了将属性当做“名/值”对使用的方法。 DocumentFragment 类（未在图15-2上显示）在实际文档中并不存在的一种节点：它代表一系列没有常规父节点的节点。对一些文档操作来说 DocumentFragment 非常有用，15.6.4节涵盖这部分内容。 DOM 也定义了一些不经常使用的类型，如像代表 doctype 声明和 XML 处理指令等类型。
 
 ## 15.2 选取文档元素
 
@@ -8318,15 +8318,15 @@ var section1 = document.getElementById("section1")
   * 如任何一个id对应的元素未定义，则抛出一个Error对象
   **/
 function getElements( /*ID(s)*/ ) {
-  var elements = {}; //开始是一个map映射对象
-  for (var i = 0; arguments.length; i++) { //循环每个参数
-    var id = arguments[i]; //参数是元素的id
-    var elt = document.getElementById(id); //查找元素
+  var elements = {}; // 开始是一个map映射对象
+  for (var i = 0; arguments.length; i++) { // 循环每个参数
+    var id = arguments[i]; // 参数是元素的id
+    var elt = document.getElementById(id); // 查找元素
     if (elt == null)
-        throw new Error("No element with id: " + id); //抛出异常
-    elements[id] = elt; //id和元素之间的映射
+        throw new Error("No element with id: " + id); // 抛出异常
+    elements[id] = elt; // id和元素之间的映射
   }
-  return elements; //对于元素映射返回id
+  return elements; // 对于元素映射返回id
 }
 ```
 
@@ -8351,7 +8351,7 @@ var radiobuttons = document.getElementsByName("favorite_color");
 这就意味着有些元素可以作为 Document 属性仅通过名字来选取：
 
 ```js
-//征对<form name="shipping">元素，得到Element对象
+// 针对<form name="shipping">元素，得到Element对象
 var form = document.shipping;
 ```
 
@@ -8398,12 +8398,12 @@ HTMLDocument 也定义 embeds 和 plugins 属性，它们是同义词，都是 H
 
 HTMLDocument 对象还定义两个属性，它们指代特殊的单个元素而不是元素的集合。`document.body`是一个HTML文档的`<body>`元素，`document.head`是`<head>`元素。这些属性总是会定义：如果文档源代码未显式地包含`<head>`和`<body>`元素，浏览器将隐式地创建它们。 Document 类的 documentElement 属性指代文档的根元素。在 HTML 文档中，它总是指代`<html>`元素。
 
-> 节点列表和HTML集合
+> 节点列表和 HTML 集合
 > `getElementsByName()`和`getElementsByTagName()`都返回 NodeList 对象，而类似`document.images`和`document.forms`的属性为 HTMLCollection 对象。这些对象都是只读的类数组对象（见7.11节）。它们有length属性，也可以像真正的数组一样索引（只是读而不是写）。可以对一个 NodeList 或 HTMLCollection 的内容用如下标准的循环进行迭代：
-> 不能直接在 NodeList 和HTML集合上调用Array的方法，但可以间接地使用：
+> 不能直接在 NodeList 和 HTML 集合上调用 Array 的方法，但可以间接地使用：
 >  HTMLCollection 对象也有额外的命名属性，也可以通过数字和字符串来索引。
 > 由于历史的原因， NodeList 和 HTMLCollection 对象也都能当做函数：以数字或字符串为参数调用它就如同使用数字或字符串索引它们一般。不鼓励使用这种怪异的方式。 
-> NodeList 和 HTMLCollection 接口都不是为像JavaScript这样的动态语言设计的。它们都定义了item()方法，期望输入一个整数，并返回此索引处的元素。在JavaScript中根本没有必要调用此方法，因为简单地使用数组索引就能替代。类似地， HTMLCollection 定义了namedItem()方法，它返回指定属性名的值，但在JavaScript程序中可以用数组索引或常规属性来访问。
+> NodeList 和 HTMLCollection 接口都不是为像JavaScript这样的动态语言设计的。它们都定义了`item()`方法，期望输入一个整数，并返回此索引处的元素。在 JavaScript 中根本没有必要调用此方法，因为简单地使用数组索引就能替代。类似地， HTMLCollection 定义了named`Item()`方法，它返回指定属性名的值，但在JavaScript程序中可以用数组索引或常规属性来访问。
 >  NodeList 和 HTMLCollection 对象不是历史文档状态的一个静态快照，而通常是实时的，并且当文档变化时它们所包含的元素列表能随之改变，这是其中一个最重要和令人惊讶的特性。假设在一个没有`<div>`元素的文档中调用`getElementsByTagName('div')`，此时返回值是一个length为0的 NodeList 对象。如果再在文档中插入一个新的`<div>`元素，此元素将自动成为 NodeList 的一个成员，并且它的length属性变成1。
 > 通常， NodeList 和 HTMLCollection 的实时性非常有用。但是，如果要在迭代一个 NodeList 对象时在文档中添加或删除的元素，首先会需要对 NodeList 对象生成一个静态的副本：
 
@@ -8422,72 +8422,72 @@ var log = document.getElementById("log");
 var total = log.getElementsByClassName("error fatal");
 ```
 
-如今的Web浏览器依赖于文档开头处对`<!DOCTYPE>`声明的严格程度来选择“怪异模式”或“标准模式”方式显示HTML文档。怪异模式是为了向后兼容性而存在的，其中一个怪异行为就是在class属性中和CSS样式表中的类标识符不区分大小写。`getElementsByClassName()`方法使用样式表的匹配算法。如果文档以怪异模式渲染，该方法将执行不区分大小写的字符串比较；否则，该比较区分大小写。
+如今的 Web 浏览器依赖于文档开头处对`<!DOCTYPE>`声明的严格程度来选择“怪异模式”或“标准模式”方式显示 HTML 文档。怪异模式是为了向后兼容性而存在的，其中一个怪异行为就是在 class 属性中和 CSS 样式表中的类标识符不区分大小写。`getElementsByClassName()`方法使用样式表的匹配算法。如果文档以怪异模式渲染，该方法将执行不区分大小写的字符串比较；否则，该比较区分大小写。
 
-在写本书这段时间内，除了IE 8及其较低的版本，`getElementsByClassName()`在所有当前的浏览器中都实现了。IE 8确实支持`querySelectorAll()`方法，下一节会介绍它，而`getElementsByClassName()`方法是可以在其之上实现的。
+在写本书这段时间内，除了 IE 8 及其较低的版本，`getElementsByClassName()`在所有当前的浏览器中都实现了。 IE 8 确实支持`querySelectorAll()`方法，下一节会介绍它，而`getElementsByClassName()`方法是可以在其之上实现的。
 
 ### 15.2.5 通过CSS选择器选取元素
 
-CSS样式表有一种非常强大的语法，那就是选择器，它用来描述文档中的若干或多组元素。CSS选择器语法的全部细节介绍超出了本书的范围，但是这里有一些例子来说明基本的语法。元素可以用ID、标签名或类来描述：
+CSS样式表有一种非常强大的语法，那就是选择器，它用来描述文档中的若干或多组元素。CSS选择器语法的全部细节介绍超出了本书的范围，但是这里有一些例子来说明基本的语法。元素可以用 ID 、标签名或类来描述：
 
 ```js
-#nav //id="nav"的元素
-div //所有的<div>元素
-.warning //所有早class属性值包含了“waring”的元素
+#nav // id="nav"的元素
+div // 所有的<div>元素
+.warning // 所有早class属性值包含了“waring”的元素
 ```
 
 更一般地，元素可以基于属性值来选取：
 
 ```js
-p[lang = "fr"] //所有使用语法段落，如：<p lang="fr">
-* [name = "x"] //所有包含name = "x"属性的元素
+p[lang = "fr"] // 所有使用语法段落，如：<p lang="fr">
+* [name = "x"] // 所有包含name = "x"属性的元素
 ```
 
 这些基本的选择器可以组合使用：
 
 ```js
-span.fatal.error //其class中 包含"fatal"和"error"的所有<span>元素
-span[lang = "fr"].warning //所有使用语法且class中包含"warning"的<span>元素
+span.fatal.error // 其class中 包含"fatal"和"error"的所有<span>元素
+span[lang = "fr"].warning // 所有使用语法且class中包含"warning"的<span>元素
 ```
 
 选择器可以指定文档结构：
 
 ```js
-#log span //id="log"元素中所有的<span>元素
-#log>span //id="log"元素的子元素中的所有<span>元素
-body>h1:first-child //<body>的子元素中的第一个<h1>元素
+#log span // id="log"元素中所有的<span>元素
+#log>span // id="log"元素的子元素中的所有<span>元素
+body>h1:first-child // <body>的子元素中的第一个<h1>元素
 ```
 
 选择器可以组合起来选取多个或多组元素：
 
 ```js
-div, #log //所有的元素，以及id="log"的元素
+div, #log // 所有的元素，以及id="log"的元素
 ```
 
-如你所见， CSS 选择器可以使用上述所有方法选取元素：通过ID、名字、标签名和类名。与 CSS3 选择器的标准化一起的另一个称做“选择器API”的W3C标准定义了获取匹配一个给定选择器的元素的 JavaScript 方法。该 API 的关键是 Document 方法`querySelectorAll()`。它接受包含一个 CSS 选择器的字符串参数，返回一个表示文档中匹配选择器的所有元素的 NodeList 对象。与前面描述的选取元素的方法不同，`querySelectorAll()`返回的 NodeList 对象并不是实时的：它包含在调用时刻选择器所匹配的元素，但它并不更新后续文档的变化。如果没有匹配的元素，`querySelectorAll()`将返回一个空的 NodeList 对象。如果选择器字符串非法，`querySelectorAll()`将抛出一个异常。
+如你所见， CSS 选择器可以使用上述所有方法选取元素：通过ID、名字、标签名和类名。与 CSS3 选择器的标准化一起的另一个称做“选择器API”的 W3C 标准定义了获取匹配一个给定选择器的元素的 JavaScript 方法。该 API 的关键是 Document 方法`querySelectorAll()`。它接受包含一个 CSS 选择器的字符串参数，返回一个表示文档中匹配选择器的所有元素的 NodeList 对象。与前面描述的选取元素的方法不同，`querySelectorAll()`返回的 NodeList 对象并不是实时的：它包含在调用时刻选择器所匹配的元素，但它并不更新后续文档的变化。如果没有匹配的元素，`querySelectorAll()`将返回一个空的 NodeList 对象。如果选择器字符串非法，`querySelectorAll()`将抛出一个异常。
 
 除了`querySelectorAll()`，文档对象还定义了`querySelector()`方法。与`querySelectorAll()`的工作原理类似，但它只是返回第一个匹配的元素（以文档顺序）或者如果没有匹配的元素就返回null。
 
 这两个方法在 Element 节点中也有定义（并且也在DocumentFragment节点中，见15.6.4节）。在元素上调用时，指定的选择器仍然在整个文档中进行匹配，然后过滤出结果集以便它只包含指定元素的后代元素。这看起来是违反常规的，因为它意味着选择器字符串能包含元素的祖先而不仅仅是上述所匹配的元素。
 
-注意，CSS定义了“:first-line”和“:first-letter”等伪元素。在CSS中，它们匹配文本节点的一部分而不是实际元素。如果和`querySelectorAll()`或`querySelector()`一起使用它们是不匹配的。而且，很多浏览器会拒绝返回“:link”和“:visited”等伪类的匹配结果，因为这会泄露用户的浏览历史记录。
+注意， CSS 定义了“:first-line”和“:first-letter”等伪元素。在CSS中，它们匹配文本节点的一部分而不是实际元素。如果和`querySelectorAll()`或`querySelector()`一起使用它们是不匹配的。而且，很多浏览器会拒绝返回“:link”和“:visited”等伪类的匹配结果，因为这会泄露用户的浏览历史记录。
 
 所有当前的浏览器都支持`querySelector()`和`querySelectorAll()`方法。但是注意，这些方法的规范并不要求支持 CSS3 选择器：鼓励浏览器支持和在样式表中一样的选择器集合。当前的浏览器除了IE都支持 CSS3 选择器。IE 7和8支持 CSS2 选择器。（期望IE 9能支持 CSS3 选择器。）
 
-`querySelectorAll()`是终极的选取元素的方法：它是一种非常强大的技术，通过它客户端 JavaScript 程序能够选择它们想要操作的元素。幸运的是，甚至在没有`querySelectorAll()`的原生支持的浏览器中也可以使用 CSS 选择器。jQuery库（见第19章）使用这种基于 CSS 选择器的查询作为它的核心编程范式。基于jQuery的Web应用程序使用一个轻便的、跨浏览器的、和`querySelectorAll()`等效的方法，命名为`$()`。
+`querySelectorAll()`是终极的选取元素的方法：它是一种非常强大的技术，通过它客户端 JavaScript 程序能够选择它们想要操作的元素。幸运的是，甚至在没有`querySelectorAll()`的原生支持的浏览器中也可以使用 CSS 选择器。jQuery库（见第19章）使用这种基于 CSS 选择器的查询作为它的核心编程范式。基于 jQuery 的Web应用程序使用一个轻便的、跨浏览器的、和`querySelectorAll()`等效的方法，命名为`$()`。
 
-jQuery的 CSS 选择器匹配代码已经作为一个独立的标准库提出来并发布了，命名为Sizzle。它已经被Dojo和其他一些客户端库所采纳。使用一个类似Sizzle的库（或一个包含Sizzle的库）的好处就是在老式浏览器中选取元素也能正常工作，并保证一个基准的选择器集合在所有的浏览器中都能运行。
+jQuery 的 CSS 选择器匹配代码已经作为一个独立的标准库提出来并发布了，命名为 Sizzle 。它已经被 Dojo 和其他一些客户端库所采纳。使用一个类似 Sizzle 的库（或一个包含 Sizzle 的库）的好处就是在老式浏览器中选取元素也能正常工作，并保证一个基准的选择器集合在所有的浏览器中都能运行。
 
 ### 15.2.6 document.all[]
 
 在DOM标准化之前，IE 4引入了`document.all[]`集合来表示所有文档中的元素（除了Text节点）。`document.all[]`已经被标准的方法（如`getElementById()`和`getElementsByTagName()`）等所取代，现在已经废弃不应该再使用了。但是，在引入之时它是革命性的，它在以各种方式使用的已有代码中仍然可以看到：
 
 ```js
-document.all[0] //文档中的第一个元素
-document.all["nav"] //id或name为"nav"的元素(或多个元素)
-document.all.nav //同上
-document.all.tags("div") //文档中的所有div元素
-document.all.tags("p")[0] //文档中的第一个<p>元素
+document.all[0] // 文档中的第一个元素
+document.all["nav"] // id或name为"nav"的元素(或多个元素)
+document.all.nav // 同上
+document.all.tags("div") // 文档中的所有div元素
+document.all.tags("p")[0] // 文档中的第一个<p>元素
 ```
 
 ## 15.3 文档结构和遍历
