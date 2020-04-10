@@ -1837,6 +1837,319 @@ Date类型使用自UTC国际协调时间，1970年1月1日零时开始经过的�
 
 ## 5.4 RegExp类型 
 
+ECMAScript 通过 RegExp 类型来支持正则表达式。使用下面类似 Perl 的语法，就可以创建一个正则表达式。
+
+```js
+var expression = / pattern / flags ;
+```
+
+其中的模式（pattern）部分可以是任何简单或复杂的正则表达式，可以包含字符类、限定符、分组、向前查找以及反向引用。每个正则表达式都可带有一或多个标志（flags），用以标明正则表达式的行为。正则表达式的匹配模式支持下列 3 个标志。
+
+- g：表示全局（global）模式，即模式将被应用于所有字符串，而非在发现第一个匹配项时立即停止；
+- i：表示不区分大小写（case-insensitive）模式，即在确定匹配项时忽略模式与字符串的大小写；
+- m：表示多行（multiline）模式，即在到达一行文本末尾时还会继续查找下一行中是否存在与模式匹配的项。
+
+因此，一个正则表达式就是一个模式与上述 3 个标志的组合体。不同组合产生不同结果，如下面的例子所示。
+
+```js
+/*
+* 匹配字符串中所有"at"的实例
+*/
+var pattern1 = /at/g;
+/*
+* 匹配第一个"bat"或"cat"，不区分大小写
+*/
+var pattern2 = /[bc]at/i;
+/*
+* 匹配所有以"at"结尾的 3 个字符的组合，不区分大小写
+*/
+var pattern3 = /.at/gi;
+```
+
+与其他语言中的正则表达式类似，模式中使用的所有元字符都必须转义。正则表达式中的元字符包括：`( [ { \ ^ $ | ) ? * + .]}`
+
+这些元字符在正则表达式中都有一或多种特殊用途，因此如果想要匹配字符串中包含的这些字符，就必须对它们进行转义。下面给出几个例子。
+
+```js
+/*
+* 匹配第一个"bat"或"cat"，不区分大小写
+*/
+var pattern1 = /[bc]at/i;
+/*
+* 匹配第一个" [bc]at"，不区分大小写
+*/
+var pattern2 = /\[bc\]at/i;
+/*
+* 匹配所有以"at"结尾的 3 个字符的组合，不区分大小写
+*/
+var pattern3 = /.at/gi;
+/*
+* 匹配所有".at"，不区分大小写
+*/
+var pattern4 = /\.at/gi;
+```
+
+在上面的例子中，pattern1 匹配第一个"bat"或"cat"，不区分大小写。而要想直接匹配"[bc]at"的话，就需要像定义 pattern2 一样，对其中的两个方括号进行转义。对于 pattern3 来说，句点表示位于"at"之前的任意一个可以构成匹配项的字符。但如果想匹配".at"，则必须对句点本身进行转义，如 pattern4 所示。
+
+前面举的这些例子都是以字面量形式来定义的正则表达式。另一种创建正则表达式的方式是使用 RegExp 构造函数，它接收两个参数：一个是要匹配的字符串模式，另一个是可选的标志字符串。可以使用字面量定义的任何表达式，都可以使用构造函数来定义，如下面的例子所示。
+
+```js
+/*
+* 匹配第一个"bat"或"cat"，不区分大小写
+*/
+var pattern1 = /[bc]at/i;
+/*
+* 与 pattern1 相同，只不过是使用构造函数创建的
+*/
+var pattern2 = new RegExp("[bc]at", "i");
+```
+
+在此， pattern1 和 pattern2 是两个完全等价的正则表达式。要注意的是，传递给 RegExp 构造函数的两个参数都是字符串（不能把正则表达式字面量传递给 RegExp 构造函数）。由于 RegExp 构造函数的模式参数是字符串，所以在某些情况下要对字符进行双重转义。所有元字符都必须双重转义，那些已经转义过的字符也是如此，例如\n（字符\在字符串中通常被转义为\\，而在正则表达式字符串中就会变成\\\\）。下表给出了一些模式，左边是这些模式的字面量形式，右边是使用 RegExp 构造函数定义相同模式时使用的字符串。
+
+| 字面量模式 | 等价的字符串 |
+|---|---|
+| `/\[bc\]at/` | `\\[bc\\]at` |
+| `/\.at/` | `\\.at` |
+| `/name\/age/` | `name\\/age` |
+| `/\d.\d{1,2}/` | `\\d.\\d{1,2}` |
+| `/\w\\hello\\123/` | `\\w\\\\hello\\\\123` |
+
+使用正则表达式字面量和使用 RegExp 构造函数创建的正则表达式不一样。在 ECMAScript 3 中，正则表达式字面量始终会共享同一个 RegExp 实例，而使用构造函数创建的每一个新 RegExp 实例都是一个新实例。来看下面的例子。
+
+```js
+var re = null,
+  i;
+for (i=0; i < 10; i++){
+  re = /cat/g;
+  re.test("catastrophe");
+}
+for (i=0; i < 10; i++){
+  re = new RegExp("cat", "g");
+  re.test("catastrophe");
+}
+```
+
+在第一个循环中，即使是循环体中指定的，但实际上只为`/cat/`创建了一个 RegExp 实例。由于实例属性（下一节介绍实例属性）不会重置，所以在循环中再次调用 `test()`方法会失败。这是因为第一次调用`test()`找到了"cat"，但第二次调用是从索引为 3 的字符（上一次匹配的末尾）开始的，所以就找不到它了。由于会测试到字符串末尾，所以下一次再调用 `test()`就又从开头开始了。
+
+第二个循环使用 RegExp 构造函数在每次循环中创建正则表达式。因为每次迭代都会创建一个新的 RegExp 实例，所以每次调用 `test()`都会返回 true。
+
+ECMAScript 5 明确规定，使用正则表达式字面量必须像直接调用 RegExp 构造函数一样，每次都创建新的 RegExp 实例。 IE9+、 Firefox 4+和 Chrome 都据此做出了修改。
+
+### 5.4.1 RegExp实例属性
+
+RegExp 的每个实例都具有下列属性，通过这些属性可以取得有关模式的各种信息。
+- global：布尔值，表示是否设置了 g 标志。
+- ignoreCase：布尔值，表示是否设置了 i 标志。
+- lastIndex：整数，表示开始搜索下一个匹配项的字符位置，从 0 算起。
+- multiline：布尔值，表示是否设置了 m 标志。
+- source：正则表达式的字符串表示，按照字面量形式而非传入构造函数中的字符串模式返回。
+
+通过这些属性可以获知一个正则表达式的各方面信息，但却没有多大用处，因为这些信息全都包含在模式声明中。例如：
+
+```js
+var pattern1 = /\[bc\]at/i;
+alert(pattern1.global); //false
+alert(pattern1.ignoreCase); //true
+alert(pattern1.multiline); //false
+alert(pattern1.lastIndex); //0
+alert(pattern1.source); //"\[bc\]at"
+
+var pattern2 = new RegExp("\\[bc\\]at", "i");
+alert(pattern2.global); //false
+alert(pattern2.ignoreCase); //true
+alert(pattern2.multiline); //false
+alert(pattern2.lastIndex); //0
+alert(pattern2.source); //"\[bc\]at"
+```
+
+我们注意到，尽管第一个模式使用的是字面量，第二个模式使用了 RegExp 构造函数，但它们的 source 属性是相同的。可见， source 属性保存的是规范形式的字符串，即字面量形式所用的字符串。
+
+### 5.4.2 RegExp实例方法
+
+RegExp 对象的主要方法是 `exec()`，该方法是专门为捕获组而设计的。 `exec()`接受一个参数，即
+要应用模式的字符串，然后返回包含第一个匹配项信息的数组；或者在没有匹配项的情况下返回 null。
+返回的数组虽然是 Array 的实例，但包含两个额外的属性： index 和 input。其中， index 表示匹配
+项在字符串中的位置，而 input 表示应用正则表达式的字符串。在数组中，第一项是与整个模式匹配
+的字符串，其他项是与模式中的捕获组匹配的字符串（如果模式中没有捕获组，则该数组只包含一项）。
+请看下面的例子。
+var text = "mom and dad and baby";
+var pattern = /mom( and dad( and baby)?)?/gi;
+var matches = pattern.exec(text);
+alert(matches.index); // 0
+alert(matches.input); // "mom and dad and baby"
+alert(matches[0]); // "mom and dad and baby"
+alert(matches[1]); // " and dad and baby"
+alert(matches[2]); // " and baby"
+RegExpExecExample01.htm
+这个例子中的模式包含两个捕获组。最内部的捕获组匹配"and baby"，而包含它的捕获组匹配"and
+dad"或者"and dad and baby"。当把字符串传入 `exec()`方法中之后，发现了一个匹配项。因为整个
+字符串本身与模式匹配，所以返回的数组 matchs 的 index 属性值为 0。数组中的第一项是匹配的整个
+字符串，第二项包含与第一个捕获组匹配的内容，第三项包含与第二个捕获组匹配的内容。
+对于 `exec()`方法而言，即使在模式中设置了全局标志（g），它每次也只会返回一个匹配项。在不
+设置全局标志的情况下，在同一个字符串上多次调用 `exec()`将始终返回第一个匹配项的信息。而在设
+置全局标志的情况下，每次调用 `exec()`则都会在字符串中继续查找新匹配项，如下面的例子所示。
+var text = "cat, bat, sat, fat";
+var pattern1 = /.at/;
+var matches = pattern1.exec(text);
+alert(matches.index); //0
+alert(matches[0]); //cat
+alert(pattern1.lastIndex); //0
+matches = pattern1.exec(text);
+alert(matches.index); //0
+alert(matches[0]); //cat
+alert(pattern1.lastIndex); //0
+var pattern2 = /.at/g;
+var matches = pattern2.exec(text);
+alert(matches.index); //0
+alert(matches[0]); //cat
+alert(pattern2.lastIndex); //3
+图灵社区会员 StinkBC(StinkBC@gmail.com) 专享 尊重版权5.4 RegExp 类型 107
+1
+2
+3
+4
+5
+13
+6
+7
+8
+9
+10
+11
+12
+matches = pattern2.exec(text);
+alert(matches.index); //5
+alert(matches[0]); //bat
+alert(pattern2.lastIndex); //8
+RegExpExecExample02.htm
+这个例子中的第一个模式 pattern1 不是全局模式，因此每次调用 `exec()`返回的都是第一个匹配
+项（"cat"）。而第二个模式 pattern2 是全局模式，因此每次调用 `exec()`都会返回字符串中的下一个
+匹配项，直至搜索到字符串末尾为止。此外，还应该注意模式的 lastIndex 属性的变化情况。在全局
+匹配模式下， lastIndex 的值在每次调用 `exec()`后都会增加，而在非全局模式下则始终保持不变。
+IE 的 JavaScript 实现在 lastIndex 属性上存在偏差，即使在非全局模式下，
+lastIndex 属性每次也会变化。
+正则表达式的第二个方法是 test()，它接受一个字符串参数。在模式与该参数匹配的情况下返回
+true；否则，返回 false。在只想知道目标字符串与某个模式是否匹配，但不需要知道其文本内容的
+情况下，使用这个方法非常方便。因此， test()方法经常被用在 if 语句中，如下面的例子所示。
+var text = "000-00-0000";
+var pattern = /\d{3}-\d{2}-\d{4}/;
+if (pattern.test(text)){
+alert("The pattern was matched.");
+}
+在这个例子中，我们使用正则表达式来测试了一个数字序列。如果输入的文本与模式匹配，则显示
+一条消息。这种用法经常出现在验证用户输入的情况下，因为我们只想知道输入是不是有效，至于它为
+什么无效就无关紧要了。
+RegExp 实例继承的 toLocaleString()和 toString()方法都会返回正则表达式的字面量，与创
+建正则表达式的方式无关。例如：
+var pattern = new RegExp("\\[bc\\]at", "gi");
+alert(pattern.toString()); // /\[bc\]at/gi
+alert(pattern.toLocaleString()); // /\[bc\]at/gi
+RegExpToStringExample01.htm
+即使上例中的模式是通过调用 RegExp 构造函数创建的，但 toLocaleString()和 toString()
+方法仍然会像它是以字面量形式创建的一样显示其字符串表示。
+正则表达式的 valueOf()方法返回正则表达式本身。
+5.4.3 RegExp构造函数属性
+RegExp 构造函数包含一些属性（这些属性在其他语言中被看成是静态属性）。这些属性适用于作用
+图灵社区会员 StinkBC(StinkBC@gmail.com) 专享 尊重版权108 第 5 章 引用类型
+域中的所有正则表达式，并且基于所执行的最近一次正则表达式操作而变化。关于这些属性的另一个独
+特之处，就是可以通过两种方式访问它们。换句话说，这些属性分别有一个长属性名和一个短属性名
+（Opera 是例外，它不支持短属性名）。下表列出了 RegExp 构造函数的属性。
+长属性名 短属性名 说 明
+input $_ 最近一次要匹配的字符串。 Opera未实现此属性
+lastMatch $& 最近一次的匹配项。 Opera未实现此属性
+lastParen $+ 最近一次匹配的捕获组。 Opera未实现此属性
+leftContext $` input字符串中lastMatch之前的文本
+multiline $* 布尔值，表示是否所有表达式都使用多行模式。 IE和Opera未实现此属性
+rightContext $' Input字符串中lastMatch之后的文本
+使用这些属性可以从 `exec()`或 test()执行的操作中提取出更具体的信息。请看下面的例子。
+var text = "this has been a short summer";
+var pattern = /(.)hort/g;
+/*
+* 注意： Opera 不支持 input、 lastMatch、 lastParen 和 multiline 属性
+* Internet Explorer 不支持 multiline 属性
+*/
+if (pattern.test(text)){
+alert(RegExp.input); // this has been a short summer
+alert(RegExp.leftContext); // this has been a
+alert(RegExp.rightContext); // summer
+alert(RegExp.lastMatch); // short
+alert(RegExp.lastParen); // s
+alert(RegExp.multiline); // false
+}
+RegExpConstructorPropertiesExample01.htm
+以上代码创建了一个模式，匹配任何一个字符后跟 hort，而且把第一个字符放在了一个捕获组中。
+RegExp 构造函数的各个属性返回了下列值：
+ input 属性返回了原始字符串；
+ leftContext 属性返回了单词 short 之前的字符串，而 rightContext 属性则返回了 short
+之后的字符串；
+ lastMatch 属性返回最近一次与整个正则表达式匹配的字符串，即 short；
+ lastParen 属性返回最近一次匹配的捕获组，即例子中的 s。
+如前所述，例子使用的长属性名都可以用相应的短属性名来代替。只不过，由于这些短属性名大都
+不是有效的 ECMAScript 标识符，因此必须通过方括号语法来访问它们，如下所示。
+var text = "this has been a short summer";
+var pattern = /(.)hort/g;
+/*
+* 注意： Opera 不支持 input、 lastMatch、 lastParen 和 multiline 属性
+* Internet Explorer 不支持 multiline 属性
+*/
+图灵社区会员 StinkBC(StinkBC@gmail.com) 专享 尊重版权5.4 RegExp 类型 109
+1
+2
+3
+4
+5
+13
+6
+7
+8
+9
+10
+11
+12
+if (pattern.test(text)){
+alert(RegExp.$_); // this has been a short summer
+alert(RegExp["$`"]); // this has been a
+alert(RegExp["$'"]); // summer
+alert(RegExp["$&"]); // short
+alert(RegExp["$+"]); // s
+alert(RegExp["$*"]); // false
+}
+RegExpConstructorPropertiesExample02.htm
+除了上面介绍的几个属性之外，还有多达 9 个用于存储捕获组的构造函数属性。访问这些属性的语
+法是 RegExp.$1、 RegExp.$2…RegExp.$9，分别用于存储第一、第二……第九个匹配的捕获组。在
+调用 `exec()`或 test()方法时，这些属性会被自动填充。然后，我们就可以像下面这样来使用它们。
+var text = "this has been a short summer";
+var pattern = /(..)or(.)/g;
+if (pattern.test(text)){
+alert(RegExp.$1); //sh
+alert(RegExp.$2); //t
+}
+RegExpConstructorPropertiesExample03.htm
+这里创建了一个包含两个捕获组的模式，并用该模式测试了一个字符串。即使 test()方法只返回
+一个布尔值，但 RegExp 构造函数的属性$1 和$2 也会被匹配相应捕获组的字符串自动填充。
+5.4.4 模式的局限性
+尽管 ECMAScript 中的正则表达式功能还是比较完备的，但仍然缺少某些语言（特别是 Perl）所支
+持的高级正则表达式特性。下面列出了 ECMAScript 正则表达式不支持的特性（要了解更多相关信息，
+请访问 www.regular-expressions.info）。
+ 匹配字符串开始和结尾的\A 和\Z 锚①
+ 向后查找（lookbehind） ②
+ 并集和交集类
+ 原子组（atomic grouping）
+ Unicode 支持（单个字符除外，如\uFFFF）
+ 命名的捕获组③
+ s（single，单行）和 x（free-spacing，无间隔）匹配模式
+ 条件匹配
+ 正则表达式注释
+即使存在这些限制， ECMAScript 正则表达式仍然是非常强大的，能够帮我们完成绝大多数模式匹
+配任务。
+——————————
+① 但支持以插入符号（^）和美元符号（$）来匹配字符串的开始和结尾。
+② 但完全支持向前查找（lookahead）。
+③ 但支持编号的捕获组。
+图灵社区会员 StinkBC(StinkBC@gmail.com) 专享 尊重版权110 第 5 章 引用类型
+
+
+
 通过 RegExp 类型来支持正则表达式，其中的模式部分可以是任何简单或复杂的正则表达式，可以包含字符类、限定类、分组、向前查找以及反向引用。
 
 同时，每个增则表达式都可待一或多个标志，用于表明正则表达式的行为，支持以下三个标志：
@@ -2412,7 +2725,7 @@ alert(stringValue.toLowerCase()); //"hello world"
 
 #### 5.6.3.6 字符串的模式匹配方法
 
-String 类型定义了几个用于在字符串中匹配模式的方法。第一个方法就是 `match()`，在字符串上调用这个方法，本质上与调用 RegExp 的 `exec()`方法相同。 `match()`方法只接受一个参数，要么是一个正则表达式，要么是一个 RegExp 对象。
+String 类型定义了几个用于在字符串中匹配模式的方法。第一个方法就是 `match()`，在字符串上调用这个方法，本质上与调用 RegExp 的 ``exec()``方法相同。 `match()`方法只接受一个参数，要么是一个正则表达式，要么是一个 RegExp 对象。
 
 ```js
 var text = "cat, bat, sat, fat";
@@ -7800,7 +8113,7 @@ function getElementTop(element){
 
 元素的客户区大小（ client dimension），指的是元素内容及其内边距所占据的空间大小。有关客户区大小的属性有两个： clientWidth 和 clientHeight。其中， clientWidth 属性是元素内容区宽度加上左右内边距宽度； clientHeight 属性是元素内容区高度加上上下内边距高度。图 12-2 形象地说明了这些属性表示的大小。
 
-从字面上看，客户区大小就是元素内部的空间大小，因此滚动条占用的空间不计算在内。最常用到这些属性的情况，就是像第 8 章讨论的确定浏览器视口大小的时候。如下面的例子所示，要确定浏览器视口大小，可以使用 document.documentElement 或 document.body（在 IE7 之前的版本中）的 clientWidth 和 clientHeight。
+从字面上看，客户区大小就是元素内部的空间大小，因此滚动条占用的空间不计算在内。最常用到这些属性的情况，就是像第 8 章讨论的确定浏览器视口大小的时候。如下面的例子所示，要确定浏览器视口大小，可以使用 `document.documentElement` 或 `document.body`（在 IE7 之前的版本中）的 clientWidth 和 clientHeight。
 
 ```js
 function getViewport(){
@@ -7818,7 +8131,7 @@ function getViewport(){
 }
 ```
 
-这个函数首先检查 document.compatMode 属性，以确定浏览器是否运行在混杂模式。 Safari 3.1 之前的版本不支持这个属性，因此就会自动执行 else 语句。 Chrome、 Opera 和 Firefox 大多数情况下都运行在标准模式下，因此它们也会前进到 else 语句。这个函数会返回一个对象，包含两个属性： width 和 height；表示浏览器视口（ `<html>`或`<body>`元素）的大小。
+这个函数首先检查 `document.compatMode` 属性，以确定浏览器是否运行在混杂模式。 Safari 3.1 之前的版本不支持这个属性，因此就会自动执行 else 语句。 Chrome、 Opera 和 Firefox 大多数情况下都运行在标准模式下，因此它们也会前进到 else 语句。这个函数会返回一个对象，包含两个属性： width 和 height；表示浏览器视口（ `<html>`或`<body>`元素）的大小。
 
 > 与偏移量相似，客户区大小也是只读的，也是每次访问都要重新计算的。
 
@@ -7833,7 +8146,7 @@ function getViewport(){
 
 图 12-3 展示了这些属性代表的大小。
 
-scrollWidth 和 scrollHeight 主要用于确定元素内容的实际大小。例如，通常认为`<html>`元素是在 Web 浏览器的视口中滚动的元素（ IE6 之前版本运行在混杂模式下时是`<body>`元素）。因此，带有垂直滚动条的页面总高度就是 document.documentElement.scrollHeight。
+scrollWidth 和 scrollHeight 主要用于确定元素内容的实际大小。例如，通常认为`<html>`元素是在 Web 浏览器的视口中滚动的元素（ IE6 之前版本运行在混杂模式下时是`<body>`元素）。因此，带有垂直滚动条的页面总高度就是`document.documentElement.scrollHeight`。
 
 对于不包含滚动条的页面而言 ， scrollWidth 和 scrollHeight 与 clientWidth 和 clientHeight 之间的关系并不十分清晰。在这种情况下，基于 `document.documentElement` 查看这些属性会在不同浏览器间发现一些不一致性问题，如下所述。
 
@@ -7848,7 +8161,7 @@ var docHeight = Math.max(document.documentElement.scrollHeight, document.documen
 var docWidth = Math.max(document.documentElement.scrollWidth, document.documentElement.clientWidth);
 ```
 
-注意，对于运行在混杂模式下的 IE，则需要用 `document.body` 代替 `document.documentElement`。通过 scrollLeft 和 scrollTop 属性既可以确定元素当前滚动的状态，也可以设置元素的滚动位置。在元素尚未被滚动时，这两个属性的值都等于 0。如果元素被垂直滚动了，那么 scrollTop 的值会大于 0，且表示元素上方不可见内容的像素高度。如果元素被水平滚动了，那么 scrollLeft 的值会大于 0，且表示元素左侧不可见内容的像素宽度。这两个属性都是可以设置的，因此将元素的scrollLeft 和 scrollTop 设置为 0，就可以重置元素的滚动位置。下面这个函数会检测元素是否位于顶部，如果不是就将其回滚到顶部。
+注意，对于运行在混杂模式下的 IE，则需要用 `document.body` 代替 `document.documentElement`。通过 scrollLeft 和 scrollTop 属性既可以确定元素当前滚动的状态，也可以设置元素的滚动位置。在元素尚未被滚动时，这两个属性的值都等于 0。如果元素被垂直滚动了，那么 scrollTop 的值会大于 0，且表示元素上方不可见内容的像素高度。如果元素被水平滚动了，那么 scrollLeft 的值会大于 0，且表示元素左侧不可见内容的像素宽度。这两个属性都是可以设置的，因此将元素的 scrollLeft 和 scrollTop 设置为 0，就可以重置元素的滚动位置。下面这个函数会检测元素是否位于顶部，如果不是就将其回滚到顶部。
 
 ```js
 function scrollToTop(element){
@@ -7862,14 +8175,14 @@ function scrollToTop(element){
 
 **4. 确定元素大小**
 
-IE、 Firefox 3+、 Safari 4+、 Opera 9.5 及 Chrome 为每个元素都提供了一个 `getBoundingClientRect()`方法。这个方法返回会一个矩形对象，包含 4 个属性： left、 top、 right 和 bottom。这些属性给出了元素在页面中相对于视口的位置。但是，浏览器的实现稍有不同。 IE8 及更早版本认为文档的左上角坐标是(2, 2)，而其他浏览器包括 IE9 则将传统的(0,0)作为起点坐标。因此，就需要在一开始检查一下位于(0,0)处的元素的位置，在 IE8 及更早版本中，会返回(2,2)，而在其他浏览器中会返回(0,0)。来看下面的函数：
+IE、 Firefox 3+、 Safari 4+、 Opera 9.5 及 Chrome 为每个元素都提供了一个`getBoundingClientRect()`方法。这个方法返回会一个矩形对象，包含 4 个属性： left、 top、 right 和 bottom。这些属性给出了元素在页面中相对于视口的位置。但是，浏览器的实现稍有不同。 IE8 及更早版本认为文档的左上角坐标是`(2, 2)`，而其他浏览器包括 IE9 则将传统的`(0, 0)`作为起点坐标。因此，就需要在一开始检查一下位于`(0, 0)`处的元素的位置，在 IE8 及更早版本中，会返回`(2, 2)`，而在其他浏览器中会返回`(0, 0)`。来看下面的函数：
 
 ```js
 function getBoundingClientRect(element){
   if (typeof arguments.callee.offset != "number"){
     var scrollTop = document.documentElement.scrollTop;
     var temp = document.createElement("div");
-      temp.style.cssText = "position:absolute;left:0;top:0;";
+      temp.style.cssText = "position: absolute; left: 0; top: 0;";
       document.body.appendChild(temp);
       arguments.callee.offset = -temp.getBoundingClientRect().top - scrollTop;
       document.body.removeChild(temp);
@@ -7886,7 +8199,7 @@ function getBoundingClientRect(element){
 }
 ```
 
-这个函数使用了它自身的属性来确定是否要对坐标进行调整。第一步是检测属性是否有定义，如果没有就定义一个。最终的 offset 会被设置为新元素上坐标的负值，实际上就是在 IE 中设置为2，在Firefox 和 Opera 中设置为0。为此，需要创建一个临时的元素，将其位置设置在(0,0)，然后再调用其`getBoundingClientRect()`。而之所以要减去视口的 scrollTop，是为了防止调用这个函数时窗口被滚动了。这样编写代码，就无需每次调用这个函数都执行两次 `getBoundingClientRect()`了。接下来，再在传入的元素上调用这个方法并基于新的计算公式创建一个对象。
+这个函数使用了它自身的属性来确定是否要对坐标进行调整。第一步是检测属性是否有定义，如果没有就定义一个。最终的 offset 会被设置为新元素上坐标的负值，实际上就是在 IE 中设置为-2，在Firefox 和 Opera 中设置为-0。为此，需要创建一个临时的元素，将其位置设置在`(0,0)`，然后再调用其`getBoundingClientRect()`。而之所以要减去视口的 scrollTop，是为了防止调用这个函数时窗口被滚动了。这样编写代码，就无需每次调用这个函数都执行两次 `getBoundingClientRect()`了。接下来，再在传入的元素上调用这个方法并基于新的计算公式创建一个对象。
 
 对于不支持 `getBoundingClientRect()`的浏览器，可以通过其他手段取得相同的信息。一般来说， right 和 left 的差值与 offsetWidth 的值相等，而 bottom 和 top 的差值与 offsetHeight 相等。而且， left 和 top 属性大致等于使用本章前面定义的 `getElementLeft()`和 `getElementTop()` 函数取得的值。综合上述，就可以创建出下面这个跨浏览器的函数：
 
@@ -7924,7 +8237,7 @@ function getBoundingClientRect(element){
 }
 ```
 
-这个函数在 `getBoundingClientRect()`有效时，就使用这个原生方法，而在这个方法无效时则使用默认的计算公式。在某些情况下，这个函数返回的值可能会有所不同，例如使用表格布局或使用滚动元素的情况下。
+这个函数在`getBoundingClientRect()`有效时，就使用这个原生方法，而在这个方法无效时则使用默认的计算公式。在某些情况下，这个函数返回的值可能会有所不同，例如使用表格布局或使用滚动元素的情况下。
 
 > 由于这里使用了 arguments.callee，所以这个方法不能在严格模式下使用。
 
