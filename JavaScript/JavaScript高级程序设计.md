@@ -1972,6 +1972,8 @@ RegExp 对象的主要方法是 `exec()`，该方法是专门为捕获组而设�
 项在字符串中的位置，而 input 表示应用正则表达式的字符串。在数组中，第一项是与整个模式匹配
 的字符串，其他项是与模式中的捕获组匹配的字符串（如果模式中没有捕获组，则该数组只包含一项）。
 请看下面的例子。
+
+```js
 var text = "mom and dad and baby";
 var pattern = /mom( and dad( and baby)?)?/gi;
 var matches = pattern.exec(text);
@@ -1980,7 +1982,8 @@ alert(matches.input); // "mom and dad and baby"
 alert(matches[0]); // "mom and dad and baby"
 alert(matches[1]); // " and dad and baby"
 alert(matches[2]); // " and baby"
-RegExpExecExample01.htm
+```
+
 这个例子中的模式包含两个捕获组。最内部的捕获组匹配"and baby"，而包含它的捕获组匹配"and
 dad"或者"and dad and baby"。当把字符串传入 `exec()`方法中之后，发现了一个匹配项。因为整个
 字符串本身与模式匹配，所以返回的数组 matchs 的 index 属性值为 0。数组中的第一项是匹配的整个
@@ -1988,6 +1991,8 @@ dad"或者"and dad and baby"。当把字符串传入 `exec()`方法中之后，�
 对于 `exec()`方法而言，即使在模式中设置了全局标志（g），它每次也只会返回一个匹配项。在不
 设置全局标志的情况下，在同一个字符串上多次调用 `exec()`将始终返回第一个匹配项的信息。而在设
 置全局标志的情况下，每次调用 `exec()`则都会在字符串中继续查找新匹配项，如下面的例子所示。
+
+```js
 var text = "cat, bat, sat, fat";
 var pattern1 = /.at/;
 var matches = pattern1.exec(text);
@@ -2003,25 +2008,12 @@ var matches = pattern2.exec(text);
 alert(matches.index); //0
 alert(matches[0]); //cat
 alert(pattern2.lastIndex); //3
-图灵社区会员 StinkBC(StinkBC@gmail.com) 专享 尊重版权5.4 RegExp 类型 107
-1
-2
-3
-4
-5
-13
-6
-7
-8
-9
-10
-11
-12
 matches = pattern2.exec(text);
 alert(matches.index); //5
 alert(matches[0]); //bat
 alert(pattern2.lastIndex); //8
-RegExpExecExample02.htm
+```
+
 这个例子中的第一个模式 pattern1 不是全局模式，因此每次调用 `exec()`返回的都是第一个匹配
 项（"cat"）。而第二个模式 pattern2 是全局模式，因此每次调用 `exec()`都会返回字符串中的下一个
 匹配项，直至搜索到字符串末尾为止。此外，还应该注意模式的 lastIndex 属性的变化情况。在全局
@@ -2031,24 +2023,33 @@ lastIndex 属性每次也会变化。
 正则表达式的第二个方法是 test()，它接受一个字符串参数。在模式与该参数匹配的情况下返回
 true；否则，返回 false。在只想知道目标字符串与某个模式是否匹配，但不需要知道其文本内容的
 情况下，使用这个方法非常方便。因此， test()方法经常被用在 if 语句中，如下面的例子所示。
+
+```js
 var text = "000-00-0000";
 var pattern = /\d{3}-\d{2}-\d{4}/;
 if (pattern.test(text)){
 alert("The pattern was matched.");
 }
+```
+
 在这个例子中，我们使用正则表达式来测试了一个数字序列。如果输入的文本与模式匹配，则显示
 一条消息。这种用法经常出现在验证用户输入的情况下，因为我们只想知道输入是不是有效，至于它为
 什么无效就无关紧要了。
 RegExp 实例继承的 toLocaleString()和 toString()方法都会返回正则表达式的字面量，与创
 建正则表达式的方式无关。例如：
+
+```js
 var pattern = new RegExp("\\[bc\\]at", "gi");
 alert(pattern.toString()); // /\[bc\]at/gi
 alert(pattern.toLocaleString()); // /\[bc\]at/gi
-RegExpToStringExample01.htm
+```
+
 即使上例中的模式是通过调用 RegExp 构造函数创建的，但 toLocaleString()和 toString()
 方法仍然会像它是以字面量形式创建的一样显示其字符串表示。
 正则表达式的 valueOf()方法返回正则表达式本身。
-5.4.3 RegExp构造函数属性
+
+### 5.4.3 RegExp构造函数属性
+
 RegExp 构造函数包含一些属性（这些属性在其他语言中被看成是静态属性）。这些属性适用于作用
 图灵社区会员 StinkBC(StinkBC@gmail.com) 专享 尊重版权108 第 5 章 引用类型
 域中的所有正则表达式，并且基于所执行的最近一次正则表达式操作而变化。关于这些属性的另一个独
