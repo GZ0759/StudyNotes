@@ -1966,12 +1966,7 @@ alert(pattern2.source); //"\[bc\]at"
 
 ### 5.4.2 RegExp实例方法
 
-RegExp 对象的主要方法是 `exec()`，该方法是专门为捕获组而设计的。 `exec()`接受一个参数，即
-要应用模式的字符串，然后返回包含第一个匹配项信息的数组；或者在没有匹配项的情况下返回 null。
-返回的数组虽然是 Array 的实例，但包含两个额外的属性： index 和 input。其中， index 表示匹配
-项在字符串中的位置，而 input 表示应用正则表达式的字符串。在数组中，第一项是与整个模式匹配
-的字符串，其他项是与模式中的捕获组匹配的字符串（如果模式中没有捕获组，则该数组只包含一项）。
-请看下面的例子。
+RegExp 对象的主要方法是 `exec()`，该方法是专门为捕获组而设计的。 `exec()`接受一个参数，即要应用模式的字符串，然后返回包含第一个匹配项信息的数组；或者在没有匹配项的情况下返回 null。返回的数组虽然是 Array 的实例，但包含两个额外的属性： index 和 input。其中， index 表示匹配项在字符串中的位置，而 input 表示应用正则表达式的字符串。在数组中，第一项是与整个模式匹配的字符串，其他项是与模式中的捕获组匹配的字符串（如果模式中没有捕获组，则该数组只包含一项）。请看下面的例子。
 
 ```js
 var text = "mom and dad and baby";
@@ -1984,13 +1979,9 @@ alert(matches[1]); // " and dad and baby"
 alert(matches[2]); // " and baby"
 ```
 
-这个例子中的模式包含两个捕获组。最内部的捕获组匹配"and baby"，而包含它的捕获组匹配"and
-dad"或者"and dad and baby"。当把字符串传入 `exec()`方法中之后，发现了一个匹配项。因为整个
-字符串本身与模式匹配，所以返回的数组 matchs 的 index 属性值为 0。数组中的第一项是匹配的整个
-字符串，第二项包含与第一个捕获组匹配的内容，第三项包含与第二个捕获组匹配的内容。
-对于 `exec()`方法而言，即使在模式中设置了全局标志（g），它每次也只会返回一个匹配项。在不
-设置全局标志的情况下，在同一个字符串上多次调用 `exec()`将始终返回第一个匹配项的信息。而在设
-置全局标志的情况下，每次调用 `exec()`则都会在字符串中继续查找新匹配项，如下面的例子所示。
+这个例子中的模式包含两个捕获组。最内部的捕获组匹配"and baby"，而包含它的捕获组匹配"anddad"或者"and dad and baby"。当把字符串传入 `exec()`方法中之后，发现了一个匹配项。因为整个字符串本身与模式匹配，所以返回的数组 matchs 的 index 属性值为 0。数组中的第一项是匹配的整个字符串，第二项包含与第一个捕获组匹配的内容，第三项包含与第二个捕获组匹配的内容。
+
+对于 `exec()`方法而言，即使在模式中设置了全局标志（g），它每次也只会返回一个匹配项。在不设置全局标志的情况下，在同一个字符串上多次调用 `exec()`将始终返回第一个匹配项的信息。而在设置全局标志的情况下，每次调用 `exec()`则都会在字符串中继续查找新匹配项，如下面的例子所示。
 
 ```js
 var text = "cat, bat, sat, fat";
@@ -2014,15 +2005,11 @@ alert(matches[0]); //bat
 alert(pattern2.lastIndex); //8
 ```
 
-这个例子中的第一个模式 pattern1 不是全局模式，因此每次调用 `exec()`返回的都是第一个匹配
-项（"cat"）。而第二个模式 pattern2 是全局模式，因此每次调用 `exec()`都会返回字符串中的下一个
-匹配项，直至搜索到字符串末尾为止。此外，还应该注意模式的 lastIndex 属性的变化情况。在全局
-匹配模式下， lastIndex 的值在每次调用 `exec()`后都会增加，而在非全局模式下则始终保持不变。
-IE 的 JavaScript 实现在 lastIndex 属性上存在偏差，即使在非全局模式下，
-lastIndex 属性每次也会变化。
-正则表达式的第二个方法是 test()，它接受一个字符串参数。在模式与该参数匹配的情况下返回
-true；否则，返回 false。在只想知道目标字符串与某个模式是否匹配，但不需要知道其文本内容的
-情况下，使用这个方法非常方便。因此， test()方法经常被用在 if 语句中，如下面的例子所示。
+这个例子中的第一个模式 pattern1 不是全局模式，因此每次调用 `exec()`返回的都是第一个匹配项（"cat"）。而第二个模式 pattern2 是全局模式，因此每次调用 `exec()`都会返回字符串中的下一个匹配项，直至搜索到字符串末尾为止。此外，还应该注意模式的 lastIndex 属性的变化情况。在全局匹配模式下， lastIndex 的值在每次调用 `exec()`后都会增加，而在非全局模式下则始终保持不变。
+
+IE 的 JavaScript 实现在 lastIndex 属性上存在偏差，即使在非全局模式下，lastIndex 属性每次也会变化。
+
+正则表达式的第二个方法是 test()，它接受一个字符串参数。在模式与该参数匹配的情况下返回true；否则，返回 false。在只想知道目标字符串与某个模式是否匹配，但不需要知道其文本内容的情况下，使用这个方法非常方便。因此， test()方法经常被用在 if 语句中，如下面的例子所示。
 
 ```js
 var text = "000-00-0000";
@@ -2032,11 +2019,9 @@ alert("The pattern was matched.");
 }
 ```
 
-在这个例子中，我们使用正则表达式来测试了一个数字序列。如果输入的文本与模式匹配，则显示
-一条消息。这种用法经常出现在验证用户输入的情况下，因为我们只想知道输入是不是有效，至于它为
-什么无效就无关紧要了。
-RegExp 实例继承的 toLocaleString()和 toString()方法都会返回正则表达式的字面量，与创
-建正则表达式的方式无关。例如：
+在这个例子中，我们使用正则表达式来测试了一个数字序列。如果输入的文本与模式匹配，则显示一条消息。这种用法经常出现在验证用户输入的情况下，因为我们只想知道输入是不是有效，至于它为什么无效就无关紧要了。
+
+RegExp 实例继承的 toLocaleString()和 toString()方法都会返回正则表达式的字面量，与创建正则表达式的方式无关。例如：
 
 ```js
 var pattern = new RegExp("\\[bc\\]at", "gi");
@@ -2044,17 +2029,15 @@ alert(pattern.toString()); // /\[bc\]at/gi
 alert(pattern.toLocaleString()); // /\[bc\]at/gi
 ```
 
-即使上例中的模式是通过调用 RegExp 构造函数创建的，但 toLocaleString()和 toString()
-方法仍然会像它是以字面量形式创建的一样显示其字符串表示。
+即使上例中的模式是通过调用 RegExp 构造函数创建的，但 toLocaleString()和 toString()方法仍然会像它是以字面量形式创建的一样显示其字符串表示。
+
 正则表达式的 valueOf()方法返回正则表达式本身。
 
 ### 5.4.3 RegExp构造函数属性
 
-RegExp 构造函数包含一些属性（这些属性在其他语言中被看成是静态属性）。这些属性适用于作用
-图灵社区会员 StinkBC(StinkBC@gmail.com) 专享 尊重版权108 第 5 章 引用类型
-域中的所有正则表达式，并且基于所执行的最近一次正则表达式操作而变化。关于这些属性的另一个独
-特之处，就是可以通过两种方式访问它们。换句话说，这些属性分别有一个长属性名和一个短属性名
-（Opera 是例外，它不支持短属性名）。下表列出了 RegExp 构造函数的属性。
+RegExp 构造函数包含一些属性（这些属性在其他语言中被看成是静态属性）。这些属性适用于作用域中的所有正则表达式，并且基于所执行的最近一次正则表达式操作而变化。关于这些属性的另一个独
+特之处，就是可以通过两种方式访问它们。换句话说，这些属性分别有一个长属性名和一个短属性名（Opera 是例外，它不支持短属性名）。下表列出了 RegExp 构造函数的属性。
+
 长属性名 短属性名 说 明
 input $_ 最近一次要匹配的字符串。 Opera未实现此属性
 lastMatch $& 最近一次的匹配项。 Opera未实现此属性
@@ -2062,7 +2045,10 @@ lastParen $+ 最近一次匹配的捕获组。 Opera未实现此属性
 leftContext $` input字符串中lastMatch之前的文本
 multiline $* 布尔值，表示是否所有表达式都使用多行模式。 IE和Opera未实现此属性
 rightContext $' Input字符串中lastMatch之后的文本
+
 使用这些属性可以从 `exec()`或 test()执行的操作中提取出更具体的信息。请看下面的例子。
+
+```js
 var text = "this has been a short summer";
 var pattern = /(.)hort/g;
 /*
@@ -2077,36 +2063,25 @@ alert(RegExp.lastMatch); // short
 alert(RegExp.lastParen); // s
 alert(RegExp.multiline); // false
 }
-RegExpConstructorPropertiesExample01.htm
+```
+
 以上代码创建了一个模式，匹配任何一个字符后跟 hort，而且把第一个字符放在了一个捕获组中。
 RegExp 构造函数的各个属性返回了下列值：
- input 属性返回了原始字符串；
- leftContext 属性返回了单词 short 之前的字符串，而 rightContext 属性则返回了 short
+- input 属性返回了原始字符串；
+- leftContext 属性返回了单词 short 之前的字符串，而 rightContext 属性则返回了 short
 之后的字符串；
- lastMatch 属性返回最近一次与整个正则表达式匹配的字符串，即 short；
- lastParen 属性返回最近一次匹配的捕获组，即例子中的 s。
-如前所述，例子使用的长属性名都可以用相应的短属性名来代替。只不过，由于这些短属性名大都
-不是有效的 ECMAScript 标识符，因此必须通过方括号语法来访问它们，如下所示。
+- lastMatch 属性返回最近一次与整个正则表达式匹配的字符串，即 short；
+- lastParen 属性返回最近一次匹配的捕获组，即例子中的 s。
+
+如前所述，例子使用的长属性名都可以用相应的短属性名来代替。只不过，由于这些短属性名大都不是有效的 ECMAScript 标识符，因此必须通过方括号语法来访问它们，如下所示。
+
+```js
 var text = "this has been a short summer";
 var pattern = /(.)hort/g;
 /*
 * 注意： Opera 不支持 input、 lastMatch、 lastParen 和 multiline 属性
 * Internet Explorer 不支持 multiline 属性
 */
-图灵社区会员 StinkBC(StinkBC@gmail.com) 专享 尊重版权5.4 RegExp 类型 109
-1
-2
-3
-4
-5
-13
-6
-7
-8
-9
-10
-11
-12
 if (pattern.test(text)){
 alert(RegExp.$_); // this has been a short summer
 alert(RegExp["$`"]); // this has been a
@@ -2115,39 +2090,40 @@ alert(RegExp["$&"]); // short
 alert(RegExp["$+"]); // s
 alert(RegExp["$*"]); // false
 }
-RegExpConstructorPropertiesExample02.htm
-除了上面介绍的几个属性之外，还有多达 9 个用于存储捕获组的构造函数属性。访问这些属性的语
-法是 RegExp.$1、 RegExp.$2…RegExp.$9，分别用于存储第一、第二……第九个匹配的捕获组。在
-调用 `exec()`或 test()方法时，这些属性会被自动填充。然后，我们就可以像下面这样来使用它们。
+```
+
+除了上面介绍的几个属性之外，还有多达 9 个用于存储捕获组的构造函数属性。访问这些属性的语法是 RegExp.$1、 RegExp.$2…RegExp.$9，分别用于存储第一、第二……第九个匹配的捕获组。在调用 `exec()`或 test()方法时，这些属性会被自动填充。然后，我们就可以像下面这样来使用它们。
+
+```js
 var text = "this has been a short summer";
 var pattern = /(..)or(.)/g;
 if (pattern.test(text)){
 alert(RegExp.$1); //sh
 alert(RegExp.$2); //t
 }
-RegExpConstructorPropertiesExample03.htm
-这里创建了一个包含两个捕获组的模式，并用该模式测试了一个字符串。即使 test()方法只返回
-一个布尔值，但 RegExp 构造函数的属性$1 和$2 也会被匹配相应捕获组的字符串自动填充。
-5.4.4 模式的局限性
-尽管 ECMAScript 中的正则表达式功能还是比较完备的，但仍然缺少某些语言（特别是 Perl）所支
-持的高级正则表达式特性。下面列出了 ECMAScript 正则表达式不支持的特性（要了解更多相关信息，
-请访问 www.regular-expressions.info）。
- 匹配字符串开始和结尾的\A 和\Z 锚①
- 向后查找（lookbehind） ②
- 并集和交集类
- 原子组（atomic grouping）
- Unicode 支持（单个字符除外，如\uFFFF）
- 命名的捕获组③
- s（single，单行）和 x（free-spacing，无间隔）匹配模式
- 条件匹配
- 正则表达式注释
+```
+
+这里创建了一个包含两个捕获组的模式，并用该模式测试了一个字符串。即使 test()方法只返回一个布尔值，但 RegExp 构造函数的属性$1 和$2 也会被匹配相应捕获组的字符串自动填充。
+
+### 5.4.4 模式的局限性
+
+尽管 ECMAScript 中的正则表达式功能还是比较完备的，但仍然缺少某些语言（特别是 Perl）所支持的高级正则表达式特性。下面列出了 ECMAScript 正则表达式不支持的特性（要了解更多相关信息，请访问 www.regular-expressions.info）。
+- 匹配字符串开始和结尾的\A 和\Z 锚①
+- 向后查找（lookbehind） ②
+- 并集和交集类
+- 原子组（atomic grouping）
+- Unicode 支持（单个字符除外，如\uFFFF）
+- 命名的捕获组③
+- s（single，单行）和 x（free-spacing，无间隔）匹配模式
+- 条件匹配
+- 正则表达式注释
 即使存在这些限制， ECMAScript 正则表达式仍然是非常强大的，能够帮我们完成绝大多数模式匹
 配任务。
 ——————————
 ① 但支持以插入符号（^）和美元符号（$）来匹配字符串的开始和结尾。
 ② 但完全支持向前查找（lookahead）。
 ③ 但支持编号的捕获组。
-图灵社区会员 StinkBC(StinkBC@gmail.com) 专享 尊重版权110 第 5 章 引用类型
+
 
 
 
