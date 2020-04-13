@@ -1904,7 +1904,7 @@ var pattern1 = /[bc]at/i;
 var pattern2 = new RegExp("[bc]at", "i");
 ```
 
-在此， pattern1 和 pattern2 是两个完全等价的正则表达式。要注意的是，传递给 RegExp 构造函数的两个参数都是字符串（不能把正则表达式字面量传递给 RegExp 构造函数）。由于 RegExp 构造函数的模式参数是字符串，所以在某些情况下要对字符进行双重转义。所有元字符都必须双重转义，那些已经转义过的字符也是如此，例如\n（字符\在字符串中通常被转义为\\，而在正则表达式字符串中就会变成\\\\）。下表给出了一些模式，左边是这些模式的字面量形式，右边是使用 RegExp 构造函数定义相同模式时使用的字符串。
+在此， pattern1 和 pattern2 是两个完全等价的正则表达式。要注意的是，传递给 RegExp 构造函数的两个参数都是字符串（不能把正则表达式字面量传递给 RegExp 构造函数）。由于 RegExp 构造函数的模式参数是字符串，所以在某些情况下要对字符进行双重转义。所有元字符都必须双重转义，那些已经转义过的字符也是如此，例如`\n`（字符`\`在字符串中通常被转义为`\\`，而在正则表达式字符串中就会变成`\\\\`）。下表给出了一些模式，左边是这些模式的字面量形式，右边是使用 RegExp 构造函数定义相同模式时使用的字符串。
 
 | 字面量模式 | 等价的字符串 |
 |---|---|
@@ -1933,11 +1933,12 @@ for (i=0; i < 10; i++){
 
 第二个循环使用 RegExp 构造函数在每次循环中创建正则表达式。因为每次迭代都会创建一个新的 RegExp 实例，所以每次调用 `test()`都会返回 true。
 
-ECMAScript 5 明确规定，使用正则表达式字面量必须像直接调用 RegExp 构造函数一样，每次都创建新的 RegExp 实例。 IE9+、 Firefox 4+和 Chrome 都据此做出了修改。
+ECMAScript 5 明确规定，使用正则表达式字面量必须像直接调用 RegExp 构造函数一样，每次都创建新的 RegExp 实例。 IE9+、 Firefox 4+ 和 Chrome 都据此做出了修改。
 
 ### 5.4.1 RegExp实例属性
 
 RegExp 的每个实例都具有下列属性，通过这些属性可以取得有关模式的各种信息。
+
 - global：布尔值，表示是否设置了 g 标志。
 - ignoreCase：布尔值，表示是否设置了 i 标志。
 - lastIndex：整数，表示开始搜索下一个匹配项的字符位置，从 0 算起。
@@ -1994,6 +1995,7 @@ matches = pattern1.exec(text);
 alert(matches.index); //0
 alert(matches[0]); //cat
 alert(pattern1.lastIndex); //0
+
 var pattern2 = /.at/g;
 var matches = pattern2.exec(text);
 alert(matches.index); //0
@@ -2009,19 +2011,19 @@ alert(pattern2.lastIndex); //8
 
 IE 的 JavaScript 实现在 lastIndex 属性上存在偏差，即使在非全局模式下，lastIndex 属性每次也会变化。
 
-正则表达式的第二个方法是 test()，它接受一个字符串参数。在模式与该参数匹配的情况下返回true；否则，返回 false。在只想知道目标字符串与某个模式是否匹配，但不需要知道其文本内容的情况下，使用这个方法非常方便。因此， test()方法经常被用在 if 语句中，如下面的例子所示。
+正则表达式的第二个方法是 `test()`，它接受一个字符串参数。在模式与该参数匹配的情况下返回true；否则，返回 false。在只想知道目标字符串与某个模式是否匹配，但不需要知道其文本内容的情况下，使用这个方法非常方便。因此， `test()`方法经常被用在 if 语句中，如下面的例子所示。
 
 ```js
 var text = "000-00-0000";
 var pattern = /\d{3}-\d{2}-\d{4}/;
 if (pattern.test(text)){
-alert("The pattern was matched.");
+  alert("The pattern was matched.");
 }
 ```
 
 在这个例子中，我们使用正则表达式来测试了一个数字序列。如果输入的文本与模式匹配，则显示一条消息。这种用法经常出现在验证用户输入的情况下，因为我们只想知道输入是不是有效，至于它为什么无效就无关紧要了。
 
-RegExp 实例继承的 toLocaleString()和 toString()方法都会返回正则表达式的字面量，与创建正则表达式的方式无关。例如：
+RegExp 实例继承的 `toLocaleString()`和 `toString()`方法都会返回正则表达式的字面量，与创建正则表达式的方式无关。例如：
 
 ```js
 var pattern = new RegExp("\\[bc\\]at", "gi");
@@ -2029,9 +2031,9 @@ alert(pattern.toString()); // /\[bc\]at/gi
 alert(pattern.toLocaleString()); // /\[bc\]at/gi
 ```
 
-即使上例中的模式是通过调用 RegExp 构造函数创建的，但 toLocaleString()和 toString()方法仍然会像它是以字面量形式创建的一样显示其字符串表示。
+即使上例中的模式是通过调用 RegExp 构造函数创建的，但 `toLocaleString()`和 `toString()`方法仍然会像它是以字面量形式创建的一样显示其字符串表示。
 
-正则表达式的 valueOf()方法返回正则表达式本身。
+正则表达式的 `valueOf()`方法返回正则表达式本身。
 
 ### 5.4.3 RegExp构造函数属性
 
@@ -2046,7 +2048,7 @@ leftContext $` input字符串中lastMatch之前的文本
 multiline $* 布尔值，表示是否所有表达式都使用多行模式。 IE和Opera未实现此属性
 rightContext $' Input字符串中lastMatch之后的文本
 
-使用这些属性可以从 `exec()`或 test()执行的操作中提取出更具体的信息。请看下面的例子。
+使用这些属性可以从 `exec()`或 `test()`执行的操作中提取出更具体的信息。请看下面的例子。
 
 ```js
 var text = "this has been a short summer";
@@ -2056,20 +2058,19 @@ var pattern = /(.)hort/g;
 * Internet Explorer 不支持 multiline 属性
 */
 if (pattern.test(text)){
-alert(RegExp.input); // this has been a short summer
-alert(RegExp.leftContext); // this has been a
-alert(RegExp.rightContext); // summer
-alert(RegExp.lastMatch); // short
-alert(RegExp.lastParen); // s
-alert(RegExp.multiline); // false
+  alert(RegExp.input); // this has been a short summer
+  alert(RegExp.leftContext); // this has been a
+  alert(RegExp.rightContext); // summer
+  alert(RegExp.lastMatch); // short
+  alert(RegExp.lastParen); // s
+  alert(RegExp.multiline); // false
 }
 ```
 
 以上代码创建了一个模式，匹配任何一个字符后跟 hort，而且把第一个字符放在了一个捕获组中。
 RegExp 构造函数的各个属性返回了下列值：
 - input 属性返回了原始字符串；
-- leftContext 属性返回了单词 short 之前的字符串，而 rightContext 属性则返回了 short
-之后的字符串；
+- leftContext 属性返回了单词 short 之前的字符串，而 rightContext 属性则返回了 short 之后的字符串；
 - lastMatch 属性返回最近一次与整个正则表达式匹配的字符串，即 short；
 - lastParen 属性返回最近一次匹配的捕获组，即例子中的 s。
 
@@ -2083,46 +2084,41 @@ var pattern = /(.)hort/g;
 * Internet Explorer 不支持 multiline 属性
 */
 if (pattern.test(text)){
-alert(RegExp.$_); // this has been a short summer
-alert(RegExp["$`"]); // this has been a
-alert(RegExp["$'"]); // summer
-alert(RegExp["$&"]); // short
-alert(RegExp["$+"]); // s
-alert(RegExp["$*"]); // false
+  alert(RegExp.$_); // this has been a short summer
+  alert(RegExp["$`"]); // this has been a
+  alert(RegExp["$'"]); // summer
+  alert(RegExp["$&"]); // short
+  alert(RegExp["$+"]); // s
+  alert(RegExp["$*"]); // false
 }
 ```
 
-除了上面介绍的几个属性之外，还有多达 9 个用于存储捕获组的构造函数属性。访问这些属性的语法是 RegExp.$1、 RegExp.$2…RegExp.$9，分别用于存储第一、第二……第九个匹配的捕获组。在调用 `exec()`或 test()方法时，这些属性会被自动填充。然后，我们就可以像下面这样来使用它们。
+除了上面介绍的几个属性之外，还有多达 9 个用于存储捕获组的构造函数属性。访问这些属性的语法是 RegExp.$1、 RegExp.$2…RegExp.$9，分别用于存储第一、第二……第九个匹配的捕获组。在调用 `exec()`或 `test()`方法时，这些属性会被自动填充。然后，我们就可以像下面这样来使用它们。
 
 ```js
 var text = "this has been a short summer";
 var pattern = /(..)or(.)/g;
 if (pattern.test(text)){
-alert(RegExp.$1); //sh
-alert(RegExp.$2); //t
+  alert(RegExp.$1); //sh
+  alert(RegExp.$2); //t
 }
 ```
 
-这里创建了一个包含两个捕获组的模式，并用该模式测试了一个字符串。即使 test()方法只返回一个布尔值，但 RegExp 构造函数的属性$1 和$2 也会被匹配相应捕获组的字符串自动填充。
+这里创建了一个包含两个捕获组的模式，并用该模式测试了一个字符串。即使 `test()`方法只返回一个布尔值，但 RegExp 构造函数的属性$1 和$2 也会被匹配相应捕获组的字符串自动填充。
 
 ### 5.4.4 模式的局限性
 
 尽管 ECMAScript 中的正则表达式功能还是比较完备的，但仍然缺少某些语言（特别是 Perl）所支持的高级正则表达式特性。下面列出了 ECMAScript 正则表达式不支持的特性（要了解更多相关信息，请访问 www.regular-expressions.info）。
-- 匹配字符串开始和结尾的\A 和\Z 锚①
-- 向后查找（lookbehind） ②
+- 匹配字符串开始和结尾的\A 和\Z 锚
+- 向后查找（lookbehind）
 - 并集和交集类
 - 原子组（atomic grouping）
 - Unicode 支持（单个字符除外，如\uFFFF）
-- 命名的捕获组③
+- 命名的捕获组
 - s（single，单行）和 x（free-spacing，无间隔）匹配模式
 - 条件匹配
 - 正则表达式注释
-即使存在这些限制， ECMAScript 正则表达式仍然是非常强大的，能够帮我们完成绝大多数模式匹
-配任务。
-——————————
-① 但支持以插入符号（^）和美元符号（$）来匹配字符串的开始和结尾。
-② 但完全支持向前查找（lookahead）。
-③ 但支持编号的捕获组。
+即使存在这些限制， ECMAScript 正则表达式仍然是非常强大的，能够帮我们完成绝大多数模式匹配任务。
 
 
 
