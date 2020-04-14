@@ -206,8 +206,6 @@ ip地址是用来定位计算机的，端口号是用来定位具体的应用程
 
 - Release版: 该版本意味“最终版本”，在前面版本的一系列测试版之后，终归会有一个正式版本，是最终交付用户使用的一个版本。该版本有时也称为标准版。一般情况下，Release不会以单词形式出现在软件封面上，取而代之的是符号(Ｒ)。
 
- 
-
 2.  版本命名规范
 
 　　软件版本号由四部分组成，第一个1为主版本号，第二个1为子版本号，第三个1为阶段版本号，第四部分为日期版本号加希腊字母版本号，希腊字母版本号共有5种，分别为：base、alpha、beta、RC、release。例如：1.1.1.051021_beta。版本号定修改规则如下
@@ -253,32 +251,32 @@ res.end()
 
 ## 什么是模块化
 
-我们把每一个 .js 文件都视为一个模块，模块内部有自己的作用域，不会影响到全局，防止出现命名冲突的情况。并且，我们约定一些关键词来进行依赖声明和 API 暴露，解决繁琐的文件依赖问题。JavaScript本身不支持模块化。在js中有两种用于实现模块的方法：对象字面量表示法、 Module 模式。有几种用于实现模块的规范，括号内为对应的脚本加载器： CMD（SeaJS） 、AMD（RequireJS）、 CommonJS（NodeJS）、 ES6 Module （ECMAScript 2015）。
+我们把每一个 `.js` 文件都视为一个模块，模块内部有自己的作用域，不会影响到全局，防止出现命名冲突的情况。并且，我们约定一些关键词来进行依赖声明和 API 暴露，解决繁琐的文件依赖问题。JavaScript本身不支持模块化。在js中有两种用于实现模块的方法：对象字面量表示法、 Module 模式。有几种用于实现模块的规范，括号内为对应的脚本加载器： CMD（SeaJS） 、AMD（RequireJS）、 CommonJS（NodeJS）、 ES6 Module （ECMAScript 2015）。
 
 ## CommonJS模块规范
 
 CommonJS对模块的定义十分简单，主要分为模块的引用、模块定义和模块标识三个部分。
 
 - 模块引用的示例代码是：`var math = require('math');`  
-- 在模块中，上下文提供 require () 来引入外部模块。对应引入的功能，上下文提供了 exports 对象用于导出当前模块的方法或者变量，并且它是唯一导出的出口。在模块中，还存在一个 module 对象，它代表模块自身，而 exports 是 module 的属性，上下文提供的 exports 对象实际上是 module.exports 的引用。在 Node 中，一个文件就是一个模块，将方法挂载在 exports 对象上作为属性即可定义导出的方式。
-- 模块标识就是传递给 require () 方法的参数，它必须是符合小驼峰命名的字符串，或者 "./" 或 "../" 开头的相对路径，或者绝对路径。它可以没有文件名后缀 .js 。
+- 在模块中，上下文提供 `require()` 来引入外部模块。对应引入的功能，上下文提供了 exports 对象用于导出当前模块的方法或者变量，并且它是唯一导出的出口。在模块中，还存在一个 module 对象，它代表模块自身，而 exports 是 module 的属性，上下文提供的 exports 对象实际上是 module.exports 的引用。在 Node 中，一个文件就是一个模块，将方法挂载在 exports 对象上作为属性即可定义导出的方式。
+- 模块标识就是传递给 `require()` 方法的参数，它必须是符合小驼峰命名的字符串，或者 "./" 或 "../" 开头的相对路径，或者绝对路径。它可以没有文件名后缀 .js 。
 
 Node的模块实现。在Node中引入模块，需要大概经历如下三个步骤：路径分析、文件定位和编译执行。
 
-优先从缓存加载。和浏览器会缓存静态js文件一样，Node也会对引入的模块进行缓存，不同的是浏览器缓存的是文件，Node缓存的是编译执行之后的对象。简言之，已经加载过的模块不会重复加载，如果再次加载一般还是只是取得接口对象。这样避免重复加载会提高加载效率。另外，不论是核心模块还是文件模块， require () 对相同模块的二次加载一律采用缓存优先的方式，这是第一优先级的，核心模块缓存检查先于文件模块的缓存检查。
+优先从缓存加载。和浏览器会缓存静态js文件一样，Node也会对引入的模块进行缓存，不同的是浏览器缓存的是文件，Node缓存的是编译执行之后的对象。简言之，已经加载过的模块不会重复加载，如果再次加载一般还是只是取得接口对象。这样避免重复加载会提高加载效率。另外，不论是核心模块还是文件模块， `require()` 对相同模块的二次加载一律采用缓存优先的方式，这是第一优先级的，核心模块缓存检查先于文件模块的缓存检查。
  
 模块标识符分析与文件定位。模块标识符在Node中主要分为以下几类：
  
 - 核心模块。核心模块优先级仅次于缓存加载，因此无法加载一个和核心模块标识符相同的自定义模块。
 - 相对路径文件模块。以 "./" 、 "../" 开头的标识符，分别表示当前目录和上一级目录，不可以省略。读取文件可以直接用文件名作为相对路径的开头，但是读取文件模块不行。
-- 绝对路径文件模块。以 "/" 开始或直接使用 "D:/Baidu/BaiduPinyin/a.js" 的标识符，前者表示当前文件模块所属的磁盘根目录。另外，无论是绝对路径还是相对路径的文件模块， require () 方法会将路径转为真实路径，并以真实路径作为索引，并将编译执行后的结果存放到缓存中。
+- 绝对路径文件模块。以 "/" 开始或直接使用 "D:/Baidu/BaiduPinyin/a.js" 的标识符，前者表示当前文件模块所属的磁盘根目录。另外，无论是绝对路径还是相对路径的文件模块， `require()` 方法会将路径转为真实路径，并以真实路径作为索引，并将编译执行后的结果存放到缓存中。
 - 非路径形式的文件模块，又称作第三方模块或者自定义模块。第三方模块是指非核心模块，也不是路径形式的标识符。它是一种特殊的文件模块，可能是一个文件或者包的形式，如自定义的 connect 模块。注意，因为第三方模块也是通过直接引用包名进行引入，所以第三方模块一定不能与核心模块重名。路径查找规律一般是先找到当前文件所处目录的 node_modules 目录，然后查找该包名文件下的 package.json 文件， 通过该文件里面的 main 属性 找到入口模块，然后加载使用这个第三方包，实际上最终加载的还是文件。如果 package.json 文件不存在或者没有 main 指定的入口模块或者 main 属性指定文件名错误， Node 会将 index 当作默认文件名，然后一次查找 index.js 、index.json 、index.node 。如果在目录分析的过程中没有定位成功任何文件，则自定义模块进入下一个模块路径进行查找，即进入其上一级目录的 node_modules 目录查找，如果直到当前磁盘根目录还没找到，则抛出查找失败的异常。当前文件的目录越深，模块查找耗时越多。
  
 模块编译。每一个编译成功的模块都会将其文件路径作为索引缓存在Module._cache对象上。对于不同扩展名，其载入方法也有所不同：
  
 - *.js* 通过fs模块同步读取文件后编译执行。
-- *.node* 这是C/C++编写的扩展文件，通过dlopen()方法加载最后编译生成的文件
-- *.json* 同过fs模块同步读取文件后，用JSON.pares()解析返回结果
+- *.node* 这是C/C++编写的扩展文件，通过`dlopen()`方法加载最后编译生成的文件
+- *.json* 同过fs模块同步读取文件后，用`JSON.pares()`解析返回结果
 - *其他* 当作.js
 
 # 五、包管理器npm
@@ -769,8 +767,6 @@ Express 是一个简洁而灵活的 node.js Web应用框架，提供了一系列
 - 定义了路由表用于执行不同的 HTTP 请求动作。
 - 可以通过向模板传递参数来动态渲染 HTML 页面。
 
-
-
 ## 安装 Express
 
 安装 Express 并将其保存到依赖列表中：
@@ -784,8 +780,6 @@ npm install express --save
 - body-parser - node.js 中间件，用于处理 JSON, Raw, Text 和 URL 编码的数据。
 - cookie-parser - 这就是一个解析Cookie的工具。通过req.cookies可以取到传过来的cookie，并把它们转成对象。
 - multer - node.js 中间件，用于处理 enctype="multipart/form-data"（设置表单的MIME编码）的表单数据。
-
-
 
 ## 第一个 Express 框架实例
 
@@ -812,8 +806,6 @@ console.log("应用实例，访问地址为 http://%s:%s", host, port)
 node express_demo.js 
 ```
 
-
-
 ## 请求和响应
 
 Express 应用使用回调函数的参数： **request** 和 **response** 对象来处理请求和响应的数据。
@@ -827,8 +819,6 @@ app.get('/', function (req, res) {
 Request 对象 - request 对象表示 HTTP 请求，包含了请求查询字符串，参数，内容，HTTP 头部等属性。
 
 Response 对象- response 对象表示 HTTP 响应，即在接收到请求时向客户端发送的 HTTP 响应数据。
-
-
 
 ## 基本路由
 
@@ -849,8 +839,6 @@ app.post('/', function (req, res) {
    res.send('Hello POST');
 })
 ```
-
-
 
 ## 托管静态文件
 
@@ -875,8 +863,6 @@ app.use('/static', express.static('public'));
 //  http://localhost:3000/static/images/kitten.jpg
 //  http://localhost:3000/static/css/style.css
 ```
-
-
 
 ## 在 Express 中使用模板引擎
 
@@ -922,8 +908,6 @@ app.get('/', function (req, res) {
 
 此时向主页发送请求，“index.jade” 会被渲染为 HTML。
 
-
-
 ## 重定向
 
 res.redirect（[status，] path）
@@ -939,8 +923,6 @@ res.redirect('http://example.com');
 res.redirect(301, 'http://example.com');
 res.redirect('../login');
 ```
-
-
 
 ## 获取表单GET/POST数据
 
@@ -971,8 +953,6 @@ app.use(function (req, res) {
   res.end(JSON.stringify(req.body, null, 2))
 })
 ```
-
-
 
 ## 路由模块的提取
 
@@ -1022,8 +1002,6 @@ router.get('/', function (req,res){  // 2.把路由都挂载到 router 路由容
 module.exports = router  // 3.把 router 路由容器导出
 ```
 
-
-
 ## 数据操作文件API模块
 
 文件 student.js 的职责是操作文件中的数据，只处理数据，不关心业务。
@@ -1033,47 +1011,47 @@ module.exports = router  // 3.把 router 路由容器导出
 // students.js
 var fs = require('fs')
 exports.find = function (callback) {
-    fs.readFile(dbPath,'utf-8',function (err,data) {
-        if (err){
-            return callback(err)
-        }
-        callback(null,JSON.parse(data).students)
-    })
+  fs.readFile(dbPath,'utf-8',function (err,data) {
+    if (err){
+      return callback(err)
+    }
+    callback(null,JSON.parse(data).students)
+  })
 }
 // router.js
 var Student = require('./student')
 router.get('/students',function (req,res) {
-    Student.find(function (err,students) {
-  	  if (err) {
-  	      return res.status(500).send('Server error')
-  	  }
-  	  res.render('index.html',{
- 	       students:students
- 	   })
+  Student.find(function (err,students) {
+    if (err) {
+      return res.status(500).send('Server error')
+    }
+    res.render('index.html',{
+      students:students
+    })
 	})
 })
 
 // 根据 id 获取学生的信息
 // students.js
 exports.findById = function (id, callback) {
-    fs.readFile(dbPath,'utf-8',function (err,data) {
-        if (err){
-            return callback(err)
-        }
-        var students = JSON.parse(data).students
-        var ret = students.find(function (item) {
-            return item.id === parseInt(id)
-        })
-        callback(null, ret)
+  fs.readFile(dbPath,'utf-8',function (err,data) {
+    if (err){
+      return callback(err)
+    }
+    var students = JSON.parse(data).students
+    var ret = students.find(function (item) {
+      return item.id === parseInt(id)
     })
+    callback(null, ret)
+  })
 }
 // router.js
 Student.findById(parseInt(req.query.id),function(err,student)) {
-    if (err) {
-    	return res.status(500).send('Server error')
-    }
+  if (err) {
+    return res.status(500).send('Server error')
+  }
 	res.render('edit.html', {
-   	  student:student
+    student:student
 	})
 }
 
@@ -1082,106 +1060,104 @@ Student.findById(parseInt(req.query.id),function(err,student)) {
 // students.js
 var fs = require('fs')
 exports.save = function (student,callback) {
-    fs.readFile(dbPath,'utf-8',function (err,data) {
-        if (err){
-            return callback(err)
-        }
-        var students = JSON.parse(data).students
-        student.id = students[students.length - 1].id + 1  // 处理学生 id 问题
-        students.push(student)
-        var fileData = JSON.stringfy({  // 先把数组传递进去变成对象，再把对象数据转换为字符串
-            students:students
-        })
-        fs.writeFile(dbPath,fileData,function(err){  // 把字符串保存到文件中
-            if (err) {
-                return callback(err)
-            }
-            callback(null)
-        })
+  fs.readFile(dbPath,'utf-8',function (err,data) {
+    if (err){
+      return callback(err)
+    }
+    var students = JSON.parse(data).students
+    student.id = students[students.length - 1].id + 1  // 处理学生 id 问题
+    students.push(student)
+    var fileData = JSON.stringfy({  // 先把数组传递进去变成对象，再把对象数据转换为字符串
+      students:students
     })
+    fs.writeFile(dbPath,fileData,function(err){  // 把字符串保存到文件中
+      if (err) {
+        return callback(err)
+      }
+      callback(null)
+    })
+  })
 }
 // router.js
 var Student = require('./student')
 router.post('/students/new', fucntion (req,res){
-   Student.save(req.body,function (err,students) {
-  	  if (err) {
- 	       return res.status(500).send('Server error')
- 	   }
-  	  res.redirect('/students')
-   })	
+  Student.save(req.body,function (err,students) {
+    if (err) {
+      return res.status(500).send('Server error')
+    }
+    res.redirect('/students')
+  })	
 })
 
 // 更新学生
 // students.js
 exports.update = function (student, callback){
-    fs.readFile(dbPath, 'utf-8', function(err,data){
-        if (err) {
-            return callback(err)
-        }
-        var students = JSON.parse(data).students
-        student.id = parseInt(student.id)
-        var stu = students.find(function(item){  // 遍历数组，找到 id 符合的数组成员（对象） 
-            return item.id === student.id
-        })
-        for (var key in student){  // 遍历拷贝对象
-            stu[key] = student[key]   // 将拷贝对象的属性值传递给符合要求的 id 符合的数组成员（对象）
-        }
-        var fileData = JSON.stringify({
-            students:students
-        })
-        fs.writeFile(dbPath,fileData,function(err){
-            if (err){
-                return callback(err) 
-            }
-            callback(null)
-        })
+  fs.readFile(dbPath, 'utf-8', function(err,data){
+    if (err) {
+      return callback(err)
+    }
+    var students = JSON.parse(data).students
+    student.id = parseInt(student.id)
+    var stu = students.find(function(item){  // 遍历数组，找到 id 符合的数组成员（对象） 
+      return item.id === student.id
     })
+    for (var key in student){  // 遍历拷贝对象
+      stu[key] = student[key]   // 将拷贝对象的属性值传递给符合要求的 id 符合的数组成员（对象）
+    }
+    var fileData = JSON.stringify({
+      students:students
+    })
+    fs.writeFile(dbPath,fileData,function(err){
+      if (err){
+        return callback(err) 
+      }
+      callback(null)
+    })
+  })
 }
 // router.js
 var Student = require('./student')
 router.post('/students/edit', fucntion (req,res){
-   Student.update(req.body,function (err) {
-  	  if (err) {
- 	       return res.status(500).send('Server error')
- 	   }
-  	  res.redirect('/students')
-   })	
+  Student.update(req.body,function (err) {
+    if (err) {
+      return res.status(500).send('Server error')
+    }
+    res.redirect('/students')
+  })	
 })
 
 // 删除学生
 // students.js
 exports.delete = function (id, callback) {
-    fs.readFile(dbPath,'utf-8',function (err,data) {
-        if (err){
-            return callback(err)
-        }
-        var students = JSON.parse(data).students
-        var deleteId = students.findIndex(function (item) {
-            return item.id === parseInt(id)
-        })
-        students.splice(deleteId, 1)
-        var fileData = JSON.stringify({
-            students:students
-        })
-        fs.writeFile(dbPath, fileData, function(err) {
-            if (err) {
-                return callback(err)
-            }
-            callback(null)
-        })
+  fs.readFile(dbPath,'utf-8',function (err,data) {
+    if (err){
+      return callback(err)
+    }
+    var students = JSON.parse(data).students
+    var deleteId = students.findIndex(function (item) {
+      return item.id === parseInt(id)
     })
+    students.splice(deleteId, 1)
+    var fileData = JSON.stringify({
+      students:students
+    })
+    fs.writeFile(dbPath, fileData, function(err) {
+      if (err) {
+        return callback(err)
+      }
+      callback(null)
+    })
+  })
 }
 // router.js
 var Student = require('./student')
 Student.delete(id, function (err) {
-    if (err) {
-        return res.status(500).send('Server error')
-    }
-    res.redirect('/students')
+  if (err) {
+    return res.status(500).send('Server error')
+  }
+  res.redirect('/students')
 })
 ```
-
-
 
 # 七、异步编程
 
@@ -1192,14 +1168,14 @@ Node.js通过普及回调函数来改进异步编程模型，回调模式与事�
 ```javascript
 // 一个定时器
 function timer(time, callback){
-    setTimeout(function(){
-        callback();
-    }, time);
+  setTimeout(function(){
+    callback();
+  }, time);
 }
 
 timer(3000, function(){
-    // 可以执行自己的操作
-    console.log(123);
+  // 可以执行自己的操作
+  console.log(123);
 })
 ```
 
@@ -1221,17 +1197,15 @@ get('data.json', function (data) {
 })
 ```
 
-
-
 ## Promise
 
 Promise相当于异步操作结果的占位符，它不会去订阅一个事件，也不会传递一个回调函数给目标函数，而是让函数返回一个表示异步读取操作的 Promise 对象，未来对这个对象的操作完全取决于 Promise 的声明周期。注意：Promise 本身不是异步的，内部封装的才是异步任务。
 
-每个 Promise 都会经历一个短暂的声明周期：先是处于进行中（pending）的状态，此时操作尚未完成，一旦异步操作结束，就会进入 Fulfilled（ 异步操作完成）或 Rejected （操作失败）两个状态中的一个。内部属性 [ [ PromiseState ] ] 被用来表示 Promise 的 3 种状态 ：” pending ” 、 fulfilled ”及＂ rejected ” 。 这个属性不暴露在 Promise 对象上 ， 所以不能以编程的方式检测 Promise 的状态 ， 只有当 Promise 的状态改变时， 通过 then () 方法来采取特定的行动 。 
+每个 Promise 都会经历一个短暂的声明周期：先是处于进行中（pending）的状态，此时操作尚未完成，一旦异步操作结束，就会进入 Fulfilled（ 异步操作完成）或 Rejected （操作失败）两个状态中的一个。内部属性 `[[PromiseState]]` 被用来表示 Promise 的 3 种状态 ：“pending” 、“fulfilled”及“rejected” 。 这个属性不暴露在 Promise 对象上 ， 所以不能以编程的方式检测 Promise 的状态 ， 只有当 Promise 的状态改变时， 通过 `then()` 方法来采取特定的行动 。 
 
 > 一旦状态改变就不会再变，任何时候都可以得到这个结果。 Promise 对象的状态改变只有两种可能：从 Pending 变为 Fulfilled 和从 Pending 变为 Rejected。只要这两种情况发生，状态就凝固了，不会再变，而是一直保持这个结果，这时就称为 Resolved （己定型） 。 就算改变己经发生，再对 Promise 对象添加回调函数，也会立即得到这个结果。这与事件 （event）完全不同。 事件的特点是，如果错过了它，再去监昕是得不到结果的 。  为了行文方便，本章后面的 Resolved 统一指 Fulfilled 状态，不包含 Rejected 状态 。  
 
-ES6 规定， Promise 对象是一个构造函数，用来生成 Promise 实例，所以可以给某个变量赋予Promise 实例对象。但是如果想要某个函数拥有 promise 功能，只需让其返回一个 promise 即可。
+ES6 规定， Promise 对象是一个构造函数，用来生成 Promise 实例，所以可以给某个变量赋予 Promise 实例对象。但是如果想要某个函数拥有 promise 功能，只需让其返回一个 promise 即可。
 
 ```javascript
 const myFirstPromise = new Promise((resolve, reject) => {
@@ -1251,9 +1225,9 @@ function myAsyncFunction(url) {
 };
 ```
 
-Promise 构造函数接受一个函数作为参数，该函数的两个参数分别是 resolve 和 reject 。 它们是两个函数，由 JavaScript 引擎提供，不用自己部署。 resolve 函数的作用是，将 Promise 对象的状态从“未完成”变为“成功”（即从 Pending 变为 Resolved ），在异步操作成功时调用，并将异步操作的结果作为参数传递出去： reject 函 数的作用是，将 Promise 对象的状态从“未完成”变为“失败”（即从 Pending 变为 Rejected), 在异步操作失败时调用，并将异步操作报出的错误作为参数传递出去 。  
+Promise 构造函数接受一个函数作为参数，该函数的两个参数分别是 resolve 和 reject 。 它们是两个函数，由 JavaScript 引擎提供，不用自己部署。 resolve 函数的作用是，将 Promise 对象的状态从“未完成”变为“成功”（即从 Pending 变为 Resolved ），在异步操作成功时调用，并将异步操作的结果作为参数传递出去： reject 函数的作用是，将 Promise 对象的状态从“未完成”变为“失败”（即从 Pending 变为 Rejected）, 在异步操作失败时调用，并将异步操作报出的错误作为参数传递出去 。  
 
-所有 Promise 都有 then () 方法。then () 方法可以接受两个回调函数作为参数 。 第一个回调函数是 Promise 对象的状态变为 Resolved 时调用， 第二个回调函数是 Promise 对象的状态变为 Rejected 时调用。其中，第二个函数是可选的，不一定要提供。这两个函数都接受 Promise 对象传出的值作为参数。  `then(null, handleRejection)` 调用的简写形式是 `catch(handleRejection)`。  
+所有 Promise 都有 `then()` 方法。`then()` 方法可以接受两个回调函数作为参数 。 第一个回调函数是 Promise 对象的状态变为 Resolved 时调用， 第二个回调函数是 Promise 对象的状态变为 Rejected 时调用。其中，第二个函数是可选的，不一定要提供。这两个函数都接受 Promise 对象传出的值作为参数。`then(null, handleRejection)` 调用的简写形式是 `catch(handleRejection)`。  
 
 ```javascript
 // Promise 构造函数接受一个函数作为参数，该函数的两个参数分别是 resolve 和 reject 
@@ -1271,7 +1245,7 @@ p1.then(function(value) {
 });
 ```
 
-串联 Promise 。每次调用 then () 方法或 catch () 方法时实际上创建并返回了另 一个 Promise，只有当第一个 Promise 完成或被拒绝后 ， 第二个才会被解决。Promise 链的另 一个重要特性是可以给下游 Promise 传递数据，我们己经看到了从执行器 resolve () 处理程序到 Promise 完成处理程序的数据传递过程，如果在完成处理程序中指定一个返回值，则可以沿着这条链继续传递数据 。   
+串联 Promise 。每次调用 `then()` 方法或 `catch()` 方法时实际上创建并返回了另 一个 Promise，只有当第一个 Promise 完成或被拒绝后 ， 第二个才会被解决。Promise 链的另 一个重要特性是可以给下游 Promise 传递数据，我们己经看到了从执行器 `resolve()` 处理程序到 Promise 完成处理程序的数据传递过程，如果在完成处理程序中指定一个返回值，则可以沿着这条链继续传递数据 。   
 
 ```javascript
 let p1 = new Promise(function(resolve, reject) {
