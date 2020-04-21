@@ -2500,7 +2500,7 @@ readFile("example.txt", function(err, contents) {
 console.log("Hi!");
 ```
 
-调用 `readFile()` 函数后，`console.log("Hi")`语句立即执行并输出“Hi” ；当 `readFile()` 结束执行时，会向任务队列的末尾添加一个新任务，该任务包含回调函数及相应的参数，当队列前面所有的任务完成后才执行该任务，并最终执行 `console.log(content)`输出所有内容 。
+调用 `readFile()` 函数后，`console.log("Hi")`语句立即执行并输出“Hi” ；当 `readFile()` 结束执行时，会向任务队列的末尾添加一个新任务，该任务包含回调函数及相应的参数，当队列前面所有的任务完成后才执行该任务，并最终执行 `console.log(contents)`输出所有内容 。
 
 回调模式比事件模型更灵活，因为相比之下，通过回调模式链接多个调用更容易。 
 
@@ -2671,7 +2671,7 @@ console.log("Hi!");
 // Timeout
 ```
 
-Promise 具有类似的工作原理，Promise的执行器会立即执行，然后才执行后续流程中的代码。调用 `resolve()`后回触发一个异步操作，传入`then()`和`catch()`方法的函数会被添加到任务队列中并异步执行。请注意，即使在代码中`then()`调用位于`console.log()`之前，但其与执行器不同，它并没有立即执行。这是因为，完成处理程序和拒绝程序总是在执行器完成后被添加到任务队列的末尾。
+Promise 具有类似的工作原理， Promise 的执行器会立即执行，然后才执行后续流程中的代码。调用 `resolve()`后回触发一个异步操作，传入`then()`和`catch()`方法的函数会被添加到任务队列中并异步执行。请注意，即使在代码中`then()`调用位于`console.log()`之前，但其与执行器不同，它并没有立即执行。这是因为，完成处理程序和拒绝程序总是在执行器完成后被添加到任务队列的末尾。
 
 ```js
 let promise = new Promise(function(resolve, reject) {
@@ -2718,7 +2718,7 @@ promise.catch(function(value) {
 
 
 
-非 promise 的 thenable 对象。`Promise.resolve()` 和 `Promise.reject()` 都可以接收非 promise 的 thenable 对象作为参数。在传递它之后，这些方法在调用 `then()`之后创建一个新的 promise ，并在`then()`函数中被调用。
+非 promise 的 thenable 对象。`Promise.resolve()` 和 `Promise.reject()` 都可以接收非 promise 的 thenable 对象作为参数。在传递它之后，这些方法在调用`then()`之后创建一个新的 promise ，并在`then()`函数中被调用。
 
 拥有`then()`方法且接受 resolve 和 reject 这两个参数的普通对象就是非 Promise 的 Thenable 对象。
 
