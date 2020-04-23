@@ -2562,7 +2562,7 @@ method1(function(err, result) {
 Promise 相当于异步操作结果的占位符，它不会去订阅一个事件，也不会传递一个回调函数给目标函数，而是让函数返回一个 Promise 对象，未来对这个对象的操作完全取决于 Promise 的生命周期。
 
 ```js
-// readFile promises to complete at some point in the future
+// readFile承诺在未来的某个时刻完成
 let promise = readFile("example.txt");
 ```
 
@@ -2601,7 +2601,7 @@ promise.then(null, function(err) {
 });
 ```
 
-Promise 还有一个 `catch()` 方法，相当于只给其传入拒绝处理程序的 `then()` 方法。
+Promise 还有一个 `catch()` 方法，相当于只给其传入拒绝处理程序的 `then()` 方法。例如，下面这个`catch()`方法和`then()`方法实现的功能是等价的：
 
 ```js
 promise.catch(function(err) {
@@ -2609,13 +2609,17 @@ promise.catch(function(err) {
     console.error(err.message);
 });
 
-// is the same as:
-
+// 以以下调用相同
 promise.then(null, function(err) {
     // rejection
     console.error(err.message);
 });
 ```
+
+`then()`方法和 `catch()`方法一起使用才能更好地处理异步操作结果。这套体系能够清楚地指明操作结果是成功还是失败，比事件和回调函数更好用。如果使用事件，在遇到错误时不会主动触发；如果使用回调函数，则必须要记得每
+次都检查错误参数。你要知道，如果不给 Promise 添加拒绝处理程序，那所有失败就自动被忽略了，所以一定要添加拒绝处理程序，即使只在函数内部记录失败的结果也行。
+
+如果一个 Promise 处于己处理状态，在这之后添加到任务队列中的处理程序仍将执行。所以无论何时你都可以添加新的完成处理程序或拒绝处理程序，同时也可以保证这些处理程序能被调用。举个例子 ：
 
 ### 11.2.2 创建未完成的 Promise
 
@@ -2623,31 +2627,25 @@ promise.then(null, function(err) {
 
 ```js
 // Node.js example
-
 let fs = require("fs");
-
 function readFile(filename) {
     return new Promise(function(resolve, reject) {
-
-        // trigger the asynchronous operation
+        // 触发异步函数
         fs.readFile(filename, { encoding: "utf8" }, function(err, contents) {
-
-            // check for errors
+            // 检查是否有错误
             if (err) {
                 reject(err);
                 return;
             }
-
-            // the read succeeded
+            // 成功读取文件
             resolve(contents);
-
         });
     });
 }
 
 let promise = readFile("example.txt");
 
-// listen for both fulfillment and rejection
+// 同时监听执行完成和执行被拒
 promise.then(function(contents) {
     // fulfillment
     console.log(contents);
@@ -2714,9 +2712,7 @@ promise.catch(function(value) {
 });
 ```
 
-如果向 `Promise.resolve()` 或 `Promise.reject()` 方法传递了一个 promise，那么该 promise 不会做任何修改而直接返回。
-
-
+> 如果向 `Promise.resolve()` 或 `Promise.reject()` 方法传递了一个 promise，那么该 promise 不会做任何修改而直接返回。
 
 非 promise 的 thenable 对象。`Promise.resolve()` 和 `Promise.reject()` 都可以接收非 promise 的 thenable 对象作为参数。在传递它之后，这些方法在调用`then()`之后创建一个新的 promise ，并在`then()`函数中被调用。
 
@@ -2905,14 +2901,14 @@ window.onunhandledrejection = function(event) {
     console.log(event.type);                    // "unhandledrejection"
     console.log(event.reason.message);          // "Explosion!"
     console.log(rejected === event.promise);    // true
-});
+};
 
 // 也可以使用addEventListener('rejectionhandled')
 window.onrejectionhandled = function(event) {
     console.log(event.type);                    // "rejectionhandled"
     console.log(event.reason.message);          // "Explosion!"
     console.log(rejected === event.promise);    // true
-});
+};
 
 rejected = Promise.reject(new Error("Explosion!"));
 ```
