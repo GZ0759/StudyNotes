@@ -887,36 +887,44 @@ ajax( "http://some.url.1", function myCallbackFunction(data){
 } );
 ```
 
-你有不同的意见？我知道，但为了避免回调函数引起的混乱并不足以成为使用阻塞式同步
-Ajax 的理由。
+你有不同的意见？我知道，但为了避免回调函数引起的混乱并不足以成为使用阻塞式同步Ajax 的理由。
+
 举例来说，考虑一下下面这段代码：
+
+```js
 function now() {
-return 21;
+	return 21;
 }
 function later() {
-answer = answer * 2;
-console.log( "Meaning of life:", answer );
+	answer = answer * 2;
+	console.log( "Meaning of life:", answer );
 }
 var answer = now();
 setTimeout( later, 1000 ); // Meaning of life: 42
-这个程序有两个块： 现在执行的部分，以及将来执行的部分。这两块的内容很明显，但这
-里我们还是要明确指出来。
+```
+
+这个程序有两个块： 现在执行的部分，以及将来执行的部分。这两块的内容很明显，但这里我们还是要明确指出来。
+
 现在：
+
+```js
 function now() {
-return 21;
+	return 21;
 }
 function later() { .. }
+
 var answer = now();
 setTimeout( later, 1000 );
+```
+
 将来：
+
+```js
 answer = answer * 2;
 console.log( "Meaning of life:", answer );
-现在这一块在程序运行之后就会立即执行。但是， setTimeout(..) 还设置了一个事件（定
-时）在将来执行，所以函数 later() 的内容会在之后的某个时间（从现在起 1000 毫秒之
-后）执行。
-任何时候，只要把一段代码包装成一个函数，并指定它在响应某个事件（定时器、鼠标点
-击、 Ajax 响应等）时执行，你就是在代码中创建了一个将来执行的块，也由此在这个程序
-中引入了异步机制。
+```
+
+现在这一块在程序运行之后就会立即执行。但是， setTimeout(..) 还设置了一个事件（定时）在将来执行，所以函数 later() 的内容会在之后的某个时间（从现在起 1000 毫秒之后）执行。
 
 任何时候，只要把一段代码包装成一个函数，并指定它在响应某个事件（定时器、鼠标点击、 Ajax 响应等）时执行，你就是在代码中创建了一个将来执行的块，也由此在这个程序中引入了异步机制。
 
@@ -928,7 +936,7 @@ console.log( "Meaning of life:", answer );
 
 ```js
 var a = {
-index: 1
+	index: 1
 };
 // 然后
 console.log( a ); // ??
@@ -944,9 +952,7 @@ a.index++;
 
 ## 1.2 事件循环
 
-然能够编写异步 JavaScript 代码
-（就像前面我们看到的定时代码），但直到最近（ES6）， JavaScript 才真正内建有直接的异
-步概念。
+虽然能够编写异步 JavaScript 代码（就像前面我们看到的定时代码），但直到最近（ES6）， JavaScript 才真正内建有直接的异步概念。
 
 JavaScript 引擎并不是独立运行的，它运行在宿主环境中，对多数开发者来说通常就是 Web 浏览器。所有的环境都有一个共同“点”（thread，也指线程），即它们都提供了一种机制来处理程序中多个块的执行，且执行每块时调用 JavaScript 引擎，这种机制被称为事件循环。
 
@@ -1015,12 +1021,14 @@ function later() {
 
 ```js
 var a = 20;
+
 function foo() {
 	a = a + 1;
 }
 function bar() {
 	a = a * 2;
 }
+
 // ajax(..)是某个库中提供的某个Ajax函数
 ajax( "http://some.url.1", foo );
 ajax( "http://some.url.2", bar );
@@ -1036,13 +1044,14 @@ JavaScript 从不跨线程共享数据，这意味着不需要考虑这一层次
 
 **完整运行**
 
-由于 JavaScript 的单线程特性， `foo()`（以及 `bar()`）中的代码具有原子性。也就是说，一 旦 `foo()` 开始运行，它的所有代码都会在 `bar()` 中的任意代码运行之前完成，或者相反。 这称为完整运行（run-to-completion）特性。  
+由于 JavaScript 的单线程特性， `foo()`（以及 `bar()`）中的代码具有原子性。也就是说，一旦 `foo()` 开始运行，它的所有代码都会在 `bar()` 中的任意代码运行之前完成，或者相反。这称为完整运行（run-to-completion）特性。  
 
 实际上，如果 `foo()` 和 `bar()` 中的代码更长，完整运行的语义就会更加清晰，比如：
 
 ```js
 var a = 1;
 var b = 2;
+
 function foo() {
 	a++;
 	b = b * a;
@@ -1053,18 +1062,15 @@ function bar() {
 	a = 8 + b;
 	b = a * 2;
 }
+
 // ajax(..)是某个库中提供的某个Ajax函数
 ajax( "http://some.url.1", foo );
 ajax( "http://some.url.2", bar );
 ```
 
-由于 foo() 不会被 bar() 中断， bar() 也不会被 foo() 中断，所以这个程序只有两个可能的
-输出，取决于这两个函数哪个先运行——如果存在多线程，且 foo() 和 bar() 中的语句可
-以交替运行的话，可能输出的数目将会增加不少！
+由于 `foo()` 不会被 `bar()` 中断， `bar()` 也不会被 `foo()` 中断，所以这个程序只有两个可能的输出，取决于这两个函数哪个先运行——如果存在多线程，且 `foo()` 和 `bar()` 中的语句可以交替运行的话，可能输出的数目将会增加不少！
 
 同一段代码有两个可能输出意味着还是存在不确定性！但是，这种不确定性是在函数（事件）顺序级别上，而不是多线程情况下的语句顺序级别（或者说，表达式运算顺序级别）。换句话说，这一确定性要高于多线程情况。
-
-由于 `foo()` 不会被 `bar()` 中断， `bar()` 也不会被 `foo()` 中断，所以这个程序只有两个可能的输出，取决于这两个函数哪个先运行——如果存在多线程，且 `foo()` 和 `bar()` 中的语句可以交替运行的话，可能输出的数目将会增加不少！
 
 在 JavaScript 的特性中，这种函数顺序的不确定性就是通常所说的竞态条件（race condition）， `foo()` 和 `bar()` 相互竞争，看谁先运行。具体来说，因为无法可靠预测 a 和 b 的最终结果，所以才是竞态条件。  
 
@@ -1158,18 +1164,20 @@ onscroll, 请求7 <--- 进程1结束
 
 ```js
 var res = {};
+
 function foo(results) {
-res.foo = results;
+  res.foo = results;
 }
 function bar(results) {
-res.bar = results;
+  res.bar = results;
 }
+
 // ajax(..)是某个库提供的某个Ajax函数
 ajax( "http://some.url.1", foo );
 ajax( "http://some.url.2", bar );
 ```
 
-foo() 和 bar() 是两个并发执行的“进程”，按照什么顺序执行是不确定的。但是，我们构建程序的方式使得无论按哪种顺序执行都无所谓，因为它们是独立运行的，不会相互影响。
+`foo()` 和 `bar()` 是两个并发执行的“进程”，按照什么顺序执行是不确定的。但是，我们构建程序的方式使得无论按哪种顺序执行都无所谓，因为它们是独立运行的，不会相互影响。
 
 这并不是竞态条件 bug，因为不管顺序如何，代码总会正常工作。
 
@@ -1182,16 +1190,16 @@ foo() 和 bar() 是两个并发执行的“进程”，按照什么顺序执行�
 ```js
 var res = [];
 function response(data) {
-res.push( data );
+  res.push( data );
 }
 // ajax(..)是某个库中提供的某个Ajax函数
 ajax( "http://some.url.1", response );
 ajax( "http://some.url.2", response );
 ```
 
-这里的并发“进程”是这两个用来处理 Ajax 响应的 response() 调用。它们可能以任意顺序运行。
+这里的并发“进程”是这两个用来处理 Ajax 响应的 `response()` 调用。它们可能以任意顺序运行。
 
-我们假定期望的行为是 res[0] 中放调用 `http://some.url.1` 的结果， res[1] 中放调用`http://some.url.2` 的结果。有时候可能是这样，但有时候却恰好相反，这要视哪个调用先完成而定。
+我们假定期望的行为是 `res[0]` 中放调用 `http://some.url.1` 的结果， `res[1]` 中放调用`http://some.url.2` 的结果。有时候可能是这样，但有时候却恰好相反，这要视哪个调用先完成而定。
 
 这种不确定性很有可能就是一个竞态条件 bug。
 
@@ -1199,20 +1207,21 @@ ajax( "http://some.url.2", response );
 
 ```js
 var res = [];
+
 function response(data) {
-if (data.url == "http://some.url.1") {
-res[0] = data;
+  if (data.url == "http://some.url.1") {
+    res[0] = data;
+  } else if (data.url == "http://some.url.2") {
+    res[1] = data;
+  }
 }
-else if (data.url == "http://some.url.2") {
-res[1] = data;
-}
-}
+
 // ajax(..)是某个库中提供的某个Ajax函数
 ajax( "http://some.url.1", response );
 ajax( "http://some.url.2", response );
 ```
 
-不管哪一个 Ajax 响应先返回，我们都要通过查看 data.url（当然，假定从服务器总会返回一个！）判断应该把响应数据放在 res 数组中的什么位置上。 res[0] 总是包含 `http://some.url.1` 的结果， res[1] 总是包含 `http://some.url.2` 的结果。通过简单的协调，就避免了竞态条件引起的不确定性。
+不管哪一个 Ajax 响应先返回，我们都要通过查看 `data.url`（当然，假定从服务器总会返回一个！）判断应该把响应数据放在 res 数组中的什么位置上。 `res[0]` 总是包含 `http://some.url.1` 的结果， `res[1]` 总是包含 `http://some.url.2` 的结果。通过简单的协调，就避免了竞态条件引起的不确定性。
 
 从这个场景推出的方法也可以应用于多个并发函数调用通过共享 DOM 彼此之间交互的情况，比如一个函数调用更新某个` <div>` 的内容，另外一个更新这个` <div>` 的风格或属性（比如使这个 DOM 元素一有内容就显示出来）。可能你并不想在这个 DOM 元素在拿到内容之前显示出来，所以这种协调必须要保证正确的交互顺序。
 
@@ -1220,49 +1229,51 @@ ajax( "http://some.url.2", response );
 
 ```js
 var a, b;
-function foo(x) {152 ｜ 第 1 章
-a = x * 2;
-baz();
+
+function foo(x) {
+  a = x * 2;
+  baz();
 }
 function bar(y) {
-b = y * 2;
-baz();
+  b = y * 2;
+  baz();
 }
 function baz() {
-console.log(a + b);
+  console.log(a + b);
 }
+
 // ajax(..)是某个库中的某个Ajax函数
 ajax( "http://some.url.1", foo );
 ajax( "http://some.url.2", bar );
 ```
 
-在这个例子中，无论 foo() 和 bar() 哪一个先被触发，总会使 baz() 过早运行（a 或者 b 仍处于未定义状态）；但对 baz() 的第二次调用就没有问题，因为这时候 a 和 b 都已经可用了。
+在这个例子中，无论 `foo()` 和 `bar()` 哪一个先被触发，总会使 `baz()` 过早运行（a 或者 b 仍处于未定义状态）；但对 `baz()` 的第二次调用就没有问题，因为这时候 a 和 b 都已经可用了。
 
 要解决这个问题有多种方法。这里给出了一种简单方法：
 
 ```js
 var a, b;
 function foo(x) {
-a = x * 2;
-if (a && b) {
-baz();
-}
+  a = x * 2;
+  if (a && b) {
+    baz();
+  }
 }
 function bar(y) {
-b = y * 2;
-if (a && b) {
-baz();
-}
+  b = y * 2;
+  if (a && b) {
+    baz();
+  }
 }
 function baz() {
-console.log( a + b );
+  console.log( a + b );
 }
 // ajax(..)是某个库中的某个Ajax函数
 ajax( "http://some.url.1", foo );
 ajax( "http://some.url.2", bar );
 ```
 
-包裹 baz() 调用的条件判断 if (a && b) 传统上称为门（gate），我们虽然不能确定 a 和 b到达的顺序，但是会等到它们两个都准备好再进一步打开门（调用 baz()）。
+包裹 `baz()` 调用的条件判断 `if (a && b)` 传统上称为门（gate），我们虽然不能确定 a 和 b到达的顺序，但是会等到它们两个都准备好再进一步打开门（调用 `baz()`）。
 
 另一种可能遇到的并发交互条件有时称为竞态（race），但是更精确的叫法是门闩（latch）。它的特性可以描述为“只有第一名取胜”。在这里，不确定性是可以接受的，因为它明确指出了这一点是可以接受的：需要“竞争”到终点，且只有唯一的胜利者。
 
@@ -1270,68 +1281,74 @@ ajax( "http://some.url.2", bar );
 
 ```js
 var a;
+
 function foo(x) {
-a = x * 2;
-baz();
+  a = x * 2;
+  baz();
 }
 function bar(x) {
-a = x / 2;
-baz();
+  a = x / 2;
+  baz();
 }
 function baz() {
-console.log( a );
+  console.log( a );
 }
+
 // ajax(..)是某个库中的某个Ajax函数
 ajax( "http://some.url.1", foo );
 ajax( "http://some.url.2", bar );
 ```
 
-不管哪一个（foo() 或 bar()）后被触发，都不仅会覆盖另外一个给 a 赋的值，也会重复调用 baz()（很可能并不是想要的结果）。
+不管哪一个（`foo()` 或 `bar()`）后被触发，都不仅会覆盖另外一个给 a 赋的值，也会重复调用 `baz()`（很可能并不是想要的结果）。
 
 所以，可以通过一个简单的门闩协调这个交互过程，只让第一个通过：
 
 ```js
 var a;
+
 function foo(x) {
-if (!a) {
-a = x * 2;
-baz();
-}
+  if (!a) {
+    a = x * 2;
+    baz();
+  }
 }
 function bar(x) {
-if (!a) {
-a = x / 2;
-baz();
-}
+  if (!a) {
+    a = x / 2;
+    baz();
+  }
 }
 function baz() {
-console.log( a );
+  console.log( a );
 }
+
 // ajax(..)是某个库中的某个Ajax函数
 ajax( "http://some.url.1", foo );
 ajax( "http://some.url.2", bar );
 ```
 
-条件判断 if (!a) 使得只有 foo() 和 bar() 中的第一个可以通过，第二个（实际上是任何后续的）调用会被忽略。也就是说，第二名没有任何意义！
+条件判断 `if (!a)` 使得只有 `foo()` 和 `bar()` 中的第一个可以通过，第二个（实际上是任何后续的）调用会被忽略。也就是说，第二名没有任何意义！
 
 #### 1.4.3 协作
 
 还有一种并发合作方式，称为并发协作（cooperative concurrency）。这里的重点不再是通过共享作用域中的值进行交互（尽管显然这也是允许的！）。这里的目标是取到一个长期运行的“进程”，并将其分割成多个步骤或多批任务，使得其他并发“进程”有机会将自己的运算插入到事件循环队列中交替运行。
 
-举例来说，考虑一个需要遍历很长的结果列表进行值转换的 Ajax 响应处理函数。我们会使用 Array#map(..) 让代码更简洁：
+举例来说，考虑一个需要遍历很长的结果列表进行值转换的 Ajax 响应处理函数。我们会使用` Array#map(..)` 让代码更简洁：
 
 ```js
 var res = [];
+
 // response(..)从Ajax调用中取得结果数组
 function response(data) {
-// 添加到已有的res数组
-res = res.concat(
-// 创建一个新的变换数组把所有data值加倍
-data.map( function(val){
-return val * 2;
-} )
-);
+  // 添加到已有的res数组
+  res = res.concat(
+    // 创建一个新的变换数组把所有data值加倍
+    data.map( function(val){
+      return val * 2;
+    } )
+  );
 }
+
 // ajax(..)是某个库中提供的某个Ajax函数
 ajax( "http://some.url.1", response );
 ajax( "http://some.url.2", response );
@@ -1339,7 +1356,7 @@ ajax( "http://some.url.2", response );
 
 如果 `http://some.url.1` 首先取得结果，那么整个列表会立刻映射到 res 中。如果记录有几千条或更少，这不算什么。但是如果有像 1000 万条记录的话，就可能需要运行相当一段时间了（在高性能笔记本上需要几秒钟，在移动设备上需要更长时间，等等）。
 
-这样的“进程”运行时，页面上的其他代码都不能运行，包括不能有其他的 response(..)调用或 UI 刷新，甚至是像滚动、输入、按钮点击这样的用户事件。这是相当痛苦的。
+这样的“进程”运行时，页面上的其他代码都不能运行，包括不能有其他的 `response(..)`调用或 UI 刷新，甚至是像滚动、输入、按钮点击这样的用户事件。这是相当痛苦的。
 
 所以，要创建一个协作性更强更友好且不会霸占事件循环队列的并发系统，你可以异步地批处理这些结果。每次处理之后返回事件循环，让其他等待事件有机会运行。
 
@@ -1347,25 +1364,27 @@ ajax( "http://some.url.2", response );
 
 ```js
 var res = [];
+
 // response(..)从Ajax调用中取得结果数组
 function response(data) {
-// 一次处理1000个
-var chunk = data.splice( 0, 1000 );
-// 添加到已有的res组
-res = res.concat(
-// 创建一个新的数组把chunk中所有值加倍
-chunk.map( function(val){
-return val * 2;
-} )
-);
-// 还有剩下的需要处理吗？
-if (data.length > 0) {
-// 异步调度下一次批处理
-setTimeout( function(){
-response( data );
-}, 0 );
+  // 一次处理1000个
+  var chunk = data.splice( 0, 1000 );
+  // 添加到已有的res组
+  res = res.concat(
+    // 创建一个新的数组把chunk中所有值加倍
+    chunk.map( function(val){
+    return val * 2;
+    } )
+  );
+  // 还有剩下的需要处理吗？
+  if (data.length > 0) {
+    // 异步调度下一次批处理
+    setTimeout( function(){
+      response( data );
+    }, 0 );
+  }
 }
-}
+
 // ajax(..)是某个库中提供的某个Ajax函数
 ajax( "http://some.url.1", response );
 ajax( "http://some.url.2", response );
@@ -1375,49 +1394,38 @@ ajax( "http://some.url.2", response );
 
 当然，我们并没有协调这些“进程”的顺序，所以结果的顺序是不可预测的。如果需要排序的话，就要使用和前面提到类似的交互技术，或者本书后面章节将要介绍的技术。
 
-这里使用 setTimeout(..0)（hack）进行异步调度，基本上它的意思就是“把这个函数插入到当前事件循环队列的结尾处”。
+这里使用 `setTimeout(..0)`（hack）进行异步调度，基本上它的意思就是“把这个函数插入到当前事件循环队列的结尾处”。
 
 > 严格说来， `setTimeout(..0)` 并不直接把项目插入到事件循环队列。定时器会在有机会的时候插入事件。举例来说，两个连续的 `setTimeout(..0)` 调用不能保证会严格按照调用顺序处理，所以各种情况都有可能出现，比如定时器漂移，在这种情况下，这些事件的顺序就不可预测。在 Node.js 中， 类似的方法是 `process.nextTick(..)`。尽管它们使用方便（通常性能也更高），但并没有（至少到目前为止）直接的方法可以适应所有环境来确保异步事件的顺序。下一小节我们会深入讨论这个话题异步：
 
 ## 1.5 任务
 
-在 ES6 中，有一个新的概念建立在事件循环队列之上，叫作任务队列（job queue）。这个
-概念给大家带来的最大影响可能是 Promise 的异步特性（参见第 3 章）。
+在 ES6 中，有一个新的概念建立在事件循环队列之上，叫作任务队列（job queue）。这个概念给大家带来的最大影响可能是 Promise 的异步特性（参见第 3 章）。
 
-遗憾的是，目前为止，这是一个没有公开 API 的机制，因此要展示清楚有些困难。所以我
-们目前只从概念上进行描述，等到第 3 章讨论 Promise 的异步特性时，你就会理解这些动
-作是如何协调和处理的。
+遗憾的是，目前为止，这是一个没有公开 API 的机制，因此要展示清楚有些困难。所以我们目前只从概念上进行描述，等到第 3 章讨论 Promise 的异步特性时，你就会理解这些动作是如何协调和处理的。
 
-因此， 我认为对于任务队列最好的理解方式就是，它是挂在事件循环队列的每个 tick 之后
-的一个队列。在事件循环的每个 tick 中，可能出现的异步动作不会导致一个完整的新事件
-添加到事件循环队列中，而会在当前 tick 的任务队列末尾添加一个项目（一个任务）。
-这就像是在说： “哦，这里还有一件事将来要做，但要确保在其他任何事情发生之前就完
-成它。”
+因此， 我认为对于任务队列最好的理解方式就是，它是挂在事件循环队列的每个 tick 之后的一个队列。在事件循环的每个 tick 中，可能出现的异步动作不会导致一个完整的新事件添加到事件循环队列中，而会在当前 tick 的任务队列末尾添加一个项目（一个任务）。这就像是在说： “哦，这里还有一件事将来要做，但要确保在其他任何事情发生之前就完成它。”
 
-事件循环队列类似于一个游乐园游戏：玩过了一个游戏之后，你需要重新到队尾排队才能
-再玩一次。而任务队列类似于玩过了游戏之后，插队接着继续玩。
+事件循环队列类似于一个游乐园游戏：玩过了一个游戏之后，你需要重新到队尾排队才能再玩一次。而任务队列类似于玩过了游戏之后，插队接着继续玩。
 
-一个任务可能引起更多任务被添加到同一个队列末尾。所以，理论上说， 任务循环（job
-loop）可能无限循环（一个任务总是添加另一个任务，以此类推），进而导致程序的
-饿死，无法转移到下一个事件循环 tick。从概念上看，这和代码中的无限循环（就像
-while(true)..）的体验几乎是一样的。
+一个任务可能引起更多任务被添加到同一个队列末尾。所以，理论上说， 任务循环（job loop）可能无限循环（一个任务总是添加另一个任务，以此类推），进而导致程序的饿死，无法转移到下一个事件循环 tick。从概念上看，这和代码中的无限循环（就像`while(true)`..）的体验几乎是一样的。
 
-任务和 setTimeout(..0) hack 的思路类似，但是其实现方式的定义更加良好，对顺序的保
-证性更强：尽可能早的将来。
+任务和 `setTimeout(..0)` hack 的思路类似，但是其实现方式的定义更加良好，对顺序的保证性更强：尽可能早的将来。
 
-设想一个调度任务（直接地，不要 hack）的 API，称其为 schedule(..)。考虑：
+设想一个调度任务（直接地，不要 hack）的 API，称其为 `schedule(..)`。考虑：
 
 ```js
 console.log( "A" );
 setTimeout( function(){
-console.log( "B" );
+  console.log( "B" );
 }, 0 );
+
 // 理论上的"任务API"
 schedule( function(){
-console.log( "C" );
-schedule( function(){
-console.log( "D" );
-} );
+  console.log( "C" );
+  schedule( function(){
+    console.log( "D" );
+  } );
 } );
 ```
 
@@ -1493,16 +1501,16 @@ console.log( a + b ); // 42
 
 ```js
 function foo() {
-console.log( b );
-return 1;
+  console.log( b );
+  return 1;
 }
 var a, b, c;
 // ES5.1 getter字面量语法
 c = {
-get bar() {
-console.log( a );
-return 1;
-}
+  get bar() {
+    console.log( a );
+    return 1;
+  }
 };
 a = 10;
 b = 30;
@@ -1511,7 +1519,7 @@ b += c.bar; // 11
 console.log( a + b ); // 42
 ```
 
-如果不是因为代码片段中的语句 console.log(..)（只是作为一种方便的形式说明可见的副作用）， JavaScript 引擎如果愿意的话，本来可以自由地把代码重新排序如下：
+如果不是因为代码片段中的语句 `console.log(..)`（只是作为一种方便的形式说明可见的副作用）， JavaScript 引擎如果愿意的话，本来可以自由地把代码重新排序如下：
 
 ```js
 // ...
@@ -1538,15 +1546,11 @@ b = 30 + c.bar;
 
 ## 第2章 回调	
 
-第 1 章的所有例子都是把函数当作独立不可分割的运作单元来使用的。在函数内部，语句
-以可预测的顺序执行（在编译器以上的层级！），但是在函数顺序这一层级，事件（也就
-是异步函数调用）的运行顺序可以有多种可能。
+第 1 章的所有例子都是把函数当作独立不可分割的运作单元来使用的。在函数内部，语句以可预测的顺序执行（在编译器以上的层级！），但是在函数顺序这一层级，事件（也就是异步函数调用）的运行顺序可以有多种可能。
 
 在所有这些示例中，函数都是作为回调（callback）使用的，因为它是事件循环“回头调用”到程序中的目标，队列处理到这个项目的时候会运行它。
 
-无数 JavaScript 程序，甚至包括一些最为高深和复杂的，所依赖的异步基础也仅限于回调
-（当然，它们使用了第 1 章介绍的各种并发交互模式）。回调函数是 JavaScript 的异步主力
-军，并且它们不辱使命地完成了自己的任务。
+无数 JavaScript 程序，甚至包括一些最为高深和复杂的，所依赖的异步基础也仅限于回调（当然，它们使用了第 1 章介绍的各种并发交互模式）。回调函数是 JavaScript 的异步主力军，并且它们不辱使命地完成了自己的任务。
 
 ## 2.1 continuation
 
