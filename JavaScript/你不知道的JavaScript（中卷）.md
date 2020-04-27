@@ -1591,7 +1591,21 @@ listen( "click", function handler(evt){
 
 ### 2.3.1 五个回调的故事
 
-在某种情况下，会在五秒钟内每秒重试一次传入的回调函数，然后才会因超时而失败。此你也只能无奈接受，并且你需要找到某种方法来保护结账代码，保证不再出问题。
+假设你是一名开发人员，为某个销售昂贵电视的网站建立商务结账系统。你已经做好了结账系统的各个界面。在最后一页，当用户点击“确定”就可以购买电视时，你需要调用（假设由某个分析追踪公司提供的）第三方函数以便跟踪这个交易。
+
+你注意到，可能是为了提高性能，他们提供了一个看似用于异步追踪的工具，这意味着你需要传入一个回调函数。在传入的这个 continuation 中，你需要提供向客户收费和展示感谢页面的最终代码。
+
+```js
+analytics.trackPurchase( purchaseData, function(){
+  chargeCreditCard();
+  displayThankyouPage();
+} );
+```
+
+到了办公室，你得知你们的一位高级客户购买了一台电视，信用卡却被刷了五次。通过分析日志，你得出一个结论：唯一的解释就是那个分析工具出于某种原因把你的回调
+调用了五次而不是一次。他们的文档中完全没有提到这种情况。
+
+显然，分析公司的开发者开发了一些实验性的代码，在某种情况下，会在五秒钟内每秒重试一次传入的回调函数，然后才会因超时而失败。此你也只能无奈接受，并且你需要找到某种方法来保护结账代码，保证不再出问题。
 
 ```js
 var tracked = false;
@@ -1623,9 +1637,9 @@ analytics.trackPurchase( purchaseData, function(){
 
 ```js
 function addNumbers(x,y) {
-// +是可以重载的，通过类型转换，也可以是字符串连接
-// 所以根据传入参数的不同，这个运算并不是严格安全的
-return x + y;
+  // +是可以重载的，通过类型转换，也可以是字符串连接
+  // 所以根据传入参数的不同，这个运算并不是严格安全的
+  return x + y;
 }
 addNumbers( 21, 21 ); // 42
 addNumbers( 21, "21" ); // "2121"
@@ -1635,12 +1649,12 @@ addNumbers( 21, "21" ); // "2121"
 
 ```js
 function addNumbers(x,y) {
-// 确保输入为数字
-if (typeof x != "number" || typeof y != "number") {
-throw Error( "Bad parameters" );
-}
-// 如果到达这里，可以通过+安全的进行数字相加
-return x + y;
+  // 确保输入为数字
+  if (typeof x != "number" || typeof y != "number") {
+    throw Error( "Bad parameters" );
+  }
+  // 如果到达这里，可以通过+安全的进行数字相加
+  return x + y;
 }
 addNumbers( 21, 21 ); // 42
 addNumbers( 21, "21" ); // Error: "Bad parameters"
@@ -1650,11 +1664,11 @@ addNumbers( 21, "21" ); // Error: "Bad parameters"
 
 ```js
 function addNumbers(x,y) {
-// 确保输入为数字
-x = Number( x );
-y = Number( y );
-// +安全进行数字相加
-return x + y;
+  // 确保输入为数字
+  x = Number( x );
+  y = Number( y );
+  // +安全进行数字相加
+  return x + y;
 }
 addNumbers( 21, 21 ); // 42
 addNumbers( 21, "21" ); // 42
@@ -1670,10 +1684,10 @@ addNumbers( 21, "21" ); // 42
 
 ```js
 function success(data) {
-console.log( data );
+  console.log( data );
 }
 function failure(err) {
-console.error( err );
+  console.error( err );
 }
 ajax( "http://some.url.1", success, failure );
 ```
@@ -1682,18 +1696,18 @@ ajax( "http://some.url.1", success, failure );
 
 > ES6 Promise API 使用的就是这种分离回调设计。第 3 章会介绍 ES6 Promise 的更多细节。
 
-还有一种常见的回调模式叫作“error-first 风格”（有时候也称为“Node 风格”，因为几乎所有 Node.js API 都采用这种风格），其中回调的第一个参数保留用作错误对象（如果有的 话）。如果成功的话，这个参数就会被清空 / 置假（后续的参数就是成功数据）。不过，如果产生了错误结果，那么第一个参数就会被置起 / 置真（通常就不会再传递其他结果）。
+还有一种常见的回调模式叫作“error-first 风格”（有时候也称为“Node 风格”，因为几乎所有 Node.js API 都采用这种风格），其中回调的第一个参数保留用作错误对象（如果有的话）。如果成功的话，这个参数就会被清空 / 置假（后续的参数就是成功数据）。不过，如果产生了错误结果，那么第一个参数就会被置起 / 置真（通常就不会再传递其他结果）。
 
 ```js
 function response(err,data) {
-// 出错？
-if (err) {
-console.error( err );
-}
-// 否则认为成功
-else {
-console.log( data );
-}
+  // 出错？
+  if (err) {
+    console.error( err );
+  }
+  // 否则认为成功
+  else {
+    console.log( data );
+  }
 }
 ajax( "http://some.url.1", response );
 ```
@@ -1722,7 +1736,11 @@ function timeoutify(fn,delay) {
 		}
 	};
 }
-// 以下是使用方式：
+```
+
+以下是使用方式：
+
+```js
 // 使用"error-first 风格" 回调设计
 function foo(err,data) {
 	if (err) {
