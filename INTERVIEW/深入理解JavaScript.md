@@ -1,6 +1,7 @@
 > 自己总结的 JavaScript 面试题  
 > [参考-冴羽博客](https://github.com/mqyqingfeng/Blog/tree/master/articles)   
 > [参考-后盾人](http://houdunren.gitee.io/note/js/1%20%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86.html)
+> [参考-木易杨](https://github.com/yygmind/blog)
 
 # 深浅拷贝
 
@@ -11,7 +12,7 @@
 1. slice、concat
 2. for/in
 3. Object.assign
-4. 展示语法
+4. 展开语法 Spread syntax
 
 如果是数组，我们可以利用数组的一些方法比如：slice、concat 返回一个新数组的特性来实现拷贝。
 
@@ -64,7 +65,13 @@ console.log(obj);
 1. JSON序列化和解析
 2. 递归for/of
 
-那如何深拷贝一个数组呢？这里介绍一个技巧，不仅适用于数组还适用于对象！这是一个简单粗暴的好方法，就是有一个问题，不能拷贝函数。因为在序列化 JavaScript 对象时，所有函数和原型成员会被有意忽略。
+那如何深拷贝一个数组呢？这里介绍一个技巧，不仅适用于数组还适用于对象！但是该方法有以下几个问题。
+- 会忽略 undefined
+- 会忽略 symbol
+- 不能序列化函数
+- 不能解决循环引用的对象
+- 不能正确处理`new Date()`
+- 不能处理正则
 
 ```js
 var arr = ["old", 1, true, ["old1", "old2"], { old: 1 }];
@@ -87,6 +94,8 @@ var deepCopy = function (obj) {
 
 尽管使用深拷贝会完全的克隆一个新对象，不会产生副作用，但是深拷贝因为使用递归，性能会不如浅拷贝，在开发中，还是要根据实际情况进行选择。
 
+我们知道 JSON 无法深拷贝循环引用，遇到这种情况会抛出异常。解决方案很简单，其实就是循环检测，我们设置一个数组或者哈希表存储已拷贝过的对象，当检测到当前对象已存在于哈希表中时，取出该值并返回即可。也可以使用了 ES6 中的 WeakMap 来处理。
+
 # 函数节流和防抖
 
 节流（`throttle`）:不管事件触发频率多高，只在单位时间内执行一次。有两种方式可以实现节流，使用时间戳和定时器。防抖（`debounce`）：不管事件触发频率多高，一定在事件触发`n`秒后才执行，如果你在一个事件触发的 `n` 秒内又触发了这个事件，就以新的事件的时间为准，`n`秒后才执行，总之，触发完事件 `n` 秒内不再触发事件，`n`秒后再执行。
@@ -101,13 +110,13 @@ var deepCopy = function (obj) {
 
 ```js
 function throttle(event, time) {
-    let pre = 0;
-    return function (...args) {
-    if (Date.now() - pre > time) {
-        pre = Date.now();
-        event.apply(this, args);
-    }
-    }
+  let pre = 0;
+  return function (...args) {
+  if (Date.now() - pre > time) {
+    pre = Date.now();
+    event.apply(this, args);
+  }
+  }
 ```
 
 定时器实现。第一次事件不会触发，最后一次一定触发
@@ -183,3 +192,5 @@ function debounce(event, time, flag) {
 ```
 
 # 函数柯里化
+# 数组去重
+# 数组扁平化
