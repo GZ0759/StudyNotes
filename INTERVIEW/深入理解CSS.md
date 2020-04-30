@@ -1,6 +1,7 @@
-# CSS 水平居中和垂直居中
+> 自己总结的 CSS 面试题 
+> [CSS布局](https://segmentfault.com/a/1190000010989110#articleHeader14)
 
-[参考文章](https://segmentfault.com/a/1190000010989110#articleHeader14)
+# CSS 水平居中和垂直居中
 
 水平居中。
 
