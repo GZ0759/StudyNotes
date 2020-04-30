@@ -1,0 +1,340 @@
+# CSS 水平居中和垂直居中
+
+[参考文章](https://segmentfault.com/a/1190000010989110#articleHeader14)
+
+水平居中。
+
+- 使用`text-align + inline-block`。此方案兼容性较好，可兼容至 IE8，对于 IE567 并不支持 inline-block，需要使用 css hack 进行兼容。
+- 使用`table + margin`。此方案兼容至 IE8，可以使用`<table/>`标签代替 css 写法，兼容性良好。
+- 使用`absolute + transform`。此方案兼容至 IE9，因为 transform 兼容性限制。如果`.child`为定宽元素，可以使用`margin-left`为元素一般宽度的负数值，兼容性极佳。
+- 使用`flex + justify-content`。flex 是一个强大的 css，生而为布局，它可以轻松的满足各种居中、对其、平分的布局要求，但由于现浏览器兼容性问题，此方案很少被使用。
+
+垂直居中。
+
+- 使用`height + line-height`。
+- 使用`table-cell + vertial-align`。可替换成`<table />`布局，兼容性良好。
+- 使用`absolute + transform`。存在 css3 兼容问题，定宽兼容性良好。
+- 使用`flex + align-items`。高版本浏览器兼容，低版本不适用。
+
+# 简单多列布局
+
+**一列定宽，一列自适应**
+
+使用`float + margin`。
+
+```css
+.left { float: left; width: 100px; }
+.right { margin-left: 120px; }
+```
+
+使用`float + overflow`，此方案不管是多列定宽或是不定宽，都可以完美实现，同时可以实现等高布局。
+
+```css
+.left { float: left; width: 100px; margin-right: 20px; }
+.right { overflow: hidden; }
+```
+
+使用`table`。
+
+```css
+.parent { display: table; width: 100%; table-layout: fixed; }
+.left,.right { display: table-cell; }
+.left { width: 100px; padding-right: 20px; }
+```
+
+使用`flex`。
+
+```css
+.parent { display: flex; }
+.left { width: 100px; padding-right: 20px; }
+.right { flex: 1; }
+```
+
+**一列不定宽，一列自适应**
+
+使用`float + overflow`
+
+```css
+.left { float: left; margin-right: 20px; }
+.right { overflow: hidden; }
+.left p { width: 200px; }
+```
+
+使用`table`
+
+```css
+.parent { display: table; width: 100%; }
+.left,.right { display: table-cell; }
+.left { width: 0.1%; padding-right: 20px; }
+.left p { width: 200px; }
+```
+
+使用`flex`
+
+```css
+.parent { display: flex; }
+.left { margin-right: 20px; }
+.right { flex: 1; }
+.left p { width: 200px; }
+```
+
+**等分多列布局**
+
+使用`float + margin`。
+
+```css
+.parent { margin-left: -20px; }
+.column { float: left; width: 25%; padding-left: 20px; box-sizing: border-box; }
+```
+
+使用`table + margin`。
+
+```css
+.parent-fix { margin-left: -20px; }
+.parent { display: table; width: 100%; table-layout: fixed; }
+.column { display: table-cell; padding-left: 20px; }
+```
+
+使用`flex`
+
+```css
+.parent { display: flex; }
+.column { flex: 1; }
+.column + .column { margin-left: 20px; }
+```
+
+**等高多列布局**
+
+使用`float + overflow`
+
+```css
+.parent { overflow: hidden; }
+.left,.right { padding-bottom: 9999px; margin-bottom: -9999px; }
+.left { float: left; width: 100px; }
+.right { overflow: hidden; }
+```
+
+使用`table`
+
+```css
+.parent { display: table; width: 100%; }
+.left { display: table-cell; width: 100px; margin-right: 20px; }
+.right { display: table-cell; }
+```
+
+使用`flex`
+
+```css
+.parent { display: flex; width: 100%; }
+.left { width: 100px; }
+.right { flex: 1; }
+```
+
+## 圣杯布局&双飞翼布局
+
+圣杯布局
+
+```html
+<div class="container">
+  <div class="header">header</div>
+  <div class="wrapper clearfix">
+    <div class="main col">main</div>
+    <div class="left col">left</div>
+    <div class="right col">right</div>
+  </div>
+  <div class="footer">footer</div>
+</div>
+```
+
+```css
+.container {
+  width: 500px;
+  margin: 50px auto;
+}
+.wrapper {
+  padding: 0 100px 0 100px;
+}
+.col {
+  position: relative;
+  float: left;
+}
+.header,
+.footer {
+  height: 50px;
+}
+.main {
+  width: 100%;
+  height: 200px;
+}
+.left {
+  width: 100px;
+  height: 200px;
+  margin-left: -100%;
+  left: -100px;
+}
+.right {
+  width: 100px;
+  height: 200px;
+  margin-left: -100px;
+  right: -100px;
+}
+.clearfix::after {
+  content: "";
+  display: block;
+  clear: both;
+  visibility: hidden;
+  height: 0;
+  overflow: hidden;
+}
+```
+
+双飞翼布局
+
+```html
+<div class="container">
+  <div class="header">header</div>
+  <div class="wrapper clearfix">
+    <div class="main col">
+      <div class="main-wrap">main</div>
+    </div>
+    <div class="left col">left</div>
+    <div class="right col">right</div>
+  </div>
+  <div class="footer">footer</div>
+</div>
+```
+
+```css
+.col {
+  float: left;
+}
+.header {
+  height: 50px;
+}
+.main {
+  width: 100%;
+}
+.main-wrap {
+  margin: 0 100px 0 100px;
+  height: 200px;
+}
+.left {
+  width: 100px;
+  height: 200px;
+  margin-left: -100%;
+}
+.right {
+  width: 100px;
+  height: 200px;
+  margin-left: -100px;
+}
+.footer {
+  height: 50px;
+}
+.clearfix::after {
+  content: "";
+  display: block;
+  clear: both;
+  visibility: hidden;
+  height: 0;
+  overflow: hidden;
+}
+```
+
+# 布局理论篇
+
+静态布局（Static Layout）
+
+即传统 Web 设计，网页上的所有元素的尺寸一律使用 px 作为单位。
+
+布局特点：不管浏览器尺寸具体是多少，网页布局始终按照最初写代码时的布局来显示。常规的 pc 的网站都是静态（定宽度）布局的，也就是设置了 min-width，这样的话，如果小于这个宽度就会出现滚动条，如果大于这个宽度则内容居中外加背景，这种设计常见与 pc 端。
+
+优点：这种布局方式对设计师和 CSS 编写者来说都是最简单的，亦没有兼容性问题。
+
+缺点：显而易见，即不能根据用户的屏幕尺寸做出不同的表现。
+
+当前，大部分门户网站、大部分企业的 PC 宣传站点都采用了这种布局方式。固定像素尺寸的网页是匹配固定像素尺寸显示器的最简单办法。但这种方法不是一种完全兼容未来网页的制作方法，我们需要一些适应未知设备的方法。
+
+双飞翼布局
+
+经典三列布局，也叫做圣杯布局【Holy Grail of Layouts】是 Kevin Cornell 在 2006 年提出的一个布局模型概念，在国内最早是由淘宝 UED 的工程师传播开来，在中国也有叫法是双飞翼布局，它的布局要求有几点：
+
+1. 三列布局，中间宽度自适应，两边定宽；
+2. 中间栏要在浏览器中优先展示渲染；
+3. 允许任意列的高度最高；
+4. 要求只用一个额外的 DIV 标签；
+5. 要求用最简单的 CSS、最少的 HACK 语句；
+
+在不增加额外标签的情况下，圣杯布局已经非常完美，圣杯布局使用了相对定位，以后布局是有局限性的，而且宽度控制要改的地方也多。
+
+在淘宝 UED（User Experience Design）探讨下，增加多一个 div 就可以不用相对布局了，只用到了浮动和负边距，这就是我们所说的双飞翼布局。
+
+多栏布局
+
+a、栏栅格系统：就是利用浮动实现的多栏布局，在 bootstrap 中用的非常多。
+
+b、多列布局：栅格系统并没有真正实现分栏效果（如 word 中的分栏），CSS3 为了满足这个要求增加了多列布局模块
+
+流式布局（Fluid）
+
+固定布局和流式布局在网页设计中最常用的两种布局方式。固定布局能呈现网页的原始设计效果，流式布局则不受窗口宽度影响，流式布局使用百分比宽度来限定布局元素，这样可以根据客户端分辨率的大小来进行合理的显示。
+
+瀑布流布局（waterfall flow）
+
+瀑布流布局是流式布局的一种。是当下比较流行的一种网站页面布局，视觉表现为参差不齐的多栏布局，随着页面滚动条向下滚动，这种布局还会不断加载数据块并附加至当前尾部。最早采用此布局的网站是 Pinterest，逐渐在国内流行开来。
+
+优点
+
+1. 有效的降低了界面复杂度，节省了空间：我们不再需要臃肿复杂的页码导航链接或按钮了。
+2. 对触屏设备来说，交互方式更符合直觉：在移动应用的交互环境当中，通过向上滑动进行滚屏的操作已经成为最基本的用户习惯，而且所需要的操作精准程度远远低于点击链接或按钮。
+3. 更高的参与度：以上两点所带来的交互便捷性可以使用户将注意力更多的集中在内容而不是操作上，从而让他们更乐于沉浸在探索与浏览当中。
+
+缺点
+
+1. 有限的用例：无限滚动的方式只适用于某些特定类型产品当中一部分特定类型的内容。 例如，在电商网站当中，用户时常需要在商品列表与详情页面之间切换，这种情况下，传统的、带有页码导航的方式可以帮助用户更稳妥和准确的回到某个特定的列表页面当中。
+2. 额外的复杂度：那些用来打造无限滚动的 JS 库虽然都自称很容易使用，但你总会需要在自己的产品中进行不同程度的定制化处理，以满足你们自己的需求;另外这些 JS 库在浏览器和设备兼容性等方面的表现也参差不齐，你必须做好充分的测试与调整工作。
+3. 再见了，页脚：如果使用了比较典型的无限滚动加载模式，这就意味着你可以和页脚说拜拜了。 最好考虑一下页脚对于你的网站，特别是用户的重要性;如果其中确实有比较重要的内容或链接，那么最好换一种更传统和稳妥的方式。千万不要耍弄你的用户，当他们一次次的浏览到页面底部，看到页脚，却因为自动加载的内容突然出现而无论如何都无法点击页脚中的链接时，他们会变的越发愤怒。
+4. 集中在一页当中动态加载数据，与一页一页的输出相比，究竟那种方式更利于 SEO，这是你必须考虑的问题。对于某些以类型网站来说，在这方面进行冒险是很不划算的。
+5. 关于页面数量的印象：其实站在用户的角度来看，这一点并非负面;不过，如果对于你的网站来说，通过更多的内容页面展示更多的相关信息(包括广告)是很重要的策略，那么单页无限滚动的方式对你并不适用。
+
+自适应布局（Adaptive Layout）
+
+自适应布局的特点是分别为不同的屏幕分辨率定义布局，即创建多个静态布局，每个静态布局对应一个屏幕分辨率范围。改变屏幕分辨率可以切换不同的静态局部（页面元素位置发生改变），但在每个静态布局中，页面元素不随窗口大小的调整发生变化。可以把自适应布局看作是静态布局的一个系列。
+
+1. 布局特点：屏幕分辨率变化时，页面里面元素的位置会变化而大小不会变化。
+2. 设计方法：使用 @media 媒体查询给不同尺寸和介质的设备切换不同的样式。在优秀的响应范围设计下可以给适配范围内的设备最好的体验，在同一个设备下实际还是固定的布局。
+
+弹性布局（Flexbox）
+
+CSS3 引入了一种新的布局模式——Flexbox 布局，即伸缩布局盒模型（Flexible Box），用来提供一个更加有效的方式制定、调整和分布一个容器里项目布局，即使它们的大小是未知或者动态的，这里简称为 Flex。
+
+Flexbox 布局常用于设计比较复杂的页面，可以轻松的实现屏幕和浏览器窗口大小发生变化时保持元素的相对位置和大小不变，同时减少了依赖于浮动布局实现元素位置的定义以及重置元素的大小。
+
+Flexbox 布局在定义伸缩项目大小时伸缩容器会预留一些可用空间，让你可以调节伸缩项目的相对大小和位置。例如，你可以确保伸缩容器中的多余空间平均分配多个伸缩项目，当然，如果你的伸缩容器没有足够大的空间放置伸缩项目时，浏览器会根据一定的比例减少伸缩项目的大小，使其不溢出伸缩容器。
+
+综合而言，Flexbox 布局功能主要具有以下几点：
+
+1. 屏幕和浏览器窗口大小发生改变也可以灵活调整布局；
+2. 可以指定伸缩项目沿着主轴或侧轴按比例分配额外空间（伸缩容器额外空间），从而调整伸缩项目的大小；
+3. 可以指定伸缩项目沿着主轴或侧轴将伸缩容器额外空间，分配到伸缩项目之前、之后或之间；
+4. 可以指定如何将垂直于元素布局轴的额外空间分布到该元素的周围；
+5. 可以控制元素在页面上的布局方向；
+6. 可以按照不同于文档对象模型（DOM）所指定排序方式对屏幕上的元素重新排序。也就是说可以在浏览器渲染中不按照文档流先后顺序重排伸缩项目顺序。
+
+响应式布局（Responsive Layout）
+
+响应式布局是 Ethan Marcotte 在 2010 年 5 月份提出的一个概念，简而言之，就是一个网站能够兼容多个终端——而不是为每个终端做一个特定的版本。这个概念是为解决移动互联网浏览而诞生的。
+
+响应式布局可以为不同终端的用户提供更加舒适的界面和更好的用户体验，而且随着目前大屏幕移动设备的普及，用“大势所趋”来形容也不为过。随着越来越多的设计师采用这个技术，我们不仅看到很多的创新，还看到了一些成形的模式。
+
+优点
+
+1. 面对不同分辨率设备灵活性强
+2. 能够快捷解决多设备显示适应问题
+
+缺点
+
+1. 兼容各种设备工作量大，效率低下
+2. 代码累赘，会出现隐藏无用的元素，加载时间加长
+3. 其实这是一种折中性质的设计解决方案，多方面因素影响而达不到最佳效果
+4. 一定程度上改变了网站原有的布局结构，会出现用户混淆的情况
