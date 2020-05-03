@@ -1,10 +1,8 @@
-> Node.js实战（第2版）
+> Node.js实战（第2版）  
 > 作者：[英] 亚历克斯•杨 等   
 > 译者：吴海星
 
-# Part 1 第一部分
-
-Node 基础知识介绍
+# Part 1 第一部分 Node 基础知识介绍
 
 现如今， Node 已经出落成了一个成熟的 Web 开发平台。本书第 1 章到第 3 章介绍 Node 的主要特性，包括如何使用 npm 和 Node 的核心模块。你还将看到如何在 Node 上使用现代版 JavaScript，以及如何从头开始构建一个 Web 应用程序。看完这些章节之后，对于 Node 能做什么，以及该如何创建自己的项目，你将会有非常深刻的认识。
 
@@ -451,43 +449,60 @@ Node 还能做一些用其他语言很难做到的事情。它是基于 JavaScri
 在创建程序时，不管是用 Node 还是其他工具，基本不可能把所有代码都放到一个文件中。
 当出现这种情况时，传统的方式是按逻辑相关性对代码分组，将包含大量代码的单个文件分解成
 多个文件，如图 2-1 所示。
-第 2 章2.1 Node 功能的组织及重用 17
 
 图 2-1 与全部存放在一个长文件中的代码相比，用目录和单独的文件组织起来的代码
 更容易查找
+
 在某些语言中，比如 PHP 和 Ruby，整合另一个文件（我们称之为“included”文件）中的逻
 辑，可能意味着在被引入文件中执行的逻辑会影响全局作用域。也就是说，被引入文件创建的任
 何变量和声明的任何函数，都可能会覆盖包含它的应用程序所创建的变量和声明的函数。
+
 假设用 PHP 写程序，可能会有下面这种逻辑：
+
+```php
 function uppercase_trim($text) {
 return trim(strtoupper($text));
 }
 include('string_handlers.php');
+```
+
 如果 string_handlers.php 文件也定义了一个 uppercase_trim 函数，你会收到一条错误消息：
+
+```
 Fatal error: Cannot redeclare uppercase_trim()
+```
+
 在 PHP 中可以用命名空间避免这个问题， Ruby 通过模块也提供了类似的功能。但 Node 的
 做法是不给你不小心污染全局命名空间的机会。
-PHP 命名空间和 Ruby 模块 PHP 命名空间在它的手册上有相关论述。 Ruby 模块
+
+> PHP 命名空间和 Ruby 模块 PHP 命名空间在它的手册上有相关论述。 Ruby 模块
 在 Ruby 文档中有解释说明。
+
 Node 模块打包代码是为了重用，但它们不会改变全局作用域。比如说，假设你正用 PHP 开
 发一个开源的内容管理系统（ CMS），并且想用一个没有使用命名空间的第三方 API 库。这个库
 中可能有一个跟你的程序中同名的类，除非你把自己程序中的类名或者库中的类名改了，否则这
 个类可能会搞垮你的程序。可是修改程序中的类名可能会让那些以你的 CMS 为基础构建项目的
 开发人员遇到问题。如果修改那个库中的类名，那么每次更新程序源码树中的那个库时都得记着
 再改一次。解决命名冲突问题最好的办法是从根本上予以避免。
+
 Node 模块允许从被引入文件中选择要暴露给程序的函数和变量。如果模块返回的函数或变
 量不止一个，那它可以通过设定 exports 对象的属性来指明它们。但如果模块只返回一个函数
-或变量，则可以设定 module.exports 属性。图 2-2 展示了这一工作机制。18 第 2 章 Node 编程基础
+或变量，则可以设定 module.exports 属性。图 2-2 展示了这一工作机制。
+
 图 2-2 组装 module.exports 属性或 exports 对象让模块可以选择应该把什么跟
 程序共享
+
 如果你觉得有点晕，先别急。我们在这一章里会给出好几个例子。 Node 的模块系统避免了
 对全局作用域的污染，从而也就避免了命名冲突，并简化了代码的重用。模块还可以发布到 npm
 （ Node 包管理器）存储库中，这是一个在线存储库，收集了已经可用并且要跟 Node 社区分享的
 Node 模块，使用这些模块没必要担心某个模块会覆盖其他模块的变量和函数。
+
 为了帮你把逻辑组织到模块中，我们会讨论下面这些主题：
+
 - 如何创建模块；
 - 模块放在文件系统中的什么地方；
 - 在创建和使用模块时要意识到的东西。
+
 我们这就深入到 Node 模块系统的学习中去，开始一个新的 Node 项目，然后创建第一个简
 单的模块。
 
@@ -495,89 +510,112 @@ Node 模块，使用这些模块没必要担心某个模块会覆盖其他模块
 
 创建新的 Node 项目很简单：创建一个文件夹，运行 npm init。好了！ npm 命令会问几个
 问题，一直回答 yes 就可以了。
+
 下面是一个完整的例子：
+
+```
 mkdir my_moudle
 cd my_moudle
 npm init -y
-参数 -y 表示 yes。这样 npm 就会创建一个全部使用默认值的 package.json 文件。如果你想要更多
-的控制权，去掉参数 -y，你就能看到 npm 提出的一系列问题，包括授权许可、作者姓名，等等。
+```
+
+参数 -y 表示 yes。这样 npm 就会创建一个全部使用默认值的 package.json 文件。如果你想要更多的控制权，去掉参数 -y，你就能看到 npm 提出的一系列问题，包括授权许可、作者姓名，等等。
 完成之后看一下 package.json，你会在其中发现自己提供的那些答案。你也可以手动编辑，但记
 得必须是有效的 JSON。
+
 空项目有了，可以创建模块了。2.2 开始一个新的 Node 项目 19
 
-创建模块
+**创建模块**
+
 模块既可以是一个文件，也可以是包含一个或多个文件的目录，如图 2-3 所示。如果模块是
 一个目录， Node 通常会在这个目录下找一个叫 index.js 的文件作为模块的入口（这个默认设置可
 以重写，见 2.5 节）。
+
 图 2-3 Node 模块可以用文件（例 1）或目录（例 2）创建
+
 典型的模块是一个包含 exports 对象属性定义的文件，这些属性可以是任意类型的数据，
 比如字符串、对象和函数。
+
 为了演示如何创建基本的模块，我们在一个名为 currency.js 的文件中添加一些做货币转换的
 函数。这个文件如下面的代码清单所示，其中有两个函数，分别对加元和美元进行互换。
+
 代码清单 2-1 定义一个 Node 模块（ currency.js）
+```js
 const canadianDollar = 0.91;
 function roundTwo(amount) {
 return Math.round(amount * 100) / 100;
 }
 exports.canadianToUS = canadian => roundTwo(canadian * canadianDollar);
 exports.USToCanadian = us => roundTwo(us / canadianDollar);
+```
+
 exports 对象上只设定了两个属性。也就是说引入这个模块的代码只能访问到 canadianToUS 和 USToCanadian 这两个函数。而变量 canadianDollar 作为私有变量仅作用在
 canadianToUS 和 USToCanadian 的逻辑内部，程序不能直接访问它。
+
 使用这个新模块要用到 Node 的 require 函数，该函数以所用模块的路径为参数。 Node 以
 同步的方式寻找模块，定位到这个模块并加载文件中的内容。 Node 查找文件的顺序是先找核心
 模块，然后是当前目录，最后是 node_modules。
-关于 require 和同步 I/O
-require 是 Node 中少数几个同步 I/O 操作之一。因为经常用到模块，并且一般都是在文
-件顶端引入，所以把 require 做成同步的有助于保持代码的整洁、有序，还能增强可读性。
-但在 I/O 密集的地方尽量不要用 require。所有同步调用都会阻塞 Node，直到调用完成
+
+> 关于 require 和同步 I/O  
+> require 是 Node 中少数几个同步 I/O 操作之一。因为经常用到模块，并且一般都是在文
+件顶端引入，所以把 require 做成同步的有助于保持代码的整洁、有序，还能增强可读性。  
+> 但在 I/O 密集的地方尽量不要用 require。所有同步调用都会阻塞 Node，直到调用完成
 才能做其他事情。比如你正在运行一个 HTTP 服务器，如果在每个进入的请求上都用了
 require，就会遇到性能问题。所以 require 和其他同步操作通常放在程序最初加载的地方。
-canadianToUS 函数设定在 exports 模块
-中，所以引入这个模块的代码可以使用它
-USToCanadian 也设定在
-exports 模块中20 第 2 章 Node 编程基础
+
 下面这个是 test-currency.js 中的代码，它 require 了 currency.js 模块。
+
 代码清单 2-2 引入一个模块（ test_currency.js）
+```js
 const currency = require('./currency');
 console.log('50 Canadian dollars equals this amount of US dollars:');
 console.log(currency.canadianToUS(50));
 console.log('30 US dollars equals this amount of Canadian dollars:');
 console.log(currency.USToCanadian(30));
+```
+
 引入一个以./开头的模块意味着，如果你准备创建的程序脚本 test-currency.js 在 currency_app
-目录下，那 currency.js 模块文件，如图 2-4 所示，应该也放在 currency_app 目录下。在引入时， .js
-扩展名可以忽略。如果没有指明是 js 文件， Node 也会检查 json 文件， json 文件是作为 JavaScript
-对象加载的。
+目录下，那 currency.js 模块文件，如图 2-4 所示，应该也放在 currency_app 目录下。在引入时， .js 扩展名可以忽略。如果没有指明是 js 文件， Node 也会检查 json 文件， json 文件是作为 JavaScript 对象加载的。
+
 图 2-4 如果在 require 模块时把./放在前面， Node 会在被执行程序文件所在的目录
 下寻找这个模块
+
 在 Node 定位到并计算好你的模块之后， require 函数会返回这个模块中定义的 exports
 对象中的内容，然后你就可以用这个模块中的两个函数做货币转换了。
+
 如果想把这个模块放到子目录中，比如 lib/，只要把 require 语句改成下面这样就可以了：
+
+```js
 const currency = require('./lib/currency');
+```
+
 组装模块中的 exports 对象是在单独的文件中组织可重用代码的一种简便方法。
 
 ##　2.3 用 module.exports 微调模块的创建
 
 尽管用函数和变量组装 exports 对象能满足大多数的模块创建需要，但有时你可能需要用
 不同的模型创建该模块。
+
 比如说，前面创建的那个货币转换器模块可以改成只返回一个 Currency 构造函数，而不是
 包含两个函数的对象。一个面向对象的实现看起来可能像下面这样：
-用路径 ./ 表明模块跟程
-序脚本放在同一目录下
-使用 currency 模块的
-USToCanadian 函数
-使用 currency 模块的
-canadianToUS 函数2.3 用 module.exports 微调模块的创建 21
 
+```js
 const Currency = require('./currency');
 const canadianDollar = 0.91;
 const currency = new Currency(canadianDollar);
 console.log(currency.canadianToUS(50));
+```
+
 如果只需要从模块中得到一个函数，那从 require 中返回一个函数的代码要比返回一个对
 象的代码更优雅。
+
 要创建只返回一个变量或函数的模块，你可能会以为只要把 exports 设定成你想返回的东
 西就行。但这样是不行的，因为 Node 觉得不能用任何其他对象、函数或变量给 exports 赋值。
+
 下面这个代码清单中的模块代码试图将一个函数赋值给 exports。
+
 代码清单 2-3 这个模块不能用
+```js
 class Currency {
 constructor(canadianDollar) {
 this.canadianDollar = canadianDollar;
@@ -593,58 +631,74 @@ return this.roundTwoDecimals(us / this.canadianDollar);
 }
 }
 exports = Currency;
+```
+
 为了让前面那个模块的代码能用，需要把 exports 换成 module.exports。用 module.
 exports 可以对外提供单个变量、函数或者对象。如果你创建了一个既有 exports 又有
 module.exports 的模块，那它会返回 module.exports，而 exports 会被忽略。
-导出的究竟是什么
-最终在程序里导出的是 module.exports。 exports 只是对 module.exports 的一个全
+
+> 导出的究竟是什么  
+> 最终在程序里导出的是 module.exports。 exports 只是对 module.exports 的一个全
 局引用，最初被定义为一个可以添加属性的空对象。 exports.myFunc 只是 module.exports.
-myFunc 的简写。
-所以，如果把 exports 设定为别的，就打破了 module.exports 和 exports 之间的引用
+myFunc 的简写。  
+> 所以，如果把 exports 设定为别的，就打破了 module.exports 和 exports 之间的引用
 关系。可是因为真正导出的是 module.exports，那样 exports 就不能用了，因为它不再指向
 module.exports 了。如果你想保留那个链接，可以像下面这样让 module.exports 再次引用
-exports：
-module.exports = exports = Currency;
-根据需要使用 exports 或 module.exports 可以将功能组织成模块，规避掉程序脚本
-一直增长所产生的弊端。
-错误， Node 不允许
-重写 exports22 第 2 章 Node 编程基础
+exports：  
+> module.exports = exports = Currency;  
+> 根据需要使用 exports 或 module.exports 可以将功能组织成模块，规避掉程序脚本
+一直增长所产生的弊端。  
 
 ## 2.4 用 node_modules 重用模块
 
 要求模块在文件系统中使用相对路径存放，对于组织程序特定的代码很有帮助，但对于想要
 在程序间共享或跟其他人共享代码却用处不大。 Node 中有一个独特的模块引入机制，可以不必
 知道模块在文件系统中的具体位置。这个机制就是使用 node_modules 目录。
+
 前面那个模块的例子中引入的是./currency。如果省略./，只写 currency， Node 会遵照
 几个规则搜寻这个模块，如图 2-5 所示。
-图 2-5 查找模块的步骤2.5 注意事项 23
+
+图 2-5 查找模块的步骤
 
 用环境变量 NODE_PATH 可以改变 Node 模块的默认路径。如果用了它，在 Windows 中
 NODE_PATH 应该设置为用分号分隔的目录列表，在其他操作系统中则用冒号分隔。
-2.5 注意事项
+
+## 2.5 注意事项
+
 尽管 Node 模块系统的本质简单直接，但还是有两点需要注意一下。
+
 第一，如果模块是目录，在模块目录中定义模块的文件必须被命名为 index.js，除非你在这
-个目录下一个叫 package.json 的文件里特别指明。要指定一个取代 index.js 的文件， package.json
-文件里必须有一个用 JavaScript 对象表示法（ JSON）数据定义的对象，其中有一个名为 main 的
-键，指明模块目录内主文件的路径。图 2-6 中的流程图对这些规则做了汇总。
+个目录下一个叫 package.json 的文件里特别指明。要指定一个取代 index.js 的文件， package.json 文件里必须有一个用 JavaScript 对象表示法（ JSON）数据定义的对象，其中有一个名为 main 的键，指明模块目录内主文件的路径。图 2-6 中的流程图对这些规则做了汇总。
+
 图 2-6 当模块目录下有 package.json 文件时，你可以用 index.js 之外的其他文件定义
 自己的模块
+
 下面是一个 package.json 文件的例子，它指定 currency.js 为主文件：
+
+```js
 {
 "main": "currency.js"
 }
+```
+
 第二， Node 能把模块作为对象缓存起来。如果程序中的两个文件引入了相同的模块，第一
 个 require 会把模块返回的数据存到内存中，这样第二个 require 就不用再去访问和计算模块
 的源文件了。也就是说，在同一个进程中用 require 加载一个模块得到的是相同的对象。假设
 你搭建了一个 MVC Web 应用程序，它有一个主对象 app。你可以设置好那个 app 对象，导出它，
 然后在项目中的任何地方 require 它。如果你在这个 app 对象中放了一些配置信息，那你就可
-以在其他文件中访问这些配置信息的值，假定目录结构如下所示：24 第 2 章 Node 编程基础
+以在其他文件中访问这些配置信息的值，假定目录结构如下所示：
+
+```js
 project
-app.js
-models
-post.js
+  app.js
+  models
+    post.js
+```
+
 图 2-7 展示了它的工作原理。
+
 图 2-7 在 Web 程序中共享 app 对象
+
 熟悉 Node 模块系统最好的办法是自己动手试一试，亲自验证一下本节所描述的 Node 的行
 为。在对模块的工作机制有了基本的认识后，接下来学习异步编程技术。
 
@@ -653,46 +707,65 @@ post.js
 如果你做过 Web 前端程序，并且遇到过界面事件（比如鼠标点击）触发的逻辑，那你就做
 过异步程序。服务端异步编程也一样：事件发生会触发响应逻辑。在 Node 的世界里流行两种响
 应逻辑管理方式：回调和事件监听。
+
 回调通常用来定义一次性响应的逻辑。比如对于数据库查询，可以指定一个回调函数来确定
 如何处理查询结果。这个回调函数可能会显示数据库查询结果，根据这些结果做些计算，或者以
 查询结果为参数执行另一个回调函数。
+
 事件监听器本质上也是一个回调，不同的是，它跟一个概念实体（ 事件）相关联。例如，当
 有人在浏览器中点击鼠标时，鼠标点击就是一个需要处理的事件。在 Node 中，当有 HTTP 请求
 过来时， HTTP 服务器会发出一个 request 事件。你可以监听那个 request 事件，并添加一些
 响应逻辑。在下面这个例子中，因为用 EventEmitter.prototype.on 方法在服务器上绑定了
 一个监听器，所以每当有 request 事件发出时，服务器就会调用 handleRequest 函数：
+
+```js
 server.on('request', handleRequest)
+```
+
 一个 Node HTTP 服务器实例就是一个事件发射器，一个可以继承、能够添加事件发射及处
 理能力的类（ EventEmitter）。 Node 的很多核心功能都继承自 EventEmitter，你也能创建自
 己的事件发射器。
+
 Node 有两种常用的响应逻辑组织方式，我们刚才用了其中一种，接下来要了解一下它的工
-作机制：2.7 用回调处理一次性事件 25
+作机制：
 
 - 如何用回调处理一次性事件；
 - 如何用事件监听器响应重复性事件；
 - 异步编程的几个难点。
+
 先来看这个最常用的异步代码编写方式：使用回调。
 
 ## 2.7 用回调处理一次性事件
 
 回调是一个函数，它被当作参数传给异步函数，用来描述异步操作完成之后要做什么。回调
 在 Node 开发中用得很频繁，比事件发射器用得多，并且用起来也很简单。
+
 为了演示回调的用法，我们来做一个简单的 HTTP 服务器，让它实现如下功能：
+
 - 异步获取存放在 JSON 文件中的文章的标题；
 - 异步获取简单的 HTML 模板；
 - 把那些标题组装到 HTML 页面里；
 - 把 HTML 页面发送给用户。
+
 最终结果如图 2-8 所示。
+
 图 2-8 来自 Web 服务器的 HTML 响应，从 JSON 文件中获取标题并返回一个 Web 页面
+
 JSON 文件（ titles.json）会被格式化成一个包含文章标题的字符串数组，内容如下所示。
+
 代码清单 2-4 一个包含文章标题的列表
+```json
 [
 "Kazakhstan is a huge country... what goes on there?",
 "This weather is making me craaazy",
 "My neighbor sort of howls at night"
 ]
+```
+
 HTML 模板文件（ template.html）如下所示，结构很简单，可以插入博客文章的标题。
+
 代码清单 2-5 用来渲染博客标题的 HTML 模板
+```html
 <!doctype html>
 <html>
 <head></head>
@@ -701,228 +774,253 @@ HTML 模板文件（ template.html）如下所示，结构很简单，可以插�
 <ul><li>%</li></ul>
 </body>
 </html>
+```
+
 获取 JSON 文件中的标题并渲染 Web 页面的代码如下所示（ blog_recent.js）。
+
 代码清单 2-6 在简单的程序中使用回调的例子
+```js
 const http = require('http');
 const fs = require('fs');
 http.createServer((req, res) => {
-if (req.url == '/') {
-fs.readFile('./titles.json', (err, data) => {
-if (err) {
-console.error(err);
-res.end('Server Error');
-} else {
-const titles = JSON.parse(data.toString());
-fs.readFile('./template.html', (err, data) => {
-if (err) {
-console.error(err);
-res.end('Server Error');
-} else {
-const tmpl = data.toString();
-const html = tmpl.replace('%', titles.join('</li><li>'));
-res.writeHead(200, { 'Content-Type': 'text/html' });
-res.end(html);
-}
-});
-}
-});
-}
+  if (req.url == '/') {
+    fs.readFile('./titles.json', (err, data) => {
+      if (err) {
+        console.error(err);
+        res.end('Server Error');
+      } else {
+        const titles = JSON.parse(data.toString());
+        fs.readFile('./template.html', (err, data) => {
+        if (err) {
+          console.error(err);
+          res.end('Server Error');
+        } else {
+          const tmpl = data.toString();
+          const html = tmpl.replace('%', titles.join('</li><li>'));
+          res.writeHead(200, { 'Content-Type': 'text/html' });
+          res.end(html);
+        }
+        });
+      }
+    }); 
+  }
 }).listen(8000, '127.0.0.1');
+```
+
 这个例子中的回调嵌套了三层：
+
+```js
 http.createServer((req, res) => { ...
-fs.readFile('./titles.json', (err, data) => { ...
-fs.readFile('./template.html', (err, data) => { ...
+  fs.readFile('./titles.json', (err, data) => { ...
+    fs.readFile('./template.html', (err, data) => { ...
+```
+
 三层还算可以，但回调层数越多，代码看起来越乱，重构和测试起来也越困难，所以最好限
 制一下回调的嵌套层级。如果把每一层回调嵌套的处理做成命名函数，虽然表示相同逻辑所用的
 代码变多了，但维护、测试和重构起来会更容易。下面的代码功能跟代码清单 2-6 中的一样。
+
 代码清单 2-7 创建中间函数以减少嵌套的例子
+```js
 const http = require('http');
 const fs = require('fs');
 http.createServer((req, res) => {
-getTitles(res);
+  getTitles(res);
 }).listen(8000, '127.0.0.1');
-function getTitles(res) {
-fs.readFile('./titles.json', (err, data) => {
-从 JSON 文本
-中解析数据
-组装 HTML 页面
-以显示博客标题
-创建 HTTP服务器并用回调定义
-响应逻辑
-读取 JSON 文件并用回调定
-如果出错，输出错误 义如何处理其中的内容
-日志，并给客户端返
-回“ Server Error”
-读取 HTML 模板，并
-在加载完成后使用
-回调
-将 HTML 页面
-发送给用户
-客户端请求一开
-始会进到这里
-获取标题，并将控制权
-转交给 getTemplate
-%会被替换
-为标题
-控制权转交给了
-getTitles
 
-if (err) {
-hadError(err, res);
-} else {
-getTemplate(JSON.parse(data.toString()), res);
+function getTitles(res) {
+  fs.readFile('./titles.json', (err, data) => {
+    if (err) {
+      hadError(err, res);
+    } else {
+      getTemplate(JSON.parse(data.toString()), res);
+    }
+  });
 }
-});
-}
+
 function getTemplate(titles, res) {
-fs.readFile('./template.html', (err, data) => {
-if (err) {
-hadError(err, res);
-} else {
-formatHtml(titles, data.toString(), res);
+  fs.readFile('./template.html', (err, data) => {
+    if (err) {
+      hadError(err, res);
+    } else {
+      formatHtml(titles, data.toString(), res);
+    }
+  });
 }
-});
-}
+
 function formatHtml(titles, tmpl, res) {
-const html = tmpl.replace('%', titles.join('</li><li>'));
-res.writeHead(200, {'Content-Type': 'text/html'});
-res.end(html);
+  const html = tmpl.replace('%', titles.join('</li><li>'));
+  res.writeHead(200, {'Content-Type': 'text/html'});
+  res.end(html);
 }
+
 function hadError(err, res) {
-console.error(err);
-res.end('Server Error');
+  console.error(err);
+  res.end('Server Error');
 }
+```
+
 你还可以用 Node 开发中的另一种惯用法来减少由 if/else 引起的嵌套：尽早从函数中返
 回。下面的代码清单功能跟前面一样，但通过尽早返回的做法避免了进一步的嵌套。它还明确表
 示出了函数不应该继续执行的意思。
+
 代码清单 2-8 通过尽早返回减少嵌套的例子
+```js
 const http = require('http');
 const fs = require('fs');
 http.createServer((req, res) => {
-getTitles(res);
+  getTitles(res);
 }).listen(8000, '127.0.0.1');
+
 function getTitles(res) {
-fs.readFile('./titles.json', (err, data) => {
-if (err) return hadError(err, res);
-getTemplate(JSON.parse(data.toString()), res);
-});
+  fs.readFile('./titles.json', (err, data) => {
+    if (err) return hadError(err, res);
+      getTemplate(JSON.parse(data.toString()), res);
+  });
 }
+
 function getTemplate(titles, res) {
-fs.readFile('./template.html', (err, data) => {
-if (err) return hadError(err, res);
-formatHtml(titles, data.toString(), res);
-});
+  fs.readFile('./template.html', (err, data) => {
+    if (err) return hadError(err, res);
+    formatHtml(titles, data.toString(), res);
+  });
 }
+
 function formatHtml(titles, tmpl, res) {
-const html = tmpl.replace('%', titles.join('</li><li>'));
-res.writeHead(200, { 'Content-Type': 'text/html'});
-res.end(html);
+  const html = tmpl.replace('%', titles.join('</li><li>'));
+  res.writeHead(200, { 'Content-Type': 'text/html'});
+  res.end(html);
 }
-getTemplate 读取模板文件，
-并将控制权转交给 formatHtml
-在这里不再创建一个 else 分
-支，而是直接 return，因为
-如果出错的话，也没必要继续
-执行这个函数了
-如果这个过程中出现了错误， hadError
-会将错误输出到控制台，并给客户端返
-回“ Server Error”
-formatHtml 得到标题
-和模板，渲染一个响应
-给客户端28 第 2 章 Node 编程基础
+
 function hadError(err, res) {
-console.error(err);
-res.end('Server Error');
+  console.error(err);
+  res.end('Server Error');
 }
+```
+
 你已经学过如何用回调为一次性任务定义响应了，比如上例中的读取文件和响应 Web 服务
 器请求，接下来我们学一学如何用事件发射器组织事件。
-Node 的异步回调惯例
-Node 中的大多数内置模块在使用回调时都会带两个参数：第一个用来放可能会发生的错
-误，第二个用来放结果。错误参数经常缩写为 err。
-下面这个是常用的函数签名的典型示例：
-const fs = require('fs');
+
+> Node 的异步回调惯例  
+> Node 中的大多数内置模块在使用回调时都会带两个参数：第一个用来放可能会发生的错
+误，第二个用来放结果。错误参数经常缩写为 err。  
+> 下面这个是常用的函数签名的典型示例：  
+```js
+const fs = require('fs');  
 fs.readFile('./titles.json', (err, data) => {
 if (err) throw err;
-// 如果没有错误发生，则对数据进行处理
+  // 如果没有错误发生，则对数据进行处理
 });
+```
 
 ## 2.8 用事件发射器处理重复性事件
 
 事件发射器会触发事件，并且在那些事件被触发时能处理它们。一些重要的 Node API 组件，
 比如 HTTP 服务器、 TCP 服务器和流，都被做成了事件发射器。你也可以创建自己的事件发射器。
+
 我们之前说过，事件是通过监听器进行处理的。 监听器是跟事件相关联的、当有事件出现时
 就会被触发的回调函数。比如 Node 中的 TCP socket，它有一个 data 事件，每当 socket 中有新
 数据时就会触发：
+
+```js
 socket.on('data', handleData);
+```
+
 我们看一下用 data 事件创建的 echo 服务器。
 
 ### 2.8.1 事件发射器示例
 
 echo 服务器就是一个处理重复性事件的简单例子，当你给它发送数据时，它会把数据发回来，
 如图 2-9 所示。
+
 图 2-9 回送发送给它的数据的 echo 服务器
 
 下面的代码清单实现了一个 echo 服务器。当有客户端连接上来时，它就会创建一个 socket。
 socket 是一个事件发射器，可以用 on 方法添加监听器响应 data 事件。只要 socket 上有新数据
 过来，就会发出这些 data 事件。
+
 代码清单 2-9 用 on 方法响应事件
+```js
 const net = require('net');
 const server = net.createServer(socket => {
+// 当读取到新数据时处理的 data 事件
 socket.on('data', data => {
+// 数据被写回到客户端
 socket.write(data);
 });
 });
 server.listen(8888);
+```
+
 用下面这条命令可以运行 echo 服务器：
+
+```
 node echo_server.js
+```
+
 echo 服务器运行起来之后，你可以用下面这条命令连上去：
+
+```
 telnet 127.0.0.1 8888
+```
+
 每次通过 telnet 会话把数据发送给服务器，数据就会传回到 telnet 会话中。
-Windows 上的 Telnet 微软的 Windows 操作系统中可能没装 telnet，你得自己装。
+
+> Windows 上的 Telnet 微软的 Windows 操作系统中可能没装 telnet，你得自己装。
 TechNet 上有各版本 Windows 下的安装指南。
 
 ### 2.8.2 响应只应该发生一次的事件
 
 监听器可以被定义成持续不断地响应事件，如前面例子所示，也能被定义成只响应一次。下面
 的代码用了 once 方法，对前面那个 echo 服务器做了修改，让它只回应第一次发送过来的数据。
+
 代码清单 2-10 用 once 方法响应单次事件
+```js
 const net = require('net');
 const server = net.createServer(socket => {
+
+// data 事件只被处理一次
 socket.once('data', data => {
 socket.write(data);
 });
 });
 server.listen(8888);
+```
 
 ### 2.8.3 创建事件发射器：一个 PUB/SUB 的例子
 
 前面的例子用了一个带事件发射器的 Node 内置 API。然而你可以用 Node 内置的事件模块创
 建自己的事件发射器。
+
 下面的代码定义了一个 channel 事件发射器，带有一个监听器，可以向加入频道的人做出
 响应。注意这里用 on（或者用比较长的 addListener）方法给事件发射器添加了监听器：
-当读取到新数据时
-处理的 data 事件
-数据被写回到
-客户端
-data 事件只
-被处理一次30 第 2 章 Node 编程基础
+
+```js
 const EventEmitter = require('events').EventEmitter;
 const channel = new EventEmitter();
 channel.on('join', () => {
 console.log('Welcome!');
 });
+```
+
 然而这个 join 回调永远都不会被调用，因为你还没发射任何事件。所以还要在上面的代码
 中加上一行，用 emit 函数发射这个事件：
+
+```js
 channel.emit('join');
-事件名称 事件是可以具有任意字符串值的键： data、 join 或某些长的让人发疯
+```
+
+> 事件名称 事件是可以具有任意字符串值的键： data、 join 或某些长的让人发疯
 的事件名都行。只有一个事件是特殊的，那就是 error，我们马上就会看到它。
+
 接下来看看如何用 EventEmitter 实现自己的发布/预订逻辑，做一个通信通道。如果运行
 代码清单 2-11 中的脚本，你就会得到一个简单的聊天服务器。聊天服务器的频道被做成了事件
 发射器，能对客户端发出的 join 事件做出响应。当有客户端加入聊天频道时， join 监听器逻
 辑会将一个针对该客户端的监听器附加到频道上，用来处理会将所有广播消息写入该客户端
 socket 的 broadcast 事件。事件类型的名称，比如 join 和 broadcast，完全是随意取的。你
 也可以按自己的喜好给它们换个名字。
+
 代码清单 2-11 用事件发射器实现的简单的发布/预订系统
+```js
 const events = require('events');
 const net = require('net');
 const channel = new events.EventEmitter();
@@ -946,30 +1044,24 @@ channel.emit('broadcast', id, data);
 });
 });
 server.listen(8888);
+```
+
 把聊天服务器跑起来后，打开一个新的命令行窗口，并在其中输入下面的命令进入聊天程序：
+
+```js
 telnet 127.0.0.1 8888
-忽略发出这一广播
-数据的用户
-添加一个专门针对当前
-用户的 broadcast 事件
-监听器
-当有用户连到服务器上时发出
-一个 join 事件，指明用户 ID
-和 client 对象
-添加 join 事件的监听器，保
-存用户的 client 对象，以便
-程序可以将数据发送给用户
-当有用户发送数据时，发出
-一个频道 broadcast 事件，
-指明用户 ID 和消息2.8 用事件发射器处理重复性事件 31
+```
 
 如果你打开几个命令行窗口，在其中任何一个窗口中输入的内容都将会被发送到其他所有窗
 口中。
+
 这个聊天服务器还有一个问题，在用户关闭连接离开聊天室后，原来那个监听器还在，仍会
 尝试向已经断开的连接写数据。这样自然就会出错。为了解决这个问题，还要按照下面的代码清
 单把监听器添加到频道事件发射器上，并且向服务器的 close 事件监听器中添加发射频道的
 leave 事件的处理逻辑。leave 事件本质上就是要移除原来给客户端添加的 broadcast 监听器。
+
 代码清单 2-12 创建一个在用户断开连接时能“打扫战场”的监听器
+```js
 ...
 channel.on('leave', function(id) {
 channel.removeListener(
@@ -984,13 +1076,20 @@ channel.emit('leave', id);
 });
 });
 server.listen(8888);
-如果出于某种原因你想停止提供聊天服务，但又不想关掉服务器，可以用 removeAllListeners 事件发射器方法去掉给定类型的全部监听器。下面是在我们的聊天服务器上使用这
-一方法的示例：
+```
+
+如果出于某种原因你想停止提供聊天服务，但又不想关掉服务器，可以用 removeAllListeners 事件发射器方法去掉给定类型的全部监听器。下面是在我们的聊天服务器上使用这一方法的示例：
+
+```js
 channel.on('shutdown', () => {
 channel.emit('broadcast', '', 'The server has shut down.\n');
 channel.removeAllListeners('broadcast');
 });
+```
+
 然后你可以添加一个停止服务的聊天命令。为此需要将 data 事件的监听器改成下面这样：
+
+```js
 client.on('data', data => {
 data = data.toString();
 if (data === 'shutdown\r\n') {
@@ -998,38 +1097,42 @@ channel.emit('shutdown');
 }
 channel.emit('broadcast', id, data);
 });
+```
+
 现在只要有人输入 shutdown 命令，所有参与聊天的人都会被踢出去。
-错 误 处 理
-在错误处理上有个常规做法，你可以创建发出 error 类型事件的事件发射器，而不是直
+
+> 错 误 处 理  
+> 在错误处理上有个常规做法，你可以创建发出 error 类型事件的事件发射器，而不是直
 接抛出错误。这样就可以为这一事件类型设置一个或多个监听器，从而定义定制的事件响应
-逻辑。
-移除指定客户端的
-broadcast 监听器
-创建 leave 事件
-的监听器
-在用户断开连接时
-发出 leave 事件32 第 2 章 Node 编程基础
-下面的代码显示的是一个错误监听器如何将被发出的错误输出到控制台中：
+逻辑。  
+> 下面的代码显示的是一个错误监听器如何将被发出的错误输出到控制台中：
+```js
 const events = require('events');
 const myEmitter = new events.EventEmitter();
 myEmitter.on('error', err => {
 console.log(`ERROR: ${err.message}`);
 });
 myEmitter.emit('error', new Error('Something is wrong.'));
-如果发出这个 error 事件类型时没有该事件类型的监听器，事件发射器会输出一个栈跟
+```
+> 如果发出这个 error 事件类型时没有该事件类型的监听器，事件发射器会输出一个栈跟
 踪（到错误发生时所执行过的程序指令列表）并停止执行。栈跟踪会用 emit 调用的第二个参
 数指明错误类型。这是只有错误类型事件才能享受的特殊待遇，在发出没有监听器的其他事件
-类型时，什么也不会发生。
-如果发出的 error 类型事件没有作为第二个参数的 error 对象，栈跟踪会指出一个“未
+类型时，什么也不会发生。  
+> 如果发出的 error 类型事件没有作为第二个参数的 error 对象，栈跟踪会指出一个“未
 捕获、未指明的‘错误’事件”错误，并且程序会停止执行。你可以用一个已经被废除的方法
 处理这个错误，用下面的代码定义一个全局处理器实现响应逻辑：
+```js
 process.on('uncaughtException', err => {
 console.error(err.stack);
 process.exit(1);
 });
-除了这个，还有像 domains 这样正在开发的方案，但它们是实验性质的。
+```
+> 除了这个，还有像 domains 这样正在开发的方案，但它们是实验性质的。
+
 如果你想让连接上来的用户看到当前有几个已连接的聊天用户，可以用下面这个监听器方
 法，它能根据给定的事件类型返回一个监听器数组：
+
+```js
 channel.on('join', function(id, client) {
 const welcome = `
 Welcome!
@@ -1037,50 +1140,68 @@ Guests online: ${this.listeners('broadcast').length}
 `;
 client.write(`${welcome}\n`);
 ...
+```
+
 为了增加能够附加到事件发射器上的监听器数量， 不让 Node 在监听器数量超过 10 个时向你
 发出警告，可以用 setMaxListeners 方法。以频道事件发射器为例，可以用下面的代码增加监
 听器的数量：
+
+```js
 channel.setMaxListeners(50);
+```
 
 ### 2.8.4 扩展事件监听器：文件监视器
 
 如果你想在事件发射器的基础上构建程序，可以创建一个新的 JavaScript 类继承事件发射器。
 比如创建一个 Watcher 类来处理放在某个目录下的文件。然后可以用这个类创建一个工具，该
-工具可以监视目录（将放到里面的文件名都改成小写的，并将文件复制到一个单独目录中）。2.8 用事件发射器处理重复性事件 33
+工具可以监视目录（将放到里面的文件名都改成小写的，并将文件复制到一个单独目录中）。
 
 设置好 Watcher 对象后，还需要加两个新方法扩展继承自 EventEmitter 的方法，代码如
 下所示。
+
 代码清单 2-13 扩展事件发射器的功能
+```js
 const fs = require('fs');
 const events = require('events');
+
 class Watcher extends events.EventEmitter {
-constructor(watchDir, processedDir) {
-super();
-this.watchDir = watchDir;
-this.processedDir = processedDir;
+  constructor(watchDir, processedDir) {
+    super();
+    this.watchDir = watchDir;
+    this.processedDir = processedDir;
+  }
+  watch() {
+    fs.readdir(this.watchDir, (err, files) => {
+    if (err) throw err;
+    for (var index in files) {
+    this.emit('process', files[index]);
+    }
+    });
+  }
+  start() {
+    fs.watchFile(this.watchDir, () => {
+    this.watch();
+    });
+  }
 }
-watch() {
-fs.readdir(this.watchDir, (err, files) => {
-if (err) throw err;
-for (var index in files) {
-this.emit('process', files[index]);
-}
-});
-}
-start() {
-fs.watchFile(this.watchDir, () => {
-this.watch();
-});
-}
-}
+
 module.exports = Watcher;
+```
+
 watch 方法循环遍历目录，处理其中的所有文件。 start 方法启动对目录的监控。监控用到
 了 Node 的 fs.watchFile 函数，所以当被监控的目录中有事情发生时， watch 方法会被触发，
 循环遍历受监控的目录，并针对其中的每一个文件发出 process 事件。
+
 定义好了 Watcher 类，可以用下面的代码创建一个 Watcher 对象：
+
+```js
 const watcher = new Watcher(watchDir, processedDir);
+```
+
 有了新创建的 Watcher 对象，你可以用继承自事件发射器类的 on 方法设定每个文件的处
 理逻辑，如下所示：
+
+```js
 watcher.on('process', (file) => {
 const watchFile = `${watchDir}/${file}`;
 const processedFile = `${processedDir}/${file.toLowerCase()}`;
@@ -1088,21 +1209,23 @@ fs.rename(watchFile, processedFile, err => {
 if (err) throw err;
 });
 });
+```
+
 现在所有必要逻辑都已经就位了，可以用下面这行代码启动对目录的监控：
+
+```js
 watcher.start();
-扩展 EventEmitter，
-添加处理文件的方法
-处理 watch 目录
-中的所有文件
-添加开始监控
-的方法34 第 2 章 Node 编程基础
+```
+
 把 Watcher 代码放到脚本中，创建 watch 和 done 目录，你应该能用 Node 运行这个脚本，
 把文件丢到 watch 目录中，然后看着文件出现在 done 目录中，文件名被改成小写。这就是用事
 件发射器创建新类的例子。
+
 通过学习如何使用回调定义一次性异步逻辑，以及如何用事件发射器重复派发异步逻辑，你
 离掌控 Node 程序的行为又近了一步。然而你可能还想在单个回调或事件发射器的监听器中添加
 新的异步任务。如果这些任务的执行顺序很重要，你就会面对新的难题：如何准确控制一系列异
 步任务里的每个任务。
+
 在我们学习如何控制任务的执行之前（ 2.10 节），先来看一看在编写异步代码时可能会碰到
 哪些难题。
 
@@ -1110,15 +1233,19 @@ watcher.start();
 
 在创建异步程序时，你必须密切关注程序的执行流程，并瞪大眼睛盯着程序的状态：事件轮
 询的条件、程序变量，以及其他随着程序逻辑执行而发生变化的资源。
+
 比如说， Node 的事件轮询会跟踪还没有完成的异步逻辑。只要有异步逻辑未完成， Node 进
 程就不会退出。一个持续运行的 Node 进程对 Web 服务器之类的应用来说很有必要，但对于命令
 行工具这种经过一段时间后就应该结束的应用却意义不大。事件轮询会跟踪所有数据库连接，直
 到它们关闭，以防止 Node 退出。
+
 如果你不小心，程序的变量也可能会出现意想不到的变化。代码清单 2-14 是一段可能因为
 执行顺序而导致混乱的异步代码。如果例子中的代码能够同步执行，你可以肯定输出应该是
 “The color is blue”。可这个例子是异步的，在 console.log 执行之前 color 的值还在变化，所
 以输出是“The color is green”。
+
 代码清单 2-14 作用域是如何导致 bug 出现的
+```js
 function asyncFunction(callback) {
 setTimeout(callback, 200);
 }
@@ -1127,16 +1254,17 @@ asyncFunction(() => {
 console.log(`The color is ${color}`);
 });
 color = 'green';
+```
+
 用 JavaScript 闭包可以“冻结” color 的值。在代码清单 2-15 中，对 asyncFunction 的调
 用被封装到了一个以 color 为参数的匿名函数里。这样你就可以马上执行这个匿名函数，把当
 前的 color 的值传给它。而 color 变成了匿名函数的参数，也就是这个匿名函数内部的本地变
 量，当匿名函数外面的 color 值发生变化时，本地版的 color 不会受影响。
+
 代码清单 2-15 用匿名函数保留全局变量的值
+```js
 function asyncFunction(callback) {
 setTimeout(callback, 200);
-这个最后执行
-（ 200ms 之后）2.10 异步逻辑的顺序化 35
-
 }
 let color = 'blue';
 (color => {
@@ -1145,9 +1273,13 @@ console.log('The color is', color);
 });
 })(color);
 color = 'green';
+```
+
 在 Node 开发中，你要用到很多 JavaScript 编程技巧，这只是其中之一。
-闭包 要了解闭包的详细信息，请参见 Mozilla JavaScript 文档： https://developer.
-mozilla.org/zh-CN/docs/JavaScript/Guide/Closures。
+
+> 闭包 要了解闭包的详细信息，请参见 [Mozilla](https://developer.
+mozilla.org/zh-CN/docs/JavaScript/Guide/Closures) JavaScript 文档。
+
 现在你知道怎么用闭包控制程序的状态了，接下来我们看看怎么让异步逻辑顺序执行，好让
 你可以掌控程序的流程。
 
@@ -1155,33 +1287,47 @@ mozilla.org/zh-CN/docs/JavaScript/Guide/Closures。
 
 在异步程序的执行过程中，有些任务可能会随时发生，跟程序中的其他部分在做什么没关
 系，什么时候做这些任务都不会出问题。但也有些任务只能在某些特定的任务之前或之后做。
+
 让一组异步任务顺序执行的概念被 Node 社区称为流程控制。这种控制分为两类： 串行和并
 行，如图 2-10 所示。
-图 2-10 串行的异步任务在概念上跟同步逻辑类似，然而并行任务不必一个接一个地执行36 第 2 章 Node 编程基础
+
+图 2-10 串行的异步任务在概念上跟同步逻辑类似，然而并行任务不必一个接一个地执行
+
 需要一个接着一个执行的任务叫作串行任务。创建一个目录并往里放一个文件的任务就是
 串行的。你不能在创建目录前往里放文件。
+
 不需要一个接着一个执行的任务叫作并行任务。这些任务彼此之间开始和结束的时间并不重
 要，但在后续逻辑执行之前它们应该全部执行完。下载几个文件然后把它们压缩到一个 zip 归档
 文件中就是并行任务。这些文件的下载可以同时进行，但在创建归档文件之前应该全部下载完。
+
 跟踪串行和并行的流程控制要做编程记账的工作。在实现串行化流程控制时，需要跟踪当前
 执行的任务，或维护一个尚未执行任务的队列。实现并行化流程控制时需要跟踪有多少个任务要
 执行完成了。
+
 有一些可以帮你记账的流程控制工具，它们能让组织异步的串行或并行化任务变得很容易。
 尽管社区创建了很多序列化异步逻辑的辅助工具，但亲自动手实现流程控制可以让你看透其中的
 玄机，让你对如何应对异步编程中的挑战有更深的认识。
+
 下面几节将介绍这些内容：
+
 - 何时使用串行化流程控制；
 - 如何实现串行化流程控制；
 - 如何实现并行化流程控制；
 - 如何使用第三方模块做流程控制。
+
 接下来我们先从何时以及如何在异步的世界中实现串行化流程控制开始。
-2.11 何时使用串行流程控制
+
+## 2.11 何时使用串行流程控制
+
 可以使用回调让几个异步任务按顺序执行，但如果任务很多，必须组织一下，否则过多的回
 调嵌套会把代码搞得很乱。
+
 下面这段代码就是用回调让任务顺序执行的。这个例子用 setTimeout 模拟需要花时间执
 行的任务：第一个任务用一秒，第二个用半秒，最后一个用十分之一秒。 setTimeout 只是一个
 人工模拟，在真正的代码中可能是读取文件、发起 HTTP 请求等。这段代码虽然不长，但它算是
 比较乱的了，并且也没有程序化添加另一个任务的简单办法。
+
+```js
 setTimeout(() => {
 console.log('I execute first.');
 setTimeout(() => {
@@ -1191,12 +1337,19 @@ console.log('I execute last.');
 }, 100);
 }, 500);
 }, 1000);
+```
+
 此外，你也可以用 Async 这样的流程控制工具执行这些任务。 Async 用起来简单直接，并且
 它的代码量很小（经过缩小化和压缩后只有 837 个字节）。下面这个命令是用来安装 Async 的：
-npm install async2.12 实现串行化流程控制 37
+
+```
+npm install async
+```
 
 下面的代码用串行化流程控制工具重新编写了前面那段代码。
+
 代码清单 2-16 用社区贡献的工具实现串行化控制
+```js
 const async = require('async');
 async.series([
 callback => {
@@ -1218,8 +1371,11 @@ callback();
 }, 100);
 }
 ]);
+```
+
 尽管这种用流程控制实现的版本代码更多，但通常可读性和可维护性更强。你一般也不会一
 直用流程控制，但当碰到想要躲开回调嵌套的情况时，它就会是改善代码可读性的好工具。
+
 看过这个用特制工具实现串行化流程控制的例子之后，我们来看看如何从头开始实现它。
 
 ## 2.12 实现串行化流程控制
@@ -1227,28 +1383,40 @@ callback();
 为了用串行化流程控制让几个异步任务按顺序执行，需要先把这些任务按预期的执行顺序
 放到一个数组中。如图 2-11 所示，这个数组将起到队列的作用：完成一个任务后按顺序从数组
 中取出下一个。
+
 图 2-11 串行化流程控制的工作机制
-给 Async 一个函数数组，
-让它一个接一个地执行38 第 2 章 Node 编程基础
+
 数组中的每个任务都是一个函数。任务完成后应该调用一个处理器函数，告诉它错误状态和
 结果。在这一实现中，如果有错误，处理器函数会终止执行；如果没有错误，处理器就从队列中
 取出下一个任务执行它。
+
 为了演示如何实现串行化流程控制，我们准备做个小程序，让它从一个随机选择的 RSS 预
 订源中获取一篇文章的标题和 URL，并显示出来。 RSS 预订源列表放在一个文本文件中。这个
 程序的输出是像下面这样的文本：
+
+```
 Of Course ML Has Monads!
 http://lambda-the-ultimate.org/node/4306
+```
+
 我们这个例子需要从 npm 存储库中下载两个辅助模块。先打开命令行，输入下面的命令给
 例子创建个目录，然后安装辅助模块：
+
+```
 mkdir listing_217
 cd listing_217
 npm init -y
 npm install --save request@2.60.0
 npm install --save htmlparser@1.7.7
+```
+
 request 模块是个经过简化的 HTTP 客户端，你可以用它获取 RSS 数据。 htmlparser 模
 块能把原始的 RSS 数据转换成 JavaScript 数据结构。
+
 接下来在新目录中创建一个包含下列代码的 index.js 文件。
+
 代码清单 2-17 在一个简单的程序中实现串行化流程控制
+```js
 const fs = require('fs');
 const request = require('request');
 const htmlparser = require('htmlparser');
@@ -1275,22 +1443,6 @@ function downloadRSSFeed(feedUrl) {
 request({ uri: feedUrl }, (err, res, body) => {
 if (err) return next(err);
 if (res.statusCode !== 200)
-只要有错误
-就尽早返回
-将预订源 URL 列表转换成字符串，
-然后分隔成一个数组
-从预订源 URL 数组中随
-机选择一个预订源 URL
-任务 3：向选定的预订源发
-送 HTTP 请求以获取数据
-任务 1：确保包含
-RSS 预订源 URL
-列表的文件存在
-任务 2：读取并解析包含
-预订源 URL 的文件2.13 实现并行化流程控制 39
-
-执行当前
-任务
 return next(new Error('Abnormal response status code'));
 next(null, body);
 });
@@ -1319,14 +1471,20 @@ currentTask(result);
 }
 }
 next();
+```
+
 在试用这个程序之前，先在程序脚本所在的目录下创建一个 rss_feeds.txt 文件。如果你自己
-没有预订源，可以试一下 Node 博客，地址是 http://blog.nodejs.org/feed/。把预订源 URL 放到这
-个文本文件中，每行一条。文件创建好后，打开命令行窗口输入下面的命令进入程序所在的目录
+没有预订源，可以试一下 Node 博客，地址是 http://blog.nodejs.org/feed/。把预订源 URL 放到这个文本文件中，每行一条。文件创建好后，打开命令行窗口输入下面的命令进入程序所在的目录
 并执行脚本：
+
+```
 cd listing_217
 node index.js
+```
+
 如本例中的实现所示，串行化流程控制本质上是在需要时让回调进场，而不是简单地把它们
 嵌套起来。
+
 你已经知道如何实现串行化流程控制了，我们接下来去看看如何让异步任务并行执行。
 
 ## 2.13 实现并行化流程控制
@@ -1334,35 +1492,35 @@ node index.js
 为了让异步任务并行执行，仍然是要把任务放到数组中，但任务的存放顺序无关紧要。每个
 任务都应该调用处理器函数增加已完成任务的计数值。当所有任务都完成后，处理器函数应该执
 行后续的逻辑。
+
 我们会做一个简单的程序作为并行化流程控制的例子，它会读取几个文本文件的内容，并输
 出单词在整个文件中出现的次数。我们会用异步的 readFile 函数读取文本文件的内容，所以几
-任务 4：将预订源数据解
-析到一个条目数组中
-如果有数据，显示第一个预
-订源条目的标题和 URL
-把所有要做的任务按执行
-顺序添加到一个数组中
-如果任务出错，
-从任务数组中 则抛出异常
-取出下个任务
-开 始 任 务 的
-串行化执行
-负责执行任务
-的 next 函数40 第 2 章 Node 编程基础
 个文件的读取可以并行执行。这个程序的工作方式如图 2-12 所示。
+
 图 2-12 用并行化流程控制实现对几个文件中单词频度的计数
+
 这个程序的输出看起来应该像下面这样（尽管实际上可能要长很多）：
+
+```
 would: 2
 wrench: 3
 writeable: 1
 you: 24
+```
+
 打开命令行窗口，输入下面的命令创建两个目录：一个是给我们这个例子用的，另一个是用
 来存放要分析的文本文件的。
+
+```
 mkdir listing_218
 cd listing_218
 mkdir text
+```
+
 接下来在 word_count 目录下创建包含下面代码清单中代码的 word_count.js 文件。
+
 代码清单 2-18 在一个简单的程序中实现并行化流程控制
+```js
 const fs = require('fs');
 const tasks = [];
 const wordCounts = {};
@@ -1372,11 +1530,7 @@ function checkIfComplete() {
 completedTasks++;
 if (completedTasks === tasks.length) {
 for (let index in wordCounts) {
-当所有任务全部完成后，列出
-文件中用到的每个单词以及
-用了多少次2.14 利用社区里的工具 41
-
-console.log(`${index}: ${wordCounts[index]}`);
+当console.log(`${index}: ${wordCounts[index]}`);
 }
 }
 }
@@ -1409,10 +1563,16 @@ tasks.push(task);
 }
 tasks.forEach(task => task());
 });
+```
+
 在试用这个程序之前，先在前面创建的 text 目录中创建一些文本文件。在创建了这些文件之
 后，打开一个命令行窗口，输入下面的命令进入程序所在目录并执行程序脚本：
+
+```
 cd word_count
 node word_count.js
+```
+
 现在你已经知道串行和并行化流程控制的底层机制了，接下来我们要看看如何用社区贡献的
 工具在程序中轻松实现流程控制，而不必自己亲自实现。
 
@@ -1420,29 +1580,21 @@ node word_count.js
 
 社区中的很多附加模块都提供了方便好用的流程控制工具。其中比较流行的有 Async、 Step
 和 Seq 这三个。尽管这些都很值得一看，但下面这个例子用的还是 Async。
-对文本中出现的
-单词计数
-得出 text 目录
-中的文件列表
-定义处理每个文件的任务。
-每个任务中都会调用一个异
-步读取文件的函数并对文件
-中使用的单词计数
-把所有任务都添加到
-函数调用数组中
-开始并行执行
-所有任务42 第 2 章 Node 编程基础
-下载指定版本
-的 Node 源码
+
 社区中有流程控制能力的附加模块 要了解更多与社区中有流程控制能力的附加模
 块相关的内容，请阅读 Werner Schuster 和 Dio Synodinos 在 InfoQ 上发表的文章“虚拟
 座谈：如何从 JavaScript 异步编程中活下来”。
+
 下面这个例子是用 Async 实现任务序列化的一段脚本，它同时用并行化流程控制下载两个文
 件，然后把它们归档。
+
 此例在微软的 Windows 中无法使用 因为 Windows 中没有 tar 和 curl 这两个命
 令，所以下面这个例子在 Windows 中无法使用。
+
 在这个例子中，我们用串行化控制来保证在文件下载完成之前不会做归档处理。
+
 代码清单 2-19 在简单的程序中使用社区附加模块中的流程控制工具
+```js
 const async = require('async');
 const exec = require('child_process').exec;
 function downloadNodeVersion(version, destination, callback) {
@@ -1475,15 +1627,10 @@ callback();
 );
 }
 ]);
+```
+
 这段脚本定义了一个可以下载指定版本 Node 源码的辅助函数。然后串行执行了两个任务：并
 行下载两个版本的 Node，然后将下载好的版本归档到一个新文件中。
-并行
-下载
-按顺序执行串
-行化任务
-创建归
-档文件2.15 总结 43
-
 
 ## 2.15 总结
 
@@ -1492,29 +1639,38 @@ callback();
 - module.exports 和 exports 对象是用来分享模块内的函数和变量的。
 - package.json 文件是用来指明依赖项的，还要指明将哪个文件作为主文件。
 - 异步逻辑可以用嵌套回调、事件发射器和流程控制工具来控制。
-Node Web 程序是什么
+
+
+# 第3章 Node Web 程序是什么
+
 本章内容
 - 创建一个新的 Web 程序
 - 搭建 RESTful 服务
 - 持久化数据
 - 使用模板
+
 本章介绍的内容全部都是关于 Node Web 程序的。看完之后，你不仅会知道 Node Web 程序
 看起来是什么样的，还能学会如何开始搭建这样的程序。 Web 开发人员在开发程序时要做的每一
 件事你都会看到。
+
 我们准备带你一起搭建一个名为 later 的 Web 程序，其创意来自 Instapaper 和 Pocket 这样的
 “回头再看”网站。涉及的工作包括开始一个新的 Node 项目、管理依赖项、创建 RESTful API、
 把数据保存到数据库中，以及用模板做一个用户界面。虽然看起来有很多内容，但不用担心，我
 们还会在后续章节中详细讲解这里提到的每一项工作。
+
 图 3-1 是最终结果的样子。
+
 图 3-1 一个“回头再看” Web 程序
-第 3 章3.1 了解 Node Web 程序的结构 45
 
 左侧的“回头再看”页面剥离了目标网站的无关元素，只留下了标题和内容主体。更重要的
 是这篇文章被永久存放到了数据库中，也就是说即便将来连原始文章都找不到了，你还是可以读
 到它。
+
 在开始搭建 Web 程序之前，应该先创建一个新项目。接下来我们会介绍如何从头开始创建
 一个 Node 项目。
-3.1 了解 Node Web 程序的结构
+
+## 3.1 了解 Node Web 程序的结构
+
 典型的 Node Web 程序是由下面几部分组成的：
 - package.json—— 一个包含依赖项列表和运行这个程序的命令的文件；
 - public/—— 静态资源文件夹， CSS 和客户端 JavaScript 都放在这里；
@@ -1530,7 +1686,9 @@ Node Web 程序是什么
 按照上面给出的结构组织的。
 最好的学习方法就是亲自动手实践，所以让我们看看老练的 Node 程序员是如何创建 Web 程
 序框架的。
-3.1.1 开始一个新的 Web 程序
+
+### 3.1.1 开始一个新的 Web 程序
+
 要创建一个新的 Web 程序，需要先做一个新的 Node 项目。如果你忘记怎么做了，可以回去
 温习一下第 2 章。其实很简单，只需要创建一个目录，然后运行 npm init，记得加上接受所有
 默认值的参数：
@@ -1579,7 +1737,8 @@ scripts 里添加一个 start 属性：
 建客户端包、执行测试、生成文档等。它基本上就是一个微型脚本调用工具，所以只要你喜欢，
 放什么都行。3.2 搭建一个 RESTful Web 服务 47
 
-3.1.2 跟其他平台比一比
+### 3.1.2 跟其他平台比一比
+
 如果用 PHP 实现上面那个程序，代码如下：
 <?php echo '<p>Hello World</p>'; ?>
 只有一行，并且一看就明白，那么这个更加复杂的 Node 示例有什么优点呢？二者是编程范
@@ -1590,7 +1749,9 @@ scripts 里添加一个 start 属性：
 此 Node 程序更容易部署和管理。
 npm 也让 Node 程序的部署变得更容易了。因为各自的依赖项是装在项目里的，所以同一系
 统上的不同项目间不会发生冲突。
-3.1.3 然后呢
+
+### 3.1.3 然后呢
+
 现在你已经掌握了用 npm init 创建项目和用 npm install --save 安装依赖项的技巧，
 可以快速创建新的项目了。太棒了！你能把自己的新想法变成新项目了。比如说，你对一个热门
 的 Web 框架感兴趣，想要尝试一下，就可以创建一个新目录，运行 npm init，然后用 npm 安
@@ -1599,7 +1760,9 @@ npm 也让 Node 程序的部署变得更容易了。因为各自的依赖项是�
 require 加载之前通过 npm install --save 安装的模块。现在我们的重点是大部分 Web 程
 序员接下来要做的事情，即添加一些 RESTful 路由。这能帮我们确定程序的 API，以及确定需要
 哪些数据库模型。
-3.2 搭建一个 RESTful Web 服务
+
+## 3.2 搭建一个 RESTful Web 服务
+
 你的程序需要一个 RESTful Web 服务，以便像 Instapaper 和 Pocket 那样创建和保存文件。
 为了将杂乱的 Web 页面变成整洁的文章，这个服务需要用到一个模块，类似最早的 Readability
 服务。
@@ -1701,7 +1864,9 @@ res.send(article);
 curl --data "title=Example 2" http://localhost:3000/articles
 恭喜你，这已经跟真正的 Web 程序差不多了！你只需要再完成两个任务就大功告成了。第
 一个任务是将数据永久保存在数据库里，第二个任务是为网上找到的文章生成一个可读版本。
-3.3 添加数据库
+
+## 3.3 添加数据库
+
 就往 Node 程序中添加数据库而言，并没有一定之规，但一般会涉及下面几个步骤。
 (1) 决定想要用的数据库系统。
 (2) 在 npm 上看看那些实现了数据库驱动或对象关系映射（ ORM）的热门模块。
@@ -1730,7 +1895,9 @@ then(cb)，其中的 cb 是回调（ callback）的缩写。
 在这个项目里，我们准备用 SQLite，还有热门的 sqlite3 模块。 SQLite 是进程内数据库，
 所以很方便：你不需要在系统上安装一个后台运行的数据库。你添加的所有数据都会写到一个
 文件里，也就是说程序停掉后再起来时数据还在，所以非常适合入门学习时用。
-3.3.1 制作自己的模型 API
+
+### 3.3.1 制作自己的模型 API
+
 文章应该能被创建、被获取、被删除，所以模型类 Article 应该提供下面这些方法：
 - Article.all(cb)——返回所有文章；
 - Article.find(id, cb) ——给定 ID，找到对应的文章；
@@ -1829,7 +1996,9 @@ module.exports = app;
 模块➊ ，然后用它获取所有文章➋ ，查找特定文章➌ 和删除一篇文章➍ 。
 最后一件事情是实现创建文章的功能。因此需要下载文章，还要用神奇的 readability 算法处
 理它们。我们需要一个来自 npm 的模块。
-3.3.2 让文章可读并把它存起来
+
+### 3.3.2 让文章可读并把它存起来
+
 RESTful API 已经搭建好了，数据也可以持久化到数据库中了，接下来该写代码把网页转换
 成简化版的“阅读视图”了。不过我们不用自己实现，因为 npm 中已经有这样的模块了。
 在 npm 上搜索 readability 会找到很多模块。我们试一下 node-readability（写作本书时是 1.0.1
@@ -1879,11 +2048,15 @@ curl --data "url=http://manning.com/cantelon2/" http://localhost:3000/articles
 这样的工作。本书后续章节还会介绍数据库 MongoDB 和 Redis 方面的知识。
 我们的程序现在已经可以保存文章了，也可以获取它们。为了能够阅读这些文章，还需要添
 加 Web 界面。
-3.4 添加用户界面
+
+## 3.4 添加用户界面
+
 给 Express 项目添加界面需要做几件事。首先是使用模板引擎。我们会简单地介绍一下如何
 安装模板引擎，并用它渲染模板。程序还需要服务静态文件，比如 CSS。在渲染模板和编写 CSS
 之前，你还需要了解，如何在必要时让前面例子中的路由处理器同时支持 JSON 和 HTML 响应。
-3.4.1 支持多种格式
+
+### 3.4.1 支持多种格式
+
 之前我们用 res.send()往客户端发送 JavaScript 对象。用 cURL 发送请求时， JSON 很方便，
 因为在控制台里看起来很清晰。但在现实应用中，这个程序还需要支持 HTML。怎么才能同时支
 持这两种格式呢？
@@ -1907,7 +2080,9 @@ res.send(articles);
 });
 在这段代码中， res.render 会渲染 view 文件夹下的模板 articles.ejs。但这需要安装模板引
 擎并创建相应的模板。
-3.4.2 渲染模板
+
+### 3.4.2 渲染模板
+
 模板引擎有很多， EJS（嵌入式 JavaScript）属于简单易学那种。从 npm 上安装 EJS 模块（写
 作本书时 EJS 的版本号是 2.3.1）：
 npm install ejs --save
@@ -1948,7 +2123,9 @@ forEach 实现的，文章的 ID 和标题是用 EJS 的<%= value %>语法➌ �
 </html>
 res.format 也可以用来显示指定的文章。从这儿开始变得有意思了，因为按照这个程序的
 要求，文章看起来应该简洁易读。
-3.4.3 用 npm 管理客户端依赖项
+
+### 3.4.3 用 npm 管理客户端依赖项
+
 模板搞定了，接下来就该添加样式了。我们不用自己创建样式，重用已有的样式会更简单，
 甚至这也能用 npm 来做！热门的 Bootstrap 客户端框架也在 npm 上，把它加到项目中：
 npm install bootstrap --save
@@ -1986,24 +2163,32 @@ head.ejs 看起来应该是这样的：
 象一下， 不仅在写 Node 代码时，在做前端开发时也可以敲入 const React = require('react')
 这样的代码！这超出了本章的范围，不过你应该感受到了吧，把源自 Node 的编程技术跟前端开
 发结合起来将释放出多么大的能量！
-3.5 总结
+
+## 3.5 总结
+
 - 用 npm init 和 Express 可以快速搭建出一个 Node Web 应用程序。
 - npm install 是安装依赖项的命令。
 - 可以用 Express 制作带有 RESTful API 的 Web 程序。
 - 选择合适的数据库系统和数据库模块需要你根据自己的需求做一些前期调研。
 - 对于小项目来说， SQLite 很好用。
 - 在 Express 中用 EJS 渲染模板很容易。
-- Express 支持很多种模板引擎，包括 Pug 和 Mustache。58 第 3 章 Node Web 程序是什么Part 2 第二部分
-Node 的 Web 开发
+- Express 支持很多种模板引擎，包括 Pug 和 Mustache。58 第 3 章 Node Web 程序是什么
+
+# Part 2 第二部分 Node 的 Web 开发
+
 接下来可以更深入地学习服务器端开发了。在服务器端代码之外， Node 还开辟了一块很
 重要的市场：前端构建系统。在这一部分，我们将会介绍如何用 Webpack 和 Gulp 开始新项目，
 还会介绍几个最流行的 Web 框架，并从多个视角来对它们进行比较，以便你找出最适合自己项
 目的框架。
+
 第 6 章一整章都是讲如何用 Connect 和 Express 模块搭建 Web 程序，供感兴趣的读者深入
 学习。另外书中还用一章集中讲了模板和数据库的使用。
+
 为了保证 Node 全栈 Web 开发知识的完整性，本书还介绍了测试和部署，让你可以为自己
 的第一个 Node 程序做好准备。
-前端构建系统
+
+# 第4章 前端构建系统
+
 本章内容
 - 用 npm 脚本简化复杂的命令
 - 用 Gulp 管理重复性任务
@@ -5857,8 +6042,12 @@ brew update
 brew install postgres
 如果之前安装过，可能会碰到升级问题。你可以参照所用平台的指南把原来的数据库迁移一
 下，或者直接抹掉数据库目录：
+
+```
 # WARNING: will delete existing postgres configuration & data
 rm -rf /usr/local/var/postgres
+```
+
 然后初始化并启动 Postgres：
 initdb -D /usr/local/var/postgres
 pg_ctl -D /usr/local/var/postgres -l logfile start
