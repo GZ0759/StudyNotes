@@ -11841,7 +11841,20 @@ var socket = new WebSocket("wx://ws.example.com:1234/resource");
 
 创建了套接字之后，通常需要在上面注册一个事件处理程序：
 
+```js
+socket.onopen = function(e) { /* The socket is now connected. */ };
+socket.onclose = function(e) { /* The socket closed. */ };
+socket.onerror = function(e) { /* Something went wrong! */ };
+socket.onmessage = function(e) {
+var message = e.data; /* The server sent us a message. */
+};
+```
+
 为了通过套接字发送数据给服务器，可以调用套接字的`send()` 方法：
+
+```js
+socket.send("Hello, server!");
+```
 
 当前版本的WebSocket API仅支持文本消息，并且必须以UTF-8编码形式的字符串传递给该消息。然而，当前WebSocket协议还包含对二进制消息的支持，未来版本的API可能会允许在客户端和WebSocket服务器端进行二进制数据的交换。
 
@@ -11852,10 +11865,84 @@ WebSocket完全是双向的，并且一旦建立了WebSocket连接，客户端�
 18.3节介绍了EventSource API，并通过一个在线聊天的客户端和服务器展示了这些API如何使用。有了WebSocket，写这类应用就变得更加容易了。例22-16就是一个简单的聊天客户端：它和例18-5很像，不同的是它采用了WebSocket来实现双向通信，而没有使用EventSource来获取消息以及XMLHttpRequest来发送消息。
 
 例22-16：基于WebSocket的聊天客户端
+```html
+<script>
+window.onload = function() {
+// Take care of some UI details
+var nick = prompt("Enter your nickname"); // Get user's nickname
+var input = document.getElementById("input"); // Find the input field
+input.focus(); // Set keyboard focus
+// Open a WebSocket to send and receive chat messages on.
+// Assume that the HTTP server we were downloaded from also functions as
+// a websocket server, and use the same host name and port, but change
+// from the http:// protocol to ws://
+var socket = new WebSocket("ws://" + location.host + "/");
+// This is how we receive messages from the server through the web socket
+socket.onmessage = function(event) { // When a new message arrives
+var msg = event.data; // Get text from event object
+var node = document.createTextNode(msg); // Make it into a text node
+var div = document.createElement("div"); // Create a <div>
+div.appendChild(node); // Add text node to div
+document.body.insertBefore(div, input); // And add div before input
+input.scrollIntoView(); // Ensure input elt is visible
+}
+// This is how we send messages to the server through the web socket
+input.onchange = function() { // When user strikes return
+var msg = nick + ": " + input.value; // Username plus user's input
+socket.send(msg); // Send it through the socket
+input.value = ""; // Get ready for more input
+}
+};
+</script>
+<!-- The chat UI is just a single, wide text input field -->
+<!-- New chat messages will be inserted before this element -->
+<input id="input" style="width:100%"/>
+```
 
 例22-17是一个基于WebSocket的聊天服务器，运行在Node中（见12.2节）。通过将该例和例18-17作比较，可以发现，WebSocket将聊天应用的服务端简化成和客户端一样。
 
 例22-17：使用WebSocket和Node的聊天服务器
+```js
+/*
+* This is server-side JavaScript, intended to be run with NodeJS.
+* It runs a WebSocket server on top of an HTTP server, using an external
+* websocket library from https://github.com/miksago/node-websocket-server/
+* If it gets an HTTP request for "/" it returns the chat client HTML file.
+* Any other HTTP requests return 404. Messages received via the
+* WebSocket protocol are simply broadcast to all active connections.
+*/
+var http = require('http'); // Use Node's HTTP server API
+var ws = require('websocket-server'); // Use an external WebSocket library
+// Read the source of the chat client at startup. Used below.
+var clientui = require('fs').readFileSync("wschatclient.html");
+// Create an HTTP server
+var httpserver = new http.Server();
+// When the HTTP server gets a new request, run this function
+httpserver.on("request", function (request, response) {
+// If the request was for "/", send the client-side chat UI.
+if (request.url === "/") { // A request for the chat UI
+response.writeHead(200, {"Content-Type": "text/html"});
+response.write(clientui);
+response.end();
+}
+else { // Send a 404 "Not Found" code for any other request
+response.writeHead(404);
+response.end();
+}
+});
+// Now wrap a WebSocket server around the HTTP server
+var wsserver = ws.createServer({server: httpserver});
+// Call this function when we receive a new connection request
+wsserver.on("connection", function(socket) {
+socket.send("Welcome to the chat room."); // Greet the new client
+socket.on("message", function(msg) { // Listen for msgs from the client
+wsserver.broadcast(msg); // And broadcast them to everyone
+});
+});
+// Run the server on port 8000. Starting the WebSocket server starts the
+// HTTP server as well. Connect to http://localhost:8000/ to use it.
+wsserver.listen(8000);
+```
 
 # 第三部分 JavaScript核心参考
 # JavaScript核心参考
