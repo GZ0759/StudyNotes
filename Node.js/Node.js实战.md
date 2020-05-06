@@ -1,6 +1,9 @@
 > Node.js实战（第2版）  
-> 作者：[英] 亚历克斯•杨 等   
+> Node.js in Action, Second Edition   
+> 作者：[英] 亚历克斯•杨 等  
+> August 2017  
 > 译者：吴海星
+> 2018年 8 月第 1 版   
 
 # 第一部分 Node 基础知识介绍
 
@@ -2163,9 +2166,7 @@ head.ejs 看起来应该是这样的：
 # 第二部分 Node 的 Web 开发
 
 接下来可以更深入地学习服务器端开发了。在服务器端代码之外， Node 还开辟了一块很
-重要的市场：前端构建系统。在这一部分，我们将会介绍如何用 Webpack 和 Gulp 开始新项目，
-还会介绍几个最流行的 Web 框架，并从多个视角来对它们进行比较，以便你找出最适合自己项
-目的框架。
+重要的市场：前端构建系统。在这一部分，我们将会介绍如何用 Webpack 和 Gulp 开始新项目，还会介绍几个最流行的 Web 框架，并从多个视角来对它们进行比较，以便你找出最适合自己项目的框架。
 
 第 6 章一整章都是讲如何用 Connect 和 Express 模块搭建 Web 程序，供感兴趣的读者深入
 学习。另外书中还用一章集中讲了模板和数据库的使用。
@@ -2179,35 +2180,46 @@ head.ejs 看起来应该是这样的：
 - 用 npm 脚本简化复杂的命令
 - 用 Gulp 管理重复性任务
 - 用 Webpack 打包客户端 Web 程序
+
 在现代 Web 开发中，用 Node 来运行工具和服务的情况越来越多。作为 Node 程序员，你可
 能要负责配置和维护这些工具。作为全栈开发人员，你可能想用这些工具来创建速度更快、更可
 靠的 Web 程序。本章将会介绍如何使用 npm 脚本、 Gulp 和 Webpack 搭建易于维护的项目。
+
 使用前端构建系统的好处非常多。它们可以帮你写出更易读懂的并具有前瞻性的代码。因为
 可以用 Babel 转译，所以无须担心浏览器对 ES2015 的支持。另外，因为能生成源码映射，所以
 你仍然可以进行基于浏览器的调试。
+
 首先简要介绍基于 Node 的前端开发。之后我们会给出一些涉及现代前端技术的例子，比如
 在项目中使用 React。
+
 ## 4.1 了解基于 Node 的前端开发
+
 最近这段时间，前端和后台开发已经开始融合了，他们都在用 npm 分发 JavaScript。也就是
 说， npm 既用于前端模块，比如 React，也用于后台代码，比如 Express。但有些模块的边界比较
 模糊，比如 lodash，它是一个通用库，既可以用在 Node 中，也可以用在浏览器中。经过仔细打
 包，一个模块可以同时用在 Node 和浏览器中，并且项目里的依赖项也可以用 npm 管理。
+
 也有专门针对客户端开发的模块系统，比如 Bower。你可以接着用这些工具，但作为 Node
 开发人员，应该优先考虑 npm。
+
 然而前端开发人员不只是用 Node 来做包分发，那些能生成可移植的、向后兼容的 JavaScript
 的工具也越来越受他们的青睐。比如像 Babel 这种能将 ES2015 转换成支持更广泛的 ES5 代码的
 转译器。还有像 UglifyJS 这样的缩码器，以及像 ESLint 这样的用来检验代码正确性的剪毛器等。
+
 测试引擎也有好多是 Node 驱动的。在 Node 进程中既可以运行 UI 代码的测试，也可以用
 Node 脚本驱动运行在浏览器中的测试。
-第 4 章4.2 用 npm 运行脚本 61
 
 开发人员通常会同时使用这些工具。在开始摆弄转译器、缩码器、剪毛器和测试引擎后，你
 需要借助某种手段记录一下构建过程是如何进行的。有些项目用 npm 脚本，有些用 Gulp 或
 Webpack。本章将逐一介绍这些方法，还会涉及一些相关的最佳实践。
+
 ## 4.2 用 npm 运行脚本
+
 Node 有 npm，而 npm 能运行脚本。因此，合作者或用户要能够调用 npm start 和 npm test
 之类的命令。在项目的 package.json 文件中，有个 scripts 属性，可以在那里指定自己的 npm
 start 命令：
+
+```js
 {
 ...
 "scripts": {
@@ -2215,11 +2227,15 @@ start 命令：
 },
 ...
 }
+```
+
 node server.js 是默认的 start 命令，所以如果只是要做这个，从技术角度讲上面的定义
 是可以省略的。当然，别忘了创建 server.js 文件。我们一般都会定义 test 属性，因为可以把测试
 框架作为依赖项，然后用 npm test 来运行测试脚本。比如说，你选了 Mocha 来做测试，并且已
 经用 npm install --save-dev 装好了。如果在 package.json 中添加下面的语句，就不用全局安
 装 Mocha 了：
+
+```js
 {
 ...
 "scripts": {
@@ -2227,40 +2243,60 @@ node server.js 是默认的 start 命令，所以如果只是要做这个，从�
 },
 ...
 }
+```
+
 注意看一下，这个例子里的参数是传给了 Mocha。也可以在运行 npm 脚本时用两个连字符
 传入参数：
+
+```js
 npm testo -- test/*.js
+```
+
 表 4-1 给出了一些常用的 npm 命令。
+
 表 4-1 npm 命令
-命 令 package.json 属性 应用案例
-start scripts.start 启动 Web 应用服务器或 Electron 程序
-stop scripts.stop 停掉 Web 应用服务器
-restart 运行 stop，然后运行 restart
-Install,
-postinstall
-scripts.install,
-scripts.postinstall
-在安装了包之后运行本地构建命令。注意， postinstall 只
-能通过 npm run postinstall 运行62 第 4 章 前端构建系统
+
+| 命令 | package.json属性 | 应用案例 |
+|---|---|---|
+| start | scripts.start | 启动 Web 应用服务器或 Electron 程序 |
+| stop | scripts.stop | 停掉 Web 应用服务器 |
+| restart |  | 运行 stop，然后运行 restart |
+| Install,postinstall | scripts.install,scripts.postinstall | 在安装了包之后运行本地构建命令。注意， postinstall 只能通过 npm run postinstall 运行 |
+
 还有很多可用的命令，包括在发布包之前进行清理的命令，以及用于包版本迁移时的前置/
 后置命令。但对于大多数 Web 开发任务来说， start 和 test 就够用了。
+
 使用 npm 时，可能会有很多你想要定义的任务并没有恰当的命令名支持。比如说，你正在
 处理一个用 ES2015 写的项目，但是你想把它转译成 ES5，这时可以用 npm run。下一节会有个
 教程教你如何创建一个能够构建 ES2015 文件的新项目。
-4.2.1 创建定制的 npm 脚本
+
+### 4.2.1 创建定制的 npm 脚本
+
 npm run 命令等同于 npm run-script，用 npm run script-name 可以运行任何脚本。
 我们来看一下如何做一个用 Babel 构建客户端脚本的命令。
+
 从创建新项目开始，然后安装必要的依赖项：
+
+```js
 mkdir es2015-example
 cd es2015-example
 npm init -y
 npm install --save-dev babel-cli babel-preset-es2015
 echo '{ "presets": ["es2015"] }' > .babelrc
+```
+
 现在你应该有了一个具有基本 Babel ES2015 工具和插件的 Node 项目。接下来打开 package.json，
 在 scripts 下面添加 babel 属性。
+
 它应该运行已经安装到 node_modules/.bin 文件夹下的脚本：
+
+```json
 "babel": "./node_modules/.bin/babel browser.js -d build/"
+```
+
 下面是用 ES2015 语法写的代码，将它存为 browser.js 文件：
+
+```js
 class Example {
 render() {
 return '<h1>Example</h1>';
@@ -2268,74 +2304,115 @@ return '<h1>Example</h1>';
 }
 const example = new Example();
 console.log(example.render());
+```
+
 运行 npm run babel 试一下。如果配置都没问题，应该会有一个 build 文件夹，里面有转
 译过的 browser.js。打开这个文件，看看里面是不是 ES5 的代码。因为太长了，我们就不放到这
 里来了，文件顶部应该有 var_createClass 这样的代码。
+
 如果构建项目时只需要做这件事，那么可以将这个任务的名称改为 build。但一般会加上
 UglifyJS：
+
+```js
 npm i --save-dev uglify-es
+```
+
 可以用 node_modules/.bin/uglifyjs 调用 UglifyJS，在 scripts 下添加名为 uglify 的属性：
+
+```js
 ./node_modules/.bin/uglifyjs build/browser.js -o build/browser.min.js
+```
+
 现在应该可以运行 npm run uglify 命令了。这些命令可以组合到一起。在 scripts 下添
 加一个名为 build 的属性，让它调用这两个任务：
 
+```js
 "build": "npm run babel && npm run uglify"
+```
+
 运行 npm run build 会执行那两个脚本。用这个简单的命令可以组合多个前端打包工具。
 这是因为 Babel 和 UglifyJS 都可以作为命令行脚本执行，并且都接受命令行参数，所以很容易放
-到一行里添加到 package.json 中。 Babel 支持配置文件，我们可以在.babelrc 文件中实现更复杂的
-行为，你应该在之前的命令中见过这个文件了。
-4.2.2 配置前端构建工具
+到一行里添加到 package.json 中。 Babel 支持配置文件，我们可以在.babelrc 文件中实现更复杂的行为，你应该在之前的命令中见过这个文件了。
+
+### 4.2.2 配置前端构建工具
+
 在使用 npm 脚本时，通常有三种配置前端构建工具的方法。
-- 指定命令行参数。比如./node_modules/.bin/ uglify --source-map。
+
+- 指定命令行参数。比如`./node_modules/.bin/ uglify --source-map`。
 - 针对项目创建配置文件，将参数放在这个文件中。 Babel 和 ESLint 经常这么干。
 - 将配置参数添加到 package.json 中。 Babel 也支持这种方式。
+
 如果构建过程复杂，要做文件的复制、合并和转移等很多事情怎么办？可以创建一个 shell 脚
 本，然后用 npm 脚本调用它。但如果你用 JavaScript，还有更巧妙的办法。很多构建系统都提供
 了 JavaScript API，以实现自动化构建。下一节会全面介绍一个这样的方案： Gulp。
+
 ## 4.3 用 Gulp 实现自动化
+
 Gulp 是基于流的构建系统。我们可以通过对这些流的引导来创建构建过程，除了转译和缩
 码，还能做很多事情。想象一个项目，后台管理区是用 Angular 做的，公开区域是基于 React 的。
 两个子项目的构建需求都是一样的。借助 Gulp，我们可以重用某些阶段的构建过程。图 4-1 给出
 了两个构建过程的例子，它们有共享的功能。
-图 4-1 功能共享的两个构建过程64 第 4 章 前端构建系统
+
+图 4-1 功能共享的两个构建过程
+
 Gulp 之所以能实现高度重用，主要归功于两项技术：使用插件和自定义构建任务。就像
 图 4-1 展示的那样，构建过程是一个流，所以这些任务和插件是可以一个接一个拼在一起的。比如
-说，对于前面那个例子中的 React 部分，可以用 Gulp Babel 和 Gulp 自带的文件聚集方法 gulp.src
-处理：
+说，对于前面那个例子中的 React 部分，可以用 Gulp Babel 和 Gulp 自带的文件聚集方法 gulp.src 处理：
+
+```js
 gulp.src('public/index.jsx')
 .pipe(babel({
 presets: ['es2015', 'react']
 }))
 .pipe(minify())
 .pipe(gulp.dest('build/public.js'));
+```
+
 要把文件合并阶段添加到这个链条上也十分容易。在深入探讨语法之前，我们先看看如何配
 置好一个小型的 Gulp 项目。
-4.3.1 把 Gulp 添加到项目中
-添加 Gulp 需要用 npm 安装 gulp-cli 和 gulp 两个包。很多人会把 gulp-cli 安装在全局环境中，
-这样只要输入 gulp 就可以运行 Gulp 处方了。如果你之前在全局环境中安装过 gulp，应该运行
+
+### 4.3.1 把 Gulp 添加到项目中
+
+添加 Gulp 需要用 npm 安装 gulp-cli 和 gulp 两个包。很多人会把 gulp-cli 安装在全局环境中，这样只要输入 gulp 就可以运行 Gulp 处方了。如果你之前在全局环境中安装过 gulp，应该运行
 npm rm --global gulp 删除它。在下面这段代码中，全局安装 gulp-cli，并创建一个带有 Gulp
 开发依赖项的新 Node 项目：
+
+```js
 npm i --global gulp-cli
 mkdir gulp-example
 cd gulp-example
 npm init -y
 npm i -save-dev gulp
+```
+
 接着创建 gulpfile.js：
+
+```js
 touch gulpfile.js
+```
+
 打开这个文件。现在用 Gulp 构建一个小型的 React 项目。这里会用到 gulp-babel、 gulp-sourcemaps
 和 gulp-concat：
+
+```js
 npm i --save-dev gulp-sourcemaps gulp-babel babel-preset-es2015
 npm i --save-dev gulp-concat react react-dom babel-preset-react
+```
+
 往项目里添加 Gulp 插件时，记得把 npm 命令中的参数 --save 换成--save-dev。如果为了
 试验新插件并想把它们卸掉，可以用 npm uninstall --save-dev 把它们从 ./node_modules
 里删掉，同时更新 package.json 文件。
-4.3.2 Gulp 任务的创建及运行
-创建 Gulp 任务需要在 gulpfile.js 中编写 Node 代码，调用 Gulp 的 API。 Gulp 的 API 可以做很
-多事，比如查找文件，把对文件进行某种转换的插件拼到一起等。
-你可以按这个例子试一下：打开 gulpfile.js 设置一个构建任务，用 gulp.src 查找 JSX 文件，4.3 用 Gulp 实现自动化 65
+
+### 4.3.2 Gulp 任务的创建及运行
+
+创建 Gulp 任务需要在 gulpfile.js 中编写 Node 代码，调用 Gulp 的 API。 Gulp 的 API 可以做很多事，比如查找文件，把对文件进行某种转换的插件拼到一起等。
+
+你可以按这个例子试一下：打开 gulpfile.js 设置一个构建任务，用 gulp.src 查找 JSX 文件，
 
 用 Babel 处理 ES2015 和 React，然后把这些文件拼到一起。代码如下所示。
+
 代码清单 4-1 用 Babel 处理 ES2015 和 React 的 gulpfile
+```js
 const gulp = require('gulp');
 const sourcemaps = require('gulp-sourcemaps');
 const babel = require('gulp-babel');
@@ -2344,123 +2421,171 @@ gulp.task('default', () => {
 return gulp.src('app/*.jsx')
 .pipe(sourcemaps.init())
 .pipe(babel({
-presets: ['es2015', 'react']
+  presets: ['es2015', 'react']
 }))
 .pipe(concat('all.js'))
 .pipe(sourcemaps.write('.'))
 .pipe(gulp.dest('dist'));
 });
+  
+  // 开始监视源文件，为调试构建源码映射
+  // 单独写入源码
+  // 将所有文件放到映射文件dist/目录下
+  // 用 Gulp 自带的文件聚集工具 gulp.src
+  // 查找所有的 React jsx 文件
+  // 像加载标准 Node 模块那样
+  // 加载 Gulp 插件
+  // 把所有源码文件拼到一个 all.js 中 使用 ES2015 和 React（ JSX）
+  // 配置 gulp-babel66
+```
+
 代码清单 4-1 中出现了几个用来捕获、处理和写文件的 Gulp 插件。首先是用文件聚集找到
 所有输入文件，然后用 gulp-sourcemaps 插件为客户端调试采集源码映射指标。注意，源码映射
 需要两个阶段：一个阶段是声明想要用源码映射，另一个阶段是写源码映射文件。与此同时，配
 置 gulp-babel 用 ES2015 和 React 处理文件。
+
 在终端里输入 gulp 就可以运行这个 Gulp 任务。
+
 在这个例子里，所有文件转换都是一个插件做的。碰巧了， Babel 既能转译 React，也能将
 ES2015 转换成 ES5。转换完成后，用 gulp-concat 插件把文件合到一起。现在所有转译都做完了，
 可以写源码映射了。最终的构建结果可以放到 dist 文件夹下。
+
 再创建一个名为 app/index.jsx 的文件，就可以试验一下 Gulp 了。可以用下面这段 JSX 代码：
+
+```js
 import React from 'react';
 import ReactDOM from 'react-dom';
 ReactDOM.render(
 <h1>Hello, world!</h1>,
 document.getElementById('example')
 );
+```
+
 在 Gulp 中，用 JavaScript 表示构建阶段很容易。并且我们可以用 gulp.task()往这个文件
 里添加自己的任务。这些任务通常都遵循相同的模式。
-(1) 源文件——收集输入文件。
-(2) 转译——让它们依次通过一个个对它们进行转换的插件。
-(3) 合并——把这些文件合到一起，创建一个整体构建文件。
-(4) 输出——设定文件的目标地址或移动输出文件。
+
+1. 源文件——收集输入文件。
+2. 转译——让它们依次通过一个个对它们进行转换的插件。
+3. 合并——把这些文件合到一起，创建一个整体构建文件。
+4. 输出——设定文件的目标地址或移动输出文件。
+
 在前面那个例子中， sourcemaps 是个特例，因为它需要两次 pipe：第一次是配置，最
 后一次是输出文件。这是因为源码映射需要把最初的代码行数映射到应该转译构建后的代码行
 数上。
-开 始 监 视 源 文
-件，为调试构建
-源码映射
-单独写入源码
-将所有文件放到 映射文件
-dist/目录下
-用 Gulp 自带的文件聚集工具 gulp.src
-查找所有的 React jsx 文件
-像加载标准 Node 模块那样
-加载 Gulp 插件
-把所有源码
-文件拼到一
-个 all.js 中 使用 ES2015 和 React（ JSX）
-配置 gulp-babel66 第 4 章 前端构建系统
-4.3.3 监测变化
+
+### 4.3.3 监测变化
+
 前端开发人员想要的最后一个东西是构建/刷新循环。精简构建过程最简单的办法就是用
 Gulp 插件监测文件系统的变化。但也有备选方案。有些库跟热重载配合得很好，并且更通用的
 DOM 和基于 CSS 的项目也很适合 LiveReload 项目。
+
 作为示例，你可以把 gulp-watch 添加到代码清单 4-1 中给出的项目里。将这个包添加到项
 目中：
+
+```
 npm i --save-dev gulp-watch
+```
+
 别忘了在 gulpfile.js 中加载它：
+
+```
 const watch = require('gulp-watch');
+```
+
 添加监测任务，让它调用前面那个例子中的默认任务：
+
+```shell
 gulp.task('watch', () => {
 watch('app/**.jsx', () => gulp.start('default'));
 });
+```
+
 这段代码定义了一个名为 watch 的任务，然后用 watch()监测 React JSX 文件的变化。只
 要有文件发生了变化，默认的构建任务就会运行。只需稍稍修改，这个处方就可以用来构建 SASS
 文件、优化图片，以及做需要在前端项目上做的很多事情。
-4.3.4 在大项目中把任务分散到不同文件中
+
+### 4.3.4 在大项目中把任务分散到不同文件中
+
 项目规模变大后，一般会需要更多的 Gulp 任务。最终会出现一个大到难以理解的长文件，
 如果把代码分解成不同的模块，就可以解决这个问题。
+
 你已经看到了， Gulp 是用 Node 的模块系统来加载插件的。没有特殊的插件加载系统，就是
 标准模块。我们也可以用 Node 的模块系统分割超长的 gulpfile 文件，以便于维护。可以按如下
 步骤来使用分散的文件。
-(1) 创建一个名为 gulp 的文件夹以及一个名为 tasks 的子目录。
-(2) 在各个文件中用 gulp.task()语法定义任务，最好是每个任务放一个文件。
-(3) 创建一个名为 gulp/index.js 的文件，在其中加载所有的 Gulp 任务文件。
-(4) 在 gulpfile.js 中引入这个 gulp/index.js 文件。
+
+1. 创建一个名为 gulp 的文件夹以及一个名为 tasks 的子目录。
+2. 在各个文件中用 gulp.task()语法定义任务，最好是每个任务放一个文件。
+3. 创建一个名为 gulp/index.js 的文件，在其中加载所有的 Gulp 任务文件。
+4. 在 gulpfile.js 中引入这个 gulp/index.js 文件。
+
 目录结构看起来应该类似这样：
+
+```
 gulpfile.js
 gulp/
 gulp/index.js
 gulp/tasks/development-build.js
 gulp/tasks/production-build.js
-我们可以用这个办法组织复杂的构建任务，还可以跟 gulp-help 模块搭配起来用。 gulp-help
-模块可以生成任务文档，运行 gulp help 可以显示每个任务的帮助信息。在你需要团队协作时，4.4 用 Webpack 构建 Web 程序 67
+```
 
-或者要在很多使用 Gulp 的项目中切换时，就能体会到这个插件的价值了。图 4-2 是 gulp help
+我们可以用这个办法组织复杂的构建任务，还可以跟 gulp-help 模块搭配起来用。 gulp-help
+模块可以生成任务文档，运行 gulp help 可以显示每个任务的帮助信息。在你需要团队协作时，或者要在很多使用 Gulp 的项目中切换时，就能体会到这个插件的价值了。图 4-2 是 gulp help
 输出的样子。
+
 图 4-2 gulp-help 输出样例
+
 Gulp 是一个通用的项目自动化工具。它适合管理项目里的跨平台清理脚本，比如运行复杂
 的客户端测试或者为数据库提供固定的测试环境。尽管它也可以构建客户端资产，但不如专门做
 这些事情的工具，也就是说相较之下， Gulp 需要更多的代码和配置来定义那些任务。 Webpack
 就是这样的工具，专注于打包 JavaScript 和 CSS 模块。下一节会介绍如何用 Webpack 构建 React
 项目。
+
 ## 4.4 用 Webpack 构建 Web 程序
+
 Webpack 是专门用来构建 Web 程序的。比如说，你要跟一位设计师合作，他已经给一个单页
 Web 程序创建了静态站，而你要改写它，构建更高效的 CSS 和 ES2015 JavaScript 代码。用 Gulp
 时，写 JavaScript 代码是为了驱动构建系统，所以会涉及写 gulpfile 和构建任务。而用 Webpack
 时，写的是配置文件，用插件和加载器添加新功能。有时候不需要额外的配置：在命令行里输入
 webpack，将源文件的路径作为参数，它就能构建项目。 4.4.4 节中有一个这样的例子。
+
 Webpack 的优势之一是更容易快速搭建出一个支持增量式构建的构建系统。如果配置成文件
 发生变化时自动构建， Webpack 不会因为一个文件发生变化而重新构建整个项目。所以它的构建
 更快，也更好理解。
+
 本节将会演示如何用 Webpack 构建一个小型的 React 项目。我们先来定义 Webpack 所用的术语。
-4.4.1 使用打包器和插件
+
+### 4.4.1 使用打包器和插件
+
 在创建 Webpack 项目之前，先来明确一些术语。 Webpack 插件是用来改变构建过程的行为的。
 这些行为包括自动将静态资源上传到 Amazon S3 或去掉输出中重复的文件等。
+
 与插件相反，加载器是用来转换资源文件的。比如将 SASS 转换为 CSS，或者将 ES2015 转
 换为 ES5。 加载器是函数，负责将输入的源文本转换为特定的文本输出。它们既可以是异步的，
 也可以是同步的。插件是可以挂接到 Webpack 更底层 API 的类的实例。
+
 如果需要转换 React 代码、 CoffeeScript、 SASS 或其他转译语言，就用加载器。如果需要调
-整 JavaScript，或用某种方式处理文件，就用插件。68 第 4 章 前端构建系统
+整 JavaScript，或用某种方式处理文件，就用插件。
+
 下一节会介绍如何用 Babel 加载器将一个 React ES2015 项目转换成对浏览器友好的包。
-4.4.2 配置和运行 Webpack
+
+### 4.4.2 配置和运行 Webpack
+
 我们要重新创建代码清单 4-1 中的那个例子，不过这次改用 Webpack。首先要安装 React：
+
+```
 mkdir webpack-example
 npm init -y
 npm install --save react react-dom
 npm install --save-dev webpack babel-loader babel-core
 npm install --save-dev babel-preset-es2015 babel-preset-react
+```
+
 最后一条命令安装了 Babel 的 ES2015 插件和用于 Babel 的 React 转换器。接下来需要创建
 webpack.config.js，我们要在这个文件里告诉 Webpack 去哪里找输入文件，把输出写到哪里，以
 及用哪些加载器。我们要对 React 使用 babel-loader，还要对它做些额外的配置，代码如下所示。
+
 代码清单 4-2 一个 webpack.config.js 文件
+```js
 const path = require('path');
 const webpack = require('webpack');
 module.exports = {
@@ -2479,43 +2604,49 @@ presets: ['es2015', 'react']
 ]
 },
 };
+// 输入文件
+// 输出文件
+// 匹配所有的 JSX 文件
+// 使用 Babel ES2015 和React 插件
+```
+
 这个配置文件包含了成功构建一个以 ES2015 写的 React 程序所需的一切。里面的配置都很
 直白：定义一个 entry，同时加载程序的主文件。然后指定输出应该写到哪里。如果这个文件不
 存在， Webpack 会创建它。接着定义一个加载器，并用 test 把它关联到一个文件聚集搜索上。
 最后，设定加载器的选项。在这个例子中，这些选项加载了 ES2015 和 React Babel 插件。
-我 们 还 需 要 一 个 React JSX 文 件 app/index.jsx ， 可 以 用 4.3.2 节 中 的 代 码 。 现 在 运
-行./node_modules/.bin/webpack，就会得到一个带着 React 依赖项的 ES5 版文件。
-4.4.3 用 Webpack 开发服务器
-如果不想在 React 文件发生变化后自己手动重新构建项目，可以用 Webpack 开发服务器。请
-在本书源码中找到 webpack-hotload-example（ ch04-front-end/webpack-hotload-example）。这个小
-输入文件
-输出文件
-匹配所有的
-JSX 文件
-使用 Babel ES2015 和
-React 插件4.4 用 Webpack 构建 Web 程序 69
 
-Express 服务器会在文件发生变化后运行 Webpack，然后将变化后的资源文件提供给浏览器。为
-了不跟主服务器冲突，你应该把它跑在另外一个端口上，也就是说在开发过程中， script 标签
+我们还需要一个 React JSX 文 件 app/index.jsx ，可以用 4.3.2 节中的代码。现在运
+行./node_modules/.bin/webpack，就会得到一个带着 React 依赖项的 ES5 版文件。
+
+### 4.4.3 用 Webpack 开发服务器
+
+如果不想在 React 文件发生变化后自己手动重新构建项目，可以用 Webpack 开发服务器。请
+在本书源码中找到 webpack-hotload-example（ ch04-front-end/webpack-hotload-example）。这个小 Express 服务器会在文件发生变化后运行 Webpack，然后将变化后的资源文件提供给浏览器。为了不跟主服务器冲突，你应该把它跑在另外一个端口上，也就是说在开发过程中， script 标签
 要指向这个开发服务器提供的 URL 上。这个服务器会构建资源文件，但输出会放在内存里，而
 不是 Webpack 的输出文件夹里。 webpack-dev-server 也可以用来做模块热加载，这与 LiveReload
 服务器的用法类似。
+
 按下面的步骤把 webpack-dev-server 添加到项目中。
-(1) 用 npm i --save-dev webpack-dev-server@ 1.14.1 安装 webpack-dev-server。
-(2) 在 webpack.config.js 的 output 属性中添加一个 publicPath 选项。
-(3) 在构建目录下添加 index.html 文件，在这个文件中加载打包后的 JavaScript 和 CSS 文件，
-注意 URL 中的端口是下一步中指定的那个端口。
-(4) 带着你想要用的选项运行服务器。比如 webpack-dev-server --hot --inline--content
--base dist/ --port 3001。
-(5) 访问 http://localhost:3001/ 加载这个程序。
+
+1. 用 npm i --save-dev webpack-dev-server@ 1.14.1 安装 webpack-dev-server。
+2. 在 webpack.config.js 的 output 属性中添加一个 publicPath 选项。
+3. 在构建目录下添加 index.html 文件，在这个文件中加载打包后的 JavaScript 和 CSS 文件，注意 URL 中的端口是下一步中指定的那个端口。
+4. 带着你想要用的选项运行服务器。比如 webpack-dev-server --hot --inline--content-base dist/ --port 3001。
+5. 访问 http://localhost:3001/ 加载这个程序。
+
 打开代码清单 4-2 中的那个 webpack.config.js，修改 output 属性，加一个 publicPath：
+```js
 output: {
 path: path.resolve(__dirname, 'dist'),
 filename: 'bundle.js',
 publicPath: '/assets/'
 },
+```
+
 创建文件 dist/index.html，代码如下所示。
+
 代码清单 4-3 用于 React Web 程序的 HTML 模板示例
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -2527,50 +2658,78 @@ publicPath: '/assets/'
 <script src="/assets/bundle.js"></script>
 </body>
 </html>
+<!-- webpack-built 打包文件的路径 -->
+```
+
 接着打开 package.json，在 scripts 下添加运行 Webpack 服务器的命令：
+
+```json
 "scripts": {
-"server:dev": "webpack-dev-server --hot –inline
---content-base dist/ --port 3001"
+"server:dev": "webpack-dev-server --hot –inline--content-base dist/ --port 3001"
 },
+```
+
 选项 --hot 是指服务器 dev 要用模块热重载。也就是说只要修改了 React 文件 app/index.js，
 浏览器就会刷新。 --inline 选项就是用来指定刷新机制的。内嵌刷新（ inline refresh）是指服务器
 dev 会在打包文件中嵌入代码来管理刷新。另外还有一种是把整个页面放到 iframe 中的 ifram 选项。
-webpack-built 打包
-文件的路径70 第 4 章 前端构建系统
 运行服务器 dev：
+
+```js
 npm run server:dev
+```
+
 运行 Webpack 开发服务器会触发构建过程，并启动一个监听端口 3001 的服务器。可以在浏
 览器中访问 http://localhost:3001 测试一下。
-热 重 载
-基于 React，以及包含 AngularJS 在内的其他框架，都有相应的热重载项目。一些框架还
+
+**热重载**
+
+> 基于 React，以及包含 AngularJS 在内的其他框架，都有相应的热重载项目。一些框架还
 考虑到了数据流，比如 Redux 和 Relay，也就是说在代码被刷新后状态还能保留下来。这是代
-码重载的理想方式，因为你不用为了重现 UI 的状态而把之前的步骤再做一遍。
-不过我们给的这个例子不是专门针对 React 的，只是为了让你对 Webpack 开发服务器有个
+码重载的理想方式，因为你不用为了重现 UI 的状态而把之前的步骤再做一遍。  
+> 不过我们给的这个例子不是专门针对 React 的，只是为了让你对 Webpack 开发服务器有个
 认识。请通过实验自行找出最适合你的项目的配置。
-4.4.4 加载 CommonJS 模块和静态资源
+
+### 4.4.4 加载 CommonJS 模块和静态资源
+
 介绍完在 React 和 Babel 项目上的用法，下面再来讲讲在更加普通的 CommonJS 项目上使用
 Webpack 的情况。无须 CommonJS 浏览器垫片， Webpack 就能提供我们需要的一切。它甚至能加
 载 CSS 文件。
+
 1. Webpack 和 CommonJS
+
 在 Webpack 中使用 CommonJS 模块语法不需要做任何配置。比如说， 有个文件用了 require：
+
+```js
 const hello = require('./hello');
 hello();
+```
+
 而另一个定义了 hello 函数：
+
+```js
 module.exports = function() {
 return 'hello';
 };
+```
+
 然后只需要一个 Webpack 配置文件来定义入口（第一段代码）和构建目标路径：
+
+```js
 const path = require('path');
 const webpack = require('webpack');
 module.exports = {
 entry: './app/index.js',
 output: { path: __dirname, filename: 'dist/bundle.js' },
 };
+```
+
 从这个文件里就能看出 Gulp 和 Webpack 的差别来了。 Webpack 的重点完全放在构建打包文
 件上，所以生成带有 CommonJS 垫片的打包文件也在它的能力范围之内。打开 dist/bundle.js，应
 该可以看到文件顶部的 webpackBootstrap 垫片，然后从源文件结构中过来的每个文件都被封4.5 总结 71
 
 装在了闭包内模拟模块系统中。下面是从打包文件中截取的代码：
+
+```js
 function(module, exports, __webpack_require__) {
 const hello = __webpack_require__(1);
 hello();
@@ -2580,19 +2739,30 @@ hello();
 module.exports = function() {
 return 'hello';
 };
+```
+
 代码中的注释表明了模块是在哪里定义的，这些文档将 module 和 exports 对象作为参数，
 可以访问它们的闭包来模拟 CommonJS 模块 API。
+
 2. 在 Webpack 中使用 npm 包
+
 我们还可以更进一步，引入从 npm 上下载下来的包。比如说你想用 jQuery。除了在页面里
 用 script 标签指向它，还有另一种办法。用 npm i --save-dev jquery 安装它，然后像加
 载 Node 模块那样加载它：
+
+```js
 const jquery = require('jquery');
+```
+
 也就是说 Webpack 把 CommonJS 模块给了我们，无须任何额外的配置，就可以使用来自 npm
 的模块。
-寻找加载器和插件
-Webpack 网站上有加载器和插件列表。 npm 上也有 Webpack 工具，可以从关键字 webpack
+
+> 寻找加载器和插件  
+> Webpack 网站上有加载器和插件列表。 npm 上也有 Webpack 工具，可以从关键字 webpack
 开始。
-4.5 总结
+
+## 4.5 总结
+
 - npm 脚本是实现简单任务自动化和脚本调用的最佳选择。
 - Gulp 可以用 JavaScript 编写更加复杂的任务，并且它是跨平台的。
 - 如果 gulpfiles 变得太长了，可以把代码分解到多个文件中。
