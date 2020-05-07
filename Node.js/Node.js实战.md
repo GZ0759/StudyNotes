@@ -1757,27 +1757,28 @@ app.get('/articles', (req, res, err) => {
 ```js
 const sqlite3 = require('sqlite3').verbose();
 const dbName = 'later.sqlite';
+// 连接到一个数据库文件
 const db = new sqlite3.Database(dbName);
 
-// 连接到一个数据库文件
-// 如果还没有，创建一个“ articles”表
 db.serialize(() => {
   const sql = `
 CREATE TABLE IF NOT EXISTS articles
 (id integer primary key, title, content TEXT)
 `;
+  // 如果还没有，创建一个“ articles”表
   db.run(sql);
 });
 class Article {
-  // 获取所有文章
   static all(cb) {
+    // 获取所有文章
     db.all('SELECT * FROM articles', cb);
   }
-  // 选择一篇指定的文章
   static find(id, cb) {
+    // 选择一篇指定的文章
     db.get('SELECT * FROM articles WHERE id = ?', id, cb);
   }
   static create(data, cb) {
+    // 问号表示参数
     const sql = 'INSERT INTO articles(title, content) VALUES (?, ?)';
     db.run(sql, data.title, data.content, cb);
   }
@@ -1805,6 +1806,7 @@ module.exports.Article = Article;
 const express = require('express');
 const bodyParser = require('body-parser');
 const app = express();
+// 加载数据库模块
 const Article = require('./db').Article;
 app.set('port', process.env.PORT || 3000);
 app.use(bodyParser.json());
@@ -1812,6 +1814,7 @@ app.use(bodyParser.urlencoded({
   extended: true
 }));
 app.get('/articles', (req, res, next) => {
+  // 获取所有文章
   Article.all((err, articles) => {
     if (err) return next(err);
     res.send(articles);
@@ -1819,6 +1822,7 @@ app.get('/articles', (req, res, next) => {
 });
 app.get('/articles/:id', (req, res, next) => {
   const id = req.params.id;
+  // 找到指定文章
   Article.find(id, (err, article) => {
     if (err) return next(err);
     res.send(article);
@@ -1826,6 +1830,7 @@ app.get('/articles/:id', (req, res, next) => {
 });
 app.delete('/articles/:id', (req, res, next) => {
   const id = req.params.id;
+  // 删除文章
   Article.delete(id, (err) => {
     if (err) return next(err);
     res.send({
@@ -1874,24 +1879,20 @@ read(url, (err, result) => {
 
 代码清单 3-5 生成可读的文章并保存
 ```js
-// 从 POST 消息体
-// 中得到 URL
-// 用 readability 模块
-// 获取这个 URL 指向
-// 的页面
-// 文章保存成功后，发送状
-// 态码为 200 的响应
 const read = require('node-readability');
 // ……代码清单 3-4 中给出的代码
 app.post('/articles', (req, res, next) => {
+  // 从 POST 消息体中得到 URL
   const url = req.body.url;
   read(url, (err, result) => {
+    // 用 readability 模块获取这个 URL 指向的页面
     if (err || !result) res.status(500).send('Error downloading article');
     Article.create({
       title: result.title,
       content: result.content
     }, (err, article) => {
       if (err) return next(err);
+      // 文章保存成功后，发送状态码为 200 的响应
       res.send('OK');
     });
   });
@@ -1946,22 +1947,19 @@ res.render 可以渲染 EJS 格式的 HTML 文件。如果你换掉代码清单 
 接下来在 view 文件夹中创建模板 articles.ejs，你可以用下面代码清单中这个完整的模板。
 
 代码清单 3-6 Article 列表模板
-```js
-// 这是对应的页脚（保存为 views/foot.ejs） :
-// 包含另一个模板
-// 循环遍历每篇文
-// 章并渲染它
-// 将文 章 的标 题
-// 作为链接文本
+```html
 <% include head %>
+<!-- 将文章的标题作为链接文本 -->
 <ul>
-<% articles.forEach((article) => { %>
-<li>
-<a href="/articles/<%= article.id %>">
-<%= article.title %>
-</a>
-</li>
-<% }) %>
+  <!-- 循环遍历每篇文章并渲染它 -->
+  <% articles.forEach((article) => { %>
+    <li>
+      <a href="/articles/<%= article.id %>">
+        <!-- 包含另一个模板 -->
+        <%= article.title %>
+      </a>
+    </li>
+  <% }) %>
 </ul>
 <% include foot %>
 ```
@@ -1977,6 +1975,11 @@ res.render 可以渲染 EJS 格式的 HTML 文件。如果你换掉代码清单 
 </head>
 <body>
 <div class="container">
+```
+
+这是对应的页脚（保存为 views/foot.ejs） :
+
+```html
 </div>
 </body>
 </html>
@@ -2009,8 +2012,8 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 ```js
 app.use(
-'/css/bootstrap.css',
-express.static('node_modules/bootstrap/dist/css/bootstrap.css')
+  '/css/bootstrap.css',
+  express.static('node_modules/bootstrap/dist/css/bootstrap.css')
 );
 ```
 
@@ -2019,11 +2022,11 @@ express.static('node_modules/bootstrap/dist/css/bootstrap.css')
 ```js
 <html>
 <head>
-<title>later;</title>
-<link rel="stylesheet" href="/css/bootstrap.css">
+  <title>later;</title>
+  <link rel="stylesheet" href="/css/bootstrap.css">
 </head>
 <body>
-<div class="container">
+  <div class="container">
 ```
 
 这只是 Bootstrap 的 CSS。它还有很多文件，包括图标、字体以及 jQuery 插件。你可以往项目里添加更多文件，或者用工具把它们打包成一个文件，让浏览器更容易加载。
