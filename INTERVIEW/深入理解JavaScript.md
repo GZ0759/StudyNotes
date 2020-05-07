@@ -195,10 +195,10 @@ function debounce(event, time, flag) {
 
 - 双层循环
 - 开辟存储对象
-- indexOf + filter
-- Set
-- 排序
-- 去除重复值
+- ES5方法filter和indexOf
+- ES5方法sort排序去重
+- ES6数据结构Set 
+- ES6数据结构Map 
 
 最原始的方法的双层循环
 
@@ -215,7 +215,7 @@ function unique(array) {
     if (j === resLen) {
       res.push(array[i])
     }
-    // 用 indexOf 简化内层的循环
+    // 用indexOf/includes方法简化内层的循环
     // var current = array[i];
     // if (res.indexOf(current) === -1) {
     //   res.push(current)
@@ -236,36 +236,24 @@ const unique = (array)=> {
 }
 ```
 
-indexOf + filter
+ES5方法filter和indexOf
 
 ```js
 const unique = arr => arr.filter((e,i) => arr.indexOf(e) === i);
+// 不同于上面的去重，这里是只要数字出现了重复次，就将其移除掉。
+// const filterNonUnique = arr => arr.filter(i => 
+//   arr.indexOf(i) === arr.lastIndexOf(i)
+// )
 ```
 
-Set
-
-```js
-const unique = arr => Array.from(new Set(arr));
-// 或者
-// const unique = arr => [...new Set(arr)];
-```
-
-Map
-
-```js
-function unique (arr) {
-    const seen = new Map()
-    return arr.filter((a) => !seen.has(a) && seen.set(a, 1))
-}
-```
-
-排序后去重。
+ES5方法sort排序去重
 
 ```js
 const unique = (array) => {
   array.sort((a, b) => a - b);
   let pre = 0;
   const result = [];
+  // 如果是第一个元素或者相邻的元素不相同
   for (let i = 0; i < array.length; i++) {
     if (!i || array[i] != array[pre]) {
       result.push(array[i]);
@@ -276,12 +264,21 @@ const unique = (array) => {
 }
 ```
 
-不同于上面的去重，这里是只要数字出现了重复次，就将其移除掉。
+ES6 提供了新的数据结构 Set。它类似于数组，但是成员的值都是唯一的，没有重复的值。Set本身是一个构造函数，用来生成 Set 数据结构。Array.from方法可以将 Set 结构转为数组。
 
 ```js
-const filterNonUnique = arr => arr.filter(i => 
-  arr.indexOf(i) === arr.lastIndexOf(i)
-)
+const unique = arr => Array.from(new Set(arr));
+// 或者
+// const unique = arr => [...new Set(arr)];
+```
+
+ES6 提供了 Map 数据结构。它类似于对象，也是键值对的集合，但是“键”的范围不限于字符串，各种类型的值（包括对象）都可以当作键。
+
+```js
+function unique (arr) {
+  const seen = new Map()
+  return arr.filter((a) => !seen.has(a) && seen.set(a, 1))
+}
 ```
 
 # 数组扁平化
