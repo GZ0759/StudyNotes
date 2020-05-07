@@ -191,6 +191,98 @@ function debounce(event, time, flag) {
 }
 ```
 
-# 函数柯里化
 # 数组去重
+
+- 双层循环
+- 开辟存储对象
+- indexOf + filter
+- Set
+- 排序
+- 去除重复值
+
+最原始的方法的双层循环
+
+```js
+function unique(array) {
+  var res = [];
+  for (var i = 0, arrayLen = array.length; i < arrayLen; i++) {
+    // 第二层遍历
+    for (var j = 0, resLen = res.length; j < resLen; j++ ) {
+      if (array[i] === res[j]) {
+          break;
+      }
+    }
+    if (j === resLen) {
+      res.push(array[i])
+    }
+    // 用 indexOf 简化内层的循环
+    // var current = array[i];
+    // if (res.indexOf(current) === -1) {
+    //   res.push(current)
+    // }
+  }
+  return res;
+}
+```
+
+开辟一个外部存储空间用于标示元素是否出现过。
+
+```js
+const unique = (array)=> {
+  var container = {};
+  return array.filter((item, index) => {
+    return container.hasOwnProperty(item) ? false : (container[item] = true)
+  });
+}
+```
+
+indexOf + filter
+
+```js
+const unique = arr => arr.filter((e,i) => arr.indexOf(e) === i);
+```
+
+Set
+
+```js
+const unique = arr => Array.from(new Set(arr));
+// 或者
+// const unique = arr => [...new Set(arr)];
+```
+
+Map
+
+```js
+function unique (arr) {
+    const seen = new Map()
+    return arr.filter((a) => !seen.has(a) && seen.set(a, 1))
+}
+```
+
+排序后去重。
+
+```js
+const unique = (array) => {
+  array.sort((a, b) => a - b);
+  let pre = 0;
+  const result = [];
+  for (let i = 0; i < array.length; i++) {
+    if (!i || array[i] != array[pre]) {
+      result.push(array[i]);
+    }
+    pre = i;
+  }
+  return result;
+}
+```
+
+不同于上面的去重，这里是只要数字出现了重复次，就将其移除掉。
+
+```js
+const filterNonUnique = arr => arr.filter(i => 
+  arr.indexOf(i) === arr.lastIndexOf(i)
+)
+```
+
 # 数组扁平化
+# 函数柯里化
