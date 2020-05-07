@@ -2568,49 +2568,61 @@ const jquery = require('jquery');
 
 ## 5.1 用户画像
 
-我们不想让你在每个项目上都用同一个框架。能够做到兼收并蓄、针对每个问题组合使用合
-适的工具则更好。用用户画像考虑设计问题是通用做法，因为这在某种程度上能让设计师跟用户
-产生共鸣。
-为了让你从第三人视角考虑这些框架，明白如何为不同类型的项目找到不同的解决方案，本
-章就用了用户画像法。这些用户是用专业情况和开发工具来定义的。你至少应该能认出下面定义
-的三种用户中的一种。
-第 5 章5.1 用户画像 73
+我们不想让你在每个项目上都用同一个框架。能够做到兼收并蓄、针对每个问题组合使用合适的工具则更好。用用户画像考虑设计问题是通用做法，因为这在某种程度上能让设计师跟用户产生共鸣。
 
-5.1.1 菲尔：代理开发者
+为了让你从第三人视角考虑这些框架，明白如何为不同类型的项目找到不同的解决方案，本章就用了用户画像法。这些用户是用专业情况和开发工具来定义的。你至少应该能认出下面定义的三种用户中的一种。
+
+### 5.1.1 菲尔：代理开发者
+
 菲尔已经做了三年的全栈开发了。他写过 Ruby、 Python 和客户端 JavaScript。
+
 - 职业情况——雇员，全栈开发。
 - 工作类型——前端工程、后台开发。
 - 电脑——MacBook Pro。
 - 工具——Sublime Text、 Dash、 xScope、 Pixelmator、 Sketch、 GitHub。
 - 教育背景—— 高中毕业，从业余爱好者开始，最终变成了职业程序员。
+
 菲尔通常是跟设计师和用户体验专家一起，用敏捷的方式开发或评审新功能，同时也要承担
 维护和错误修订工作。
-5.1.2 纳迪娜：开源开发者
+
+### 5.1.2 纳迪娜：开源开发者
+
 纳迪娜之前是一名企业 Web 开发人员，做得挺成功，后来开始自己接活了。
+
 - 职业情况——自由职业， JavaScript 专家。
 - 工作类型——后台开发，偶尔用 Go 和 Erlang 做高性能程序。还写了一个开源的电影目录
 Web 程序。
 - 电脑——高端 PC， Linux。
 - 工具—— Vim、 tmux、 Mercurial 以及 shell 里的所有工具。
 - 教育背景——计算机科学专业毕业。
+
 纳迪娜每天都要给她的两个主要客户和自己的开源项目协调出足够的时间。她给客户做的
 项目是测试驱动的，但她的开源项目更偏向于功能驱动。
-5.1.3 爱丽丝：产品开发者
+
+### 5.1.3 爱丽丝：产品开发者
+
 爱丽丝在做一个成功的 iOS app，也在帮忙做公司的 Web API。
+
 - 职业情况——雇员，程序员。
 - 工作类型——iOS 开发，同时负责 Web 程序和 Web 服务。
 - 电脑——MacBook Pro， iPad Pro。
 - 工具——Xcode、 Atom、 Babel、 Perforce。
 - 教育背景——理科毕业，现在任职的这家创业公司的前五名员工之一。
+
 爱丽丝用 Xcode 写 Objective-C 和 Swift，但有些勉强，其实她更喜欢 JavaScript， ES2015 和
 Babel 让她觉得很兴奋！开发新的 Web 服务支持公司的 iOS 和桌面程序对她来说只是开胃小菜，
 爱丽丝希望能经常做基于 React 的 Web 程序。
-用户定义好了，接下来定义术语框架。74 第 5 章 服务器端框架
+
+用户定义好了，接下来定义术语框架。
+
 ## 5.2 框架是什么
+
 从技术角度来看，本章介绍的一些服务器端框架根本不是框架。关于框架这个词，不同的程
 序员对它有不同的理解。在 Node 社区，这些项目大部分都应该叫模块，但更细微的定义有助于
 我们对这一族的库进行比较。
+
 LoopBack 项目用了如下定义。
+
 - API 框架——用于搭建 Web API 的库，有协助组织程序结构的框架支持。 LoopBack 将自
 己定义为这类框架。
 - HTTP 服务器库——所有基于 Express 的项目都可以归为这一类，包括 Koa 和 Kraken.js。
@@ -2619,12 +2631,16 @@ LoopBack 项目用了如下定义。
 - Web MVC 框架——模型视图控制器框架， Sail.js 就是这种框架。
 - 全栈框架——这些框架在服务器端和浏览器上用的都是 JavaScript，并且两端可以共享代
 码。这被称为同构代码。 DerbyJS 是个全栈 MVC 框架。
+
 大多数 Node 开发人员都把框架理解为第二种： HTTP 服务器库。下一节介绍的 Koa 就是一
 个服务器库，它独辟蹊径，用 ES2015 语法中新创的生成器来定义 HTTP 中间件。
+
 ## 5.3 Koa
+
 Koa 是以 Express 为基础开发的，但它用 ES2015 中的生成器语法来定义中间件。也就是说我
 们几乎可以编写异步的中间件。这在某种程度上解决了中间件重度依赖回调的问题。在 Koa 中可
 以用 yield 退出和重入中间件。表 5-1 是 Koa 的主要特点。
+
 表 5-1 Koa 的主要特点
 库类型 HTTP 服务器库
 功能特性 基于生成器的中间件，请求/响应模型
@@ -2633,22 +2649,34 @@ Koa 是以 Express 为基础开发的，但它用 ES2015 中的生成器语法�
 文档 http://koajs.com/
 热门程度 GitHub 10 000 颗星
 授权许可 MIT
+
 下面这段代码演示了在 Koa 中如何用 yield 转到下一个中间件组件，等它执行完后再回来
 继续执行调用者中间件的逻辑。
+
 代码清单 5-1 Koa 的中间件顺序
+```js
 const koa = require('koa');
 const app = koa();
 
 app.use(function*(next) {
-const start = new Date;
+  const start = new Date;
 yield next;
 const ms = new Date - start;
 console.log('%s %s - %s', this.method, this.url, ms);
 });
 app.use(function*() {
-this.body = 'Hello World';
+  this.body = 'Hello World';
 });
 app.listen(3000);
+  // 在中间件函
+  // 数上使用生
+  // 成器语法
+  // yield 以运行下
+  // 一个中间件组件
+  // 回到当初 yield 的
+  // 位置继续执行
+```
+
 代码清单 5-1 用生成器 在两个中间件的上下文中切换。注意关键字 function *，这里是
 不可能用箭头函数的。用 yield 关键字 将执行步骤转到中间件的栈中去，然后在下一个中间
 件返回后再回来 。使用生成器函数带来的额外好处是只要设定 this.body 就好了。 Express
@@ -2656,35 +2684,39 @@ app.listen(3000);
 请求都有对应的上下文，用来封装 Node 的 HTTP request 和 response 对象。在需要访问请求
 里的东西时，比如 GET 参数或 cookie，可以通过这个请求上下文来访问。响应也是如此，就像
 代码清单 5-1 里所展示的，设定 this.body 里的值就可以控制送什么给浏览器。
+
 如果你之前用过 Express 中间件和生成器语法，学会 Koa 应该并不难。否则可能不太容易搞
 懂，至少不明白 Koa 这种方式有什么好处。关于 yield 是如何在中间件组件间进行切换的，图 5-1
 给出了更多细节。
+
 图 5-1 中的每个阶段都是跟代码清单 5-1 中的数字对应的。首先，在第一个中间件组件里创
 建计时器 ，然后执行跳转到第二个中间件组件里去渲染 body 。在响应发送出去后，回到第
 一个中间件组件继续执行，计算出时间 。用 console.log 在终端里输出，请求完成 。注意，
 阶段 在代码清单 5-1 中看不出来，它是由 Koa 和 Node 的 HTTP 服务器处理的。
+
 图 5-1 Koa 中间件的执行顺序
-在中间件函
-数上使用生
-成器语法
-yield 以运行下
-一个中间件组件
-回到当初 yield 的
-位置继续执行
-5.3.1 设置
+
+### 5.3.1 设置
+
 Koa 项目的设置工作包括安装模块和定义中间件。如果需要更多功能，比如要通过路由 API
 定义和响应各种 HTTP 请求，则需要安装路由中间件。也就是说典型的工作流程需要事先规划好
 项目要用到的中间件，所以我们先要研究一下有哪些流行的模块。
-点 评
-爱丽丝：“作为产品开发人员，我喜欢 Koa 的最小功能集，因为我们的项目需求独特，我
-们非常想根据需求来框定整个技术栈。”
-菲尔：“作为代理开发人员，我发现中间件搜索阶段的处理太麻烦了。我希望框架能帮我
+
+> 点 评  
+> 爱丽丝：“作为产品开发人员，我喜欢 Koa 的最小功能集，因为我们的项目需求独特，我
+们非常想根据需求来框定整个技术栈。”  
+> 菲尔：“作为代理开发人员，我发现中间件搜索阶段的处理太麻烦了。我希望框架能帮我
 处理好，并且因为我经手的很多项目需求都差不多，所以不想总是安装相同的模块来做这些基
 础性工作。”
+
 下一节会介绍一个第三方模块，它为 Koa 提供了一个强大的路由库。
-5.3.2 定义路由
+
+### 5.3.2 定义路由
+
 koa-router 是一个流行的路由器中间件组件。它也是基于 HTTP 动词的，这点跟 Express 一样，
 不同之处是它的链式 API。下面这段代码演示了它的路由定义：
+
+```js
 router
 .post('/pages', function*(next) {
 // 创建页面
@@ -2695,33 +2727,49 @@ router
 .put('pages-update', '/pages/:id', function*(next) {
 // 更新页面
 });
+```
+
 可以提供额外的参数给路由命名。这可以用来生成 URL，并不是所有 Node Web 框架都支持
 这一功能。这里有个例子：
-router.url('pages-update', '99');
-这个模块融合了 Express 和其他 Web 框架的功能。
-点 评
-菲尔：“这个路由库让我想起了 RoR 上的一些功能，我喜欢它，所以 Koa 能赢得我的
-青睐。”
-纳迪娜： “我发现可以用 Koa 对我已有的项目做些模块化处理，并跟社区分享这些
-代码。”5.4 Kraken 77
 
-5.3.3 REST API
+```js
+router.url('pages-update', '99');
+```
+
+这个模块融合了 Express 和其他 Web 框架的功能。
+
+> 点 评  
+> 菲尔：“这个路由库让我想起了 RoR 上的一些功能，我喜欢它，所以 Koa 能赢得我的
+青睐。”  
+> 纳迪娜： “我发现可以用 Koa 对我已有的项目做些模块化处理，并跟社区分享这些
+代码。”
+
+### 5.3.3 REST API
+
 Koa 没有提供实现 RESTful API 所必需的工具，只能借助某种路由处理中间件。前面那个例
 子可以扩展一下，在 Koa 中实现 RESTful API。
-5.3.4 优点
+
+### 5.3.4 优点
+
 以前可以说 Koa 在采用生成器语法上有先发优势，但随着 ES2015 在 Node 社区中的普及，
 这已经算不上是 Koa 的优势了。 Koa 现在的主要优势是它很精简，还有一些非常棒的第三方模块，
 Koa 的维基百科上有更详细的介绍。因为语法优雅，能根据项目的具体需求量身定制，所以 Koa
 深受开发人员喜爱。
-5.3.5 弱点
+
+### 5.3.5 弱点
+
 Koa 的可配置水平让一些开发人员望而却步。除非有现成的代码共享策略，否则用 Koa 创建
 太多小项目会导致低下的代码复用率。
+
 ## 5.4 Kraken
+
 Kraken 是基于 Express 的，又通过 Paypal 开发的一些定制模块添了些新功能。为程序提供安
 全层的 Lusca 是其中特别实用的一个模块。虽然 Lusca 可以独立于 Kraken 使用，但 Kraken 还有
 一个好处是它预定义的项目结构。 Express 和 Koa 程序对项目结构没有任何要求，相较之下，
 Kraken 在创建新项目上提供了更多帮助。表 5-2 中是 Kraken 的主要特性。
+
 表 5-2 Kraken 的主要特性
+
 库类型 HTTP 服务器库
 功能特性 对象项目结构要求严格、模型、模板（ Dust）、安全强化（ Lusca）、配置管理、国际化
 建议应用 企业 Web 程序
@@ -2729,16 +2777,24 @@ Kraken 在创建新项目上提供了更多帮助。表 5-2 中是 Kraken 的主
 文档 https://www.kraken.com/help/api
 热门程度 GitHub 4000 颗星
 授权许可 Apache 2.0
-5.4.1 设置
+
+### 5.4.1 设置
+
 可以将 Kraken 作为中间件组件添加到 Express 项目中：
+
+```js
 const express = require('express'),
 const kraken = require('kraken-js');78 第 5 章 服务器端框架
 const app = express();
 app.use(kraken());
 app.listen(3000);
+```
+
 也可以用 Kraken 的 Yeoman 生成器创建一个新项目。 Yeoman 是用来生成新项目的工具，我
 们可以用它的生成器生成各种框架的初始项目。下面是用 Yeoman 创建 Kraken 项目所需的步骤，
 这里使用了 Kraken 偏好的文件系统结构：
+
+```
 $ npm install -g yo generator-kraken bower grunt-cli
 $ yo kraken
 ,'""`.
@@ -2753,60 +2809,89 @@ Tell me a bit about your application:
 [?] Description: A Kraken application
 [?] Author: Alex R. Young
 ...
+```
+
 生成器会创建新的目录，不用我们自己动手。在生成器完成了自己的工作后，你可以启动服
 务器，然后访问 http://localhost:8000 看看它生成了什么。
-5.4.2 定义路由
+
+### 5.4.2 定义路由
+
 在 Kraken 中，路由被定义为跟控制器在一起。这跟 Express 把路由定义和路由处理器分开的
 做法不同， Kraken 采用了 MVC 的方式，由于 ES6 箭头函数的使用，这样更轻便：
+
+```js
 module.exports = (router) => {
 router.get('/', (req, res) => {
 res.render('index');
 });
 };
+```
+
 路由器可以在 URL 中放置参数：
+
+```js
 module.exports = (router) => {
 router.get('/people/:id', (req, res) => {
 const people = { alex: { name: 'Alex' } };
 res.render('people/edit', people[req.param.id]);
 });
 };
+```
+
 Kraken 的路由 API 是 express-enrouten，并且它会根据文件所在的目录推断路由。比如说，
 如果有下面这样的目录结构：
 
+```
 controllers
 |-user
 |-create.js
 |-list.js
+```
+
 那么 Kraken 会生成路由 /user/create 和 /user/list。
-5.4.3 REST API
+
+### 5.4.3 REST API
+
 Kraken 可以做 REST API，但没有什么特别的支持。 express-enrouten 可以跟解析 JSON 的中
 间件相结合，所以能实现 REST API。
+
 Kraken 的路由器支持 DELETE、 GET、 POST、 PUT 等 HTTP 动词，在实现 REST 时跟 Express
 类似。
-5.4.4 优点
+
+### 5.4.4 优点
+
 由于生成器的原因， Kraken 项目从大体上来看都差不多。虽然 Express 项目的目录结构可以
 随心所欲，但 Kraken 项目一般不会改变文件和目录的位置。
+
 因为模板库（ Dust）和国际化库（ Makara）都是 Kraken 自带的，所以它们两个可以无缝集
 成。在编写支持国际化的 Dust 模板时，需要指定键：
+
+```html
 <h1>{@pre type="content" key="greeting"/}</h1>
+```
+
 还要添加名称符合 locales/language-code/view-name.properties 模式的属性文件。这些属性文
-件中只是简单的键/值对，比如说，如果之前那个例子中的视图文件是 public/templates/profile.dust，
-那么对应的属性文件应该是 locales/US/en/profile.properties。
-点 评
-菲尔：“Kraken 的文件结构和用控制器处理路由这两点非常对我的胃口。我们团队里有人
+件中只是简单的键/值对，比如说，如果之前那个例子中的视图文件是 public/templates/profile.dust，那么对应的属性文件应该是 locales/US/en/profile.properties。
+> 点 评  
+> 菲尔：“Kraken 的文件结构和用控制器处理路由这两点非常对我的胃口。我们团队里有人
 会 Django 和 RoR，让他们换成 Kraken 应该不会太难。 Kraken 的文档看起来也很棒，博客上有
-很多干货。”
-爱丽丝：“我喜欢用 Lusca 增加程序安全性这个想法，但 Kraken 中也有我不需要的东西。
+很多干货。”  
+>爱丽丝：“我喜欢用 Lusca 增加程序安全性这个想法，但 Kraken 中也有我不需要的东西。
 我准备抛开 Kraken，单独试试 Lusca。”
-5.4.5 弱点
+
+### 5.4.5 弱点
+
 Kraken 比 Koa 或 Express 难学。一些在 Express 中可以通过编程完成的任务，在 Kraken 中要
 通过 JSON 配置文件来做，并且有时候很难确定到底要用哪些 JSON 属性才能得到预期结果。
 
 ## 5.5 hapi
-hapi 是个服务器框架，它的重点是 Web API 的开发。 hapi 有自己的插件 API，完全没有客户80 第 5 章 服务器端框架
+
+hapi 是个服务器框架，它的重点是 Web API 的开发。 hapi 有自己的插件 API，完全没有客户
 端支持，也没有数据模型层。 hapi 有路由 API 和它自己的 HTTP 服务器封装。在 hapi 中设计 API，
+
 要把服务器当作主抽象。从 DevOps 的观点来看， hapi 自带的连接和日志功能使得它易于扩展和
 管理。表 5-3 中是 hapi 的主要特性。
+
 表 5-3 hapi 的主要特性
 库类型 HTTP 服务器库
 功能特性 高层服务器容器抽象，安全的头部信息
@@ -2815,14 +2900,22 @@ hapi 是个服务器框架，它的重点是 Web API 的开发。 hapi 有自己
 文档 http://hapijs.com/api
 热门程度 GitHub 6000 颗星
 授权许可 BSD 3 条款
-5.5.1 设置
+
+### 5.5.1 设置
+
 首先创建一个新的 Node 项目，安装 hapi：
+
+```
 mkdir listing5_2
 cd listing5_2
 npm init -y
 npm install --save hapi
+```
+
 然后创建文件 server.js，将下面的代码加入其中。
+
 代码清单 5-2 基本的 hapi 服务器
+```
 const Hapi = require('hapi');
 const server = new Hapi.Server();
 server.connection({
@@ -2835,12 +2928,17 @@ throw err;
 }
 console.log('Server running at:', server.info.uri);
 });
+```
+
 这样已经可以运行了，但如果没有路由，它也做不了什么。接下来我们讲 hapi 怎么处理
 路由。
-5.5.2 定义路由
+
+### 5.5.2 定义路由
+
 hapi 有创建路由的 API。要创建路由，必须提供一个包含请求方法、 URL 和回调函数的对象，5.5 hapi 81
 
 其中的回调函数就是路由处理器。下面是带处理器方法的路由定义示例。
+
 代码清单 5-3 hapi 的入门服务器
 const Hapi = require('hapi');
 const server = new Hapi.Server();
@@ -2861,22 +2959,36 @@ throw err;
 }
 console.log('Server running at:', server.info.uri);
 });
+
 这段代码定义了一个路由，以及将文本 hello world 作为了响应的处理器。把它添加到 server.js
 中。执行 npm start 命令运行这个服务器，然后打开 http://localhost:8000/hello 看看响应结果。
+
 hapi 没有预定义的目录结构或任何 MVC 特性，它完全是基于服务器的。从这点来看， hapi
 跟 Express 很像。然而 hapi 的 request 和 reply 路由处理器签名跟 Express 的 req 和 res 不同。
+
 hapi 的请求和响应对象也不同于 Express 中的对等对象：必须调用 reply，而不是操作 Express
 的 res 对象。 Express 更像 Node 自带的 HTTP 服务器。
+
 更加复杂的功能，比如提供静态文件，需要靠插件来完成。
-5.5.3 插件
+
+### 5.5.3 插件
+
 hapi 有自己的插件架构，并且大部分项目都需要靠插件完成认证和输入校验等功能。 inert
 是大多数项目都需要的简单插件，它提供了静态文件和目录处理器。
+
 要将 inert 添加到 hapi 项目中，需要先用 server.register 方法注册这个插件。由此添加
 发送单个文件的 reply.file 方法和一个目录处理器。下面来看一下目录处理器。
+
 首先确保你已经创建了基于代码清单 5-2 的项目。然后，安装 inert：
+
+```
 npm install --save inert
-现在可以加载和注册插件了。打开 server.js，添加下面的代码。82 第 5 章 服务器端框架
+```
+
+现在可以加载和注册插件了。打开 server.js，添加下面的代码。
+
 代码清单 5-4 用 hapi 添加插件
+```js
 const Inert = require('inert');
 server.register(Inert, () => {});
 server.route({
@@ -2890,12 +3002,18 @@ index: true
 }
 }
 });
+```
+
 除了函数， hapi 路由还可以接受插件的配置对象。在这段代码中， directory 对象中就是
 inert 的配置参数，其含义是提供当前目录中的静态文件，并显示该目录下文件的索引。这跟
 Express 的中间件不同。从这个例子可以看出，在 hapi 程序中，插件是如何扩展服务器的行为的。
-5.5.4 REST API
+
+### 5.5.4 REST API
+
 hapi 支持 HTTP 动词和 URL 参数化，允许用标准的 hapi 路由 API 实现 REST API。下面这段
 代码是一个普通的删除方法的路由：
+
+```js
 server.route({
 method: 'DELETE',
 path: '/items/{id}',
@@ -2904,31 +3022,40 @@ handler: (req, reply) => {
 reply(true);
 }
 });
+```
+
 另外，有些插件让创建 RESTful API 变得容易了。比如说， hapi-sequelize-crud 可以基于
 Sequelize 模型自动生成 RESTful API。
-点 评
-菲尔： “我一定要试试 hapi-sequelize-crud，因为我们已经有程序在用 PostgreSQL 和
-MySQL 了，所以 Sequelize 应该会合适。但 hapi 自己没有提供这样的功能，如果将来这个插
-件没人支持就麻烦了，所以我不太确定 hapi 是否适合代理场景。”
-爱丽丝：“作为产品开发人员，我对 hapi 很感兴趣，因为它像 Express 一样，坚持走极简
-路线，另外插件 API 也更加正式，富有表现力。”
-纳迪娜：“我觉得可以给 hapi 做几个开源插件，并且现有插件写得都不错。看起来 hapi
-的受众在技术上没问题，这也是它能吸引我的原因之一。”5.6 Sails.js 83
 
-5.5.5 优点
+> 点 评  
+> 菲尔： “我一定要试试 hapi-sequelize-crud，因为我们已经有程序在用 PostgreSQL 和
+MySQL 了，所以 Sequelize 应该会合适。但 hapi 自己没有提供这样的功能，如果将来这个插
+件没人支持就麻烦了，所以我不太确定 hapi 是否适合代理场景。”  
+> 爱丽丝：“作为产品开发人员，我对 hapi 很感兴趣，因为它像 Express 一样，坚持走极简
+路线，另外插件 API 也更加正式，富有表现力。”  
+> 纳迪娜：“我觉得可以给 hapi 做几个开源插件，并且现有插件写得都不错。看起来 hapi
+的受众在技术上没问题，这也是它能吸引我的原因之一。”
+
+### 5.5.5 优点
+
 hapi 的插件 API 是它最大的优势。插件不仅能扩展 hapi 的服务器，还可以添加各种各样的功
 能，比如数据校验和模板等。另外，由于 hapi 是基于 HTTP 服务器的，所以适合用在某些部署场
 景中。如果要部署很多相互连接的服务器，或者需要做负载均衡时， hapi 基于服务器的 API 可能
 比 Express 或 Koa 好用。
-5.5.6 弱点
+
+### 5.5.6 弱点
+
 hapi 的弱点跟 Express 一样：极简，所以对项目结构没有把控。我们永远也不知道哪个插件
 的开发会停下来，所以过于依赖插件可能会造成将来难以维护。
+
 ## 5.6 Sails.js
+
 我们之前介绍的都是极简的服务器库。接下来要讲的 Sails 跟它们有本质上的区别，这是一
 个模型视图控制器框架。 Sails 有一个跟数据库协同作用的对象关系映射（ ORM）库，还能自
 动生成 REST API。它支持 WebSocket 等现代化的功能。如果你喜欢用 React 或 Angular，应该会
 很高兴它是前端无关的： Sails 不是全栈框架，所以可以跟任何前端库或框架配合使用。表 5-4 是
 Sails 的主要特性。
+
 表 5-4 Sails 的主要特性
 库类型 MVC 框架
 功能特性 有支持数据库的 ORM，生成 REST API， WebSocket
@@ -2937,55 +3064,81 @@ Sails 的主要特性。
 文档 http://sailsjs.org/documentation/concepts
 热门程度 GitHub 6000 颗星
 授权许可 BSD 3 条款
-点 评
-菲尔：“听起来就是我想要的，它的缺点是什么？”
-爱丽丝：“我觉得这可能不适合我，因为我们已经把时间用在开发 React 程序上了，但既
+> 点 评  
+> 菲尔：“听起来就是我想要的，它的缺点是什么？”  
 然它主要是用来做服务器的，可能会适合我们的产品。”
-5.6.1 设置
+
+### 5.6.1 设置
+
 Sails 有项目生成器，所以最好是全局安装，这样创建新项目会更轻松。用 npm 安装，然后
-用 sails new 创建项目：84 第 5 章 服务器端框架
+用 sails new 创建项目：
+
+```
 npm install -g sails
 sails new example-project
+```
+
 之后会出现一个新创建的目录，其中有 package.json 和基本的 Sails 依赖项。这个新项目包含
+爱丽丝：“我觉得这可能不适合我，因为我们已经把时间用在开发 React 程序上了，但既
 了 Sails 本身、 EJS 和 Grunt。运行 npm start 或 sails lift 都可以启动服务器。服务器跑起
 来后，访问 http://localhost:1337 可以看到自带的初始页。
-5.6.2 定义路由
+
+### 5.6.2 定义路由
+
 Sails 中将路由称为定制路由，打开 config/routes.js，在输出的路由中添加新的属性即可添加
 路由。属性的格式是 HTTP 动词加上部分 URL。比如像下面这样：
+
+```js
 module.exports.routes = {
 'get /example': { view: 'example' },
 'post /items': 'ItemController.create
 };
+```
+
 第一个路由需要文件 view/example.ejs。第二个路由需要有 create 方法的 api/controllers/
 ItemController。运行命令 sails generate controller item create 可以生成带有 create
 方法的控制器。也可以用类似的命令生成 RESTful API。
-5.6.3 REST API
+
+### 5.6.3 REST API
+
 Sails 将数据库模型和控制器结合进了 API 中，可以用命令 sails generate api resourcename 生成 RESTful API。要使用数据库，首先需要安装数据库适配器。找到 Waterline MySQL 包
 的名字，然后把它添加到项目中：
+
+```
 npm install --save waterline sails-mysql
+```
+
 接下来，打开 config/connections.js，将 MySQL 服务器的连接信息填好。 Sails 模型文件中可
 以指定数据库连接，所以不同的模型可以使用不同的数据库。也就是说可以把用户会话数据放在
 Redis 之类的数据库中，而把需要持久保存的数据放到 MySQL 这样的关系型数据库中。
+
 Waterline 是 Sails 的数据库系统库，除了支持多个数据库，它还能定义表和列名，以支持遗
 留的数据库模式。另外，它的查询 API 支持 promise，因此查询看起来很像现代化的 JavaScript。
-点 评
-菲尔：“听起来非常适合我们，首先是可以轻松创建 API，其次是 Waterline 模型能支持已
-有的数据库模式。我们想把一些客户缓慢地从 MySQL 迁移到 PostgreSQL， Waterline 能满足这
-个要求。我们的一些开发人员和设计师用过 RoR，所以我觉得他们马上就能掌握 Sails。”
-爱丽丝：“这个框架里有我们的产品不需要的东西。我觉得 Koa 或 hapi 可能更合适。”5.7 DerbyJS 85
 
-5.6.4 优点
+> 点 评  
+> 菲尔：“听起来非常适合我们，首先是可以轻松创建 API，其次是 Waterline 模型能支持已
+有的数据库模式。我们想把一些客户缓慢地从 MySQL 迁移到 PostgreSQL， Waterline 能满足这
+个要求。我们的一些开发人员和设计师用过 RoR，所以我觉得他们马上就能掌握 Sails。”  
+> 爱丽丝：“这个框架里有我们的产品不需要的东西。我觉得 Koa 或 hapi 可能更合适。”
+
+### 5.6.4 优点
+
 自带的项目创建和 API 生成意味着可以快速设置项目，快速添加典型的 REST API。因为
 Sails 项目的文件系统结构都是一样的，所以也有利于创建新项目和相互协作。 Sails 的创建者
 Mike McNeil 和 Irl Nathan 共同写了本书，叫 Sails in Action，书中阐述了 Sails 对 Node 新手是多么
 友好。
-5.6.5 弱点
+
+### 5.6.5 弱点
+
 Sails 的弱点跟其他服务器端 MVC 框架一样：路由 API 意味着我们在设计程序时必须考虑到
 Sails 的路由特性，并且由于 Waterline 的处理方式，可能很难将数据库模式调整为符合它的要求
 的样子。
+
 ## 5.7 DerbyJS
+
 DerbyJS 是全栈框架，支持数据同步和视图的服务器端渲染。它用到了 MongoDB 和 Redis，
 数据同步层是由 ShareJS 提供的，支持冲突的自动解析。表 5-5 中是 DerbyJS 的主要特性。
+
 表 5-5 DerbyJS 的主要特性
 库类型 全栈框架
 功能特性 有支持数据库的 ORM（ Racer），同构
@@ -2994,18 +3147,26 @@ DerbyJS 是全栈框架，支持数据同步和视图的服务器端渲染。它
 文档 http://derbyjs.com/docs/derby-0.6
 热门程度 GitHub 4000 颗星
 授权许可 MIT
-5.7.1 设置
+
+### 5.7.1 设置
+
 运行 DerbyJS 的例子需要安装 MongoDB 和 Redis。 DerbyJS 的文档里有 Mac OS、 Linux 和
 Windows 上的安装指南。
-要快速创建新的 DerbyJS 项目，需要安装 derby 和 derby-starter。 derby-starter 包是用来引导
-Derby 程序的：
+
+要快速创建新的 DerbyJS 项目，需要安装 derby 和 derby-starter。 derby-starter 包是用来引导 Derby 程序的：
+
+```
 mkdir example-derby-app
 cd example-derby-app
 npm init -f
 npm install --save derby derby-starter derby-debug
+```
+
 Derby 程序分为几个小程序。创建新的 app 目录，在其中创建三个文件： index.js、 server.js 和
-index.html。下面这个简单的 Derby 程序演示了如何渲染模板。86 第 5 章 服务器端框架
+index.html。下面这个简单的 Derby 程序演示了如何渲染模板。
+
 代码清单 5-5 Derby app/index.js 文件
+```js
 const app = module.exports = require('derby')
 .createApp('hello', __filename);
 app.loadViews(__dirname);
@@ -3017,60 +3178,94 @@ message.createNull('');
 page.render();
 });
 });
+```
+
 文件 app/server.js 只需要加载 derby-starter 模块，代码如下所示：
+
+```js
 require('derby-starter').run(__dirname, { port: 8005 });
+```
+
 文件 app/index.html 渲染了一个输入域以及用户输入的消息：
+
+```
 <Body:>
 Holler: <input value="{{hello.message}}">
 <h2>{{hello.message}}</h2>
+```
+
 在 example-derby-app 目录下运行 node derby/server.js 应该就能运行这个程序。在它运行
 起来之后，只要修改 app/index.html，程序就会重启，也就是说编辑代码和模板时程序会自动实时
 更新。
-5.7.2 定义路由
+
+### 5.7.2 定义路由
+
 DerbyJS 中的路由是用 derby-router 实现的。因为是基于 Express 的，所以 DerbyJS 的路由 API
 跟服务器端路由类似，浏览器中用的也是这个路由模块。在 DerbyJS 程序中点击链接时，它会试
 着在客户端渲染响应。
+
 因为 DerbyJS 是全栈框架，所以它添加路由的方式跟本章中讲到的其他框架不太一样。对于
 基本的路由而言，最理想的添加方式是添加一个视图。打开 apps/app/index.js，用 app.get 添加
 一个路由：
+
+```js
 app.get('hello', '/hello');
+```
+
 然后打开 apps/app/views/hello.pug，添加一个简单的 Pug 模板：
+
+```
 index:
 h2 Hello
 p Hello world
+```
+
 打开 apps/app/views/index.pug，导入这个模板：
+
+```
 import:(src= "./hello")
+```
+
 如果你之前运行过npm start，这个程序应该会不断更新，所以打开 http://localhost:3000/hello
 会显示新的视图。
 
 模板中的 index:那行是视图的命名空间。在 DerbyJS 中，视图的名称有用冒号分隔的命名
 空间，所以刚刚创建的是 hello:index。这样做的出发点是为了将视图封起来，以免在大型项
 目中出现冲突。
-5.7.3 REST API
+
+### 5.7.3 REST API
+
 在 DerbyJS 中创建 RESTful API 需要用 Express 添加路由和路由处理器。 DerbyJS 项目中有个
-server.js 文件，可以用 Express 创建服务器。打开 server/routes.js，你会发现一个路由的例子，是
-用标准的 Express 路由 API 定义的。
+server.js 文件，可以用 Express 创建服务器。打开 server/routes.js，你会发现一个路由的例子，是用标准的 Express 路由 API 定义的。
+
 在服务器路由文件中，可以用 app.use 装载另一个 Express 程序，所以可以将 REST API 作
 为一个完全独立的 Express 程序，然后让作为主程序的 DerbyJS 程序装载它。
-5.7.4 优点
+
+### 5.7.4 优点
+
 DerbyJS 有数据库模型 API 和数据同步 API。你可以用它搭建单页 Web 程序和现代化的实时
 程序。因为它自带对 WebSocket 和同步的支持，所以不用我们费心去选择 WebSocket 库，或者如
 何在服务器端和客户端之间同步数据。
-点 评
-菲尔：“我们有个客户想要做一个实时的数据可视化项目，所以我觉得用 DerbyJS 应该不
-错。但 DerbyJS 看起来似乎不太好掌握，所以我担心开发人员可能不太愿意接受它。”
-爱丽丝：“作为产品开发者，我几乎找不出让产品需求跟 DerbyJS 架构相匹配的办法，所
+
+> 点 评  
+> 菲尔：“我们有个客户想要做一个实时的数据可视化项目，所以我觉得用 DerbyJS 应该不
+错。但 DerbyJS 看起来似乎不太好掌握，所以我担心开发人员可能不太愿意接受它。”  
+> 爱丽丝：“作为产品开发者，我几乎找不出让产品需求跟 DerbyJS 架构相匹配的办法，所
 以我觉得它不适合我们的项目。”
-5.7.5 弱点
+
+### 5.7.5 弱点
+
 几乎很难说服有服务器端或客户端库使用经验的人使用 DerbyJS。比如说，那些喜欢 React
 的客户端开发人员通常都不想用 DerbyJS。那些熟悉 WebSocket，喜欢做 REST API 或 MVC 项目
 的服务器端开发人员也没有学习 DerbyJS 的动力。
+
 ## 5.8 Flatiron.js
+
 Flatiron 是 Web 框架，有 URL 路由、数据管理、中间件、插件和日志功能。跟大多数 Web
 框架不同， Flatiron 的模块在设计时就考虑了耦合性，所以可以分开使用。你甚至可以在自己的
 项目中使用其中一个或多个模块。比如说，如果你喜欢日志模块，可以把它放到一个 Express 项
-目中。 Flatiron 的 URL 路由和中间件层不是用 Express 或 Connect 写的，但它的中间件能跟 Connect
-兼容。表 5-6 中是 Flatiron 的特性。88 第 5 章 服务器端框架
+目中。 Flatiron 的 URL 路由和中间件层不是用 Express 或 Connect 写的，但它的中间件能跟 Connect 兼容。表 5-6 中是 Flatiron 的特性。88 第 5 章 服务器端框架
+
 表 5-6 Flatiron 的特性
 库类型 模块化 MVC 框架
 功能特性 数据库管理层（ Resourceful），解耦的可重用模块
@@ -3079,13 +3274,22 @@ Flatiron 是 Web 框架，有 URL 路由、数据管理、中间件、插件和�
 文档 https://github.com/flatiron
 热门程度 GitHub 1500 颗星
 授权许可 MIT
-5.8.1 设置
+
+### 5.8.1 设置
+
 我们需要全局安装 Flatiron 命令行工具来创建新的 Flatiron 项目：
+
+```
 npm install -g flatiron
 flatiron create example-flatiron-app
+```
+
 后面这条命令会创建一个新目录，其中有 package.json 和必要的依赖项。运行 npm install
 安装依赖项，然后用 npm start 启动这个程序。
+
 主文件 app.js 看起来跟典型的 Express 程序差不多：
+
+```js
 const flatiron = require('flatiron');
 const path = require('path');
 const app = flatiron.app;
@@ -3095,24 +3299,41 @@ app.router.get('/', () => {
 this.res.json({ 'hello': 'world' })
 });
 app.start(3000);
+```
+
 然而它的路由器既不同于 Express，也不同于 Koa。它用 this.res 返回响应，而不是给应
 答器回调的参数。我们来仔细看看 Flatiron 的路由。
-5.8.2 定义路由
+
+### 5.8.2 定义路由
+
 Flatiron 的路由库叫 Director。它既能用于服务器端路由，也支持浏览器中的路由，所以可以
 用来制作单页程序。 Director 使用 Express 风格的 HTTP 动词路由：
+
+```js
 router.get('/example', example);
 router.post('/example', examplePost);
+```
+
 路由可以有参数，并且参数可以用正则表达式定义：
+
+```js
 router.param('id', /([\\w\\-]+)/);
 router.on('/pages/:id', pageId => {});5.8 Flatiron.js 89
+```
 
 要生成响应，用 res.writeHead 发送响应头部，用 res.end 发送响应的主体部分：
+
+```js
 router.get('/', () => {
 this.res.writeHead(200, { 'content-type': 'text/plain' });
 this.res.end('Hello, World');
 });
+```
+
 也可以定义一个路由表对象，把路由 API 当作类来用。这种用法需要初始化一个新的路由器，
 然后用 dispatch 方法来处理 HTTP 请求：
+
+```js
 const http = require('http');
 const director = require('director');
 const router = new director.http.Router({
@@ -3126,8 +3347,12 @@ this.res.end('hello world');
 const server = http.createServer((req, res) =>
 router.dispatch(req, res);
 });
+```
+
 把路由 API 当作类还有一个好处，这样可以接入流 API。也就是说能用更加快速便捷的方式
 处理比较大的请求，比如在需要解析上传数据并提前退出时，这种方式更好：
+
+```js
 const director = require('director');
 const router = new director.http.Router();
 router.get('/', { stream: true }, () => {
@@ -3135,39 +3360,57 @@ this.req.on('data', (chunk) => {
 console.log(chunk);
 });
 });
+```
+
 Director 有一个带作用域的路由 API，很适合用来创建 REST API。
-5.8.3 REST API
+
+### 5.8.3 REST API
+
 在 Flatiron 中，可以用 Express 风格的标准 HTTP 动词方法创建 REST API，或者用 Director
 的作用域路由功能。这个功能可以基于 URL 的组成和 URL 的参数对路由分组：
+
+```js
 router.path(/\/users\/(\w+)/, () => {
 this.get((id) => {});
 this.delete((id) => {});
 this.put((id) => {});
 });
+```
+
 Flatiron 还有一个高层的 REST 封装器 Resourceful，支持 CouchDB、 MongoDB、 Socket.IO 和
-数据校验。90 第 5 章 服务器端框架
-5.8.4 优点
+数据校验。
+
+### 5.8.4 优点
+
 框架想得到注意是很难的，所以 Flatiron 的解耦设计是它最大的优点。你可以脱离整个框架
 使用其中的模块。比如说，很多项目都在用 Winston 日志模块，但没用 Flatiron 的其他部分。这
 意味着 Flatiron 的某些部分会得到开源社区的良好贡献。
+
 Director URL 路由 API 是同构的，客户端和服务器端开发中都可以用。 Director 的 API 跟
 Express 风格的路由 API 也不同： Director 有经过简化的流 API，路由对象会在路由执行前后发出
 事件。
+
 不同于大多数 Node Web 框架， Flatiron 有个插件管理器。因此在 Flatiron 项目中使用社区支
 持的插件更容易。
-点 评
-纳迪娜： “我喜欢 Flatiron 的模块设计，插件管理器也很棒。我已经想到要做哪些插件了。”
-爱丽丝：“我不喜欢全都是 Flatiron 的模块那种感觉，所以我想试试其他的 ORM 和模板库。”
-5.8.5 弱点
+
+> 点 评  
+> 纳迪娜： “我喜欢 Flatiron 的模块设计，插件管理器也很棒。我已经想到要做哪些插件了。”  
+> 爱丽丝：“我不喜欢全都是 Flatiron 的模块那种感觉，所以我想试试其他的 ORM 和模板库。”  
+
+### 5.8.5 弱点
+
 在大型 MVC 项目中， Flatiron 不像其他框架那么好用。比如在设置上， Sails 就比它更容易。
-如果要做几个中等规模的传统 Web 程序， Flatiron 应该很好用。 Flatiron 的配置能力是加分项，但
-一定要先评估一下其他选项。
+如果要做几个中等规模的传统 Web 程序， Flatiron 应该很好用。 Flatiron 的配置能力是加分项，但一定要先评估一下其他选项。
+
 LoopBack 是个强大的竞争对手，也是本章介绍的最后一个框架。
+
 ## 5.9 LoopBack
+
 LoopBack①是 StrongLoop 创建的，这家公司为 Node Web 程序的开发提供了一些商业支持服
 务。 LoopBack 是个 API 框架，但它的功能特性很适合跟数据库配合，也很适合跟 MVC 程序配合。
 它甚至还有个浏览和管理 REST API 的 Web 界面。如果你要给移动端和桌面端程序找个创建
 Web API 的框架，那就是 LoopBack 了。请查看表 5-7 了解 LoopBack 的详情。
+
 表 5-7 LoopBack 的特性
 库类型 API 框架
 功能特性 ORM、 API 用户界面、 WebSocket、客户端 SDK（包括 iOS）
@@ -3182,25 +3425,38 @@ Web API 的框架，那就是 LoopBack 了。请查看表 5-7 了解 LoopBack �
 LoopBack 是开源的，自从 StrongLoop 被 IBM 收购后，这个框架已经得到了主流商业认可，
 这让它在 Node 社区里脱颖而出。 LoopBack 有个 Yeoman 生成器，可以快速搭建起程序脚手架。
 下一节将介绍如何创建一个全新的 LoopBack 程序。
-5.9.1 设置
+
+### 5.9.1 设置
+
 创建新的 LoopBack 项目需要用到 StrongLoop 的命令行工具。全局安装 strongloop 包，以便
 可以通过 slc 命令使用命令行工具。这个包里有进程管理功能，但我们对 LoopBack 项目生成器
 更感兴趣：
+
+```
 npm install -g strongloop
 slc loopback
+```
+
 StrongLoop 命令行工具会带着你一步步完成新项目的创建。输入项目的名字，然后选择
 api-server 程序框架。生成器装好项目的依赖项后，会显示一些提示，告诉你如何开始新项目。
 看起来应该是图 5-2 的样子。
+
 图 5-2 LoopBack 的项目生成器
+
 输入 node .运行这个项目，用 slc loopback:model 创建模型。在设置新的 LoopBack
 项目时，会经常用到 slc 命令。
-在项目运行时，你应该可以在 http://0.0.0.0:3000/explorer/ 访问到 API 管理界面。点击 User 展开
-用户端点，会有一个列表显示所有可用的 API 方法，包括 PUT /Users 和 DELETE /Users/{id}
-等标准的 RESTful 路由，如图 5-3 所示。92 第 5 章 服务器端框架
+
+在项目运行时，你应该可以在 http://0.0.0.0:3000/explorer/ 访问到 API 管理界面。点击 User 展开用户端点，会有一个列表显示所有可用的 API 方法，包括 PUT /Users 和 DELETE /Users/{id}
+等标准的 RESTful 路由，如图 5-3 所示。
+
 图 5-3 显示 User 路由的 StrongLoop API 管理界面
-5.9.2 定义路由
+
+### 5.9.2 定义路由
+
 LoopBack 中的路由可以在 Express 这个层面添加。创建 server/boot/routes.js，通过 LoopBack
 路由器实例添加一个新路由：
+
+```js
 module.exports = (app) => {
 const router = app.loopback.Router();
 router.get('/hello', (req, res) => {
@@ -3208,77 +3464,106 @@ res.send('Hello, world');
 });
 app.use(router);
 };
-访问 http://localhost:3000/hello 会看到响应消息 Hello,world。不过在 LoopBack 项目中，一般
-不用这样添加路由。只有需要特殊的 API 端点时才需要这样，一般的路由都是在生成模型时自动
+```
+
+访问 http://localhost:3000/hello 会看到响应消息 Hello,world。不过在 LoopBack 项目中，一般不用这样添加路由。只有需要特殊的 API 端点时才需要这样，一般的路由都是在生成模型时自动
 添加的。
-5.9.3 REST API
+
+### 5.9.3 REST API
+
 在 LoopBack 项目中，用模型生成器是创建 REST API 最轻松的办法。 slc 命令有这个功能。
 比如说，如果要用 slc loopback:model 添加名为 product 的新模型，则运行：
+
+```
 slc loopback:model product
+```
 
 slc 命令会带着你一步步创建，让你选择这个模型是否只用在服务器端，并设置一些属性和
 校验器。创建好后，你可以看一下对应的 JSON 文件。用这样的 JSON 文件来定义模型的行为更
 轻便，其中包括了你之前指定的所有属性。
+
 如果还需要添加更多的属性，可以用 slc loopback:property，随时添加都行。
-点 评
-菲尔：“我们喜欢 LoopBack，因为它可以快速添加 RESTful 资源，并且它还有 API 管理界
+
+> 点 评  
+> 菲尔：“我们喜欢 LoopBack，因为它可以快速添加 RESTful 资源，并且它还有 API 管理界
 面。但就我个人而言，是因为它看起来很灵活，能支持我们之前做的 MVC Web 程序。我们可
-以把之前的数据库挂上，把那些项目迁移到 Node 上来。”
-爱丽丝：“这是唯一一个真正面向 iOS、 Android 和富 Web 客户端的框架。 LoopBack 有 iOS
+以把之前的数据库挂上，把那些项目迁移到 Node 上来。”  
+> 爱丽丝：“这是唯一一个真正面向 iOS、 Android 和富 Web 客户端的框架。 LoopBack 有 iOS
 和 Android 的客户端库，对于我们这些依靠移动端程序的产品开发人员来说，这很重要。”
-5.9.4 优点
+
+### 5.9.4 优点
+
 即便是这样简短的介绍，也能清楚地表明 LoopBack 帮我们免除了繁琐的套路化代码。它的
 命令行工具几乎可以生成一个完整的 RESTful Web API 程序，甚至包括数据库模型和校验。同
 时， LoopBack 对前端代码没有太多限制。它还让你考虑哪个模型可以通过浏览器访问，哪个只
 能在服务器端使用。有些框架在这个问题上犯了错误，把所有事情都推给了浏览器。
+
 如果有需要跟 Web API 通话的移动端程序，可以看看 LoopBack 的客户端 SDK。它支持 API
 集成，可以给 iOS 和 Android 推送消息。
-5.9.5 弱点
+
+### 5.9.5 弱点
+
 LoopBack 基于 JSON 的模型 API 跟大部分 JavaScript 数据库 API 都不同。所以可能要花些时
 间才能搞懂如何将它映射到已有的数据库模式上。另外，因为 HTTP 层是基于 Express 的，所以
 在某种程度上会受限于 Express 所支持的功能。尽管 Express 是个很好的 HTTP 服务器库，但还
 有支持更现代化的 API 的新库。 LoopBack 没有特定的插件 API，虽然可以用 Express 中间件，但
 毕竟不如 Flatiron 或 hapi 的插件 API 方便。
+
 这是本章介绍的最后一个框架。在开始下一章之前，我们先做个简单的比较，以便帮你为下
 一个项目选出正确的框架。
+
 ## 5.10 比较
+
 如果你一直在看本章中的点评，可能已经决定要用哪个框架了。如果还没决定，本章后续
 内容会对这些框架的好处做个比较。如果你还是搞不清楚，可以根据图 5-4 中提出的问题找到
-答案。94 第 5 章 服务器端框架
+答案。
+
 图 5-4 选择 Node 框架
+
 乍一看，那些热门的 Node 服务器端框架都差不多。他们提供了轻便的 HTTP API，使用了服
 务器端模型，而不是 PHP 那种页面模型。但它们在设计上的差别对项目的影响很大，所以要做
 个比较的话，应从 HTTP 层开始。
+
 HTTP 服务器和路由
+
 大多数 Node 框架都是基于 Connect 或 Express 的。本章有三个完全不依赖 Express，提出了
 自己的 HTTP API 方案的框架： Koa、 hapi 和 Flatiron。
+
 Koa 也是写 Express 的那个作者写的，但其用更加现代化的 JavaScript 特性实现了全新的工作
 方式。如果你喜欢 Express，也喜欢用 ES2015 生成器语法，可以试试 Koa。
+
 hapi 的服务器和路由 API 是高度模块化的，感觉跟 Express 那一类不一样。如果你觉得
 Express 的语法比较尴尬，可以试试 hapi。 hapi 让 HTTP 服务器变得更容易处理，如果你想把服
 务器连起来，或者要做服务器集群， hapi 比 Express 及其后裔们好用。
-Flatiron 的路由器能跟 Express 兼容，不过功能更多。跟 Express 风格的中间件栈不同， Flatiron
-的路由器用了路由表，还会发出事件。我们可以给 Flatiron 的路由器传递一个对象常量。这个路
-由器还能用在浏览器中，如果你的服务器端开发人员还要做现代化的客户端开发，那跟 React 路
+
+Flatiron 的路由器能跟 Express 兼容，不过功能更多。跟 Express 风格的中间件栈不同， Flatiron 的路由器用了路由表，还会发出事件。我们可以给 Flatiron 的路由器传递一个对象常量。这个路由器还能用在浏览器中，如果你的服务器端开发人员还要做现代化的客户端开发，那跟 React 路
 由器之类的技术比起来， Flatiron 路由器会让他们觉得更舒服。
 
 ## 5.11 编写模块化代码
+
 在本章介绍的框架中，有些不是直接支持插件的，但都可以通过某种方式进行扩展。基于
-Express 的框架可以用 Connect 中间件，但 hapi 和 Flatiron 有它们自己的插件 API。定义良好的插
-件 API 非常实用，因为它们能让新用户更轻松地对框架进行扩展。
+Express 的框架可以用 Connect 中间件，但 hapi 和 Flatiron 有它们自己的插件 API。定义良好的插件 API 非常实用，因为它们能让新用户更轻松地对框架进行扩展。
+
 如果是 Sails.js 或 LoopBack 这样的大型 MVC 框架，插件 API 会让创建新项目变得容易得多。
 LoopBack 提供了一个强力的项目管理工具，弱化了对插件 API 的依赖程度。在 npm 的 StrongLoop
 主页上，有很多与 LoopBack 相关的项目为 Angular 和数据库等产品提供支持。
+
 ## 5.12 用户选择
+
 我们已经为本章中定义的用户提供了足够的背景知识，他们可以为自己的下一个项目选出合
 适的框架了。
+
 菲尔：“最后我选了 LoopBack。这是个艰难的决定，因为 Sails 和 Kraken 都有我们团队喜欢
 的点，但我们觉得 LoopBack 有更强的长期支持，而且可以省掉大量的服务器端开发工作。”
+
 纳迪娜：“作为一名开源开发人员，我把票投给了 Flatiron。它可以适应我在做的各种项目。
 比如说，有些项目只要用 Winston 和 Director 就好，其他的则会用整个 Flatiron。”
+
 爱丽丝：“我选的是 hapi。它是极简风格的，我能根据项目的需求对它进行调整。 hapi 大部
 分都是 Node 代码，并且不依赖特定的框架，所以我觉得它合适。”
+
 ## 5.13 总结
+
 - Koa 轻便、极简，在中间件中使用 ES2015 生成器语法。适合依赖外部 Web API 的单页
 Web 程序。
 - hapi 的重点是 HTTP 服务器和路由。适合由很多小服务器组成的轻便后台。
@@ -3289,24 +3574,29 @@ Web 程序。
 - DerbyJS 是个同构框架，适合实时程序。
 - LoopBack 帮我们省掉了写套路化代码的工作。它可以快速生成带有数据库支持的 REST
 API，并有个 API 管理界面。96 第 6 章 深入了解 Connect 和 Express
-# 第6章 深入了解 Connect 和
-Express
+
+# 第6章 深入了解 Connect 和 Express
+
 本章内容
 - 了解 Connect 和 Express 是用来做什么的
 - 中间件的使用及创建
 - Express 程序的创建及配置
 - 用 Express 中的关键技术处理错误、渲染视图和表单
 - 用 Express 的架构化技术实现路由、 REST API 和用户认证
+
 本书在第 3 章中搭建了一个简单的 Express 程序。本章会进一步深入研究 Express 和 Connect。
 很多 Web 开发人员都在用这两个热门的 Node 模块。本章会介绍如何用最常用的模式搭建 Web
 程序和 REST API。
-Connect 和 Express
-下面一节将要讨论的概念可以直接套用到 Express 框架上，因为 Express 就是在 Connect
+
+> Connect 和 Express  
+> 下面一节将要讨论的概念可以直接套用到 Express 框架上，因为 Express 就是在 Connect
 的基础上，通过添加高层糖衣扩展和搭建出来的。看完这一节，你会对 Connect 中间件的工作
 机制，以及如何通过组装这些组件来创建一个程序有个确切的认识。其他 Node Web 框架的工
 作机制也差不多，弄明白 Connect 后，将来学习新框架会更容易入门。
+
 我们先来看一下如何创建一个基本的 Connect 程序，然后再介绍如何用更流行的 Express 搭
 建稍复杂一些的 Express 程序。
+
 ## 6.1 Connect
 本节要讲 Connect。内容包括如何用中间件搭建简单的 Web 程序，以及中间件的顺序的重要
 性。在将来搭建更加模块化的 Express 程序时，你仍然会用到这些知识。
