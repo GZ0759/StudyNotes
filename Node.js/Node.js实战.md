@@ -1733,7 +1733,7 @@ app.get('/articles', (req, res, err) => {
 });
 ```
 
-这个 HTTP 路由是用来获取所有文章的，所以对应的模型方法应该类似于 Article.all。这要取决于数据库 API，一般来说应该是 `Article.find({}, cb)`和 `Article.fetchAll().then(cb)`，其中的 cb 是回调（ callback）的缩写。
+这个 HTTP 路由是用来获取所有文章的，所以对应的模型方法应该类似于 `Article.all`。这要取决于数据库 API，一般来说应该是 `Article.find({}, cb)`和 `Article.fetchAll().then(cb)`，其中的 cb 是回调（ callback）的缩写。
 
 数据库系统这么多，怎么决定该选哪个呢？这个例子中选了 SQLite，至于理由，且听我们慢慢道来。
 
@@ -1847,7 +1847,7 @@ module.exports = app;
 
 RESTful API 已经搭建好了，数据也可以持久化到数据库中了，接下来该写代码把网页转换成简化版的“阅读视图”了。不过我们不用自己实现，因为 npm 中已经有这样的模块了。
 
-在 npm 上搜索 readability 会找到很多模块。我们试一下 node-readability（写作本书时是 1.0.1版）。用 npm install node-readability --save 安装它。这个模块提供了一个异步函数，可以下载指定 URL 的页面并将 HTML 转换成简化版。下面这段代码演示了 node-readability 的用法。如果你想试试，可以把这里的代码和代码清单 3-5 中的代码添加到 index.js 文件中：
+在 npm 上搜索 readability 会找到很多模块。我们试一下 node-readability（写作本书时是 1.0.1版）。用 `npm install node-readability --save` 安装它。这个模块提供了一个异步函数，可以下载指定 URL 的页面并将 HTML 转换成简化版。下面这段代码演示了 node-readability 的用法。如果你想试试，可以把这里的代码和代码清单 3-5 中的代码添加到 index.js 文件中：
 
 ```js
 const read = require('node-readability');
@@ -1857,7 +1857,7 @@ read(url, (err, result)=> {
 });
 ```
 
-还可以和数据库类结合起来，用 Article.create 方法保存文章：
+还可以和数据库类结合起来，用 `Article.create` 方法保存文章：
 
 ```js
 read(url, (err, result) => {
@@ -1884,17 +1884,17 @@ read(url, (err, result) => {
 const read = require('node-readability');
 // ……代码清单 3-4 中给出的代码
 app.post('/articles', (req, res, next) => {
-const url = req.body.url;
-read(url, (err, result) => {
-if (err || !result) res.status(500).send('Error downloading article');
-Article.create(
-{ title: result.title, content: result.content },
-(err, article) => {
-if (err) return next(err);
-res.send('OK');
-}
-);
-});
+  const url = req.body.url;
+  read(url, (err, result) => {
+    if (err || !result) res.status(500).send('Error downloading article');
+    Article.create({
+      title: result.title,
+      content: result.content
+    }, (err, article) => {
+      if (err) return next(err);
+      res.send('OK');
+    });
+  });
 });
 ```
 
@@ -1918,7 +1918,7 @@ curl --data "url=http://manning.com/cantelon2/" http://localhost:3000/articles
 
 之前我们用 `res.send()`往客户端发送 JavaScript 对象。用 cURL 发送请求时， JSON 很方便，因为在控制台里看起来很清晰。但在现实应用中，这个程序还需要支持 HTML。怎么才能同时支持这两种格式呢？
 
-基本做法是用 Express 的 res.format 方法。它可以根据请求发送相应格式的响应。它的用法如下所示，提供一个包含格式及对应的响应函数的列表：
+基本做法是用 Express 的 `res.format` 方法。它可以根据请求发送相应格式的响应。它的用法如下所示，提供一个包含格式及对应的响应函数的列表：
 
 ```js
 res.format({
@@ -1931,7 +1931,7 @@ res.format({
 });
 ```
 
-在这段代码中， res.render 会渲染 view 文件夹下的模板 articles.ejs。但这需要安装模板引擎并创建相应的模板。
+在这段代码中， `res.render` 会渲染 view 文件夹下的模板 articles.ejs。但这需要安装模板引擎并创建相应的模板。
 
 ### 3.4.2 渲染模板
 
