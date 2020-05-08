@@ -282,4 +282,201 @@ function unique (arr) {
 ```
 
 # 数组扁平化
+
+- 循环递归的基本实现
+- 使用reduce简化循环
+- ES6扩展运算符循环
+- 字符串toString方法
+
+基本实现。循环数组元素，如果还是一个数组，就递归调用该方法。
+
+```js
+const flat = (array) => {
+  let result = [];
+  for (let i = 0; i < array.length; i++) {
+    if (Array.isArray(array[i])) {
+      result = result.concat(flat(array[i]));
+    } else {
+      result.push(array[i]);
+    }
+  }
+  return result;
+}
+```
+
+使用reduce简化
+
+```js
+function flatten(array) {
+  return array.reduce(
+    (target, current) =>
+      Array.isArray(current) ?
+        target.concat(flatten(current)) :
+        target.concat(current)
+    , [])
+}
+```
+
+ES6 增加了扩展运算符，用于取出参数对象的所有可遍历属性，拷贝到当前对象之中。
+
+```js
+function flatten(arr) {
+  while (arr.some(item => Array.isArray(item))) {
+    arr = [].concat(...arr);
+  }
+  return arr;
+}
+```
+
+如果数组的元素都是数字或都是字符串，那么我们可以考虑使用 toString 方法，因为：调用 toString 方法，返回了一个逗号分隔的扁平的字符串。然而这种方法使用的场景却非常有限，如果数组是 [1, '1', 2, '2'] 的话，这种方法就会产生错误的结果。
+
+```js
+function flatten(arr) {
+  return arr.toString().split(',').map(() => +item)
+}
+```
+
+# 数组最值
+
+- 直接循环求最值
+- 使用reduce简化
+- Math.max接收合适参数
+- 数组排序方法sort
+
+最最原始的方法，莫过于循环遍历一遍：
+
+```js
+var result = arr[0];
+for (var i = 1; i < arr.length; i++) {
+    result =  Math.max(result, arr[i]);
+}
+```
+
+既然是通过遍历数组求出一个最终值，那么我们就可以使用 reduce 方法。
+
+```js
+array.reduce((c, n) => Math.max(c, n))
+```
+
+`Math.max`参数原本是一组数字，只需要让他可以接收数组即可。
+
+```js
+const array = [3,2,1,4,5];
+Math.max.apply(null, array);
+// 或者
+// Math.max(...array);
+```
+
+如果我们先对数组进行一次排序，那么最大值就是最后一个值：
+
+```js
+arr.sort(function (a, b) {
+  return a - b;
+});
+arr[arr.length - 1]
+```
+
 # 函数柯里化
+
+在数学和计算机科学中，柯里化是一种将使用多个参数的一个函数转换成一系列使用一个参数的函数的技术。通俗易懂的解释：用闭包把参数保存起来，当参数的数量足够执行函数了，就开始执行函数。
+
+判断当前函数传入的参数是否大于或等于`fn`需要参数的数量，如果是，直接执行`fn`。如果传入参数数量不够，返回一个闭包，暂存传入的参数，并重新返回`currying`函数。
+
+实际应用
+- 延迟计算：部分求和、bind 函数
+- 动态创建函数：添加监听 addEvent、惰性函数
+- 参数复用
+
+```js
+function currying(fn, length) {
+  length = length || fn.length; 	
+  return function (...args) {			
+    return args.length >= length	
+    	? fn.apply(this, args)			
+      : currying(fn.bind(this, ...args), length - args.length) 
+  }
+}
+```
+
+ES6 极简写法，更加简洁也更加易懂。
+
+```js
+function currying(fn, ...args) {
+  if (args.length >= fn.length) {
+    return fn(...args);
+  } else {
+    return (...args2) => currying(fn, ...args, ...args2);
+  }
+}
+```
+
+# 模拟实现call
+
+- 1.判断当前`this`是否为函数，防止` Function.prototype.myCall()` 直接调用
+- 2.`context` 为可选参数，如果不传的话默认上下文为 `window`
+- 3.为`context` 创建一个 `Symbol`（保证不会重名）属性，将当前函数赋值给这个属性
+- 4.处理参数，传入第一个参数后的其余参数
+- 4.调用函数后即删除该`Symbol`属性
+
+```js
+Function.prototype.myCall = function (context = window, ...args) {
+  if (this === Function.prototype) {
+    return undefined; // 用于防止 Function.prototype.myCall() 直接调用
+  }
+  context = context || window;
+  const fn = Symbol();
+  context[fn] = this;
+  const result = context[fn](...args);
+  delete context[fn];
+  return result;
+}
+```
+
+# 模拟实现apply
+
+`apply`实现类似`call`，参数为数组
+
+```js
+Function.prototype.myApply = function (context = window, args) {
+  if (this === Function.prototype) {
+    return undefined; // 用于防止 Function.prototype.myCall() 直接调用
+  }
+  const fn = Symbol();
+  context[fn] = this;
+  let result;
+  if (Array.isArray(args)) {
+    result = context[fn](...args);
+  } else {
+    result = context[fn]();
+  }
+  delete context[fn];
+  return result;
+}
+```
+
+# 模拟实现bind
+
+
+- 1.处理参数，返回一个闭包
+- 2.判断是否为构造函数调用，如果是则使用`new`调用当前函数
+- 3.如果不是，使用`apply`，将`context`和处理好的参数传入
+
+```js
+Function.prototype.myBind = function (context,...args1) {
+  if (this === Function.prototype) {
+    throw new TypeError('Error')
+  }
+  const _this = this
+  return function F(...args2) {
+    // 判断是否用于构造函数
+    if (this instanceof F) {
+      return new _this(...args1, ...args2)
+    }
+    return _this.apply(context, args1.concat(args2))
+  }
+}
+```
+
+# 模拟实现new
+# 模拟实现Promise
+
