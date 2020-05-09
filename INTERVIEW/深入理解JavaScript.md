@@ -1,4 +1,5 @@
 > 自己总结的 JavaScript 面试题  
+> [参考-awesome-coding-js](https://github.com/ConardLi/awesome-coding-js)   
 > [参考-冴羽博客](https://github.com/mqyqingfeng/Blog/tree/master/articles)   
 > [参考-后盾人](http://houdunren.gitee.io/note/js/1%20%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86.html)
 > [参考-木易杨](https://github.com/yygmind/blog)
@@ -412,24 +413,44 @@ function currying(fn, ...args) {
 
 # 模拟实现call
 
-- 1.判断当前`this`是否为函数，防止` Function.prototype.myCall()` 直接调用
-- 2.`context` 为可选参数，如果不传的话默认上下文为 `window`
-- 3.为`context` 创建一个 `Symbol`（保证不会重名）属性，将当前函数赋值给这个属性
-- 4.处理参数，传入第一个参数后的其余参数
-- 4.调用函数后即删除该`Symbol`属性
+`call()` 方法使用一个指定的 this 值和单独给出的一个或多个参数来调用一个函数。
+
+- 允许为不同的对象分配和调用属于一个对象的函数/方法。
+- 提供新的 this 值给当前调用的函数/方法。可以使用 call 来实现继承。
+
+处理步骤：
+1. 判断当前`this`是否为函数，防止` Function.prototype.myCall()` 直接调用
+2. `context` 为可选参数，如果不传的话默认上下文为 `window`
+3. 为`context` 创建一个 `Symbol`（保证不会重名）属性，将当前函数赋值给这个属性
+4. 处理参数，传入第一个参数后的其余参数
+4. 调用函数后即删除该`Symbol`属性
 
 ```js
-Function.prototype.myCall = function (context = window, ...args) {
+Function.prototype.myCall = function (context, ...args) {
   if (this === Function.prototype) {
-    return undefined; // 用于防止 Function.prototype.myCall() 直接调用
+    return undefined;
   }
-  context = context || window;
+
+  context = Object(context) || window;
+
   const fn = Symbol();
   context[fn] = this;
+
   const result = context[fn](...args);
+
   delete context[fn];
   return result;
 }
+```
+
+call 是 ES3 的方法，展开运算符是 ES6 的功能。所以用 eval 方法拼成一个函数。这里 args 会自动调用 `Array.toString()` 这个方法。
+
+```js
+var args = [];
+  for(var i = 1, len = arguments.length; i < len; i++) {
+      args.push('arguments[' + i + ']');
+  }
+  var result = eval('context.fn(' + args +')');
 ```
 
 # 模拟实现apply
@@ -439,8 +460,9 @@ Function.prototype.myCall = function (context = window, ...args) {
 ```js
 Function.prototype.myApply = function (context = window, args) {
   if (this === Function.prototype) {
-    return undefined; // 用于防止 Function.prototype.myCall() 直接调用
+    return undefined; 
   }
+  context = Object(context) || window;
   const fn = Symbol();
   context[fn] = this;
   let result;
@@ -456,13 +478,15 @@ Function.prototype.myApply = function (context = window, args) {
 
 # 模拟实现bind
 
+`bind()` 方法创建一个新的函数，在 `bind()` 被调用时，这个新函数的 this 被指定为 `bind()` 的第一个参数，而其余参数将作为新函数的参数，供调用时使用。
 
-- 1.处理参数，返回一个闭包
-- 2.判断是否为构造函数调用，如果是则使用`new`调用当前函数
-- 3.如果不是，使用`apply`，将`context`和处理好的参数传入
+处理步骤：
+1. 处理参数，返回一个闭包
+2. 判断是否为构造函数调用，如果是则使用`new`调用当前函数
+3. 如果不是，使用`apply`，将`context`和处理好的参数传入
 
 ```js
-Function.prototype.myBind = function (context,...args1) {
+Function.prototype.myBind = function (context, ...args1) {
   if (this === Function.prototype) {
     throw new TypeError('Error')
   }
@@ -477,6 +501,369 @@ Function.prototype.myBind = function (context,...args1) {
 }
 ```
 
+兼容到ES5版本。
+
+```js
+Function.prototype.bind2 = function (context) {
+
+    if (typeof this !== "function") {
+      throw new Error("Function.prototype.bind - what is trying to be bound is not callable");
+    }
+
+    var self = this;
+    var args = Array.prototype.slice.call(arguments, 1);
+
+    var fNOP = function () {};
+
+    var fBound = function () {
+        var bindArgs = Array.prototype.slice.call(arguments);
+        return self.apply(this instanceof fNOP ? this : context, args.concat(bindArgs));
+    }
+
+    fNOP.prototype = this.prototype;
+    fBound.prototype = new fNOP();
+    return fBound;
+}
+```
+
 # 模拟实现new
 # 模拟实现Promise
+
+## 基础版本
+
+- 设定三个状态 `PENDING、FULFILLED、REJECTED` ，只能由`PENDING`改变为`FULFILLED、REJECTED`，并且只能改变一次
+- `MyPromise`接收一个函数`executor`，`executor`有两个参数`resolve`方法和`reject`方法
+- `resolve`将`PENDING`改变为`FULFILLED`
+- `reject`将`PENDING`改变为`FULFILLED`
+- `promise`变为`FULFILLED`状态后具有一个唯一的`value`
+- `promise`变为`REJECTED`状态后具有一个唯一的`reason`
+
+```js
+const PENDING = 'pending';
+const FULFILLED = 'fulfilled';
+const REJECTED = 'rejected';
+
+function MyPromise(executor) {
+  this.state = PENDING;
+  this.value = null;
+  this.reason = null;
+
+  const resolve = (value) => {
+    if (this.state === PENDING) {
+      this.state = FULFILLED;
+      this.value = value;
+    }
+  }
+
+  const reject = (reason) => {
+    if (this.state === PENDING) {
+      this.state = REJECTED;
+      this.reason = reason;
+    }
+  }
+
+  try {
+    executor(resolve, reject);
+  } catch (reason) {
+    reject(reason);
+  }
+}
+```
+
+## then方法
+
+- `then`方法接受两个参数`onFulfilled、onRejected`，它们分别在状态由`PENDING`改变为`FULFILLED、REJECTED`后调用
+- 一个`promise`可绑定多个`then`方法
+- `then`方法可以同步调用也可以异步调用
+- 同步调用：状态已经改变，直接调用`onFulfilled`方法
+- 异步调用：状态还是`PENDING`，将`onFulfilled、onRejected`分别加入两个函数数组`onFulfilledCallbacks、onRejectedCallbacks`，当异步调用`resolve`和`reject`时，将两个数组中绑定的事件循环执行。
+
+```js
+function MyPromise(executor) {
+  this.state = PENDING;
+  this.value = null;
+  this.reason = null;
+  this.onFulfilledCallbacks = [];
+  this.onRejectedCallbacks = [];
+
+  const resolve = (value) => {
+    if (this.state === PENDING) {
+      this.state = FULFILLED;
+      this.value = value;
+      this.onFulfilledCallbacks.forEach(fun => {
+        fun();
+      });
+    }
+  }
+
+  const reject = (reason) => {
+    if (this.state === PENDING) {
+      this.state = REJECTED;
+      this.reason = reason;
+      this.onRejectedCallbacks.forEach(fun => {
+        fun();
+      });
+    }
+  }
+
+  try {
+    executor(resolve, reject);
+  } catch (reason) {
+    reject(reason);
+  }
+}
+
+MyPromise.prototype.then = function (onFulfilled, onRejected) {
+  switch (this.state) {
+    case FULFILLED:
+      onFulfilled(this.value);
+      break;
+    case REJECTED:
+      onFulfilled(this.value);
+      break;
+    case PENDING:
+      this.onFulfilledCallbacks.push(() => {
+        onFulfilled(this.value);
+      })
+      this.onRejectedCallbacks.push(() => {
+        onRejected(this.reason);
+      })
+      break;
+  }
+}
+```
+
+## then方法异步调用
+
+如下面的代码：输入顺序是：`1、2、ConardLi`
+
+```js
+console.log(1);
+
+let promise = new Promise((resolve, reject) => {
+  resolve('ConardLi');
+});
+
+promise.then((value) => {
+  console.log(value);
+});
+
+console.log(2);
+```
+
+虽然`resolve`是同步执行的，我们必须保证`then`是异步调用的，我们用`settimeout`来模拟异步调用（并不能实现微任务和宏任务的执行机制，只是保证异步调用）
+
+```js
+MyPromise.prototype.then = function (onFulfilled, onRejected) {
+  if (typeof onFulfilled != 'function') {
+    onFulfilled = function (value) {
+      return value;
+    }
+  }
+  if (typeof onRejected != 'function') {
+    onRejected = function (reason) {
+      throw reason;
+    }
+  }
+  switch (this.state) {
+    case FULFILLED:
+      setTimeout(() => {
+        onFulfilled(this.value);
+      }, 0);
+      break;
+    case REJECTED:
+      setTimeout(() => {
+        onRejected(this.reason);
+      }, 0);
+      break;
+    case PENDING:
+      this.onFulfilledCallbacks.push(() => {
+        setTimeout(() => {
+          onFulfilled(this.value);
+        }, 0);
+      })
+      this.onRejectedCallbacks.push(() => {
+        setTimeout(() => {
+          onRejected(this.reason);
+        }, 0);
+      })
+      break;
+  }
+}
+```
+
+## then方法链式调用
+
+保证链式调用，即`then`方法中要返回一个新的`promise`，并将`then`方法的返回值进行`resolve`。
+
+> 注意：这种实现并不能保证`then`方法中返回一个新的`promise`，只能保证链式调用。
+
+```js
+MyPromise.prototype.then = function (onFulfilled, onRejected) {
+  if (typeof onFulfilled != 'function') {
+    onFulfilled = function (value) {
+      return value;
+    }
+  }
+  if (typeof onRejected != 'function') {
+    onRejected = function (reason) {
+      throw reason;
+    }
+  }
+  const promise2 = new MyPromise((resolve, reject) => {
+    switch (this.state) {
+      case FULFILLED:
+        setTimeout(() => {
+          try {
+            const x = onFulfilled(this.value);
+            resolve(x);
+          } catch (reason) {
+            reject(reason);
+          }
+        }, 0);
+        break;
+      case REJECTED:
+        setTimeout(() => {
+          try {
+            const x = onRejected(this.reason);
+            resolve(x);
+          } catch (reason) {
+            reject(reason);
+          }
+        }, 0);
+        break;
+      case PENDING:
+        this.onFulfilledCallbacks.push(() => {
+          setTimeout(() => {
+            try {
+              const x = onFulfilled(this.value);
+              resolve(x);
+            } catch (reason) {
+              reject(reason);
+            }
+          }, 0);
+        })
+        this.onRejectedCallbacks.push(() => {
+          setTimeout(() => {
+            try {
+              const x = onRejected(this.reason);
+              resolve(x);
+            } catch (reason) {
+              reject(reason);
+            }
+          }, 0);
+        })
+        break;
+    }
+  })
+  return promise2;
+}
+```
+
+## catch方法
+
+若上面没有定义`reject`方法，所有的异常会走向`catch`方法：
+
+```js
+MyPromise.prototype.catch = function(onRejected) {
+  return this.then(null, onRejected);
+};
+```
+
+
+## finally方法
+
+不管是`resolve`还是`reject`都会调用`finally`。
+
+```js
+MyPromise.prototype.finally = function(fn) {
+  return this.then(value => {
+      fn();
+      return value;
+  }, reason => {
+      fn();
+      throw reason;
+  });
+};
+```
+
+## Promise.resolve
+
+
+`Promise.resolve`用来生成一个直接处于`FULFILLED`状态的Promise。
+
+```js
+MyPromise.reject = function(value) {
+  return new MyPromise((resolve, reject) => {
+    resolve(value);
+  });
+};
+```
+
+## Promise.reject
+
+`Promise.reject`用来生成一个直接处于`REJECTED`状态的Promise。
+
+```js
+MyPromise.reject = function(reason) {
+  return new MyPromise((resolve, reject) => {
+    reject(reason);
+  });
+};
+```
+
+
+## all方法
+
+接受一个`promise`数组，当所有`promise`状态`resolve`后，执行`resolve`
+
+```js
+MyPromise.all = function (promises) {
+  return new Promise((resolve, reject) => {
+    if (promises.length === 0) {
+      resolve([]);
+    } else {
+      let result = [];
+      let index = 0;
+      for (let i = 0; i < promises.length; i++) {
+        promises[i].then(data => {
+          result[i] = data;
+          if (++index === promises.length) {
+            resolve(result);
+          }
+        }, err => {
+          reject(err);
+          return;
+        });
+      }
+    }
+  });
+}
+```
+
+## race方法
+
+
+接受一个`promise`数组，当有一个`promise`状态`resolve`后，执行`resolve`
+
+```js
+MyPromise.race = function (promises) {
+  return new Promise((resolve, reject) => {
+    if (promises.length === 0) {
+      resolve();
+    } else {
+      let index = 0;
+      for (let i = 0; i < promises.length; i++) {
+        promises[i].then(data => {
+          resolve(data);
+        }, err => {
+          reject(err);
+          return;
+        });
+      }
+    }
+  });
+}
+```
+
 
