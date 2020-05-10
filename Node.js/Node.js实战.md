@@ -2582,22 +2582,19 @@ const jquery = require('jquery');
 - 工具——Sublime Text、 Dash、 xScope、 Pixelmator、 Sketch、 GitHub。
 - 教育背景—— 高中毕业，从业余爱好者开始，最终变成了职业程序员。
 
-菲尔通常是跟设计师和用户体验专家一起，用敏捷的方式开发或评审新功能，同时也要承担
-维护和错误修订工作。
+菲尔通常是跟设计师和用户体验专家一起，用敏捷的方式开发或评审新功能，同时也要承担维护和错误修订工作。
 
 ### 5.1.2 纳迪娜：开源开发者
 
 纳迪娜之前是一名企业 Web 开发人员，做得挺成功，后来开始自己接活了。
 
 - 职业情况——自由职业， JavaScript 专家。
-- 工作类型——后台开发，偶尔用 Go 和 Erlang 做高性能程序。还写了一个开源的电影目录
-Web 程序。
+- 工作类型——后台开发，偶尔用 Go 和 Erlang 做高性能程序。还写了一个开源的电影目录Web 程序。
 - 电脑——高端 PC， Linux。
 - 工具—— Vim、 tmux、 Mercurial 以及 shell 里的所有工具。
 - 教育背景——计算机科学专业毕业。
 
-纳迪娜每天都要给她的两个主要客户和自己的开源项目协调出足够的时间。她给客户做的
-项目是测试驱动的，但她的开源项目更偏向于功能驱动。
+纳迪娜每天都要给她的两个主要客户和自己的开源项目协调出足够的时间。她给客户做的项目是测试驱动的，但她的开源项目更偏向于功能驱动。
 
 ### 5.1.3 爱丽丝：产品开发者
 
@@ -2609,49 +2606,40 @@ Web 程序。
 - 工具——Xcode、 Atom、 Babel、 Perforce。
 - 教育背景——理科毕业，现在任职的这家创业公司的前五名员工之一。
 
-爱丽丝用 Xcode 写 Objective-C 和 Swift，但有些勉强，其实她更喜欢 JavaScript， ES2015 和
-Babel 让她觉得很兴奋！开发新的 Web 服务支持公司的 iOS 和桌面程序对她来说只是开胃小菜，
-爱丽丝希望能经常做基于 React 的 Web 程序。
+爱丽丝用 Xcode 写 Objective-C 和 Swift，但有些勉强，其实她更喜欢 JavaScript， ES2015 和 Babel 让她觉得很兴奋！开发新的 Web 服务支持公司的 iOS 和桌面程序对她来说只是开胃小菜，爱丽丝希望能经常做基于 React 的 Web 程序。
 
 用户定义好了，接下来定义术语框架。
 
 ## 5.2 框架是什么
 
-从技术角度来看，本章介绍的一些服务器端框架根本不是框架。关于框架这个词，不同的程
-序员对它有不同的理解。在 Node 社区，这些项目大部分都应该叫模块，但更细微的定义有助于
-我们对这一族的库进行比较。
+从技术角度来看，本章介绍的一些服务器端框架根本不是框架。关于框架这个词，不同的程序员对它有不同的理解。在 Node 社区，这些项目大部分都应该叫模块，但更细微的定义有助于我们对这一族的库进行比较。
 
 LoopBack 项目用了如下定义。
 
-- API 框架——用于搭建 Web API 的库，有协助组织程序结构的框架支持。 LoopBack 将自
-己定义为这类框架。
-- HTTP 服务器库——所有基于 Express 的项目都可以归为这一类，包括 Koa 和 Kraken.js。
-这些库帮我们围绕 HTTP 动词和路由搭建程序。
+- API 框架——用于搭建 Web API 的库，有协助组织程序结构的框架支持。 LoopBack 将自己定义为这类框架。
+- HTTP 服务器库——所有基于 Express 的项目都可以归为这一类，包括 Koa 和 Kraken.js。这些库帮我们围绕 HTTP 动词和路由搭建程序。
 - HTTP 服务器框架——用来搭建模块化 HTTP 服务器的框架。 hapi 就是这种框架。
 - Web MVC 框架——模型视图控制器框架， Sail.js 就是这种框架。
-- 全栈框架——这些框架在服务器端和浏览器上用的都是 JavaScript，并且两端可以共享代
-码。这被称为同构代码。 DerbyJS 是个全栈 MVC 框架。
+- 全栈框架——这些框架在服务器端和浏览器上用的都是 JavaScript，并且两端可以共享代码。这被称为同构代码。 DerbyJS 是个全栈 MVC 框架。
 
-大多数 Node 开发人员都把框架理解为第二种： HTTP 服务器库。下一节介绍的 Koa 就是一
-个服务器库，它独辟蹊径，用 ES2015 语法中新创的生成器来定义 HTTP 中间件。
+大多数 Node 开发人员都把框架理解为第二种： HTTP 服务器库。下一节介绍的 Koa 就是一个服务器库，它独辟蹊径，用 ES2015 语法中新创的生成器来定义 HTTP 中间件。
 
 ## 5.3 Koa
 
-Koa 是以 Express 为基础开发的，但它用 ES2015 中的生成器语法来定义中间件。也就是说我
-们几乎可以编写异步的中间件。这在某种程度上解决了中间件重度依赖回调的问题。在 Koa 中可
-以用 yield 退出和重入中间件。表 5-1 是 Koa 的主要特点。
+Koa 是以 Express 为基础开发的，但它用 ES2015 中的生成器语法来定义中间件。也就是说我们几乎可以编写异步的中间件。这在某种程度上解决了中间件重度依赖回调的问题。在 Koa 中可以用 yield 退出和重入中间件。表 5-1 是 Koa 的主要特点。
 
 表 5-1 Koa 的主要特点
-库类型 HTTP 服务器库
-功能特性 基于生成器的中间件，请求/响应模型
-建议应用 轻型 Web 程序、不严格的 HTTP API、单页 Web 程序
-插件架构 中间件
-文档 http://koajs.com/
-热门程度 GitHub 10 000 颗星
-授权许可 MIT
 
-下面这段代码演示了在 Koa 中如何用 yield 转到下一个中间件组件，等它执行完后再回来
-继续执行调用者中间件的逻辑。
+| 库类型 | HTTP 服务器库 |
+|---|---|
+| 功能特性 | 基于生成器的中间件，请求/响应模型 |
+| 建议应用 | 轻型 Web 程序、不严格的 HTTP API、单页 Web 程序 |
+| 插件架构 | 中间件 |
+| 文档 | http://koajs.com/ |
+| 热门程度 | GitHub 10 000 颗星 |
+| 授权许可 | MIT |
+
+下面这段代码演示了在 Koa 中如何用 yield 转到下一个中间件组件，等它执行完后再回来继续执行调用者中间件的逻辑。
 
 代码清单 5-1 Koa 的中间件顺序
 ```js
@@ -2677,30 +2665,17 @@ app.listen(3000);
   // 位置继续执行
 ```
 
-代码清单 5-1 用生成器 在两个中间件的上下文中切换。注意关键字 function *，这里是
-不可能用箭头函数的。用 yield 关键字 将执行步骤转到中间件的栈中去，然后在下一个中间
-件返回后再回来 。使用生成器函数带来的额外好处是只要设定 this.body 就好了。 Express
-则需要用函数来发送响应： res.send(response)。在 Koa 中间件中， this 就是上下文。每个
-请求都有对应的上下文，用来封装 Node 的 HTTP request 和 response 对象。在需要访问请求
-里的东西时，比如 GET 参数或 cookie，可以通过这个请求上下文来访问。响应也是如此，就像
-代码清单 5-1 里所展示的，设定 this.body 里的值就可以控制送什么给浏览器。
+代码清单 5-1 用生成器 在两个中间件的上下文中切换。注意关键字 function *，这里是不可能用箭头函数的。用 yield 关键字 将执行步骤转到中间件的栈中去，然后在下一个中间件返回后再回来 。使用生成器函数带来的额外好处是只要设定 this.body 就好了。 Express则需要用函数来发送响应： res.send(response)。在 Koa 中间件中， this 就是上下文。每个请求都有对应的上下文，用来封装 Node 的 HTTP request 和 response 对象。在需要访问请求里的东西时，比如 GET 参数或 cookie，可以通过这个请求上下文来访问。响应也是如此，就像代码清单 5-1 里所展示的，设定 this.body 里的值就可以控制送什么给浏览器。
 
-如果你之前用过 Express 中间件和生成器语法，学会 Koa 应该并不难。否则可能不太容易搞
-懂，至少不明白 Koa 这种方式有什么好处。关于 yield 是如何在中间件组件间进行切换的，图 5-1
-给出了更多细节。
+如果你之前用过 Express 中间件和生成器语法，学会 Koa 应该并不难。否则可能不太容易搞懂，至少不明白 Koa 这种方式有什么好处。关于 yield 是如何在中间件组件间进行切换的，图 5-1给出了更多细节。
 
-图 5-1 中的每个阶段都是跟代码清单 5-1 中的数字对应的。首先，在第一个中间件组件里创
-建计时器 ，然后执行跳转到第二个中间件组件里去渲染 body 。在响应发送出去后，回到第
-一个中间件组件继续执行，计算出时间 。用 console.log 在终端里输出，请求完成 。注意，
-阶段 在代码清单 5-1 中看不出来，它是由 Koa 和 Node 的 HTTP 服务器处理的。
+图 5-1 中的每个阶段都是跟代码清单 5-1 中的数字对应的。首先，在第一个中间件组件里创建计时器 ，然后执行跳转到第二个中间件组件里去渲染 body 。在响应发送出去后，回到第一个中间件组件继续执行，计算出时间 。用 console.log 在终端里输出，请求完成 。注意，阶段 在代码清单 5-1 中看不出来，它是由 Koa 和 Node 的 HTTP 服务器处理的。
 
 图 5-1 Koa 中间件的执行顺序
 
 ### 5.3.1 设置
 
-Koa 项目的设置工作包括安装模块和定义中间件。如果需要更多功能，比如要通过路由 API
-定义和响应各种 HTTP 请求，则需要安装路由中间件。也就是说典型的工作流程需要事先规划好
-项目要用到的中间件，所以我们先要研究一下有哪些流行的模块。
+Koa 项目的设置工作包括安装模块和定义中间件。如果需要更多功能，比如要通过路由 API 定义和响应各种 HTTP 请求，则需要安装路由中间件。也就是说典型的工作流程需要事先规划好项目要用到的中间件，所以我们先要研究一下有哪些流行的模块。
 
 > 点 评  
 > 爱丽丝：“作为产品开发人员，我喜欢 Koa 的最小功能集，因为我们的项目需求独特，我
@@ -2713,8 +2688,7 @@ Koa 项目的设置工作包括安装模块和定义中间件。如果需要更�
 
 ### 5.3.2 定义路由
 
-koa-router 是一个流行的路由器中间件组件。它也是基于 HTTP 动词的，这点跟 Express 一样，
-不同之处是它的链式 API。下面这段代码演示了它的路由定义：
+koa-router 是一个流行的路由器中间件组件。它也是基于 HTTP 动词的，这点跟 Express 一样，不同之处是它的链式 API。下面这段代码演示了它的路由定义：
 
 ```js
 router
@@ -2729,8 +2703,7 @@ router
 });
 ```
 
-可以提供额外的参数给路由命名。这可以用来生成 URL，并不是所有 Node Web 框架都支持
-这一功能。这里有个例子：
+可以提供额外的参数给路由命名。这可以用来生成 URL，并不是所有 Node Web 框架都支持这一功能。这里有个例子：
 
 ```js
 router.url('pages-update', '99');
@@ -2746,37 +2719,29 @@ router.url('pages-update', '99');
 
 ### 5.3.3 REST API
 
-Koa 没有提供实现 RESTful API 所必需的工具，只能借助某种路由处理中间件。前面那个例
-子可以扩展一下，在 Koa 中实现 RESTful API。
+Koa 没有提供实现 RESTful API 所必需的工具，只能借助某种路由处理中间件。前面那个例子可以扩展一下，在 Koa 中实现 RESTful API。
 
 ### 5.3.4 优点
 
-以前可以说 Koa 在采用生成器语法上有先发优势，但随着 ES2015 在 Node 社区中的普及，
-这已经算不上是 Koa 的优势了。 Koa 现在的主要优势是它很精简，还有一些非常棒的第三方模块，
-Koa 的维基百科上有更详细的介绍。因为语法优雅，能根据项目的具体需求量身定制，所以 Koa
-深受开发人员喜爱。
+以前可以说 Koa 在采用生成器语法上有先发优势，但随着 ES2015 在 Node 社区中的普及，这已经算不上是 Koa 的优势了。 Koa 现在的主要优势是它很精简，还有一些非常棒的第三方模块，Koa 的维基百科上有更详细的介绍。因为语法优雅，能根据项目的具体需求量身定制，所以 Koa 深受开发人员喜爱。
 
 ### 5.3.5 弱点
 
-Koa 的可配置水平让一些开发人员望而却步。除非有现成的代码共享策略，否则用 Koa 创建
-太多小项目会导致低下的代码复用率。
+Koa 的可配置水平让一些开发人员望而却步。除非有现成的代码共享策略，否则用 Koa 创建太多小项目会导致低下的代码复用率。
 
 ## 5.4 Kraken
 
-Kraken 是基于 Express 的，又通过 Paypal 开发的一些定制模块添了些新功能。为程序提供安
-全层的 Lusca 是其中特别实用的一个模块。虽然 Lusca 可以独立于 Kraken 使用，但 Kraken 还有
-一个好处是它预定义的项目结构。 Express 和 Koa 程序对项目结构没有任何要求，相较之下，
-Kraken 在创建新项目上提供了更多帮助。表 5-2 中是 Kraken 的主要特性。
+Kraken 是基于 Express 的，又通过 Paypal 开发的一些定制模块添了些新功能。为程序提供安全层的 Lusca 是其中特别实用的一个模块。虽然 Lusca 可以独立于 Kraken 使用，但 Kraken 还有一个好处是它预定义的项目结构。 Express 和 Koa 程序对项目结构没有任何要求，相较之下，Kraken 在创建新项目上提供了更多帮助。表 5-2 中是 Kraken 的主要特性。
 
 表 5-2 Kraken 的主要特性
-
-库类型 HTTP 服务器库
-功能特性 对象项目结构要求严格、模型、模板（ Dust）、安全强化（ Lusca）、配置管理、国际化
-建议应用 企业 Web 程序
-插件架构 Express 中间件
-文档 https://www.kraken.com/help/api
-热门程度 GitHub 4000 颗星
-授权许可 Apache 2.0
+| 库类型 | HTTP 服务器库 |
+|---|---|
+| 功能特性 | 对象项目结构要求严格、模型、模板（ Dust）、安全强化（ Lusca）、配置管理、国际化 |
+| 建议应用 | 企业 Web 程序 |
+| 插件架构 | Express 中间件 |
+| 文档 | https://www.kraken.com/help/api |
+| 热门程度 | GitHub 4000 颗星 |
+| 授权许可 | Apache 2.0 |
 
 ### 5.4.1 设置
 
@@ -2790,9 +2755,7 @@ app.use(kraken());
 app.listen(3000);
 ```
 
-也可以用 Kraken 的 Yeoman 生成器创建一个新项目。 Yeoman 是用来生成新项目的工具，我
-们可以用它的生成器生成各种框架的初始项目。下面是用 Yeoman 创建 Kraken 项目所需的步骤，
-这里使用了 Kraken 偏好的文件系统结构：
+也可以用 Kraken 的 Yeoman 生成器创建一个新项目。 Yeoman 是用来生成新项目的工具，我们可以用它的生成器生成各种框架的初始项目。下面是用 Yeoman 创建 Kraken 项目所需的步骤，这里使用了 Kraken 偏好的文件系统结构：
 
 ```
 $ npm install -g yo generator-kraken bower grunt-cli
@@ -2811,13 +2774,11 @@ Tell me a bit about your application:
 ...
 ```
 
-生成器会创建新的目录，不用我们自己动手。在生成器完成了自己的工作后，你可以启动服
-务器，然后访问 http://localhost:8000 看看它生成了什么。
+生成器会创建新的目录，不用我们自己动手。在生成器完成了自己的工作后，你可以启动服务器，然后访问 http://localhost:8000 看看它生成了什么。
 
 ### 5.4.2 定义路由
 
-在 Kraken 中，路由被定义为跟控制器在一起。这跟 Express 把路由定义和路由处理器分开的
-做法不同， Kraken 采用了 MVC 的方式，由于 ES6 箭头函数的使用，这样更轻便：
+在 Kraken 中，路由被定义为跟控制器在一起。这跟 Express 把路由定义和路由处理器分开的做法不同， Kraken 采用了 MVC 的方式，由于 ES6 箭头函数的使用，这样更轻便：
 
 ```js
 module.exports = (router) => {
@@ -2838,8 +2799,7 @@ res.render('people/edit', people[req.param.id]);
 };
 ```
 
-Kraken 的路由 API 是 express-enrouten，并且它会根据文件所在的目录推断路由。比如说，
-如果有下面这样的目录结构：
+Kraken 的路由 API 是 express-enrouten，并且它会根据文件所在的目录推断路由。比如说，如果有下面这样的目录结构：
 
 ```
 controllers
@@ -2852,54 +2812,43 @@ controllers
 
 ### 5.4.3 REST API
 
-Kraken 可以做 REST API，但没有什么特别的支持。 express-enrouten 可以跟解析 JSON 的中
-间件相结合，所以能实现 REST API。
+Kraken 可以做 REST API，但没有什么特别的支持。 express-enrouten 可以跟解析 JSON 的中间件相结合，所以能实现 REST API。
 
-Kraken 的路由器支持 DELETE、 GET、 POST、 PUT 等 HTTP 动词，在实现 REST 时跟 Express
-类似。
+Kraken 的路由器支持 DELETE、 GET、 POST、 PUT 等 HTTP 动词，在实现 REST 时跟 Express 类似。
 
 ### 5.4.4 优点
 
-由于生成器的原因， Kraken 项目从大体上来看都差不多。虽然 Express 项目的目录结构可以
-随心所欲，但 Kraken 项目一般不会改变文件和目录的位置。
+由于生成器的原因， Kraken 项目从大体上来看都差不多。虽然 Express 项目的目录结构可以随心所欲，但 Kraken 项目一般不会改变文件和目录的位置。
 
-因为模板库（ Dust）和国际化库（ Makara）都是 Kraken 自带的，所以它们两个可以无缝集
-成。在编写支持国际化的 Dust 模板时，需要指定键：
+因为模板库（ Dust）和国际化库（ Makara）都是 Kraken 自带的，所以它们两个可以无缝集成。在编写支持国际化的 Dust 模板时，需要指定键：
 
 ```html
 <h1>{@pre type="content" key="greeting"/}</h1>
 ```
 
-还要添加名称符合 locales/language-code/view-name.properties 模式的属性文件。这些属性文
-件中只是简单的键/值对，比如说，如果之前那个例子中的视图文件是 public/templates/profile.dust，那么对应的属性文件应该是 locales/US/en/profile.properties。
+还要添加名称符合 locales/language-code/view-name.properties 模式的属性文件。这些属性文件中只是简单的键/值对，比如说，如果之前那个例子中的视图文件是 public/templates/profile.dust，那么对应的属性文件应该是 locales/US/en/profile.properties。
+
 > 点 评  
-> 菲尔：“Kraken 的文件结构和用控制器处理路由这两点非常对我的胃口。我们团队里有人
-会 Django 和 RoR，让他们换成 Kraken 应该不会太难。 Kraken 的文档看起来也很棒，博客上有
-很多干货。”  
->爱丽丝：“我喜欢用 Lusca 增加程序安全性这个想法，但 Kraken 中也有我不需要的东西。
-我准备抛开 Kraken，单独试试 Lusca。”
+> 菲尔：“Kraken 的文件结构和用控制器处理路由这两点非常对我的胃口。我们团队里有人会 Django 和 RoR，让他们换成 Kraken 应该不会太难。 Kraken 的文档看起来也很棒，博客上有很多干货。”  
+>爱丽丝：“我喜欢用 Lusca 增加程序安全性这个想法，但 Kraken 中也有我不需要的东西。我准备抛开 Kraken，单独试试 Lusca。”
 
 ### 5.4.5 弱点
 
-Kraken 比 Koa 或 Express 难学。一些在 Express 中可以通过编程完成的任务，在 Kraken 中要
-通过 JSON 配置文件来做，并且有时候很难确定到底要用哪些 JSON 属性才能得到预期结果。
+Kraken 比 Koa 或 Express 难学。一些在 Express 中可以通过编程完成的任务，在 Kraken 中要通过 JSON 配置文件来做，并且有时候很难确定到底要用哪些 JSON 属性才能得到预期结果。
 
 ## 5.5 hapi
 
-hapi 是个服务器框架，它的重点是 Web API 的开发。 hapi 有自己的插件 API，完全没有客户
-端支持，也没有数据模型层。 hapi 有路由 API 和它自己的 HTTP 服务器封装。在 hapi 中设计 API，
-
-要把服务器当作主抽象。从 DevOps 的观点来看， hapi 自带的连接和日志功能使得它易于扩展和
-管理。表 5-3 中是 hapi 的主要特性。
+hapi 是个服务器框架，它的重点是 Web API 的开发。 hapi 有自己的插件 API，完全没有客户端支持，也没有数据模型层。 hapi 有路由 API 和它自己的 HTTP 服务器封装。在 hapi 中设计 API，要把服务器当作主抽象。从 DevOps 的观点来看， hapi 自带的连接和日志功能使得它易于扩展和管理。表 5-3 中是 hapi 的主要特性。
 
 表 5-3 hapi 的主要特性
-库类型 HTTP 服务器库
-功能特性 高层服务器容器抽象，安全的头部信息
-建议应用 单页 Web 程序、 HTTP API
-插件架构 hapi 插件
-文档 http://hapijs.com/api
-热门程度 GitHub 6000 颗星
-授权许可 BSD 3 条款
+| 库类型 | HTTP 服务器库 |
+|---|---|
+| 功能特性 | 高层服务器容器抽象，安全的头部信息 |
+| 建议应用 | 单页 Web 程序、 HTTP API |
+| 插件架构 | hapi 插件 |
+| 文档 | http://hapijs.com/api |
+| 热门程度 | GitHub 6000 颗星 |
+| 授权许可 | BSD 3 条款 |
 
 ### 5.5.1 设置
 
@@ -2935,9 +2884,7 @@ console.log('Server running at:', server.info.uri);
 
 ### 5.5.2 定义路由
 
-hapi 有创建路由的 API。要创建路由，必须提供一个包含请求方法、 URL 和回调函数的对象，5.5 hapi 81
-
-其中的回调函数就是路由处理器。下面是带处理器方法的路由定义示例。
+hapi 有创建路由的 API。要创建路由，必须提供一个包含请求方法、 URL 和回调函数的对象，其中的回调函数就是路由处理器。下面是带处理器方法的路由定义示例。
 
 代码清单 5-3 hapi 的入门服务器
 const Hapi = require('hapi');
@@ -2960,24 +2907,19 @@ throw err;
 console.log('Server running at:', server.info.uri);
 });
 
-这段代码定义了一个路由，以及将文本 hello world 作为了响应的处理器。把它添加到 server.js
-中。执行 npm start 命令运行这个服务器，然后打开 http://localhost:8000/hello 看看响应结果。
+这段代码定义了一个路由，以及将文本 hello world 作为了响应的处理器。把它添加到 server.js 中。执行 npm start 命令运行这个服务器，然后打开 http://localhost:8000/hello 看看响应结果。
 
-hapi 没有预定义的目录结构或任何 MVC 特性，它完全是基于服务器的。从这点来看， hapi
-跟 Express 很像。然而 hapi 的 request 和 reply 路由处理器签名跟 Express 的 req 和 res 不同。
+hapi 没有预定义的目录结构或任何 MVC 特性，它完全是基于服务器的。从这点来看， hapi 跟 Express 很像。然而 hapi 的 request 和 reply 路由处理器签名跟 Express 的 req 和 res 不同。
 
-hapi 的请求和响应对象也不同于 Express 中的对等对象：必须调用 reply，而不是操作 Express
-的 res 对象。 Express 更像 Node 自带的 HTTP 服务器。
+hapi 的请求和响应对象也不同于 Express 中的对等对象：必须调用 reply，而不是操作 Express 的 res 对象。 Express 更像 Node 自带的 HTTP 服务器。
 
 更加复杂的功能，比如提供静态文件，需要靠插件来完成。
 
 ### 5.5.3 插件
 
-hapi 有自己的插件架构，并且大部分项目都需要靠插件完成认证和输入校验等功能。 inert
-是大多数项目都需要的简单插件，它提供了静态文件和目录处理器。
+hapi 有自己的插件架构，并且大部分项目都需要靠插件完成认证和输入校验等功能。 inert 是大多数项目都需要的简单插件，它提供了静态文件和目录处理器。
 
-要将 inert 添加到 hapi 项目中，需要先用 server.register 方法注册这个插件。由此添加
-发送单个文件的 reply.file 方法和一个目录处理器。下面来看一下目录处理器。
+要将 inert 添加到 hapi 项目中，需要先用 server.register 方法注册这个插件。由此添加发送单个文件的 reply.file 方法和一个目录处理器。下面来看一下目录处理器。
 
 首先确保你已经创建了基于代码清单 5-2 的项目。然后，安装 inert：
 
@@ -3004,14 +2946,11 @@ index: true
 });
 ```
 
-除了函数， hapi 路由还可以接受插件的配置对象。在这段代码中， directory 对象中就是
-inert 的配置参数，其含义是提供当前目录中的静态文件，并显示该目录下文件的索引。这跟
-Express 的中间件不同。从这个例子可以看出，在 hapi 程序中，插件是如何扩展服务器的行为的。
+除了函数， hapi 路由还可以接受插件的配置对象。在这段代码中， directory 对象中就是inert 的配置参数，其含义是提供当前目录中的静态文件，并显示该目录下文件的索引。这跟Express 的中间件不同。从这个例子可以看出，在 hapi 程序中，插件是如何扩展服务器的行为的。
 
 ### 5.5.4 REST API
 
-hapi 支持 HTTP 动词和 URL 参数化，允许用标准的 hapi 路由 API 实现 REST API。下面这段
-代码是一个普通的删除方法的路由：
+hapi 支持 HTTP 动词和 URL 参数化，允许用标准的 hapi 路由 API 实现 REST API。下面这段代码是一个普通的删除方法的路由：
 
 ```js
 server.route({
@@ -3024,134 +2963,104 @@ reply(true);
 });
 ```
 
-另外，有些插件让创建 RESTful API 变得容易了。比如说， hapi-sequelize-crud 可以基于
-Sequelize 模型自动生成 RESTful API。
+另外，有些插件让创建 RESTful API 变得容易了。比如说， hapi-sequelize-crud 可以基于 Sequelize 模型自动生成 RESTful API。
 
 > 点 评  
-> 菲尔： “我一定要试试 hapi-sequelize-crud，因为我们已经有程序在用 PostgreSQL 和
-MySQL 了，所以 Sequelize 应该会合适。但 hapi 自己没有提供这样的功能，如果将来这个插
-件没人支持就麻烦了，所以我不太确定 hapi 是否适合代理场景。”  
-> 爱丽丝：“作为产品开发人员，我对 hapi 很感兴趣，因为它像 Express 一样，坚持走极简
-路线，另外插件 API 也更加正式，富有表现力。”  
-> 纳迪娜：“我觉得可以给 hapi 做几个开源插件，并且现有插件写得都不错。看起来 hapi
-的受众在技术上没问题，这也是它能吸引我的原因之一。”
+> 菲尔： “我一定要试试 hapi-sequelize-crud，因为我们已经有程序在用 PostgreSQL 和MySQL 了，所以 Sequelize 应该会合适。但 hapi 自己没有提供这样的功能，如果将来这个插件没人支持就麻烦了，所以我不太确定 hapi 是否适合代理场景。”  
+> 爱丽丝：“作为产品开发人员，我对 hapi 很感兴趣，因为它像 Express 一样，坚持走极简路线，另外插件 API 也更加正式，富有表现力。”  
+> 纳迪娜：“我觉得可以给 hapi 做几个开源插件，并且现有插件写得都不错。看起来 hapi 的受众在技术上没问题，这也是它能吸引我的原因之一。”
 
 ### 5.5.5 优点
 
-hapi 的插件 API 是它最大的优势。插件不仅能扩展 hapi 的服务器，还可以添加各种各样的功
-能，比如数据校验和模板等。另外，由于 hapi 是基于 HTTP 服务器的，所以适合用在某些部署场
-景中。如果要部署很多相互连接的服务器，或者需要做负载均衡时， hapi 基于服务器的 API 可能
-比 Express 或 Koa 好用。
+hapi 的插件 API 是它最大的优势。插件不仅能扩展 hapi 的服务器，还可以添加各种各样的功能，比如数据校验和模板等。另外，由于 hapi 是基于 HTTP 服务器的，所以适合用在某些部署场景中。如果要部署很多相互连接的服务器，或者需要做负载均衡时， hapi 基于服务器的 API 可能比 Express 或 Koa 好用。
 
 ### 5.5.6 弱点
 
-hapi 的弱点跟 Express 一样：极简，所以对项目结构没有把控。我们永远也不知道哪个插件
-的开发会停下来，所以过于依赖插件可能会造成将来难以维护。
+hapi 的弱点跟 Express 一样：极简，所以对项目结构没有把控。我们永远也不知道哪个插件的开发会停下来，所以过于依赖插件可能会造成将来难以维护。
 
 ## 5.6 Sails.js
 
-我们之前介绍的都是极简的服务器库。接下来要讲的 Sails 跟它们有本质上的区别，这是一
-个模型视图控制器框架。 Sails 有一个跟数据库协同作用的对象关系映射（ ORM）库，还能自
-动生成 REST API。它支持 WebSocket 等现代化的功能。如果你喜欢用 React 或 Angular，应该会
-很高兴它是前端无关的： Sails 不是全栈框架，所以可以跟任何前端库或框架配合使用。表 5-4 是
-Sails 的主要特性。
+我们之前介绍的都是极简的服务器库。接下来要讲的 Sails 跟它们有本质上的区别，这是一个模型-视图-控制器框架。 Sails 有一个跟数据库协同作用的对象关系映射（ ORM）库，还能自动生成 REST API。它支持 WebSocket 等现代化的功能。如果你喜欢用 React 或 Angular，应该会很高兴它是前端无关的： Sails 不是全栈框架，所以可以跟任何前端库或框架配合使用。表 5-4 是Sails 的主要特性。
 
 表 5-4 Sails 的主要特性
-库类型 MVC 框架
-功能特性 有支持数据库的 ORM，生成 REST API， WebSocket
-建议应用 Rails 风格的 MVC 程序
-插件架构 Express 中间件
-文档 http://sailsjs.org/documentation/concepts
-热门程度 GitHub 6000 颗星
-授权许可 BSD 3 条款
+| 库类型 | MVC 框架 |
+|---|---|
+| 功能特性 | 有支持数据库的 ORM，生成 REST API， WebSocket |
+| 建议应用 | Rails 风格的 MVC 程序 |
+| 插件架构 | Express 中间件 |
+| 文档 | http://sailsjs.org/documentation/concepts |
+| 热门程度 | GitHub 6000 颗星 |
+| 授权许可 | BSD 3 条款 |
+
 > 点 评  
 > 菲尔：“听起来就是我想要的，它的缺点是什么？”  
-然它主要是用来做服务器的，可能会适合我们的产品。”
+> 爱丽丝：“我觉得这可能不适合我，因为我们已经把时间用在开发 React 程序上了，但既然它主要是用来做服务器的，可能会适合我们的产品。”
 
 ### 5.6.1 设置
 
-Sails 有项目生成器，所以最好是全局安装，这样创建新项目会更轻松。用 npm 安装，然后
-用 sails new 创建项目：
+Sails 有项目生成器，所以最好是全局安装，这样创建新项目会更轻松。用 npm 安装，然后用 sails new 创建项目：
 
 ```
 npm install -g sails
 sails new example-project
 ```
 
-之后会出现一个新创建的目录，其中有 package.json 和基本的 Sails 依赖项。这个新项目包含
-爱丽丝：“我觉得这可能不适合我，因为我们已经把时间用在开发 React 程序上了，但既
-了 Sails 本身、 EJS 和 Grunt。运行 npm start 或 sails lift 都可以启动服务器。服务器跑起
-来后，访问 http://localhost:1337 可以看到自带的初始页。
+之后会出现一个新创建的目录，其中有 package.json 和基本的 Sails 依赖项。这个新项目包含了 Sails 本身、 EJS 和 Grunt。运行 npm start 或 sails lift 都可以启动服务器。服务器跑起来后，访问 http://localhost:1337 可以看到自带的初始页。
 
 ### 5.6.2 定义路由
 
-Sails 中将路由称为定制路由，打开 config/routes.js，在输出的路由中添加新的属性即可添加
-路由。属性的格式是 HTTP 动词加上部分 URL。比如像下面这样：
+Sails 中将路由称为定制路由，打开 config/routes.js，在输出的路由中添加新的属性即可添加路由。属性的格式是 HTTP 动词加上部分 URL。比如像下面这样：
 
 ```js
 module.exports.routes = {
 'get /example': { view: 'example' },
-'post /items': 'ItemController.create
+'post /items': 'ItemController.create'
 };
 ```
 
-第一个路由需要文件 view/example.ejs。第二个路由需要有 create 方法的 api/controllers/
-ItemController。运行命令 sails generate controller item create 可以生成带有 create
-方法的控制器。也可以用类似的命令生成 RESTful API。
+第一个路由需要文件 view/example.ejs。第二个路由需要有 create 方法的 api/controllers/ItemController。运行命令 sails generate controller item create 可以生成带有 create 方法的控制器。也可以用类似的命令生成 RESTful API。
 
 ### 5.6.3 REST API
 
-Sails 将数据库模型和控制器结合进了 API 中，可以用命令 sails generate api resourcename 生成 RESTful API。要使用数据库，首先需要安装数据库适配器。找到 Waterline MySQL 包
-的名字，然后把它添加到项目中：
+Sails 将数据库模型和控制器结合进了 API 中，可以用命令 sails generate api resourcename 生成 RESTful API。要使用数据库，首先需要安装数据库适配器。找到 Waterline MySQL 包的名字，然后把它添加到项目中：
 
 ```
 npm install --save waterline sails-mysql
 ```
 
-接下来，打开 config/connections.js，将 MySQL 服务器的连接信息填好。 Sails 模型文件中可
-以指定数据库连接，所以不同的模型可以使用不同的数据库。也就是说可以把用户会话数据放在
-Redis 之类的数据库中，而把需要持久保存的数据放到 MySQL 这样的关系型数据库中。
+接下来，打开 config/connections.js，将 MySQL 服务器的连接信息填好。 Sails 模型文件中可以指定数据库连接，所以不同的模型可以使用不同的数据库。也就是说可以把用户会话数据放在Redis 之类的数据库中，而把需要持久保存的数据放到 MySQL 这样的关系型数据库中。
 
-Waterline 是 Sails 的数据库系统库，除了支持多个数据库，它还能定义表和列名，以支持遗
-留的数据库模式。另外，它的查询 API 支持 promise，因此查询看起来很像现代化的 JavaScript。
+Waterline 是 Sails 的数据库系统库，除了支持多个数据库，它还能定义表和列名，以支持遗留的数据库模式。另外，它的查询 API 支持 promise，因此查询看起来很像现代化的 JavaScript。
 
 > 点 评  
-> 菲尔：“听起来非常适合我们，首先是可以轻松创建 API，其次是 Waterline 模型能支持已
-有的数据库模式。我们想把一些客户缓慢地从 MySQL 迁移到 PostgreSQL， Waterline 能满足这
-个要求。我们的一些开发人员和设计师用过 RoR，所以我觉得他们马上就能掌握 Sails。”  
+> 菲尔：“听起来非常适合我们，首先是可以轻松创建 API，其次是 Waterline 模型能支持已有的数据库模式。我们想把一些客户缓慢地从 MySQL 迁移到 PostgreSQL， Waterline 能满足这个要求。我们的一些开发人员和设计师用过 RoR，所以我觉得他们马上就能掌握 Sails。”  
 > 爱丽丝：“这个框架里有我们的产品不需要的东西。我觉得 Koa 或 hapi 可能更合适。”
 
 ### 5.6.4 优点
 
-自带的项目创建和 API 生成意味着可以快速设置项目，快速添加典型的 REST API。因为
-Sails 项目的文件系统结构都是一样的，所以也有利于创建新项目和相互协作。 Sails 的创建者
-Mike McNeil 和 Irl Nathan 共同写了本书，叫 Sails in Action，书中阐述了 Sails 对 Node 新手是多么
-友好。
+自带的项目创建和 API 生成意味着可以快速设置项目，快速添加典型的 REST API。因为Sails 项目的文件系统结构都是一样的，所以也有利于创建新项目和相互协作。 Sails 的创建者Mike McNeil 和 Irl Nathan 共同写了本书，叫 Sails in Action，书中阐述了 Sails 对 Node 新手是多么友好。
 
 ### 5.6.5 弱点
 
-Sails 的弱点跟其他服务器端 MVC 框架一样：路由 API 意味着我们在设计程序时必须考虑到
-Sails 的路由特性，并且由于 Waterline 的处理方式，可能很难将数据库模式调整为符合它的要求
-的样子。
+Sails 的弱点跟其他服务器端 MVC 框架一样：路由 API 意味着我们在设计程序时必须考虑到Sails 的路由特性，并且由于 Waterline 的处理方式，可能很难将数据库模式调整为符合它的要求的样子。
 
 ## 5.7 DerbyJS
 
-DerbyJS 是全栈框架，支持数据同步和视图的服务器端渲染。它用到了 MongoDB 和 Redis，
-数据同步层是由 ShareJS 提供的，支持冲突的自动解析。表 5-5 中是 DerbyJS 的主要特性。
+DerbyJS 是全栈框架，支持数据同步和视图的服务器端渲染。它用到了 MongoDB 和 Redis，数据同步层是由 ShareJS 提供的，支持冲突的自动解析。表 5-5 中是 DerbyJS 的主要特性。
 
 表 5-5 DerbyJS 的主要特性
-库类型 全栈框架
-功能特性 有支持数据库的 ORM（ Racer），同构
-建议应用 有服务器端支持的单页 Web 程序
-插件架构 DerbyJS 插件
-文档 http://derbyjs.com/docs/derby-0.6
-热门程度 GitHub 4000 颗星
-授权许可 MIT
+| 库类型 | 全栈框架 |
+|---|---|
+| 功能特性 | 有支持数据库的 ORM（ Racer），同构 |
+| 建议应用 | 有服务器端支持的单页 Web 程序 |
+| 插件架构 | DerbyJS 插件 |
+| 文档 | http://derbyjs.com/docs/derby-0.6 |
+| 热门程度 | GitHub 4000 颗星 |
+| 授权许可 | MIT |
 
 ### 5.7.1 设置
 
-运行 DerbyJS 的例子需要安装 MongoDB 和 Redis。 DerbyJS 的文档里有 Mac OS、 Linux 和
-Windows 上的安装指南。
+运行 DerbyJS 的例子需要安装 MongoDB 和 Redis。 DerbyJS 的文档里有 Mac OS、 Linux 和 Windows 上的安装指南。
 
 要快速创建新的 DerbyJS 项目，需要安装 derby 和 derby-starter。 derby-starter 包是用来引导 Derby 程序的：
 
@@ -3162,8 +3071,7 @@ npm init -f
 npm install --save derby derby-starter derby-debug
 ```
 
-Derby 程序分为几个小程序。创建新的 app 目录，在其中创建三个文件： index.js、 server.js 和
-index.html。下面这个简单的 Derby 程序演示了如何渲染模板。
+Derby 程序分为几个小程序。创建新的 app 目录，在其中创建三个文件： index.js、 server.js 和 index.html。下面这个简单的 Derby 程序演示了如何渲染模板。
 
 代码清单 5-5 Derby app/index.js 文件
 ```js
@@ -3194,19 +3102,13 @@ Holler: <input value="{{hello.message}}">
 <h2>{{hello.message}}</h2>
 ```
 
-在 example-derby-app 目录下运行 node derby/server.js 应该就能运行这个程序。在它运行
-起来之后，只要修改 app/index.html，程序就会重启，也就是说编辑代码和模板时程序会自动实时
-更新。
+在 example-derby-app 目录下运行 node derby/server.js 应该就能运行这个程序。在它运行起来之后，只要修改 app/index.html，程序就会重启，也就是说编辑代码和模板时程序会自动实时更新。
 
 ### 5.7.2 定义路由
 
-DerbyJS 中的路由是用 derby-router 实现的。因为是基于 Express 的，所以 DerbyJS 的路由 API
-跟服务器端路由类似，浏览器中用的也是这个路由模块。在 DerbyJS 程序中点击链接时，它会试
-着在客户端渲染响应。
+DerbyJS 中的路由是用 derby-router 实现的。因为是基于 Express 的，所以 DerbyJS 的路由 API 跟服务器端路由类似，浏览器中用的也是这个路由模块。在 DerbyJS 程序中点击链接时，它会试着在客户端渲染响应。
 
-因为 DerbyJS 是全栈框架，所以它添加路由的方式跟本章中讲到的其他框架不太一样。对于
-基本的路由而言，最理想的添加方式是添加一个视图。打开 apps/app/index.js，用 app.get 添加
-一个路由：
+因为 DerbyJS 是全栈框架，所以它添加路由的方式跟本章中讲到的其他框架不太一样。对于基本的路由而言，最理想的添加方式是添加一个视图。打开 apps/app/index.js，用 app.get 添加一个路由：
 
 ```js
 app.get('hello', '/hello');
@@ -3226,54 +3128,41 @@ p Hello world
 import:(src= "./hello")
 ```
 
-如果你之前运行过npm start，这个程序应该会不断更新，所以打开 http://localhost:3000/hello
-会显示新的视图。
+如果你之前运行过npm start，这个程序应该会不断更新，所以打开 http://localhost:3000/hello 会显示新的视图。
 
-模板中的 index:那行是视图的命名空间。在 DerbyJS 中，视图的名称有用冒号分隔的命名
-空间，所以刚刚创建的是 hello:index。这样做的出发点是为了将视图封起来，以免在大型项
-目中出现冲突。
+模板中的 index:那行是视图的命名空间。在 DerbyJS 中，视图的名称有用冒号分隔的命名空间，所以刚刚创建的是 hello:index。这样做的出发点是为了将视图封起来，以免在大型项目中出现冲突。
 
 ### 5.7.3 REST API
 
-在 DerbyJS 中创建 RESTful API 需要用 Express 添加路由和路由处理器。 DerbyJS 项目中有个
-server.js 文件，可以用 Express 创建服务器。打开 server/routes.js，你会发现一个路由的例子，是用标准的 Express 路由 API 定义的。
+在 DerbyJS 中创建 RESTful API 需要用 Express 添加路由和路由处理器。 DerbyJS 项目中有个server.js 文件，可以用 Express 创建服务器。打开 server/routes.js，你会发现一个路由的例子，是用标准的 Express 路由 API 定义的。
 
-在服务器路由文件中，可以用 app.use 装载另一个 Express 程序，所以可以将 REST API 作
-为一个完全独立的 Express 程序，然后让作为主程序的 DerbyJS 程序装载它。
+在服务器路由文件中，可以用 app.use 装载另一个 Express 程序，所以可以将 REST API 作为一个完全独立的 Express 程序，然后让作为主程序的 DerbyJS 程序装载它。
 
 ### 5.7.4 优点
 
-DerbyJS 有数据库模型 API 和数据同步 API。你可以用它搭建单页 Web 程序和现代化的实时
-程序。因为它自带对 WebSocket 和同步的支持，所以不用我们费心去选择 WebSocket 库，或者如
-何在服务器端和客户端之间同步数据。
+DerbyJS 有数据库模型 API 和数据同步 API。你可以用它搭建单页 Web 程序和现代化的实时程序。因为它自带对 WebSocket 和同步的支持，所以不用我们费心去选择 WebSocket 库，或者如何在服务器端和客户端之间同步数据。
 
 > 点 评  
-> 菲尔：“我们有个客户想要做一个实时的数据可视化项目，所以我觉得用 DerbyJS 应该不
-错。但 DerbyJS 看起来似乎不太好掌握，所以我担心开发人员可能不太愿意接受它。”  
-> 爱丽丝：“作为产品开发者，我几乎找不出让产品需求跟 DerbyJS 架构相匹配的办法，所
-以我觉得它不适合我们的项目。”
+> 菲尔：“我们有个客户想要做一个实时的数据可视化项目，所以我觉得用 DerbyJS 应该不错。但 DerbyJS 看起来似乎不太好掌握，所以我担心开发人员可能不太愿意接受它。”  
+> 爱丽丝：“作为产品开发者，我几乎找不出让产品需求跟 DerbyJS 架构相匹配的办法，所以我觉得它不适合我们的项目。”
 
 ### 5.7.5 弱点
 
-几乎很难说服有服务器端或客户端库使用经验的人使用 DerbyJS。比如说，那些喜欢 React
-的客户端开发人员通常都不想用 DerbyJS。那些熟悉 WebSocket，喜欢做 REST API 或 MVC 项目
-的服务器端开发人员也没有学习 DerbyJS 的动力。
+几乎很难说服有服务器端或客户端库使用经验的人使用 DerbyJS。比如说，那些喜欢 React 的客户端开发人员通常都不想用 DerbyJS。那些熟悉 WebSocket，喜欢做 REST API 或 MVC 项目的服务器端开发人员也没有学习 DerbyJS 的动力。
 
 ## 5.8 Flatiron.js
 
-Flatiron 是 Web 框架，有 URL 路由、数据管理、中间件、插件和日志功能。跟大多数 Web
-框架不同， Flatiron 的模块在设计时就考虑了耦合性，所以可以分开使用。你甚至可以在自己的
-项目中使用其中一个或多个模块。比如说，如果你喜欢日志模块，可以把它放到一个 Express 项
-目中。 Flatiron 的 URL 路由和中间件层不是用 Express 或 Connect 写的，但它的中间件能跟 Connect 兼容。表 5-6 中是 Flatiron 的特性。88 第 5 章 服务器端框架
+Flatiron 是 Web 框架，有 URL 路由、数据管理、中间件、插件和日志功能。跟大多数 Web 框架不同， Flatiron 的模块在设计时就考虑了耦合性，所以可以分开使用。你甚至可以在自己的项目中使用其中一个或多个模块。比如说，如果你喜欢日志模块，可以把它放到一个 Express 项目中。 Flatiron 的 URL 路由和中间件层不是用 Express 或 Connect 写的，但它的中间件能跟 Connect 兼容。表 5-6 中是 Flatiron 的特性。
 
 表 5-6 Flatiron 的特性
-库类型 模块化 MVC 框架
-功能特性 数据库管理层（ Resourceful），解耦的可重用模块
-建议应用 轻量的 MVC 程序，在其他框架中使用 Flatiron 模块
-插件架构 Broadway 插件 API
-文档 https://github.com/flatiron
-热门程度 GitHub 1500 颗星
-授权许可 MIT
+| 库类型 | 模块化 MVC 框架 |
+|---|---|
+| 功能特性 | 数据库管理层（ Resourceful），解耦的可重用模块 |
+| 建议应用 | 轻量的 MVC 程序，在其他框架中使用 Flatiron 模块 |
+| 插件架构 | Broadway 插件 API |
+| 文档 | https://github.com/flatiron |
+| 热门程度 | GitHub 1500 颗星 |
+| 授权许可 | MIT |
 
 ### 5.8.1 设置
 
@@ -3284,8 +3173,7 @@ npm install -g flatiron
 flatiron create example-flatiron-app
 ```
 
-后面这条命令会创建一个新目录，其中有 package.json 和必要的依赖项。运行 npm install
-安装依赖项，然后用 npm start 启动这个程序。
+后面这条命令会创建一个新目录，其中有 package.json 和必要的依赖项。运行 npm install 安装依赖项，然后用 npm start 启动这个程序。
 
 主文件 app.js 看起来跟典型的 Express 程序差不多：
 
@@ -3301,13 +3189,11 @@ this.res.json({ 'hello': 'world' })
 app.start(3000);
 ```
 
-然而它的路由器既不同于 Express，也不同于 Koa。它用 this.res 返回响应，而不是给应
-答器回调的参数。我们来仔细看看 Flatiron 的路由。
+然而它的路由器既不同于 Express，也不同于 Koa。它用 this.res 返回响应，而不是给应答器回调的参数。我们来仔细看看 Flatiron 的路由。
 
 ### 5.8.2 定义路由
 
-Flatiron 的路由库叫 Director。它既能用于服务器端路由，也支持浏览器中的路由，所以可以
-用来制作单页程序。 Director 使用 Express 风格的 HTTP 动词路由：
+Flatiron 的路由库叫 Director。它既能用于服务器端路由，也支持浏览器中的路由，所以可以用来制作单页程序。 Director 使用 Express 风格的 HTTP 动词路由：
 
 ```js
 router.get('/example', example);
@@ -3330,8 +3216,7 @@ this.res.end('Hello, World');
 });
 ```
 
-也可以定义一个路由表对象，把路由 API 当作类来用。这种用法需要初始化一个新的路由器，
-然后用 dispatch 方法来处理 HTTP 请求：
+也可以定义一个路由表对象，把路由 API 当作类来用。这种用法需要初始化一个新的路由器，然后用 dispatch 方法来处理 HTTP 请求：
 
 ```js
 const http = require('http');
@@ -3349,8 +3234,7 @@ router.dispatch(req, res);
 });
 ```
 
-把路由 API 当作类还有一个好处，这样可以接入流 API。也就是说能用更加快速便捷的方式
-处理比较大的请求，比如在需要解析上传数据并提前退出时，这种方式更好：
+把路由 API 当作类还有一个好处，这样可以接入流 API。也就是说能用更加快速便捷的方式处理比较大的请求，比如在需要解析上传数据并提前退出时，这种方式更好：
 
 ```js
 const director = require('director');
@@ -3366,8 +3250,7 @@ Director 有一个带作用域的路由 API，很适合用来创建 REST API。
 
 ### 5.8.3 REST API
 
-在 Flatiron 中，可以用 Express 风格的标准 HTTP 动词方法创建 REST API，或者用 Director
-的作用域路由功能。这个功能可以基于 URL 的组成和 URL 的参数对路由分组：
+在 Flatiron 中，可以用 Express 风格的标准 HTTP 动词方法创建 REST API，或者用 Director 的作用域路由功能。这个功能可以基于 URL 的组成和 URL 的参数对路由分组：
 
 ```js
 router.path(/\/users\/(\w+)/, () => {
@@ -3377,21 +3260,15 @@ this.put((id) => {});
 });
 ```
 
-Flatiron 还有一个高层的 REST 封装器 Resourceful，支持 CouchDB、 MongoDB、 Socket.IO 和
-数据校验。
+Flatiron 还有一个高层的 REST 封装器 Resourceful，支持 CouchDB、 MongoDB、 Socket.IO 和数据校验。
 
 ### 5.8.4 优点
 
-框架想得到注意是很难的，所以 Flatiron 的解耦设计是它最大的优点。你可以脱离整个框架
-使用其中的模块。比如说，很多项目都在用 Winston 日志模块，但没用 Flatiron 的其他部分。这
-意味着 Flatiron 的某些部分会得到开源社区的良好贡献。
+框架想得到注意是很难的，所以 Flatiron 的解耦设计是它最大的优点。你可以脱离整个框架使用其中的模块。比如说，很多项目都在用 Winston 日志模块，但没用 Flatiron 的其他部分。这意味着 Flatiron 的某些部分会得到开源社区的良好贡献。
 
-Director URL 路由 API 是同构的，客户端和服务器端开发中都可以用。 Director 的 API 跟
-Express 风格的路由 API 也不同： Director 有经过简化的流 API，路由对象会在路由执行前后发出
-事件。
+Director URL 路由 API 是同构的，客户端和服务器端开发中都可以用。 Director 的 API 跟Express 风格的路由 API 也不同： Director 有经过简化的流 API，路由对象会在路由执行前后发出事件。
 
-不同于大多数 Node Web 框架， Flatiron 有个插件管理器。因此在 Flatiron 项目中使用社区支
-持的插件更容易。
+不同于大多数 Node Web 框架， Flatiron 有个插件管理器。因此在 Flatiron 项目中使用社区支持的插件更容易。
 
 > 点 评  
 > 纳迪娜： “我喜欢 Flatiron 的模块设计，插件管理器也很棒。我已经想到要做哪些插件了。”  
@@ -3399,62 +3276,50 @@ Express 风格的路由 API 也不同： Director 有经过简化的流 API，�
 
 ### 5.8.5 弱点
 
-在大型 MVC 项目中， Flatiron 不像其他框架那么好用。比如在设置上， Sails 就比它更容易。
-如果要做几个中等规模的传统 Web 程序， Flatiron 应该很好用。 Flatiron 的配置能力是加分项，但一定要先评估一下其他选项。
+在大型 MVC 项目中， Flatiron 不像其他框架那么好用。比如在设置上， Sails 就比它更容易。如果要做几个中等规模的传统 Web 程序， Flatiron 应该很好用。 Flatiron 的配置能力是加分项，但一定要先评估一下其他选项。
 
 LoopBack 是个强大的竞争对手，也是本章介绍的最后一个框架。
 
 ## 5.9 LoopBack
 
-LoopBack①是 StrongLoop 创建的，这家公司为 Node Web 程序的开发提供了一些商业支持服
-务。 LoopBack 是个 API 框架，但它的功能特性很适合跟数据库配合，也很适合跟 MVC 程序配合。
-它甚至还有个浏览和管理 REST API 的 Web 界面。如果你要给移动端和桌面端程序找个创建
-Web API 的框架，那就是 LoopBack 了。请查看表 5-7 了解 LoopBack 的详情。
+LoopBack①是 StrongLoop 创建的，这家公司为 Node Web 程序的开发提供了一些商业支持服务。 LoopBack 是个 API 框架，但它的功能特性很适合跟数据库配合，也很适合跟 MVC 程序配合。它甚至还有个浏览和管理 REST API 的 Web 界面。如果你要给移动端和桌面端程序找个创建Web API 的框架，那就是 LoopBack 了。请查看表 5-7 了解 LoopBack 的详情。
 
 表 5-7 LoopBack 的特性
-库类型 API 框架
-功能特性 ORM、 API 用户界面、 WebSocket、客户端 SDK（包括 iOS）
-建议应用 支持多客户端的 API（移动端、桌面端、 Web）
-插件架构 Express 中间件
-文档 http://loopback.io/doc/
-热门程度 GitHub 6500 颗星
-授权许可 双许可： MIT 和 StrongLoop 认购协议
-——————————
+| 库类型 | API 框架 |
+|---|---|
+| 功能特性 | ORM、 API 用户界面、 WebSocket、客户端 SDK（包括 iOS） |
+| 建议应用 | 支持多客户端的 API（移动端、桌面端、 Web） |
+| 插件架构 | Express 中间件 |
+| 文档 | http://loopback.io/doc/ |
+| 热门程度 | GitHub 6500 颗星 |
+| 授权许可 | 双许可： MIT 和 StrongLoop 认购协议 |
+
 ① 本节内容基于 Loopback 3.0 之前的版本，用 npm i -g loopback-cli 安装 3.0 之后的版本，替代 slc 的工具为 lb。
 
-LoopBack 是开源的，自从 StrongLoop 被 IBM 收购后，这个框架已经得到了主流商业认可，
-这让它在 Node 社区里脱颖而出。 LoopBack 有个 Yeoman 生成器，可以快速搭建起程序脚手架。
-下一节将介绍如何创建一个全新的 LoopBack 程序。
+LoopBack 是开源的，自从 StrongLoop 被 IBM 收购后，这个框架已经得到了主流商业认可，这让它在 Node 社区里脱颖而出。 LoopBack 有个 Yeoman 生成器，可以快速搭建起程序脚手架。下一节将介绍如何创建一个全新的 LoopBack 程序。
 
 ### 5.9.1 设置
 
-创建新的 LoopBack 项目需要用到 StrongLoop 的命令行工具。全局安装 strongloop 包，以便
-可以通过 slc 命令使用命令行工具。这个包里有进程管理功能，但我们对 LoopBack 项目生成器
-更感兴趣：
+创建新的 LoopBack 项目需要用到 StrongLoop 的命令行工具。全局安装 strongloop 包，以便可以通过 slc 命令使用命令行工具。这个包里有进程管理功能，但我们对 LoopBack 项目生成器更感兴趣：
 
 ```
 npm install -g strongloop
 slc loopback
 ```
 
-StrongLoop 命令行工具会带着你一步步完成新项目的创建。输入项目的名字，然后选择
-api-server 程序框架。生成器装好项目的依赖项后，会显示一些提示，告诉你如何开始新项目。
-看起来应该是图 5-2 的样子。
+StrongLoop 命令行工具会带着你一步步完成新项目的创建。输入项目的名字，然后选择 api-server 程序框架。生成器装好项目的依赖项后，会显示一些提示，告诉你如何开始新项目。看起来应该是图 5-2 的样子。
 
 图 5-2 LoopBack 的项目生成器
 
-输入 node .运行这个项目，用 slc loopback:model 创建模型。在设置新的 LoopBack
-项目时，会经常用到 slc 命令。
+输入 node .运行这个项目，用 slc loopback:model 创建模型。在设置新的 LoopBack 项目时，会经常用到 slc 命令。
 
-在项目运行时，你应该可以在 http://0.0.0.0:3000/explorer/ 访问到 API 管理界面。点击 User 展开用户端点，会有一个列表显示所有可用的 API 方法，包括 PUT /Users 和 DELETE /Users/{id}
-等标准的 RESTful 路由，如图 5-3 所示。
+在项目运行时，你应该可以在 http://0.0.0.0:3000/explorer/ 访问到 API 管理界面。点击 User 展开用户端点，会有一个列表显示所有可用的 API 方法，包括 PUT /Users 和 DELETE /Users/{id} 等标准的 RESTful 路由，如图 5-3 所示。
 
 图 5-3 显示 User 路由的 StrongLoop API 管理界面
 
 ### 5.9.2 定义路由
 
-LoopBack 中的路由可以在 Express 这个层面添加。创建 server/boot/routes.js，通过 LoopBack
-路由器实例添加一个新路由：
+LoopBack 中的路由可以在 Express 这个层面添加。创建 server/boot/routes.js，通过 LoopBack 路由器实例添加一个新路由：
 
 ```js
 module.exports = (app) => {
@@ -3471,109 +3336,75 @@ app.use(router);
 
 ### 5.9.3 REST API
 
-在 LoopBack 项目中，用模型生成器是创建 REST API 最轻松的办法。 slc 命令有这个功能。
-比如说，如果要用 slc loopback:model 添加名为 product 的新模型，则运行：
+在 LoopBack 项目中，用模型生成器是创建 REST API 最轻松的办法。 slc 命令有这个功能。比如说，如果要用 slc loopback:model 添加名为 product 的新模型，则运行：
 
 ```
 slc loopback:model product
 ```
 
-slc 命令会带着你一步步创建，让你选择这个模型是否只用在服务器端，并设置一些属性和
-校验器。创建好后，你可以看一下对应的 JSON 文件。用这样的 JSON 文件来定义模型的行为更
-轻便，其中包括了你之前指定的所有属性。
+slc 命令会带着你一步步创建，让你选择这个模型是否只用在服务器端，并设置一些属性和校验器。创建好后，你可以看一下对应的 JSON 文件。用这样的 JSON 文件来定义模型的行为更轻便，其中包括了你之前指定的所有属性。
 
 如果还需要添加更多的属性，可以用 slc loopback:property，随时添加都行。
 
 > 点 评  
-> 菲尔：“我们喜欢 LoopBack，因为它可以快速添加 RESTful 资源，并且它还有 API 管理界
-面。但就我个人而言，是因为它看起来很灵活，能支持我们之前做的 MVC Web 程序。我们可
-以把之前的数据库挂上，把那些项目迁移到 Node 上来。”  
-> 爱丽丝：“这是唯一一个真正面向 iOS、 Android 和富 Web 客户端的框架。 LoopBack 有 iOS
-和 Android 的客户端库，对于我们这些依靠移动端程序的产品开发人员来说，这很重要。”
+> 菲尔：“我们喜欢 LoopBack，因为它可以快速添加 RESTful 资源，并且它还有 API 管理界面。但就我个人而言，是因为它看起来很灵活，能支持我们之前做的 MVC Web 程序。我们可以把之前的数据库挂上，把那些项目迁移到 Node 上来。”  
+> 爱丽丝：“这是唯一一个真正面向 iOS、 Android 和富 Web 客户端的框架。 LoopBack 有 iOS 和 Android 的客户端库，对于我们这些依靠移动端程序的产品开发人员来说，这很重要。”
 
 ### 5.9.4 优点
 
-即便是这样简短的介绍，也能清楚地表明 LoopBack 帮我们免除了繁琐的套路化代码。它的
-命令行工具几乎可以生成一个完整的 RESTful Web API 程序，甚至包括数据库模型和校验。同
-时， LoopBack 对前端代码没有太多限制。它还让你考虑哪个模型可以通过浏览器访问，哪个只
-能在服务器端使用。有些框架在这个问题上犯了错误，把所有事情都推给了浏览器。
+即便是这样简短的介绍，也能清楚地表明 LoopBack 帮我们免除了繁琐的套路化代码。它的命令行工具几乎可以生成一个完整的 RESTful Web API 程序，甚至包括数据库模型和校验。同时， LoopBack 对前端代码没有太多限制。它还让你考虑哪个模型可以通过浏览器访问，哪个只能在服务器端使用。有些框架在这个问题上犯了错误，把所有事情都推给了浏览器。
 
-如果有需要跟 Web API 通话的移动端程序，可以看看 LoopBack 的客户端 SDK。它支持 API
-集成，可以给 iOS 和 Android 推送消息。
+如果有需要跟 Web API 通话的移动端程序，可以看看 LoopBack 的客户端 SDK。它支持 API 集成，可以给 iOS 和 Android 推送消息。
 
 ### 5.9.5 弱点
 
-LoopBack 基于 JSON 的模型 API 跟大部分 JavaScript 数据库 API 都不同。所以可能要花些时
-间才能搞懂如何将它映射到已有的数据库模式上。另外，因为 HTTP 层是基于 Express 的，所以
-在某种程度上会受限于 Express 所支持的功能。尽管 Express 是个很好的 HTTP 服务器库，但还
-有支持更现代化的 API 的新库。 LoopBack 没有特定的插件 API，虽然可以用 Express 中间件，但
-毕竟不如 Flatiron 或 hapi 的插件 API 方便。
+LoopBack 基于 JSON 的模型 API 跟大部分 JavaScript 数据库 API 都不同。所以可能要花些时间才能搞懂如何将它映射到已有的数据库模式上。另外，因为 HTTP 层是基于 Express 的，所以在某种程度上会受限于 Express 所支持的功能。尽管 Express 是个很好的 HTTP 服务器库，但还有支持更现代化的 API 的新库。 LoopBack 没有特定的插件 API，虽然可以用 Express 中间件，但毕竟不如 Flatiron 或 hapi 的插件 API 方便。
 
-这是本章介绍的最后一个框架。在开始下一章之前，我们先做个简单的比较，以便帮你为下
-一个项目选出正确的框架。
+这是本章介绍的最后一个框架。在开始下一章之前，我们先做个简单的比较，以便帮你为下一个项目选出正确的框架。
 
 ## 5.10 比较
 
-如果你一直在看本章中的点评，可能已经决定要用哪个框架了。如果还没决定，本章后续
-内容会对这些框架的好处做个比较。如果你还是搞不清楚，可以根据图 5-4 中提出的问题找到
-答案。
+如果你一直在看本章中的点评，可能已经决定要用哪个框架了。如果还没决定，本章后续内容会对这些框架的好处做个比较。如果你还是搞不清楚，可以根据图 5-4 中提出的问题找到答案。
 
 图 5-4 选择 Node 框架
 
-乍一看，那些热门的 Node 服务器端框架都差不多。他们提供了轻便的 HTTP API，使用了服
-务器端模型，而不是 PHP 那种页面模型。但它们在设计上的差别对项目的影响很大，所以要做
-个比较的话，应从 HTTP 层开始。
+乍一看，那些热门的 Node 服务器端框架都差不多。他们提供了轻便的 HTTP API，使用了服务器端模型，而不是 PHP 那种页面模型。但它们在设计上的差别对项目的影响很大，所以要做个比较的话，应从 HTTP 层开始。
 
 HTTP 服务器和路由
 
-大多数 Node 框架都是基于 Connect 或 Express 的。本章有三个完全不依赖 Express，提出了
-自己的 HTTP API 方案的框架： Koa、 hapi 和 Flatiron。
+大多数 Node 框架都是基于 Connect 或 Express 的。本章有三个完全不依赖 Express，提出了自己的 HTTP API 方案的框架： Koa、 hapi 和 Flatiron。
 
-Koa 也是写 Express 的那个作者写的，但其用更加现代化的 JavaScript 特性实现了全新的工作
-方式。如果你喜欢 Express，也喜欢用 ES2015 生成器语法，可以试试 Koa。
+Koa 也是写 Express 的那个作者写的，但其用更加现代化的 JavaScript 特性实现了全新的工作方式。如果你喜欢 Express，也喜欢用 ES2015 生成器语法，可以试试 Koa。
 
-hapi 的服务器和路由 API 是高度模块化的，感觉跟 Express 那一类不一样。如果你觉得
-Express 的语法比较尴尬，可以试试 hapi。 hapi 让 HTTP 服务器变得更容易处理，如果你想把服
-务器连起来，或者要做服务器集群， hapi 比 Express 及其后裔们好用。
+hapi 的服务器和路由 API 是高度模块化的，感觉跟 Express 那一类不一样。如果你觉得Express 的语法比较尴尬，可以试试 hapi。 hapi 让 HTTP 服务器变得更容易处理，如果你想把服务器连起来，或者要做服务器集群， hapi 比 Express 及其后裔们好用。
 
-Flatiron 的路由器能跟 Express 兼容，不过功能更多。跟 Express 风格的中间件栈不同， Flatiron 的路由器用了路由表，还会发出事件。我们可以给 Flatiron 的路由器传递一个对象常量。这个路由器还能用在浏览器中，如果你的服务器端开发人员还要做现代化的客户端开发，那跟 React 路
-由器之类的技术比起来， Flatiron 路由器会让他们觉得更舒服。
+Flatiron 的路由器能跟 Express 兼容，不过功能更多。跟 Express 风格的中间件栈不同， Flatiron 的路由器用了路由表，还会发出事件。我们可以给 Flatiron 的路由器传递一个对象常量。这个路由器还能用在浏览器中，如果你的服务器端开发人员还要做现代化的客户端开发，那跟 React 路由器之类的技术比起来， Flatiron 路由器会让他们觉得更舒服。
 
 ## 5.11 编写模块化代码
 
-在本章介绍的框架中，有些不是直接支持插件的，但都可以通过某种方式进行扩展。基于
-Express 的框架可以用 Connect 中间件，但 hapi 和 Flatiron 有它们自己的插件 API。定义良好的插件 API 非常实用，因为它们能让新用户更轻松地对框架进行扩展。
+在本章介绍的框架中，有些不是直接支持插件的，但都可以通过某种方式进行扩展。基于Express 的框架可以用 Connect 中间件，但 hapi 和 Flatiron 有它们自己的插件 API。定义良好的插件 API 非常实用，因为它们能让新用户更轻松地对框架进行扩展。
 
-如果是 Sails.js 或 LoopBack 这样的大型 MVC 框架，插件 API 会让创建新项目变得容易得多。
-LoopBack 提供了一个强力的项目管理工具，弱化了对插件 API 的依赖程度。在 npm 的 StrongLoop
-主页上，有很多与 LoopBack 相关的项目为 Angular 和数据库等产品提供支持。
+如果是 Sails.js 或 LoopBack 这样的大型 MVC 框架，插件 API 会让创建新项目变得容易得多。LoopBack 提供了一个强力的项目管理工具，弱化了对插件 API 的依赖程度。在 npm 的 StrongLoop 主页上，有很多与 LoopBack 相关的项目为 Angular 和数据库等产品提供支持。
 
 ## 5.12 用户选择
 
-我们已经为本章中定义的用户提供了足够的背景知识，他们可以为自己的下一个项目选出合
-适的框架了。
+我们已经为本章中定义的用户提供了足够的背景知识，他们可以为自己的下一个项目选出合适的框架了。
 
-菲尔：“最后我选了 LoopBack。这是个艰难的决定，因为 Sails 和 Kraken 都有我们团队喜欢
-的点，但我们觉得 LoopBack 有更强的长期支持，而且可以省掉大量的服务器端开发工作。”
+菲尔：“最后我选了 LoopBack。这是个艰难的决定，因为 Sails 和 Kraken 都有我们团队喜欢的点，但我们觉得 LoopBack 有更强的长期支持，而且可以省掉大量的服务器端开发工作。”
 
-纳迪娜：“作为一名开源开发人员，我把票投给了 Flatiron。它可以适应我在做的各种项目。
-比如说，有些项目只要用 Winston 和 Director 就好，其他的则会用整个 Flatiron。”
+纳迪娜：“作为一名开源开发人员，我把票投给了 Flatiron。它可以适应我在做的各种项目。比如说，有些项目只要用 Winston 和 Director 就好，其他的则会用整个 Flatiron。”
 
-爱丽丝：“我选的是 hapi。它是极简风格的，我能根据项目的需求对它进行调整。 hapi 大部
-分都是 Node 代码，并且不依赖特定的框架，所以我觉得它合适。”
+爱丽丝：“我选的是 hapi。它是极简风格的，我能根据项目的需求对它进行调整。 hapi 大部分都是 Node 代码，并且不依赖特定的框架，所以我觉得它合适。”
 
 ## 5.13 总结
 
-- Koa 轻便、极简，在中间件中使用 ES2015 生成器语法。适合依赖外部 Web API 的单页
-Web 程序。
+- Koa 轻便、极简，在中间件中使用 ES2015 生成器语法。适合依赖外部 Web API 的单页Web 程序。
 - hapi 的重点是 HTTP 服务器和路由。适合由很多小服务器组成的轻便后台。
-- Flatiron 是一组解耦的模块，既可以当作 Web MVC 框架来用，也可以当作更轻便的 Express
-库。 Flatiron 跟 Connect 中间件是兼容的。
+- Flatiron 是一组解耦的模块，既可以当作 Web MVC 框架来用，也可以当作更轻便的 Express 库。 Flatiron 跟 Connect 中间件是兼容的。
 - Kraken 是基于 Express 的，添加了安全特性。可以用于 MVC。
 - Sails.js 是 Rails/Django 风格的 MVC 框架。有 ORM 和模板系统。
 - DerbyJS 是个同构框架，适合实时程序。
-- LoopBack 帮我们省掉了写套路化代码的工作。它可以快速生成带有数据库支持的 REST
-API，并有个 API 管理界面。96 第 6 章 深入了解 Connect 和 Express
+- LoopBack 帮我们省掉了写套路化代码的工作。它可以快速生成带有数据库支持的 REST API，并有个 API 管理界面。
 
 # 第6章 深入了解 Connect 和 Express
 
@@ -3598,172 +3429,229 @@ API，并有个 API 管理界面。96 第 6 章 深入了解 Connect 和 Express
 建稍复杂一些的 Express 程序。
 
 ## 6.1 Connect
+
 本节要讲 Connect。内容包括如何用中间件搭建简单的 Web 程序，以及中间件的顺序的重要
 性。在将来搭建更加模块化的 Express 程序时，你仍然会用到这些知识。
-第 6 章6.1 Connect 97
 
-6.1.1 创建 Connect 程序
+### 6.1.1 创建 Connect 程序
+
 Connect 以前是 Express 的基础，但实际上只用 Connect 也能做出完整的 Web 程序。用下面
 的命令下载并安装 Connect：
+
+```
 $ npm install connect@3.4.0
+```
+
 最简单的 Connect 程序应该是这样的：
+
+```js
 const app = require('connect')();
 app.use((req, res, next) => {
 res.end('Hello, world!');
 });
 app.listen(3000);
+```
+
 这个程序（代码在 ch06-connect-and-express/hello-world 里）会用 Hello,World! 给出响应。传
 给 app.use 的函数是个中间件，它以文本 Hello,World! 作为响应结束了请求处理过程。中间件
 是所有 Connect 和 Express 程序的基础。下面来看一下细节。
-6.1.2 了解 Connect 中间件的工作机制
+
+### 6.1.2 了解 Connect 中间件的工作机制
+
 Connect 中间件就是 JavaScript 函数。这个函数一般会有三个参数：请求对象、响应对象，以
 及一个名为 next 的回调函数。一个中间件完成自己的工作，要执行后续的中间件时，可以调用
 这个回调函数。
+
 在中间件运行之前， Connect 会用分派器接管请求对象，然后交给程序中的第一个中间件。
 图 6-1 是一个典型的 Connect 程序的示意图，由分派器和一组中间件组成，这些中间件包括日志
 记录、消息体解析器、静态文件服务器和定制中间件。
+
 图 6-1 两个 HTTP 请求穿过 Connect 服务器的生命周期
+
 由此可见，借助中间件 API，可以把一些小的构件块组合到一起，实现复杂的处理逻辑。你
 会在下一节看到如何进行这种组合。
-6.1.3 组合中间件
+
+### 6.1.3 组合中间件
+
 Connect 中的 use 方法就是用来组合中间件的。我们先来定义两个中间件函数，然后把它们
 都添加到程序中。其中一个是之前那个例子里的 hello 函数，另外一个是 logger。
+
 代码清单 6-1 使用多个 Connect 中间件
+```js
 const connect = require('connect');
 function logger(req, res, next) {
-console.log('%s %s', req.method, req.url);
-next();
+  // 输出 HTTP 请求的方法和 URL 并调用 next()
+  console.log('%s %s', req.method, req.url);
+  next();
 }
 function hello(req, res) {
-res.setHeader('Content-Type', 'text/plain');
-res.end('hello world');
+  // 用“ hello world”响应 HTTP 请求
+  res.setHeader('Content-Type', 'text/plain');
+  res.end('hello world');
 }
 connect()
 .use(logger)
 .use(hello)
 .listen(3000);
+```
+
 这两个中间件的名称签名不一样：一个有 next，一个没有。因为后面这个中间件完成了 HTTP
 响应，再也不需要把控制权交还给分派器了。
+
 如前所示， use()函数返回的是 Connect 程序的实例，支持方法链。不过并不一定要把.use()
 链起来，像下面这样也可以：
+
+```js
 const app = connect();
 app.use(logger);
 app.use(hello);
 app.listen(3000);
+```
+
 有了这个简单的入门程序，我们来看看为什么.use()的调用顺序很重要，以及如何策略地
 用这个顺序调整程序的工作方式。
-6.1.4 中间件的顺序
+
+### 6.1.4 中间件的顺序
+
 中间件的顺序会对程序的行为产生显著影响。漏掉 next()能停止执行，也可以通过组合中
 间件实现用户认证之类的功能。
+
 中间件不调用 next 会怎么样？在之前那个入门程序中， logger 是第一个中间件，然后是
 hello。 Connect 将日志输出到控制台，然后返回 HTTP 响应。如果像下面这样把顺序倒过来会
 怎么样？
-用“ hello world”响
-应 HTTP 请求
-输出 HTTP 请求的方法
-和 URL 并调用 next()6.1 Connect 99
 
 代码清单 6-2 错误： hello 中间件组件在 logger 组件前面
+```JS
 const connect = require('connect');
 function logger(req, res, next) {
-console.log('%s %s', req.method, req.url);
-next();
+  // 总是调用 next()，所以后续中间件总会被调用
+  console.log('%s %s', req.method, req.url);
+  next();
 }
 function hello(req, res) {
-res.setHeader('Content-Type', 'text/plain');
-res.end('hello world');
+  // 不会调用 next()，因为组件响应了请求
+  res.setHeader('Content-Type', 'text/plain');
+  res.end('hello world');
 }
+// 因为 hello 不调用 next()，所以logger 永远不会被调用
 const app = connect()
 .use(hello)
 .use(logger)
 .listen(3000);
+```
+
 这个例子是先调用 hello，程序如期返回响应结果。但 logger 永远也不会执行，因为 hello
 没有调用 next()，所以控制权没有交回给分派器，它也不能调用下一个中间件。也就是说，如
 果某个中间件不调用 next()，那链在它后面的中间件就不会被调用。
+
 图 6-2 给出了这个例子是如何跳过 logger 的，以及如何改正。
+
 图 6-2 中间件的顺序很重要
+
 正如你所看到的，像这样把 hello 放到 logger 前面并没什么用，但只要运用得当，排序
 是可以带来好处的。
+
 6.1.5 创建可配置的中间件
+
 介绍完中间件的基础知识，可以深入研究一些细节了。接下来先看看如何创建更通用的可重
 用中间件。
-总是调用 next()，所以
-后续中间件总会被调用
-不会调用 next()，因为
-组件响应了请求
-因为 hello 不调用 next()，所以
-logger 永远不会被调用100 第 6 章 深入了解 Connect 和 Express
+
 为了做到可配置，中间件一般会遵循一个简单的惯例：用一个函数返回另一个函数（闭包）。
 这种可配置中间件的基本结构如下所示：
+
+```JS
 function setup(options) {
-// 设置逻辑
+  // 设置逻辑
+  // 在这里做中间件的初始化
 return function(req, res, next) {
-// 中间件逻辑
+  // 中间件逻辑
+  // 即使被外部函数返回了，仍然可以访问 options
 }
 }
+```
+
 这种中间件的用法如下：
+
+```JS
 app.use(setup({some: 'options' }));
+```
+
 注意 app.use 中的 setup 函数，之前放的是对中间件函数的引用。
+
 本节会用这项技术构建一个可重用、可配置的中间件：数据格式可配置的 logger。
+
 前面创建的 logger 中间件不可配置。要输出请求的 req.method 和 req.url 是写死在代
 码里的。如果将来想改变 logger 输出的信息该怎么办?
+
 在实际工作中，可配置的中间件跟之前创建的不可配置中间件用起来是一样的，只是可以向
 其中传入额外的参数来改变它的行为。可配置中间件的使用和下面这个例子差不多， logger 能
 接收一个字符串参数，描述输出的日志格式:
+
+```JS
 const app = connect()
 .use(logger(':method :url'))
 .use(hello);
+```
+
 为了让 logger 可配置，需要先定义一个 setup 函数，它能接受一个字符串参数（此例中
 名为 format）。 setup 的返回结果是一个函数，即 Connect 所用的中间件。即便被 setup 返回
 后，这个中间件函数仍能访问 format，因为它们是在同一个 JavaScript 闭包内定义的。 logger
 会将 format 中的标记替换为 req 对象中的相应属性，输出到控制台，然后调用 next()。代码
 如下所示。
+
 代码清单 6-3 可配置的 Connect 中间件 logger
+
+```JS
+// setup 函数可以用不同的配置调用多次
 function setup(format) {
+// logger 组件用正则表达式匹配请求属性
 const regexp = /:(\w+)/g;
+// Connect 使用的真实 logger 组件
 return function createLogger(req, res, next) {
+// 用正则表达式格式化请求的日志条目
 const str = format.replace(regexp, (match, property) => {
 return req[property];
 });
+// 将日志条目输出到控制台
 console.log(str);
+// 将控制权交给下一个中间件组件
 next();
 }
-在这里做中间
-件的初始化
-即使被外部函数返回了，
-仍然可以访问 options
-setup 函数可以用不
-同的配置调用多次
-logger 组件用正则
-表达式匹配请求属性
-Connect 使用的真
-用正则表达式格式化 实 logger 组件
-请求的日志条目
-将日志条目输出到
-将控制权交给下 控制台
-一个中间件组件
-
 }
+// 直接导出 logger 的 setup 函数
 module.exports = setup;
+```
+
 现在这个 logger 成了可配置的中间件，所以，可以在同一程序中给.use()传入不同配置
 的 logger，或者在将来开发的程序中重用这段代码。整个 Connect 社区都在用这种可配置中间
 件的概念，并且为了保持一致性，所有 Connect 核心中间件都是可配置的。
+
 要使用代码清单 6-3 中的中间件 logger，需要给它传一个字符串，指明请求对象中的属性。
 比如.use(setup(':method :url'))会输出所有请求的 HTTP 方法（ GET、 POST 等）和 URL。
 在转战 Express 之前，先看看 Connect 对错误处理的支持。
-6.1.6 使用错误处理中间件
+
+### 6.1.6 使用错误处理中间件
+
 所有程序都有错误。不管是在系统层面还是在用户层面，面对错误，甚至是无法预料的错误，
 做到未雨绸缪才是明智之举。 Connect 中有一种用来处理错误的中间件变体，跟常规的中间件相
 比，除了请求、响应对象外，错误处理中间件的参数中还多了一个错误对象。
+
 Connect 刻意将错误处理做到极简，让开发人员指明应该如何处理错误。比如说，可以只让
 系统和程序级错误（比如“undefined 的变量 foo”）通过中间件，或者只让用户错误（“密码无效”）
 通过，或者让两者的组合通过。 Connect 让你自己选择最佳的处理策略。
+
 接下来会介绍错误处理中间件的工作机制以及一些实用的模式：
+
 - 用 Connect 的默认错误处理器；
 - 自行处理。
+
 我们先看看不进行任何配置时 Connect 是如何处理错误的。
+
 1. 用 Connect 的默认错误处理器
+
 因为函数 foo()没有定义，所以下面这个中间件会抛出错误 ReferenceError：
+
+```JS
 const connect = require('connect')
 connect()
 .use((req, res) => {
@@ -3772,20 +3660,25 @@ res.setHeader('Content-Type', 'text/plain');
 res.end('hello world');
 })
 .listen(3000)
+```
+
 Connect 默认的处理是返回响应状态码 500，响应主体是文本 Internal Server Error 和错误的详
 细信息。这无可厚非，但在真正的程序中，一般还会对这些错误做些特殊处理，比如将它们发送
 给一个日志守护进程。
+
 2. 自行处理程序错误
+
 Connect 也支持用错误处理中间件自行处理错误。比如说，为了在开发时看到简单快捷的
 错误报告，你可能想用 JSON 格式发送错误信息；而在生产环境中，为了不把敏感的内部信息
 （比如栈跟踪、文件名和行号等）暴露给潜在的攻击者，你可能只想发送一个简单的服务器错误
 响应。
-直接导出 logger
-的 setup 函数
+
 错误处理中间件函数必须有四个参数： err、 req、 res 和 next，如代码清单 6-4 所示， 而
 常规的中间件只有 req、 res 和 next 三个参数。下面这个错误处理中间件的完整代码（带服务
 器部分）在 ch06-connect-and-express/listing6_4 中。
+
 代码清单 6-4 Connect 中的错误处理中间件
+```JS
 const env = process.env.NODE_ENV || 'development';
 function errorHandler(err, req, res, next) {
 res.statusCode = 500;
@@ -3801,86 +3694,120 @@ res.end('Server error');
 }
 }
 module.exports = errorHandler;
-用 NODE_ENV 设定程序的模式 Connect 一般会根据环境变量 NODE_ENV(process.
-env.NODE_ENV)来切换不同服务器环境（比如生产环境和开发环境）下的行为。
+// 错误处理中间件定义四个参数
+// errorHandler 中间件组件根据 NODE_ENV 的值执行不同的操作
+```
+
+用 NODE_ENV 设定程序的模式 Connect 一般会根据环境变量 NODE_ENV(process.env.NODE_ENV)来切换不同服务器环境（比如生产环境和开发环境）下的行为。
+
 当 Connect 遇到错误时，它会切换，只去调用错误处理中间件，如图 6-3 所示。
+
 图 6-3 引发了错误的 HTTP 请求在 Connect 服务器中的生命周期
-错误处理中间件定
-义四个参数
-errorHandler 中间件
-组件根据 NODE_ENV 的
-值执行不同的操作6.2 Express 103
+
 
 假设有一个允许用户登录到管理区域的博客程序。如果负责用户路由的中间件引发了一个错
 误，则中间件 blog 和 admin 都会被跳过，因为它们不是错误处理中间件（只有三个参数）。然
 后 Connect 看到接受错误参数的 errorHandler，就会调用它。中间件看起来像下面这样：
+
+```JS
 connect()
 .use(router(require('./routes/user')))
 .use(router(require('./routes/blog'))) // 跳过
 .use(router(require('./routes/admin'))) // 跳过
 .use(errorHandler);
+```
+
 基于中间件的执行顺序短路某些功能是组织 Express 程序的基本概念。对 Connect 有了基本
 的了解后，该去看看 Express 了。
+
 ## 6.2 Express
+
 Express 是非常流行的 Web 框架，以前是在 Connect 的基础上搭建的。尽管提供了一些基本
 的功能，比如静态文件服务、 URL 路由和程序配置等，但它依然是极简的 Web 框架。 Express 提
 供的结构足以让我们把可重用的代码组装起来，但又不会限制开发实践。
+
 接下来，我们要用 Express 框架程序生成器创建一个新的 Express 程序。后续几节内容会比
 第 3 章更细致地介绍整个过程，所以看完本章内容后，你应该可以用自己掌握的知识创建 Express
 Web 程序和 RESTful API 了。随着内容向前推进，程序的功能也会慢慢增加，到最后变成一个完
 整的程序。
-6.2.1 生成程序框架
+
+### 6.2.1 生成程序框架
+
 Express 对程序结构不作要求，路由可以放在多个文件中，公共资源文件也可以放到任何目
 录下。最简单的 Express 程序可能像下面这样，但它仍然是一个功能完备的 HTTP 服务器。
+
 代码清单 6-5 极简的 Express 程序
+```JS
 const express = require('express');
 const app = express();
 app.get('/', (req, res) => {
 res.send('Hello');
 });
 app.listen(3000);
+// 发送“ Hello”作为响应文本
+// 监听端口 3000
+// 响应对/的请求
+```
+
 express-generator 包里有创建程序框架的命令行工具 express(1)。如果你刚开始接触
 Express，可以用它生成的程序作为起点。这个生成的程序中有模板、公共资源文件、配置等很多
 东西。
+
 express(1)生成的程序框架中只有几个目录和一些文件，如图 6-4 所示。设计成这样的结构，
 是为了让开发者能在几秒钟之内把 Express 跑起来，但你完全可以决定用什么样的程序结构。
-发送“ Hello”
-作为响应文本
-监听端口 3000
-响应对/的请求104 第 6 章 深入了解 Connect 和 Express
+
 图 6-4 使用 EJS 模板的默认程序框架结构
+
 本章示例中所用的模板是 EJS，其结构跟 HTML 很像。 EJS 在 HTML 文档中嵌入服务器端
 JavaScript，并在发送到客户端之前执行，所以说它跟 PHP、 JSP（在 Java 中用）和 ERB（在 Ruby
 中用）类似。第 7 章会详细介绍 EJS。
+
 本节会带你完成如下任务：
 - 用 npm 全局安装 Express；
 - 生成程序；
 - 探索生成的程序，安装依赖项。
-下面开始吧!
-1. 安装 Express 的可执行程序
-首先要用 npm 全局安装 express-generator：
-$ npm install -g express-generator
-装好之后，可以用 --help 选项看看可用的选项，如图 6-5 所示。
-图 6-5 Express 帮助
-其中一些选项用来生成程序中的某些部分。比如说，你可以指定模板引擎，让它生成选定模
-板引擎的空文件。同样，如果用 --css 指定了 CSS 预处理器，它会生成该 CSS 预处理器的虚拟6.2 Express 105
 
-模板文件。
+下面开始吧!
+
+1. 安装 Express 的可执行程序
+
+首先要用 npm 全局安装 express-generator：
+
+```
+$ npm install -g express-generator
+```
+
+装好之后，可以用 --help 选项看看可用的选项，如图 6-5 所示。
+
+图 6-5 Express 帮助
+
+其中一些选项用来生成程序中的某些部分。比如说，你可以指定模板引擎，让它生成选定模
+板引擎的空文件。同样，如果用 --css 指定了 CSS 预处理器，它会生成该 CSS 预处理器的虚拟模板文件。
+
 可执行程序装好了，接下来我们要生成最终会变成在线留言板的程序框架。
+
 2. 生成程序
+
 用-e（或--ejs）指定要使用的模板引擎是 EJS，执行 express -e shoutbox。如果你想
 跟我们在 GitHub 库上的代码保持一致，那就执行 express -e listing6_6。
+
 一个功能完备的程序会出现在 shoutbox 目录中。其中会有描述项目和依赖项的 package.json
 文件、程序主文件、 public 目录，以及一个放路由处理器的目录。
+
 3. 探索程序
+
 仔细看一下它生成了什么。在编辑器中打开 package.json 文件，看看程序的依赖项， 如图 6-6
 所示。 Express 猜不出你要用依赖项的哪个版本，所以你最好给出模块的主要、次要及修订版本
 号，以免引起意想不到的 bug。比如明确给出"express":"~4.13.1"，那么 npm 每次都会安装
 相同的代码。
+
 图 6-6 生成的 package.json
+
 现在看一下 express(1)生成的程序主文件，如下面的代码清单所示。暂时先不要动它。其
 中有前面介绍过的中间件，但默认的中间件配置什么样还是值得一看的。
+
 代码清单 6-6 生成的 Express 程序框架
+```js
 var express = require('express');
 var path = require('path');
 var favicon = require('serve-favicon');
@@ -3891,8 +3818,7 @@ var routes = require('./routes/index');
 var users = require('./routes/users');
 var app = express();
 app.set('views', path.join(__dirname, 'views'));
-提供默认的
-favicon
+// 提供默认的favicon
 app.set('view engine', 'ejs');
 app.use(logger('dev'));
 app.use(bodyParser.json());
@@ -3923,137 +3849,194 @@ error: {}
 });
 });
 module.exports = app;
+// 输出有颜色区分的日志，
+// 以便于开发调试
+// 解析请求主体
+// 提供./public 下
+// 的静态文件
+// 指定程序
+// 路由
+// 在开发时显示样式化
+```
+
 虽然有了 package.json 和 app.js 文件，但程序还跑不起来，因为依赖项还没装。不管 express(1)
 什么时候生成 package.json，都要安装依赖项。执行 npm install，然后执行 npm start 启
 动程序。
+
 在浏览器中访问 http://localhost:3000，默认程序看起来如图 6-7 所示。
+
 图 6-7 默认的 Express 程序
-输出有颜色区分的日志，
-以便于开发调试
-解析请求主体
-提供./public 下
-的静态文件
-指定程序
-路由
-在开发时显示样式化
+
 的 HTML 错误页面6.2 Express 107
 
 看过了生成的程序框架，可以开始搭建真正的 Express 程序了。我们要做一个允许用户发消
 息的在线留言板。在做这样的程序时，大多数有经验的 Express 开发人员都会从规划 API 开始，
 然后由此推导出所需的路由和资源。
+
 4. 在线留言板程序的规划
+
 下面是这个在线留言板程序的需求。
 (1) 用户应该可以注册、登录、退出。
 (2) 用户应该可以发消息（条目）。
 (3) 站点的访问者可以分页浏览条目。
 (4) 应该有个支持认证的简单的 REST API。
+
 针对这些需求，我们要存储数据和处理用户认证，还需要对用户的输入进行校验。必要的路
 由应该有以下两种。
+
 - API 路由。
- GET /api/entries： 获取条目列表。
- GET /api/entries/page：获取单页条目。
- POST /api/entry：创建新的留言条目。
+  - GET /api/entries： 获取条目列表。
+  - GET /api/entries/page：获取单页条目。
+  - POST /api/entry：创建新的留言条目。
 - Web UI 路由。
- GET /post：显示创建新条目的表单。
- POST /post：提交新条目。
- GET /register：显示注册表单。
- POST /register：创建新的用户账号。
- GET /login：显示登录表单。
- POST /login：登录。
- GET /logout：退出。
+  - GET /post：显示创建新条目的表单。
+  - POST /post：提交新条目。
+  - GET /register：显示注册表单。
+  - POST /register：创建新的用户账号。
+  - GET /login：显示登录表单。
+  - POST /login：登录。
+  - GET /logout：退出。
+
 这个布局跟大多数 Web 程序一样。希望将来你能以此为模板搭建自己的程序。
+
 你可能已经注意到上一个代码清单中的 app.set 了：
+
+```js
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
+```
+
 这就是 Express 程序的配置方式，接下来我们要详细讲解 Express 的配置。
-6.2.2 Express 和程序的配置
+
+### 6.2.2 Express 和程序的配置
+
 程序运行的环境发生变化时，需求也会发生变化。比如说，产品在开发环境中运行时，你可
 能想要看到尽可能详尽的日志；但在生产环境中，你可能想让日志尽量精简，可能还要用 gzip
 进行压缩。除了配置特定环境下的功能， 还要定义一些程序层面的配置项，以便让 Express 知道
-你用的是什么模板引擎，到哪里去找模板。 Express 还支持自定义的配置项键/值对。108 第 6 章 深入了解 Connect 和 Express
-设置环境变量
-要在 UNIX 系统中设置环境变量，可以用这个命令：
-$ NODE_ENV=production node app
-在 Windows 中用这个：
-$ set NODE_ENV=production
-$ node app
-这些环境变量会出现在程序里的 process.env 对象中。
+你用的是什么模板引擎，到哪里去找模板。 Express 还支持自定义的配置项键/值对。
+
+> 设置环境变量
+> 要在 UNIX 系统中设置环境变量，可以用这个命令：
+> $ NODE_ENV=production node app
+> 在 Windows 中用这个：
+> $ set NODE_ENV=production
+> $ node app
+> 这些环境变量会出现在程序里的 process.env 对象中。
+
 Express 有一个极简的环境驱动配置系统，这个系统由几个方法组成，全部由环境变量
 NODE_ENV 驱动：
+
 - app.set()
 - app.get()
 - app.enable()
 - app.disable()
 - app.enabled()
 - app.disabled()
+
 在本节中，你将会看到如何用配置系统定制 Express 的行为，以及在开发时如何让它如你
 所愿。
+
 我们先来探讨一下基于环境的配置是什么意思。环境变量 NODE_ENV 源于 Express，后来很
 多 Node 框架照搬了这一做法，用它告知 Node 程序运行在哪个环境中，其默认是开发环境。
+
 app.configure()方法有一个可选的字符串参数，用来指定运行环境；还有一个参数是函
 数。如果有这个字符串，则在运行环境与字符串相同时才会调用那个函数；如果没有，则在所有
 环境中都会调用那个函数。这些环境的名称完全是随意的。比如说，可以用 development、
 stage、 test 和 production，或简写为 prod：
+
+```js
 if (app.get('env') === 'development') {
 app.use(express.errorHandler());
 }
+```
+
 为了实现可定制的行为， Express 在其内部使用了配置系统，我们也可以在自己的程序中使
 用这个系统。
+
 Express 还为布尔类型的配置项提供了 app.set()和 app.get()的变体。比如说， app.enable
 (setting)等同于 app.set(setting, true)，而 app.enabled(setting)可以用来检查该
 值是否被启用了。 app.disable(setting)和 app.disabled(setting)是对它们的补充。
+
 Express 为开发 API 提供了一个配置项，即 json spaces。如果把它加到 app.js 中，程序输
 出 JSON 的格式会变得更易读：
-app.set('json spaces', 2);
-介绍完如何使用配置系统，接下来该讲讲 Express 中的视图渲染了。6.2 Express 109
 
-6.2.3 渲染视图
+```js
+app.set('json spaces', 2);
+```
+
+介绍完如何使用配置系统，接下来该讲讲 Express 中的视图渲染了。
+
+### 6.2.3 渲染视图
+
 尽管前面说过， Express 几乎支持所有 Node 社区中的模板引擎，但本章的程序用的是 EJS 模
 板。不熟悉 EJS 也不用担心，它很像其他 Web 开发平台（ PHP、 JSP、 ERB）中的模板语言。本
 章只会涉及 EJS 的一些基础知识，但第 7 章会详细介绍 EJS 和其他几个模板引擎。
+
 不管是渲染整个 HTML 页面、一个 HTML 片段，还是一个 RSS 预订源，对几乎所有程序来
 说，视图渲染都非常重要。其概念很简单：把数据传给视图，然后视图对数据进行转换，对 Web
 程序来说，通常是转换成 HTML。你对视图应该不会觉得陌生，因为大多数框架都有类似的功能。
 图 6-8 阐明了视图如何形成新的数据表示。
+
 图 6-8 HTML 模板 + 数据 = 数据的 HTML 视图
+
 图 6-8 对应的模板如下所示：
+```js
 <h1><%= name %></h1>
 <p><%= name %> is a 2 year old <%= species %>.</p>
+```
+
 Express 中有两种渲染视图的办法：程序层面用 app.render()，在请求或响应层面用
-res.render() ， Express 内 部 用 的 是 前 一 种 。 本 章 只 用 res.render() 。 如 果 你 看 一
-下./routes/index.js，会看到一个调用 res.render('index')的函数，渲染的是./views/index.ejs
-模板，代码如下所示（参见 listing6_8）：
+res.render() ， Express 内 部 用 的 是 前 一 种 。 本 章 只 用 res.render() 。 如 果 你 看 一 下./routes/index.js，会看到一个调用 res.render('index')的函数，渲染的是./views/index.ejs 模板，代码如下所示（参见 listing6_8）：
+
+```js
 router.get('/', (req, res, next) => {
 res.render('index', { title: 'Express' });
 });
+```
+
 在研究 res.render()之前，先来看看如何配置视图系统。
+
 1. 配置视图系统
+
 Express 视图系统的配置很简单。即便 express(1)已经生成好了，你还是应该了解一下这
 些配置的底层机制，以便在需要时进行修改。我们会重点介绍三个领域：
+
 - 调整视图的查找；
 - 配置默认的模板引擎；
 - 启用视图缓存，减少文件 I/O。
-首先是设定 views。110 第 6 章 深入了解 Connect 和 Express
- 改变查找目录
+
+首先是设定 views。
+- 改变查找目录
 下面的代码片段是 Express 的可执行程序创建的 views 设定：
+
+```js
 app.set('views', __dirname + '/views');
+```
+
 这个配置项指明了 Express 查找视图的目录。这里的 __dirname 用得好，这样程序就不用把当前
 工作目录当作程序根目录了。
-__dirname
-Node 中的 __dirname（前面有两个下划线）是个全局变量，表示当前运行的文件所在的
+
+>　__dirname
+>　Node 中的 __dirname（前面有两个下划线）是个全局变量，表示当前运行的文件所在的
 目录。在开发时，这个目录通常就是当前工作目录（ CWD），但在生产环境中，这个文件可能
 运行在其他目录中。 __dirname 有助于保持路径在各种环境中的一致性。
+
 下一个配置项是 view engine。
- 使用默认的模板引擎
+- 使用默认的模板引擎
+
 用 express(1)生成程序时，我们在命令行中用 -e 指定模板引擎 EJS，所以 view engine
 被设为 ejs。 Express 要靠扩展名确定用哪个模板引擎渲染文件，但有了这个配置项，我们可以
 用 index 指定要渲染的文件，而不需要用 index.ejs。
+
 你可能会想， Express 为什么还要考虑扩展名。因为如果使用带扩展名的模板文件，就可以
 在同一个 Express 程序中使用多个模板引擎。同时这样又能提供一个清晰的 API，因为大多数程
 序都是只用一个模板引擎。
+
 比如说，你发现用另一种模板引擎写 RSS 预订源更容易，或者正要换一个模板引擎用。你
 可能将 Pug 作为默认引擎，用 EJS 渲染 /feed 路由的响应结果，就像下面的代码一样指明 .ejs 扩
 展名。
+
+```js
 app.set('view engine', 'pug');
 app.get('/', function(){
 res.render('index');
@@ -4061,46 +4044,62 @@ res.render('index');
 app.get('/feed', function(){
 res.render('rss.ejs');
 });
+```
+
 保持 package.json 同步 记住，所有要用到的模板引擎都应该添加到 package.json 的
 依赖项对象中。用 npm install --save package-name 安装，用 npm uninstall --
 save package-name 从 node_modules 和 package.json 中删除。在你还不知道该用哪个
 模板引擎时，你的试验会轻松一些。
-2. 视图缓存
-在生产环境中， view cache 是默认开启的，以防止后续的 render()从硬盘中读取模板文
-件。因为模板文件中的内容会被放到内存中，所以性能会得到显著提升。但启用这个配置项后，6.2 Express 111
 
-只有重启服务器才能让模板文件的编辑生效，所以在开发时会禁用它。如果在分级（ staging）环
+2. 视图缓存
+
+在生产环境中， view cache 是默认开启的，以防止后续的 render()从硬盘中读取模板文
+件。因为模板文件中的内容会被放到内存中，所以性能会得到显著提升。但启用这个配置项后，只有重启服务器才能让模板文件的编辑生效，所以在开发时会禁用它。如果在分级（ staging）环
 境中运行，很可能要启用这个配置项。
+
 如图 6-9 所示， view cache 被禁用时，每次请求都会从硬盘上读取模板。这样无须重启程
 序来让模板的修改生效。启用 view cache 后，每个模板只需要读取一次硬盘。
 你已经知道视图缓存机制是如何提升非开发环境中的程序性能了。接下来我们看看 Express
 如何定位视图来渲染它们。
+
 图 6-9 视图缓存设置
+
 3. 视图查找
+
 查找视图的过程跟 require()查找模块的过程差不多。在程序中调用了 res.render()或
 app.render()后， Express 会先检查有没有这样的绝对路径，接着找视图目录的相对路径。最
-后会尝试找目录中的 index 文件。整个过程如图 6-10 所示。112 第 6 章 深入了解 Connect 和 Express
+后会尝试找目录中的 index 文件。整个过程如图 6-10 所示。
+
 图 6-10 Express 视图查找过程
+
 因为 ejs 被设为默认引擎，所以无须在 render 中指明模板文件的扩展名.ejs。
+
 随着开发进展，程序中的视图会越来越多，并且有时一个资源会有几个视图。 view lookup
 可以帮我们组织这些视图，比如说把视图文件放在跟资源相连的子目录中。
+
 用添加子目录的办法可以去掉模板文件名称中的冗余部分，比如 edit-entry.ejs 和 show-entry.ejs。
+
 Express 会添加跟 view engine 匹配的扩展名，根据 res.render('entries/edit')定位
 到 ./views/entries/edit.ejs。
-Express 会检查 views 的子目录中是否有名为 index 的文件。当文件的名称为复数时，比如 entries，
-通常表示这是一个资源列表。也就是说 res.render('entries')一般会渲染文件 views/entries/
-index.ejs。
+
+Express 会检查 views 的子目录中是否有名为 index 的文件。当文件的名称为复数时，比如 entries，通常表示这是一个资源列表。也就是说 res.render('entries')一般会渲染文件 views/entries/index.ejs。
+
 4. 将数据传递给视图的办法
+
 在 Express 中，要给被渲染的视图传递数据有几种办法，其中最常用的是将要传递的数据作
 为 res.render()的参数。此外，还可以在路由处理器之前的中间件中设定一些变量，比如用
 app.locals 传递程序层面的数据，用 res.locals 传递请求层面的数据。
+
 将变量直接作为 res.render()的参数优先级最高，要高于在 res.locals 和 app.locals
-中设定的变量值，如图 6-11 所示。6.2 Express 113
+中设定的变量值，如图 6-11 所示。
 
 图 6-11 渲染模板时，直接传给 render 函数的值优先级最高
+
 默认情况下， Express 只会向视图中传递一个程序级变量——settings，这个对象中包含所
 有用 app.set()设定的值。比如 app.set('title', 'My Application')会把 settings.
 title 输出到模板中，请看下面的 EJS 代码片段：
+
+```
 <html>
 <head>
 <title><%= settings.title %></title>
@@ -4109,36 +4108,54 @@ title 输出到模板中，请看下面的 EJS 代码片段：
 <h1><%= settings.title %></h1>
 <p>Welcome to <%= settings.title %>.</p>
 </body>
+```
+
 实际上， Express 是像下面这样输出这个对象的：
+
+```js
 app.locals.settings = app.settings;
+```
+
 这就是关于数据传递的全部知识！在了解了如何渲染视图以及如何传递数据给它们之后，该
 去看看怎么给我们的在线留言板程序定义路由和路由处理器了。另外还要创建数据库模型来做数
 据的持久化。
-6.2.4 Express 路由入门
+
+### 6.2.4 Express 路由入门
+
 Express 路由的主要任务是将特定模式的 URL 匹配到响应逻辑上。但也可以将 URL 模式匹
-配到中间件上，以便用中间件实现某些路由上的可重用功能。114 第 6 章 深入了解 Connect 和 Express
-合并值
+配到中间件上，以便用中间件实现某些路由上的可重用功能。
+
 本节要：
 - 用特定路由的中间件校验用户提交的内容；
 - 实现特定路由的校验。
+
 先看看特定路由中间件有哪些用法。
+
 1. 校验用户内容提交
+
 为了介绍校验的做法，我们要给这个程序加上消息提交功能。 实现这个功能需要完成下面
 几项工作：
+
 - 创建消息模型；
 - 添加与消息相关的路由；
 - 创建消息表单；
 - 添加业务逻辑，用提交上来的表单数据创建消息。
+
 下面先来创建消息模型。
- 创建消息模型
+- 创建消息模型
+
 在创建模型之前，需要先安装 Node redis 模块。执行命令 npm install --save redis。
 如果你的机器上没装 Redis，请访问其官网了解如何安装；如果你用的是 macOS，可以用 Homebrew
 安装， Windows 有 Redis Chocolatey 包。
+
 这里用 Redis 是想偷点儿懒：借助 Redis 和 ES6 的特性，我们不需要用复杂的数据库就能轻
 松创建出轻便的模型。如果你想自己试试其他的数据库，可以参考第 8 章介绍的知识。
+
 接下来可以看看如何创建保存在线留言板消息条目的模型了。创建 models/entry.js 文件，将
 下面的代码放到这个文件中。这是个简单的 ES6 类，它会把数据存到 Redis 列表中。
+
 代码清单 6-7 消息条目模型
+```js
 const redis = require('redis');
 const db = redis.createClient();
 class Entry {
@@ -4158,20 +4175,24 @@ cb();
 }
 );
 }
-循环遍历传入
-对象中的键
-将保存的消息转换
-成 JSON 字符串
-将 JSON 字符串保
-存到 Redis 列表中
-创建 Redis 客
-户端实例6.2 Express 115
+// 循环遍历传入
+// 对象中的键
+// 将保存的消息转换
+// 成 JSON 字符串
+// 将 JSON 字符串保
+// 存到 Redis 列表中
+// 创建 Redis 客
+// 户端实例
 
 }
 module.exports = Entry;
+```
+
 基本模型有了，现在要添加获取消息用的 getRange 函数，代码如下所示。你可以用这个函
 数获取消息。
+
 代码清单 6-8 获取一部分消息的逻辑
+```js
 class Entry {
 static getRange(from, to, cb) {
 db.lrange('entries', from, to, (err, items) => {
@@ -4185,17 +4206,31 @@ cb(null, entries);
 }
 ...
 }
+```
+
 创建好模型，现在你可以添加路由来创建消息和获取消息列表了。
- 创建消息表单
+
+- 创建消息表单
+
 接下来添加创建消息的功能，先把下面的代码添加到 app.js 的路由部分：
+
+```js
 app.get('/post', entries.form);
 app.post('/post', entries.submit);
+```
+
 接着把下面的代码添加到 routes/entries.js 中。这个路由逻辑会渲染一个包含表单的模板：
+
+```js
 exports.form = (req, res) => {
 res.render('post', { title: 'Post' });
 };
+```
+
 然后用下面的 EJS 代码创建表单模板 views/post.ejs。
+
 代码清单 6-9 用于输入消息数据的表单
+```html
 <!DOCTYPE html>
 <html>
 <head>
@@ -4210,13 +4245,14 @@ res.render('post', { title: 'Post' });
 <p>
 <input type='text' name='entry[title]' placeholder='Title' />
 </p>
+<!-- 
 用来获取消息记录的
 Redis lrange 函数
 消息标题
 解码之前保存为 JSON
-的消息记录116 第 6 章 深入了解 Connect 和 Express
-来自表单中名为“ entry[...]”
-的控件
+的消息记录 -->
+<!-- 来自表单中名为“ entry[...]”
+的控件 -->
 <p>
 <textarea name='entry[body]' placeholder='Body'></textarea>
 </p>
@@ -4226,15 +4262,29 @@ Redis lrange 函数
 </form>
 </body>
 </html>
+```
+
 这个表单用了形如 entry[title]之类的输入控件名称，需要用扩展的消息体解析器来解
 析。打开 app.js，找到
+
+```js
 app.use(bodyParser.urlencoded({ extended: false }));
+```
+
 改成：
+
+```js
 app.use(bodyParser.urlencoded({ extended: true }));
+```
+
 显示表单的页面做好了，接下来我们要用表单提交上来的数据创建消息。
- 实现消息的创建
+
+- 实现消息的创建
+
 把下面的代码添加到文件 routes/entries.js 中，实现用表单提交上来的数据创建消息。
+
 代码清单 6-10 用表单提交的数据创建消息
+```js
 exports.submit = (req, res, next) => {
 const data = req.body.entry;
 const user = res.locals.user;
@@ -4249,20 +4299,26 @@ if (err) return next(err);
 res.redirect('/');
 });
 };
+```
+
 现在用浏览器访问 /post 后应该可以添加消息了。到代码清单 6-21 时才会要求用户先登录。
 处理好消息创建的功能，该实现渲染消息列表的功能了。
- 添加显示消息的首页
+
+- 添加显示消息的首页
+
 先创建 routes/entries.js，然后把下面的代码放到里面。引入消息模型，输出渲染消息列表的
 函数。
+
 代码清单 6-11 消息列表
+```js
 const Entry = require('../models/entry');
 exports.list = (req, res, next) => {
 Entry.getRange(0, -1, (err, entries) => {
-消息主体
-获取
-消息
-加载用户数据的中间件
-在代码清单 6-28 中6.2 Express 117
+// 消息主体
+// 获取
+// 消息
+// 加载用户数据的中间件
+// 在代码清单 6-28 中
 
 if (err) return next(err);
 res.render('entries', {
@@ -4271,9 +4327,13 @@ entries: entries,
 });
 });
 };
+```
+
 这个路由的业务逻辑定义好之后，还需要添加 EJS 模板来显示这些消息。在 views 目录下创
 建 entries.ejs 文件，并加入下面的 EJS 代码。
+
 代码清单 6-12 视图 entries.ejs
+```
 <!DOCTYPE html>
 <html>
 <head>
@@ -4291,23 +4351,37 @@ entries: entries,
 <% }) %>
 </body>
 </html>
+```
+
 在运行程序之前，先用 touch views/menu.ejs 创建菜单模板文件，后面再添加具体代码。
 视图和路由准备好后，需要告诉程序到哪里去找这些路由。
- 添加与消息相关的路由
+
+- 添加与消息相关的路由
+
 在把与消息相关的路由添加到程序中之前，需要调整一下 app.js。先把下面这个 require
 语句放在 app.js 文件的顶端：
+
+```js
 const entries = require('./routes/entries');
+```
+
 接下来，还是在 app.js 中，修改包含 app.get('/'的那行代码，改成下面这样，让发给 / 的
 请求返回消息列表：
+
+```js
 app.get('/', entries.list);
+```
+
 现在运行这个程序，首页会显示消息列表。既然消息创建和显示列表都做好了，那么接下来
 该看看如何用特定路由中间件校验表单数据了。
- 使用特定路由中间件
+
+- 使用特定路由中间件
+
 假定你想将表单中的消息文本域设为必填项。能想到的第一种方式可能是像下面的代码那
 样把它直接加在路由回调函数中。然而这种方式并不理想，因为校验逻辑是绑死在这个表单上
-渲染 HTTP 响应118 第 6 章 深入了解 Connect 和 Express
-的。而在大多数情况下，校验逻辑都能被提炼到可重用的组件中，让开发更容易、更快、更具
-声明性：
+渲染 HTTP 响应118 第 6 章 深入了解 Connect 和 Express 的。而在大多数情况下，校验逻辑都能被提炼到可重用的组件中，让开发更容易、更快、更具声明性：
+
+```js
 ...
 exports.submit = (req, res, next) => {
 let data = req.body.entry;
@@ -4322,23 +4396,35 @@ res.redirect('back');
 return;
 }
 ...
+```
+
 Express 路由可以有自己的中间件，其被放在路由回调函数之前，只有跟这个路由匹配时才
 会调用。本章所用的路由回调并没有做特殊处理。这些中间件跟其他中间件一样，甚至你即将创
 建的校验中间件也一样。
+
 接下来我们要用特定路由中间件来做校验，先来看一种虽然简单但不太灵活的实现方式。
+
 2. 用特定路由中间件实现表单校验
+
 第一种方式是写几个简单但特定的中间件组件来执行校验。带有此类中间件的 POST/post
 路由看起来应该像下面这样：
+
+```js
 app.post('/post',
 requireEntryTitle,
 requireEntryTitleLengthAbove(4),
 entries.submit
 );
+```
+
 一般的路由定义只有两个参数：路径和路由处理函数，而这个路由定义中又额外地增加了两
 个参数，这两个参数就是校验中间件。
+
 在下面的代码中，我们把原来的校验逻辑剥离出来做成了两个中间件。但它们的模块化程度
 还不高，只能用在输入域 entry[title]上。
+
 代码清单 6-13 两个更有潜力但仍不完美的校验中间件
+```js
 function requireEntryTitle(req, res, next) {
 const title = req.body.entry.title;
 if (title) {
@@ -4351,9 +4437,9 @@ res.redirect('back');
 function requireEntryTitleLengthAbove(len) {
 return (req, res, next) => {6.2 Express 119
 
-如果有，则进
-入 下 一 个 中
-间件
+// 如果有，则进
+// 入 下 一 个 中
+// 间件
 const title = req.body.entry.title;
 if (title.length > len) {
 next();
@@ -4363,21 +4449,31 @@ res.redirect('back');
 }
 };
 }
+```
+
 实际工作中更常用的方案是进一步抽象，剥离成更灵活的校验器，以目标输入域的名称为参
 数进行校验。下面来看一下这种实现方式。
- 构建灵活的校验中间件
+
+- 构建灵活的校验中间件
+
 如果能重用校验逻辑，可以像下面这样传入输入域名称，那我们的工作量会进一步降低。
+
+```js
 app.post('/post',
 validate.required('entry[title]'),
 validate.lengthAbove('entry[title]', 4),
 entries.submit);
+```
+
 打开 app.js，把路由部分的 app.post('/post', entries.submit);换成上面这段代码。
 这里有必要提一下， Express 社区已经创建了很多类似的公用库，但掌握校验中间件的工作机制
 以及如何编写中间件仍然很有必要。
-开始动手写代码吧。用代码清单 6-14 中的代码创建 ./middleware/validate.js 文件。 validate.js
-会输出 validate.required()和 validate.lengthAbove()两个中间件。这里的实现细节并
+
+开始动手写代码吧。用代码清单 6-14 中的代码创建 ./middleware/validate.js 文件。 validate.js 会输出 validate.required()和 validate.lengthAbove()两个中间件。这里的实现细节并
 不重要，关键是通过这个例子学习如何提炼出程序中的通用代码，用少量的工作成果发挥大作用。
+
 代码清单 6-14 校验中间件的实现
+```js
 function parseField(field) {
 return field
 .split(/\[|\]/)
@@ -4399,15 +4495,15 @@ next();
 res.error(`${field.join(' ')} is required`);
 res.redirect('back');
 }
-解析输入
-域一次
-每次收到请求都检
-查输入域是否有值
-如果没有，
-显示错误
-解析 entry[name]符号
-基于 parseField()
-的结果查找属性120 第 6 章 深入了解 Connect 和 Express
+// 解析输入
+// 域一次
+// 每次收到请求都检
+// 查输入域是否有值
+// 如果没有，
+// 显示错误
+// 解析 entry[name]符号
+// 基于 parseField()
+// 的结果查找属性
 };
 };
 exports.lengthAbove = (field, len) => {
@@ -4422,35 +4518,51 @@ res.redirect('back');
 }
 };
 };
+```
+
 为了让程序能访问到这个中间件，需要把下面这行代码放到 app.js 中：
+
+```js
 const validate = require('./middleware/validate');
+```
+
 现在再试，应该发现校验已经生效了。这个校验 API 还可以进一步优化，你可以把这个当作
 练习自己研究一下。
-6.2.5 用户认证
+
+### 6.2.5 用户认证
+
 本节会带你从头开始为我们的程序创建一个认证系统。你要实现下面这些功能：
 - 存储和认证已注册用户；
 - 注册功能；
 - 登录功能；
 - 加载用户信息的中间件。
+
 我们还是用 Redis 作为用户账号的存储。接下来先创建 User 模型，看看如何让 Redis 用起来
 更容易。
+
 1. 保存和加载用户记录
+
 本节要实现用户加载、保存和认证。任务清单是：
 - 用 package.json 定义程序的依赖项；
 - 创建用户模型；
 - 用 Redis 加载和保存用户信息；
 - 用 bcrypt 增强用户密码的安全性；
 - 实现用户认证。
+
 Bcrypt 是一个加盐的哈希函数，可作为第三方模块专门对密码做哈希处理。 Bcrypt 特别适合
 处理密码，因为计算机越来越快，而 bcrypt 能让破解变慢，从而有效对抗暴力攻击。
 先用 npm install --save redis bcrypt 安装这些依赖项。
+
 2. 创建用户模型
+
 在 models/ 目录下创建 user.js。
 
 代码清单 6-15 中是用户模型的代码。这段代码引入了依赖项 redis 和 bcrypt，然后用
 redis.createClient()打开 Redis 连接。函数 User 可以合并传入的参数对象。 比如说， new
 User({ name: 'Tobi' })会创建一个对象，并将对象的属性 name 设为 Tobi。
+
 代码清单 6-15 开始创建用户模型
+```js
 const redis = require('redis');
 const bcrypt = require('bcrypt');
 const db = redis.createClient();
@@ -4462,14 +4574,20 @@ this[key] = obj[key];
 }
 }
 module.exports = User;
+```
+
 现在这个用户模型只是个架子，还需要添加创建和更新记录的方法。
+
 3. 把用户保存到 Redis 中
+
 接下来要实现的功能是保存用户，把数据存到 Redis 中。代码清单 6-16 中的 save 方法会先
 检查用户是否有 ID，如果有就调用 update 方法，用名称索引用户 ID，并用对象的属性组装出
 Redis 哈希表中的记录。如果没有 ID，则认为这是一个新用户，增加 user:ids 的值，给用户一
 个唯一 ID，然后对密码做哈希处理，用之前提到的那个 update 方法把用户数据存到 Redis 中。
 把下面的代码加到 models/user.js 中。
+
 代码清单 6-16 更新用户记录
+```js
 class User {
 // ...
 save(cb) {
@@ -4489,43 +4607,53 @@ this.update(cb);
 update(cb) {
 const id = this.id;
 db.set(`user:id:${this.name}`, id, (err) => {
-创建到 Redis
-的长连接
-循环遍历传
-设定当前类 入的对象
-的所有属性
-设定 ID，
-以便保存
-如果设置了 ID，则
-用户已经存在
-创建唯
-一 ID
-密码
-哈希
-保存用户
-属性
-用名称索引
-用户 ID
-输出 User 类122 第 6 章 深入了解 Connect 和 Express
+// 创建到 Redis
+// 的长连接
+// 循环遍历传
+// 设定当前类 入的对象
+// 的所有属性
+// 设定 ID，
+// 以便保存
+// 如果设置了 ID，则
+// 用户已经存在
+// 创建唯
+// 一 ID
+// 密码
+// 哈希
+// 保存用户
+// 属性
+// 用名称索引
+// 用户 ID
+// 输出 User 类
 if (err) return cb(err);
 db.hmset(`user:${id}`, this, (err) => {
 cb(err);
 });
 });
 }
+```
+
 4. 增强用户密码的安全性
+
 刚创建用户时，需要将.pass 属性设为用户的密码。然后用户保存逻辑会将.pass 属性换
 作经过哈希处理的密码。
+
 这个哈希会加盐。每个用户用的盐不一样，加盐可以使他们有效对抗彩虹表攻击：对哈希机
 制来说，盐就像私钥一样。可以用 bcrypt 的 genSalt()为哈希生成 12 个字符的盐。
-彩虹表攻击 彩虹表攻击用预先计算好的表破解经过哈希处理的密码。维基百科
+
+> 彩虹表攻击 彩虹表攻击用预先计算好的表破解经过哈希处理的密码。维基百科
 上有更详细的介绍。
+
 盐生成好之后，调用 bcrypt.hash()对.pass 属性和盐做哈希处理。在.update()把数据
 存到 Redis 之前， .pass 属性的值会换成最终的哈希值，保证不会保存密码的明文，只保存它的
 哈希结果。
+
 下面代码中定义的函数会创建加盐的哈希，并把结果存到用户的属性.pass 中。把它加到
 models/user.js 中。
+
 代码清单 6-17 在用户模型中添加 bcrypt 加密函数
+
+```js
 class User {
 // ...
 hashPassword(cb) {
@@ -4540,33 +4668,45 @@ cb();
 });
 }
 }
+```
+
 已经完成了。
+
 5. 测试用户保存逻辑
+
 我们来试一下，在控制台中输入命令 redis-server 启动 Redis 服务器。把下面的代码加到
 models/user.js 的最下面，创建示例用户。然后运行 node models/user.js 执行示例用户的创建。
 代码清单 6-18 测试用户模型
+
+```js
 const User = require('./models/user');
 const user = new User({ name: 'Example', pass: 'test' });
-用 Redis 存储当
-前类的属性
-设定盐以
-便保存
-生成有 12
-个字符的盐
-生成哈希
-设定哈希以
-便保存
-创建新用户6.2 Express 123
+// 用 Redis 存储当
+// 前类的属性
+// 设定盐以
+// 便保存
+// 生成有 12
+// 个字符的盐
+// 生成哈希
+// 设定哈希以
+// 便保存
+// 创建新用户
+
 
 user.save((err) => {
 if (err) console.error(err);
 console.log('user id %d', user.id);
 });
+```
+
 应该能看到表明用户创建成功的输出，比如： user id 1。测试完成后，从 models/user.js 中
 去掉刚才添加的示例用户创建代码。
+
 在使用 Redis 中的工具 redis-cli 时，可以用 HGETALL 命令取出哈希表中的所有键和值，如下
 所示。
+
 代码清单 6-19 使用 Redis 命令行工具进行查询
+```
 $ redis-cli
 redis> get user:ids
 "1"
@@ -4582,15 +4722,23 @@ redis> hgetall user:1
 9) "salt"
 10) "$2a$12$BAOWThTAkNjY7Uht0UdBku"
 redis> quit
+```
+
 用户保存的功能做好了，该添加获取用户信息的功能了。
+
 其他的 REDIS-CLI 命令 Redis 命令参考手册中有更多介绍 Redis 命令的内容。
+
 6. 获取用户数据
+
 在 Web 程序中，用户登录通常是在表单中输入用户名和密码，然后把这些数据提交给后台
 进行认证。在得到登录表单提交的数据后，需要一个能通过用户名获取用户信息的方法。
+
 下面代码中的 User.getByName()就是这样的方法。这个函数先用 User.getId() 查找用
 户 ID，然后把 ID 传给 User.get()，由它负责取得 Redis 哈希表中的用户数据。把下面的方法
 加到 models/user.js 中。
+
 代码清单 6-20 从 Redis 中取得用户数据
+```js
 class User {
 // ...
 static getByName(name, cb) {
@@ -4599,19 +4747,19 @@ if (err) return cb(err);
 User.get(id, cb);
 });
 }
-保存用户
-启动 Redis
-命令行 找出最近创建
-的用户的 ID
-取出哈希表条
-哈希表条目 目中的数据
-的属性
-退出 Redis
-命令行
-根据名称查找
-用户 ID
-用 ID抓取
-用户124 第 6 章 深入了解 Connect 和 Express
+// 保存用户
+// 启动 Redis
+// 命令行 找出最近创建
+// 的用户的 ID
+// 取出哈希表条
+// 哈希表条目 目中的数据
+// 的属性
+// 退出 Redis
+// 命令行
+// 根据名称查找
+// 用户 ID
+// 用 ID抓取
+// 用户
 static getId(name, cb) {
 db.get(`user:id:${name}`, cb);
 }
@@ -4626,57 +4774,75 @@ cb(null, new User(user));
 User.getByName('tobi', (err, user) => {
 console.log(user);
 });
+```
+
 现在已经可以获取经过哈希的密码了，我们继续实现用户认证功能。
+
 7. 用户登录认证
+
 用户认证所需的最后一个方法在下面的代码清单中，前面定义的用户数据获取函数派上用场
 了。把它添加到 models/user.js 中。
+
 代码清单 6-21 用户名和密码认证
+```js
 static authenticate(name, pass, cb) {
 User.getByName(name, (err, user) => {
-if (err) return cb(err);
+  if (err) return cb(err);
 if (!user.id) return cb();
 bcrypt.hash(pass, user.salt, (err, hash) => {
-if (err) return cb(err);
+  if (err) return cb(err);
 if (hash == user.pass) return cb(null, user);
 cb();
 });
 });
 }
+  // 取得由名称
+  // 索引的 ID
+  // 获取普通对
+  // 象哈希
+  // 将普通对象转换成
+  // 新的 User 对象
+  // 通过用户名查找用户
+  // 用户不存在
+  // 匹配发现项
+  // 密码无效
+  // 对给出的
+  // 密码做哈
+  // 希处理
+```
+
 认证功能一开始先用用户名查找用户记录。如果没找到，马上调用回调函数。反之把保存在
 用户对象中的盐和提交上来的密码做哈希处理，产生的结果应该跟 user.pass 的哈希值相同。
 如果两个哈希值不匹配，说明用户输入的凭证是无效的。当查找不存在的键时， Redis 会返回一
 个空的哈希值，所以这里的检查办法是!user.id，而不是!user。
+
 现在用户认证做好了，该实现用户注册功能了。
-6.2.6 注册新用户
+
+### 6.2.6 注册新用户
+
 为了让用户创建新账号后登录，需要提供注册和登录功能。
+
 本节需要完成下面的任务实现注册：
 - 将注册和登录路由映射到 URL 路径上；
-取得由名称
-索引的 ID
-获取普通对
-象哈希
-将普通对象转换成
-新的 User 对象
-通过用户名查找用户
-用户不存在
-匹配发现项
-密码无效
-对给出的
-密码做哈
-希处理6.2 Express 125
-
 - 添加显示注册表单的注册路由处理器；
 - 实现用户数据存储功能，存储从表单提交上来的用户数据。
+
 表单如图 6-12 所示。
+
 图 6-12 用户注册表单
+
 这个表单是在浏览器访问 /register 时显示的。稍后还要创建一个类似的登录表单。
+
 1. 添加注册路由
 要显示注册表单，首先要创建一个路由渲染这个表单，然后把它返回给用户的浏览器显示
 出来。
+
 参照代码清单 6-22 修改 app.js，这段代码用 Node 的模块系统从 routes 目录中引入定义注册
 路由行为的模块，并将 HTTP 方法及 URL 路径关联到路由函数上。由此构成一个“前端控制器”。
 如你所见， 这里既有 GET 注册路由，也有 POST 注册路由。
+
 代码清单 6-22 添加注册路由
+```js
 ...
 const register = require('./routes/register');
 ...
@@ -4687,13 +4853,19 @@ register.js 中，输出渲染注册模板的路由：
 exports.form = (req, res) => {
 res.render('register', { title: 'Register' });
 };
+// 引入路由逻辑
+// 添加路由
+```
+
 这个路由用到了一个 EJS 模板，我们接下来创建用于定义注册表单的 HTML 的模板。
+
 2. 创建注册表单
+
 为了定义注册表单的 HTML，需要在 views 目录下创建 register.ejs 文件。可以用下面这个代
 码清单中的 HTML/EJS。
-引入路由逻辑
-添加路由
+
 代码清单 6-23 注册表单的视图模板
+```html
 <!DOCTYPE html>
 <html>
 <head>
@@ -4719,46 +4891,61 @@ res.render('register', { title: 'Register' });
 </form>
 </body>
 </html>
-注意上面的 include messages，它嵌入了另一个模板 messages.ejs。我们接下来就定义这
-个用来跟用户沟通的模板。
-3. 把反馈消息传达给用户
-在用户注册过程中，以及在大多数应用场景中，将反馈消息传达给用户都是必须要做的工作。
-比如说，用户注册时所选的用户名可能已经被占用了。这时要提示用户用其他用户名注册。
-这个程序里的 messages.ejs 模板是用来显示错误的。它会嵌入到很多模板中。
-在 views 目录下创建一个名为 messages.ejs 的文件，把下面的代码放到这个文件里。这段代
-码会检查是否有变量 locals.messages，如果有，模板会循环遍历这个变量以显示消息对象。
-每个消息对象都有 type 属性（如果需要，可以用消息做非错误通知）和 string 属性（消息文
-本）。我们可以把要显示的错误添加到 res.locals.messages 数组中形成队列。消息显示之后，
-调用 removeMessages 清空消息队列：
-<% if (locals.messages) { %>
-<% messages.forEach((message) => { %>
-<p class='<%= message.type %>'><%= message.string %></p>
-<% }) %>
-<% removeMessages() %>
-<% } %>
-图 6-13 是显示错误报告时的注册表单。
-用户名是
+<!-- 用户名是
 必填项
 导航链接
 稍后添加
 稍后添加的
 提示消息
 密码是必
-填项
+填项 -->
+```
+
+注意上面的 include messages，它嵌入了另一个模板 messages.ejs。我们接下来就定义这
+个用来跟用户沟通的模板。
+
+3. 把反馈消息传达给用户
+
+在用户注册过程中，以及在大多数应用场景中，将反馈消息传达给用户都是必须要做的工作。
+比如说，用户注册时所选的用户名可能已经被占用了。这时要提示用户用其他用户名注册。
+这个程序里的 messages.ejs 模板是用来显示错误的。它会嵌入到很多模板中。
+
+在 views 目录下创建一个名为 messages.ejs 的文件，把下面的代码放到这个文件里。这段代
+码会检查是否有变量 locals.messages，如果有，模板会循环遍历这个变量以显示消息对象。
+每个消息对象都有 type 属性（如果需要，可以用消息做非错误通知）和 string 属性（消息文
+本）。我们可以把要显示的错误添加到 res.locals.messages 数组中形成队列。消息显示之后，
+调用 removeMessages 清空消息队列：
+
+```html
+<% if (locals.messages) { %>
+<% messages.forEach((message) => { %>
+<p class='<%= message.type %>'><%= message.string %></p>
+<% }) %>
+<% removeMessages() %>
+<% } %>
+```
+
+图 6-13 是显示错误报告时的注册表单。
 
 图 6-13 显示错误报告时的注册表单
+
 向 res.locals.messages 中添加消息是一种简单的用户沟通方式，但在重定向后 res.locals
 会丢失，所以如果要跨越请求传递消息，那么需要用到会话。
+
 4. 在会话中存放临时的消息
 Post/Redirect/Get（ PRG）是一种常用的 Web 程序设计模式。这种模式是指，用户请求表单，
 表单数据作为 HTTP POST 请求被提交，然后用户被重定向到另外一个 Web 页面上。用户被重定
 向到哪里取决于表单数据是否有效。如果表单数据无效，程序会让用户回到表单页面。如果表单
 数据有效，程序会让用户到新的 Web 页面中。 PRG 模式主要是为了防止表单的重复提交。
+
 在 Express 中，用户被重定向后， res.locals 中的内容会被重置。如果把发给用户的消息
 存在 res.locals 中，这些消息在显示之前就已经丢了。把消息存在会话变量中可以解决这个
 问题。确保消息在重定向后的页面上仍然能够显示。
+
 我们要添加一个模块，让它在一个会话变量中维护用户消息队列。创建文件./middleware/
 messages.js，加入下面这些代码：
+
+```js
 const express = require('express');
 function message(req) {
 return (msg, type) => {
@@ -4768,28 +4955,43 @@ sess.messages = sess.messages || [];
 sess.messages.push({ type: type, string: msg });
 };
 };
+```
+
 res.message 函数可以把消息添加到来自任何 Express 请求的会话变量中。 express.response
 对象是 Express 给响应对象用的原型。所有中间件和路由都能访问到添加到这个对象中的属性。
 在前面的代码中， express.response 被赋值给了一个名为 res 的变量，这样添加属性更容易，
 可读性也提高了。
+
 这个功能需要会话支持，为此我们需要一个跟 Express 兼容的中间件模块，官方支持的包是
-express-session。用 npm install --save express-session 安装，然后把它添加到 app.js 中：128 第 6 章 深入了解 Connect 和 Express
+express-session。用 npm install --save express-session 安装，然后把它添加到 app.js 中：
+
+```js
 const session = require('express-session');
 ...
 app.use(session({
 secret: 'secret',
 resave: false, saveUninitialized: true
 }));
+```
+
 这个中间件最好放在 cookie 后面（ 26 行附近）。
+
 为了让添加消息变得更容易，再加上下面这段代码。用 res.error 函数可以轻松地将类型
 为 error 的消息添加到消息队列中。它用到了在前面那个模块中定义的 res.message 函数：
+
+```js
 res.error = msg => this.message(msg, 'error');
+```
+
 最后一步是把这些消息输出到模板中显示。如果不做这一步，就只能把 req.session.messages
 传给每个 res.render()调用，这很不明智。
+
 为了解决这个问题，我们要创建一个中间件，在每个请求上用 res.session.messages 上
 的内容组装出 res.locals.messages，这样可以更高效地把消息输出到所有要渲染的模板上。
 到目前为 止， ./middleware/messages.js 只是扩展了响应的原型，还没输出任何东西。把下面的代
 码加到这个文件中，输出我们需要的中间件：
+
+```js
 module.exports = (req, res, next) => {
 res.message = message(req);
 res.error = (msg) => {
@@ -4801,13 +5003,18 @@ req.session.messages = [];
 };
 next();
 };
+```
+
 它首先定义了一个模板变量 messages，用来存放会话中的消息；这是一个数组，在上一个
 请求中可能存在，也可能不存在（这些是存在会话里的消息）。接下来，还需要一个把消息从会
 话中移除的办法，否则它们会因为没人清理而越积越多。
+
 现在只要在 app.js 中 require()这个文件就可以集成这个新功能了。这个中间件应该放在
 中间件 session 下面，因为它要依赖 req.session。注意一下，因为这个中间件既不接受选项， 也
 不返回第二个函数，所以可以调用 app.use(messages)，而无须调用 app.use(messages())。
 为将来考虑，不管是否接受选项，第三方中间件最好用 app.use(messages())：
+
+```js
 ...
 const register = require('./routes/register');
 const messages = require('./middleware/messages');
@@ -4822,23 +5029,35 @@ saveUninitialized: true
 }));
 app.use(messages);
 ...
+```
+
 这样任何视图中都可以访问到 messages 和 removeMessages()了，所以，不管出现在哪
 个模板中， messages.ejs 应该都可以圆满完成任务。
+
 注册表单的显示做好了，还解决了向用户传达反馈信息的问题。接下来继续前进，去处理注
 册表单的提交吧。
+
 5. 实现用户注册
+
 我们需要一个路由函数来处理提交到 /register 上的 HTTP POST 请求。可以将这个函数命名
 为 submit。
+
 当表单数据提交上来时，中间件 bodyParser()会用这些数据组装 req.body。注册表单使用了
 对象表示法 user[name]，经过解析后会变成 req.body.user.name。同样， req.body.user.pass
 表示密码输入域。
+
 表单提交路由处理器中的代码很少，我们只需要处理校验，比如确保用户名未被占用；还有
 保存新用户，如代码清单 6-24 所示。
+
 注册一完成，就会把 user.id 赋值给会话变量，稍后还要通过检查它是否存在来判断用户
 是否通过了认证。如果校验失败，消息会作为 messages 变量通过 res.locals.messages 输
 出到模板中，并且用户会被重定向回注册表单。
+
 请把下面的代码添加到 routes/register.js 中实现这一功能。
+
 代码清单 6-24 用提交的数据创建用户
+
+```js
 const User = require('../models/user');
 ...
 exports.submit = (req, res, next) => {
@@ -4862,32 +5081,42 @@ res.redirect('/');
 }
 });
 };
-顺延传递
-数据库连
-接错误和
-其他错误
-保存新
-用户
-检查用户名
-是否唯一
-用户名已经
-被占用
-为认证保
-存 uid
-重定向到记
-录的列表页
-用 POST 数据
-创建用户130 第 6 章 深入了解 Connect 和 Express
+// 顺延传递
+// 数据库连
+// 接错误和
+// 其他错误
+// 保存新
+// 用户
+// 检查用户名
+// 是否唯一
+// 用户名已经
+// 被占用
+// 为认证保
+// 存 uid
+// 重定向到记
+// 录的列表页
+// 用 POST 数据
+/创建用户
+```
+
 现在启动程序，访问 /register 注册一个用户。接下来我们要让已注册的用户通过 /login 表单
 进行认证。
-6.2.7 已注册用户登录
+
+### 6.2.7 已注册用户登录
+
 实现登录功能比注册简单，因为之前定义的通用认证方法 User.authenticate()里已经有
 了登录所需的大部分代码 。本节将添加：
+
 - 显示登录表单的路由逻辑；
 - 认证从表单提交的用户数据的逻辑。
+
 这个表单看起来应该如图 6-14 所示。
+
 图 6-14 用户登录表单
+
 先从修改 app.js 入手，引入登录路由并确立路由路径：
+
+```js
 ...
 const login = require('./routes/login');
 ...
@@ -4895,21 +5124,32 @@ app.get('/login', login.form);
 app.post('/login', login.submit);
 app.get('/logout', login.logout);
 ...
+  
+  // 处理凭证有
+  // 为认证 效的用户
+  // 存储 uid
+```
+
 接下来添加显示登录表单的功能。
+
 1. 显示登录表单
+
 实现登录表单的第一步是为与登录和退出相关的路由创建一个文件： routes/login.js。显示登
 录表单的路由逻辑几乎跟之前实现那个显示注册表单的逻辑一模一样，唯一的区别是模板名称和
 页面标题不同：
+
+```js
 exports.form = (req, res) => {
 res.render('login', { title: 'Login' });
 };
-定义登录表单的 ./views/login.ejs 跟 register.ejs 也极其相似，只有说明文本和表单提交的目标
-路由不同。代码如下所示。6.2 Express 131
+```
 
-处理凭证有
-为认证 效的用户
-存储 uid
+定义登录表单的 ./views/login.ejs 跟 register.ejs 也极其相似，只有说明文本和表单提交的目标
+路由不同。代码如下所示。
+
 代码清单 6-25 登录表单的视图模板
+
+```html
 <!DOCTYPE html>
 <html>
 <head>
@@ -4935,12 +5175,19 @@ res.render('login', { title: 'Login' });
 </form>
 </body>
 </html>
+```
+
 做好显示登录表单所需的路由和模板后，接下来要添加处理登录请求的逻辑。
+
 2. 登录认证
+
 处理登录请求需要添加路由逻辑，对用户提交的用户名和密码进行检查，如果正确，将用户
 ID 设为会话变量，并把用户重定向到首页上。下面的代码包含了这种逻辑，将它们添加到
 routes/login.js 中。
+
 代码清单 6-26 处理登录的路由
+
+```js
 const User = require('../models/user');
 ...
 exports.submit = (req, res, next) => {
@@ -4968,36 +5215,55 @@ res.redirect('back');
 输出错误
 消息
 重定向回
-登录表单132 第 6 章 深入了解 Connect 和 Express
+登录表单
+```
+
 如果用户是使用 User.authenticate()认证， req.session.uid 就会像在 POST/register
 路由中一样赋值：这个值会保存在会话中，可以用它获取 User 或其他与用户相关的数据。如果
 找不到匹配的记录，会设定一个错误，并重新显示登录表单。
+
 用户可能还希望有主动退出功能，所以应该在程序中提供一个退出链接。在 app.js 中创建这
 个路由：
+
+```js
 const login = require('./routes/login');
 ...
 app.get('/logout', login.logout)
+```
+
 然后在 ./routes/login.js 中，下面的这个函数会移除会话，这将被 session()中间件检测到，
 其会为后续请求赋予新的会话：
+
+```js
 exports.logout = (req, res) => {
 req.session.destroy((err) => {
 if (err) throw err;
 res.redirect('/');
 })
 };
+```
+
 注册和登录页面都创建好了，接下来需要添加一个菜单，让用户可以进入这两个页面。 来
 看一下如何创建。
+
 3. 为已认证的和匿名的用户创建菜单
+
 本节会为匿名的和已认证的用户创建一个菜单，让他们可以登录、 注册、 提交消息以及退出。
 图 6-15 是为匿名用户创建的菜单。
+
 图 6-15 用户登录和注册菜单，用来访问你创建的表单
+
 用户通过认证后将会显示另外一个菜单，来表明其用户名以及发消息页面的链接和退出链
 接。如图 6-16 所示。
+
 图 6-16 用户通过认证后的菜单
+
 在所有程序页面的 EJS 模板中，标签<body>之后都有这样一段代码： <% include menu %>。
-这是要嵌入模板 ./views/menu.ejs，接下来马上创建。6.2 Express 133
+这是要嵌入模板 ./views/menu.ejs，接下来马上创建。
 
 代码清单 6-27 匿名和已认证用户的菜单
+
+```html
 <% if (locals.user) { %>
 <div id='menu'>
 <span class='name'><%= user.name %></span>
@@ -5010,25 +5276,35 @@ res.redirect('/');
 <a href='/register'>register</a>
 </div>
 <% } %>
+```
+
 在这个程序中，你可以假定如果有 user 变量输出到了模板中，那么这个用户就已经通过认
 证了，否则不会输出这个变量。也就是说当这个变量出现时，可以显示用户名、消息提交和退出
 链接。当访问者是匿名用户时，显示网站登录和注册链接。
+
 你可能在想本地变量 user 是从哪来的。其实代码还没写呢。接下来我们要写一些代码为每
 个请求加载已登录用户的数据，并让模板可以得到这些数据。
-6.2.8 用户加载中间件
+
+### 6.2.8 用户加载中间件
+
 在做 Web 程序时，一般都需要从数据库中加载用户信息。通常会表示为 JavaScript 对象。为
 了使其与用户交互更简单，要保证这项数据可持续访问。在本章的程序里，要用中间件为每个请
 求加载用户数据。
+
 中间件脚本会放在 ./middleware/user.js 中，它会从上层目录（ ../models）中引入 User 模型。
 先是输出中间件函数，然后检查会话查看用户 ID。当用户 ID 出现时，表明用户已经通过认证了，
 所以从 Redis 中取出用户数据是安全的。
+
 Node 是单线程的，没有线程本地存储。对于 HTTP 服务器而言，请求和响应变量是唯一的
 上下文对象。构建在 Node 之上的高层框架可能会提供额外的对象存放已认证用户之类的数据，
 但 Express 坚持使用 Node 提供的原始对象。因此，上下文数据一般保存在请求对象上，比如在
 代码清单 6-28 中，用户被存储为 req.user，后续的中间件和路由可以用这个属性访问它。
+
 你可能想知道给 res.locals.user 的任务是什么。 res.locals 是 Express 提供的请求层
 对象， 可以将数据输出给模板，很像 app.locals。它还是能合并已有对象的函数。
+
 代码清单 6-28 加载已登录用户数据的中间件
+```js
 const User = require('../models/user');
 module.exports = (req, res, next) => {
 const uid = req.session.uid;
@@ -5037,27 +5313,32 @@ User.get(uid, (err, user) => {
 if (err) return next(err);
 req.user = res.locals.user = user;
 next();
-给已登录用
-户的菜单
-给匿名用户
-的菜单
-从会话中取出已
-登录用户的 ID
-从 Redis 中取出已
-登录用户的数据
-将用户数据输出
-到响应对象中134 第 6 章 深入了解 Connect 和 Express
-将中间件添
-加到程序中
+// 给已登录用
+// 户的菜单
+// 给匿名用户
+// 的菜单
+// 从会话中取出已
+// 登录用户的 ID
+// 从 Redis 中取出已
+// 登录用户的数据
+// 将用户数据输出
+// 到响应对象中
+// 将中间件添
+// 加到程序中
 });
 };
+```
+
 要使用这个新中间件，首先要删掉 app.js 中所有包含文本 user 的代码。然后像往常那样引
 入模块，把它传给 app.use()。在这个程序中， user 出现在路由器上面，所以只有路由和在
 user 下面的中间件能访问 req.user。如果你正在使用加载数据的中间件，就像这个中间件一
 样， 可能要把 express.static 放到它上面。否则每次返回静态文件时，都会浪费时间到数据
 库中取用户数据。
+
 下面是在 app.js 中启用这个中间件的代码。
+
 代码清单 6-29 启用用户加载中间件
+```js
 const user = require('./middleware/user');
 ...
 app.use(express.session());
@@ -5066,9 +5347,13 @@ app.use(user);
 app.use(messages);
 app.use(app.router);
 ...
+```
+
 如果再次启动程序，不管是访问/login 还是/register，应该都可以看到菜单。如果想给菜单增
 加样式，可以把下面的 CSS 加到 public/stylesheets/style.css 中。
+
 代码清单 6-30 可以加到 style.css 中给菜单添加样式的 CSS
+```css
 #menu {
 position: absolute;
 top: 15px;
@@ -5084,47 +5369,68 @@ text-decoration: none;
 margin-left: 5px;
 color: black;
 }
+```
+
 菜单到位了，你应该可以自己注册个用户了。注册成功后就可以看到带有 Post 链接的已认
 证用户菜单。
+
 下一节将要介绍如何给程序添加 REST API。
-6.2.9 创建 REST API
+
+### 6.2.9 创建 REST API
+
 本节会创建一个 RESTful API，让第三方程序可以跟我们的在线留言板程序互动，进行公开
-数据的访问和添加。按照 REST 的思想，程序数据是可以用谓词和名词（即 HTTP 方法和 URL）6.2 Express 135
+数据的访问和添加。按照 REST 的思想，程序数据是可以用谓词和名词（即 HTTP 方法和 URL）
 
 访问和修改的。通过 REST 请求得到的数据一般是机器可读的格式，比如 JSON 或 XML。
 实现 API 需要完成下面这些任务：
+
 - 设计一个让用户显示、列表、移除和提交消息的 API；
 - 添加基本认证；
 - 实现路由；
 - 提供 JSON 和 XML 响应。
 能对 API 请求进行认证和签名的技术有很多种，但本书不准备展开讨论比较复杂的方案。仅
 以 basic-auth 包为例介绍如何集成认证功能。
+
 1. 设计 API
+
 在动手写代码之前最好先想清楚会涉及哪些路由。我们会在 RESTful API 的路径前加上/api，
 但你可以根据自己的喜好决定怎么实现。比如用 http://api.myapplication.com 这样的子域名也可以。
+
 从下面的代码来看，与其将回调函数放在 app.VERB()调用里，不如把它做成单独的 Node
 模块。保持路由列表的清爽简洁，可以让你对你们团队在做什么，以及这些回调在哪里实现一目
 了然：
+
+```js
 app.get('/api/user/:id', api.user);
 app.get('/api/entries/:page?', api.entries);
 app.post('/api/entry', api.add);
+```
+
 2. 添加基本的认证
+
 之前说过，很多保证 API 安全和限制 API 访问的办法都不在本书的讨论范围之内。但认证过
 程还是要介绍一下的，简单起见，这里以基本认证为例。
+
 我们将用中间件 api.auth 实现这一过程，具体实现会放在 ./routes/api.js 模块里。 app.use()
 方法可以接受路径参数，这在 Express 中被称为挂载点。不管是什么 HTTP 谓词，只要请求的路
 径以挂载点开头，就会触发这个中间件。
+
 下面这段代码中的 app.use('/api', api.auth)应该放在加载用户数据的中间件前面。
 这样可以稍后再修改用户加载中间件，为已认证的 API 用户加载数据：
+
+```js
 ...
 const api = require('./routes/api');
 ...
 app.use('/api', api.auth);
 app.use(user);
 ...
+```
+
 要执行基本认证，先要安装 basic-auth 模块： npm install --save basic-auth。接着创
-建./routes/api.js，引入 Express 和用户模型。可以用 basic-auth 从请求中获取基本认证凭证，然后
-交给 User.authenticate 进行认证：
+建./routes/api.js，引入 Express 和用户模型。可以用 basic-auth 从请求中获取基本认证凭证，然后交给 User.authenticate 进行认证：
+
+```js
 const auth = require('basic-auth');
 const express = require('express');
 const User = require('../models/user');136 第 6 章 深入了解 Connect 和 Express
@@ -5135,11 +5441,17 @@ if (user) req.remoteUser = user;
 next(err);
 });
 };
+```
+
 认证已经准备好了，接下来我们去实现 API 的路由。
+
 3. 实现路由
+
 第一个要实现的路由是 GET /api/user/:id。先根据 ID 取得用户数据，如果用户不存在，
 则返回 404 Not Found 的响应状态码。如果用户存在，则将用户数据传给 res.json()做串行化
 处理，并以 JSON 格式返回该数据。将下面的代码加到 routes/api.js 中：
+
+```js
 exports.user = (req, res, next) => {
 User.get(req.params.id, (err, user) => {
 if (err) return next(err);
@@ -5147,16 +5459,30 @@ if (!user.id) return res.sendStatus(404);
 res.json(user);
 });
 };
+```
+
 然后将这个路由加到 app.js 中：
+
+```js
 app.get('/api/user/:id', api.user);
+```
+
 接下来可以测试一下。
+
 4. 测试用户数据获取
+
 启动程序，然后用命令行工具 cURL 进行测试。下面是测试 REST 认证的示例命令。 URL 中
 提供了凭证 tobi:ferret， cURL 用它生成 Authorization 请求头域：
+
+```
 $ curl http://tobi:ferret@127.0.0.1:3000/api/user/1 -v
+```
+
 下面是测试成功时返回的结果。如果你想亲自动手试一下，需要先找到一个用户的 ID。如
 果 1 不行，可以用 redis-cli 的 GET user:ids，找出你注册过的用户数据看看。
+
 代码清单 6-31 测试输出
+```shell
 * About to connect() to local port 80 (#0)
 * Trying 127.0.0.1... connected
 * Connected to local (127.0.0.1) port 80 (#0)
@@ -5170,19 +5496,24 @@ $ curl http://tobi:ferret@127.0.0.1:3000/api/user/1 -v
 >
 < HTTP/1.1 200 OK
 < X-Powered-By: Express
-显示发送的
-HTTP 头
-显示接收到
-的 HTTP 头6.2 Express 137
+# 显示发送的
+# HTTP 头
+# 显示接收到
+# 的 HTTP 头
 
 < Content-Type: application/json; charset=utf-8
 < Content-Length: 150
 < Connection: keep-alive
 <
 {"id":"1","name":"tobi"}
+```
+
 5. 去掉敏感的用户数据
+
 正如你通过 JSON 响应看到的，用户的密码和盐都在。我们可以在 models/user.js 中的 User
 上实现.toJSON()把它们去掉：
+
+```js
 class User {
 // ...
 toJSON() {
@@ -5191,21 +5522,32 @@ id: this.id,
 name: this.name
 };
 }
+```
+
 如果有.toJSON， JSON.stringify 就会用它返回的 JSON 数据。现在再发送之前那个 cURL
 请求，就只有 ID 和 name 属性了：
+
+```js
 {
 "id": "1",
 "name": "tobi"
 }
+```
+
 接下来添加创建消息的 API。
+
 6. 添加消息
+
 因为通过 API 添加消息的实现和通过 HTML 表单添加的实现几乎一模一样，所以可以重用
 之前实现的 entries.submit()路由逻辑。
+
 然而在 entries.submit()中，消息中要有用户名和其他细节信息。所以需要修改用户加
 载中间件，用 basic-auth 中间件加载的用户数据组装 res.locals.user。之前在进行基本认
 证时，我们将用户数据设为了请求对象的属性 req.remoteUser。那现在只要在用户加载中间
 件中检查这个属性就可以了。按照下面这样修改 middleware/user.js 中的 module.exports 定义，
 用户加载中间件就能跟 API 进行协作了：
+
+```js
 ...
 module.exports = (req, res, next) => {
 if (req.remoteUser) {
@@ -5219,11 +5561,17 @@ req.user = res.locals.user = user;
 next();
 });
 };
-显示接收到的
-JSON 数据138 第 6 章 深入了解 Connect 和 Express
+
+// 显示接收到的
+// JSON 数据
+```
+
 这样改完之后就可以通过 API 添加消息了。
+
 不过还有一个问题，现在添加消息的响应还是重定向到首页，我们要针对 API 请求调整一下。
 像下面这样修改 routes/entries.js 中的 entry.save：
+
+```js
 ...
 entry.save(err => {
 if (err) return next(err);
@@ -5234,37 +5582,65 @@ res.redirect('/');
 }
 });
 ...
+```
+
 最后，为了启用消息添加 API，将下面的代码添加到 app.js 中的路由部分：
+
+```js
 app.post('/api/entry', entries.submit);
+```
+
 用下面的 cURL 命令测试消息添加 API。它发送的标题和内容主体数据所用的名称跟 HTML
 表单输入域的名称相同：
+
+```
 $ curl -X POST -d "entry[title]='Ho ho ho'&entry[body]='Santa loves you'"
 http://tobi:ferret@127.0.0.1:3000/api/entry
+```
+
 创建消息的 API 做好了，该添加获取消息的 API 了。
+
 7. 支持消息列表
+
 接下来要实现的 API 路由是 GET /api/entries/:page?。这个路由实现跟 ./routes/entries.js
 中的消息列表路由几乎一模一样。只是还要添加分页中间件，即下面代码中用到的 page()，我
 们稍后再实现这个中间件。
+
 因为要用到消息，所以需要在 routes/api.js 的顶部加入下面这行代码引入 Entry 模型：
+
+```js
 const Entry = require('../models/entry');
+```
+
 接下来把下面的代码添加到 app.js 中：
+
+```js
 const Entry = require('./models/entry');
 ...
 app.get('/api/entries/:page?', page(Entry.count), api.entries);
+```
+
 现在把下面的代码添加到 routes/api.js 中。这段代码和 routes/entries.js 中对应代码的差别是
 它不再渲染模板，而是返回了 JSON：
+
+```js
 exports.entries = (req, res, next) => {
 const page = req.page;
 Entry.getRange(page.from, page.to, (err, entries) => {
 if (err) return next(err);
 res.json(entries);
 });
-};6.2 Express 139
+};
+```
 
 8. 实现分页中间件
+
 在分页时，要用查询字符串 ?page=N 来确定当前页面。把下面的中间件函数加到 .middleware/
 page.js 中。
+
 代码清单 6-32 分页中间件
+
+```js
 module.exports = (cb, perpage) => {
 perpage = perpage || 10;
 return (req, res, next) => {
@@ -5286,13 +5662,37 @@ next();
 });
 }
 };
+  
+  // 每页记录条数
+  // 的默认值为 10
+  // 返回中间
+  // 件函数
+  // 将参数 page 解析为
+  // 十进制的整型值
+  // 调用传入
+  // 传递 的函数
+  // 错误
+  // 将控制权交给
+  // 下一个中间件
+  // 保存 page 属性
+  // 以便将来引用
+```
+
 这个中间件抓取赋给 ?page=N 的值，比如 ?page=1。然后取得结果集的总数，并预先计算
 出一些值拼成 page 对象，把它输出到需要渲染的视图中。把这些值放在模板外计算可以减少模
 板中的逻辑，让模板保持简洁。
+
 9. 测试消息路由
+
 下面的 cURL 命令从 API 获取消息：
+
+```
 $ curl http://tobi:ferret@127.0.0.1:3000/api/entries
+```
+
 这条命令的输出结果应该和下面的 JSON 差不多：
+
+```json
 [
 {
 "username": "rick",
@@ -5305,40 +5705,44 @@ $ curl http://tobi:ferret@127.0.0.1:3000/api/entries
 "body": "I think cat can hear my thoughts."
 },
 ...
+```
+
 基本的 API 实现已经做完了，接下来我们看看如何让 API 支持多种格式的响应。
-每页记录条数
-的默认值为 10
-返回中间
-件函数
-将参数 page 解析为
-十进制的整型值
-调用传入
-传递 的函数
-错误
-将控制权交给
-下一个中间件
-保存 page 属性
-以便将来引用140 第 6 章 深入了解 Connect 和 Express
-6.2.10 启用内容协商
+
+### 6.2.10 启用内容协商
+
 内容协商让客户端可以指定它乐于接受且喜欢的数据格式。本节会介绍如何让 API 提供
 JSON 和 XML 格式的数据，以便 API 的使用者可以决定它们想要哪种格式的数据。
+
 HTTP 通过 Accept 请求头域提供了内容协商机制。比如说，某个客户端可能更喜欢 HTML，
 但也可以接受普通文本，则可以这样设定请求头：
+
+```
 Accept: text/plain; q=0.5, text/html
+```
+
 qvalue 或 quality value（例子中的 q=0.5）表明即便 text/html 放在了第二个，它的优先
 级也要比 text/plain 高 50%。 Express 会解析这个信息并提供一个规范化的 req.accepted
 数组：
+
+```js
 [{ value: 'text/html', quality: 1 },
 { value: 'text/plain', quality: 0.5 }]
+```
+
 Express 还提供了 res.format()方法，它的参数是一个 MIME 类型的数组和一些回调函数。
 Express 会决定客户端愿意接受什么格式的数据，以及你愿意提供什么格式的数据，然后调用相
 应的回调函数。
+
 1. 实现内容协商
+
 在 routes/api.js 中，支持内容协商的 GET /api/entries 路由看起来应该像代码清单 6-33
 那样。 JSON 像之前那样被支持——用 res.send()发送串行化为 JSON 的消息数据。 XML 回调
 循环遍历消息，并将其写入 socket 中。注意，没必要显式设定 Content-Type， res.format()
 会自动设定关联的类型。
+
 代码清单 6-33 实现内容协商
+```
 exports.entries = (req, res, next) => {
 const page = req.page;
 Entry.getRange(page.from, page.to, (err, entries) => {
@@ -5371,10 +5775,14 @@ XML 响应6.2 Express 141
 })
 });
 };
+
 如果设定了默认响应格式回调，当用户请求的格式不在你特意提供的格式中时，就会执行这
 个默认的回调函数。
+
 res.format()方法还可以将扩展名映射到相关联的 MIME类型上。比如可以用 json 和 xml
 代替 application/json 和 application/xml，就像下面这样：
+
+```js
 ...
 res.format({
 json: () => {
@@ -5396,11 +5804,19 @@ res.end('</entries>');
 }
 })
 ...
+```
+```
+
 2. XML 响应
+
 在路由中写这么一大堆代码只是为了返回 XML 响应，这并不是最简洁的办法，接下来我们
 要用视图系统实现这一功能。
+
 用下面的 EJS 创建一个名为 ./views/entries/xml.ejs 的模板，它会循环遍历消息生成<entry>标签。
+
 代码清单 6-34 用 EJS 模板生成 XML
+```html
+```
 <entries>
 <% entries.forEach(entry => { %>
 <entry>
@@ -5410,21 +5826,29 @@ res.end('</entries>');
 </entry>
 <% }) %>
 </entries>
+```
+
 现在可以把原来的 XML 回调换成以消息数组为参数的 res.render()了，像下面这样：
-循环遍历每
-条消息
-输出消息中的各个域142 第 6 章 深入了解 Connect 和 Express
+环遍历每条消息输出消息中的各个域
+
+```
 ...
 xml: () => {
 res.render('entries/xml', { entries: entries });
 }
 })
 ...
+```
+
 来测试一下 API 的 XML 版本吧。输入下面的命令，看看输出是不是 XML：
+
+```
 curl -i -H 'Accept: application/xml'
 ➥ http://tobi:ferret@127.0.0.1:3000/api/entries
+```
 
 ## 6.3 总结
+
 - Connect 是一个 HTTP 框架，可以在处理请求之前和之后堆叠中间件。
 - Connect 中间件是个函数，它的参数包括 Node 的请求和响应对象、一个调用下一个中间
 件的函数，以及一个可选的错误对象。
@@ -5434,17 +5858,21 @@ curl -i -H 'Accept: application/xml'
 - Express 有个简单的模板引擎 API，支持很多种引擎。7.1 用模板保持代码的整洁性 143
 
 # 第7章 Web 程序的模板
+
 本章内容
 - 用模板组织程序
 - 用 Embedded JavaScript 创建模板
 - 学习极简风格的 Hogan 模板
 - 用 Pug 创建模板
+
 在第 3 章和第 6 章，为了在 Express 程序中创建视图，我们介绍过一些模板的基础知识。接
 下来本章将专门介绍模板。我们会讲到三个热门的模板引擎，以及如何用模板把显示层标记从逻
 辑代码中分离出来，保持 Web 程序代码的整洁性。
+
 如果你熟悉模板和模型视图控制器（ MVC）模式，可以直接进入 7.2 节开始学习。我们会
 详细介绍 Embedded JavaScript、 Hogan 和 Pug 三个模板引擎。如果对模板不太了解，请继续往下
 看，接下来的几节将会介绍模板这一概念。
+
 ## 7.1 用模板保持代码的整洁性
 在 Node 中可以像其他 Web 技术一样，用 MVC 模式开发传统的 Web 程序。 MVC 的主要思
 想是将逻辑、数据和展示层分离。在遵循 MVC 模式的 Web 程序中，一般是用户向服务器请求资
