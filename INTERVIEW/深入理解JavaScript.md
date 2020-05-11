@@ -478,7 +478,7 @@ Function.prototype.myApply = function (context = window, args) {
 
 # 模拟实现bind
 
-`bind()` 方法创建一个新的函数，在 `bind()` 被调用时，这个新函数的 this 被指定为 `bind()` 的第一个参数，而其余参数将作为新函数的参数，供调用时使用。
+bind() 方法会创建一个新函数，当这个新函数被调用时，它的 this 值是传递给 bind() 的第一个参数，传入bind方法的第二个以及以后的参数加上绑定函数运行时本身的参数按照顺序作为原函数的参数来调用原函数。bind返回的绑定函数也能使用 new 操作符创建对象：这种行为就像把原函数当成构造器，提供的 this 值被忽略，同时调用时的参数被提供给模拟函数。
 
 处理步骤：
 1. 处理参数，返回一个闭包
@@ -513,6 +513,9 @@ Function.prototype.bind2 = function (context) {
     var self = this;
     var args = Array.prototype.slice.call(arguments, 1);
 
+    // 用一个空对象作为中介
+    // 把 fBound.prototype 赋值为空对象的实例
+    // 原型式继承
     var fNOP = function () {};
 
     var fBound = function () {
@@ -526,7 +529,59 @@ Function.prototype.bind2 = function (context) {
 }
 ```
 
+# 模拟实现instanceof
+
+instanceof 运算符用于检测构造函数的 prototype 属性是否出现在某个实例对象的原型链上。
+
+原型与原型链（prototype chain）关系
+- 函数的`prototype`属性指向了一个对象，这个对象正是调用该构造函数而创建的实例的原型
+- 每一个JavaScript对象（除了 null ）都具有的一个属性，叫`__proto__`，这个属性会指向该对象的原型
+- 每个原型都有一个`constructor`属性指向关联的构造函数，实例也可以继承该属性
+
+```js
+function Car(make, model, year) {
+  this.make = make; 
+  this.model = model;
+  this.year = year;
+}
+const auto = new Car('Honda', 'Accord', 1998);
+
+console.log(auto instanceof Car);  // true
+console.log(auto instanceof Object);  // true
+```
+
+实现
+
+```js
+function myInstanceof(target, origin) {
+  const proto = target.__proto__;
+  if (proto) {
+    if (origin.prototype === proto) {
+      return true;
+    } else {
+      return myInstanceof(proto, origin)
+    }
+  } else {
+    return false;
+  }
+}
+```
+
 # 模拟实现new
+
+```js
+function create() {
+	// 1、获得构造函数，同时删除 arguments 中第一个参数
+    Con = [].shift.call(arguments);
+	// 2、创建一个空的对象并链接到原型，obj 可以访问构造函数原型中的属性
+    var obj = Object.create(Con.prototype);
+	// 3、绑定 this 实现继承，obj 可以访问到构造函数中的属性
+    var ret = Con.apply(obj, arguments);
+	// 4、优先返回构造函数返回的对象
+	return ret instanceof Object ? ret : obj;
+};
+```
+
 # 模拟实现Promise
 
 ## 基础版本
