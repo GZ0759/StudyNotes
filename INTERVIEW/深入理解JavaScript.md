@@ -569,17 +569,33 @@ function myInstanceof(target, origin) {
 
 # 模拟实现new
 
+new 运算符创建一个用户定义的对象类型的实例或具有构造函数的内置对象的实例。new 关键字会进行如下的操作：
+
+- 创建一个空的简单JavaScript对象（即{}）；
+- 链接该对象（即设置该对象的构造函数）到另一个对象 ；
+- 将步骤1新创建的对象作为this的上下文 ；
+- 如果该函数没有返回对象，则返回this。
+
 ```js
 function create() {
 	// 1、获得构造函数，同时删除 arguments 中第一个参数
-    Con = [].shift.call(arguments);
+  Con = [].shift.call(arguments);
 	// 2、创建一个空的对象并链接到原型，obj 可以访问构造函数原型中的属性
-    var obj = Object.create(Con.prototype);
+  var obj = Object.create(Con.prototype);
 	// 3、绑定 this 实现继承，obj 可以访问到构造函数中的属性
-    var ret = Con.apply(obj, arguments);
+  var ret = Con.apply(obj, arguments);
 	// 4、优先返回构造函数返回的对象
 	return ret instanceof Object ? ret : obj;
 };
+```
+
+```js
+function create(Con, ...args) {
+  let obj = {}
+  Object.setPrototypeOf(obj, Con.prototype)
+  let result = Con.apply(obj, args)
+  return result instanceof Object ? result : obj
+}
 ```
 
 # 模拟实现Promise
