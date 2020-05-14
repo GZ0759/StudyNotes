@@ -4,6 +4,201 @@
 > [参考-后盾人](http://houdunren.gitee.io/note/js/1%20%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86.html)
 > [参考-木易杨](https://github.com/yygmind/blog)
 
+# 闭包
+
+函数和对其周围状态（lexical environment，词法环境）的引用捆绑在一起构成闭包（closure）。也就是说，闭包可以让你从内部函数访问外部函数作用域。在 JavaScript 中，每当函数被创建，就会在函数生成时生成闭包。
+
+## 实用的闭包
+
+闭包很有用，因为它允许将函数与其所操作的某些数据（环境）关联起来。这显然类似于面向对象编程。在面向对象编程中，对象允许我们将某些数据（对象的属性）与一个或者多个方法相关联。
+
+```js
+function makeSizer(size) {
+  return function() {
+    document.body.style.fontSize = size + 'px';
+  };
+}
+
+var size12 = makeSizer(12);
+var size14 = makeSizer(14);
+var size16 = makeSizer(16);
+
+document.getElementById('size-12').onclick = size12;
+document.getElementById('size-14').onclick = size14;
+document.getElementById('size-16').onclick = size16;
+```
+
+## 用闭包模拟私有方法
+
+编程语言中，比如 Java，是支持将方法声明为私有的，即它们只能被同一个类中的其它方法所调用。而 JavaScript 没有这种原生支持，但我们可以使用闭包来模拟私有方法。私有方法不仅仅有利于限制对代码的访问：还提供了管理全局命名空间的强大能力，避免非核心的方法弄乱了代码的公共接口部分。
+
+```js
+var Counter = (function() {
+  var privateCounter = 0;
+  function changeBy(val) {
+    privateCounter += val;
+  }
+  return {
+    increment: function() {
+      changeBy(1);
+    },
+    decrement: function() {
+      changeBy(-1);
+    },
+    value: function() {
+      return privateCounter;
+    }
+  }   
+})();
+```
+
+## 在循环中创建闭包
+
+在 ECMAScript 2015 引入 let 关键字 之前，在循环中有一个常见的闭包创建问题。
+
+### DOM事件回调
+
+> 运行这段代码后，无论焦点在哪个input上，显示的都是关于年龄的信息。原因是赋值给 onfocus 的是闭包。这些闭包是由他们的函数定义和在 setupHelp 作用域中捕获的环境所组成的。这三个闭包在循环中被创建，但他们共享了同一个词法作用域，在这个作用域中存在一个变量item。这是因为变量item使用var进行声明，由于变量提升，所以具有函数作用域。当onfocus的回调执行时，item.help的值被决定。由于循环在事件触发之前早已执行完毕，变量对象item（被三个闭包所共享）已经指向了helpText的最后一项。
+
+```js
+function setupHelp() {
+  var helpText = [
+      {'id': 'email', 'help': 'Your e-mail address'},
+      {'id': 'name', 'help': 'Your full name'},
+      {'id': 'age', 'help': 'Your age (you must be over 16)'}
+    ];
+
+  for (var i = 0; i < helpText.length; i++) {
+    var item = helpText[i];
+    document.getElementById(item.id).onfocus = function() {
+      showHelp(item.help);
+    }
+  }
+}
+```
+
+解决这个问题的一种方案是使用更多的闭包：特别是使用前面所述的函数工厂。
+
+```js
+function makeHelpCallback(help) {
+  return function() {
+    showHelp(help);
+  };
+}
+
+function setupHelp() {
+  // ...
+  for (var i = 0; i < helpText.length; i++) {
+    var item = helpText[i];
+    document.getElementById(item.id).onfocus = makeHelpCallback(item.help);
+  }
+}
+```
+
+另一种方法使用了匿名闭包：
+
+```js
+function setupHelp() {
+  // ...
+  for (var i = 0; i < helpText.length; i++) {
+    (function() {
+       var item = helpText[i];
+       document.getElementById(item.id).onfocus = function() {
+         showHelp(item.help);
+       }
+    })(); // 马上把当前循环项的item与事件回调相关联起来
+  }
+}
+```
+
+如果不想使用过多的闭包，你可以用ES2015引入的let关键词：
+
+```js
+for (var i = 0; i < helpText.length; i++) {
+  let item = helpText[i];
+  document.getElementById(item.id).onfocus = function() {
+    showHelp(item.help);
+  }
+}
+```
+
+另一个可选方案是使用`forEach()`来遍历helpText数组并给每一个`<p>`添加一个监听器，如下所示：
+
+```js
+helpText.forEach(function(text) {
+  document.getElementById(text.id).onfocus = function() {
+    showHelp(text.help);
+  }
+});
+```
+
+### 定时器回调
+
+经典面试题，循环中使用闭包解决 `var` 定义函数的问题。首先因为 `setTimeout` 是个异步函数，所有会先把循环全部执行完毕，这时候 `i` 就是 6 了，所以会输出一堆 6。
+
+```Js
+for ( var i=1; i<=5; i++) {
+	setTimeout( function timer() {
+		console.log( i );
+	}, i*1000 );
+}
+```
+
+解决办法
+
+```js
+// 使用闭包
+for (var i = 1; i <= 5; i++) {
+  (function(j) {
+    setTimeout(function timer() {
+      console.log(j);
+    }, j * 1000);
+  })(i);
+}
+
+// 使用`setTimeout`的第三个参数
+for ( var i=1; i<=5; i++) {
+	setTimeout( function timer(j) {
+		console.log( j );
+	}, i*1000, i);
+}
+
+// 使用 `let` 定义  `i` 了
+for ( let i=1; i<=5; i++) {
+	setTimeout( function timer() {
+		console.log( i );
+	}, i*1000 );
+}
+```
+
+### 函数数组
+
+```js
+var data = [];
+
+for (var i = 0; i < 3; i++) {
+  data[i] = function () {
+    console.log(i);
+  };
+}
+
+data[0]();  // 3
+data[1]();  // 3
+data[2]();  // 3
+```
+
+改成闭包。
+
+```js
+for (var i = 0; i < 3; i++) {
+  data[i] = (function (i) {
+    return function(){
+        console.log(i);
+    }
+  })(i);
+}
+```
+
 # 深浅拷贝
 
 如果数组元素是基本类型，就会拷贝一份，互不影响，而如果是对象或者数组，就会只拷贝对象和数组的引用，这样我们无论在新旧数组进行了修改，两者都会发生变化。我们把这种复制引用的拷贝方法称之为浅拷贝，与之对应的就是深拷贝，深拷贝就是指完全的拷贝一个对象，即使嵌套了对象，两者也相互分离，修改一个对象的属性，也不会影响另一个。
