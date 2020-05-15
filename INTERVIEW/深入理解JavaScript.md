@@ -520,6 +520,7 @@ function unique (arr) {
 - 使用reduce简化循环
 - ES6扩展运算符循环
 - 字符串toString方法
+- 字符串JSON过滤
 
 基本实现。循环数组元素，如果还是一个数组，就递归调用该方法。
 
@@ -566,6 +567,16 @@ function flatten(arr) {
 ```js
 function flatten(arr) {
   return arr.toString().split(',').map(() => +item)
+}
+```
+
+字符串过滤。将输入数组转换为字符串并删除所有括号（[]）并将输出解析为数组。
+
+```js
+const flatten = arr => {
+  let re = /\[|\]/g;
+  let str = JSON.stringify(arr).replace(re, '');
+  return JSON.parse(`[${str}]`);
 }
 ```
 
