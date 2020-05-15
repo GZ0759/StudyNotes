@@ -199,6 +199,43 @@ for (var i = 0; i < 3; i++) {
 }
 ```
 
+## 面试题
+
+点击一个Ul里面的5个li，分别弹出他们的序号
+
+```js
+let doms = document.getElementsByClassName('li');
+let lis = [].slice.call(doms);
+
+for (let li of lis) {
+  li.addEventListener('click', ()=>{
+    window.alert(lis.indexOf(li))
+  })
+}
+
+// 变量闭包处理
+// for (let i = 0; i < lis.length; i++) {
+//   lis[i].onclick = function (e) {
+//     window.alert(i)
+//   }
+// }
+
+// 对象属性保存
+// for (var i = 0; i < lis.length; i++) {
+//   var li = lis[i];
+//   li.index = i;
+//   li.onclick = function (e) {
+//     window.alert(this.index)
+//   }
+// }
+
+// 事件委派
+// let ul = document.querySelector('ul');
+// ul.addEventListener('click', function (e) {
+//   window.alert(lis.indexOf(e.srcElement))
+// })
+```
+
 # 深浅拷贝
 
 如果数组元素是基本类型，就会拷贝一份，互不影响，而如果是对象或者数组，就会只拷贝对象和数组的引用，这样我们无论在新旧数组进行了修改，两者都会发生变化。我们把这种复制引用的拷贝方法称之为浅拷贝，与之对应的就是深拷贝，深拷贝就是指完全的拷贝一个对象，即使嵌套了对象，两者也相互分离，修改一个对象的属性，也不会影响另一个。
