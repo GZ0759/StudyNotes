@@ -691,13 +691,13 @@ data: {
 <div :style="[styleA, styleB]">文本</div>
 ```
 
-另外，使用`:style`时，Vue.js会自动给特殊的CSS属性名称增加前缀，比如 transform。
+另外，使用`:style`时，Vue.js 会自动给特殊的CSS属性名称增加前缀，比如 transform。
 
 # 第五章 内置指令
 
 ## 5.1 基本指令
 
-`v-cloak` 不需要表达式，在 Vue 实例结束编译时从从绑定的HTML元素上移除，经常和 CSS 的 `display: none` 配合使用。在一般情况下，`v-cloak` 是一个解决初始化慢导致页面闪动的最佳实践。对于简单的项目很实用，但是在具有工程化的项目里，剩下的内容都是由路由去挂载不同组件完成的，所以不再需要 v-cloak。
+`v-cloak` 不需要表达式，在 Vue 实例结束编译时从从绑定的 HTML 元素上移除，经常和 CSS 的 `display: none` 配合使用。在一般情况下，`v-cloak` 是一个解决初始化慢导致页面闪动的最佳实践。对于简单的项目很实用，但是在具有工程化的项目里，剩下的内容都是由路由去挂载不同组件完成的，所以不再需要 `v-cloak`。
 
 ```html
 <div v-cloak>
@@ -717,7 +717,7 @@ data: {
 
 ### 5.2.1 v-if、v-else-if、v-else
 
-与 JavaScript 的条件语句 if、else、else if 类似，Vue.js 的条件指令可以根据表达式的值在 DOM 中渲染或销毁元素/组件。可以在 Vue.js 内置的`<template>`元素上使用条件指令，最终渲染的结果不会包含该元素。
+与 JavaScript 的条件语句 if、else、else if 类似，Vue.js 的条件指令可以根据表达式的值在 DOM 中渲染或销毁元素/组件。如果一次判断的是多个元素，可以在 Vue.js 内置的`<template>`元素上使用条件指令，最终渲染的结果不会包含该元素。
 
 ```html
 <div>
@@ -733,7 +733,7 @@ data: {
 </template>
 ```
 
-Vue 在渲染元素时，出于效率考虑，会尽可能地复用已有的元素而非重新渲染。`v-if`、`v-else-if`、`v-else` 是条件渲染指令，利用 key 属性，可以决定是否要复用元素，key 的值必须是唯一的。
+Vue 在渲染元素时，出于效率考虑，会尽可能地复用已有的元素而非重新渲染。`v-if`、`v-else-if`、`v-else` 是条件渲染指令，利用 `key` 属性，可以决定是否要复用元素，`key` 的值必须是唯一的。
 
 ```html
 <body>
@@ -764,9 +764,11 @@ Vue 在渲染元素时，出于效率考虑，会尽可能地复用已有的元�
 </script>
 ```
 
+给两个`<input>`元素都添加`key`后，就不会复用了，切换类型时键入的内容也会被删除，不过`<label>`元素仍然是被复用的，因为没有添加`key`属性。
+
 ### 5.2.2 v-show
 
-`v-show` 改变元素的 CSS 属性 display，当 `v-show` 表达式的值为 false 时，元素会隐藏，查看 DOM 结构会看到元素上加载了内联样式`display: none;`。但该指令不能在`<template>`上使用。
+`v-show`的用法与`v-if`基本一致，只不过它改变元素的 CSS 属性 display，当 `v-show` 表达式的值为 false 时，元素会隐藏，查看 DOM 结构会看到元素上加载了内联样式`display: none;`。但该指令不能在`<template>`上使用。
 
 ```html
 <body>
@@ -786,19 +788,21 @@ Vue 在渲染元素时，出于效率考虑，会尽可能地复用已有的元�
 
 ### 5.2.3 v-if与v-show的选择
 
-`v-if` 是真正的条件渲染，它会根据表达式适当地销毁或重建元素及绑定的事件或子组件，如果表达式的初始值为 false，则一开始元素/组件并不会渲染，只有当条件第一次变为真时才开始变异。而 `v-show` 只是简单的 CSS 属性切换，无论条件真与否，都会被编译。相比之下，`v-if` 更适合条件不经常改变的场景，因为它切换开销相对较大，而 `v-show` 适用于频繁切换条件。
+`v-if` 是真正的条件渲染，它会根据表达式适当地销毁或重建元素及绑定的事件或子组件，如果表达式的初始值为 false，则一开始元素/组件并不会渲染，只有当条件第一次变为真时才开始编译。
+
+而 `v-show` 只是简单的 CSS 属性切换，无论条件真与否，都会被编译。相比之下，`v-if` 更适合条件不经常改变的场景，因为它切换开销相对较大，而 `v-show` 适用于频繁切换条件。
 
 ## 5.3 列表渲染指令v-for
 
 ### 5.3.1 基本用法
 
-当需要将一个数组遍历或枚举一个对象循环显示时，就会用到列表渲染指令 v-for。它的表达式需结合 in 来使用，类似 item in items 的形式。列表渲染也支持用 of 来代替 in 作为分隔符，它更接近 JavaScript 迭代器的语法。
+当需要将一个数组遍历或枚举一个对象循环显示时，就会用到列表渲染指令 `v-for`。它的表达式需结合 in 来使用，类似 `item in items` 的形式。列表渲染也支持用 of 来代替 in 作为分隔符，它更接近 JavaScript 迭代器的语法。
 
 ```html
 <ul>
-	<li v-for="book in books">{{book.name}}</li>
+	<li v-for="book in books">{{ book.name }}</li>
 	<!-- 或者 -->
-	<li v-for="book of books">{{book.name}}</li>
+	<li v-for="book of books">{{ book.name }}</li>
 </ul>   
 ```
 
@@ -831,15 +835,15 @@ Vue 在渲染元素时，出于效率考虑，会尽可能地复用已有的元�
 
 ### 5.3.3 数组更新
 
-Vue 的核心是数据与视图的双向绑定，当我们修改数组时， Vue 会检测到数据变化，所以用 v-for 渲染的视图也会立即更新。 Vue 包含了一组观察数组变异的方法，使用它们改变数组也会触发视图更新：
+Vue 的核心是数据与视图的双向绑定，当我们修改数组时， Vue 会检测到数据变化，所以用 `v-for` 渲染的视图也会立即更新。 Vue 包含了一组观察数组变异的方法，使用它们改变数组也会触发视图更新：
 
-1. `push()`
-2. `pop()`
-3. `shift()`
-4. `unshift()`
-5. `splice()`
-6. `sort()`
-7. `reverse()`
+- `push()`
+- `pop()`
+- `shift()`
+- `unshift()`
+- `splice()`
+- `sort()`
+- `reverse()`
 
 但非变异方法不会更新视图，例如 `filter()`、`concat()`、`slice()`，它们返回的是一个新数组，在使用这些非变异方法时，可以用新数组来替换原数组。
 
@@ -856,31 +860,34 @@ Vue 在检测到数组变化时，并不是直接重新渲染整个列表，而�
 - 通过索引直接设置项，比如 `vm.books[3] = { ... }`
 - 修改数组长度，比如 `vm.books.length = 1`
 
-解决第一个问题的方法可以使用 Vue内置的 set 方法，如果是在 webpack 中使用组件化的方式，默认是没有导入 Vue 的，这时可以使用`$set`。另一种方法时直接使用 splice 来解决。
+解决第一个问题的方法可以使用 Vue 内置的 `set` 方法。
+
+```js
+Vue.set(app.books, 3, {
+	name: '《CSS揭秘》',
+	author: '[希] Lea Verou'
+});
+```
+
+如果是在 webpack 中使用组件化的方式，默认是没有导入 Vue 的，这时可以使用`$set`。另一种方法时直接使用 `splice` 来解决。
 
 ```javascript
-var vm = new Vue({
-	data: {
-		items: ['a', 'b', 'c']
-	}
-})
-vm.items[1] = 'x' // 不是响应性的
-vm.items.length = 2 // 不是响应性的
+this.$set(app.books, 3, {
+	name: '《CSS揭秘》',
+	author: '[希] Lea Verou'
+});
 
-let indexOfItem = 1, newValue = x;
-
-// Vue.set
-Vue.set(vm.items, indexOfItem, newValue)
-
-// Array.prototype.splice
-vm.items.splice(indexOfItem, 1, newValue)
+// 另一种方法
+app.books.splice(3, 1, {
+	name: '《CSS揭秘》',
+	author: '[希] Lea Verou'
+});
 ```
 
 第二个问题也可以直接用 splice 来解决：
 
 ```js
-let newLength = 2;
-vm.items.splice(newLength)
+app.books.splice(1);
 ```
 
 ### 5.3.3 过滤与排序
@@ -927,7 +934,7 @@ methods: {
 
 ### 5.4.1 基本用法
 
-在事件绑定上，类似原生 JavaScript 的 onclick 等写法，也是在 HTML 上进行监听的。`@click`的表达式可以直接使用 JavaScript 语句，也可以是一个在 Vue 实例中 methods 选项内的函数名。`@click`调用的方法名后可以不跟括号`()`，如果该方法有参数，默认会将原生事件对象 event 传入。
+在事件绑定上，类似原生 JavaScript 的 `onclick` 等写法，也是在 HTML 上进行监听的。`@click`的表达式可以直接使用 JavaScript 语句，也可以是一个在 Vue 实例中 `methods` 选项内的函数名。`@click`调用的方法名后可以不跟括号`()`，如果该方法有参数，默认会将原生事件对象 `event` 传入。
 
 ```html
 <button @click="counter++">+1</button>
@@ -938,22 +945,33 @@ methods: {
 
 这种在 HTML 元素上监听事件的设计看似将 DOM 与 JavaScript 紧耦合，违背分离的原理，实则刚好相反。因为通过 HTML 就可以知道调用的是哪个方法，将逻辑与 DOM 解耦，便于维护。最重要的是，当 ViewModel 销毁时，所有的事件处理器都会自动删除，无需自己清理。
 
-Vue 提供了一个特殊变量`$event`，用于访问原生 DOM 事件。
+Vue 提供了一个特殊变量`$event`，用于访问原生 DOM 事件。例如下面的实例可以阻止链接打开。
 
 ```html
-<a href="http://www.baidu.com" @click="handleClick('禁止打开',$event)">点我打开链接</a>
+<a href="http://www.baidu.com" @click="handleClick('禁止打开', $event)">点我打开链接</a>
+```
+
+```js
+methods: {
+	handleClick(message, event){
+		event.preventDefault();
+		window.alert(message);
+	}
+}
 ```
 
 ### 5.4.2 修饰符
 
 事件可以用修饰符来实现特定功能，例如`event.preventDefault()`，可以用 Vue 事件的修饰符来实现。在绑定的事件后加小圆点`.`，再跟一个后缀来使用修饰符。
 
-- `.stop`
-- `.prevent`
-- `.capture`
-- `.self`
-- `.once`
-- `.passive`
+- `.stop` 阻止单击事件继续传播
+- `.prevent` 提交事件不再重载页面
+- `.capture` 使用事件捕获模式
+- `.self` 只当在 event.target 是当前元素自身时触发处理函数
+- `.once` 点击事件将只会触发一次
+- `.passive` 滚动事件的默认行为 (即滚动行为) 将会立即触发
+
+修饰符可以串联。使用修饰符时，顺序很重要；相应的代码会以同样的顺序产生。因此，用 `v-on:click.prevent.self` 会阻止所有的点击，而 `v-on:click.self.prevent` 只会阻止对元素自身的点击。
 
 在表单元素上监听键盘事件时，还可以使用按键修饰符，比如按下具体某个键时才调用方法。也可以自己配置具体按键，全局定义后即可使用 keycode 和快键名称，甚至组合使用。除了具体的某个 keyCode 外，Vue 还提供了一些快捷名称。这些按键修饰符也可以组合使用，或和鼠标一起配合使用。
 
@@ -972,15 +990,30 @@ Vue 提供了一个特殊变量`$event`，用于访问原生 DOM 事件。
 - `.left`
 - `.right`
 
+这些按键修饰符也可以组合使用，或和鼠标一起配合使用。
+
+- `.ctrl`
+- `.alt`
+- `.shift`
+- `.meta`
+
+```html
+<!-- Alt + C -->
+<input v-on:keyup.alt.67="clear">
+
+<!-- Ctrl + Click -->
+<div v-on:click.ctrl="doSomething">Do something</div>
+```
+
 ## 5.5 实战：利用计算属性、指令等知识开发购物车
 
 购物侧需要展示一个已加入购物车的商品列表，包含商品名称、商品单价、购买数量和操作等信息，还需要实时显示购买的总价。其中购买数量可以增加或减少，每类购买数量还可以从购物车中移除。
 
-注意，将 vue.min.js 和 index.js 文件写在`<body>`的最底部，如果写在`<head>`里，Vue 实例将无法创建，因为此时 DOM 还没有被解析完成，除非通过异步或在事件 DOMContentLoaded（IE是onreadystatechange）触发时再创建 vue 实例，这有点像 jQuery的`$(document).ready()`方法。
+注意，将 `vue.min.js` 和 `index.js` 文件写在`<body>`的最底部，如果写在`<head>`里，Vue 实例将无法创建，因为此时 DOM 还没有被解析完成，除非通过异步或在事件 DOMContentLoaded（IE是onreadystatechange）触发时再创建 vue 实例，这有点像 jQuery的`$(document).ready()`方法。
 
 练习1：在当前示例基础上扩展商品列表，新增一项是否选中该商品的功能，总价变为只计算选中商品的总价，同时提供一个全选的按钮。
 
-练习2：将商品列表 list 改为一个二维数组来实现商品的分类，比如可分为“电子产品”、“生活用品”和“果蔬”，同类商品聚合在一起。提示，你可能会用到两次 v-for。
+练习2：将商品列表 list 改为一个二维数组来实现商品的分类，比如可分为“电子产品”、“生活用品”和“果蔬”，同类商品聚合在一起。提示，你可能会用到两次`v-for`。
 
 # 第六章 表单与v-model
 
