@@ -523,17 +523,15 @@ computed: {
 
 # 第四章 v-bind及class与style绑定
 
-DOM 元素经常会动态地绑定一些 class 类名或 style 样式，本章将介绍使用 v-bind 指令来绑定 class 和 style 的多种方法。
+DOM 元素经常会动态地绑定一些 class 类名或 style 样式，本章将介绍使用 `v-bind` 指令来绑定 class 和 style 的多种方法。
 
 ## 4.1 了解b-bind指令
 
 `v-bind` 的的主要用法是动态更新 HTML 元素上的属性。
 
-在数据绑定中，最常见的两个需求就是元素的样式名称 class 和内联样式 style 的动态绑定，它们也是 HTML 的属性，因此可以使用 v-bind 指令。我们只需要用 `v-bind` 计算出表达式最终的字符串就可以，不过有时候表达式的逻辑较复杂，使用字符串拼接方法较难阅读和维护，所以 Vue.js 增强了对 class 和 style 的绑定。
+在数据绑定中，最常见的两个需求就是元素的样式名称 class 和内联样式 style 的动态绑定，它们也是 HTML 的属性，因此可以使用 v-bind 指令。我们只需要用 `v-bind` 计算出表达式最终的字符串就可以，不过有时候表达式的逻辑较复杂，使用字符串拼接方法较难阅读和维护，所以 Vue.js 增强了对 class 和 style 的绑定。表达式结果的类型除了字符串之外，还可以是对象或数组。
 
 ## 4.2 绑定class的几种方式
-
-绑定 class 的几种方式，包括对象语法、数组语法和在组件上使用。
 
 ### 4.2.1 对象语法
 
@@ -556,7 +554,7 @@ DOM 元素经常会动态地绑定一些 class 类名或 style 样式，本章�
 </script>
 ```
 
-当 `:class` 的表达式过长或逻辑复杂时，还可以绑定一个计算属性。这是一种很友好和常见的用法，一般当条件多于两个时，都可以使用 data 或 computed。
+当 `:class` 的表达式过长或逻辑复杂时，还可以绑定一个计算属性。这是一种很友好和常见的用法，一般当条件多于两个时，都可以使用 `data` 或 `computed`。
 
 ```html
 <body>
@@ -573,7 +571,7 @@ DOM 元素经常会动态地绑定一些 class 类名或 style 样式，本章�
      },
      computed: {
        classes: function(){
-          return{
+          return {
               active : this.isActive && !this.error,
               'text-fail': this.error && this.error.type === 'fail'
           }           
@@ -583,20 +581,31 @@ DOM 元素经常会动态地绑定一些 class 类名或 style 样式，本章�
 </script>
 ```
 
+除了计算属性，也可以直接绑定一个 Object 类型的数据，或者使用类似计算属性的 `methods`。
+
 ### 4.2.2 数组语法
 
-当需要应用多个 class 时， 可以使用数组语法，给 `:class` 绑定一个数组，应用一个 class 列表。也可以使用三元表达式来根据条件切换 class。如果 class 有多个条件时，可以在数组语法中使用对象语法。
+当需要应用多个 class 时， 可以使用数组语法，给 `:class` 绑定一个数组，应用一个 class 列表。也可以使用三元表达式来根据条件切换 class。
 
 ```html
 <div v-bind:class="[activeClass, errorClass]"></div>
-<!--  
+```
+
+```js
 data: {
 	activeClass: 'active',
 	errorClass: 'text-danger'
 }
--->
+```
 
+```html
 <div v-bind:class="[isActive ? activeClass : '', errorClass]"></div>
+```
+
+如果 class 有多个条件时，可以在数组语法中使用对象语法。
+
+```html
+<div v-bind:class="[{ active: isActive }, errorClass]"></div>
 ```
 
 当然，与对象语法一样，也可以使用 data、 computed 和 methods 三种方法。
@@ -629,6 +638,8 @@ data: {
 </script>
 ```
 
+使用计算属性给元素动态设置类名，在业务中经常用到，尤其是在写复用的组件时，所以在开发过程中，如果表达式较长或逻辑复杂，应该尽可能地优先使用计算属性。
+
 ### 4.2.3 在组件上使用
 
 如果直接在自定义组件上使用 `class` 或 `:class`，样式规则会直接应用到这个组件的根元素上。但只适合于自定义组件的最外层是一个根元素。当不满足这种条件或需要给具体的子元素设置类名时，应当使用组件的 props 来传递。
@@ -648,13 +659,15 @@ data: {
 
 ## 4.3 绑定内联样式
 
-绑定内联样式，使用`v-bind: style`可以给元素绑定内联样式，方法与`:class`类似，也有对象语法和数组语法，看起来很像直接在元素上写CSS。
+使用`v-bind: style`可以给元素绑定内联样式，方法与`:class`类似，也有对象语法和数组语法，看起来很像直接在元素上写CSS。
 
 ```html
-<div :style="{ 'color': color,'fontSize': fontSize + 'px'}">文本</div>
+<div :style="{ 'color': color, 'fontSize': fontSize + 'px' }">文本</div>
 ```
 
-CSS属性名称使用驼峰命名或短横分割命名。大多数情况下直接写一长串的样式不便于阅读和维护，一般以对象写在 data 或 computed，也可以使用数组语法。大多数情况下，直接写一长串的样式不便于阅读和维护，所以一般写在 data 或 computed 里。
+`v-bind:style` 的对象语法十分直观——看着非常像 CSS，但其实是一个 JavaScript 对象。CSS property 名可以用驼峰式 (camelCase) 或短横线分隔 (kebab-case，记得用引号括起来) 来命名。
+
+大多数情况下，直接写一长串的样式不便于阅读和维护，一般以对象写在 `data` 或 `computed`，也可以使用数组语法。
 
 ```html
 <div v-bind: style="styleObject"></div>
@@ -672,13 +685,13 @@ CSS属性名称使用驼峰命名或短横分割命名。大多数情况下直�
 </script>
 ```
 
-应用多个样式对象时 ， 可以使用数组语法。但在实际业务中，`:style` 的数组语法并不常用 因为往往可以写在一个对象里面，而较为常用的应当是计算属性。
+应用多个样式对象时，可以使用数组语法。但在实际业务中，`:style` 的数组语法并不常用 因为往往可以写在一个对象里面，而较为常用的应当是计算属性。
 
 ```html
 <div :style="[styleA, styleB]">文本</div>
 ```
 
-另外，Vue.js会自动给特殊的CSS属性名称增加前缀，比如 transform。
+另外，使用`:style`时，Vue.js会自动给特殊的CSS属性名称增加前缀，比如 transform。
 
 # 第五章 内置指令
 
