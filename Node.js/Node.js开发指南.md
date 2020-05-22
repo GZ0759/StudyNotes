@@ -9,8 +9,7 @@ Node.js，或者 Node，可以让 JavaScript 脱离浏览器的束缚运行在�
 
 ## 1.1 Node.js 是什么 
 
-Node.js 不是一种独立的语言，与 PHP、 Python、 Perl、 Ruby 的“既是语言也是平台”
-不同。 Node.js 也不是一个 JavaScript 框架，不同于 CakePHP、 Django、 Rails。 Node.js 更不是浏览器端的库，不能与 jQuery、 ExtJS 相提并论。 Node.js 是一个让 JavaScript 运行在服务端的开发平台，它让 JavaScript 成为脚本语言世界的一等公民，在服务端堪与 PHP、 Python、Perl、 Ruby 平起平坐。
+Node.js 不是一种独立的语言，与 PHP、 Python、 Perl、 Ruby 的“既是语言也是平台”不同。 Node.js 也不是一个 JavaScript 框架，不同于 CakePHP、 Django、 Rails。 Node.js 更不是浏览器端的库，不能与 jQuery、 ExtJS 相提并论。 Node.js 是一个让 JavaScript 运行在服务端的开发平台，它让 JavaScript 成为脚本语言世界的一等公民，在服务端堪与 PHP、 Python、Perl、 Ruby 平起平坐。
 
 Node.js 是一个让 JavaScript 运行在浏览器之外的平台。它实现了诸如文件系统、模块、包、操作系统 API、网络通信等 Core JavaScript 没有或者不完善的功能。
 
@@ -27,8 +26,7 @@ Node.js 是一个让 JavaScript 运行在浏览器之外的平台。它实现了
 - 单元测试工具；
 - 客户端 JavaScript 编译器。
 
-Node.js 内建了 HTTP 服务器支持，也就是说可以轻而易举地实现一个网站和服务器
-的组合。这和 PHP、 Perl 不一样，因为在使用 PHP 的时候，必须先搭建一个 Apache 之类的HTTP 服务器，然后通过 HTTP 服务器的模块加载或 CGI 调用，才能将 PHP 脚本的执行结果呈现给用户。而当你使用 Node.js 时，不用额外搭建一个 HTTP 服务器，因为 Node.js 本身就内建了一个。这个服务器不仅可以用来调试代码，而且它本身就可以部署到产品环境，它的性能足以满足要求。Node.js 还可以部署到非网络应用的环境下，比如一个命令行工具。 Node.js 还可以调用C/C++ 的代码，这样可以充分利用已有的诸多函数库，也可以将对性能要求非常高的部分用、C/C++ 来实现。
+Node.js 内建了 HTTP 服务器支持，也就是说可以轻而易举地实现一个网站和服务器的组合。这和 PHP、 Perl 不一样，因为在使用 PHP 的时候，必须先搭建一个 Apache 之类的HTTP 服务器，然后通过 HTTP 服务器的模块加载或 CGI 调用，才能将 PHP 脚本的执行结果呈现给用户。而当你使用 Node.js 时，不用额外搭建一个 HTTP 服务器，因为 Node.js 本身就内建了一个。这个服务器不仅可以用来调试代码，而且它本身就可以部署到产品环境，它的性能足以满足要求。Node.js 还可以部署到非网络应用的环境下，比如一个命令行工具。 Node.js 还可以调用C/C++ 的代码，这样可以充分利用已有的诸多函数库，也可以将对性能要求非常高的部分用、C/C++ 来实现。
 
 ## 1.3 异步式 I/O 与事件驱动 
 
@@ -68,13 +66,11 @@ CommonJS 规范包括了模块（ modules）、包（ packages）、系统（ sy
 
 # 第二章 安装和配置Node.js
 
-编译源代码。Node.js 从 0.6 版本开始已经实现了源代码级别的跨平台，因此我们可以使用不同的编译
-命令将同一份源代码的基础上编译为不同平台下的原生可执行代码。在编译之前，要先获取源码包。我们建议访问http://nodejs.org，点击Download链接，然后选择Source Code，下载正式发布的源码包。如果你需要开发中的版本，可以通过https://github.com/joyent/node/zipball/master 获得，或者在命令行下输入`git clone git://github.com/joyent/node.git` 从git获得最新的分支。
+编译源代码。Node.js 从 0.6 版本开始已经实现了源代码级别的跨平台，因此我们可以使用不同的编译命令将同一份源代码的基础上编译为不同平台下的原生可执行代码。在编译之前，要先获取源码包。我们建议访问http://nodejs.org，点击Download链接，然后选择Source Code，下载正式发布的源码包。如果你需要开发中的版本，可以通过https://github.com/joyent/node/zipball/master 获得，或者在命令行下输入`git clone git://github.com/joyent/node.git` 从git获得最新的分支。
 
-安装多版本管理器。迄今为止Node.js 更新速度还很快，有时候新版本还会将旧版本的一些 API 废除，以至于写好的代码不能向下兼容。有时候可能想要尝试一下新版本有趣的特性，但又想要保持一个相对稳定的环境。基于这种需求， Node.js 的社区开发了多版本管理器，用于在一台机器上维护多个版本的 Node.js 实例，方便按需切换。 Node 多版本管理器（ Node Version Manager， nvm）是一个通用的叫法，它目前有许多不同的实现。
+安装多版本管理器。迄今为止 Node.js 更新速度还很快，有时候新版本还会将旧版本的一些 API 废除，以至于写好的代码不能向下兼容。有时候可能想要尝试一下新版本有趣的特性，但又想要保持一个相对稳定的环境。基于这种需求， Node.js 的社区开发了多版本管理器，用于在一台机器上维护多个版本的 Node.js 实例，方便按需切换。 Node 多版本管理器（ Node Version Manager， nvm）是一个通用的叫法，它目前有许多不同的实现。
 
-n 是一个十分简洁的 Node 多版本管理器，就连它的名字也不例外。它的名字就是 n，
-没错，就一个字母。 如果已经安装好了 Node.js 和 npm 环境，就可以直接使用`npm install -g n`命令来安装 n。如果想完全通过 n 来管理 Node.js，那么没安装之前哪来的 npm 呢？事实上， n 并不需要 Node.js 驱动，它只是 bash 脚本，使用 npm 安装只是采取一种简便的方式而已。我们可以在 https://github.com/visionmedia/n 下载它的代码，然后使用 make install 命令安装。
+n 是一个十分简洁的 Node 多版本管理器，就连它的名字也不例外。它的名字就是 n，没错，就一个字母。 如果已经安装好了 Node.js 和 npm 环境，就可以直接使用`npm install -g n`命令来安装 n。如果想完全通过 n 来管理 Node.js，那么没安装之前哪来的 npm 呢？事实上， n 并不需要 Node.js 驱动，它只是 bash 脚本，使用 npm 安装只是采取一种简便的方式而已。我们可以在 https://github.com/visionmedia/n 下载它的代码，然后使用 make install 命令安装。
 
 # 第三章 Node.js快速入门
 
@@ -84,8 +80,7 @@ n 是一个十分简洁的 Node 多版本管理器，就连它的名字也不例
 
 运行 Node.js 程序的基本方法就是执行 `node script.js`，其中 script.js 是脚本的文件名。
 
-除了直接运行脚本文件外， `node --help` 显示的使用方法中说明了另一种输出 Hello
-World 的方式：我们可以把要执行的语句作为 `node -e` 的参数直接执行。
+除了直接运行脚本文件外， `node --help` 显示的使用方法中说明了另一种输出 Hello World 的方式：我们可以把要执行的语句作为 `node -e` 的参数直接执行。
 ```
 $ node -e "console.log('Hello World');"
 Hello World
@@ -172,7 +167,7 @@ setTimeout(function() {
 
 Node.js 在什么时候会进入事件循环呢？答案是 Node.js 程序由事件循环开始，到事件循环结束，所有的逻辑都是事件的回调函数，所以 Node.js 始终在事件循环中，程序入口就是事件循环第一个事件的回调函数。事件的回调函数在执行的过程中，可能会发出 I/O 请求或直接发射（ emit）事件，执行完毕后再返回事件循环，事件循环会检查事件队列中有没有未处理的事件，直到程序结束。
 
-与其他语言不同的是， Node.js 没有显式的事件循环，类似 Ruby 的 EventMachine::run() 的函数在 Node.js 中是不存在的。 Node.js 的事件循环对开发者不可见， 由 libev 库实现。 libev 支持多种类型的事件，如 ev_io、 ev_timer、 ev_signal、 ev_idle 等，在 Node.js 中均被EventEmitter 封装。 libev 事件循环的每一次迭代，在 Node.js 中就是一次 Tick， libev 不断检查是否有活动的、可供检测的事件监听器，直到检测不到时才退出事件循环，进程结束。
+与其他语言不同的是， Node.js 没有显式的事件循环，类似 Ruby 的 `EventMachine::run()` 的函数在 Node.js 中是不存在的。 Node.js 的事件循环对开发者不可见， 由 libev 库实现。 libev 支持多种类型的事件，如 ev_io、 ev_timer、 ev_signal、 ev_idle 等，在 Node.js 中均被EventEmitter 封装。 libev 事件循环的每一次迭代，在 Node.js 中就是一次 Tick， libev 不断检查是否有活动的、可供检测的事件监听器，直到检测不到时才退出事件循环，进程结束。
 
 ## 3.3 模块和包
 
@@ -182,8 +177,7 @@ Node.js 在什么时候会进入事件循环呢？答案是 Node.js 程序由事
 
 什么是模块。模块是 Node.js 应用程序的基本组成部分，文件和模块是一一对应的。换言之，一个 Node.js 文件就是一个模块，这个文件可能是 JavaScript 代码、 JSON 或者编译过的 C/C++ 扩展。在前面章节的例子中，用到了 `var http = require('http')`， 其中 http 是 Node.js 的一个核心模块，其内部是用 C++ 实现的，外部用 JavaScript 封装。我们通过require 函数获取了这个模块，然后才能使用其中的对象。
 
-创建及加载模块。Node.js 提供了 exports 和 require 两个对象，其中 exports 是模块公开的接口， require 用于从外部获取一个模块的接口，即所获取模块的 exports 对象。这种接口封装方式比许多语言要简洁得多，同时也不失优雅，未引入违反语义的特性，
-符合传统的编程逻辑。因为 require 不会重复加载模块，也就是说无论调用多少次 require， 获得的模块都是同一个。
+创建及加载模块。Node.js 提供了 exports 和 require 两个对象，其中 exports 是模块公开的接口， require 用于从外部获取一个模块的接口，即所获取模块的 exports 对象。这种接口封装方式比许多语言要简洁得多，同时也不失优雅，未引入违反语义的特性，符合传统的编程逻辑。因为 require 不会重复加载模块，也就是说无论调用多少次 require， 获得的模块都是同一个。
 
 覆盖 exports。有时候只是想把一个对象封装到模块中。模块接口的唯一变化是使用 `module.exports = Hello` 代替了 `exports.Hello=Hello`。在外部引用该模块时，其接口对象就是要输出的 Hello 对象本身，而不是原先的exports。事实上， exports 本身仅仅是一个普通的空对象，即 `{}`，它专门用来声明接口，本质上是通过它为模块闭包的内部建立了一个有限的访问接口。因为它没有任何特殊的地方，所以可以用其他东西来代替，譬如我们上面例子中的 Hello 对象。
 
@@ -211,7 +205,7 @@ process 是一个全局变量，即 global 对象的属性。它用于描述当�
 
 `process.argv` 是命令行参数数组，第一个元素是 node， 第二个元素是脚本文件名，从第三个元素开始每个元素是一个运行参数。
 
-`process.stdout`是标准输出流，通常我们使用的 console.log() 向标准输出打印字符，而 process.stdout.write() 函数提供了更底层的接口。
+`process.stdout`是标准输出流，通常我们使用的 `console.log()` 向标准输出打印字符，而 `process.stdout.write()` 函数提供了更底层的接口。
 
 `process.stdin`是标准输入流，初始时它是被暂停的，要想从标准输入读取数据，你必须恢复流，并手动编写流的事件响应函数。
 
@@ -221,7 +215,7 @@ console 用于提供控制台标准输出，它是由 Internet Explorer 的JScri
 
 `console.log()`：向标准输出流打印字符并以换行符结束。 console.log 接受若干个参数，如果只有一个参数，则输出这个参数的字符串形式。如果有多个参数，则以类似于 C 语言 printf() 命令的格式输出。第一个参数是一个字符串，如果没有参数，只打印一个换行。
 
-`console.error()`：与 console.log() 用法相同，只是向标准错误流输出。
+`console.error()`：与 `console.log()` 用法相同，只是向标准错误流输出。
 
 `console.trace()`：向标准错误流输出当前的调用栈。
 
@@ -239,16 +233,11 @@ events 是 Node.js 最重要的模块，没有“之一”，原因是 Node.js �
 
 事件发射器。events 模块只提供了一个对象：events:EventEmitter。EventEmitter 的核心就是事件发射与事件监听器功能的封装。EventEmitter 的每个事件由一个事件名和若干个参数组成，事件名是一个字符串，通常表达一定的语义。对于每个事件， EventEmitter 支持若干个事件监听器。当事件发射时，注册到这个事件的事件监听器被依次调用，事件参数作为回调函数参数传递。
 
-- `EventEmitter.on(event, listener)` 为指定事件注册一个监听器，接受一个字
-符串 event 和一个回调函数 listener。
-- `EventEmitter.emit(event, [arg1], [arg2], [...])` 发射 event 事件，传
-递若干可选参数到事件监听器的参数表。
-- `EventEmitter.once(event, listener)` 为指定事件注册一个单次监听器，即
-监听器最多只会触发一次，触发后立刻解除该监听器。
-- `EventEmitter.removeListener(event, listener)` 移除指定事件的某个监听
-器， listener 必须是该事件已经注册过的监听器。
-- `EventEmitter.removeAllListeners([event])` 移除所有事件的所有监听器，
-如果指定 event，则移除指定事件的所有监听器。
+- `EventEmitter.on(event, listener)` 为指定事件注册一个监听器，接受一个字符串 event 和一个回调函数 listener。
+- `EventEmitter.emit(event, [arg1], [arg2], [...])` 发射 event 事件，传递若干可选参数到事件监听器的参数表。
+- `EventEmitter.once(event, listener)` 为指定事件注册一个单次监听器，即监听器最多只会触发一次，触发后立刻解除该监听器。
+- `EventEmitter.removeListener(event, listener)` 移除指定事件的某个监听器， listener 必须是该事件已经注册过的监听器。
+- `EventEmitter.removeAllListeners([event])` 移除所有事件的所有监听器，如果指定 event，则移除指定事件的所有监听器。
 
 EventEmitter 定义了一个特殊的事件 error，它包含了“错误”的语义，我们在遇到异常的时候通常会发射 error 事件。当 error 被发射时， EventEmitter 规定如果没有响应的监听器， Node.js 会把它当作异常，退出程序并打印调用栈。我们一般要为会发射 error 事件的对象设置监听器，避免遇到错误后整个程序崩溃。
 
@@ -291,8 +280,7 @@ mode 参数用于创建文件时给文件指定权限，默认是 0666。回调�
 
 Node.js 标准库提供了 http 模块，其中封装了一个高效的 HTTP 服务器和一个简易的HTTP客户端。http.Server 是一个基于事件的 HTTP 服务器，它的核心由 Node.js 下层 C++ 部分实现，而接口由 JavaScript 封装，兼顾了高性能与简易性。 http.request 则是一个 HTTP 客户端工具，用于向 HTTP 服务器发起请求，例如实现 Pingback 或者内容抓取。
 
-HTTP 服务器。http.Server 是 http 模块中的 HTTP 服务器对象，用 Node.js 做的所有基于 HTTP 协议的系统，如网站、社交应用甚至代理服务器，都是基于 http.Server 实现的。它提供了
-一套封装级别很低的 API，仅仅是流控制和简单的消息解析，所有的高层功能都要通过它的接口来实现。
+HTTP 服务器。http.Server 是 http 模块中的 HTTP 服务器对象，用 Node.js 做的所有基于 HTTP 协议的系统，如网站、社交应用甚至代理服务器，都是基于 http.Server 实现的。它提供了一套封装级别很低的 API，仅仅是流控制和简单的消息解析，所有的高层功能都要通过它的接口来实现。
 
 `http.ClientRequest` 是由 http.request 或 http.get 返回产生的对象，表示一个已经产生而且正在进行中的 HTTP 请求。它提供一个 response 事件，即 http.request 或 http.get 第二个参数指定的回调函数的绑定对象。
 
@@ -310,8 +298,7 @@ Node.js 和 PHP、Perl、 ASP、 JSP 一样，目的都是实现动态网页，�
 
 Node.js 本质上和 Perl 或 C++ 一样，都可以作为 CGI 扩展被调用，但它还可以跳过 HTTP 服务器，因为它本身就是。传统的架构中 HTTP 服务器的角色会由 Apache、 Nginx、 IIS 之类的软件来担任，而 Node.js 不需要②。 Node.js 提供了 http 模块，它是由 C++ 实现的，性能可靠，可以直接应用到生产环境。Node.js 和其他的语言相比的另一个显著区别，在于它的原始封装程度较低。例如 PHP 中你可以访问 $_REQUEST 获取客户端的 POST 或 GET 请求，通常不需要直接处理 HTTP 协议①。这些语言要求由 HTTP 服务器来调用，因此你需要设置一个 HTTP 服务器来处理客户端的请求， HTTP 服务器通过 CGI 或其他方式调用脚本语言解释器，将运行的结果传递回HTTP 服务器，最终再把内容返回给客户端。而在 Node.js 中，很多工作需要你自己来做（并不是都要自己动手，因为有第三方框架的帮助）。
 
-Express 除了为 http 模块提供了更高层的接口外，还实现了
-许多功能，其中包括：
+Express 除了为 http 模块提供了更高层的接口外，还实现了许多功能，其中包括：
 - 路由控制；
 - 模板解析支持；
 - 动态视图；
@@ -341,6 +328,7 @@ express -t ejs microblog
 ## 5.3 路由控制
 
 当通过浏览器访问 app.js 建立的服务器时，会看到一个简单的页面，实际上它已经完成了许多透明的工作，现在就让我们来解释一下它的工作机制，以帮助理解网站的整体架构。访问 http://localhost:3000，浏览器会向服务器发送以下请求。
+
 ```
 GET / HTTP/1.1
 Host: localhost:3000
@@ -380,7 +368,7 @@ app.get('/user/:username', function(req, res) {
 });
 ```
 
-但当访问任何被这两条同样的规则匹配到的路径时，会发现请求总是被前一条路由规则捕获，后面的规则会被忽略。原因是 Express 在处理路由规则时，会优先匹配先定义的路由规则，因此后面相同的规则被屏蔽。Express 提供了路由控制权转移的方法，即回调函数的第三个参数next，通过调用next()，会将路由控制权转移给后面的规则。
+但当访问任何被这两条同样的规则匹配到的路径时，会发现请求总是被前一条路由规则捕获，后面的规则会被忽略。原因是 Express 在处理路由规则时，会优先匹配先定义的路由规则，因此后面相同的规则被屏蔽。Express 提供了路由控制权转移的方法，即回调函数的第三个参数next，通过调用`next()`，会将路由控制权转移给后面的规则。
 
 ```
 app.all('/user/:username', function(req, res, next) {
@@ -392,7 +380,7 @@ app.get('/user/:username', function(req, res) {
 });
 ```
 
-这是一个非常有用的工具，可以让我们轻易地实现中间件，而且还能提高代码的复用程度。例如我们针对一个用户查询信息和修改信息的操作，分别对应了 GET 和 PUT 操作，而两者共有的一个步骤是检查用户名是否合法，因此可以通过 next() 方法实现。
+这是一个非常有用的工具，可以让我们轻易地实现中间件，而且还能提高代码的复用程度。例如我们针对一个用户查询信息和修改信息的操作，分别对应了 GET 和 PUT 操作，而两者共有的一个步骤是检查用户名是否合法，因此可以通过 `next()` 方法实现。
 
 ```
 var users = {
@@ -428,10 +416,12 @@ app.put('/user/:username', function(req, res) {
 在 MVC 架构中，模板引擎包含在服务器端。控制器得到用户请求后，从模型获取数据，调用模板引擎。模板引擎以数据和页面模板为输入，生成 HTML 页面，然后返回给控制器，由控制器交回客户端。
 
 基于 JavaScript 的模板引擎有许多种实现，我们推荐使用 ejs （Embedded JavaScript），因为它十分简单，而且与 Express 集成良好。由于它是标准 JavaScript 实现的，因此它不仅可以运行在服务器端，还可以运行在浏览器中。在 app.js 中通过以下两个语句设置了模板引擎和页面模板的位置。
+
 ```
 app.set('views', __dirname + '/views');
 app.set('view engine', 'ejs');
 ```
+
 Express 的视图系统还支持片段视图（partials），它就是一个页面的片段，通常是重复的内容，用于迭代显示。通过它你可以将相对独立的页面块分割出去，而且可以避免显式地使用 for 循环。partial 是一个可以在视图中使用函数，它接受两个参数，第一个是片段视图的名称，第二个可以是一个对象或一个数组，如果是一个对象，那么片段视图中上下文变量引用的就是这个对象；如果是一个数组，那么其中每个元素依次被迭代应用到片段视图。片段视图中上下文变量名就是视图文件名。
 
 Express 提供了一种叫做视图助手的工具，它的功能是允许在视图中访问一个全局的函数或对象，不用每次调用视图解析的时候单独传入。前面提到的 partial 就是一个视图助手。视图助手有两类，分别是静态视图助手和动态视图助手。这两者的差别在于，静态视图助手可以是任何类型的对象，包括接受任意参数的函数，但访问到的对象必须是与用户请求无关的，而动态视图助手只能是一个函数，这个函数不能接受参数，但可以访问 req 和 res 对象。
@@ -439,13 +429,16 @@ Express 提供了一种叫做视图助手的工具，它的功能是允许在视
 ## 5.5 建立微博网站
 
 根据功能设计，我们把路由按照以下方案规划。
-- /：首页
-- /u/[user]：用户的主页
-- /post：发表信息
-- /reg：用户注册
-- /login：用户登录
-- /logout：用户登出
+
+- `/`：首页
+- `/u/[user]`：用户的主页
+- `/post`：发表信息
+- `/reg`：用户注册
+- `/login`：用户登录
+- `/logout`：用户登出
+
 以上页面还可以根据用户状态细分。发表信息以及用户登出页面必须是已登录用户才能操作的功能，而用户注册和用户登入所面向的对象必须是未登入的用户。首页和用户主页则针对已登入和未登入的用户显示不同的内容。
+
 ```
 app.get('/', routes.index);
 app.get('/u/:user', routes.user);
@@ -456,6 +449,7 @@ app.get('/login', routes.login);
 app.post('/login', routes.doLogin);
 app.get('/logout', routes.logout);
 ```
+
 其中 /post、 /login 和 /reg 由于要接受表单信息，因此使用 app.post 注册路由。 /login 和 /reg 还要显示用户注册时要填写的表单，所以要以 app.get 注册。
 
 ## 5.6 用户注册和登录
@@ -481,7 +475,7 @@ MongoDB 是一个对象数据库，它没有表、行等概念，也没有固定
 
 Node.js 的模块加载对用户来说十分简单，只需调用 require 即可，但其内部机制较为复杂。
 
-模块的类型。Node.js 的模块可以分为两大类，一类是核心模块，另一类是文件模块。核心模块就是Node.js 标准 API 中提供的模块，如 fs、 http、 net、 vm 等，这些都是由 Node.js 官方提供的模块，编译成了二进制代码。我们可以直接通过 require 获取核心模块，例如 require('fs')。核心模块拥有最高的加载优先级，换言之如果有模块与其命名冲突，Node.js 总是会加载核心模块。
+模块的类型。Node.js 的模块可以分为两大类，一类是核心模块，另一类是文件模块。核心模块就是Node.js 标准 API 中提供的模块，如 fs、 http、 net、 vm 等，这些都是由 Node.js 官方提供的模块，编译成了二进制代码。我们可以直接通过 require 获取核心模块，例如 `require('fs')`。核心模块拥有最高的加载优先级，换言之如果有模块与其命名冲突，Node.js 总是会加载核心模块。
 
 文件模块则是存储为单独的文件（或文件夹）的模块，可能是 JavaScript 代码、 JSON 或编译好的 C/C++ 代码。文件模块的加载方法相对复杂，但十分灵活，尤其是和 npm 结合使用时。在不显式指定文件模块扩展名的时候， Node.js 会分别试图加上 .js、 .json 和 .node扩展名。 .js 是 JavaScript 代码， .json 是 JSON 格式的文本， .node 是编译好的 C/C++ 代码。
 
@@ -489,11 +483,11 @@ Node.js 的模块加载对用户来说十分简单，只需调用 require 即可
 
 如果 require 参数以“./ ”或“../ ”开头，那么则以相对路径的方式来查找模块，这种方式在应用中是最常见的。
 
-如果require参数不以“/ ”、“./ ”或“../ ”开头，而该模块又不是核心模块，那么就要通过查找 node_modules 加载模块了。我们使用npm获取的包通常就是以这种方式加载的。在 node_modules 目录的外面一层，我们可以直接使用 require('express') 来代替require('./node_modules/express')。这是Node.js模块加载的一个重要特性：通过查找 node_modules 目录来加载模块。
+如果require参数不以“/ ”、“./ ”或“../ ”开头，而该模块又不是核心模块，那么就要通过查找 node_modules 加载模块了。我们使用npm获取的包通常就是以这种方式加载的。在 node_modules 目录的外面一层，我们可以直接使用 `require('express')` 来代替`require('./node_modules/express')`。这是Node.js模块加载的一个重要特性：通过查找 node_modules 目录来加载模块。
 
 当 require 遇到一个既不是核心模块，又不是以路径形式表示的模块名称时，会试图在当前目录下的 node_modules 目录中来查找是不是有这样一个模块。如果没有找到，则会在当前目录的上一层中的 node_modules 目录中继续查找，反复执行这一过程，直到遇到根目录为止。
 
-加载缓存。Node.js 模块不会被重复加载，这是因为 Node.js 通过文件名缓存所有加载过的文件模块，所以以后再访问到时就不会重新加载了。注意， Node.js 是根据实际文件名缓存的，而不是require()提供的参数缓存的，也就是说即使你分别通过 require('express') 和 require('./node_modules/express') 加载两次，也不会重复加载，因为尽管两次参数不同，解析到的文件却是同一个。
+加载缓存。Node.js 模块不会被重复加载，这是因为 Node.js 通过文件名缓存所有加载过的文件模块，所以以后再访问到时就不会重新加载了。注意， Node.js 是根据实际文件名缓存的，而不是`require()`提供的参数缓存的，也就是说即使你分别通过 `require('express')` 和 `require('./node_modules/express')` 加载两次，也不会重复加载，因为尽管两次参数不同，解析到的文件却是同一个。
 
 ## 6.2 控制流
 
@@ -514,6 +508,7 @@ for (var i = 0; i < files.length; i++) {
 ```
 
 大多数情况下我们可以用数组的 forEach 方法解决这个问题：
+
 ```JavaScript
 //callbackforeach.js
 var fs = require('fs');
@@ -577,6 +572,7 @@ var somevar = 'value';
 }
 console.log(somevar); // 输出 value
 ```
+
 这是因为 JavaScript 的作用域完全是由函数来决定的， if、 for 语句中的花括号不是独立的作用域。
 
 函数作用域。不同于大多数类 C 的语言，由一对花括号封闭的代码块就是一个作用域， JavaScript 的作用域是通过函数来定义的，在一个函数中定义的变量只对这个函数内部可见，我们称为函数作用域。在函数中引用一个变量时， JavaScript 会先搜索当前函数作用域，或者称为“局部作用域”，如果没有找到则搜索其上层作用域，一直到全局作用域。
@@ -602,7 +598,7 @@ console.log(counter()); // 输出 2
 console.log(counter()); // 输出 3
 ```
 
-这正是所谓闭包的特性。当一个函数返回它内部定义的一个函数时，就产生了一个闭包，闭包不但包括被返回的函数，还包括这个函数的定义环境。上面例子中，当函数generateClosure() 的内部函数 get 被一个外部变量 counter 引用时， counter 和 generateClosure() 的局部变量就是一个闭包。
+这正是所谓闭包的特性。当一个函数返回它内部定义的一个函数时，就产生了一个闭包，闭包不但包括被返回的函数，还包括这个函数的定义环境。上面例子中，当函数generateClosure() 的内部函数 get 被一个外部变量 counter 引用时， counter 和 `generateClosure()` 的局部变量就是一个闭包。
 
 ```JavaScript
 var generateClosure = function() {
