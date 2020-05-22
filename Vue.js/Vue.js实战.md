@@ -1039,9 +1039,9 @@ Vue.js 提供了 `v-model` 指令，用于在表单类元素上双向绑定数�
 	</script>
 </body>
 ```
-使用 v-model 后，表单控件显示的值只依赖所绑定的数据，不再关心初始化时的 value 属性，对于在`<textarea></textarea>` 之间插入的值，也不会生效。
 
-使用 `v-model` 时，如果是用中文输入法输入中文，一般在没有选定词语前，也就是在拼音阶段，Vue 是不会更新数据的。如果希望实时更新中文数据，可以用`@input`来替代 `v-model`。事实上，`v-model` 也是一个特殊的语法糖，只不过它会在不同的表单上智能处理。
+> 使用 v-model 后，表单控件显示的值只依赖所绑定的数据，不再关心初始化时的 value 属性，对于在`<textarea></textarea>` 之间插入的值，也不会生效。
+> 使用 `v-model` 时，如果是用中文输入法输入中文，一般在没有选定词语前，也就是在拼音阶段，Vue 是不会更新数据的。如果希望实时更新中文数据，可以用`@input`来替代 `v-model`。事实上，`v-model` 也是一个特殊的语法糖，只不过它会在不同的表单上智能处理。
 
 ```html
 <body>
@@ -1132,7 +1132,7 @@ Vue.js 提供了 `v-model` 指令，用于在表单类元素上双向绑定数�
 </body>
 ```
 
-选择列表就是下拉选择器，也是常见的表单控件，同样也分为单选和多选两种方式。`<option>`是备选项，如果含有 value 属性，`v-model` 就会优先匹配 value 的值；如果没有，就会直接匹配`<option>`的 text。给`<selected>`添加属性 multiple 就可以多选，此时 `v-model` 绑定的是一个数组，与复选框用法类似。在业务中，`<option>`经常用 v-for 动态输出，value 和 text 也是用 `v-bind` 来动态输出的。
+选择列表就是下拉选择器，也是常见的表单控件，同样也分为单选和多选两种方式。`<option>`是备选项，如果含有 value 属性，`v-model` 就会优先匹配 value 的值；如果没有，就会直接匹配`<option>`的 text。给`<selected>`添加属性 multiple 就可以多选，此时 `v-model` 绑定的是一个数组，与复选框用法类似。在业务中，`<option>`经常用 `v-for` 动态输出，value 和 text 也是用 `v-bind` 来动态输出的。
 
 虽然用选择列表`<select>`控件可以很简单地完成下拉选择的需求，但是在实际业务中反而不常用，因为它的样式依赖平台和浏览器，无法统一，也不太美观，功能也受限，比如不支持搜索，所以常见的解决方案是用 div 模拟一个类似的控件。
 
@@ -1160,11 +1160,7 @@ var app = new Vue({
 </script>
 ```
 
-```html
-<input type="radio" v-model="pick" v-bind:value="a">
-```
-
-复选框，选中时和未勾选时有两种类型，可以再使用 v-bind 则可以在实现动态绑定。
+复选框，选中时和未勾选时有两种类型，可以再使用 `v-bind` 则可以在实现动态绑定。
 
 ```html
 <div id="app">
@@ -1186,7 +1182,7 @@ var app = new Vue({
 </script>
 ```
 
-选择列表，当选中时，app.selected 是一个 Object，所以 `app.selected.number === 123`。
+选择列表，当选中时，`app.selected` 是一个 Object，所以 `app.selected.number === 123`。
 
 ```html
 <div id="app">
@@ -1218,6 +1214,8 @@ var app = new Vue({
 从 Vue.2.x 开始， v-model 还可以用于自定义组件，满足定制化的需求。
 
 # 第七章 组件详解
+
+组件是 vue.js 最核心的功能，也是整个框架设计最精彩的地方，当然也是最难掌握的。
 
 ## 7.1 组件与复用
 
@@ -1260,7 +1258,6 @@ new Vue({ el: '#app' })
 ```javascript
 var ComponentA = { /* ... */ }
 var ComponentB = { /* ... */ }
-var ComponentC = { /* ... */ }
 
 new Vue({
 	el: '#app',
@@ -1271,22 +1268,58 @@ new Vue({
 })
 ```
 
-Vue 组件的模板在某些情况下会收到 HTML 的限制，比如`<table>`内规定只允许时`<tr>`、`<td>`、`<th>`等这些表格元素，所以在`<table>`内直接使用组件时无效的。这种情况下，可以使用特殊的 is 属性来挂载组件。
+Vue 组件的模板在某些情况下会受到 HTML 的限制，比如`<table>`内规定只允许时`<tr>`、`<td>`、`<th>`等这些表格元素，所以在`<table>`内直接使用组件时无效的。这种情况下，可以使用特殊的 is 属性来挂载组件。
 
-除了 template 选项外，组件中还可以像 Vue 实例那样使用其他的选项，比如 data、computed、methods 等。但是在使用 data 时，和实例稍有区别，data 必须是函数，然后将数据 return 出去。一个组件的 data 选项必须是一个函数，因此每个实例可以维护一份被返回对象的独立的拷贝。如果 return 出的对象引用了外部的一个对象，那这么这个对象就是共享的，任何一方修改都会同步。
+```html
+<table>
+  <blog-post-row></blog-post-row>
+</table>
+```
 
-```javascript
-Vue.component('my-component',{
-	template:'<button @click="counter++">{{ counter }}</button>',
-	data:function(){
-		return {
-			counter: 0
-		}
+这个自定义组件 `<blog-post-row>` 会被作为无效的内容提升到外部，并导致最终渲染结果出错。幸好这个特殊的 is attribute 给了我们一个变通的办法：
+
+```html
+<table>
+  <tr is="blog-post-row"></tr>
+</table>
+```
+
+需要注意的是如果我们从以下来源使用模板的话，这条限制是不存在的：
+
+- 字符串 (例如：`template: '...'`)
+- 单文件组件 (`.vue`)
+- `<script type="text/x-template">`
+
+除了 template 选项外，组件中还可以像 Vue 实例那样使用其他的选项，比如 data、computed、methods 等。但是在使用 data 时，和实例稍有区别，data 必须是函数，然后将数据 return 出去。
+
+一个组件的 data 选项必须是一个函数，因此每个实例可以维护一份被返回对象的独立的拷贝。如果 return 出的对象引用了外部的一个对象，那这么这个对象就是共享的，任何一方修改都会同步。
+
+```html
+<div id="app">
+	<my-compone></my-compone>
+	<my-compone></my-compone>
+	<my-compone></my-compone>
+</div>
+<script>
+	// 应该在实例data里面
+	var data = {
+		counter: 0
 	}
-})
+	Vue.component('my-component',{
+		template:'<button @click="counter++">{{ counter }}</button>',
+		data: function(){
+			return data;
+		}
+	});
+	var app = new Vue({
+		el: '#app'
+	})
+</script>
 ```
 
 ## 7.2 使用props传递数据
+
+### 7.2.1 基本用法
 
 组件不仅仅是要把模板的内容进行复用，更重要的是组件间要进行通信。通常父组件的模板中包含子组件，父组件要正向地向子组件传递数据或参数，子组件接收到后根据参数的不同来渲染不同的内容或执行操作。这个正向传递数据的过程就是通过 props 来实现的。
 
@@ -1301,17 +1334,15 @@ Vue.component('blog-post', {
 ```
 
 ```html
+<!-- 父组件 -->
 <!-- 在 HTML 中是 kebab-case 的 -->
 <blog-post post-title="hello!"></blog-post>
+
+<!-- 子组件 -->
+<!-- <h3>hello!</h3> -->
 ```
 
-如果我们从以下来源使用模板的话，这条限制是不存在的：
-
-- 字符串 (例如：template: '...')
-- 单文件组件 (.vue)
-- `<script type="text/x-template">`
-
-props 中声明的数据与组件 data 函数 return 的数据主要区别是 props 的来自父级，而 data 中的是组件自己的数据，作用域是组件本身，这两种数据都可以在模板 template 及计算属性 computed 和方法 methods 中使用。
+props 中声明的数据与组件 data 函数 return 的数据主要区别是 props 的来自父级，而 data 中的是组件自己的数据，作用域是组件本身，这两种数据都可以在模板 `template` 、计算属性 `computed` 和方法 `methods` 中使用。
 
 有时候，传递的数据并不是直接写死的，而是来自父级的动态数据，这时可以使用指令 `v-bind` 来动态绑定 props 的值，党父组件的数据变化时，也会传递给子组件。
 
@@ -1329,7 +1360,7 @@ props 中声明的数据与组件 data 函数 return 的数据主要区别是 pr
 		var app = new Vue({
 			el:'#app',
 			data:{
-				parentMessage:''
+				parentMessage: ''
 			}
 		})
 	</script>
@@ -1338,7 +1369,9 @@ props 中声明的数据与组件 data 函数 return 的数据主要区别是 pr
 
 注意，如果只是传递数字、布尔值、数组、对象，而没有使用 `v-bind`，传递的仅仅是字符串。
 
-单向数据流。Vue 2.x 与  Vue 1.x 比较大的一个改变就是，前者通过 props 传递数据是单向的了，也就是父组件数据变化时会传递给子组件，但是反过来不行。而在 Vue 1.x 里提供了 `.sync` 修饰符来支持双向绑定。之所以这样设计，是尽可能将父子组件解耦，避免子组件无意中修改了父组件的状态。
+### 7.2.2 单向数据流
+
+Vue 2.x 与  Vue 1.x 比较大的一个改变就是，前者通过 props 传递数据是单向的了，也就是父组件数据变化时会传递给子组件，但是反过来不行。而在 Vue 1.x 里提供了 `.sync` 修饰符来支持双向绑定。之所以这样设计，是尽可能将父子组件解耦，避免子组件无意中修改了父组件的状态。
 
 业务中会经常遇到两种需要改变 prop 的情况，一种是父组件传递初始值进来，子组件将它作为初始值保存起来，在自己的作用域下可以随意使用和修改。这种情况可以在组件 data 内再声明一个数据，引用父组件的 prop。通过这样，就可以避免直接操作 prop 数据。
 
@@ -1362,9 +1395,11 @@ computed: {
 }
 ```
 
-注意，在 JavaScript 中对象和数组时引用类型，指向同一个内存空间，所以 props 是对象和数组时，在子组件内改变是会影响父组件的。
+> 注意，在 JavaScript 中对象和数组时引用类型，指向同一个内存空间，所以 props 是对象和数组时，在子组件内改变是会影响父组件的。
 
-数据验证。props 选项的值除了一个数组，也可以是对象，当 prop 需要验证时，就需要对象写法。一般组件需要提供给别人使用时，推荐都进行数据验证，比如某个数据必须是数字类型，如果传入字符串，就会在控制台弹出警告。
+### 7.2.3 数据验证
+
+props 选项的值除了一个数组，也可以是对象，当 prop 需要验证时，就需要对象写法。一般组件需要提供给别人使用时，推荐都进行数据验证，比如某个数据必须是数字类型，如果传入字符串，就会在控制台弹出警告。
 
 ```javascript
 Vue.component('my-component', {
@@ -1402,15 +1437,21 @@ Vue.component('my-component', {
 })
 ```
 
-验证的 type 类型可以是 String、Number、Boolean、Object、Array、Function，type也可以是一个自定义构造器，使用 instanceof 检测。当 prop 验证失败时，在开发版本下会在控制台抛出警告。
+验证的 type 类型可以是 `String`、`Number`、`Boolean`、`Object`、`Array`、`Function`，type 也可以是一个自定义构造器，使用 instanceof 检测。当 prop 验证失败时，在开发版本下会在控制台抛出警告。
 
 ## 7.3 组件通信
 
 从父组件向子组件通信，通过 props 传递数据就可以了，但 Vue 组件通信的场景不止这一种。
 
-自定义事件。子组件需要向父组件传递数据，则用到自定义事件。v-on 除了监听 DOM 事件外，还可以用于组件之间的自定义事件。
+组件关系可分为父子组件通信、兄弟组件通信、跨级组件通信。
 
-子组件用`$emit()`来触发事件，父组件用`$on()`来监听子组件的事件，父组件也可以直接在子组件的自定义标签上使用 `v-on` 来监听子组件触发的自定义事件。`$emit()`方法的第一个参数是自定义事件的名称，后面的参数是要传递的数据，可以不填或填写多个。除了用 `v-on` 在组件上监听自定义事件外，也可以监听 DOM 事件，这时可以用 `.native` 修饰符表示监听的是一个原生事件，监听的是该组件的根元素。
+### 7.3.1 自定义事件
+
+子组件需要向父组件传递数据，则用到自定义事件。`v-on` 除了监听 DOM 事件外，还可以用于组件之间的自定义事件。
+
+类似 JavaScript 的设计模式——观察者模式，子组件用`$emit()`来触发事件，父组件用`$on()`来监听子组件的事件，父组件也可以直接在子组件的自定义标签上使用 `v-on` 来监听子组件触发的自定义事件。
+
+`$emit()`方法的第一个参数是自定义事件的名称，后面的参数是要传递的数据，可以不填或填写多个。
 
 ```javascript
 Vue.component('welcome-button', {
@@ -1439,23 +1480,13 @@ new Vue({
 })
 ```
 
-使用 `v-model`。Vue 2.x 可以在自定义组件上使用 `v-model` 指令。
+除了用 `v-on` 在组件上监听自定义事件外，也可以监听 DOM 事件，这时可以用 `.native` 修饰符表示监听的是一个原生事件，监听的是该组件的根元素。
+
+### 7.3.2 使用v-model
+
+Vue 2.x 可以在自定义组件上使用 `v-model` 指令。
 
 如下面的例子，并没有在`<my-component>`上使用`@input=handler`，而是直接用了 `v-model` 绑定的一个数据 total，着也可以称为语法糖。也可以间接地用自定义事件来实现。
-
-```javascript
-Vue.component('my-component',{
-	template:'<button @click="handleClick">1</button>',
-	data: function () {
-		return { counter: 1}
-	},
-	methods:{
-		handleClick: function(){
-			this.$emit('input',this.counter)
-		}
-	}
-});
-```
 
 ```html
 <div id="app">
@@ -1463,25 +1494,64 @@ Vue.component('my-component',{
 	<my-component v-model="total"></my-component>
 	<!--<my-component @input="handleGetCounter"></my-component> -->
 </div>
+<script>
+	Vue.component('my-component', {
+		template:'<button @click="handleClick">+1</button>',
+		data: function () {
+			return { counter: 0 }
+		},
+		methods:{
+			handleClick: function (){
+				this.counter++;
+				this.$emit('input', this.counter)
+			}
+		}
+	});
+	var app = new Vue({
+		el:'#app',
+		data:{
+			total: 0
+		},
+		// methods:{
+		// 	handleGetCounter(counter) {
+		// 		this.total = counter
+		// 	}
+		// } 
+	})
+</script>
 ```
 
-```javascript
-var app = new Vue({
-	el:'#app',
-	data:{
-		total:0
-	},
-		/* methods:{
-			handleGetCounter(counter) {
-			this.total = counter
-			}
-		} */
+一个组件上的 `v-model` 默认会利用名为 value 的 prop 和名为 input 的事件，但是像单选框、复选框等类型的输入控件可能会将 value 特性用于不同的目的。
+
+```html
+<custom-input
+  v-bind:value="searchText"
+  v-on:input="searchText = $event"
+></custom-input>
+```
+
+```js
+Vue.component('custom-input', {
+  props: ['value'],
+  template: `
+    <input
+      v-bind:value="value"
+      v-on:input="$emit('input', $event.target.value)"
+    >
+  `
 })
 ```
 
-一个组件上的 `v-model` 默认会利用名为 value 的 prop 和名为 input 的事件，但是像单选框、复选框等类型的输入控件可能会将 value 特性用于不同的目的。实现一个具有双向绑定的 `v-model` 组件要满足两个条件：接收一个 value 属性和在有新的 value 时触发 input 事件。因此，`v-model` 可以用来创建自定义的表单输入组件，进行数据双向绑定。
+为了让它正常工作，这个组件内的 `<input>` 必须：
 
-非父子组件通信。在实际业务中，除了父子组件通信外，还有很多非父子组件通信的场景，非父子组件一般有两种，兄弟组件和跨多级组件。
+- 将其 value attribute 绑定到一个名叫 value 的 prop 上
+- 在其 input 事件被触发时，将新的值通过自定义的 input 事件抛出
+
+因此，`v-model` 可以用来创建自定义的表单输入组件，进行数据双向绑定。
+
+### 7.3.3 非父子组件通信
+
+在实际业务中，除了父子组件通信外，还有很多非父子组件通信的场景，非父子组件一般有两种，兄弟组件和跨多级组件。
 
 在Vue.js 1.x中，除了`$emit()`方法外，还提供`$dispatch()`和`$broadcast()`这两个方法。前者用于向上级派发时间，后者是由上级向下级广播时间。这两种方法一旦发出事件后，任何组件都是可以接收到的，就近原则，而且会在第一次接收到后停止冒泡，除非返回 true。
 
