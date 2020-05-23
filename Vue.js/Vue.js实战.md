@@ -1807,42 +1807,109 @@ var app = new Vue({
 </body>
 ```
 
+子组件的模板，在`<slot>`元素上有一个类似`props`传递数据给组件的写法`msg="xxx"`，将数据传递到插槽。父组件中使用了`<template>`元素，而且拥有一个`scope="props"`的特性，这里的`props`是一个临时变量，就像`v-for="item in items"`里面的 item 一样。 template 内可以通过临时变量 props 访问来自子组件插槽的数据 msg 。
+
+将上面的示例渲染后的最终结果为：
+
+```html
+<div id="app">
+	<div class="container">
+		<p>来自父组件的内容</p>
+		<p>来自子组件的内容</p>
+	</div>
+</div>
+```
+
 作用域插槽更具代表性的用例是列表组件，允许组件自定义应该如何渲染列表每一项。
 
 ```html
-<child-component :books="bk">
-	<!-- 作用域插槽也可以是具名的slot -->
-	<template slot="sn" slot-scope="props">
-		<li>{{ props.bookName }}</li>
-	</template>
-</child-component>
-```
-
-```javascript
-Vue.component('child-component',{
-	props:{
-		books:{
-			type:Array,
-			default:function(){
-				return [];
-			}
-		}
-	},
-	template:'<ul><slot name="sn" v-for="b in books" :book-name="b.name"></slot></ul>'
+<<div id="app">
+    <my-list :book="books">
+        <!--作用域插槽也可以是具名的Slot-->
+        <template slot="book" scope="props">
+            <li>{{ props.bookName }}</li>
+        </template>
+    </my-list>
+</div>
+<script>
+Vue.component('my-list', {
+    props: {
+        books: {
+            type: Array,
+            default: function () {
+                return [];
+            }
+        }
+    },
+    template: `
+	<ul>
+		<slot name="book" 
+		v-for="book in books" 
+		:book-name="book.name">
+		</slot>
+	</ul>
+    `,
 });
 var app = new Vue({
 	el:'#app',
 	data:{
-		bk:[
-			{name:'《Vue.js实战》'},
-			{name:'javascript高级程序设计'},
-			{name:'javascrip语言精粹'}
+		books: [
+			{ name: '《Vue.js实战》' },
+			{ name: 'javascript高级程序设计' },
+			{ name: 'javascrip语言精粹' }
 		]
 	}
 })
+</script>
 ```
 
-访问 slot。Vue.js 2.x 提供了用来访问被 slot 分发的内容的方法`$slots`。每个具名插槽有其相应的属性 (例如：slot="foo"中的内容将会在`vm.$slots.foo`中被找到)。default属性包括了所有没有被包含在具名插槽中的节点。
+子组件 my-list 接收一个来自父级的 prop 数组 books ，并且将它在 name 为 book 的 slot 上使用`v-for`指令循环，同时暴露一个变量 bookName 。
+
+作用域插槽的使用场景是既可以复用子组件的 slot ，又可以使 slot 内容不一致。如果上例还在其他组件内使用，`<li>`的内容渲染权是由使用者掌握，而数据却可以通过临时变量（比如 props ）从子组件内获取。
+
+### 7.4.5 访问 slot
+
+在 Vue.js 1.x 中，想要获取某个 slot 是比较麻烦的，需要用 `v-el`间接获取。而 Vue.js 2.x 提供了用来访问被 slot 分发的内容的方法`$slots`。
+
+```html
+<div id="app">
+    <child-component>
+        <h2 slot="header">标题</h2>
+        <p>正文的内容</p>
+        <p>更多正文的内容</p>
+        <div slot="footer">底部信息</div>
+    </child-component>
+</div>
+<script>
+Vue.component('child-component', {
+    template: `
+		<div class="container">
+			<div class="header">
+				<slot name="header"></slot>
+			</div>
+			<div class="main">
+				<slot></slot>
+			</div>
+			<div class="footer">
+				<slot name="footer"></slot>
+			</div>
+		</div>    
+    `,
+    mounted: function () {
+        var header = this.$slots.header;
+        var main = this.$slots.default;
+        var footer = this.$slots.footer;
+        console.log(footer);
+        console.log(footer[0].elm.innerHTML);
+    }
+});
+var app = new Vue({
+    el: '#app',
+});
+</script>
+```
+
+通过`$slots`可以访问某个具名 slot ，`this.$slots.default`包括了所有没有被包含在具名 slot 中的节点。`$slots`在业务中几乎用不到，在用 render 函数 创建组建时会比较有用，但主要还是用于独立组件开发中。
 
 ## 7.5 组件高级用法
 
