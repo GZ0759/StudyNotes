@@ -1555,11 +1555,104 @@ Vue.component('custom-input', {
 
 在Vue.js 1.x中，除了`$emit()`方法外，还提供`$dispatch()`和`$broadcast()`这两个方法。前者用于向上级派发时间，后者是由上级向下级广播时间。这两种方法一旦发出事件后，任何组件都是可以接收到的，就近原则，而且会在第一次接收到后停止冒泡，除非返回 true。
 
+```html
+<!-- 此实例只在Vue 1.x版本中有效： -->
+<div id="app">
+    <p>{{message}}</p>
+    <my-component></my-component>
+</div>
+<script>
+Vue.component('my-component', {
+    template: `<button @click="handleDispatch">派发事件</button>`,
+    methods: {
+        handleDispatch: function () {
+            this.$dispatch('on-message', '来自内部组件的数据')
+        }
+    }
+});
+new Vue({
+    el: '#app',
+    data: {
+        message: ''
+    },
+    events: {
+        'on-message': function (msg) {
+            this.message = msg;
+        }
+    }
+});
+</script>
+```
+
+这两个方法虽然看起来很好用，但是在 Vue.js 2.x 中都废弃了，因为基于组件树结构的事件流让人难以理解，并且在组件结构扩展的过程中会变得越来越脆弱，并且不能解决兄弟组件通信的问题。
+
 在Vue.js 2.x中，推荐使用中央事件总线 (bus)，也就是一个中介。首先创建名为 bus 的空 Vue 实例，在生命周期 mounted 钩子函数里监控来自 bus 事件的方法，在组件中通过 bus 把事件发送出去。这种方法巧妙而轻量地实现了任何组件间的通信。
+
+```html
+<div id="app">
+    <p>{{message}}</p>
+    <component-a></component-a>
+</div>
+<script>
+var bus = new Vue();
+Vue.component('component-a', {
+    template: `<button @click="handleEvent">传递事件</button>`,
+    methods: {
+        handleEvent: function () {
+            bus.$emit('on-message', '来自组件component-a的内容')
+        }
+    }
+});
+var app = new Vue({
+    el: '#app',
+    data: {
+        message: ''
+    },
+    mounted: function () {
+        var _this = this;
+        // 在实例初始化时，监听来自bus实例的事件
+        bus.$on('on-message', function (msg) {
+            _this.message = msg;
+        })
+    }
+});
+</script>
+```
+
+这种方法巧妙而轻量地实现了任何组件间的通信，包括父子、兄弟、跨级，而且 Vue 1.x 和 Vue 2.x 都使用。如果深入使用，可以扩展bus实例，给它添加data、methods、computed等选项，这些都是可以公用的。在业务中，尤其是协同开发时非常有用，因为经常需要共享一些通用的信息，比如用户登录的昵称、性别、邮箱等，还有用户的授权token等。只需在初始化时让bus获取一次，任何时间、任何组件就可以从中直接使用，在单页面富应用（SPA）中会很实用。
+
+当项目比较大，有更多的小伙伴参与开发时，也可以选择更好的状态管理解决方案 vuex。
 
 除了中央事件总线 bus 外，还有两种方法可以实现组件间的通信：父链和子组件索引。
 
-父链。在子组件中，使用`this.$parent`可以直接访问该组件的父实例或组件，父组件也可以通过`this.$children`访问它所有的子组件，而且可以递归向上或向下无限访问，直到根实例或最内层的组件。在业务中，子组件应该尽可能地避免依赖父组件的数据，更不应该去主动修改它的数据。
+父链。在子组件中，使用`this.$parent`可以直接访问该组件的父实例或组件，父组件也可以通过`this.$children`访问它所有的子组件，而且可以递归向上或向下无限访问，直到根实例或最内层的组件。
+
+```html
+<div id="app">
+    <p>{{message}}</p>
+    <component-a></component-a>
+</div>
+
+<script>
+Vue.component('component-a', {
+    template: `<button @click="handleEvent">通过父链直接修改数据</button>`,
+    methods: {
+        handleEvent: function () {
+			// 访问到父链后，可以做任何操作，比如直接修改数据
+            this.$parent.message = '来自组件component-a的内容'
+        }
+    }
+});
+var app = new Vue({
+    el: '#app',
+    data: {
+        message: ''
+    }
+});
+</script>
+```
+
+尽管 Vue 允许这样操作，但在业务中，子组件应该尽可能地避免依赖父组件的数据，更不应该去主动修改它的数据，因为这样使得父子组件紧耦合，只看父组件，很难理解父组件的状态，因为它可能被任意组件修改，理想状态下，只有组件自己能修改它的状态。父子组件最好时通过 props 和 `$emit` 来通信。
 
 子组件索引。当子组件较多时，通过`this.$children`来一一遍历出我们需要的一个组件实例是比较困难的，尤其是组件动态渲染时，它们的序列是不固定的。Vue提供了子组件索引的方法，用特殊的属性 ref 来为子组件指定一个索引名称。在父组件模板中，子组件标签上使用 ref 指定一个名称，并在父组件内通过`this.$refs`来访问指定名称的子组件。
 
@@ -1571,54 +1664,127 @@ Vue.component('custom-input', {
 <child-component ref="child"></child-component>
 ```
 
-注意，`$refs`只在组件渲染完成后才填充，并且它是非响应式的，它仅仅作为一个直接访问于组件的应急方案，应当避免在模板或计算属性中使用`$refs`。
+> 注意，`$refs`只在组件渲染完成后才填充，并且它是非响应式的，它仅仅作为一个直接访问于组件的应急方案，应当避免在模板或计算属性中使用`$refs`。
+
+与 Vue 1.x 不同的是，Vue 2.x 将 v-el 和 v-ref 合并为了 ref ， VUe 会自动去判断是普通标签还是组件。
 
 ## 7.4 使用slot分发内容
 
-当需要让组件组合使用，混合父组件的内容与子组件的模板时，就会用到 slot，这个过程叫做内容分发。
+### 7.4.1 什么是slot
+
+当需要让组件组合使用，混合父组件的内容与子组件的模板时，就会用到 slot，这个过程叫做内容分发。以`<app>`为例，它有两个特点：
+
+- `<app>`组件不知道它的挂载点会有什么内容。挂载点的内容是由`<app>`的父组件决定的。
+- `<app>`组件很可能有它自己的模板。
 
 props 传递数据、events 触发事件和 slot 内容分发就构成了 Vue 组件的三个 API 来源，再复杂的组件也是由着三部分构成的。
 
-父组件模板的内容是在父组件作用域内编译，子组件的内容是在子组件作用域内编译。因此，slot 分发的内容，作用域是在父组件上的。
+### 7.4.2 作用域
+
+父组件模板的内容是在父组件作用域内编译，子组件的内容是在子组件作用域内编译。
+
+```html
+<!-- 这里的 message 就是一个slot -->
+<!-- 但是它绑定的是父组件的数据 -->
+<child-component>
+    {{message}}
+</child-component>
+```
+
+在子组件上绑定数据：
+
+```html
+<div id="app">
+    <child-component></child-component>
+</div>
+<script>
+Vue.component('child-component', {
+    template: `<div v-model="showChild">子组件</div>`,
+    data() {
+        return {
+            showChild: true
+        }
+    }
+});
+var app = new Vue({
+    el: '#app',
+});
+</script>
+```
+
+因此，slot 分发的内容，作用域是在父组件上的。
+
+### 7.4.3 slot用法
 
 单个 slot。在子组件内使用特殊的`<slot>`元素就可以为这个子组件开启一个 slot（插槽），在父组件模板里，插入在子组件标签内的所有内容将替代子组件的`<slot>`标签及它的内容。
 
+```html
+<div id="app">
+    <child-component>
+        <p>分发的内容</p>
+        <p>更多分发的内容</p>
+    </child-component>
+</div>
+<script>
+Vue.component('child-component', {
+    template: `
+    <div>
+        <slot>
+           <p>如果没有父组件插入内容，我将作为默认出现。</p>
+        </slot>
+    </div>
+            `,
+});
+var app = new Vue({
+    el: '#app',
+});
+</script>
+```
+
 子组件模板内定义`<slot>`元素，如果父组件没有使用 slot 时，默认渲染这段默认内容，否则，父组件的内容进行分发，替换整个`<slot>`插槽。
+
+> 注意：子组件`<slot>`内的备用内容，它的作用域是子组件本身。
 
 具名 slot。给`slot`元素指定一个 name 后可以分发多个内容，具名 slot 可以与单个 slot 共存。
 
-如果`<slot>`没有使用 name 特性，它将作为默认 slot 出现，父组件没有使用 slot 的元素与内容都将出现在这里。如果没有指定默认的匿名 slot，父组件内多余的内容片段都将被抛弃，除非父组件的组件标签使用 inline-template 特性，将它们作为内联模板。另一种 `slot` 特性的用法是直接用在一个普通的元素上。
-
 ```html
-<div class="container">
-	<header>
-		<slot name="header"></slot>
-	</header>
-	<main>
-		<slot></slot>
-	</main>
-	<footer>
-		<slot name="footer"></slot>
-	</footer>
+<div id="app">
+    <child-component>
+        <h2 slot="header">标题</h2>
+        <p>正文的内容</p>
+        <p>更多正文的内容</p>
+        <div slot="footer">底部信息</div>
+    </child-component>
 </div>
+<script>
+Vue.component('child-component', {
+    template: `
+	<div class="container">
+		<div class="header">
+			<slot name="header"></slot>
+		</div>
+		<div class="main">
+			<slot></slot>
+		</div>
+		<div class="footer">
+			<slot name="footer"></slot>
+		</div>
+	</div>    
+    `,
+});
+var app = new Vue({
+    el: '#app',
+});
+</script>
 ```
 
-```html
-<base-layout>
-	<template slot="header">
-		<h1>Here might be a page title</h1>
-	</template>
+如果`<slot>`没有使用 name 特性，它将作为默认 slot 出现，父组件没有使用 slot 的元素与内容都将出现在这里。
 
-	<p>A paragraph for the main content.</p>
-	<p>And another one.</p>
+如果没有指定默认的匿名 slot，父组件内多余的内容片段都将被抛弃。
 
-	<template slot="footer">
-		<p>Here is some contact info</p>
-	</template>
-</base-layout>
-```
+### 7.4.4 作用域插槽
 
-作用域插槽。作用域插槽是一种特殊的 slot，使用一个可以复用的模板替换已渲染元素。作用域插槽的使用场景就是父组件既可以复用子组件的 slot，又可以使 slot 内容不一致。
+作用域插槽是一种特殊的 slot，使用一个可以复用的模板替换已渲染元素。作用域插槽的使用场景就是父组件既可以复用子组件的 slot，又可以使 slot 内容不一致。
 
 ```html
 <body>
