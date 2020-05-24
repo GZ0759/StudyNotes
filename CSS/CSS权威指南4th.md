@@ -2342,10 +2342,9 @@ CSS变形规范对matrix()函数做了严格规定：“以六个值a-f确定的
 
 如果在三维空间中改变元素的形态，例如使用translate3d()或rotateY()。或许希望在 3D 空间中呈现元素。然而，这却不是默认的行为。默认情况下，不管怎样变形，得到的结果都是扁平的。幸好，这个行为可以使用transform-style属性修改。
 
-transform-style
-
-| 取值 | flat / preserve-3d |
+| transform-style |  |
 |---|---|
+| 取值 | flat / preserve-3d |
 | 初始值 | flat |
 | 适用于 | 任何可变形的元素计算值指定的值 |
 | 继承性 | 否 |
@@ -2361,10 +2360,9 @@ transform-style
 
 先讲perspective属性。这个属性的值是一个长度，定义视域锥体的深度。这么看来，它与前面讨论的perspective()函数功能类似，不过二者之间有重要的区别。
 
-perspective
-
-| 取值 | none / <length> |
+| perspective |  |
 |---|---|
+| 取值 | none / `<length>` |
 | 初始值 | none |
 | 适用于 | 任何可变形的元素 |
 | 计算值 | 绝对长度，或者none |
