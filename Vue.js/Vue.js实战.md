@@ -59,6 +59,8 @@
 
 <!-- /TOC -->
 
+# 第一部分 基础篇
+
 # 第一章 初识Vue.js
 
 ## 1.1 Vue.js是什么
@@ -2274,9 +2276,21 @@ Vue 2.x 移除了大量 Vue 1.x 自定义指令的配置。在使用自定义指
 8.2.1 开发一个可从外部关闭的下拉菜单
 8.2.2 开发一个实时时间转换指令v-time
 
+# 第二部分 进阶篇
+
 # 第九章 Render函数
 
-Vue.js 2.x 与 Vue.js1.x 最大的区别就在于前者使用了Virtual Dom（虚拟DOM）来更新节点，提升渲染性能。虚拟DOM并不是真正意义上的DOM，而是一个轻量级的JavaScript对象，在状态发生变化时，虚拟DOM会进行Diff运算，来更新只需要被替换的DOM，而不是全部重绘，与DOM操作相比，开销会小很多。
+Vue.js 2.x 与 Vue.js1.x 最大的区别就在于前者使用了Virtual Dom（虚拟DOM）来更新节点，提升渲染性能。
+
+## 9.1 什么是Virtual Dom
+## 9.2 什么是Render函数
+## 9.3 createElement用法
+## 9.4 函数化组件
+## 9.5 JSX
+## 9.6 实战：使用Render函数开发可排序的表格组件
+## 9.7 实战：留言列表
+
+虚拟DOM并不是真正意义上的DOM，而是一个轻量级的JavaScript对象，在状态发生变化时，虚拟DOM会进行Diff运算，来更新只需要被替换的DOM，而不是全部重绘，与DOM操作相比，开销会小很多。
 
 vNode对象通过一些特定的选项描述了真实的DOM结构，每个DOM元素或组件都对应一个VNode对象，VNode主要可以分为如下几类，TextVNode文本节点、ElementVnode普通元素节点、ComponentVnode组件节点、EmptyVNode没有内容的注释节点、CLoneVNode克隆节点，可以是以上任意类型的节点，唯一的区别在于isCloned属性为true
 
@@ -2698,6 +2712,8 @@ ES6语法提示
 emit(event,...args) 中的 ...args 是函数参数的结构，使用它可以从当前参数（这里是第二个）到最后的参数都获取到。
 
 ## 11.3 实战：中央事件总线插件vue-bus
+
+# 第三部分 实战篇
 
 # 第十二章 iView经典组件解剖
 
