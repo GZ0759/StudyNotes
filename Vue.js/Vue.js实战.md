@@ -1913,7 +1913,11 @@ var app = new Vue({
 
 ## 7.5 组件高级用法
 
-递归组件。组件在它的模板内可以递归地调用自己，只要给组件设置 name 的选项就可以。设置 name 后，在组件模板内就可以递归使用了。不过需要注意的是，必须给一个条件来限制递归数量，否则会抛出错误：max stack size exceeded。
+这些方法在实际业务中不是很常用，但在独立组件开发时可能会用到。
+
+### 7.5.1 递归组件
+
+组件在它的模板内可以递归地调用自己，只要给组件设置 name 的选项就可以。设置 name 后，在组件模板内就可以递归使用了。不过需要注意的是，必须给一个条件来限制递归数量，否则会抛出错误：`max stack size exceeded`。
 
 ```html
 <div id="app">
@@ -1930,24 +1934,48 @@ Vue.component('child-component',{
 			default:1
 		}
 	},
-	template:'<div class="child"><child-component :count="count+1" v-if="count<6"></child-component></div>'
+	template:'<div class="child"><child-component :count="count+1" v-if="count<3"></child-component></div>'
 })
 ```
 
-内联模板。组件的模板一般都是在 template 选项内定义的，Vue 提供了一个内联模板功能，在使用组件时，给组件标签使用 inline-tempate 特性，组件就会把它的内容当作模板，而不是把它当作内容分发，这让模板更灵活。但是，在父组件声明的数据和在子组件中声明的数据，都可以渲染，如果同名优先使用子组件的数据，这就是内联模板的缺点， 它让作用域比较难理解。
+组件递归使用可以用来开发一些具有未知层级关系的独立组件，比如级联选择器和树形控件等。
+
+### 7.5.2 内联模板
+
+组件的模板一般都是在 template 选项内定义的，Vue 提供了一个内联模板功能，在使用组件时，给组件标签使用 inline-tempate 特性，组件就会把它的内容当作模板，而不是把它当作内容分发，这让模板更灵活。但是，在父组件声明的数据和在子组件中声明的数据，都可以渲染，如果同名优先使用子组件的数据，这就是内联模板的缺点， 它让作用域比较难理解。
 
 ```html
-<my-component inline-template>
-	<div>
-		<p>These are compiled as the component's own template.</p>
-		<p>Not parent's transclusion content.</p>
-	</div>
-</my-component>
+<div id="app">
+    <child-component inline-template>
+        <div>
+            <h2>在父组件中定义子组件的模板</h2>
+            <p>{{ message }}</p>
+            <p>{{ msg }}</p>
+        </div>
+    </child-component>
+</div>
+<script>
+Vue.component('child-component', {
+    data() {
+        return {
+            msg: '在子组件中声明的数据'
+        }
+    }
+});
+var app = new Vue({
+    el: '#app',
+    data: {
+        message: '在父组件中声明的数据'
+    }
+});
+</script>
 ```
 
-动态组件。Vue.js 提供了一个特殊的元素`<component>`用来动态地挂载不同的组件，使用 :is 特性来选择要挂载的组件。动态地改变 currentView 的值就可以动态挂载组件了，也可以直接绑定在组件对象上。
+### 7.5.3 动态组件
 
-```
+Vue.js 提供了一个特殊的元素`<component>`用来动态地挂载不同的组件，使用 `:is` 特性来选择要挂载的组件。动态地改变 currentView 的值就可以动态挂载组件了，也可以直接绑定在组件对象上。
+
+```html
 <component :is="currentView"></component>
 <button @click="handleChangeView('A')">切换到A</button>
 <button @click="handleChangeView('B')">切换到B</button>
@@ -1956,45 +1984,74 @@ Vue.component('child-component',{
 
 ```javascript
 components:{
-	comA:{template:'<div>组件A</div>'},
-	comB:{template:'<div>组件B</div>'},
-	comC:{template:'<div>组件C</div>'}
+	comA: { template: '<div>组件A</div>' },
+	comB: { template: '<div>组件B</div>' },
+	comC: { template: '<div>组件C</div>' }
 },
 data:{
-	currentView:'comA'
+	currentView: 'comA'
 },
 methods:{
-	handleChangeView:function(com){
+	handleChangeView: function(com){
 		this.currentView = 'com' + com
 	}
 }
 
 ```
 
-异步组件。当工程足够大，使用组件足够多时，是时候考虑下性能问题了。Vue.js 允许将组件定义为一个工厂函数，动态地解析组件 Vue.js 只在组件需要渲染时触发工厂函数，并且把结果缓存起来，用于后面的再次渲染。
+### 7.5.4 异步组件
+
+当工程足够大，使用组件足够多时，是时候考虑下性能问题了。Vue.js 允许将组件定义为一个工厂函数，动态地解析组件 Vue.js 只在组件需要渲染时触发工厂函数，并且把结果缓存起来，用于后面的再次渲染。
 
 工厂函数接收一个 resolve 回调，在收到从服务器下载的组件定义时调用，也可以调用 `reject(reson)` 提示加载失败。
 
 ```javascript
-Vue.component('async-example', function (resolve, reject) {
-	setTimeout(function () {
-		// 向 `resolve` 回调传递组件定义
-		resolve({
-			template: '<div>I am async!</div>'
-		})
-	}, 1000)
-})
+Vue.component('child-component', function (resolve, reject) {
+    window.setTimeout(function () {
+        resolve({
+            template: `<div>我是异步渲染的！</div>`
+        })
+    }, 1000)
+});
 ```
+
+在进阶篇里，还会介绍主流的打包编译工具 webpack 和 .vue 单文件的用法，更优雅地实现异步组件（路由）。
 
 ## 7.6 其它
 
+### 7.6.1 $nextTick
+
 Vue 在观察到数据变化时并不是直接更新 DOM，而是开启一个队列，并缓冲在同一事件循环中发生的所有数据改变。在缓冲时会去除重复数据，从而避免不必要的计算和 DOM 操作。然后，在下一个事件循环 tick 中，Vue 刷新队列并执行实际（已去重的）工作。所以如果用一个 for 循环来动态改变数据100次，其实只会应用最后一次改变，如果没有这种机制，DOM 就要重绘 100次，这固然是一个很大的开销。
 
-Vue 会根据当前浏览器环境优先使用原生的 Promise then 和 MutationObserver，如果都不支持就会采用 setTimeout 代替。
+```html
+<div id="app">
+    <div id="div" v-if="showDiv">这是一段文本</div>
+    <button @click="getText">获取div内容</button>
+</div>
+<script>
+var app = new Vue({
+    el: '#app',
+    data: {
+        showDiv: false
+    },
+    methods: {
+        getText: function () {
+            this.showDiv = true;
+            this.$nextTick(function () {
+                var text = document.getElementById('div');
+                console.log(text.innerHTML);
+            })
+        }
+    }
+});
+</script>
+```
+
+Vue 会根据当前浏览器环境优先使用原生的 `Promise.then` 和 `MutationObserver`，如果都不支持就会采用 `setTimeout` 代替。
 
 `$nextTick`就是用来指导什么时候 DOM 更新完成的。`$nextTick`将回调延迟到下次DOM更新循环之后执行。在修改数据之后立即使用它，然后等待 DOM 更新。
 
-理论上，我们应该不用去主动操作 DOM，因为 Vue 的核心思想就是数据驱动 DOM，但在很多业务里，我们避免不了会使用一些第三方库，这些机遇原生 JavaScript 的库都有创建和更新及销毁的完整生命周期，与 Vue 配合使用，就要利用好`$nextTick`。
+理论上，我们应该不用去主动操作 DOM，因为 Vue 的核心思想就是数据驱动 DOM，但在很多业务里，我们避免不了会使用一些第三方库，这些基于原生 JavaScript 的库都有创建和更新及销毁的完整生命周期，与 Vue 配合使用，就要利用好`$nextTick`。
 
 ```javascript
 // 修改数据
@@ -2005,7 +2062,9 @@ Vue.nextTick(function () {
 })
 ```
 
-X-Templates。Vue 提供了另一种定义模板的方式，在一个`<script>`标签里使用 text/x-template 类型，并且指定一个 id，将这个 id 赋给 template。在`<script>`标签里，可以愉快地写 HTML 代码，不用考虑换行问题。不过，Vue 的初衷并不是滥用它，因为它将模板和组件的其他定义隔离了。
+### 7.6.2 X-Templates
+
+Vue 提供了另一种定义模板的方式，在一个`<script>`标签里使用 `text/x-template` 类型，并且指定一个 id，将这个 id 赋给 template。在`<script>`标签里，可以愉快地写 HTML 代码，不用考虑换行问题。不过，Vue 的初衷并不是滥用它，因为它将模板和组件的其他定义隔离了。
 
 ```html
 <script type="text/x-template" id="hello-world-template">
@@ -2019,6 +2078,10 @@ Vue.component('hello-world', {
 })
 ```
 
+x-template 需要定义在 Vue 所属的 DOM 元素外。
+
+### 7.6.3 手动挂载实例
+
 手动挂载实例的方法。创建的实例可以通过 `new Vue()` 的形式创建出来。在一些非常特殊的情况下，我们需要动态地区创建 Vue 实例。Vue 提供了` Vue.extend` 和`$mount`两个方法来手动挂载一个实例。
 
 `Vue.extend` 是基础 Vue 构造器，创建一个“子类”，参数是包含组件选项的对象。
@@ -2028,47 +2091,188 @@ Vue.component('hello-world', {
 ```html
 <div id="mount-div"></div>
 <script>
-	var MyComponent = Vue.extend({ //Vue.extend是基础构造器，参数是一个包含组件选项的对象
+	var MyComponent = Vue.extend({ 
 		template:'<div>hello:{{ name }}</div>',
 		// 没el:'' 表示没挂载
-		data:function(){
+		data: function(){
 			return { name : 'Aresn'}
 		}
 	})
-	new MyComponent().$mount('#mount-div')  //用$mount()手动挂载一个未挂载的实例
-	// 还可以这么写：
-	// new MyComponent({
-	// 	el:'#mount-div'
-	// })
-	// 或者在文档之外渲染并且随后挂载
-	// var com = new MyComponent().$mount();
-	// document.getElementById('mount-div').appendChild(com.$el)
+	new MyComponent().$mount('#mount-div') 
 </script>
 ```
 
+以后两种写法也是可以的：
+
+```js
+new MyComponent({
+	el:'#mount-div'
+})
+
+// 或者在文档之外渲染并且随后挂载
+var com = new MyComponent().$mount();
+document.getElementById('mount-div').appendChild(com.$el)
+```
+
+手动挂载实例（组件）是一种比较极端的高级用法，在业务中几乎用不到，只在开发一些复杂的独立组件时可能会使用
+
 ## 7.7 实战：两个常用组件的开发
 
-开发一个数字输入框组件。数字输入框是对普通输入框的扩展，用来快捷输入一个标准的数字。数字输入框只能输入数字，而且又两个快捷按钮，可以直接减1或加1。除此之外，还可以设置初始值、最大值、最小值，在数值改变时，触发一个自定义事件来通知父组件。
+### 7.7.1 开发一个数字输入框组件
 
-所有的组件配置都在组件里定义，先在 template 里定义了组件的根节点，因为是独立组件，应该对每个 prop 进行校验。这里根据需求有最大值、最小值和默认值，有3个 `prop：max` 和 min 都是数字类型，默认值是正无穷大和负无穷大，value 也是数字类型，默认值是0.
+数字输入框是对普通输入框的扩展，用来快捷输入一个标准的数字。数字输入框只能输入数字，而且又两个快捷按钮，可以直接减1或加1。除此之外，还可以设置初始值、最大值、最小值，在数值改变时，触发一个自定义事件来通知父组件。
+
+所有的组件配置都在组件里定义，先在 template 里定义了组件的根节点，因为是独立组件，应该对每个 prop 进行校验。这里根据需求有最大值、最小值和默认值，有3个 prop ，max 和 min 都是数字类型，默认值是正无穷大和负无穷大，value 也是数字类型，默认值是0.
+
+```js
+Vue.component('input-number',{
+  template: '\,
+      <div class="input-number"> \
+          \
+      </div>',
+  props: {
+      max: {
+          type: Number,
+          default: Infinity
+      },
+      min: {
+          type: Number,
+          default: -Infinity
+      },
+      value: {
+          type: Number,
+          default: 0
+      }
+  }
+});
+```
 
 父组件的 value 是一个关键的绑定值，所以用了 v-model 这样优雅的方式实现双向绑定，也让 API 看起来很合理。大多数表单类组件都应该有一个 v-model，比如输入框、单选框、多选框、下拉选择器等。
 
 Vue 组件时单向数据流，所以无法从组件内部直接修改 prop、value 的值，解决办法是给组件声明一个 data，默认引用 value 的值，然后在组件内部维护这个 data。
 
+```js
+data: function (){
+	return {
+		currentValue: this.value
+	}
+},
+```
+
 这只解决了初始化时引用父组件 value 的问题，但是如果从父组件修改了 value 值，子组件的值也要一起更新。为了实现这个功能，需要使用 watch 选项来监听某个 prop 或 data 的变化。
+
+```js
+watch: {
+	currentValue: function (val){
+		this.$emit('input',val);
+		this.$emit('on-change',val);
+	},
+	value: function (val){
+		this.updateValue(val);
+	}
+},
+```
 
 练习1：在输入框聚焦时，增加对键盘上下按键的支持，相当于加1和减1.
 
 练习2：增加一个控制步伐的prop——step，比如设置为10，点击加号按钮，一次增加10.
 
-开发一个标签页组件。每个标签页的主题内容肯定是由使用组件的父级控制的，所以这部分是一个 slot，而且 slot 的数量决定了标签切换按钮的数量。同时我们还定义一个子组件 pane，嵌套在标签页组件 tabs 里，我们的业务代码都放在 pane 的 slot 内，而3个 pane 组件作为整体成为 tabs 的 slot。
+### 7.7.2 开发一个标签页组件
+
+每个标签页的主题内容肯定是由使用组件的父级控制的，所以这部分是一个 slot，而且 slot 的数量决定了标签切换按钮的数量。同时我们还定义一个子组件 pane，嵌套在标签页组件 tabs 里，我们的业务代码都放在 pane 的 slot 内，而3个 pane 组件作为整体成为 tabs 的 slot。
 
 # 第八章 自定义指令
 
-自定义指令的注册方式和组件很像，也分为全局注册和局部注册，一个指令定义对象可以提供如下几个钩子函数 (均为可选)：有blid、inserted、update、componentUpdated、unbind五种。其中钩子函数有四个参数，el、binding、vnode和oldVnode，binding是一个对象，包含的属性有name、value、oldValue、expression、arg、modifiers六个。
+丰富的内置指令能满足我们的绝大部分业务需求，不过在需要一些特殊功能时，我们仍然希望对 DOM 进行底层的操作，这时就要用到自定义指令。
 
-如果指令需要多个值，可以传入一个 javascript 对象字面量。记住，指令函数能够接受所有合法的 JavaScript 表达式
+## 8.1 基本用法
+
+自定义指令的注册方式和组件很像，也分为全局注册和局部注册，比如注册一个 `v-focus` 的指令，用于在`<input>`、`<textarea>`元素初始化时自动获得焦点，两种写法分别是：
+
+```js
+//全局注册
+Vue.directive('focus', {
+    //指令选项
+});
+
+// 局部注册
+var app = new Vue({
+    el: '#app',
+    directives: {
+        focus: {
+            //指令选项
+        }
+    }
+})
+```
+
+自定义指令的选项是由几个钩子函数组成的，每个都是可选的。
+
+- bind：只调用一次，指令第一次绑定到元素时调用，用这个钩子函数可以定义一个在绑定时只执行一次的初始化操作。
+- inserted：被绑定元素插入父节点时调用（父节点存在即可调用，不必存在于 document 中）。
+- update：被绑定元素所在的模板更新时调用，而不论绑定值是否变化。通过比较更新前后的绑定值可以忽略不必要的模板更新。
+- componentUpdated：被绑定元素所在模板完成一次更新周期时调用。
+- unbind：只调用一次，指令与元素解绑时调用。
+
+```js
+<div id="app">
+	<input type="text" v-focus>
+</div>
+<script>
+	Vue.directive('focus', {
+		inserted: function (el) {
+			// 聚焦元素
+			el.focus();
+		}
+	})
+
+	var app = new Vue({
+		el: '#app'
+	})
+</script>
+```
+
+每个钩子函数都有几个参数可选，比如上面我们用到了 el。它们的含义如下：
+
+- el：指令所绑定的元素，可以用来直接操作 DOM。
+- binding：一个对象，包含以下属性：
+	- name：指令名，不包括 v- 前缀。
+	- value：指令的绑定值，例如 v-my-directive=“1 + 1”，value 的值是2。
+	- oldValue：指令绑定的前一个值，仅在 update 和 componentupdated 钩子中可用。无论值是否改变都可以。
+	- expression：绑定值的字符串形式，例如 v-my-directive=“1 + 1”，expression 的值是“1 + 1”。
+	- arg：传给指令的参数。例如 v-my-directive: foo，arg 的值是 foo。
+	- modifiers：一个包含修饰符的对象。例如 v-my-directive.foo.bar，修饰符对象 modifiers 的值是 { foo: true, bar: true }。
+- vnode：Vue编译生成的虚拟节点，在进阶中介绍。
+- oldVnode：上一个虚拟节点仅在 update 和 componentupdated 钩子中可用。
+
+在大多数场景，我们会在 bind 钩子里绑定一些事件，比如在 document 上用 addEventListrener 绑定，在 unbind 里用 removeEventListener 解绑，比较典型的示例就是让这个元素随着鼠标拖拽。
+
+如果需要多个值，自定义指令也可以传入一个 JavaScript 对象字面量，只要是合法类型的 JavaScript 表达式都是可以的。例如：
+
+```html
+<div id="app">
+	<div v-test="{msg: 'hello', name: 'jj'}"></div>
+</div>
+<script>
+	Vue.directive('test', {
+		bind: function (el, binding, vnode) {
+			console.log(binding.value.msg);
+			console.log(binding.value.name);
+		}
+	})
+
+	var app = new Vue({
+		el: '#app',
+	})
+</script>
+```
+
+Vue 2.x 移除了大量 Vue 1.x 自定义指令的配置。在使用自定义指令时，应该充分理解业务需求，因为很多时候你需要的可能并不是自定义指令，而是组件。
+
+## 8.2 实战
+
+8.2.1 开发一个可从外部关闭的下拉菜单
+8.2.2 开发一个实时时间转换指令v-time
 
 # 第九章 Render函数
 
