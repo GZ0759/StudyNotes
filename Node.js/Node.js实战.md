@@ -364,7 +364,7 @@ const [nodePath, scriptPath, name] = process.argv;
 console.log('Hello', name);
 ```
 
-用 node cli.js yourName 运行这个脚本，你会看到 Hello yourName。这用到了 ES2015 的解构，它会从 process.argv 中拉取第三个参数。所有 Node 程序都可以访问 process 对象，这是用户向程序中传递参数的基础。
+用 `node cli.js yourName` 运行这个脚本，你会看到 Hello yourName。这用到了 ES2015 的解构，它会从 process.argv 中拉取第三个参数。所有 Node 程序都可以访问 process 对象，这是用户向程序中传递参数的基础。
 
 Node 命令行程序还可以做其他事情。如果在程序开头的地方加上#!，并赋予其执行许可（ chmod +x cli.js）， shell 就可以在调用程序时使用 Node。也就是说可以像运行其他 shell 脚本那样运行 Node 程序。在类 Unix 系统中用下面这样的代码：
 
@@ -444,7 +444,7 @@ Node 还能做一些用其他语言很难做到的事情。它是基于 JavaScri
 
 ```php
 function uppercase_trim($text) {
-return trim(strtoupper($text));
+  return trim(strtoupper($text));
 }
 include('string_handlers.php');
 ```
@@ -477,7 +477,7 @@ Node 模块允许从被引入文件中选择要暴露给程序的函数和变量
 
 ## 2.2 开始一个新的 Node 项目
 
-创建新的 Node 项目很简单：创建一个文件夹，运行 npm init。好了！ npm 命令会问几个问题，一直回答 yes 就可以了。
+创建新的 Node 项目很简单：创建一个文件夹，运行 `npm init`。好了！ npm 命令会问几个问题，一直回答 yes 就可以了。
 
 下面是一个完整的例子：
 
@@ -673,9 +673,9 @@ JSON 文件（ titles.json）会被格式化成一个包含文章标题的字符
 代码清单 2-4 一个包含文章标题的列表
 ```json
 [
-"Kazakhstan is a huge country... what goes on there?",
-"This weather is making me craaazy",
-"My neighbor sort of howls at night"
+  "Kazakhstan is a huge country... what goes on there?",
+  "This weather is making me craaazy",
+  "My neighbor sort of howls at night"
 ]
 ```
 
@@ -827,7 +827,7 @@ if (err) throw err;
 
 事件发射器会触发事件，并且在那些事件被触发时能处理它们。一些重要的 Node API 组件，比如 HTTP 服务器、 TCP 服务器和流，都被做成了事件发射器。你也可以创建自己的事件发射器。
 
-我们之前说过，事件是通过监听器进行处理的。 监听器是跟事件相关联的、当有事件出现时就会被触发的回调函数。比如 Node 中的 TCP socket，它有一个 data 事件，每当 socket 中有新数据时就会触发：
+我们之前说过，事件是通过监听器进行处理的。监听器是跟事件相关联的、当有事件出现时就会被触发的回调函数。比如 Node 中的 TCP socket，它有一个 data 事件，每当 socket 中有新数据时就会触发：
 
 ```js
 socket.on('data', handleData);
@@ -847,11 +847,11 @@ echo 服务器就是一个处理重复性事件的简单例子，当你给它发
 ```js
 const net = require('net');
 const server = net.createServer(socket => {
-// 当读取到新数据时处理的 data 事件
-socket.on('data', data => {
-// 数据被写回到客户端
-socket.write(data);
-});
+  // 当读取到新数据时处理的 data 事件
+  socket.on('data', data => {
+    // 数据被写回到客户端
+    socket.write(data);
+  });
 });
 server.listen(8888);
 ```
@@ -880,11 +880,10 @@ telnet 127.0.0.1 8888
 ```js
 const net = require('net');
 const server = net.createServer(socket => {
-
-// data 事件只被处理一次
-socket.once('data', data => {
-socket.write(data);
-});
+  // data 事件只被处理一次
+  socket.once('data', data => {
+    socket.write(data);
+  });
 });
 server.listen(8888);
 ```
@@ -920,22 +919,22 @@ const net = require('net');
 const channel = new events.EventEmitter();
 channel.clients = {};
 channel.subscriptions = {};
-channel.on('join', function(id, client) {
-this.clients[id] = client;
-this.subscriptions[id] = (senderId, message) => {
-if (id != senderId) {
-this.clients[id].write(message);
-}
-};
-this.on('broadcast', this.subscriptions[id]);
+channel.on('join', function (id, client) {
+  this.clients[id] = client;
+  this.subscriptions[id] = (senderId, message) => {
+    if (id != senderId) {
+      this.clients[id].write(message);
+    }
+  };
+  this.on('broadcast', this.subscriptions[id]);
 });
 const server = net.createServer(client => {
-const id = `${client.remoteAddress}:${client.remotePort}`;
-channel.emit('join', id, client);
-client.on('data', data => {
-data = data.toString();
-channel.emit('broadcast', id, data);
-});
+  const id = `${client.remoteAddress}:${client.remotePort}`;
+  channel.emit('join', id, client);
+  client.on('data', data => {
+    data = data.toString();
+    channel.emit('broadcast', id, data);
+  });
 });
 server.listen(8888);
 ```
@@ -953,17 +952,14 @@ telnet 127.0.0.1 8888
 代码清单 2-12 创建一个在用户断开连接时能“打扫战场”的监听器
 ```js
 ...
-channel.on('leave', function(id) {
-channel.removeListener(
-'broadcast', this.subscriptions[id]
-);
-channel.emit('broadcast', id, `${id} has left the chatroom.\n`);
+channel.on('leave', function (id) {
+  channel.removeListener('broadcast', this.subscriptions[id]);
+  channel.emit('broadcast', id, `${id} has left the chatroom.\n`);
 });
-const server = net.createServer(client => {
-...
-client.on('close', () => {
-channel.emit('leave', id);
-});
+const server = net.createServer(client => {...
+  client.on('close', () => {
+    channel.emit('leave', id);
+  });
 });
 server.listen(8888);
 ```
@@ -1172,13 +1168,13 @@ color = 'green';
 
 ```js
 setTimeout(() => {
-console.log('I execute first.');
-setTimeout(() => {
-console.log('I execute next.');
-setTimeout(() => {
-console.log('I execute last.');
-}, 100);
-}, 500);
+  console.log('I execute first.');
+  setTimeout(() => {
+    console.log('I execute next.');
+    setTimeout(() => {
+      console.log('I execute last.');
+    }, 100);
+  }, 500);
 }, 1000);
 ```
 
@@ -1194,24 +1190,24 @@ npm install async
 ```js
 const async = require('async');
 async.series([
-callback => {
-setTimeout(() => {
-console.log('I execute first.');
-callback();
-}, 1000);
-},
-callback => {
-setTimeout(() => {
-console.log('I execute next.');
-callback();
-}, 500);
-},
-callback => {
-setTimeout(() => {
-console.log('I execute last.');
-callback();
-}, 100);
-}
+  callback => {
+    setTimeout(() => {
+      console.log('I execute first.');
+      callback();
+    }, 1000);
+  },
+  callback => {
+    setTimeout(() => {
+      console.log('I execute next.');
+      callback();
+    }, 500);
+  },
+  callback => {
+    setTimeout(() => {
+      console.log('I execute last.');
+      callback();
+    }, 100);
+  }
 ]);
 ```
 
@@ -1254,54 +1250,55 @@ const fs = require('fs');
 const request = require('request');
 const htmlparser = require('htmlparser');
 const configFilename = './rss_feeds.txt';
+
 function checkForRSSFile() {
-fs.exists(configFilename, (exists) => {
-if (!exists)
-return next(new Error(`Missing RSS file: ${configFilename}`));
-next(null, configFilename);
-});
+  fs.exists(configFilename, (exists) => {
+    if (!exists) return next(new Error(`Missing RSS file: ${configFilename}`));
+    next(null, configFilename);
+  });
 }
+
 function readRSSFile(configFilename) {
-fs.readFile(configFilename, (err, feedList) => {
-if (err) return next(err);
-feedList = feedList
-.toString()
-.replace(/^\s+|\s+$/g, '')
-.split('\n');
-const random = Math.floor(Math.random() * feedList.length);
-next(null, feedList[random]);
-});
+  fs.readFile(configFilename, (err, feedList) => {
+    if (err) return next(err);
+    feedList = feedList.toString().replace(/^\s+|\s+$/g, '').split('\n');
+    const random = Math.floor(Math.random() * feedList.length);
+    next(null, feedList[random]);
+  });
 }
+
 function downloadRSSFeed(feedUrl) {
-request({ uri: feedUrl }, (err, res, body) => {
-if (err) return next(err);
-if (res.statusCode !== 200)
-return next(new Error('Abnormal response status code'));
-next(null, body);
-});
+  request({
+    uri: feedUrl
+  }, (err, res, body) => {
+    if (err) return next(err);
+    if (res.statusCode !== 200) return next(new Error('Abnormal response status code'));
+    next(null, body);
+  });
 }
+
 function parseRSSFeed(rss) {
-const handler = new htmlparser.RssHandler();
-const parser = new htmlparser.Parser(handler);
-parser.parseComplete(rss);
-if (!handler.dom.items.length)
-return next(new Error('No RSS items found'));
-const item = handler.dom.items.shift();
-console.log(item.title);
-console.log(item.link);
+  const handler = new htmlparser.RssHandler();
+  const parser = new htmlparser.Parser(handler);
+  parser.parseComplete(rss);
+  if (!handler.dom.items.length) return next(new Error('No RSS items found'));
+  const item = handler.dom.items.shift();
+  console.log(item.title);
+  console.log(item.link);
 }
 const tasks = [
-checkForRSSFile,
-readRSSFile,
-downloadRSSFeed,
-parseRSSFeed
+  checkForRSSFile,
+  readRSSFile,
+  downloadRSSFeed,
+  parseRSSFeed
 ];
+
 function next(err, result) {
-if (err) throw err;
-const currentTask = tasks.shift();
-if (currentTask) {
-currentTask(result);
-}
+  if (err) throw err;
+  const currentTask = tasks.shift();
+  if (currentTask) {
+    currentTask(result);
+  }
 }
 next();
 ```
@@ -1351,43 +1348,40 @@ const tasks = [];
 const wordCounts = {};
 const filesDir = './text';
 let completedTasks = 0;
+
 function checkIfComplete() {
-completedTasks++;
-if (completedTasks === tasks.length) {
-for (let index in wordCounts) {
-当console.log(`${index}: ${wordCounts[index]}`);
+  completedTasks++;
+  if (completedTasks === tasks.length) {
+    for (let index in wordCounts) {
+      当console.log(`${index}: ${wordCounts[index]}`);
+    }
+  }
 }
-}
-}
+
 function addWordCount(word) {
-wordCounts[word] = (wordCounts[word]) ? wordCounts[word] + 1 : 1;
+  wordCounts[word] = (wordCounts[word]) ? wordCounts[word] + 1 : 1;
 }
+
 function countWordsInText(text) {
-const words = text
-.toString()
-.toLowerCase()
-.split(/\W+/)
-.sort();
-words
-.filter(word => word)
-.forEach(word => addWordCount(word));
+  const words = text.toString().toLowerCase().split(/\W+/).sort();
+  words.filter(word => word).forEach(word => addWordCount(word));
 }
 fs.readdir(filesDir, (err, files) => {
-if (err) throw err;
-files.forEach(file => {
-const task = (file => {
-return () => {
-fs.readFile(file, (err, text) => {
-if (err) throw err;
-countWordsInText(text);
-checkIfComplete();
-});
-};
-})(`${filesDir}/${file}`);
-tasks.push(task);
-}
-tasks.forEach(task => task());
-});
+      if (err) throw err;
+      files.forEach(file => {
+          const task = (file => {
+            return () => {
+              fs.readFile(file, (err, text) => {
+                if (err) throw err;
+                countWordsInText(text);
+                checkIfComplete();
+              });
+            };
+          })(`${filesDir}/${file}`);
+          tasks.push(task);
+        }
+        tasks.forEach(task => task());
+      });
 ```
 
 在试用这个程序之前，先在前面创建的 text 目录中创建一些文本文件。在创建了这些文件之后，打开一个命令行窗口，输入下面的命令进入程序所在目录并执行程序脚本：
@@ -1415,35 +1409,33 @@ node word_count.js
 ```js
 const async = require('async');
 const exec = require('child_process').exec;
+
 function downloadNodeVersion(version, destination, callback) {
-const url = `http://nodejs.org/dist/v${version}/node-v${version}.tar.gz`;
-const filepath = `${destination}/${version}.tgz`;
-exec(`curl ${url} > ${filepath}`, callback);
+  const url = `http://nodejs.org/dist/v${version}/node-v${version}.tar.gz`;
+  const filepath = `${destination}/${version}.tgz`;
+  exec(`curl ${url} > ${filepath}`, callback);
 }
 async.series([
-callback => {
-async.parallel([
-callback => {
-console.log('Downloading Node v4.4.7...');
-downloadNodeVersion('4.4.7', '/tmp', callback);
-},
-callback => {
-console.log('Downloading Node v6.3.0...');
-downloadNodeVersion('6.3.0', '/tmp', callback);
-}
-], callback);
-},
-callback => {
-console.log('Creating archive of downloaded files...');
-exec(
-'tar cvf node_distros.tar /tmp/4.4.7.tgz /tmp/6.3.0.tgz',
-err => {
-if (err) throw err;
-console.log('All done!');
-callback();
-}
-);
-}
+  callback => {
+    async.parallel([
+      callback => {
+        console.log('Downloading Node v4.4.7...');
+        downloadNodeVersion('4.4.7', '/tmp', callback);
+      },
+      callback => {
+        console.log('Downloading Node v6.3.0...');
+        downloadNodeVersion('6.3.0', '/tmp', callback);
+      }
+    ], callback);
+  },
+  callback => {
+    console.log('Creating archive of downloaded files...');
+    exec('tar cvf node_distros.tar /tmp/4.4.7.tgz /tmp/6.3.0.tgz', err => {
+      if (err) throw err;
+      console.log('All done!');
+      callback();
+    });
+  }
 ]);
 ```
 
@@ -1759,7 +1751,6 @@ const sqlite3 = require('sqlite3').verbose();
 const dbName = 'later.sqlite';
 // 连接到一个数据库文件
 const db = new sqlite3.Database(dbName);
-
 db.serialize(() => {
   const sql = `
 CREATE TABLE IF NOT EXISTS articles
