@@ -2,7 +2,7 @@
 > Node.js in Action, Second Edition   
 > 作者：[英] 亚历克斯•杨 等  
 > August 2017  
-> 译者：吴海星
+> 译者：吴海星  
 > 2018年 8 月第 1 版   
 
 # 第一部分 Node 基础知识介绍
@@ -43,7 +43,7 @@ Node.js 是一个 JavaScript 运行平台，其显著特征是它的异步和事
 
 ### 1.1.2 事件轮询
 
-我们把图 1-1 放大，仔细研究“响应浏览器的请求”那部分。在这个应用程序中， Node 内置的 HTTP 服务器库，即核心模块 http.Server，负责用流、事件、 Node 的 HTTP 请求解析器的组合来处理请求，它是本地代码。你用 Express Web 应用库添加的回调函数，也是由它触发的。这个回调函数又会触发数据库查询语句，最终应用程序会用 HTTP 发送 JSON 作为响应。整个过程用了三个非阻塞网络调用：一个用于请求，一个用于数据库，还有一个用于响应。 Node 是如何调配这些网络操作的呢？答案是事件轮询（ event loop）。图 1-2 展示了如何用事件轮询完成这三个网络操作。
+我们把图 1-1 放大，仔细研究“响应浏览器的请求”那部分。在这个应用程序中， Node 内置的 HTTP 服务器库，即核心模块 http.Server，负责用流、事件、 Node 的 HTTP 请求解析器的组合来处理请求，它是本地代码。你用 Express Web 应用库添加的回调函数，也是由它触发的。这个回调函数又会触发数据库查询语句，最终应用程序会用 HTTP 发送 JSON 作为响应。整个过程用了三个非阻塞网络调用：一个用于请求，一个用于数据库，还有一个用于响应。 Node 是如何调配这些网络操作的呢？答案是事件轮询（event loop）。图 1-2 展示了如何用事件轮询完成这三个网络操作。
 
 图 1-2 事件轮询
 
@@ -59,10 +59,10 @@ Node.js 是一个 JavaScript 运行平台，其显著特征是它的异步和事
 
 ```js
 function User() {
-// 构造器
+  // 构造器
 }
 User.prototype.method = function() {
-// 方法
+  // 方法
 };
 ```
 
@@ -92,7 +92,7 @@ Node 还有原生的 promise 和生成器。为了让我们能用流畅的接口
 
 生成器能把异步 I/O 变成同步编程风格。 Koa Web 应用库中用到了生成器，你可以研究一下它的代码以了解生成器的用法。如果结合 Koa 使用 promise 和其他生成器，你就可以抛开层层嵌套的回调，在值上 yield。
 
-ES2015 中的模板字符串在 Node 中也很好用。在 ES5 中，字符串常量不支持插值，也不能跨行。现在我们可以用反引号（ `）定义模板字符串，不仅可以插值，而且还可以跨行。比如像下面这个例子一样，在 Web 应用中直接定义一小段 HTML 模板：
+ES2015 中的模板字符串在 Node 中也很好用。在 ES5 中，字符串常量不支持插值，也不能跨行。现在我们可以用反引号（`）定义模板字符串，不仅可以插值，而且还可以跨行。比如像下面这个例子一样，在 Web 应用中直接定义一小段 HTML 模板：
 
 ```js
 this.body = `
@@ -124,7 +124,7 @@ this.body += '<div>\n';
 ```js
 const fs = require('fs');
 fs.readFile('package.json',
-(err, text) => console.log('Length:', text.length)
+  (err, text) => console.log('Length:', text.length)
 );
 ```
 
@@ -132,14 +132,14 @@ fs.readFile('package.json',
 
 ```js
 function User(id) {
-// 构造器
-this.id = id;
+  // 构造器
+  this.id = id;
 }
 User.prototype.load = function() {
-var self = this;var query = 'SELECT * FROM users WHERE id = ?';
-sql.query(query, this.id, function(err, users) {
-self.name = users[0].name;
-});
+  var self = this;var query = 'SELECT * FROM users WHERE id = ?';
+  sql.query(query, this.id, function(err, users) {
+    self.name = users[0].name;
+  });
 };
 ```
 
@@ -181,7 +181,7 @@ node --v8-options | grep "in progress"
 
 ### 1.2.3 了解 Node 的发布计划
 
-Node 的发行版分为长期支持版（ LTS）、当前版和每日构建版三组。 LTS 版有 18 个月的支持服务，期满后还有 12 个月的维护性支持服务。版本号是按照语义版本（ SemVer）编制的。 SemVer给每个版本定义了一个主要、次要和补丁版本号。 比如 6.9.1 的主要版本号是 6，次要版本号是 9，补丁版本号是 1。只要看到主版本号发生变化，那就意味着有些 API 可能不兼容了，也就是说如果要用这个版本的 Node，那么你的项目需要重新测试一下。另外，按 Node 的发布规则，主版本号增长意味着新的当前版也已经切下来了。每日构建版的构建是自动进行的，每隔 24 小时一次，包含这 24 小时内的最新修改，但一般只用来测试 Node 的最新特性。
+Node 的发行版分为长期支持版（LTS）、当前版和每日构建版三组。 LTS 版有 18 个月的支持服务，期满后还有 12 个月的维护性支持服务。版本号是按照语义版本（ SemVer）编制的。 SemVer给每个版本定义了一个主要、次要和补丁版本号。 比如 6.9.1 的主要版本号是 6，次要版本号是 9，补丁版本号是 1。只要看到主版本号发生变化，那就意味着有些 API 可能不兼容了，也就是说如果要用这个版本的 Node，那么你的项目需要重新测试一下。另外，按 Node 的发布规则，主版本号增长意味着新的当前版也已经切下来了。每日构建版的构建是自动进行的，每隔 24 小时一次，包含这 24 小时内的最新修改，但一般只用来测试 Node 的最新特性。
 
 用哪个版本取决于你的项目和组织。有些人可能喜欢更新不那么频繁的 LTS，对于那些难以管理频繁更新的大公司来说，这个版本可能更好。但如果你想跟上性能和功能的改进，当前版更合适。
 
@@ -189,9 +189,9 @@ Node 的发行版分为长期支持版（ LTS）、当前版和每日构建版�
 
 安装 Node 的最简单的方法是使用其官网上的安装程序。可以用对应 Mac 或 Windows 的安装程序安装最新的当前版（写作本书时是 6.5）。或者用操作系统上的包管理器， Debian、 Ubuntu、Arch、 Fedora、 FreeBSD、 Gentoo 和 SUSE 全都有安装包，另外还有 Homebrew 和 SmartOS 的安装包。如果没有能用在你的操作系统上的包，也可以下载源码自己构建。
 
-Node 官网（ https://nodejs.org/zh-cn/download/）上有个包含所有安装包的列表，源码在 GitHub（ https://github.com/nodejs/node）上。建议收藏一下 Node 在 GitHub 上的项目主页以备不时之需，比如有时候你可能想看看它的源码。
+[Node 官网](https://nodejs.org/zh-cn/download/)上有个包含所有安装包的列表，源码在 [GitHub](https://github.com/nodejs/node)上。建议收藏一下 Node 在 GitHub 上的项目主页以备不时之需，比如有时候你可能想看看它的源码。
 
-装好之后，可以在终端中输入 node -v 来试一下。这个命令应该会输出你所安装的 Node 的版本号。接下来，创建一个名为 hello.js 的文件，内容如下所示：
+装好之后，可以在终端中输入 `node -v` 来试一下。这个命令应该会输出你所安装的 Node 的版本号。接下来，创建一个名为 hello.js 的文件，内容如下所示：
 
 ```js
 console.log("hello from Node");
@@ -210,7 +210,7 @@ Node 还有一些自带的工具。它不单单是一个解释器，而是由一
 
 Node 自带了一个包管理器，以及从文件和网络 I/O 到 zlib 压缩等无所不包的核心 JavaScript 模块，还有一个调试器。 npm 包管理器是这个基础设施中的重要组成部分，也是我们要重点介绍的。
 
-如果你想检查一下 Node 是否已经安装成功，可以在命令行里运行 node -v 和 npm -v。这两个命令分别用来显示你所安装的 Node 和 npm 的版本。
+如果你想检查一下 Node 是否已经安装成功，可以在命令行里运行 `node -v` 和 `npm -v`。这两个命令分别用来显示你所安装的 Node 和 npm 的版本。
 
 ### 1.4.1 npm
 
@@ -222,7 +222,7 @@ Node 自带了一个包管理器，以及从文件和网络 I/O 到 zlib 压缩�
 
 npm 要求 Node 项目所在的目录下有一个 package.json 文件。创建 package.json 文件的最简单方法是使用 npm。在命令行中输入下面这些命令：
 
-```
+```sh
 mkdir example-project
 cd example-project
 npm init -y
