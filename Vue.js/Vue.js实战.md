@@ -308,10 +308,9 @@ filters: {
 指令是 Vue.js 模板中最常用的一项功能，它带有前缀 `v-`，指令的主要职责就是当起表达式的值改变时，相应地将某些行为应用到 DOM 上。数据驱动 DOM 是 Vue.js 的核心理念，所以不到万不得已时不要主动操作 DOM，只需要维护好数据，DOM 的事 Vue 会帮忙优雅处理。
 
 ```html
+<!-- 数据show的值为true，p元素会被插入，为false时则会被移除 -->
 <body>
 	<div id="app">
-		<!-- 数据show的值为true，p元素会被插入，
-		为false时则会被移除 -->
 		<p v-if="show">显示这段文本</p>
 	</div>
 </body>
@@ -2239,11 +2238,11 @@ var app = new Vue({
 - el：指令所绑定的元素，可以用来直接操作 DOM。
 - binding：一个对象，包含以下属性：
 	- name：指令名，不包括 v- 前缀。
-	- value：指令的绑定值，例如 v-my-directive=“1 + 1”，value 的值是2。
+	- value：指令的绑定值，例如 `v-my-directive=“1 + 1”`，value 的值是2。
 	- oldValue：指令绑定的前一个值，仅在 update 和 componentupdated 钩子中可用。无论值是否改变都可以。
-	- expression：绑定值的字符串形式，例如 v-my-directive=“1 + 1”，expression 的值是“1 + 1”。
-	- arg：传给指令的参数。例如 v-my-directive: foo，arg 的值是 foo。
-	- modifiers：一个包含修饰符的对象。例如 v-my-directive.foo.bar，修饰符对象 modifiers 的值是 { foo: true, bar: true }。
+	- expression：绑定值的字符串形式，例如 `v-my-directive=“1 + 1”`，expression 的值是“1 + 1”。
+	- arg：传给指令的参数。例如 `v-my-directive: foo`，arg 的值是 foo。
+	- modifiers：一个包含修饰符的对象。例如 `v-my-directive.foo.ba`r，修饰符对象 modifiers 的值是 `{ foo: true, bar: true }`。
 - vnode：Vue编译生成的虚拟节点，在进阶中介绍。
 - oldVnode：上一个虚拟节点仅在 update 和 componentupdated 钩子中可用。
 
@@ -2387,13 +2386,13 @@ module.exports = config;
 ```javascript
 module: {
 	rules: [
-			{
-					test:/\.css$/,
-					use: [
-							'style-loader',
-							'css-loader'
-					]
-			}
+		{
+			test:/\.css$/,
+			use: [
+					'style-loader',
+					'css-loader'
+			]
+		}
 	]
 }
 ```
