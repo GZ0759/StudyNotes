@@ -2537,10 +2537,89 @@ css动画改变的属性值可以不在元素的前后两个状态中。在有�
 关键核选择符可以是以逗号分隔的一组百分数，也可以是关键字`from`或`to`。关键字`from`等于0%,关键字end等于100%。关键帧选择符表示目标关键帧在动画持续时间内位于百分之几的位置。关键帧由选择符后的属性值块声明。百分数值必须带上%号；也就是说，0不是有效的关键帧选择符。
 
 ### 18.3.1 省略from和to值
+
+如未指定 0% 或 from 关键帧，用户代理（浏览器）将使用要应用动画效果的属性的原始值构建一个 0% 关键帧。这就跟使用没有应用动画效果时属性的值声明 0% 关键赖一样，只不过相应的属性不能受其他动画的影响（详情参见18.4.1节）。类似地，如果没有定义 100% 或 to 关键帧，而且没有应用其他动画，浏览器将使用没有动画效果时属性的值构建一个虚设的 100% 关键帧。
+
 ### 18.3.2 重复关键帧属性
+
+在Webkit最初实现的实验性动画中（使用-webkit-前级）,每个关键帧只能声明一次，如果多次声明，只有最后一个声明起作用，之前的关键帧选择符块被忽略。现在则不然。
+如今，与CSS中的其他机制一样，具有相同值的关键帧将层叠。在标准的句法中（不用前级）,前述W动画可以声明两次to或100%,left属性的值将被覆盖：
+
+```css
+@keyframes W {
+  from, to {
+    top: 0;
+    left: 0;
+  }
+  25%, 75% {
+    top: 100%;
+  }
+  50% {
+    top: 50%;
+  }
+  to {
+    left: 100%;
+  }
+}
+```
+
+注意，第一个关键帧选择符中既有from,也有to。因此，那个选择符块会为to关键帧设定top和left。而后，to关键帧的left值在最后一个关键帧块中被覆盖。
+
 ### 18.3.3 支持动画的属性
+
+特别注意，不是所有属性都支持动画。在动画的关键帧中列出的不支持动画的属性，直接被忽略（同理，浏览器无法识别的属性和值也将被忽略）。
+
+如果两个属性值没有中间点，得到的动画效果可能与预期不符，可能无法正确以动画形式呈现，或者根本没有动画效果。例如，不应该让元素的高度在`height:auto`和`height:300px`之间以动画形式变化，因为auto和300px之间没有中间点。动画效果可能还有，但是不同浏览器的处理方式不同：Firefox不渲染动画；如果auto等同于0,Safari会渲染动画；目前，Opera和Chrome直接跳到动画前后状态之间一半的位置，这可能并不是50%关键帧选择符，具体情况视animation-timing-function的值而定。也就是说，在没有中间点这个问题上，不同的浏览器对不同的属性有不同的处理方式，无法保证一定能得到预期的结果。
+
+为每个属性都声明位于0%和100%位置上的值基本上能得到符合预期的动画效果。
+
 ### 18.3.4 不支持动画但不被忽略的属性
+
+上述中间点规则有两个例外：visibility和animation-timing-function.
+
+虽然`visibility:hidden`和`visibility:visible`之间没有中间点，但是visibility属性支持动画。从hidden变成visible时，可见性的值从一个值直接跳到发生变化的下一个关键帧。
+
+尽管animation-timing-function属性不支持动画，但是如果在关键帧块中声明了，所在块中的属性值将使用它设定的时序函数。动画时序的变化不以动画形式呈现，而是直接变成新值，并且只在转到下一个关键帧时起作用（详情参见18.4.7节）。
+
 ### 18.3.5 通过脚本编辑@keyframes动画
+
+关键帧规则在出现的那一刻还会应用可以通过API查找、追加和删除。@keyframes动画中声明的关键帧块可以使用`appendRule(n)`或`deleteRule(n)`修改，其中n是关键的完整选择符。关键帧的内容可通过`findRule(n)`获取。
+
+```css
+@keyframes w {
+  from, to {
+    top: 0;
+    left: 0;
+  }
+  25%, 75% {
+    top: 100%;
+  }
+  50% {
+    top: 50%;
+  }
+  to {
+    left: 100%;
+  }
+}
+```
+
+appendRule()、deleteRule()和findRule()三个方法的参数都是完整的关键帧选择符。以W动画为例，如果想获取25%/75%关键帧的内容，传入的参数为25%,75%:
+
+```js
+//获取指定关键帧的选择符和内容
+var aRule = myAnimation.findRule ('25%, 75%').cssText;
+//删除50%关键帧
+myAnimation.deleteRule('50%');
+//在动画末尾添加53%关键帧
+myAnimation.appendRule('53% {top: 50%;}');
+```
+
+在`myAnimation.findRule('25%,75%').cssText;`语句中，myAnimation是一个关键帧动画的名称，返回的结果是匹配25%,75%的关键帧。如果只有25%或75%关键赖，匹配不到任何关键帧。如果用的是W动画，这个语句返回`25%,75%{top:100%;}`。
+
+类似地，`myAnimation.deleteRule('50%')`将删除最后一个50%关键帧。因此，如果有多个50%关键帧，排在最后的那个将被删除。反过来，myAnimation,appendRule('53%{top:50%;})将在@keyframes块中最后一个关键帧的后面追加53%关键帧。
+
+动画有三个事件，animationstart、animationend和animationiteration,分别在动画的开头和结尾，以及一次选代结束与下一次迭代开始之间触发。只要动画中定义的关键帧规则有效，就会触发animationstart和animationend事件，即使关键帧规则为空也是如此。animationiteration事件仅在动画有多次选代时才会触发，因为animationiteration不能与animationend事件同时触发。
+
 ## 18.4 把动画应用到元素上
 
 定义好关键帧动画便可以把动画应用到元素和（或）伪元素上。为了把动画附加到元素上，并控制动画的播放过程，CSS提供了多个相关的属性。若想保证动画效果能显示出来，至少要指明动画的名称，以及持续时间（不然动画瞬间就结束了）。
@@ -2553,19 +2632,155 @@ css动画改变的属性值可以不在元素的前后两个状态中。在有�
 
 animation-name属性的值为一个逗号分隔的列表，指定想应用的关键帧动画的名称。这里所说的名称是指使用@keyframes规则定义动画时设定的无引号标识符或有引号的字符串（抑或二者混用）。
 
+animation-name | |
+取值 | [<single-animation-name> / none]#
+初始值 | none
+适用于 | 所有元素，以及`:before`和`:after`伪元素
+计算值 | 指定的值
+继承性 | 否
+动画性 | 否
+
+默认值为none,表示没有动画效果。根据CSS层叠机制，可以使用none值覆盖其他地方应用的动画（这也是不建议使用none命名动画的原因，除非你疯了）。如果想应用动画，把值设为@keyframes的标识符，即动画的名称。
+
+只把动画应用到先系上还不足以让动画呈现出来，动画虽然能播放，但是瞬间就结束。此时，关键帧中的属性都会经历变化，而且animationstart和animationend事件也会触发。若想看到动画效果，至少要让动画持续一定的时间。而这由animation-duration属性设定。
+
 ### 18.4.2 定义动画的时长
+
+animation-duration属性定义动画选代一次用时多久，单位为秒（s)或毫秒（ms)。
+
+animation-duration | |
+取值 | <time>#
+初始值 | 0s
+适用于 | 所有元素，以及`:before`和`:after`伪元素
+计算值 | 指定的值
+继承性 | 否
+动画性 | 否
+
 ### 18.4.3 声明动画的迭代次数
+
+只声明必须的animation-name属性，动画将播放一次，而且只播放一次。如果希望选代的次数不是默认的一次，使用animation-iteration-count属性设定。
+
+animation-iteration-count | |
+取值 | [<number> / infinite]#
+初始值 | 1
+适用于 | 所有元素，以及：before和：:after伪元素
+计算值 | 指定的值
+继承性 | 否
+动画性 | 否
+
+默认情况下，动画播放一次（因为默认值是1)。如果给animation-iteration-count属性提供其他值，可以是任何数字或关键字infinite,而且animation-delay属性的值中没有负值，动画将重复指定的次数。
+
 ### 18.4.4 设置动画的播放方向
-### 18.4.5 延迟播放博华
+
+使用animation-direction属性可以控制动画是从0%关键帧向100%关键帧播放，还是从100%关键帧向0%关键帧播放。可以让所有迭代都按照相同的方向播放，也可以隔一个循环变换一次方向。
+
+animation-direction | |
+取值 | [normal / reverse / alternate / alternate-reverse]#
+初始值 |Normal
+适用于 |所有元素，以及：before和：:after伪元素
+计算值 |指定的值
+继承性 |否
+动画性 |否
+
+animation-direction属性定义按什么方向播放动画的关键帧。可取的值有四个：
+
+- `animation-direction:normal`.设为normal时（或者省略，默认为norma1),动画的每次选代都从0%关键帧向100%关键帧播放。
+- `animation-direction:reverse`.reverse值逆序播放各次选代，即从100%关键帧向0%关键帧播放。逆转动画的方向也就逆转了animation-timing-function(参见18.4.7节）。
+- `animation-direction:alternate`.alternate值的意思是第一次选代（以及后续各奇数次选代）从0%向100%播放，第二次选代（以及后续各偶数次选代）方向相反，从100%向0%播放。
+- `animation-direction:alternate-reverse`.alternate-reverse值与alternate值类似，只不过是反过来的。第一次选代（以及后续各奇数次选代）从100%向0%播放，第二次选代（以及后续各偶数次迭代）方向相反，从0%向100%播放。
+
+### 18.4.5 延迟播放动画
+
+animation-delay属性定义浏览器把动画附加到元素上之后等待多久开始第一次选代。
+
+animation-delay | |
+取值 | <time>#
+初始值 | 0s
+适用于 | 所有元素，以及`::before`和`::after`伪元素
+计算值 | 指定的值
+继承性 | 否
+动画性 | 否
+
+animation-delay属性设定把动画附加到元素上之后隔多久开始播放动画，单位为秒（s)或毫秒（ms)。
+
+
 ### 18.4.6 动画事件
+
+与动画有关的事件有三个：animationstart、animationiteration和animationend。每个事件都有三个只读属性：animationName、elapsedTime和pseudoElement,在所有浏览器中都无需使用前缀。
+
+animationstart 事件在动画开始播放时触发；如有延迟，等animation-delay 设定的时间过后触发；否则，立即触发。如果animation-delay为负值，animationstart事件立即触发，在支持elapsedTime的浏览器中，它的值等于延迟的绝对值。而在仍需使用前缀的浏览器中，elapsedTime等于0。
+
+**动画链**
+
+我们可以利用animation-delay属性把多个动画串在一次，让下一个动画在前一个动画结束后立即开始：
+
+```css
+.rainbow {
+  animation-name: red, orange, yellow, blue, green;
+  animation-duration: 1s, 3s, 5s, 7s, 11s;
+  animation-delay: 3s, 4s, 7s, 12s, 19s;
+}
+```
+
+在这个示例中，red动画延迟三秒、持续一秒，因此animationend事件在四秒后触发。后续各动画都在前一个动画结束后开始。我们称这样的效果为CSS动画链。
+
 ### 18.4.7 改变动画的内部时序
+
+好了，编写脚本是很好玩，不过我们还是回到纯CSS上吧。下面讨论时序函数。与transition-timing-function属性类似，animation-timing-function属性指明动画在一次循环（或迭代）中如何演进。
+
+animation-timing-function | |
+取值 | [ ease / linear / ease-in / ease-out / ease-in-out / steps-start / steps-end / steps(<integer>, start) / steps(<integer>, end) / cubic-bezier(<number>, <number>, <number>, <number>)]#
+初始值 |  ease
+适用于 | 所有元素，以及::before和::after伪元素
+计算值 | 指定的值
+继承性 | 否
+动画性 | 否
+
 ### 18.4.8 设置动画的播放状态
+
+如果想暂停和继续播放动画，可以使用animation-play-state属性定义动画是播放还是暂停的。
+
+animation-play-state | | 
+取值 | [running / paused]#
+初始值 |  running
+适用于 | 所有元素，以及::before和::after伪元素
+计算值 | 指定的值
+继承性 | 否
+动画性 | 否
+
+设为默认值running时，动画正常播放。设为paused时，动画暂停。此时，动画依然应用到元素上，只是在暂停前播放到的位置停住。如果在迭代中途停止，已经发生变化的属性停在当前的值。再次设为running,或者回到默认值，动画从停止的位置继续播放，就像控制动画的“时钟”停止后又开始行走了一样。
+
+如果在动画的延迟阶段设置animation-play-state:paused,延迟时钟也暂停，把animation-play-state设为running之后继续计时。
+
 ### 18.4.9 动画的填充模式
+
+animation-fill-mode属性定义动画播放结束后是否应用原来的属性值。
+
+animation-fill-mode | | 
+取值 | [ none / forwards / backwards / both ]#
+初始值 |  none
+适用于 | 所有元素，以及：before和：:after伪元素
+计算值 | 指定的值
+继承性 | 否
+动画性 | 否
+
+这个属性的作用体现在，默认情况下动画所做的改动只在动画播放的过程中有效，一旦动画结束，属性将还原为动画之前的值。因此，如果动画把背景由红色变成蓝色，(默认情况下）动画结束后背景将还原为红色。
+
+类似地，如果animation-delay为正值，动画不会立即改变属性的值，而是在延迟结束，触发animationstart事件后才开始改变。
+
+使用animation-fi11-mode属性可以定义触发animationstart事件之前和触发animationend事件之后动画如何影响元素。我们可以设定，让0%关键帧中设定的属性值在延迟期间就应用到元素上，或者在触发animationend事件之后继续应用到元素上。
+
+animation-fill-mode属性的默认值是none,意思是动画不播放就没有效果：0%关键赖(或反向播放动画时的100%关键帧）块中设定的属性值在animation-delay结束、触发animationstart事件之前不应用到元素上。
+
+设为backwards时，0%或from关键帧（如果有的话）中定义的属性值在动画应用到元素上的那一刻就起作用。0%关键帧（animation-direction属性的值为reversed或reversed-alternate时，为100%关键帧）定义的属性值立即应用，而不等待animation-delay时间结束。
+
+forwards值的意思是动画播放结束后，即animation-iteration-count设定的选付次数全部结束，触发了animationend事件，当时的属性值继续应用在元素上。如果animation-iteration-count的值是整数，应用的属性值来自100%关键赖；如果最后一次选代是反向的，则来自0%关键帧。
+
+both值包含backwards和forwards两个值的效果，即把动画附加到元素上之后立即应用属性值，而且触发animationend事件之后，属性的值得以保留。
+
 ## 18.5 写为一个属性
 
-使用animation简写属性，无需分别定义8个属性，在一行声明中就能为元素定义全部动画属性。
-
-animation属性的值是一个列表，以空格分隔，分别对应各个单独属性。如果要在元素或伪元素上应用多个动画，在列出的各动画之间加上逗号。
+使用animation简写属性，无需分别定义8个属性，在一行声明中就能为元素定义全部动画属性。animation属性的值是一个列表，以空格分隔，分别对应各个单独属性。如果要在元素或伪元素上应用多个动画，在列出的各动画之间加上逗号。
 
 ## 18.6 动画、特指度和优先顺序
 
