@@ -2634,7 +2634,7 @@ animation-name属性的值为一个逗号分隔的列表，指定想应用的关
 
 | animation-name |  |
 |---|---|
-| 取值 | [<single-animation-name> / none]# |
+| 取值 | [`<single-animation-name>` / none]# |
 | 初始值 | none |
 | 适用于 | 所有元素，以及`::before`和`::after`伪元素 |
 | 计算值 | 指定的值 |
@@ -2647,62 +2647,66 @@ animation-name属性的值为一个逗号分隔的列表，指定想应用的关
 
 ### 18.4.2 定义动画的时长
 
-animation-duration属性定义动画选代一次用时多久，单位为秒（s)或毫秒（ms)。
+animation-duration属性定义动画选代一次用时多久，单位为秒（s）或毫秒（ms）。
 
-animation-duration | |
-取值 | <time>#
-初始值 | 0s
-适用于 | 所有元素，以及`:before`和`:after`伪元素
-计算值 | 指定的值
-继承性 | 否
-动画性 | 否
+| animation-duration |  |
+|---|---|
+| 取值 | `<time>`# |
+| 初始值 | 0s |
+| 适用于 | 所有元素，以及`::before`和`::after`伪元素 |
+| 计算值 | 指定的值 |
+| 继承性 | 否 |
+| 动画性 | 否 |
 
 ### 18.4.3 声明动画的迭代次数
 
 只声明必须的animation-name属性，动画将播放一次，而且只播放一次。如果希望选代的次数不是默认的一次，使用animation-iteration-count属性设定。
 
-animation-iteration-count | |
-取值 | [<number> / infinite]#
-初始值 | 1
-适用于 | 所有元素，以及：before和：:after伪元素
-计算值 | 指定的值
-继承性 | 否
-动画性 | 否
+| animation-iteration-count |  |
+|---|---|
+| 取值 | [`<number>` / infinite]# |
+| 初始值 | 1 |
+| 适用于 | 所有元素，以及`::before`和`::after`伪元素 |
+| 计算值 | 指定的值 |
+| 继承性 | 否 |
+| 动画性 | 否 |
 
-默认情况下，动画播放一次（因为默认值是1)。如果给animation-iteration-count属性提供其他值，可以是任何数字或关键字infinite,而且animation-delay属性的值中没有负值，动画将重复指定的次数。
+默认情况下，动画播放一次（因为默认值是1）。如果给animation-iteration-count属性提供其他值，可以是任何数字或关键字infinite,而且animation-delay属性的值中没有负值，动画将重复指定的次数。
 
 ### 18.4.4 设置动画的播放方向
 
 使用animation-direction属性可以控制动画是从0%关键帧向100%关键帧播放，还是从100%关键帧向0%关键帧播放。可以让所有迭代都按照相同的方向播放，也可以隔一个循环变换一次方向。
 
-animation-direction | |
-取值 | [normal / reverse / alternate / alternate-reverse]#
-初始值 |Normal
-适用于 |所有元素，以及：before和：:after伪元素
-计算值 |指定的值
-继承性 |否
-动画性 |否
+| animation-direction |  |
+|---|---|
+| 取值 | [normal / reverse / alternate / alternate-reverse]# |
+| 初始值 | Normal |
+| 适用于 | 所有元素，以及`::before`和`::after`伪元素 |
+| 计算值 | 指定的值 |
+| 继承性 | 否 |
+| 动画性 | 否 |
 
 animation-direction属性定义按什么方向播放动画的关键帧。可取的值有四个：
 
-- `animation-direction:normal`.设为normal时（或者省略，默认为norma1),动画的每次选代都从0%关键帧向100%关键帧播放。
-- `animation-direction:reverse`.reverse值逆序播放各次选代，即从100%关键帧向0%关键帧播放。逆转动画的方向也就逆转了animation-timing-function(参见18.4.7节）。
-- `animation-direction:alternate`.alternate值的意思是第一次选代（以及后续各奇数次选代）从0%向100%播放，第二次选代（以及后续各偶数次选代）方向相反，从100%向0%播放。
-- `animation-direction:alternate-reverse`.alternate-reverse值与alternate值类似，只不过是反过来的。第一次选代（以及后续各奇数次选代）从100%向0%播放，第二次选代（以及后续各偶数次迭代）方向相反，从0%向100%播放。
+- `normal`：设为normal时（或者省略，默认为norma1）,动画的每次选代都从0%关键帧向100%关键帧播放。
+- `reverse`：reverse值逆序播放各次选代，即从100%关键帧向0%关键帧播放。逆转动画的方向也就逆转了animation-timing-function（参见18.4.7节）。
+- `alternate`：alternate值的意思是第一次选代（以及后续各奇数次选代）从0%向100%播放，第二次选代（以及后续各偶数次选代）方向相反，从100%向0%播放。
+- `alternate-reverse`：alternate-reverse值与alternate值类似，只不过是反过来的。第一次选代（以及后续各奇数次选代）从100%向0%播放，第二次选代（以及后续各偶数次迭代）方向相反，从0%向100%播放。
 
 ### 18.4.5 延迟播放动画
 
 animation-delay属性定义浏览器把动画附加到元素上之后等待多久开始第一次选代。
 
-animation-delay | |
-取值 | <time>#
-初始值 | 0s
-适用于 | 所有元素，以及`::before`和`::after`伪元素
-计算值 | 指定的值
-继承性 | 否
-动画性 | 否
+| animation-delay |  |
+|---|---|
+| 取值 | `<time>`# |
+| 初始值 | 0s |
+| 适用于 | 所有元素，以及`::before`和`::after`伪元素 |
+| 计算值 | 指定的值 |
+| 继承性 | 否 |
+| 动画性 | 否 |
 
-animation-delay属性设定把动画附加到元素上之后隔多久开始播放动画，单位为秒（s)或毫秒（ms)。
+animation-delay属性设定把动画附加到元素上之后隔多久开始播放动画，单位为秒（s）或毫秒（ms）。
 
 
 ### 18.4.6 动画事件
@@ -2729,49 +2733,52 @@ animationstart 事件在动画开始播放时触发；如有延迟，等animatio
 
 好了，编写脚本是很好玩，不过我们还是回到纯CSS上吧。下面讨论时序函数。与transition-timing-function属性类似，animation-timing-function属性指明动画在一次循环（或迭代）中如何演进。
 
-animation-timing-function | |
-取值 | [ ease / linear / ease-in / ease-out / ease-in-out / steps-start / steps-end / steps(<integer>, start) / steps(<integer>, end) / cubic-bezier(<number>, <number>, <number>, <number>)]#
-初始值 |  ease
-适用于 | 所有元素，以及::before和::after伪元素
-计算值 | 指定的值
-继承性 | 否
-动画性 | 否
+| animation-timing-function |  |
+|---|---|
+| 取值 | [ ease / linear / ease-in / ease-out / ease-in-out / steps-start / steps-end / steps(`<integer>`, start) / steps(`<integer>`, end) / cubic-bezier(`<number>`, `<number>`, `<number>`, `<number>`)]# |
+| 初始值 | ease |
+| 适用于 | 所有元素，以及`::before`和`::after`伪元素 |
+| 计算值 | 指定的值 |
+| 继承性 | 否 |
+| 动画性 | 否 |
 
 ### 18.4.8 设置动画的播放状态
 
 如果想暂停和继续播放动画，可以使用animation-play-state属性定义动画是播放还是暂停的。
 
-animation-play-state | | 
-取值 | [running / paused]#
-初始值 |  running
-适用于 | 所有元素，以及::before和::after伪元素
-计算值 | 指定的值
-继承性 | 否
-动画性 | 否
+| animation-play-state |  |
+|---|---|
+| 取值 | [running / paused]# |
+| 初始值 | running |
+| 适用于 | 所有元素，以及`::before`和`::after`伪元素 |
+| 计算值 | 指定的值 |
+| 继承性 | 否 |
+| 动画性 | 否 |
 
 设为默认值running时，动画正常播放。设为paused时，动画暂停。此时，动画依然应用到元素上，只是在暂停前播放到的位置停住。如果在迭代中途停止，已经发生变化的属性停在当前的值。再次设为running,或者回到默认值，动画从停止的位置继续播放，就像控制动画的“时钟”停止后又开始行走了一样。
 
-如果在动画的延迟阶段设置animation-play-state:paused,延迟时钟也暂停，把animation-play-state设为running之后继续计时。
+如果在动画的延迟阶段设置`animation-play-state: paused`,延迟时钟也暂停，把animation-play-state设为running之后继续计时。
 
 ### 18.4.9 动画的填充模式
 
 animation-fill-mode属性定义动画播放结束后是否应用原来的属性值。
 
-animation-fill-mode | | 
-取值 | [ none / forwards / backwards / both ]#
-初始值 |  none
-适用于 | 所有元素，以及：before和：:after伪元素
-计算值 | 指定的值
-继承性 | 否
-动画性 | 否
+| animation-fill-mode |  |
+|---|---|
+| 取值 | [ none / forwards / backwards / both ]# |
+| 初始值 | none |
+| 适用于 | 所有元素，以及：before和：:after伪元素 |
+| 计算值 | 指定的值 |
+| 继承性 | 否 |
+| 动画性 | 否 |
 
-这个属性的作用体现在，默认情况下动画所做的改动只在动画播放的过程中有效，一旦动画结束，属性将还原为动画之前的值。因此，如果动画把背景由红色变成蓝色，(默认情况下）动画结束后背景将还原为红色。
+这个属性的作用体现在，默认情况下动画所做的改动只在动画播放的过程中有效，一旦动画结束，属性将还原为动画之前的值。因此，如果动画把背景由红色变成蓝色，（默认情况下）动画结束后背景将还原为红色。
 
 类似地，如果animation-delay为正值，动画不会立即改变属性的值，而是在延迟结束，触发animationstart事件后才开始改变。
 
 使用animation-fi11-mode属性可以定义触发animationstart事件之前和触发animationend事件之后动画如何影响元素。我们可以设定，让0%关键帧中设定的属性值在延迟期间就应用到元素上，或者在触发animationend事件之后继续应用到元素上。
 
-animation-fill-mode属性的默认值是none,意思是动画不播放就没有效果：0%关键赖(或反向播放动画时的100%关键帧）块中设定的属性值在animation-delay结束、触发animationstart事件之前不应用到元素上。
+animation-fill-mode属性的默认值是none,意思是动画不播放就没有效果：0%关键赖（或反向播放动画时的100%关键帧）块中设定的属性值在animation-delay结束、触发animationstart事件之前不应用到元素上。
 
 设为backwards时，0%或from关键帧（如果有的话）中定义的属性值在动画应用到元素上的那一刻就起作用。0%关键帧（animation-direction属性的值为reversed或reversed-alternate时，为100%关键帧）定义的属性值立即应用，而不等待animation-delay时间结束。
 
