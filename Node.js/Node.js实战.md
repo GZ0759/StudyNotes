@@ -1934,7 +1934,7 @@ res.format({
 npm install ejs --save
 ```
 
-res.render 可以渲染 EJS 格式的 HTML 文件。如果你换掉代码清单 3-4 中 `app.get('/articles')`路由处理器中的 `res.send(articles)`，在浏览器中访问 http://localhost:3000/articles 时，程序应该会尝试渲染 articles.ejs。
+`res.render` 可以渲染 EJS 格式的 HTML 文件。如果你换掉代码清单 3-4 中 `app.get('/articles')`路由处理器中的 `res.send(articles)`，在浏览器中访问 http://localhost:3000/articles 时，程序应该会尝试渲染 articles.ejs。
 
 接下来在 view 文件夹中创建模板 articles.ejs，你可以用下面代码清单中这个完整的模板。
 
