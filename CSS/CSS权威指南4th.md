@@ -2484,7 +2484,7 @@ transition属性的值可以是none,或者任意个以逼号分隔的单次过�
 
 ## 17.5 过渡是效果增强
 
-浏览器对过渡的支持极好。所有浏览器，包括Safari、Chrome、Opera、Firefox、Edge和Internet Explorer(从IE10开始）,都支持CSS过渡。
+浏览器对过渡的支持极好。所有浏览器，包括Safari、Chrome、Opera、Firefox、Edge和Internet Explorer（从IE10开始）,都支持CSS过渡。
 
 过渡是对用户界面（user-interface,UI）的效果增强。即使没有得到全面支持，也不妨碍你使用。如果某个浏览器不支持CSS过渡，本想以过渡效果呈现的变化仍会发生，只不过触发样式重新计算事件时，始态将瞬间“过渡”到终态。
 
@@ -2542,7 +2542,7 @@ css动画改变的属性值可以不在元素的前后两个状态中。在有�
 
 ### 18.3.2 重复关键帧属性
 
-在Webkit最初实现的实验性动画中（使用-webkit-前级）,每个关键帧只能声明一次，如果多次声明，只有最后一个声明起作用，之前的关键帧选择符块被忽略。现在则不然。
+在 Webkit 最初实现的实验性动画中（使用`-webkit-`前级）,每个关键帧只能声明一次，如果多次声明，只有最后一个声明起作用，之前的关键帧选择符块被忽略。现在则不然。
 如今，与CSS中的其他机制一样，具有相同值的关键帧将层叠。在标准的句法中（不用前级）,前述W动画可以声明两次to或100%,left属性的值将被覆盖：
 
 ```css
@@ -2603,7 +2603,7 @@ css动画改变的属性值可以不在元素的前后两个状态中。在有�
 }
 ```
 
-appendRule()、deleteRule()和findRule()三个方法的参数都是完整的关键帧选择符。以W动画为例，如果想获取25%/75%关键帧的内容，传入的参数为25%,75%:
+`appendRule()`、`deleteRule()`和`findRule()`三个方法的参数都是完整的关键帧选择符。以W动画为例，如果想获取25%/75%关键帧的内容，传入的参数为25%,75%:
 
 ```js
 //获取指定关键帧的选择符和内容
@@ -2616,7 +2616,7 @@ myAnimation.appendRule('53% {top: 50%;}');
 
 在`myAnimation.findRule('25%,75%').cssText;`语句中，myAnimation是一个关键帧动画的名称，返回的结果是匹配25%,75%的关键帧。如果只有25%或75%关键赖，匹配不到任何关键帧。如果用的是W动画，这个语句返回`25%,75%{top:100%;}`。
 
-类似地，`myAnimation.deleteRule('50%')`将删除最后一个50%关键帧。因此，如果有多个50%关键帧，排在最后的那个将被删除。反过来，myAnimation,appendRule('53%{top:50%;})将在@keyframes块中最后一个关键帧的后面追加53%关键帧。
+类似地，`myAnimation.deleteRule('50%')`将删除最后一个50%关键帧。因此，如果有多个50%关键帧，排在最后的那个将被删除。反过来，`myAnimation,appendRule('53%{top:50%;})`将在@keyframes块中最后一个关键帧的后面追加53%关键帧。
 
 动画有三个事件，animationstart、animationend和animationiteration,分别在动画的开头和结尾，以及一次选代结束与下一次迭代开始之间触发。只要动画中定义的关键帧规则有效，就会触发animationstart和animationend事件，即使关键帧规则为空也是如此。animationiteration事件仅在动画有多次选代时才会触发，因为animationiteration不能与animationend事件同时触发。
 
@@ -2632,15 +2632,16 @@ myAnimation.appendRule('53% {top: 50%;}');
 
 animation-name属性的值为一个逗号分隔的列表，指定想应用的关键帧动画的名称。这里所说的名称是指使用@keyframes规则定义动画时设定的无引号标识符或有引号的字符串（抑或二者混用）。
 
-animation-name | |
-取值 | [<single-animation-name> / none]#
-初始值 | none
-适用于 | 所有元素，以及`:before`和`:after`伪元素
-计算值 | 指定的值
-继承性 | 否
-动画性 | 否
+| animation-name |  |
+|---|---|
+| 取值 | [<single-animation-name> / none]# |
+| 初始值 | none |
+| 适用于 | 所有元素，以及`::before`和`::after`伪元素 |
+| 计算值 | 指定的值 |
+| 继承性 | 否 |
+| 动画性 | 否 |
 
-默认值为none,表示没有动画效果。根据CSS层叠机制，可以使用none值覆盖其他地方应用的动画（这也是不建议使用none命名动画的原因，除非你疯了）。如果想应用动画，把值设为@keyframes的标识符，即动画的名称。
+默认值为none,表示没有动画效果。根据CSS层叠机制，可以使用none值覆盖其他地方应用的动画（这也是不建议使用none命名动画的原因，除非你疯了）。如果想应用动画，把值设为`@keyframes`的标识符，即动画的名称。
 
 只把动画应用到先系上还不足以让动画呈现出来，动画虽然能播放，但是瞬间就结束。此时，关键帧中的属性都会经历变化，而且animationstart和animationend事件也会触发。若想看到动画效果，至少要让动画持续一定的时间。而这由animation-duration属性设定。
 
