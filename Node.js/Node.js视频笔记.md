@@ -5,91 +5,18 @@
 <!-- TOC -->
 
 - [一、Node.js介绍](#一nodejs介绍)
-  - [是什么？](#是什么)
-  - [能做什么](#能做什么)
-  - [得到什么](#得到什么)
-  - [学习资料](#学习资料)
-  - [Hello World](#hello-world)
 - [二、Node中的JavaScript](#二node中的javascript)
-  - [ECMAScript](#ecmascript)
-  - [核心模块](#核心模块)
-  - [第三方模块](#第三方模块)
-  - [自定义模块](#自定义模块)
-  - [事件](#事件)
-  - [Buffer](#buffer)
 - [三、Web服务器开发](#三web服务器开发)
-  - [ip地址和端口号](#ip地址和端口号)
-  - [服务器与客户端的连接](#服务器与客户端的连接)
-  - [请求头Content-type](#请求头content-type)
-  - [处理网站中的静态资源](#处理网站中的静态资源)
-  - [获取表单提交数据](#获取表单提交数据)
-  - [软件版本号](#软件版本号)
-  - [Node.js重定向](#nodejs重定向)
 - [四、Node中的模块系统](#四node中的模块系统)
-  - [什么是模块化](#什么是模块化)
-  - [CommonJS模块规范](#commonjs模块规范)
 - [五、包管理器npm](#五包管理器npm)
-  - [npm是什么](#npm是什么)
-  - [npm 5 变化](#npm-5-变化)
-  - [命令行常用命令](#命令行常用命令)
-  - [package.json的语法](#packagejson的语法)
 - [六、开发框架Express](#六开发框架express)
-  - [Express 简介](#express-简介)
-  - [安装 Express](#安装-express)
-  - [第一个 Express 框架实例](#第一个-express-框架实例)
-  - [请求和响应](#请求和响应)
-  - [基本路由](#基本路由)
-  - [托管静态文件](#托管静态文件)
-  - [在 Express 中使用模板引擎](#在-express-中使用模板引擎)
-  - [重定向](#重定向)
-  - [获取表单GET/POST数据](#获取表单getpost数据)
-  - [路由模块的提取](#路由模块的提取)
-  - [数据操作文件API模块](#数据操作文件api模块)
 - [七、异步编程](#七异步编程)
-  - [回调函数](#回调函数)
-  - [Promise](#promise)
 - [八、MongoDB](#八mongodb)
-  - [MongoDB 简介](#mongodb-简介)
-  - [启动和关闭数据库](#启动和关闭数据库)
-  - [基本命令](#基本命令)
-  - [在 Node 中操作 MongoDB 数据](#在-node-中操作-mongodb-数据)
-  - [使用 Node 操作 MySQL 数据库](#使用-node-操作-mysql-数据库)
 - [九、服务器启动工具nodemon](#九服务器启动工具nodemon)
-  - [node mon 简介](#node-mon-简介)
-  - [nodemon 安装](#nodemon-安装)
-  - [nodemon 用法](#nodemon-用法)
 - [十、path路径操作模块](#十path路径操作模块)
-  - [path.basename()](#pathbasename)
-  - [path.dirname()](#pathdirname)
-  - [path.extname()](#pathextname)
-  - [path.format()](#pathformat)
-  - [path.isAbsolute()](#pathisabsolute)
-  - [path.join()](#pathjoin)
-  - [path.normalize()](#pathnormalize)
-  - [path.parse(path)](#pathparsepath)
-  - [path.relative()](#pathrelative)
-  - [path.resolve()](#pathresolve)
 - [十一、全局成员](#十一全局成员)
-  - [global](#global)
-  - [process](#process)
-  - [伪全局成员](#伪全局成员)
 - [十二、中间件](#十二中间件)
-  - [**前言**](#前言)
-  - [Connect介绍](#connect介绍)
-  - [express中间件](#express中间件)
-  - [express应用级中间件](#express应用级中间件)
-  - [express路由级中间件。](#express路由级中间件)
-  - [express错误处理中间件。](#express错误处理中间件)
-  - [express内置中间件。](#express内置中间件)
-  - [express第三方中间件。](#express第三方中间件)
 - [十三、服务器渲染与客户端渲染](#十三服务器渲染与客户端渲染)
-  - [什么是服务器端渲染和客户端渲染？](#什么是服务器端渲染和客户端渲染)
-  - [两者本质的区别是什么？](#两者本质的区别是什么)
-  - [服务器端渲染的优缺点是怎样的？](#服务器端渲染的优缺点是怎样的)
-  - [客户端渲染的优缺点是怎样的？](#客户端渲染的优缺点是怎样的)
-  - [使用服务器端渲染还是客户端渲染？](#使用服务器端渲染还是客户端渲染)
-  - [对于前后端分离，如果进行seo优化？](#对于前后端分离如果进行seo优化)
-  - [究竟如何理解前后端分离？](#究竟如何理解前后端分离)
 
 <!-- /TOC -->
 
@@ -97,7 +24,7 @@
 
 ## 是什么？
 
-Node.js® is a JavaScript runtime built on Chrome’s V8 JavaScript engine. 
+Node.js is a JavaScript runtime built on Chrome’s V8 JavaScript engine. 
 
 Node.js是一个JavaScript运行时环境，使用谷歌V8渲染引擎构建的。意思就是说，JavaScript可以完全脱离浏览器运行，node.js可以解析和执行JavaScript代码。Node.js以 ECMAScript 为基本语法，但没有BOM和DOM操作，只是提供一些服务器级别的操作API，例如文件读写、网络服务构建、网络通信、http服务器等处理。
 
@@ -111,9 +38,7 @@ Node.js’ package ecosystem, npm, is the largest ecosystem of open source libra
 
 ## 能做什么
 
-主要功能是Web服务器后台、命令行工具。
-
-学习node.js的目的就是帮助大家打开服务器这个黑盒子。
+主要功能是Web服务器后台、命令行工具。学习node.js的目的就是帮助大家打开服务器这个黑盒子。
 
 ## 得到什么
 
@@ -167,7 +92,7 @@ Node.js中的基础API之一就是EventEmitter。无论是在Node中还是在浏
 
 ## Buffer
 
-JavaScript语言没有读取或操作二进制数据流的机制，Node.js 中引入了 Buffer 类型使我们可以操作 TCP流 或 文件流。Buffer 是全局的，所以使用的时候无需 require() 的方式来加载。
+JavaScript语言没有读取或操作二进制数据流的机制，Node.js 中引入了 Buffer 类型使我们可以操作 TCP 流或文件流。Buffer 是全局的，所以使用的时候无需 `require()` 的方式来加载。
 
 Buffer是一个表示固定内存分配的全局对象，也就是说，任何要放到缓存区中的字节数需要提前定下，它就好比是一个由八位字节元素组成的数组，可以有效地在JavaScript中表示二进制数据。该功能一部分作用是可以对数据进行编码转换，比如，base64就是一种仅用ASCAII字符书写二进制数据的方式。在Node中，绝大部分进行数据IO操作的API都用buffer来接收和返回数据。
 
@@ -185,11 +110,11 @@ ip地址是用来定位计算机的，端口号是用来定位具体的应用程
 
 ## 请求头Content-type
 
-服务器将每次响应的数据内容类型告诉客户端，不同的资源对应的Content-Type是不一样的，具体参照这个[网址](http://tool.oschina.net/commons)。对于文本类型的数据，最好都加上编码，目的是为了防s止中文解析乱码问题。通过网络发送文件，发送的并不是文件，本质上来讲发送的是文件的内容，当浏览器收到服务器响应内容之后，就会根据Content-Type进行对应的解析处理。
+服务器将每次响应的数据内容类型告诉客户端，不同的资源对应的 Content-Type 是不一样的，具体参照这个[网址](http://tool.oschina.net/commons)。对于文本类型的数据，最好都加上编码，目的是为了防止中文解析乱码问题。通过网络发送文件，发送的并不是文件，本质上来讲发送的是文件的内容，当浏览器收到服务器响应内容之后，就会根据Content-Type进行对应的解析处理。
 
 ## 处理网站中的静态资源
 
-浏览器收到 HTML 响应的内容之后，就要开始从上到下依次解析，当在解析的过程中，如果发现 link 、 script 、img 、iframe 、video 、audio 等带有 src 或者 href （ link ）属性标签，即具有外链的资源时，浏览器会自动对这些资源发送新的请求。为了方便的统一处理这些静态资源，所以我们约定把所有的静态资源都存在在 public 目录中。可以通过代码灵活控制资源是否可以被用户访问到，从而完整静态资源的统一加载。统一处理方式：如果请求路径是以  /public/ 开头的，则可以将请求路径当作文件路径进行直接读取。
+浏览器收到 HTML 响应的内容之后，就要开始从上到下依次解析，当在解析的过程中，如果发现 link 、 script 、img 、iframe 、video 、audio 等带有 src 或者 href （ link ）属性标签，即具有外链的资源时，浏览器会自动对这些资源发送新的请求。为了方便的统一处理这些静态资源，所以我们约定把所有的静态资源都存在在 public 目录中。可以通过代码灵活控制资源是否可以被用户访问到，从而完整静态资源的统一加载。统一处理方式：如果请求路径是以  `/public/` 开头的，则可以将请求路径当作文件路径进行直接读取。
 
 ## 获取表单提交数据
 
@@ -207,31 +132,28 @@ ip地址是用来定位计算机的，端口号是用来定位具体的应用程
 
 - RC版: 该版本已经相当成熟了，基本上不存在导致错误的BUG，与即将发行的正式版相差无几。
 
-- Release版: 该版本意味“最终版本”，在前面版本的一系列测试版之后，终归会有一个正式版本，是最终交付用户使用的一个版本。该版本有时也称为标准版。一般情况下，Release不会以单词形式出现在软件封面上，取而代之的是符号(Ｒ)。
+- Release版: 该版本意味“最终版本”，在前面版本的一系列测试版之后，终归会有一个正式版本，是最终交付用户使用的一个版本。该版本有时也称为标准版。一般情况下，Release不会以单词形式出现在软件封面上，取而代之的是符号（Ｒ）。
 
 2.  版本命名规范
 
-　　软件版本号由四部分组成，第一个1为主版本号，第二个1为子版本号，第三个1为阶段版本号，第四部分为日期版本号加希腊字母版本号，希腊字母版本号共有5种，分别为：base、alpha、beta、RC、release。例如：1.1.1.051021_beta。版本号定修改规则如下
+软件版本号由四部分组成，第一个1为主版本号，第二个1为子版本号，第三个1为阶段版本号，第四部分为日期版本号加希腊字母版本号，希腊字母版本号共有5种，分别为：base、alpha、beta、RC、release。例如：1.1.1.051021_beta。版本号定修改规则如下
 
-- 主版本号(1)：当功能模块有较大的变动，比如增加多个模块或者整体架构发生变化。此版本号由项目决定是否修改。
+- 主版本号（1）：当功能模块有较大的变动，比如增加多个模块或者整体架构发生变化。此版本号由项目决定是否修改。
 
-- 子版本号(1)：当功能有一定的增加或变化，比如增加了对权限控制、增加自定义视图等功能。此版本号由项目决定是否修改。
+- 子版本号（1）：当功能有一定的增加或变化，比如增加了对权限控制、增加自定义视图等功能。此版本号由项目决定是否修改。
 
-- 阶段版本号(1)：一般是 Bug 修复或是一些小的变动，要经常发布修订版，时间间隔不限，修复一个严重的bug即可发布一个修订版。此版本号由项目经理决定是否修改。
+- 阶段版本号（1）：一般是 Bug 修复或是一些小的变动，要经常发布修订版，时间间隔不限，修复一个严重的bug即可发布一个修订版。此版本号由项目经理决定是否修改。
 
-- 日期版本号(051021):用于记录修改项目的当前日期，每天对项目的修改都需要更改日期版本号。此版本号由开发人员决定是否修改。
+- 日期版本号（051021）:用于记录修改项目的当前日期，每天对项目的修改都需要更改日期版本号。此版本号由开发人员决定是否修改。
 
-- 希腊字母版本号(beta):此版本号用于标注当前版本的软件处于哪个开发阶段，当软件进入到另一个阶段时需要修改此版本号。此版本号由项目决定是否修改。
+- 希腊字母版本号（beta）:此版本号用于标注当前版本的软件处于哪个开发阶段，当软件进入到另一个阶段时需要修改此版本号。此版本号由项目决定是否修改。
 
 ## Node.js重定向
 
 重定向的准则;
 
-（1）给客户发送301响应代码，告诉客户：资源已经移到另一个位置。其中 301 是永久重定向， 302 是临时重定向。
-
-（2）发送一个位置头（Location Header）告诉客户重定向到哪里。
-
-
+- 给客户发送301响应代码，告诉客户：资源已经移到另一个位置。其中 301 是永久重定向， 302 是临时重定向。
+- 发送一个位置头（Location Header）告诉客户重定向到哪里。
 
 ```javascript
 var http = require('http');
@@ -275,7 +197,7 @@ Node的模块实现。在Node中引入模块，需要大概经历如下三个步
 - 绝对路径文件模块。以 "/" 开始或直接使用 "D:/Baidu/BaiduPinyin/a.js" 的标识符，前者表示当前文件模块所属的磁盘根目录。另外，无论是绝对路径还是相对路径的文件模块， `require()` 方法会将路径转为真实路径，并以真实路径作为索引，并将编译执行后的结果存放到缓存中。
 - 非路径形式的文件模块，又称作第三方模块或者自定义模块。第三方模块是指非核心模块，也不是路径形式的标识符。它是一种特殊的文件模块，可能是一个文件或者包的形式，如自定义的 connect 模块。注意，因为第三方模块也是通过直接引用包名进行引入，所以第三方模块一定不能与核心模块重名。路径查找规律一般是先找到当前文件所处目录的 node_modules 目录，然后查找该包名文件下的 package.json 文件， 通过该文件里面的 main 属性 找到入口模块，然后加载使用这个第三方包，实际上最终加载的还是文件。如果 package.json 文件不存在或者没有 main 指定的入口模块或者 main 属性指定文件名错误， Node 会将 index 当作默认文件名，然后一次查找 index.js 、index.json 、index.node 。如果在目录分析的过程中没有定位成功任何文件，则自定义模块进入下一个模块路径进行查找，即进入其上一级目录的 node_modules 目录查找，如果直到当前磁盘根目录还没找到，则抛出查找失败的异常。当前文件的目录越深，模块查找耗时越多。
  
-模块编译。每一个编译成功的模块都会将其文件路径作为索引缓存在Module._cache对象上。对于不同扩展名，其载入方法也有所不同：
+模块编译。每一个编译成功的模块都会将其文件路径作为索引缓存在 Module._cache 对象上。对于不同扩展名，其载入方法也有所不同：
  
 - *.js* 通过fs模块同步读取文件后编译执行。
 - *.node* 这是C/C++编写的扩展文件，通过`dlopen()`方法加载最后编译生成的文件
@@ -286,7 +208,7 @@ Node的模块实现。在Node中引入模块，需要大概经历如下三个步
 
 ## npm是什么
 
-NPM的全称是Node Package Manager，是随同NodeJS一起安装的包管理和分发工具，它很方便让JavaScript开发者下载、安装、上传以及管理已经安装的包。pm 由三个独立的部分组成：网站、注册表（registry）、命令行工具 (CLI) 。网站是开发者查找包（package）、设置参数以及管理 npm 使用体验的主要途径。注册表是一个巨大的数据库，保存了每个包（package）的信息。 CLI 通过命令行或终端运行。开发者通过 CLI 与 npm 打交道。
+NPM的全称是Node Package Manager，是随同NodeJS一起安装的包管理和分发工具，它很方便让JavaScript开发者下载、安装、上传以及管理已经安装的包。pm 由三个独立的部分组成：网站、注册表（registry）、命令行工具 （CLI） 。网站是开发者查找包（package）、设置参数以及管理 npm 使用体验的主要途径。注册表是一个巨大的数据库，保存了每个包（package）的信息。 CLI 通过命令行或终端运行。开发者通过 CLI 与 npm 打交道。
 
 ## npm 5 变化
 
@@ -403,7 +325,7 @@ npm install --help
 
 
 
-### **npm root** 查看包的安装路径
+### npm root 查看包的安装路径
 
 ```shell
 npm root [-g]
@@ -606,7 +528,7 @@ package.json 文件至少要有两部分内容：“name” 、“version” 。
 >
 > - 不要把node或者js放在名字中。因为你写了package.json它就被假定成为了js，不过你可以用"engine"字段指定一个引擎（见后文）。
 > - 这个名字会作为在URL的一部分、命令行的参数或者文件夹的名字。任何non-url-safe的字符都是不能用的。
-> - 这个名字可能会作为参数被传入require()，所以它应该比较短，但也要意义清晰。
+> - 这个名字可能会作为参数被传入`require()`，所以它应该比较短，但也要意义清晰。
 > - 在你爱上你的名字之前，你可能要去npm registry查看一下这个名字是否已经被使用了。
 >
 > **version**
@@ -760,8 +682,6 @@ package.json 文件至少要有两部分内容：“name” 、“version” 。
 
 # 六、开发框架Express
 
-
-
 ## Express 简介
 
 Express 是一个简洁而灵活的 node.js Web应用框架，提供了一系列强大特性帮助你创建各种 Web 应用，和丰富的 HTTP 工具。使用 Express 可以快速地搭建一个完整功能的网站。Express 框架核心特性：
@@ -871,8 +791,8 @@ app.use('/static', express.static('public'));
 
 需要在应用中进行如下设置才能让 Express 渲染模板文件：
 
-- views, 放模板文件的目录，比如： app.set('views', './views')
-- view engine, 模板引擎，比如： app.set('view engine', 'jade')
+- views, 放模板文件的目录，比如：`app.set('views', './views')`
+- view engine, 模板引擎，比如：`app.set('view engine', 'jade')`
 
 然后安装相应的模板引擎 npm 软件包。
 
@@ -1230,7 +1150,7 @@ function myAsyncFunction(url) {
 
 Promise 构造函数接受一个函数作为参数，该函数的两个参数分别是 resolve 和 reject 。 它们是两个函数，由 JavaScript 引擎提供，不用自己部署。 resolve 函数的作用是，将 Promise 对象的状态从“未完成”变为“成功”（即从 Pending 变为 Resolved ），在异步操作成功时调用，并将异步操作的结果作为参数传递出去： reject 函数的作用是，将 Promise 对象的状态从“未完成”变为“失败”（即从 Pending 变为 Rejected）, 在异步操作失败时调用，并将异步操作报出的错误作为参数传递出去 。  
 
-所有 Promise 都有 `then()` 方法。`then()` 方法可以接受两个回调函数作为参数 。 第一个回调函数是 Promise 对象的状态变为 Resolved 时调用， 第二个回调函数是 Promise 对象的状态变为 Rejected 时调用。其中，第二个函数是可选的，不一定要提供。这两个函数都接受 Promise 对象传出的值作为参数。`then(null, handleRejection)` 调用的简写形式是 `catch(handleRejection)`。  
+所有 Promise 都有 `then()` 方法。`then()` 方法可以接受两个回调函数作为参数。第一个回调函数是 Promise 对象的状态变为 Resolved 时调用， 第二个回调函数是 Promise 对象的状态变为 Rejected 时调用。其中，第二个函数是可选的，不一定要提供。这两个函数都接受 Promise 对象传出的值作为参数。`then(null, handleRejection)` 调用的简写形式是 `catch(handleRejection)`。  
 
 ```javascript
 // Promise 构造函数接受一个函数作为参数，该函数的两个参数分别是 resolve 和 reject 
@@ -1263,7 +1183,7 @@ p1.then(function(value) {
 });
 ```
 
-如果返回的是 Promise 对象 ， 会通过一个额外的步骤来确定下一步怎么走。如果返回的对象是 resolve ，那么接下来调用 then () 方法的第一个函数执行（完成处理函数），如果返回的对象是 reject ，那么接下来调用的 then () 方法的第二个函数执行（拒绝处理函数）。
+如果返回的是 Promise 对象 ， 会通过一个额外的步骤来确定下一步怎么走。如果返回的对象是 resolve ，那么接下来调用 then () 方法的第一个函数执行（完成处理函数），如果返回的对象是 reject ，那么接下来调用的 `then()` 方法的第二个函数执行（拒绝处理函数）。
 
 ```javascript
 let p1 = new Promise(function(resolve, reject) {
@@ -1287,11 +1207,11 @@ p1.then(function(value) {
 封装 Promise 版本的 readFile ，解决回调地狱问题。
 
 ```javascript
-var fs = require(‘fs‘)
+var fs = require('fs')
 
 function pReadFile(filePath) {
   return new Promise(function (resolve, reject) {
-    fs.readFile(filePath, ‘utf8‘, function (err, data) {
+    fs.readFile(filePath, 'utf8', function (err, data) {
       if (err) {
         reject(err)
       } else {
@@ -1301,14 +1221,14 @@ function pReadFile(filePath) {
   })
 }
 
-pReadFile(‘./data/a.txt‘)
+pReadFile('./data/a.txt')
   .then(function (data) {
     console.log(data)
-    return pReadFile(‘./data/b.txt‘)
+    return pReadFile('./data/b.txt')
   })
   .then(function (data) {
     console.log(data)
-    return pReadFile(‘./data/c.txt‘)
+    return pReadFile('./data/c.txt')
   })
   .then(function (data) {
     console.log(data)
@@ -1346,12 +1266,6 @@ pGet('http://127.0.0.1:3000/users/4')
         document.querySelector('#user_form').innerHTML = htmlStr
 	})
 ```
-
-
-
-
-
-
 
 # 八、MongoDB
 
@@ -1445,17 +1359,17 @@ var User = mongoose.model('User', userSchema)
 
 ```javascript
 var admin = new User({
-    username: 'admin',
-    password: '123456'
+  username: 'admin',
+  password: '123456'
 })
 
 admin.save(function (err,ret) {
-    if (err) {
-        consolo.log('保存失败')
-    }else {
-        consolo.log('保存成功')
-        console.log(ret)
-    }
+  if (err) {
+    consolo.log('保存失败')
+  }else {
+    consolo.log('保存成功')
+    console.log(ret)
+  }
 })
 ```
 
@@ -1495,10 +1409,6 @@ connection.query('SELECT 1 + 1 AS solution', function (error, results, fields) {
 // 关闭连接
 connection.end();
 ```
-
-
-
-
 
 # 九、服务器启动工具nodemon
 
@@ -1611,9 +1521,9 @@ path.extname('.index');
 
 ## path.format() 
 
-path.format(pathObject) 返回字符串。
+`path.format(pathObject)` 返回字符串。
 
-path.format() 方法会从一个对象返回一个路径字符串。 与 path.parse() 相反。当 pathObject 提供的属性有组合时，有些属性的优先级比其他的高：如果提供了 pathObject.dir，则 pathObject.root 会被忽略；如果提供了 pathObject.base 存在，则 pathObject.ext 和 pathObject.name 会被忽略
+`path.format()` 方法会从一个对象返回一个路径字符串。 与 `path.parse()` 相反。当 pathObject 提供的属性有组合时，有些属性的优先级比其他的高：如果提供了 pathObject.dir，则 pathObject.root 会被忽略；如果提供了 pathObject.base 存在，则 pathObject.ext 和 pathObject.name 会被忽略
 
 ```js
 path.format({
@@ -1661,10 +1571,10 @@ path.join('foo', {}, 'bar');
 
 ## path.normalize() 
 
-path.normalize(path) 获得规范化路径。
+`path.normalize(path)` 获得规范化路径。
 
 
-path.normalize() 方法会规范化给定的 path，并解析 '..' 和 '.' 片段。当发现多个连续的路径分隔符时（如 POSIX 上的 / 与 Windows 上的 \ 或 /），它们会被单个的路径分隔符（POSIX 上是 /，Windows 上是 \）替换。 末尾的多个分隔符会被保留。如果 path 是一个长度为零的字符串，则返回 '.'，表示当前工作目录。如果 path 不是一个字符串，则抛出 TypeError。
+`path.normalize()` 方法会规范化给定的 path，并解析 '..' 和 '.' 片段。当发现多个连续的路径分隔符时（如 POSIX 上的 / 与 Windows 上的 \ 或 /），它们会被单个的路径分隔符（POSIX 上是 /，Windows 上是 \）替换。 末尾的多个分隔符会被保留。如果 path 是一个长度为零的字符串，则返回 '.'，表示当前工作目录。如果 path 不是一个字符串，则抛出 TypeError。
 
 ```js
 path.normalize('C:\\temp\\\\foo\\bar\\..\\');
@@ -1695,7 +1605,7 @@ path.parse('C:\\path\\dir\\file.txt');
 │ root │              │ name │ ext │
 " C:\      path\dir   \ file  .txt "
 └──────┴──────────────┴──────┴─────┘
-(请无视以上字符串中的空格，它们只是为了布局)
+// (请无视以上字符串中的空格，它们只是为了布局)
 ```
 
 
@@ -1978,7 +1888,7 @@ app.use('/', router);
 
 ## express错误处理中间件。
 
-错误处理中间件和其他中间件定义类似，只是要使用 4 个参数，而不是 3 个，其签名如下： (err, req, res, next)。
+错误处理中间件和其他中间件定义类似，只是要使用 4 个参数，而不是 3 个，其签名如下：`(err, req, res, next)`。
 
 错误处理中间件有 *4* 个参数，定义错误处理中间件时必须使用这 4 个参数。即使不需要 `next` 对象，也必须在签名中声明它，否则中间件会被识别为一个常规中间件，不能处理错误。
 
@@ -2077,18 +1987,18 @@ app.use(cookieParser());
 
 ## 使用服务器端渲染还是客户端渲染？
 
-　　**不谈业务场景而盲目选择使用何种渲染方式都是耍流氓。**比如企业级网站，主要功能是**展示**而**没有复杂的交互**，并且需要**良好的SEO**，则这时我们就需要使用服务器端渲染；而类似后台管理页面，交互性比较强，不需要seo的考虑，那么就可以使用客户端渲染。
+**不谈业务场景而盲目选择使用何种渲染方式都是耍流氓。**比如企业级网站，主要功能是**展示**而**没有复杂的交互**，并且需要**良好的SEO**，则这时我们就需要使用服务器端渲染；而类似后台管理页面，交互性比较强，不需要seo的考虑，那么就可以使用客户端渲染。
 
-　　另外，具体使用何种渲染方法并不是绝对的，比如现在一些网站采用了**首屏服务器端渲染**，即对于用户最开始打开的那个页面采用的是服务器端渲染，这样就保证了渲染速度，而其他的页面采用客户端渲染，这样就完成了前后端分离。
+另外，具体使用何种渲染方法并不是绝对的，比如现在一些网站采用了**首屏服务器端渲染**，即对于用户最开始打开的那个页面采用的是服务器端渲染，这样就保证了渲染速度，而其他的页面采用客户端渲染，这样就完成了前后端分离。
 
 ## 对于前后端分离，如果进行seo优化？
 
-　　如果进行了前后端分离，那么前端就是通过js来修改dom使得html拼接完全，然后再显示，或者是使用SPA，这样，seo几乎没有。那么这种情况下如何做seo优化呢？
+如果进行了前后端分离，那么前端就是通过js来修改dom使得html拼接完全，然后再显示，或者是使用SPA，这样，seo几乎没有。那么这种情况下如何做seo优化呢？
 
-　　我们可以自行提交**sitemap**，**让蜘蛛主动去爬取**，但是遇到了sitemap中的url，达到指定页面之后只有元js怎么办呢？这是我们可以使用<noscript>标签来进行简单的优化，比如打印出当前页面信息的一些关键的信息点，但是正常用户并不需要这些，会造成额外的负担，且前端可以判断是否支持JavaScript，而后段不行，只好根据百度的spider做UA判断，使用phantomjs或者nginx代理，来对spider访问的页面进行特殊的处理，达到被收录的效果。但这种效果还是不好。。。
+我们可以自行提交**sitemap**，**让蜘蛛主动去爬取**，但是遇到了sitemap中的url，达到指定页面之后只有元js怎么办呢？这是我们可以使用`<noscript>`标签来进行简单的优化，比如打印出当前页面信息的一些关键的信息点，但是正常用户并不需要这些，会造成额外的负担，且前端可以判断是否支持JavaScript，而后段不行，只好根据百度的spider做UA判断，使用phantomjs或者nginx代理，来对spider访问的页面进行特殊的处理，达到被收录的效果。但这种效果还是不好。。。
 
-　　而目前的react和vue都提供了SSR，即服务器端渲染，这也就是提供seo不好的解决方式了。
+而目前的react和vue都提供了SSR，即服务器端渲染，这也就是提供seo不好的解决方式了。
 
 ## 究竟如何理解前后端分离？
 
-　　实际上，时至今日，前后端分离一定是必然或者趋势，因为早期在web1.0时代的网页就是简单的网页，而如今的网页越来越朝向app前进，而前后端分离就是实现app的必然的结果。所以，我们可以认为html、css、JavaScript组成了这个app，然后浏览器作为虚拟机来运行这些程序，即浏览器成为了app的运行环境，成了客户端，总的来说就是当前的前端越来越朝向桌面应用或者说是手机上的app发展了，而比如说电脑上的qq可以服务器端渲染吗？肯定不能！所以前后端分离也就成了必然。**而我们目前接触额前端工程化、编译（转译）、各种MVC/MVVM框架、依赖工具、npm、bable、webpack等等看似很新鲜、创新的东西实际上都是传动桌面开发所形成的概念，只是近年来前端发展较快而借鉴过来的，本质上就是开源社区东平西凑做出来的一个visual studio。**
+实际上，时至今日，前后端分离一定是必然或者趋势，因为早期在web1.0时代的网页就是简单的网页，而如今的网页越来越朝向app前进，而前后端分离就是实现app的必然的结果。所以，我们可以认为html、css、JavaScript组成了这个app，然后浏览器作为虚拟机来运行这些程序，即浏览器成为了app的运行环境，成了客户端，总的来说就是当前的前端越来越朝向桌面应用或者说是手机上的app发展了，而比如说电脑上的qq可以服务器端渲染吗？肯定不能！所以前后端分离也就成了必然。**而我们目前接触额前端工程化、编译（转译）、各种MVC/MVVM框架、依赖工具、npm、bable、webpack等等看似很新鲜、创新的东西实际上都是传动桌面开发所形成的概念，只是近年来前端发展较快而借鉴过来的，本质上就是开源社区东平西凑做出来的一个visual studio。**
