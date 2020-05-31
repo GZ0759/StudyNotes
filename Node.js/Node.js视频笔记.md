@@ -1,4 +1,4 @@
-> Node.JS-7天-黑马程序员
+> Node.JS-7天-黑马程序员  
 > [在线视频](https://www.bilibili.com/video/BV1Ns411N7HU?t=1681)
 
 
@@ -24,21 +24,33 @@
 
 ## 是什么？
 
-Node.js is a JavaScript runtime built on Chrome’s V8 JavaScript engine. 
-
+> Node.js is a JavaScript runtime built on Chrome’s V8 JavaScript engine.   
 Node.js是一个JavaScript运行时环境，使用谷歌V8渲染引擎构建的。意思就是说，JavaScript可以完全脱离浏览器运行，node.js可以解析和执行JavaScript代码。Node.js以 ECMAScript 为基本语法，但没有BOM和DOM操作，只是提供一些服务器级别的操作API，例如文件读写、网络服务构建、网络通信、http服务器等处理。
 
-Node.js uses an event-driven, non-blocking I/O model that makes it lightweight and efficient. 
-
+> Node.js uses an event-driven, non-blocking I/O model that makes it lightweight and efficient.   
 特点有事件驱动、非阻塞IO模型（异步）、轻量和高效。
 
-Node.js’ package ecosystem, npm, is the largest ecosystem of open source libraries in the world.
-
+> Node.js’ package ecosystem, npm, is the largest ecosystem of open source libraries in the world.  
 拥有世界上最大的开源库生态系统npm，绝大多数JavaScript相关的包都存放在了npm上，这样做的目的是为了让那个开发人员更方便地区找到、下载和使用。
+
+- Node.js 是什么
+  + JavaScript 运行时
+  + 既不是语言，也不是框架，它是一个平台
+- Node.js 中的 JavaScript
+  + 没有 BOM、DOM
+  + EcmaScript 基本的 JavaScript 语言部分
+  + 在 Node 中为 JavaScript 提供了一些服务器级别的 API
+    * 文件操作的能力
+    * http 服务的能力
 
 ## 能做什么
 
 主要功能是Web服务器后台、命令行工具。学习node.js的目的就是帮助大家打开服务器这个黑盒子。
+
+命令行工具
+- npm（node）
+- git（C语言）
+- hexo（node）
 
 ## 得到什么
 
