@@ -3712,13 +3712,13 @@ $ npm install -g express-generator
 图 6-5 Express 帮助
 
 其中一些选项用来生成程序中的某些部分。比如说，你可以指定模板引擎，让它生成选定模
-板引擎的空文件。同样，如果用 --css 指定了 CSS 预处理器，它会生成该 CSS 预处理器的虚拟模板文件。
+板引擎的空文件。同样，如果用 `--css` 指定了 CSS 预处理器，它会生成该 CSS 预处理器的虚拟模板文件。
 
 可执行程序装好了，接下来我们要生成最终会变成在线留言板的程序框架。
 
 2. 生成程序
 
-用-e（或--ejs）指定要使用的模板引擎是 EJS，执行 express -e shoutbox。如果你想跟我们在 GitHub 库上的代码保持一致，那就执行 express -e listing6_6。
+用-e（或--ejs）指定要使用的模板引擎是 EJS，执行 `express -e shoutbox`。如果你想跟我们在 GitHub 库上的代码保持一致，那就执行 `express -e listing6_6`。
 
 一个功能完备的程序会出现在 shoutbox 目录中。其中会有描述项目和依赖项的 package.json 文件、程序主文件、 public 目录，以及一个放路由处理器的目录。
 
@@ -3801,8 +3801,7 @@ module.exports = app;
 3 站点的访问者可以分页浏览条目。
 4 应该有个支持认证的简单的 REST API。
 
-针对这些需求，我们要存储数据和处理用户认证，还需要对用户的输入进行校验。必要的路
-由应该有以下两种。
+针对这些需求，我们要存储数据和处理用户认证，还需要对用户的输入进行校验。必要的路由应该有以下两种。
 
 - API 路由。
   - GET /api/entries： 获取条目列表。
@@ -3830,10 +3829,7 @@ app.set('view engine', 'ejs');
 
 ### 6.2.2 Express 和程序的配置
 
-程序运行的环境发生变化时，需求也会发生变化。比如说，产品在开发环境中运行时，你可
-能想要看到尽可能详尽的日志；但在生产环境中，你可能想让日志尽量精简，可能还要用 gzip
-进行压缩。除了配置特定环境下的功能， 还要定义一些程序层面的配置项，以便让 Express 知道
-你用的是什么模板引擎，到哪里去找模板。 Express 还支持自定义的配置项键/值对。
+程序运行的环境发生变化时，需求也会发生变化。比如说，产品在开发环境中运行时，你可能想要看到尽可能详尽的日志；但在生产环境中，你可能想让日志尽量精简，可能还要用 gzip 进行压缩。除了配置特定环境下的功能， 还要定义一些程序层面的配置项，以便让 Express 知道你用的是什么模板引擎，到哪里去找模板。 Express 还支持自定义的配置项键/值对。
 
 > 设置环境变量
 > 要在 UNIX 系统中设置环境变量，可以用这个命令：
@@ -3843,8 +3839,7 @@ app.set('view engine', 'ejs');
 > $ node app
 > 这些环境变量会出现在程序里的 process.env 对象中。
 
-Express 有一个极简的环境驱动配置系统，这个系统由几个方法组成，全部由环境变量
-NODE_ENV 驱动：
+Express 有一个极简的环境驱动配置系统，这个系统由几个方法组成，全部由环境变量NODE_ENV 驱动：
 
 - app.set()
 - app.get()
@@ -3853,16 +3848,11 @@ NODE_ENV 驱动：
 - app.enabled()
 - app.disabled()
 
-在本节中，你将会看到如何用配置系统定制 Express 的行为，以及在开发时如何让它如你
-所愿。
+在本节中，你将会看到如何用配置系统定制 Express 的行为，以及在开发时如何让它如你所愿。
 
-我们先来探讨一下基于环境的配置是什么意思。环境变量 NODE_ENV 源于 Express，后来很
-多 Node 框架照搬了这一做法，用它告知 Node 程序运行在哪个环境中，其默认是开发环境。
+我们先来探讨一下基于环境的配置是什么意思。环境变量 NODE_ENV 源于 Express，后来很多 Node 框架照搬了这一做法，用它告知 Node 程序运行在哪个环境中，其默认是开发环境。
 
-app.configure()方法有一个可选的字符串参数，用来指定运行环境；还有一个参数是函
-数。如果有这个字符串，则在运行环境与字符串相同时才会调用那个函数；如果没有，则在所有
-环境中都会调用那个函数。这些环境的名称完全是随意的。比如说，可以用 development、
-stage、 test 和 production，或简写为 prod：
+app.configure()方法有一个可选的字符串参数，用来指定运行环境；还有一个参数是函数。如果有这个字符串，则在运行环境与字符串相同时才会调用那个函数；如果没有，则在所有环境中都会调用那个函数。这些环境的名称完全是随意的。比如说，可以用 development、stage、 test 和 production，或简写为 prod：
 
 ```js
 if (app.get('env') === 'development') {
@@ -3870,15 +3860,11 @@ app.use(express.errorHandler());
 }
 ```
 
-为了实现可定制的行为， Express 在其内部使用了配置系统，我们也可以在自己的程序中使
-用这个系统。
+为了实现可定制的行为， Express 在其内部使用了配置系统，我们也可以在自己的程序中使用这个系统。
 
-Express 还为布尔类型的配置项提供了 app.set()和 app.get()的变体。比如说， app.enable
-(setting)等同于 app.set(setting, true)，而 app.enabled(setting)可以用来检查该
-值是否被启用了。 app.disable(setting)和 app.disabled(setting)是对它们的补充。
+Express 还为布尔类型的配置项提供了 app.set()和 app.get()的变体。比如说， app.enable(setting)等同于 app.set(setting, true)，而 app.enabled(setting)可以用来检查该值是否被启用了。 app.disable(setting)和 app.disabled(setting)是对它们的补充。
 
-Express 为开发 API 提供了一个配置项，即 json spaces。如果把它加到 app.js 中，程序输
-出 JSON 的格式会变得更易读：
+Express 为开发 API 提供了一个配置项，即 json spaces。如果把它加到 app.js 中，程序输出 JSON 的格式会变得更易读：
 
 ```js
 app.set('json spaces', 2);

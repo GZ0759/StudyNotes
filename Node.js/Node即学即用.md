@@ -1,6 +1,7 @@
-> Node即学即用
-> Node:Up and Running
-> 2013年1月第一次印刷
+> Node即学即用  
+> Node:Up and Running  
+> 2013年1月第一次印刷  
+> 作者：[英] Tom Hughes-Croucher / [英] Mike Wilson
 
 # 目录
 

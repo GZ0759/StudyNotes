@@ -1,5 +1,6 @@
-> Node.js开发指南
-> 2012年7月第一版
+> Node.js开发指南  
+> 2012年7月第一版  
+> 作者:：郭家宝（BYVoid）  
 
 # 第一章 Node.js简介
 
@@ -81,6 +82,7 @@ n 是一个十分简洁的 Node 多版本管理器，就连它的名字也不例
 运行 Node.js 程序的基本方法就是执行 `node script.js`，其中 script.js 是脚本的文件名。
 
 除了直接运行脚本文件外， `node --help` 显示的使用方法中说明了另一种输出 Hello World 的方式：我们可以把要执行的语句作为 `node -e` 的参数直接执行。
+
 ```
 $ node -e "console.log('Hello World');"
 Hello World
@@ -309,6 +311,7 @@ Express 除了为 http 模块提供了更高层的接口外，还实现了许多
 - 访问日志；
 - 缓存；
 - 插件支持。
+
 需要指出的是， Express 不是一个无所不包的全能框架，像 Rails 或 Django 那样实现了模板引擎甚至 ORM （Object Relation Model，对象关系模型）。它只是一个轻量级的 Web 框架，多数功能只是对 HTTP 协议中常用操作的封装，更多的功能需要插件或者整合其他模块来完成。
 
 ## 5.2 快速开始
@@ -346,7 +349,7 @@ Accept-Charset: UTF-8,*;q=0.5
 
 Express 还支持更高级的路径匹配模式。例如我们想要展示一个用户的个人页面，路径为`/user/[username]`，可以用下面的方法定义路由规则。
 
-```
+```js
 app.get('/user/:username', function(req, res) {
   res.send('user: ' + req.params.username);
 });
@@ -359,7 +362,8 @@ app.get('/user/:username', function(req, res) {
 Express 支持 REST 风格的请求方式，在介绍之前我们先说明一下什么是 REST。REST 的意思是 表征状态转移（Representational State Transfer），它是一种基于 HTTP 协议的网络应用的接口风格，充分利用 HTTP 的方法实现统一风格接口的服务。
 
 Express 支持同一路径绑定多个路由响应函数。
-```
+
+```js
 app.all('/user/:username', function(req, res) {
   res.send('all methods captured');
 });

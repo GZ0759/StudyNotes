@@ -33,16 +33,6 @@ Node.js是一个JavaScript运行时环境，使用谷歌V8渲染引擎构建的�
 > Node.js’ package ecosystem, npm, is the largest ecosystem of open source libraries in the world.  
 拥有世界上最大的开源库生态系统npm，绝大多数JavaScript相关的包都存放在了npm上，这样做的目的是为了让那个开发人员更方便地区找到、下载和使用。
 
-- Node.js 是什么
-  + JavaScript 运行时
-  + 既不是语言，也不是框架，它是一个平台
-- Node.js 中的 JavaScript
-  + 没有 BOM、DOM
-  + EcmaScript 基本的 JavaScript 语言部分
-  + 在 Node 中为 JavaScript 提供了一些服务器级别的 API
-    * 文件操作的能力
-    * http 服务的能力
-
 ## 能做什么
 
 主要功能是Web服务器后台、命令行工具。学习node.js的目的就是帮助大家打开服务器这个黑盒子。
@@ -233,7 +223,7 @@ NPM的全称是Node Package Manager，是随同NodeJS一起安装的包管理和
 
 ## 命令行常用命令
 
-### npm install 安装模块
+npm install 安装模块
 
 ```shell
 npm install (with no args, in package dir)	
@@ -270,7 +260,7 @@ npm install gulp --global
 
 
 
-### npm uninstall 卸载模块 
+npm uninstall 卸载模块 
 
 ```shell
 npm uninstall [<@scope>/]<pkg>[@<version>]... [-S|--save|-D|--save-dev|-O|--save-optional]
@@ -283,7 +273,7 @@ npm uninstall gulp --save-dev
 
 
 
-### npm update 更新模块
+npm update 更新模块
 
 ```shell
 npm update [-g] [<pkg>...]
@@ -291,7 +281,7 @@ npm update [-g] [<pkg>...]
 
 
 
-### npm outdated 检查模块是否已经过时
+npm outdated 检查模块是否已经过时
 
 ```shell
 npm outdated [[<@scope>/]<pkg> ...]
@@ -302,7 +292,7 @@ npm outdated
 
 
 
-### npm ls 查看安装的模块
+npm ls 查看安装的模块
 
 ```shell
 npm ls [[<@scope>/]<pkg> ...]
@@ -315,7 +305,7 @@ npm ls -g
 
 
 
-### npm init 在项目中引导创建一个package.json文件
+npm init 在项目中引导创建一个package.json文件
 
 ```shell
 npm init [-f|--force|-y|--yes]
@@ -326,7 +316,7 @@ npm init -Y
 
 
 
-### npm help 查看某条命令的详细帮助 
+npm help 查看某条命令的详细帮助 
 
 ```shell
 npm help <term> [<terms..>]
@@ -337,7 +327,7 @@ npm install --help
 
 
 
-### npm root 查看包的安装路径
+npm root 查看包的安装路径
 
 ```shell
 npm root [-g]
@@ -347,7 +337,7 @@ npm root [-g]
 
 
 
-### npm config 管理npm的配置路径
+npm config 管理npm的配置路径
 
 ```shell
 npm config set <key> <value> [-g|--global]
@@ -369,7 +359,7 @@ npm install -g cnpm --registry=https://registry.npm.taobao.org
 
 
 
-### npm cache 管理模块的缓存
+npm cache 管理模块的缓存
 
 ```shell
 npm cache add <tarball file>
@@ -387,7 +377,7 @@ npm cache clean
 
 
 
-### npm start 启动模块
+npm start 启动模块
 
 ```shell
 npm start [-- <args>]
@@ -401,7 +391,7 @@ npm start [-- <args>]
 
 
 
-### npm stop 停止模块
+npm stop 停止模块
 
 ```shell
 npm stop [-- <args>]
@@ -409,7 +399,7 @@ npm stop [-- <args>]
 
 
 
-### npm restart 重新启动模块
+npm restart 重新启动模块
 
 ```shell
 npm restart [-- <args>]
@@ -417,7 +407,7 @@ npm restart [-- <args>]
 
 
 
-### npm test 测试模块
+npm test 测试模块
 
 ```shell
 npm test [-- <args>]
@@ -432,7 +422,7 @@ npm tst [-- <args>]
 
 
 
-### npm version 查看模块版本
+npm version 查看模块版本
 
 ```shell
 npm version [<newversion> | major | minor | patch | premajor | preminor | prepatch | prerelease | from-git]
@@ -447,7 +437,7 @@ npm version
 
 
 
-### npm view 查看模块的注册信息
+npm view 查看模块的注册信息
 
 ```shell
 npm view [<@scope>/]<name>[@<version>] [<field>[.<subfield>]...]
@@ -464,7 +454,7 @@ npm view npm contributors
 
 
 
-### npm adduser 用户登录
+npm adduser 用户登录
 
 ```shell
 npm adduser [--registry=url] [--scope=@orgname] [--always-auth]
@@ -474,7 +464,7 @@ npm adduser [--registry=url] [--scope=@orgname] [--always-auth]
 
 
 
-### npm publish 发布模块
+npm publish 发布模块
 
 ```shell
 npm publish [<tarball>|<folder>] [--tag <tag>] [--access <public|restricted>]
@@ -485,7 +475,7 @@ Sets tag 'latest' if no --tag specified
 
 
 
-### npm access 在发布的包上设置访问级别
+npm access 在发布的包上设置访问级别
 
 ```shell
 npm access public [<package>]
