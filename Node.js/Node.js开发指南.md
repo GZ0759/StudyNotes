@@ -140,17 +140,45 @@ ECMAScript 诞生至今已经有了多个版本，最新的版本是在 2009 年
 
 ## 1.6 CommonJS
 
-服务器端 JavaScript 的重生。在JavaScript 诞生之初，网景公司就实现了服务端的 JavaScript，但由于需要支付一大笔授权费用才能使用，服务端 JavaScript 在当年并没有像客户端 JavaScript 一样流行开来。真正使大多数人见识到 JavaScript 在服务器开发威力的，是微软的 ASP。随着后来 LAMP 的兴起，以及Web 2.0 时代的到来， Ajax 等一系列概念的提出， JavaScript 成了前端开发的代名词，同时服务端 JavaScript 也逐渐被人遗忘。
+1.6.1 服务端 JavaScript 的重生
+Node.js 并不是第一个尝试使 JavaScript 运行在浏览器之外的项目。追根溯源，在
+JavaScript 诞生之初，网景公司就实现了服务端的 JavaScript，但由于需要支付一大笔授权费
+用才能使用，服务端 JavaScript 在当年并没有像客户端 JavaScript 一样流行开来。真正使大
+多数人见识到 JavaScript 在服务器开发威力的，是微软的 ASP。
+2000年左右，也就是 ASP 蒸蒸日上的年代，很多开发者开始学习 JScript。然而 JScript 在
+当时并不是很受欢迎，一方面是早期的 JScript 和 JavaScript 兼容较差，另一方面微软大力推
+广的是 VBScript，而不是 JScript。随着后来 LAMP 的兴起，以及Web 2.0 时代的到来， Ajax
+等一系列概念的提出， JavaScript 成了前端开发的代名词，同时服务端 JavaScript 也逐渐被人
+遗忘。
+直至几年前， JavaScript 的种种优势才被重新提起， JavaScript 又具备了在服务端流行的
+条件， Node.js 应运而生。与此同时， RingoJS 也基于 Rhino 实现了类似的服务端 JavaScript 平
+台，还有像 CouchDB、 MongoDB 等新型非关系型数据库也开始用 JavaScript 和 JSON 作为
+其数据操纵语言，基于 JavaScript 的服务端实现开始遍地开花。
 
-直至几年前， JavaScript 的种种优势才被重新提起， JavaScript 又具备了在服务端流行的条件， Node.js 应运而生。与此同时， RingoJS 也基于 Rhino 实现了类似的服务端 JavaScript 平台，还有像 CouchDB、 MongoDB 等新型非关系型数据库也开始用 JavaScript 和 JSON 作为其数据操纵语言，基于 JavaScript 的服务端实现开始遍地开花。
-
-Common.js 规范与实现。正如当年为了统一 JavaScript 语言标准，人们制定了 ECMAScript 规范一样，如今为了统一 JavaScript 在浏览器之外的实现， CommonJS 诞生了。 CommonJS 试图定义一套普通应用程序使用的API，从而填补 JavaScript 标准库过于简单的不足。 CommonJS 的终极目标是制定一个像 C++ 标准库一样的规范，使得基于 CommonJS API 的应用程序可以在不同的环境下运行，就像用 C++ 编写的应用程序可以使用不同的编译器和运行时函数库一样。为了保持中立， CommonJS 不参与标准库实现，其实现交给像 Node.js 之类的项目来完成。
-
-CommonJS 规范包括了模块（ modules）、包（ packages）、系统（ system）、二进制（ binary）、控制台（ console）、编码（ encodings）、文件系统（ filesystems）、套接字（ sockets）、单元测试（ unit testing）等部分。Node.js 是目前 CommonJS 规范最热门的一个实现，它基于 CommonJS 的 Modules/1.0 规范实现了 Node.js 的模块，同时随着 CommonJS 规范的更新， Node.js 也在不断跟进。由于目前 CommonJS 大部分规范还在起草阶段， Node.js 已经率先实现了一些功能，并将其反馈给CommonJS 规范制定组织，但 Node.js 并不完全遵循 CommonJS 规范。这是所有规范制定者都会遇到的尴尬局面，因为规范的制定总是滞后于技术的发展。
+1.6.2 CommonJS 规范与实现
+正如当年为了统一 JavaScript 语言标准，人们制定了 ECMAScript 规范一样，如今为了
+统一 JavaScript 在浏览器之外的实现， CommonJS 诞生了。 CommonJS 试图定义一套普通应
+用程序使用的API，从而填补 JavaScript 标准库过于简单的不足。 CommonJS 的终极目标是
+制定一个像 C++ 标准库一样的规范，使得基于 CommonJS API 的应用程序可以在不同的环
+境下运行，就像用 C++ 编写的应用程序可以使用不同的编译器和运行时函数库一样。为了
+保持中立， CommonJS 不参与标准库实现，其实现交给像 Node.js 之类的项目来完成。图1-5
+是 CommonJS 的各种实现。
+CommonJS 规范包括了模块（ modules）、包（ packages）、系统（ system）、二进制（ binary）、
+控制台（ console）、编码（ encodings）、文件系统（ filesystems）、套接字（ sockets）、单元测
+试（ unit testing）等部分。目前大部分标准都在拟定和讨论之中，已经发布的标准有
+Modules/1.0、 Modules/1.1、 Modules/1.1.1、 Packages/1.0、 System/1.0。
+Node.js 是目前 CommonJS 规范最热门的一个实现，它基于 CommonJS 的 Modules/1.0 规
+范实现了 Node.js 的模块，同时随着 CommonJS 规范的更新， Node.js 也在不断跟进。由于目
+前 CommonJS 大部分规范还在起草阶段， Node.js 已经率先实现了一些功能，并将其反馈给
+CommonJS 规范制定组织，但 Node.js 并不完全遵循 CommonJS 规范。这是所有规范制定者
+都会遇到的尴尬局面，因为规范的制定总是滞后于技术的发展。
 
 # 第二章 安装和配置Node.js
 
 编译源代码。Node.js 从 0.6 版本开始已经实现了源代码级别的跨平台，因此我们可以使用不同的编译命令将同一份源代码的基础上编译为不同平台下的原生可执行代码。在编译之前，要先获取源码包。我们建议访问http://nodejs.org，点击Download链接，然后选择Source Code，下载正式发布的源码包。如果你需要开发中的版本，可以通过https://github.com/joyent/node/zipball/master 获得，或者在命令行下输入`git clone git://github.com/joyent/node.git` 从git获得最新的分支。
+
+安装 Node 包管理器。Node 包管理器（ npm）是一个由 Node.js 官方提供的第三方包管理工具，就像 PHP 的Pear、 Python 的 PyPI 一样。 npm 是一个完全由 JavaScript 实现的命令行工具，通过 Node.js 执行，因此严格来讲它不属于 Node.js 的一部分。在最初的版本中，我们需要在安装完 Node.js 以后手动安装npm。但从 Node.js 0.6 开始， npm 已包含在发行包中了，我们在 Windows、
+Mac 上安装包和源代码包时会自动同时安装 npm。
 
 安装多版本管理器。迄今为止 Node.js 更新速度还很快，有时候新版本还会将旧版本的一些 API 废除，以至于写好的代码不能向下兼容。有时候可能想要尝试一下新版本有趣的特性，但又想要保持一个相对稳定的环境。基于这种需求， Node.js 的社区开发了多版本管理器，用于在一台机器上维护多个版本的 Node.js 实例，方便按需切换。 Node 多版本管理器（ Node Version Manager， nvm）是一个通用的叫法，它目前有许多不同的实现。
 
@@ -173,6 +201,25 @@ Hello World
 
 使用 node 的 REPL 模式。REPL （ Read-eval-print loop），即输入—求值—输出循环。运行无参数的 node 将会启动一个 JavaScript 的交互式 shell。在任何时候，连续按两次 Ctrl + C 即可推出 Node.js 的 REPL 模式。node 提出的 REPL 在应用开发时会给人带来很大的便利，例如我们可以测试一个包能否正常使用，单独调用应用的某一个模块，执行简单的计算等。
 
+```shell
+$ node
+> console.log('Hello World');
+Hello World
+undefined
+> consol.log('Hello World');
+ReferenceError: consol is not defined
+  at repl:1:1
+  at REPLServer.eval (repl.js:80:21)
+  at repl.js:190:20
+  at REPLServer.eval (repl.js:87:5)
+  at Interface.<anonymous> (repl.js:182:12)
+  at Interface.emit (events.js:67:17)
+  at Interface._onLine (readline.js:162:10)
+  at Interface._line (readline.js:426:8)
+  at Interface._ttyWrite (readline.js:603:14)
+  at ReadStream.<anonymous> (readline.js:82:12)
+```
+
 建立 HTTP 服务器。Node.js 是为网络而诞生的平台，但又与 ASP、PHP 很很大的不同。成功运行 PHP 之前先要配置一个功能强大而复杂的 HTTP 服务器，譬如 Apache、 IIS 或 Nginx，还需要将 PHP 配置为 HTTP 服务器的模块，或者使用FastCGI 协议调用 PHP 解释器。这种架构是“浏览器 - HTTP 服务器 - PHP 解释器”的组织方式，而Node.js采用了一种不同的组织方式。Node.js 将“HTTP服务器”这一层抽离，直接面向浏览器用户。
 
 ```JavaScript
@@ -193,28 +240,93 @@ console.log("HTTP server is listening at port 3000.");
 
 supervisor 可以帮助你实现这个功能，它会监视你对代码的改动，并自动重启 Node.js。使用方法很简单，首先使用 npm 安装 supervisor。接下来，使用 supervisor 命令启动 app.js。
 
+```shell
+$ npm install -g supervisor
+$ supervisor app.js
+
+DEBUG: Running node-supervisor with
+DEBUG: program 'app.js'
+DEBUG: --watch '.'
+DEBUG: --extensions 'node|js'
+DEBUG: --exec 'node'
+
+DEBUG: Starting child process with 'node app.js'
+DEBUG: Watching directory '/home/byvoid/.' for changes.
+HTTP server is listening at port 3000.
+```
+
+当代码被改动时，运行的脚本会被终止，然后重新启动。在终端中显示的结果如下：
+
+```shell
+DEBUG: crashing child
+DEBUG: Starting child process with 'node app.js'
+HTTP server is listening at port 3000.
+```
+
 ## 3.2 异步式 I/O 与事件式编程
 
-Node.js 最大的特点就是异步式 I/O（或者非阻塞 I/O）与事件紧密结合的编程模式。这种模式与传统的同步式 I/O 线性的编程思路有很大的不同，因为控制流很大程度上要靠事件和回调函数来组织，一个逻辑要拆分为若干个单元。
+Node.js 最大的特点就是异步式 I/O（或者非阻塞 I/O）与事件紧密结合的编程模式。这
+种模式与传统的同步式 I/O 线性的编程思路有很大的不同，因为控制流很大程度上要靠事件
+和回调函数来组织，一个逻辑要拆分为若干个单元。
 
-什么是阻塞（ block）呢？线程在执行中如果遇到磁盘读写或网络通信（统称为 I/O 操作），通常要耗费较长的时间，这时操作系统会剥夺这个线程的 CPU 控制权，使其暂停执行，同时将资源让给其他的工作线程，这种线程调度方式称为阻塞。当 I/O 操作完毕时，操作系统将这个线程的阻塞状态解除，恢复其对CPU的控制权，令其继续执行。这种 I/O 模式就是通常的同步式 I/O（ Synchronous I/O）或阻塞式 I/O （ Blocking I/O）。
+3.2.1 阻塞与线程
 
-相应地，异步式 I/O （ Asynchronous I/O）或非阻塞式 I/O （ Non-blocking I/O）则针对所有 I/O 操作不采用阻塞的策略。当线程遇到 I/O 操作时，不会以阻塞的方式等待 I/O 操作的完成或数据的返回，而只是将 I/O 请求发送给操作系统，继续执行下一条语句。当操作系统完成 I/O 操作时，以事件的形式通知执行 I/O 操作的线程，线程会在特定时候处理这个事件。为了处理异步 I/O，线程必须有事件循环，不断地检查有没有未处理的事件，依次予以处理。
+什么是阻塞（ block）呢？线程在执行中如果遇到磁盘读写或网络通信（统称为 I/O 操作），
+通常要耗费较长的时间，这时操作系统会剥夺这个线程的 CPU 控制权，使其暂停执行，同
+时将资源让给其他的工作线程，这种线程调度方式称为 阻塞。当 I/O 操作完毕时，操作系统
+将这个线程的阻塞状态解除，恢复其对CPU的控制权，令其继续执行。这种 I/O 模式就是通
+常的同步式 I/O（ Synchronous I/O）或阻塞式 I/O （ Blocking I/O）。
 
-阻塞模式下，一个线程只能处理一项任务，要想提高吞吐量必须通过多线程。而非阻塞模式下，一个线程永远在执行计算操作，这个线程所使用的 CPU 核心利用率永远是 100%，I/O 以事件的方式通知。在阻塞模式下，多线程往往能提高系统吞吐量，因为一个线程阻塞时还有其他线程在工作，多线程可以让 CPU 资源不被阻塞中的线程浪费。而在非阻塞模式下，线程不会被 I/O 阻塞，永远在利用 CPU。多线程带来的好处仅仅是在多核 CPU 的情
-下利用更多的核，而 Node.js 的单线程也能带来同样的好处。这就是为什么 Node.js 使用了单线程、非阻塞的事件编程模式。
+相应地，异步式 I/O （ Asynchronous I/O）或非阻塞式 I/O （ Non-blocking I/O）则针对
+所有 I/O 操作不采用阻塞的策略。当线程遇到 I/O 操作时，不会以阻塞的方式等待 I/O 操作
+的完成或数据的返回，而只是将 I/O 请求发送给操作系统，继续执行下一条语句。当操作
+系统完成 I/O 操作时，以事件的形式通知执行 I/O 操作的线程，线程会在特定时候处理这个
+事件。为了处理异步 I/O，线程必须有事件循环，不断地检查有没有未处理的事件，依次予
+以处理。
 
-异步式 I/O 就是少了多线程的开销。对操作系统来说，创建一个线程的代价是十分昂贵的，需要给它分配内存、列入调度，同时在线程切换的时候还要执行内存换页， CPU 的缓存被清空，切换回来的时候还要重新从内存中读取信息，破坏了数据的局部性。 当然，异步式编程的缺点在于不符合人们一般的程序设计思维，容易让控制流变得晦涩难懂，给编码和调试都带来不小的困难。习惯传统编程模式的开发者在刚刚接触到大规模的异步式应用时往往会无所适从，但慢慢习惯以后会好很多。尽管如此，异步式编程还是较为困难，不过可喜的是现在已经有了不少专门解决异步式编程问题的库（如async）。
+阻塞模式下，一个线程只能处理一项任务，要想提高吞吐量必须通过多线程。而非阻塞
+模式下，一个线程永远在执行计算操作，这个线程所使用的 CPU 核心利用率永远是 100%，
+I/O 以事件的方式通知。在阻塞模式下，多线程往往能提高系统吞吐量，因为一个线程阻塞
+时还有其他线程在工作，多线程可以让 CPU 资源不被阻塞中的线程浪费。而在非阻塞模式
+下，线程不会被 I/O 阻塞，永远在利用 CPU。多线程带来的好处仅仅是在多核 CPU 的情况
+下利用更多的核，而Node.js的单线程也能带来同样的好处。这就是为什么 Node.js 使用了单
+线程、非阻塞的事件编程模式。
 
-| 同步式 I/O（阻塞式） | 异步式 I/O（非阻塞式）   |
-| ----- | --------- |
-| 通过事件片分割和线程调度利用多核CPU | 通过功能划分利用多核CPU
-| 需要由操作系统调度多线程使用多核 | CPU 可以将单进程绑定到单核 CPU
-| 难以充分利用 | CPU 资源 可以充分利用 CPU 资源
-| 内存轨迹大，数据局部性弱 | 内存轨迹小，数据局部性强
-| 符合线性的编程思维 | 不符合传统编程思维
+图3-3 和图3-4 分别是多线程同步式 I/O 与单线程异步式 I/O 的示例。假设我们有一项工
+作，可以分为两个计算部分和一个 I/O 部分， I/O 部分占的时间比计算多得多（通常都是这
+样）。如果我们使用阻塞 I/O，那么要想获得高并发就必须开启多个线程。而使用异步式 I/O
+时，单线程即可胜任。
 
-回调函数。Node.js 中，并不是所有的 API 都提供了同步和异步版本。 Node.js 不鼓励使用同步 I/O。
+单线程事件驱动的异步式 I/O 比传统的多线程阻塞式 I/O 究竟好在哪里呢？简而言之，
+异步式 I/O 就是少了多线程的开销。对操作系统来说，创建一个线程的代价是十分昂贵的，
+需要给它分配内存、列入调度，同时在线程切换的时候还要执行内存换页， CPU 的缓存被
+清空，切换回来的时候还要重新从内存中读取信息，破坏了数据的局部性。 
+
+当然，异步式编程的缺点在于不符合人们一般的程序设计思维，容易让控制流变得晦涩
+难懂，给编码和调试都带来不小的困难。习惯传统编程模式的开发者在刚刚接触到大规模的异
+步式应用时往往会无所适从，但慢慢习惯以后会好很多。尽管如此，异步式编程还是较为困难，
+不过可喜的是现在已经有了不少专门解决异步式编程问题的库（如async），参见6.2.2节。
+
+表3-1比较了同步式 I/O 和异步式 I/O 的特点。
+
+同步式 I/O（阻塞式）| 异步式 I/O（非阻塞式）
+利用多线程提供吞吐量 | 单线程即可实现高吞吐量
+通过事件片分割和线程调度利用多核CPU | 通过功能划分利用多核CPU
+需要由操作系统调度多线程使用多核 CPU | 可以将单进程绑定到单核 CPU
+难以充分利用 CPU 资源 | 可以充分利用 CPU 资源
+内存轨迹大，数据局部性弱|  内存轨迹小，数据局部性强
+符合线性的编程思维 | 不符合传统编程思维
+
+3.2.2 回调函数
+
+同步式读取文件的方式比较容易理解，将文件名作为参数传入 fs.readFileSync 函
+数，阻塞等待读取完成后，将文件的内容作为函数的返回值赋给 data 变量，接下来控制台
+输出 data 的值，最后输出 end.。
+
+异步式读取文件就稍微有些违反直觉了， end.先被输出。要想理解结果，我们必须先
+知道在 Node.js 中，异步式 I/O 是通过回调函数来实现的。 fs.readFile 接收了三个参数，
+第一个是文件名，第二个是编码方式，第三个是一个函数，我们称这个函数为回调函数。
+JavaScript 支 持匿 名 的函 数定 义 方式。
 
 ```JavaScript
 // 异步
@@ -227,15 +339,31 @@ fs.readFile('file.txt', 'utf-8', function(err, data) {
   }
 });
 console.log('end.');
+// end.
+// Contents of the file.
 
 // 同步
 var fs = require('fs');
 var data = fs.readFileSync('file.txt', 'utf-8');
 console.log(data);
 console.log('end.');
+// Contents of the file.
+// end.
 ```
 
-事件。Node.js 所有的异步 I/O 操作在完成时都会发送一个事件到事件队列。在开发者看来，事件由 EventEmitter 对象提供。前面提到的 fs.readFile 和 http.createServer 的回调函数都是通过 EventEmitter 来实现的。
+fs.readFile 调用时所做的工作只是将异步式 I/O 请求发送给了操作系统，然后立即
+返回并执行后面的语句，执行完以后进入事件循环监听事件。当 fs 接收到 I/O 请求完成的
+事件时，事件循环会主动调用回调函数以完成后续工作。因此我们会先看到 end.，再看到
+file.txt 文件的内容。
+
+> Node.js 中，并不是所有的 API 都提供了同步和异步版本。 Node.js 不
+鼓励使用同步 I/O。
+
+3.2.3 事件
+Node.js 所有的异步 I/O 操作在完成时都会发送一个事件到事件队列。在开发者看来，事
+件由 EventEmitter 对象提供。前面提到的 fs.readFile 和 http.createServer 的回
+调函数都是通过 EventEmitter 来实现的。下面我们用一个简单的例子说明 EventEmitter
+的用法：
 
 ```JavaScript
 var EventEmitter = require('events').EventEmitter;
@@ -250,9 +378,25 @@ setTimeout(function() {
 }, 1000);
 ```
 
-Node.js 在什么时候会进入事件循环呢？答案是 Node.js 程序由事件循环开始，到事件循环结束，所有的逻辑都是事件的回调函数，所以 Node.js 始终在事件循环中，程序入口就是事件循环第一个事件的回调函数。事件的回调函数在执行的过程中，可能会发出 I/O 请求或直接发射（ emit）事件，执行完毕后再返回事件循环，事件循环会检查事件队列中有没有未处理的事件，直到程序结束。
+运行这段代码， 1秒后控制台输出了 some_event occured.。其原理是 event 对象
+注册了事件 some_event 的一个监听器，然后我们通过 setTimeout 在1000毫秒以后向
+event 对象发送事件 some_event，此时会调用 some_event 的监听器。
 
-与其他语言不同的是， Node.js 没有显式的事件循环，类似 Ruby 的 `EventMachine::run()` 的函数在 Node.js 中是不存在的。 Node.js 的事件循环对开发者不可见， 由 libev 库实现。 libev 支持多种类型的事件，如 ev_io、 ev_timer、 ev_signal、 ev_idle 等，在 Node.js 中均被EventEmitter 封装。 libev 事件循环的每一次迭代，在 Node.js 中就是一次 Tick， libev 不断检查是否有活动的、可供检测的事件监听器，直到检测不到时才退出事件循环，进程结束。
+我们将在 4.3.1节中详细讨论 EventEmitter 对象的用法。
+
+Node.js 的事件循环机制
+
+Node.js 在什么时候会进入事件循环呢？答案是 Node.js 程序由事件循环开始，到事件循
+环结束，所有的逻辑都是事件的回调函数，所以 Node.js 始终在事件循环中，程序入口就是
+事件循环第一个事件的回调函数。事件的回调函数在执行的过程中，可能会发出 I/O 请求或
+直接发射（ emit）事件，执行完毕后再返回事件循环，事件循环会检查事件队列中有没有未
+处理的事件，直到程序结束。图3-5说明了事件循环的原理。
+
+与其他语言不同的是， Node.js 没有显式的事件循环，类似 Ruby 的 EventMachine::run()
+的函数在 Node.js 中是不存在的。 Node.js 的事件循环对开发者不可见， 由 libev 库实现。 libev
+支持多种类型的事件，如 ev_io、 ev_timer、 ev_signal、 ev_idle 等，在 Node.js 中均被
+EventEmitter 封装。 libev 事件循环的每一次迭代，在 Node.js 中就是一次 Tick， libev 不
+断检查是否有活动的、可供检测的事件监听器，直到检测不到时才退出事件循环，进程结束。
 
 ## 3.3 模块和包
 
