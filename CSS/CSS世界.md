@@ -99,13 +99,9 @@ CSS 新世界，CSS 3 主要有两个大的改变，布局更为丰富（CSS3 �
 选择器。选择器是用来瞄准目标元素的东西，例如，`.vocabulary`就是一个选择器。
 
 - 类选择器：指以“.”这个点号开头的选择器。很多元素可以应用同一个类选择器。“类”，天生就是被公用的命。
-
 - ID 选择器：“#”打头，权重相当高。ID 一般指向唯一元素。但是，在 CSS 中，ID 样式出现在多个不同的元素上并不会只渲染第一个，而是雨露均沾。但显然不推荐这么做。
-
 - 属性选择器：指含有`[]`的选择器，形如`[title]{}`、`[title= "css-world"]{}`、`[title~="css-world"]{}`、`[title^= "css-world"]{}`和`[title$="cssworld"]{}`等。
-
 - 伪类选择器： 一般指前面有个英文冒号（:）的选择器，如`:first-child`或`:lastchild`等。
-
 - 伪元素选择器：就是有连续两个冒号的选择器，如`::first-line`、`::first-letter`、`::before`和`::after`。
 
 关系选择器。关系选择器是指根据与其他元素的关系选择元素的选择器，常见的符号有后代选择器（空格）、相邻后代选择器（“>”）、兄弟选择器（“~”），还有相邻兄弟选择器（“+”）等，这些都是非常常用的选择器。
@@ -138,7 +134,7 @@ CSS 新世界，CSS 3 主要有两个大的改变，布局更为丰富（CSS3 �
 
 width/height 作用在哪个盒子上。width 的默认值是 auto，它至少包含了以下 4 种不同的宽度表现。
 
-- 充分利用可用空间。元素宽度默认是 100%于父级容器。
+- 充分利用可用空间。元素宽度默认是 100% 于父级容器。
 - 收缩与包裹。典型代表就是浮动、绝对定位、inline-block 元素或 table 元素。
 - 收缩到最小。这个最容易出现在 table-layout 为 auto 的表格中，单独一个文字占一行。
 - 超出容器限制。除非有明确的 width 相关设置，否则上面 3 种情况尺寸都不会主动超过父级容器宽度限制的，但是存在一些特殊情况。
@@ -226,7 +222,7 @@ height 和 width 还有一个比较明显的区别就是对百分比单位的支
 
 如何让元素支持`height: 100%`效果？第一是设定显式的高度值。第二是使用绝对定位。需要注意的是，绝对定位元素的百分比计算和非绝对定位元素的百分比计算是有区别的，区别在于绝对定位的宽高百分比计算是相对于 padding box 的，也就是说会把 padding 大小值计算在内，但是，非绝对定位元素则是相对于 content box 计算的。
 
-改变 width/height 作用细节的 box-sizing。该属性虽然是 CSS3 属性，但是 IE8 可以在添加-ms-私有前缀后支持，IE9 浏览器开始就不需要私有前缀。box-sizing 属性的作用是改变 width 的作用细节。默认情况下，width 是作用在 content box 上，而该属性的作用就是可以把 width 作用的盒子变成其他几个。box-sizing 被发明出来最大的初衷应该是解决替换元素宽度自适应问题。
+改变 width/height 作用细节的 `box-sizing`。该属性虽然是 CSS3 属性，但是 IE8 可以在添加-ms-私有前缀后支持，IE9 浏览器开始就不需要私有前缀。`box-sizing` 属性的作用是改变 width 的作用细节。默认情况下，width 是作用在 content box 上，而该属性的作用就是可以把 width 作用的盒子变成其他几个。`box-sizing` 被发明出来最大的初衷应该是解决替换元素宽度自适应问题。
 
 相对简单而单纯的 `height: auto`。CSS 的默认流是水平方向的，宽度是稀缺的，高度是无限的。因此，宽度的分配规则就比较复杂，高度就显得比较随意，叠加就是最终的高度值，当然如果存在于绝对定位模型中，也具有格式化高度特性。
 
@@ -254,7 +250,7 @@ img {
 
 min-width/min-height 的初始值是 auto，max-width/max-height 的初始值是 none。max-width 会覆盖 width，包裹覆盖 !important；min-width 覆盖 max-width，此规则发生在 min-width 和 max-width 冲突的时候。
 
-任意高度元素的展开收起动画技术。如果使用 `height`+`overflow: hidden` 实现，height 使用的值假设是 auto，则从 0 到 auto 是无法计算的，因此无法形成过渡效果。
+任意高度元素的展开收起动画技术。如果使用 `height` + `overflow: hidden` 实现，height 使用的值假设是 auto，则从 0 到 auto 是无法计算的，因此无法形成过渡效果。
 
 ```css
 .element {
@@ -272,7 +268,7 @@ min-width/min-height 的初始值是 auto，max-width/max-height 的初始值是
 
 从作用上来讲，块级负责结构，内联负责内容。 CSS 世界是为图文展示而设计的。所谓图文，指图片和文字，是最典型的内联元素。所以，在 CSS 世界中，内联元素是最为重要的，涉及的 CSS 属性也非常之多。
 
-从定义看，“内联盒子”的“内联”特指“外在盒子”，和“display 为inline 的元素”不是一个概念。inline-block 和 inline-table 都是“内联元素”，因为它们的“外在盒子”都是内联盒子。从表现看，“内联元素”的典型特征就是可以和文字在一行显示。
+从定义看，“内联盒子”的“内联”特指“外在盒子”，和“display 为 inline 的元素”不是一个概念。inline-block 和 inline-table 都是“内联元素”，因为它们的“外在盒子”都是内联盒子。从表现看，“内联元素”的典型特征就是可以和文字在一行显示。
 
 内联世界深入的基础——内联盒模型。
 - 内容区域（content area），内容区域指一种围绕文字看不见的盒子，其大小仅受字符本身特性控制，本质上是一个字符盒子。
@@ -313,7 +309,7 @@ min-width/min-height 的初始值是 auto，max-width/max-height 的初始值是
 2. 不能左右`:empty`伪类。也就是说添加 content 的空内容还是会被这个伪类选择到。
 3. content 动态生成值无法获取。
 
-content内容生成技术。在实际项目中，content 属性几乎都是用在`::before`/`::after`这两个伪元素中，因此，content 内容生成技术有时候也称为`::before`/`::after`伪元素技术。
+content内容生成技术。在实际项目中，content 属性几乎都是用在`::before`或`::after`这两个伪元素中，因此，content 内容生成技术有时候也称为`::before`或`::after`伪元素技术。
 
 1. content 辅助元素生成。通常，我们会把 content 的属性值设置为空字符串。然后，利用其他 CSS 代码来生成辅助元素，或实现图形效果，或实现特定布局。与使用显式的 HTML 标签元素相比，这样做的好处是 HTML 代码会显得更加干净和精简。
 
@@ -325,9 +321,9 @@ content内容生成技术。在实际项目中，content 属性几乎都是用�
 }
 ```
 
-2. content 字符内容生成。content 字符内容生成就是直接写入字符内容，中英文都可以，比较常见的应用就是配合 @font-face 规则实现图标字体效果。除常规字符之外，我们还可以插入 Unicode 字符，比较经典 的就是插入换行符来实现某些布局或者效果。
+2. content 字符内容生成。content 字符内容生成就是直接写入字符内容，中英文都可以，比较常见的应用就是配合 `@font-face` 规则实现图标字体效果。除常规字符之外，我们还可以插入 Unicode 字符，比较经典 的就是插入换行符来实现某些布局或者效果。
 3. content 图片生成，指的是直接用 url 功能符显示图片。url 功能符中的图片地址不仅可以是常见的 png、 jpg 格式，还可以是 ico 图片、svg 文件以及 base64URL 地址，但不支持 CSS3 渐变背景图。虽然支持的图片格式多种多样，但是实际项目中，content 图片生成用得并不多，主要原因在于图片的尺寸不好控制，我们设置宽高无法改变图片的固有尺寸。所以，伪元素中的图片更多的是使用 background-image 模拟。
-4. 了解 content 开启闭合符号生成。content 支持的属性值中有一对不常用的 open-quote 和 close-quote 关键字，顾名思义，就是“开启的引号”和“闭合的引号”，使用纯正的中文解释就是“上引号”和“下引号”。CSS 中还有 no-open-quote 和 no-close-quote 关键字 。
+4. 了解 content 开启闭合符号生成。content 支持的属性值中有一对不常用的 `open-quote` 和 `close-quote` 关键字，顾名思义，就是“开启的引号”和“闭合的引号”，使用纯正的中文解释就是“上引号”和“下引号”。CSS 中还有 `no-open-quote` 和 `no-close-quote` 关键字 。
 5. content attr 属性值内容生成。除了原生的 HTML 属性，自定义的 HTML 属性也是可以生成的。需要注意的是，attr 功能符中的属性值名称千万不要自以为是地在外面加个引号。
 6. 深入理解 content 计数器。使用 CSS 计数器之前，必须重置一个值，默认是 0。使用`counter()`函数来给元素增加计数器。下面的 CSS 给每个 h3 元素的前面增加了"Section <计算器值>:"。CSS 计数器对创建有序列表特别有用，因为在子元素中会自动创建一个 CSS 计数器的实例。使用 `counters()` 函数，在不同级别的嵌套计数器之间可以插入字符串。比如这个 CSS 例子：
 
@@ -459,7 +455,7 @@ margin 合并的计算规则总结为“正正取大值”“正负值相加”�
 
 `margin: auto`的填充规则是：如果一侧定值，一侧 auto，则 auto 为剩余空间大小；如果两侧均是 auto，则平分剩余空间。居中对齐左右同时 auto 计算即可。触发 margin:auto 计算有一个前提条件，就是 width 或 height 为 auto 时，元素是具有对应方向的自动填充特性的，因为在垂直上 height 是不符合条件的，所以不能运用这个方法进行垂直居中。
 
-如果要进行垂直居中，可以使用两种方法。第一种方法是使用 writing-mode 改变文档流的方向。第二种方法是让绝对定位元素的 `margin: auto` 居中。
+如果要进行垂直居中，可以使用两种方法。第一种方法是使用 `writing-mode` 改变文档流的方向。第二种方法是让绝对定位元素的 `margin: auto` 居中。
 
 ```css
 .son {
@@ -494,7 +490,7 @@ border 与透明边框技巧。虽然`color: transparent`在 IE9 以上版本的
 - 优雅地增加点击区域大小。比 padding 更加友好。
 - 三角等图形绘制。border 属性可以轻松实现兼容性非常好的三角图形效果，其底层原因受 inset/outset 等看上去没有实用价值的 border-style 属性影响。
 
-margin+padding 可以实现等高布局，同样，border 属性也可以实现等高布局。此方法要想生效，有一点需要注意，父级容器不能使用`overflow: hidden`清除浮动影响，因为溢出隐藏是基于 padding box 的，如果设置了`overflow: hidden`，则左浮动的导航列表元素就会被隐藏掉，这显然不是我们想要的效果。
+margin + padding 可以实现等高布局，同样，border 属性也可以实现等高布局。此方法要想生效，有一点需要注意，父级容器不能使用`overflow: hidden`清除浮动影响，因为溢出隐藏是基于 padding box 的，如果设置了`overflow: hidden`，则左浮动的导航列表元素就会被隐藏掉，这显然不是我们想要的效果。
 
 ```css
 /* 导航背景区border创建 */
@@ -519,7 +515,7 @@ margin+padding 可以实现等高布局，同样，border 属性也可以实现�
 
 ## 5.1 字母 x—CSS 世界中隐匿的举足轻重的角色
 
-字母 x 与 CSS 世界的基线。在各种内联相关模型中，凡是涉及垂直方向的排版或者对齐的，都离不开最基本的基线（ baseline）。例如， line-height 行高的定义就是两基线的间距， vertical-align 的默认值就是基线。字母 x 的下边缘（线）就是我们的基线。
+字母 x 与 CSS 世界的基线。在各种内联相关模型中，凡是涉及垂直方向的排版或者对齐的，都离不开最基本的基线（baseline）。例如， line-height 行高的定义就是两基线的间距， vertical-align 的默认值就是基线。字母 x 的下边缘（线）就是我们的基线。
 
 字母 x 与 CSS 中的 x-height。通俗地讲，x-height 指的就是小写字母 x 的高度，术语描述就是基线和等分线（mean line）（也称作中线 midline）之间的距离。在 CSS 世界中，middle 指的是基线往上 1/2 x-height 高度。我们可以近似理解为字母 x 交叉点那个位置。由此可见，`vertical-align: middle`并不是绝对的垂直居中对齐，我们平常看到的 middle 效果只是一种近似效果。原因很简单，因为不同的字体在行内盒子中的位置是不一样的。
 
@@ -839,9 +835,9 @@ float 属性的种种归根结底还是由于自身各种特性导致的。 floa
 
 官方对 clear 属性的解释是：“元素盒子的边不能和前面的浮动元素相邻。” clear 属性指定一个元素是否可以在它之前的浮动元素旁边，或者必须向下移动（清除浮动） 到这些浮动元素的下面。clear 属性适用于浮动和非浮动元素。
 
-clear 属性时让自身不能和前面的浮动元素相邻。考虑到 float 属性要么就 left 要么就 right，不可能同时存在，同时由于 clear 属性对“后面的”浮动元素时不闻不问的。所以当`clear: left`有效的时候，`clear: right`必定无效，也就是此时`clear: left`等同于设置`clear both`；同样的，`clear: right`如果有效也是等同于设置`clear: both`。由此可见，`clear:left`和`clear:right`这两个声明就没有任何使用的价值，至少在 CSS 世界中是如此，直接使用`clear:both`就行（针对一个浮动相邻元素）。
+clear 属性时让自身不能和前面的浮动元素相邻。考虑到 float 属性要么就 left 要么就 right，不可能同时存在，同时由于 clear 属性对“后面的”浮动元素时不闻不问的。所以当`clear: left`有效的时候，`clear: right`必定无效，也就是此时`clear: left`等同于设置`clear both`；同样的，`clear: right`如果有效也是等同于设置`clear: both`。由此可见，`clear: left`和`clear: right`这两个声明就没有任何使用的价值，至少在 CSS 世界中是如此，直接使用`clear: both`就行（针对一个浮动相邻元素）。
 
-clear 属性只有块级元素才有效的，而::after 等伪元素默认都是内联水平，这就是借助伪元素清除浮动影响时需要设置 display 属性值的原因。
+clear 属性只有块级元素才有效的，而`::after` 等伪元素默认都是内联水平，这就是借助伪元素清除浮动影响时需要设置 display 属性值的原因。
 
 由于`clear: both`的作用本质是让自己不和 float 元素在一行显示，并不是真正意义上的清除浮动，因此 float 元素的一些不好的特性依然存在，于是，会有类似下面的现象。
 
@@ -850,7 +846,7 @@ clear 属性只有块级元素才有效的，而::after 等伪元素默认都是
 
 当应用于非浮动块时，它将非浮动块的边框边界移动到所有相关浮动元素外边界的下方。这个非浮动块的垂直外边距会折叠。另一方面，两个浮动元素的垂直外边距将不会折叠。当应用于浮动元素时，它将元素的外边界移动到所有相关的浮动元素外边界的下方。这会影响后面浮动元素的布局，后面的浮动元素的位置无法高于它之前的元素。
 
-注释:如果你想要一个元素将所有浮动元素包含在内（解决浮动元素 float 使其父元素高度塌陷），你既可以将这个容器设置为浮动，又可以通过 `::after` 伪元素设置 clear 属性作为替代。还有三种方法是，给父元素一个固定高度；添加一个块级元素，并给此元素设置`clear: both`清除浮动；给父元素添加 `overflow：hidden；`。
+注释：如果你想要一个元素将所有浮动元素包含在内（解决浮动元素 float 使其父元素高度塌陷），你既可以将这个容器设置为浮动，又可以通过 `::after` 伪元素设置 clear 属性作为替代。还有三种方法是，给父元素一个固定高度；添加一个块级元素，并给此元素设置`clear: both`清除浮动；给父元素添加 `overflow：hidden；`。
 
 ## 6.3 CSS 世界的结界——BFC
 
@@ -892,7 +888,7 @@ img {
 
 和基于纯流体特性实现的两栏或多栏自适应布局相比，基于 BFC 特性的自适应布局有如下优点。
 
-- 自适应内容由于封闭而更健壮，容错性更强。比方说，内部设置 clear:both 不会与 float 元素相互干扰而导致错位。
+- 自适应内容由于封闭而更健壮，容错性更强。比方说，内部设置 `clear: both` 不会与 float 元素相互干扰而导致错位。
 - 自适应内容自动填满浮动以外区域，无须关心浮动元素宽度，可以整站大规模应用。
 
 但是，由于绝大多数的触发 BFC 的属性自身有一些古怪的特性，所以，实际操作的时候，能兼顾流体特性和 BFC 特性来实现无敌自适应布局的属性并不多。下面是常见的 CSS 属性说明。
@@ -911,7 +907,7 @@ img {
 
 要想彻底清除浮动的影响，最适合的属性不是 clear 而是 overflow。一般使用`overflow: hidden`，利用 BFC 的“结界”特性彻底解决浮动对外部或兄弟元素的影响。虽然有许多其他 CSS 声明也能清除浮动，但是基本上都会让元素的宽度表现为“包裹性”，也就是会影响原来的样式布局。
 
-一个设置了 `overflow:hidden` 声明的元素，当其子元素内容超出容器宽度高度限制的时候，剪裁的边界是 border box 的内边缘，而非 padding box 的内边缘。所以我们在实际项目开发的时候，要尽量避免滚动容器设置 padding-bottom 值。
+一个设置了 `overflow: hidden` 声明的元素，当其子元素内容超出容器宽度高度限制的时候，剪裁的边界是 border box 的内边缘，而非 padding box 的内边缘。所以我们在实际项目开发的时候，要尽量避免滚动容器设置 padding-bottom 值。
 
 自 IE8 以上版本的浏览器开始， overflow 属性家族增加了两个属性，就是这里的 overflow-x 和 overflow-y，分别表示单独控制水平或垂直方向上的剪裁规则。支持的属性值和 overflow 属性一模一样。
 
@@ -952,7 +948,7 @@ HTML 中有两个标签是默认可以产生滚动条的，一个是根元素`<h
 
 锚点定位作用的本质。锚点定位行为的发生，本质上是通过改变容器滚动高度或者宽度来实现的。首先，锚点定位也可以发生在普通的容器元素上，而且定位行为的发生是由内而外的。“由内而外”指的是，普通元素和窗体同时可滚动的时候，会由内而外触发所有可滚 动窗体的锚点定位行为。其次就是设置了`overflow: hidden`的元素也是可滚动的，因为锚点定位本质上是改变了 scrollTop 或 scrollLeft 值。
 
-知道`overflow:hidden`元素依然可以滚动，可以帮助我们实现无 JavaScript 的选项卡效果。但却有不少不足之处：其一，容器高度需要固定；第二，也是最麻烦的，就是“由内而外”的锚点定位会触发窗体的重定位，也就是说，如果页面也是可以滚动的，则点击选项卡按钮后页面发生跳动。
+知道`overflow: hidden`元素依然可以滚动，可以帮助我们实现无 JavaScript 的选项卡效果。但却有不少不足之处：其一，容器高度需要固定；第二，也是最麻烦的，就是“由内而外”的锚点定位会触发窗体的重定位，也就是说，如果页面也是可以滚动的，则点击选项卡按钮后页面发生跳动。
 
 ```html
 <div class="box">
@@ -981,7 +977,7 @@ HTML 中有两个标签是默认可以产生滚动条的，一个是根元素`<h
 }
 ```
 
-知道`overflow:hidden`元素依然可以滚动，还可以帮助我们理解一些现象发生的原因。例如，之前提到过的使用 margin-bottom 负值加 padding-bottom 正值以及父元素 `overflow:hidden` 配合实现的等高布局，在大多数情况下，这种布局使用是没有任何问题的，但是如果使用`dom.scrollIntoView()`或者触发窗体视区范围之外的内部元素的锚点定位行为，布局就会飞掉，没错，布局就像长了翅膀一样飞掉了。
+知道`overflow: hidden`元素依然可以滚动，还可以帮助我们理解一些现象发生的原因。例如，之前提到过的使用 margin-bottom 负值加 padding-bottom 正值以及父元素 `overflow: hidden` 配合实现的等高布局，在大多数情况下，这种布局使用是没有任何问题的，但是如果使用`dom.scrollIntoView()`或者触发窗体视区范围之外的内部元素的锚点定位行为，布局就会飞掉，没错，布局就像长了翅膀一样飞掉了。
 
 ## 6.5 float 的兄弟 position:absolute
 
@@ -1299,7 +1295,7 @@ z-index 负值的最终表现并不是单一的，而是与“层叠上下文”
 
 定位元素一旦设置了 z-index 值，就从普通定位元素变成了层叠上下文元素，相互间的层叠顺序就发生了根本的变化，很容易出现设置了巨大的 z-index 值也无法覆盖其他元素的问题。
 
-避免 z-index“一山比一山高”的样式混乱问题。
+避免 z-index “一山比一山高”的样式混乱问题。
 
 页面上主体元素遵循 z-index “不犯二”准则，浮层元素使用 z-index “层级计数器” 。
 
@@ -1340,7 +1336,7 @@ font-size 的关键字属性值分以下两类。
 
 ## 8.2 字体属性家族的大家长 font-family
 
-CSS 世界中的有很多属性都是以 font- 开头的，如 font-style、 font-weight 和这里要介绍的 font-family，把所有这些以 font- 开头的 CSS 属性统称为“字体属性家族”。顾名思义， font-family 就是“字体家族”的意思。font-family 默认值由操作系统和浏览器共同决定。
+CSS 世界中的有很多属性都是以 `font-` 开头的，如 font-style、 font-weight 和这里要介绍的 font-family，把所有这些以 font- 开头的 CSS 属性统称为“字体属性家族”。顾名思义， font-family 就是“字体家族”的意思。font-family 默认值由操作系统和浏览器共同决定。
 
 font-family 支持两类属性值，一类是“字体名”，一类是“字体族”。
 
@@ -1377,7 +1373,7 @@ font-weight 表示“字重”，通俗点讲，就是表示文字的粗细程�
 > bold 定义粗体字符。
 > bolder 定义更粗的字符。
 > lighter 定义更细的字符。
-> 100 ～ 900 的整百数 定义由粗到细的字符。400 等同于 normal，而 700 等同于 bold。
+> 100 ～ 900 的整百数定义由粗到细的字符。400 等同于 normal，而 700 等同于 bold。
 > inherit 规定应该从父元素继承字体的粗细。
 
 font-style 表示文字造型是斜还是正，与 font-weight 相比，其属性值就要少很多。其中， normal 是默认值。浏览器显示一个标准的字体样式。italic 和 oblique 这两个关键字都表示“斜体”的意思。区别在于：italic 是使用当前字体的斜体字体，而 oblique 只是单纯地让文字倾斜。 如果当前字体没有对应的斜体字体，则退而求其次，解析为 oblique，也就是单纯形状倾斜。
@@ -1409,11 +1405,11 @@ font 属性除了缩写用法，还支持关键字属性值，其语法如下。
 
 ## 8.5 真正了解@font face 规则
 
-@font face 本质上就是一个定义字体或字体集的变量，这个变量不仅仅是简单地自定义字体，还包括字体重命名、默认字体样式设置等。@font face 规则支持的 CSS 属性有 font-family、 src、 font-style、 font-weigh、 unicode-range、 font-variant、 font-stretch 和 font-feature-settings。
+`@font face` 本质上就是一个定义字体或字体集的变量，这个变量不仅仅是简单地自定义字体，还包括字体重命名、默认字体样式设置等。@font face 规则支持的 CSS 属性有 font-family、 src、 font-style、 font-weigh、 unicode-range、 font-variant、 font-stretch 和 font-feature-settings。
 
 这里的 font-family 可以看成是一个字体变量，名称可以非常随意，如直接用一个美元符号'\$'。非 IE 浏览器下甚至可以直接使用纯空格' '。不过有一点需要注意，就是使用这些稀奇古怪的字符或者空格的时候，一定要加引号。
 
-src 表示引入的字体资源可以是系统字体，也可以是外链字体。如果是使用系统安装字体， 则使用 local()功能符；如果是使用外链字体，则使用 url() 功能符。而 local() 功能符 IE9 及其以上版本浏览器才支持。
+src 表示引入的字体资源可以是系统字体，也可以是外链字体。如果是使用系统安装字体， 则使用 `local()`功能符；如果是使用外链字体，则使用 `url()` 功能符。而 `local()` 功能符 IE9 及其以上版本浏览器才支持。
 
 在 Chrome 浏览器下， @font face 规则设置`font-style: italic`可以让文字倾斜。因为有些字体可能会有专门的斜体字体，注意这个斜体字体并不 是让文字的形状倾斜，而是专门设计的倾斜的字体，所以很多细节会跟物理上的请求不一样。 于是，可以在 CSS 代码中使用`font-style: italic`的时候，通过方法会调用这个对应字体。
 
@@ -1469,8 +1465,8 @@ text-indent 就是对文本进行缩进控制，但是这种缩进对内容要�
 ```
 ```css
 p {
-text-indent: -3em;
-padding-left: 3em;
+  text-indent: -3em;
+  padding-left: 3em;
 }
 ```
 
@@ -1510,7 +1506,7 @@ letter-spacing 具有以下一些特性。
 
 ```css
 .title {
-animation: textIn 1s both;
+  animation: textIn 1s both;
 }
 @keyframes textIn {
   0% {
@@ -1587,7 +1583,7 @@ IE 浏览器（至少到 IE11）到目前为止使用`text-align: justify`都无
 
 `text-align: justify`除了实现文本的两端对齐，还可以实现容错性更强的两端对齐布局效果。 
 
-在默认设置下，`text-align:justify`要想有两端对齐的效果，需要满足两点：一是有分隔点，如空格；二是要超过一行，此时非最后一行内容会两端对齐。
+在默认设置下，`text-align: justify`要想有两端对齐的效果，需要满足两点：一是有分隔点，如空格；二是要超过一行，此时非最后一行内容会两端对齐。
 
 ### 8.6.7 如何解决 text-decoration 下划线和文本重叠的问题
 
@@ -1610,24 +1606,28 @@ text-transform 也是为英文字符设计的，要么全大写`text-transform: 
 要想让`::first-letter(:first-letter)`伪元素生效，是需要满足一定条件的。
 
 - 元素的 display 计算值必须是 block、 inline-block、 list-item、 table-cell 或者 table-caption，其他所有 display 计算值都没有用，包括 display:table 和 display:flex 等。
-- 此外，不是所有的字符都能单独作为::first-letter 伪元素存在的。常见的标点符号、各类括号和引号 在::first-letter 伪元素眼中全部都是“辅助类”字符。正常情况下可以直接作为伪元素的字符就是数字、英文字母、中文、 \$、一些运算符，以 及非常容易被忽视的空格等。
+- 此外，不是所有的字符都能单独作为`::first-letter` 伪元素存在的。常见的标点符号、各类括号和引号 在`::first-letter` 伪元素眼中全部都是“辅助类”字符。正常情况下可以直接作为伪元素的字符就是数字、英文字母、中文、 \$、一些运算符，以 及非常容易被忽视的空格等。
 - 字符前面不能有图片或者 inline-block/inline-table 之类的元素存在。
-- 一般来讲， ::before 伪元素和普通元素之间没有多少瓜葛，例如:first-child 和:empty 之类的选择器都不受影响。但是::before 伪元素也参 与::first-letter 伪元素
-- 如果字符被选作了::first-letter 伪元素，并不是像::before 伪元素那样，几乎所 有 CSS 都有效，只是一部分有效。
+- 一般来讲， ::before 伪元素和普通元素之间没有多少瓜葛，例如:first-child 和:empty 之类的选择器都不受影响。但是::before 伪元素也参 与`::first-letter` 伪元素
+- 如果字符被选作了`::first-letter` 伪元素，并不是像::before 伪元素那样，几乎所 有 CSS 都有效，只是一部分有效。
 
-支持部分 display 属性值标签嵌套。 ::first-letter 伪元素获取可以跨标签，也 就是不仅能选择匿名内联盒子，还能透过层层标签进行选择，但是也有一些限制，并不是所有标签嵌套都是有用的。 ::first-letter 伪元素的另外一个重要特性—颜色等权重总是多了一层。
+支持部分 display 属性值标签嵌套。 `::first-letter` 伪元素获取可以跨标签，也 就是不仅能选择匿名内联盒子，还能透过层层标签进行选择，但是也有一些限制，并不是所有标签嵌套都是有用的。 `::first-letter` 伪元素的另外一个重要特性—颜色等权重总是多了一层。
 
-:first-line 选择器用于选取指定选择器的首行。利用了::first-line 伪元素，于是标签上的颜色实际上是设置给 background-color 的，而按钮真正呈现的颜色已经被::first-line 伪元素牢牢设置好了， 就完全不用担心文字颜色和背景色混在一起了。
+`:first-line` 选择器用于选取指定选择器的首行。利用了`::first-line` 伪元素，于是标签上的颜色实际上是设置给 background-color 的，而按钮真正呈现的颜色已经被`::first-line` 伪元素牢牢设置好了， 就完全不用担心文字颜色和背景色混在一起了。
 
-- :first-line 和:first-letter 伪元素一样， IE9 及以上版本浏览器支持双冒号::first-line{}写法， IE8 浏览器只认识单冒号写法。
+- `:first-line` 和`:first-letter` 伪元素一样， IE9 及以上版本浏览器支持双冒号`::first-line{}`写法， IE8 浏览器只认识单冒号写法。
 
-- :first-line 和:first-letter 伪元素一样，只能作用在块级元素上，也就是 display 为 block、 inline-block、 list-item、 table-cell 或者 tablecaption 的元素设置:first-line 才有效， table、 flex 之类都是无效的。
+- `:first-line` 和`:first-letter` 伪元素一样，只能作用在块级元素上，也就是 display 为 block、 inline-block、 list-item、 table-cell 或者 tablecaption 的元素设置`:first-line` 才有效， table、 flex 之类都是无效的。
 
-- :first-line 和:first-letter 伪元素一样，仅支持部分 CSS 属性，例如： • 所有字体相关属性； • color 属性； • 所有背景相关属性； • text-decoration、 text-transfor、 letter-spacing、 word-spacing、 line-height 和 vertical-align 等属性。
+- `:first-line` 和`:first-letter` 伪元素一样，仅支持部分 CSS 属性，例如： 
+  - 所有字体相关属性； 
+  - color 属性； 
+  - 所有背景相关属性； 
+  - text-decoration、 text-transfor、 letter-spacing、 word-spacing、 line-height 和 vertical-align 等属性。
 
-- :first-line 和:first-letter 伪元素一样， color 等继承属性的权重总是多了 一层，毕竟称为“伪元素”，就好像里面还有个子元素。如果:first-line 和:first-letter 同时设置颜色， :first-letter 级别比:first-line 高，即使:first-line 写在后面，甚至加!important（如果浏览器支持）也是如此。
+- `:first-line` 和`:first-letter` 伪元素一样， color 等继承属性的权重总是多了 一层，毕竟称为“伪元素”，就好像里面还有个子元素。如果`:first-line` 和`:first-letter` 同时设置颜色， `:first-letter` 级别比`:first-line` 高，即使`:first-line` 写在后面，甚至加!important（如果浏览器支持）也是如此。
 
-- :first-line 和:first-letter 伪元素一样，也支持标签嵌套，但是具体细则 和:first-letter 出入较大，例如，它不支持 table 相关属性等。
+- `:first-line` 和`:first-letter` 伪元素一样，也支持标签嵌套，但是具体细则 和:first-letter 出入较大，例如，它不支持 table 相关属性等。
 
 # 第 9 章 元素的装饰与美化
 
