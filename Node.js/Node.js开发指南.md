@@ -16,7 +16,7 @@ Node.js 不是一种独立的语言，与 PHP、 Python、 Perl、 Ruby 的“�
 
 Node.js 是一个划时代的技术，它在原有的 Web 前端和后端技术的基础上总结并提炼出了许多新的概念和方法，堪称是十多年来 Web 开发经验的集大成者。 Node.js 可以作为服务器向用户提供服务，与 PHP、 Python、 Ruby on Rails 相比，它跳过了 Apache、 Nginx 等 HTTP 服务器，直接面向前端开发。 Node.js 的许多设计理念与经典架构（如 LAMP）有着很大的不同，可提供强大的伸缩能力，以适应21世纪10年代以后规模越来越庞大的互联网环境。
 
-Node.js 与 JavaScript
+**Node.js 与 JavaScript**
 
 说起 JavaScript，不得不让人想到浏览器。传统意义上， JavaScript 是由 ECMAScript、文档对象模型（ DOM）和浏览器对象模型（ BOM）组成的，而 Mozilla 则指出 JavaScript 由 Core JavaScript 和 Client JavaScript 组成。之所以会有这种分歧，是因为 JavaScript 和浏览器之间复杂的历史渊源，以及其命途多舛的发展历程所共同造成的，我们会在后面详述。我们可以认为， Node.js 中所谓的 JavaScript 只是 Core JavaScript，或者说是 ECMAScript 的一个实现，不包含 DOM、 BOM 或者 Client JavaScript。这是因为 Node.js 不运行在浏览器中，所以不需要使用浏览器中的许多特性。
 
@@ -38,9 +38,9 @@ Node.js 的 JavaScript 引擎是 V8，来自 Google Chrome 项目。 V8 号称�
 - 单元测试工具；
 - 客户端 JavaScript 编译器。
 
-Node.js 内建了 HTTP 服务器支持，也就是说可以轻而易举地实现一个网站和服务器的组合。这和 PHP、 Perl 不一样，因为在使用 PHP 的时候，必须先搭建一个 Apache 之类的HTTP 服务器，然后通过 HTTP 服务器的模块加载或 CGI 调用，才能将 PHP 脚本的执行结果呈现给用户。而当你使用 Node.js 时，不用额外搭建一个 HTTP 服务器，因为 Node.js 本身就内建了一个。这个服务器不仅可以用来调试代码，而且它本身就可以部署到产品环境，它的性能足以满足要求。
+Node.js 内建了 HTTP 服务器支持，也就是说可以轻而易举地实现一个网站和服务器的组合。这和 PHP、 Perl 不一样，因为在使用 PHP 的时候，必须先搭建一个 Apache 之类的 HTTP 服务器，然后通过 HTTP 服务器的模块加载或 CGI 调用，才能将 PHP 脚本的执行结果呈现给用户。而当你使用 Node.js 时，不用额外搭建一个 HTTP 服务器，因为 Node.js 本身就内建了一个。这个服务器不仅可以用来调试代码，而且它本身就可以部署到产品环境，它的性能足以满足要求。
 
-Node.js 还可以部署到非网络应用的环境下，比如一个命令行工具。 Node.js 还可以调用C/C++ 的代码，这样可以充分利用已有的诸多函数库，也可以将对性能要求非常高的部分用、C/C++ 来实现。
+Node.js 还可以部署到非网络应用的环境下，比如一个命令行工具。 Node.js 还可以调用 C/C++ 的代码，这样可以充分利用已有的诸多函数库，也可以将对性能要求非常高的部分用、C/C++ 来实现。
 
 ## 1.3 异步式 I/O 与事件驱动 
 
@@ -63,7 +63,7 @@ db.query('SELECT * from some_table', function(res) {
 });
 ```
 
-这段代码中 db.query 的第二个参数是一个函数，我们称为回调函数。进程在执行到 db.query 的时候，不会等待结果返回，而是直接继续执行后面的语句，直到进入事件循环。当数据库查询结果返回时，会将事件发送到事件队列，等到线程进入事件循环以后，才会调用之前的回调函数继续执行后面的逻辑。
+这段代码中 `db.query` 的第二个参数是一个函数，我们称为回调函数。进程在执行到 `db.query` 的时候，不会等待结果返回，而是直接继续执行后面的语句，直到进入事件循环。当数据库查询结果返回时，会将事件发送到事件队列，等到线程进入事件循环以后，才会调用之前的回调函数继续执行后面的逻辑。
 
 Node.js 的异步机制是基于事件的，所有的磁盘 I/O、网络通信、数据库查询都以非阻塞的方式请求，返回的结果由事件循环来处理。图1-1 描述了这个机制。 Node.js 进程在同一时刻只会处理一个事件，完成后立即进入事件循环检查并处理后面的事件。这样做的好处是，CPU 和内存在同一时间集中处理一件事，同时尽可能让耗时的 I/O 操作并行执行。对于低速连接攻击， Node.js 只是在事件队列中增加请求，等待操作系统的回应，因而不会有任何多线程开销，很大程度上可以提高 Web 应用的健壮性，防止恶意攻击。
 
@@ -140,38 +140,19 @@ ECMAScript 诞生至今已经有了多个版本，最新的版本是在 2009 年
 
 ## 1.6 CommonJS
 
-1.6.1 服务端 JavaScript 的重生
-Node.js 并不是第一个尝试使 JavaScript 运行在浏览器之外的项目。追根溯源，在
-JavaScript 诞生之初，网景公司就实现了服务端的 JavaScript，但由于需要支付一大笔授权费
-用才能使用，服务端 JavaScript 在当年并没有像客户端 JavaScript 一样流行开来。真正使大
-多数人见识到 JavaScript 在服务器开发威力的，是微软的 ASP。
-2000年左右，也就是 ASP 蒸蒸日上的年代，很多开发者开始学习 JScript。然而 JScript 在
-当时并不是很受欢迎，一方面是早期的 JScript 和 JavaScript 兼容较差，另一方面微软大力推
-广的是 VBScript，而不是 JScript。随着后来 LAMP 的兴起，以及Web 2.0 时代的到来， Ajax
-等一系列概念的提出， JavaScript 成了前端开发的代名词，同时服务端 JavaScript 也逐渐被人
-遗忘。
-直至几年前， JavaScript 的种种优势才被重新提起， JavaScript 又具备了在服务端流行的
-条件， Node.js 应运而生。与此同时， RingoJS 也基于 Rhino 实现了类似的服务端 JavaScript 平
-台，还有像 CouchDB、 MongoDB 等新型非关系型数据库也开始用 JavaScript 和 JSON 作为
-其数据操纵语言，基于 JavaScript 的服务端实现开始遍地开花。
+### 1.6.1 服务端 JavaScript 的重生
 
-1.6.2 CommonJS 规范与实现
-正如当年为了统一 JavaScript 语言标准，人们制定了 ECMAScript 规范一样，如今为了
-统一 JavaScript 在浏览器之外的实现， CommonJS 诞生了。 CommonJS 试图定义一套普通应
-用程序使用的API，从而填补 JavaScript 标准库过于简单的不足。 CommonJS 的终极目标是
-制定一个像 C++ 标准库一样的规范，使得基于 CommonJS API 的应用程序可以在不同的环
-境下运行，就像用 C++ 编写的应用程序可以使用不同的编译器和运行时函数库一样。为了
-保持中立， CommonJS 不参与标准库实现，其实现交给像 Node.js 之类的项目来完成。图1-5
-是 CommonJS 的各种实现。
-CommonJS 规范包括了模块（ modules）、包（ packages）、系统（ system）、二进制（ binary）、
-控制台（ console）、编码（ encodings）、文件系统（ filesystems）、套接字（ sockets）、单元测
-试（ unit testing）等部分。目前大部分标准都在拟定和讨论之中，已经发布的标准有
-Modules/1.0、 Modules/1.1、 Modules/1.1.1、 Packages/1.0、 System/1.0。
-Node.js 是目前 CommonJS 规范最热门的一个实现，它基于 CommonJS 的 Modules/1.0 规
-范实现了 Node.js 的模块，同时随着 CommonJS 规范的更新， Node.js 也在不断跟进。由于目
-前 CommonJS 大部分规范还在起草阶段， Node.js 已经率先实现了一些功能，并将其反馈给
-CommonJS 规范制定组织，但 Node.js 并不完全遵循 CommonJS 规范。这是所有规范制定者
-都会遇到的尴尬局面，因为规范的制定总是滞后于技术的发展。
+Node.js 并不是第一个尝试使 JavaScript 运行在浏览器之外的项目。追根溯源，在JavaScript 诞生之初，网景公司就实现了服务端的 JavaScript，但由于需要支付一大笔授权费用才能使用，服务端 JavaScript 在当年并没有像客户端 JavaScript 一样流行开来。真正使大多数人见识到 JavaScript 在服务器开发威力的，是微软的 ASP。
+
+2000年左右，也就是 ASP 蒸蒸日上的年代，很多开发者开始学习 JScript。然而 JScript 在当时并不是很受欢迎，一方面是早期的 JScript 和 JavaScript 兼容较差，另一方面微软大力推广的是 VBScript，而不是 JScript。随着后来 LAMP 的兴起，以及 Web 2.0 时代的到来， Ajax 等一系列概念的提出， JavaScript 成了前端开发的代名词，同时服务端 JavaScript 也逐渐被人遗忘。
+
+直至几年前， JavaScript 的种种优势才被重新提起， JavaScript 又具备了在服务端流行的条件， Node.js 应运而生。与此同时， RingoJS 也基于 Rhino 实现了类似的服务端 JavaScript 平台，还有像 CouchDB、 MongoDB 等新型非关系型数据库也开始用 JavaScript 和 JSON 作为其数据操纵语言，基于 JavaScript 的服务端实现开始遍地开花。
+
+### 1.6.2 CommonJS 规范与实现
+
+正如当年为了统一 JavaScript 语言标准，人们制定了 ECMAScript 规范一样，如今为了统一 JavaScript 在浏览器之外的实现， CommonJS 诞生了。 CommonJS 试图定义一套普通应用程序使用的API，从而填补 JavaScript 标准库过于简单的不足。 CommonJS 的终极目标是制定一个像 C++ 标准库一样的规范，使得基于 CommonJS API 的应用程序可以在不同的环境下运行，就像用 C++ 编写的应用程序可以使用不同的编译器和运行时函数库一样。为了保持中立， CommonJS 不参与标准库实现，其实现交给像 Node.js 之类的项目来完成。图1-5是 CommonJS 的各种实现。
+
+CommonJS 规范包括了模块（ modules）、包（ packages）、系统（ system）、二进制（ binary）、控制台（ console）、编码（ encodings）、文件系统（ filesystems）、套接字（ sockets）、单元测试（ unit testing）等部分。目前大部分标准都在拟定和讨论之中，已经发布的标准有Modules/1.0、 Modules/1.1、 Modules/1.1.1、 Packages/1.0、 System/1.0。Node.js 是目前 CommonJS 规范最热门的一个实现，它基于 CommonJS 的 Modules/1.0 规范实现了 Node.js 的模块，同时随着 CommonJS 规范的更新， Node.js 也在不断跟进。由于目前 CommonJS 大部分规范还在起草阶段， Node.js 已经率先实现了一些功能，并将其反馈给CommonJS 规范制定组织，但 Node.js 并不完全遵循 CommonJS 规范。这是所有规范制定者都会遇到的尴尬局面，因为规范的制定总是滞后于技术的发展。
 
 # 第二章 安装和配置Node.js
 
