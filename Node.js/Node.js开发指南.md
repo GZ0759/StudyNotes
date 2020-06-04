@@ -339,24 +339,24 @@ Node.js 在什么时候会进入事件循环呢？答案是 Node.js 程序由事
 
 模块和包是没有本质区别的，两个概念也时常混用。如果要辨析，那么可以把包理解成是实现了某个功能模块的集合，用于发布和维护。对使用者来说，模块和包的区别是透明的，因此经常不作区分。
 
-3.3.1 什么是模块
+### 3.3.1 什么是模块
 
 模块是 Node.js 应用程序的基本组成部分，文件和模块是一一对应的。换言之，一个 Node.js 文件就是一个模块，这个文件可能是 JavaScript 代码、 JSON 或者编译过的 C/C++ 扩展。
 
 在前面章节的例子中，用到了 `var http = require('http')`， 其中 http 是 Node.js 的一个核心模块，其内部是用 C++ 实现的，外部用 JavaScript 封装。我们通过require 函数获取了这个模块，然后才能使用其中的对象。
 
-3.3.2 创建及加载模块
+### 3.3.2 创建及加载模块
 
 创建模块。Node.js 提供了 exports 和 require 两个对象，其中 exports 是模块公开的接口， require 用于从外部获取一个模块的接口，即所获取模块的 exports 对象。这种接口封装方式比许多语言要简洁得多，同时也不失优雅，未引入违反语义的特性，符合传统的编程逻辑。
 
 ```js
 //module.js
 var name;
-exports.setName = function(thyName) {
-name = thyName;
+exports.setName = function (thyName) {
+  name = thyName;
 };
-exports.sayHello = function() {
-console.log('Hello ' + name);
+exports.sayHello = function () {
+  console.log('Hello ' + name);
 };
 ```
 
@@ -369,18 +369,18 @@ myModule.setName('BYVoid');
 myModule.sayHello();
 ```
 
-单次加载。上面这个例子有点类似于创建一个对象，但实际上和对象又有本质的区别，因为
-require 不会重复加载模块，也就是说无论调用多少次 require， 获得的模块都是同一个。
-我们在 getmodule.js 的基础上稍作修改：
+单次加载。上面这个例子有点类似于创建一个对象，但实际上和对象又有本质的区别，因为 require 不会重复加载模块，也就是说无论调用多少次 require， 获得的模块都是同一个。我们在 getmodule.js 的基础上稍作修改：
 
 ```js
 //loadmodule.js
 var hello1 = require('./module');
 hello1.setName('BYVoid');
+
 var hello2 = require('./module');
 hello2.setName('BYVoid 2');
-// Hello BYVoid 2
+
 hello1.sayHello();
+// Hello BYVoid 2
 ```
 
 覆盖 exports。有时候只是想把一个对象封装到模块中。模块接口的唯一变化是使用 `module.exports = Hello` 代替了 `exports.Hello = Hello`。在外部引用该模块时，其接口对象就是要输出的 Hello 对象本身，而不是原先的exports。
@@ -388,13 +388,13 @@ hello1.sayHello();
 ```js
 //hello.js
 function Hello() {
-var name;
-this.setName = function(thyName) {
-name = thyName;
-};
-this.sayHello = function() {
-console.log('Hello ' + name);
-};
+  var name;
+  this.setName = function (thyName) {
+    name = thyName;
+  };
+  this.sayHello = function () {
+    console.log('Hello ' + name);
+  };
 };
 // exports.Hello = Hello;
 module.exports = Hello;
@@ -412,19 +412,13 @@ hello.sayHello();
 
 事实上， exports 本身仅仅是一个普通的空对象，即 `{}`，它专门用来声明接口，本质上是通过它为模块闭包的内部建立了一个有限的访问接口。因为它没有任何特殊的地方，所以可以用其他东西来代替，譬如我们上面例子中的 Hello 对象。
 
-> 不可以通过对 exports 直接赋值代替对 module.exports 赋值。
-exports 实际上只是一个和 module.exports 指向同一个对象的变量，
-它本身会在模块执行结束后释放，但 module 不会，因此只能通过指定
-module.exports 来改变访问接口。
+> 不可以通过对 exports 直接赋值代替对 `module.exports` 赋值。exports 实际上只是一个和 `module.exports` 指向同一个对象的变量，它本身会在模块执行结束后释放，但 module 不会，因此只能通过指定`module.exports` 来改变访问接口。
 
-3.3.3 创建包
+### 3.3.3 创建包
 
-包是在模块基础上更深一步的抽象， Node.js 的包类似于 C/C++ 的函数库或者 Java/.Net
-的类库。它将某个独立的功能封装起来，用于发布、更新、依赖管理和版本控制。 Node.js 根
-据 CommonJS 规范实现了包机制，开发了 npm来解决包的发布和获取需求。
+包是在模块基础上更深一步的抽象， Node.js 的包类似于 C/C++ 的函数库或者 Java/.Net 的类库。它将某个独立的功能封装起来，用于发布、更新、依赖管理和版本控制。 Node.js 根据 CommonJS 规范实现了包机制，开发了 npm来解决包的发布和获取需求。
 
-Node.js 的包是一个目录，其中包含一个 JSON 格式的包说明文件 package.json。严格符
-合 CommonJS 规范的包应该具备以下特征：
+Node.js 的包是一个目录，其中包含一个 JSON 格式的包说明文件 package.json。严格符合 CommonJS 规范的包应该具备以下特征：
 
 - package.json 必须在包的顶层目录下；
 - 二进制文件应该在 bin 目录下；
@@ -432,19 +426,16 @@ Node.js 的包是一个目录，其中包含一个 JSON 格式的包说明文件
 - 文档应该在 doc 目录下；
 - 单元测试应该在 test 目录下。
 
-Node.js 对包的要求并没有这么严格，只要顶层目录下有 package.json，并符合一些规范
-即可。当然为了提高兼容性，我们还是建议你在制作包的时候，严格遵守 CommonJS 规范。
+Node.js 对包的要求并没有这么严格，只要顶层目录下有 package.json，并符合一些规范即可。当然为了提高兼容性，我们还是建议你在制作包的时候，严格遵守 CommonJS 规范。
 
 1. 作为文件夹的模块
 
-模块与文件是一一对应的。文件不仅可以是 JavaScript 代码或二进制代码，还可以是一
-个文件夹。最简单的包，就是一个作为文件夹的模块。下面我们来看一个例子，建立一个叫
-做 somepackage 的文件夹，在其中创建 index.js，内容如下：
+模块与文件是一一对应的。文件不仅可以是 JavaScript 代码或二进制代码，还可以是一个文件夹。最简单的包，就是一个作为文件夹的模块。下面我们来看一个例子，建立一个叫做 somepackage 的文件夹，在其中创建 index.js，内容如下：
 
 ```js
 //somepackage/index.js
 exports.hello = function() {
-console.log('Hello.');
+  console.log('Hello.');
 };
 ```
 
@@ -456,46 +447,35 @@ var somePackage = require('./somepackage');
 somePackage.hello();
 ```
 
-运行 node getpackage.js，控制台将输出结果 Hello.。
+运行 `node getpackage.js`，控制台将输出结果` Hello.`。
 
-我们使用这种方法可以把文件夹封装为一个模块，即所谓的包。包通常是一些模块的集
-合，在模块的基础上提供了更高层的抽象，相当于提供了一些固定接口的函数库。通过定制
-package.json，我们可以创建更复杂、更完善、更符合规范的包用于发布。
+我们使用这种方法可以把文件夹封装为一个模块，即所谓的包。包通常是一些模块的集合，在模块的基础上提供了更高层的抽象，相当于提供了一些固定接口的函数库。通过定制 package.json，我们可以创建更复杂、更完善、更符合规范的包用于发布。
 
 2. package.json
 
-在前面例子中的 somepackage 文件夹下，我们创建一个叫做 package.json 的文件，内容如
-下所示：
+在前面例子中的 somepackage 文件夹下，我们创建一个叫做 package.json 的文件，内容如下所示：
 
 ```json
 {
-"main" : "./lib/interface.js"
+  "main" : "./lib/interface.js"
 }
 ```
 
-然后将 index.js 重命名为 interface.js 并放入 lib 子文件夹下。以同样的方式再次调用这个
-包，依然可以正常使用。
+然后将 index.js 重命名为 interface.js 并放入 lib 子文件夹下。以同样的方式再次调用这个包，依然可以正常使用。
 
-Node.js 在调用某个包时，会首先检查包中 package.json 文件的 main 字段，将其作为
-包的接口模块，如果 package.json 或 main 字段不存在，会尝试寻找 index.js 或 index.node 作
-为包的接口。
+Node.js 在调用某个包时，会首先检查包中 package.json 文件的 main 字段，将其作为包的接口模块，如果 package.json 或 main 字段不存在，会尝试寻找 index.js 或 index.node 作为包的接口。
 
-package.json 是 CommonJS 规定的用来描述包的文件，完全符合规范的 package.json 文
-件应该含有以下字段。
-- name：包的名称，必须是唯一的，由小写英文字母、数字和下划线组成，不能包含
-空格。
+package.json 是 CommonJS 规定的用来描述包的文件，完全符合规范的 package.json 文件应该含有以下字段。
+
+- name：包的名称，必须是唯一的，由小写英文字母、数字和下划线组成，不能包含空格。
 - description：包的简要说明。
 - version：符合语义化版本识别①规范的版本字符串。
 - keywords：关键字数组，通常用于搜索。
-- maintainers：维护者数组，每个元素要包含 name、 email（可选）、 web（可选）
-字段。
-- contributors：贡献者数组，格式与maintainers相同。包的作者应该是贡献者
-数组的第一个元素。
+- maintainers：维护者数组，每个元素要包含 name、 email（可选）、 web（可选）字段。
+- contributors：贡献者数组，格式与maintainers相同。包的作者应该是贡献者数组的第一个元素。
 - bugs：提交bug的地址，可以是网址或者电子邮件地址。
-- licenses：许可证数组，每个元素要包含 type （许可证的名称）和 url （链接到
-许可证文本的地址）字段。
-- repositories：仓库托管地址数组，每个元素要包含 type（仓库的类型，如 git ）、
-url （仓库的地址）和 path （相对于仓库的路径，可选）字段。
+- licenses：许可证数组，每个元素要包含 type （许可证的名称）和 url （链接到许可证文本的地址）字段。
+- repositories：仓库托管地址数组，每个元素要包含 type（仓库的类型，如 git ）、url （仓库的地址）和 path （相对于仓库的路径，可选）字段。
 - dependencies：包的依赖，一个关联数组，由包名称和版本号组成。
 
 下面是一个完全符合 CommonJS 规范的 package.json 示例：
@@ -507,52 +487,42 @@ url （仓库的地址）和 path （相对于仓库的路径，可选）字段�
 elements of a CommonJS package.",
 "version": "0.7.0",
 "keywords": [
-"package",
-"example"
+  "package",
+  "example"
 ],
-"maintainers": [
-{
-"name": "Bill Smith",
-"email": "bills@example.com",
-}
-],
-"contributors": [
-{
-"name": "BYVoid",
-"web": "http://www.byvoid.com/"
-}
-],
+"maintainers": [{
+  "name": "Bill Smith",
+  "email": "bills@example.com",
+}],
+"contributors": [{
+  "name": "BYVoid",
+  "web": "http://www.byvoid.com/"
+}],
 "bugs": {
-"mail": "dev@example.com",
-"web": "http://www.example.com/bugs"
+  "mail": "dev@example.com",
+  "web": "http://www.example.com/bugs"
 },
-"licenses": [
-{
-"type": "GPLv2",
-"url": "http://www.example.org/licenses/gpl.html"
-}
-],
-"repositories": [
-{
-"type": "git",
-"url": "http://github.com/BYVoid/mypackage.git"
-}
-],
+"licenses": [{
+  "type": "GPLv2",
+  "url": "http://www.example.org/licenses/gpl.html"
+}],
+"repositories": [{
+  "type": "git",
+  "url": "http://github.com/BYVoid/mypackage.git"
+}],
 "dependencies": {
-"webkit": "1.2",
-"ssl": {
-"gnutls": ["1.0", "2.0"],
-"openssl": "0.9.8"
-}
+  "webkit": "1.2",
+  "ssl": {
+    "gnutls": ["1.0", "2.0"],
+    "openssl": "0.9.8"
+  }
 }
 }
 ```
 
-3.3.4 Node.js 包管理器
+### 3.3.4 Node.js 包管理器
 
-Node.js包管理器，即npm是 Node.js 官方提供的包管理工具①，它已经成了 Node.js 包的
-标准发布平台，用于 Node.js 包的发布、传播、依赖控制。 npm 提供了命令行工具，使你可
-以方便地下载、安装、升级、删除包，也可以让你作为开发者发布并维护包。
+Node.js包管理器，即npm是 Node.js 官方提供的包管理工具，它已经成了 Node.js 包的标准发布平台，用于 Node.js 包的发布、传播、依赖控制。 npm 提供了命令行工具，使你可以方便地下载、安装、升级、删除包，也可以让你作为开发者发布并维护包。
 
 1. 获取一个包
 
@@ -572,27 +542,15 @@ $ npm i express
 
 随后你会看到以下安装信息：
 
-此时 express 就安装成功了，并且放置在当前目录的 node_modules 子目录下。 npm 在
-获取 express 的时候还将自动解析其依赖，并获取 express 依赖的 mime、 mkdirp、
-qs 和 connect。
+此时 express 就安装成功了，并且放置在当前目录的 node_modules 子目录下。 npm 在获取 express 的时候还将自动解析其依赖，并获取 express 依赖的 mime、 mkdirp、qs 和 connect。
 
 2. 本地模式和全局模式
 
-npm在默认情况下会从 http://npmjs.org 搜索或下载包，将包安装到当前目录的node_modules
-子目录下。
+npm在默认情况下会从 http://npmjs.org 搜索或下载包，将包安装到当前目录的 node_modules 子目录下。
 
-> 如果你熟悉 Ruby 的 gem 或者 Python 的 pip，你会发现 npm 与它们的
-行为不同， gem 或 pip 总是以全局模式安装，使包可以供所有的程序使用，
-而 npm 默认会把包安装到当前目录下。这反映了 npm 不同的设计哲学。如
-果把包安装到全局，可以提高程序的重复利用程度，避免同样的内容的多
-份副本，但坏处是难以处理不同的版本依赖。如果把包安装到当前目录，
-或者说本地，则不会有不同程序依赖不同版本的包的冲突问题，同时还减
-轻了包作者的 API 兼容性压力，但缺陷则是同一个包可能会被安装许多次。
+> 如果你熟悉 Ruby 的 gem 或者 Python 的 pip，你会发现 npm 与它们的行为不同， gem 或 pip 总是以全局模式安装，使包可以供所有的程序使用，而 npm 默认会把包安装到当前目录下。这反映了 npm 不同的设计哲学。如果把包安装到全局，可以提高程序的重复利用程度，避免同样的内容的多份副本，但坏处是难以处理不同的版本依赖。如果把包安装到当前目录，或者说本地，则不会有不同程序依赖不同版本的包的冲突问题，同时还减轻了包作者的 API 兼容性压力，但缺陷则是同一个包可能会被安装许多次。
 
-在使用 npm 安装包的时候，有两种模式： 本地模式和全局模式。默认情况下我们使用 npm
-install命令就是采用本地模式，即把包安装到当前目录的 node_modules 子目录下。 Node.js
-的 require 在加载模块时会尝试搜寻 node_modules 子目录，因此使用 npm 本地模式安装
-的包可以直接被引用。
+在使用 npm 安装包的时候，有两种模式： 本地模式和全局模式。默认情况下我们使用`npm install`命令就是采用本地模式，即把包安装到当前目录的 node_modules 子目录下。 Node.js 的 require 在加载模块时会尝试搜寻 node_modules 子目录，因此使用 npm 本地模式安装的包可以直接被引用。
 
 npm 还有另一种不同的安装模式被成为全局模式，使用方法为：
 
@@ -600,60 +558,41 @@ npm 还有另一种不同的安装模式被成为全局模式，使用方法为�
 npm [install/i] -g [package_name]
 ```
 
-与本地模式的不同之处就在于多了一个参数 -g。我们在 介绍 supervisor那个小节中使用
-了 npm install -g supervisor 命令，就是以全局模式安装 supervisor。
+与本地模式的不同之处就在于多了一个参数 `-g`。我们在 介绍 supervisor那个小节中使用了 `npm install -g supervisor` 命令，就是以全局模式安装 supervisor。
 
-为什么要使用全局模式呢？多数时候并不是因为许多程序都有可能用到它，为了减少多
-重副本而使用全局模式，而是因为本地模式不会注册 PATH 环境变量。举例说明，我们安装
-supervisor 是为了在命令行中运行它，譬如直接运行 supervisor script.js，这时就需要在 PATH
-环境变量中注册 supervisor。 npm 本地模式仅仅是把包安装到 node_modules 子目录下，其中
-的 bin 目录没有包含在 PATH 环境变量中，不能直接在命令行中调用。而当我们使用全局模
-式安装时， npm 会将包安装到系统目录， 譬如 /usr/local/lib/node_modules/， 同时 package.json 文件中 bin 字段包含的文件会被链接到 /usr/local/bin/。 /usr/local/bin/ 是在PATH 环境变量中默认定义的，因此就可以直接在命令行中运行 supervisor script.js命令了。
+为什么要使用全局模式呢？多数时候并不是因为许多程序都有可能用到它，为了减少多重副本而使用全局模式，而是因为本地模式不会注册 PATH 环境变量。举例说明，我们安装 supervisor 是为了在命令行中运行它，譬如直接运行 `supervisor script.js`，这时就需要在 PATH 环境变量中注册 supervisor。 npm 本地模式仅仅是把包安装到 node_modules 子目录下，其中的 bin 目录没有包含在 PATH 环境变量中，不能直接在命令行中调用。而当我们使用全局模式安装时， npm 会将包安装到系统目录， 譬如 /usr/local/lib/node_modules/， 同时 package.json 文件中 bin 字段包含的文件会被链接到 /usr/local/bin/。 /usr/local/bin/ 是在PATH 环境变量中默认定的，因此就可以直接在命令行中运行 `supervisor script.js`命令了。
 
-> 使用全局模式安装的包并不能直接在 JavaScript 文件中用 require 获
-得，因为 require 不会搜索 /usr/local/lib/node_modules/。我们会在第 6 章
-详细介绍模块的加载顺序。本地模式和全局模式的特点如表3-2所示。
+> 使用全局模式安装的包并不能直接在 JavaScript 文件中用 require 获得，因为 require 不会搜索 /usr/local/lib/node_modules/。我们会在第 6 章详细介绍模块的加载顺序。本地模式和全局模式的特点如表3-2所示。
 
 表3-2 本地模式与全局模式
 
-模 式 可通过 require 使用 注册PATH
-本地模式 是 否
-全局模式 否 是
+| 模 式 | 可通过 require 使用 | 注册PATH |
+|---|---|---|
+| 本地模式 | 是 | 否 |
+| 全局模式 | 否 | 是 |
 
-总而言之，当我们要把某个包作为工程运行时的一部分时，通过本地模式获取，如果要
-在命令行下使用，则使用全局模式安装。
+总而言之，当我们要把某个包作为工程运行时的一部分时，通过本地模式获取，如果要在命令行下使用，则使用全局模式安装。
 
-> 在 Linux/Mac 上使用 npm install -g 安装时有可能需要 root 权限，
-因为 /usr/local/lib/node_modules/ 通常只有管理员才有权写入。
+> 在 Linux/Mac 上使用 `npm install -g` 安装时有可能需要 root 权限，因为 /usr/local/lib/node_modules/ 通常只有管理员才有权写入。
 
 3. 创建全局链接
 
-npm 提供了一个有趣的命令 npm link， 它的功能是在本地包和全局包之间创建符号链
-接。我们说过使用全局模式安装的包不能直接通过 require 使用，但通过 npm link命令
-可以打破这一限制。举个例子，我们已经通过 npm install -g express 安装了 express，
-这时在工程的目录下运行命令：
+npm 提供了一个有趣的命令 npm link， 它的功能是在本地包和全局包之间创建符号链接。我们说过使用全局模式安装的包不能直接通过 require 使用，但通过 npm link 命令可以打破这一限制。举个例子，我们已经通过 `npm install -g express` 安装了 express，这时在工程的目录下运行命令：
 
 ```
 $ npm link express
 ./node_modules/express -> /usr/local/lib/node_modules/express
 ```
 
-我们可以在 node_modules 子目录中发现一个指向安装到全局的包的符号链接。通过这
-种方法，我们就可以把全局包当本地包来使用了。
+我们可以在 node_modules 子目录中发现一个指向安装到全局的包的符号链接。通过这种方法，我们就可以把全局包当本地包来使用了。
 
 > npm link 命令不支持 Windows。
 
-除了将全局的包链接到本地以外，使用 npm link命令还可以将本地的包链接到全局。
-使用方法是在包目录（ package.json 所在目录）中运行 npm link 命令。如果我们要开发
-一个包，利用这种方法可以非常方便地在不同的工程间进行测试。
+除了将全局的包链接到本地以外，使用 `npm link`命令还可以将本地的包链接到全局。使用方法是在包目录（ package.json 所在目录）中运行 `npm link` 命令。如果我们要开发一个包，利用这种方法可以非常方便地在不同的工程间进行测试。
 
 4. 包的发布
 
-npm 可以非常方便地发布一个包，比 pip、 gem、 pear 要简单得多。在发布之前，首先
-需要让我们的包符合 npm 的规范， npm 有一套以 CommonJS 为基础包规范，但与 CommonJS
-并不完全一致，其主要差别在于必填字段的不同。通过使用 npm init 可以根据交互式问答
-产生一个符合标准的 package.json，例如创建一个名为 byvoidmodule 的目录，然后在这个
-目录中运行npm init：
+npm 可以非常方便地发布一个包，比 pip、 gem、 pear 要简单得多。在发布之前，首先需要让我们的包符合 npm 的规范， npm 有一套以 CommonJS 为基础包规范，但与 CommonJS并不完全一致，其主要差别在于必填字段的不同。通过使用 `npm init` 可以根据交互式问答产生一个符合标准的 package.json，例如创建一个名为 byvoidmodule 的目录，然后在这个目录中运行`npm init`：
 
 ```
 $ npm init
@@ -670,38 +609,30 @@ Test command: (none)
 What versions of node does it run on? (~0.6.10)
 About to write to /home/byvoid/byvoidmodule/package.json
 {
-"author": "BYVoid <byvoid.kcp@gmail.com> (http://www.byvoid.com/)",
-"name": "byvoidmodule",
-"description": "A module for learning perpose.",
-"version": "0.0.1",
-"homepage": "http://www.byvoid.com/",
-"repository": {
-"url": ""
-},
-"engines": {
-"node": "~0.6.12"
-},
-"dependencies": {},
-"devDependencies": {}
+  "author": "BYVoid <byvoid.kcp@gmail.com> (http://www.byvoid.com/)",
+  "name": "byvoidmodule",
+  "description": "A module for learning perpose.",
+  "version": "0.0.1",
+  "homepage": "http://www.byvoid.com/",
+  "repository": {
+    "url": ""
+  },
+  "engines": {
+    "node": "~0.6.12"
+  },
+  "dependencies": {},
+  "devDependencies": {}
 }
 Is this ok? (yes) yes
 ```
 
-这样就在 byvoidmodule 目录中生成一个符合 npm 规范的 package.json 文件。创建一个
-index.js 作为包的接口，一个简单的包就制作完成了。
+这样就在 byvoidmodule 目录中生成一个符合 npm 规范的 package.json 文件。创建一个 index.js 作为包的接口，一个简单的包就制作完成了。
 
-在发布前，我们还需要获得一个账号用于今后维护自己的包，使用 npm adduser 根据
-提示输入用户名、密码、邮箱，等待账号创建完成。完成后可以使用 npm whoami 测验是
-否已经取得了账号。
+在发布前，我们还需要获得一个账号用于今后维护自己的包，使用 `npm adduser` 根据提示输入用户名、密码、邮箱，等待账号创建完成。完成后可以使用 npm whoami 测验是否已经取得了账号。
 
-接下来，在 package.json 所在目录下运行 npm publish，稍等片刻就可以完成发布了。
-打开浏览器，访问 http://search.npmjs.org/ 就可以找到自己刚刚发布的包了。现在我们可以在
-世界的任意一台计算机上使用 npm install byvoidmodule 命令来安装它。图3-6 是npmjs.
-org上包的描述页面。
+接下来，在 package.json 所在目录下运行 `npm publish`，稍等片刻就可以完成发布了。打开浏览器，访问 http://search.npmjs.org/ 就可以找到自己刚刚发布的包了。现在我们可以在世界的任意一台计算机上使用 `npm install byvoidmodule `命令来安装它。图3-6 是 npmjs.org 上包的描述页面。
 
-如果你的包将来有更新，只需要在 package.json 文件中修改 version 字段，然后重新
-使用 npm publish 命令就行了。如果你对已发布的包不满意（比如我们发布的这个毫无意
-义的包），可以使用 npm unpublish 命令来取消发布。
+如果你的包将来有更新，只需要在 package.json 文件中修改 version 字段，然后重新使用 `npm publish` 命令就行了。如果你对已发布的包不满意（比如我们发布的这个毫无意义的包），可以使用 `npm unpublish` 命令来取消发布。
 
 ## 3.4 调试
 
