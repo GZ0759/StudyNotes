@@ -72,15 +72,15 @@ a.checkEmail();
 
 ```JavaScript
 var CheckObjectThree = function () {
-    this.checkName = function () {
-        console.log("验证姓名");
-    };
-    this.checkEmail = function () {
-        console.log("验证邮箱");
-    };
-    this.checkPassword = function () {
-        console.log("验证密码");
-    }
+  this.checkName = function () {
+    console.log("验证姓名");
+  };
+  this.checkEmail = function () {
+    console.log("验证邮箱");
+  };
+  this.checkPassword = function () {
+    console.log("验证密码");
+  }
 };
 
 var a = new CheckObjectThree();
@@ -97,15 +97,15 @@ a.checkPassword();
 var CheckObjectFive = function () {
 };
 CheckObjectFive.prototype = {
-    checkName: function () {
-        console.log("验证姓名");
-    },
-    checkEmail: function () {
-        console.log("验证邮箱");
-    },
-    checkPassword: function () {
-        console.log("验证密码");
-    }
+  checkName: function () {
+    console.log("验证姓名");
+  },
+  checkEmail: function () {
+    console.log("验证邮箱");
+  },
+  checkPassword: function () {
+    console.log("验证密码");
+  }
 };
 
 var a = new CheckObjectFive();
@@ -122,18 +122,18 @@ a.checkPassword();
 var CheckObjectSix = function () {
 };
 CheckObjectSix.prototype = {
-    checkName: function () {
-        console.log("验证姓名");
-        return this;
-    },
-    checkEmail: function () {
-        console.log("验证邮箱");
-        return this;
-    },
-    checkPassword: function () {
-        console.log("验证密码");
-        return this;
-    }
+  checkName: function () {
+    console.log("验证姓名");
+    return this;
+  },
+  checkEmail: function () {
+    console.log("验证邮箱");
+    return this;
+  },
+  checkPassword: function () {
+    console.log("验证密码");
+    return this;
+  }
 };
 var a = new CheckObjectSix();
 a.checkName().checkEmail().checkPassword();
@@ -145,7 +145,7 @@ prototype.js 是一款 JavaScript 框架，里面为我们方便的封装了很�
 
 ```js
 Function.prototype.checkEmail = function() {
-    // 验证邮箱
+  // 验证邮箱
 };
 
 // 这时候调用就比较方便了
@@ -157,20 +157,21 @@ var f = new Function();
 f.checkEmail();
 ```
 
-但是这样做会无缘原生对象Function，所以别人创建的函数也会被你创建的函数所污染，造成不必要的开销，但是你可以抽象出一个统一添加方法的功能方法。
+但是这样做会污染原生对象Function，所以别人创建的函数也会被你创建的函数所污染，造成不必要的开销，但是你可以抽象出一个统一添加方法的功能方法。
 
 ```js
 Function.prototype.addMethod = function(name, fn) {
-    this[name] = fn;
+  this[name] = fn;
 };
 
 var methods = function() {};
 // 或者 var methods = new Function();
+
 methods.addMethod("checkName", function() {
-    // 验证姓名
+  // 验证姓名
 });
 methods.addMethod("checkEmail", function() {
-    // 验证邮箱
+  // 验证邮箱
 });
 
 // 调用
@@ -184,8 +185,8 @@ methods.checkName();
 
 ```js
 Function.prototype.addMethod = function(name, fn) {
-    this[name] = fn;
-    return this;
+  this[name] = fn;
+  return this;
 };
 
 var methods = function() {};
@@ -208,8 +209,8 @@ methods.checkEmail().checkName();
 
 ```js
 Function.prototype.addMethod = function(name, fn) {
-    this.prototype[name] = fn;
-    return this;
+  this.prototype[name] = fn;
+  return this;
 };
 
 var Methods = function() {};
@@ -250,9 +251,9 @@ m.checkEmail();
 
 ```js
 var Book = function(id, bookname, price) {
-    this.id = id;
-    this.name = bookname;
-    this.price = price;
+  this.id = id;
+  this.name = bookname;
+  this.price = price;
 };
 
 var book = new Book(10, "JavaScript设计模式", 50);
@@ -263,12 +264,12 @@ console.log(book.bookname);
 
 ```js
 Book.prototype.display = function() {
-    // 展示这本书
+  // 展示这本书
 };
 
 // 或者
 Book.prototype = {
-    display: function() {}
+  display: function() {}
 };
 ```
 
@@ -286,25 +287,24 @@ constructor 是一个属性，当创建一个函数或者对象时都会为其�
 
 在对象创建时通过使用这些特权方法可以初始化实例对象的一些属性，因此这些在创建对象时调用的特权方法还可以看作是类的构造器。
 
-
 ```js
 // 私有属性与私有方法，对象公有属性和对象公有方法，构造器
 var Book = function(id, name, price) {
-    // 私有属性
-    var num = 1;
-    // 私有方法
-    function checkId() {}
-    // 特权方法
-    this.getName = function() {};
-    this.getPrice = function() {};
-    this.setName = function() {};
-    this.setPrice = function() {};
-    // 对象公有属性
-    this.id = id;
-    this.copy = function() {};
-    // 构造器
-    this.setName(name);
-    this.setPrice(price);
+  // 私有属性
+  var num = 1;
+  // 私有方法
+  function checkId() {}
+  // 特权方法
+  this.getName = function() {};
+  this.getPrice = function() {};
+  this.setName = function() {};
+  this.setPrice = function() {};
+  // 对象公有属性
+  this.id = id;
+  this.copy = function() {};
+  // 构造器
+  this.setName(name);
+  this.setPrice(price);
 };
 ```
 
@@ -315,13 +315,13 @@ var Book = function(id, name, price) {
 Book.isChinese = true;
 // 类静态公有方法（对象不能访问）
 Book.resetTime = function() {
-    console.log("new Time");
+  console.log("new Time");
 };
 Book.prototype = {
-    // 公有属性
-    isJSBook: false,
-    // 公有方法
-    display: function() {}
+  // 公有属性
+  isJSBook: false,
+  // 公有方法
+  display: function() {}
 };
 
 var b = new Book(11, "JavaScript设计模式", 50);
@@ -339,42 +339,43 @@ Book.resetTime(); // new Time
 闭包是有权访问另外一个函数作用域中变量的函数，即在一个函数内部创建另外一个函数。我们把这个闭包作为创建对象的构造函数，这样它既是闭包又是可实例对象的函数，即可访问到类函数作用域中的变量。有时候在闭包内部实现一个完整的类然后将其返回。
 
 ```js
-var Book = (function() {
-    // 静态私有变量
-    var bookNum = 0;
-    // 静态私有方法
-    function checkBook(name) {}
+var Book = (function () {
+  // 静态私有变量
+  var bookNum = 0;
+  // 静态私有方法
+  function checkBook(name) {}
     // 创建类
-    function _book(newId, newName, newPrice) {
-        // 私有变量
-        var name, price;
-        // 私有方法
-        function checkID(id) {}
+
+  function _book(newId, newName, newPrice) {
+      // 私有变量
+      var name, price;
+      // 私有方法
+      function checkID(id) {}
         // 特权方法
-        this.getName = function() {};
-        this.getPrice = function() {};
-        this.setName = function() {};
-        this.setPrice = function() {};
-        // 公有属性
-        this.id = newId;
-        // 公有方法
-        this.copy = function() {};
-        bookNum++;
-        if (bookNum > 100) {
-            throw new Error("我们仅出版100本书。");
-        }
-        // 构造器
-        this.setName(name);
-        this.setPrice(price);
+      this.getName = function () {};
+      this.getPrice = function () {};
+      this.setName = function () {};
+      this.setPrice = function () {};
+      // 公有属性
+      this.id = newId;
+      // 公有方法
+      this.copy = function () {};
+      bookNum++;
+      if (bookNum > 100) {
+        throw new Error("我们仅出版100本书。");
+      }
+      // 构造器
+      this.setName(name);
+      this.setPrice(price);
     }
     // 构造原型
-    _book.prototype = {
-        // 静态公有属性
-        isJSBook: false,
-        display: function() {}
-    };
-    // 返回类
-    return _book;
+  _book.prototype = {
+    // 静态公有属性
+    isJSBook: false,
+    display: function () {}
+  };
+  // 返回类
+  return _book;
 })();
 ```
 
@@ -384,9 +385,9 @@ var Book = (function() {
 
 ```js
 var Book = function(title, time, type) {
-    this.title = title;
-    this.time = time;
-    this.type = type;
+  this.title = title;
+  this.time = time;
+  this.type = type;
 };
 var book = Book("JavaScript", "2014", "js");
 console.log(book); // undefined
@@ -400,15 +401,15 @@ console.log(window.type); // js
 ```js
 /** 图书安全类 */
 var Book = function(title, time, type) {
-    // 判断执行过程中this是否是当前这个对象（如果是用new创建的）
-    if (this instanceof Book) {
-        this.title = title;
-        this.time = time;
-        this.type = type;
-    } else {
-        // 否则重新创建这个对象
-        return new Book(title, time, type);
-    }
+  // 判断执行过程中this是否是当前这个对象（如果是用new创建的）
+  if (this instanceof Book) {
+    this.title = title;
+    this.time = time;
+    this.type = type;
+  } else {
+    // 否则重新创建这个对象
+    return new Book(title, time, type);
+  }
 };
 
 var book = Book("javaScript", "2014", "js");
@@ -435,22 +436,22 @@ console.log(window.time); // undefined
 ```js
 // 声明父类
 function SuperClass() {
-    this.superValue = true;
+  this.superValue = true;
 }
 // 为父类添加公有方法
 SuperClass.prototype.getSuperValue = function() {
-    return this.superValue;
+  return this.superValue;
 };
 // 声明子类
 function SubClass() {
-    this.SubValue = false;
+  this.SubValue = false;
 }
 
 // 继承父类
 SubClass.prototype = new SuperClass();
 // 为子类添加公有方法
 SubClass.prototype.getSubValue = function() {
-    return this.SubValue;
+  return this.SubValue;
 };
 
 var instance = new SubClass();
@@ -525,43 +526,43 @@ instance1.showBooks(); // TypeError
 /** 组合式继承 */
 // 声明父类
 function SuperClass() {
-    // 值类型公有属性
-    this.name = name;
-    // 引用类型公有属性
-    this.books = ["html", "css", "JavaScript"];
+  // 值类型公有属性
+  this.name = name;
+  // 引用类型公有属性
+  this.books = ["html", "css", "JavaScript"];
 }
 
 // 父类原型公有方法
-SuperClass.prototype.getName = function() {
-    console.log(this.name);
+SuperClass.prototype.getName = function () {
+  console.log(this.name);
 };
 
 // 声明子类
 function SubClass(name, time) {
-    // 构造函数式继承父类属性
-    SuperClass.call(this, name);
-    // 子类中新增公有属性
-    this.time = time;
+  // 构造函数式继承父类属性
+  SuperClass.call(this, name);
+  // 子类中新增公有属性
+  this.time = time;
 }
 
 // 类式继承 子类原型继承父类
 SubClass.prototype = new SuperClass();
 // 子类原型方法
-SubClass.prototype.getTime = function() {
-    console.log(this.time);
+SubClass.prototype.getTime = function () {
+  console.log(this.time);
 };
 
 // 测试
 var instance1 = new SubClass("js book", 2014);
 instance1.books.push("设计模式");
 console.log(instance1.books); // ["html", "css", "JavaScript", "设计模式"]
-instance1.getName();  // js book;
-instance1.getTime();  // 2014
+instance1.getName(); // js book;
+instance1.getTime(); // 2014
 
 var instance2 = new SubClass("css book", 2013);
 console.log(instance2.books); // ["html", "css", "JavaScript"]
-instance1.getName();  // css book;
-instance1.getTime();  // 2013
+instance1.getName(); // css book;
+instance1.getTime(); // 2013
 ```
 
 洁净的继承者——原型式继承。它是类式继承的一个封装，其中的过渡对象就相当于类式集成中的子类，只不过在原型式中作为一个过渡对象出现的，目的是为了创建要返回的新的实例化对象。
@@ -569,18 +570,18 @@ instance1.getTime();  // 2013
 ```js
 /** 原型式继承 */
 function inheritObject(o) {
-    // 声明一个过渡函数对象
-    function F() {}
+  // 声明一个过渡函数对象
+  function F() {}
     // 过渡对象的原型继承符对象
-    F.prototype = o;
-    // 返回过渡对象的一个实例，该实例的原型继承了父对象
-    return new F();
+  F.prototype = o;
+  // 返回过渡对象的一个实例，该实例的原型继承了父对象
+  return new F();
 }
 
 // 测试用例
 var book = {
-    name: "js book",
-    alikeBook: ["css book", "html book"]
+  name: "js book",
+  alikeBook: ["css book", "html book"]
 };
 
 var newBook = inheritObject(book);
@@ -606,33 +607,34 @@ console.log(book.alikeBook); // ["css book", "html book", "xml book", "as book"]
 ```js
 /** 寄生式继承 */
 function inheritObject(o) {
-    // 声明一个过渡函数对象
-    function F() {}
-    // 过渡对象的原型继承父对象
-    F.prototype = o;
-    // 返回过渡对象的一个实例，该实例的原型继承了父对象
-    return new F();
+  // 声明一个过渡函数对象
+  function F() {}
+  // 过渡对象的原型继承父对象
+  F.prototype = o;
+  // 返回过渡对象的一个实例，该实例的原型继承了父对象
+  return new F();
 }
 
 // 声明基对象
 var book = {
-    name: "js book",
-    alikeBook: ["css book", "html book"]
+  name: "js book",
+  alikeBook: ["css book", "html book"]
 };
 
 function createBook(obj) {
-    // 通过原型继承方式创建新对象
-    var o = new inheritObject(obj);
-    // 拓展新对象
-    o.getName = function(){
-        console.log(name);
-    };
-    // 返回拓展后的新对象
-    return o;
+  // 通过原型继承方式创建新对象
+  var o = new inheritObject(obj);
+  // 拓展新对象
+  o.getName = function(){
+      console.log(name);
+  };
+  // 返回拓展后的新对象
+  return o;
 }
 ```
 
 终极继承者——寄生组合式继承。寄生是寄生式继承，另外一种继承模式是构造函数继承。但是这里的寄生式继承有些特别，这里它处理的不是对象，而是类的原型。
+
 ```js
 /**
  * 寄生式继承 继承原型
@@ -641,46 +643,46 @@ function createBook(obj) {
  **/
 
 function inheritObject(o) {
-    // 声明一个过渡函数对象
-    function F() {}
-    // 过渡对象的原型继承父对象
-    F.prototype = o;
-    // 返回过渡对象的一个实例，该实例的原型继承了父对象
-    return new F();
+  // 声明一个过渡函数对象
+  function F() {}
+  // 过渡对象的原型继承父对象
+  F.prototype = o;
+  // 返回过渡对象的一个实例，该实例的原型继承了父对象
+  return new F();
 }
 
 function inheritPrototype(subClass, superClass) {
-    // 复制一份父类的原型保存在变量中
-    var p = inheritObject(superClass.prototype);
-    p.constructor = subClass;
-    subClass.prototype = p;
+  // 复制一份父类的原型保存在变量中
+  var p = inheritObject(superClass.prototype);
+  p.constructor = subClass;
+  subClass.prototype = p;
 }
 
 /** 测试用例 */
 // 定义父类
 function SuperClass(name) {
-    this.name = name;
-    this.colors = ["red", "blue", "green"];
+  this.name = name;
+  this.colors = ["red", "blue", "green"];
 }
 
 //定义父类原型方法
 SuperClass.prototype.getName = function() {
-    console.log(this.name);
+  console.log(this.name);
 };
 
 // 定义子类
 function SubClass(name, time) {
-    // 构造函数式继承
-    SuperClass.call(this,name);
-    // 子类增强属性
-    this.time = time;
+  // 构造函数式继承
+  SuperClass.call(this,name);
+  // 子类增强属性
+  this.time = time;
 }
 
 // 寄生式继承父类原型
 inheritPrototype(SubClass,SuperClass);
 // 子类新增原型方法
 SubClass.prototype.getTime = function(){
-    console.log(this.time);
+  console.log(this.time);
 };
 // 创建两个测试方法
 var instance1 = new SubClass("js book", 2014);
@@ -702,21 +704,21 @@ extend 方法是一个浅复制过程，只能复制值类型的属性，对于�
 ```js
 /** 单继承 属性复制 */
 var extend = function(target, source) {
-    for (var property in source) {
-        // 将对象中的属性复制到目标对象中
-        target[property] = source[property];
-    }
-    // 返回目标对象
-    return target;
+  for (var property in source) {
+    // 将对象中的属性复制到目标对象中
+    target[property] = source[property];
+  }
+  // 返回目标对象
+  return target;
 };
 
 // 测试用例
 var book = {
-    name: "JavaScript设计模式",
-    alike: ["css", "html", "JavaScript"]
+  name: "JavaScript设计模式",
+  alike: ["css", "html", "JavaScript"]
 };
 var anotherBook = {
-    color: "blue"
+  color: "blue"
 };
 extend(anotherBook, book);
 console.log(anotherBook.name); // JavaScript设计模式
@@ -735,23 +737,23 @@ mix 方法的作用就是将传入的多个对象的属性复制到源对象中�
 ```js
 /** 多继承 属性复制 */
 var mix = function() {
-    var i = 1, // 从第二个参数开始为被继承的对象
-        leng = arguments.length, // 获取参数长度
-        target = arguments[0], // 第一个参数为目标对象
-        arg; // 缓存参数对象
-    // 遍历被继承的对象
-    for (; i < len; i++) {
-        // 缓存当前对象
-        arg = arguments[i];
-        // 遍历被继承对象中的属性
-        for (var variable in arg) {
-            // 将被继承对象中的属性复制到目标对象中
-            target[variable] = arg[variable];
-        }
+  var i = 1, // 从第二个参数开始为被继承的对象
+    leng = arguments.length, // 获取参数长度
+    target = arguments[0], // 第一个参数为目标对象
+    arg; // 缓存参数对象
+  // 遍历被继承的对象
+  for (; i < len; i++) {
+    // 缓存当前对象
+    arg = arguments[i];
+    // 遍历被继承对象中的属性
+    for (var variable in arg) {
+      // 将被继承对象中的属性复制到目标对象中
+      target[variable] = arg[variable];
     }
+  }
 
-    // 返回目标对象
-    return target;
+  // 返回目标对象
+  return target;
 };
 
 otherBook.mix(book1, book2);
@@ -764,18 +766,18 @@ console.log(otherBook);
 
 ```js
 function add() {
-    // 获取参数
-    var arg = arguments,
-        len = arg.length;
-    switch (len) {
-        // 如果没有参数
-        case 0:
-            return 10;
-        case 1:
-            return 10 + arg[0];
-        case 2:
-            return arg[0] + arg[1];
-    }
+  // 获取参数
+  var arg = arguments,
+    len = arg.length;
+  switch (len) {
+    // 如果没有参数
+    case 0:
+      return 10;
+    case 1:
+      return 10 + arg[0];
+    case 2:
+      return arg[0] + arg[1];
+  }
 }
 
 // 测试用例
@@ -798,10 +800,10 @@ console.log(add(6, 7)); // 13
 
 ```js
 var LoginAlert = function(text) {
-    this.content = text;
+  this.content = text;
 };
 LoginAlert.prototype.show = function() {
-    // 显示警示框
+  // 显示警示框
 };
 var userNameAlert = new LoginAlert('用户名不能多于16个字母或数字');
 userNameAlert.show();
@@ -816,14 +818,14 @@ passwordAlert.show('输入的密码不正确');
 
 ```js
 var PopFactory = function(name) {
-    switch (name) {
-        case 'alert': 
-            return new LoginAlert();
-        case 'confirm': 
-            return new LoginConfirm();
-        case 'prompt': 
-            return new LoginPrompt();
-    }
+  switch (name) {
+    case 'alert': 
+      return new LoginAlert();
+    case 'confirm': 
+      return new LoginConfirm();
+    case 'prompt': 
+      return new LoginPrompt();
+  }
 }
 ```
 
@@ -831,21 +833,21 @@ var PopFactory = function(name) {
 
 ```js
 function createPop(type, text) {
-    var o = new Object();
-    o.content = text;
-    o.show = function() {
-        // 显示方法
-    };
-    if(type === 'alert') {
-        // 警示框差异部分
-    }
-    if(type === 'prompt') {
-        // 提示框差异部分
-    }
-    if(type === 'confirm') {
-        // 确定框差异部分
-    }
-    return o;
+  var o = new Object();
+  o.content = text;
+  o.show = function() {
+    // 显示方法
+  };
+  if(type === 'alert') {
+    // 警示框差异部分
+  }
+  if(type === 'prompt') {
+    // 提示框差异部分
+  }
+  if(type === 'confirm') {
+    // 确定框差异部分
+  }
+  return o;
 }
 
 var userNameAlert = createPop("alert", "用户名只能是26个字母和数字");
@@ -866,9 +868,9 @@ var userNameAlert = createPop("alert", "用户名只能是26个字母和数字")
 ```js
 /** 使用安全模式类可以屏蔽创建类的实例时，忽略使用new关键字造成的错误 */
 var Demo = function() {
-    if (!(this instanceof Demo)) {
-        return new Demo();
-    }
+  if (!(this instanceof Demo)) {
+    return new Demo();
+  }
 };
 
 var d = Demo();
@@ -880,48 +882,48 @@ d.show(); // 成功获取！
 ```js
 // 安全模式创建的工厂类
 var Factory = function(type, content) {
-    if (this instanceof Factory) {
-        var s = new this[type](content);
-        return s;
-    } else {
-        return new Factory(type, content);
-    }
+  if (this instanceof Factory) {
+    var s = new this[type](content);
+    return s;
+  } else {
+    return new Factory(type, content);
+  }
 };
 
 // 工厂原型中设置创建所有类型数据对象的基类
 Factory.prototype = {
-    Java: function(content) {
-        // 将内容保存在content里面以备以后使用
-        this.content = content;
-        // 创建对象时，通过闭包，直接执行，将内容按需求的样式插入到页面内
-        (function(content) {
-            var div = document.createElement("div");
-            div.innerHTML = content;
-            div.style.color = "green";
-            document.getElementById('container').appendChild(div);
-        })(content);
-    },
-    Php: function(content) {
-        // ......
-    },
-    JavaScript: function(content) {
-        // ......
-    }
+  Java: function(content) {
+    // 将内容保存在content里面以备以后使用
+    this.content = content;
+    // 创建对象时，通过闭包，直接执行，将内容按需求的样式插入到页面内
+    (function(content) {
+        var div = document.createElement("div");
+        div.innerHTML = content;
+        div.style.color = "green";
+        document.getElementById('container').appendChild(div);
+    })(content);
+  },
+  Php: function(content) {
+    // ......
+  },
+  JavaScript: function(content) {
+    // ......
+  }
 };
 
 var data = [{
-    type: "JavaScript",
-    content: "JavaScript哪家强"
+  type: "JavaScript",
+  content: "JavaScript哪家强"
 }, {
-    type: "Java",
-    content: "Java哪家强"
+  type: "Java",
+  content: "Java哪家强"
 }, {
-    type: "php",
-    content: "php哪家强"
+  type: "php",
+  content: "php哪家强"
 }];
 
 for (var i = 0; i < data.length; i++) {
-    Factory(data[i].type, data[i].content);
+  Factory(data[i].type, data[i].content);
 }
 ```
 
