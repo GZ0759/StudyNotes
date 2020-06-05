@@ -636,10 +636,7 @@ Is this ok? (yes) yes
 
 ## 3.4 调试
 
-在没有编译器或解译器的支持下，为缺乏内省机制的语言实现一个
-调试器是几乎不可能的。 Node.js 的调试功能正是由 V8 提供的，保持了一贯的高效和方便的
-特性。尽管你也许已经对原始的调试方式十分适应，而且有了一套高效的调试技巧，但我们
-还是想介绍一下如何使用 Node.js 内置的工具和第三方模块来进行单步调试。
+在没有编译器或解译器的支持下，为缺乏内省机制的语言实现一个调试器是几乎不可能的。 Node.js 的调试功能正是由 V8 提供的，保持了一贯的高效和方便的特性。尽管你也许已经对原始的调试方式十分适应，而且有了一套高效的调试技巧，但我们还是想介绍一下如何使用 Node.js 内置的工具和第三方模块来进行单步调试。
 
 命令行调试。Node.js 支持命令行下的单步调试。在命令行下执行`node debug debug.js`，将会启动调试工具。
 
@@ -658,8 +655,8 @@ node --debug-brk[=port] script.js
 
 # 第四章 Node.js核心模块
 
-核心模块是 Node.js 的心脏，它由一些精简而高效的库组成，为 Node.js 提供了基本的
-API。本章中，我们挑选了一部分最常用的核心模块加以详细介绍，主要内容包括：
+核心模块是 Node.js 的心脏，它由一些精简而高效的库组成，为 Node.js 提供了基本的 API。本章中，我们挑选了一部分最常用的核心模块加以详细介绍，主要内容包括：
+
 - 全局对象；
 - 常用工具；
 - 事件机制；
@@ -670,26 +667,21 @@ API。本章中，我们挑选了一部分最常用的核心模块加以详细�
 
 JavaScript 中有一个特殊的对象，称为全局对象（Global Object），它及其所有属性都可以在程序的任何地方访问，即全局变量。在浏览器 JavaScript 中，通常 window 是全局对象，而 Node.js 中的全局对象是 global，所有全局变量（除了 global 本身以外）都是 global 对象的属性。
 
-我们在 Node.js 中能够直接访问到对象通常都是 global 的属性，如 console、process
-等，下面逐一介绍。
+我们在 Node.js 中能够直接访问到对象通常都是 global 的属性，如 console、process 等，下面逐一介绍。
 
-4.1.1 全局对象与全局变量
+### 4.1.1 全局对象与全局变量
 
-global 最根本的作用是作为全局变量的宿主。按照 ECMAScript 的定义，满足以下条
-件的变量是全局变量：
+global 最根本的作用是作为全局变量的宿主。按照 ECMAScript 的定义，满足以下条件的变量是全局变量：
 
 - 在最外层定义的变量；
 - 全局对象的属性；
 - 隐式定义的变量（未定义直接赋值的变量）。
 
-当你定义一个全局变量时，这个变量同时也会成为全局对象的属性，反之亦然。需要注
-意的是，在 Node.js 中你不可能在最外层定义变量，因为所有用户代码都是属于当前模块的，
-而模块本身不是最外层上下文。
+当你定义一个全局变量时，这个变量同时也会成为全局对象的属性，反之亦然。需要注意的是，在 Node.js 中你不可能在最外层定义变量，因为所有用户代码都是属于当前模块的，而模块本身不是最外层上下文。
 
-> 永远使用 var 定义变量以避免引入全局变量，因为全局变量会污染
-命名空间，提高代码的耦合风险。
+> 永远使用 var 定义变量以避免引入全局变量，因为全局变量会污染命名空间，提高代码的耦合风险。
 
-4.1.2 process
+### 4.1.2 process
 
 process 是一个全局变量，即 global 对象的属性。它用于描述当前 Node.js 进程状态的对象，提供了一个与操作系统的简单接口。下面将会介绍 process 对象的一些最常用的成员方法。
 
@@ -701,52 +693,41 @@ process 是一个全局变量，即 global 对象的属性。它用于描述当�
 
 `process.nextTick(callback)`的功能是为事件循环设置一项任务， Node.js 会在下次事件循环调响应时调用 callback。
 
- Node.js 适合 I/O 密集型的应用，而不是计算密集型的应用，
-因为一个 Node.js 进程只有一个线程，因此在任何时刻都只有一个事件在执行。如果这个事
-件占用大量的 CPU 时间，执行事件循环中的下一个事件就需要等待很久，因此 Node.js 的一
-个编程原则就是尽量缩短每个事件的执行时间。 process.nextTick() 提供了一个这样的
-工具，可以把复杂的工作拆散，变成一个个较小的事件。
+Node.js 适合 I/O 密集型的应用，而不是计算密集型的应用，因为一个 Node.js 进程只有一个线程，因此在任何时刻都只有一个事件在执行。如果这个事件占用大量的 CPU 时间，执行事件循环中的下一个事件就需要等待很久，因此 Node.js 的一个编程原则就是尽量缩短每个事件的执行时间。 `process.nextTick()` 提供了一个这样的工具，可以把复杂的工作拆散，变成一个个较小的事件。
 
 ```js
 function doSomething(args, callback) {
-somethingComplicated(args);
-callback();
+  somethingComplicated(args);
+  callback();
 }
 doSomething(function onEnd() {
-compute();
+  compute();
 });
 ```
 
-我们假设 compute() 和 somethingComplicated() 是两个较为耗时的函数，以上
-的程序在调用 doSomething() 时会先执行 somethingComplicated()，然后立即调用
-回调函数，在 onEnd() 中又会执行 compute()。下面用 process.nextTick() 改写上
-面的程序：
+我们假设 `compute()` 和 `somethingComplicated()` 是两个较为耗时的函数，以上的程序在调用 `doSomething()` 时会先执行 `somethingComplicated()`，然后立即调用回调函数，在 `onEnd()` 中又会执行 `compute()`。下面用 `process.nextTick()` 改写上面的程序：
 
 ```js
 function doSomething(args, callback) {
-somethingComplicated(args);
-process.nextTick(callback);
+  somethingComplicated(args);
+  process.nextTick(callback);
 }
 doSomething(function onEnd() {
-compute();
+  compute();
 });
 ```
 
-改写后的程序会把上面耗时的操作拆分为两个事件，减少每个事件的执行时间，提高事
-件响应速度。
+改写后的程序会把上面耗时的操作拆分为两个事件，减少每个事件的执行时间，提高事件响应速度。
 
-> 不要使用 setTimeout(fn,0)代替 process.nextTick(callback)，
-前者比后者效率要低得多。
+> 不要使用 `setTimeout(fn,0)`代替 `process.nextTick(callback)`，前者比后者效率要低得多。
 
-我们探讨了process对象常用的几个成员，除此之外process还展示了process.platform、
-process.pid、 process.execPath、 process.memoryUsage() 等方法，以及 POSIX
-进程信号响应机制。
+我们探讨了process对象常用的几个成员，除此之外process还展示了`process.platform`、`process.pid`、 `process.execPath`、 `process.memoryUsage()` 等方法，以及 POSIX进程信号响应机制。
 
-4.1.3 console
+### 4.1.3 console
 
 console 用于提供控制台标准输出，它是由 Internet Explorer 的JScript引擎提供的调试工具，后来逐渐成为浏览器的事实标准。Node.js 沿用了这个标准，提供与习惯行为一致的 console 对象，用于向标准输出流（ stdout）或标准错误流（ stderr）输出字符。
 
-`console.log()`：向标准输出流打印字符并以换行符结束。 console.log 接受若干个参数，如果只有一个参数，则输出这个参数的字符串形式。如果有多个参数，则以类似于 C 语言 printf() 命令的格式输出。第一个参数是一个字符串，如果没有参数，只打印一个换行。
+`console.log()`：向标准输出流打印字符并以换行符结束。 `console.log` 接受若干个参数，如果只有一个参数，则输出这个参数的字符串形式。如果有多个参数，则以类似于 C 语言 `printf()` 命令的格式输出。第一个参数是一个字符串，如果没有参数，只打印一个换行。
 
 `console.error()`：与 `console.log()` 用法相同，只是向标准错误流输出。
 
@@ -756,52 +737,50 @@ console 用于提供控制台标准输出，它是由 Internet Explorer 的JScri
 
 util 是一个 Node.js 核心模块，提供常用函数的集合，用于弥补核心 JavaScript 的功能过于精简的不足。
 
-4.2.1 util.inherits
+### 4.2.1 util.inherits
 
-`util.inherits(constructor, superConstructor)`是一个实现对象间原型继承
-的函数。 JavaScript 的面向对象特性是基于原型的，与常见的基于类的不同。 JavaScript 没有
-提供对象继承的语言级别特性，而是通过原型复制来实现的。
+`util.inherits(constructor, superConstructor)`是一个实现对象间原型继承的函数。 JavaScript 的面向对象特性是基于原型的，与常见的基于类的不同。 JavaScript 没有提供对象继承的语言级别特性，而是通过原型复制来实现的。
 
 ```js
 var util = require('util');
 function Base() {
-this.name = 'base';
-this.base = 1991;
-this.sayHello = function() {
-console.log('Hello ' + this.name);
-};
+  this.name = 'base';
+  this.base = 1991;
+  this.sayHello = function() {
+    console.log('Hello ' + this.name);
+  };
 }
 Base.prototype.showName = function() {
-console.log(this.name);
+  console.log(this.name);
 };
 function Sub() {
-this.name = 'sub';
+  this.name = 'sub';
 }
 util.inherits(Sub, Base);
+
 var objBase = new Base();
 objBase.showName();
 objBase.sayHello();
 console.log(objBase);
+
 var objSub = new Sub();
 objSub.showName();
 //objSub.sayHello();
 console.log(objSub);
 ```
 
-我们定义了一个基础对象 Base 和一个继承自 Base 的 Sub， Base 有三个在构造函数
-内定义的属性和一个原型中定义的函数，通过 util.inherits 实现继承。运行结果如下：
+我们定义了一个基础对象 Base 和一个继承自 Base 的 Sub， Base 有三个在构造函数内定义的属性和一个原型中定义的函数，通过 util.inherits 实现继承。运行结果如下：
 
 ```js
 base
 Hello base
 { name: 'base', base: 1991, sayHello: [Function] }
+
 sub
 { name: 'sub' }
 ```
 
-注意， Sub 仅仅继承了 Base 在原型中定义的函数，而构造函数内部创造的 base 属
-性和 sayHello 函数都没有被 Sub 继承。同时，在原型中定义的属性不会被 console.log 作
-为对象的属性输出。如果我们去掉 objSub.sayHello(); 这行的注释，将会看到：
+注意， Sub 仅仅继承了 Base 在原型中定义的函数，而构造函数内部创造的 base 属性和 sayHello 函数都没有被 Sub 继承。同时，在原型中定义的属性不会被 `console.log` 作为对象的属性输出。如果我们去掉 `objSub.sayHello();` 这行的注释，将会看到：
 
 ```
 node.js:201
@@ -817,27 +796,23 @@ at Array.0 (module.js:479:10)
 at EventEmitter._tickCallback (node.js:192:40)
 ```
 
-4.2.2 util.inspect
+### 4.2.2 util.inspect
 
 `util.inspect(object,[showHidden],[depth],[colors])`是一个将任意对象转换为字符串的方法，通常用于调试和错误输出。它至少接受一个参数 object，即要转换的对象。
 
 showHidden 是一个可选参数，如果值为 true，将会输出更多隐藏信息。
 
-depth 表示最大递归的层数，如果对象很复杂，你可以指定层数以控制输出信息的多
-少。如果不指定depth，默认会递归2层，指定为 null 表示将不限递归层数完整遍历对象。
-如果color 值为 true，输出格式将会以 ANSI 颜色编码，通常用于在终端显示更漂亮
-的效果。
+depth 表示最大递归的层数，如果对象很复杂，你可以指定层数以控制输出信息的多少。如果不指定depth，默认会递归2层，指定为 null 表示将不限递归层数完整遍历对象。如果color 值为 true，输出格式将会以 ANSI 颜色编码，通常用于在终端显示更漂亮的效果。
 
-特别要指出的是， util.inspect 并不会简单地直接把对象转换为字符串，即使该对
-象定义了 toString 方法也不会调用。
+特别要指出的是， `util.inspect` 并不会简单地直接把对象转换为字符串，即使该对象定义了 toString 方法也不会调用。
 
 ```js
 var util = require('util');
 function Person() {
-this.name = 'byvoid';
-this.toString = function() {
-return this.name;
-};
+  this.name = 'byvoid';
+  this.toString = function() {
+    return this.name;
+  };
 }
 var obj = new Person();
 console.log(util.inspect(obj));
@@ -848,31 +823,26 @@ console.log(util.inspect(obj, true));
 
 ```js
 { name: 'byvoid', toString: [Function] }
+
 { toString:
-{ [Function]
-[prototype]: { [constructor]: [Circular] },
-[caller]: null,
-[length]: 0,
-[name]: '',
-[arguments]: null },
-name: 'byvoid' }
+  { [Function]
+    [prototype]: { [constructor]: [Circular] },
+    [caller]: null,
+    [length]: 0,
+    [name]: '',
+    [arguments]: null },
+  name: 'byvoid' }
 ```
 
-除了以上我们介绍的几个函数之外， util还提供了util.isArray()、 util.isRegExp()、
-util.isDate()、 util.isError() 四个类型测试工具，以及 util.format()、 util.
-debug() 等工具。
+除了以上我们介绍的几个函数之外， util还提供了`util.isArray()`、 `util.isRegExp()`、`util.isDate()`、 `util.isError()` 四个类型测试工具，以及 `util.format()`、 `util.debug()` 等工具。
 
 ## 4.3 事件驱动events
 
 events 是 Node.js 最重要的模块，没有“之一”，原因是 Node.js 本身架构就是事件式的，而它提供了唯一的接口，所以堪称 Node.js 事件编程的基石。events 模块不仅用于用户代码与 Node.js 下层事件循环的交互，还几乎被所有的模块依赖。
 
-4.3.1 事件发射器
+### 4.3.1 事件发射器
 
-events 模块只提供了一个对象： events.EventEmitter。 EventEmitter 的核心就
-是事件发射与事件监听器功能的封装。 EventEmitter 的每个事件由一个事件名和若干个参
-数组成，事件名是一个字符串，通常表达一定的语义。对于每个事件， EventEmitter 支持
-若干个事件监听器。当事件发射时，注册到这个事件的事件监听器被依次调用，事件参数作
-为回调函数参数传递。
+events 模块只提供了一个对象： `events.EventEmitter`。 EventEmitter 的核心就是事件发射与事件监听器功能的封装。 EventEmitter 的每个事件由一个事件名和若干个参数组成，事件名是一个字符串，通常表达一定的语义。对于每个事件， EventEmitter 支持若干个事件监听器。当事件发射时，注册到这个事件的事件监听器被依次调用，事件参数作为回调函数参数传递。
 
 让我们以下面的例子解释这个过程：
 
@@ -880,10 +850,10 @@ events 模块只提供了一个对象： events.EventEmitter。 EventEmitter 的
 var events = require('events');
 var emitter = new events.EventEmitter();
 emitter.on('someEvent', function(arg1, arg2) {
-console.log('listener1', arg1, arg2);
+  console.log('listener1', arg1, arg2);
 });
 emitter.on('someEvent', function(arg1, arg2) {
-console.log('listener2', arg1, arg2);
+  console.log('listener2', arg1, arg2);
 });
 emitter.emit('someEvent', 'byvoid', 1991);
 ```
@@ -895,23 +865,19 @@ listener1 byvoid 1991
 listener2 byvoid 1991
 ```
 
-以上例子中， emitter 为事件 someEvent 注册了两个事件监听器，然后发射了
-someEvent 事件。运行结果中可以看到两个事件监听器回调函数被先后调用。
+以上例子中， emitter 为事件 someEvent 注册了两个事件监听器，然后发射了 someEvent 事件。运行结果中可以看到两个事件监听器回调函数被先后调用。
 
 这就是EventEmitter最简单的用法。接下来我们介绍一下EventEmitter常用的API。
 
-- `EventEmitter.on(event, listener)` 为指定事件注册一个监听器，接受一个字符串 event 和一个回调函数 listener。
-- `EventEmitter.emit(event, [arg1], [arg2], [...])` 发射 event 事件，传递若干可选参数到事件监听器的参数表。
-- `EventEmitter.once(event, listener)` 为指定事件注册一个单次监听器，即监听器最多只会触发一次，触发后立刻解除该监听器。
-- `EventEmitter.removeListener(event, listener)` 移除指定事件的某个监听器， listener 必须是该事件已经注册过的监听器。
-- `EventEmitter.removeAllListeners([event])` 移除所有事件的所有监听器，如果指定 event，则移除指定事件的所有监听器。
+1. `EventEmitter.on(event, listener)` 为指定事件注册一个监听器，接受一个字符串 event 和一个回调函数 listener。
+2. `EventEmitter.emit(event, [arg1], [arg2], [...])` 发射 event 事件，传递若干可选参数到事件监听器的参数表。
+3. `EventEmitter.once(event, listener)` 为指定事件注册一个单次监听器，即监听器最多只会触发一次，触发后立刻解除该监听器。
+4. `EventEmitter.removeListener(event, listener)` 移除指定事件的某个监听器， listener 必须是该事件已经注册过的监听器。
+5. `EventEmitter.removeAllListeners([event])` 移除所有事件的所有监听器，如果指定 event，则移除指定事件的所有监听器。
 
-4.3.2 error 事件
+### 4.3.2 error 事件
 
-EventEmitter 定义了一个特殊的事件 error，它包含了“错误”的语义，我们在遇到
-异常的时候通常会发射 error 事件。当 error 被发射时， EventEmitter 规定如果没有响
-应的监听器， Node.js 会把它当作异常，退出程序并打印调用栈。我们一般要为会发射 error
-事件的对象设置监听器，避免遇到错误后整个程序崩溃。例如：
+EventEmitter 定义了一个特殊的事件 error，它包含了“错误”的语义，我们在遇到异常的时候通常会发射 error 事件。当 error 被发射时， EventEmitter 规定如果没有响应的监听器， Node.js 会把它当作异常，退出程序并打印调用栈。我们一般要为会发射 error 事件的对象设置监听器，避免遇到错误后整个程序崩溃。例如：
 
 ```js
 var events = require('events');
@@ -936,14 +902,11 @@ at Array.0 (module.js:479:10)
 at EventEmitter._tickCallback (node.js:192:40)
 ```
 
-4.3.3 继承 EventEmitter
+### 4.3.3 继承 EventEmitter
 
-大多数时候我们不会直接使用 EventEmitter，而是在对象中继承它。包括 fs、 net、
-http 在内的，只要是支持事件响应的核心模块都是 EventEmitter 的子类。
+大多数时候我们不会直接使用 EventEmitter，而是在对象中继承它。包括 fs、 net、http 在内的，只要是支持事件响应的核心模块都是 EventEmitter 的子类。
 
-为什么要这样做呢？原因有两点。首先，具有某个实体功能的对象实现事件符合语义，
-事件的监听和发射应该是一个对象的方法。其次 JavaScript 的对象机制是基于原型的，支持
-部分多重继承，继承 EventEmitter 不会打乱对象原有的继承关系。
+为什么要这样做呢？原因有两点。首先，具有某个实体功能的对象实现事件符合语义，事件的监听和发射应该是一个对象的方法。其次 JavaScript 的对象机制是基于原型的，支持部分多重继承，继承 EventEmitter 不会打乱对象原有的继承关系。
 
 ## 4.4 文件系统fs
 
