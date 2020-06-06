@@ -1276,19 +1276,121 @@ req.on('response', function (res) {
 
 # 第五章 使用Node.js进行Web开发
 
+本章，我们打算从零开始用 Node.js 实现一个微博系统，功能包括路由控制、页面模板、数据库访问、用户注册、登录、用户会话等内容。
+
+我们会介绍 Express 框架、 MVC 设计模式、 ejs 模板引擎以及 MongoDB 数据库的操作。
+通过实战演练，你将会了解到网站开发的基本方法。本章涉及的代码较多，所有的代码均可
+以在 www.byvoid.com/project/node 找到，但你最好还是亲自输入这些代码。现在就让我们开
+始一起动手来实现一个微博网站吧。
+
 ## 5.1 准备工作
 
-Node.js 和 PHP、Perl、 ASP、 JSP 一样，目的都是实现动态网页，也就是说由服务器动态生成 HTML 页面。之所以要这么做，是因为静态 HTML 的可扩展性非常有限，无法与用户有效交互。同时如果有大量相似的内容，例如产品介绍页面，那么1000个产品就要1000个静态的 HTML 页面，维护这1000个页面简直是一场灾难，因此动态生成 HTML 页面的技术应运而生。最早实现动态网页的方法是使用Perl ①和 CGI。在 Perl 程序中输出 HTML 内容，由 HTTP 服务器调用 Perl 程序，将结果返回给客户端。大概在 2000 年左右，以 ASP、 PHP、 JSP 的为代表的以模板为基础的语言出现了，这种语言的使用方法与 CGI 相反，是在以 HTML 为主的模板中插入程序代码。
+Node.js 和 PHP、Perl、 ASP、 JSP 一样，目的都是实现动态网页，也就是说由服务器动态生成 HTML 页面。之所以要这么做，是因为静态 HTML 的可扩展性非常有限，无法与用户有效交互。同时如果有大量相似的内容，例如产品介绍页面，那么1000个产品就要1000个静态的 HTML 页面，维护这1000个页面简直是一场灾难，因此动态生成 HTML 页面的技术应运而生。
 
-但它的问题是页面和程序逻辑紧密耦合。为了解决这种问题，以 MVC 架构为基础的平台逐渐兴起，著名的 Ruby on Rails、 Django、 Zend Framework 都是基于 MVC 架构的。MVC（Model-View-Controller，模型视图控制器）是一种软件的设计模式，它最早是由 20 世纪 70 年代的 Smalltalk 语言提出的，即把一个复杂的软件工程分解为三个层面：模型、视图和控制器。
+最早实现动态网页的方法是使用Perl 和 CGI。在 Perl 程序中输出 HTML 内容，由 HTTP 服务器调用 Perl 程序，将结果返回给客户端。这种方式在互联网刚刚兴起的 20 世纪 90 年代
+非常流行，几乎所有的动态网页都是这么做的。但问题在于如果 HTML 内容比较多，维护
+非常不方便。大概在 2000 年左右，以 ASP、 PHP、 JSP 的为代表的以模板为基础的语言出现了，这种语言的使用方法与 CGI 相反，是在以 HTML 为主的模板中插入程序代码。但它的问题是页面和程序逻辑紧密耦合。为了解决这种问题，以 MVC 架构为基础的平台逐渐兴起，著名的 Ruby on Rails、 Django、 Zend Framework 都是基于 MVC 架构的。
+
+MVC（Model-View-Controller，模型视图控制器）是一种软件的设计模式，它最早是由 20 世纪 70 年代的 Smalltalk 语言提出的，即把一个复杂的软件工程分解为三个层面：模型、视图和控制器。
+
 - 模型是对象及其数据结构的实现，通常包含数据库操作。
 - 视图表示用户界面，在网站中通常就是 HTML 的组织结构。
 - 控制器用于处理用户请求和数据流、复杂模型，将输出传递给视图。
-我们称 PHP、 ASP、 JSP 为“模板为中心的架构”
 
-Node.js 本质上和 Perl 或 C++ 一样，都可以作为 CGI 扩展被调用，但它还可以跳过 HTTP 服务器，因为它本身就是。传统的架构中 HTTP 服务器的角色会由 Apache、 Nginx、 IIS 之类的软件来担任，而 Node.js 不需要②。 Node.js 提供了 http 模块，它是由 C++ 实现的，性能可靠，可以直接应用到生产环境。Node.js 和其他的语言相比的另一个显著区别，在于它的原始封装程度较低。例如 PHP 中你可以访问 $_REQUEST 获取客户端的 POST 或 GET 请求，通常不需要直接处理 HTTP 协议①。这些语言要求由 HTTP 服务器来调用，因此你需要设置一个 HTTP 服务器来处理客户端的请求， HTTP 服务器通过 CGI 或其他方式调用脚本语言解释器，将运行的结果传递回HTTP 服务器，最终再把内容返回给客户端。而在 Node.js 中，很多工作需要你自己来做（并不是都要自己动手，因为有第三方框架的帮助）。
+我们称 PHP、 ASP、 JSP 为“模板为中心的架构”，表 5-1 是两种Web开发架构的一个
+对比。
 
-Express 除了为 http 模块提供了更高层的接口外，还实现了许多功能，其中包括：
+表5-1 Web 开发架构对比
+
+| 特 性 | 模板为中心架构 | MVC 架构 |
+|---|---|---|
+| 页面产生方式 | 执行并替换标签中的语句 | 由模板引擎生成 HTML 页面 |
+| 路径解析 | 对应到文件系统 | 由控制器定义 |
+| 数据访问 | 通过 SQL 语句查询或访问文件系统 | 对象关系模型 |
+| 架构中心 | 脚本语言是静态 HTTP 服务器的扩展 | 静态 HTTP 服务器是脚本语言的补充 |
+| 适用范围 | 小规模网站 | 大规模网站 |
+| 学习难度 | 容易 | 较难 |
+
+这两种架构都出自原始的 CGI，但不同之处是前者走了一条粗放扩张的发展路线，由于
+易学易用，在几年前应用较广，而随着互联网规模的扩大，后者优势逐渐体现，目前已经成
+为主流。
+
+Node.js 本质上和 Perl 或 C++ 一样，都可以作为 CGI 扩展被调用，但它还可以跳过 HTTP
+服务器，因为它本身就是。传统的架构中 HTTP 服务器的角色会由 Apache、 Nginx、 IIS 之类
+的软件来担任，而 Node.js 不需要。 Node.js 提供了 http 模块，它是由 C++ 实现的，性能
+可靠，可以直接应用到生产环境。图5-1 是一个简单的架构示意图。
+
+Node.js 和其他的语言相比的另一个显著区别，在于它的原始封装程度较低。例如 PHP 中你可以访问 `$_REQUEST` 获取客户端的 POST 或 GET 请求，通常不需要直接处理 HTTP 协议。这些语言要求由 HTTP 服务器来调用，因此你需要设置一个 HTTP 服务器来处理客户端的请求， HTTP 服务器通过 CGI 或其他方式调用脚本语言解释器，将运行的结果传递回HTTP 服务器，最终再把内容返回给客户端。而在 Node.js 中，很多工作需要你自己来做（并不是都要自己动手，因为有第三方框架的帮助）。
+
+### 5.1.1 使用 http 模块
+
+Node.js 由于不需要另外的 HTTP 服务器，因此减少了一层抽象，给性能带来不少提升，
+但同时也因此而提高了开发难度。举例来说，我们要实现一个 POST 数据的表单，例如：
+
+```html
+<form method="post" action="http://localhost:3000/">
+<input type="text" name="title" />
+<textarea name="text"></textarea>
+<input type="submit" />
+</form>
+```
+
+这个表单包含两个字段： title 和 text，提交时以 POST 的方式将请求发送给
+http://localhost:3000/。假设我们要实现的功能是将这两个字段的东西原封不动地返回给用户，
+PHP 只需写两行代码，储存为 index.php 放在网站根目录下即可：
+
+```php
+echo $_POST['title'];
+echo $_POST['text'];
+```
+
+在 3.5.1 节中使用了类似下面的方法（用http模块）：
+
+```js
+var http = require('http');
+var querystring = require('querystring');
+var server = http.createServer(function(req, res) {
+var post = '';
+req.on('data', function(chunk) {
+post += chunk;
+});
+req.on('end', function() {
+post = querystring.parse(post);
+res.write(post.title);
+res.write(post.text);
+res.end();
+});
+}).listen(3000);
+```
+
+这种差别可能会让你大吃一惊， PHP 的实现要比Node.js容易得多。 Node.js 完成这样一
+个简单任务竟然如此复杂：你需要先创建一个 http 的实例，在其请求处理函数中手动编写
+req 对象的事件监听器。当客户端数据到达时，将 POST 数据暂存在闭包的变量中，直到 end
+事件触发，解析 POST 请求，处理后返回客户端。
+
+其实这个比较是不公平的， PHP 之所以显得简单并不是因为它没有做这些事，而是因为
+PHP 已经将这些工作完全封装好了，只提供了一个高层的接口，而 Node.js 的 http 模块提
+供的是底层的接口，尽管使用起来复杂，却可以让我们对 HTTP 协议的理解更加清晰。
+
+但是等等，我们并不是为了理解 HTTP 协议才来使用 Node.js 的，作为 Web 应用开发者，
+我们不需要知道实现的细节，更不想与这些细节纠缠从而降低开发效率。难道 Node.js 的抽
+象如此之差，把不该有的细节都暴露给了开发者吗？
+
+实际上， Node.js 虽然提供了 http 模块，却不是让你直接用这个模块进行 Web 开发的。
+http 模块仅仅是一个 HTTP 服务器内核的封装，你可以用它做任何 HTTP 服务器能做的事
+情，不仅仅是做一个网站，甚至实现一个 HTTP 代理服务器都行。你如果想用它直接开发网
+站，那么就必须手动实现所有的东西了，小到一个 POST 请求，大到 Cookie、会话的管理。
+当你用这种方式建成一个网站的时候，你就几乎已经做好了一个完整的框架了。
+
+### 5.1.2 Express 框架
+
+npm 提供了大量的第三方模块，其中不乏许多 Web 框架，我们没有必要重复发明轮子，
+因而选择使用 Express 作为开发框架，因为它是目前最稳定、使用最广泛，而且 Node.js 官
+方推荐的唯一一个 Web 开发框架。
+
+[Express](http://expressjs.com/) 除了为 http 模块提供了更高层的接口外，还实现了
+许多功能，其中包括：
+
 - 路由控制；
 - 模板解析支持；
 - 动态视图；
@@ -1300,11 +1402,62 @@ Express 除了为 http 模块提供了更高层的接口外，还实现了许多
 - 缓存；
 - 插件支持。
 
-需要指出的是， Express 不是一个无所不包的全能框架，像 Rails 或 Django 那样实现了模板引擎甚至 ORM （Object Relation Model，对象关系模型）。它只是一个轻量级的 Web 框架，多数功能只是对 HTTP 协议中常用操作的封装，更多的功能需要插件或者整合其他模块来完成。
+需要指出的是， Express 不是一个无所不包的全能框架，像 Rails 或 Django 那样实现了
+模板引擎甚至 ORM （ Object Relation Model，对象关系模型）。它只是一个轻量级的 Web 框
+架，多数功能只是对 HTTP 协议中常用操作的封装，更多的功能需要插件或者整合其他模块
+来完成。
+
+下面用 Express 重新实现前面的例子：
+
+```js
+var express = require('express');
+var app = express.createServer();
+app.use(express.bodyParser());
+app.all('/', function(req, res) {
+res.send(req.body.title + req.body.text);
+});
+app.listen(3000);
+```
+
+可以看到，我们不需要手动编写 req 的事件监听器了，只需加载 `express.bodyParser()`
+就能直接通过 req.body 获取 POST 的数据了。
 
 ## 5.2 快速开始
 
-Express 像很多框架一样都提供了 Quick Start（快速开始）工具，这个工具的功能通常是建立一个网站最小的基础框架，在此基础上完成开发。为了使用这个工具，我们需要用全局模式安装 Express，因为只有这样我们才能在命令行中使用它。
+在上一小节我们已经介绍了 Web 开发的典型架构，我们选择了用 Express 作为开发框架
+来开发一个网站，从现在开始我们就要真正动手实践了。
+
+### 5.2.1 安装 Express
+
+首先我们要安装 Express。如果一个包是某个工程依赖，那么我们需要在工程的目录下
+使用本地模式安装这个包，如果要通过命令行调用这个包中的命令，则需要用全局模式安装
+（关于本地模式和全局模式，参见 3.3.4节），因此按理说我们使用本地模式安装 Express 即可。
+但是Express 像很多框架一样都提供了 Quick Start（快速开始）工具，这个工具的功能通常
+是建立一个网站最小的基础框架，在此基础上完成开发。当然你可以完全自己动手，但我还
+是推荐使用这个工具更快速地建立网站。为了使用这个工具，我们需要用全局模式安装
+Express，因为只有这样我们才能在命令行中使用它。运行以下命令：
+
+```
+$ npm install -g express
+```
+
+等待数秒后安装完成，我们就可以在命令行下通过 express 命令快速创建一个项目了。
+在这之前先使用 express --help 查看帮助信息：
+
+```
+Usage: express [options] [path]
+Options:
+-s, --sessions add session support
+-t, --template <engine> add template <engine> support (jade|ejs). default=jade
+-c, --css <engine> add stylesheet <engine> support (stylus). default=plain css
+-v, --version output framework version
+-h, --help output help information
+```
+
+Express 在初始化一个项目的时候需要指定模板引擎，默认支持Jade和ejs，为了降低学
+习难度我们推荐使用 ejs ，同时暂时不添加 CSS 引擎和会话支持。
+
+### 5.2.2 建立工程
 
 通过以下命令建立网站基本结构：
 
@@ -1312,13 +1465,210 @@ Express 像很多框架一样都提供了 Quick Start（快速开始）工具，
 express -t ejs microblog
 ```
 
-无参数的`npm install`的功能就是检查当前目录下的 package.json，并自动安装所有指定的依赖。
+当前目录下出现了子目录 microblog，并且产生了一些文件：
 
-用 Express 实现的网站实际上就是一个 Node.js 程序，因此可以直接运行。我们运行`node app.js`， 看到`Express server listening on port 3000 in development mode`。接下来，打开浏览器，输入地址 http://localhost:3000， 就可以看到一个简单的 Welcome to Express 页面了。
+```
+create : microblog
+create : microblog/package.json
+create : microblog/app.js
+create : microblog/public
+create : microblog/public/javascripts
+create : microblog/public/images
+create : microblog/public/stylesheets
+create : microblog/public/stylesheets/style.css
+create : microblog/routes
+create : microblog/routes/index.js
+create : microblog/views
+create : microblog/views/layout.ejs
+create : microblog/views/index.ejs
+dont forget to install dependencies:
+$ cd microblog && npm install
+```
+
+它还提示我们要进入其中运行 npm install， 我们依照指示，结果如下：
+
+```
+ejs@0.6.1 ./node_modules/ejs
+express@2.5.8 ./node_modules/express
+-- qs@0.4.2
+-- mime@1.2.4
+-- mkdirp@0.3.0
+-- connect@1.8.5
+```
+
+它自动安装了依赖 ejs 和 express。这是为什么呢？检查目录中的 package.json 文件，内
+容是：
+
+```json
+{
+"name": "microblog"
+, "version": "0.0.1"
+, "private": true
+, "dependencies": {
+"express": "2.5.8"
+, "ejs": ">= 0.0.1"
+}
+}
+```
+
+其中 dependencies 属性中有express 和ejs。无参数的 npm install 的功能就是
+检查当前目录下的 package.json，并自动安装所有指定的依赖。
+
+### 5.2.3 启动服务器
+
+用 Express 实现的网站实际上就是一个 Node.js 程序，因此可以直接运行。我们运行 node
+app.js， 看到 Express server listening on port 3000 in development mode。
+
+接下来，打开浏览器，输入地址 http://localhost:3000， 你就可以看到一个简单的 Welcome
+to Express 页面了。如果你能看到如图5-2 所示的页面，那么说明你的设定正确无误。
+
+图5-2 Express 初始欢迎页面
+
+要关闭服务器的话，在终端中按 Ctrl + C。注意，如果你对代码做了修改，要想看到修
+改后的效果必须重启服务器，也就是说你需要关闭服务器并再次运行才会有效果。如果觉得
+有些麻烦，可以使用 supervisor 实现监视代码修改和自动重启，具体使用方法参见 3.1.3 节。
+
+> 注意命令行中显示服务器运行在开发模式下（ development mode），因
+此不要在生产环境中部署它。我们会在 6.3 节中介绍如何在真实的生产环
+境下部署 Node.js 服务器。
+
+### 5.2.4 工程的结构
+
+现在让我们回过头来看看 Express 都生成了哪些文件。除了 package.json，它只产生了两
+个 JavaScript 文件 app.js 和 routes/index.js。模板引擎 ejs 也有两个文件 index.ejs 和layout.ejs，此外还有样式表 style.css。下面来详细看看这几个文件。
+
+1. app.js
+
+app.js 是工程的入口，我们先看看其中有什么内容：
+
+```js
+/**
+* Module dependencies.
+*/
+var express = require('express')
+, routes = require('./routes');
+var app = module.exports = express.createServer();
+// Configuration
+app.configure(function(){
+app.set('views', __dirname + '/views');
+app.set('view engine', 'ejs');
+app.use(express.bodyParser());
+app.use(express.methodOverride());
+app.use(app.router);
+app.use(express.static(__dirname + '/public'));
+});
+app.configure('development', function(){
+app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
+});
+app.configure('production', function(){
+app.use(express.errorHandler());
+});
+// Routes
+app.get('/', routes.index);
+app.listen(3000);
+console.log("Express server listening on port %d in %s mode", app.address().port,
+app.settings.env);
+```
+
+对比上一节使用 Express 的例子，这个文件长了不少，不过并不复杂。下面来分析一下
+这段代码。
+
+首先我们导入了 Express 模块，前面已经通过 npm 安装到了本地，在这里可以直接通过
+require 获取。 routes 是一个文件夹形式的本地模块，即./routes/index.js，它的功能
+是为指定路径组织返回内容，相当于 MVC 架构中的控制器。通过 express.createServer()
+函数创建了一个应用的实例，后面的所有操作都是针对于这个实例进行的。
+
+接下来是三个 app.configure 函数，分别指定了通用、开发和产品环境下的参数。
+第一个 app.configure 直接接受了一个回调函数，后两个则只能在开发和产品环境中调用。
+
+app.set 是 Express 的参数设置工具，接受一个键（ key）和一个值（ value），可用的参
+数如下所示。
+
+- basepath：基础地址，通常用于 res.redirect() 跳转。
+- views：视图文件的目录，存放模板文件。
+- view engine：视图模板引擎。
+- view options：全局视图参数对象。
+- view cache：启用视图缓存。
+- case sensitive routes：路径区分大小写。
+- strict routing：严格路径，启用后不会忽略路径末尾的“ / ”。
+- jsonp callback：开启透明的 JSONP 支持。
+
+Express 依赖于 connect， 提供了大量的中间件，可以通过 app.use 启用。 app.configure
+中启用了5个中间件： bodyParser、 methodOverride、 router、 static 以及 errorHandler。
+bodyParser 的功能是解析客户端请求，通常是通过 POST 发送的内容。 methodOverride
+用于支持定制的 HTTP 方法①。 router 是项目的路由支持。 static 提供了静态文件支持。
+errorHandler 是错误控制器。
+
+app.get('/', routes.index); 是一个路由控制器，用户如果访问“ / ”路径，则
+由 routes.index 来控制。
+
+最后服务器通过 app.listen(3000); 启动，监听3000端口。
+
+2. routes/index.js
+
+routes/index.js 是路由文件，相当于控制器，用于组织展示的内容：
+
+```js
+/*
+* GET home page.
+*/
+exports.index = function(req, res) {
+——————————
+res.render('index', { title: 'Express' });
+};
+```
+
+app.js 中通过 app.get('/', routes.index); 将“ / ”路径映射到 exports.index
+函数下。其中只有一个语句 res.render('index', { title: 'Express' })，功能是
+调用模板解析引擎，翻译名为 index 的模板，并传入一个对象作为参数，这个对象只有一个
+属性，即 title: 'Express'。
+
+3. index.ejs
+
+index.ejs 是模板文件，即 routes/index.js 中调用的模板，内容是：
+
+```html
+<h1><%= title %></h1>
+<p>Welcome to <%= title %></p>
+```
+
+它的基础是 HTML 语言，其中包含了形如 <%= title %> 的标签，功能是显示引用的
+变量，即 res.render 函数第二个参数传入的对象的属性。
+
+4. layout.ejs
+
+模板文件不是孤立展示的，默认情况下所有的模板都继承自 layout.ejs，即 <%- body %>
+部分才是独特的内容，其他部分是共有的，可以看作是页面框架。
+
+```html
+<!DOCTYPE html>
+<html>
+<head>
+<title><%= title %></title>
+<link rel='stylesheet' href='/stylesheets/style.css' />
+</head>
+<body>
+<%- body %>
+</body>
+</html>
+```
+
+以上就是一个基本的工程结构，十分简单，功能划分却非常清楚。我们会在后面的小节
+中基于这个工程继续完善，直到实现一个功能完整的网站。
 
 ## 5.3 路由控制
 
-当通过浏览器访问 app.js 建立的服务器时，会看到一个简单的页面，实际上它已经完成了许多透明的工作，现在就让我们来解释一下它的工作机制，以帮助理解网站的整体架构。访问 http://localhost:3000，浏览器会向服务器发送以下请求。
+在上一节，我们已经讲过了如何使用 Express 建立一个基本工程，这个工程只包含一些
+基础架构，没有任何实际内容。从这一小节开始，我们将会讲述 Express 的基本使用方法，
+在前面例子的基础上逐步完善这个工程。
+
+### 5.3.1 工作原理
+
+当通过浏览器访问 app.js 建立的服务器时，会看到一个简单的页面，实际上它已经
+完成了许多透明的工作，现在就让我们来解释一下它的工作机制，以帮助理解网站的整
+体架构。
+
+访问 http://localhost:3000，浏览器会向服务器发送以下请求：
 
 ```
 GET / HTTP/1.1
@@ -1333,71 +1683,263 @@ Accept-Language: zh;q=0.8,en-US;q=0.6,en;q=0.4
 Accept-Charset: UTF-8,*;q=0.5
 ```
 
-服务器在开始监听之前，设置好了所有的路由规则，当请求到达时直接分配到响应函数。`app.get` 是路由规则创建函数，它接受两个参数，第一个参数是请求的路径，第二个参数是一个回调函数，该路由规则被触发时调用回调函数，其参数表传递两个参数，分别是 req 和 res，表示请求信息和响应信息。
+其中第一行是请求的方法、路径和 HTTP 协议版本，后面若干行是 HTTP 请求头。 app 会
+解析请求的路径，调用相应的逻辑。 app.js 中有一行内容是 app.get('/', routes.index)，
+它的作用是规定路径为“/”的 GET 请求由 routes.index 函数处理。 routes.index 通
+过 res.render('index', { title: 'Express' }) 调用视图模板 index，传递 title
+变量。最终视图模板生成 HTML 页面，返回给浏览器，返回的内容是：
 
-Express 还支持更高级的路径匹配模式。例如我们想要展示一个用户的个人页面，路径为`/user/[username]`，可以用下面的方法定义路由规则。
+```
+HTTP/1.1 200 OK
+X-Powered-By: Express
+Content-Type: text/html; charset=utf-8
+Content-Length: 202
+Connection: keep-alive
+<!DOCTYPE html>
+<html>
+<head>
+<title>Express</title>
+<link rel='stylesheet' href='/stylesheets/style.css' />
+</head>
+<body>
+<h1>Express</h1>
+<p>Welcome to Express</p>
+</body>
+</html>
+```
+
+浏览器在接收到内容以后，经过分析发现要获取 /stylesheets/style.css，因此会再次向服
+务器发起请求。 app.js 中并没有一个路由规则指派到 /stylesheets/style.css，但 app 通过
+app.use(express.static(__dirname + '/public')) 配置了静态文件服务器，因此
+/stylesheets/style.css 会定向到 app.js 所在目录的子目录中的文件 public/stylesheets/style.css，向客户端返回以下信息：
+
+```
+HTTP/1.1 200 OK
+X-Powered-By: Express
+Date: Mon, 02 Apr 2012 15:56:55 GMT
+Cache-Control: public, max-age=0
+Last-Modified: Mon, 12 Mar 2012 12:49:50 GMT
+ETag: "110-1331556590000"
+Content-Type: text/css; charset=UTF-8
+Accept-Ranges: bytes
+Content-Length: 110
+Connection: keep-alive
+body {
+padding: 50px;
+font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+}
+a {
+color: #00B7FF;
+}
+```
+
+由 Express 创建的网站架构如图5-3 所示。
+
+图5-3 Express 网站的架构
+
+这是一个典型的 MVC 架构，浏览器发起请求，由路由控制器接受，根据不同的路径定
+向到不同的控制器。控制器处理用户的具体请求，可能会访问数据库中的对象，即模型部
+分。控制器还要访问模板引擎，生成视图的 HTML，最后再由控制器返回给浏览器，完成
+一次请求。
+
+### 5.3.2 创建路由规则
+
+当我们在浏览器中访问譬如 http://localhost:3000/abc 这样不存在的页面时，服务器会在
+响应头中返回 404 Not Found 错误，浏览器显示如图5-4 所示。
+
+图5-4 访问不存在的页面时浏览器看到的结果
+
+这是因为 /abc 是一个不存在的路由规则，而且它也不是一个 public 目录下的文件，所以
+Express返回了404 Not Found的错误。
+
+接下来我们会讲述如何创建路由规则。
+
+假设我们要创建一个地址为 /hello 的页面，内容是当前的服务器时间，让我们看看具
+体做法。打开 app.js，在已有的路由规则 app.get('/', routes.index) 后面添加一行：
+
+```js
+app.get('/hello', routes.hello);
+```
+
+修改 routes/index.js，增加 hello 函数：
+
+```js
+/*
+* GET home page.
+*/
+exports.index = function(req, res) {
+res.render('index', { title: 'Express' });
+};
+exports.hello = function(req, res) {
+res.send('The time is ' + new Date().toString());
+};
+```
+
+重启 app.js，在浏览器中访问 http://localhost:3000/hello， 可以看到类似于图5-5 的页面，
+刷新页面可以看到时间发生变化，因为你看到的内容是动态生成的结果。
+
+图5-5 访问 /hello 时显示的内容
+
+服务器在开始监听之前，设置好了所有的路由规则，当请求到达时直接分配到响应函数。
+app.get 是路由规则创建函数，它接受两个参数，第一个参数是请求的路径，第二个参数
+是一个回调函数，该路由规则被触发时调用回调函数，其参数表传递两个参数，分别是 req
+和 res，表示请求信息和响应信息。
+
+### 5.3.3 路径匹配
+
+上面的例子是为固定的路径设置路由规则， Express 还支持更高级的路径匹配模式。例
+如我们想要展示一个用户的个人页面，路径为 /user/[username]，可以用下面的方法定义路由
+规则：
 
 ```js
 app.get('/user/:username', function(req, res) {
-  res.send('user: ' + req.params.username);
+res.send('user: ' + req.params.username);
 });
 ```
 
-路径规则 `/user/:username` 会被自动编译为正则表达式，类似于 `\/user\/([^\/]+)\/?` 这样的形式。路径参数可以在响应函数中通过 req.params 的属性访问。
+修改以后重启 app.js，访问 http://localhost:3000/user/byvoid， 可以看到页面显示了以下
+内容：
 
-路径规则同样支持 JavaScript 正则表达式，例如 `app.get(\/user\/([^\/]+)\/?,callback)`。这样的好处在于可以定义更加复杂的路径规则，而不同之处是匹配的参数是匿名的，因此需要通过`req.params[0]`、 `req.params[1]`这样的形式访问。
+```
+user: byvoid
+```
 
-Express 支持 REST 风格的请求方式，在介绍之前我们先说明一下什么是 REST。REST 的意思是 表征状态转移（Representational State Transfer），它是一种基于 HTTP 协议的网络应用的接口风格，充分利用 HTTP 的方法实现统一风格接口的服务。
+路径规则 /user/:username 会被自动编译为正则表达式，类似于 \/user\/([^\/]+)\/?
+这样的形式。路径参数可以在响应函数中通过 req.params 的属性访问。
 
-Express 支持同一路径绑定多个路由响应函数。
+路径规则同样支持 JavaScript 正则表达式，例如 app.get(\/user\/([^\/]+)\/?,
+callback)。这样的好处在于可以定义更加复杂的路径规则，而不同之处是匹配的参数是匿
+名的，因此需要通过 req.params[0]、 req.params[1] 这样的形式访问。
+
+### 5.3.4 REST 风格的路由规则
+
+Express 支持 REST 风格的请求方式，在介绍之前我们先说明一下什么是 REST。 REST 的
+意思是 表征状态转移（ Representational State Transfer），它是一种基于 HTTP 协议的网络应
+用的接口风格，充分利用 HTTP 的方法实现统一风格接口的服务。 HTTP 协议定义了以下8
+种标准的方法。
+
+- GET：请求获取指定资源。
+- HEAD：请求指定资源的响应头。
+- POST：向指定资源提交数据。
+- PUT：请求服务器存储一个资源。
+- DELETE：请求服务器删除指定资源。
+- TRACE：回显服务器收到的请求，主要用于测试或诊断。
+- CONNECT： HTTP/1.1 协议中预留给能够将连接改为管道方式的代理服务器。
+- OPTIONS：返回服务器支持的HTTP请求方法。
+
+其中我们经常用到的是 GET、 POST、 PUT 和 DELETE 方法。根据 REST 设计模式，这
+4种方法通常分别用于实现以下功能。
+
+- GET：获取
+- POST：新增
+- PUT：更新
+- DELETE：删除
+
+这是因为这4种方法有不同的特点，按照定义，它们的特点如表 5-2 所示。
+所谓安全是指没有副作用，即请求不会对资源产生变动，连续访问多次所获得的结果不
+受访问者的影响。而幂等指的是重复请求多次与一次请求的效果是一样的，比如获取和更
+新操作是幂等的，这与新增不同。删除也是幂等的，即重复删除一个资源，和删除一次是
+一样的。
+
+表5-2 REST风格HTTP 请求的特点
+
+| 请求方式 | 安 全 | 幂 等 |
+|---|---|---|
+| GET | 是 | 是 |
+| POST | 否 | 否 |
+| PUT | 否 | 是 |
+| DELETE | 否 | 是 |
+
+Express 对每种 HTTP 请求方法都设计了不同的路由绑定函数，例如前面例子全部是
+app.get，表示为该路径绑定了 GET 请求，向这个路径发起其他方式的请求不会被响应。
+
+表 5-3 是 Express 支持的所有 HTTP 请求的绑定函数。
+
+表5-3 Express 支持的 HTTP 请求的绑定函数
+
+| 请求方式 | 绑定函数 |
+|---|---|
+| GET | app.get(path, callback) |
+| POST | app.post(path, callback) |
+| PUT | app.put(path, callback) |
+| DELETE | app.delete(path, callback) |
+| PATCH | ① app.patch(path, callback) |
+| TRACE | app.trace(path, callback) |
+| CONNECT | app.connect(path, callback) |
+| OPTIONS | app.options(path, callback) |
+| 所有方法 | app.all(path, callback) |
+
+例如我们要绑定某个路径的 POST 请求，则可以用 app.post(path, callback) 的
+方法。需要注意的是 app.all 函数，它支持把所有的请求方式绑定到同一个响应函数，是
+一个非常灵活的函数，在后面我们可以看到许多功能都可以通过它来实现。
+
+### 5.3.5 控制权转移
+
+Express 支持同一路径绑定多个路由响应函数，例如：
 
 ```js
 app.all('/user/:username', function(req, res) {
-  res.send('all methods captured');
+res.send('all methods captured');
 });
 app.get('/user/:username', function(req, res) {
-  res.send('user: ' + req.params.username);
+res.send('user: ' + req.params.username);
 });
 ```
 
-但当访问任何被这两条同样的规则匹配到的路径时，会发现请求总是被前一条路由规则捕获，后面的规则会被忽略。原因是 Express 在处理路由规则时，会优先匹配先定义的路由规则，因此后面相同的规则被屏蔽。Express 提供了路由控制权转移的方法，即回调函数的第三个参数next，通过调用`next()`，会将路由控制权转移给后面的规则。
+但当你访问任何被这两条同样的规则匹配到的路径时，会发现请求总是被前一条路由规
+则捕获，后面的规则会被忽略。原因是 Express 在处理路由规则时，会优先匹配先定义的路
+由规则，因此后面相同的规则被屏蔽。
 
-```
+Express 提供了路由控制权转移的方法，即回调函数的第三个参数next，通过调用
+next()，会将路由控制权转移给后面的规则，例如：
+
+```js
 app.all('/user/:username', function(req, res, next) {
-  console.log('all methods captured');
-  next();
+console.log('all methods captured');
+next();
 });
 app.get('/user/:username', function(req, res) {
-  res.send('user: ' + req.params.username);
+res.send('user: ' + req.params.username);
 });
 ```
 
-这是一个非常有用的工具，可以让我们轻易地实现中间件，而且还能提高代码的复用程度。例如我们针对一个用户查询信息和修改信息的操作，分别对应了 GET 和 PUT 操作，而两者共有的一个步骤是检查用户名是否合法，因此可以通过 `next()` 方法实现。
+当访问被匹配到的路径时，如 http://localhost:3000/user/carbo，会发现终端中打印了 all
+methods captured，而且浏览器中显示了 user: carbo。这说明请求先被第一条路由规
+则捕获，完成 console.log 使用 next() 转移控制权，又被第二条规则捕获，向浏览器
+返回了信息。
 
-```
+这是一个非常有用的工具，可以让我们轻易地实现中间件，而且还能提高代码的复用程
+度。例如我们针对一个用户查询信息和修改信息的操作，分别对应了 GET 和 PUT 操作，而
+两者共有的一个步骤是检查用户名是否合法，因此可以通过 next() 方法实现：
+
+```js
 var users = {
-  'byvoid': {
-    name: 'Carbo',
-    website: 'http://www.byvoid.com'
-  }
+'byvoid': {
+name: 'Carbo',
+website: 'http://www.byvoid.com'
+}
 };
 app.all('/user/:username', function(req, res, next) {
-  // 检查用户是否存在
-  if (users[req.params.username]) {
-    next();
-  } else {
-   next(new Error(req.params.username + ' does not exist.'));
-  }
+// 检查用户是否存在
+if (users[req.params.username]) {
+next();
+} else {
+next(new Error(req.params.username + ' does not exist.'));
+}
 });
 app.get('/user/:username', function(req, res) {
-  // 用户一定存在，直接展示
-  res.send(JSON.stringify(users[req.params.username]));
+// 用户一定存在，直接展示
+res.send(JSON.stringify(users[req.params.username]));
 });
 app.put('/user/:username', function(req, res) {
-  // 修改用户信息
-  res.send('Done');
+// 修改用户信息
+res.send('Done');
 });
 ```
+
+上面例子中， app.all 定义的这个路由规则实际上起到了中间件的作用，把相似请求
+的相同部分提取出来，有利于代码维护其他next方法如果接受了参数，即代表发生了错误。
+使用这种方法可以把错误检查分段化，降低代码耦合度。
 
 ## 5.4 模板引擎
 
