@@ -1317,9 +1317,9 @@ Node.js 由于不需要另外的 HTTP 服务器，因此减少了一层抽象，
 
 ```html
 <form method="post" action="http://localhost:3000/">
-<input type="text" name="title" />
-<textarea name="text"></textarea>
-<input type="submit" />
+  <input type="text" name="title" />
+    <textarea name="text"></textarea>
+  <input type="submit" />
 </form>
 ```
 
@@ -1802,9 +1802,9 @@ app.get('/user/:username', function (req, res) {
 });
 ```
 
-当访问被匹配到的路径时，如 http://localhost:3000/user/carbo，会发现终端中打印了 all methods captured，而且浏览器中显示了 user: carbo。这说明请求先被第一条路由规则捕获，完成 console.log 使用 next() 转移控制权，又被第二条规则捕获，向浏览器返回了信息。
+当访问被匹配到的路径时，如 http://localhost:3000/user/carbo，会发现终端中打印了 all methods captured，而且浏览器中显示了 user: carbo。这说明请求先被第一条路由规则捕获，完成 `console.log` 使用 `next()` 转移控制权，又被第二条规则捕获，向浏览器返回了信息。
 
-这是一个非常有用的工具，可以让我们轻易地实现中间件，而且还能提高代码的复用程度。例如我们针对一个用户查询信息和修改信息的操作，分别对应了 GET 和 PUT 操作，而两者共有的一个步骤是检查用户名是否合法，因此可以通过 next() 方法实现：
+这是一个非常有用的工具，可以让我们轻易地实现中间件，而且还能提高代码的复用程度。例如我们针对一个用户查询信息和修改信息的操作，分别对应了 GET 和 PUT 操作，而两者共有的一个步骤是检查用户名是否合法，因此可以通过 `next()` 方法实现：
 
 ```js
 var users = {
@@ -1831,7 +1831,7 @@ app.put('/user/:username', function (req, res) {
 });
 ```
 
-上面例子中， app.all 定义的这个路由规则实际上起到了中间件的作用，把相似请求的相同部分提取出来，有利于代码维护其他next方法如果接受了参数，即代表发生了错误。使用这种方法可以把错误检查分段化，降低代码耦合度。
+上面例子中， `app.all` 定义的这个路由规则实际上起到了中间件的作用，把相似请求的相同部分提取出来，有利于代码维护其他next方法如果接受了参数，即代表发生了错误。使用这种方法可以把错误检查分段化，降低代码耦合度。
 
 ## 5.4 模板引擎
 
@@ -1870,7 +1870,7 @@ app.set('view engine', 'ejs');
 res.render('index', { title: 'Express' });
 ```
 
-res.render 的功能是调用模板引擎，并将其产生的页面直接返回给客户端。它接受两个参数，第一个是模板的名称，即 views 目录下的模板文件名，不包含文件的扩展名；第二个参数是传递给模板的数据，用于模板翻译。 index.ejs 内容如下：
+`res.render` 的功能是调用模板引擎，并将其产生的页面直接返回给客户端。它接受两个参数，第一个是模板的名称，即 views 目录下的模板文件名，不包含文件的扩展名；第二个参数是传递给模板的数据，用于模板翻译。 index.ejs 内容如下：
 
 ```html
 <h1><%= title %></h1>
@@ -1942,9 +1942,17 @@ app.get('/list', function (req, res) {
 
 ```html
 <ul><%- partial('listitem', items) %></ul>
+```
+
 同时新建 listitem.ejs，内容是：
+
+```html
 <li><%= listitem %></li>
+```
+
 访问 http://localhost:3000/list，可以在源代码中看到以下内容：
+
+```html
 <!DOCTYPE html>
 <html>
 <head>
@@ -2000,8 +2008,17 @@ app.get('/helper', function (req, res) {
 
 ## 5.5 建立微博网站
 
-根据功能设计，我们把路由按照以下方案规划。
+在前面的几节中，我们已经对 Express 进行了基本的介绍，现在让我们动手开始创建一个微博网站吧。
 
+### 5.5.1 功能分析
+
+开发中的一个大忌就是没有想清楚要做什么就开始动手，因此我们准备在动手实践之前先规划一下网站的功能，即使是出于学习目的也不例外。首先，微博应该以用户为中心，因此需要有用户的注册和登录功能。微博网站最核心的功能是信息的发表，这个功能涉及许多方面，包括数据库访问、前端显示等。一个完整的微博系统应该支持信息的评论、转发、圈点用户等功能，但出于演示目的，我们不能一一实现所有功能，只是实现一个微博社交网站的雏形。
+
+### 5.5.2 路由规划
+
+在完成功能设计以后，下一个要做的事情就是路由规划了。路由规划，或者说控制器规划是整个网站的骨架部分，因为它处于整个架构的枢纽位置，相当于各个接口之间的粘合剂，所以应该优先考虑。
+
+根据功能设计，我们把路由按照以下方案规划。
 - `/`：首页
 - `/u/[user]`：用户的主页
 - `/post`：发表信息
@@ -2011,7 +2028,9 @@ app.get('/helper', function (req, res) {
 
 以上页面还可以根据用户状态细分。发表信息以及用户登出页面必须是已登录用户才能操作的功能，而用户注册和用户登入所面向的对象必须是未登入的用户。首页和用户主页则针对已登入和未登入的用户显示不同的内容。
 
-```
+打开 app.js，把 Routes 部分修改为：
+
+```js
 app.get('/', routes.index);
 app.get('/u/:user', routes.user);
 app.post('/post', routes.post);
@@ -2022,46 +2041,1037 @@ app.post('/login', routes.doLogin);
 app.get('/logout', routes.logout);
 ```
 
-其中 /post、 /login 和 /reg 由于要接受表单信息，因此使用 app.post 注册路由。 /login 和 /reg 还要显示用户注册时要填写的表单，所以要以 app.get 注册。
+其中 /post、 /login 和 /reg 由于要接受表单信息，因此使用 app.post 注册路由。 /login和 /reg 还要显示用户注册时要填写的表单，所以要以 app.get 注册。同时在 routes/index.js中添加相应的函数：
+
+```js
+exports.index = function(req, res) {
+  res.render('index', { title: 'Express' });
+};
+exports.user = function(req, res) {
+};
+exports.post = function(req, res) {
+};
+exports.reg = function(req, res) {
+};
+exports.doReg = function(req, res) {
+};
+exports.login = function(req, res) {
+};
+exports.doLogin = function(req, res) {
+};
+exports.logout = function(req, res) {
+};
+```
+
+我们将在5.6节介绍会话（ session），说明如何管理用户的状态。
+
+### 5.5.3 界面设计
+
+我们在开发网站的时候必须时刻意识到网站是为用户开发的，因而用户界面是非常重要的。一种普遍的观点是后端的开发者不必太多关注前端用户体验，因为这是前端程序员和设计师要做的事情。但实际上为了设计一个优雅的界面，后端程序员也不得不介入功能实现，因为很多时候前端和后端无法完全划分，仅仅靠前端开发者是无法设计出优美而又可用的界面的。
+
+作为后端开发者，你可能和我一样都不太擅长设计，不过没关系，我们可以利用已有的优秀设计。如果你认同 Twitter 的简洁风格，那么 Twitter Bootstrap 是最好的选择。 Twitter Bootstrap 是由 Twitter 的设计师和工程师发起的开源项目，它提供了一套与 Twitter 风格一致的简洁、优雅的 Web UI，包含了完全由 HTML、 CSS、 JavaScript 实现的用户交互工具。不管你是资深的前端工程师，还是专业的后端开发者，你都可以轻松地使用Twitter Bootstrap 制作出优美的界面。图5-8 是Twitter Bootstrap 部件的介绍页面。
+
+图5-8 Twitter Bootstrap
+
+### 5.5.4 使用 Bootstrap
+
+现在我们就用 Bootstrap 开始设计我们的界面。从 http://twitter.github.com/bootstrap/ 下载 bootstrap.zip，解压后可以看到以下文件：
+
+```
+css/bootstrap-responsive.css
+css/bootstrap-responsive.min.css
+css/bootstrap.css
+css/bootstrap.min.css
+img/glyphicons-halflings-white.png
+img/glyphicons-halflings.png
+js/bootstrap.js
+js/bootstrap.min.js
+```
+
+其中所有的 JavaScript 和 CSS 文件都提供了开发版和产品版，前者是原始的代码，后者经过压缩，文件名中带有 min。将 img 目录复制到工程 public 目录下，将 bootstrap.css、bootstrap-responsive.css 复制到 public/stylesheets 中，将 bootstrap.js 复制到 public/javascripts 目录中，然后从 http://jquery.com/ 下载一份最新版的 jquery.js 也放入 public/javascripts 目录中。
+
+接下来，修改 views/layout.ejs：
+
+```html
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+<title><%= title %> - Microblog</title>
+<link rel='stylesheet' href='/stylesheets/bootstrap.css' />
+<style type="text/css">
+body {
+padding-top: 60px;
+padding-bottom: 40px;
+}
+</style>
+<link href="stylesheets/bootstrap-responsive.css" rel="stylesheet">
+</head>
+<body>
+<div class="navbar navbar-fixed-top">
+<div class="navbar-inner">
+<div class="container">
+<a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+<span class="icon-bar"></span>
+<span class="icon-bar"></span>
+<span class="icon-bar"></span>
+</a>
+<a class="brand" href="/">Microblog</a>
+<div class="nav-collapse">
+<ul class="nav">
+<li class="active"><a href="/">首页</a></li>
+<li><a href="/login">登入</a></li>
+<li><a href="/reg">注册</a></li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+<div id="container" class="container">
+<%- body %>106 第 5 章 使用 Node.js 进行 Web 开发
+<hr />
+<footer>
+<p><a href="http://www.byvoid.com/" target="_blank">BYVoid</a> 2012</p>
+</footer>
+</div>
+</body>
+<script src="/javascripts/jquery.js"></script>
+<script src="/javascripts/bootstrap.js"></script>
+</html>
+```
+
+上面代码是使用 Bootstrap部件实现的一个简单页面框架，整个页面分为顶部工具栏、正文和页脚三部分，其中正文和页脚包含在名为 container 的 div 标签中。
+
+最后我们设计首页，修改 views/index.ejs：
+
+```html
+<div class="hero-unit">
+<h1>欢迎来到 Microblog</h1>
+<p>Microblog 是一个基于 Node.js 的微博系统。 </p>
+<p>
+<a class="btn btn-primary btn-large" href="/login">登录</a>
+<a class="btn btn-large" href="/reg">立即注册</a>
+</p>
+</div>
+<div class="row">
+<div class="span4">
+<h2>Carbo 说</h2>
+<p>东风破早梅 向暖一枝开 冰雪无人见 春从天上来</p>
+</div>
+<div class="span4">
+<h2>BYVoid 说</h2>
+<p>
+Open Chinese Convert（ OpenCC）是一个开源的中文简繁转换项目，致力于制作高质量的基于统计预料的简繁转换词库。
+还提供函数库(libopencc)、命令行简繁转换工具、人工校对工具、词典生成程序、
+在线转换服务及图形用户界面。 </p>
+</div>
+<div class="span4">
+<h2>佛振 说</h2>
+<p>中州韵输入法引擎 / Rime Input Method Engine 取意历史上通行的中州韵，
+愿写就一部汇集音韵学智慧的输入法经典之作。
+项目网站设在 http://code.google.com/p/rimeime/
+创造应用价值是一方面，更要坚持对好技术的追求，希望能写出灵动而易于扩展的代码，
+使其成为一款个性十足的开源输入法。 </p>
+</div>
+</div>
+```
+
+首页的效果如图5-9 所示。
+
+图5-9 使用 Bootstrap 实现的首页
+
+怎么样？即使不懂设计也做出了优雅的界面，使用 Bootstrap 可以大大简化前端设计工作。
 
 ## 5.6 用户注册和登录
 
-访问数据库。选用 MongoDB 作为网站的数据库系统，它是一个开源的 NoSQL 数据库，相比MySQL 那样的关系型数据库，它更为轻巧、灵活，非常适合在数据规模很大、事务性不强的场合下使用。
+在上一节我们使用 Bootstrap 创建了网站的基本框架。在这一节我们要实现用户会话的功能，包括用户注册和登录状态的维护。为了实现这些功能，我们需要引入会话机制来记录用户状态，还要访问数据库来保存和读取用户信息。现在就让我们从数据库开始。
+
+### 5.6.1 访问数据库
+
+我们选用 MongoDB 作为网站的数据库系统，它是一个开源的 NoSQL 数据库，相比 MySQL 那样的关系型数据库，它更为轻巧、灵活，非常适合在数据规模很大、事务性不强的场合下使用。
+
+1. NoSQL
+
+什么是 NoSQL 呢？为了解释清楚，首先让我们来介绍几个概念。在传统的数据库中，数据库的格式是由表（ table）、 行（ row）、 字段（ field）组成的。表有固定的结构，规定了每行有哪些字段，在创建时被定义，之后修改很困难。行的格式是相同的，由若干个固定的字段组成。每个表可能有若干个字段作为索引（ index），这其中有的是主键（ primary key），用于约束表中的数据，还有唯一键（ unique key），确保字段中不存放重复数据。表和表之间可能还有相互的约束，称为外键（ foreign key）。对数据库的每次查询都要以行为单位，复杂的查询包括嵌套查询、连接查询和交叉表查询。
+
+拥有这些功能的数据库被称为关系型数据库，关系型数据库通常使用一种叫做 SQL （ Structured Query Language）的查询语言作为接口，因此又称为 SQL 数据库。典型的 SQL 数据库有 MySQL、 Oracle、 Microsoft SQL Server、 PostgreSQL、 SQLite，等等。
 
 NoSQL 是 1998 年被提出的，它曾经是一个轻量、开源、不提供SQL功能的关系数据库。但现在 NoSQL 被认为是 Not Only SQL 的简称，主要指非关系型、分布式、不提供 ACID①的数据库系统。正如它的名称所暗示的， NoSQL 设计初衷并不是为了取代 SQL 数据库的，而是作为一个补充，它和 SQL 数据库有着各自不同的适应领域。 NoSQL 不像 SQL 数据库一样都有着统一的架构和接口，不同的 NoSQL 数据库系统从里到外可能完全不同。
 
-MongoDB 是一个对象数据库，它没有表、行等概念，也没有固定的模式和结构，所有的数据以文档的形式存储。所谓文档就是一个关联数组式的对象，它的内部由属性组成，一个属性对应的值可能是一个数、字符串、日期、数组，甚至是一个嵌套的文档。
+2. MongoDB
 
-会话支持。会话是一种持久的网络协议，用于完成服务器和客户端之间的一些交互行为。会话是一个比连接粒度更大的概念，一次会话可能包含多次连接，每次连接都被认为是会话的一次操作。在网络应用开发中，有必要实现会话以帮助用户交互。
+MongoDB 是一个对象数据库，它没有表、行等概念，也没有固定的模式和结构，所有的数据以文档的形式存储。所谓文档就是一个关联数组式的对象，它的内部由属性组成，一个属性对应的值可能是一个数、字符串、日期、数组，甚至是一个嵌套的文档。下面是一个 MongoDB 文档的示例：
+
+```js
+{ "_id" : ObjectId( "4f7fe8432b4a1077a7c551e8" ),
+"uid" : 2004,
+"username" : "byvoid",
+"net9" : { "nickname" : "BYVoid",
+"surname" : "Kuo",
+"givenname" : "Carbo",
+"fullname" : "Carbo Kuo",
+"emails" : [ "byvoid@byvoid.com", "byvoid.kcp@gmail.com" ],
+"website" : "http://www.byvoid.com",
+"address" : "Zijing 2#, Tsinghua University" }
+}
+```
+
+上面文档中 uid 是一个整数属性， username 是字符串属性， _id 是文档对象的标识符，格式为特定的 ObjectId。 net9 是一个嵌套的文档，其内部结构与一般文档无异。从格式来看文档好像 JSON，没错， MongoDB 的数据格式就是 JSON ②，因此与 JavaScript 的亲和性很强。在 Mongodb 中对数据的操作都是以文档为单位的，当然我们也可以修改文档的部分属性。对于查询操作，我们只需要指定文档的任何一个属性，就可在数据库中将满足条件的所有文档筛选出来。为了加快查询， MongoDB 也对文档实现了索引，这一点和 SQL 数据库一样。
+
+3. 连接数据库
+
+现在，让我们来看看如何连接数据库吧。首先确保已在本地安装好了 MongoDB，如果没有，请去 http://www.mongodb.org/ 查看如何安装。
+
+为了在 Node.js 中使用 MongoDB， 我们需要获取一个模块。打开工程目录中的 package.json，在 dependencies 属性中添加一行代码：
+
+```js
+{
+"name": "microblog"
+, "version": "0.0.1"
+, "private": true
+, "dependencies": {
+"express": "2.5.8"
+, "ejs": ">= 0.0.1"
+, "mongodb": ">= 0.9.9"
+}
+}
+```
+
+然后运行 npm install 更新依赖的模块。接下来在工程的目录中创建 settings.js 文件，这个文件用于保存数据库的连接信息。我们将用到的数据库命名为 microblog，数据库服务器在本地，因此Settings.js文件的内容如下：
+
+```js
+module.exports = {
+cookieSecret: 'microblogbyvoid',
+db: 'microblog',
+host: 'localhost',
+};
+```
+
+其中， db 是数据库的名称， host 是数据库的地址。 cookieSecret 用于 Cookie 加密与数据库无关，我们留作后用。
+
+接下来在 models 子目录中创建 db.js，内容是：
+
+```js
+var settings = require('../settings');
+var Db = require('mongodb').Db;
+var Connection = require('mongodb').Connection;
+var Server = require('mongodb').Server;
+module.exports = new Db(settings.db, new Server(settings.host, Connection.DEFAULT_
+PORT, {}));
+```
+
+以上代码通过 module.exports 输出了创建的数据库连接，在后面的小节中我们会用到这个模块。由于模块只会被加载一次，以后我们在其他文件中使用时均为这一个实例。
+
+### 5.6.2 会话支持
+
+在完成用户注册和登录功能之前，我们需要先了解会话的概念。会话是一种持久的网络协议，用于完成服务器和客户端之间的一些交互行为。会话是一个比连接粒度更大的概念，一次会话可能包含多次连接，每次连接都被认为是会话的一次操作。在网络应用开发中，有必要实现会话以帮助用户交互。例如网上购物的场景，用户浏览了多个页面，购买了一些物品，这些请求在多次连接中完成。许多应用层网络协议都是由会话支持的，如 FTP、 Telnet 等，而 HTTP 协议是无状态的，本身不支持会话，因此在没有额外手段的帮助下，前面场景中服务器不知道用户购买了什么。
 
 为了在无状态的 HTTP 协议之上实现会话， Cookie 诞生了。 Cookie 是一些存储在客户端的信息，每次连接的时候由浏览器向服务器递交，服务器也向浏览器发起存储 Cookie 的请求，依靠这样的手段服务器可以识别客户端。我们通常意义上的 HTTP 会话功能就是这样实现的。具体来说，浏览器首次向服务器发起请求时，服务器生成一个唯一标识符并发送给客户端浏览器，浏览器将这个唯一标识符存储在 Cookie 中，以后每次再发起请求，客户端浏览器都会向服务器传送这个唯一标识符，服务器通过这个唯一标识符来识别用户。
 
-对于开发者来说，我们无须关心浏览器端的存储，需要关注的仅仅是如何通过这个唯一标识符来识别用户。很多服务端脚本语言都有会话功能，如 PHP，把每个唯一标识符存储到文件中。 Express 也提供了会话中间件，默认情况下是把用户信息存储在内存中，但我们既然已经有了 MongoDB，不妨把会话信息存储在数据库中，便于持久维护。
+对于开发者来说，我们无须关心浏览器端的存储，需要关注的仅仅是如何通过这个唯一标识符来识别用户。很多服务端脚本语言都有会话功能，如 PHP，把每个唯一标识符存储到文件中。 Express 也提供了会话中间件，默认情况下是把用户信息存储在内存中，但我们既然已经有了 MongoDB，不妨把会话信息存储在数据库中，便于持久维护。为了使用这一功能，我们首先要获得一个叫做 connect-mongo 的模块，在 package.json 中添加一行代码：
+
+```json
+{
+"name": "microblog"
+, "version": "0.0.1"
+, "private": true
+, "dependencies": {
+"express": "2.5.8"
+, "ejs": ">= 0.0.1"
+, "connect-mongo": ">= 0.1.7"
+, "mongodb": ">= 0.9.9"
+}
+}
+```
+
+运行 npm install 获得模块。然后打开 app.js，添加以下内容：
+
+```js
+var MongoStore = require('connect-mongo');
+var settings = require('../settings');
+app.configure(function(){
+app.set('views', __dirname + '/views');
+app.set('view engine', 'ejs');
+app.use(express.bodyParser());
+app.use(express.methodOverride());
+app.use(express.cookieParser());
+app.use(express.session({
+secret: settings.cookieSecret,
+store: new MongoStore({
+db: settings.db
+})
+}));
+app.use(app.router);
+app.use(express.static(__dirname + '/public'));
+});
+```
+
+其中 express.cookieParser() 是 Cookie 解析的中间件。 express.session() 则提供会话支持，设置它的 store 参数为 MongoStore 实例，把会话信息存储到数据库中，以避免丢失。
+
+在后面的小节中，我们可以通过 req.session 获取当前用户的会话对象，以维护用户相关的信息。
+
+### 5.6.3 注册和登入
+
+我们已经准备好了数据库访问和会话存储的相关信息，接下来开始实现网站的第一个功能，用户注册和登入。
+
+1. 注册页面
+
+首先来设计用户注册页面的表单，创建 views/reg.ejs 文件，内容是：
+
+```html
+<form class="form-horizontal" method="post">
+<fieldset>
+<legend>用户注册</legend>
+<div class="control-group">
+<label class="control-label" for="username">用户名</label>
+<div class="controls">
+<input type="text" class="input-xlarge" id="username" name="username">
+<p class="help-block">你的账户名称，用于登录和显示。 </p>
+</div>
+</div>
+<div class="control-group">
+<label class="control-label" for="password">口令</label>
+<div class="controls">
+<input type="password" class="input-xlarge" id="password" name="password">
+</div>
+</div>
+<div class="control-group">
+<label class="control-label" for="password-repeat">重复输入口令</label>
+<div class="controls">
+<input type="password" class="input-xlarge" id="password-repeat"
+name="password-repeat">
+</div>
+</div>
+<div class="form-actions">
+<button type="submit" class="btn btn-primary">注册</button>
+</div>
+</fieldset>
+</form>
+```
+
+这个表单中有3个输入单元，分别是 username、 password 和 password-repeat。表单的请求方法是 POST，将会发送到相同的路径下。
+
+到目前为止我们所有的路由规则还都写在了 app.js 中，随着规模扩大其维护难度不断提高，因此我们需要把所有的路由规则分离出去。修改 app.js 的 app.configure 部分，用app.use(express.router(routes)) 代替 app.use(app.router)：
+
+```js
+app.configure(function(){
+app.set('views', --dirname + '/views');
+app.set('view engine', 'ejs');
+app.use(express.bodyParser());
+app.use(express.methodOverride());
+app.use(express.cookieParser());
+app.use(express.session({
+secret: settings.cookieSecret,
+store: new MongoStore({
+db: settings.db
+})
+}));
+app.use(express.router(routes));
+app.use(express.static(--dirname + '/public'));
+});
+```
+
+接下来打开 routes/index.js，把内容改为：
+
+```js
+module.exports = function(app) {
+app.get('/', function(req, res) {
+res.render('index', {
+title: '首页'
+});
+});
+app.get('/reg', function(req, res) {
+res.render('reg', {
+title: '用户注册',
+});
+});
+};
+```
+
+现在运行 app.js，在浏览器中打开 http://localhost:3000/reg，可以看到如图5-10所示的页面。
+
+图5-10 注册页面的效果
+
+2. 注册响应
+
+上面这个页面十分简洁优雅，看了以后是不是有立即注册的冲动呢？当然，现在点击注册是没有效果的，因为我们还没有实现 POST 请求发送后的功能，下面就来实现。在 routes/index.js 中添加 /reg 的 POST 响应函数：
+
+```js
+app.post('/reg', function(req, res) {
+//检验用户两次输入的口令是否一致
+if (req.body['password-repeat'] != req.body['password']) {
+req.flash('error', '两次输入的口令不一致');
+return res.redirect('/reg');
+}114 第 5 章 使用 Node.js 进行 Web 开发
+//生成口令的散列值
+var md5 = crypto.createHash('md5');
+var password = md5.update(req.body.password).digest('base64');
+var newUser = new User({
+name: req.body.username,
+password: password,
+});
+//检查用户名是否已经存在
+User.get(newUser.name, function(err, user) {
+if (user)
+err = 'Username already exists.';
+if (err) {
+req.flash('error', err);
+return res.redirect('/reg');
+}
+//如果不存在则新增用户
+newUser.save(function(err) {
+if (err) {
+req.flash('error', err);
+return res.redirect('/reg');
+}
+req.session.user = newUser;
+req.flash('success', '注册成功');
+res.redirect('/');
+});
+});
+});
+```
+
+这段代码用到了一些新的东西，我们一一说明。
+
+- req.body 就是 POST 请求信息解析过后的对象，例如我们要访问用户传递的password 域的值，只需访问 req.body['password'] 即可。
+- req.flash 是 Express 提供的一个奇妙的工具，通过它保存的变量只会在用户当前和下一次的请求中被访问，之后会被清除，通过它我们可以很方便地实现页面的通知和错误信息显示功能。
+- res.redirect 是重定向功能，通过它会向用户返回一个 303 See Other 状态，通知浏览器转向相应页面。
+- crypto 是 Node.js 的一个核心模块，功能是加密并生成各种散列，使用它之前首先要声明 var crypto = require('crypto')。我们代码中使用它计算了密码的散列值。
+- User 是我们设计的用户对象，在后面我们会详细介绍，这里先假设它的接口都是可用的，使用前需要通过 var User = require('../models/user.js') 引用。
+- User.get 的功能是通过用户名获取已知用户，在这里我们判断用户名是否已经存在。 User.save 可以将用户对象的修改写入数据库。
+- 通过 req.session.user = newUser 向会话对象写入了当前用户的信息，在后面我们会通过它判断用户是否已经登录。
+
+3. 用户模型
+
+在前面的代码中，我们直接使用了 User 对象。 User 是一个描述数据的对象，即 MVC架构中的模型。前面我们使用了许多视图和控制器，这是第一次接触到模型。与视图和控制器不同，模型是真正与数据打交道的工具，没有模型，网站就只是一个外壳，不能发挥真实的作用，因此它是框架中最根本的部分。现在就让我们来实现 User 模型吧。
+
+在 models 目录中创建 user.js 的文件，内容如下：
+
+```js
+var mongodb = require('./db');
+function User(user) {
+this.name = user.name;
+this.password = user.password;
+};
+module.exports = User;
+User.prototype.save = function save(callback) {
+// 存入 Mongodb 的文档
+var user = {
+name: this.name,
+password: this.password,
+};
+mongodb.open(function(err, db) {
+if (err) {
+return callback(err);
+}
+// 读取 users 集合
+db.collection('users', function(err, collection) {
+if (err) {
+mongodb.close();
+return callback(err);
+}
+// 为 name 属性添加索引
+collection.ensureIndex('name', {unique: true});
+// 写入 user 文档
+collection.insert(user, {safe: true}, function(err, user) {
+mongodb.close();
+callback(err, user);
+});
+});
+});
+};
+User.get = function get(username, callback) {
+mongodb.open(function(err, db) {
+if (err) {
+return callback(err);
+}
+// 读取 users 集合
+db.collection('users', function(err, collection) {
+if (err) {
+mongodb.close();
+return callback(err);
+}
+// 查找 name 属性为 username 的文档
+collection.findOne({name: username}, function(err, doc) {
+mongodb.close();
+if (doc) {
+// 封装文档为 User 对象
+var user = new User(doc);
+callback(err, user);
+} else {
+callback(err, null);
+}
+});
+});
+});
+};
+```
+
+以上代码实现了两个接口， User.prototype.save 和 User.get， 前者是对象实例的方法，用于将用户对象的数据保存到数据库中，后者是对象构造函数的方法，用于从数据库中查找指定的用户。
+
+4. 视图交互
+
+现在几乎已经万事俱备，只差视图的支持了。为了实现不同登录状态下页面呈现不同内容的功能，我们需要创建动态视图助手，通过它我们才能在视图中访问会话中的用户数据。同时为了显示错误和成功的信息，也要在动态视图助手中增加响应的函数。
+
+打开 app.js，添加以下代码：
+
+```js
+app.dynamicHelpers({
+user: function(req, res) {
+return req.session.user;
+},
+error: function(req, res) {
+var err = req.flash('error');
+if (err.length)
+return err;
+else
+return null;
+},
+success: function(req, res) {
+var succ = req.flash('success');
+if (succ.length)
+return succ;
+else
+return null;
+},
+});
+```
+
+接下来，修改 layout.ejs中的导航栏部分：
+
+```html
+<ul class="nav">
+<li class="active"><a href="/">首页</a></li>
+<% if (!user) { %>
+<li><a href="/login">登入</a></li>
+<li><a href="/reg">注册</a></li>
+<% } else { %>
+<li><a href="/logout">登出</a></li>
+<% } %>
+</ul>
+```
+
+上面功能是为已登入用户和未登入用户显示不同的信息。 在 container 中， <%- body %>之前加入：
+
+```html
+<% if (success) { %>
+<div class="alert alert-success">
+<%= success %>
+</div>
+<% } %>
+<% if (error) { %>
+<div class="alert alert-error">
+<%= error %>
+</div>
+<% } %>
+```
+
+它的功能是页面通知。
+
+现在看看最终的效果吧，图5-11和图5-12分别是注册时遇到错误和注册成功以后的画面。
+
+图5-11 两次输入的密码不一致
+
+图5-12 注册成功
+
+5. 登入和登出
+
+当我们完成用户注册的功能以后，再实现用户登入和登出就相当容易了。把下面的代码加到 routes/index.js 中：
+
+```js
+app.get('/login', function(req, res) {
+res.render('login', {
+title: '用户登入',
+});
+});
+app.post('/login', function(req, res) {
+//生成口令的散列值
+var md5 = crypto.createHash('md5');
+var password = md5.update(req.body.password).digest('base64');
+User.get(req.body.username, function(err, user) {
+if (!user) {
+req.flash('error', '用户不存在');
+return res.redirect('/login');
+}
+if (user.password != password) {
+req.flash('error', '用户口令错误');
+return res.redirect('/login');
+}
+req.session.user = user;
+req.flash('success', '登入成功');
+res.redirect('/');
+});
+});
+app.get('/logout', function(req, res) {
+req.session.user = null;
+req.flash('success', '登出成功');
+res.redirect('/');
+});
+```
+
+在这里你可以清晰地看出登入和登出仅仅是 req.session.user 变量的标记，非常简单。但这会不会有安全性问题呢？不会的，因为这个变量只有服务端才能访问到，只要不是黑客攻破了整个服务器，无法从外部改动。
+
+最后我们创建 views/login.ejs，内容如下：
+
+```html
+<form class="form-horizontal" method="post">
+<fieldset>
+<legend>用户登入</legend>
+<div class="control-group">
+<label class="control-label" for="username">用户名</label>120 第 5 章 使用 Node.js 进行 Web 开发
+<div class="controls">
+<input type="text" class="input-xlarge" id="username" name="username">
+</div>
+</div>
+<div class="control-group">
+<label class="control-label" for="password">口令</label>
+<div class="controls">
+<input type="password" class="input-xlarge" id="password" name="password">
+</div>
+</div>
+<div class="form-actions">
+<button type="submit" class="btn btn-primary">登入</button>
+</div>
+</fieldset>
+</form>
+```
+
+在浏览器中访问http://localhost:3000/login，你将会看到如图5-13 所示的页面。
+
+图5-13 用户登入
+
+至此用户注册和登录的功能就完全实现了。
+
+### 5.6.4 页面权限控制
+
+在前面我们已经实现了用户登入，并且在页面中通过不同的内容反映出了用户已登入和未登入的状态。现在我们还有一个工作要做，就是为页面设置访问权限。例如，登出功能应
+该只对已登入的用户开放，注册和登入页面则应该阻止已登入的用户访问。如何实现这一点呢？最简单的方法是在每个页面的路由响应函数内检查用户是否已经登录，但这会带来很多重复的代码，违反了 DRY ①原则。因此，我们利用路由中间件来实现这个功能。
+
+5.3.5 节介绍了同一路径绑定多个响应函数的方法，通过调用 next() 转移控制权，这种方法叫做路由中间件。我们可以把用户登入状态检查放到路由中间件中，在每个路径前增加路由中间件，即可实现页面权限控制。
+
+最终的 routes/index.js 内容如下：
+
+```js
+var crypto = require('crypto');
+var User = require('../models/user.js');
+module.exports = function(app) {
+app.get('/', function(req, res) {
+res.render('index', {
+title: '首页'
+});
+});
+app.get('/reg', checkNotLogin);
+app.get('/reg', function(req, res) {
+res.render('reg', {
+title: '用户注册',
+});
+});
+app.post('/reg', checkNotLogin);
+app.post('/reg', function(req, res) {
+//检验用户两次输入的口令是否一致
+if (req.body['password-repeat'] != req.body['password']) {
+req.flash('error', '两次输入的口令不一致');
+return res.redirect('/reg');
+}
+//生成口令的散列值
+var md5 = crypto.createHash('md5');
+var password = md5.update(req.body.password).digest('base64');
+var newUser = new User({
+name: req.body.username,
+password: password,
+});
+//检查用户名是否已经存在
+User.get(newUser.name, function(err, user) {
+if (user)
+err = 'Username already exists.';
+if (err) {
+req.flash('error', err);
+return res.redirect('/reg');
+}
+//如果不存在则新增用户
+newUser.save(function(err) {
+if (err) {
+req.flash('error', err);
+return res.redirect('/reg');
+}
+req.session.user = newUser;
+req.flash('success', '注册成功');
+res.redirect('/');
+});
+});
+});
+app.get('/login', checkNotLogin);
+app.get('/login', function(req, res) {
+res.render('login', {
+title: '用户登入',
+});
+});
+app.post('/login', checkNotLogin);
+app.post('/login', function(req, res) {
+//生成口令的散列值
+var md5 = crypto.createHash('md5');
+var password = md5.update(req.body.password).digest('base64');
+User.get(req.body.username, function(err, user) {
+if (!user) {
+req.flash('error', '用户不存在');
+return res.redirect('/login');
+}
+if (user.password != password) {
+req.flash('error', '用户口令错误');
+return res.redirect('/login');
+}
+req.session.user = user;
+req.flash('success', '登入成功');
+res.redirect('/');
+});
+});
+app.get('/logout', checkLogin);
+app.get('/logout', function(req, res) {
+req.session.user = null;
+req.flash('success', '登出成功');
+res.redirect('/');
+});
+};
+function checkLogin(req, res, next) {
+if (!req.session.user) {
+req.flash('error', '未登入');
+return res.redirect('/login');
+}
+next();
+}
+function checkNotLogin(req, res, next) {
+if (req.session.user) {
+req.flash('error', '已登入');
+return res.redirect('/');
+}
+next();
+}
+```
 
 ## 5.7 发表微博
 
+现在网站已经具备了用户注册、登入、页面权限控制的功能，这些功能为网站最核心的部分——发表微博做好了准备。在这个小节里，我们将会实现发表微博的功能，完成整个网站的设计。
+
+### 5.7.1 微博模型
+
+现在让我们从模型开始设计。仿照用户模型，将微博模型命名为 Post 对象，它拥有与User 相似的接口，分别是 Post.get 和 Post.prototype.save。 Post.get 的功能是从数据库中获取微博，可以按指定用户获取，也可以获取全部的内容。 Post.prototype.save是 Post 对象实例的方法，用于将对象的变动保存到数据库。
+
+创建 models/post.js，写入以下内容：
+
+```js
+var mongodb = require('./db');
+function Post(username, post, time) {
+this.user = username;
+this.post = post;124 第 5 章 使用 Node.js 进行 Web 开发
+if (time) {
+this.time = time;
+} else {
+this.time = new Date();
+}
+};
+module.exports = Post;
+Post.prototype.save = function save(callback) {
+// 存入 Mongodb 的文档
+var post = {
+user: this.user,
+post: this.post,
+time: this.time,
+};
+mongodb.open(function(err, db) {
+if (err) {
+return callback(err);
+}
+// 读取 posts 集合
+db.collection('posts', function(err, collection) {
+if (err) {
+mongodb.close();
+return callback(err);
+}
+// 为 user 属性添加索引
+collection.ensureIndex('user');
+// 写入 post 文档
+collection.insert(post, {safe: true}, function(err, post) {
+mongodb.close();
+callback(err, post);
+});
+});
+});
+};
+Post.get = function get(username, callback) {
+mongodb.open(function(err, db) {
+if (err) {
+return callback(err);
+}
+// 读取 posts 集合
+db.collection('posts', function(err, collection) {
+if (err) {
+mongodb.close();
+return callback(err);
+}
+// 查找 user 属性为 username 的文档，如果 username 是 null 则匹配全部
+var query = {};
+if (username) {
+query.user = username;
+}
+collection.find(query).sort({time: -1}).toArray(function(err, docs) {
+mongodb.close();
+if (err) {
+callback(err, null);
+}
+// 封装 posts 为 Post 对象
+var posts = [];
+docs.forEach(function(doc, index) {
+var post = new Post(doc.user, doc.post, doc.time);
+posts.push(post);
+});
+callback(null, posts);
+});
+});
+});
+};
+```
+
+在后面我们会通过控制器调用这个模块。
+
+### 5.7.2 发表微博
+
+我们曾经约定通过 POST 方法访问 /post 以发表微博，现在让我们来实现这个控制器。
+
+```js
+在 routes/index.js 中添加下面的代码：
+app.post('/post', checkLogin);
+app.post('/post', function(req, res) {
+var currentUser = req.session.user;
+var post = new Post(currentUser.name, req.body.post);
+post.save(function(err) {
+if (err) {
+req.flash('error', err);
+return res.redirect('/');
+}
+req.flash('success', '发表成功');
+res.redirect('/u/' + currentUser.name);
+});
+});
+```
+
+这段代码通过 req.session.user 获取当前用户信息，从 req.body.post 获取用户发表的内容，建立 Post 对象，调用 save() 方法存储信息，最后将用户重定向到用户页面。
+
+### 5.7.3 用户页面
+
+用户页面的功能是展示用户发表的所有内容，在routes/index.js中加入以下代码：
+
+```js
+app.get('/u/:user', function(req, res) {
+User.get(req.params.user, function(err, user) {
+if (!user) {
+req.flash('error', '用户不存在');
+return res.redirect('/');
+}
+Post.get(user.name, function(err, posts) {
+if (err) {
+req.flash('error', err);
+return res.redirect('/');
+}
+res.render('user', {
+title: user.name,
+posts: posts,
+});
+});
+});
+});
+```
+
+它的功能是首先检查用户是否存在，如果存在则从数据库中获取该用户的微博，最后通过 posts 属性传递给 user 视图。 views/user.ejs 的内容如下：
+
+```html
+<% if (user) { %>
+<%- partial('say') %>
+<% } %>
+<%- partial('posts') %>
+```
+
+根据 DRY 原则，我们把重复用到的部分都提取出来，分别放入 say.ejs 和 posts.ejs。 say.ejs 的功能是显示一个发表微博的表单，它的内容如下：
+
+```html
+<form method="post" action="/post" class="well form-inline center" style="text-align:
+center;">
+<input type="text" class="span8" name="post">
+<button type="submit" class="btn btn-success"><i class="icon-comment icon-white">
+</i> 发言</button>
+</form>
+```
+
+posts.ejs 的目的是按照行列显示传入的 posts 的所有内容：
+
+```html
+<% posts.forEach(function(post, index) {
+if (index % 3 == 0) { %>
+<div class="row">
+<%} %>
+<div class="span4">
+<h2><a href="/u/<%= post.user %>"><%= post.user %></a> 说</h2>
+<p><small><%= post.time %></small></p>
+<p><%= post.post %></p>
+</div>
+<% if (index % 3 == 2) { %>
+</div><!-- end row -->
+<% } %>
+<%}) %>
+<% if (posts.length % 3 != 0) { %>
+</div><!-- end row -->
+<%} %>
+```
+
+完成上述工作后，重启服务器。在用户的页面上发表几个微博，然后可以看到用户页面的效果如图5-14 所示。
+
+图5-14 用户页面
+
+### 5.7.4 首页
+
+最后一步是实现首页的内容。我们计划在首页显示所有用户发表的微博，按时间从新到旧的顺序。
+
+在 routes/index.js 中添加下面代码：
+
+```js
+app.get('/', function(req, res) {
+Post.get(null, function(err, posts) {
+if (err) {128 第 5 章 使用 Node.js 进行 Web 开发
+posts = [];
+}
+res.render('index', {
+title: '首页',
+posts: posts,
+});
+});
+});
+```
+
+它的功能是读取所有用户的微博，传递给页面 posts 属性。接下来修改首页的模板index.ejs：
+
+```html
+<% if (!user) { %>
+<div class="hero-unit">
+<h1>欢迎来到 Microblog</h1>
+<p>Microblog 是一个基于 Node.js 的微博系统。 </p>
+<p>
+<a class="btn btn-primary btn-large" href="/login">登录</a>
+<a class="btn btn-large" href="/reg">立即注册</a>
+</p>
+</div>
+<% } else { %>
+<%- partial('say') %>
+<% } %>
+<%- partial('posts') %>
+```
+
+下面看看首页的效果吧，图5-15和图5-16是用户登入之前和登入以后看到的首页效果。
+
+图5-15 登入之前的首页
+
+图5-16 登入以后的首页
+
+### 5.7.5 下一步
+
+到此为止，微博网站的基本功能就完成了。这个网站仅仅是微博的一个雏形，距离真正的微博还有很大的距离。例如，我们没有对注册信息进行完整的验证，如用户名的规则，密码的长短等。为了防止恶意注册还应该带有验证码和邮件认证的功能，甚至还应该支持OAuth。我们对发帖没有进行任何限制，尽管注入 HTML 是不可能的，但至少还应该对长度有限制。首页和用户页面的显示都是没有数量限制的，当微博很多以后这个页面可能会很长，应该实现分页的功能。作为社交工具，最重要的用户关注、转帖、评论、圈点用户这些功能都没有实现。
+
+除了功能上的不足，这个网站还有潜在的性能问题，例如每次查询数据库都没有限制取得的数量，还应该对一些访问频繁的页面增加缓存机制。另外，我们一直是以开发模式在运行着这个网站，没有讨论如何把它真正部署起来，我们会在下一章详细讨论。
+
+
+如果你对这个用 Node.js 实现的微博网站有兴趣，请访问 https://github.com/BYVoid/microblog ，这里有 Microblog 示例中的完整代码，而且在其基础上还做了进一步的改进，也欢迎你为它“添砖加瓦”。
 
 # 第六章 Node.js进阶话题
+
+在本书的最后一章，我们打算讨论几个独立的话题，主要内容包括：
+
+- 模块加载机制；
+- 异步编程模式下的控制流；
+- Node.js 应用部署；
+- Node.js的一些劣势。
 
 ## 6.1 模块加载机制
 
 Node.js 的模块加载对用户来说十分简单，只需调用 require 即可，但其内部机制较为复杂。
 
-模块的类型。Node.js 的模块可以分为两大类，一类是核心模块，另一类是文件模块。核心模块就是Node.js 标准 API 中提供的模块，如 fs、 http、 net、 vm 等，这些都是由 Node.js 官方提供的模块，编译成了二进制代码。我们可以直接通过 require 获取核心模块，例如 `require('fs')`。核心模块拥有最高的加载优先级，换言之如果有模块与其命名冲突，Node.js 总是会加载核心模块。
+### 6.1.1 模块的类型
+
+Node.js 的模块可以分为两大类，一类是核心模块，另一类是文件模块。核心模块就是Node.js 标准 API 中提供的模块，如 fs、 http、 net、 vm 等，这些都是由 Node.js 官方提供的模块，编译成了二进制代码。我们可以直接通过 require 获取核心模块，例如 `require('fs')`。核心模块拥有最高的加载优先级，换言之如果有模块与其命名冲突，Node.js 总是会加载核心模块。
 
 文件模块则是存储为单独的文件（或文件夹）的模块，可能是 JavaScript 代码、 JSON 或编译好的 C/C++ 代码。文件模块的加载方法相对复杂，但十分灵活，尤其是和 npm 结合使用时。在不显式指定文件模块扩展名的时候， Node.js 会分别试图加上 .js、 .json 和 .node扩展名。 .js 是 JavaScript 代码， .json 是 JSON 格式的文本， .node 是编译好的 C/C++ 代码。
 
+表 6-1总结了 Node.js 模块的类型，从上到下加载优先级由高到低。
+
+表6-1 Node.js 模块的类别和加载顺序
+
+核心模块 内 建
+文件模块 JavaScript .js
+JSON .json
+C/C++扩展 .node
+
+### 6.1.2 按路径加载模块
+
 文件模块的加载有两种方式，一种是按路径加载，一种是查找 node_modules 文件夹。如果 require 参数以“/ ”开头，那么就以绝对路径的方式查找模块名称，例如 require ('/home/byvoid/module') 将会按照优先级依次尝试加载 /home/byvoid/module.js、/home/byvoid/module.json 和 /home/byvoid/module.node。
 
-如果 require 参数以“./ ”或“../ ”开头，那么则以相对路径的方式来查找模块，这种方式在应用中是最常见的。
+如果 require 参数以“./ ”或“../ ”开头，那么则以相对路径的方式来查找模块，这种方式在应用中是最常见的。例如前面的例子中我们用了require('./hello')来加载同一文件夹下的hello.js。
 
-如果require参数不以“/ ”、“./ ”或“../ ”开头，而该模块又不是核心模块，那么就要通过查找 node_modules 加载模块了。我们使用npm获取的包通常就是以这种方式加载的。在 node_modules 目录的外面一层，我们可以直接使用 `require('express')` 来代替`require('./node_modules/express')`。这是Node.js模块加载的一个重要特性：通过查找 node_modules 目录来加载模块。
+### 6.1.3 通过查找 node_modules 目录加载模块
 
-当 require 遇到一个既不是核心模块，又不是以路径形式表示的模块名称时，会试图在当前目录下的 node_modules 目录中来查找是不是有这样一个模块。如果没有找到，则会在当前目录的上一层中的 node_modules 目录中继续查找，反复执行这一过程，直到遇到根目录为止。
+如果require参数不以“/ ”、“./ ”或“../ ”开头，而该模块又不是核心模块，那么就要通过查找 node_modules 加载模块了。我们使用npm获取的包通常就是以这种方式加载的。
 
-加载缓存。Node.js 模块不会被重复加载，这是因为 Node.js 通过文件名缓存所有加载过的文件模块，所以以后再访问到时就不会重新加载了。注意， Node.js 是根据实际文件名缓存的，而不是`require()`提供的参数缓存的，也就是说即使你分别通过 `require('express')` 和 `require('./node_modules/express')` 加载两次，也不会重复加载，因为尽管两次参数不同，解析到的文件却是同一个。
+在某个目录下执行命令npm install express， 你会发现出现了一个叫做node_modules
+的目录，里面的结构大概如图 6-1 所示。
+
+在 node_modules 目录的外面一层，我们可以直接使用 `require('express')` 来代替`require('./node_modules/express')`。这是Node.js模块加载的一个重要特性：通过查找 node_modules 目录来加载模块。
+
+当 require 遇到一个既不是核心模块，又不是以路径形式表示的模块名称时，会试图在当前目录下的 node_modules 目录中来查找是不是有这样一个模块。如果没有找到，则会在当前目录的上一层中的 node_modules 目录中继续查找，反复执行这一过程，直到遇到根目录为止。举个例子，我们要在 /home/byvoid/develop/foo.js 中使用 require('bar.js') 命令， Node.js会依次查找：
+
+- /home/byvoid/develop/node_modules/bar.js
+- /home/byvoid/node_modules/bar.js
+- /home/node_modules/bar.js
+- /node_modules/bar.js
+
+为什么要这样做呢？因为通常一个工程内会有一些子目录，当子目录内的文件需要访问
+到工程共同依赖的模块时，就需要向父目录上溯了。比如说工程的目录结构如下：
+
+```
+|- project
+  |- app.js
+  |- models
+    |- ...
+  |- views
+    |- ...
+  |- controllers
+    |- index_controller.js
+    |- error_controller.js
+    |- ...
+  |- node_modules
+    |- express
+```
+
+我们不仅要在 project 目录下的 app.js 中使用 require('express')，而且可能要在
+controllers 子目录下的 index_controller.js 中也使用 require('express')，这时就需要向
+父目录上溯一层才能找到 node_modules 中的 express 了。
+
+### 6.1.4 加载缓存
+
+Node.js 模块不会被重复加载，这是因为 Node.js 通过文件名缓存所有加载过的文件模块，所以以后再访问到时就不会重新加载了。注意， Node.js 是根据实际文件名缓存的，而不是`require()`提供的参数缓存的，也就是说即使你分别通过 `require('express')` 和 `require('./node_modules/express')` 加载两次，也不会重复加载，因为尽管两次参数不同，解析到的文件却是同一个。
+
+### 6.1.5 加载顺序
+
+下面总结一下使用 require(some_module) 时的加载顺序。
+
+1. 如果some_module 是一个核心模块，直接加载，结束。
+2. 如果some_module以“ / ”、“ ./ ”或“ ../ ”开头，按路径加载 some_module，结束。
+3. 假设当前目录为 current_dir，按路径加载 current_dir/node_modules/some_module。
+  - 如果加载成功，结束。
+  - 如果加载失败，令current_dir为其父目录。
+  - 重复这一过程，直到遇到根目录，抛出异常，结束。
 
 ## 6.2 控制流
+
+基于异步 I/O 的事件式编程容易将程序的逻辑拆得七零八落，给控制流的疏理制造障碍。让我们通过下面的例子来说明这个问题。
+
+### 6.2.1 循环的陷阱
 
 Node.js 的异步机制由事件和回调函数实现，一开始接触可能会感觉违反常规，但习惯以后就会发现还是很简单的。然而这之中其实暗藏了不少陷阱，一个很容易遇到的问题就是循环中的回调函数，初学者经常容易陷入这个圈套。
 
@@ -2079,7 +3089,22 @@ for (var i = 0; i < files.length; i++) {
 // undefined: CCC
 ```
 
-大多数情况下我们可以用数组的 forEach 方法解决这个问题：
+现在问题就明朗了：原因是3次读取文件的回调函数事实上是同一个实例，其中引用到的 i 值是上面循环执行结束后的值，因此不能分辨。如何解决这个问题呢？我们可以利用JavaScript 函数式编程的特性，手动建立一个闭包：
+
+```js
+//forloopclosure.js
+var fs = require('fs');
+var files = ['a.txt', 'b.txt', 'c.txt'];
+for (var i = 0; i < files.length; i++) {
+(function(i) {
+fs.readFile(files[i], 'utf-8', function(err, contents) {
+console.log(files[i] + ': ' + contents);
+});
+})(i);
+}
+```
+
+事实上以上这种写法并不常见，因为它降低了程序的可读性，故不推荐使用。大多数情况下我们可以用数组的 forEach 方法解决这个问题：
 
 ```JavaScript
 //callbackforeach.js
@@ -2092,6 +3117,8 @@ files.forEach(function(filename) {
 });
 ```
 
+### 6.2.2 解决控制流难题
+
 除了循环的陷阱， Node.js 异步式编程还有一个显著的问题，即深层的回调函数嵌套。在这种情况下，我们很难像看基本控制流结构一样一眼看清回调函数之间的关系，因此当程序规模扩大时必须采取手段降低耦合度，以实现更加优美、可读的代码。这个问题本身没有立竿见影的解决方法，只能通过改变设计模式，时刻注意降低逻辑之间的耦合关系来解决。
 
 除此之外，还有许多项目试图解决这一难题。 async 是一个控制流解耦模块，它提供了async.series、 async.parallel、 async.waterfall 等函数，在实现复杂的逻辑时使用这些函数代替回调函数嵌套可以让程序变得更清晰可读且易于维护，但你必须遵循它的编程风格。
@@ -2100,17 +3127,30 @@ streamlinejs和jscex则采用了更高级的手段，它的思想是“变同步
 
 eventproxy 的思路与前面两者区别更大，它实现了对事件发射器的深度封装，采用一种完全基于事件松散耦合的方式来实现控制流的梳理。
 
+无论是以上哪种解决手段，都不是“非侵入性的”，也就是说它对你编程模式的影响是非常大的，你几乎不可能无代价地在使用了一种模式很久以后从容地换成另一种模式，或者直接糅合使用两种模式。而且它们都是在解决了深层嵌套的回调函数可读性问题的同时，引入了其他复杂的语法，带来了另一种可读性的降低。所以，是否使用，使用哪种方案，在决定之前是需要仔细斟酌研究的。
+
 ## 6.3 Node.js应用部署
 
-在开发的过程中，通过node app.js 命令运行服务器即可。但它不适合在产品环境下使用，为什么呢？因为到目前为止这个服务器还有几个重大缺陷。
+在第5章我们已经使用Express实现了一个微博网站，在开发的过程中，通过node app.js命令运行服务器即可。但它不适合在产品环境下使用，为什么呢？因为到目前为止这个服务器还有几个重大缺陷。
 
-- 不支持故障恢复
-- 没有日志
-- 无法利用多核提高性能
-- 独占端口
-- 需要手动启动
+- 不支持故障恢复  
+不知你是否在调试的过程中注意，当程序有错误发生时，整个进程就会结束，需要重新在终端中启动服务器。这一点在开发中无可厚非，但在产品环境下就是严重的问题了，因为一旦用户访问时触发了程序中某个隐含的bug， 整个服务器就崩溃了，将无法继续为所有用户提供服务。在部署Node.js 应用的时候一定要考虑到故障恢复，提高系统的可靠性。
 
-服务器的日志功能。Express 支持两种运行模式：开发模式和产品模式，前者的目的是利于调试，后者则是利于部署。使用产品模式运行服务器的方式很简单，只需设置 NODE_ENV 环境变量。通过 NODE_ENV=production node app.js 命令运行服务器可以看到。
+- 没有日志  
+对于开发者来说，日志，尤其是错误日志是及其重要的，经常查看它可以发现测试时没有注意到的程序错误。然而这个服务器运行时没有产生任何日志，包括访问日志和错误日志，所以有必要实现它的日志功能。
+
+- 无法利用多核提高性能  
+由于Node.js是单线程的，一个进程只能利用一个CPU 核心。当请求大量到来时，单线程就成为了提高吞吐量的瓶颈。随着多核乃至众核时代的到来，只能利用一个核心所带来的浪费是十分严重的，我们需要使用多进程来提高系统的性能。
+
+- 独占端口  
+假如整个服务器只有一个网站，或者可以给每个网站分配一个独立的IP地址，不会有端口冲突的问题。而很多时候为了充分利用服务器的资源，我们会在同一个服务器上建立多个网站，而且这些网站可能有的是PHP，有的是Rails，有的是Node.js。不能每个进程都独占80端口，所以我们有必要通过反向代理来实现基于域名的端口共享。
+
+- 需要手动启动  
+先前每次启动服务器都是通过在命令行中直接键入命令来实现的，但在产品环境中，特别是在服务器重启以后，全部靠手动启动是不现实的。因此，我们应该制作一个自动启动服务器的脚本，并且通过该脚本可以实现停止服务器等功能。
+
+### 6.3.1 日志功能
+
+下面我们开始在第5章的代码的基础上，介绍如何实现服务器的日志功能。 Express支持两种运行模式：开发模式和产品模式，前者的目的是利于调试，后者则是利于部署。使用产品模式运行服务器的方式很简单，只需设置NODE_ENV 环境变量。通过NODE_ENV=production node app.js命令运行服务器可以看到：
 
 ```
 Express server listening on port 3000 in production mode
@@ -2118,21 +3158,266 @@ Express server listening on port 3000 in production mode
 
 接下来让我们实现访问日志和错误日志功能。访问日志就是记录用户对服务器的每个请求，包括客户端IP 地址，访问时间，访问路径，服务器响应以及客户端代理字符串。而错误日志则记录程序发生错误时的信息，由于调试中需要即时查看错误信息，将所有错误直接显示到终端即可，而在产品模式中，需要写入错误日志文件。
 
+Express 提供了一个访问日志中间件，只需指定stream 参数为一个输出流即可将访问日志写入文件。打开app.js，在最上方加入以下代码：
+
+```js
+var fs = require('fs');
+var accessLogfile = fs.createWriteStream('access.log', {flags: 'a'});
+var errorLogfile = fs.createWriteStream('error.log', {flags: 'a'});
+```
+
+然后在app.configure 函数第一行加入：
+
+```js
+app.use(express.logger({stream: accessLogfile}));
+```
+
+至于错误日志，需要单独实现错误响应，修改如下：
+
+```js
+app.configure('production', function(){
+app.error(function (err, req, res, next) {
+var meta = '[' + new Date() + '] ' + req.url + '\n';
+errorLogfile.write(meta + err.stack + '\n');
+next();
+});
+});
+```
+
+这段代码的功能是通过app.error注册错误响应函数，在其中将错误写入错误日志流。
+
+现在重新运行服务器，在浏览器中访问 http://127.0.0.1:3000/，即可在app.js 同一目录下的 access.log 文件中看到与以下类似的内容：
+
+```
+127.0.0.1 - - [Thu, 5 Apr 2012 15:29:28 GMT] "GET / HTTP/1.1" 200 3389 "-" "Mozilla/5.0
+(Macintosh; Intel Mac OS X 10_7_3) AppleWebKit/535.19 (KHTML, like Gecko)
+Chrome/18.0.1025.162 Safari/535.19"
+127.0.0.1 - - [Thu, 5 Apr 2012 15:29:28 GMT] "GET /stylesheets/bootstrap-responsive.css
+HTTP/1.1" 304 - "http://127.0.0.1:3000/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_7_3)
+AppleWebKit/535.19 (KHTML, like Gecko) Chrome/18.0.1025.162 Safari/535.19"
+127.0.0.1 - - [Thu, 5 Apr 2012 15:29:28 GMT] "GET /javascripts/jquery.js HTTP/1.1" 304
+- "http://127.0.0.1:3000/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_7_3)
+AppleWebKit/535.19 (KHTML, like Gecko) Chrome/18.0.1025.162 Safari/535.19"
+127.0.0.1 - - [Thu, 5 Apr 2012 15:29:28 GMT] "GET /javascripts/bootstrap.js HTTP/1.1"
+304 - "http://127.0.0.1:3000/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_7_3)
+AppleWebKit/535.19 (KHTML, like Gecko) Chrome/18.0.1025.162 Safari/535.19"
+127.0.0.1 - - [Thu, 5 Apr 2012 15:29:28 GMT] "GET /stylesheets/bootstrap.css HTTP/1.1"
+304 - "http://127.0.0.1:3000/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_7_3)
+AppleWebKit/535.19 (KHTML, like Gecko) Chrome/18.0.1025.162 Safari/535.19"
+127.0.0.1 - - [Thu, 5 Apr 2012 15:29:28 GMT] "GET /favicon.ico HTTP/1.1" 404 - "-"
+"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_7_3) AppleWebKit/535.19 (KHTML, like Gecko)
+Chrome/18.0.1025.162 Safari/535.19"
+```
+
+为了产生一个错误，我们修改routes/index.js 中“ / ”的响应函数，加入以下代码：
+
+```js
+throw new Error('An error for test purposes.');
+```
+
+再次访问 http://127.0.0.1:3000/， 可以看到 error.log 输出了完整的错误内容，如下所示：
+
+```
+[Thu Apr 5 2012 23:33:21 GMT+0800 (CST)] /
+Error: An error for test purposes.
+at Object.<anonymous> (/byvoid/microblog/routes/index.js:7:11)
+at nextMiddleware (/byvoid/microblog/node_modules/express/node_modules/connect/
+lib/middleware/router.js:175:25)
+at param (/byvoid/microblog/node_modules/express/node_modules/connect/lib/
+middleware/router.js:183:16)
+at pass (/byvoid/microblog/node_modules/express/node_modules/connect/lib/
+middleware/router.js:191:10)
+at Object.router [as handle] (/byvoid/microblog/node_modules/express/
+node_modules/connect/lib/middleware/router.js:197:6)
+at next (/byvoid/microblog/node_modules/express/node_modules/connect/lib/
+http.js:203:15)
+at /byvoid/microblog/node_modules/express/node_modules/connect/lib/middleware/
+session.js:323:9
+at /byvoid/microblog/node_modules/express/node_modules/connect/lib/middleware/
+session.js:342:9
+at /byvoid/microblog/node_modules/connect-mongo/lib/connect-mongo.js:151:15
+at /byvoid/microblog/node_modules/connect-mongo/node_modules/mongodb/lib/
+mongodb/collection.js:885:34
+```
+
+这样，一个简单有效的日志功能就这样实现了。
+
+### 6.3.2 使用cluster模块
+
 从0.6 版本开始， Node.js 提供了一个核心模块： cluster。 cluster的功能是生成与当前进程相同的子进程，并且允许父进程和子进程之间共享端口。 Node.js 的另一个核心模块child_process 也提供了相似的进程生成功能，但最大的区别在于cluster 允许跨进程端口复用，给我们的网络服务器开发带来了很大的方便。
 
-共享80端口。默认的HTTP 端口是80，因此必须监听80端口才能使网址更加简洁。如果整个服务器只有一个网站，那么只需让app.js 监听80 端口即可。但很多时候一个服务器上运行着不止一个网站，尤其是还有用其他语言（如PHP）写成的网站，这该怎么办呢？此时虚拟主机可以粉墨登场了。虚拟主机，就是让多个网站共享使用同一服务器同一IP地址，通过域名的不同来划分请求。主流的HTTP服务器都提供了虚拟主机支持，如Nginx、 Apache、 IIS等。
+为了在外部模块调用app.js， 首先需要禁止服务器自动启动。修改app.js，在 `app.listen(3000);` 前后加上判断语句：
+
+```js
+if (!module.parent) {
+app.listen(3000);
+console.log("Express server listening on port %d in %s mode", app.address().port,
+app.settings.env);
+}
+```
+
+这个语句的功能是判断当前模块是不是由其他模块调用的，如果不是，说明它是直接启动的，此时启动调试服务器；如果是，则不自动启动服务器。经过这样的修改，以后直接调用node app.js服务器会直接运行，但在其他模块中调用require('./app') 则不会自动启动，需要再显式地调用 listen() 函数。
+
+接下来就让我们通过cluster 调用app.js。 创建cluster.js， 内容如下所示：
+
+```js
+var cluster = require('cluster');
+var os = require('os');
+// 获取CPU 的数量
+var numCPUs = os.cpus().length;
+var workers = {};
+if (cluster.isMaster) {
+// 主进程分支
+cluster.on('death', function (worker) {
+// 当一个工作进程结束时，重启工作进程
+delete workers[worker.pid];
+worker = cluster.fork();
+workers[worker.pid] = worker;
+});
+// 初始开启与CPU 数量相同的工作进程
+for (var i = 0; i < numCPUs; i++) {
+var worker = cluster.fork();
+workers[worker.pid] = worker;
+}
+} else {
+// 工作进程分支，启动服务器
+var app = require('./app');
+app.listen(3000);
+}
+// 当主进程被终止时，关闭所有工作进程
+process.on('SIGTERM', function () {
+for (var pid in workers) {
+process.kill(pid);
+}
+process.exit(0);
+});
+```
+
+cluster.js的功能是创建与CPU 核心个数相同的服务器进程，以确保充分利用多核CPU的资源。主进程生成若干个工作进程，并监听工作进程结束事件，当工作进程结束时，重新启动一个工作进程。分支进程产生时会自顶向下重新执行当前程序，并通过分支判断进入工作进程分支，在其中读取模块并启动服务器。通过cluster启动的工作进程可以直接实现端口复用，因此所有工作进程只需监听同一端口。当主进程终止时，还要主动关闭所有工作进程。
+
+在终端中执行node cluster.js 命令， 可以看到进程列表中启动了多个 node进程（ 8核CPU）：
+
+```
+12408 ? 00:01:28 node
+12411 ? 00:01:27 node
+12412 ? 00:01:28 node
+12414 ? 00:01:31 node
+12416 ? 00:01:34 node
+12418 ? 00:01:44 node
+12420 ? 00:01:38 node
+12422 ? 00:01:34 node
+12424 ? 00:02:14 node
+```
+
+终止工作进程，新的工作进程会立即启动，终止主进程，所有工作进程也会同时结束。这样，一个既能利用多核资源，又有实现故障恢复功能的服务器就诞生了。
+
+### 6.3.3 启动脚本
+
+接下来，我们还需要一个启动脚本来简化维护工作。如果你维护过Linux 服务器，会对/etc/init.d/ 下面的脚本有印象。例如使用/etc/init.d/nginx start 和/etc/init.d/nginx stop 可以启动和关闭Nginx 服务器。我们通过bash 脚本也来实现一个类似的功能，创建microblog 并使用chmod +x microblog 赋予其执行权限，脚本内容为：
+
+```
+#! /bin/sh
+NODE_ENV=production
+DAEMON="node cluster.js"
+NAME=Microblog
+DESC=Microblog
+PIDFILE="microblog.pid"
+case "$1" in
+start)
+echo "Starting $DESC: "
+nohup $DAEMON > /dev/null &
+echo $! > $PIDFILE
+echo "$NAME."
+;;
+stop)
+echo "Stopping $DESC: "
+pid='cat $PIDFILE'
+kill $pid
+rm $PIDFILE
+echo "$NAME."
+;;
+esac
+exit 0
+```
+
+它的功能是通过nohup 启动服务器，使进程不会因为退出终端而关闭，同时将主进程的pid 写入microblog.pid 文件。当调用结束命令时，从microblog.pid 读取pid 的值，终止主进程以关闭服务器。
+
+运行./microblog start，结果如下：
+
+```
+Starting Microblog:
+Microblog.
+```
+
+在该目录下生成了microblog.pid文件，查看进程表可以发现服务器已经启动。关闭服务器时只需执行./microblog stop，即可结束所有工作进程。
+
+有了这个启动脚本，我们就可以实现服务器的开机自动启动了，根据不同的操作系统，将其加入启动运行项即可，唯一需要修改的地方是DAEMON 和PIDFILE 应该写成绝对路径，以便在不同的目录下运行。
+
+> 这段脚本只支持 POSIX 操作系统，如 Linux、 Mac OS等，在 Windows 下不可用。
+
+### 6.3.4 共享 80 端口
+
+到目前为止，网站都是运行在3000端口下的，也就是说用户必须在网址中加入:3000才能访问网站。默认的 HTTP 端口是80，因此必须监听80端口才能使网址更加简洁。如果整个服务器只有一个网站，那么只需让app.js 监听80 端口即可。但很多时候一个服务器上运行着不止一个网站，尤其是还有用其他语言（如PHP）写成的网站，这该怎么办呢？此时虚拟主机可以粉墨登场了。
+
+虚拟主机，就是让多个网站共享使用同一服务器同一IP地址，通过域名的不同来划分请求。主流的HTTP服务器都提供了虚拟主机支持，如Nginx、 Apache、 IIS等。我们以Nginx为例，介绍如何通过反向代理实现Node.js 虚拟主机。
+
+在Nginx 中设置反向代理和虚拟主机非常简单，下面是配置文件的一个示例：
+
+```js
+server {
+listen 80;
+server_name mysite.com;
+location / {
+proxy_pass http://localhost:3000;
+}
+}
+```
+
+这个配置文件的功能是监听访问mysite.com 80 端口的请求，并将所有的请求转发给http://localhost:3000，即我们的Node.js 服务器。现在访问 http://mysite.com/ ，就相当于服务器访问 http://localhost:3000 了。
+
+在添加了虚拟主机以后，还可以在Nginx配置文件中添加访问静态文件的规则（具体请参考Nginx文档）， 删去app.js中的app.use(express.static(__dirname + '/public'));。这样可以直接让Nginx 来处理静态文件，减少反向代理以及Node.js 的开销。
 
 ## 6.4 Node.js不是银弹
 
-Node.js 不适合做的事情。
+在本书正文的最后一节，我们打算讨论一下Node.js 不适合做什么，涉及它的不足之处和一些弊端。
 
-计算密集型的程序。理想情况下，Node.js 单线程在执行的过程中会将一个 CPU 核心完全占满，所有的请求必须等待当前请求处理完毕以后进入事件循环才能响应。如果一个应用是计算密集型的，那么除非你手动将它拆散，否则请求响应延迟将会相当大。
+在西方古老的传说里，有一种叫做“狼人”的可怕生物。这种生物平时和人类没有什么不同之处，但每到月圆之夜，他们就会变成狼身。当他们变成狼以后，兽性会不能控制，开始袭击普通的人类。狼人给人类带来了巨大的恐惧，因为他们是无法被一般的手段杀死的，只有用赐福过的银弹（ Silver Bullet）才能杀死狼人。“银弹”因此成为了“任何能够带来极大效果的直接解决方案”的代名词。
 
-单用户多任务型应用。如果面对的是单用户，譬如本地的命令行工具或者图形界面，那么所谓的大量并发请求就不存在了。但是用户提供界面的同时后台在进行某个计算，为了让用户界面不出现阻塞状态，不得不开启多线程或多进程。而Node.js 线程或进程之间的通信到目前为止还很不便，因为它根本没有锁，因而号称不会死锁。 Node.js 的多进程往往是在执行同一任务，通过多进程利用多处理器的资源，但遇到多进程相互协作时，就显得捉襟见肘了。
+Node.js 也不例外，它不是什么能够大幅度提高软件开发效率和质量的灵丹妙药。无论使用什么语言、工具，所能改变的仅仅是开发的舒适程度和方便程度，而最终软件的好坏所能改变的范围相当有限。任何试图以限制程序员犯错来提高软件质量的方式最终都已经以失败告终。真正优秀的软件是靠优秀的程序员开发出来的，优秀的语言、平台、工具只有在优秀的程序员的手中才能显现出它的威力。
 
-逻辑十分复杂的事务。Node.js 的控制流不是线性的，它被一个个事件拆散，但人的思维却是线性的。Node.js更善于处理那些逻辑简单但访问频繁的任务，而不适合完成逻辑十分复杂的工作。
+**Node.js 不适合做什么**
 
-Unicode与国际化。Node.js 不支持完整的Unicode，很多字符无法用string 表示。公平地说这不是Node.js 的缺陷，而是JavaScript 标准的问题。目前JavaScript 支持的字符集还是双字节的CS2，即用两个字节来表示一个Unicode 字符，这样能表示的字符数量是65536。
+Node.js 是一个优秀的平台，吸引大量开发者关注。它有许多传统架构不具备的优点，以至于我们情不自禁地愿意用它来做开发。 Node.js 和任何东西一样，都有它擅长的和不擅长的事情，如果你非要用它来做它不擅长的事情，那么你将会陷入僵局之中。尽管你可以以喜欢、它很新潮、性能高为借口，却不得不写出难看的代码。
+
+和大多数新技术的本质一样， Node.js 也只是旧瓶盛新酒。大多数人事实上并不知道为什么使用Node.js， 只是因为你了解它，所以使用它，进而觉得它好，觉得它是最合适的。这是一个必须跳出的误区，否则你就像是得了强迫症，不管三七二十一，遇到什么问题都用Node.js 解决。所以现在就让我们来谈谈 Node.js 不适合做的事情吧。
+
+1. 计算密集型的程序
+
+在Node.js 0.8 版本之前， Node.js 不支持多线程。当然，这是一种设计哲学问题，因为Node.js的开发者和支持者坚信单线程和事件驱动的异步式编程比传统的多线程编程运行效率更高。但事实上多线程可以达到同样的吞吐量，尽管可能开销不小，但不必为多核环境进行特殊的配置。相比之下， Node.js 由于其单线程性的特性，必须通过多进程的方法才能充分利用多核资源。
+
+理想情况下， Node.js单线程在执行的过程中会将一个CPU核心完全占满，所有的请求必须等待当前请求处理完毕以后进入事件循环才能响应。如果一个应用是计算密集型的，那么除非你手动将它拆散，否则请求响应延迟将会相当大。例如，某个事件的回调函数中要进行复杂的计算，占用CPU 200毫秒，那么事件循环中所有的请求都要等待200毫秒。为了提高响应速度，你唯一的办法就是把这个计算密集的部分拆成若干个逻辑，这给编程带来了额外的复杂性。即使这样，系统的总吞吐量和总响应延迟也不会降低，只是调度稍微公平了一些。
+
+不过好在真正的Web 服务器中，很少会有计算密集的部分，如果真的有，那么它不应该被实现为即时的响应。正确的方式是给用户一个提示，说服务器正在处理中，完成后会通知用户，然后交给服务器的其他进程甚至其他专职的服务器来做这件事。
+
+2. 单用户多任务型应用
+
+前面我们讨论的通常都是服务器端编程，其中一个假设就是用户数量很多。但如果面对的是单用户，譬如本地的命令行工具或者图形界面，那么所谓的大量并发请求就不存在了。于是另一个恐怖的问题出现了，尽管是单用户，却不一定是单任务。例如给用户提供界面的同时后台在进行某个计算，为了让用户界面不出现阻塞状态，你不得不开启多线程或多进程。而Node.js 线程或进程之间的通信到目前为止还很不便，因为它根本没有锁，因而号称不会死锁。 Node.js 的多进程往往是在执行同一任务，通过多进程利用多处理器的资源，但遇到多进程相互协作时，就显得捉襟见肘了。
+
+3. 逻辑十分复杂的事务
+
+Node.js 的控制流不是线性的，它被一个个事件拆散，但人的思维却是线性的，当你试图转换思维来迎合语言或编译器时，就不得不作出牺牲。举例来说，你要实现一个这样的逻辑：从银行取钱，拿钱去购买某个虚拟商品，买完以后加入库存数据库，这中间的任何一步都可能会涉及数十次的I/O操作，而且任何一次操作失败以后都要进行回滚操作。这个过程是线性的，已经很复杂了，如果要拆分为非线性的逻辑，那么其复杂程度很可能就达到无法维护的地步了。
+
+Node.js更善于处理那些逻辑简单但访问频繁的任务，而不适合完成逻辑十分复杂的工作。
+
+4. Unicode 与国际化
+
+Node.js 不支持完整的Unicode，很多字符无法用string 表示。公平地说这不是Node.js 的缺陷，而是JavaScript 标准的问题。目前JavaScript 支持的字符集还是双字节的UCS2，即用两个字节来表示一个Unicode 字符，这样能表示的字符数量是65536。显然，仅仅是汉字就不止这个数目，很多生僻汉字，以及一些较为罕见语言的文字都无法表示。这其实是一个历史遗留问题，像2000 年问题（俗称千年虫）一样，都起源于当时人们的主观判断。最早的Unicode设计者认为65536个字符足以囊括全世界所有的文字了，因此那个时候盲目兼容Unicode 的系统或平台（如Windows、 Java 和JavaScript）在后来都遇到了问题。
+
+Unicode 随后意识到2个字节是不够的，因此推出了UCS4，即用4 个字节来表示一个Unicode 字符。很多原先用定长编码的UCS2 的系统都升级为了变长编码的UTF-16，因为只有它向下兼容UCS2。 UTF-16 对UCS2 以内的字符采用定长的双字节编码，而对它以外的部分使用多字节的变长编码。这种方式的好处是在绝大多数情况下它都是定长的编码，有利于提高运算效率，而且兼容了UCS2，但缺点是它本质还是变长编码，程序中处理多少有些不便。
+
+许多号称支持UTF-16 的平台仍然只支持它的子集UCS2，而不支持它的变长编码部分。相比之下， UTF-8 完全是变长编码，有利于传输，而UTF-32 或UCS4 则是4 字节的定长编码，有利于计算。
+
+当下的JavaScript 内部支持的仍是定长的UCS2 而不是变长的UTF-16，因此对于处理UCS4 的字符它无能为力。所有的JavaScript 引擎都被迫保留了这个缺陷，包括V8 在内，因此你无法使用Node.js 处理罕见的字符。想用Node.js 实现一个多语言的字典工具？还是算了吧，除非你放弃使用string 数据类型，把所有的字符当作二进制的Buffer 数据来处理。
 
 # 附录A JavaScript的高级特性
 
