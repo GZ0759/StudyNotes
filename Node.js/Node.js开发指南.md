@@ -1414,7 +1414,7 @@ Options:
 -h, --help output help information
 ```
 
-Express 在初始化一个项目的时候需要指定模板引擎，默认支持Jade和ejs，为了降低学习难度我们推荐使用 ejs ，同时暂时不添加 CSS 引擎和会话支持。
+Express 在初始化一个项目的时候需要指定模板引擎，默认支持 Jade 和 ejs ，为了降低学习难度我们推荐使用 ejs ，同时暂时不添加 CSS 引擎和会话支持。
 
 ### 5.2.2 建立工程
 
@@ -1440,6 +1440,7 @@ create : microblog/routes/index.js
 create : microblog/views
 create : microblog/views/layout.ejs
 create : microblog/views/index.ejs
+
 dont forget to install dependencies:
 $ cd microblog && npm install
 ```
@@ -1497,7 +1498,9 @@ app.js 是工程的入口，我们先看看其中有什么内容：
  */
 var express = require('express'),
   routes = require('./routes');
+
 var app = module.exports = express.createServer();
+
 // Configuration
 app.configure(function () {
   app.set('views', __dirname + '/views');
@@ -1507,17 +1510,21 @@ app.configure(function () {
   app.use(app.router);
   app.use(express.static(__dirname + '/public'));
 });
+
 app.configure('development', function () {
   app.use(express.errorHandler({
     dumpExceptions: true,
     showStack: true
   }));
 });
+
 app.configure('production', function () {
   app.use(express.errorHandler());
 });
+
 // Routes
 app.get('/', routes.index);
+
 app.listen(3000);
 console.log("Express server listening on port %d in %s mode", app.address().port, app.settings.env);
 ```
@@ -1526,9 +1533,9 @@ console.log("Express server listening on port %d in %s mode", app.address().port
 
 首先我们导入了 Express 模块，前面已经通过 npm 安装到了本地，在这里可以直接通过 require 获取。 routes 是一个文件夹形式的本地模块，即./routes/index.js，它的功能是为指定路径组织返回内容，相当于 MVC 架构中的控制器。通过 `express.createServer()`函数创建了一个应用的实例，后面的所有操作都是针对于这个实例进行的。
 
-接下来是三个 app.configure 函数，分别指定了通用、开发和产品环境下的参数。第一个 app.configure 直接接受了一个回调函数，后两个则只能在开发和产品环境中调用。
+接下来是三个 `app.configure` 函数，分别指定了通用、开发和产品环境下的参数。第一个 `app.configure` 直接接受了一个回调函数，后两个则只能在开发和产品环境中调用。
 
-app.set 是 Express 的参数设置工具，接受一个键（ key）和一个值（ value），可用的参数如下所示。
+`app.set` 是 Express 的参数设置工具，接受一个键（ key）和一个值（ value），可用的参数如下所示。
 
 - basepath：基础地址，通常用于 `res.redirect()` 跳转。
 - views：视图文件的目录，存放模板文件。
@@ -1539,9 +1546,9 @@ app.set 是 Express 的参数设置工具，接受一个键（ key）和一个�
 - strict routing：严格路径，启用后不会忽略路径末尾的“ / ”。
 - jsonp callback：开启透明的 JSONP 支持。
 
-Express 依赖于 connect， 提供了大量的中间件，可以通过 app.use 启用。 `app.configure`中启用了5个中间件： bodyParser、 methodOverride、 router、 static 以及 errorHandler。 bodyParser 的功能是解析客户端请求，通常是通过 POST 发送的内容。 methodOverride用于支持定制的 HTTP 方法①。 router 是项目的路由支持。 static 提供了静态文件支持。 errorHandler 是错误控制器。
+Express 依赖于 connect， 提供了大量的中间件，可以通过 `app.use` 启用。 `app.configure`中启用了5个中间件： bodyParser、 methodOverride、 router、 static 以及 errorHandler。 bodyParser 的功能是解析客户端请求，通常是通过 POST 发送的内容。 methodOverride用于支持定制的 HTTP 方法。 router 是项目的路由支持。 static 提供了静态文件支持。 errorHandler 是错误控制器。
 
-`app.get('/', routes.index);` 是一个路由控制器，用户如果访问“ / ”路径，则由 routes.index 来控制。
+`app.get('/', routes.index);` 是一个路由控制器，用户如果访问“ / ”路径，则由 `routes.index` 来控制。
 
 最后服务器通过 `app.listen(3000);` 启动，监听3000端口。
 
@@ -1580,13 +1587,13 @@ index.ejs 是模板文件，即 routes/index.js 中调用的模板，内容是�
 ```html
 <!DOCTYPE html>
 <html>
-<head>
-<title><%= title %></title>
-<link rel='stylesheet' href='/stylesheets/style.css' />
-</head>
-<body>
-<%- body %>
-</body>
+  <head>
+    <title><%= title %></title>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+  </head>
+  <body>
+    <%- body %>
+  </body>
 </html>
 ```
 
@@ -1615,7 +1622,7 @@ Accept-Language: zh;q=0.8,en-US;q=0.6,en;q=0.4
 Accept-Charset: UTF-8,*;q=0.5
 ```
 
-其中第一行是请求的方法、路径和 HTTP 协议版本，后面若干行是 HTTP 请求头。 app 会解析请求的路径，调用相应的逻辑。 app.js 中有一行内容是 `app.get('/', routes.index)`，它的作用是规定路径为“/”的 GET 请求由 routes.index 函数处理。 routes.index 通过 `res.render('index', { title: 'Express' })` 调用视图模板 index，传递 title变量。最终视图模板生成 HTML 页面，返回给浏览器，返回的内容是：
+其中第一行是请求的方法、路径和 HTTP 协议版本，后面若干行是 HTTP 请求头。 app 会解析请求的路径，调用相应的逻辑。 app.js 中有一行内容是 `app.get('/', routes.index)`，它的作用是规定路径为“/”的 GET 请求由 routes.index 函数处理。 routes.index 通过 `res.render('index', { title: 'Express' })` 调用视图模板 index，传递 title 变量。最终视图模板生成 HTML 页面，返回给浏览器，返回的内容是：
 
 ```
 HTTP/1.1 200 OK
@@ -1623,16 +1630,17 @@ X-Powered-By: Express
 Content-Type: text/html; charset=utf-8
 Content-Length: 202
 Connection: keep-alive
+
 <!DOCTYPE html>
 <html>
-<head>
-<title>Express</title>
-<link rel='stylesheet' href='/stylesheets/style.css' />
-</head>
-<body>
-<h1>Express</h1>
-<p>Welcome to Express</p>
-</body>
+  <head>
+    <title>Express</title>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+  </head>
+  <body>
+    <h1>Express</h1>
+    <p>Welcome to Express</p>
+  </body>
 </html>
 ```
 
@@ -1649,12 +1657,13 @@ Content-Type: text/css; charset=UTF-8
 Accept-Ranges: bytes
 Content-Length: 110
 Connection: keep-alive
+
 body {
-padding: 50px;
-font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+  padding: 50px;
+  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
 }
 a {
-color: #00B7FF;
+  color: #00B7FF;
 }
 ```
 
@@ -1666,11 +1675,11 @@ color: #00B7FF;
 
 ### 5.3.2 创建路由规则
 
-当我们在浏览器中访问譬如 http://localhost:3000/abc 这样不存在的页面时，服务器会在响应头中返回 404 Not Found 错误，浏览器显示如图5-4 所示。
+当我们在浏览器中访问譬如 http://localhost:3000/abc 这样不存在的页面时，服务器会在响应头中返回 `404 Not Found` 错误，浏览器显示如图5-4 所示。
 
 图5-4 访问不存在的页面时浏览器看到的结果
 
-这是因为 /abc 是一个不存在的路由规则，而且它也不是一个 public 目录下的文件，所以 Express 返回了404 Not Found的错误。
+这是因为 /abc 是一个不存在的路由规则，而且它也不是一个 public 目录下的文件，所以 Express 返回了`404 Not Found`的错误。
 
 接下来我们会讲述如何创建路由规则。
 
@@ -1691,6 +1700,7 @@ exports.index = function (req, res) {
     title: 'Express'
   });
 };
+
 exports.hello = function (req, res) {
   res.send('The time is ' + new Date().toString());
 };
@@ -1718,7 +1728,7 @@ app.get('/user/:username', function(req, res) {
 user: byvoid
 ```
 
-路径规则 /user/:username 会被自动编译为正则表达式，类似于 `\/user\/([^\/]+)\/?` 这样的形式。路径参数可以在响应函数中通过 req.params 的属性访问。
+路径规则 /user/:username 会被自动编译为正则表达式，类似于 `\/user\/([^\/]+)\/?` 这样的形式。路径参数可以在响应函数中通过 `req.params` 的属性访问。
 
 路径规则同样支持 JavaScript 正则表达式，例如 `app.get(\/user\/([^\/]+)\/?, callback)`。这样的好处在于可以定义更加复杂的路径规则，而不同之处是匹配的参数是匿名的，因此需要通过 `req.params[0]`、 `req.params[1]` 这样的形式访问。
 
@@ -1767,13 +1777,13 @@ Express 对每种 HTTP 请求方法都设计了不同的路由绑定函数，例
 | POST | app.post(path, callback) |
 | PUT | app.put(path, callback) |
 | DELETE | app.delete(path, callback) |
-| PATCH | ① app.patch(path, callback) |
+| PATCH | app.patch(path, callback) |
 | TRACE | app.trace(path, callback) |
 | CONNECT | app.connect(path, callback) |
 | OPTIONS | app.options(path, callback) |
 | 所有方法 | app.all(path, callback) |
 
-例如我们要绑定某个路径的 POST 请求，则可以用 `app.post(path, callback)` 的方法。需要注意的是 app.all 函数，它支持把所有的请求方式绑定到同一个响应函数，是一个非常灵活的函数，在后面我们可以看到许多功能都可以通过它来实现。
+例如我们要绑定某个路径的 POST 请求，则可以用 `app.post(path, callback)` 的方法。需要注意的是 `app.all` 函数，它支持把所有的请求方式绑定到同一个响应函数，是一个非常灵活的函数，在后面我们可以看到许多功能都可以通过它来实现。
 
 ### 5.3.5 控制权转移
 
@@ -1790,7 +1800,7 @@ app.get('/user/:username', function (req, res) {
 
 但当你访问任何被这两条同样的规则匹配到的路径时，会发现请求总是被前一条路由规则捕获，后面的规则会被忽略。原因是 Express 在处理路由规则时，会优先匹配先定义的路由规则，因此后面相同的规则被屏蔽。
 
-Express 提供了路由控制权转移的方法，即回调函数的第三个参数next，通过调用`next()`，会将路由控制权转移给后面的规则，例如：
+Express 提供了路由控制权转移的方法，即回调函数的第三个参数 next ，通过调用`next()`，会将路由控制权转移给后面的规则，例如：
 
 ```js
 app.all('/user/:username', function (req, res, next) {
@@ -1802,7 +1812,7 @@ app.get('/user/:username', function (req, res) {
 });
 ```
 
-当访问被匹配到的路径时，如 http://localhost:3000/user/carbo，会发现终端中打印了 all methods captured，而且浏览器中显示了 user: carbo。这说明请求先被第一条路由规则捕获，完成 `console.log` 使用 `next()` 转移控制权，又被第二条规则捕获，向浏览器返回了信息。
+当访问被匹配到的路径时，如 http://localhost:3000/user/carbo，会发现终端中打印了 `all methods captured`，而且浏览器中显示了 `user: carbo`。这说明请求先被第一条路由规则捕获，完成 `console.log` 使用 `next()` 转移控制权，又被第二条规则捕获，向浏览器返回了信息。
 
 这是一个非常有用的工具，可以让我们轻易地实现中间件，而且还能提高代码的复用程度。例如我们针对一个用户查询信息和修改信息的操作，分别对应了 GET 和 PUT 操作，而两者共有的一个步骤是检查用户名是否合法，因此可以通过 `next()` 方法实现：
 
@@ -1831,7 +1841,7 @@ app.put('/user/:username', function (req, res) {
 });
 ```
 
-上面例子中， `app.all` 定义的这个路由规则实际上起到了中间件的作用，把相似请求的相同部分提取出来，有利于代码维护其他next方法如果接受了参数，即代表发生了错误。使用这种方法可以把错误检查分段化，降低代码耦合度。
+上面例子中， `app.all` 定义的这个路由规则实际上起到了中间件的作用，把相似请求的相同部分提取出来，有利于代码维护其他 next 方法如果接受了参数，即代表发生了错误。使用这种方法可以把错误检查分段化，降低代码耦合度。
 
 ## 5.4 模板引擎
 
@@ -1877,7 +1887,7 @@ res.render('index', { title: 'Express' });
 <p>Welcome to <%= title %></p>
 ```
 
-上面代码其中有两处 `<%= title %>`，用于模板变量显示，它们在模板翻译时会被替换成 Express，因为 res.render 传递了 { title: 'Express' }。
+上面代码其中有两处 `<%= title %>`，用于模板变量显示，它们在模板翻译时会被替换成 Express，因为 `res.render` 传递了 `{ title: 'Express' }`。
 
 ejs 的标签系统非常简单，它只有以下3种标签。
 
@@ -1894,17 +1904,17 @@ ejs 的标签系统非常简单，它只有以下3种标签。
 ```html
 <!DOCTYPE html>
 <html>
-<head>
-<title><%= title %></title>
-<link rel='stylesheet' href='/stylesheets/style.css' />
-</head>
-<body>
-<%- body %>
-</body>
+  <head>
+    <title><%= title %></title>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+  </head>
+  <body>
+    <%- body %>
+  </body>
 </html>
 ```
 
-layout.ejs 是一个页面布局模板，它描述了整个页面的框架结构，默认情况下每个单独的页面都继承自这个框架，替换掉 <%- body %> 部分。这个功能通常非常有用，因为一般为了保持整个网站的一致风格， HTML 页面的`<head>`部分以及页眉页脚中的大量内容是重复的，因此我们可以把它们放在 layout.ejs 中。当然，这个功能并不是强制的，如果想关闭它，可以在 app.js 的中 app.configure 中添加以下内容，这样页面布局功能就被关闭了。
+layout.ejs 是一个页面布局模板，它描述了整个页面的框架结构，默认情况下每个单独的页面都继承自这个框架，替换掉 `<%- body %>` 部分。这个功能通常非常有用，因为一般为了保持整个网站的一致风格， HTML 页面的`<head>`部分以及页眉页脚中的大量内容是重复的，因此我们可以把它们放在 layout.ejs 中。当然，这个功能并不是强制的，如果想关闭它，可以在 app.js 的中 `app.configure` 中添加以下内容，这样页面布局功能就被关闭了。
 
 ```js
 app.set('view options', {
@@ -1955,13 +1965,13 @@ app.get('/list', function (req, res) {
 ```html
 <!DOCTYPE html>
 <html>
-<head>
-<title>List</title>
-<link rel='stylesheet' href='/stylesheets/style.css' />
-</head>
-<body>
-<ul><li>1991</li><li>byvoid</li><li>express</li><li>Node.js</li></ul>
-</body>
+  <head>
+    <title>List</title>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+  </head>
+  <body>
+    <ul><li>1991</li><li>byvoid</li><li>express</li><li>Node.js</li></ul>
+  </body>
 </html>
 ```
 
@@ -2995,31 +3005,32 @@ Node.js 的模块加载对用户来说十分简单，只需调用 require 即可
 
 ### 6.1.1 模块的类型
 
-Node.js 的模块可以分为两大类，一类是核心模块，另一类是文件模块。核心模块就是Node.js 标准 API 中提供的模块，如 fs、 http、 net、 vm 等，这些都是由 Node.js 官方提供的模块，编译成了二进制代码。我们可以直接通过 require 获取核心模块，例如 `require('fs')`。核心模块拥有最高的加载优先级，换言之如果有模块与其命名冲突，Node.js 总是会加载核心模块。
+Node.js 的模块可以分为两大类，一类是核心模块，另一类是文件模块。核心模块就是 Node.js 标准 API 中提供的模块，如 fs、 http、 net、 vm 等，这些都是由 Node.js 官方提供的模块，编译成了二进制代码。我们可以直接通过 require 获取核心模块，例如 `require('fs')`。核心模块拥有最高的加载优先级，换言之如果有模块与其命名冲突，Node.js 总是会加载核心模块。
 
-文件模块则是存储为单独的文件（或文件夹）的模块，可能是 JavaScript 代码、 JSON 或编译好的 C/C++ 代码。文件模块的加载方法相对复杂，但十分灵活，尤其是和 npm 结合使用时。在不显式指定文件模块扩展名的时候， Node.js 会分别试图加上 .js、 .json 和 .node扩展名。 .js 是 JavaScript 代码， .json 是 JSON 格式的文本， .node 是编译好的 C/C++ 代码。
+文件模块则是存储为单独的文件（或文件夹）的模块，可能是 JavaScript 代码、 JSON 或编译好的 C/C++ 代码。文件模块的加载方法相对复杂，但十分灵活，尤其是和 npm 结合使用时。在不显式指定文件模块扩展名的时候， Node.js 会分别试图加上 `.js`、 `.json` 和 `.node`扩展名。 `.js` 是 JavaScript 代码， `.json` 是 JSON 格式的文本， `.node` 是编译好的 C/C++ 代码。
 
 表 6-1总结了 Node.js 模块的类型，从上到下加载优先级由高到低。
 
 表6-1 Node.js 模块的类别和加载顺序
 
-核心模块 内 建
-文件模块 JavaScript .js
-JSON .json
-C/C++扩展 .node
+| 核心模块 |  | 内 建 |
+|---|---|---|
+| 文件模块 | JavaScript | .js |
+|  | JSON | .json |
+|  | C/C++扩展 | .node |
+
 
 ### 6.1.2 按路径加载模块
 
-文件模块的加载有两种方式，一种是按路径加载，一种是查找 node_modules 文件夹。如果 require 参数以“/ ”开头，那么就以绝对路径的方式查找模块名称，例如 require ('/home/byvoid/module') 将会按照优先级依次尝试加载 /home/byvoid/module.js、/home/byvoid/module.json 和 /home/byvoid/module.node。
+文件模块的加载有两种方式，一种是按路径加载，一种是查找 node_modules 文件夹。如果 require 参数以“/ ”开头，那么就以绝对路径的方式查找模块名称，例如 `require ('/home/byvoid/module')` 将会按照优先级依次尝试加载 /home/byvoid/module.js、/home/byvoid/module.json 和 /home/byvoid/module.node。
 
-如果 require 参数以“./ ”或“../ ”开头，那么则以相对路径的方式来查找模块，这种方式在应用中是最常见的。例如前面的例子中我们用了require('./hello')来加载同一文件夹下的hello.js。
+如果 require 参数以“./ ”或“../ ”开头，那么则以相对路径的方式来查找模块，这种方式在应用中是最常见的。例如前面的例子中我们用了`require('./hello')`来加载同一文件夹下的hello.js。
 
 ### 6.1.3 通过查找 node_modules 目录加载模块
 
 如果require参数不以“/ ”、“./ ”或“../ ”开头，而该模块又不是核心模块，那么就要通过查找 node_modules 加载模块了。我们使用npm获取的包通常就是以这种方式加载的。
 
-在某个目录下执行命令npm install express， 你会发现出现了一个叫做node_modules
-的目录，里面的结构大概如图 6-1 所示。
+在某个目录下执行命令npm install express， 你会发现出现了一个叫做 node_modules 的目录，里面的结构大概如图 6-1 所示。
 
 在 node_modules 目录的外面一层，我们可以直接使用 `require('express')` 来代替`require('./node_modules/express')`。这是Node.js模块加载的一个重要特性：通过查找 node_modules 目录来加载模块。
 
@@ -3030,8 +3041,7 @@ C/C++扩展 .node
 - /home/node_modules/bar.js
 - /node_modules/bar.js
 
-为什么要这样做呢？因为通常一个工程内会有一些子目录，当子目录内的文件需要访问
-到工程共同依赖的模块时，就需要向父目录上溯了。比如说工程的目录结构如下：
+为什么要这样做呢？因为通常一个工程内会有一些子目录，当子目录内的文件需要访问到工程共同依赖的模块时，就需要向父目录上溯了。比如说工程的目录结构如下：
 
 ```
 |- project
@@ -3048,9 +3058,7 @@ C/C++扩展 .node
     |- express
 ```
 
-我们不仅要在 project 目录下的 app.js 中使用 require('express')，而且可能要在
-controllers 子目录下的 index_controller.js 中也使用 require('express')，这时就需要向
-父目录上溯一层才能找到 node_modules 中的 express 了。
+我们不仅要在 project 目录下的 app.js 中使用 `require('express')`，而且可能要在controllers 子目录下的 index_controller.js 中也使用` require('express')`，这时就需要向父目录上溯一层才能找到 node_modules 中的 express 了。
 
 ### 6.1.4 加载缓存
 
@@ -3058,10 +3066,10 @@ Node.js 模块不会被重复加载，这是因为 Node.js 通过文件名缓存
 
 ### 6.1.5 加载顺序
 
-下面总结一下使用 require(some_module) 时的加载顺序。
+下面总结一下使用 `require(some_module)` 时的加载顺序。
 
-1. 如果some_module 是一个核心模块，直接加载，结束。
-2. 如果some_module以“ / ”、“ ./ ”或“ ../ ”开头，按路径加载 some_module，结束。
+1. 如果 some_module 是一个核心模块，直接加载，结束。
+2. 如果 some_module 以“ / ”、“ ./ ”或“ ../ ”开头，按路径加载 some_module，结束。
 3. 假设当前目录为 current_dir，按路径加载 current_dir/node_modules/some_module。
   - 如果加载成功，结束。
   - 如果加载失败，令current_dir为其父目录。
@@ -3357,25 +3365,25 @@ Microblog.
 
 ### 6.3.4 共享 80 端口
 
-到目前为止，网站都是运行在3000端口下的，也就是说用户必须在网址中加入:3000才能访问网站。默认的 HTTP 端口是80，因此必须监听80端口才能使网址更加简洁。如果整个服务器只有一个网站，那么只需让app.js 监听80 端口即可。但很多时候一个服务器上运行着不止一个网站，尤其是还有用其他语言（如PHP）写成的网站，这该怎么办呢？此时虚拟主机可以粉墨登场了。
+到目前为止，网站都是运行在 3000 端口下的，也就是说用户必须在网址中加入`:3000`才能访问网站。默认的 HTTP 端口是 80 ，因此必须监听 80 端口才能使网址更加简洁。如果整个服务器只有一个网站，那么只需让 app.js 监听 80 端口即可。但很多时候一个服务器上运行着不止一个网站，尤其是还有用其他语言（如PHP）写成的网站，这该怎么办呢？此时虚拟主机可以粉墨登场了。
 
-虚拟主机，就是让多个网站共享使用同一服务器同一IP地址，通过域名的不同来划分请求。主流的HTTP服务器都提供了虚拟主机支持，如Nginx、 Apache、 IIS等。我们以Nginx为例，介绍如何通过反向代理实现Node.js 虚拟主机。
+虚拟主机，就是让多个网站共享使用同一服务器同一IP地址，通过域名的不同来划分请求。主流的HTTP服务器都提供了虚拟主机支持，如Nginx、 Apache、 IIS等。我们以Nginx为例，介绍如何通过反向代理实现 Node.js 虚拟主机。
 
-在Nginx 中设置反向代理和虚拟主机非常简单，下面是配置文件的一个示例：
+在 Nginx 中设置反向代理和虚拟主机非常简单，下面是配置文件的一个示例：
 
-```js
+```
 server {
-listen 80;
-server_name mysite.com;
-location / {
-proxy_pass http://localhost:3000;
-}
+  listen 80;
+  server_name mysite.com;
+  location / {
+    proxy_pass http://localhost:3000;
+  }
 }
 ```
 
-这个配置文件的功能是监听访问mysite.com 80 端口的请求，并将所有的请求转发给http://localhost:3000，即我们的Node.js 服务器。现在访问 http://mysite.com/ ，就相当于服务器访问 http://localhost:3000 了。
+这个配置文件的功能是监听访问 mysite.com 80 端口的请求，并将所有的请求转发给http://localhost:3000，即我们的 Node.js 服务器。现在访问 http://mysite.com/ ，就相当于服务器访问 http://localhost:3000 了。
 
-在添加了虚拟主机以后，还可以在Nginx配置文件中添加访问静态文件的规则（具体请参考Nginx文档）， 删去app.js中的app.use(express.static(__dirname + '/public'));。这样可以直接让Nginx 来处理静态文件，减少反向代理以及Node.js 的开销。
+在添加了虚拟主机以后，还可以在Nginx配置文件中添加访问静态文件的规则（具体请参考Nginx文档），删去app.js中的`app.use(express.static(__dirname + '/public'));`。这样可以直接让 Nginx 来处理静态文件，减少反向代理以及 Node.js 的开销。
 
 ## 6.4 Node.js不是银弹
 
