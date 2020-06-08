@@ -163,7 +163,6 @@ http.createServer(function (req, res) {
   // res.end()
 }).listen(3000, "127.0.0.1");
 console.log('Server running at http://127.0.0.1:3000/');
-
 ```
 
 # 四、Node中的模块系统
@@ -268,19 +267,15 @@ common options: [-S|--save|-D|--save-dev|-O|--save-optional] [-E|--save-exact] [
 npm会根据包内容设置一些默认值。
 
 - `"scripts": {"start": "node server.js"}`
-
   如果包的根目录有`server.js`文件，npm会默认将`start`命令设置为`node server.js`。
 
 - `"scripts":{"preinstall": "node-waf clean || true; node-waf configure build"}`
-
   如果包的根目录有`wscript`文件，npm会默认将`preinstall`命令用node-waf进行编译。
 
 - `"scripts":{"preinstall": "node-gyp rebuild"}`
-
   如果包的根目录有`binding.gyp`文件，npm会默认将`preinstall`命令用node-gyp进行编译。
 
 - `"contributors": [...]`
-
   如果包的根目录有`AUTHORS`文件，npm会默认逐行按`Name <email> (url)`格式处理，邮箱和url是可选的。#号和空格开头的行会被忽略。
 
 package.json 文件至少要有两部分内容：“name” 、“version” 。其他内容：
@@ -410,7 +405,7 @@ package.json 文件至少要有两部分内容：“name” 、“version” 。
 
  比如下面都是合法的：
 
- ```
+ ```json
  { "dependencies" :
    { "foo" : "1.0.0 - 2.9999.9999"
    , "bar" : ">=1.0.2 <2.1.2"
@@ -438,7 +433,7 @@ package.json 文件至少要有两部分内容：“name” 、“version” 。
 
  比如：
 
- ```
+ ```json
  { "name": "ethopia-waza",
    "description": "a delightfully fruity coffee varietal",
    "version": "1.2.3",
@@ -551,7 +546,7 @@ app.use(express.static('public'));
 
 所有文件的路径都是相对于存放目录的，因此，存放静态文件的目录名不会出现在 URL 中。如果你的静态资源存放在多个目录下面，你可以多次调用 `express.static` 中间件。访问静态资源文件时，`express.static` 中间件会根据目录添加的顺序查找所需的文件。
 
-如果你希望所有通过 express.static 访问的文件都存放在一个“虚拟（virtual）”目录（即目录根本不存在）下面，可以通过为静态资源目录指定一个挂载路径的方式来实现，如下所示：
+如果你希望所有通过 `express.static` 访问的文件都存放在一个“虚拟（virtual）”目录（即目录根本不存在）下面，可以通过为静态资源目录指定一个挂载路径的方式来实现，如下所示：
 
 ```javascript
 app.use('/static', express.static('public'));
@@ -607,7 +602,9 @@ app.get('/', function (req, res) {
 
 ## 重定向
 
+```
 res.redirect（[status，] path）
+```
 
 path使用指定的 HTTP 状态代码重定向到指定的URL status。如果未指定 status ，则状态代码默认为“302”Found“。
 
@@ -860,7 +857,7 @@ Student.delete(id, function (err) {
 
 ## 回调函数
 
-Node.js通过普及回调函数来改进异步编程模型，回调模式与事件模型类似，异步代码都会在未来的某个时间点执行，二者的区别是回调模式中被调用的函数是作为参数传入的。回调函数在Javascript中非常常见，一般是需要在一个耗时操作之后执行某个操作时可以使用回调函数。
+Node.js 通过普及回调函数来改进异步编程模型，回调模式与事件模型类似，异步代码都会在未来的某个时间点执行，二者的区别是回调模式中被调用的函数是作为参数传入的。回调函数在 Javascript 中非常常见，一般是需要在一个耗时操作之后执行某个操作时可以使用回调函数。
 
 ```javascript
 // 一个定时器
@@ -896,7 +893,7 @@ get('data.json', function (data) {
 
 ## Promise
 
-Promise相当于异步操作结果的占位符，它不会去订阅一个事件，也不会传递一个回调函数给目标函数，而是让函数返回一个表示异步读取操作的 Promise 对象，未来对这个对象的操作完全取决于 Promise 的声明周期。注意：Promise 本身不是异步的，内部封装的才是异步任务。
+Promise 相当于异步操作结果的占位符，它不会去订阅一个事件，也不会传递一个回调函数给目标函数，而是让函数返回一个表示异步读取操作的 Promise 对象，未来对这个对象的操作完全取决于 Promise 的声明周期。注意：Promise 本身不是异步的，内部封装的才是异步任务。
 
 每个 Promise 都会经历一个短暂的声明周期：先是处于进行中（pending）的状态，此时操作尚未完成，一旦异步操作结束，就会进入 Fulfilled（ 异步操作完成）或 Rejected （操作失败）两个状态中的一个。内部属性 `[[PromiseState]]` 被用来表示 Promise 的 3 种状态 ：“pending” 、“fulfilled”及“rejected” 。 这个属性不暴露在 Promise 对象上 ， 所以不能以编程的方式检测 Promise 的状态 ， 只有当 Promise 的状态改变时， 通过 `then()` 方法来采取特定的行动 。 
 
@@ -957,7 +954,7 @@ p1.then(function(value) {
 });
 ```
 
-如果返回的是 Promise 对象 ， 会通过一个额外的步骤来确定下一步怎么走。如果返回的对象是 resolve ，那么接下来调用 then () 方法的第一个函数执行（完成处理函数），如果返回的对象是 reject ，那么接下来调用的 `then()` 方法的第二个函数执行（拒绝处理函数）。
+如果返回的是 Promise 对象，会通过一个额外的步骤来确定下一步怎么走。如果返回的对象是 resolve ，那么接下来调用 `then()` 方法的第一个函数执行（完成处理函数），如果返回的对象是 reject ，那么接下来调用的 `then()` 方法的第二个函数执行（拒绝处理函数）。
 
 ```javascript
 let p1 = new Promise(function(resolve, reject) {
@@ -1161,7 +1158,7 @@ User.find{
 ## 使用 Node 操作 MySQL 数据库
 
 ```javascript
-var mysql      = require('mysql');
+var mysql = require('mysql');
 
 // 创建数据库
 var connection = mysql.createConnection({
@@ -1235,8 +1232,6 @@ nodemon -h 或者 nodemon -help
 const path = require('path');
 ```
 
-
-
 ## path.basename()
 
 path.basename(path[, ext]) 获取路径中的文件名。
@@ -1253,8 +1248,6 @@ path.basename('/foo/bar/baz/asdf/quux.html', '.html');
 // 返回: 'quux'
 ```
 
-
-
 ## path.dirname() 
 
 path.dirname(path) 获取路径中目录名。
@@ -1265,8 +1258,6 @@ path.dirname() 方法返回一个 path 的目录名，类似于 Unix 中的 dirn
 path.dirname('/foo/bar/baz/asdf/quux');
 // 返回: '/foo/bar/baz/asdf'
 ```
-
-
 
 ## path.extname() 
 
@@ -1291,8 +1282,6 @@ path.extname('.index');
 // 返回: ''
 ```
 
-
-
 ## path.format() 
 
 `path.format(pathObject)` 返回字符串。
@@ -1306,8 +1295,6 @@ path.format({
 });
 // 返回: 'C:\\path\\dir\\file.txt'
 ```
-
-
 
 ## path.isAbsolute() 
 
@@ -1325,8 +1312,6 @@ path.isAbsolute('bar/baz');     // false
 path.isAbsolute('.');           // false
 ```
 
-
-
 ## path.join() 
 
 path.join([...paths]) 获取路径合并结果。
@@ -1340,8 +1325,6 @@ path.join('/foo', 'bar', 'baz/asdf', 'quux', '..');
 path.join('foo', {}, 'bar');
 // 抛出 'TypeError: Path must be a string. Received {}'
 ```
-
-
 
 ## path.normalize() 
 
@@ -1358,8 +1341,6 @@ path.normalize('C:\\temp\\\\foo\\bar\\..\\');
 path.win32.normalize('C:////temp\\\\/\\/\\/foo/bar');
 // Returns: 'C:\\temp\\foo\\bar'
 ```
-
-
 
 ## path.parse(path)
 
@@ -1382,8 +1363,6 @@ path.parse('C:\\path\\dir\\file.txt');
 // (请无视以上字符串中的空格，它们只是为了布局)
 ```
 
-
-
 ## path.relative()
 
 path.relative(from, to) 获取相对路径。
@@ -1395,8 +1374,6 @@ path.relative() 方法返回从 from 到 to 的相对路径（基于当前工作
 path.relative('C:\\orandea\\test\\aaa', 'C:\\orandea\\impl\\bbb');
 // 返回: '..\\..\\impl\\bbb'
 ```
-
-
 
 ## path.resolve() 
 
@@ -1416,14 +1393,6 @@ path.resolve('wwwroot', 'static_files/png/', '../gif/image.gif');
 // 则返回 '/home/myself/node/wwwroot/static_files/gif/image.gif'
 ```
 
-十一、全局成员
-
-
-
-十一、全局成员
-
-
-
 # 十一、全局成员
 
 ## global
@@ -1435,20 +1404,15 @@ var a = 10
 console.log(global.a)  // 10
 ```
 
-
-
 ## process
 
 该对象用于获取当前Node进程的信息，一般用于获取环境变量之类的信息。
-
-
 
 ## 伪全局成员
 
 全局变量在所有模块中均可使用。 以下变量虽然看起来像全局变量，但实际上不是。 它们的作用域只在模块内。
 
 1.  `__dirname`
-
 
 该成员用于获取当前这个js文件所在目录（所在文件夹）的完成的绝对物理路径。该成员只在模块内部有效，在REPL环境当中失效。输出为当前模块的文件夹名称。等同于 path.dirname( __filename ) 的值。
 
@@ -1612,8 +1576,6 @@ app.get('/user/:id', function (req, res, next) {
 });
 ```
 
-
-
 ## express路由级中间件。
 
 路由级中间件和应用级中间件一样，只是它绑定的对象为 `express.Router()`。路由级使用 `router.use()` 或 `router.VERB()` 加载。上述在应用级创建的中间件系统，可通过如下代码改写为路由级：
@@ -1658,8 +1620,6 @@ router.get('/user/:id', function (req, res, next) {
 app.use('/', router);
 ```
 
-
-
 ## express错误处理中间件。
 
 错误处理中间件和其他中间件定义类似，只是要使用 4 个参数，而不是 3 个，其签名如下：`(err, req, res, next)`。
@@ -1672,8 +1632,6 @@ app.use(function(err, req, res, next) {
   res.status(500).send('Something broke!');
 });
 ```
-
-
 
 ## express内置中间件。
 
@@ -1704,8 +1662,6 @@ app.use(express.static('public'));
 app.use(express.static('uploads'));
 app.use(express.static('files'));
 ```
-
-
 
 ## express第三方中间件。
 

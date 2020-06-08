@@ -3431,19 +3431,18 @@ $ npm install connect@3.4.0
 ```js
 const app = require('connect')();
 app.use((req, res, next) => {
-res.end('Hello, world!');
+  res.end('Hello, world!');
 });
 app.listen(3000);
 ```
 
-这个程序（代码在 ch06-connect-and-express/hello-world 里）会用 Hello,World! 给出响应。传给 app.use 的函数是个中间件，它以文本 Hello,World! 作为响应结束了请求处理过程。中间件是所有 Connect 和 Express 程序的基础。下面来看一下细节。
+这个程序（代码在 ch06-connect-and-express/hello-world 里）会用 Hello,World! 给出响应。传给 `app.use` 的函数是个中间件，它以文本 Hello,World! 作为响应结束了请求处理过程。中间件是所有 Connect 和 Express 程序的基础。下面来看一下细节。
 
 ### 6.1.2 了解 Connect 中间件的工作机制
 
 Connect 中间件就是 JavaScript 函数。这个函数一般会有三个参数：请求对象、响应对象，以及一个名为 next 的回调函数。一个中间件完成自己的工作，要执行后续的中间件时，可以调用这个回调函数。
 
-在中间件运行之前， Connect 会用分派器接管请求对象，然后交给程序中的第一个中间件。图 6-1 是一个典型的 Connect 程序的示意图，由分派器和一组中间件组成，这些中间件包括日志
-记录、消息体解析器、静态文件服务器和定制中间件。
+在中间件运行之前， Connect 会用分派器接管请求对象，然后交给程序中的第一个中间件。图 6-1 是一个典型的 Connect 程序的示意图，由分派器和一组中间件组成，这些中间件包括日志记录、消息体解析器、静态文件服务器和定制中间件。
 
 图 6-1 两个 HTTP 请求穿过 Connect 服务器的生命周期
 
@@ -3474,7 +3473,7 @@ connect()
 
 这两个中间件的名称签名不一样：一个有 next，一个没有。因为后面这个中间件完成了 HTTP 响应，再也不需要把控制权交还给分派器了。
 
-如前所示， use()函数返回的是 Connect 程序的实例，支持方法链。不过并不一定要把`.use()`链起来，像下面这样也可以：
+如前所示， `use()`函数返回的是 Connect 程序的实例，支持方法链。不过并不一定要把`.use()`链起来，像下面这样也可以：
 
 ```js
 const app = connect();
@@ -3487,7 +3486,7 @@ app.listen(3000);
 
 ### 6.1.4 中间件的顺序
 
-中间件的顺序会对程序的行为产生显著影响。漏掉 next()能停止执行，也可以通过组合中间件实现用户认证之类的功能。
+中间件的顺序会对程序的行为产生显著影响。漏掉 `next()`能停止执行，也可以通过组合中间件实现用户认证之类的功能。
 
 中间件不调用 next 会怎么样？在之前那个入门程序中， logger 是第一个中间件，然后是 hello。 Connect 将日志输出到控制台，然后返回 HTTP 响应。如果像下面这样把顺序倒过来会怎么样？
 
@@ -3511,7 +3510,7 @@ const app = connect()
 .listen(3000);
 ```
 
-这个例子是先调用 hello，程序如期返回响应结果。但 logger 永远也不会执行，因为 hello 没有调用 next()，所以控制权没有交回给分派器，它也不能调用下一个中间件。也就是说，如果某个中间件不调用 next()，那链在它后面的中间件就不会被调用。
+这个例子是先调用 hello，程序如期返回响应结果。但 logger 永远也不会执行，因为 hello 没有调用`next()`，所以控制权没有交回给分派器，它也不能调用下一个中间件。也就是说，如果某个中间件不调用`next()`，那链在它后面的中间件就不会被调用。
 
 图 6-2 给出了这个例子是如何跳过 logger 的，以及如何改正。
 
@@ -3563,27 +3562,27 @@ const app = connect()
 ```JS
 // setup 函数可以用不同的配置调用多次
 function setup(format) {
-// logger 组件用正则表达式匹配请求属性
-const regexp = /:(\w+)/g;
-// Connect 使用的真实 logger 组件
-return function createLogger(req, res, next) {
-// 用正则表达式格式化请求的日志条目
-const str = format.replace(regexp, (match, property) => {
-return req[property];
-});
-// 将日志条目输出到控制台
-console.log(str);
-// 将控制权交给下一个中间件组件
-next();
-}
-}
-// 直接导出 logger 的 setup 函数
+    // logger 组件用正则表达式匹配请求属性
+    const regexp = /:(\w+)/g;
+    // Connect 使用的真实 logger 组件
+    return function createLogger(req, res, next) {
+      // 用正则表达式格式化请求的日志条目
+      const str = format.replace(regexp, (match, property) => {
+        return req[property];
+      });
+      // 将日志条目输出到控制台
+      console.log(str);
+      // 将控制权交给下一个中间件组件
+      next();
+    }
+  }
+  // 直接导出 logger 的 setup 函数
 module.exports = setup;
 ```
 
-现在这个 logger 成了可配置的中间件，所以，可以在同一程序中给.use()传入不同配置的 logger，或者在将来开发的程序中重用这段代码。整个 Connect 社区都在用这种可配置中间件的概念，并且为了保持一致性，所有 Connect 核心中间件都是可配置的。
+现在这个 logger 成了可配置的中间件，所以，可以在同一程序中给`.use()`传入不同配置的 logger，或者在将来开发的程序中重用这段代码。整个 Connect 社区都在用这种可配置中间件的概念，并且为了保持一致性，所有 Connect 核心中间件都是可配置的。
 
-要使用代码清单 6-3 中的中间件 logger，需要给它传一个字符串，指明请求对象中的属性。比如.use(setup(':method :url'))会输出所有请求的 HTTP 方法（ GET、 POST 等）和 URL。在转战 Express 之前，先看看 Connect 对错误处理的支持。
+要使用代码清单 6-3 中的中间件 logger，需要给它传一个字符串，指明请求对象中的属性。比如`.use(setup(':method :url'))`会输出所有请求的 HTTP 方法（ GET、 POST 等）和 URL。在转战 Express 之前，先看看 Connect 对错误处理的支持。
 
 ### 6.1.6 使用错误处理中间件
 
@@ -3600,17 +3599,17 @@ Connect 刻意将错误处理做到极简，让开发人员指明应该如何处
 
 1. 用 Connect 的默认错误处理器
 
-因为函数 foo()没有定义，所以下面这个中间件会抛出错误 ReferenceError：
+因为函数 `foo()`没有定义，所以下面这个中间件会抛出错误 ReferenceError：
 
 ```JS
 const connect = require('connect')
 connect()
-.use((req, res) => {
-foo();
-res.setHeader('Content-Type', 'text/plain');
-res.end('hello world');
-})
-.listen(3000)
+  .use((req, res) => {
+    foo();
+    res.setHeader('Content-Type', 'text/plain');
+    res.end('hello world');
+  })
+  .listen(3000)
 ```
 
 Connect 默认的处理是返回响应状态码 500，响应主体是文本 Internal Server Error 和错误的详细信息。这无可厚非，但在真正的程序中，一般还会对这些错误做些特殊处理，比如将它们发送给一个日志守护进程。
@@ -3624,18 +3623,19 @@ Connect 也支持用错误处理中间件自行处理错误。比如说，为了
 代码清单 6-4 Connect 中的错误处理中间件
 ```JS
 const env = process.env.NODE_ENV || 'development';
+
 function errorHandler(err, req, res, next) {
-res.statusCode = 500;
-switch (env) {
-case 'development':
-console.error('Error:');
-console.error(err);
-res.setHeader('Content-Type', 'application/json');
-res.end(JSON.stringify(err));
-break;
-default:
-res.end('Server error');
-}
+  res.statusCode = 500;
+  switch (env) {
+  case 'development':
+    console.error('Error:');
+    console.error(err);
+    res.setHeader('Content-Type', 'application/json');
+    res.end(JSON.stringify(err));
+    break;
+  default:
+    res.end('Server error');
+  }
 }
 module.exports = errorHandler;
 // 错误处理中间件定义四个参数
@@ -3684,9 +3684,9 @@ app.listen(3000);
 // 响应对/的请求
 ```
 
-express-generator 包里有创建程序框架的命令行工具 express(1)。如果你刚开始接触Express，可以用它生成的程序作为起点。这个生成的程序中有模板、公共资源文件、配置等很多东西。
+express-generator 包里有创建程序框架的命令行工具 `express(1)`。如果你刚开始接触Express，可以用它生成的程序作为起点。这个生成的程序中有模板、公共资源文件、配置等很多东西。
 
-express(1)生成的程序框架中只有几个目录和一些文件，如图 6-4 所示。设计成这样的结构，是为了让开发者能在几秒钟之内把 Express 跑起来，但你完全可以决定用什么样的程序结构。
+`express(1)`生成的程序框架中只有几个目录和一些文件，如图 6-4 所示。设计成这样的结构，是为了让开发者能在几秒钟之内把 Express 跑起来，但你完全可以决定用什么样的程序结构。
 
 图 6-4 使用 EJS 模板的默认程序框架结构
 
@@ -3707,12 +3707,11 @@ express(1)生成的程序框架中只有几个目录和一些文件，如图 6-4
 $ npm install -g express-generator
 ```
 
-装好之后，可以用 --help 选项看看可用的选项，如图 6-5 所示。
+装好之后，可以用 `--help` 选项看看可用的选项，如图 6-5 所示。
 
 图 6-5 Express 帮助
 
-其中一些选项用来生成程序中的某些部分。比如说，你可以指定模板引擎，让它生成选定模
-板引擎的空文件。同样，如果用 `--css` 指定了 CSS 预处理器，它会生成该 CSS 预处理器的虚拟模板文件。
+其中一些选项用来生成程序中的某些部分。比如说，你可以指定模板引擎，让它生成选定模板引擎的空文件。同样，如果用 `--css` 指定了 CSS 预处理器，它会生成该 CSS 预处理器的虚拟模板文件。
 
 可执行程序装好了，接下来我们要生成最终会变成在线留言板的程序框架。
 
@@ -3724,11 +3723,11 @@ $ npm install -g express-generator
 
 3. 探索程序
 
-仔细看一下它生成了什么。在编辑器中打开 package.json 文件，看看程序的依赖项， 如图 6-6所示。 Express 猜不出你要用依赖项的哪个版本，所以你最好给出模块的主要、次要及修订版本号，以免引起意想不到的 bug。比如明确给出"express":"~4.13.1"，那么 npm 每次都会安装相同的代码。
+仔细看一下它生成了什么。在编辑器中打开 package.json 文件，看看程序的依赖项， 如图 6-6所示。 Express 猜不出你要用依赖项的哪个版本，所以你最好给出模块的主要、次要及修订版本号，以免引起意想不到的 bug。比如明确给出`"express":"~4.13.1"`，那么 npm 每次都会安装相同的代码。
 
 图 6-6 生成的 package.json
 
-现在看一下 express(1)生成的程序主文件，如下面的代码清单所示。暂时先不要动它。其中有前面介绍过的中间件，但默认的中间件配置什么样还是值得一看的。
+现在看一下 `express(1)`生成的程序主文件，如下面的代码清单所示。暂时先不要动它。其中有前面介绍过的中间件，但默认的中间件配置什么样还是值得一看的。
 
 代码清单 6-6 生成的 Express 程序框架
 ```js
@@ -3746,31 +3745,33 @@ app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 app.use(logger('dev'));
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.urlencoded({
+  extended: false
+}));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', routes);
 app.use('/users', users);
-app.use(function(req, res, next) {
-let err = new Error('Not Found');
-err.status = 404;
-next(err);
+app.use(function (req, res, next) {
+  let err = new Error('Not Found');
+  err.status = 404;
+  next(err);
 });
 if (app.get('env') === 'development') {
-app.use(function(err, req, res, next) {
-res.status(err.status || 500);
-res.render('error', {
-message: err.message,
-error: err
-});
-});
+  app.use(function (err, req, res, next) {
+    res.status(err.status || 500);
+    res.render('error', {
+      message: err.message,
+      error: err
+    });
+  });
 }
-app.use(function(err, req, res, next) {
-res.status(err.status || 500);
-res.render('error', {
-message: err.message,
-error: {}
-});
+app.use(function (err, req, res, next) {
+  res.status(err.status || 500);
+  res.render('error', {
+    message: err.message,
+    error: {}
+  });
 });
 module.exports = app;
 // 输出有颜色区分的日志，
@@ -3783,7 +3784,7 @@ module.exports = app;
 // 在开发时显示样式化
 ```
 
-虽然有了 package.json 和 app.js 文件，但程序还跑不起来，因为依赖项还没装。不管 express(1) 什么时候生成 package.json，都要安装依赖项。执行 npm install，然后执行 npm start 启动程序。
+虽然有了 package.json 和 app.js 文件，但程序还跑不起来，因为依赖项还没装。不管 `express(1)` 什么时候生成 package.json，都要安装依赖项。执行 `npm install`，然后执行 `npm start` 启动程序。
 
 在浏览器中访问 http://localhost:3000，默认程序看起来如图 6-7 所示。
 
@@ -3796,10 +3797,10 @@ module.exports = app;
 4. 在线留言板程序的规划
 
 下面是这个在线留言板程序的需求。
-1 用户应该可以注册、登录、退出。
-2 用户应该可以发消息（条目）。
-3 站点的访问者可以分页浏览条目。
-4 应该有个支持认证的简单的 REST API。
+1. 用户应该可以注册、登录、退出。
+2. 用户应该可以发消息（条目）。
+3. 站点的访问者可以分页浏览条目。
+4. 应该有个支持认证的简单的 REST API。
 
 针对这些需求，我们要存储数据和处理用户认证，还需要对用户的输入进行校验。必要的路由应该有以下两种。
 
@@ -3852,7 +3853,7 @@ Express 有一个极简的环境驱动配置系统，这个系统由几个方法
 
 我们先来探讨一下基于环境的配置是什么意思。环境变量 NODE_ENV 源于 Express，后来很多 Node 框架照搬了这一做法，用它告知 Node 程序运行在哪个环境中，其默认是开发环境。
 
-app.configure()方法有一个可选的字符串参数，用来指定运行环境；还有一个参数是函数。如果有这个字符串，则在运行环境与字符串相同时才会调用那个函数；如果没有，则在所有环境中都会调用那个函数。这些环境的名称完全是随意的。比如说，可以用 development、stage、 test 和 production，或简写为 prod：
+`app.configure()`方法有一个可选的字符串参数，用来指定运行环境；还有一个参数是函数。如果有这个字符串，则在运行环境与字符串相同时才会调用那个函数；如果没有，则在所有环境中都会调用那个函数。这些环境的名称完全是随意的。比如说，可以用 development、stage、 test 和 production，或简写为 prod：
 
 ```js
 if (app.get('env') === 'development') {
@@ -3862,7 +3863,7 @@ app.use(express.errorHandler());
 
 为了实现可定制的行为， Express 在其内部使用了配置系统，我们也可以在自己的程序中使用这个系统。
 
-Express 还为布尔类型的配置项提供了 app.set()和 app.get()的变体。比如说， app.enable(setting)等同于 app.set(setting, true)，而 app.enabled(setting)可以用来检查该值是否被启用了。 app.disable(setting)和 app.disabled(setting)是对它们的补充。
+Express 还为布尔类型的配置项提供了 `app.set()`和 `app.get()`的变体。比如说， `app.enable(setting)`等同于 `app.set(setting, true)`，而 a`pp.enabled(setting)`可以用来检查该值是否被启用了。 `app.disable(setting)`和 `app.disabled(setting)`是对它们的补充。
 
 Express 为开发 API 提供了一个配置项，即 json spaces。如果把它加到 app.js 中，程序输出 JSON 的格式会变得更易读：
 
@@ -3874,14 +3875,9 @@ app.set('json spaces', 2);
 
 ### 6.2.3 渲染视图
 
-尽管前面说过， Express 几乎支持所有 Node 社区中的模板引擎，但本章的程序用的是 EJS 模
-板。不熟悉 EJS 也不用担心，它很像其他 Web 开发平台（ PHP、 JSP、 ERB）中的模板语言。本
-章只会涉及 EJS 的一些基础知识，但第 7 章会详细介绍 EJS 和其他几个模板引擎。
+尽管前面说过， Express 几乎支持所有 Node 社区中的模板引擎，但本章的程序用的是 EJS 模板。不熟悉 EJS 也不用担心，它很像其他 Web 开发平台（ PHP、 JSP、 ERB）中的模板语言。本章只会涉及 EJS 的一些基础知识，但第 7 章会详细介绍 EJS 和其他几个模板引擎。
 
-不管是渲染整个 HTML 页面、一个 HTML 片段，还是一个 RSS 预订源，对几乎所有程序来
-说，视图渲染都非常重要。其概念很简单：把数据传给视图，然后视图对数据进行转换，对 Web
-程序来说，通常是转换成 HTML。你对视图应该不会觉得陌生，因为大多数框架都有类似的功能。
-图 6-8 阐明了视图如何形成新的数据表示。
+不管是渲染整个 HTML 页面、一个 HTML 片段，还是一个 RSS 预订源，对几乎所有程序来说，视图渲染都非常重要。其概念很简单：把数据传给视图，然后视图对数据进行转换，对 Web程序来说，通常是转换成 HTML。你对视图应该不会觉得陌生，因为大多数框架都有类似的功能。图 6-8 阐明了视图如何形成新的数据表示。
 
 图 6-8 HTML 模板 + 数据 = 数据的 HTML 视图
 
@@ -3891,8 +3887,7 @@ app.set('json spaces', 2);
 <p><%= name %> is a 2 year old <%= species %>.</p>
 ```
 
-Express 中有两种渲染视图的办法：程序层面用 app.render()，在请求或响应层面用
-res.render() ， Express 内 部 用 的 是 前 一 种 。 本 章 只 用 res.render() 。 如 果 你 看 一 下./routes/index.js，会看到一个调用 res.render('index')的函数，渲染的是./views/index.ejs 模板，代码如下所示（参见 listing6_8）：
+Express 中有两种渲染视图的办法：程序层面用 app.render()，在请求或响应层面用 res.render() ， Express 内 部 用 的 是 前 一 种 。 本 章 只 用 res.render() 。 如 果 你 看 一 下./routes/index.js，会看到一个调用 res.render('index')的函数，渲染的是./views/index.ejs 板，代码如下所示（参见 listing6_8）：
 
 ```js
 router.get('/', (req, res, next) => {
@@ -3904,8 +3899,7 @@ res.render('index', { title: 'Express' });
 
 1. 配置视图系统
 
-Express 视图系统的配置很简单。即便 express(1)已经生成好了，你还是应该了解一下这
-些配置的底层机制，以便在需要时进行修改。我们会重点介绍三个领域：
+Express 视图系统的配置很简单。即便 express(1)已经生成好了，你还是应该了解一下这些配置的底层机制，以便在需要时进行修改。我们会重点介绍三个领域：
 
 - 调整视图的查找；
 - 配置默认的模板引擎；
@@ -3919,28 +3913,19 @@ Express 视图系统的配置很简单。即便 express(1)已经生成好了，�
 app.set('views', __dirname + '/views');
 ```
 
-这个配置项指明了 Express 查找视图的目录。这里的 __dirname 用得好，这样程序就不用把当前
-工作目录当作程序根目录了。
+这个配置项指明了 Express 查找视图的目录。这里的 __dirname 用得好，这样程序就不用把当前工作目录当作程序根目录了。
 
 >　__dirname
->　Node 中的 __dirname（前面有两个下划线）是个全局变量，表示当前运行的文件所在的
-目录。在开发时，这个目录通常就是当前工作目录（ CWD），但在生产环境中，这个文件可能
-运行在其他目录中。 __dirname 有助于保持路径在各种环境中的一致性。
+>　Node 中的 __dirname（前面有两个下划线）是个全局变量，表示当前运行的文件所在的目录。在开发时，这个目录通常就是当前工作目录（ CWD），但在生产环境中，这个文件可能运行在其他目录中。 __dirname 有助于保持路径在各种环境中的一致性。
 
 下一个配置项是 view engine。
 - 使用默认的模板引擎
 
-用 express(1)生成程序时，我们在命令行中用 -e 指定模板引擎 EJS，所以 view engine
-被设为 ejs。 Express 要靠扩展名确定用哪个模板引擎渲染文件，但有了这个配置项，我们可以
-用 index 指定要渲染的文件，而不需要用 index.ejs。
+用 express(1)生成程序时，我们在命令行中用 -e 指定模板引擎 EJS，所以 view engine被设为 ejs。 Express 要靠扩展名确定用哪个模板引擎渲染文件，但有了这个配置项，我们可以用 index 指定要渲染的文件，而不需要用 index.ejs。
 
-你可能会想， Express 为什么还要考虑扩展名。因为如果使用带扩展名的模板文件，就可以
-在同一个 Express 程序中使用多个模板引擎。同时这样又能提供一个清晰的 API，因为大多数程
-序都是只用一个模板引擎。
+你可能会想， Express 为什么还要考虑扩展名。因为如果使用带扩展名的模板文件，就可以在同一个 Express 程序中使用多个模板引擎。同时这样又能提供一个清晰的 API，因为大多数程序都是只用一个模板引擎。
 
-比如说，你发现用另一种模板引擎写 RSS 预订源更容易，或者正要换一个模板引擎用。你
-可能将 Pug 作为默认引擎，用 EJS 渲染 /feed 路由的响应结果，就像下面的代码一样指明 .ejs 扩
-展名。
+比如说，你发现用另一种模板引擎写 RSS 预订源更容易，或者正要换一个模板引擎用。你可能将 Pug 作为默认引擎，用 EJS 渲染 /feed 路由的响应结果，就像下面的代码一样指明 .ejs 扩展名。
 
 ```js
 app.set('view engine', 'pug');
@@ -3952,58 +3937,41 @@ res.render('rss.ejs');
 });
 ```
 
-保持 package.json 同步 记住，所有要用到的模板引擎都应该添加到 package.json 的
-依赖项对象中。用 npm install --save package-name 安装，用 npm uninstall --
-save package-name 从 node_modules 和 package.json 中删除。在你还不知道该用哪个
-模板引擎时，你的试验会轻松一些。
+保持 package.json 同步 记住，所有要用到的模板引擎都应该添加到 package.json 的依赖项对象中。用 npm install --save package-name 安装，用 npm uninstall -- save package-name 从 node_modules 和 package.json 中删除。在你还不知道该用哪个模板引擎时，你的试验会轻松一些。
 
 2. 视图缓存
 
-在生产环境中， view cache 是默认开启的，以防止后续的 render()从硬盘中读取模板文
-件。因为模板文件中的内容会被放到内存中，所以性能会得到显著提升。但启用这个配置项后，只有重启服务器才能让模板文件的编辑生效，所以在开发时会禁用它。如果在分级（ staging）环
-境中运行，很可能要启用这个配置项。
+在生产环境中， view cache 是默认开启的，以防止后续的 render()从硬盘中读取模板文件。因为模板文件中的内容会被放到内存中，所以性能会得到显著提升。但启用这个配置项后，只有重启服务器才能让模板文件的编辑生效，所以在开发时会禁用它。如果在分级（ staging）环境中运行，很可能要启用这个配置项。
 
-如图 6-9 所示， view cache 被禁用时，每次请求都会从硬盘上读取模板。这样无须重启程
-序来让模板的修改生效。启用 view cache 后，每个模板只需要读取一次硬盘。
-你已经知道视图缓存机制是如何提升非开发环境中的程序性能了。接下来我们看看 Express
-如何定位视图来渲染它们。
+如图 6-9 所示， view cache 被禁用时，每次请求都会从硬盘上读取模板。这样无须重启程序来让模板的修改生效。启用 view cache 后，每个模板只需要读取一次硬盘。你已经知道视图缓存机制是如何提升非开发环境中的程序性能了。接下来我们看看 Express如何定位视图来渲染它们。
 
 图 6-9 视图缓存设置
 
 3. 视图查找
 
-查找视图的过程跟 require()查找模块的过程差不多。在程序中调用了 res.render()或
-app.render()后， Express 会先检查有没有这样的绝对路径，接着找视图目录的相对路径。最
-后会尝试找目录中的 index 文件。整个过程如图 6-10 所示。
+查找视图的过程跟 require()查找模块的过程差不多。在程序中调用了 res.render()或 app.render()后， Express 会先检查有没有这样的绝对路径，接着找视图目录的相对路径。最后会尝试找目录中的 index 文件。整个过程如图 6-10 所示。
 
 图 6-10 Express 视图查找过程
 
 因为 ejs 被设为默认引擎，所以无须在 render 中指明模板文件的扩展名.ejs。
 
-随着开发进展，程序中的视图会越来越多，并且有时一个资源会有几个视图。 view lookup
-可以帮我们组织这些视图，比如说把视图文件放在跟资源相连的子目录中。
+随着开发进展，程序中的视图会越来越多，并且有时一个资源会有几个视图。 view lookup 可以帮我们组织这些视图，比如说把视图文件放在跟资源相连的子目录中。
 
 用添加子目录的办法可以去掉模板文件名称中的冗余部分，比如 edit-entry.ejs 和 show-entry.ejs。
 
-Express 会添加跟 view engine 匹配的扩展名，根据 res.render('entries/edit')定位
-到 ./views/entries/edit.ejs。
+Express 会添加跟 view engine 匹配的扩展名，根据 res.render('entries/edit')定位到 ./views/entries/edit.ejs。
 
 Express 会检查 views 的子目录中是否有名为 index 的文件。当文件的名称为复数时，比如 entries，通常表示这是一个资源列表。也就是说 res.render('entries')一般会渲染文件 views/entries/index.ejs。
 
 4. 将数据传递给视图的办法
 
-在 Express 中，要给被渲染的视图传递数据有几种办法，其中最常用的是将要传递的数据作
-为 res.render()的参数。此外，还可以在路由处理器之前的中间件中设定一些变量，比如用
-app.locals 传递程序层面的数据，用 res.locals 传递请求层面的数据。
+在 Express 中，要给被渲染的视图传递数据有几种办法，其中最常用的是将要传递的数据作为 res.render()的参数。此外，还可以在路由处理器之前的中间件中设定一些变量，比如用 app.locals 传递程序层面的数据，用 res.locals 传递请求层面的数据。
 
-将变量直接作为 res.render()的参数优先级最高，要高于在 res.locals 和 app.locals
-中设定的变量值，如图 6-11 所示。
+将变量直接作为 res.render()的参数优先级最高，要高于在 res.locals 和 app.locals 中设定的变量值，如图 6-11 所示。
 
 图 6-11 渲染模板时，直接传给 render 函数的值优先级最高
 
-默认情况下， Express 只会向视图中传递一个程序级变量——settings，这个对象中包含所
-有用 app.set()设定的值。比如 app.set('title', 'My Application')会把 settings.
-title 输出到模板中，请看下面的 EJS 代码片段：
+默认情况下， Express 只会向视图中传递一个程序级变量——settings，这个对象中包含所有用 app.set()设定的值。比如 app.set('title', 'My Application')会把 settings.title 输出到模板中，请看下面的 EJS 代码片段：
 
 ```
 <html>
@@ -4022,14 +3990,11 @@ title 输出到模板中，请看下面的 EJS 代码片段：
 app.locals.settings = app.settings;
 ```
 
-这就是关于数据传递的全部知识！在了解了如何渲染视图以及如何传递数据给它们之后，该
-去看看怎么给我们的在线留言板程序定义路由和路由处理器了。另外还要创建数据库模型来做数
-据的持久化。
+这就是关于数据传递的全部知识！在了解了如何渲染视图以及如何传递数据给它们之后，该去看看怎么给我们的在线留言板程序定义路由和路由处理器了。另外还要创建数据库模型来做数据的持久化。
 
 ### 6.2.4 Express 路由入门
 
-Express 路由的主要任务是将特定模式的 URL 匹配到响应逻辑上。但也可以将 URL 模式匹
-配到中间件上，以便用中间件实现某些路由上的可重用功能。
+Express 路由的主要任务是将特定模式的 URL 匹配到响应逻辑上。但也可以将 URL 模式匹配到中间件上，以便用中间件实现某些路由上的可重用功能。
 
 本节要：
 - 用特定路由的中间件校验用户提交的内容；
@@ -4039,8 +4004,7 @@ Express 路由的主要任务是将特定模式的 URL 匹配到响应逻辑上�
 
 1. 校验用户内容提交
 
-为了介绍校验的做法，我们要给这个程序加上消息提交功能。 实现这个功能需要完成下面
-几项工作：
+为了介绍校验的做法，我们要给这个程序加上消息提交功能。 实现这个功能需要完成下面几项工作：
 
 - 创建消息模型；
 - 添加与消息相关的路由；
@@ -4050,15 +4014,11 @@ Express 路由的主要任务是将特定模式的 URL 匹配到响应逻辑上�
 下面先来创建消息模型。
 - 创建消息模型
 
-在创建模型之前，需要先安装 Node redis 模块。执行命令 npm install --save redis。
-如果你的机器上没装 Redis，请访问其官网了解如何安装；如果你用的是 macOS，可以用 Homebrew
-安装， Windows 有 Redis Chocolatey 包。
+在创建模型之前，需要先安装 Node redis 模块。执行命令 npm install --save redis。如果你的机器上没装 Redis，请访问其官网了解如何安装；如果你用的是 macOS，可以用 Homebrew 安装， Windows 有 Redis Chocolatey 包。
 
-这里用 Redis 是想偷点儿懒：借助 Redis 和 ES6 的特性，我们不需要用复杂的数据库就能轻
-松创建出轻便的模型。如果你想自己试试其他的数据库，可以参考第 8 章介绍的知识。
+这里用 Redis 是想偷点儿懒：借助 Redis 和 ES6 的特性，我们不需要用复杂的数据库就能轻松创建出轻便的模型。如果你想自己试试其他的数据库，可以参考第 8 章介绍的知识。
 
-接下来可以看看如何创建保存在线留言板消息条目的模型了。创建 models/entry.js 文件，将
-下面的代码放到这个文件中。这是个简单的 ES6 类，它会把数据存到 Redis 列表中。
+接下来可以看看如何创建保存在线留言板消息条目的模型了。创建 models/entry.js 文件，将下面的代码放到这个文件中。这是个简单的 ES6 类，它会把数据存到 Redis 列表中。
 
 代码清单 6-7 消息条目模型
 ```js
@@ -4094,8 +4054,7 @@ cb();
 module.exports = Entry;
 ```
 
-基本模型有了，现在要添加获取消息用的 getRange 函数，代码如下所示。你可以用这个函
-数获取消息。
+基本模型有了，现在要添加获取消息用的 getRange 函数，代码如下所示。你可以用这个函数获取消息。
 
 代码清单 6-8 获取一部分消息的逻辑
 ```js
@@ -4170,8 +4129,7 @@ Redis lrange 函数
 </html>
 ```
 
-这个表单用了形如 entry[title]之类的输入控件名称，需要用扩展的消息体解析器来解
-析。打开 app.js，找到
+这个表单用了形如 entry[title]之类的输入控件名称，需要用扩展的消息体解析器来解析。打开 app.js，找到
 
 ```js
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -4207,13 +4165,11 @@ res.redirect('/');
 };
 ```
 
-现在用浏览器访问 /post 后应该可以添加消息了。到代码清单 6-21 时才会要求用户先登录。
-处理好消息创建的功能，该实现渲染消息列表的功能了。
+现在用浏览器访问 /post 后应该可以添加消息了。到代码清单 6-21 时才会要求用户先登录。处理好消息创建的功能，该实现渲染消息列表的功能了。
 
 - 添加显示消息的首页
 
-先创建 routes/entries.js，然后把下面的代码放到里面。引入消息模型，输出渲染消息列表的
-函数。
+先创建 routes/entries.js，然后把下面的代码放到里面。引入消息模型，输出渲染消息列表的函数。
 
 代码清单 6-11 消息列表
 ```js
@@ -4235,8 +4191,7 @@ entries: entries,
 };
 ```
 
-这个路由的业务逻辑定义好之后，还需要添加 EJS 模板来显示这些消息。在 views 目录下创
-建 entries.ejs 文件，并加入下面的 EJS 代码。
+这个路由的业务逻辑定义好之后，还需要添加 EJS 模板来显示这些消息。在 views 目录下创建 entries.ejs 文件，并加入下面的 EJS 代码。
 
 代码清单 6-12 视图 entries.ejs
 ```
@@ -4259,33 +4214,27 @@ entries: entries,
 </html>
 ```
 
-在运行程序之前，先用 touch views/menu.ejs 创建菜单模板文件，后面再添加具体代码。
-视图和路由准备好后，需要告诉程序到哪里去找这些路由。
+在运行程序之前，先用 touch views/menu.ejs 创建菜单模板文件，后面再添加具体代码。视图和路由准备好后，需要告诉程序到哪里去找这些路由。
 
 - 添加与消息相关的路由
 
-在把与消息相关的路由添加到程序中之前，需要调整一下 app.js。先把下面这个 require
-语句放在 app.js 文件的顶端：
+在把与消息相关的路由添加到程序中之前，需要调整一下 app.js。先把下面这个 require 语句放在 app.js 文件的顶端：
 
 ```js
 const entries = require('./routes/entries');
 ```
 
-接下来，还是在 app.js 中，修改包含 app.get('/'的那行代码，改成下面这样，让发给 / 的
-请求返回消息列表：
+接下来，还是在 app.js 中，修改包含 app.get('/'的那行代码，改成下面这样，让发给 / 的请求返回消息列表：
 
 ```js
 app.get('/', entries.list);
 ```
 
-现在运行这个程序，首页会显示消息列表。既然消息创建和显示列表都做好了，那么接下来
-该看看如何用特定路由中间件校验表单数据了。
+现在运行这个程序，首页会显示消息列表。既然消息创建和显示列表都做好了，那么接下来该看看如何用特定路由中间件校验表单数据了。
 
 - 使用特定路由中间件
 
-假定你想将表单中的消息文本域设为必填项。能想到的第一种方式可能是像下面的代码那
-样把它直接加在路由回调函数中。然而这种方式并不理想，因为校验逻辑是绑死在这个表单上
-渲染 HTTP 响应118 第 6 章 深入了解 Connect 和 Express 的。而在大多数情况下，校验逻辑都能被提炼到可重用的组件中，让开发更容易、更快、更具声明性：
+假定你想将表单中的消息文本域设为必填项。能想到的第一种方式可能是像下面的代码那样把它直接加在路由回调函数中。然而这种方式并不理想，因为校验逻辑是绑死在这个表单上渲染 HTTP 响应118 第 6 章 深入了解 Connect 和 Express 的。而在大多数情况下，校验逻辑都能被提炼到可重用的组件中，让开发更容易、更快、更具声明性：
 
 ```js
 ...
@@ -4304,16 +4253,13 @@ return;
 ...
 ```
 
-Express 路由可以有自己的中间件，其被放在路由回调函数之前，只有跟这个路由匹配时才
-会调用。本章所用的路由回调并没有做特殊处理。这些中间件跟其他中间件一样，甚至你即将创
-建的校验中间件也一样。
+Express 路由可以有自己的中间件，其被放在路由回调函数之前，只有跟这个路由匹配时才会调用。本章所用的路由回调并没有做特殊处理。这些中间件跟其他中间件一样，甚至你即将创建的校验中间件也一样。
 
 接下来我们要用特定路由中间件来做校验，先来看一种虽然简单但不太灵活的实现方式。
 
 2. 用特定路由中间件实现表单校验
 
-第一种方式是写几个简单但特定的中间件组件来执行校验。带有此类中间件的 POST/post
-路由看起来应该像下面这样：
+第一种方式是写几个简单但特定的中间件组件来执行校验。带有此类中间件的 POST/post 路由看起来应该像下面这样：
 
 ```js
 app.post('/post',
@@ -4323,11 +4269,9 @@ entries.submit
 );
 ```
 
-一般的路由定义只有两个参数：路径和路由处理函数，而这个路由定义中又额外地增加了两
-个参数，这两个参数就是校验中间件。
+一般的路由定义只有两个参数：路径和路由处理函数，而这个路由定义中又额外地增加了两个参数，这两个参数就是校验中间件。
 
-在下面的代码中，我们把原来的校验逻辑剥离出来做成了两个中间件。但它们的模块化程度
-还不高，只能用在输入域 entry[title]上。
+在下面的代码中，我们把原来的校验逻辑剥离出来做成了两个中间件。但它们的模块化程度还不高，只能用在输入域 entry[title]上。
 
 代码清单 6-13 两个更有潜力但仍不完美的校验中间件
 ```js
@@ -4357,8 +4301,7 @@ res.redirect('back');
 }
 ```
 
-实际工作中更常用的方案是进一步抽象，剥离成更灵活的校验器，以目标输入域的名称为参
-数进行校验。下面来看一下这种实现方式。
+实际工作中更常用的方案是进一步抽象，剥离成更灵活的校验器，以目标输入域的名称为参数进行校验。下面来看一下这种实现方式。
 
 - 构建灵活的校验中间件
 
@@ -4371,12 +4314,9 @@ validate.lengthAbove('entry[title]', 4),
 entries.submit);
 ```
 
-打开 app.js，把路由部分的 app.post('/post', entries.submit);换成上面这段代码。
-这里有必要提一下， Express 社区已经创建了很多类似的公用库，但掌握校验中间件的工作机制
-以及如何编写中间件仍然很有必要。
+打开 app.js，把路由部分的 app.post('/post', entries.submit);换成上面这段代码。这里有必要提一下， Express 社区已经创建了很多类似的公用库，但掌握校验中间件的工作机制以及如何编写中间件仍然很有必要。
 
-开始动手写代码吧。用代码清单 6-14 中的代码创建 ./middleware/validate.js 文件。 validate.js 会输出 validate.required()和 validate.lengthAbove()两个中间件。这里的实现细节并
-不重要，关键是通过这个例子学习如何提炼出程序中的通用代码，用少量的工作成果发挥大作用。
+开始动手写代码吧。用代码清单 6-14 中的代码创建 ./middleware/validate.js 文件。 validate.js 会输出 validate.required()和 validate.lengthAbove()两个中间件。这里的实现细节并不重要，关键是通过这个例子学习如何提炼出程序中的通用代码，用少量的工作成果发挥大作用。
 
 代码清单 6-14 校验中间件的实现
 ```js
@@ -4432,8 +4372,7 @@ res.redirect('back');
 const validate = require('./middleware/validate');
 ```
 
-现在再试，应该发现校验已经生效了。这个校验 API 还可以进一步优化，你可以把这个当作
-练习自己研究一下。
+现在再试，应该发现校验已经生效了。这个校验 API 还可以进一步优化，你可以把这个当作练习自己研究一下。
 
 ### 6.2.5 用户认证
 
@@ -4443,8 +4382,7 @@ const validate = require('./middleware/validate');
 - 登录功能；
 - 加载用户信息的中间件。
 
-我们还是用 Redis 作为用户账号的存储。接下来先创建 User 模型，看看如何让 Redis 用起来
-更容易。
+我们还是用 Redis 作为用户账号的存储。接下来先创建 User 模型，看看如何让 Redis 用起来更容易。
 
 1. 保存和加载用户记录
 
@@ -4455,17 +4393,13 @@ const validate = require('./middleware/validate');
 - 用 bcrypt 增强用户密码的安全性；
 - 实现用户认证。
 
-Bcrypt 是一个加盐的哈希函数，可作为第三方模块专门对密码做哈希处理。 Bcrypt 特别适合
-处理密码，因为计算机越来越快，而 bcrypt 能让破解变慢，从而有效对抗暴力攻击。
-先用 npm install --save redis bcrypt 安装这些依赖项。
+Bcrypt 是一个加盐的哈希函数，可作为第三方模块专门对密码做哈希处理。 Bcrypt 特别适合处理密码，因为计算机越来越快，而 bcrypt 能让破解变慢，从而有效对抗暴力攻击。先用 npm install --save redis bcrypt 安装这些依赖项。
 
 2. 创建用户模型
 
 在 models/ 目录下创建 user.js。
 
-代码清单 6-15 中是用户模型的代码。这段代码引入了依赖项 redis 和 bcrypt，然后用
-redis.createClient()打开 Redis 连接。函数 User 可以合并传入的参数对象。 比如说， new
-User({ name: 'Tobi' })会创建一个对象，并将对象的属性 name 设为 Tobi。
+代码清单 6-15 中是用户模型的代码。这段代码引入了依赖项 redis 和 bcrypt，然后用redis.createClient()打开 Redis 连接。函数 User 可以合并传入的参数对象。 比如说， new User({ name: 'Tobi' })会创建一个对象，并将对象的属性 name 设为 Tobi。
 
 代码清单 6-15 开始创建用户模型
 ```js
@@ -4486,11 +4420,7 @@ module.exports = User;
 
 3. 把用户保存到 Redis 中
 
-接下来要实现的功能是保存用户，把数据存到 Redis 中。代码清单 6-16 中的 save 方法会先
-检查用户是否有 ID，如果有就调用 update 方法，用名称索引用户 ID，并用对象的属性组装出
-Redis 哈希表中的记录。如果没有 ID，则认为这是一个新用户，增加 user:ids 的值，给用户一
-个唯一 ID，然后对密码做哈希处理，用之前提到的那个 update 方法把用户数据存到 Redis 中。
-把下面的代码加到 models/user.js 中。
+接下来要实现的功能是保存用户，把数据存到 Redis 中。代码清单 6-16 中的 save 方法会先检查用户是否有 ID，如果有就调用 update 方法，用名称索引用户 ID，并用对象的属性组装出Redis 哈希表中的记录。如果没有 ID，则认为这是一个新用户，增加 user:ids 的值，给用户一个唯一 ID，然后对密码做哈希处理，用之前提到的那个 update 方法把用户数据存到 Redis 中。把下面的代码加到 models/user.js 中。
 
 代码清单 6-16 更新用户记录
 ```js
@@ -4541,21 +4471,15 @@ cb(err);
 
 4. 增强用户密码的安全性
 
-刚创建用户时，需要将.pass 属性设为用户的密码。然后用户保存逻辑会将.pass 属性换
-作经过哈希处理的密码。
+刚创建用户时，需要将.pass 属性设为用户的密码。然后用户保存逻辑会将.pass 属性换作经过哈希处理的密码。
 
-这个哈希会加盐。每个用户用的盐不一样，加盐可以使他们有效对抗彩虹表攻击：对哈希机
-制来说，盐就像私钥一样。可以用 bcrypt 的 genSalt()为哈希生成 12 个字符的盐。
+这个哈希会加盐。每个用户用的盐不一样，加盐可以使他们有效对抗彩虹表攻击：对哈希机制来说，盐就像私钥一样。可以用 bcrypt 的 genSalt()为哈希生成 12 个字符的盐。
 
-> 彩虹表攻击 彩虹表攻击用预先计算好的表破解经过哈希处理的密码。维基百科
-上有更详细的介绍。
+> 彩虹表攻击 彩虹表攻击用预先计算好的表破解经过哈希处理的密码。维基百科上有更详细的介绍。
 
-盐生成好之后，调用 bcrypt.hash()对.pass 属性和盐做哈希处理。在.update()把数据
-存到 Redis 之前， .pass 属性的值会换成最终的哈希值，保证不会保存密码的明文，只保存它的
-哈希结果。
+盐生成好之后，调用 bcrypt.hash()对.pass 属性和盐做哈希处理。在.update()把数据存到 Redis 之前， .pass 属性的值会换成最终的哈希值，保证不会保存密码的明文，只保存它的哈希结果。
 
-下面代码中定义的函数会创建加盐的哈希，并把结果存到用户的属性.pass 中。把它加到
-models/user.js 中。
+下面代码中定义的函数会创建加盐的哈希，并把结果存到用户的属性.pass 中。把它加到 models/user.js 中。
 
 代码清单 6-17 在用户模型中添加 bcrypt 加密函数
 
@@ -4580,9 +4504,7 @@ cb();
 
 5. 测试用户保存逻辑
 
-我们来试一下，在控制台中输入命令 redis-server 启动 Redis 服务器。把下面的代码加到
-models/user.js 的最下面，创建示例用户。然后运行 node models/user.js 执行示例用户的创建。
-代码清单 6-18 测试用户模型
+我们来试一下，在控制台中输入命令 redis-server 启动 Redis 服务器。把下面的代码加到 models/user.js 的最下面，创建示例用户。然后运行 node models/user.js 执行示例用户的创建。代码清单 6-18 测试用户模型
 
 ```js
 const User = require('./models/user');
@@ -4605,11 +4527,9 @@ console.log('user id %d', user.id);
 });
 ```
 
-应该能看到表明用户创建成功的输出，比如： user id 1。测试完成后，从 models/user.js 中
-去掉刚才添加的示例用户创建代码。
+应该能看到表明用户创建成功的输出，比如： user id 1。测试完成后，从 models/user.js 中去掉刚才添加的示例用户创建代码。
 
-在使用 Redis 中的工具 redis-cli 时，可以用 HGETALL 命令取出哈希表中的所有键和值，如下
-所示。
+在使用 Redis 中的工具 redis-cli 时，可以用 HGETALL 命令取出哈希表中的所有键和值，如下所示。
 
 代码清单 6-19 使用 Redis 命令行工具进行查询
 ```
@@ -4636,12 +4556,9 @@ redis> quit
 
 6. 获取用户数据
 
-在 Web 程序中，用户登录通常是在表单中输入用户名和密码，然后把这些数据提交给后台
-进行认证。在得到登录表单提交的数据后，需要一个能通过用户名获取用户信息的方法。
+在 Web 程序中，用户登录通常是在表单中输入用户名和密码，然后把这些数据提交给后台进行认证。在得到登录表单提交的数据后，需要一个能通过用户名获取用户信息的方法。
 
-下面代码中的 User.getByName()就是这样的方法。这个函数先用 User.getId() 查找用
-户 ID，然后把 ID 传给 User.get()，由它负责取得 Redis 哈希表中的用户数据。把下面的方法
-加到 models/user.js 中。
+下面代码中的 User.getByName()就是这样的方法。这个函数先用 User.getId() 查找用户 ID，然后把 ID 传给 User.get()，由它负责取得 Redis 哈希表中的用户数据。把下面的方法加到 models/user.js 中。
 
 代码清单 6-20 从 Redis 中取得用户数据
 ```js
@@ -4686,8 +4603,7 @@ console.log(user);
 
 7. 用户登录认证
 
-用户认证所需的最后一个方法在下面的代码清单中，前面定义的用户数据获取函数派上用场
-了。把它添加到 models/user.js 中。
+用户认证所需的最后一个方法在下面的代码清单中，前面定义的用户数据获取函数派上用场了。把它添加到 models/user.js 中。
 
 代码清单 6-21 用户名和密码认证
 ```js
@@ -4717,10 +4633,7 @@ cb();
 // 希处理
 ```
 
-认证功能一开始先用用户名查找用户记录。如果没找到，马上调用回调函数。反之把保存在
-用户对象中的盐和提交上来的密码做哈希处理，产生的结果应该跟 user.pass 的哈希值相同。
-如果两个哈希值不匹配，说明用户输入的凭证是无效的。当查找不存在的键时， Redis 会返回一
-个空的哈希值，所以这里的检查办法是!user.id，而不是!user。
+认证功能一开始先用用户名查找用户记录。如果没找到，马上调用回调函数。反之把保存在用户对象中的盐和提交上来的密码做哈希处理，产生的结果应该跟 user.pass 的哈希值相同。如果两个哈希值不匹配，说明用户输入的凭证是无效的。当查找不存在的键时， Redis 会返回一个空的哈希值，所以这里的检查办法是!user.id，而不是!user。
 
 现在用户认证做好了，该实现用户注册功能了。
 
@@ -4740,12 +4653,9 @@ cb();
 这个表单是在浏览器访问 /register 时显示的。稍后还要创建一个类似的登录表单。
 
 1. 添加注册路由
-要显示注册表单，首先要创建一个路由渲染这个表单，然后把它返回给用户的浏览器显示
-出来。
+要显示注册表单，首先要创建一个路由渲染这个表单，然后把它返回给用户的浏览器显示出来。
 
-参照代码清单 6-22 修改 app.js，这段代码用 Node 的模块系统从 routes 目录中引入定义注册
-路由行为的模块，并将 HTTP 方法及 URL 路径关联到路由函数上。由此构成一个“前端控制器”。
-如你所见， 这里既有 GET 注册路由，也有 POST 注册路由。
+参照代码清单 6-22 修改 app.js，这段代码用 Node 的模块系统从 routes 目录中引入定义注册路由行为的模块，并将 HTTP 方法及 URL 路径关联到路由函数上。由此构成一个“前端控制器”。如你所见， 这里既有 GET 注册路由，也有 POST 注册路由。
 
 代码清单 6-22 添加注册路由
 ```js
@@ -4767,8 +4677,7 @@ res.render('register', { title: 'Register' });
 
 2. 创建注册表单
 
-为了定义注册表单的 HTML，需要在 views 目录下创建 register.ejs 文件。可以用下面这个代
-码清单中的 HTML/EJS。
+为了定义注册表单的 HTML，需要在 views 目录下创建 register.ejs 文件。可以用下面这个代码清单中的 HTML/EJS。
 
 代码清单 6-23 注册表单的视图模板
 ```html
@@ -4807,20 +4716,13 @@ res.render('register', { title: 'Register' });
 填项 -->
 ```
 
-注意上面的 include messages，它嵌入了另一个模板 messages.ejs。我们接下来就定义这
-个用来跟用户沟通的模板。
+注意上面的 include messages，它嵌入了另一个模板 messages.ejs。我们接下来就定义这个用来跟用户沟通的模板。
 
 3. 把反馈消息传达给用户
 
-在用户注册过程中，以及在大多数应用场景中，将反馈消息传达给用户都是必须要做的工作。
-比如说，用户注册时所选的用户名可能已经被占用了。这时要提示用户用其他用户名注册。
-这个程序里的 messages.ejs 模板是用来显示错误的。它会嵌入到很多模板中。
+在用户注册过程中，以及在大多数应用场景中，将反馈消息传达给用户都是必须要做的工作。比如说，用户注册时所选的用户名可能已经被占用了。这时要提示用户用其他用户名注册。这个程序里的 messages.ejs 模板是用来显示错误的。它会嵌入到很多模板中。
 
-在 views 目录下创建一个名为 messages.ejs 的文件，把下面的代码放到这个文件里。这段代
-码会检查是否有变量 locals.messages，如果有，模板会循环遍历这个变量以显示消息对象。
-每个消息对象都有 type 属性（如果需要，可以用消息做非错误通知）和 string 属性（消息文
-本）。我们可以把要显示的错误添加到 res.locals.messages 数组中形成队列。消息显示之后，
-调用 removeMessages 清空消息队列：
+在 views 目录下创建一个名为 messages.ejs 的文件，把下面的代码放到这个文件里。这段代码会检查是否有变量 locals.messages，如果有，模板会循环遍历这个变量以显示消息对象。每个消息对象都有 type 属性（如果需要，可以用消息做非错误通知）和 string 属性（消息文本）。我们可以把要显示的错误添加到 res.locals.messages 数组中形成队列。消息显示之后，调用 removeMessages 清空消息队列：
 
 ```html
 <% if (locals.messages) { %>
@@ -4835,21 +4737,14 @@ res.render('register', { title: 'Register' });
 
 图 6-13 显示错误报告时的注册表单
 
-向 res.locals.messages 中添加消息是一种简单的用户沟通方式，但在重定向后 res.locals
-会丢失，所以如果要跨越请求传递消息，那么需要用到会话。
+向 res.locals.messages 中添加消息是一种简单的用户沟通方式，但在重定向后 res.locals 会丢失，所以如果要跨越请求传递消息，那么需要用到会话。
 
 4. 在会话中存放临时的消息
-Post/Redirect/Get（ PRG）是一种常用的 Web 程序设计模式。这种模式是指，用户请求表单，
-表单数据作为 HTTP POST 请求被提交，然后用户被重定向到另外一个 Web 页面上。用户被重定
-向到哪里取决于表单数据是否有效。如果表单数据无效，程序会让用户回到表单页面。如果表单
-数据有效，程序会让用户到新的 Web 页面中。 PRG 模式主要是为了防止表单的重复提交。
+Post/Redirect/Get（ PRG）是一种常用的 Web 程序设计模式。这种模式是指，用户请求表单，表单数据作为 HTTP POST 请求被提交，然后用户被重定向到另外一个 Web 页面上。用户被重定向到哪里取决于表单数据是否有效。如果表单数据无效，程序会让用户回到表单页面。如果表单数据有效，程序会让用户到新的 Web 页面中。 PRG 模式主要是为了防止表单的重复提交。
 
-在 Express 中，用户被重定向后， res.locals 中的内容会被重置。如果把发给用户的消息
-存在 res.locals 中，这些消息在显示之前就已经丢了。把消息存在会话变量中可以解决这个
-问题。确保消息在重定向后的页面上仍然能够显示。
+在 Express 中，用户被重定向后， res.locals 中的内容会被重置。如果把发给用户的消息存在 res.locals 中，这些消息在显示之前就已经丢了。把消息存在会话变量中可以解决这个问题。确保消息在重定向后的页面上仍然能够显示。
 
-我们要添加一个模块，让它在一个会话变量中维护用户消息队列。创建文件./middleware/
-messages.js，加入下面这些代码：
+我们要添加一个模块，让它在一个会话变量中维护用户消息队列。创建文件./middleware/messages.js，加入下面这些代码：
 
 ```js
 const express = require('express');
@@ -4863,13 +4758,9 @@ sess.messages.push({ type: type, string: msg });
 };
 ```
 
-res.message 函数可以把消息添加到来自任何 Express 请求的会话变量中。 express.response
-对象是 Express 给响应对象用的原型。所有中间件和路由都能访问到添加到这个对象中的属性。
-在前面的代码中， express.response 被赋值给了一个名为 res 的变量，这样添加属性更容易，
-可读性也提高了。
+res.message 函数可以把消息添加到来自任何 Express 请求的会话变量中。 express.response 对象是 Express 给响应对象用的原型。所有中间件和路由都能访问到添加到这个对象中的属性。在前面的代码中， express.response 被赋值给了一个名为 res 的变量，这样添加属性更容易，可读性也提高了。
 
-这个功能需要会话支持，为此我们需要一个跟 Express 兼容的中间件模块，官方支持的包是
-express-session。用 npm install --save express-session 安装，然后把它添加到 app.js 中：
+这个功能需要会话支持，为此我们需要一个跟 Express 兼容的中间件模块，官方支持的包是express-session。用 npm install --save express-session 安装，然后把它添加到 app.js 中：
 
 ```js
 const session = require('express-session');
@@ -4882,20 +4773,15 @@ resave: false, saveUninitialized: true
 
 这个中间件最好放在 cookie 后面（ 26 行附近）。
 
-为了让添加消息变得更容易，再加上下面这段代码。用 res.error 函数可以轻松地将类型
-为 error 的消息添加到消息队列中。它用到了在前面那个模块中定义的 res.message 函数：
+为了让添加消息变得更容易，再加上下面这段代码。用 res.error 函数可以轻松地将类型为 error 的消息添加到消息队列中。它用到了在前面那个模块中定义的 res.message 函数：
 
 ```js
 res.error = msg => this.message(msg, 'error');
 ```
 
-最后一步是把这些消息输出到模板中显示。如果不做这一步，就只能把 req.session.messages
-传给每个 res.render()调用，这很不明智。
+最后一步是把这些消息输出到模板中显示。如果不做这一步，就只能把 req.session.messages 传给每个 res.render()调用，这很不明智。
 
-为了解决这个问题，我们要创建一个中间件，在每个请求上用 res.session.messages 上
-的内容组装出 res.locals.messages，这样可以更高效地把消息输出到所有要渲染的模板上。
-到目前为 止， ./middleware/messages.js 只是扩展了响应的原型，还没输出任何东西。把下面的代
-码加到这个文件中，输出我们需要的中间件：
+为了解决这个问题，我们要创建一个中间件，在每个请求上用 res.session.messages 上的内容组装出 res.locals.messages，这样可以更高效地把消息输出到所有要渲染的模板上。到目前为 止， ./middleware/messages.js 只是扩展了响应的原型，还没输出任何东西。把下面的代码加到这个文件中，输出我们需要的中间件：
 
 ```js
 module.exports = (req, res, next) => {
@@ -4911,14 +4797,9 @@ next();
 };
 ```
 
-它首先定义了一个模板变量 messages，用来存放会话中的消息；这是一个数组，在上一个
-请求中可能存在，也可能不存在（这些是存在会话里的消息）。接下来，还需要一个把消息从会
-话中移除的办法，否则它们会因为没人清理而越积越多。
+它首先定义了一个模板变量 messages，用来存放会话中的消息；这是一个数组，在上一个请求中可能存在，也可能不存在（这些是存在会话里的消息）。接下来，还需要一个把消息从会话中移除的办法，否则它们会因为没人清理而越积越多。
 
-现在只要在 app.js 中 require()这个文件就可以集成这个新功能了。这个中间件应该放在
-中间件 session 下面，因为它要依赖 req.session。注意一下，因为这个中间件既不接受选项， 也
-不返回第二个函数，所以可以调用 app.use(messages)，而无须调用 app.use(messages())。
-为将来考虑，不管是否接受选项，第三方中间件最好用 app.use(messages())：
+现在只要在 app.js 中 require()这个文件就可以集成这个新功能了。这个中间件应该放在中间件 session 下面，因为它要依赖 req.session。注意一下，因为这个中间件既不接受选项， 也不返回第二个函数，所以可以调用 app.use(messages)，而无须调用 app.use(messages())。为将来考虑，不管是否接受选项，第三方中间件最好用 app.use(messages())：
 
 ```js
 ...
@@ -4937,27 +4818,19 @@ app.use(messages);
 ...
 ```
 
-这样任何视图中都可以访问到 messages 和 removeMessages()了，所以，不管出现在哪
-个模板中， messages.ejs 应该都可以圆满完成任务。
+这样任何视图中都可以访问到 messages 和 removeMessages()了，所以，不管出现在哪个模板中， messages.ejs 应该都可以圆满完成任务。
 
-注册表单的显示做好了，还解决了向用户传达反馈信息的问题。接下来继续前进，去处理注
-册表单的提交吧。
+注册表单的显示做好了，还解决了向用户传达反馈信息的问题。接下来继续前进，去处理注册表单的提交吧。
 
 5. 实现用户注册
 
-我们需要一个路由函数来处理提交到 /register 上的 HTTP POST 请求。可以将这个函数命名
-为 submit。
+我们需要一个路由函数来处理提交到 /register 上的 HTTP POST 请求。可以将这个函数命名为 submit。
 
-当表单数据提交上来时，中间件 bodyParser()会用这些数据组装 req.body。注册表单使用了
-对象表示法 user[name]，经过解析后会变成 req.body.user.name。同样， req.body.user.pass
-表示密码输入域。
+当表单数据提交上来时，中间件 bodyParser()会用这些数据组装 req.body。注册表单使用了对象表示法 user[name]，经过解析后会变成 req.body.user.name。同样， req.body.user.pass 表示密码输入域。
 
-表单提交路由处理器中的代码很少，我们只需要处理校验，比如确保用户名未被占用；还有
-保存新用户，如代码清单 6-24 所示。
+表单提交路由处理器中的代码很少，我们只需要处理校验，比如确保用户名未被占用；还有保存新用户，如代码清单 6-24 所示。
 
-注册一完成，就会把 user.id 赋值给会话变量，稍后还要通过检查它是否存在来判断用户
-是否通过了认证。如果校验失败，消息会作为 messages 变量通过 res.locals.messages 输
-出到模板中，并且用户会被重定向回注册表单。
+注册一完成，就会把 user.id 赋值给会话变量，稍后还要通过检查它是否存在来判断用户是否通过了认证。如果校验失败，消息会作为 messages 变量通过 res.locals.messages 输出到模板中，并且用户会被重定向回注册表单。
 
 请把下面的代码添加到 routes/register.js 中实现这一功能。
 
@@ -5005,8 +4878,7 @@ res.redirect('/');
 /创建用户
 ```
 
-现在启动程序，访问 /register 注册一个用户。接下来我们要让已注册的用户通过 /login 表单
-进行认证。
+现在启动程序，访问 /register 注册一个用户。接下来我们要让已注册的用户通过 /login 表单进行认证。
 
 ### 6.2.7 已注册用户登录
 
