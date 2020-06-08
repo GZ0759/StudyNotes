@@ -628,7 +628,7 @@ Is this ok? (yes) yes
 
 这样就在 byvoidmodule 目录中生成一个符合 npm 规范的 package.json 文件。创建一个 index.js 作为包的接口，一个简单的包就制作完成了。
 
-在发布前，我们还需要获得一个账号用于今后维护自己的包，使用 `npm adduser` 根据提示输入用户名、密码、邮箱，等待账号创建完成。完成后可以使用 npm whoami 测验是否已经取得了账号。
+在发布前，我们还需要获得一个账号用于今后维护自己的包，使用 `npm adduser` 根据提示输入用户名、密码、邮箱，等待账号创建完成。完成后可以使用 `npm whoami` 测验是否已经取得了账号。
 
 接下来，在 package.json 所在目录下运行 `npm publish`，稍等片刻就可以完成发布了。打开浏览器，访问 http://search.npmjs.org/ 就可以找到自己刚刚发布的包了。现在我们可以在世界的任意一台计算机上使用 `npm install byvoidmodule `命令来安装它。图3-6 是 npmjs.org 上包的描述页面。
 
@@ -954,7 +954,7 @@ fs.readFile('content.txt', 'utf-8', function(err, data) {
 Text 文本文件示例
 ```
 
-当读取文件出现错误时， err 将会是 Error 对象。如果 content.txt 不存在，运行前面的代码则会出现以下结果：
+当读取文件出现错误时， err 将会是 Error 对象。如果 `content.txt` 不存在，运行前面的代码则会出现以下结果：
 
 ```
 { [Error: ENOENT, no such file or directory 'content.txt'] errno: 34, code: 'ENOENT',
@@ -972,6 +972,7 @@ path: 'content.txt' }
 ### 4.4.3 fs.open
 
 `fs.open(path, flags, [mode], [callback(err, fd)])`是 POSIX open 函数的封装，与 C 语言标准库中的 fopen 函数类似。它接受两个必选参数， path 为文件的路径，flags 可以是以下值。
+
 - r ：以读取模式打开文件。
 - r+ ：以读写模式打开文件。
 - w ：以写入模式打开文件，如果文件不存在则创建。
@@ -1019,7 +1020,7 @@ bytesRead: 8
 
 ## 4.5 HTTP服务器与客户端
 
-Node.js 标准库提供了 http 模块，其中封装了一个高效的 HTTP 服务器和一个简易的 HTTP 客户端。 `http.Server` 是一个基于事件的 HTTP服务器，它的核心由 Node.js 下层 C++部分实现，而接口由 JavaScript 封装，兼顾了高性能与简易性。 `http.request` 则是一个HTTP 客户端工具，用于向 HTTP 服务器发起请求，例如实现 Pingback 或者内容抓取。
+Node.js 标准库提供了 http 模块，其中封装了一个高效的 HTTP 服务器和一个简易的 HTTP 客户端。 `http.Server` 是一个基于事件的 HTTP 服务器，它的核心由 Node.js 下层 C++部分实现，而接口由 JavaScript 封装，兼顾了高性能与简易性。 `http.request` 则是一个 HTTP 客户端工具，用于向 HTTP 服务器发起请求，例如实现 Pingback 或者内容抓取。
 
 ### 4.5.1 HTTP 服务器
 
@@ -1046,7 +1047,7 @@ console.log("HTTP server is listening at port 3000.");
 
 `http.Server` 是一个基于事件的 HTTP 服务器，所有的请求都被封装为独立的事件，开发者只需要对它的事件编写响应函数即可实现 HTTP 服务器的所有功能。它继承自 EventEmitter，提供了以下几个事件。
 
-- request：当客户端请求到来时，该事件被触发，提供两个参数 req 和res，分别是`http.ServerRequest` 和 `http.ServerResponse` 的实例，表示请求和响应信息。
+- request：当客户端请求到来时，该事件被触发，提供两个参数 req 和res，分别是 `http.ServerRequest` 和 `http.ServerResponse` 的实例，表示请求和响应信息。
 - connection：当 TCP 连接建立时，该事件被触发，提供一个参数 socket，为 `net.Socket` 的实例。 connection 事件的粒度要大于 request，因为客户端在 Keep-Alive 模式下可能会在同一个连接内发送多次请求。
 - close：当服务器关闭时，该事件被触发。注意不是在用户连接断开时。
 
@@ -1095,7 +1096,7 @@ HTTP 请求一般可以分为两部分： 请求头（ Request Header）和请�
 
 3. 获取 GET 请求内容
 
-注意， `http.ServerRequest` 提供的属性中没有类似于 PHP 语言中的 `$_GET` 或`$_POST` 的属性，那我们如何接受客户端的表单请求呢？由于 GET 请求直接被嵌入在路径中， URL是完整的请求路径，包括了 `?` 后面的部分，因此你可以手动解析后面的内容作为 GET请求的参数。 Node.js 的 url 模块中的 parse 函数提供了这个功能，例如：
+注意， `http.ServerRequest` 提供的属性中没有类似于 PHP 语言中的 `$_GET` 或`$_POST` 的属性，那我们如何接受客户端的表单请求呢？由于 GET 请求直接被嵌入在路径中， URL是完整的请求路径，包括了 `?` 后面的部分，因此你可以手动解析后面的内容作为 GET 请求的参数。 Node.js 的 url 模块中的 parse 函数提供了这个功能，例如：
 
 ```js
 //httpserverrequestget.js
@@ -1154,8 +1155,8 @@ http.createServer(function (req, res) {
 `http.ServerResponse` 有三个重要的成员函数，用于返回响应头、响应内容以及结束请求。
 
 - `response.writeHead(statusCode, [headers])`：向请求的客户端发送响应头。statusCode 是 HTTP 状态码，如 200 （请求成功）、 404 （未找到）等。 headers是一个类似关联数组的对象，表示响应头的每个属性。该函数在一个请求内最多只能调用一次，如果不调用，则会自动生成一个响应头。
-- `response.write(data, [encoding])`：向请求的客户端发送响应内容。 data 是一个 Buffer 或字符串，表示要发送的内容。如果 data 是字符串，那么需要指定encoding 来说明它的编码方式，默认是 utf-8。在 response.end 调用之前，response.write 可以被多次调用。
-- `response.end([data], [encoding])`：结束响应，告知客户端所有发送已经完成。当所有要返回的内容发送完毕的时候，该函数 必须 被调用一次。它接受两个可选参数，意义和 response.write 相同。如果不调用该函数，客户端将永远处于等待状态。
+- `response.write(data, [encoding])`：向请求的客户端发送响应内容。 data 是一个 Buffer 或字符串，表示要发送的内容。如果 data 是字符串，那么需要指定 encoding 来说明它的编码方式，默认是 utf-8。在 `response.end` 调用之前，`response.write` 可以被多次调用。
+- `response.end([data], [encoding])`：结束响应，告知客户端所有发送已经完成。当所有要返回的内容发送完毕的时候，该函数 必须 被调用一次。它接受两个可选参数，意义和 `response.write` 相同。如果不调用该函数，客户端将永远处于等待状态。
 
 ### 4.5.2 HTTP 客户端
 
@@ -1286,7 +1287,7 @@ Node.js 和 PHP、Perl、 ASP、 JSP 一样，目的都是实现动态网页，�
 
 最早实现动态网页的方法是使用 Perl 和 CGI 。在 Perl 程序中输出 HTML 内容，由 HTTP 服务器调用 Perl 程序，将结果返回给客户端。这种方式在互联网刚刚兴起的 20 世纪 90 年代非常流行，几乎所有的动态网页都是这么做的。但问题在于如果 HTML 内容比较多，维护非常不方便。大概在 2000 年左右，以 ASP、 PHP、 JSP 的为代表的以模板为基础的语言出现了，这种语言的使用方法与 CGI 相反，是在以 HTML 为主的模板中插入程序代码。但它的问题是页面和程序逻辑紧密耦合。为了解决这种问题，以 MVC 架构为基础的平台逐渐兴起，著名的 Ruby on Rails、 Django、 Zend Framework 都是基于 MVC 架构的。
 
-MVC（Model-View-Controller，模型视图控制器）是一种软件的设计模式，它最早是由 20 世纪 70 年代的 Smalltalk 语言提出的，即把一个复杂的软件工程分解为三个层面：模型、视图和控制器。
+MVC（Model-View-Controller，模型-视图-控制器）是一种软件的设计模式，它最早是由 20 世纪 70 年代的 Smalltalk 语言提出的，即把一个复杂的软件工程分解为三个层面：模型、视图和控制器。
 
 - 模型是对象及其数据结构的实现，通常包含数据库操作。
 - 视图表示用户界面，在网站中通常就是 HTML 的组织结构。
@@ -1309,7 +1310,7 @@ MVC（Model-View-Controller，模型视图控制器）是一种软件的�
 
 Node.js 本质上和 Perl 或 C++ 一样，都可以作为 CGI 扩展被调用，但它还可以跳过 HTTP 服务器，因为它本身就是。传统的架构中 HTTP 服务器的角色会由 Apache、 Nginx、 IIS 之类的软件来担任，而 Node.js 不需要。 Node.js 提供了 http 模块，它是由 C++ 实现的，性能可靠，可以直接应用到生产环境。图5-1 是一个简单的架构示意图。
 
-Node.js 和其他的语言相比的另一个显著区别，在于它的原始封装程度较低。例如 PHP 中你可以访问 `$_REQUEST` 获取客户端的 POST 或 GET 请求，通常不需要直接处理 HTTP 协议。这些语言要求由 HTTP 服务器来调用，因此你需要设置一个 HTTP 服务器来处理客户端的请求， HTTP 服务器通过 CGI 或其他方式调用脚本语言解释器，将运行的结果传递回HTTP 服务器，最终再把内容返回给客户端。而在 Node.js 中，很多工作需要你自己来做（并不是都要自己动手，因为有第三方框架的帮助）。
+Node.js 和其他的语言相比的另一个显著区别，在于它的原始封装程度较低。例如 PHP 中你可以访问 `$_REQUEST` 获取客户端的 POST 或 GET 请求，通常不需要直接处理 HTTP 协议。这些语言要求由 HTTP 服务器来调用，因此你需要设置一个 HTTP 服务器来处理客户端的请求， HTTP 服务器通过 CGI 或其他方式调用脚本语言解释器，将运行的结果传递回 HTTP 服务器，最终再把内容返回给客户端。而在 Node.js 中，很多工作需要你自己来做（并不是都要自己动手，因为有第三方框架的帮助）。
 
 ### 5.1.1 使用 http 模块
 
@@ -1470,7 +1471,7 @@ express@2.5.8 ./node_modules/express
 }
 ```
 
-其中 dependencies 属性中有express 和ejs。无参数的 npm install 的功能就是检查当前目录下的 package.json，并自动安装所有指定的依赖。
+其中 dependencies 属性中有 express 和 ejs 。无参数的 `npm install` 的功能就是检查当前目录下的 package.json，并自动安装所有指定的依赖。
 
 ### 5.2.3 启动服务器
 
@@ -1546,7 +1547,7 @@ console.log("Express server listening on port %d in %s mode", app.address().port
 - strict routing：严格路径，启用后不会忽略路径末尾的“ / ”。
 - jsonp callback：开启透明的 JSONP 支持。
 
-Express 依赖于 connect， 提供了大量的中间件，可以通过 `app.use` 启用。 `app.configure`中启用了5个中间件： bodyParser、 methodOverride、 router、 static 以及 errorHandler。 bodyParser 的功能是解析客户端请求，通常是通过 POST 发送的内容。 methodOverride用于支持定制的 HTTP 方法。 router 是项目的路由支持。 static 提供了静态文件支持。 errorHandler 是错误控制器。
+Express 依赖于 connect， 提供了大量的中间件，可以通过 `app.use` 启用。 `app.configure`中启用了5个中间件： bodyParser、 methodOverride、 router、 static 以及 errorHandler。 bodyParser 的功能是解析客户端请求，通常是通过 POST 发送的内容。 methodOverride 用于支持定制的 HTTP 方法。 router 是项目的路由支持。 static 提供了静态文件支持。 errorHandler 是错误控制器。
 
 `app.get('/', routes.index);` 是一个路由控制器，用户如果访问“ / ”路径，则由 `routes.index` 来控制。
 
@@ -1812,7 +1813,7 @@ app.get('/user/:username', function (req, res) {
 });
 ```
 
-当访问被匹配到的路径时，如 http://localhost:3000/user/carbo，会发现终端中打印了 `all methods captured`，而且浏览器中显示了 `user: carbo`。这说明请求先被第一条路由规则捕获，完成 `console.log` 使用 `next()` 转移控制权，又被第二条规则捕获，向浏览器返回了信息。
+当访问被匹配到的路径时，如 http://localhost:3000/user/carbo ，会发现终端中打印了 `all methods captured`，而且浏览器中显示了 `user: carbo`。这说明请求先被第一条路由规则捕获，完成 `console.log` 使用 `next()` 转移控制权，又被第二条规则捕获，向浏览器返回了信息。
 
 这是一个非常有用的工具，可以让我们轻易地实现中间件，而且还能提高代码的复用程度。例如我们针对一个用户查询信息和修改信息的操作，分别对应了 GET 和 PUT 操作，而两者共有的一个步骤是检查用户名是否合法，因此可以通过 `next()` 方法实现：
 
@@ -1960,7 +1961,7 @@ app.get('/list', function (req, res) {
 <li><%= listitem %></li>
 ```
 
-访问 http://localhost:3000/list，可以在源代码中看到以下内容：
+访问 http://localhost:3000/list ，可以在源代码中看到以下内容：
 
 ```html
 <!DOCTYPE html>

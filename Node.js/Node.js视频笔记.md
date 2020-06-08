@@ -112,11 +112,11 @@ ip地址是用来定位计算机的，端口号是用来定位具体的应用程
 
 ## 请求头Content-type
 
-服务器将每次响应的数据内容类型告诉客户端，不同的资源对应的 Content-Type 是不一样的，具体参照这个[网址](http://tool.oschina.net/commons)。对于文本类型的数据，最好都加上编码，目的是为了防止中文解析乱码问题。通过网络发送文件，发送的并不是文件，本质上来讲发送的是文件的内容，当浏览器收到服务器响应内容之后，就会根据Content-Type进行对应的解析处理。
+服务器将每次响应的数据内容类型告诉客户端，不同的资源对应的 Content-Type 是不一样的，具体参照这个[网址](http://tool.oschina.net/commons)。对于文本类型的数据，最好都加上编码，目的是为了防止中文解析乱码问题。通过网络发送文件，发送的并不是文件，本质上来讲发送的是文件的内容，当浏览器收到服务器响应内容之后，就会根据 Content-Type 进行对应的解析处理。
 
 ## 处理网站中的静态资源
 
-浏览器收到 HTML 响应的内容之后，就要开始从上到下依次解析，当在解析的过程中，如果发现 link 、 script 、img 、iframe 、video 、audio 等带有 src 或者 href （ link ）属性标签，即具有外链的资源时，浏览器会自动对这些资源发送新的请求。为了方便的统一处理这些静态资源，所以我们约定把所有的静态资源都存在在 public 目录中。可以通过代码灵活控制资源是否可以被用户访问到，从而完整静态资源的统一加载。统一处理方式：如果请求路径是以  `/public/` 开头的，则可以将请求路径当作文件路径进行直接读取。
+浏览器收到 HTML 响应的内容之后，就要开始从上到下依次解析，当在解析的过程中，如果发现 link 、 script 、img 、iframe 、video 、audio 等带有 src 或者 href （ link ）属性标签，即具有外链的资源时，浏览器会自动对这些资源发送新的请求。为了方便的统一处理这些静态资源，所以我们约定把所有的静态资源都存在在 public 目录中。可以通过代码灵活控制资源是否可以被用户访问到，从而完整静态资源的统一加载。统一处理方式：如果请求路径是以 `/public/` 开头的，则可以将请求路径当作文件路径进行直接读取。
 
 ## 获取表单提交数据
 
@@ -127,13 +127,9 @@ ip地址是用来定位计算机的，端口号是用来定位具体的应用程
 1. 软件版本阶段说明
 
 - Base版: 此版本表示该软件仅仅是一个假页面链接，通常包括所有的功能和页面布局，但是页面中的功能都没有做完整的实现，只是做为整体网站的一个基础架构。
-
 - Alpha版: 此版本表示该软件在此阶段主要是以实现软件功能为主，通常只在软件开发者内部交流，一般而言，该版本软件的Bug较多，需要继续修改。
-
 - Beta版: 该版本相对于α版已有了很大的改进，消除了严重的错误，但还是存在着一些缺陷，需要经过多次测试来进一步消除，此版本主要的修改对像是软件的UI。
-
 - RC版: 该版本已经相当成熟了，基本上不存在导致错误的BUG，与即将发行的正式版相差无几。
-
 - Release版: 该版本意味“最终版本”，在前面版本的一系列测试版之后，终归会有一个正式版本，是最终交付用户使用的一个版本。该版本有时也称为标准版。一般情况下，Release不会以单词形式出现在软件封面上，取而代之的是符号（Ｒ）。
 
 2.  版本命名规范
@@ -141,13 +137,9 @@ ip地址是用来定位计算机的，端口号是用来定位具体的应用程
 软件版本号由四部分组成，第一个1为主版本号，第二个1为子版本号，第三个1为阶段版本号，第四部分为日期版本号加希腊字母版本号，希腊字母版本号共有5种，分别为：base、alpha、beta、RC、release。例如：1.1.1.051021_beta。版本号定修改规则如下
 
 - 主版本号（1）：当功能模块有较大的变动，比如增加多个模块或者整体架构发生变化。此版本号由项目决定是否修改。
-
 - 子版本号（1）：当功能有一定的增加或变化，比如增加了对权限控制、增加自定义视图等功能。此版本号由项目决定是否修改。
-
 - 阶段版本号（1）：一般是 Bug 修复或是一些小的变动，要经常发布修订版，时间间隔不限，修复一个严重的bug即可发布一个修订版。此版本号由项目经理决定是否修改。
-
 - 日期版本号（051021）:用于记录修改项目的当前日期，每天对项目的修改都需要更改日期版本号。此版本号由开发人员决定是否修改。
-
 - 希腊字母版本号（beta）:此版本号用于标注当前版本的软件处于哪个开发阶段，当软件进入到另一个阶段时需要修改此版本号。此版本号由项目决定是否修改。
 
 ## Node.js重定向
@@ -165,13 +157,13 @@ http.createServer(function (req, res) {
     'Location': 'http://www.homestarrunner.com/sbsite/'
   });
   res.end();
+  // 其它方法
+  // res.statusCode = 302 
+  // res.setHeader('location','/')
+  // res.end()
 }).listen(3000, "127.0.0.1");
 console.log('Server running at http://127.0.0.1:3000/');
 
-// 其它方法
-res.statusCode = 302 
-res.setHeader('location','/')
-res.end()
 ```
 
 # 四、Node中的模块系统
@@ -214,7 +206,7 @@ NPM的全称是Node Package Manager，是随同NodeJS一起安装的包管理和
 
 ## npm 5 变化
 
-- 使用`npm install xxx`命令安装模块时，不再需要 --save 选项，会自动将模块依赖信息保存到 package.json 文件；
+- 使用`npm install xxx`命令安装模块时，不再需要 `--save` 选项，会自动将模块依赖信息保存到 package.json 文件；
 - 安装模块操作（改变 node_modules 文件夹内容）会生成或更新 package-lock.json 文件
 - 发布的模块不会包含 package-lock.json 文件
 - 如果手动修改了 package.json 文件中已有模块的版本，直接执行`npm install`不会安装新指定的版本，只能通过`npm install xxx@yy`更新
@@ -223,273 +215,53 @@ NPM的全称是Node Package Manager，是随同NodeJS一起安装的包管理和
 
 ## 命令行常用命令
 
-npm install 安装模块
+`npm install` 安装模块
 
 ```shell
-npm install (with no args, in package dir)	
-npm install [<@scope>/]<name>
-npm install [<@scope>/]<name>@<tag>
-npm install [<@scope>/]<name>@<version>
-npm install [<@scope>/]<name>@<version range>
-npm install <tarball file>
-npm install <tarball url>
-npm install <folder>
-
 alias: npm i
 common options: [-S|--save|-D|--save-dev|-O|--save-optional] [-E|--save-exact] [--dry-run]
 
-# 默认情况下，根据dependencies配置安装所有的依赖包到当地的 node_modules 文件夹中。
-npm install
-# 安装包，默认会安装最新的版本。
-npm install gulp
-# 安装指定版本。
-npm install gulp@3.9.1
 # -S, --save 安装包信息将加入到dependencies（生产阶段的依赖）
 # -D, --save-dev 安装包信息将加入到devDependencies（开发阶段的依赖），所以开发阶段一般使用它。
 # -O, --save-optional 安装包信息将加入到optionalDependencies（可选阶段的依赖）
 # -E, --save-exact 精确安装指定模块版本
-npm install --save gulp
-# 全局安装（global）,使用 -g 或 --global
-npm install gulp --global
-
-# 项目对模块的依赖可以使用下面的 3 种方法来表示（假设当前版本号是 1.1.0 ）：
-# - 兼容模块新发布的补丁版本：~1.1.0、1.1.x、1.1
-# - 兼容模块新发布的小版本、补丁版本：^1.1.0、1.x、1
-# - 兼容模块新发布的大版本、小版本、补丁版本：*、x
 ```
 
+`npm uninstall` 卸载模块 
 
+`npm update` 更新模块
 
-npm uninstall 卸载模块 
+`npm outdated` 检查模块是否已经过时
 
-```shell
-npm uninstall [<@scope>/]<pkg>[@<version>]... [-S|--save|-D|--save-dev|-O|--save-optional]
+`npm ls` 查看安装的模块
 
-aliases: remove, rm, r, un, unlink
+`npm init` 在项目中引导创建一个 package.json 文件，`-Y` 表示跳过向导
 
-# 如卸载开发版本的模块
-npm uninstall gulp --save-dev
-```
+`npm help` 查看某条命令的详细帮助。系统在默认的浏览器或者默认的编辑器中打开本地nodejs安装包的网页文件，如果是 `--help` 则是在命令行显示。
 
+`npm root` 查看包的安装路径
 
+`npm config` 管理npm的配置路径
 
-npm update 更新模块
+`npm cache` 管理模块的缓存。最常用命令无非清除 npm 本地缓存`npm cache clean `
 
-```shell
-npm update [-g] [<pkg>...]
-```
+`npm start` 启动模块。该命令写在package.json文件scripts的start字段中，可以自定义命令来配置一个服务器环境和安装一系列的必要程序
 
+`npm stop` 停止模块
 
+`npm restart` 重新启动模块
 
-npm outdated 检查模块是否已经过时
+`npm test` 测试模块。该命令写在package.json文件scripts的test字段中，可以自定义该命令来执行一些操作
 
-```shell
-npm outdated [[<@scope>/]<pkg> ...]
+`npm version` 查看模块版本
 
-# 此命令会列出所有已经过时的包，可以及时进行包的更新
-npm outdated
-```
+`npm view` 查看模块的注册信息
 
+`npm adduser` 用户登录
 
+`npm publish` 发布模块
 
-npm ls 查看安装的模块
-
-```shell
-npm ls [[<@scope>/]<pkg> ...]
-
-aliases: list, la, ll
-
-# 查看全局安装的模块及依赖 
-npm ls -g 
-```
-
-
-
-npm init 在项目中引导创建一个package.json文件
-
-```shell
-npm init [-f|--force|-y|--yes]
-
-# 安装包的信息可保持到项目的package.json文件中，以便后续的其它的项目开发或者他人合作使用，也说package.json在项目中是必不可少的。 -Y 表示跳过向导。
-npm init -Y
-```
-
-
-
-npm help 查看某条命令的详细帮助 
-
-```shell
-npm help <term> [<terms..>]
-
-# 系统在默认的浏览器或者默认的编辑器中打开本地nodejs安装包的网页文件，如果是 --help 则是在命令行显示。
-npm install --help
-```
-
-
-
-npm root 查看包的安装路径
-
-```shell
-npm root [-g]
-
-#输出 node_modules的路径
-```
-
-
-
-npm config 管理npm的配置路径
-
-```shell
-npm config set <key> <value> [-g|--global]
-npm config get <key>
-npm config delete <key>
-npm config list
-npm config edit
-npm get <key>
-npm set <key> <value> [-g|--global]
-
-# 对于config这块用得最多应该是设置代理，解决npm安装一些模块失败的问题
-# 例如我在公司内网，因为公司的防火墙原因，无法完成任何模块的安装，这个时候设置代理可以解决
-npm config set proxy=http://xxx
-# 又如国内的网络环境问题，某官方的IP可能被和谐了，幸好国内有好心人，搭建了镜像，此时我们简单设置镜像。
-npm config set registry="http://r.cnpmjs.org"
-# 也可以临时配置，如安装淘宝镜像。之后可以通过cnpm命令安装了。
-npm install -g cnpm --registry=https://registry.npm.taobao.org
-```
-
-
-
-npm cache 管理模块的缓存
-
-```shell
-npm cache add <tarball file>
-npm cache add <folder>
-npm cache add <tarball url>
-npm cache add <name>@<version>
-
-npm cache ls [<path>]
-
-npm cache clean [<path>]
-
-# 最常用命令无非清除npm本地缓存
-npm cache clean 
-```
-
-
-
-npm start 启动模块
-
-```shell
-npm start [-- <args>]
-
-# 该命令写在package.json文件scripts的start字段中，可以自定义命令来配置一个服务器环境和安装一系列的必要程序，如
-"scripts": {
-    "start": "gulp -ws"
-}
-# 此时在cmd中输入npm start命令相当于执行gulpfile.js文件自定义的watch和server命令。如果package.json文件没有设置start，则将直接启动node server.js
-```
-
-
-
-npm stop 停止模块
-
-```shell
-npm stop [-- <args>]
-```
-
-
-
-npm restart 重新启动模块
-
-```shell
-npm restart [-- <args>]
-```
-
-
-
-npm test 测试模块
-
-```shell
-npm test [-- <args>]
-npm tst [-- <args>]
-
-# 该命令写在package.json文件scripts的test字段中，可以自定义该命令来执行一些操作，如
-"scripts": {
-    "test": "gulp release"
-},
-# 此时在cmd中输入npm test命令相当于执行gulpfile.js文件自定义的release命令。
-```
-
-
-
-npm version 查看模块版本
-
-```shell
-npm version [<newversion> | major | minor | patch | premajor | preminor | prepatch | prerelease | from-git]
-
-'npm [-v | --version]' to print npm version
-'npm view <pkg> version' to view a package's published version
-'npm ls' to inspect current package/dependency versions
-
-# 查看模块的版本
-npm version
-```
-
-
-
-npm view 查看模块的注册信息
-
-```shell
-npm view [<@scope>/]<name>[@<version>] [<field>[.<subfield>]...]
-
-aliases: info, show, v
-
-# 查看模块的依赖关系
-npm view gulp dependencies
-#查看模块的源文件地址
-npm view gulp repository.url
-#查看模块的贡献者，包含邮箱地址
-npm view npm contributors
-```
-
-
-
-npm adduser 用户登录
-
-```shell
-npm adduser [--registry=url] [--scope=@orgname] [--always-auth]
-
-#发布模板到npm社区前需要先登录，然后再进入发布的操作
-```
-
-
-
-npm publish 发布模块
-
-```shell
-npm publish [<tarball>|<folder>] [--tag <tag>] [--access <public|restricted>]
-
-Publishes '.' if no argument supplied
-Sets tag 'latest' if no --tag specified
-```
-
-
-
-npm access 在发布的包上设置访问级别
-
-```shell
-npm access public [<package>]
-npm access restricted [<package>]
-
-npm access grant <read-only|read-write> <scope:team> [<package>]
-npm access revoke <scope:team> [<package>]
-
-npm access ls-packages [<user>|<scope>|<scope:team>]
-npm access ls-collaborators [<package> [<user>]]
-npm access edit [<package>]
-```
-
-
+`npm access` 在发布的包上设置访问级别
 
 ## package.json的语法
 
@@ -522,165 +294,165 @@ package.json 文件至少要有两部分内容：“name” 、“version” 。
 - bugs：当前项目的一些错误信息，如果有的话；我们需要在 package.json 文件中指定项目依赖的包，这样别人在拿到这个项目时才可以使用 npm install 下载。
 - 包有两种依赖方式：dependencies：在生产环境中需要用到的依赖；devDependencies：在开发、测试环境中用到的依赖。
 
-> **name**
->
-> 在package.json中最重要的就是name和version字段。他们都是必须的，如果没有就无法install。name和version一起组成的标识在假设中是唯一的。改变包应该同时改变version。
->
-> name是这个东西的名字。注意：
->
-> - 不要把node或者js放在名字中。因为你写了package.json它就被假定成为了js，不过你可以用"engine"字段指定一个引擎（见后文）。
-> - 这个名字会作为在URL的一部分、命令行的参数或者文件夹的名字。任何non-url-safe的字符都是不能用的。
-> - 这个名字可能会作为参数被传入`require()`，所以它应该比较短，但也要意义清晰。
-> - 在你爱上你的名字之前，你可能要去npm registry查看一下这个名字是否已经被使用了。
->
-> **version**
->
-> version必须能被node-semver解析，它被包在npm的依赖中。（要自己用可以执行npm install semver）
->
-> **description**
->
-> 放简介，字符串，方便在`npm search`中搜索
->
-> **keywords**
->
-> 关键字，数组、字符串，方便在`npm search`中搜索
->
-> **bugs**
->
-> 你项目的提交问题的url和（或）邮件地址
->
-> ```
-> {
->  "url" : "http://github.com/owner/project/issues", 
-> "email" : "project@hostname.com"
-> }
-> ```
->
-> **license**
->
-> 你应该要指定一个许可证，让人知道使用的权利和限制的。
->
-> 最简单的方法是，假如你用一个像BSD或者MIT这样通用的许可证，就只需要指定一个许可证的名字，像这样：
->
-> ```
-> { "license" : "BSD" }
-> ```
->
-> 如果你又更复杂的许可条件，或者想要提供给更多地细节，可以这样:
->
-> ```
-> "licenses" : [
->   { "type" : "MyLicense"
->   , "url" : "http://github.com/owner/project/path/to/license"
->   }
-> ]
-> ```
->
-> **repository**
->
-> 指定你的代码存放的地方。这个对希望贡献的人有帮助。如果git仓库在github上，那么`npm docs`命令能找到你。
->
-> 这样做：
->
-> ```
-> "repository" :
->   { "type" : "git"
->   , "url" : "http://github.com/isaacs/npm.git"
->   }
-> 
-> "repository" :
->   { "type" : "svn"
->   , "url" : "http://v8.googlecode.com/svn/trunk/"
->   }
-> ```
->
->
->
-> URL应该是公开的（即便是只读的）能直接被未经过修改的版本控制程序处理的url。不应该是一个html的项目页面。因为它是给计算机看的。
->
-> **scripts**
->
-> “scripts”是一个由脚本命令组成的hash对象，他们在包不同的生命周期中被执行。key是生命周期事件，value是要运行的命令。
->
-> **config**
->
-> "config" hash可以用来配置用于包脚本中的跨版本参数。在实例中，如果一个包有下面的配置：
->
-> ```
-> {
->  "name" : "foo",
->  "config" : { "port" : "8080" } 
-> }
-> ```
->
-> 然后有一个“start”命令引用了`npm_package_config_port`环境变量，用户可以通过`npm config set foo:port 8001`来重写他。
->
-> **dependencies**
->
-> 依赖是给一组包名指定版本范围的一个hash。这个版本范围是一个由一个或多个空格分隔的字符串。依赖还可以用tarball或者git URL。
->
-> 请不要将测试或过渡性的依赖放在`dependencies`hash中。见下文的`devDependencies`
->
-> - `version` 必须完全和`version`一致
-> - `>version` 必须比`version`大
-> - `>=version` 同上
-> - `<version` 同上
-> - `<=version` 同上
-> - `~version` 大约一样
-> - `1.2.x` 1.2.0, 1.2.1, 等，但不包括1.3.0
-> - `http://...` 见下文'依赖URL'
-> - `*` 所有
-> - `""` 空，同`*`
-> - `version1 - version2` 同 `>=version1 <=version2`.
-> - `range1 || range2` 二选一。
-> - `git...` 见下文'依赖Git URL'
-> - `user/repo` 见下文'GitHub URLs'
->
-> 比如下面都是合法的：
->
-> ```
-> { "dependencies" :
->   { "foo" : "1.0.0 - 2.9999.9999"
->   , "bar" : ">=1.0.2 <2.1.2"
->   , "baz" : ">1.0.2 <=2.3.4"
->   , "boo" : "2.0.1"
->   , "qux" : "<1.0.0 || >=2.3.1 <2.4.5 || >=2.5.2 <3.0.0"
->   , "asd" : "http://asdf.com/asdf.tar.gz"
->   , "til" : "~1.2"
->   , "elf" : "~1.2.3"
->   , "two" : "2.x"
->   , "thr" : "3.3.x"
->   }
-> }
-> ```
->
-> **devDependencies**
->
-> 如果有人要使用你的模块，那么他们可能不需要你开发使用的外部测试或者文档框架。
->
-> 在这种情况下，最好将这些附属的项目列在`devDependencies`中。
->
-> 这些东西会在执行`npm link`或者`npm install`的时候初始化，并可以像其他npm配置参数一样管理。
->
-> 对于非特定平台的构建步骤，比如需要编译CoffeeScript，可以用`prepublish`脚本去实现，并把它依赖的包放在devDependency中。（译者注：prepublish定义了在执行`npm publish`的时候先行执行的脚本）
->
-> 比如：
->
-> ```
-> { "name": "ethopia-waza",
->   "description": "a delightfully fruity coffee varietal",
->   "version": "1.2.3",
->   "devDependencies": {
->     "coffee-script": "~1.6.3"
->   },
->   "scripts": {
->     "prepublish": "coffee -o lib/ -c src/waza.coffee"
->   },
->   "main": "lib/waza.js"
-> }
-> ```
->
-> `prepublish`脚本会在publishing前运行，这样用户就不用自己去require来编译就能使用。并且在开发模式中（比如本地运行`npm install`）会运行这个脚本以便更好地测试。
+ **name**
+
+ 在package.json中最重要的就是name和version字段。他们都是必须的，如果没有就无法install。name和version一起组成的标识在假设中是唯一的。改变包应该同时改变version。
+
+ name是这个东西的名字。注意：
+
+ - 不要把node或者js放在名字中。因为你写了package.json它就被假定成为了js，不过你可以用"engine"字段指定一个引擎（见后文）。
+ - 这个名字会作为在URL的一部分、命令行的参数或者文件夹的名字。任何non-url-safe的字符都是不能用的。
+ - 这个名字可能会作为参数被传入`require()`，所以它应该比较短，但也要意义清晰。
+ - 在你爱上你的名字之前，你可能要去npm registry查看一下这个名字是否已经被使用了。
+
+ **version**
+
+ version必须能被node-semver解析，它被包在npm的依赖中。（要自己用可以执行npm install semver）
+
+ **description**
+
+ 放简介，字符串，方便在`npm search`中搜索
+
+ **keywords**
+
+ 关键字，数组、字符串，方便在`npm search`中搜索
+
+ **bugs**
+
+ 你项目的提交问题的url和（或）邮件地址
+
+ ```
+ {
+  "url" : "http://github.com/owner/project/issues", 
+ "email" : "project@hostname.com"
+ }
+ ```
+
+ **license**
+
+ 你应该要指定一个许可证，让人知道使用的权利和限制的。
+
+ 最简单的方法是，假如你用一个像BSD或者MIT这样通用的许可证，就只需要指定一个许可证的名字，像这样：
+
+ ```
+ { "license" : "BSD" }
+ ```
+
+ 如果你又更复杂的许可条件，或者想要提供给更多地细节，可以这样:
+
+ ```
+ "licenses" : [
+   { "type" : "MyLicense"
+   , "url" : "http://github.com/owner/project/path/to/license"
+   }
+ ]
+ ```
+
+ **repository**
+
+ 指定你的代码存放的地方。这个对希望贡献的人有帮助。如果git仓库在github上，那么`npm docs`命令能找到你。
+
+ 这样做：
+
+ ```
+ "repository" :
+   { "type" : "git"
+   , "url" : "http://github.com/isaacs/npm.git"
+   }
+ 
+ "repository" :
+   { "type" : "svn"
+   , "url" : "http://v8.googlecode.com/svn/trunk/"
+   }
+ ```
+
+
+
+ URL应该是公开的（即便是只读的）能直接被未经过修改的版本控制程序处理的url。不应该是一个html的项目页面。因为它是给计算机看的。
+
+ **scripts**
+
+ “scripts”是一个由脚本命令组成的hash对象，他们在包不同的生命周期中被执行。key是生命周期事件，value是要运行的命令。
+
+ **config**
+
+ "config" hash可以用来配置用于包脚本中的跨版本参数。在实例中，如果一个包有下面的配置：
+
+ ```
+ {
+  "name" : "foo",
+  "config" : { "port" : "8080" } 
+ }
+ ```
+
+ 然后有一个“start”命令引用了`npm_package_config_port`环境变量，用户可以通过`npm config set foo:port 8001`来重写他。
+
+ **dependencies**
+
+ 依赖是给一组包名指定版本范围的一个hash。这个版本范围是一个由一个或多个空格分隔的字符串。依赖还可以用tarball或者git URL。
+
+ 请不要将测试或过渡性的依赖放在`dependencies`hash中。见下文的`devDependencies`
+
+ - `version` 必须完全和`version`一致
+ - `>version` 必须比`version`大
+ - `>=version` 同上
+ - `<version` 同上
+ - `<=version` 同上
+ - `~version` 大约一样
+ - `1.2.x` 1.2.0, 1.2.1, 等，但不包括1.3.0
+ - `http://...` 见下文'依赖URL'
+ - `*` 所有
+ - `""` 空，同`*`
+ - `version1 - version2` 同 `>=version1 <=version2`.
+ - `range1 || range2` 二选一。
+ - `git...` 见下文'依赖Git URL'
+ - `user/repo` 见下文'GitHub URLs'
+
+ 比如下面都是合法的：
+
+ ```
+ { "dependencies" :
+   { "foo" : "1.0.0 - 2.9999.9999"
+   , "bar" : ">=1.0.2 <2.1.2"
+   , "baz" : ">1.0.2 <=2.3.4"
+   , "boo" : "2.0.1"
+   , "qux" : "<1.0.0 || >=2.3.1 <2.4.5 || >=2.5.2 <3.0.0"
+   , "asd" : "http://asdf.com/asdf.tar.gz"
+   , "til" : "~1.2"
+   , "elf" : "~1.2.3"
+   , "two" : "2.x"
+   , "thr" : "3.3.x"
+   }
+ }
+ ```
+
+ **devDependencies**
+
+ 如果有人要使用你的模块，那么他们可能不需要你开发使用的外部测试或者文档框架。
+
+ 在这种情况下，最好将这些附属的项目列在`devDependencies`中。
+
+ 这些东西会在执行`npm link`或者`npm install`的时候初始化，并可以像其他npm配置参数一样管理。
+
+ 对于非特定平台的构建步骤，比如需要编译CoffeeScript，可以用`prepublish`脚本去实现，并把它依赖的包放在devDependency中。（译者注：prepublish定义了在执行`npm publish`的时候先行执行的脚本）
+
+ 比如：
+
+ ```
+ { "name": "ethopia-waza",
+   "description": "a delightfully fruity coffee varietal",
+   "version": "1.2.3",
+   "devDependencies": {
+     "coffee-script": "~1.6.3"
+   },
+   "scripts": {
+     "prepublish": "coffee -o lib/ -c src/waza.coffee"
+   },
+   "main": "lib/waza.js"
+ }
+ ```
+
+ `prepublish`脚本会在publishing前运行，这样用户就不用自己去require来编译就能使用。并且在开发模式中（比如本地运行`npm install`）会运行这个脚本以便更好地测试。
 
 # 六、开发框架Express
 
@@ -715,12 +487,12 @@ npm install express --save
 var express = require('express');
 var app = express();
 app.get('/', function (req, res) {
-res.send('Hello World');
+  res.send('Hello World');
 })
 var server = app.listen(8081, function () {
-var host = server.address().address
-var port = server.address().port
-console.log("应用实例，访问地址为 http://%s:%s", host, port)
+  var host = server.address().address
+  var port = server.address().port
+  console.log("应用实例，访问地址为 http://%s:%s", host, port)
 })
 ```
 
