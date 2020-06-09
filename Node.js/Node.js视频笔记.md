@@ -632,7 +632,6 @@ $ npm install body-parser
 
 ```JavaScript
 var express = require('express')
-// 0. 引包
 var bodyParser = require('body-parser')
 
 var app = express()
@@ -652,20 +651,25 @@ app.use(function (req, res) {
 
 路由模块 router.js 的作用是处理路由，根据不同的请求方法和请求路径设置处理的请求处理函数。模块职责要单一，划分模块是为了增强项目代码可维护性，提高开发效率。一般路由容器的挂载要在配置之后。
 
+第一种方法，但是不建议用，因为将执行主代码变成 router.js 文件了。
+
 ```javascript
-// 第一种方法，但是不建议用，因为将执行主代码变成 router.js 文件了。
 // app.js 主要代码
 var express = require('express')
 var app = express()
 moudule.exports = app
 app.listen(3000)
+
 // router.js 主要代码
 var app = require('./app')
 app.get('/', function (req,res){
-    res.send('hello world')
+  res.send('hello world')
 })
+```
 
-// 第二种方法，通过在 router.js 中导出一个接受参数的函数。
+第二种方法，通过在 router.js 中导出一个接受参数的函数。
+
+```js
 // app.js 主要代码
 var express = require('express')
 var app = express()
@@ -678,8 +682,11 @@ moudule.exports = function (app) {
     res.send('hello world')
 	})
 }
+```
 
-// 第三种方法，在 express 中有更好的方式，不用封装函数。
+第三种方法，在 express 中有更好的方式，不用封装函数。
+
+```js
 // app.js 主要代码
 var express = require('express')
 var router = require('./router')  // 4.把 router 路由容器导入
@@ -691,7 +698,7 @@ app.listen(3000)
 var express = require('express')
 var router = express.Router()  // 1.创建一个路由容器
 router.get('/', function (req,res){  // 2.把路由都挂载到 router 路由容器中
-    res.send('hello world')
+  res.send('hello world')
 })
 module.exports = router  // 3.把 router 路由容器导出
 ```
@@ -700,8 +707,9 @@ module.exports = router  // 3.把 router 路由容器导出
 
 文件 student.js 的职责是操作文件中的数据，只处理数据，不关心业务。
 
+1. 获取所有学生列表
+
 ```javascript
-// 获取所有学生列表
 // students.js
 var fs = require('fs')
 exports.find = function (callback) {
@@ -724,8 +732,11 @@ router.get('/students',function (req,res) {
     })
 	})
 })
+```
 
-// 根据 id 获取学生的信息
+2. 根据 id 获取学生的信息
+
+```js
 // students.js
 exports.findById = function (id, callback) {
   fs.readFile(dbPath,'utf-8',function (err,data) {
@@ -748,9 +759,11 @@ Student.findById(parseInt(req.query.id),function(err,student)) {
     student:student
 	})
 }
+```
 
+3. 添加保存学生
 
-// 添加保存学生
+```js
 // students.js
 var fs = require('fs')
 exports.save = function (student,callback) {
@@ -782,8 +795,11 @@ router.post('/students/new', fucntion (req,res){
     res.redirect('/students')
   })	
 })
+```
 
-// 更新学生
+4. 更新学生
+
+```js
 // students.js
 exports.update = function (student, callback){
   fs.readFile(dbPath, 'utf-8', function(err,data){
@@ -819,8 +835,11 @@ router.post('/students/edit', fucntion (req,res){
     res.redirect('/students')
   })	
 })
+```
 
-// 删除学生
+5. 删除学生
+
+```js
 // students.js
 exports.delete = function (id, callback) {
   fs.readFile(dbPath,'utf-8',function (err,data) {
@@ -897,7 +916,7 @@ Promise 相当于异步操作结果的占位符，它不会去订阅一个事件
 
 每个 Promise 都会经历一个短暂的声明周期：先是处于进行中（pending）的状态，此时操作尚未完成，一旦异步操作结束，就会进入 Fulfilled（ 异步操作完成）或 Rejected （操作失败）两个状态中的一个。内部属性 `[[PromiseState]]` 被用来表示 Promise 的 3 种状态 ：“pending” 、“fulfilled”及“rejected” 。 这个属性不暴露在 Promise 对象上 ， 所以不能以编程的方式检测 Promise 的状态 ， 只有当 Promise 的状态改变时， 通过 `then()` 方法来采取特定的行动 。 
 
-> 一旦状态改变就不会再变，任何时候都可以得到这个结果。 Promise 对象的状态改变只有两种可能：从 Pending 变为 Fulfilled 和从 Pending 变为 Rejected。只要这两种情况发生，状态就凝固了，不会再变，而是一直保持这个结果，这时就称为 Resolved （己定型） 。 就算改变己经发生，再对 Promise 对象添加回调函数，也会立即得到这个结果。这与事件 （event）完全不同。 事件的特点是，如果错过了它，再去监昕是得不到结果的 。  为了行文方便，本章后面的 Resolved 统一指 Fulfilled 状态，不包含 Rejected 状态 。  
+> 一旦状态改变就不会再变，任何时候都可以得到这个结果。 Promise 对象的状态改变只有两种可能：从 Pending 变为 Fulfilled 和从 Pending 变为 Rejected。只要这两种情况发生，状态就凝固了，不会再变，而是一直保持这个结果，这时就称为 Resolved （己定型） 。 就算改变己经发生，再对 Promise 对象添加回调函数，也会立即得到这个结果。这与事件 （event）完全不同。 事件的特点是，如果错过了它，再去监昕是得不到结果的。为了行文方便，本章后面的 Resolved 统一指 Fulfilled 状态，不包含 Rejected 状态 。  
 
 ES6 规定， Promise 对象是一个构造函数，用来生成 Promise 实例，所以可以给某个变量赋予 Promise 实例对象。但是如果想要某个函数拥有 promise 功能，只需让其返回一个 promise 即可。
 

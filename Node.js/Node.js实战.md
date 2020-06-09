@@ -3676,7 +3676,7 @@ Express 对程序结构不作要求，路由可以放在多个文件中，公共
 const express = require('express');
 const app = express();
 app.get('/', (req, res) => {
-res.send('Hello');
+  res.send('Hello');
 });
 app.listen(3000);
 // 发送“ Hello”作为响应文本
@@ -3684,13 +3684,13 @@ app.listen(3000);
 // 响应对/的请求
 ```
 
-express-generator 包里有创建程序框架的命令行工具 `express(1)`。如果你刚开始接触Express，可以用它生成的程序作为起点。这个生成的程序中有模板、公共资源文件、配置等很多东西。
+express-generator 包里有创建程序框架的命令行工具 `express(1)`。如果你刚开始接触 Express ，可以用它生成的程序作为起点。这个生成的程序中有模板、公共资源文件、配置等很多东西。
 
 `express(1)`生成的程序框架中只有几个目录和一些文件，如图 6-4 所示。设计成这样的结构，是为了让开发者能在几秒钟之内把 Express 跑起来，但你完全可以决定用什么样的程序结构。
 
 图 6-4 使用 EJS 模板的默认程序框架结构
 
-本章示例中所用的模板是 EJS，其结构跟 HTML 很像。 EJS 在 HTML 文档中嵌入服务器端JavaScript，并在发送到客户端之前执行，所以说它跟 PHP、 JSP（在 Java 中用）和 ERB（在 Ruby中用）类似。第 7 章会详细介绍 EJS。
+本章示例中所用的模板是 EJS，其结构跟 HTML 很像。 EJS 在 HTML 文档中嵌入服务器端 JavaScript ，并在发送到客户端之前执行，所以说它跟 PHP、 JSP（在 Java 中用）和 ERB（在 Ruby中用）类似。第 7 章会详细介绍 EJS。
 
 本节会带你完成如下任务：
 - 用 npm 全局安装 Express；
@@ -3717,13 +3717,13 @@ $ npm install -g express-generator
 
 2. 生成程序
 
-用-e（或--ejs）指定要使用的模板引擎是 EJS，执行 `express -e shoutbox`。如果你想跟我们在 GitHub 库上的代码保持一致，那就执行 `express -e listing6_6`。
+用`-e`（或`--ejs`）指定要使用的模板引擎是 EJS，执行 `express -e shoutbox`。如果你想跟我们在 GitHub 库上的代码保持一致，那就执行 `express -e listing6_6`。
 
 一个功能完备的程序会出现在 shoutbox 目录中。其中会有描述项目和依赖项的 package.json 文件、程序主文件、 public 目录，以及一个放路由处理器的目录。
 
 3. 探索程序
 
-仔细看一下它生成了什么。在编辑器中打开 package.json 文件，看看程序的依赖项， 如图 6-6所示。 Express 猜不出你要用依赖项的哪个版本，所以你最好给出模块的主要、次要及修订版本号，以免引起意想不到的 bug。比如明确给出`"express":"~4.13.1"`，那么 npm 每次都会安装相同的代码。
+仔细看一下它生成了什么。在编辑器中打开 package.json 文件，看看程序的依赖项，如图 6-6所示。 Express 猜不出你要用依赖项的哪个版本，所以你最好给出模块的主要、次要及修订版本号，以免引起意想不到的 bug。比如明确给出`"express":"~4.13.1"`，那么 npm 每次都会安装相同的代码。
 
 图 6-6 生成的 package.json
 
@@ -3786,11 +3786,9 @@ module.exports = app;
 
 虽然有了 package.json 和 app.js 文件，但程序还跑不起来，因为依赖项还没装。不管 `express(1)` 什么时候生成 package.json，都要安装依赖项。执行 `npm install`，然后执行 `npm start` 启动程序。
 
-在浏览器中访问 http://localhost:3000，默认程序看起来如图 6-7 所示。
+在浏览器中访问 http://localhost:3000 ，默认程序看起来如图 6-7 所示。
 
 图 6-7 默认的 Express 程序
-
-的 HTML 错误页面6.2 Express 107
 
 看过了生成的程序框架，可以开始搭建真正的 Express 程序了。我们要做一个允许用户发消息的在线留言板。在做这样的程序时，大多数有经验的 Express 开发人员都会从规划 API 开始，然后由此推导出所需的路由和资源。
 
@@ -3840,7 +3838,7 @@ app.set('view engine', 'ejs');
 > $ node app
 > 这些环境变量会出现在程序里的 process.env 对象中。
 
-Express 有一个极简的环境驱动配置系统，这个系统由几个方法组成，全部由环境变量NODE_ENV 驱动：
+Express 有一个极简的环境驱动配置系统，这个系统由几个方法组成，全部由环境变量 NODE_ENV 驱动：
 
 - app.set()
 - app.get()
@@ -3857,7 +3855,7 @@ Express 有一个极简的环境驱动配置系统，这个系统由几个方法
 
 ```js
 if (app.get('env') === 'development') {
-app.use(express.errorHandler());
+  app.use(express.errorHandler());
 }
 ```
 
@@ -3877,7 +3875,7 @@ app.set('json spaces', 2);
 
 尽管前面说过， Express 几乎支持所有 Node 社区中的模板引擎，但本章的程序用的是 EJS 模板。不熟悉 EJS 也不用担心，它很像其他 Web 开发平台（ PHP、 JSP、 ERB）中的模板语言。本章只会涉及 EJS 的一些基础知识，但第 7 章会详细介绍 EJS 和其他几个模板引擎。
 
-不管是渲染整个 HTML 页面、一个 HTML 片段，还是一个 RSS 预订源，对几乎所有程序来说，视图渲染都非常重要。其概念很简单：把数据传给视图，然后视图对数据进行转换，对 Web程序来说，通常是转换成 HTML。你对视图应该不会觉得陌生，因为大多数框架都有类似的功能。图 6-8 阐明了视图如何形成新的数据表示。
+不管是渲染整个 HTML 页面、一个 HTML 片段，还是一个 RSS 预订源，对几乎所有程序来说，视图渲染都非常重要。其概念很简单：把数据传给视图，然后视图对数据进行转换，对 Web 程序来说，通常是转换成 HTML 。你对视图应该不会觉得陌生，因为大多数框架都有类似的功能。图 6-8 阐明了视图如何形成新的数据表示。
 
 图 6-8 HTML 模板 + 数据 = 数据的 HTML 视图
 
@@ -3887,19 +3885,19 @@ app.set('json spaces', 2);
 <p><%= name %> is a 2 year old <%= species %>.</p>
 ```
 
-Express 中有两种渲染视图的办法：程序层面用 app.render()，在请求或响应层面用 res.render() ， Express 内 部 用 的 是 前 一 种 。 本 章 只 用 res.render() 。 如 果 你 看 一 下./routes/index.js，会看到一个调用 res.render('index')的函数，渲染的是./views/index.ejs 板，代码如下所示（参见 listing6_8）：
+Express 中有两种渲染视图的办法：程序层面用 `app.render()`，在请求或响应层面用 `res.render()` ， Express 内部用的是前一种。本章只用 `res.render()` 。如果你看一下./routes/index.js，会看到一个调用 `res.render('index')`的函数，渲染的是./views/index.ejs 板，代码如下所示（参见 listing6_8）：
 
 ```js
 router.get('/', (req, res, next) => {
-res.render('index', { title: 'Express' });
+  res.render('index', { title: 'Express' });
 });
 ```
 
-在研究 res.render()之前，先来看看如何配置视图系统。
+在研究 `res.render()`之前，先来看看如何配置视图系统。
 
 1. 配置视图系统
 
-Express 视图系统的配置很简单。即便 express(1)已经生成好了，你还是应该了解一下这些配置的底层机制，以便在需要时进行修改。我们会重点介绍三个领域：
+Express 视图系统的配置很简单。即便 `express(1)`已经生成好了，你还是应该了解一下这些配置的底层机制，以便在需要时进行修改。我们会重点介绍三个领域：
 
 - 调整视图的查找；
 - 配置默认的模板引擎；
@@ -3921,7 +3919,7 @@ app.set('views', __dirname + '/views');
 下一个配置项是 view engine。
 - 使用默认的模板引擎
 
-用 express(1)生成程序时，我们在命令行中用 -e 指定模板引擎 EJS，所以 view engine被设为 ejs。 Express 要靠扩展名确定用哪个模板引擎渲染文件，但有了这个配置项，我们可以用 index 指定要渲染的文件，而不需要用 index.ejs。
+用 `express(1)`生成程序时，我们在命令行中用 `-e` 指定模板引擎 EJS，所以 view engine 被设为 ejs。 Express 要靠扩展名确定用哪个模板引擎渲染文件，但有了这个配置项，我们可以用 index 指定要渲染的文件，而不需要用 index.ejs。
 
 你可能会想， Express 为什么还要考虑扩展名。因为如果使用带扩展名的模板文件，就可以在同一个 Express 程序中使用多个模板引擎。同时这样又能提供一个清晰的 API，因为大多数程序都是只用一个模板引擎。
 
@@ -3929,19 +3927,19 @@ app.set('views', __dirname + '/views');
 
 ```js
 app.set('view engine', 'pug');
-app.get('/', function(){
-res.render('index');
+app.get('/', function () {
+  res.render('index');
 });
-app.get('/feed', function(){
-res.render('rss.ejs');
+app.get('/feed', function () {
+  res.render('rss.ejs');
 });
 ```
 
-保持 package.json 同步 记住，所有要用到的模板引擎都应该添加到 package.json 的依赖项对象中。用 npm install --save package-name 安装，用 npm uninstall -- save package-name 从 node_modules 和 package.json 中删除。在你还不知道该用哪个模板引擎时，你的试验会轻松一些。
+保持 package.json 同步 记住，所有要用到的模板引擎都应该添加到 package.json 的依赖项对象中。用 `npm install --save package-name` 安装，用 `npm uninstall -- save package-name` 从 node_modules 和 package.json 中删除。在你还不知道该用哪个模板引擎时，你的试验会轻松一些。
 
 2. 视图缓存
 
-在生产环境中， view cache 是默认开启的，以防止后续的 render()从硬盘中读取模板文件。因为模板文件中的内容会被放到内存中，所以性能会得到显著提升。但启用这个配置项后，只有重启服务器才能让模板文件的编辑生效，所以在开发时会禁用它。如果在分级（ staging）环境中运行，很可能要启用这个配置项。
+在生产环境中， view cache 是默认开启的，以防止后续的 `render()`从硬盘中读取模板文件。因为模板文件中的内容会被放到内存中，所以性能会得到显著提升。但启用这个配置项后，只有重启服务器才能让模板文件的编辑生效，所以在开发时会禁用它。如果在分级（ staging）环境中运行，很可能要启用这个配置项。
 
 如图 6-9 所示， view cache 被禁用时，每次请求都会从硬盘上读取模板。这样无须重启程序来让模板的修改生效。启用 view cache 后，每个模板只需要读取一次硬盘。你已经知道视图缓存机制是如何提升非开发环境中的程序性能了。接下来我们看看 Express如何定位视图来渲染它们。
 
@@ -3949,7 +3947,7 @@ res.render('rss.ejs');
 
 3. 视图查找
 
-查找视图的过程跟 require()查找模块的过程差不多。在程序中调用了 res.render()或 app.render()后， Express 会先检查有没有这样的绝对路径，接着找视图目录的相对路径。最后会尝试找目录中的 index 文件。整个过程如图 6-10 所示。
+查找视图的过程跟 `require()`查找模块的过程差不多。在程序中调用了 `res.render()`或 `app.render()`后， Express 会先检查有没有这样的绝对路径，接着找视图目录的相对路径。最后会尝试找目录中的 index 文件。整个过程如图 6-10 所示。
 
 图 6-10 Express 视图查找过程
 
@@ -3959,28 +3957,28 @@ res.render('rss.ejs');
 
 用添加子目录的办法可以去掉模板文件名称中的冗余部分，比如 edit-entry.ejs 和 show-entry.ejs。
 
-Express 会添加跟 view engine 匹配的扩展名，根据 res.render('entries/edit')定位到 ./views/entries/edit.ejs。
+Express 会添加跟 view engine 匹配的扩展名，根据 `res.render('entries/edit')`定位到 ./views/entries/edit.ejs。
 
-Express 会检查 views 的子目录中是否有名为 index 的文件。当文件的名称为复数时，比如 entries，通常表示这是一个资源列表。也就是说 res.render('entries')一般会渲染文件 views/entries/index.ejs。
+Express 会检查 views 的子目录中是否有名为 index 的文件。当文件的名称为复数时，比如 entries，通常表示这是一个资源列表。也就是说 `res.render('entries')`一般会渲染文件 views/entries/index.ejs。
 
 4. 将数据传递给视图的办法
 
-在 Express 中，要给被渲染的视图传递数据有几种办法，其中最常用的是将要传递的数据作为 res.render()的参数。此外，还可以在路由处理器之前的中间件中设定一些变量，比如用 app.locals 传递程序层面的数据，用 res.locals 传递请求层面的数据。
+在 Express 中，要给被渲染的视图传递数据有几种办法，其中最常用的是将要传递的数据作为 `res.render()`的参数。此外，还可以在路由处理器之前的中间件中设定一些变量，比如用 `app.locals` 传递程序层面的数据，用 `res.locals` 传递请求层面的数据。
 
-将变量直接作为 res.render()的参数优先级最高，要高于在 res.locals 和 app.locals 中设定的变量值，如图 6-11 所示。
+将变量直接作为 `res.render()`的参数优先级最高，要高于在 `res.locals` 和 `app.locals` 中设定的变量值，如图 6-11 所示。
 
 图 6-11 渲染模板时，直接传给 render 函数的值优先级最高
 
-默认情况下， Express 只会向视图中传递一个程序级变量——settings，这个对象中包含所有用 app.set()设定的值。比如 app.set('title', 'My Application')会把 settings.title 输出到模板中，请看下面的 EJS 代码片段：
+默认情况下， Express 只会向视图中传递一个程序级变量——settings，这个对象中包含所有用 `app.set()`设定的值。比如 `app.set('title', 'My Application')`会把 `settings.title` 输出到模板中，请看下面的 EJS 代码片段：
 
-```
+```html
 <html>
 <head>
-<title><%= settings.title %></title>
+  <title><%= settings.title %></title>
 </head>
 <body>
-<h1><%= settings.title %></h1>
-<p>Welcome to <%= settings.title %>.</p>
+  <h1><%= settings.title %></h1>
+  <p>Welcome to <%= settings.title %>.</p>
 </body>
 ```
 
@@ -4014,7 +4012,7 @@ Express 路由的主要任务是将特定模式的 URL 匹配到响应逻辑上�
 下面先来创建消息模型。
 - 创建消息模型
 
-在创建模型之前，需要先安装 Node redis 模块。执行命令 npm install --save redis。如果你的机器上没装 Redis，请访问其官网了解如何安装；如果你用的是 macOS，可以用 Homebrew 安装， Windows 有 Redis Chocolatey 包。
+在创建模型之前，需要先安装 Node redis 模块。执行命令 `npm install --save redis`。如果你的机器上没装 Redis，请访问其官网了解如何安装；如果你用的是 macOS，可以用 Homebrew 安装， Windows 有 Redis Chocolatey 包。
 
 这里用 Redis 是想偷点儿懒：借助 Redis 和 ES6 的特性，我们不需要用复杂的数据库就能轻松创建出轻便的模型。如果你想自己试试其他的数据库，可以参考第 8 章介绍的知识。
 
@@ -4025,30 +4023,29 @@ Express 路由的主要任务是将特定模式的 URL 匹配到响应逻辑上�
 const redis = require('redis');
 const db = redis.createClient();
 class Entry {
-constructor(obj) {
-for (let key in obj) {
-this[key] = obj[key];
-}
-}
-save(cb) {
-const entryJSON = JSON.stringify(this);
-db.lpush(
-'entries',
-entryJSON,
-(err) => {
-if (err) return cb(err);
-cb();
-}
-);
-}
-// 循环遍历传入
-// 对象中的键
-// 将保存的消息转换
-// 成 JSON 字符串
-// 将 JSON 字符串保
-// 存到 Redis 列表中
-// 创建 Redis 客
-// 户端实例
+  constructor(obj) {
+    for (let key in obj) {
+      this[key] = obj[key];
+    }
+  }
+  save(cb) {
+      const entryJSON = JSON.stringify(this);
+      db.lpush(
+        'entries',
+        entryJSON, (err) => {
+          if (err) return cb(err);
+          cb();
+        }
+      );
+    }
+    // 循环遍历传入
+    // 对象中的键
+    // 将保存的消息转换
+    // 成 JSON 字符串
+    // 将 JSON 字符串保
+    // 存到 Redis 列表中
+    // 创建 Redis 客
+    // 户端实例
 
 }
 module.exports = Entry;
@@ -4059,17 +4056,17 @@ module.exports = Entry;
 代码清单 6-8 获取一部分消息的逻辑
 ```js
 class Entry {
-static getRange(from, to, cb) {
-db.lrange('entries', from, to, (err, items) => {
-if (err) return cb(err);
-let entries = [];
-items.forEach((item) => {
-entries.push(JSON.parse(item));
-});
-cb(null, entries);
-});
-}
-...
+  static getRange(from, to, cb) {
+      db.lrange('entries', from, to, (err, items) => {
+        if (err) return cb(err);
+        let entries = [];
+        items.forEach((item) => {
+          entries.push(JSON.parse(item));
+        });
+        cb(null, entries);
+      });
+    }
+    ...
 }
 ```
 
@@ -4088,7 +4085,7 @@ app.post('/post', entries.submit);
 
 ```js
 exports.form = (req, res) => {
-res.render('post', { title: 'Post' });
+  res.render('post', { title: 'Post' });
 };
 ```
 
@@ -4098,38 +4095,43 @@ res.render('post', { title: 'Post' });
 ```html
 <!DOCTYPE html>
 <html>
+
 <head>
-<title><%= title %></title>
-<link rel='stylesheet' href='/stylesheets/style.css' />
+  <title>
+    <%=t itle %>
+  </title>
+  <link rel='stylesheet' href='/stylesheets/style.css' />
 </head>
+
 <body>
-<% include menu %>
-<h1><%= title %></h1>
-<p>Fill in the form below to add a new post.</p>
-<form action='/post' method='post'>
-<p>
-<input type='text' name='entry[title]' placeholder='Title' />
-</p>
-<!-- 
+  <% include menu %>
+    <h1><%= title %></h1>
+    <p>Fill in the form below to add a new post.</p>
+    <form action='/post' method='post'>
+      <p>
+        <input type='text' name='entry[title]' placeholder='Title' />
+      </p>
+      <!-- 
 用来获取消息记录的
 Redis lrange 函数
 消息标题
 解码之前保存为 JSON
 的消息记录 -->
-<!-- 来自表单中名为“ entry[...]”
+      <!-- 来自表单中名为“ entry[...]”
 的控件 -->
-<p>
-<textarea name='entry[body]' placeholder='Body'></textarea>
-</p>
-<p>
-<input type='submit' value='Post' />
-</p>
-</form>
+      <p>
+        <textarea name='entry[body]' placeholder='Body'></textarea>
+      </p>
+      <p>
+        <input type='submit' value='Post' />
+      </p>
+    </form>
 </body>
+
 </html>
 ```
 
-这个表单用了形如 entry[title]之类的输入控件名称，需要用扩展的消息体解析器来解析。打开 app.js，找到
+这个表单用了形如 `entry[title]`之类的输入控件名称，需要用扩展的消息体解析器来解析。打开 app.js，找到
 
 ```js
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -4150,18 +4152,18 @@ app.use(bodyParser.urlencoded({ extended: true }));
 代码清单 6-10 用表单提交的数据创建消息
 ```js
 exports.submit = (req, res, next) => {
-const data = req.body.entry;
-const user = res.locals.user;
-const username = user ? user.name : null;
-const entry = new Entry({
-username: username,
-title: data.title,
-body: data.body
-});
-entry.save((err) => {
-if (err) return next(err);
-res.redirect('/');
-});
+  const data = req.body.entry;
+  const user = res.locals.user;
+  const username = user ? user.name : null;
+  const entry = new Entry({
+    username: username,
+    title: data.title,
+    body: data.body
+  });
+  entry.save((err) => {
+    if (err) return next(err);
+    res.redirect('/');
+  });
 };
 ```
 
@@ -4175,26 +4177,26 @@ res.redirect('/');
 ```js
 const Entry = require('../models/entry');
 exports.list = (req, res, next) => {
-Entry.getRange(0, -1, (err, entries) => {
-// 消息主体
-// 获取
-// 消息
-// 加载用户数据的中间件
-// 在代码清单 6-28 中
+  Entry.getRange(0, -1, (err, entries) => {
+    // 消息主体
+    // 获取
+    // 消息
+    // 加载用户数据的中间件
+    // 在代码清单 6-28 中
 
-if (err) return next(err);
-res.render('entries', {
-title: 'Entries',
-entries: entries,
-});
-});
+    if (err) return next(err);
+    res.render('entries', {
+      title: 'Entries',
+      entries: entries,
+    });
+  });
 };
 ```
 
 这个路由的业务逻辑定义好之后，还需要添加 EJS 模板来显示这些消息。在 views 目录下创建 entries.ejs 文件，并加入下面的 EJS 代码。
 
 代码清单 6-12 视图 entries.ejs
-```
+```html
 <!DOCTYPE html>
 <html>
 <head>
@@ -4239,18 +4241,18 @@ app.get('/', entries.list);
 ```js
 ...
 exports.submit = (req, res, next) => {
-let data = req.body.entry;
-if (!data.title) {
-res.error('Title is required.');
-res.redirect('back');
-return;
-}
-if (data.title.length < 4) {
-res.error('Title must be longer than 4 characters.');
-res.redirect('back');
-return;
-}
-...
+    let data = req.body.entry;
+    if (!data.title) {
+      res.error('Title is required.');
+      res.redirect('back');
+      return;
+    }
+    if (data.title.length < 4) {
+      res.error('Title must be longer than 4 characters.');
+      res.redirect('back');
+      return;
+    }
+    ...
 ```
 
 Express 路由可以有自己的中间件，其被放在路由回调函数之前，只有跟这个路由匹配时才会调用。本章所用的路由回调并没有做特殊处理。这些中间件跟其他中间件一样，甚至你即将创建的校验中间件也一样。
@@ -4263,15 +4265,15 @@ Express 路由可以有自己的中间件，其被放在路由回调函数之前
 
 ```js
 app.post('/post',
-requireEntryTitle,
-requireEntryTitleLengthAbove(4),
-entries.submit
+  requireEntryTitle,
+  requireEntryTitleLengthAbove(4),
+  entries.submit
 );
 ```
 
 一般的路由定义只有两个参数：路径和路由处理函数，而这个路由定义中又额外地增加了两个参数，这两个参数就是校验中间件。
 
-在下面的代码中，我们把原来的校验逻辑剥离出来做成了两个中间件。但它们的模块化程度还不高，只能用在输入域 entry[title]上。
+在下面的代码中，我们把原来的校验逻辑剥离出来做成了两个中间件。但它们的模块化程度还不高，只能用在输入域 `entry[title]`上。
 
 代码清单 6-13 两个更有潜力但仍不完美的校验中间件
 ```js
@@ -4779,7 +4781,7 @@ resave: false, saveUninitialized: true
 res.error = msg => this.message(msg, 'error');
 ```
 
-最后一步是把这些消息输出到模板中显示。如果不做这一步，就只能把 req.session.messages 传给每个 res.render()调用，这很不明智。
+最后一步是把这些消息输出到模板中显示。如果不做这一步，就只能把 req.session.messages 传给每个 `res.render()`调用，这很不明智。
 
 为了解决这个问题，我们要创建一个中间件，在每个请求上用 res.session.messages 上的内容组装出 res.locals.messages，这样可以更高效地把消息输出到所有要渲染的模板上。到目前为 止， ./middleware/messages.js 只是扩展了响应的原型，还没输出任何东西。把下面的代码加到这个文件中，输出我们需要的中间件：
 
@@ -5606,7 +5608,7 @@ res.end('</entries>');
 </entries>
 ```
 
-现在可以把原来的 XML 回调换成以消息数组为参数的 res.render()了，像下面这样：
+现在可以把原来的 XML 回调换成以消息数组为参数的 `res.render()`了，像下面这样：
 环遍历每条消息输出消息中的各个域
 
 ```

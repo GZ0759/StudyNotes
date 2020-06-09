@@ -1707,7 +1707,7 @@ exports.hello = function (req, res) {
 };
 ```
 
-重启 app.js，在浏览器中访问 http://localhost:3000/hello， 可以看到类似于图5-5 的页面，刷新页面可以看到时间发生变化，因为你看到的内容是动态生成的结果。
+重启 app.js，在浏览器中访问 http://localhost:3000/hello ，可以看到类似于图5-5 的页面，刷新页面可以看到时间发生变化，因为你看到的内容是动态生成的结果。
 
 图5-5 访问 /hello 时显示的内容
 
@@ -1723,7 +1723,7 @@ app.get('/user/:username', function(req, res) {
 });
 ```
 
-修改以后重启 app.js，访问 http://localhost:3000/user/byvoid， 可以看到页面显示了以下内容：
+修改以后重启 app.js，访问 http://localhost:3000/user/byvoid ，可以看到页面显示了以下内容：
 
 ```
 user: byvoid
@@ -2107,47 +2107,54 @@ js/bootstrap.min.js
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
+
 <head>
-<title><%= title %> - Microblog</title>
-<link rel='stylesheet' href='/stylesheets/bootstrap.css' />
-<style type="text/css">
-body {
-padding-top: 60px;
-padding-bottom: 40px;
-}
-</style>
-<link href="stylesheets/bootstrap-responsive.css" rel="stylesheet">
+  <title>
+    <%=t itle %>- Microblog</title>
+  <link rel='stylesheet' href='/stylesheets/bootstrap.css' />
+  <style type="text/css">
+    body {
+      padding-top: 60px;
+      padding-bottom: 40px;
+    }
+  </style>
+  <link href="stylesheets/bootstrap-responsive.css" rel="stylesheet">
 </head>
+
 <body>
-<div class="navbar navbar-fixed-top">
-<div class="navbar-inner">
-<div class="container">
-<a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
-<span class="icon-bar"></span>
-<span class="icon-bar"></span>
-<span class="icon-bar"></span>
-</a>
-<a class="brand" href="/">Microblog</a>
-<div class="nav-collapse">
-<ul class="nav">
-<li class="active"><a href="/">首页</a></li>
-<li><a href="/login">登入</a></li>
-<li><a href="/reg">注册</a></li>
-</ul>
-</div>
-</div>
-</div>
-</div>
-<div id="container" class="container">
-<%- body %>106 第 5 章 使用 Node.js 进行 Web 开发
-<hr />
-<footer>
-<p><a href="http://www.byvoid.com/" target="_blank">BYVoid</a> 2012</p>
-</footer>
-</div>
+  <div class="navbar navbar-fixed-top">
+    <div class="navbar-inner">
+      <div class="container">
+        <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </a>
+        <a class="brand" href="/">Microblog</a>
+        <div class="nav-collapse">
+          <ul class="nav">
+            <li class="active"><a href="/">首页</a>
+            </li>
+            <li><a href="/login">登入</a>
+            </li>
+            <li><a href="/reg">注册</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="container" class="container">
+    <%- body %>106 第 5 章 使用 Node.js 进行 Web 开发
+      <hr />
+      <footer>
+        <p><a href="http://www.byvoid.com/" target="_blank">BYVoid</a> 2012</p>
+      </footer>
+  </div>
 </body>
 <script src="/javascripts/jquery.js"></script>
 <script src="/javascripts/bootstrap.js"></script>
+
 </html>
 ```
 
@@ -2157,33 +2164,27 @@ padding-bottom: 40px;
 
 ```html
 <div class="hero-unit">
-<h1>欢迎来到 Microblog</h1>
-<p>Microblog 是一个基于 Node.js 的微博系统。 </p>
-<p>
-<a class="btn btn-primary btn-large" href="/login">登录</a>
-<a class="btn btn-large" href="/reg">立即注册</a>
-</p>
+  <h1>欢迎来到 Microblog</h1>
+  <p>Microblog 是一个基于 Node.js 的微博系统。</p>
+  <p>
+    <a class="btn btn-primary btn-large" href="/login">登录</a>
+    <a class="btn btn-large" href="/reg">立即注册</a>
+  </p>
 </div>
 <div class="row">
-<div class="span4">
-<h2>Carbo 说</h2>
-<p>东风破早梅 向暖一枝开 冰雪无人见 春从天上来</p>
-</div>
-<div class="span4">
-<h2>BYVoid 说</h2>
-<p>
-Open Chinese Convert（ OpenCC）是一个开源的中文简繁转换项目，致力于制作高质量的基于统计预料的简繁转换词库。
-还提供函数库(libopencc)、命令行简繁转换工具、人工校对工具、词典生成程序、
-在线转换服务及图形用户界面。 </p>
-</div>
-<div class="span4">
-<h2>佛振 说</h2>
-<p>中州韵输入法引擎 / Rime Input Method Engine 取意历史上通行的中州韵，
-愿写就一部汇集音韵学智慧的输入法经典之作。
-项目网站设在 http://code.google.com/p/rimeime/
-创造应用价值是一方面，更要坚持对好技术的追求，希望能写出灵动而易于扩展的代码，
-使其成为一款个性十足的开源输入法。 </p>
-</div>
+  <div class="span4">
+    <h2>Carbo 说</h2>
+    <p>东风破早梅 向暖一枝开 冰雪无人见 春从天上来</p>
+  </div>
+  <div class="span4">
+    <h2>BYVoid 说</h2>
+    <p>
+      Open Chinese Convert（ OpenCC）是一个开源的中文简繁转换项目，致力于制作高质量的基于统计预料的简繁转换词库。 还提供函数库(libopencc)、命令行简繁转换工具、人工校对工具、词典生成程序、 在线转换服务及图形用户界面。</p>
+  </div>
+  <div class="span4">
+    <h2>佛振 说</h2>
+    <p>中州韵输入法引擎 / Rime Input Method Engine 取意历史上通行的中州韵， 愿写就一部汇集音韵学智慧的输入法经典之作。 项目网站设在 http://code.google.com/p/rimeime/ 创造应用价值是一方面，更要坚持对好技术的追求，希望能写出灵动而易于扩展的代码， 使其成为一款个性十足的开源输入法。</p>
+  </div>
 </div>
 ```
 
@@ -2214,16 +2215,19 @@ NoSQL 是 1998 年被提出的，它曾经是一个轻量、开源、不提供SQ
 MongoDB 是一个对象数据库，它没有表、行等概念，也没有固定的模式和结构，所有的数据以文档的形式存储。所谓文档就是一个关联数组式的对象，它的内部由属性组成，一个属性对应的值可能是一个数、字符串、日期、数组，甚至是一个嵌套的文档。下面是一个 MongoDB 文档的示例：
 
 ```js
-{ "_id" : ObjectId( "4f7fe8432b4a1077a7c551e8" ),
-"uid" : 2004,
-"username" : "byvoid",
-"net9" : { "nickname" : "BYVoid",
-"surname" : "Kuo",
-"givenname" : "Carbo",
-"fullname" : "Carbo Kuo",
-"emails" : [ "byvoid@byvoid.com", "byvoid.kcp@gmail.com" ],
-"website" : "http://www.byvoid.com",
-"address" : "Zijing 2#, Tsinghua University" }
+{
+  "_id": ObjectId("4f7fe8432b4a1077a7c551e8"),
+  "uid": 2004,
+  "username": "byvoid",
+  "net9": {
+    "nickname": "BYVoid",
+    "surname": "Kuo",
+    "givenname": "Carbo",
+    "fullname": "Carbo Kuo",
+    "emails": ["byvoid@byvoid.com", "byvoid.kcp@gmail.com"],
+    "website": "http://www.byvoid.com",
+    "address": "Zijing 2#, Tsinghua University"
+  }
 }
 ```
 
@@ -2237,14 +2241,14 @@ MongoDB 是一个对象数据库，它没有表、行等概念，也没有固定
 
 ```js
 {
-"name": "microblog"
-, "version": "0.0.1"
-, "private": true
-, "dependencies": {
-"express": "2.5.8"
-, "ejs": ">= 0.0.1"
-, "mongodb": ">= 0.9.9"
-}
+  "name": "microblog",
+  "version": "0.0.1",
+  "private": true,
+  "dependencies": {
+    "express": "2.5.8",
+    "ejs": ">= 0.0.1",
+    "mongodb": ">= 0.9.9"
+  }
 }
 ```
 
