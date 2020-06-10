@@ -2030,6 +2030,7 @@ app.get('/helper', function (req, res) {
 在完成功能设计以后，下一个要做的事情就是路由规划了。路由规划，或者说控制器规划是整个网站的骨架部分，因为它处于整个架构的枢纽位置，相当于各个接口之间的粘合剂，所以应该优先考虑。
 
 根据功能设计，我们把路由按照以下方案规划。
+
 - `/`：首页
 - `/u/[user]`：用户的主页
 - `/post`：发表信息
@@ -2052,7 +2053,7 @@ app.post('/login', routes.doLogin);
 app.get('/logout', routes.logout);
 ```
 
-其中 /post、 /login 和 /reg 由于要接受表单信息，因此使用 app.post 注册路由。 /login和 /reg 还要显示用户注册时要填写的表单，所以要以 app.get 注册。同时在 routes/index.js中添加相应的函数：
+其中 /post、 /login 和 /reg 由于要接受表单信息，因此使用 `app.post` 注册路由。 /login和 /reg 还要显示用户注册时要填写的表单，所以要以 `app.get` 注册。同时在 routes/index.js 中添加相应的函数：
 
 ```js
 exports.index = function(req, res) {
@@ -2080,7 +2081,7 @@ exports.logout = function(req, res) {
 
 我们在开发网站的时候必须时刻意识到网站是为用户开发的，因而用户界面是非常重要的。一种普遍的观点是后端的开发者不必太多关注前端用户体验，因为这是前端程序员和设计师要做的事情。但实际上为了设计一个优雅的界面，后端程序员也不得不介入功能实现，因为很多时候前端和后端无法完全划分，仅仅靠前端开发者是无法设计出优美而又可用的界面的。
 
-作为后端开发者，你可能和我一样都不太擅长设计，不过没关系，我们可以利用已有的优秀设计。如果你认同 Twitter 的简洁风格，那么 Twitter Bootstrap 是最好的选择。 Twitter Bootstrap 是由 Twitter 的设计师和工程师发起的开源项目，它提供了一套与 Twitter 风格一致的简洁、优雅的 Web UI，包含了完全由 HTML、 CSS、 JavaScript 实现的用户交互工具。不管你是资深的前端工程师，还是专业的后端开发者，你都可以轻松地使用Twitter Bootstrap 制作出优美的界面。图5-8 是Twitter Bootstrap 部件的介绍页面。
+作为后端开发者，你可能和我一样都不太擅长设计，不过没关系，我们可以利用已有的优秀设计。如果你认同 Twitter 的简洁风格，那么 Twitter Bootstrap 是最好的选择。 Twitter Bootstrap 是由 Twitter 的设计师和工程师发起的开源项目，它提供了一套与 Twitter 风格一致的简洁、优雅的 Web UI，包含了完全由 HTML、 CSS、 JavaScript 实现的用户交互工具。不管你是资深的前端工程师，还是专业的后端开发者，你都可以轻松地使用 Twitter Bootstrap 制作出优美的界面。图5-8 是 Twitter Bootstrap 部件的介绍页面。
 
 图5-8 Twitter Bootstrap
 
@@ -2208,7 +2209,7 @@ js/bootstrap.min.js
 
 拥有这些功能的数据库被称为关系型数据库，关系型数据库通常使用一种叫做 SQL （ Structured Query Language）的查询语言作为接口，因此又称为 SQL 数据库。典型的 SQL 数据库有 MySQL、 Oracle、 Microsoft SQL Server、 PostgreSQL、 SQLite，等等。
 
-NoSQL 是 1998 年被提出的，它曾经是一个轻量、开源、不提供SQL功能的关系数据库。但现在 NoSQL 被认为是 Not Only SQL 的简称，主要指非关系型、分布式、不提供 ACID①的数据库系统。正如它的名称所暗示的， NoSQL 设计初衷并不是为了取代 SQL 数据库的，而是作为一个补充，它和 SQL 数据库有着各自不同的适应领域。 NoSQL 不像 SQL 数据库一样都有着统一的架构和接口，不同的 NoSQL 数据库系统从里到外可能完全不同。
+NoSQL 是 1998 年被提出的，它曾经是一个轻量、开源、不提供 SQL 功能的关系数据库。但现在 NoSQL 被认为是 Not Only SQL 的简称，主要指非关系型、分布式、不提供 ACID① 的数据库系统。正如它的名称所暗示的， NoSQL 设计初衷并不是为了取代 SQL 数据库的，而是作为一个补充，它和 SQL 数据库有着各自不同的适应领域。 NoSQL 不像 SQL 数据库一样都有着统一的架构和接口，不同的 NoSQL 数据库系统从里到外可能完全不同。
 
 2. MongoDB
 
@@ -2252,13 +2253,13 @@ MongoDB 是一个对象数据库，它没有表、行等概念，也没有固定
 }
 ```
 
-然后运行 npm install 更新依赖的模块。接下来在工程的目录中创建 settings.js 文件，这个文件用于保存数据库的连接信息。我们将用到的数据库命名为 microblog，数据库服务器在本地，因此Settings.js文件的内容如下：
+然后运行 `npm install` 更新依赖的模块。接下来在工程的目录中创建 settings.js 文件，这个文件用于保存数据库的连接信息。我们将用到的数据库命名为 microblog，数据库服务器在本地，因此 Settings.js 文件的内容如下：
 
 ```js
 module.exports = {
-cookieSecret: 'microblogbyvoid',
-db: 'microblog',
-host: 'localhost',
+  cookieSecret: 'microblogbyvoid',
+  db: 'microblog',
+  host: 'localhost',
 };
 ```
 
@@ -2271,11 +2272,10 @@ var settings = require('../settings');
 var Db = require('mongodb').Db;
 var Connection = require('mongodb').Connection;
 var Server = require('mongodb').Server;
-module.exports = new Db(settings.db, new Server(settings.host, Connection.DEFAULT_
-PORT, {}));
+module.exports = new Db(settings.db, new Server(settings.host, Connection.DEFAULT_ PORT, {}));
 ```
 
-以上代码通过 module.exports 输出了创建的数据库连接，在后面的小节中我们会用到这个模块。由于模块只会被加载一次，以后我们在其他文件中使用时均为这一个实例。
+以上代码通过 `module.exports` 输出了创建的数据库连接，在后面的小节中我们会用到这个模块。由于模块只会被加载一次，以后我们在其他文件中使用时均为这一个实例。
 
 ### 5.6.2 会话支持
 
@@ -2287,43 +2287,43 @@ PORT, {}));
 
 ```json
 {
-"name": "microblog"
-, "version": "0.0.1"
-, "private": true
-, "dependencies": {
-"express": "2.5.8"
-, "ejs": ">= 0.0.1"
-, "connect-mongo": ">= 0.1.7"
-, "mongodb": ">= 0.9.9"
-}
+  "name": "microblog",
+  "version": "0.0.1",
+  "private": true,
+  "dependencies": {
+    "express": "2.5.8",
+    "ejs": ">= 0.0.1",
+    "connect-mongo": ">= 0.1.7",
+    "mongodb": ">= 0.9.9"
+  }
 }
 ```
 
-运行 npm install 获得模块。然后打开 app.js，添加以下内容：
+运行 `npm install` 获得模块。然后打开 app.js，添加以下内容：
 
 ```js
 var MongoStore = require('connect-mongo');
 var settings = require('../settings');
-app.configure(function(){
-app.set('views', __dirname + '/views');
-app.set('view engine', 'ejs');
-app.use(express.bodyParser());
-app.use(express.methodOverride());
-app.use(express.cookieParser());
-app.use(express.session({
-secret: settings.cookieSecret,
-store: new MongoStore({
-db: settings.db
-})
-}));
-app.use(app.router);
-app.use(express.static(__dirname + '/public'));
+app.configure(function () {
+  app.set('views', __dirname + '/views');
+  app.set('view engine', 'ejs');
+  app.use(express.bodyParser());
+  app.use(express.methodOverride());
+  app.use(express.cookieParser());
+  app.use(express.session({
+    secret: settings.cookieSecret,
+    store: new MongoStore({
+      db: settings.db
+    })
+  }));
+  app.use(app.router);
+  app.use(express.static(__dirname + '/public'));
 });
 ```
 
-其中 express.cookieParser() 是 Cookie 解析的中间件。 express.session() 则提供会话支持，设置它的 store 参数为 MongoStore 实例，把会话信息存储到数据库中，以避免丢失。
+其中 `express.cookieParser()` 是 Cookie 解析的中间件。 `express.session()` 则提供会话支持，设置它的 store 参数为 MongoStore 实例，把会话信息存储到数据库中，以避免丢失。
 
-在后面的小节中，我们可以通过 req.session 获取当前用户的会话对象，以维护用户相关的信息。
+在后面的小节中，我们可以通过 `req.session` 获取当前用户的会话对象，以维护用户相关的信息。
 
 ### 5.6.3 注册和登入
 
@@ -2335,71 +2335,70 @@ app.use(express.static(__dirname + '/public'));
 
 ```html
 <form class="form-horizontal" method="post">
-<fieldset>
-<legend>用户注册</legend>
-<div class="control-group">
-<label class="control-label" for="username">用户名</label>
-<div class="controls">
-<input type="text" class="input-xlarge" id="username" name="username">
-<p class="help-block">你的账户名称，用于登录和显示。 </p>
-</div>
-</div>
-<div class="control-group">
-<label class="control-label" for="password">口令</label>
-<div class="controls">
-<input type="password" class="input-xlarge" id="password" name="password">
-</div>
-</div>
-<div class="control-group">
-<label class="control-label" for="password-repeat">重复输入口令</label>
-<div class="controls">
-<input type="password" class="input-xlarge" id="password-repeat"
-name="password-repeat">
-</div>
-</div>
-<div class="form-actions">
-<button type="submit" class="btn btn-primary">注册</button>
-</div>
-</fieldset>
+  <fieldset>
+    <legend>用户注册</legend>
+    <div class="control-group">
+      <label class="control-label" for="username">用户名</label>
+      <div class="controls">
+        <input type="text" class="input-xlarge" id="username" name="username">
+        <p class="help-block">你的账户名称，用于登录和显示。</p>
+      </div>
+    </div>
+    <div class="control-group">
+      <label class="control-label" for="password">口令</label>
+      <div class="controls">
+        <input type="password" class="input-xlarge" id="password" name="password">
+      </div>
+    </div>
+    <div class="control-group">
+      <label class="control-label" for="password-repeat">重复输入口令</label>
+      <div class="controls">
+        <input type="password" class="input-xlarge" id="password-repeat" name="password-repeat">
+      </div>
+    </div>
+    <div class="form-actions">
+      <button type="submit" class="btn btn-primary">注册</button>
+    </div>
+  </fieldset>
 </form>
 ```
 
 这个表单中有3个输入单元，分别是 username、 password 和 password-repeat。表单的请求方法是 POST，将会发送到相同的路径下。
 
-到目前为止我们所有的路由规则还都写在了 app.js 中，随着规模扩大其维护难度不断提高，因此我们需要把所有的路由规则分离出去。修改 app.js 的 app.configure 部分，用app.use(express.router(routes)) 代替 app.use(app.router)：
+到目前为止我们所有的路由规则还都写在了 app.js 中，随着规模扩大其维护难度不断提高，因此我们需要把所有的路由规则分离出去。修改 app.js 的 app.configure 部分，用 `app.use(express.router(routes))` 代替 `app.use(app.router)`：
 
 ```js
-app.configure(function(){
-app.set('views', --dirname + '/views');
-app.set('view engine', 'ejs');
-app.use(express.bodyParser());
-app.use(express.methodOverride());
-app.use(express.cookieParser());
-app.use(express.session({
-secret: settings.cookieSecret,
-store: new MongoStore({
-db: settings.db
-})
-}));
-app.use(express.router(routes));
-app.use(express.static(--dirname + '/public'));
+app.configure(function () {
+  app.set('views', --dirname + '/views');
+  app.set('view engine', 'ejs');
+  app.use(express.bodyParser());
+  app.use(express.methodOverride());
+  app.use(express.cookieParser());
+  app.use(express.session({
+    secret: settings.cookieSecret,
+    store: new MongoStore({
+      db: settings.db
+    })
+  }));
+  app.use(express.router(routes));
+  app.use(express.static(--dirname + '/public'));
 });
 ```
 
 接下来打开 routes/index.js，把内容改为：
 
 ```js
-module.exports = function(app) {
-app.get('/', function(req, res) {
-res.render('index', {
-title: '首页'
-});
-});
-app.get('/reg', function(req, res) {
-res.render('reg', {
-title: '用户注册',
-});
-});
+module.exports = function (app) {
+  app.get('/', function (req, res) {
+    res.render('index', {
+      title: '首页'
+    });
+  });
+  app.get('/reg', function (req, res) {
+    res.render('reg', {
+      title: '用户注册',
+    });
+  });
 };
 ```
 
@@ -2418,8 +2417,7 @@ app.post('/reg', function (req, res) {
     req.flash('error', '两次输入的口令不一致');
     return res.redirect('/reg');
   }
-  114 第 5 章 使用 Node.js 进行 Web 开发
-    //生成口令的散列值
+  //生成口令的散列值
   var md5 = crypto.createHash('md5');
   var password = md5.update(req.body.password).digest('base64');
   var newUser = new User({
@@ -2450,81 +2448,88 @@ app.post('/reg', function (req, res) {
 
 这段代码用到了一些新的东西，我们一一说明。
 
-- req.body 就是 POST 请求信息解析过后的对象，例如我们要访问用户传递的password 域的值，只需访问 req.body['password'] 即可。
-- req.flash 是 Express 提供的一个奇妙的工具，通过它保存的变量只会在用户当前和下一次的请求中被访问，之后会被清除，通过它我们可以很方便地实现页面的通知和错误信息显示功能。
-- res.redirect 是重定向功能，通过它会向用户返回一个 303 See Other 状态，通知浏览器转向相应页面。
-- crypto 是 Node.js 的一个核心模块，功能是加密并生成各种散列，使用它之前首先要声明 var crypto = require('crypto')。我们代码中使用它计算了密码的散列值。
-- User 是我们设计的用户对象，在后面我们会详细介绍，这里先假设它的接口都是可用的，使用前需要通过 var User = require('../models/user.js') 引用。
-- User.get 的功能是通过用户名获取已知用户，在这里我们判断用户名是否已经存在。 User.save 可以将用户对象的修改写入数据库。
-- 通过 req.session.user = newUser 向会话对象写入了当前用户的信息，在后面我们会通过它判断用户是否已经登录。
+- `req.body` 就是 POST 请求信息解析过后的对象，例如我们要访问用户传递的 password 域的值，只需访问 `req.body['password']` 即可。
+- `req.flash` 是 Express 提供的一个奇妙的工具，通过它保存的变量只会在用户当前和下一次的请求中被访问，之后会被清除，通过它我们可以很方便地实现页面的通知和错误信息显示功能。
+- `res.redirect` 是重定向功能，通过它会向用户返回一个 303 See Other 状态，通知浏览器转向相应页面。
+- crypto 是 Node.js 的一个核心模块，功能是加密并生成各种散列，使用它之前首先要声明 `var crypto = require('crypto')`。我们代码中使用它计算了密码的散列值。
+- User 是我们设计的用户对象，在后面我们会详细介绍，这里先假设它的接口都是可用的，使用前需要通过 `var User = require('../models/user.js')` 引用。
+- `User.get` 的功能是通过用户名获取已知用户，在这里我们判断用户名是否已经存在。 `User.save` 可以将用户对象的修改写入数据库。
+- 通过 `req.session.user = newUser` 向会话对象写入了当前用户的信息，在后面我们会通过它判断用户是否已经登录。
 
 3. 用户模型
 
-在前面的代码中，我们直接使用了 User 对象。 User 是一个描述数据的对象，即 MVC架构中的模型。前面我们使用了许多视图和控制器，这是第一次接触到模型。与视图和控制器不同，模型是真正与数据打交道的工具，没有模型，网站就只是一个外壳，不能发挥真实的作用，因此它是框架中最根本的部分。现在就让我们来实现 User 模型吧。
+在前面的代码中，我们直接使用了 User 对象。 User 是一个描述数据的对象，即 MVC 架构中的模型。前面我们使用了许多视图和控制器，这是第一次接触到模型。与视图和控制器不同，模型是真正与数据打交道的工具，没有模型，网站就只是一个外壳，不能发挥真实的作用，因此它是框架中最根本的部分。现在就让我们来实现 User 模型吧。
 
 在 models 目录中创建 user.js 的文件，内容如下：
 
 ```js
 var mongodb = require('./db');
+
 function User(user) {
-this.name = user.name;
-this.password = user.password;
+  this.name = user.name;
+  this.password = user.password;
 };
 module.exports = User;
 User.prototype.save = function save(callback) {
-// 存入 Mongodb 的文档
-var user = {
-name: this.name,
-password: this.password,
-};
-mongodb.open(function(err, db) {
-if (err) {
-return callback(err);
-}
-// 读取 users 集合
-db.collection('users', function(err, collection) {
-if (err) {
-mongodb.close();
-return callback(err);
-}
-// 为 name 属性添加索引
-collection.ensureIndex('name', {unique: true});
-// 写入 user 文档
-collection.insert(user, {safe: true}, function(err, user) {
-mongodb.close();
-callback(err, user);
-});
-});
-});
+  // 存入 Mongodb 的文档
+  var user = {
+    name: this.name,
+    password: this.password,
+  };
+  mongodb.open(function (err, db) {
+    if (err) {
+      return callback(err);
+    }
+    // 读取 users 集合
+    db.collection('users', function (err, collection) {
+      if (err) {
+        mongodb.close();
+        return callback(err);
+      }
+      // 为 name 属性添加索引
+      collection.ensureIndex('name', {
+        unique: true
+      });
+      // 写入 user 文档
+      collection.insert(user, {
+        safe: true
+      }, function (err, user) {
+        mongodb.close();
+        callback(err, user);
+      });
+    });
+  });
 };
 User.get = function get(username, callback) {
-mongodb.open(function(err, db) {
-if (err) {
-return callback(err);
-}
-// 读取 users 集合
-db.collection('users', function(err, collection) {
-if (err) {
-mongodb.close();
-return callback(err);
-}
-// 查找 name 属性为 username 的文档
-collection.findOne({name: username}, function(err, doc) {
-mongodb.close();
-if (doc) {
-// 封装文档为 User 对象
-var user = new User(doc);
-callback(err, user);
-} else {
-callback(err, null);
-}
-});
-});
-});
+  mongodb.open(function (err, db) {
+    if (err) {
+      return callback(err);
+    }
+    // 读取 users 集合
+    db.collection('users', function (err, collection) {
+      if (err) {
+        mongodb.close();
+        return callback(err);
+      }
+      // 查找 name 属性为 username 的文档
+      collection.findOne({
+        name: username
+      }, function (err, doc) {
+        mongodb.close();
+        if (doc) {
+          // 封装文档为 User 对象
+          var user = new User(doc);
+          callback(err, user);
+        } else {
+          callback(err, null);
+        }
+      });
+    });
+  });
 };
 ```
 
-以上代码实现了两个接口， User.prototype.save 和 User.get， 前者是对象实例的方法，用于将用户对象的数据保存到数据库中，后者是对象构造函数的方法，用于从数据库中查找指定的用户。
+以上代码实现了两个接口， `User.prototype.save` 和 `User.get`， 前者是对象实例的方法，用于将用户对象的数据保存到数据库中，后者是对象构造函数的方法，用于从数据库中查找指定的用户。
 
 4. 视图交互
 
@@ -2534,23 +2539,23 @@ callback(err, null);
 
 ```js
 app.dynamicHelpers({
-user: function(req, res) {
-return req.session.user;
-},
-error: function(req, res) {
-var err = req.flash('error');
-if (err.length)
-return err;
-else
-return null;
-},
-success: function(req, res) {
-var succ = req.flash('success');
-if (succ.length)
-return succ;
-else
-return null;
-},
+  user: function (req, res) {
+      return req.session.user;
+    },
+    error: function (req, res) {
+      var err = req.flash('error');
+      if (err.length)
+        return err;
+      else
+        return null;
+    },
+    success: function (req, res) {
+      var succ = req.flash('success');
+      if (succ.length)
+        return succ;
+      else
+        return null;
+    },
 });
 ```
 
@@ -2558,29 +2563,33 @@ return null;
 
 ```html
 <ul class="nav">
-<li class="active"><a href="/">首页</a></li>
-<% if (!user) { %>
-<li><a href="/login">登入</a></li>
-<li><a href="/reg">注册</a></li>
-<% } else { %>
-<li><a href="/logout">登出</a></li>
-<% } %>
+  <li class="active"><a href="/">首页</a>
+  </li>
+  <% if (!user) { %>
+    <li><a href="/login">登入</a>
+    </li>
+    <li><a href="/reg">注册</a>
+    </li>
+    <% } else { %>
+    <li><a href="/logout">登出</a>
+    </li>
+  <% } %>
 </ul>
 ```
 
-上面功能是为已登入用户和未登入用户显示不同的信息。 在 container 中， <%- body %>之前加入：
+上面功能是为已登入用户和未登入用户显示不同的信息。 在 container 中，` <%- body %>`之前加入：
 
 ```html
 <% if (success) { %>
-<div class="alert alert-success">
-<%= success %>
-</div>
-<% } %>
-<% if (error) { %>
-<div class="alert alert-error">
-<%= error %>
-</div>
-<% } %>
+  <div class="alert alert-success">
+    <%=s uccess %>
+  </div>
+  <% } %>
+    <% if (error) { %>
+      <div class="alert alert-error">
+        <%=e rror %>
+      </div>
+    <% } %>
 ```
 
 它的功能是页面通知。
@@ -2596,60 +2605,60 @@ return null;
 当我们完成用户注册的功能以后，再实现用户登入和登出就相当容易了。把下面的代码加到 routes/index.js 中：
 
 ```js
-app.get('/login', function(req, res) {
-res.render('login', {
-title: '用户登入',
+app.get('/login', function (req, res) {
+  res.render('login', {
+    title: '用户登入',
+  });
 });
+app.post('/login', function (req, res) {
+  //生成口令的散列值
+  var md5 = crypto.createHash('md5');
+  var password = md5.update(req.body.password).digest('base64');
+  User.get(req.body.username, function (err, user) {
+    if (!user) {
+      req.flash('error', '用户不存在');
+      return res.redirect('/login');
+    }
+    if (user.password != password) {
+      req.flash('error', '用户口令错误');
+      return res.redirect('/login');
+    }
+    req.session.user = user;
+    req.flash('success', '登入成功');
+    res.redirect('/');
+  });
 });
-app.post('/login', function(req, res) {
-//生成口令的散列值
-var md5 = crypto.createHash('md5');
-var password = md5.update(req.body.password).digest('base64');
-User.get(req.body.username, function(err, user) {
-if (!user) {
-req.flash('error', '用户不存在');
-return res.redirect('/login');
-}
-if (user.password != password) {
-req.flash('error', '用户口令错误');
-return res.redirect('/login');
-}
-req.session.user = user;
-req.flash('success', '登入成功');
-res.redirect('/');
-});
-});
-app.get('/logout', function(req, res) {
-req.session.user = null;
-req.flash('success', '登出成功');
-res.redirect('/');
+app.get('/logout', function (req, res) {
+  req.session.user = null;
+  req.flash('success', '登出成功');
+  res.redirect('/');
 });
 ```
 
-在这里你可以清晰地看出登入和登出仅仅是 req.session.user 变量的标记，非常简单。但这会不会有安全性问题呢？不会的，因为这个变量只有服务端才能访问到，只要不是黑客攻破了整个服务器，无法从外部改动。
+在这里你可以清晰地看出登入和登出仅仅是 `req.session.user` 变量的标记，非常简单。但这会不会有安全性问题呢？不会的，因为这个变量只有服务端才能访问到，只要不是黑客攻破了整个服务器，无法从外部改动。
 
 最后我们创建 views/login.ejs，内容如下：
 
 ```html
 <form class="form-horizontal" method="post">
-<fieldset>
-<legend>用户登入</legend>
-<div class="control-group">
-<label class="control-label" for="username">用户名</label>120 第 5 章 使用 Node.js 进行 Web 开发
-<div class="controls">
-<input type="text" class="input-xlarge" id="username" name="username">
-</div>
-</div>
-<div class="control-group">
-<label class="control-label" for="password">口令</label>
-<div class="controls">
-<input type="password" class="input-xlarge" id="password" name="password">
-</div>
-</div>
-<div class="form-actions">
-<button type="submit" class="btn btn-primary">登入</button>
-</div>
-</fieldset>
+  <fieldset>
+    <legend>用户登入</legend>
+    <div class="control-group">
+      <label class="control-label" for="username">用户名</label>120 第 5 章 使用 Node.js 进行 Web 开发
+      <div class="controls">
+        <input type="text" class="input-xlarge" id="username" name="username">
+      </div>
+    </div>
+    <div class="control-group">
+      <label class="control-label" for="password">口令</label>
+      <div class="controls">
+        <input type="password" class="input-xlarge" id="password" name="password">
+      </div>
+    </div>
+    <div class="form-actions">
+      <button type="submit" class="btn btn-primary">登入</button>
+    </div>
+  </fieldset>
 </form>
 ```
 
@@ -2661,107 +2670,108 @@ res.redirect('/');
 
 ### 5.6.4 页面权限控制
 
-在前面我们已经实现了用户登入，并且在页面中通过不同的内容反映出了用户已登入和未登入的状态。现在我们还有一个工作要做，就是为页面设置访问权限。例如，登出功能应
-该只对已登入的用户开放，注册和登入页面则应该阻止已登入的用户访问。如何实现这一点呢？最简单的方法是在每个页面的路由响应函数内检查用户是否已经登录，但这会带来很多重复的代码，违反了 DRY ①原则。因此，我们利用路由中间件来实现这个功能。
+在前面我们已经实现了用户登入，并且在页面中通过不同的内容反映出了用户已登入和未登入的状态。现在我们还有一个工作要做，就是为页面设置访问权限。例如，登出功能应该只对已登入的用户开放，注册和登入页面则应该阻止已登入的用户访问。如何实现这一点呢？最简单的方法是在每个页面的路由响应函数内检查用户是否已经登录，但这会带来很多重复的代码，违反了 DRY ①原则。因此，我们利用路由中间件来实现这个功能。
 
-5.3.5 节介绍了同一路径绑定多个响应函数的方法，通过调用 next() 转移控制权，这种方法叫做路由中间件。我们可以把用户登入状态检查放到路由中间件中，在每个路径前增加路由中间件，即可实现页面权限控制。
+5.3.5 节介绍了同一路径绑定多个响应函数的方法，通过调用 `next()` 转移控制权，这种方法叫做路由中间件。我们可以把用户登入状态检查放到路由中间件中，在每个路径前增加路由中间件，即可实现页面权限控制。
 
 最终的 routes/index.js 内容如下：
 
 ```js
 var crypto = require('crypto');
 var User = require('../models/user.js');
-module.exports = function(app) {
-app.get('/', function(req, res) {
-res.render('index', {
-title: '首页'
-});
-});
-app.get('/reg', checkNotLogin);
-app.get('/reg', function(req, res) {
-res.render('reg', {
-title: '用户注册',
-});
-});
-app.post('/reg', checkNotLogin);
-app.post('/reg', function(req, res) {
-//检验用户两次输入的口令是否一致
-if (req.body['password-repeat'] != req.body['password']) {
-req.flash('error', '两次输入的口令不一致');
-return res.redirect('/reg');
-}
-//生成口令的散列值
-var md5 = crypto.createHash('md5');
-var password = md5.update(req.body.password).digest('base64');
-var newUser = new User({
-name: req.body.username,
-password: password,
-});
-//检查用户名是否已经存在
-User.get(newUser.name, function(err, user) {
-if (user)
-err = 'Username already exists.';
-if (err) {
-req.flash('error', err);
-return res.redirect('/reg');
-}
-//如果不存在则新增用户
-newUser.save(function(err) {
-if (err) {
-req.flash('error', err);
-return res.redirect('/reg');
-}
-req.session.user = newUser;
-req.flash('success', '注册成功');
-res.redirect('/');
-});
-});
-});
-app.get('/login', checkNotLogin);
-app.get('/login', function(req, res) {
-res.render('login', {
-title: '用户登入',
-});
-});
-app.post('/login', checkNotLogin);
-app.post('/login', function(req, res) {
-//生成口令的散列值
-var md5 = crypto.createHash('md5');
-var password = md5.update(req.body.password).digest('base64');
-User.get(req.body.username, function(err, user) {
-if (!user) {
-req.flash('error', '用户不存在');
-return res.redirect('/login');
-}
-if (user.password != password) {
-req.flash('error', '用户口令错误');
-return res.redirect('/login');
-}
-req.session.user = user;
-req.flash('success', '登入成功');
-res.redirect('/');
-});
-});
-app.get('/logout', checkLogin);
-app.get('/logout', function(req, res) {
-req.session.user = null;
-req.flash('success', '登出成功');
-res.redirect('/');
-});
+module.exports = function (app) {
+  app.get('/', function (req, res) {
+    res.render('index', {
+      title: '首页'
+    });
+  });
+  app.get('/reg', checkNotLogin);
+  app.get('/reg', function (req, res) {
+    res.render('reg', {
+      title: '用户注册',
+    });
+  });
+  app.post('/reg', checkNotLogin);
+  app.post('/reg', function (req, res) {
+    //检验用户两次输入的口令是否一致
+    if (req.body['password-repeat'] != req.body['password']) {
+      req.flash('error', '两次输入的口令不一致');
+      return res.redirect('/reg');
+    }
+    //生成口令的散列值
+    var md5 = crypto.createHash('md5');
+    var password = md5.update(req.body.password).digest('base64');
+    var newUser = new User({
+      name: req.body.username,
+      password: password,
+    });
+    //检查用户名是否已经存在
+    User.get(newUser.name, function (err, user) {
+      if (user)
+        err = 'Username already exists.';
+      if (err) {
+        req.flash('error', err);
+        return res.redirect('/reg');
+      }
+      //如果不存在则新增用户
+      newUser.save(function (err) {
+        if (err) {
+          req.flash('error', err);
+          return res.redirect('/reg');
+        }
+        req.session.user = newUser;
+        req.flash('success', '注册成功');
+        res.redirect('/');
+      });
+    });
+  });
+  app.get('/login', checkNotLogin);
+  app.get('/login', function (req, res) {
+    res.render('login', {
+      title: '用户登入',
+    });
+  });
+  app.post('/login', checkNotLogin);
+  app.post('/login', function (req, res) {
+    //生成口令的散列值
+    var md5 = crypto.createHash('md5');
+    var password = md5.update(req.body.password).digest('base64');
+    User.get(req.body.username, function (err, user) {
+      if (!user) {
+        req.flash('error', '用户不存在');
+        return res.redirect('/login');
+      }
+      if (user.password != password) {
+        req.flash('error', '用户口令错误');
+        return res.redirect('/login');
+      }
+      req.session.user = user;
+      req.flash('success', '登入成功');
+      res.redirect('/');
+    });
+  });
+  app.get('/logout', checkLogin);
+  app.get('/logout', function (req, res) {
+    req.session.user = null;
+    req.flash('success', '登出成功');
+    res.redirect('/');
+  });
 };
+
 function checkLogin(req, res, next) {
-if (!req.session.user) {
-req.flash('error', '未登入');
-return res.redirect('/login');
+  if (!req.session.user) {
+    req.flash('error', '未登入');
+    return res.redirect('/login');
+  }
+  next();
 }
-next();
-}
+
 function checkNotLogin(req, res, next) {
-if (req.session.user) {
-req.flash('error', '已登入');
-return res.redirect('/');
-}
-next();
+  if (req.session.user) {
+    req.flash('error', '已登入');
+    return res.redirect('/');
+  }
+  next();
 }
 ```
 
@@ -2771,81 +2781,92 @@ next();
 
 ### 5.7.1 微博模型
 
-现在让我们从模型开始设计。仿照用户模型，将微博模型命名为 Post 对象，它拥有与User 相似的接口，分别是 Post.get 和 Post.prototype.save。 Post.get 的功能是从数据库中获取微博，可以按指定用户获取，也可以获取全部的内容。 Post.prototype.save是 Post 对象实例的方法，用于将对象的变动保存到数据库。
+现在让我们从模型开始设计。仿照用户模型，将微博模型命名为 Post 对象，它拥有与 User 相似的接口，分别是 `Post.get` 和 `Post.prototype.save`。 `Post.get` 的功能是从数据库中获取微博，可以按指定用户获取，也可以获取全部的内容。 `Post.prototype.save`是 Post 对象实例的方法，用于将对象的变动保存到数据库。
 
 创建 models/post.js，写入以下内容：
 
 ```js
 var mongodb = require('./db');
+
 function Post(username, post, time) {
-this.user = username;
-this.post = post;124 第 5 章 使用 Node.js 进行 Web 开发
-if (time) {
-this.time = time;
-} else {
-this.time = new Date();
-}
+  this.user = username;
+  this.post = post;
+  if (time) {
+    this.time = time;
+  } else {
+    this.time = new Date();
+  }
 };
 module.exports = Post;
 Post.prototype.save = function save(callback) {
-// 存入 Mongodb 的文档
-var post = {
-user: this.user,
-post: this.post,
-time: this.time,
-};
-mongodb.open(function(err, db) {
-if (err) {
-return callback(err);
-}
-// 读取 posts 集合
-db.collection('posts', function(err, collection) {
-if (err) {
-mongodb.close();
-return callback(err);
-}
-// 为 user 属性添加索引
-collection.ensureIndex('user');
-// 写入 post 文档
-collection.insert(post, {safe: true}, function(err, post) {
-mongodb.close();
-callback(err, post);
-});
-});
-});
+  // 存入 Mongodb 的文档
+  var post = {
+    user: this.user,
+    post: this.post,
+    time: this.time,
+  };
+  mongodb.open(function (err, db) {
+    if (err) {
+      return callback(err);
+    }
+    // 读取 posts 集合
+    db.collection('posts', function (err, collection) {
+      if (err) {
+        mongodb.close();
+        return callback(err);
+      }
+      // 为 user 属性添加索引
+      collection.ensureIndex('user');
+      // 写入 post 文档
+      collection.insert(post, {
+        safe: true
+      }, function (err, post) {
+        mongodb.close();
+        callback(err, post);
+      });
+    });
+  });
 };
 Post.get = function get(username, callback) {
-mongodb.open(function(err, db) {
-if (err) {
-return callback(err);
+  mongodb.open(function (err, db) {
+    if (err) {
+      return callback(err);
+    }
+    // 读取 posts 集合
+    db.collection('posts', function (err, collection) {
+      if (err) {
+        mongodb.close();
+        return callback(err);
+      }
+      // 查找 user 属性为 username 的文档，如果 username 是 null 则匹配全部
+      var query = {};
+      if (username) {
+        query.user = username;
+      }
+      collection.find(query).sort({
+        time: -1
+      }).toArray(function (err, docs) {
+        mongodb.close();
+        if (err) {
+          callback(err, null);
+        }
+        // 封装 posts 为 Post 对象
+        var posts = [];
+        docs.forEach(function (doc, index) {
+          var post = new Post(doc.user, doc.post, doc.time);
+          posts.push(post);
+        });
+        callback(null, posts);
+      });
+    });
+  });
+}; // This is just a sample script. Paste your real code (javascript or HTML) here.
+
+if ('this_is' == /an_example/) {
+  of_beautifer();
+} else {
+  var a = b ? (c % d) : e[f];
 }
-// 读取 posts 集合
-db.collection('posts', function(err, collection) {
-if (err) {
-mongodb.close();
-return callback(err);
-}
-// 查找 user 属性为 username 的文档，如果 username 是 null 则匹配全部
-var query = {};
-if (username) {
-query.user = username;
-}
-collection.find(query).sort({time: -1}).toArray(function(err, docs) {
-mongodb.close();
-if (err) {
-callback(err, null);
-}
-// 封装 posts 为 Post 对象
-var posts = [];
-docs.forEach(function(doc, index) {
-var post = new Post(doc.user, doc.post, doc.time);
-posts.push(post);
-});
-callback(null, posts);
-});
-});
-});
-};
 ```
 
 在后面我们会通过控制器调用这个模块。
@@ -2854,47 +2875,48 @@ callback(null, posts);
 
 我们曾经约定通过 POST 方法访问 /post 以发表微博，现在让我们来实现这个控制器。
 
-```js
 在 routes/index.js 中添加下面的代码：
+
+```js
 app.post('/post', checkLogin);
-app.post('/post', function(req, res) {
-var currentUser = req.session.user;
-var post = new Post(currentUser.name, req.body.post);
-post.save(function(err) {
-if (err) {
-req.flash('error', err);
-return res.redirect('/');
-}
-req.flash('success', '发表成功');
-res.redirect('/u/' + currentUser.name);
-});
+app.post('/post', function (req, res) {
+  var currentUser = req.session.user;
+  var post = new Post(currentUser.name, req.body.post);
+  post.save(function (err) {
+    if (err) {
+      req.flash('error', err);
+      return res.redirect('/');
+    }
+    req.flash('success', '发表成功');
+    res.redirect('/u/' + currentUser.name);
+  });
 });
 ```
 
-这段代码通过 req.session.user 获取当前用户信息，从 req.body.post 获取用户发表的内容，建立 Post 对象，调用 save() 方法存储信息，最后将用户重定向到用户页面。
+这段代码通过 `req.session.user` 获取当前用户信息，从 `req.body.post` 获取用户发表的内容，建立 Post 对象，调用 `save()` 方法存储信息，最后将用户重定向到用户页面。
 
 ### 5.7.3 用户页面
 
-用户页面的功能是展示用户发表的所有内容，在routes/index.js中加入以下代码：
+用户页面的功能是展示用户发表的所有内容，在 routes/index.js 中加入以下代码：
 
 ```js
-app.get('/u/:user', function(req, res) {
-User.get(req.params.user, function(err, user) {
-if (!user) {
-req.flash('error', '用户不存在');
-return res.redirect('/');
-}
-Post.get(user.name, function(err, posts) {
-if (err) {
-req.flash('error', err);
-return res.redirect('/');
-}
-res.render('user', {
-title: user.name,
-posts: posts,
-});
-});
-});
+app.get('/u/:user', function (req, res) {
+  User.get(req.params.user, function (err, user) {
+    if (!user) {
+      req.flash('error', '用户不存在');
+      return res.redirect('/');
+    }
+    Post.get(user.name, function (err, posts) {
+      if (err) {
+        req.flash('error', err);
+        return res.redirect('/');
+      }
+      res.render('user', {
+        title: user.name,
+        posts: posts,
+      });
+    });
+  });
 });
 ```
 
@@ -2912,8 +2934,8 @@ posts: posts,
 ```html
 <form method="post" action="/post" class="well form-inline center" style="text-align:
 center;">
-<input type="text" class="span8" name="post">
-<button type="submit" class="btn btn-success"><i class="icon-comment icon-white">
+  <input type="text" class="span8" name="post">
+  <button type="submit" class="btn btn-success"><i class="icon-comment icon-white">
 </i> 发言</button>
 </form>
 ```
@@ -2921,21 +2943,25 @@ center;">
 posts.ejs 的目的是按照行列显示传入的 posts 的所有内容：
 
 ```html
-<% posts.forEach(function(post, index) {
-if (index % 3 == 0) { %>
-<div class="row">
+<% posts.forEach(function(post, index) { if (index % 3==0 ) { %>
+  <div class="row">
 <%} %>
 <div class="span4">
-<h2><a href="/u/<%= post.user %>"><%= post.user %></a> 说</h2>
-<p><small><%= post.time %></small></p>
-<p><%= post.post %></p>
+  <h2><a href="/u/<%= post.user %>"><%= post.user %></a> 说</h2>
+  <p><small><%= post.time %></small>
+  </p>
+  <p>
+    <%=p ost.post %>
+  </p>
 </div>
-<% if (index % 3 == 2) { %>
-</div><!-- end row -->
-<% } %>
+  <% if (index % 3==2 ) { %>
+</div>
+  <!-- end row -->
+  <% } %>
 <%}) %>
-<% if (posts.length % 3 != 0) { %>
-</div><!-- end row -->
+<% if (posts.length % 3 !=0 ) { %>
+  </div>
+  <!-- end row -->
 <%} %>
 ```
 
@@ -2950,16 +2976,16 @@ if (index % 3 == 0) { %>
 在 routes/index.js 中添加下面代码：
 
 ```js
-app.get('/', function(req, res) {
-Post.get(null, function(err, posts) {
-if (err) {128 第 5 章 使用 Node.js 进行 Web 开发
-posts = [];
-}
-res.render('index', {
-title: '首页',
-posts: posts,
-});
-});
+app.get('/', function (req, res) {
+  Post.get(null, function (err, posts) {
+    if (err) {
+      posts = [];
+    }
+    res.render('index', {
+      title: '首页',
+      posts: posts,
+    });
+  });
 });
 ```
 
@@ -2992,7 +3018,6 @@ posts: posts,
 到此为止，微博网站的基本功能就完成了。这个网站仅仅是微博的一个雏形，距离真正的微博还有很大的距离。例如，我们没有对注册信息进行完整的验证，如用户名的规则，密码的长短等。为了防止恶意注册还应该带有验证码和邮件认证的功能，甚至还应该支持OAuth。我们对发帖没有进行任何限制，尽管注入 HTML 是不可能的，但至少还应该对长度有限制。首页和用户页面的显示都是没有数量限制的，当微博很多以后这个页面可能会很长，应该实现分页的功能。作为社交工具，最重要的用户关注、转帖、评论、圈点用户这些功能都没有实现。
 
 除了功能上的不足，这个网站还有潜在的性能问题，例如每次查询数据库都没有限制取得的数量，还应该对一些访问频繁的页面增加缓存机制。另外，我们一直是以开发模式在运行着这个网站，没有讨论如何把它真正部署起来，我们会在下一章详细讨论。
-
 
 如果你对这个用 Node.js 实现的微博网站有兴趣，请访问 https://github.com/BYVoid/microblog ，这里有 Microblog 示例中的完整代码，而且在其基础上还做了进一步的改进，也欢迎你为它“添砖加瓦”。
 
@@ -3197,7 +3222,7 @@ next();
 });
 ```
 
-这段代码的功能是通过app.error注册错误响应函数，在其中将错误写入错误日志流。
+这段代码的功能是通过`app.error`注册错误响应函数，在其中将错误写入错误日志流。
 
 现在重新运行服务器，在浏览器中访问 http://127.0.0.1:3000/，即可在app.js 同一目录下的 access.log 文件中看到与以下类似的内容：
 
@@ -3269,7 +3294,7 @@ app.settings.env);
 }
 ```
 
-这个语句的功能是判断当前模块是不是由其他模块调用的，如果不是，说明它是直接启动的，此时启动调试服务器；如果是，则不自动启动服务器。经过这样的修改，以后直接调用node app.js服务器会直接运行，但在其他模块中调用require('./app') 则不会自动启动，需要再显式地调用 listen() 函数。
+这个语句的功能是判断当前模块是不是由其他模块调用的，如果不是，说明它是直接启动的，此时启动调试服务器；如果是，则不自动启动服务器。经过这样的修改，以后直接调用node app.js服务器会直接运行，但在其他模块中调用`require('./app')` 则不会自动启动，需要再显式地调用 `listen()` 函数。
 
 接下来就让我们通过cluster 调用app.js。 创建cluster.js， 内容如下所示：
 
@@ -3468,7 +3493,7 @@ console.log(counter()); // 输出 2
 console.log(counter()); // 输出 3
 ```
 
-这正是所谓闭包的特性。当一个函数返回它内部定义的一个函数时，就产生了一个闭包，闭包不但包括被返回的函数，还包括这个函数的定义环境。上面例子中，当函数generateClosure() 的内部函数 get 被一个外部变量 counter 引用时， counter 和 `generateClosure()` 的局部变量就是一个闭包。
+这正是所谓闭包的特性。当一个函数返回它内部定义的一个函数时，就产生了一个闭包，闭包不但包括被返回的函数，还包括这个函数的定义环境。上面例子中，当函数`generateClosure()` 的内部函数 get 被一个外部变量 counter 引用时， counter 和 `generateClosure()` 的局部变量就是一个闭包。
 
 ```JavaScript
 var generateClosure = function() {
@@ -3488,7 +3513,7 @@ console.log(counter1()); // 输出 3
 console.log(counter2()); // 输出 2
 ```
 
-上面这个例子解释了闭包是如何产生的：counter1 和 counter2 分别调用了 generateClosure() 函数，生成了两个闭包的实例，它们内部引用的 count 变量分别属于各自的运行环境。
+上面这个例子解释了闭包是如何产生的：counter1 和 counter2 分别调用了 `generateClosure()` 函数，生成了两个闭包的实例，它们内部引用的 count 变量分别属于各自的运行环境。
 
 闭包的用途。闭包有两个主要用途，一是实现嵌套的回调函数，二是隐藏对象的细节。
 

@@ -1117,11 +1117,11 @@ var kitty = new Cat ({ name: 'Zildjian' });
 
 // 持久化保存 kitty 实例
 kitty.save(function (err) {
-    if (err) {
-        console.log(err);
-    }else {
-        console.log('meow');
-    }
+  if (err) {
+    console.log(err);
+  }else {
+    console.log('meow');
+  }
 })
 
 ```
@@ -1131,14 +1131,14 @@ kitty.save(function (err) {
 ```javascript
 // 设计集合结构
 var userSchema = new Schema({
-    username: {
-        type: String,
-        required:true
-    },
-    password: {
-        type: String,
-        required:true
-    },
+  username: {
+    type: String,
+    required:true
+  },
+  password: {
+    type: String,
+    required:true
+  },
 })
 
 // 将文档结构发布为模型，返回值是模型构造函数
@@ -1167,10 +1167,11 @@ admin.save(function (err,ret) {
 
 ```javascript
 // 查询所有
-User.find(function () {} )
+User.find(function () {})
+
 // 条件查询
-User.find{
-    //条件
+User.find {
+  //条件
 }，(function () {})
 ```
 
