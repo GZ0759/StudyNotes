@@ -11925,7 +11925,7 @@ function submitData() {
 
 ## 21.2 XMLHttpRequest 2级
 
-FormData实例。FormData 类型为序列化表单以及创建与表单格式相同的数据（用于通过 XHR 传输）提供了便利。其中 FormData 的实例对象有 append () 方法，接收两个参数：键和值，分别对应表单字段的名字和字段中包含的值。
+FormData实例。FormData 类型为序列化表单以及创建与表单格式相同的数据（用于通过 XHR 传输）提供了便利。其中 FormData 的实例对象有 `append()` 方法，接收两个参数：键和值，分别对应表单字段的名字和字段中包含的值。
 
 ```JavaScript
 var data = new FormData();
@@ -12017,7 +12017,7 @@ xhr.send(null);
 
 ```
 
-为确保正常执行，必须在调用 open() 方法之前添加 onprogress 事件处理程序。在上面代码中，每次触发 progress 事件，都会以新的状态信息更新 HTML 元素的内容。如果响应头部中包含 Content-Length 字段，那么也可以利用此信息来计算从响应中已经接收到的数据的百分比。
+为确保正常执行，必须在调用 `open()` 方法之前添加 onprogress 事件处理程序。在上面代码中，每次触发 progress 事件，都会以新的状态信息更新 HTML 元素的内容。如果响应头部中包含 Content-Length 字段，那么也可以利用此信息来计算从响应中已经接收到的数据的百分比。
 
 ## 21.4 跨源资源共享　
 
@@ -12027,14 +12027,14 @@ CORS 跨资源共享定义了在必须访问跨资源时，浏览器与服务器
 
 比如一个简单的使用 GET 或 POST 发送的请求，它没有自定义的头部，而主体内容是 text/plain。在发送该请求时，需要给它附加一个额外的 Origin 头部，其中包含请求页面的源信息（协议、域名和端口），以便服务器根据这个头部信息来决定是否给予响应。下面是 Origin 头部的一个示例： 
 
-```javascript
+```
 Origin: http://www.nczonline.net
 ```
 
 如果服务器认为这个请求可以接受，就在 Access-Control-Allow-Origin 头部中回发相同的源信息（如果是公共资源，可以回发"*"）。例如： 
 
-```javascript
- Access-Control-Allow-Origin: http://www.nczonline.net 
+```
+Access-Control-Allow-Origin: http://www.nczonline.net 
 ```
 
 如果没有这个头部，或者有这个头部但源信息不匹配，浏览器就会驳回请求。正常情况下，浏览器会处理请求。注意，请求和响应都不包含 cookie 信息。  
@@ -12060,9 +12060,9 @@ xhr.send(null);
 
 与 IE 中的 XDR 对象不同，通过跨域 XHR 对象可以访问 status 和 statusText 属性，而且还支持同步请求。但是跨域 XHR 对象也有一些限制，但为了安全这些限制是必须的
 
-- 不能使用 setRequestHeader()设置自定义头部。
+- 不能使用 `setRequestHeader()`设置自定义头部。
 - 不能发送和接收 cookie。
-- 调用 getAllResponseHeaders()方法总会返回空字符串。
+- 调用 `getAllResponseHeaders()`方法总会返回空字符串。
 
 由于无论同源请求还是跨源请求都使用相同的接口，因此对于本地资源，最好使用相对 URL，在访问远程资源时再使用绝对 URL。这样做能消除歧义，避免出现限制访问头部或本地 cookie 信息等问题。
 
@@ -12074,7 +12074,7 @@ Preflighted Requests。CORS 通过一种叫做 Preflighted Requests 透明服务
 
 以下是一个带有自定义头部 NCZ 的使用 POST 方法发送的请求。
 
-```JavaScript
+```
 Origin: http://www.nczonline.net
 Access-Control-Request-Method: POST
 Access-Control-Request-Headers: NCZ
@@ -12091,7 +12091,7 @@ Preflight 请求结束后，结果将按照响应中指定的时间缓存起来�
 
 带凭借的请求。默认情况下，跨域请求不提供凭据，包括 cookie 、 HTTP 认证及客户端 SSL 证明等，但通过将 withCredentials 属性设置为 true ，可以指定某个请求应该发送凭据。如果服务器接受带凭据的请求，会用下面的 HTTP 头部来响应。
 
-```JavaScript
+```
 Access-Control-Allow-Credentials: true
 ```
 
@@ -12140,7 +12140,7 @@ Web Sockets 的目标是在一个单独的持久连接上提供全双工、双�
 
 首先，可以通过 XHR 访问的任何 URL 也可以通过浏览器或服务器访问。对于未被授权系统有权访问某个资源的情况，我们称之为 XSRF 跨站点请求伪造。为确保通过XHR访问的URL安全，通行的做法就是验证发送请求者是否有权限访问相应的资源。
 
-XHR 对象也提供了一些安全机制，虽然表面上看可以保证安全，但实际上却相当不可靠。实际上，前面介绍的 open() 还能再接收两个参数：要随请求一起发送的用户名和密码。带有这两个参数的请求可以通过 SSL 发送给服务器上的页面。
+XHR 对象也提供了一些安全机制，虽然表面上看可以保证安全，但实际上却相当不可靠。实际上，前面介绍的 `open()` 还能再接收两个参数：要随请求一起发送的用户名和密码。带有这两个参数的请求可以通过 SSL 发送给服务器上的页面。
 
 21.7　小结　
 
