@@ -1202,7 +1202,7 @@ connection.end();
 
 # 九、服务器启动工具nodemon
 
-## node mon 简介
+## nodemon 简介
 
 nodemon 是一种工具，通过在检测到目录中的文件更改时自动重新启动节点应用程序，从而来帮助开发者开发基于 node.js 的应用程序。 nodemon 并没有要求任何对你的代码或开发的方法中的额外变化。 nodemon 是一个替换包装器`node`的工具，用于在执行脚本时使用`nodemon`命令替换`node`命令。
 
