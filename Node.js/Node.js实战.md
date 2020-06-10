@@ -9063,7 +9063,9 @@ proxy_set_header X-NginX-Proxy true;
 - 管道通信
 - 使用退出码
 
-Node 命令行工具的应用非常广泛，从 Gulp 和 Yeoman 这样的项目自动化工具到 XML 和 JSON解析器，几乎无处不在。如果你想了解如何用 Node 制作命令行工具，可以从本章获取你所需要知道的所有知识。我们会介绍 Node 程序如何接受命令行参数，如何用管道处理 I/O，也会介绍让命令行用起来更高效的 shell 提示。用 Node 编写命令行工具并不难，重要的是按照社区的惯例来做。本章介绍了很多这样的惯例，以便让你写出别人无须查阅太多文档就知道该怎么使用的工具。
+Node 命令行工具的应用非常广泛，从 Gulp 和 Yeoman 这样的项目自动化工具到 XML 和 JSON解析器，几乎无处不在。如果你想了解如何用 Node 制作命令行工具，可以从本章获取你所需要知道的所有知识。我们会介绍 Node 程序如何接受命令行参数，如何用管道处理 I/O，也会介绍让命令行用起来更高效的 shell 提示。
+
+用 Node 编写命令行工具并不难，重要的是按照社区的惯例来做。本章介绍了很多这样的惯例，以便让你写出别人无须查阅太多文档就知道该怎么使用的工具。
 
 ## 11.1 了解惯例和理念
 
@@ -9072,40 +9074,35 @@ Node 命令行工具的应用非常广泛，从 Gulp 和 Yeoman 这样的项目�
 ```
 Usage: babel [options] <files ...>
 Options:
--h, --help output usage information
--f, --filename [filename] filename to use when reading from
-stdin
+  -h, --help output usage information
+  -f, --filename [filename] filename to use when reading from
+  stdin
 [ ... ]
--q, --quiet Don't log anything
--V, --version output the version number
+  -q, --quiet Don't log anything
+  -V, --version output the version number
 ```
 
 这里有几个值得注意的点。第一是 `-h` 和` --help` 都能输出帮助信息：很多程序都支持这个选项。第二是表示文件名（ filename）的 `-f` 选项——这是很容易掌握的助记符。很多选项都是用的助记符。用 -q 表示输出的安静（ quiet）模式也是很常用的惯例，另外还可以用 `-v` 来显示程序的版本（ version）。你的程序也应该支持这些选项。
 
-然而这些选项不仅仅是惯例。使用连字符和双连字符（ --）已经得到了 The Open Group 实用公约的认可。 ①公约中甚至说明了应该如何使用它们：
+然而这些选项不仅仅是惯例。使用连字符和双连字符（--）已经得到了 The Open Group 实用公约的认可。 ①公约中甚至说明了应该如何使用它们：
 
 - 准则 4——所有选项都应该带有前缀-；
-- 准则 10——第一个非选项参数的--参数都应该当作表明参数结束的分隔符。之后的参数，
-
-即便以-字符开头的，都应该作为操作数处理。
+- 准则 10——第一个非选项参数的`--`参数都应该当作表明参数结束的分隔符。之后的参数，即便以`-`字符开头的，都应该作为操作数处理。
 
 设计命令行程序的另一个重点是理念。这可以追溯到 UNIX 的创造者们，他们想要设计可以与基于文本的简单界面一起使用的“小而锋利的工具”。
 
-这是 UNIX 的理念：编写只做一件事并能把它做好的程序；编写能协作的程序；编写能处理文本流的程序，因为那是通用的接口。
-——Doug McIlroy②
+> 这是 UNIX 的理念：编写只做一件事并能把它做好的程序；编写能协作的程序；编写能处理文本流的程序，因为那是通用的接口。——Doug McIlroy②
 
 本章会对 shell 技术和 UNIX 的惯例做个全面的概述，以便帮你设计出其他人能用的命令行工
 具。本章还会提供专门针对 Windows 的建议，但大多数情况下， Node 工具默认应该是跨平台的。
-shell 技巧：获取帮助信息
 
-如果你使用 shell 时卡住了，可以试试 man <cmd>，然后会看到这条命令的使用手册。
+> shell 技巧：获取帮助信息
+> 如果你使用 shell 时卡住了，可以试试 man <cmd>，然后会看到这条命令的使用手册。
 如果你忘记了某个命令怎么拼写，可以用 apropos <cmd>在系统命令库中搜一下。
 
 ## 11.2 parse-json
 
-对 JavaScript 程序员来说，最简单实用的程序就是读取 JSON，如果有效的话就输出它们。
-
-接下来我们会做一个这样的工具。
+对 JavaScript 程序员来说，最简单实用的程序就是读取 JSON，如果有效的话就输出它们。接下来我们会做一个这样的工具。
 
 先看一下这个命令看起来应该是什么样的。我们希望可以像下面这样调用它：
 
@@ -9113,7 +9110,7 @@ shell 技巧：获取帮助信息
 node parse-json.js -f my.json
 ```
 
-这里要解决的第一个问题是怎样从命令行中得到-f my.json，也就是这个程序的参数。还
+这里要解决的第一个问题是怎样从命令行中得到`-f my.json`，也就是这个程序的参数。还
 要从 stdin 中读取输入。继续，后面会讲怎么解决这两个问题。
 
 ## 11.3 使用命令行参数
@@ -9121,22 +9118,21 @@ node parse-json.js -f my.json
 虽然不是所有，但大多数命令行程序都会接受参数。 Node 本身有处理这些参数的办法，但
 npm 上的第三方模块功能更多。我们需要用这些功能实现一些广泛使用的惯例。继续往下看。
 
-11.3.1 解析命令行参数
+### 11.3.1 解析命令行参数
 
-命令行参数可以从 process.argv 数组中得到。这个数组中都是运行命令时传给 shell 的字
-符串。所以如果把命令切分一下，你就知道数组中的各个元素分别是什么了。 process.argv[0]
-是 node， process.argv[1]是 parse-json.js， [2]是 -f，以此类推。
+命令行参数可以从 `process.argv` 数组中得到。这个数组中都是运行命令时传给 shell 的字
+符串。所以如果把命令切分一下，你就知道数组中的各个元素分别是什么了。 `process.argv[0]`
+是 node， `process.argv[1]`是 parse-json.js， `[2]`是 `-f`，以此类推。
 
-如果之前用过命令行程序，你应该见过带-或--的参数。这些前缀是给程序传递选项的特殊
-惯例： --表示后面是参数的全名， --表示后面是代表参数的一个字母。比如 npm 命令的 -h 和
---help。
+如果之前用过命令行程序，你应该见过带`-`或`--`的参数。这些前缀是给程序传递选项的特殊
+惯例： `--`表示后面是参数的全名， `--`表示后面是代表参数的一个字母。比如 npm 命令的 `-h` 和 `--help`。
 
-参 数 惯 例
-其他参数惯例如下：
-`--version` 输出程序的版本；
+> 参 数 惯 例  
+其他参数惯例如下：  
+`--version` 输出程序的版本；  
 `-y` 或 `--yes` 表示其他没有指定的参数全用默认值。
 
-给参数加个别名，比如 -h 和 --help，等参数多了之后就会觉得解析起来比较麻烦，好在
+给参数加个别名，比如 `-h` 和 `--help`，等参数多了之后就会觉得解析起来比较麻烦，好在
 有个叫 yargs 的模块可以帮我们解决这个问题。下面有个特别简单的例子。只需要引入 yargs，
 然后访问 argv 属性看看给脚本传了哪些参数：
 
@@ -9152,10 +9148,10 @@ console.log({ f: argv.f });
 虽然有进步，但光有参数对象还不够，我们还需要验证参数，生成使用文本。下一节会介绍
 如何描述和验证参数。
 
-11.3.2 验证参数
+### 11.3.2 验证参数
 
 yargs 模块中有验证参数的方法。下面这段代码演示了如何用 yargs 解析 JSON 解析器的参数
--f，然后用 describe 和 nargs 方法确保参数的格式是正确的。
+`-f`，然后用 describe 和 nargs 方法确保参数的格式是正确的。
 
 代码清单 11-1 用 yargs 解析命令行参数
 ```js
@@ -9163,14 +9159,16 @@ const readFile = require('fs').readFile;
 const yargs = require('yargs');11.3 使用命令行参数 241
 
 const argv = yargs
-.demand('f')
-.nargs('f', 1)
-.describe('f', 'JSON file to parse')
-.argv;
+  // 需要 -f 才能运行
+  .demand('f')
+  // 告诉 yargs -f 后面要有参数值
+  .nargs('f', 1)
+  .describe('f', 'JSON file to parse')
+  .argv;
 const file = argv.f;
 readFile(file, (err, dataBuffer) => {
-const value = JSON.parse(dataBuffer.toString());
-console.log(JSON.stringify(value));
+  const value = JSON.parse(dataBuffer.toString());
+  console.log(JSON.stringify(value));
 });
 ```
 
@@ -9181,22 +9179,22 @@ yargs 用起来比处理 process.argv 数组容易，并且还可以强化参数
 
 ```js
 yargs
-// ...
-.usage('parse-json [options]')
-.help('h')
-.alias('h', 'help')
-// ...
+  // ...
+  .usage('parse-json [options]')
+  .help('h')
+  .alias('h', 'help')
+  // ...
 ```
 
 现在这个 JSON 解析器可以接受文件参数了，但我们还没实现文件处理功能，因为它还需要
 接受 stdin。接下来我们要学习如何按照常用的 UNIX 惯例实现这一功能。
 
-shell 技巧： history
+> shell 技巧： history  
 shell 中有之前输入过的命令的记录。用 history 可以看到这些记录。它的别名一般是 h。
 
-11.3.3 将 stdin 作为文件传递
+### 11.3.3 将 stdin 作为文件传递
 
-如果文件是连字符（ -f -），则表示要从 stdin 抓取数据。这是另一个常用的命令行惯例。
+如果文件是连字符（ `-f -`），则表示要从 stdin 抓取数据。这是另一个常用的命令行惯例。
 用 mississippi 包做这个很容易。但在调用 JSON.parse 之前，必须把所有传给程序的数据合到
 一起，因为它要解析的是完整的 JSON 字符串。加上 mississippi 模块之后，我们的例子看起来应
 该是这样的。
@@ -9211,13 +9209,6 @@ const argv = yargs
 .usage('parse-json [options]')
 .help('h')
 .alias('h', 'help')
-```
-
-需要 -f 才能运行
-告诉 yargs -f 后面
-要有参数值242 第 11 章 编写命令行程序
-
-```js
 .demand('f') // 需要 -f 才能运行
 .nargs('f', 1) // 告诉 yargs -f 之后需要跟一个参数值
 .describe('f', 'JSON file to parse')
@@ -9253,6 +9244,7 @@ parse(dataBuffer.toString());
 
 对我们的 JSON 解析器来说，有下面这段代码和代码清单 11-2 中的#!/usr/bin/env node
 就够了。
+
 ```js
 ...
 "name": "parse-json",
@@ -9263,7 +9255,7 @@ parse(dataBuffer.toString());
 ```
 
 如果用 npm install -global 安装这个包，那你可以在系统中的任何地方调用 parse-json
-命令。你可以打开终端窗口（或 Windows 里的命令提示符），输入 parse-json 试一试。是的，
+命令。你可以打开终端窗口（或 Windows 里的命令提示符），输入 parse-json 试一试。是的，在 Windows 上也可以，因为 npm 会自动安装一个封装器，让它可以在 Windows 里运行。
 
 ## 11.5 用管道连接脚本
 
@@ -9275,7 +9267,7 @@ parse-json 很简单，它只是接收文本然后进行验证。如果想把它
 shell 跟 Unix 的 shell 不同，不过还好在关键点上能保持一致。在调试时可能会出现差异，但对编
 写命令行程序应该没有影响。
 
-11.5.1 将数据通过管道传给 parse-json
+### 11.5.1 将数据通过管道传给 parse-json
 
 管道技术是连接命令行程序的主要办法。管道能将一个程序的 stdout 附着到另一个进程的
 stdin 流上，是进程间通信的中间组件。在 Node 中， stdin 是可读流，可以通过 process.stdin
@@ -9286,45 +9278,61 @@ echo "[1,2,3]" | parse-json -f -
 ```
 
 注意命令中的|，这是告诉 echo "{}"输出到 parse-json 的 stdin 中。
-shell 技巧：键盘快捷键
-你已经看到管道怎么用了，现在可以用它把 history 和 grep 组合起来搜索命令历史记录：
-history | grep node
-甚至还可以更简单，即用键盘上的向上和向下键翻看之前的命令。人们经常这么干，但实
-际上还有更好用的办法！用 Ctrl-R 从命令历史记录里搜索，不用一个个翻，直接调出跟你提供
-的文本部分匹配的命令。
 
+> shell 技巧：键盘快捷键  
+你已经看到管道怎么用了，现在可以用它把 history 和 grep 组合起来搜索命令历史记录：  
+history | grep node  
+甚至还可以更简单，即用键盘上的向上和向下键翻看之前的命令。人们经常这么干，但实际上还有更好用的办法！用 Ctrl-R 从命令历史记录里搜索，不用一个个翻，直接调出跟你提供的文本部分匹配的命令。  
 这样的快捷键还有： Ctrl-S 是向前搜索， Ctrl-G 是放弃搜索。还可以用快捷键更高效地编
 辑文本： Ctrl-W 是删除字词， ALT-F/B 是向前或向后移动一个单词， Ctrl-A/E 是跳到一行的开
 头或结尾处。
 
-11.5.2 处理错误和退出码
+### 11.5.2 处理错误和退出码
 
 目前这个程序还没有输出任何结果。如果你不知道一个命令应该输出什么，那么如果提供的
 数据是错误的，怎样才能知道它是否成功完成了呢？答案是退出码。你可以看到最后运行的命令
 的退出码，不过要注意，因为用了管道，所以 echo 和 node 是被当作一条命令对待的。
+
 在 Windows 上，可以这样查看退出码：
 
+```
 echo %errorlevel%
+```
 
 在 UNIX 上，可以用这条命令查看退出码：
-echo $?244 第 11 章 编写命令行程序
+
+```
+echo $?
+```
+
 如果一条命令是成功完成的，那它的退出码应该是 0（ zero）。所以如果给 parse-json 的是有
 问题的 JSON，那么退出码应该是非 0 值：
 
+```
 parse-json -f invalid.json
+```
 
 运行上面的命令，程序会以非 0 状态退出，并输出一条消息表明原因。当有错误抛出但没有
 被捕获时， Node 会自动退出并输出错误消息。
 
-错误流
+**错误流**
 
 尽管在控制台中输出消息会有帮助，但最好还是保存到文件中，这样以后出了问题需要调试
 时还能看到。这在 shell 中很容易实现，只要把 stdout 流重定向给一个文件就可以了：
+
+```
 echo '可以覆盖文件！ ' > out.log
 echo '甚至还可以追加到文件末尾！ ' >> out.log
+```
+
 在试验 parse-json 对无效的 JSON 的反应时，很有必要将错误消息保存下来：
+
+```
 parse-json -f invalid.json > out.log
+```
+
 但这样就没有错误日志了。等你知道 stderr 和 stdout 之间的区别时，就明白为什么会这样了：
+
 - stdout 是给其他命令行程序用的；
 - stderr 是给开发人员看的。
 
@@ -9332,9 +9340,12 @@ parse-json -f invalid.json > out.log
 是记录到 stdout 中的，就像 console.log 一样。了解到这些区别之后，你可能想换掉 stdout，
 把 stderr 重定向到文件中。好在改起来很简单。
 
-stdin、 stdout 和 stderr 流都有对应的编号，分别是 0 到 2。 stderr 对应的流编号是 2，可以用
-2> out.log 重定向， shell 看到这个就知道要将编号为 2 的流重定向到文件 out.log 中：
+stdin、 stdout 和 stderr 流都有对应的编号，分别是 0 到 2。 stderr 对应的流编号是 2，可以用`2> out.log`重定向， shell 看到这个就知道要将编号为 2 的流重定向到文件 out.log 中：
+
+```
 parse-json -f invalid.json 2> out.log
+```
+
 管道所做的事情就是输出重定向，不过它针对的不是文件，而是进程。比如下面的代码：
 
 ```js
@@ -9352,17 +9363,18 @@ node -e "console.error(null)" | parse-json
 在控制台里输出。 数据应该传给 stdout，不能给 stderr。
 
 我们可以从图 11-2 看到管道如何将各个编号的流与程序连接到一起，并将输出路由到不同的
-文件中。11.5 用管道连接脚本 245
+文件中。
 
 图 11-2 管道与输出流的组合
+
 Node 还有一个可以使用管道的 API。因为它是基于 Node 流的，所以可以用在所有实现了
 Node 流的类中。接下来我们会继续解释管道在 Node 中的使用。
 
-shell 技巧：清除命令行
+> shell 技巧：清除命令行  
 有些命令特别长。在需要删除一条很长的命令时该怎么办？可以用快捷键 Ctrl-U，其可以
 删除当前行。输入 Ctrl-Y 能将这一行命令再找回来，可以像用复制粘贴一样使用这些快捷键。
 
-11.5.3 在 Node 中使用管道
+### 11.5.3 在 Node 中使用管道
 
 接下来介绍如何通过 Node 的 API 使用管道。我们先写个小脚本，让它显示在被管道中断之
 前程序运行了多长时间。
@@ -9390,19 +9402,18 @@ parse-json -f test.json | node time.js
 
 现在你大概了解输出什么和如何从另外一个程序那里得到输入数据了，可以开始制作更复杂
 的程序了。但我们还要先谈一下通过管道让进程相互连接的时机。246 第 11 章 编写命令行程序
-shell 技巧：完成
-除了命令历史记录，大多数 shell 都能在你按下 Tab 键时匹配命令或文件。有些甚至可以
-用 Alt-?看到要补齐哪些字符。
 
-11.5.4 管道与命令的执行顺序
+> shell 技巧：  
+完成除了命令历史记录，大多数 shell 都能在你按下 Tab 键时匹配命令或文件。有些甚至可以用 Alt-?看到要补齐哪些字符。
+
+### 11.5.4 管道与命令的执行顺序
 
 用管道连接起来的命令都是立即执行的。这些命令不会以任何形式相互等待。也就是说管道
 不会等到命令退出再传送数据，并且命令只能使用发送给它的数据。因为没有等待，所以也不知
 道前面的命令是如何退出的。
 
 如果你只想在 JSON 成功解析时才输出消息，那就要用别的操作符。当用于数字时， && 和||
-在 shell 里跟在 JavaScript 里的用法差不多。 && 表示前面的命令退出码为 0 时才执行下一条命令，
-而||表示退出码非 0 时执行。
+在 shell 里跟在 JavaScript 里的用法差不多。 && 表示前面的命令退出码为 0 时才执行下一条命令，而||表示退出码非 0 时执行。
 
 我们来做一个在进程退出时通过 stderr 输出消息的小脚本。值得注意的是它跟 echo 不同，
 因为它输出到 stderr 中，也就是说消息是给开发人员看的，不是给其他程序的。你只需要监听
@@ -9417,35 +9428,42 @@ console.error(args.join(' '));
 ```
 
 JSON 解析成功后用&&调用 exit-message.js：
-parse-json -f test.json && node exit-message.js "parsed JSON successfully"
-但 exit-message.js 得不到 parse-json 的输出。 && 操作符必须等 parse-json.js 完成，然后判断是
-否应该执行下一条命令。使用 && 时不像使用管道那样有自动重定向。
 
-重定向输入
+```
+parse-json -f test.json && node exit-message.js "parsed JSON successfully"
+```
+
+但 exit-message.js 得不到 parse-json 的输出。 && 操作符必须等 parse-json.js 完成，然后判断是否应该执行下一条命令。使用 && 时不像使用管道那样有自动重定向。
+
+**重定向输入**
 
 你已经知道如何重定向输出了，实际上用类似的方式也可以重定向输入。虽然一般不需要，
 但如果可执行文件不接受文件名参数，就可以用这个办法。如果想将文件读取到 stdin 中，那么
-可以用<filename：
+可以用`<filename`：
+
+```
 parse-json -f - <invalid.json
+```
+
 将两种重定向结合起来，就可以用临时文件恢复 parse-json 的输出：
+
+```
 parse-json -f test.json >tmp.out &&
 node exit-message.js "parsed JSON successfully" <tmp.out
+```
+
 学会如何处理流、退出码和命令顺序后，应该能用 Node 命令给自己的包写脚本了。下一节
 我们将会演示如何用管道把 Browserify 和 UglifyJS 结合起来。
 
-shell 提示：清屏
+> shell 提示：清屏  
 有时候你可能会将二进制文件 cat 到终端上。就像《黑客帝国》里的场景一样，屏幕上
 全是乱码。这时可以按下 Ctrl-L 来刷新终端窗口，或者用 reset 命令重置终端窗口。
 
 ## 11.6 解释真正的脚本
 
-现在你已经可以开始编写 package.json 文件中的 scripts 域了。比如将 browserify 和 uglifyjs
-结合到一起。 Browserify 可以把 Node 模块打包到一起，以便在浏览器中使用。 UglifyJS 可以缩小
-JavaScript 文件，以便可以用更小的带宽和更短的时间发送给浏览器。在下面这个例子中， build
-将会把 main.js（随书源码见 ch11-command-line/snippets/uglify-example） 相关的脚本合并到一起，
-以便可以在浏览器中使用，然后缩小合并后的脚本：
+现在你已经可以开始编写 package.json 文件中的 scripts 域了。比如将 browserify 和 uglifyjs 结合到一起。 Browserify 可以把 Node 模块打包到一起，以便在浏览器中使用。 UglifyJS 可以缩小JavaScript 文件，以便可以用更小的带宽和更短的时间发送给浏览器。在下面这个例子中， build 将会把 main.js（随书源码见 ch11-command-line/snippets/uglify-example） 相关的脚本合并到一起，以便可以在浏览器中使用，然后缩小合并后的脚本：
 
-```js
+```json
 {
 "devDependencies": {
 "browserify": "13.3.0",
@@ -10138,6 +10156,7 @@ Docker Hub 上也有 Node。在 Dockfile 里加上 FROM node:argon 就能在映�
 # 附录B 自动化的网络抓取
 
 本附录包括
+
 - 从网页创建结构化数据
 - 用 cheerio 实现基本的网络抓取器
 - 用 jsdom 处理动态内容
@@ -10165,7 +10184,6 @@ Node 特别适合做网络抓取器，因为它将基于浏览器的技术和通
 一下对方网站上的 robots.txt 文件，但还是应该先联系一下站长。有时候站长可能会邀请你索引
 他们的信息——可能是一个大型 Web 开发协议中的部分内容。
 
-附录 B
 图 B-1 抓取和存储内容的步骤
 
 本节会介绍人们是如何在真正的网站上使用网络抓取器的，然后还会介绍以 Node 为基础制
@@ -10178,7 +10196,7 @@ Node 特别适合做网络抓取器，因为它将基于浏览器的技术和通
 电阻器。这样的网站会用网络爬虫下载内容，用抓取器识别内容并提取兴趣值（比如电阻器的容
 差），用内部数据库存储处理后的信息。
 
-图 B-2 Octopart 允许用户搜索电子元器件附录 B 自动化的网络抓取 269
+图 B-2 Octopart 允许用户搜索电子元器件
 
 然而网络抓取不仅仅用在搜索引擎上，还用在日益增长的数据科学和数据新闻领域。数据记
 者用数据库生产故事，但因为有太多数据的存储格式不太容易访问，所以他们可能会用网络抓取
@@ -10194,9 +10212,7 @@ Node 特别适合做网络抓取器，因为它将基于浏览器的技术和通
 - 轻便宽容的 cheerio；
 - 遵循 Web 标准的文档对象模型（ DOM）模拟器 jsdom。
 
-这两个库都可以用 npm 安装。有时可能还需要解析松散的人类可读的数据格式，比如日期。
-
-我们会简单地介绍一下 JavaScript 的 Date.parse 和 Moment.js。
+这两个库都可以用 npm 安装。有时可能还需要解析松散的人类可读的数据格式，比如日期。我们会简单地介绍一下 JavaScript 的 Date.parse 和 Moment.js。
 
 ## B.2 用 cheerio 进行基本的网络抓取
 
@@ -10213,6 +10229,7 @@ Felix Böhm 做的 cheerio 库特别适合做网络抓取，它有两个关键�
 
 代码清单 B-1 提取图书的详细信息
 ```js
+// 定义要解析的 HTML
 const html = `
 <html>
 <body>
@@ -10224,8 +10241,10 @@ const html = `
 </body>
 </html>`;
 const cheerio = require('cheerio');
+// 解析整个文档
 const $ = cheerio.load(html);
 const book = {
+// 用 CSS 选择器提取需要的域
 title: $('.book h2').text(),
 author: $('.book h3').text(),
 description: $('.book p').text()
@@ -10246,6 +10265,7 @@ console.log(book);
 素的选择器。
 
 比如要从一个古怪的网站提取图书信息，其页面上只有表，根本没有 CSS 类，就像下面这样：
+
 ```html
 <html>
 <body>
@@ -10263,13 +10283,6 @@ console.log(book);
 在 Chrome 中打开这个页面，然后在书名上点击右键，选择“检查”，会看到如图 B-4 所示的
 界面。
 
-定义要解析
-的 HTML
-解析整个
-文档
-用 CSS 选择器
-提取需要的域附录 B 自动化的网络抓取 271
-
 图 B-4 在 Chrome 中查看 HTML
 
 HTML 下面有个白条显示着“html body table tbody tr td a”，这基本上就是我们需要的选择器。
@@ -10283,12 +10296,16 @@ HTML 下面有个白条显示着“html body table tbody tr td a”，这基本�
 代码清单 B-2 处理杂乱的 HTML
 ```js
 const fs = require('fs');
+// 从文件中加载 HTML
 const html = fs.readFileSync('./messy_html_example.html', 'utf8');
 const cheerio = require('cheerio');
 const $ = cheerio.load(html);
 const book = {
+// 用 cheerio 的 eq()方法跳到第二个元素
 title: $('table tr td a').first().text(),
+// 用 cheerio 的 first()方法得到指定的链接
 href: $('table tr td a').first().attr('href'),
+// 用 cheerio 的 attr()方法得到 URL
 author: $('table tr td').eq(1).text()
 };
 console.log(book);
@@ -10297,33 +10314,20 @@ console.log(book);
 由于上面的代码用 fs 模块加载了 HTML，因此不用在例子中输入 HTML。在实际工作中，
 数据源可能是运行着的网站，但数据依然可能来自文件或数据库。文档经过解析后，用 first()
 获取表格第一个元素中的链接。用 cheerio 的 attr()方法获取链接的 URL，它会像 jQuery 那样
-从文件中加
-载 HTML
-用 cheerio 的 eq()方
-法跳到第二个元素
-用 cheerio 的 first()
-方法得到指定的链接
-用 cheerio 的 attr()
-方法得到 URL272 附录 B 自动化的网络抓取
 返回元素上的指定属性。 eq()方法也很有用，在上面这段代码里用它跳过第一个 td，因为第二
 个里是作者。
-Web 解析的危险
-用 cheerio 这样的模块解析 Web 文档是快速但粗糙的办法。一定要注意所解析内容的类型。
-比如碰到二进制数据时，它可能会抛出异常，所以如果用在 Web 程序中的话，可能会导致 Node
-进程崩溃。如果抓取器跟 Web 程序在同一个进程里，这个程序就要跟着承担很大的风险。
-所以在解析内容之前，最好先检查一下。另外尽量让抓取器在独立的 Node 进程里运行，
-以减轻崩溃可能产生的影响。
 
-cheerio 的局限之一是只能处理静态文档，它是用来处理纯 HTML 文档的，不适合用客户端
-JavaScript 生成的动态页面。下一节会介绍如何用 jsdom 在 Node 程序中创建类似于浏览器的环境，
-从而可以执行客户端 JavaScript。
+> Web 解析的危险  
+用 cheerio 这样的模块解析 Web 文档是快速但粗糙的办法。一定要注意所解析内容的类型。比如碰到二进制数据时，它可能会抛出异常，所以如果用在 Web 程序中的话，可能会导致 Node 进程崩溃。如果抓取器跟 Web 程序在同一个进程里，这个程序就要跟着承担很大的风险。  
+所以在解析内容之前，最好先检查一下。另外尽量让抓取器在独立的 Node 进程里运行，以减轻崩溃可能产生的影响。
+
+cheerio 的局限之一是只能处理静态文档，它是用来处理纯 HTML 文档的，不适合用客户端 
+JavaScript 生成的动态页面。下一节会介绍如何用 jsdom 在 Node 程序中创建类似于浏览器的环境，从而可以执行客户端 JavaScript。
 
 ## B.3 用 jsdom 处理动态内容
 
 jsdom 是网络抓取器理想中的工具：它能下载 HTML，能依照浏览器中出现的 DOM 进行解
-释，还能运行客户端 JavaScript。你可以指定要运行的客户端 JavaScript，包括 jQuery。也就是说
-你可以把 jQuery（或定制的调试脚本）注入到任何页面中。如图 B-5 所示， jsdom 能将 HTML 和
-JavaScript 结合到一起，抓取到其他工具访问不到的内容。
+释，还能运行客户端 JavaScript。你可以指定要运行的客户端 JavaScript，包括 jQuery。也就是说你可以把 jQuery（或定制的调试脚本）注入到任何页面中。如图 B-5 所示， jsdom 能将 HTML 和 JavaScript 结合到一起，抓取到其他工具访问不到的内容。
 
 图 B-5 用 jsdom 抓取
 
@@ -10336,8 +10340,9 @@ jsdom 的基本用法是通过 jsdom.env 方法。下例演示了 jsdom 如何�
 
 代码清单 B-3 用 jsdom 抓取页面
 
-```html
+```js
 const jsdom = require('jsdom');
+// 引入要处理的HTML代码片段
 const html = `
 <div class="book">
 <h2>Catch-22</h2>
@@ -10345,12 +10350,16 @@ const html = `
 <p>A satirical indictment of military madness.</p>
 </div>
 `;
+// 解析文档并加载 jQuery
 jsdom.env(html, ['./node_modules/jquery/dist/jquery.js'], scrape);
 function scrape(err, window) {
+// 创建 jQuery对象的别名以便于使用
 var $ = window.$;
+// 用 jQuery 的遍历方法 得到图书的数据
 $('.book').each(function() {
 var $el = $(this);
 console.log({
+// 用 jQuery 的$.each方法遍历图书条目
 title: $el.find('h2').text(),
 author: $el.find('h3').text(),
 description: $el.find('p').text()
@@ -10371,32 +10380,22 @@ jsdom.env 方法是用来解析文档及注入 jQuery 的。这里注入的 jQue
 
 选择器用 jQuery 的.each 方法遍历每一本书。虽然这个例子只有一本书，但已经足以说明
 jQuery 的遍历方法确实是可用的。图书的所有数据也是用 jQuery 的遍历方法得到的。
+
 代码清单 B-3 跟之前代码清单 B-1 中的例子差不多，主要区别是由 Node 在当前进程中解析
-和执行的 jQuery。代码清单 B-1 用 cheerio 实现了类似的功能，那是 cheerio 自己的类 jQuery 层。
-这里是像在浏览器中那样运行这些代码的。
+和执行的 jQuery。代码清单 B-1 用 cheerio 实现了类似的功能，那是 cheerio 自己的类 jQuery 层。这里是像在浏览器中那样运行这些代码的。
 
 jsdom.env 方法只在静态页面中有用。要解析使用客户端 JavaScript 的页面，需要用
 jsdom.jsdom。这个同步方法会返回一个窗口对象，可以用其他 jsdom 工具操作。下面这段代码
 用 jsdom 解析了一个带 script 标签的文档， jsdom.jQueryify 让抓取变得更容易了。
 
-——————————
-① 编写本书时是 jsdom 6.3.0。
-引 入 要 处 理 的
-HTML代码片段
-解析文档并
-加载 jQuery
-创建 jQuery对
-象的别名以便
-于使用
-用 jQuery 的遍
-历方法 得到图
-书的数据
-用 jQuery 的$.each
-方法遍历图书条目
+
 代码清单 B-4 用 jsdom 解析动态 HTML
-```html
+```js
 const jsdom = require('jsdom');
+// 指定 jQuery 路径
 const jqueryPath = './node_modules/jquery/dist/jquery.js';
+// 没有静态值的 HTML
+// 动态插入值的脚本
 const html = `
 <div class="book">
 <h2></h2>
@@ -10407,13 +10406,16 @@ document.querySelector('h3').innerHTML = 'Joseph Heller';
 </script>
 </div>
 `;
+// 创建表示文档的对象
 const doc = jsdom.jsdom(html);
 const window = doc.defaultView;
 jsdom.jQueryify(window, jqueryPath, function() {
+// 将 jQuery 插入这个文档
 var $ = window.$;
 $('.book').each(function() {
 var $el = $(this);
 console.log({
+// 提取图书的数据
 title: $el.find('h2').text(),
 author: $el.find('h3').text()
 });
@@ -10443,32 +10445,21 @@ npm install --save jquery jsdom 设置一个新项目。在这段代码中的 HT
 得到有价值的数据后，还需要进行处理，以便能够保存到数据库中或以 CSV 之类的格式导
 出。抓取到的数据或者是非结构化的普通文本，或者是用微格式编码的。
 
-微格式是基于标记的轻便数据格式，用来结构化地址、日历和事件、标签或关键词等数据。
-指定 jQuery
-路径
-没有静态值
-的 HTML
-动态插
-入值的
-脚本
-创建表示文
-档的对象
-将 jQuery 插
-入这个文档
-提取图书
-的数据附录 B 自动化的网络抓取 275
+微格式是基于标记的轻便数据格式，用来结构化地址、日历和事件、标签或关键词等数据。microformats.org 上有对已有微格式的介绍。下面是一个将名字表示为微格式的例子：
 
-microformats.org 上有对已有微格式的介绍。下面是一个将名字表示为微格式的例子：
+```html
 <a class="h-card" href="http://example.com">Joseph Heller</a>
+```
+
 微格式解析起来很容易，用 cheerio 或 jsdom，像$('.h-card').text()这样简单的表达式
 就可以把 Joseph Heller 提取出来。但普通文本需要做更多工作。这一节将会介绍如何解析日期，
 并将它们转换成更有利于数据库存储的格式。
 
 大多数网页都不用微格式。这里可能会有问题但依然可控的是日期值。日期的可能格式很多，
 但在同一个网站上一般会保持一致。在识别出日期的格式后，就可以对其进行解析和格式化了。
+
 JavaScript 中有内置日期解析器：运行 new Date('2016 01 01')，就会得到对应于 2016
-年 1 月 1 日的 Date 实例。支持哪些输入格式是由基于 RFC 2822 或 ISO 8601 的 Date.parse 决
-定的。其他格式可能能用，所以一般要用源数据试一下，看看会发生什么。
+年 1 月 1 日的 Date 实例。支持哪些输入格式是由基于 RFC 2822 或 ISO 8601 的 Date.parse 决定的。其他格式可能能用，所以一般要用源数据试一下，看看会发生什么。
 
 另外一种办法是用正则表达式跟源数据匹配，然后用 Date 的构造器创建新的 Date 对象。
 其用法如下所示：
@@ -10494,10 +10485,13 @@ YYYY-MM-DD。在下面的代码中， cheerio 用 Moment 对数据进行格式�
 'use strict';
 const cheerio = require('cheerio');
 const fs = require('fs');
+// 加载输入文件
 const html = fs.readFileSync('./input.html');
+// 引入 moment
 const moment = require('moment');
 const $ = cheerio.load(html);
 const books = $('.book')
+// 将每本图书都映射为作者、书名和出版日期
 .map((i, el) => {
 return {
 author: $(el).find('h2').text(),
@@ -10506,18 +10500,10 @@ published: $(el).find('h4').text()
 };
 })
 .get();
+// CSV 文件的头
 console.log('title, author, sourceDate, dbDate');
 books.forEach((book) => {
-```
-
-加载输入
-文件
-引入 moment
-CSV 文件
-的头
-将每本图书都映射为作
-者、书名和出版日期276 附录 B 自动化的网络抓取
-```js
+// 解析日期
 let date = moment(new Date(book.published));
 console.log(
 '%s, %s, %s, %s',
@@ -10553,6 +10539,7 @@ CSV。 HTML 中的日期应该放在 h4 中，如下所示：
 
 代码清单 B-5 中用 console.log 输出了 CSV。先输出标题栏，然后在循环遍历中输出每本
 书的数据。对于日期，先是用 new Date 解析，然后用 Moment 转换成可以跟 MySQL 兼容的格式。
+
 习惯了日期的解析和格式化之后，可以对其他数据格式使用类似的技术。比如用正则表达式
 捕获货币和距离度量数据，然后用 Numeral 这种通用的数值格式库做格式化处理。
 
@@ -10563,7 +10550,6 @@ CSV。 HTML 中的日期应该放在 h4 中，如下所示：
 - 在抓取网站之前应该先查看网站的 robots.txt 文件，跟站长联系，取得对方许可。
 - 主要工具是静态 HTML 解析器（ cheerio）和能够运行 JavaScript 的解析器（ jsdom），以及能够找到 CSS 选择器的浏览器开发者工具。
 - 因为有时数据的格式化程度比较低，所以可能需要将日期或货币之类的数据转换成适用于数据库的格式。
-解析日期
 
 # 附录C Connect 的官方中间件
 
