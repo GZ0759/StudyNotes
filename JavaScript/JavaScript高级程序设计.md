@@ -2859,7 +2859,7 @@ var person = {
 
 这里创建了一个名为 name 的属性，为它指定的值是"Nicholas"。也就是说， `[[Value]]`特性将被设置为"Nicholas"，而对这个值的任何修改都将反映在这个位置。
 
-要修改属性默认的特性，必须使用 ECMAScript 5 的 `Object.defineProperty ()` 方法，该方法接收三个参数：属性所在的对象、属性的名字和一个描述符对象。其中，描述符（descriptor）对象的属性必须是： configurable、 enumerable、 writable 和 value。设置其中的一或多个值，可以修改对应的特性值。
+要修改属性默认的特性，必须使用 ECMAScript 5 的 `Object.defineProperty()` 方法，该方法接收三个参数：属性所在的对象、属性的名字和一个描述符对象。其中，描述符（descriptor）对象的属性必须是： configurable、 enumerable、 writable 和 value。设置其中的一或多个值，可以修改对应的特性值。
 
 ```js
 var person = {};
@@ -2903,7 +2903,7 @@ Object.defineProperty(person, "name", {
 });
 ```
 
-也就是说，可以多次调用 `Object.defineProperty ()` 方法修改同一个属性，但在把 `[[configurable]]` 特性设置为 false 之后就会有限制了。
+也就是说，可以多次调用 `Object.defineProperty()` 方法修改同一个属性，但在把 `[[configurable]]` 特性设置为 false 之后就会有限制了。
 
 在调用 `Object.defineProperty()`方法时，如果不指定， `[[configurable]]`、 `[[enumerable]]` 和`[[writable]]` 特性的默认值都是 false。多数情况下，可能都没有必要利用 `Object.defineProperty()`方法提供的这些高级功能。不过，理解这些概念对理解 JavaScript 对象却非常有用。
 
@@ -3077,7 +3077,7 @@ var person1 = new Person("Nicholas", 29, "Software Engineer");
 var person2 = new Person("Greg", 27, "Doctor");
 ```
 
-在这个例子中，`Person()`函数取代了 `createPerson()`函数。我们注意到，` Person()`中的代码除了与 `createPerson()`中相同的部分外，还存在以下不同之处：
+在这个例子中，`Person()`函数取代了 `createPerson()`函数。我们注意到，`Person()`中的代码除了与 `createPerson()`中相同的部分外，还存在以下不同之处：
 
 - 没有显式地创建对象；
 - 直接将属性和方法赋给了 this 对象；
@@ -3333,7 +3333,7 @@ Person.prototype.name = "Nicholas";
 Person.prototype.age = 29;
 Person.prototype.job = "Software Engineer";
 Person.prototype.sayName = function(){
-alert(this.name);
+  alert(this.name);
 };
 
 var person = new Person();
@@ -3708,9 +3708,9 @@ alert(SuperType.prototype.isPrototypeOf(instance)); //true
 
 通过实现原型链，本质上扩展了本章前面介绍的原型搜索机制。读者大概还记得，当以读取模式访问一个实例属性时，首先会在实例中搜索该属性。如果没有找到该属性，则会继续搜索实例的原型。在通过原型链实现继承的情况下，搜索过程就得以沿着原型链继续向上。就拿上面的例子来说，调用`instance.getSuperValue()`会经历三个搜索步骤： 
 
-1）搜索实例；   
-2）搜索 SubType.prototype；  
-3）搜索 SuperType.prototype，最后一步才会找到该方法。  
+1. 搜索实例；   
+2. 搜索 SubType.prototype；  
+3. 搜索 SuperType.prototype，最后一步才会找到该方法。  
 
 在找不到属性或方法的情况下，搜索过程总是要一环一环地前行到原型链末端才会停下来。
 
@@ -4220,9 +4220,7 @@ var factorial = (function f(num){
 
 ## 7.2 闭包 
 
-闭包是指有权访问另一个函数作用域中的变量的函数。创建闭包的常见方式，就是在一个函数内部创建另一个函数。下面代码即使这个内部函数被返回了，而且是在其他地方被调用了，但它仍然可
-以访问变量 propertyName 。之所以还能够访问这个变量，是因为内部函数的作用域链中包含`createComparisonFunction()`的作用域。要彻底搞清楚其中的细节，必须从理解函数被调用的时候
-都会发生什么入手。
+闭包是指有权访问另一个函数作用域中的变量的函数。创建闭包的常见方式，就是在一个函数内部创建另一个函数。下面代码即使这个内部函数被返回了，而且是在其他地方被调用了，但它仍然可以访问变量 propertyName 。之所以还能够访问这个变量，是因为内部函数的作用域链中包含`createComparisonFunction()`的作用域。要彻底搞清楚其中的细节，必须从理解函数被调用的时候都会发生什么入手。
 
 ```js
 function createComparisonFunction(propertyName) {
@@ -4378,7 +4376,7 @@ object.getName(); //"My Object"
 
 ### 7.2.3 内存泄漏
 
-由于 IE9 之前的版本对 JScript 对象和 COM 对象使用不同的垃圾收集例程，因此闭包在 IE 的这些版本中会导致一些特殊的问题。具体来说，如果闭包的作用域链中保存着一个HTML 元素，那么就意味着该元素将无法被销毁。只要匿名函数存在，变量引用 DOM 的引用数至少也是1，因此它所占用的内存就永远不会被回收。
+由于 IE9 之前的版本对 JScript 对象和 COM 对象使用不同的垃圾收集例程，因此闭包在 IE 的这些版本中会导致一些特殊的问题。具体来说，如果闭包的作用域链中保存着一个 HTML 元素，那么就意味着该元素将无法被销毁。只要匿名函数存在，变量引用 DOM 的引用数至少也是1，因此它所占用的内存就永远不会被回收。
 
 ```js
 function assignHandler(){
@@ -4389,7 +4387,7 @@ function assignHandler(){
 }
 ```
 
-闭包会引用包含函数的整个活动对象，而其中包含着 element。通过把 element.id 的一个副本保存在一个变量中，并且在闭包中引用该变量消除了循环引用。但仅仅做到这一步，还是不能解决内存泄漏的问题。即使闭包不直接引用 element，包含函数的活动对象中也仍然会保存一个引用。因此，有必要把 element 变量设置为 null。这样就能够解除对 DOM 对象的引用，顺利地减少其引用数，确保正常回收其占用的内存。
+闭包会引用包含函数的整个活动对象，而其中包含着 element。通过把 `element.id` 的一个副本保存在一个变量中，并且在闭包中引用该变量消除了循环引用。但仅仅做到这一步，还是不能解决内存泄漏的问题。即使闭包不直接引用 element，包含函数的活动对象中也仍然会保存一个引用。因此，有必要把 element 变量设置为 null。这样就能够解除对 DOM 对象的引用，顺利地减少其引用数，确保正常回收其占用的内存。
 
 ```js
 function assignHandler(){
@@ -4450,7 +4448,7 @@ outputNumbers(count);
 
 ```js
 var someFunction = function(){
-//这里是块级作用域
+  //这里是块级作用域
 };
 someFunction();
 ```

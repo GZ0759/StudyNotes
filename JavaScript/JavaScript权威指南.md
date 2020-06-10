@@ -3565,7 +3565,7 @@ for (i = 0; i < 4; i++) {
 };
 ```
 
-这个例子主要说明了使用数组写法和用字符串表达式来访问对象属性的灵活性。这段代码也可以通过点运算符来重写，但是很多场景只能使用数组写法来完成。假设你正在写一个程序，这个程序利用网络资源计算当前用户股票市场投资的金额。程序允许用户输入每只股票的名称和购股份额。该程序使用名为portfolio的对象来存储这些信息。每只股票在这个对象中都有对应的属性，属性名称就是股票名称，属性值就是购股数量，例如，如果用户持有 IBM 的50股，那么 portfolio.ibm 属性的值就为50。
+这个例子主要说明了使用数组写法和用字符串表达式来访问对象属性的灵活性。这段代码也可以通过点运算符来重写，但是很多场景只能使用数组写法来完成。假设你正在写一个程序，这个程序利用网络资源计算当前用户股票市场投资的金额。程序允许用户输入每只股票的名称和购股份额。该程序使用名为portfolio的对象来存储这些信息。每只股票在这个对象中都有对应的属性，属性名称就是股票名称，属性值就是购股数量，例如，如果用户持有 IBM 的50股，那么 `portfolio.ibm` 属性的值就为50。
 
 下面是程序的部分代码，这个函数用来给 portifolio 添加新的股票：
 
@@ -3934,7 +3934,7 @@ var p = {
 };
 ```
 
-注意在这段代码中getter和setter里this关键字的用法。JavaScript把这些函数当做对象的方法来调用，也就是说，在函数体内的this指向表示这个点的对象，因此，r属性的getter方法可以通过this.x和this.y引用x和y属性。
+注意在这段代码中getter和setter里this关键字的用法。JavaScript把这些函数当做对象的方法来调用，也就是说，在函数体内的this指向表示这个点的对象，因此，r属性的getter方法可以通过`this.x`和`this.y`引用x和y属性。
 
 和数据属性一样，存取器属性是可以继承的，因此可以将上述代码中的对象p当做另一个“点”的原型。可以给新对象定义它的x和y属性，但r和theta属性是继承来的：
 
@@ -4221,13 +4221,13 @@ JSON的语法是JavaScript语法的子集，它并不能表示JavaScript里的�
 
 ## 6.10 对象方法 
 
-所有的JavaScript对象都从Object.prototype继承属性（除了那些不通过原型显式创建的对象）。这些继承属性主要是方法，因为JavaScript程序员普遍对继承方法更感兴趣。我们已经讨论过`hasOwnProperty()`、`propertyIsEnumerable()`和`isPrototypeOf()`这三个方法，以及在Object构造函数里定义的静态函数`Object.create()`和`Object.getPrototypeOf()`等。本节将对定义在Object.prototype里的对象方法展开讲解，这些方法非常好用而且使用广泛，但一些特定的类会重写这些方法。
+所有的JavaScript对象都从Object.prototype继承属性（除了那些不通过原型显式创建的对象）。这些继承属性主要是方法，因为JavaScript程序员普遍对继承方法更感兴趣。我们已经讨论过`hasOwnProperty()`、`propertyIsEnumerable()`和`isPrototypeOf()`这三个方法，以及在Object构造函数里定义的静态函数`Object.create()`和`Object.getPrototypeOf()`等。本节将对定义在`Object.prototype`里的对象方法展开讲解，这些方法非常好用而且使用广泛，但一些特定的类会重写这些方法。
 
 ### 6.10.1 toString()方法
 
 `toString()`方法没有参数，它将返回一个表示调用这个方法的对象值的字符串。在需要将对象转换为字符串的时候，JavaScript都会调用这个方法。比如，当使用“+”运算符连接一个字符串和一个对象时或者在希望使用字符串的方法中使用了对象时都会调用`toString()`。
 
-默认的`toString()`方法的返回值带有的信息量很少（尽管它在检测对象的类型时非常有用），例如，下面这行代码的计算结果为字符串“[object Object]”：
+默认的`toString()`方法的返回值带有的信息量很少（尽管它在检测对象的类型时非常有用），例如，下面这行代码的计算结果为字符串`[object Object]`：
 
 ```js
 var s = { x:1, y:1 }.toString(); //=>[object Object]
@@ -4241,7 +4241,7 @@ var s = { x:1, y:1 }.toString(); //=>[object Object]
 
 ### 6.10.3 toJSON()方法
 
-Object.prototype实际上没有定义`toJSON()`方法，但对于需要执行序列化的对象来说，`JSON.stringify()`方法会调用`toJSON()`方法。如果在待序列化的对象中存在这个方法，则调用它，返回值即是序列化的结果，而不是原始的对象。具体示例参见`Date.toJSON()`。
+`Object.prototype`实际上没有定义`toJSON()`方法，但对于需要执行序列化的对象来说，`JSON.stringify()`方法会调用`toJSON()`方法。如果在待序列化的对象中存在这个方法，则调用它，返回值即是序列化的结果，而不是原始的对象。具体示例参见`Date.toJSON()`。
 
 ### 6.10.4 valueOf()方法
 
@@ -6675,7 +6675,7 @@ function typeAndValue (x){
 
 一种可能的解决方案是使用构造函数的名字而不是使用构造函数本身作为类标识符。一个窗口里的 Array 构造函数和令一个窗口的 Array 构造函数是不相等的，但是它们的名字是一样的。在一些 Javascript 的实现中为了给函数对象提供一个非标准的属性name，用来表示函数的名称。对于那些没有那么属性的 Javascript 实现来说，可以将函数转换为字符串，然后从中提取出函数名（9.4中示例的代码给Function类添加了`getName()`方法，就是使用这种方法来得到函数名）。
 
-下面定义的`type()`函数以字符串的方法返回对象的类型。它用typeof运算符来处理原始的值和函数。对于对象来说，它要么返回class属性的值要么返回构造函数的名字。`type()`函数用到了前面`classof()`函数和9.4节的Function,`getName()`方法。为了简单起见，这里包含了函数和方法的代码：
+下面定义的`type()`函数以字符串的方法返回对象的类型。它用typeof运算符来处理原始的值和函数。对于对象来说，它要么返回 class 属性的值要么返回构造函数的名字。`type()`函数用到了前面`classof()`函数和9.4节的Function,`getName()`方法。为了简单起见，这里包含了函数和方法的代码：
 
 ```js
 // 例9.4：可以判断值的类型的type()函数
@@ -7018,7 +7018,7 @@ var hand = deck.deal(13).sort(Card.orderBySuit);
 
 3.8.3和6.10节讨论了对象类型转化所多用到的重要方法，有一些方法是需要做类型转换时由javascript解释器自动调用的。不需要为定义的每个类都实现这些方法，但这些方法的确非常重要，如果没有为自定义的类实现这些方法，也应当是有意为之，而不应当因为疏忽而漏掉了它们。
 
-最重要的方法首当`toString()`。这个方法的作用是返回一个表示这个对象的字符串。在希望使用字符串的地方用到对象的话（比如将对象用作属性名或使用“+”运算符来进行字符串的链接运算）， JavaScript 会自动调用这个方法，如果没有实现这个方法，类会默认的从`Object.prototype`中继承`toString()`方法，这个方法的运算结果是“[object object]”，这个字符串的用处不大。`toString()`方法应当返还一个可读的字符串，这样最终用户才能将这个输出值利用起来，然而有时候并不一定非要如此，不管怎样，可以返回可读字符串的`toString()`方法也会让程序调试变得更加轻松。例如上文中的 Range 类和 Complex 类都定义了`toString()`方法。
+最重要的方法首当`toString()`。这个方法的作用是返回一个表示这个对象的字符串。在希望使用字符串的地方用到对象的话（比如将对象用作属性名或使用“+”运算符来进行字符串的链接运算）， JavaScript 会自动调用这个方法，如果没有实现这个方法，类会默认的从`Object.prototype`中继承`toString()`方法，这个方法的运算结果是`[object object]`，这个字符串的用处不大。`toString()`方法应当返还一个可读的字符串，这样最终用户才能将这个输出值利用起来，然而有时候并不一定非要如此，不管怎样，可以返回可读字符串的`toString()`方法也会让程序调试变得更加轻松。例如上文中的 Range 类和 Complex 类都定义了`toString()`方法。
 
 `toLocaleString()`和`toString()`极为类似：`toLocaleString()`是以本地敏感性（locale-sensitive）的方式来讲对象转换为字符串。默认情况下，对象所继承的`toLocaleString()`方法只是简单的调用`toString()`方法。有一些内置类型包含有用的`toLocaleString()`方法用以实际上返回本地化相关的字符串，如果需要为对象到字符串的转换定义`toString()`方法，那么同样需要定义`toLocaleString()`方法处理本地化的对象到字符串的转换。下面的Set类中的定义中会有相关代码。
 
@@ -7231,7 +7231,7 @@ var genric = {
 
 我们可以通过将变量（或参数）闭包在一个构造函数内来模拟实现私有实例字段，调用构造函数会创建一个实例。为了做到这一点，需要在构造函数内定义一个函数（因此这个函数可以访问构造函数内部的参数和变量），并将这个函数赋值给新创建对象的属性。
 
-下面的例子展示了对Rang类的令一种封装，新版的类的实例包含`from()`和`to()`方法用于返回范围的端点，而不是用from和to属性来获取端点。这里的`from()`和`to()`方法是定义在每个Range对象上 的，而不是从原型继承出来的。其它的`Range()`方法还是和之前一样定义在原型中，但获取端点的方式从之前直接从属性读取变成了通过`from()`和`to()`方法来读取
+下面的例子展示了对Rang类的令一种封装，新版的类的实例包含`from()`和`to()`方法用于返回范围的端点，而不是用from和to属性来获取端点。这里的`from()`和`to()`方法是定义在每个Range对象上的，而不是从原型继承出来的。其它的`Range()`方法还是和之前一样定义在原型中，但获取端点的方式从之前直接从属性读取变成了通过`from()`和`to()`方法来读取
 
 ```js
 /*对Range类读取端点的方法的简单封装*/
@@ -7252,7 +7252,7 @@ Range.prototype={
 };
 ```
 
-这个新的Range类定义了用于读取范围端点的方法，但没有定义设置端点的方法或属性。这让类的实例看起来是不可修改的，如果正确的话，一旦创建Range对象，端点数据就不可修改了。除非使用 ECMAScript 5 (9.3节)中的某些特性，但from和to的属性依然是可写的，并且Range对象实际上并不是真正可以不可修改的：
+这个新的Range类定义了用于读取范围端点的方法，但没有定义设置端点的方法或属性。这让类的实例看起来是不可修改的，如果正确的话，一旦创建Range对象，端点数据就不可修改了。除非使用 ECMAScript 5 （9.3节）中的某些特性，但from和to的属性依然是可写的，并且Range对象实际上并不是真正可以不可修改的：
 
 ```js
 var r = new Range(1,5);//一个不可修改的范围
@@ -7333,7 +7333,7 @@ B.prototype = inherit(A.prototype); //子类派生父类
 B.prototype.constructor = B; //重载继承来的constructor属性
 ```
 
-末尾这两行代码是在 JavaScript 中创建子类的关键。如果不这样做，原型对象仅仅是一个普通对象，它只继承自Object.prototype，这意味着你的类和所有的类一样是Object的子类。如果将这两行代码添加至defienClass()函数中（9.3）节，可以将它变成下面的例子中的defineSubclass()函数和Function.prototype.extend()方法：
+末尾这两行代码是在 JavaScript 中创建子类的关键。如果不这样做，原型对象仅仅是一个普通对象，它只继承自Object.prototype，这意味着你的类和所有的类一样是Object的子类。如果将这两行代码添加至`defienClass()`函数中（9.3）节，可以将它变成下面的例子中的`defineSubclass()`函数和`Function.prototype.extend()`方法：
 
 ```js
 /*定义子类*/
@@ -7401,7 +7401,7 @@ SingletonSet.prototype.equals = function(that){
 
 最后一节的SingletonSet类定义了全新的集合实现，而且将它继承自其父类的核心方法全部替换。然而定义子类的时，我们往往希望对父类的行为进行修改或扩充，而不是完全替换掉它们。为了做到这一点，构造函数和子类的的方法需要调用或链接到父类构造函数和父类的方法。
 
-下面的例子对此做了展示。它定义了Set的子类NonNullSet,它不允许null和undefined作为它的成员。为了使用这种方式对成员做限制，NonNullSet需要在其add()方法中对null和undefined值做检测。但它需要完全重新实现一个`add()`方法，因此它调用了父类中的这个方法。注意，`NonNullSet()`构造函数同样不需要重新实现，它只须将它的参数传入父类构造函数（作为函数 来调用它，而不是通过构造函数来调用），通过父类的构造函数来初始化新创建的对象。
+下面的例子对此做了展示。它定义了Set的子类NonNullSet,它不允许null和undefined作为它的成员。为了使用这种方式对成员做限制，NonNullSet需要在其`add()`方法中对null和undefined值做检测。但它需要完全重新实现一个`add()`方法，因此它调用了父类中的这个方法。注意，`NonNullSet()`构造函数同样不需要重新实现，它只须将它的参数传入父类构造函数（作为函数 来调用它，而不是通过构造函数来调用），通过父类的构造函数来初始化新创建的对象。
 
 ```js
 /*在子类中调用父类的构造函数和方法*/
@@ -7427,7 +7427,7 @@ NonNullSet.prototype.add = function() {
 };
 ```
 
-让我们将这个非null集合的概念推而广之，称为“过滤后的集合”，这个集合中成员首先传入一个过滤函数再执行添加操作。为此，定义一个类工厂函数，类似`enumeration()`函数，传入一个过滤函数，返回一个新的Set子类，实际上，可以对此做进一步的通用化的处理，定义一个可接受两个参数的类工厂：子类和用于add()方法的过滤函数。这个工厂方法称为`filteredsetSubclass()`,并通过这样的代码来使用它：
+让我们将这个非null集合的概念推而广之，称为“过滤后的集合”，这个集合中成员首先传入一个过滤函数再执行添加操作。为此，定义一个类工厂函数，类似`enumeration()`函数，传入一个过滤函数，返回一个新的Set子类，实际上，可以对此做进一步的通用化的处理，定义一个可接受两个参数的类工厂：子类和用于`add()`方法的过滤函数。这个工厂方法称为`filteredsetSubclass()`,并通过这样的代码来使用它：
 
 ```js
 //定义一个只能保持字符串的“集合”类
@@ -7494,32 +7494,37 @@ return superclass.extend(function() {
 ```js
 /*使用组合代替继承的集合的实现*/
 /**
-*实现一个FilteredSet,它实现包装某个指定的“集合”对象。
-* 并对传入add()方法的值应用的了某种指定的过滤器
-* “范围”类中其他所有的核心方法延续到包装后的实例中
-**/
+ *实现一个FilteredSet,它实现包装某个指定的“集合”对象。
+ * 并对传入add()方法的值应用的了某种指定的过滤器
+ * “范围”类中其他所有的核心方法延续到包装后的实例中
+ **/
 var FileredSet = Set.extend(
-  function FileredSet (set,filter){//构造函数
+  function FileredSet(set, filter) { //构造函数
     this.set = set;
     this.filter = filter;
-  },
-  {//实例方法
-    add:function(){
+  }, { //实例方法
+    add: function () {
         //如果已经有过滤器，直接使用它
-      if(this.filter){
-          for(var i = 0;i<arguments.length;i++){
-            var v =arguments[i];
-            if(!this.filter(v))
-            throw new Error ("FilteredSet:value" + v + "rejeced by filter");
+        if (this.filter) {
+          for (var i = 0; i < arguments.length; i++) {
+            var v = arguments[i];
+            if (!this.filter(v))
+              throw new Error("FilteredSet:value" + v + "rejeced by filter");
           }
         }
         //调用set中的add()方法
-        this.set.add.apply(this.set,arguments);
+        this.set.add.apply(this.set, arguments);
         return this;
-    },
-    contains:function(v){return this.set.contains(v);},
-    size:function(){return this.set.size();},
-    foreach:function(f,c){this.set.foreach(f,c);}
+      },
+      contains: function (v) {
+        return this.set.contains(v);
+      },
+      size: function () {
+        return this.set.size();
+      },
+      foreach: function (f, c) {
+        this.set.foreach(f, c);
+      }
   }
 );
 ```
@@ -7540,9 +7545,9 @@ var t = new FileredSet(s,function(x){return !(x instanceof Set);})
 
 在上节中给出了“组合优于继承”的原则，但为了将这条原则阐述清楚，创建了Set的子类。这样做的原因就是最终得到类是Set的实例（本书作者这里表示稍微有含糊，作者的意思应该就是“Set子类的实例也是Set的实例”，而不是“子类是Set的实例”）。它会从Set继承有用的辅助方法，比如`toString()`和`equals()`。尽管这是一个很实际的原因，但不用创建类似Set类这样具有类的子类也可以很好的用组合来实现“范围”。上文中的SingletonSet类可以有另外一种类型的实现，这个类还是继承自Set，因此它可以继承很多辅助方法，但它的实现和其父类的实现完全不一样。SingletonSet并不是Set类的专用版本，而是完全不同的另一种Set。在类层次结构中SingletonSet和Set应当是兄弟的关系，而非父子关系。
 
-不管是在经典面向对象编程的语言中还是在javascript中，通行的解决办法是（这里指的是实现类的不同定制版本的解决办法，更直接的讲究是实现多态的方法）“从实现中抽离出接口”。假定定义了一个AbstractSet类，其中定义了一些辅助方法比如`toString()`,但并没有实现诸如foreach()的核心方法。这样，实现Set、SingletonSet和FilteredSet都是这个抽象类的子类，FilteredSet和SlingletonSet都不必再显示为了某个不相关的子类了。
+不管是在经典面向对象编程的语言中还是在javascript中，通行的解决办法是（这里指的是实现类的不同定制版本的解决办法，更直接的讲究是实现多态的方法）“从实现中抽离出接口”。假定定义了一个AbstractSet类，其中定义了一些辅助方法比如`toString()`,但并没有实现诸如`foreach()`的核心方法。这样，实现Set、SingletonSet和FilteredSet都是这个抽象类的子类，FilteredSet和SlingletonSet都不必再显示为了某个不相关的子类了。
 
-下面的例子在这个思路上更进了一步，定义了一个层次结构的抽象的集合类。bstractSet只定义了一个抽象方法，`contains()`。任何类只要"声称"自己是一个表示范围的类，就必须定义这个`contains()`方法。然后定义AbstractSet的子类AbstractSet的子类AbstractEnumerableSet。这个类增加了抽象的`size()`和`foreach()`方法，而且定义了一些有用的非抽象方法(toString/toArray/equals等)AbstractEnumerableSet并没有定义`add()`和`remove()`方法，它只代表只读集合。SingletonSet可以实现为非抽象子类。最后，定义了AbstractEnumerableSet的子类AbstractWritableSet。这个final抽象集合定义了抽象方法`add()`和`remove()`，并实现了诸如union()和intersection()等具体方法，这两个方法调用了`add()`和`remove()`。AbstractWritableSet是Set和FilteredSet相应的父类。但这个例子中并没有实现它。而是实现了一个新的名叫ArraySet的非抽象类。
+下面的例子在这个思路上更进了一步，定义了一个层次结构的抽象的集合类。bstractSet只定义了一个抽象方法，`contains()`。任何类只要"声称"自己是一个表示范围的类，就必须定义这个`contains()`方法。然后定义AbstractSet的子类AbstractSet的子类AbstractEnumerableSet。这个类增加了抽象的`size()`和`foreach()`方法，而且定义了一些有用的非抽象方法（toString/toArray/equals等）AbstractEnumerableSet并没有定义`add()`和`remove()`方法，它只代表只读集合。SingletonSet可以实现为非抽象子类。最后，定义了AbstractEnumerableSet的子类AbstractWritableSet。这个final抽象集合定义了抽象方法`add()`和`remove()`，并实现了诸如`union()`和`intersection()`等具体方法，这两个方法调用了`add()`和`remove()`。AbstractWritableSet是Set和FilteredSet相应的父类。但这个例子中并没有实现它。而是实现了一个新的名叫ArraySet的非抽象类。
 
 这个例子很长，但是还是应当完整的看一遍。这里用到了`Function.prototype.extend()`作为创建子类的快捷方法。
 
@@ -7743,49 +7748,53 @@ function idGetter() { //getter函数返回该id
 
 ```js
 /**
-*创建一个不可变的类，它的属性和方法都是只读的
-**/
+ *创建一个不可变的类，它的属性和方法都是只读的
+ **/
 //这个方法可以使用new调用，也可以省略new，它可以用作构造函数也可以用作工厂函数。
 function Range2(from, to) {
     //这些都是对from和to只读属性的描述符
     var props = {
-        from: {
-            value: from,
-            enumerable: true,
-            writable: false,
-            configurable: false
-        },
-        to: {
-            value: to,
-            enumerable: true,
-            writable: false,
-            configurable: false
-        }
+      from: {
+        value: from,
+        enumerable: true,
+        writable: false,
+        configurable: false
+      },
+      to: {
+        value: to,
+        enumerable: true,
+        writable: false,
+        configurable: false
+      }
     };
     if (this instanceof Range2) //如果作为构造函数来调用
-        Object.defineProperties(this, props); //定义属性
+      Object.defineProperties(this, props); //定义属性
     else
-        return Object.create(Range2.prototype, //创建并返回这个新Range2对象
-            props); //属性由props指定
-}
-//如果用同样的方法给Range2.protptype对象添加属性，那么需要给这些属性设置他们的特性
-//因为我们无法识别出他们的可枚举性，可写性和可配置性，这些属性的特征默认false
+      return Object.create(Range2.prototype, //创建并返回这个新Range2对象
+        props); //属性由props指定
+  }
+  //如果用同样的方法给Range2.protptype对象添加属性，那么需要给这些属性设置他们的特性
+  //因为我们无法识别出他们的可枚举性，可写性和可配置性，这些属性的特征默认false
 
-Object.defineProperties(Range2.prototype,{
-    includes:{
-        value:function(x){return this.from <= x && x <= this.to;}
-    },
-    foreach:{
-        value:function(f){
-            for(var x = Math.ceil(this.from); x <= this.to; x++)f(x);
-        }
-    },
-    toString:{
-        value:function(){return "(" + this.from + "..." + this.to + ")";}
+Object.defineProperties(Range2.prototype, {
+  includes: {
+    value: function (x) {
+      return this.from <= x && x <= this.to;
     }
+  },
+  foreach: {
+    value: function (f) {
+      for (var x = Math.ceil(this.from); x <= this.to; x++) f(x);
+    }
+  },
+  toString: {
+    value: function () {
+      return "(" + this.from + "..." + this.to + ")";
+    }
+  }
 });
 
-var c = Range2(100,22); //
+var c = Range2(100, 22); //
 console.log(c.toString()) //=> (100...22)
 ```
 
@@ -7793,31 +7802,37 @@ console.log(c.toString()) //=> (100...22)
 
 ```js
 /**
-  *属性描述符工具函数 
-  **/
+ *属性描述符工具函数
+ **/
 //将o的指定名字（或所有）的属性设置为不可写的和不可配置的
-function freezeProps(o){
+function freezeProps(o) {
     var props = (arguments.length == 1) //如果只有一个参数
-    ? Object.getOwnPropertyNames(o) //所有属性名称
-    :Array.prototype.splice.call(arguments,1); //否则传入了指定的名字的属性
-    props.forEach(function(n){//设置属性
-        //忽略配置的属性
-        if(!Object.getOwnPropertyDescriptor(o,n).configurable)return;
-        Object.defineProperty(o,n,{writable:false,configurable:false});
+      ? Object.getOwnPropertyNames(o) //所有属性名称
+      : Array.prototype.splice.call(arguments, 1); //否则传入了指定的名字的属性
+    props.forEach(function (n) { //设置属性
+      //忽略配置的属性
+      if (!Object.getOwnPropertyDescriptor(o, n).configurable) return;
+      Object.defineProperty(o, n, {
+        writable: false,
+        configurable: false
+      });
     });
-return o;//继承它
-}
-//将o的指定名字（或所有）的属性设置为不可枚举和可配置的
-function hideProps(o){
-    var props = (arguments.length == 1) //如果只有一个参数
-    ?Object.getOwnPropertyNames(o) //使用所有的属性
-    :Array.prototype.splice.call(arguments,1);//否则传入了指定名字的属性
-props.forEach(function(n){//将它们设置为不可枚举的
+    return o; //继承它
+  }
+  //将o的指定名字（或所有）的属性设置为不可枚举和可配置的
+
+function hideProps(o) {
+  var props = (arguments.length == 1) //如果只有一个参数
+    ? Object.getOwnPropertyNames(o) //使用所有的属性
+    : Array.prototype.splice.call(arguments, 1); //否则传入了指定名字的属性
+  props.forEach(function (n) { //将它们设置为不可枚举的
     //忽略不可配置的属性
-    if(!Object.getOwnPropertyDescriptor(o,n).configurable)return;
-    Object.defineProperty(o,n,{enumerable:false});
-});
-return o;
+    if (!Object.getOwnPropertyDescriptor(o, n).configurable) return;
+    Object.defineProperty(o, n, {
+      enumerable: false
+    });
+  });
+  return o;
 }
 ```
 
@@ -7827,19 +7842,25 @@ return o;
 
 ```js
 /**
-  *一个简单不可不变的类 
-  **/
-function Range3(from,to){//不可变的类Range3的构造函数
-    this.from = from;
-    this.to = to;
-    freezeProps(this) //将属性设置为不可变的
+ *一个简单不可不变的类
+ **/
+function Range3(from, to) { //不可变的类Range3的构造函数
+  this.from = from;
+  this.to = to;
+  freezeProps(this) //将属性设置为不可变的
 }
 
-Range3.prototype = hideProps({//使用不可枚举的属性来定义原型
-    constructor:Range3,
-    includes:function(x){return this.from <= x && x <= this.to;},
-    foreach:function(f){for(var x = Math.ceil(this.from);x <= this.to; x++) f(x);},
-    toString:function(){return "(" + this.from + "..." + this.to + ")";}
+Range3.prototype = hideProps({ //使用不可枚举的属性来定义原型
+  constructor: Range3,
+  includes: function (x) {
+    return this.from <= x && x <= this.to;
+  },
+  foreach: function (f) {
+    for (var x = Math.ceil(this.from); x <= this.to; x++) f(x);
+  },
+  toString: function () {
+    return "(" + this.from + "..." + this.to + ")";
+  }
 });
 ```
 
@@ -7900,7 +7921,7 @@ Range.prototype = hideProps({
 ```
 ### 9.8.4 防止类的扩展
 
-通常认为，通过给原型对象添加方法可以动态地对类进行扩展，这是javascript本身的特性，在ECMAScript5中根据需要对此特性加以限制。`Object.preventExtensions()`可以将对象设置为不可扩展的（6.8.3节）也就是说不能给对象添加任何新属性。Object.seal()则更加强大，它除了能阻止用户给添加新属性，还能将当前已有的属性设置为不可配置的，这样就不能删除这些属性了（但不可配置的属性可以是可写的，也可以抓换为只读属性）。可以通过这样语句简单的代码来阻止对`Object.prototype`的扩展：
+通常认为，通过给原型对象添加方法可以动态地对类进行扩展，这是javascript本身的特性，在ECMAScript5中根据需要对此特性加以限制。`Object.preventExtensions()`可以将对象设置为不可扩展的（6.8.3节）也就是说不能给对象添加任何新属性。`Object.seal()`则更加强大，它除了能阻止用户给添加新属性，还能将当前已有的属性设置为不可配置的，这样就不能删除这些属性了（但不可配置的属性可以是可写的，也可以抓换为只读属性）。可以通过这样语句简单的代码来阻止对`Object.prototype`的扩展：
 
 ```js
 Object.seal(Object.prototype)
@@ -7939,45 +7960,60 @@ Object.freeze(enumeration);
 
 ```js
 /**
-  * StringSet:利用ECMAScript5的特性定义子类
-  **/
-function StringSet(){
+ * StringSet:利用ECMAScript5的特性定义子类
+ **/
+function StringSet() {
     this.set = Object.create(null); //创建一个不可包含原型的对象
     this.n = 0;
-    this.add.apply(this,arguments);
-}
-//注意，使用Object.create()可以继承父类的原型
-//而且可以定义单独调用的方法，因为我们我们制定属性的可写性、可枚举性和可配置性。
-//因此这些属性特性的默认值都是false ， 只读方法让这个类难于子类化(被继承)
-StringSet.prototype = Object.create(AbstractEnumerableSet.prototype,{
-    constructor:{value:StringSet},
-    contains:{value:function(x){return x in this.set;}},
-    size:{value:function(x){return this.n;}},
-    foreach:{value:function(f,c){Object.keys(this.set).forEach(f,c);}},
-    add:{
-        value:function(){
-            for(var i = 0; i< arguments.length; i++){
-                if(!(arguments<[i] in this.set)){
-                    this.set[arguments[i]] = true;
-                    this.n++;
-                }
-            }
-            return this;
-        }
-    },
-    remove:{
-        value:function(){
-            for(var i = 0; i < arguments.length; i++){
-                if (arguments[i] in this.set){
-                    delete this.set[arguments[i]];
-                    this.n--;
-                }
-            }
-            return this;
-        }
+    this.add.apply(this, arguments);
+  }
+  //注意，使用Object.create()可以继承父类的原型
+  //而且可以定义单独调用的方法，因为我们我们制定属性的可写性、可枚举性和可配置性。
+  //因此这些属性特性的默认值都是false ， 只读方法让这个类难于子类化(被继承)
+StringSet.prototype = Object.create(AbstractEnumerableSet.prototype, {
+  constructor: {
+    value: StringSet
+  },
+  contains: {
+    value: function (x) {
+      return x in this.set;
     }
+  },
+  size: {
+    value: function (x) {
+      return this.n;
+    }
+  },
+  foreach: {
+    value: function (f, c) {
+      Object.keys(this.set).forEach(f, c);
+    }
+  },
+  add: {
+    value: function () {
+      for (var i = 0; i < arguments.length; i++) {
+        if (!(arguments < [i] in this.set)) {
+          this.set[arguments[i]] = true;
+          this.n++;
+        }
+      }
+      return this;
+    }
+  },
+  remove: {
+    value: function () {
+      for (var i = 0; i < arguments.length; i++) {
+        if (arguments[i] in this.set) {
+          delete this.set[arguments[i]];
+          this.n--;
+        }
+      }
+      return this;
+    }
+  }
 });
 ```
+
 ### 9.8.6 属性描述符
 
 6.7节讨论了ECMAScript5中的属性描述符，但没有给出他们的示例代码，本节给出一个例子，来讲述基于ECMAscript5如何对属性进行各种操作。下面的例子中给Object.prototype添加了`properties()`方法（这个方法是不可枚举的）。这个方法的返回值是一个对象，用于表示属性的列表，并定义了有用的方法用来输出属性和属性特征（对于调试非常有用），用来获得属性描述符（当复制属性时同时复制属性特性时非常有用）以及用来设置属性的特征（是上文定义的`hideProps()`和`freezeProps()`函数不错的替代方案）。这个例子展示了ECMAScript5的大多数属性相关的特性。同时使用了一种模块编程技术，这将在下一节讨论。
