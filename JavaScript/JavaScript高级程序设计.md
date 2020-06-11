@@ -11935,13 +11935,13 @@ data.append("name", "Nicholas");
 ```javascript
 var xhr = createXHR();
 xhr.onreadystatechange = function(event) {
-    if (xhr.readyState == 4) {
-        if ((xhr.status >= 200 && xhr.status < 300) || xhr.status == 304) {
-            alert(xhr.responseText);
-        } else {
-            alert("Request was unsuccessful: " + xhr.status);
-        }
+  if (xhr.readyState == 4) {
+    if ((xhr.status >= 200 && xhr.status < 300) || xhr.status == 304) {
+      alert(xhr.responseText);
+    } else {
+      alert("Request was unsuccessful: " + xhr.status);
     }
+  }
 };
 
 xhr.open("post", "postexample.php", true);
