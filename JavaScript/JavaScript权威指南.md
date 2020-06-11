@@ -11392,26 +11392,25 @@ Keymap.keyCodeToKeyName = {
 
 超文本传输协议（HyperText TransferProtocol，HTTP）规定 Web 浏览器如何从 Web 服务器获取文档和向 Web 服务器提交表单内容，以及 Web 服务器如何响应这些请求和提交。Web 浏览器会处理大量 HTTP。通常，HTTP 并不在脚本的控制下，只是当用户单击链接、提交表单和输入 URL 时才发生。
 
-但是，用 JavaScript 代码操纵 HTTP 是可行的。当用脚本设置 window 对象的 location 属性或调用表单对象的 submit()方法时，都会初始化 HTTP 请求。在这两种情况下，浏览器会加载新页面。这种用脚本控制 HTTP 的方法在多框架页面中非常有用，但这并非我们在此讨论的主题。相反，本章会说明在没有导致 Web 浏览器重新加载任何窗口或窗体的内容情况下，脚本如何实现 Web 浏览器与服务器之间的通信。
+但是，用 JavaScript 代码操纵 HTTP 是可行的。当用脚本设置 window 对象的 location 属性或调用表单对象的 `submit()`方法时，都会初始化 HTTP 请求。在这两种情况下，浏览器会加载新页面。这种用脚本控制 HTTP 的方法在多框架页面中非常有用，但这并非我们在此讨论的主题。相反，本章会说明在没有导致 Web 浏览器重新加载任何窗口或窗体的内容情况下，脚本如何实现 Web 浏览器与服务器之间的通信。
 
 术语 Ajax 描述了一种主要使用脚本操纵 HTTP 的 Web 应用架构。Ajax 应用的主要特点是使用脚本操纵 HTTP 和 Web 服务器进行数据交换，不会导致页面重载。避免页面重载（这是 Web 初期的标准做法）的能力使 Web 应用感觉更像传统的桌面应用。Web 应用可以使用 Ajax 技术把用户的交互数据记录到服务器中；也可以开始只显示简单页面，之后按需加载额外的数据和页面组件来提升应用的启动时间。
+
 Comet 是和使用脚本操作 HTTP 的 web 应用构架相关的术语（Comet 这个名字是 Alex Russell 在 2006 年 3 月创造，这个名字可能是对 Ajax 开了个玩笑，Comet 和 Ajax 都是美国的洗涤日用品牌）。在某种意义上，Comet 和 Ajax 相反，在 Comet 中，web 服务器发起通信并异步发送到消息客户端。如果 web 应用需要相应服务器发送消息，则它会使用 Ajax 技术发送或请求数据。在 Ajax 中，客户端从服务器“拉”数据。在 Comet 中，服务端向客户端“推”数据。Comet 还包括其他名词，如：“服务器推”，“Ajax 推”，“HTTP 流”。
 
-Comet 是和使用脚本操纵 HTTP 的 Web 应用架构相关的术语。在某种意义上，Comet 和 Ajax 相反。在 Comet 中，Web 服务器发起通信并异步发送消息到客户端。如果 Web 应用需要响应服务端发送的消息，则它会使用 Ajax 技术发送或请求数据。在 Ajax 中，客户端从服务端“拉”数据，而在 Comet 中，服务端向客户端“推”数据。Comet 还包括其他名词（如“服务器推”、“Ajax 推”和“HTTP 流”）。
+实现 Ajax 和 Comet 的方式有很多种，而这些底层的实现有时称为传输协议（transport）。例如，`<img>`元素有一个 src 属性。当脚本设置这个属性为 URL 时，浏览器发起的 HTTP GET 请求会从这个 URL 下载图片。因此，脚本通过设置`<img>`元素的 src 属性，且把信息作为图片 URL 的查询字符串部分，就把能经过编码信息传递给 Web 服务器。Web 服务器实际上必须返回某个图片来作为请求结果，但它一定要不可见：例如，一个 1×1 像素的透明图片。
 
-实现 Ajax 和 Comet 的方式有很多种，而这些底层的实现有时称为传输协议（transport）。例如，<img>元素有一个 src 属性。当脚本设置这个属性为 URL 时，浏览器发起的 HTTP GET 请求会从这个 URL 下载图片。因此，脚本通过设置<img>元素的 src 属性，且把信息作为图片 URL 的查询字符串部分，就把能经过编码信息传递给 Web 服务器。Web 服务器实际上必须返回某个图片来作为请求结果，但它一定要不可见：例如，一个 1×1 像素的透明图片。
+`<img>`元素无法实现完整的 Ajax 传输协议，因为数据交换是单向的：客户端能发送数据到服务器，但服务器的响应一直是张图片导致客户端无法轻易从中提取信息。然而，`<iframe>`元素更加强大，为了把`<iframe>`作为 Ajax 传输协议使用，脚本首先要把发送给 Web 服务器的信息编码到 URL 中，然后设置`<iframe>`的 src 属性为该 URL。服务器能创建一个包含响应内容的 HTML 文档，并把它返回给 Web 浏览器，并且在`<iframe>`中显示它。`<iframe>`需要对用户不可见，例如可以使用 CSS 隐藏它。脚本能通过遍历`<iframe>`的文档对象来读取服务端的响应。注意，这种访问受限于 13.6.2 节介绍的同源策略问题。
 
-<img>元素无法实现完整的 Ajax 传输协议，因为数据交换是单向的：客户端能发送数据到服务器，但服务器的响应一直是张图片导致客户端无法轻易从中提取信息。然而，<iframe>元素更加强大，为了把<iframe>作为 Ajax 传输协议使用，脚本首先要把发送给 Web 服务器的信息编码到 URL 中，然后设置<iframe>的 src 属性为该 URL。服务器能创建一个包含响应内容的 HTML 文档，并把它返回给 Web 浏览器，并且在<iframe>中显示它。<iframe>需要对用户不可见，例如可以使用 CSS 隐藏它。脚本能通过遍历<iframe>的文档对象来读取服务端的响应。注意，这种访问受限于 13.6.2 节介绍的同源策略问题。
+实际上，`<script>`元素的 src 属性能设置 URL 并发起 HTTP GET 请求。使用`<script>`元素实现脚本操纵 HTTP 是非常吸引人的，因为它们可以跨域通信而不受限于同源策略。通常，使用基于`<script>`的 Ajax 传输协议时，服务器的响应采用 JSON 编码（见 6.9 节）的数据格式，当执行脚本时，JavaScript 解析器能自动将其“解码”。由于它使用 JSON 数据格式，因此这种 Ajax 传输协议也叫做“JSONP”。
 
-实际上，<script>元素的 src 属性能设置 URL 并发起 HTTP GET 请求。使用<script>元素实现脚本操纵 HTTP 是非常吸引人的，因为它们可以跨域通信而不受限于同源策略。通常，使用基于<script>的 Ajax 传输协议时，服务器的响应采用 JSON 编码（见 6.9 节）的数据格式，当执行脚本时，JavaScript 解析器能自动将其“解码”。由于它使用 JSON 数据格式，因此这种 Ajax 传输协议也叫做“JSONP”。
-
-虽然在<iframe>和<script>传输协议之上能实现 Ajax 技术，但通常还有更简单的方式。一段时间以来，所有浏览器都支持 XMLHttpRequest 对象，它定义了用脚本操纵 HTTP 的 API。除了常用的 GET 请求，这个 API 还包含实现 POST 请求的能力，同时它能用文本或 Document 对象的形式返回服务器的响应。虽然它名字叫 XMLHttpRequest API，但并未没有限定只能使用 XML 文档，它能获取任何类型的文本文档。18.1 节涵盖 XMLHttpRequest API 和本章的大部分。本章的大部分 Ajax 示例都将使用 XMLHttpRequest 对象来实现协议方案，我们也将在 18.2 节演示如何使用基于<script>的传输协议，因为<script>元素有规避同源限制的能力。
+虽然在`<iframe>`和`<script>`传输协议之上能实现 Ajax 技术，但通常还有更简单的方式。一段时间以来，所有浏览器都支持 XMLHttpRequest 对象，它定义了用脚本操纵 HTTP 的 API。除了常用的 GET 请求，这个 API 还包含实现 POST 请求的能力，同时它能用文本或 Document 对象的形式返回服务器的响应。虽然它名字叫 XMLHttpRequest API，但并未没有限定只能使用 XML 文档，它能获取任何类型的文本文档。18.1 节涵盖 XMLHttpRequest API 和本章的大部分。本章的大部分 Ajax 示例都将使用 XMLHttpRequest 对象来实现协议方案，我们也将在 18.2 节演示如何使用基于`<script>`的传输协议，因为`<script>`元素有规避同源限制的能力。
 
 > XML 是可选的  
 > “Ajax”中的 X 表示 XML，这个 HTTP（XMLHttpRequest）的主要客户端 API 在其名字中突出了 XML，并且后面我们将看到 XMLHttpRequest 对象的其中一个属性叫 responseXML。它看起来像说明 XML 是用脚本操纵 HTTP 的重要部分，但实际上它不是，这些名字只是 XML 流行时的遗迹。当然，Ajax 技术能和 XML 文档一起工作，但使用 XML 只是一种选择，实际上很少使用。XMLHttpRequest 规范列出了这个令人困惑名字的不足之处：  
 > 对象名 XMLHttpRequest 是为了兼容 Web，虽然这个名字的每个部分都可能造成误导。首先，这个对象支持包括 XML 在内的任何基于文本的格式。其次，它能用于 HTTP 和 HTTPS 请求（一些实现支持除了 HTTP 和 HTTPS 之外的协议，但规范不包括这些功能）。最后，它所支持的请求是一个广义概念，指的是对于定义的 HTTP 方法的涉及 HTTP 请求或响应的所有活动。
 
-Comet 传输协议比 Ajax 更精妙，但都需要客户端和服务器之间建立（必要时重新建立）连接，同时需要服务器保持连接处于打开状态，这样它才能够发送异步信息。隐藏的<iframe>能像 Comet 传输协议一样有用，例如，如果服务器以<iframe>中待执行的<script>元素的形式发送每条消息。实现 Comet 的一种更可靠跨平台方案是客户端建立一个和服务器的连接（使用 Ajax 传输协议），同时服务器保持这个连接打开直到它需要推送一条消息。服务器每发送一条消息就关闭这个连接，这样可以确保客户端正确接收到消息。处理该消息之后，客户端马上为后续的消息推送建立一个新连接。
+Comet 传输协议比 Ajax 更精妙，但都需要客户端和服务器之间建立（必要时重新建立）连接，同时需要服务器保持连接处于打开状态，这样它才能够发送异步信息。隐藏的`<iframe>`能像 Comet 传输协议一样有用，例如，如果服务器以`<iframe>`中待执行的`<script>`元素的形式发送每条消息。实现 Comet 的一种更可靠跨平台方案是客户端建立一个和服务器的连接（使用 Ajax 传输协议），同时服务器保持这个连接打开直到它需要推送一条消息。服务器每发送一条消息就关闭这个连接，这样可以确保客户端正确接收到消息。处理该消息之后，客户端马上为后续的消息推送建立一个新连接。
 
 实现可靠的跨平台 Comet 传输协议是非常有挑战性的，所以大部分使用 Comet 架构的 Web 应用开发者依赖于像 Dojo 这样的 Web 框架库中的传输协议。在写本章时，浏览器正开始实现 HTML5 相关草案中的 Server-Sent 事件，它用 EventSource 对象的形式定义了简单的 Comet API。18.3 节涵盖 EventSource API 且演示了一个使用 XMLHttpRequest 实现的简单模拟示例。
 
@@ -11432,7 +11431,7 @@ var request = new XMLHttpRequest();
 你也能重用已存在的 XMLHttpRequest，但注意这将会终止之前通过该对象挂起的任何请求。
 
 > IE6 中的 XMLHttpRequest  
-> Microsoft 最早把 XMLHttpRequest 对象引入到 IE5 中，且在 IE5 和 IE6 中它只是一个 ActiveX 对象。IE7 之前的版本不支持非标准的 XMLHttpRequest()构造函数，但它能像如下这样模拟：
+> Microsoft 最早把 XMLHttpRequest 对象引入到 IE5 中，且在 IE5 和 IE6 中它只是一个 ActiveX 对象。IE7 之前的版本不支持非标准的 `XMLHttpRequest()`构造函数，但它能像如下这样模拟：
 
 ```js
 //ie5和i6模拟XMLHttpRequest()构造函数
@@ -11454,20 +11453,29 @@ if (window.XMLHttpRequest === undefined) {
 }
 ```
 
-一个 HTTP 请求由 4 部分组成：· HTTP 请求方法或“动作”（verb）·正在请求的 URL·一个可选的请求头集合，其中可能包括身份验证信息·一个可选的请求主体
+一个 HTTP 请求由 4 部分组成：
 
-服务器返回的 HTTP 响应包含 3 部分：·一个数字和文字组成的状态码，用来显示请求的成功和失败·一个响应头集合·响应主体
+1. HTTP 请求方法或“动作”（verb）
+2. 正在请求的 URL
+3. 一个可选的请求头集合，其中可能包括身份验证信息
+4. 一个可选的请求主体
+
+服务器返回的 HTTP 响应包含 3 部分：
+
+1. 一个数字和文字组成的状态码，用来显示请求的成功和失败
+2. 一个响应头集合
+3. 响应主体
 
 接下来的前面两节会展示如何设置 HTTP 请求的每个部分和如何查询 HTTP 响应的每个部分，随后的核心章节会涵盖更多的专门议题。
 
 HTTP 的基础请求/响应架构非常简单并且易于使用。但在实践中会有各种各样随之而来的复杂问题：客户端和服务器交换 cookie，服务器重定向浏览器到其他服务器，缓存某些资源而剩下的不缓存，某些客户端通过代理服务器发送所有的请求等。XMLHttpRequest 不是协议级的 HTTP API 而是浏览器级的 API。浏览器需要考虑 cookie、重定向、缓存和代理，但代码只需要担心请求和响应。
 
 > XMLHttpRequest 和本地文件  
-> 网页中可以使用相对 URL 的能力通常意味着我们能使用本地文件系统来开发和测试 HTML，并避免对 Web 服务器进行不必要的部署。然后当使用 XMLHttpRequest 进行 Ajax 编程时，这通常是不可行的。XMLHttpRequest 用于同 HTTP 和 HTTPS 协议一起工作。理论上，它能够同像 FTP 这样的其他协议一起工作，但比如像请求方法和响应状态码等部分 API 是 HTTP 特有的。如果从本地文件中加载网页，那么该页面中的脚本将无法通过相对 URL 使用 XMLHttpRequest，因为这些 URL 将相对于 file://URL 而不是 http:// URL。而同源策略通常会阻止使用绝对 http:// URL（请参见 18.1.6 节）。结果是当使用 XMLHttpRequest 时，为了测试它们通常必须把文件上传到 Web 服务器（或运行一个本地服务器）。
+> 网页中可以使用相对 URL 的能力通常意味着我们能使用本地文件系统来开发和测试 HTML，并避免对 Web 服务器进行不必要的部署。然后当使用 XMLHttpRequest 进行 Ajax 编程时，这通常是不可行的。XMLHttpRequest 用于同 HTTP 和 HTTPS 协议一起工作。理论上，它能够同像 FTP 这样的其他协议一起工作，但比如像请求方法和响应状态码等部分 API 是 HTTP 特有的。如果从本地文件中加载网页，那么该页面中的脚本将无法通过相对 URL 使用 XMLHttpRequest，因为这些 URL 将相对于 file://URL 而不是 http://URL。而同源策略通常会阻止使用绝对 http://URL（请参见 18.1.6 节）。结果是当使用 XMLHttpRequest 时，为了测试它们通常必须把文件上传到 Web 服务器（或运行一个本地服务器）。
 
 ### 18.1.1 指定请求
 
-创建 XMLHttpRequest 对象之后，发起 HTTP 请求的下一步是调用 XMLHttpRequest 对象的 open()方法去指定这个请求的两个必需部分：方法和 URL。
+创建 XMLHttpRequest 对象之后，发起 HTTP 请求的下一步是调用 XMLHttpRequest 对象的 `open()`方法去指定这个请求的两个必需部分：方法和 URL。
 
 ```js
 request.open(
@@ -11476,11 +11484,11 @@ request.open(
 ); //URL的内容
 ```
 
-open()的第一个参数指定 HTTP 方法或动作。这个字符串不区分大小写，但通常大家用大写字母来匹配 HTTP 协议。“GET”和“POST”方法是得到广泛支持的。“GET”用于常规请求，它适用于当 URL 完全指定请求资源，当请求对服务器没有任何副作用以及当服务器的响应是可缓存时。“POST”方法常用于 HTML 表单。它在请求主体中包含额外数据（表单数据）且这些数据常存储到服务器上的数据库中（副作用）。相同 URL 的重复 POST 请求从服务器得到的响应可能不同，同时不应该缓存使用这个方法的请求。
+`open()`的第一个参数指定 HTTP 方法或动作。这个字符串不区分大小写，但通常大家用大写字母来匹配 HTTP 协议。“GET”和“POST”方法是得到广泛支持的。“GET”用于常规请求，它适用于当 URL 完全指定请求资源，当请求对服务器没有任何副作用以及当服务器的响应是可缓存时。“POST”方法常用于 HTML 表单。它在请求主体中包含额外数据（表单数据）且这些数据常存储到服务器上的数据库中（副作用）。相同 URL 的重复 POST 请求从服务器得到的响应可能不同，同时不应该缓存使用这个方法的请求。
 
-除了“GET”和“POST”之外，XMLHttpRequest 规范也允许把“DELETE”、“HEAD”、“OPTIONS”和“PUT”作为 o p en()的第 1 个参数。（“H T T P CONNECT”、“TRACE”和“TRACK”因为安全风险已被明确禁止。）旧浏览器并不支持所有这些方法，但至少“HEAD”得到广泛支持，例 18-13 演示如何使用它。
+除了“GET”和“POST”之外，XMLHttpRequest 规范也允许把“DELETE”、“HEAD”、“OPTIONS”和“PUT”作为 `open()`的第 1 个参数。（“HTTP CONNECT”、“TRACE”和“TRACK”因为安全风险已被明确禁止。）旧浏览器并不支持所有这些方法，但至少“HEAD”得到广泛支持，例 18-13 演示如何使用它。
 
-open()的第 2 个参数是 URL，它是请求的主题。这是相对于文档的 URL，这个文档包含调用 open()的脚本。如果指定绝对 URL、协议、主机和端口通常必须匹配所在文档的对应内容：跨域的请求通常会报错。（但是当服务器明确允许跨域请求时，2 级 XMLHttpRequest 规范会允许它，见 18.1.6 节。）
+`open()`的第 2 个参数是 URL，它是请求的主题。这是相对于文档的 URL，这个文档包含调用 `open()`的脚本。如果指定绝对 URL、协议、主机和端口通常必须匹配所在文档的对应内容：跨域的请求通常会报错。（但是当服务器明确允许跨域请求时，2 级 XMLHttpRequest 规范会允许它，见 18.1.6 节。）
 
 如果有请求头的话，请求进程的下个步骤是设置它。例如，POST 请求需要“Content-Type”头指定请求主题的 MIME 类型：
 
@@ -11488,9 +11496,9 @@ open()的第 2 个参数是 URL，它是请求的主题。这是相对于文档�
 request.setRequestHeader("Content-Type", "text/plain");
 ```
 
-如果对相同的头调用 setRequestHeader()多次，新值不会取代之前指定的值，相反，HTTP 请求将包含这个头的多个副本或这个头将指定多个值。
+如果对相同的头调用 `setRequestHeader()`多次，新值不会取代之前指定的值，相反，HTTP 请求将包含这个头的多个副本或这个头将指定多个值。
 
-你不能自己指定“Content-Length”、“Date”、“Referer”或“User-Agent”头，XMLHttpRequest 将自动添加这些头而防止伪造它们。类似地，XMLHttpRequest 对象自动处理 cookie、连接时间、字符集和编码判断，所以你无法向 setRequestHeader()传递这些头：
+你不能自己指定“Content-Length”、“Date”、“Referer”或“User-Agent”头，XMLHttpRequest 将自动添加这些头而防止伪造它们。类似地，XMLHttpRequest 对象自动处理 cookie、连接时间、字符集和编码判断，所以你无法向 `setRequestHeader()`传递这些头：
 
 ```
 Accept-Charset	Content-Transfer-Encoding	TE
@@ -11501,25 +11509,24 @@ cookie	Keep-Alive	User-Agent
 cookie2	Referer	Via
 ```
 
-你能为请求指定“Authorization”头，但通常不需要这么做。如果请求一个受密码保护的 URL，把用户名和密码作为第 4 个和第 5 个参数传递给 open()，则 XMLHttpRequest 将设置合适的头。（接下来我们将了解关于 open()可选的第三个参数。可选的用户名和密码参数会在第四部分有介绍。）
+你能为请求指定“Authorization”头，但通常不需要这么做。如果请求一个受密码保护的 URL，把用户名和密码作为第 4 个和第 5 个参数传递给 `open()`，则 XMLHttpRequest 将设置合适的头。（接下来我们将了解关于 `open()`可选的第三个参数。可选的用户名和密码参数会在第四部分有介绍。）
 
-使用 XMLHttpRequest 发起 HTTP 请求的最后一步是指定可选的请求主体并向服务器发送它。使用 send()方法像如下这样做：
+使用 XMLHttpRequest 发起 HTTP 请求的最后一步是指定可选的请求主体并向服务器发送它。使用 `send()`方法像如下这样做：
 
 ```
 request.send(null);
 ```
 
-GET 请求绝对没有主体，所以应该传递 null 或省略这个参数。POST 请求通常拥有主体，同时它应该匹配使用 setRequestHeader()指定的“Content-Type”头。
+GET 请求绝对没有主体，所以应该传递 null 或省略这个参数。POST 请求通常拥有主体，同时它应该匹配使用 `setRequestHeader()`指定的“Content-Type”头。
 
 > 顺序问题  
-> HTTP 请求的各部分有指定顺序：请求方法和 URL 首先到达，然后是请求头，最后是请求主体。XMLHttpRequest 实现通常直到调用 send()方法才开始启动网络。但 XMLHttpRequest API 的设计似乎使每个方法都将写入网络流。这意味着调用 XMLHttpRequest 方法的顺序必须匹配 HTTP 请求的架构。例如，setRequestHeader()方法的调用必须在调用 open()之前但在调用 send()之后，否则它将抛出异常。
+> HTTP 请求的各部分有指定顺序：请求方法和 URL 首先到达，然后是请求头，最后是请求主体。XMLHttpRequest 实现通常直到调用 `send()`方法才开始启动网络。但 XMLHttpRequest API 的设计似乎使每个方法都将写入网络流。这意味着调用 XMLHttpRequest 方法的顺序必须匹配 HTTP 请求的架构。例如，`setRequestHeader()`方法的调用必须在调用 `open()`之前但在调用 `send()`之后，否则它将抛出异常。
 
 例 18-1 使用了我们目前介绍的所有 XMLHttpRequest 方法。它用 POST 方法发送文本字符串给服务器，并忽略服务器返回的任何响应。
 
 例 18-1：用 POST 方法发送纯文本给服务器
 
 ```js
-/**POST方法发送纯文本给服务器**/
 function postMessage(msg) {
   var request = new XMLHttpRequest(); //新请求
   request.open("POST", "log.php"); //用POST向服务器端发送脚本
@@ -11533,34 +11540,35 @@ function postMessage(msg) {
 }
 ```
 
-注意例 18-1 中的 send()方法启动请求，然后返回，当它等待服务器的响应时并不阻塞。接下来章节介绍的几乎都是异步处理 HTTP 响应。
+注意例 18-1 中的 `send()`方法启动请求，然后返回，当它等待服务器的响应时并不阻塞。接下来章节介绍的几乎都是异步处理 HTTP 响应。
 
 ### 18.1.2 取得响应
 
 一个完整的 HTTP 响应由状态码、响应头集合和响应主体组成。这些都可以通过 XMLHttpRequest 对象的属性和方法使用：
 
 - status 和 statusText 属性以数字和文本的形式返回 HTTP 状态码。这些属性保存标准的 HTTP 值，像 200 和“OK”表示成功请求，404 和“Not Found”表示 URL 不能匹配服务器上的任何资源。
-- 使用 getResponseHeader()和 getAllResponseHeaders()能查询响应头。XMLHttpRequest 会自动处理 cookie：它会从 getAllResponseHeaders()头返回集合中过滤掉 cookie 头，而如果给 getResponseHeader()传递“Set-Cookie”和“Set-Cookie2”则返回 null。
+- 使用 `getResponseHeader()`和 `getAllResponseHeaders()`能查询响应头。XMLHttpRequest 会自动处理 cookie：它会从 `getAllResponseHeaders()`头返回集合中过滤掉 cookie 头，而如果给 `getResponseHeader()`传递“Set-Cookie”和“Set-Cookie2”则返回 null。
 - 响应主体可以从 responseText 属性中得到文本形式的，从 responseXML 属性中得到 Document 形式的。（这个属性名是有历史的：它实际上对 XHTML 和 XML 文档有效，但 XHR2 说它也应该对普通的 HTML 文档工作。）关于 responseXML 的更多内容请看 18.1.2 节下面的“2.响应解码”节。
 
-XMLHttpRequest 对象通常（除了见 18.1.2 节下面的“1.同步响应”节的内容）异步使用：发送请求后，send()方法立即返回，直到响应返回，前面列出的响应方法和属性才有效。为了在响应准备就绪时得到通知，必须监听 XMLHttpRequest 对象上的 readystatechange 事件（或者 18.1.4 节描述新的 XHR 进度事件）。但为了理解这个事件类型，你必须理解 readyState 属性。
+XMLHttpRequest 对象通常（除了见 18.1.2 节下面的“1.同步响应”节的内容）异步使用：发送请求后，`send()`方法立即返回，直到响应返回，前面列出的响应方法和属性才有效。为了在响应准备就绪时得到通知，必须监听 XMLHttpRequest 对象上的 readystatechange 事件（或者 18.1.4 节描述新的 XHR 进度事件）。但为了理解这个事件类型，你必须理解 readyState 属性。
 
 readyState 是一个整数，它指定了 HTTP 请求的状态，同时表 18-1 列出了它可能的值。第一列的符号是 XMLHttpRequest 构造函数定义的常量。这些常量是 XMLHttpRequest 规范的一部分，但老的浏览器和 IE8 没有定义它们，通常看到使用硬编码值 4 来表示 XMLHttpRequest.DONE。
 
 表 18-1：XMLHttpRequest 的 readyState 值
 
-常量 值 含义
-UNSENT 0 open()尚未调用
-OPENED 1 open()已调用
-HEADERS_RECEIVED 2 接收到头信息
-LOADING 3 接收到响应主体
-DONE 4 响应完成
+| 常量 | 值 | 含义 |
+|---|---|---|
+| UNSENT | 0 | `open()`尚未调用 |
+| OPENED | 1 | `open()`已调用 |
+| HEADERS_RECEIVED | 2 | 接收到头信息 |
+| LOADING | 3 | 接收到响应主体 |
+| DONE | 4 | 响应完成 |
 
-理论上，每次 readyState 属性改变都会触发 readystatechange 事件。实际中，当 readyState 改变为 0 或 1 时可能没有触发这个事件。当调用 send()时，即使 readyState 仍处于 OPENED 状态，也通常触发它。某些浏览器在 LOADING 状态时能触发多次事件来给出进度反馈。当 readyState 值改变为 4 或服务器的响应完成时，所有的浏览器都触发 readystatechange 事件。因为在响应完成之前也会触发事件，所以事件处理程序应该一直检验 readyState 值。
+理论上，每次 readyState 属性改变都会触发 readystatechange 事件。实际中，当 readyState 改变为 0 或 1 时可能没有触发这个事件。当调用 `send()`时，即使 readyState 仍处于 OPENED 状态，也通常触发它。某些浏览器在 LOADING 状态时能触发多次事件来给出进度反馈。当 readyState 值改变为 4 或服务器的响应完成时，所有的浏览器都触发 readystatechange 事件。因为在响应完成之前也会触发事件，所以事件处理程序应该一直检验 readyState 值。
 
-为了监听 readystatechange 事件，请把事件处理函数设置为 XMLHttpRequest 对象的 onreadystatechange 属性。也能使用 addEventListener()（或在 IE8 以及之前版本中使用 attachEvent()），但通常每个请求只需要一个处理程序，所以只设置 onreadystatechange 更容易。
+为了监听 readystatechange 事件，请把事件处理函数设置为 XMLHttpRequest 对象的 onreadystatechange 属性。也能使用 `addEventListener()`（或在 IE8 以及之前版本中使用 `attachEvent()`），但通常每个请求只需要一个处理程序，所以只设置 onreadystatechange 更容易。
 
-例 18-2 定义了 getText()函数来演示如何监听 readystatechange 事件。事件处理程序首先要确保请求完成。如果这样，它会检查响应状态码来取保请求成功。然后它查找“Content-Type”头来验证响应主体是否是期望的类型。如果 3 个条件都得到满足，它会把响应主体（以文本形式）发送给指定的回调函数。
+例 18-2 定义了 `getText()`函数来演示如何监听 readystatechange 事件。事件处理程序首先要确保请求完成。如果这样，它会检查响应状态码来取保请求成功。然后它查找“Content-Type”头来验证响应主体是否是期望的类型。如果 3 个条件都得到满足，它会把响应主体（以文本形式）发送给指定的回调函数。
 
 ```js
 /*获取HTTP响应的onreadysatechange*/
@@ -11586,7 +11594,7 @@ function getText(url, callback) {
 
 1. 同步响应
 
-由于其本身的性质，异步处理 HTTP 响应是最好的方式。然而，XMLHttpRequest 也支持同步响应。如果把 false 作为第 3 个参数传递给 open()，那么 send()方法将阻塞直到请求完成。在这种情况下，不需要使用事件处理程序：一旦 send()返回，仅需要检查 XMLHttpRequest 对象的 status 和 responseText 属性。比较例 18-2 中 getText()函数的同步代码：
+由于其本身的性质，异步处理 HTTP 响应是最好的方式。然而，XMLHttpRequest 也支持同步响应。如果把 false 作为第 3 个参数传递给 `open()`，那么 `send()`方法将阻塞直到请求完成。在这种情况下，不需要使用事件处理程序：一旦 `send()`返回，仅需要检查 XMLHttpRequest 对象的 status 和 responseText 属性。比较例 18-2 中 `getText()`函数的同步代码：
 
 ```js
 //发起同步的HTTP GET请求以获得指定URL的内容
@@ -11605,7 +11613,7 @@ function getTextSync(url) {
 }
 ```
 
-同步请求是吸引人的，但应该避免使用它们。客户端 JavaScript 是单线程的，当 send()方法阻塞时，它通常会导致整个浏览器 UI 冻结。如果连接的服务器响应慢，那么用户的浏览器将冻结。然而，参见 22.4 节可接受的使用同步请求的场景。
+同步请求是吸引人的，但应该避免使用它们。客户端 JavaScript 是单线程的，当 `send()`方法阻塞时，它通常会导致整个浏览器 UI 冻结。如果连接的服务器响应慢，那么用户的浏览器将冻结。然而，参见 22.4 节可接受的使用同步请求的场景。
 
 2. 响应解码
 
@@ -11613,7 +11621,7 @@ function getTextSync(url) {
 
 但是还是其他方式来处理服务器的响应。如果服务器发送 XML 或 XHTML 文档作为其响应，你能通过 responseXML 属性获得一个解析形式的 XML 文档。这个属性的值是一个 Document 对象，可以使用第 15 章介绍的技术搜索和遍历它。（XHR2 草案规范指出浏览器也应该自动解析“text/html”类型的响应，使它们也能通过 responseXML 属性获取其 Document 文档对象，但在写本章时当前浏览器还没有这么做。）
 
-如果服务器想发送诸如对象或数组这样的结构化数据作为其响应，它应该传输 JSON 编码（参见 6.9 节）的字符串数据。当接收它时，可以把 responseText 属性传递给 JSON. parse()。例 18-3 是例 18-2 的归纳：它实现指定 URL 的 GET 请求并当 URL 的内容准备就绪时把它们传递给指定的回调函数。但它不是一直传递文本，而是传递 Document 对象或使用 JSON.parse()编码的对象或字符串。
+如果服务器想发送诸如对象或数组这样的结构化数据作为其响应，它应该传输 JSON 编码（参见 6.9 节）的字符串数据。当接收它时，可以把 responseText 属性传递给 `JSON.parse()`。例 18-3 是例 18-2 的归纳：它实现指定 URL 的 GET 请求并当 URL 的内容准备就绪时把它们传递给指定的回调函数。但它不是一直传递文本，而是传递 Document 对象或使用 `JSON.parse()`编码的对象或字符串。
 
 ```js
 /**解析HTTP响应**/
@@ -11642,11 +11650,11 @@ function get(url, callback) {
 }
 ```
 
-例 18-3 检查该响应的“Content-Type”头且专门处理“application/json”影响。你可能希望特殊编码的另一个响应类型是“application/javascript”或“text/javascript”。你能使用 XMLHttpRequest 请求 JavaScript 脚本，然后使用全局 eval()（参见 4.12.2 节）执行这个脚本。但是，在这种情况下不需要使用 XMLHttpRequest 对象，因为<script>元素本身操纵 HTTP 脚本的能力完全可以实现加载并执行脚本。见示例 13-4，且记住<script>元素能发起跨域 HTTP 请求，而 XMLHttpRequest API 则禁止。
+例 18-3 检查该响应的“Content-Type”头且专门处理“application/json”影响。你可能希望特殊编码的另一个响应类型是“application/javascript”或“text/javascript”。你能使用 XMLHttpRequest 请求 JavaScript 脚本，然后使用全局 `eval()`（参见 4.12.2 节）执行这个脚本。但是，在这种情况下不需要使用 XMLHttpRequest 对象，因为`<script>`元素本身操纵 HTTP 脚本的能力完全可以实现加载并执行脚本。见示例 13-4，且记住`<script>`元素能发起跨域 HTTP 请求，而 XMLHttpRequest API 则禁止。
 
-Web 服务端通常使用二进制数据（例如，图片文件）响应 HTTP 请求。responseText 属性只能用于文本，且它不能妥善处理二进制响应，即使对最终字符串使用了 charCodeAt()方法。XHR2 定义了处理二进制响应的方法，但在写本章时，浏览器厂商还没有实现它。进一步详情请参见 22.6.2 节。
+Web 服务端通常使用二进制数据（例如，图片文件）响应 HTTP 请求。responseText 属性只能用于文本，且它不能妥善处理二进制响应，即使对最终字符串使用了 `charCodeAt()`方法。XHR2 定义了处理二进制响应的方法，但在写本章时，浏览器厂商还没有实现它。进一步详情请参见 22.6.2 节。
 
-服务器响应的正常解码是假设服务器为这个响应发送了“Content-Type”头和正确的 MIME 类型。例如，如果服务器发送 XML 文档但没有设置适当的 MIME 类型，那么 XMLHttpRequest 对象将不会解析它且设置 responseXML 属性。或者，如果服务器在“Content-Type”头中包含了错误的“charset”参数，那么 XMLHttpRequest 将使用错误的编码来解析响应，并且 responseText 中的字符可能是错的。XHR2 定义了 overrideMimeType()方法来解决这个问题，并且大量的浏览器已经实现了它。如果相对于服务器你更了解资源的 MIME 类型，那么在调用 send()之前把类型传递给 overrideMimeType()，这将使 XMLHttpRequest 忽略“Content-Type”头而使用指定的类型。假设你将下载 XML 文件，而你计划把它当成纯文本对待。可以使用 setOverrideMimeType()让 XMLHttpRequest 知道它不需要把文件解析成 XML 文档：
+服务器响应的正常解码是假设服务器为这个响应发送了“Content-Type”头和正确的 MIME 类型。例如，如果服务器发送 XML 文档但没有设置适当的 MIME 类型，那么 XMLHttpRequest 对象将不会解析它且设置 responseXML 属性。或者，如果服务器在“Content-Type”头中包含了错误的“charset”参数，那么 XMLHttpRequest 将使用错误的编码来解析响应，并且 responseText 中的字符可能是错的。XHR2 定义了 `overrideMimeType()`方法来解决这个问题，并且大量的浏览器已经实现了它。如果相对于服务器你更了解资源的 MIME 类型，那么在调用 `send()`之前把类型传递给 `overrideMimeType()`，这将使 XMLHttpRequest 忽略“Content-Type”头而使用指定的类型。假设你将下载 XML 文件，而你计划把它当成纯文本对待。可以使用 `setOverrideMimeType()`让 XMLHttpRequest 知道它不需要把文件解析成 XML 文档：
 
 ```js
 //不要把响应作为XML文档处理
@@ -11663,13 +11671,13 @@ HTTP POST 请求包括一个请求主体，它包含客户端传递给服务器�
 考虑 HTML 表单。当用户提交表单时，表单中的数据（每个表单元素的名字和值）编码到一个字符串中并随请求发送。默认情况下，HTML 表单通过 POST 方法发送给服务器，而编码后的表单数据则用做请求主体。对表单数据使用的编码方案相对简单：对每个表单元素的名字和值执行普通的 URL 编码（使用十六进制转义码替换特殊字符），使用等号把编码后的名字和值分开，并使用“&”符号分开名/值对。一个简单表单的编码像如下这样：
 
 ```
-             find=laobeijing&mendian=3123&radius=1km
+find=laobeijing&mendian=3123&radius=1km
 ```
 
 表单数据编码格式有一个正式的 MIME 类型：
 
 ```
-        application/x-www-form-urlencoded
+application/x-www-form-urlencoded
 ```
 
 当使用 POST 方法提交这种顺序的表单数据时，必须设置“Content-Type”请求头为这个值。
@@ -11677,11 +11685,11 @@ HTTP POST 请求包括一个请求主体，它包含客户端传递给服务器�
 注意，这种类型的编码并不需要 HTML 表单，在本章我们实际上将不需要直接使用表单。在 Ajax 应用中，你希望发送给服务器的很可能是一个 JavaScript 对象。（这个对象可能从 HTML 表单的用户输入中得到，但这里不是问题。）前面展示的数据变成 JavaScript 对象的表单编码形式可能是：
 
 ```js
-            {
-                find: "laobeijing",
-                mendian: 3123,
-                radius: "1km"
-            }
+{
+  find: "laobeijing",
+  mendian: 3123,
+  radius: "1km"
+}
 ```
 
 表单编码在 Web 上如此广泛使用，同时所有服务器端的编程语言都能得到良好的支持，所以非表单数据的表单编码通常也是容易实现的事情。例 18-4 展示了如何实现对象属性的表单编码。
@@ -11708,7 +11716,7 @@ function encodeFormDate(data) {
 }
 ```
 
-使用已定义的 encodeFormData()函数，我们能容易地写出像例 18-5 中 postData()函数这样的工具函数。需要注意的是，简单来说，postData()函数（在随后的示例中有相似的函数）不能处理服务器的响应。当响应完成，它传递整个 XMLHttpRequest 对象给指定的回调函数。这个回调函数负责检查响应状态码和提取响应文本。
+使用已定义的 `encodeFormData()`函数，我们能容易地写出像例 18-5 中 `postData()`函数这样的工具函数。需要注意的是，简单来说，`postData()`函数（在随后的示例中有相似的函数）不能处理服务器的响应。当响应完成，它传递整个 XMLHttpRequest 对象给指定的回调函数。这个回调函数负责检查响应状态码和提取响应文本。
 
 ```js
 /**使用表单编码数据发起一个HTTP POST请求**/
@@ -11729,7 +11737,7 @@ function postData(url, data, callback) {
 }
 ```
 
-表单数据同样可以通过 GET 请求来提交，既然表单提交的目的是为了执行只读查询，因此 GET 请求比 POST 请求更合适。（当提交表单的目标仅仅是一个只读查询，GET 比 POST 更合适。）GET 请求从来没有主体，所以需要发送给服务器的表单编码数据“负载”要作为 URL（后跟一个问号）的查询部分。encodeFormData()工具函数也能用于这种 GET 请求，且例 18-6 演示了如何使用它。
+表单数据同样可以通过 GET 请求来提交，既然表单提交的目的是为了执行只读查询，因此 GET 请求比 POST 请求更合适。（当提交表单的目标仅仅是一个只读查询，GET 比 POST 更合适。）GET 请求从来没有主体，所以需要发送给服务器的表单编码数据“负载”要作为 URL（后跟一个问号）的查询部分。`encodeFormData()`工具函数也能用于这种 GET 请求，且例 18-6 演示了如何使用它。
 
 ```js
 /**使用表单数据发起GET请求**/
@@ -11747,12 +11755,12 @@ function getData(url, data, callback) {
 HTML 表单在提交的时候会对表单数据进行 URL 编码，但使用 XMLHttpRequest 能给我们编码自己想要的任何数据。随着服务器上的适当支持，我们的 pizza 查询数据将编码成一个更清晰的 URL，如下：
 
 ```
-        http://www.a.com/01234/1km/mendian
+http://www.a.com/01234/1km/mendian
 ```
 
 2. JSON 编码的请求
 
-在 POST 请求主体中使用表单编码是常见惯例，但在任何情况下它都不是 HTTP 协议的必需品。近年来，作为 Web 交换格式的 JSON 已经得到普及。例 18-7 展示如何使用 JSON. stringify()（参见 6.9 节）编码请求主体。注意这个示例和例 18-5 的不同仅在最后两行。
+在 POST 请求主体中使用表单编码是常见惯例，但在任何情况下它都不是 HTTP 协议的必需品。近年来，作为 Web 交换格式的 JSON 已经得到普及。例 18-7 展示如何使用 `JSON.stringify()`（参见 6.9 节）编码请求主体。注意这个示例和例 18-5 的不同仅在最后两行。
 
 ```js
 /**使用JSON编码主体来发起HTTP POST请求**/
@@ -11775,14 +11783,14 @@ function postJSON(url, data, callback) {
 XML 有时也用于数据传输的编码。JavaScript 对象的用表单编码或 JSON 编码版本表达的 pizza 查询，也能用 XML 文档来表示它。例如，它看起来如下所示：
 
 ```xml
-        <query>
-            <find miandian="3123" radius="1km">
-                laobeijing
-            </find>
-        </query>
+<query>
+  <find miandian="3123" radius="1km">
+    laobeijing
+  </find>
+</query>
 ```
 
-在目前展示的所有示例中，XMLHttpRequest 的 send()方法的参数是一个字符串或 null。实际上，可以在这里传入 XML Document 对象。例 18-8 展示如何创建一个简单的 XML Document 对象并使用它作为 HTTP 请求的主体。
+在目前展示的所有示例中，XMLHttpRequest 的 `send()`方法的参数是一个字符串或 null。实际上，可以在这里传入 XML Document 对象。例 18-8 展示如何创建一个简单的 XML Document 对象并使用它作为 HTTP 请求的主体。
 
 ```js
 /**使用XML文档作为其主体的HTTP POST请求**/
@@ -11809,13 +11817,13 @@ function postQuery(url, what, where, radius, callback) {
 }
 ```
 
-注意：例 18-8 不曾为请求设置“Content-Type”头。当给 send()方法传入 XML 文档时，并没有预先指定“Content-Type”头，但 XMLHttpRequest 对象会自动设置一个合适的头。（类似地，如果给 send()传入一个字符串但没有指定 Content-Type 头，那么 XMLHttpRequest 将会添加“ext/plain; charset=UTF-8”头。）在例 18-1 的代码中显式设置了这个头，但实际上对于纯文本的请求主体并不需要这么做。
+注意：例 18-8 不曾为请求设置“Content-Type”头。当给 `send()`方法传入 XML 文档时，并没有预先指定“Content-Type”头，但 XMLHttpRequest 对象会自动设置一个合适的头。（类似地，如果给 `send()`传入一个字符串但没有指定 Content-Type 头，那么 XMLHttpRequest 将会添加“ext/plain; charset=UTF-8”头。）在例 18-1 的代码中显式设置了这个头，但实际上对于纯文本的请求主体并不需要这么做。
 
 4. 上传文件
 
-HTML 表单的特性之一是当用户通过<inputtype="file">元素选择文件时，表单将在它产生的 POST 请求主体中发送文件内容。HTML 表单始终能上传文件，但到目前为止它还不能使用 XMLHttpRequest API 做相同的事情。然后，XHR2 API 允许通过向 send()方法传入 File 对象来实现上传文件。
+HTML 表单的特性之一是当用户通过`<inputtype="file">`元素选择文件时，表单将在它产生的 POST 请求主体中发送文件内容。HTML 表单始终能上传文件，但到目前为止它还不能使用 XMLHttpRequest API 做相同的事情。然后，XHR2 API 允许通过向 `send()`方法传入 File 对象来实现上传文件。
 
-没有 File()对象构造函数，脚本仅能获得表示用户当前选择文件的 File 对象。在支持 File 对象的浏览器中，每个<input type="file">元素有一个 files 属性，它是 File 对象中的类数组对象。拖放 API（参见 17.7 节）允许通过拖放事件的 dataTransfer.files 属性访问用户“拖放”到元素上的文件。我们将在 22.6 节和 22.7 节看到更多关于 File 对象的内容。但现在来讲，可以将它当做一个用户选择文件完全不透明的表示形式，适用于通过 send()来上传文件。例 18-9 是一个自然的 JavaScript 函数，它对某些文件上传元素添加了 change 事件处理程序，这样它们能自动把任何选择过的文件内容通过 POST 方法自动发送到指定的 URL。
+没有 `File()`对象构造函数，脚本仅能获得表示用户当前选择文件的 File 对象。在支持 File 对象的浏览器中，每个`<input type="file">`元素有一个 files 属性，它是 File 对象中的类数组对象。拖放 API（参见 17.7 节）允许通过拖放事件的 dataTransfer.files 属性访问用户“拖放”到元素上的文件。我们将在 22.6 节和 22.7 节看到更多关于 File 对象的内容。但现在来讲，可以将它当做一个用户选择文件完全不透明的表示形式，适用于通过 `send()`来上传文件。例 18-9 是一个自然的 JavaScript 函数，它对某些文件上传元素添加了 change 事件处理程序，这样它们能自动把任何选择过的文件内容通过 POST 方法自动发送到指定的 URL。
 
 ```js
 /**使用http POST请求上传文件**/
@@ -11847,13 +11855,13 @@ whenReady(function () {
 });
 ```
 
-正如我们在 22.6 节所看到的，文件类型是更通用的二进制大对象（Blob）类型中的一个子类型。XHR2 允许向 send()方法传入任何 Blob 对象。如果没有显式设置 Content-Type 头，这个 Blob 对象的 type 属性用于设置待上传的 Content-Type 头。如果需要上传已经产生的二进制数据，可以使用 22.5 节和 22.6.3 节展示的技术把数据转化为 Blob 并将其作为请求主体。
+正如我们在 22.6 节所看到的，文件类型是更通用的二进制大对象（Blob）类型中的一个子类型。XHR2 允许向 `send()`方法传入任何 Blob 对象。如果没有显式设置 Content-Type 头，这个 Blob 对象的 type 属性用于设置待上传的 Content-Type 头。如果需要上传已经产生的二进制数据，可以使用 22.5 节和 22.6.3 节展示的技术把数据转化为 Blob 并将其作为请求主体。
 
 5. multipart/form-data 请求
 
 当 HTML 表单同时包含文件上传元素和其他元素时，浏览器不能使用普通的表单编码而必须使用称为“multipart/form-data”的特殊 Content-Type 来用 POST 方法提交表单。这种编码包括使用长“边界”字符串把请求主体分离成多个部分。对于文本数据，手动创建“multipart/form-data”请求主体是可能的，但很复杂。
 
-XHR2 定义了新的 FormData API，它容易实现多部分请求主体。首先，使用 FormData()构造函数创建 FormData 对象，然后按需多次调用这个对象的 append()方法把个体“部分”（可以是字符串、File 或 Blob 对象）添加到请求中。最后，把 FormData 对象传递给 send()方法。send()方法将对请求定义合适的边界字符串和设置“Content-Type”头。例 18-10 演示了 FormData 的使用，同时我们将在例 18-11 再次看到它。
+XHR2 定义了新的 FormData API，它容易实现多部分请求主体。首先，使用 `FormData()`构造函数创建 FormData 对象，然后按需多次调用这个对象的 `append()`方法把个体“部分”（可以是字符串、File 或 Blob 对象）添加到请求中。最后，把 FormData 对象传递给 `send()`方法。`send()`方法将对请求定义合适的边界字符串和设置“Content-Type”头。例 18-10 演示了 FormData 的使用，同时我们将在例 18-11 再次看到它。
 
 ```js
 /**使用POST方法发送multipart/form-data请求主体**/
@@ -11888,7 +11896,7 @@ function postFormData(url, data, callback) {
 
 在之前的示例中，使用 readystatechange 事件探测 HTTP 请求的完成。XHR2 规范草案定义了更多有用的事件集，有些已经在 Firefox、Chrome 和 Safari 中得到支持。在这个新的事件模型中，XMLHttpRequest 对象在请求的不同阶段触发不同类型的事件，所以它不再需要检查 readyState 属性。
 
-在支持它们的浏览器中，这些新事件会像如下这样触发。当调用 send()时，触发单个 loadstart 事件。当正在加载服务器的响应时，XMLHttpRequest 对象会发生 progress 事件，通常每隔 50 毫秒左右，所以可以使用这些事件给用户反馈请求的进度。如果请求快速完成，它可能从不会触发 progress 事件。当事件完成，会触发 load 事件。
+在支持它们的浏览器中，这些新事件会像如下这样触发。当调用 `send()`时，触发单个 loadstart 事件。当正在加载服务器的响应时，XMLHttpRequest 对象会发生 progress 事件，通常每隔 50 毫秒左右，所以可以使用这些事件给用户反馈请求的进度。如果请求快速完成，它可能从不会触发 progress 事件。当事件完成，会触发 load 事件。
 
 一个完成的请求不一定是成功的请求，例如，load 事件的处理程序应该检查 XMLHttpRequest 对象的 status 状态码来确定收到的是“200 OK”而不是“404 Not Found”的 HTTP 响应。
 
@@ -11896,7 +11904,7 @@ HTTP 请求无法完成有 3 种情况，对应 3 种事件。如果请求超时
 
 对于任何具体请求，浏览器将只会触发 load、abort、timeout 和 error 事件中的一个。XHR2 规范草案指出一旦这些事件中的一个发生后，浏览器应该触发 loadend 事件。但在写本章时，尚未有浏览器实现 loadend 事件。
 
-可以通过 XMLHttpRequest 对象的 addEventListener()方法为这些 progress 事件中的每个都注册处理程序。如果每种事件只有一个事件处理程序，通常更容易的方法是只设置对应的处理程序属性，比如 onprogress 和 onload。甚至可以使用这些事件属性是否存在来测试浏览器是否支持 progress 事件：
+可以通过 XMLHttpRequest 对象的 `addEventListener()`方法为这些 progress 事件中的每个都注册处理程序。如果每种事件只有一个事件处理程序，通常更容易的方法是只设置对应的处理程序属性，比如 onprogress 和 onload。甚至可以使用这些事件属性是否存在来测试浏览器是否支持 progress 事件：
 
 ```js
 if ("onprogress" in new XMLHttpRequest()) {
@@ -11915,9 +11923,9 @@ request.onprogress = function (e) {
 
 1. 上传进度事件
 
-除了为监控 HTTP 响应的加载定义的这些有用的事件外，XHR2 也给出了用于监控 HTTP 请求上传的事件。在实现这些特性的浏览器中，XMLHttpRequest 对象将有 upload 属性。upload 属性值是一个对象，它定义了 addEventListener()方法和整个 progress 事件集合，比如 onprogress 和 onload。（但 upload 对象没有定义 onreadystatechange 属性，upload 仅能触发新的事件类型。）
+除了为监控 HTTP 响应的加载定义的这些有用的事件外，XHR2 也给出了用于监控 HTTP 请求上传的事件。在实现这些特性的浏览器中，XMLHttpRequest 对象将有 upload 属性。upload 属性值是一个对象，它定义了 `addEventListener()`方法和整个 progress 事件集合，比如 onprogress 和 onload。（但 upload 对象没有定义 onreadystatechange 属性，upload 仅能触发新的事件类型。）
 
-你能仅仅像使用常见的 progress 事件处理程序一样使用 upload 事件处理程序。对于 XMLHttpRequest 对象 x，设置 x.onprogress 以监控响应的下载进度，并且设置 x.upload.onprogress 以监控请求的上传进度。
+你能仅仅像使用常见的 progress 事件处理程序一样使用 upload 事件处理程序。对于 XMLHttpRequest 对象 x，设置 `x.onprogress` 以监控响应的下载进度，并且设置 `x.upload.onprogress` 以监控请求的上传进度。
 
 例 18-11 演示了如何使用 upload progress 事件把上传进度反馈给用户。这个示例也演示了如何从拖放 API 中获得 File 对象和如何使用 FormData API 在单个 XMLHttpRequest 请求中上传多个文件。在写本书时，这些功能依旧在草案中，并且这些示例不能在所有的浏览器中工作。
 
@@ -12000,11 +12008,11 @@ wenReady(function () {
 
 ### 18.1.5 中止请求和超时
 
-可以通过调用 XMLHttpRequest 对象的 abort()方法来取消正在进行的 HTTP 请求。abort()方法在所有的 XMLHttpRequest 版本和 XHR2 中可用，调用 abort()方法在这个对象上触发 abort 事件。（在写本章时，某些浏览器支持 abort 事件。可以通过 XMLHttpRequest 对象的“onabort”属性是否存在来判断。）
+可以通过调用 XMLHttpRequest 对象的 `abort()`方法来取消正在进行的 HTTP 请求。`abort()`方法在所有的 XMLHttpRequest 版本和 XHR2 中可用，调用 `abort()`方法在这个对象上触发 abort 事件。（在写本章时，某些浏览器支持 abort 事件。可以通过 XMLHttpRequest 对象的“onabort”属性是否存在来判断。）
 
-调用 abort()的主要原因是完成取消或超时请求消耗的时间太长或当响应变得无关时。假设使用 XMLHttpRequest 为文本输入域请求自动完成推荐。如果用户在服务器的建议达到之前输入了新字符，这时等待请求不再有趣，应该中止。
+调用 `abort()`的主要原因是完成取消或超时请求消耗的时间太长或当响应变得无关时。假设使用 XMLHttpRequest 为文本输入域请求自动完成推荐。如果用户在服务器的建议达到之前输入了新字符，这时等待请求不再有趣，应该中止。
 
-XHR2 定义了 timeout 属性来指定请求自动中止后的毫秒数，也定义了 timeout 事件用于当超时发生时触发（不是 abort 事件）。在写本章时，浏览器不支持这些自动超时（并且它们的 XMLHttpRequest 对象没有 timeout 和 ontimeout 属性）。可以用 setTimeout()（参见 14.1 节）和 abort()方法实现自己的超时。例 18-12 演示如何这么做。
+XHR2 定义了 timeout 属性来指定请求自动中止后的毫秒数，也定义了 timeout 事件用于当超时发生时触发（不是 abort 事件）。在写本章时，浏览器不支持这些自动超时（并且它们的 XMLHttpRequest 对象没有 timeout 和 ontimeout 属性）。可以用 `setTimeout()`（参见 14.1 节）和 `abort()`方法实现自己的超时。例 18-12 演示如何这么做。
 
 ```js
 /**实现超时**/
@@ -12045,13 +12053,13 @@ timeGetText("index.html", 10000, callback); //此处测试不跨域
 
 ### 18.1.6 跨域 HTTP 请求
 
-作为同源策略（参见 13.6.2 节）的一部分，XMLHttpRequest 对象通常仅可以发起和文档具有相同服务器的 HTTP 请求。这个限制关闭了安全漏洞，但它笨手笨脚并且也阻止了大量合适使用的跨域请求。可以在<form>和<iframe>元素中使用跨域 URL，而浏览器显示最终的跨域文档。但因为同源策略，浏览器不允许原始脚本查找跨域文档的内容。使用 XMLHttpRequest，文档内容都是通过 responseText 属性暴露，所以同源策略不允许 XMLHttpRequest 进行跨域请求。（注意<script>元素并未真正受限于同源策略：它加载并执行任何来源的脚本。如果我们看 18.2 节，跨域请求的灵活性使得<script>元素成为取代 XMLHttpRequest 的主流 Ajax 传输协议。）
+作为同源策略（参见 13.6.2 节）的一部分，XMLHttpRequest 对象通常仅可以发起和文档具有相同服务器的 HTTP 请求。这个限制关闭了安全漏洞，但它笨手笨脚并且也阻止了大量合适使用的跨域请求。可以在`<form>`和`<iframe>`元素中使用跨域 URL，而浏览器显示最终的跨域文档。但因为同源策略，浏览器不允许原始脚本查找跨域文档的内容。使用 XMLHttpRequest，文档内容都是通过 responseText 属性暴露，所以同源策略不允许 XMLHttpRequest 进行跨域请求。（注意`<script>`元素并未真正受限于同源策略：它加载并执行任何来源的脚本。如果我们看 18.2 节，跨域请求的灵活性使得`<script>`元素成为取代 XMLHttpRequest 的主流 Ajax 传输协议。）
 
 XHR2 通过在 HTTP 响应中选择发送合适的 CORS（Cross-Origin Resource Sharing，跨域资源共享）允许跨域访问网站。在写本书时，Firefox、Safari、Chrome 的当前版本都支持 CORS，而 IE8 通过这里没有列出的专用 XDomainRequest 对象支持它。作为 Web 程序员，使用这个功能并不需要做什么额外的工作：如果浏览器支持 XMLHttpRequest 的 CORS 且实现跨域请求的网站决定使用 CORS 允许跨域请求，那么同源策略将不放宽而跨域请求就会正常工作。
 
-虽然实现 CORS 支持的跨域请求工作不需要做任何事情，但有一些安全细节需要了解。首先，如果给 XMLHttpRequest 的 open()方法传入用户名和密码，那么它们绝对不会通过跨域请求发送（这使分布式密码破解攻击成为可能）。除外，跨域请求通常也不会包含其他任何的用户证书：cookie 和 HTTP 身份验证令牌（token）通常不会作为请求的内容部分发送且任何作为跨域响应来接收的 cookie 都会丢弃。如果跨域请求需要这几种凭证才能成功，那么必须在用 send()发送请求前设置 XMLHttpRequest 的 withCredentials 属性为 true。这样做不常见，但测试 withCredentials 的存在性是测试浏览器是否支持 CORS 的一种方法。
+虽然实现 CORS 支持的跨域请求工作不需要做任何事情，但有一些安全细节需要了解。首先，如果给 XMLHttpRequest 的 `open()`方法传入用户名和密码，那么它们绝对不会通过跨域请求发送（这使分布式密码破解攻击成为可能）。除外，跨域请求通常也不会包含其他任何的用户证书：cookie 和 HTTP 身份验证令牌（token）通常不会作为请求的内容部分发送且任何作为跨域响应来接收的 cookie 都会丢弃。如果跨域请求需要这几种凭证才能成功，那么必须在用 `send()`发送请求前设置 XMLHttpRequest 的 withCredentials 属性为 true。这样做不常见，但测试 withCredentials 的存在性是测试浏览器是否支持 CORS 的一种方法。
 
-示例 8-13 是常见的 JavaScript 代码，它使用 XMLHttpRequest 实现 HTTP HEAD 请求以下载文档中<a>元素链接资源的类型、大小和时间等信息。这个 HEAD 请求按需发起，且由此产生的链接信息会出现在工具提示中。这个示例假设跨域链接的信息不可用，但通过支持 CORS 的浏览器尝试下载它。
+示例 8-13 是常见的 JavaScript 代码，它使用 XMLHttpRequest 实现 HTTP HEAD 请求以下载文档中`<a>`元素链接资源的类型、大小和时间等信息。这个 HEAD 请求按需发起，且由此产生的链接信息会出现在工具提示中。这个示例假设跨域链接的信息不可用，但通过支持 CORS 的浏览器尝试下载它。
 
 ```js
 /**使用HEAD和CORS请求链接详细信息**/
@@ -12121,37 +12129,37 @@ whenReady(function () {
 
 ## 18.2 借助<script>发送 HTTP 请求：JSONP
 
-本章概述提到过<script>元素可以作为一种 Ajax 传输机制：只须设置<script>元素的 src 属性（假如它还没插入到 document 中，需要插入进去），然后浏览器就会发送一个 HTTP 请求以下载 src 属性所指向的 URL。使用<script>元素进行 Ajax 传输的一个主要原因是，它不受同源策略的影响，因此可以使用它们从其他的服务器请求数据，第二个原因是包含 JSON 编码数据的响应体会自动解码（即，执行）。
+本章概述提到过`<script>`元素可以作为一种 Ajax 传输机制：只须设置`<script>`元素的 src 属性（假如它还没插入到 document 中，需要插入进去），然后浏览器就会发送一个 HTTP 请求以下载 src 属性所指向的 URL。使用`<script>`元素进行 Ajax 传输的一个主要原因是，它不受同源策略的影响，因此可以使用它们从其他的服务器请求数据，第二个原因是包含 JSON 编码数据的响应体会自动解码（即，执行）。
 
 > 脚本和安全性  
-> 为了使用<script>元素进行 Ajax 传输，必须允许 Web 页面可以执行远程服务器发送过来的任何 JavaScript 代码。这意味着对于不可信的服务器，不应该采取该技术。当与可信的服务器通信时，要提防攻击者可能进入服务器中，然后黑客会接管你的网页，运行他自己的代码，并显示任何他想要的内容，还表现得就像这些内容本就来自你的网站。  
-> 需要注意的是，这种方式普遍用于可信的第三方脚本，特别是在页面中嵌入广告和“组件”。作为 Ajax 传输使用的<script>与可信的 Web 服务通信，没有比这更危险的了。
+> 为了使用`<script>`元素进行 Ajax 传输，必须允许 Web 页面可以执行远程服务器发送过来的任何 JavaScript 代码。这意味着对于不可信的服务器，不应该采取该技术。当与可信的服务器通信时，要提防攻击者可能进入服务器中，然后黑客会接管你的网页，运行他自己的代码，并显示任何他想要的内容，还表现得就像这些内容本就来自你的网站。  
+> 需要注意的是，这种方式普遍用于可信的第三方脚本，特别是在页面中嵌入广告和“组件”。作为 Ajax 传输使用的`<script>`与可信的 Web 服务通信，没有比这更危险的了。
 
-这种使用<script>元素作为 Ajax 传输的技术称为 JSONP，若 HTTP 请求所得到的响应数据是经过 JSON 编码的，则适合使用该技术。P 代表“填充”或“前缀”——这个一会儿再作解释。
+这种使用`<script>`元素作为 Ajax 传输的技术称为 JSONP，若 HTTP 请求所得到的响应数据是经过 JSON 编码的，则适合使用该技术。P 代表“填充”或“前缀”——这个一会儿再作解释。
 
-假设你已经写了一个服务，它处理 GET 请求并返回 JSON 编码的数据。同源的文档可以在代码中使用 XMLHttpRequest 和 JSON.parse()，就像例 18-3 中的代码一样。假如在服务器上启用了 CORS，在新的浏览器下，跨域的文档也可以使用 XMLHttpRequest 享受到该服务。在不支持 CROS 的旧浏览器下，跨域文档只能通过<script>元素访问这个服务。使用 JSONP，JSON 响应数据（理论上）是合法的 JavaScript 代码，当它到达时浏览器将执行它。相反，不使用 JSONP，而是对 JSON 编码过的数据解码，结果还是数据，并没有做任何事情。
+假设你已经写了一个服务，它处理 GET 请求并返回 JSON 编码的数据。同源的文档可以在代码中使用 XMLHttpRequest 和 `JSON.parse()`，就像例 18-3 中的代码一样。假如在服务器上启用了 CORS，在新的浏览器下，跨域的文档也可以使用 XMLHttpRequest 享受到该服务。在不支持 CROS 的旧浏览器下，跨域文档只能通过`<script>`元素访问这个服务。使用 JSONP，JSON 响应数据（理论上）是合法的 JavaScript 代码，当它到达时浏览器将执行它。相反，不使用 JSONP，而是对 JSON 编码过的数据解码，结果还是数据，并没有做任何事情。
 
-这就是 JSONP 中 P 的意义所在。当通过<script>元素调用数据时，响应内容必须用 JavaScript 函数名和圆括号包裹起来。而不是发送这样一段 JSON 数据：
+这就是 JSONP 中 P 的意义所在。当通过`<script>`元素调用数据时，响应内容必须用 JavaScript 函数名和圆括号包裹起来。而不是发送这样一段 JSON 数据：
 
 ```
-        [1,2{"bukle":"my shoes"}]
+[1,2{"bukle":"my shoes"}]
 ```
 
 它会发送这样的一个包裹后的 JSON 响应：
 
 ```
-            handleResponse([1, 2 {
-                "bukle": "my shoes"}]
-            )
+handleResponse([1, 2 {
+  "bukle": "my shoes"}]
+)
 ```
 
-包裹后的响应会成为<script>元素的内容，它先判断 JSON 编码后的数据（毕竟就是一个 JavaScript 表达式），然后把它传递给 handleResponse()函数，我们可以假设，文档会拿这些数据做一些有用的事情。
+包裹后的响应会成为`<script>`元素的内容，它先判断 JSON 编码后的数据（毕竟就是一个 JavaScript 表达式），然后把它传递给 `handleResponse()`函数，我们可以假设，文档会拿这些数据做一些有用的事情。
 
-为了可行起见，我们必须通过某种方式告诉服务，它正在从一个<script>元素调用，必须返回一个 JSONP 响应，而不应该是普通的 JSON 响应。这个可以通过在 URL 中添加一个查询参数来实现：例如，追加“?json”（或&json）。
+为了可行起见，我们必须通过某种方式告诉服务，它正在从一个`<script>`元素调用，必须返回一个 JSONP 响应，而不应该是普通的 JSON 响应。这个可以通过在 URL 中添加一个查询参数来实现：例如，追加“?json”（或&json）。
 
 在实践中，支持 JSONP 的服务不会强制指定客户端必须实现的回调函数名称，比如 handleResponse。相反，它们使用查询参数的值，允许客户端指定一个函数名，然后使用函数名去填充响应。例 18-14 使用一个名为 jsonp 的查询参数来指定回调函数的名称。许多支持 JSONP 的服务都能分辨出这个参数名。另一个常见的参数名称是 callback，为了让使用到的服务支持类似特殊的需求，就需要在代码上做一些修改了。
 
-例 18-14 定义了一个 getJSONP()函数，它发送 JSONP 请求。这个例子有点复杂，有几点值得注意。首先，注意它是如何创建一个新的<script>元素，设置其 URL，并把它插入到文档中的。正是该插入操作触发 HTTP 请求。其次，注意例 18-14 为每个请求都创建了一个全新的内部回调函数，回调函数作为 getJSONP()函数的一个属性存储起来。最后要注意的是回调函数做了一些必要的清理工作：删除脚本元素，并删除自身。
+例 18-14 定义了一个 `getJSONP()`函数，它发送 JSONP 请求。这个例子有点复杂，有几点值得注意。首先，注意它是如何创建一个新的`<script>`元素，设置其 URL，并把它插入到文档中的。正是该插入操作触发 HTTP 请求。其次，注意例 18-14 为每个请求都创建了一个全新的内部回调函数，回调函数作为 `getJSONP()`函数的一个属性存储起来。最后要注意的是回调函数做了一些必要的清理工作：删除脚本元素，并删除自身。
 
 ```js
 /**使用script元素发送JSOP请求**/
@@ -12445,7 +12453,7 @@ worder.onerror = function(e) {
 }
 ```
 
-和所有的事件目标一样，Worker对象也定义了标准`的addEventListener()` 方法和`removeEventListener()` 方法，如果想要管理多个事件处理程序，可以使用这些方法来代替onmessage和onerror属性。
+和所有的事件目标一样，Worker对象也定义了标准的`addEventListener()` 方法和`removeEventListener()` 方法，如果想要管理多个事件处理程序，可以使用这些方法来代替onmessage和onerror属性。
 
 Worker对象还有另一个方法：terminate() 。该方法强制一个Worker线程结束运行。
 
@@ -12567,7 +12575,7 @@ Blob本身并没有多大意思，但是它们为用于二进制数据的大量J
 
 - 可以使用`postMessage()` 方法向其他窗口或者Worker发送一个Blob。参见22.3节和22.4节。
 - 可以将Blob存储到客户端数据库中。参见22.8节。
-- 可以通过将Blob传递给一个XMLHttpRequest对象的send() 方法，来将该Blob上传到服务器。例18-9介绍了相关的文件上传的例子（要记住，File对象就是特殊的类型的Blob）。
+- 可以通过将Blob传递给一个XMLHttpRequest对象的`send()` 方法，来将该Blob上传到服务器。例18-9介绍了相关的文件上传的例子（要记住，File对象就是特殊的类型的Blob）。
 - 可以使用createObjectURL() 函数获取一个特殊的blob:// URL，该URL代表一个Blob的内容，然后，将其和DOM或者CSS结合使用。22.6.4节会对其进行相应介绍。
 - 可以使用FileReader对象来异步地（或者在Worker线程中同步地）将一个Blob内容抽取成一个字符串或者ArrayBuffer。22.6.5节将展示该基本的技术。
 - 可以使用将在22.7节中介绍的文件系统API和FileWriter对象，来实现将一个Blob写入到一个本地文件中。
