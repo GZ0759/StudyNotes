@@ -9087,7 +9087,7 @@ Options:
 
 然而这些选项不仅仅是惯例。使用连字符和双连字符（--）已经得到了 The Open Group 实用公约的认可。 ① 公约中甚至说明了应该如何使用它们：
 
-- 准则 4——所有选项都应该带有前缀-；
+- 准则 4——所有选项都应该带有前缀`-`；
 - 准则 10——第一个非选项参数的`--`参数都应该当作表明参数结束的分隔符。之后的参数，即便以`-`字符开头的，都应该作为操作数处理。
 
 设计命令行程序的另一个重点是理念。这可以追溯到 UNIX 的创造者们，他们想要设计可以与基于文本的简单界面一起使用的“小而锋利的工具”。
@@ -9163,7 +9163,7 @@ readFile(file, (err, dataBuffer) => {
 });
 ```
 
-yargs 用起来比处理 `process.argv` 数组容易，并且还可以强化参数的规则。代码清单 11-1 用 demand 表示这个参数是必需的，然后声明它需要一个参数值，应该是要解析的 JSON 文件。为了让程序用起来更容易，还可以用 yargs 提供使用说明。依照惯例是见到参数 -h 或 --help 时输出使用说明文本。下面是用 yargs 添加使用说明的例子：
+yargs 用起来比处理 `process.argv` 数组容易，并且还可以强化参数的规则。代码清单 11-1 用 demand 表示这个参数是必需的，然后声明它需要一个参数值，应该是要解析的 JSON 文件。为了让程序用起来更容易，还可以用 yargs 提供使用说明。依照惯例是见到参数 `-h` 或 `--help` 时输出使用说明文本。下面是用 yargs 添加使用说明的例子：
 
 ```js
 yargs
@@ -9181,7 +9181,7 @@ yargs
 
 ### 11.3.3 将 stdin 作为文件传递
 
-如果文件是连字符（ `-f -`），则表示要从 stdin 抓取数据。这是另一个常用的命令行惯例。用 mississippi 包做这个很容易。但在调用 JSON.parse 之前，必须把所有传给程序的数据合到一起，因为它要解析的是完整的 JSON 字符串。加上 mississippi 模块之后，我们的例子看起来应该是这样的。
+如果文件是连字符（ `-f -`），则表示要从 stdin 抓取数据。这是另一个常用的命令行惯例。用 mississippi 包做这个很容易。但在调用 `JSON.parse` 之前，必须把所有传给程序的数据合到一起，因为它要解析的是完整的 JSON 字符串。加上 mississippi 模块之后，我们的例子看起来应该是这样的。
 
 代码清单 11-2 从 stdin 读取文件
 
@@ -9300,7 +9300,7 @@ parse-json -f invalid.json > out.log
 - stdout 是给其他命令行程序用的；
 - stderr 是给开发人员看的。
 
-在调用了 console.error 或有错误抛出时， Node 会记录到 stderr 中。这跟 echo 不同，它是记录到 stdout 中的，就像 console.log 一样。了解到这些区别之后，你可能想换掉 stdout，把 stderr 重定向到文件中。好在改起来很简单。
+在调用了 `console.error` 或有错误抛出时， Node 会记录到 stderr 中。这跟 echo 不同，它是记录到 stdout 中的，就像 `console.log` 一样。了解到这些区别之后，你可能想换掉 stdout，把 stderr 重定向到文件中。好在改起来很简单。
 
 stdin、 stdout 和 stderr 流都有对应的编号，分别是 0 到 2。 stderr 对应的流编号是 2，可以用`2> out.log`重定向， shell 看到这个就知道要将编号为 2 的流重定向到文件 out.log 中：
 
@@ -9314,7 +9314,7 @@ parse-json -f invalid.json 2> out.log
 node -e "console.log(null)" | parse-json
 ```
 
-这条命令记录了 null 并将它通过管道交给 parse-json。 null 不会被输出到控制台里，因为它只会传给下一条命令。我们换成 console.error 试试：
+这条命令记录了 null 并将它通过管道交给 parse-json。 null 不会被输出到控制台里，因为它只会传给下一条命令。我们换成 `console.error` 试试：
 
 ```js
 node -e "console.error(null)" | parse-json
@@ -9418,7 +9418,7 @@ node exit-message.js "parsed JSON successfully" <tmp.out
 }
 ```
 
-build 的运行方式是用命令 npm run build，它会先创建一个 bundle.js，如果打包成功，再创建 bundle.min.js。因为用的是 &&，所以能保证只有第一阶段成功后才会运行第二阶段的命令。
+build 的运行方式是用命令 `npm run build`，它会先创建一个 bundle.js，如果打包成功，再创建 bundle.min.js。因为用的是 &&，所以能保证只有第一阶段成功后才会运行第二阶段的命令。
 
 你可以用本章介绍的技术创建和使用命令行程序。另外，命令行程序还可以把其他语言的脚本结合到一起，比如 Python、 Ruby 或 Haskell 命令行程序，都可以轻松地用到你的 Node 程序中。
 
@@ -10218,7 +10218,7 @@ const book = {
 console.log(book);
 ```
 
-由于上面的代码用 fs 模块加载了 HTML，因此不用在例子中输入 HTML。在实际工作中，数据源可能是运行着的网站，但数据依然可能来自文件或数据库。文档经过解析后，用 `first()`获取表格第一个元素中的链接。用 cheerio 的 `attr()`方法获取链接的 URL，它会像 jQuery 那样返回元素上的指定属性。 eq()方法也很有用，在上面这段代码里用它跳过第一个 td，因为第二个里是作者。
+由于上面的代码用 fs 模块加载了 HTML，因此不用在例子中输入 HTML。在实际工作中，数据源可能是运行着的网站，但数据依然可能来自文件或数据库。文档经过解析后，用 `first()`获取表格第一个元素中的链接。用 cheerio 的 `attr()`方法获取链接的 URL，它会像 jQuery 那样返回元素上的指定属性。 `eq()`方法也很有用，在上面这段代码里用它跳过第一个 td，因为第二个里是作者。
 
 > Web 解析的危险  
 > 用 cheerio 这样的模块解析 Web 文档是快速但粗糙的办法。一定要注意所解析内容的类型。比如碰到二进制数据时，它可能会抛出异常，所以如果用在 Web 程序中的话，可能会导致 Node 进程崩溃。如果抓取器跟 Web 程序在同一个进程里，这个程序就要跟着承担很大的风险。  
@@ -10232,8 +10232,7 @@ jsdom 是网络抓取器理想中的工具：它能下载 HTML，能依照浏览
 
 图 B-5 用 jsdom 抓取
 
-jsdom 也有缺点。它不能完美地模拟浏览器，它比 cheerio 慢，它的 HTML 解析器太严格，碰到写得不好的页面时可能会失效。然而有些网站完全依赖于客户端 JavaScript 的支持，所以对
-于某些抓取任务来说， jsdom 是不可或缺的工具。
+jsdom 也有缺点。它不能完美地模拟浏览器，它比 cheerio 慢，它的 HTML 解析器太严格，碰到写得不好的页面时可能会失效。然而有些网站完全依赖于客户端 JavaScript 的支持，所以对于某些抓取任务来说， jsdom 是不可或缺的工具。
 
 jsdom 的基本用法是通过 jsdom.env 方法。下例演示了 jsdom 如何通过注入 jQuery 抓取页面并提取需要的值。
 
@@ -10269,13 +10268,13 @@ function scrape(err, window) {
 
 代码清单 B-3 需要保存在本地的 jQuery 和 jsdom①。这两个都可以用 npm 安装，模块名称分别是 jQuery 和 jsdom。一切准备就绪后，运行这段代码应该能在控制台中看到 HTML 片段里的书名、作者和介绍。
 
-jsdom.env 方法是用来解析文档及注入 jQuery 的。这里注入的 jQuery 是用 npm 下载到本地的，不过也可以提供一个指向内容交付网络（ CDN）或文件系统上的 jQuery 的 URL， jsdom 知道该怎么处理。 jsdom.env 方法是异步的，需要给它一个回调函数。这个回调函数能收到错误和窗口对象，我们可以通过窗口对象访问文档。为了便于访问，这里给窗口的 jQuery 对象定义了别名 \$。
+`jsdom.env` 方法是用来解析文档及注入 jQuery 的。这里注入的 jQuery 是用 npm 下载到本地的，不过也可以提供一个指向内容交付网络（ CDN）或文件系统上的 jQuery 的 URL， jsdom 知道该怎么处理。 `jsdom.env` 方法是异步的，需要给它一个回调函数。这个回调函数能收到错误和窗口对象，我们可以通过窗口对象访问文档。为了便于访问，这里给窗口的 jQuery 对象定义了别名 `$`。
 
-选择器用 jQuery 的.each 方法遍历每一本书。虽然这个例子只有一本书，但已经足以说明 jQuery 的遍历方法确实是可用的。图书的所有数据也是用 jQuery 的遍历方法得到的。
+选择器用 jQuery 的`.each` 方法遍历每一本书。虽然这个例子只有一本书，但已经足以说明 jQuery 的遍历方法确实是可用的。图书的所有数据也是用 jQuery 的遍历方法得到的。
 
 代码清单 B-3 跟之前代码清单 B-1 中的例子差不多，主要区别是由 Node 在当前进程中解析和执行的 jQuery。代码清单 B-1 用 cheerio 实现了类似的功能，那是 cheerio 自己的类 jQuery 层。这里是像在浏览器中那样运行这些代码的。
 
-jsdom.env 方法只在静态页面中有用。要解析使用客户端 JavaScript 的页面，需要用 jsdom.jsdom。这个同步方法会返回一个窗口对象，可以用其他 jsdom 工具操作。下面这段代码用 jsdom 解析了一个带 script 标签的文档， jsdom.jQueryify 让抓取变得更容易了。
+`jsdom.env` 方法只在静态页面中有用。要解析使用客户端 JavaScript 的页面，需要用 `jsdom.jsdom`。这个同步方法会返回一个窗口对象，可以用其他 jsdom 工具操作。下面这段代码用 jsdom 解析了一个带 script 标签的文档， `jsdom.jQueryify` 让抓取变得更容易了。
 
 代码清单 B-4 用 jsdom 解析动态 HTML
 
@@ -10314,7 +10313,7 @@ jsdom.jQueryify(window, jqueryPath, function () {
 
 代码清单 B-4 需要安装 jQuery，如果你是手工创建的这段代码，那么需要用 `npm init` 和 `npm install --save jquery jsdom` 设置一个新项目。在这段代码中的 HTML 里，我们要抓取的值是动态插入进去的。插入这些值的代码在文档的 script 标签里。
 
-这次 jsdom.env 换成了 jsdom.jsdom。它是同步的，因为文档对象是在内存中创建的，但在查询或处理之前不会做什么。查询和处理文档的 jQuery 是用 jsdom.jQueryify 插入到文档中的。在 jQuery 加载和运行后，回调得以执行，从而从文档中查询到我们感兴趣的值，输出到控制台中。输出如下所示：
+这次 `jsdom.env` 换成了 `jsdom.jsdom`。它是同步的，因为文档对象是在内存中创建的，但在查询或处理之前不会做什么。查询和处理文档的 jQuery 是用 `jsdom.jQueryify` 插入到文档中的。在 jQuery 加载和运行后，回调得以执行，从而从文档中查询到我们感兴趣的值，输出到控制台中。输出如下所示：
 
 ```js
 { title: 'Catch-22', author: 'Joseph Heller' }
@@ -10326,7 +10325,7 @@ jsdom.jQueryify(window, jqueryPath, function () {
 
 得到有价值的数据后，还需要进行处理，以便能够保存到数据库中或以 CSV 之类的格式导出。抓取到的数据或者是非结构化的普通文本，或者是用微格式编码的。
 
-微格式是基于标记的轻便数据格式，用来结构化地址、日历和事件、标签或关键词等数据。microformats.org 上有对已有微格式的介绍。下面是一个将名字表示为微格式的例子：
+微格式是基于标记的轻便数据格式，用来结构化地址、日历和事件、标签或关键词等数据。`microformats.org` 上有对已有微格式的介绍。下面是一个将名字表示为微格式的例子：
 
 ```html
 <a class="h-card" href="http://example.com">Joseph Heller</a>
@@ -10336,7 +10335,7 @@ jsdom.jQueryify(window, jqueryPath, function () {
 
 大多数网页都不用微格式。这里可能会有问题但依然可控的是日期值。日期的可能格式很多，但在同一个网站上一般会保持一致。在识别出日期的格式后，就可以对其进行解析和格式化了。
 
-JavaScript 中有内置日期解析器：运行 `new Date('2016 01 01')`，就会得到对应于 2016 年 1 月 1 日的 Date 实例。支持哪些输入格式是由基于 RFC 2822 或 ISO 8601 的 Date.parse 决定的。其他格式可能能用，所以一般要用源数据试一下，看看会发生什么。
+JavaScript 中有内置日期解析器：运行 `new Date('2016 01 01')`，就会得到对应于 2016 年 1 月 1 日的 Date 实例。支持哪些输入格式是由基于 RFC 2822 或 ISO 8601 的 `Date.parse` 决定的。其他格式可能能用，所以一般要用源数据试一下，看看会发生什么。
 
 另外一种办法是用正则表达式跟源数据匹配，然后用 Date 的构造器创建新的 Date 对象。其用法如下所示：
 
@@ -10405,9 +10404,9 @@ books.forEach((book) => {
 </div>
 ```
 
-抓取器加载完输入文件之后又加载了 Moment，然后用 cheerio 的.map 和.get 方法将图书一一映射为 JavaScript 对象。 .map 方法会遍历这些图书，然后回调方法会用.find 选择器遍历方法从元素中提取需要的数据，再用.get 方法将文本结果变成数组。
+抓取器加载完输入文件之后又加载了 Moment，然后用 cheerio 的`.map` 和`.get` 方法将图书一一映射为 JavaScript 对象。 `.map` 方法会遍历这些图书，然后回调方法会用`.find` 选择器遍历方法从元素中提取需要的数据，再用`.get` 方法将文本结果变成数组。
 
-代码清单 B-5 中用 console.log 输出了 CSV。先输出标题栏，然后在循环遍历中输出每本书的数据。对于日期，先是用 new Date 解析，然后用 Moment 转换成可以跟 MySQL 兼容的格式。
+代码清单 B-5 中用 `console.log` 输出了 CSV。先输出标题栏，然后在循环遍历中输出每本书的数据。对于日期，先是用 new Date 解析，然后用 Moment 转换成可以跟 MySQL 兼容的格式。
 
 习惯了日期的解析和格式化之后，可以对其他数据格式使用类似的技术。比如用正则表达式捕获货币和距离度量数据，然后用 Numeral 这种通用的数值格式库做格式化处理。
 
