@@ -1196,7 +1196,7 @@ console.log(global.a); // 10
 
 1.  `__dirname`
 
-该成员用于获取当前这个 js 文件所在目录（所在文件夹）的完成的绝对物理路径。该成员只在模块内部有效，在 REPL 环境当中失效。输出为当前模块的文件夹名称。等同于 path.dirname( \_\_filename ) 的值。
+该成员用于获取当前这个 js 文件所在目录（所在文件夹）的完成的绝对物理路径。该成员只在模块内部有效，在 REPL 环境当中失效。输出为当前模块的文件夹名称。等同于 `path.dirname( \_\_filename )` 的值。
 
 ```js
 // 示例：运行位于 `/Users/mjr`目录下的example.js文件：`node example.js`
@@ -1218,11 +1218,11 @@ console.log(__filename);
 
 3. exports
 
-这是一个对于 module.exports 的更简短的引用形式。
+这是一个对于 `module.exports` 的更简短的引用形式。
 
 4. module
 
-对当前模块的引用。 module.exports 用于指定一个模块所导出的内容，即可以通过 require() 访问的内容。
+对当前模块的引用。` module.exports` 用于指定一个模块所导出的内容，即可以通过 `require()` 访问的内容。
 
 4. require()
 
@@ -1287,7 +1287,7 @@ http
 
 Express 是一个自身功能极简，完全是由路由和中间件构成一个的 web 开发框架：从本质上来说，一个 Express 应用就是在调用各种中间件。
 
-中间件（Middleware） 是一个函数，它可以访问请求对象（request object (req)）, 响应对象（response object (res)）, 和 web 应用中处于请求-响应循环流程中的中间件，一般被命名为 next 的变量。
+中间件（Middleware） 是一个函数，它可以访问请求对象`request object (req)`, 响应对象`response object (res)`, 和 web 应用中处于请求-响应循环流程中的中间件，一般被命名为 next 的变量。
 
 中间件的功能包括：
 
@@ -1302,7 +1302,7 @@ Express 是一个自身功能极简，完全是由路由和中间件构成一个
 
 ## express 应用级中间件
 
-应用级中间件绑定到 app 对象 使用 app.use() 和 app.METHOD()， 其中， METHOD 是需要处理的 HTTP 请求的方法，例如 GET, PUT, POST 等等，全部小写。
+应用级中间件绑定到 app 对象 使用 `app.use()` 和 `app.METHOD()`， 其中， METHOD 是需要处理的 HTTP 请求的方法，例如 GET, PUT, POST 等等，全部小写。
 
 ```javascript
 var app = express();
@@ -1429,7 +1429,7 @@ app.use(function (err, req, res, next) {
 
 ## express 内置中间件。
 
-express.static 是 Express 唯一内置的中间件。它基于 serve-static，负责在 Express 应用中提托管静态资源。参数 root 指提供静态资源的根目录。
+`express.static` 是 Express 唯一内置的中间件。它基于 serve-static，负责在 Express 应用中提托管静态资源。参数 root 指提供静态资源的根目录。
 
 下面的例子使用了 `express.static` 中间件，其中的 `options` 对象经过了精心的设计。
 

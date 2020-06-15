@@ -10234,7 +10234,7 @@ jsdom 是网络抓取器理想中的工具：它能下载 HTML，能依照浏览
 
 jsdom 也有缺点。它不能完美地模拟浏览器，它比 cheerio 慢，它的 HTML 解析器太严格，碰到写得不好的页面时可能会失效。然而有些网站完全依赖于客户端 JavaScript 的支持，所以对于某些抓取任务来说， jsdom 是不可或缺的工具。
 
-jsdom 的基本用法是通过 jsdom.env 方法。下例演示了 jsdom 如何通过注入 jQuery 抓取页面并提取需要的值。
+jsdom 的基本用法是通过 `jsdom.env` 方法。下例演示了 jsdom 如何通过注入 jQuery 抓取页面并提取需要的值。
 
 代码清单 B-3 用 jsdom 抓取页面
 

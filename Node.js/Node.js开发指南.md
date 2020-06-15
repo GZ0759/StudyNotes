@@ -156,15 +156,14 @@ CommonJS 规范包括了模块（ modules）、包（ packages）、系统（ sy
 
 # 第二章 安装和配置Node.js
 
-编译源代码。Node.js 从 0.6 版本开始已经实现了源代码级别的跨平台，因此我们可以使用不同的编译命令将同一份源代码的基础上编译为不同平台下的原生可执行代码。在编译之前，要先获取源码包。我们建议访问http://nodejs.org ，点击Download链接，然后选择Source Code，下载正式发布的源码包。如果你需要开发中的版本，可以通过https://github.com/joyent/node/zipball/master 获得，或者在命令行下输入`git clone git://github.com/joyent/node.git` 从git获得最新的分支。
+编译源代码。Node.js 从 0.6 版本开始已经实现了源代码级别的跨平台，因此我们可以使用不同的编译命令将同一份源代码的基础上编译为不同平台下的原生可执行代码。在编译之前，要先获取源码包。我们建议访问 http://nodejs.org ，点击Download链接，然后选择Source Code，下载正式发布的源码包。如果你需要开发中的版本，可以通过 https://github.com/joyent/node/zipball/master 获得，或者在命令行下输入`git clone git://github.com/joyent/node.git` 从git获得最新的分支。
 
-安装 Node 包管理器。Node 包管理器（ npm）是一个由 Node.js 官方提供的第三方包管理工具，就像 PHP 的Pear、 Python 的 PyPI 一样。 npm 是一个完全由 JavaScript 实现的命令行工具，通过 Node.js 执行，因此严格来讲它不属于 Node.js 的一部分。在最初的版本中，我们需要在安装完 Node.js 以后手动安装npm。但从 Node.js 0.6 开始， npm 已包含在发行包中了，我们在 Windows、
-Mac 上安装包和源代码包时会自动同时安装 npm。
+安装 Node 包管理器。Node 包管理器（ npm）是一个由 Node.js 官方提供的第三方包管理工具，就像 PHP 的Pear、 Python 的 PyPI 一样。 npm 是一个完全由 JavaScript 实现的命令行工具，通过 Node.js 执行，因此严格来讲它不属于 Node.js 的一部分。在最初的版本中，我们需要在安装完 Node.js 以后手动安装npm。但从 Node.js 0.6 开始， npm 已包含在发行包中了，我们在 Windows、Mac 上安装包和源代码包时会自动同时安装 npm。
 
 安装多版本管理器。迄今为止 Node.js 更新速度还很快，有时候新版本还会将旧版本的一些 API 废除，以至于写好的代码不能向下兼容。有时候可能想要尝试一下新版本有趣的特性，但又想要保持一个相对稳定的环境。基于这种需求， Node.js 的社区开发了多版本管理器，用于在一台机器上维护多个版本的 Node.js 实例，方便按需切换。 Node 多版本管理器（ Node Version Manager， nvm）是一个通用的叫法，它目前有许多不同的实现。
 
-n 是一个十分简洁的 Node 多版本管理器，就连它的名字也不例外。它的名字就是 n，没错，就一个字母。 如果已经安装好了 Node.js 和 npm 环境，就可以直接使用`npm install -g n`命令来安装 n。如果想完全通过 n 来管理 Node.js，那么没安装之前哪来的 npm 呢？事实上， n 并不需要 Node.js 驱动，它只是 bash 脚本，使用 npm 安装只是采取一种简便的方式而已。我们可以在 https://github.com/visionmedia/n 下载它的代码，然后使用 make install 命令安装。
-
+n 是一个十分简洁的 Node 多版本管理器，就连它的名字也不例外。它的名字就是 n，没错，就一个字母。 如果已经安装好了 Node.js 和 npm 环境，就可以直接使用`npm install -g n`命令来安装 n。如果想完全通过 n 来管理 Node.js，那么没安装之前哪来的 npm 呢？事实上， n 并不需要 Node.js 驱动，它只是 bash 脚本，使用 npm 安装只是采取一种简便的方式而已。我们可以在 https://github.com/visionmedia/n 下载它的代码，然后使用 `make install` 命令安装。
+z
 # 第三章 Node.js快速入门
 
 ## 3.1 开始用 Node.js 编程
@@ -275,7 +274,7 @@ Node.js 最大的特点就是异步式 I/O（或者非阻塞 I/O）与事件紧�
 
 ### 3.2.2 回调函数
 
-同步式读取文件的方式比较容易理解，将文件名作为参数传入 `fs.readFileSync` 函数，阻塞等待读取完成后，将文件的内容作为函数的返回值赋给 `data` 变量，接下来控制台输出 `data` 的值，最后输出 `end.`。
+同步式读取文件的方式比较容易理解，将文件名作为参数传入 `fs.readFileSync` 函数，阻塞等待读取完成后，将文件的内容作为函数的返回值赋给 data 变量，接下来控制台输出 data 的值，最后输出 `end.`。
 
 异步式读取文件就稍微有些违反直觉了， `end.`先被输出。要想理解结果，我们必须先知道在 Node.js 中，异步式 I/O 是通过回调函数来实现的。 `fs.readFile` 接收了三个参数，第一个是文件名，第二个是编码方式，第三个是一个函数，我们称这个函数为回调函数。JavaScript 支持匿名的函数定义方式。
 
@@ -343,7 +342,7 @@ Node.js 在什么时候会进入事件循环呢？答案是 Node.js 程序由事
 
 模块是 Node.js 应用程序的基本组成部分，文件和模块是一一对应的。换言之，一个 Node.js 文件就是一个模块，这个文件可能是 JavaScript 代码、 JSON 或者编译过的 C/C++ 扩展。
 
-在前面章节的例子中，用到了 `var http = require('http')`， 其中 http 是 Node.js 的一个核心模块，其内部是用 C++ 实现的，外部用 JavaScript 封装。我们通过require 函数获取了这个模块，然后才能使用其中的对象。
+在前面章节的例子中，用到了 `var http = require('http')`， 其中 http 是 Node.js 的一个核心模块，其内部是用 C++ 实现的，外部用 JavaScript 封装。我们通过 require 函数获取了这个模块，然后才能使用其中的对象。
 
 ### 3.3.2 创建及加载模块
 
@@ -577,7 +576,7 @@ npm [install/i] -g [package_name]
 
 3. 创建全局链接
 
-npm 提供了一个有趣的命令 npm link， 它的功能是在本地包和全局包之间创建符号链接。我们说过使用全局模式安装的包不能直接通过 require 使用，但通过 npm link 命令可以打破这一限制。举个例子，我们已经通过 `npm install -g express` 安装了 express，这时在工程的目录下运行命令：
+npm 提供了一个有趣的命令 `npm link`， 它的功能是在本地包和全局包之间创建符号链接。我们说过使用全局模式安装的包不能直接通过 require 使用，但通过 `npm link` 命令可以打破这一限制。举个例子，我们已经通过 `npm install -g express` 安装了 express，这时在工程的目录下运行命令：
 
 ```
 $ npm link express
@@ -1477,7 +1476,7 @@ express@2.5.8 ./node_modules/express
 
 用 Express 实现的网站实际上就是一个 Node.js 程序，因此可以直接运行。我们运行 `node app.js`， 看到 `Express server listening on port 3000 in development mode`。
 
-接下来，打开浏览器，输入地址 http://localhost:3000， 你就可以看到一个简单的 Welcome to Express 页面了。如果你能看到如图5-2 所示的页面，那么说明你的设定正确无误。
+接下来，打开浏览器，输入地址 http://localhost:3000 ，你就可以看到一个简单的 Welcome to Express 页面了。如果你能看到如图5-2 所示的页面，那么说明你的设定正确无误。
 
 图5-2 Express 初始欢迎页面
 
