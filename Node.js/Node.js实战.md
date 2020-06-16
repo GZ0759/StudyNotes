@@ -5567,46 +5567,40 @@ curl -i -H 'Accept: application/xml'
 - 在用 Express 实现 REST API 时，可以用 HTTP 谓词定义路由。
 - Express 路由的响应可以是 JSON、 HTML 或其他格式的数据。
 - Express 有个简单的模板引擎 API，支持很多种引擎。7.1 用模板保持代码的整洁性 143
-
-# 第7章 Web 程序的模板
+# 第 7 章 Web 程序的模板
 
 本章内容
+
 - 用模板组织程序
 - 用 Embedded JavaScript 创建模板
 - 学习极简风格的 Hogan 模板
 - 用 Pug 创建模板
 
-在第 3 章和第 6 章，为了在 Express 程序中创建视图，我们介绍过一些模板的基础知识。接
-下来本章将专门介绍模板。我们会讲到三个热门的模板引擎，以及如何用模板把显示层标记从逻
-辑代码中分离出来，保持 Web 程序代码的整洁性。
+在第 3 章和第 6 章，为了在 Express 程序中创建视图，我们介绍过一些模板的基础知识。接下来本章将专门介绍模板。我们会讲到三个热门的模板引擎，以及如何用模板把显示层标记从逻 辑代码中分离出来，保持 Web 程序代码的整洁性。
 
-如果你熟悉模板和模型视图控制器（ MVC）模式，可以直接进入 7.2 节开始学习。我们会
-详细介绍 Embedded JavaScript、 Hogan 和 Pug 三个模板引擎。如果对模板不太了解，请继续往下
-看，接下来的几节将会介绍模板这一概念。
+如果你熟悉模板和模型-视图-控制器（ MVC）模式，可以直接进入 7.2 节开始学习。我们会 详细介绍 Embedded JavaScript、 Hogan 和 Pug 三个模板引擎。如果对模板不太了解，请继续往下 看，接下来的几节将会介绍模板这一概念。
 
 ## 7.1 用模板保持代码的整洁性
-在 Node 中可以像其他 Web 技术一样，用 MVC 模式开发传统的 Web 程序。 MVC 的主要思
-想是将逻辑、数据和展示层分离。在遵循 MVC 模式的 Web 程序中，一般是用户向服务器请求资
-源，然后控制器向模型请求数据，得到数据后传给视图，再由视图以特定格式将数据呈现给用户。
-MVC 中的视图部分一般会用到某种模板语言。在使用模板时，视图会将模型返回的数据传递给
-模板引擎，并指定用哪个模板文件展示这些数据。
-你可以通过图 7-1 了解一下模板是如何融入 MVC 程序的整体架构中的。模板文件中通常包
-含数据的占位符、 HTML、 CSS，有时还会用一些客户端 JavaScript 来做第三方小部件显示，比
-如 Facebook 的点赞按钮，或者触发界面行为，比如隐藏或显示页面的某些部分。因为模板文件
-的工作重点是展示而不是处理逻辑，所以前端开发人员和服务器端开发人员可以一起工作，这样
-有利于项目任务的分工。
-本节会分别在用和不用模板的两种情况下渲染 HTML，让你看到两者之间的差异。但我们还
-是先看一个模板的实例吧。
-第 7 章144 第 7 章 Web 程序的模板
+
+在 Node 中可以像其他 Web 技术一样，用 MVC 模式开发传统的 Web 程序。 MVC 的主要思 想是将逻辑、数据和展示层分离。在遵循 MVC 模式的 Web 程序中，一般是用户向服务器请求资 源，然后控制器向模型请求数据，得到数据后传给视图，再由视图以特定格式将数据呈现给用户。 MVC 中的视图部分一般会用到某种模板语言。在使用模板时，视图会将模型返回的数据传递给 模板引擎，并指定用哪个模板文件展示这些数据。
+
+你可以通过图 7-1 了解一下模板是如何融入 MVC 程序的整体架构中的。模板文件中通常包 含数据的占位符、 HTML、 CSS，有时还会用一些客户端 JavaScript 来做第三方小部件显示，比 如 Facebook 的点赞按钮，或者触发界面行为，比如隐藏或显示页面的某些部分。因为模板文件 的工作重点是展示而不是处理逻辑，所以前端开发人员和服务器端开发人员可以一起工作，这样 有利于项目任务的分工。
+
+本节会分别在用和不用模板的两种情况下渲染 HTML，让你看到两者之间的差异。但我们还 是先看一个模板的实例吧。
+
 图 7-1 MVC 程序的流程以及它跟模板层的交互
-模板实战
-为了快速演示一下如何使用模板，我们以一个简单的博客程序为例，看它如何优雅地输出
-HTML。每篇博客文章都会有一个标题、发布日期以及主体文本。博客在浏览器中如图 7-2 所示。
+
+**模板实战**
+
+为了快速演示一下如何使用模板，我们以一个简单的博客程序为例，看它如何优雅地输出 HTML。每篇博客文章都会有一个标题、发布日期以及主体文本。博客在浏览器中如图 7-2 所示。
+
 图 7-2 博客程序在浏览器中的输出示例
-博客文章是从文本文件 entries.txt 中读取的，格式如下所示。 ---表明一篇文章结束，另一篇
-文章开始。
+
+博客文章是从文本文件 entries.txt 中读取的，格式如下所示。 ---表明一篇文章结束，另一篇 文章开始。
 
 代码清单 7-1 博客文章文本文件
+
+```
 title: It's my birthday!
 date: January 12, 2016
 I am getting old, but thankfully I'm not in jail!
@@ -5615,63 +5609,72 @@ title: Movies are pretty good
 date: January 2, 2016
 I've been watching a lot of movies lately. It's relaxing,
 except when they have clowns in them.
+```
+
 博客程序的代码放在 blog.js 中，先引入必要的模块，然后读入博客文章，代码如下所示。
+
 代码清单 7-2 博客程序的文件解析逻辑
-const fs = require('fs');
-const http = require('http');
+
+```js
+const fs = require("fs");
+const http = require("http");
+// 读取和解析博客文章文本的函数
 function getEntries() {
-const entries = [];
-let entriesRaw = fs.readFileSync('./entries.txt', 'utf8');
-entriesRaw = entriesRaw.split('---');
-entriesRaw.map((entryRaw) => {
-const entry = {};
-const lines = entryRaw.split('\n');
-lines.map((line) => {
-if (line.indexOf('title: ') === 0) {
-entry.title = line.replace('title: ', '');
-} else if (line.indexOf('date: ') === 0) {
-entry.date = line.replace('date: ', '');
-} else {
-entry.body = entry.body || '';
-entry.body += line;
-}
-});
-entries.push(entry);
-});
-return entries;
+  const entries = [];
+  // 从文件中读取博客文章的数据
+  let entriesRaw = fs.readFileSync("./entries.txt", "utf8");
+  // 解析文本， 将它们分成一篇篇的文章
+  entriesRaw = entriesRaw.split("---");
+  entriesRaw.map((entryRaw) => {
+    const entry = {};
+    // 逐行解析，提取出文章的属性
+    const lines = entryRaw.split("\n");
+    // 解析文章的文本，将它们按行分解
+    lines.map((line) => {
+      if (line.indexOf("title: ") === 0) {
+        entry.title = line.replace("title: ", "");
+      } else if (line.indexOf("date: ") === 0) {
+        entry.date = line.replace("date: ", "");
+      } else {
+        entry.body = entry.body || "";
+        entry.body += line;
+      }
+    });
+    entries.push(entry);
+  });
+  return entries;
 }
 const entries = getEntries();
 console.log(entries);
-下面这段代码定义了一个 HTTP 服务器，把它加到博客程序中。收到 HTTP 请求后，服务器
-会返回一个包含所有文章的页面。这个页面是用函数 blogPage 渲染的，一会儿再定义它：
+```
+
+下面这段代码定义了一个 HTTP 服务器，把它加到博客程序中。收到 HTTP 请求后，服务器 会返回一个包含所有文章的页面。这个页面是用函数 blogPage 渲染的，一会儿再定义它：
+
+```js
 const server = http.createServer((req, res) => {
-const output = blogPage(entries);
-res.writeHead(200, {'Content-Type': 'text/html'});
-res.end(output);
+  const output = blogPage(entries);
+  res.writeHead(200, { "Content-Type": "text/html" });
+  res.end(output);
 });
 server.listen(8000);
-接下来定义 blogPage 函数，用它把文章渲染到 HTML 页面中，以便发送给浏览器。我们
-会尝试两种不同的方式：
-读取和解析博客文
-章文本的函数
-从文件中读取博
-客文章的数据
-解析文本， 将它们分
-成一篇篇的文章
-逐行解析，
-提 取 出 文
-章的属性
-解析文章的文本，将
-它们按行分解146 第 7 章 Web 程序的模板
+```
+
+接下来定义 blogPage 函数，用它把文章渲染到 HTML 页面中，以便发送给浏览器。我们 会尝试两种不同的方式：
+
 - 不用模板渲染；
 - 用模板渲染。
+
 下面先来看一下不用模板的情况。
+
 1. 不用模板渲染 HTML
-博客程序可以直接输出 HTML，但在处理逻辑中引入 HTML 会让代码变得很乱。下面代码
-中的 blogPage 函数没用模板显示文章。
+
+博客程序可以直接输出 HTML，但在处理逻辑中引入 HTML 会让代码变得很乱。下面代码 中的 blogPage 函数没用模板显示文章。
+
 代码清单 7-3 模板引擎把展示细节和程序逻辑分开
+
+```js
 function blogPage(entries) {
-let output = `
+  let output = `
 <html>
 <head>
 <style type="text/css">
@@ -5682,442 +5685,568 @@ let output = `
 </head>
 <body>
 `;
-entries.map(entry => {
-output += `
+  entries.map((entry) => {
+    // 逻辑中穿插了太多的 HTML
+    output += `
 <div class="entry_title">${entry.title}</div>
 <div class="entry_date">${entry.date}</div>
 <div class="entry_body">${entry.body}</div>
 `;
-});
-output += '</body></html>';
-return output;
+  });
+  output += "</body></html>";
+  return output;
 }
-看看所有这些跟展示相关的内容、 CSS 定义和 HTML 给程序添了多少行代码。
-2. 用模板渲染 HTML
-模板可以把 HTML 从处理逻辑中挪走，大幅提升代码的整洁性。
-本节的演示程序需要用到 Embedded JavaScript（ EJS）模块，可以用下面这条命令安装：
-npm install ejs
-下面的代码加载了一个模板文件， blogPage 函数也和前面不一样了，这次用到了 EJS 模板
-引擎，我们会在 7.2 节中介绍这个模板引擎的用法。
-const fs = require('fs');
-const ejs = require('ejs');
-const template = fs.readFileSync('./templatess/blog_page.ejs', 'utf8');
-function blogPage(entries) {
-const values = { entries };
-return ejs.render(template, values);
-}
-逻辑中穿插了
-太多的 HTML7.2 Embedded JavaScript 的模板 147
+```
 
-完整的随书源码见 ch07-templates/listing7_4/。 EJS 模板文件是由 HTML 标记（从处理逻辑中
-挪过来的）和数据占位符（指示把数据放在哪里）构成的。展示文章的 EJS 模板文件中应该包含
-下面这样的 HTML 和占位符。
+看看所有这些跟展示相关的内容、 CSS 定义和 HTML 给程序添了多少行代码。
+
+2. 用模板渲染 HTML
+
+模板可以把 HTML 从处理逻辑中挪走，大幅提升代码的整洁性。
+
+本节的演示程序需要用到 Embedded JavaScript（ EJS）模块，可以用下面这条命令安装：
+
+```
+npm install ejs
+```
+
+下面的代码加载了一个模板文件， blogPage 函数也和前面不一样了，这次用到了 EJS 模板 引擎，我们会在 7.2 节中介绍这个模板引擎的用法。
+
+```js
+const fs = require("fs");
+const ejs = require("ejs");
+const template = fs.readFileSync("./templatess/blog_page.ejs", "utf8");
+function blogPage(entries) {
+  const values = { entries };
+  return ejs.render(template, values);
+}
+```
+
+完整的随书源码见 ch07-templates/listing7_4/。 EJS 模板文件是由 HTML 标记（从处理逻辑中 挪过来的）和数据占位符（指示把数据放在哪里）构成的。展示文章的 EJS 模板文件中应该包含 下面这样的 HTML 和占位符。
+
 代码清单 7-4 显示文章的 EJS 模板
+
+```html
 <html>
-<head>
-<style type="text/css">
-.entry_title { font-weight: bold; }
-.entry_date { font-style: italic; }
-.entry_body { margin-bottom: 1em; }
-</style>
-</head>
-<body>
-<% entries.map(entry => { %>
-<div class="entry_title"><%= entry.title %></div>
-<div class="entry_date"><%= entry.date %></div>
-<div class="entry_body"><%= entry.body %></div>
-<% }); %>
-</body>
+  <head>
+    <style type="text/css">
+      .entry_title {
+        font-weight: bold;
+      }
+      .entry_date {
+        font-style: italic;
+      }
+      .entry_body {
+        margin-bottom: 1em;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- 循环遍历博客文章的占位符 -->
+    <% entries.map(entry => { %>
+    <!-- 每篇博客文章中的 各项数据的占位符 -->
+    <div class="entry_title"><%= entry.title %></div>
+    <div class="entry_date"><%= entry.date %></div>
+    <div class="entry_body"><%= entry.body %></div>
+    <% }); %>
+  </body>
 </html>
-Node 社区创建了很多模板引擎。 HTML 需要闭合标签，而 CSS 需要左右大括号，如果你觉
-得这样不够优雅，那么可以认真研究一下模板引擎。它们会用特殊的“语言”（比如我们后面会
-讲到的 Pug 语言）以更简洁的方式表示 HTML 或 CSS。
-这些模板引擎可以让模板更整洁，但你可能不想花时间去学另外一种表示 HTML 和 CSS 的
-技术。用不用最终还是要取决于你自己。
+```
+
+Node 社区创建了很多模板引擎。 HTML 需要闭合标签，而 CSS 需要左右大括号，如果你觉 得这样不够优雅，那么可以认真研究一下模板引擎。它们会用特殊的“语言”（比如我们后面会 讲到的 Pug 语言）以更简洁的方式表示 HTML 或 CSS。
+
+这些模板引擎可以让模板更整洁，但你可能不想花时间去学另外一种表示 HTML 和 CSS 的 技术。用不用最终还是要取决于你自己。
+
 本章会介绍三个模板引擎，以及如何在 Node 程序中使用它们的模板：
+
 - Embedded JavaScript（ EJS）引擎；
 - 极简的 Hogan 引擎；
 - Pug 模板引擎。
+
 这些引擎都允许用另一种方式写 HTML。我们先从 EJS 开始。
 
 ## 7.2 Embedded JavaScript 的模板
-Embedded JavaScript 处理模板的方式相当地简单直接，在其他语言中用过模板的人对它应该
-有种似曾相识的感觉，比如 JSP（ Java）、 Smarty（ PHP）、 ERB（ Ruby）等模板。你可以把 EJS
-标签当作给数据准备的占位符嵌入到 HTML 中，还可以在模板中执行纯 JavaScript 代码，就像
-PHP 那样完成条件分支和循环之类的工作。
+
+Embedded JavaScript 处理模板的方式相当地简单直接，在其他语言中用过模板的人对它应该 有种似曾相识的感觉，比如 JSP（ Java）、 Smarty（ PHP）、 ERB（ Ruby）等模板。你可以把 EJS 标签当作给数据准备的占位符嵌入到 HTML 中，还可以在模板中执行纯 JavaScript 代码，就像 PHP 那样完成条件分支和循环之类的工作。
+
 本节会讲解如何：
+
 - 创建 EJS 模板；
 - 用 EJS 过滤器提供常用的、与展示相关的功能，比如文本处理、排序和循环；
-循环遍历博客
-文章的占位符
-每篇博客文章中的
-各项数据的占位符148 第 7 章 Web 程序的模板
 - 在 Node 程序中集成 EJS；
 - 把 EJS 用在客户端程序中。
+
 接下来我们要深入到 EJS 模板的世界中。
-7.2.1 创建模板
-在模板的世界中，发送给模板引擎做渲染的数据有时被称为上下文。下面是 EJS 用一个简单
-的模板渲染上下文的例子：
-const ejs = require('ejs');
-const template = '<%= message %>';
-const context = { message: 'Hello template!' };
+
+### 7.2.1 创建模板
+
+在模板的世界中，发送给模板引擎做渲染的数据有时被称为上下文。下面是 EJS 用一个简单 的模板渲染上下文的例子：
+
+```js
+const ejs = require("ejs");
+const template = "<%= message %>";
+const context = { message: "Hello template!" };
 console.log(ejs.render(template, context));
-注意发送给 render 的第二个参数中 locals 的用法。第二个参数可以包含 EJS 选项以及上
-下文数据，而 locals 可以确保上下文中数据不会被当作 EJS 选项。但大多数情况下你都可以把
-上下文本身当作第二个参数，就像下面的 render 一样：
+```
+
+注意发送给 render 的第二个参数中 locals 的用法。第二个参数可以包含 EJS 选项以及上 下文数据，而 locals 可以确保上下文中数据不会被当作 EJS 选项。但大多数情况下你都可以把 上下文本身当作第二个参数，就像下面的 render 一样：
+
+```js
 console.log(ejs.render(template, context));
-如果把上下文直接当作 render 的第二个参数，一定不要给上下文中的值用这些名称： cache、
-client、 close、 compileDebug、 debug、 filename、 open 或 scope。它们是为修改模板
-引擎设定的保留字。
-字符转义
-在渲染时， EJS 会转义上下文值中的所有特殊字符，将它们替换为 HTML 实体码。这是为了
-防止跨站脚本（ XSS）攻击，恶意用户会将 JavaScript 作为数据提交给 Web 程序，希望其他用户
-访问包含这些数据的页面时能在他们的浏览器中执行。下面的代码展示了 EJS 的转义处理：
-const ejs = require('ejs');
-const template = '<%= message %>';
-const context = {message: "<script>alert('XSS attack!');</script>"};
+```
+
+如果把上下文直接当作 render 的第二个参数，一定不要给上下文中的值用这些名称： cache、 client、 close、 compileDebug、 debug、 filename、 open 或 scope。它们是为修改模板 引擎设定的保留字。
+
+**字符转义**
+
+在渲染时， EJS 会转义上下文值中的所有特殊字符，将它们替换为 HTML 实体码。这是为了 防止跨站脚本（ XSS）攻击，恶意用户会将 JavaScript 作为数据提交给 Web 程序，希望其他用户 访问包含这些数据的页面时能在他们的浏览器中执行。下面的代码展示了 EJS 的转义处理：
+
+```js
+const ejs = require("ejs");
+const template = "<%= message %>";
+const context = { message: "<script>alert('XSS attack!');</script>" };
 console.log(ejs.render(template, context));
+```
+
 这段代码在显示时会输出下面这种代码：
+
+```js
 &lt;script&gt;alert('XSS attack!');&lt;/script&gt;
+```
+
 如果用在模板中的是可信数据，不想做转义处理，可以用<%-代替<%=，像下面这样：
-const ejs = require('ejs');
-const template = '<%- message %>';
+
+```js
+const ejs = require("ejs");
+const template = "<%- message %>";
 const context = {
-message: "<script>alert('Trusted JavaScript!');</script>"
+  message: "<script>alert('Trusted JavaScript!');</script>",
 };
 console.log(ejs.render(template, context));
-注意！指明 EJS 标签的字符是可修改的，比如像这样：
-const ejs = require('ejs');
+```
 
-ejs.delimiter = '$'
-const template = '<$= message $>';
-const context = { message: 'Hello template!' };
+注意！指明 EJS 标签的字符是可修改的，比如像这样：
+
+```js
+const ejs = require("ejs");
+ejs.delimiter = "$";
+const template = "<$= message $>";
+const context = { message: "Hello template!" };
 console.log(ejs.render(template, context));
+```
+
 介绍过 EJS 的基础知识，接下来我们看一些包含更多细节的例子。
-7.2.2 将 EJS 集成到你的程序中
-把模板和代码放在同一个文件里很别扭，并且会显得代码很乱，接下来我们要告诉你如何用
-Node API 从单独的文件中读取模板。
+
+### 7.2.2 将 EJS 集成到你的程序中
+
+把模板和代码放在同一个文件里很别扭，并且会显得代码很乱，接下来我们要告诉你如何用 Node API 从单独的文件中读取模板。
+
 进入工作目录，创建 app.js 文件，把下面的代码放在里面。
+
 代码清单 7-5 把模板代码放在文件中
-const ejs = require('ejs');
-const fs = require('fs');
-const http = require('http');
-const filename = './templates/students.ejs';
+
+```js
+const ejs = require("ejs");
+const fs = require("fs");
+const http = require("http");
+// 意模板文件的位置
+const filename = "./templates/students.ejs";
+// 传给模板引擎的数据
 const students = [
-{ name: 'Rick LaRue', age: 23 },
-{ name: 'Sarah Cathands', age: 25 },
-{ name: 'Bob Dobbs', age: 37 }
+  { name: "Rick LaRue", age: 23 },
+  { name: "Sarah Cathands", age: 25 },
+  { name: "Bob Dobbs", age: 37 },
 ];
+// 创建 HTTP 服务器
 const server = http.createServer((req, res) => {
-if (req.url === '/') {
-fs.readFile(filename, (err, data) => {
-const template = data.toString();
-const context = { students: students };
-const output = ejs.render(template, context);
-res.setHeader('Content-type', 'text/html');
-res.end(output);
-});
-} else {
-res.statusCode = 404;
-res.end('Not found');
-}
+  if (req.url === "/") {
+    // 从文件中读取模板
+    fs.readFile(filename, (err, data) => {
+      const template = data.toString();
+      const context = { students: students };
+      // 渲染模板
+      const output = ejs.render(template, context);
+      res.setHeader("Content-type", "text/html");
+      // 发送 HTTP 响应
+      res.end(output);
+    });
+  } else {
+    res.statusCode = 404;
+    res.end("Not found");
+  }
 });
 server.listen(8000);
-接下来创建用来存放模板文件的子目录 templates，在 templates 下创建 students.ejs 文件，把
-下面的代码放到 students.ejs 中。
+```
+
+接下来创建用来存放模板文件的子目录 templates，在 templates 下创建 students.ejs 文件，把 下面的代码放到 students.ejs 中。
+
 代码清单 7-6 渲染学生数组的 EJS 模板
+
+```html
 <% if (students.length) { %>
 <ul>
-<% students.forEach((student) => { %>
-<li><%= student.name %> (<%= student.age %>)</li>
-<% }) %>
-注意模板文
-件的位置
-传给模板引
-擎的数据
-创建 HTTP
-服务器
-从文件中读
-取模板
-渲染
-模板
-发送 HTTP
-响应150 第 7 章 Web 程序的模板
+  <% students.forEach((student) => { %>
+  <li><%= student.name %> (<%= student.age %>)</li>
+  <% }) %> 注意模板文 件的位置 传给模板引 擎的数据 创建 HTTP 服务器 从文件中读
+  取模板 渲染 模板 发送 HTTP 响应150 第 7 章 Web 程序的模板
 </ul>
 <% } %>
-缓存 EJS 模板
-如果有必要，可以让 EJS 把模板函数缓存在内存中。也就是说在解析完模板文件后， EJS 可以
-把解析得到的函数存下来。这样以后需要渲染这个模板时不用再次解析，所以渲染速度会更快。
-如果正在开发过程当中，想即时看到模板文件修改后的效果，则不要启用缓存。但在把程序
-部署到生产环境中时，启用缓存是一种简单快捷的性能优化办法。可以通过环境变量 NODE_ENV
-判定是否启用缓存。
+```
+
+**缓存 EJS 模板**
+
+如果有必要，可以让 EJS 把模板函数缓存在内存中。也就是说在解析完模板文件后， EJS 可以 把解析得到的函数存下来。这样以后需要渲染这个模板时不用再次解析，所以渲染速度会更快。
+
+如果正在开发过程当中，想即时看到模板文件修改后的效果，则不要启用缓存。但在把程序 部署到生产环境中时，启用缓存是一种简单快捷的性能优化办法。可以通过环境变量 NODE_ENV 判定是否启用缓存。
+
 如果想试一下，可以将前面的 render 函数调用改成下面这样：
-const cache = process.env.NODE_ENV === 'production';
-const output = ejs.render(
-template,
-{ students, cache, filename }
-);
+
+```js
+const cache = process.env.NODE_ENV === "production";
+const output = ejs.render(template, { students, cache, filename });
+```
+
 第二个参数中的 filename 选项并不仅限于文件，可以用要渲染的模板的唯一标识。
+
 知道怎么把 EJS 集成到 Node 程序中后，我们去看看如何在浏览器中使用 EJS。
-7.2.3 在客户端程序中使用 EJS
+
+### 7.2.3 在客户端程序中使用 EJS
+
 要在客户端使用 EJS，首先要把 EJS 引擎下载到工作目录中，命令如下所示：
+
+```
 cd /your/working/directory
 curl -O https://raw.githubusercontent.com/tj/ejs/master/lib/ejs.js
+```
+
 下载完就可以在客户端代码中使用 EJS 了。下面是一个简单的 EJS 客户端程序，将它存为
 index.html，在浏览器中打开看看效果。
-代码清单 7-7 用 EJS 给客户端增加使用模板的能力
-<html>
-<head>
-<title>EJS example</title>
-<script src="ejs.js"></script>
-<script
-src="http://ajax.googleapis.com/ajax/libs/jquery/1.8/jquery.js">
-</script>
-</head>
-<body>
-<div id="output"></div>
-<script>
-const template = "<%= message %>";
-const context = { message: 'Hello template!' };
-$(document).ready(() => {
-$('#output').html(
-ejs.render(template, context)
-);
-});
-引入 jQuery 库做
-DOM 处理
-用来渲染模板输
-出的占位标签
-渲染内容用
-的模板
-等着浏览器
-加载页码
-用在模
-板中的
-数据
-将模板渲染到 ID 为
-“ output”的 div 中7.3 使用 Mustache 模板语言与 Hogan 151
 
-</script>
-</body>
+代码清单 7-7 用 EJS 给客户端增加使用模板的能力
+
+```html
+<html>
+  <head>
+    <title>EJS example</title>
+    <script src="ejs.js"></script>
+    <!-- 引入 jQuery 库做 DOM 处理 -->
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8/jquery.js"></script>
+  </head>
+  <body>
+    <!-- 用来渲染模板输出的占位标签 -->
+    <div id="output"></div>
+    <script>
+      // 渲染内容用的模板
+      const template = "<%= message %>";
+      // 用在模板中的数据
+      const context = { message: "Hello template!" };
+      // 等着浏览器加载页码
+      $(document).ready(() => {
+        $("#output").html(
+          // 将模板渲染到 ID 为“ output”的 div 中
+          ejs.render(template, context)
+        );
+      });
+    </script>
+  </body>
 </html>
+```
+
 学完这个功能完备的 Node 模板引擎，该去看一下 Hogan 模板引擎了，它特意限制了模板代
 码中可用的功能。
 
 ## 7.3 使用 Mustache 模板语言与 Hogan
-Hogan.js 是 Twitter 为满足自己的需求而创建的模板引擎。 Hogan 是 Mustache 模板语言标准
-的具体实现，这一标准是由 GitHub 的 Chris Wanstrath 创建的。
-跟 EJS 不同， Mustache 遵循极简主义，特意去掉了条件逻辑。在内容过滤上， Mustache 只
-为防止 XSS 攻击而保留了转义处理功能。 Mustache 主张模板代码应该尽可能地简单。
+
+Hogan.js 是 Twitter 为满足自己的需求而创建的模板引擎。 Hogan 是 Mustache 模板语言标准 的具体实现，这一标准是由 GitHub 的 Chris Wanstrath 创建的。
+
+跟 EJS 不同， Mustache 遵循极简主义，特意去掉了条件逻辑。在内容过滤上， Mustache 只 为防止 XSS 攻击而保留了转义处理功能。 Mustache 主张模板代码应该尽可能地简单。
+
 本节将会介绍：
+
 - 如何在程序中创建和实现 Mustache 模板；
 - Mustache 标准中的各种模板标签；
 - 如何用子模板组织模板；
 - 如何用定制的分隔符和其他选项对 Hogan 进行微调。
-我们去看看 Hogan 提供的另一种使用模板的方式。
-7.3.1 创建模板
-要使用 Hogan，或试验本节的例子，需要在程序目录中（ ch07-templates/hogan-snippet）安装
-Hogan。因此请在命令行中输入下面这条命令：
+
+  我们去看看 Hogan 提供的另一种使用模板的方式。
+
+### 7.3.1 创建模板
+
+要使用 Hogan，或试验本节的例子，需要在程序目录中（ ch07-templates/hogan-snippet）安装 Hogan。因此请在命令行中输入下面这条命令：
+
+```
 npm i --save hogan.js
+```
+
 下面是 Hogan 使用简单模板渲染上下文的简单例子。运行后会输出“Hello template!”。
-const hogan = require('hogan.js');
-const templateSource = '{{message}}';
-const context = { message: 'Hello template!' };
+
+```js
+const hogan = require("hogan.js");
+const templateSource = "{{message}}";
+const context = { message: "Hello template!" };
 const template = hogan.compile(templateSource);
 console.log(template.render(context));
+```
+
 了解了如何用 Hogan 处理 Mustache 模板后，接下来看看 Mustache 支持哪些标签。
-7.3.2 Mustache 标签
-Mustache 标签在概念上跟 EJS 的标签类似，也有变量值的占位符，指明哪里需要循环，可以
-增强 Mustache 的功能，在模板里添加注释。
+
+### 7.3.2 Mustache 标签
+
+Mustache 标签在概念上跟 EJS 的标签类似，也有变量值的占位符，指明哪里需要循环，可以 增强 Mustache 的功能，在模板里添加注释。
+
 1. 显示简单的值
-在 Mustache 模板中，要把想要显示的上下文名称放在双大括号中。大括号在 Mustache 社区
-里被称为胡须。比如说，如果想显示上下文项 name 的值，应该用 Hogan 标签{{name}}。
-跟大多数模板引擎一样， Hogan 默认也会对内容进行转义以防范 XSS 攻击。如果要在 Hogan
-中显示未转义的值，既可以把上下文项的名称放在三条胡须中，也可以在前面添加一个 & 符号。
-还是用前面那个例子，你可以用{{{name}}}显示不做转义处理的上下文值，也可以用{{&name}}。
+
+在 Mustache 模板中，要把想要显示的上下文名称放在双大括号中。大括号在 Mustache 社区 里被称为胡须。比如说，如果想显示上下文项 name 的值，应该用 Hogan 标签{{name}}。
+
+跟大多数模板引擎一样， Hogan 默认也会对内容进行转义以防范 XSS 攻击。如果要在 Hogan 中显示未转义的值，既可以把上下文项的名称放在三条胡须中，也可以在前面添加一个 & 符号。 还是用前面那个例子，你可以用{{{name}}}显示不做转义处理的上下文值，也可以用{{&name}}。
+
 如果想在 Mustache 模板中添加注释，可以这样： {{! This is a comment }}。
+
 2. 区块：多个值的循环遍历
-尽管 Hogan 不允许在模板中使用逻辑，但它确实引入了一种优雅的办法，可以用 Mustache
-区块对上下文项中的多个值做循环遍历。比如下面这个上下文中的数组：
+
+尽管 Hogan 不允许在模板中使用逻辑，但它确实引入了一种优雅的办法，可以用 Mustache 区块对上下文项中的多个值做循环遍历。比如下面这个上下文中的数组：
+
+```js
 const context = {
-students: [
-{ name: 'Jane Narwhal', age: 21 },
-{ name: 'Rick LaRue', age: 26 }
-]
+  students: [
+    { name: "Jane Narwhal", age: 21 },
+    { name: "Rick LaRue", age: 26 },
+  ],
 };
-如果要创建一个模板，让每个学生都显示在单独的 HTML 段落中，比如像下面这样， Hogan
-模板可以轻松实现：
+```
+
+如果要创建一个模板，让每个学生都显示在单独的 HTML 段落中，比如像下面这样， Hogan 模板可以轻松实现：
+
+```html
 <p>Name: Jane Narwhal, Age: 21 years old</p>
 <p>Name: Rick LaRue, Age: 26 years old</p>
+```
+
 下面这个模板能生成上面的 HTML：
+
+```html
 {{#students}}
 <p>Name: {{name}}, Age: {{age}} years old</p>
 {{/students}}
+```
+
 3. 反向区块：值不存在时的默认 HTML
-如果上下文数据中的 students 不是数组会怎么样？比如说，如果只是单个对象，那么模板
-会显示这个对象。但如果是 undefined 或 false，或者空数组，则什么都不显示。
-如果想输出消息指明该区块的值不存在，那么可以用 Mustache 的反向区块。把下面的模板
-代码加到前面那个显示学生信息的模板中，上下文中没有数据时就会显示这条消息：
+
+如果上下文数据中的 students 不是数组会怎么样？比如说，如果只是单个对象，那么模板 会显示这个对象。但如果是 undefined 或 false，或者空数组，则什么都不显示。
+
+如果想输出消息指明该区块的值不存在，那么可以用 Mustache 的反向区块。把下面的模板 代码加到前面那个显示学生信息的模板中，上下文中没有数据时就会显示这条消息：
+
+```html
 {{^students}}
 <p>No students found.</p>
 {{/students}}
-4. 区块 lambda：区块内的定制功能
-如果 Mustache 现有的功能无法满足你的需求，那么可以依据 Mustache 标准自己定义区块标
-签，让它调用函数处理模板内容，不用循环遍历数组。这被称为区块 lambda。
-代码清单 7-8 是用区块 lambda 支持 Markdown 的例子。这个例子用到了 github-flavoredmarkdown 模块，在命令行中输入 npm install github-flavored-markdown --dev 安装。
-如果你用的是随书源码，则在 ch07-templates/listing7_8 里运行 npm install。7.3 使用 Mustache 模板语言与 Hogan 153
+```
 
-在下面这段代码中，模板中的**Name**传给由区块 lambda 调用的 Markdown 解析器，生成
-了<strong>Name</strong>。
+4. 区块 lambda：区块内的定制功能
+
+如果 Mustache 现有的功能无法满足你的需求，那么可以依据 Mustache 标准自己定义区块标 签，让它调用函数处理模板内容，不用循环遍历数组。这被称为区块 lambda。
+
+代码清单 7-8 是用区块 lambda 支持 Markdown 的例子。这个例子用到了 github-flavoredmarkdown 模块，在命令行中输入 npm install github-flavored-markdown --dev 安装。 如果你用的是随书源码，则在 ch07-templates/listing7_8 里运行 npm install。
+
+在下面这段代码中，模板中的**Name**传给由区块 lambda 调用的 Markdown 解析器，生成 了<strong>Name</strong>。
+
 代码清单 7-8 在 Hogan 中使用 lambda
-const hogan = require('hogan.js');
-const md = require('github-flavored-markdown');
+
+```js
+const hogan = require("hogan.js");
+// 引入 Markdown 解析器
+const md = require("github-flavored-markdown");
+// Mustache 模板中也包含Markdown 格式的内容
 const templateSource = `
 {{#markdown}}**Name**: {{name}}{{/markdown}}
 `;
 const context = {
-name: 'Rick LaRue',
-markdown: () => text => md.parse(text)
+  name: "Rick LaRue",
+  // 模板上下文中包含一个解析 Markdown 的区块lambda
+  markdown: () => (text) => md.parse(text),
 };
 const template = hogan.compile(templateSource);
 console.log(template.render(context));
+```
+
 使用区块 lambda 可以在模板中轻松实现缓存和转换机制等功能。
+
 5. 子模板：在其他模板中重用模板
-为了避免多个模板中复制粘贴相同的代码，可以将这些通用的代码做成子模板（ partial）。
-子模板是放在其他模板内的构件，可以把复杂的模板分解成简单模板。
+
+为了避免多个模板中复制粘贴相同的代码，可以将这些通用的代码做成子模板（ partial）。 子模板是放在其他模板内的构件，可以把复杂的模板分解成简单模板。
+
 比如下面这个例子，将显示学生数据的代码从主模板中分离出来做成了子模板。
+
 代码清单 7-9 在 Hogan 中使用子模板
-const hogan = require('hogan.js');
+
+```js
+const hogan = require("hogan.js");
+// 用于子模板的代码
 const studentTemplate = `
 <p>
 Name: {{name}},
 Age: {{age}} years old
 </p>
 `;
+// 主模板代码
 const mainTemplate = `
 {{#students}}
 {{>student}}
 {{/students}}
 `;
 const context = {
-students: [{
-name: 'Jane Narwhal',
-age: 21
-}, {
-name: 'Rick LaRue',
-age: 26
-}]
+  students: [
+    {
+      name: "Jane Narwhal",
+      age: 21,
+    },
+    {
+      name: "Rick LaRue",
+      age: 26,
+    },
+  ],
 };
+// 编译主模板和子模板
 const template = hogan.compile(mainTemplate);
 const partial = hogan.compile(studentTemplate);
-const html = template.render(context, {student: partial });
+// 渲染主模板和子模板
+const html = template.render(context, { student: partial });
 console.log(html);
-引入 Markdown 解析器
-Mustache 模板中也包含
-Markdown 格式的内容
-模板上下文中包含一个
-解析 Markdown 的区块
-lambda
-用于子模板的代码
-主模板代码
-编译主模板
-和子模板
-渲染主模板
-和子模板
-7.3.3 微调 Hogan
-Hogan 用起来相当简单，掌握它的标签汇总表就够了。在使用时可能只有一两个地方需要调
-整一下。
-如果你不喜欢 Mustache 风格的大括号，可以给 compile 方法传入一个参数覆盖 Hogan 所用
-的分隔符。下面的例子把 EJS 风格的分隔符编译在 Hogan 中：
-hogan.compile(text, { delimiters: '<% %>' });
+```
+
+### 7.3.3 微调 Hogan
+
+Hogan 用起来相当简单，掌握它的标签汇总表就够了。在使用时可能只有一两个地方需要调 整一下。
+
+如果你不喜欢 Mustache 风格的大括号，可以给 compile 方法传入一个参数覆盖 Hogan 所用 的分隔符。下面的例子把 EJS 风格的分隔符编译在 Hogan 中：
+
+```js
+hogan.compile(text, { delimiters: "<% %>" });
+```
+
 除了 Mustache，还有其他模板语言。比如想把 HTML 的噪声都去掉的 Pug。
 
 ## 7.4 用 Pug 做模板
-Pug，以前叫 Jade，它用另一种方式来表示 HTML，是 Express 的默认模板引擎。 Pug 和其他
-主流模板系统的差别主要在于它对空格的使用。 Pug 模板用缩进表示 HTML 标签的嵌入关系。
-HTML 标签也不必明确给出关闭标签，从而避免了因为过早关闭，或根本就不关闭标签所产生的
-问题。由于有严格的缩进规则，因此 Pug 模板看起来很简洁，更易于维护。
+
+Pug，以前叫 Jade，它用另一种方式来表示 HTML，是 Express 的默认模板引擎。 Pug 和其他 主流模板系统的差别主要在于它对空格的使用。 Pug 模板用缩进表示 HTML 标签的嵌入关系。 HTML 标签也不必明确给出关闭标签，从而避免了因为过早关闭，或根本就不关闭标签所产生的 问题。由于有严格的缩进规则，因此 Pug 模板看起来很简洁，更易于维护。
+
 我们用一个简短的示例演示一下，看它如何表示这段 HTML：
+
+```html
 <html>
-<head>
-<title>Welcome</title>
-</head>
-<body>
-<div id="main" class="content">
-<strong>"Hello world!"</strong>
-</div>
-</body>
+  <head>
+    <title>Welcome</title>
+  </head>
+  <body>
+    <div id="main" class="content">
+      <strong>"Hello world!"</strong>
+    </div>
+  </body>
 </html>
+```
+
 这段 HTML 对应的 Pug 模板如下所示：
+
+```
 html
 head
 title Welcome
 body
 div.content#main
 strong "Hello world!"
-Pug 像 EJS 一样，可以嵌入 JavaScript，可以用在服务器端或客户端。但 Pug 还有其他特性，
-比如模板继承和 mixins。用 mixins 可以定义易于重用的小型模板，用来表示常用视觉元素的
-HTML，比如条目列表和盒子。 Mixins 很像我们上一节介绍的 Hogan.js 子模板。有了模板继承，
-那些把一个 HTML 页面渲染到多个文件中的 Pug 模板组织起来就更容易了。我们稍后会详细介
-绍。输入下面这条命令安装 Pug：
+```
+
+Pug 像 EJS 一样，可以嵌入 JavaScript，可以用在服务器端或客户端。但 Pug 还有其他特性， 比如模板继承和 mixins。用 mixins 可以定义易于重用的小型模板，用来表示常用视觉元素的 HTML，比如条目列表和盒子。 Mixins 很像我们上一节介绍的 Hogan.js 子模板。有了模板继承， 那些把一个 HTML 页面渲染到多个文件中的 Pug 模板组织起来就更容易了。我们稍后会详细介 绍。输入下面这条命令安装 Pug：
+
+```
 npm install pug --save
+```
 
 本节将会介绍：
+
 - Pug 的基础知识，比如说明类名、属性和块扩展；
 - 如何用内置的关键字往 Pug 模板里添加逻辑；
 - 如何用继承、块和 mixins 组织模板。
+
 我们先看看 Pug 基本的语法和用法。
-7.4.1 Pug 基础知识
-Pug 的标签名跟 HTML 一样，但抛弃了前面的<和后面的>字符，并用缩进表示标签的嵌套关
-系。标签可以用.<classname>关联一个或多个 CSS 类。比如应用了 content 和 sidebar 类的 div
-元素表示为：
+
+### 7.4.1 Pug 基础知识
+
+Pug 的标签名跟 HTML 一样，但抛弃了前面的<和后面的>字符，并用缩进表示标签的嵌套关 系。标签可以用.<classname>关联一个或多个 CSS 类。比如应用了 content 和 sidebar 类的 div 元素表示为：
+
+```
 div.content.sidebar
-在标签上添加#<ID>可以赋予它 CSS ID。比如给前面那个例子中的 div 加上了 CSS ID
-featured_content：
+```
+
+在标签上添加#<ID>可以赋予它 CSS ID。比如给前面那个例子中的 div 加上了 CSS ID featured_content：
+
+```
 div.content.sidebar#featured_content
-div 标签的快捷表示法
-因为 HTML 中经常使用 div， Pug 定义了它的快捷表示法。下面这个例子渲染出来的 HTML
-和前面那个例子一样：
+```
+
+> div 标签的快捷表示法
+> 因为 HTML 中经常使用 div， Pug 定义了它的快捷表示法。下面这个例子渲染出来的 HTML 和前面那个例子一样：
+
+```
 .content.sidebar#featured_content
-你已经知道如何表示 HTML 标签、它们的 CSS 类和 ID 了，接下来我们看看如何指定 HTML
-标签的属性。
+```
+
+你已经知道如何表示 HTML 标签、它们的 CSS 类和 ID 了，接下来我们看看如何指定 HTML 标签的属性。
+
 1. 指定标签的属性
-将标签的属性放在括号中，每个属性之间用逗号分开。下面的 Pug 表示一个会在新的浏览器
-标签中打开的链接：
+
+将标签的属性放在括号中，每个属性之间用逗号分开。下面的 Pug 表示一个会在新的浏览器 标签中打开的链接：
+
+```
 a(href='http://nodejs.org', target='_blank')
-因为带属性的标签可能会很长，所以 Pug 在处理这样的标签时比较灵活。比如下面这种表示
-跟前面那个效果一样：
+```
+
+因为带属性的标签可能会很长，所以 Pug 在处理这样的标签时比较灵活。比如下面这种表示 跟前面那个效果一样：
+
+```
 a(href='http://nodejs.org',
 target='_blank')
-也可以指定不需要值的属性。下面这段 Pug 示例是一个 HTML 表单，其中包含一个 select
-元素，有预先选定 option：
+```
+
+也可以指定不需要值的属性。下面这段 Pug 示例是一个 HTML 表单，其中包含一个 select 元素，有预先选定 option：
+
+```
 strong Select your favorite food:
 form
 select
 option(value='Cheese') Cheese
 option(value='Tofu', selected) Tofu
 Specifying tag content
-在前面那段代码中还有标签内容的示例： strong 标签后面的 Select your favorite
-food:；第一个 option 后面的 Cheese；第二个 option 后面的 Tofu。
-这是 Pug 中指定标签内容的常用办法，但不是唯一的。尽管这种风格在指定比较短的内容时
-很好用，但如果标签的内容很长，则会导致 Pug 模板中出现超长的代码行。不过，就像下面这个
-例子一样，在 Pug 中可以用|指定标签的内容：
+```
+
+在前面那段代码中还有标签内容的示例： strong 标签后面的 Select your favorite food:；第一个 option 后面的 Cheese；第二个 option 后面的 Tofu。
+
+这是 Pug 中指定标签内容的常用办法，但不是唯一的。尽管这种风格在指定比较短的内容时 很好用，但如果标签的内容很长，则会导致 Pug 模板中出现超长的代码行。不过，就像下面这个 例子一样，在 Pug 中可以用|指定标签的内容：
+
+```
 textarea
 | This is some default text
 | that the user should be
 | provided with.
-如果 HTML 标签只接受文本（即不能嵌入 HTML 元素），比如 style 和 script，则可以去
-掉|字符，像下面这样：
+```
+
+如果 HTML 标签只接受文本（即不能嵌入 HTML 元素），比如 style 和 script，则可以去 掉|字符，像下面这样：
+
+```
 style.
 h1 {
 font-size: 6em;
 color: #9DFF0C;
 }
-用两种办法分别表示长短两种内容可以让 Pug 模板保持优雅。 Pug 还有一种表示嵌套关系的
-办法，即块扩展。
+```
+
+用两种办法分别表示长短两种内容可以让 Pug 模板保持优雅。 Pug 还有一种表示嵌套关系的 办法，即块扩展。
+
 2. 用块扩展把它组织好
-Pug 一般用缩进表示嵌套，但有时缩进形成的空格太多了。比如下面这个用缩进定义链接列
-表的 Pug 模板：
+
+Pug 一般用缩进表示嵌套，但有时缩进形成的空格太多了。比如下面这个用缩进定义链接列 表的 Pug 模板：
+
+```
 ul
 li
 a(href='http://nodejs.org/') Node.js homepage
@@ -6125,36 +6254,50 @@ li
 a(href='http://npmjs.org/') NPM homepage
 li
 a(href='http://nodebits.org/') Nodebits blog
-如果用 Pug 块扩展，这个例子会更紧凑。块扩展可以在标签后面用冒号表示嵌套。下面这段
-代码生成的输出跟前面的一样，但只有四行代码，而前面那段代码有七行：
+```
+
+如果用 Pug 块扩展，这个例子会更紧凑。块扩展可以在标签后面用冒号表示嵌套。下面这段 代码生成的输出跟前面的一样，但只有四行代码，而前面那段代码有七行：
+
+```
 ul
 li: a(href='http://nodejs.org/') Node.js homepage
 li: a(href='http://npmjs.org/') NPM homepage
 li: a(href='http://nodebits.org/') Nodebits blog
-如何用 Pug 表示标记的介绍就到这里，接下来我们要看一下如何把 Pug 集成到程序中。
-3. 将数据纳入到 Pug 模板中
-数据传给 Pug 引擎的方式跟 EJS 一样。模板先被编译成函数，然后带着上下文调用它，以便
-渲染 HTML 输出。如下例所示：7.4 用 Pug 做模板 157
+```
 
-const pug = require('pug');
-const template = 'strong #{message}';
-const context = { message: 'Hello template!' };
+如何用 Pug 表示标记的介绍就到这里，接下来我们要看一下如何把 Pug 集成到程序中。
+
+3. 将数据纳入到 Pug 模板中
+
+数据传给 Pug 引擎的方式跟 EJS 一样。模板先被编译成函数，然后带着上下文调用它，以便 渲染 HTML 输出。如下例所示：7.4 用 Pug 做模板 157
+
+```js
+const pug = require("pug");
+const template = "strong #{message}";
+const context = { message: "Hello template!" };
 const fn = pug.compile(template);
 console.log(fn(context));
+```
+
 这个模板中的#{message}是要被上下文值替换掉的占位符。
-上下文值也可以作为属性的值。下面这个例子会渲染出<a href="http://google.com">
-</a>：
-const pug = require('pug');
-const template = 'a(href = url)';
-const context = { url: 'http://google.com' };
+
+上下文值也可以作为属性的值。下面这个例子会渲染出<a href="http://google.com"> </a>：
+
+```js
+const pug = require("pug");
+const template = "a(href = url)";
+const context = { url: "http://google.com" };
 const fn = pug.compile(template);
 console.log(fn(context));
-了解了如何用 Pug 表示 HTML，以及如何给 Pug 模板提供数据，接下来该去看一下如何在
-Pug 中添加逻辑处理了。
-7.4.2 Pug 模板中的逻辑
-把数据交给模板后，还需要定义处理数据的逻辑。在 Pug 中，可以直接在模板中嵌入 JavaScript
-代码来定义数据处理逻辑。像 if 语句、 for 循环、 var 声明这样的代码都很常见。在深入讲解
-具体细节之前，来看个用 Pug 模板渲染通讯录的例子，先对如何使用 Pug 逻辑有个直观的感受：
+```
+
+了解了如何用 Pug 表示 HTML，以及如何给 Pug 模板提供数据，接下来该去看一下如何在 Pug 中添加逻辑处理了。
+
+### 7.4.2 Pug 模板中的逻辑
+
+把数据交给模板后，还需要定义处理数据的逻辑。在 Pug 中，可以直接在模板中嵌入 JavaScript 代码来定义数据处理逻辑。像 if 语句、 for 循环、 var 声明这样的代码都很常见。在深入讲解 具体细节之前，来看个用 Pug 模板渲染通讯录的例子，先对如何使用 Pug 逻辑有个直观的感受：
+
+```
 h3.contacts-header My Contacts
 if contacts.length
 each contact in contacts
@@ -6173,75 +6316,117 @@ when 'Pending'
 | User has a pending invitation
 else
 p You currently do not have any contacts
+```
+
 下面来看一下 Pug 模板中嵌入 JavaScript 代码时如何处理输出。
+
 1. 在 Pug 模板中使用 JavaScript
-带有-前缀的 JavaScript 代码的返回结果不会出现在渲染结果中。带有=前缀的 JavaScript 代
-码的执行结果则会出现，但为了防止 XSS 攻击做了转义处理。如果 JavaScript 代码生成的内容不
-应该转义，那么可以用前缀!=。表 7-1 是这些前缀的汇总。158 第 7 章 Web 程序的模板
+
+带有-前缀的 JavaScript 代码的返回结果不会出现在渲染结果中。带有=前缀的 JavaScript 代 码的执行结果则会出现，但为了防止 XSS 攻击做了转义处理。如果 JavaScript 代码生成的内容不 应该转义，那么可以用前缀!=。表 7-1 是这些前缀的汇总。
+
 表 7-1 在 Pug 中嵌入 JavaScript 的前缀
 前 缀 输 出
 = 转义的输出（用于不可信任或不可预测的值，免受 XSS 攻击）
 != 不做转义处理的输出（用于可信任或可预测的值）
+
 - 没有输出
-在 Pug 中，有些常用的条件判断和循环语句可以不带前缀： if、 else、 case、 when、 default、
-until、 while、 each 和 unless。
+
+在 Pug 中，有些常用的条件判断和循环语句可以不带前缀： if、 else、 case、 when、 default、 until、 while、 each 和 unless。
+
 Pug 中还可以定义变量。下面两种赋值方式效果是一样的：
+
+```
 - count = 0
 count = 0
+```
+
 没有前缀的语句没有输出，就像前面说的-前缀一样。
+
 2. 循环遍历对象和数组
-Pug 中的 JavaScript 可以访问上下文中的值。在下面这个例子中，我们会从文件中读取一个
-Pug 模板，并让它显示一个包含两条消息的上下文数组：
-const pug = require('pug');
-const fs = require('fs');
-const template = fs.readFileSync('./template.pug');
-const context = { messages: [
-'You have logged in successfully.',
-'Welcome back!'
-]};
+
+Pug 中的 JavaScript 可以访问上下文中的值。在下面这个例子中，我们会从文件中读取一个 Pug 模板，并让它显示一个包含两条消息的上下文数组：
+
+```js
+const pug = require("pug");
+const fs = require("fs");
+const template = fs.readFileSync("./template.pug");
+const context = {
+  messages: ["You have logged in successfully.", "Welcome back!"],
+};
 const fn = pug.compile(template);
 console.log(fn(context));
+```
+
 Pug 模板中的内容如下所示：
+
+```
 - messages.forEach(message => {
 p= message
 - })
+```
+
 最终输出的 HTML 是：
-<p>You have logged in successfully.</p><p>Welcome back!</p>
-Pug 中还有一个非 JavaScript 形式的循环： each 语句。用 each 语句很容易实现数组和对象
-属性的循环遍历。
+
+```html
+<p>You have logged in successfully.</p>
+<p>Welcome back!</p>
+```
+
+Pug 中还有一个非 JavaScript 形式的循环： each 语句。用 each 语句很容易实现数组和对象 属性的循环遍历。
+
 下面这段代码跟前面的例子效果一样，但用的是 each：
+
+```
 each message in messages
 p= message
-对象属性的循环遍历可以稍有不同，像这样：
-each value, key in post
-div7.4 用 Pug 做模板 159
+```
 
+对象属性的循环遍历可以稍有不同，像这样：
+
+```
+each value, key in post
+div
 strong #{key}
 p value
+```
+
 3. 条件化渲染的模板代码
-有时要根据数据的取值决定如何显示模板。下面是个条件判断的例子，几乎有一半的可能会
-输出 script 标签：
+
+有时要根据数据的取值决定如何显示模板。下面是个条件判断的例子，几乎有一半的可能会 输出 script 标签：
+
+```
 - n = Math.round(Math.random() * 1) + 1
 - if (n == 1) {
 script
 alert('You win!');
 - }
+```
+
 条件判断在 Pug 中还有一种更简洁的写法：
+
+```
 - n = Math.round(Math.random() * 1) + 1
 if n == 1
 script
 alert('You win!');
+```
+
 如果条件判断是取反的，比如 if (n != 1)，可以用 Pug 的 unless 关键字：
+
+```
 - n = Math.round(Math.random() * 1) + 1
 unless n == 1
 script
 alert('You win!');
+```
+
 4. 在 Pug 中使用 case 语句
-Pug 中还有类似于 switch 的非 JavaScript 条件判断： case 语句。 case 语句可以根据模板
-的场景指定输出。
-在下面这个例子中，我们用 case 语句以三种不同的方式显示博客的搜索结果。如果没有结
-果，则显示一条提示消息。如果找到一篇，则显示它的详细信息。如果找到很多篇，则用 each
-语句循环遍历所有文章，显示它们的标题：
+
+Pug 中还有类似于 switch 的非 JavaScript 条件判断： case 语句。 case 语句可以根据模板 的场景指定输出。
+
+在下面这个例子中，我们用 case 语句以三种不同的方式显示博客的搜索结果。如果没有结 果，则显示一条提示消息。如果找到一篇，则显示它的详细信息。如果找到很多篇，则用 each 语句循环遍历所有文章，显示它们的标题：
+
+```
 case results.length
 when 0
 p No results found.
@@ -6250,58 +6435,73 @@ p= results[0].content
 default
 each result in results
 p= result.title
-7.4.3 组织 Pug 模板
-模板定义好后，要知道该如何组织。跟程序逻辑一样，你肯定也不想让模板文件过大。一个
-模板文件应该对应一个构件：比如一个页面，一个边栏，或者一篇博客文章中的内容。
-本节会介绍几种机制，让几个不同的模板文件一起渲染内容：160 第 7 章 Web 程序的模板
+```
+
+### 7.4.3 组织 Pug 模板
+
+模板定义好后，要知道该如何组织。跟程序逻辑一样，你肯定也不想让模板文件过大。一个 模板文件应该对应一个构件：比如一个页面，一个边栏，或者一篇博客文章中的内容。
+
+本节会介绍几种机制，让几个不同的模板文件一起渲染内容：
+
 - 用模板继承组织多个模板文件；
 - 用块前缀/追加实现布局；
 - 模板包含；
 - 借助 mixins 重用模板逻辑。
+
 我们先从 Pug 的模板继承开始。
+
 1. 用模板继承组织多个模板文件
-模板继承是多个模板文件的结构化处理办法之一。从概念上来讲，模板就像面向对象编程中
-的类。一个模板可以扩展另一个，然后这个再扩展另一个。只要合理，使用多少层继承都可以。
-这里有个小例子，我们用模板继承提供一个简单的 HTML 包装器，可以用来包装页面内容。进
-入工作目录，创建存放 Pug 文件的 templates 目录。在其中创建模板文件 layout.pug，代码如下所示：
+
+模板继承是多个模板文件的结构化处理办法之一。从概念上来讲，模板就像面向对象编程中 的类。一个模板可以扩展另一个，然后这个再扩展另一个。只要合理，使用多少层继承都可以。
+
+这里有个小例子，我们用模板继承提供一个简单的 HTML 包装器，可以用来包装页面内容。进 入工作目录，创建存放 Pug 文件的 templates 目录。在其中创建模板文件 layout.pug，代码如下所示：
+
+```
 html
 head
 block title
 body
 block content
-layout.pug 中有 HTML 页面的基本定义和两个模板块。模板块是可以由后裔模板提供内容的
-占位符。 layout.pug 的后裔模板可以在 title 模板块的位置设定页面标题，在 content 模板块
-的位置设定在页面上显示什么。
+```
+
+layout.pug 中有 HTML 页面的基本定义和两个模板块。模板块是可以由后裔模板提供内容的 占位符。 layout.pug 的后裔模板可以在 title 模板块的位置设定页面标题，在 content 模板块 的位置设定在页面上显示什么。
+
 接下来在 template 中创建 page.pug，这个模板会提供 title 和 content 块的具体内容：
+
+```
 extends layout
 block title
 title Messages
 block content
 each message in messages
 p= message
-最后再演示一下继承的实际用法，将本节前面的例子改成下面这段代码，让它显示模板的渲
-染结果。
+```
+
+最后再演示一下继承的实际用法，将本节前面的例子改成下面这段代码，让它显示模板的渲 染结果。
+
 代码清单 7-10 模板继承实战
-const pug = require('pug');
-const fs = require('fs');
-const templateFile = './templates/page.pug';
+
+```js
+const pug = require("pug");
+const fs = require("fs");
+const templateFile = "./templates/page.pug";
 const iterTemplate = fs.readFileSync(templateFile);
-const context = { messages: [
-'You have logged in successfully.',
-'Welcome back!'
-]};
-const iterFn = pug.compile(
-iterTemplate,
-{ filename: templateFile }
-);
+const context = {
+  messages: ["You have logged in successfully.", "Welcome back!"],
+};
+const iterFn = pug.compile(iterTemplate, { filename: templateFile });
 console.log(iterFn(context));
-接下来我们要介绍模板继承的另一个特性：块前缀和块追加。7.4 用 Pug 做模板 161
+```
+
+接下来我们要介绍模板继承的另一个特性：块前缀和块追加。
 
 2. 用块前缀/块追加实现布局
-在前面那个例子中， layout.pug 中的模板块没有内容，因此在 page.pug 模板中设定内容简单
-直接。如果被继承的模板中有内容，也可以用块前缀和块追加，在原有内容基础上构建新内容，
-而不是替换它。
+
+在前面那个例子中， layout.pug 中的模板块没有内容，因此在 page.pug 模板中设定内容简单 直接。如果被继承的模板中有内容，也可以用块前缀和块追加，在原有内容基础上构建新内容， 而不是替换它。
+
 下面的 layout.pug 模板中增加了一个模板块 scripts，其中有加载 jQuery 的 script 标签：
+
+```
 html
 head
 - const baseUrl = "http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/"
@@ -6310,15 +6510,23 @@ block style
 block scripts
 body
 block content
+```
+
 如果还想让 page.pug 再加上 jQuery UI 库，可以用下面的模板。
+
 代码清单 7-11 用块追加再加载一个 JavaScript 文件
+
+```js
+  // 这个模板扩展了 layout 模板
 extends layout
 baseUrl = "http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/"
 block title
 title Messages
+  // 定义 style 块
 block style
 link(rel="stylesheet", href= baseUrl+"themes/flick/jquery-ui.css")
 block append scripts
+  // 把这个 scripts 块追加到layout 中定义的那个上面
 script(src= baseUrl+"jquery-ui.js")
 block content
 count = 0
@@ -6332,15 +6540,15 @@ modal: true
 });
 });
 != '<div id="message_' + count + '">' + message + '</div>'
+```
+
 但模板继承不是唯一一种集成多个模板的办法。也可以用 include Pug 命令。
+
 3. 模板包含
-Pug 中的 include 命令是另一个组织模板的工具。这个命令会引入另一个模板中的内容。
-如果在前面那个 layout.pug 里加一行 include footer，最终就会得到下面这个模版：
-这个模板扩展了
-layout 模板
-定义 style 块
-把这个 scripts 块追加到
-layout 中定义的那个上面162 第 7 章 Web 程序的模板
+
+Pug 中的 include 命令是另一个组织模板的工具。这个命令会引入另一个模板中的内容。 如果在前面那个 layout.pug 里加一行 include footer，最终就会得到下面这个模版：
+
+```
 html
 head
 block title
@@ -6350,33 +6558,47 @@ script(src='//ajax.googleapis.com/ajax/libs/jquery/1.8/jquery.js')
 body
 block content
 include footer
+```
+
 这个模版会在 layout.pug 的渲染输出中引入 footer.pug 中的内容，如图 7-3 所示。
-图 7-3 Pug 的 include 机制是在渲染一个模板时包含另一个模板内容的简单办法
-可以用 include 往 layout.pug 中添加关于网站的信息或设计元素。也可以指定文件的扩展
-名，包含非 Pug 文件（比如 include twitter_widget.html）。
+
+图 7-3 Pug 的 include 机制是在渲染一个模板时包含另一个模板内容的简单办法 可以用 include 往 layout.pug 中添加关于网站的信息或设计元素。也可以指定文件的扩展 名，包含非 Pug 文件（比如 include twitter_widget.html）。
+
 4. 借助 mixin 重用模板逻辑
-尽管 Pug 的 include 命令能帮我们引入之前创建的代码块，但要构建在程序和不同页面之
-间共享的可重用功能库时，它就帮不上什么忙了。 Pug 为此专门提供了 mixin 命令，可以用来定
-义可重用的 Pug 代码块。
-mixin 模拟的是 JavaScript 函数。 它跟函数一样，可以带参数，并且这些参数可以用来生成 Pug
-代码。
+
+尽管 Pug 的 include 命令能帮我们引入之前创建的代码块，但要构建在程序和不同页面之 间共享的可重用功能库时，它就帮不上什么忙了。 Pug 为此专门提供了 mixin 命令，可以用来定 义可重用的 Pug 代码块。
+
+mixin 模拟的是 JavaScript 函数。 它跟函数一样，可以带参数，并且这些参数可以用来生成 Pug 代码。
+
 比如说要处理下面这种数据结构：
+
+```js
 const students = [
-{ name: 'Rick LaRue', age: 23 },
-{ name: 'Sarah Cathands', age: 25 },
-{ name: 'Bob Dobbs', age: 37 }
+  { name: "Rick LaRue", age: 23 },
+  { name: "Sarah Cathands", age: 25 },
+  { name: "Bob Dobbs", age: 37 },
 ];
+```
+
 如果要把从对象中提取出来的属性输出到 HTML 列表里，那么可以像下面这样定义一个 mixin：
+
+```
 mixin list_object_property(objects, property)
 ul
 each object in objects
 li= object[property]7.5 总结 163
+```
 
 然后就可以像下面这样借助 mixin 显示这些数据：
+
+```
 mixin list_object_property(students, 'name')
-借助模板继承、 include 语句和 mixin，你可以轻松地重用展示标记，防止模板文件变得
-过于冗长。
+```
+
+借助模板继承、 include 语句和 mixin，你可以轻松地重用展示标记，防止模板文件变得 过于冗长。
+
 ## 7.5 总结
+
 - 模板引擎可以把程序逻辑和展示组织好。
 - EJS、 Hogan.js 和 Pug 都是 Node 中比较流行的模板引擎。
 - EJS 支持简单的流程控制，以及转义或非转义插值。
