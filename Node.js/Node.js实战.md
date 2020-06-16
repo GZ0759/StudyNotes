@@ -5566,7 +5566,8 @@ curl -i -H 'Accept: application/xml'
 - Express Web 程序也是用中间件搭建的。
 - 在用 Express 实现 REST API 时，可以用 HTTP 谓词定义路由。
 - Express 路由的响应可以是 JSON、 HTML 或其他格式的数据。
-- Express 有个简单的模板引擎 API，支持很多种引擎。7.1 用模板保持代码的整洁性 143
+- Express 有个简单的模板引擎 API，支持很多种引擎。
+
 # 第 7 章 Web 程序的模板
 
 本章内容
@@ -5576,17 +5577,17 @@ curl -i -H 'Accept: application/xml'
 - 学习极简风格的 Hogan 模板
 - 用 Pug 创建模板
 
-在第 3 章和第 6 章，为了在 Express 程序中创建视图，我们介绍过一些模板的基础知识。接下来本章将专门介绍模板。我们会讲到三个热门的模板引擎，以及如何用模板把显示层标记从逻 辑代码中分离出来，保持 Web 程序代码的整洁性。
+在第 3 章和第 6 章，为了在 Express 程序中创建视图，我们介绍过一些模板的基础知识。接下来本章将专门介绍模板。我们会讲到三个热门的模板引擎，以及如何用模板把显示层标记从逻辑代码中分离出来，保持 Web 程序代码的整洁性。
 
 如果你熟悉模板和模型-视图-控制器（ MVC）模式，可以直接进入 7.2 节开始学习。我们会 详细介绍 Embedded JavaScript、 Hogan 和 Pug 三个模板引擎。如果对模板不太了解，请继续往下 看，接下来的几节将会介绍模板这一概念。
 
 ## 7.1 用模板保持代码的整洁性
 
-在 Node 中可以像其他 Web 技术一样，用 MVC 模式开发传统的 Web 程序。 MVC 的主要思 想是将逻辑、数据和展示层分离。在遵循 MVC 模式的 Web 程序中，一般是用户向服务器请求资 源，然后控制器向模型请求数据，得到数据后传给视图，再由视图以特定格式将数据呈现给用户。 MVC 中的视图部分一般会用到某种模板语言。在使用模板时，视图会将模型返回的数据传递给 模板引擎，并指定用哪个模板文件展示这些数据。
+在 Node 中可以像其他 Web 技术一样，用 MVC 模式开发传统的 Web 程序。 MVC 的主要思想是将逻辑、数据和展示层分离。在遵循 MVC 模式的 Web 程序中，一般是用户向服务器请求资源，然后控制器向模型请求数据，得到数据后传给视图，再由视图以特定格式将数据呈现给用户。 MVC 中的视图部分一般会用到某种模板语言。在使用模板时，视图会将模型返回的数据传递给模板引擎，并指定用哪个模板文件展示这些数据。
 
-你可以通过图 7-1 了解一下模板是如何融入 MVC 程序的整体架构中的。模板文件中通常包 含数据的占位符、 HTML、 CSS，有时还会用一些客户端 JavaScript 来做第三方小部件显示，比 如 Facebook 的点赞按钮，或者触发界面行为，比如隐藏或显示页面的某些部分。因为模板文件 的工作重点是展示而不是处理逻辑，所以前端开发人员和服务器端开发人员可以一起工作，这样 有利于项目任务的分工。
+你可以通过图 7-1 了解一下模板是如何融入 MVC 程序的整体架构中的。模板文件中通常包 含数据的占位符、 HTML、 CSS，有时还会用一些客户端 JavaScript 来做第三方小部件显示，比如 Facebook 的点赞按钮，或者触发界面行为，比如隐藏或显示页面的某些部分。因为模板文件 的工作重点是展示而不是处理逻辑，所以前端开发人员和服务器端开发人员可以一起工作，这样有利于项目任务的分工。
 
-本节会分别在用和不用模板的两种情况下渲染 HTML，让你看到两者之间的差异。但我们还 是先看一个模板的实例吧。
+本节会分别在用和不用模板的两种情况下渲染 HTML，让你看到两者之间的差异。但我们还是先看一个模板的实例吧。
 
 图 7-1 MVC 程序的流程以及它跟模板层的交互
 
@@ -5596,7 +5597,7 @@ curl -i -H 'Accept: application/xml'
 
 图 7-2 博客程序在浏览器中的输出示例
 
-博客文章是从文本文件 entries.txt 中读取的，格式如下所示。 ---表明一篇文章结束，另一篇 文章开始。
+博客文章是从文本文件 entries.txt 中读取的，格式如下所示。 `---`表明一篇文章结束，另一篇文章开始。
 
 代码清单 7-1 博客文章文本文件
 
@@ -5623,7 +5624,7 @@ function getEntries() {
   const entries = [];
   // 从文件中读取博客文章的数据
   let entriesRaw = fs.readFileSync("./entries.txt", "utf8");
-  // 解析文本， 将它们分成一篇篇的文章
+  // 解析文本，将它们分成一篇篇的文章
   entriesRaw = entriesRaw.split("---");
   entriesRaw.map((entryRaw) => {
     const entry = {};
@@ -5648,7 +5649,7 @@ const entries = getEntries();
 console.log(entries);
 ```
 
-下面这段代码定义了一个 HTTP 服务器，把它加到博客程序中。收到 HTTP 请求后，服务器 会返回一个包含所有文章的页面。这个页面是用函数 blogPage 渲染的，一会儿再定义它：
+下面这段代码定义了一个 HTTP 服务器，把它加到博客程序中。收到 HTTP 请求后，服务器会返回一个包含所有文章的页面。这个页面是用函数 blogPage 渲染的，一会儿再定义它：
 
 ```js
 const server = http.createServer((req, res) => {
@@ -5659,7 +5660,7 @@ const server = http.createServer((req, res) => {
 server.listen(8000);
 ```
 
-接下来定义 blogPage 函数，用它把文章渲染到 HTML 页面中，以便发送给浏览器。我们 会尝试两种不同的方式：
+接下来定义 blogPage 函数，用它把文章渲染到 HTML 页面中，以便发送给浏览器。我们会尝试两种不同的方式：
 
 - 不用模板渲染；
 - 用模板渲染。
@@ -5668,7 +5669,7 @@ server.listen(8000);
 
 1. 不用模板渲染 HTML
 
-博客程序可以直接输出 HTML，但在处理逻辑中引入 HTML 会让代码变得很乱。下面代码 中的 blogPage 函数没用模板显示文章。
+博客程序可以直接输出 HTML，但在处理逻辑中引入 HTML 会让代码变得很乱。下面代码中的 blogPage 函数没用模板显示文章。
 
 代码清单 7-3 模板引擎把展示细节和程序逻辑分开
 
@@ -5722,7 +5723,7 @@ function blogPage(entries) {
 }
 ```
 
-完整的随书源码见 ch07-templates/listing7_4/。 EJS 模板文件是由 HTML 标记（从处理逻辑中 挪过来的）和数据占位符（指示把数据放在哪里）构成的。展示文章的 EJS 模板文件中应该包含 下面这样的 HTML 和占位符。
+完整的随书源码见 ch07-templates/listing7_4/。 EJS 模板文件是由 HTML 标记（从处理逻辑中挪过来的）和数据占位符（指示把数据放在哪里）构成的。展示文章的 EJS 模板文件中应该包含 下面这样的 HTML 和占位符。
 
 代码清单 7-4 显示文章的 EJS 模板
 
@@ -5753,9 +5754,9 @@ function blogPage(entries) {
 </html>
 ```
 
-Node 社区创建了很多模板引擎。 HTML 需要闭合标签，而 CSS 需要左右大括号，如果你觉 得这样不够优雅，那么可以认真研究一下模板引擎。它们会用特殊的“语言”（比如我们后面会 讲到的 Pug 语言）以更简洁的方式表示 HTML 或 CSS。
+Node 社区创建了很多模板引擎。 HTML 需要闭合标签，而 CSS 需要左右大括号，如果你觉得这样不够优雅，那么可以认真研究一下模板引擎。它们会用特殊的“语言”（比如我们后面会 讲到的 Pug 语言）以更简洁的方式表示 HTML 或 CSS。
 
-这些模板引擎可以让模板更整洁，但你可能不想花时间去学另外一种表示 HTML 和 CSS 的 技术。用不用最终还是要取决于你自己。
+这些模板引擎可以让模板更整洁，但你可能不想花时间去学另外一种表示 HTML 和 CSS 的技术。用不用最终还是要取决于你自己。
 
 本章会介绍三个模板引擎，以及如何在 Node 程序中使用它们的模板：
 
@@ -5780,7 +5781,7 @@ Embedded JavaScript 处理模板的方式相当地简单直接，在其他语言
 
 ### 7.2.1 创建模板
 
-在模板的世界中，发送给模板引擎做渲染的数据有时被称为上下文。下面是 EJS 用一个简单 的模板渲染上下文的例子：
+在模板的世界中，发送给模板引擎做渲染的数据有时被称为上下文。下面是 EJS 用一个简单的模板渲染上下文的例子：
 
 ```js
 const ejs = require("ejs");
@@ -5789,17 +5790,17 @@ const context = { message: "Hello template!" };
 console.log(ejs.render(template, context));
 ```
 
-注意发送给 render 的第二个参数中 locals 的用法。第二个参数可以包含 EJS 选项以及上 下文数据，而 locals 可以确保上下文中数据不会被当作 EJS 选项。但大多数情况下你都可以把 上下文本身当作第二个参数，就像下面的 render 一样：
+注意发送给 render 的第二个参数中 locals 的用法。第二个参数可以包含 EJS 选项以及上 下文数据，而 locals 可以确保上下文中数据不会被当作 EJS 选项。但大多数情况下你都可以把上下文本身当作第二个参数，就像下面的 render 一样：
 
 ```js
 console.log(ejs.render(template, context));
 ```
 
-如果把上下文直接当作 render 的第二个参数，一定不要给上下文中的值用这些名称： cache、 client、 close、 compileDebug、 debug、 filename、 open 或 scope。它们是为修改模板 引擎设定的保留字。
+如果把上下文直接当作 render 的第二个参数，一定不要给上下文中的值用这些名称： cache、 client、 close、 compileDebug、 debug、 filename、 open 或 scope。它们是为修改模板引擎设定的保留字。
 
 **字符转义**
 
-在渲染时， EJS 会转义上下文值中的所有特殊字符，将它们替换为 HTML 实体码。这是为了 防止跨站脚本（ XSS）攻击，恶意用户会将 JavaScript 作为数据提交给 Web 程序，希望其他用户 访问包含这些数据的页面时能在他们的浏览器中执行。下面的代码展示了 EJS 的转义处理：
+在渲染时， EJS 会转义上下文值中的所有特殊字符，将它们替换为 HTML 实体码。这是为了 防止跨站脚本（ XSS）攻击，恶意用户会将 JavaScript 作为数据提交给 Web 程序，希望其他用户访问包含这些数据的页面时能在他们的浏览器中执行。下面的代码展示了 EJS 的转义处理：
 
 ```js
 const ejs = require("ejs");
@@ -5814,7 +5815,7 @@ console.log(ejs.render(template, context));
 &lt;script&gt;alert('XSS attack!');&lt;/script&gt;
 ```
 
-如果用在模板中的是可信数据，不想做转义处理，可以用<%-代替<%=，像下面这样：
+如果用在模板中的是可信数据，不想做转义处理，可以用`<%-`代替`<%=`，像下面这样：
 
 ```js
 const ejs = require("ejs");
@@ -5878,7 +5879,7 @@ const server = http.createServer((req, res) => {
 server.listen(8000);
 ```
 
-接下来创建用来存放模板文件的子目录 templates，在 templates 下创建 students.ejs 文件，把 下面的代码放到 students.ejs 中。
+接下来创建用来存放模板文件的子目录 templates，在 templates 下创建 students.ejs 文件，把下面的代码放到 students.ejs 中。
 
 代码清单 7-6 渲染学生数组的 EJS 模板
 
@@ -5888,16 +5889,16 @@ server.listen(8000);
   <% students.forEach((student) => { %>
   <li><%= student.name %> (<%= student.age %>)</li>
   <% }) %> 注意模板文 件的位置 传给模板引 擎的数据 创建 HTTP 服务器 从文件中读
-  取模板 渲染 模板 发送 HTTP 响应150 第 7 章 Web 程序的模板
+  取模板 渲染 模板 发送 HTTP 响应
 </ul>
 <% } %>
 ```
 
 **缓存 EJS 模板**
 
-如果有必要，可以让 EJS 把模板函数缓存在内存中。也就是说在解析完模板文件后， EJS 可以 把解析得到的函数存下来。这样以后需要渲染这个模板时不用再次解析，所以渲染速度会更快。
+如果有必要，可以让 EJS 把模板函数缓存在内存中。也就是说在解析完模板文件后， EJS 可以把解析得到的函数存下来。这样以后需要渲染这个模板时不用再次解析，所以渲染速度会更快。
 
-如果正在开发过程当中，想即时看到模板文件修改后的效果，则不要启用缓存。但在把程序 部署到生产环境中时，启用缓存是一种简单快捷的性能优化办法。可以通过环境变量 NODE_ENV 判定是否启用缓存。
+如果正在开发过程当中，想即时看到模板文件修改后的效果，则不要启用缓存。但在把程序部署到生产环境中时，启用缓存是一种简单快捷的性能优化办法。可以通过环境变量 NODE_ENV 判定是否启用缓存。
 
 如果想试一下，可以将前面的 render 函数调用改成下面这样：
 
@@ -5919,8 +5920,7 @@ cd /your/working/directory
 curl -O https://raw.githubusercontent.com/tj/ejs/master/lib/ejs.js
 ```
 
-下载完就可以在客户端代码中使用 EJS 了。下面是一个简单的 EJS 客户端程序，将它存为
-index.html，在浏览器中打开看看效果。
+下载完就可以在客户端代码中使用 EJS 了。下面是一个简单的 EJS 客户端程序，将它存为 index.html，在浏览器中打开看看效果。
 
 代码清单 7-7 用 EJS 给客户端增加使用模板的能力
 
@@ -5952,8 +5952,7 @@ index.html，在浏览器中打开看看效果。
 </html>
 ```
 
-学完这个功能完备的 Node 模板引擎，该去看一下 Hogan 模板引擎了，它特意限制了模板代
-码中可用的功能。
+学完这个功能完备的 Node 模板引擎，该去看一下 Hogan 模板引擎了，它特意限制了模板代码中可用的功能。
 
 ## 7.3 使用 Mustache 模板语言与 Hogan
 
@@ -5968,7 +5967,7 @@ Hogan.js 是 Twitter 为满足自己的需求而创建的模板引擎。 Hogan �
 - 如何用子模板组织模板；
 - 如何用定制的分隔符和其他选项对 Hogan 进行微调。
 
-  我们去看看 Hogan 提供的另一种使用模板的方式。
+我们去看看 Hogan 提供的另一种使用模板的方式。
 
 ### 7.3.1 创建模板
 
@@ -5996,11 +5995,11 @@ Mustache 标签在概念上跟 EJS 的标签类似，也有变量值的占位符
 
 1. 显示简单的值
 
-在 Mustache 模板中，要把想要显示的上下文名称放在双大括号中。大括号在 Mustache 社区 里被称为胡须。比如说，如果想显示上下文项 name 的值，应该用 Hogan 标签{{name}}。
+在 Mustache 模板中，要把想要显示的上下文名称放在双大括号中。大括号在 Mustache 社区 里被称为胡须。比如说，如果想显示上下文项 name 的值，应该用 Hogan 标签`{{name}}`。
 
-跟大多数模板引擎一样， Hogan 默认也会对内容进行转义以防范 XSS 攻击。如果要在 Hogan 中显示未转义的值，既可以把上下文项的名称放在三条胡须中，也可以在前面添加一个 & 符号。 还是用前面那个例子，你可以用{{{name}}}显示不做转义处理的上下文值，也可以用{{&name}}。
+跟大多数模板引擎一样， Hogan 默认也会对内容进行转义以防范 XSS 攻击。如果要在 Hogan 中显示未转义的值，既可以把上下文项的名称放在三条胡须中，也可以在前面添加一个 `&` 符号。 还是用前面那个例子，你可以用`{{{name}}}`显示不做转义处理的上下文值，也可以用`{{&name}}`。
 
-如果想在 Mustache 模板中添加注释，可以这样： {{! This is a comment }}。
+如果想在 Mustache 模板中添加注释，可以这样： `{{! This is a comment }}`。
 
 2. 区块：多个值的循环遍历
 
@@ -6046,9 +6045,9 @@ const context = {
 
 如果 Mustache 现有的功能无法满足你的需求，那么可以依据 Mustache 标准自己定义区块标 签，让它调用函数处理模板内容，不用循环遍历数组。这被称为区块 lambda。
 
-代码清单 7-8 是用区块 lambda 支持 Markdown 的例子。这个例子用到了 github-flavoredmarkdown 模块，在命令行中输入 npm install github-flavored-markdown --dev 安装。 如果你用的是随书源码，则在 ch07-templates/listing7_8 里运行 npm install。
+代码清单 7-8 是用区块 lambda 支持 Markdown 的例子。这个例子用到了 github-flavoredmarkdown 模块，在命令行中输入 `npm install github-flavored-markdown --dev` 安装。 如果你用的是随书源码，则在 ch07-templates/listing7_8 里运行 `npm install`。
 
-在下面这段代码中，模板中的**Name**传给由区块 lambda 调用的 Markdown 解析器，生成 了<strong>Name</strong>。
+在下面这段代码中，模板中的**Name**传给由区块 lambda 调用的 Markdown 解析器，生成 了`<strong>Name</strong>`。
 
 代码清单 7-8 在 Hogan 中使用 lambda
 
@@ -6172,13 +6171,13 @@ npm install pug --save
 
 ### 7.4.1 Pug 基础知识
 
-Pug 的标签名跟 HTML 一样，但抛弃了前面的<和后面的>字符，并用缩进表示标签的嵌套关 系。标签可以用.<classname>关联一个或多个 CSS 类。比如应用了 content 和 sidebar 类的 div 元素表示为：
+Pug 的标签名跟 HTML 一样，但抛弃了前面的`<`和后面的`>`字符，并用缩进表示标签的嵌套关 系。标签可以用`.<classname>`关联一个或多个 CSS 类。比如应用了 content 和 sidebar 类的 div 元素表示为：
 
 ```
 div.content.sidebar
 ```
 
-在标签上添加#<ID>可以赋予它 CSS ID。比如给前面那个例子中的 div 加上了 CSS ID featured_content：
+在标签上添加`#<ID>`可以赋予它 CSS ID。比如给前面那个例子中的 div 加上了 CSS ID featured_content：
 
 ```
 div.content.sidebar#featured_content
@@ -6221,7 +6220,7 @@ Specifying tag content
 
 在前面那段代码中还有标签内容的示例： strong 标签后面的 Select your favorite food:；第一个 option 后面的 Cheese；第二个 option 后面的 Tofu。
 
-这是 Pug 中指定标签内容的常用办法，但不是唯一的。尽管这种风格在指定比较短的内容时 很好用，但如果标签的内容很长，则会导致 Pug 模板中出现超长的代码行。不过，就像下面这个 例子一样，在 Pug 中可以用|指定标签的内容：
+这是 Pug 中指定标签内容的常用办法，但不是唯一的。尽管这种风格在指定比较短的内容时 很好用，但如果标签的内容很长，则会导致 Pug 模板中出现超长的代码行。不过，就像下面这个 例子一样，在 Pug 中可以用`|`指定标签的内容：
 
 ```
 textarea
@@ -6230,9 +6229,9 @@ textarea
 | provided with.
 ```
 
-如果 HTML 标签只接受文本（即不能嵌入 HTML 元素），比如 style 和 script，则可以去 掉|字符，像下面这样：
+如果 HTML 标签只接受文本（即不能嵌入 HTML 元素），比如 style 和 script，则可以去 掉`|`字符，像下面这样：
 
-```
+```css
 style.
 h1 {
 font-size: 6em;
@@ -6269,7 +6268,7 @@ li: a(href='http://nodebits.org/') Nodebits blog
 
 3. 将数据纳入到 Pug 模板中
 
-数据传给 Pug 引擎的方式跟 EJS 一样。模板先被编译成函数，然后带着上下文调用它，以便 渲染 HTML 输出。如下例所示：7.4 用 Pug 做模板 157
+数据传给 Pug 引擎的方式跟 EJS 一样。模板先被编译成函数，然后带着上下文调用它，以便 渲染 HTML 输出。如下例所示：
 
 ```js
 const pug = require("pug");
@@ -6279,9 +6278,9 @@ const fn = pug.compile(template);
 console.log(fn(context));
 ```
 
-这个模板中的#{message}是要被上下文值替换掉的占位符。
+这个模板中的`#{message}`是要被上下文值替换掉的占位符。
 
-上下文值也可以作为属性的值。下面这个例子会渲染出<a href="http://google.com"> </a>：
+上下文值也可以作为属性的值。下面这个例子会渲染出`<a href="http://google.com"> </a>`：
 
 ```js
 const pug = require("pug");
@@ -6322,12 +6321,14 @@ p You currently do not have any contacts
 
 1. 在 Pug 模板中使用 JavaScript
 
-带有-前缀的 JavaScript 代码的返回结果不会出现在渲染结果中。带有=前缀的 JavaScript 代 码的执行结果则会出现，但为了防止 XSS 攻击做了转义处理。如果 JavaScript 代码生成的内容不 应该转义，那么可以用前缀!=。表 7-1 是这些前缀的汇总。
+带有`-`前缀的 JavaScript 代码的返回结果不会出现在渲染结果中。带有=前缀的 JavaScript 代 码的执行结果则会出现，但为了防止 XSS 攻击做了转义处理。如果 JavaScript 代码生成的内容不 应该转义，那么可以用前缀`!=`。表 7-1 是这些前缀的汇总。
 
 表 7-1 在 Pug 中嵌入 JavaScript 的前缀
-前 缀 输 出
-= 转义的输出（用于不可信任或不可预测的值，免受 XSS 攻击）
-!= 不做转义处理的输出（用于可信任或可预测的值）
+
+| 前 缀 | 输 出 |
+|---|---|
+| = | 转义的输出（用于不可信任或不可预测的值，免受 XSS 攻击） |
+| != | 不做转义处理的输出（用于可信任或可预测的值） |
 
 - 没有输出
 
@@ -6340,7 +6341,7 @@ Pug 中还可以定义变量。下面两种赋值方式效果是一样的：
 count = 0
 ```
 
-没有前缀的语句没有输出，就像前面说的-前缀一样。
+没有前缀的语句没有输出，就像前面说的`-`前缀一样。
 
 2. 循环遍历对象和数组
 
@@ -6411,7 +6412,7 @@ script
 alert('You win!');
 ```
 
-如果条件判断是取反的，比如 if (n != 1)，可以用 Pug 的 unless 关键字：
+如果条件判断是取反的，比如 `if (n != 1)`，可以用 Pug 的 unless 关键字：
 
 ```
 - n = Math.round(Math.random() * 1) + 1
@@ -6517,16 +6518,16 @@ block content
 代码清单 7-11 用块追加再加载一个 JavaScript 文件
 
 ```js
-  // 这个模板扩展了 layout 模板
+// 这个模板扩展了 layout 模板
 extends layout
 baseUrl = "http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/"
 block title
 title Messages
-  // 定义 style 块
+// 定义 style 块
 block style
 link(rel="stylesheet", href= baseUrl+"themes/flick/jquery-ui.css")
 block append scripts
-  // 把这个 scripts 块追加到layout 中定义的那个上面
+// 把这个 scripts 块追加到layout 中定义的那个上面
 script(src= baseUrl+"jquery-ui.js")
 block content
 count = 0
@@ -6604,7 +6605,7 @@ mixin list_object_property(students, 'name')
 - EJS 支持简单的流程控制，以及转义或非转义插值。
 - Hogan.js 是简单的模板引擎，不支持流程控制，但支持 Mustache 标准。
 - Pug 是比较复杂的模板语言，可以输出 HTML，但不用尖括号。
-- Pug 用空格表示标签的嵌套关系。164 第 8 章 存储数据
+- Pug 用空格表示标签的嵌套关系。
 
 # 第8章 存储数据
 
