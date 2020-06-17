@@ -6614,29 +6614,20 @@ mixin list_object_property(students, 'name')
 - 非关系型数据库： MongoDB
 - ACID 类
 - 云数据库和存储服务
-Node.js 的应用范围非常广泛，可以满足开发人员各种各样的需求。没有哪个数据库或存储
-方案能够独立应对 Node 所面对的各种应用场景。本章不仅会对各种可能的数据存储做个概述，
-还会介绍一些重要的概念和术语。
+Node.js 的应用范围非常广泛，可以满足开发人员各种各样的需求。没有哪个数据库或存储 方案能够独立应对 Node 所面对的各种应用场景。本章不仅会对各种可能的数据存储做个概述， 还会介绍一些重要的概念和术语。
 ## 8.1 关系型数据库
-长期以来，关系型数据库都是 Web 程序存储数据的不二之选。因为关于这个话题的讨论太
-多了，所以本章不会在这上面多费口舌。
-关系型数据库以关系代数和集合论为理论基础，诞生于 20 世纪 70 年代。用模式指定各种数
-据类型的格式和这些数据类型之间的关系。比如说，做社交网络时会有 User 和 Post 类型，它
-们之间还会有一对多的关系。然后用结构化查询语言（ SQL）发起数据查询，比如“给我 ID 为
-123 的用户名下的所有帖子”用 SQL 表示就是： SELECT * FROM post WHERE user_id=123。
+长期以来，关系型数据库都是 Web 程序存储数据的不二之选。因为关于这个话题的讨论太 多了，所以本章不会在这上面多费口舌。
+关系型数据库以关系代数和集合论为理论基础，诞生于 20 世纪 70 年代。用模式指定各种数 据类型的格式和这些数据类型之间的关系。比如说，做社交网络时会有 User 和 Post 类型，它 们之间还会有一对多的关系。然后用结构化查询语言（ SQL）发起数据查询，比如“给我 ID 为 123 的用户名下的所有帖子”用 SQL 表示就是： SELECT * FROM post WHERE user_id=123。
 ## 8.2 PostgreSQL
-在 Node 程序中， MySQL 和 PostgreSQL（ Postgres）都是常用的关系型数据库。其实选择哪
-个关系型数据库主要看个人偏好，所以本节大部分内容也适用于其他关系型数据库，比如
-MySQL。我们先看一下如何在开发环境中安装 Postgres。
+在 Node 程序中， MySQL 和 PostgreSQL（ Postgres）都是常用的关系型数据库。其实选择哪 个关系型数据库主要看个人偏好，所以本节大部分内容也适用于其他关系型数据库，比如 MySQL。我们先看一下如何在开发环境中安装 Postgres。
 8.2.1 安装及配置
-Postgres 的安装不是执行一条 npm 命令那么简单。不同平台上的安装是不一样的。 macOS 上
-很简单，只要：
-第 8 章8.2 PostgreSQL 165
+Postgres 的安装不是执行一条 npm 命令那么简单。不同平台上的安装是不一样的。 macOS 上 很简单，只要：
 
+```
 brew update
 brew install postgres
-如果之前安装过，可能会碰到升级问题。你可以参照所用平台的指南把原来的数据库迁移一
-下，或者直接抹掉数据库目录：
+```
+如果之前安装过，可能会碰到升级问题。你可以参照所用平台的指南把原来的数据库迁移一 下，或者直接抹掉数据库目录：
 
 ```
 # WARNING: will delete existing postgres configuration & data
@@ -6644,44 +6635,48 @@ rm -rf /usr/local/var/postgres
 ```
 
 然后初始化并启动 Postgres：
+```
 initdb -D /usr/local/var/postgres
 pg_ctl -D /usr/local/var/postgres -l logfile start
-这会启动 Postgres 守护进程，不过每次重启机器都要重新启动这个进程。如果嫌这样麻烦，
-可以找一下在线教程，有很多教程是讲如何在机器启动时自动启动 Postgres 守护进程的。
-同样，很多 Linux 系统也有安装包。至于 Windows，要从 postgresql.org 上下载安装器。
-Postgres 有几个命令行管理工具，可以用 man 命令看一下它们各自的帮助手册了解详情。
+```
+这会启动 Postgres 守护进程，不过每次重启机器都要重新启动这个进程。如果嫌这样麻烦， 可以找一下在线教程，有很多教程是讲如何在机器启动时自动启动 Postgres 守护进程的。
+同样，很多 Linux 系统也有安装包。至于 Windows，要从 postgresql.org 上下载安装器。 Postgres 有几个命令行管理工具，可以用 man 命令看一下它们各自的帮助手册了解详情。
 8.2.2 创建数据库
-Postgres 守护进程跑起来后就可以创建要用的库了。数据库只需要创建一次，最简单的办法
-是用命令 createdb。下面这条命令创建了一个名为 articles 的库：
+Postgres 守护进程跑起来后就可以创建要用的库了。数据库只需要创建一次，最简单的办法 是用命令 createdb。下面这条命令创建了一个名为 articles 的库：
+```
 createdb articles
-如果成功就不会有输出。如果已经有同名数据库了，则什么也不做，只是提示创建失败。
-尽管可以根据数据库的运行环境配置成连接多个数据库，但大多数程序一次只会连接一个。
-它们至少会有两个环境：开发和生产。
+```
+如果成功就不会有输出。如果已经有同名数据库了，则什么也不做，只是提示创建失败。 尽管可以根据数据库的运行环境配置成连接多个数据库，但大多数程序一次只会连接一个。 它们至少会有两个环境：开发和生产。
 要删掉已有数据库中的全部数据，可以用 dropdb 命令，参数是数据库名：
+```
 dropdb articles
+```
 如果想再用这个库，需要再次执行 createdb。
 8.2.3 从 Node 中连接 Postgres
 在 Node 中与 Postgres 交互，最受欢迎的包就是 pg。可以用 npm 安装：
+```
 npm install pg --save
-Postgres 服务器跑起来了，数据库创建好了， pg 包也安装上了，那么现在可以在 Node 里使
-用这个数据库了。在给服务器发送命令之前，还需要建立数据库连接，如下所示。
+```
+Postgres 服务器跑起来了，数据库创建好了， pg 包也安装上了，那么现在可以在 Node 里使 用这个数据库了。在给服务器发送命令之前，还需要建立数据库连接，如下所示。
 代码清单 8-1 连接数据库
+```js
 const pg = require('pg');
 const db = new pg.Client({ database: 'articles' });
-配置连
-接参数166 第 8 章 存储数据
-关闭数据库连接，
-Node 进程可以退出
+// 配置连
+// 接参数
+// 关闭数据库连接，
+// Node 进程可以退出
 db.connect((err, client) => {
 if (err) throw err;
 console.log('Connected to database', db.database);
 db.end();
 });
+```
 pg 包在 GitHub 的 wiki 页面上有 pg.Client 及其他方法的详细介绍。
 8.2.4 定义表
-要在 PostgreSQL 中存储数据，首先要像下面这样定义表，确定表中存储的数据形态（随书
-源码见 ch08-databases/listing8_3）。
+要在 PostgreSQL 中存储数据，首先要像下面这样定义表，确定表中存储的数据形态（随书 源码见 ch08-databases/listing8_3）。
 代码清单 8-2 定义模式
+```js
 db.query(`
 CREATE TABLE IF NOT EXISTS snippets (
 id SERIAL,
@@ -6693,11 +6688,11 @@ if (err) throw err;
 console.log('Created table "snippets"');
 db.end();
 });
+```
 8.2.5 插入数据
-表定义好后，可以像下面这样用 INSERT 查询插入数据。如果不指定 id， PostgreSQL 会自
-动生成一个。要想知道生成的 ID 是什么，需要在查询语句里加上 RETURNING id，然后可以在
-回调函数的结果集参数中得到 id 值。
+表定义好后，可以像下面这样用 INSERT 查询插入数据。如果不指定 id， PostgreSQL 会自 动生成一个。要想知道生成的 ID 是什么，需要在查询语句里加上 RETURNING id，然后可以在 回调函数的结果集参数中得到 id 值。
 代码清单 8-3 插入数据
+```js
 const body = 'hello world';
 db.query(`
 INSERT INTO snippets (body) VALUES (
@@ -6709,11 +6704,11 @@ if (err) throw err;
 const id = result.rows[0].id;
 console.log('Inserted row with id %s', id);
 });
+```
 8.2.6 更新数据
-插入数据后，可以像下面这样用 UPDATE 查询更新数据。受影响的记录数放在查询结果中的8.3 Knex 167
-
-rowCount 属性上。完整随书源码见 ch08-databases/listing8_4。
+插入数据后，可以像下面这样用 UPDATE 查询更新数据。受影响的记录数放在查询结果中的 rowCount 属性上。完整随书源码见 ch08-databases/listing8_4。
 代码清单 8-4 更新数据
+```js
 const id = 1;
 const body = 'greetings, world';
 db.query(`
@@ -6724,37 +6719,35 @@ UPDATE snippets SET (body) = (
 if (err) throw err;
 console.log('Updated %s rows.', result.rowCount);
 });
+```
 8.2.7 查询数据
-关系型数据库的能量主要体现在复杂的数据查询上。查询语句用的是 SELECT，下面这种是
-最简单的。
+关系型数据库的能量主要体现在复杂的数据查询上。查询语句用的是 SELECT，下面这种是 最简单的。
 代码清单 8-5 查询数据
+```js
 db.query(`
 SELECT * FROM snippets ORDER BY id
 `, (err, result) => {
 if (err) throw err;
 console.log(result.rows);
 });
+```
 ## 8.3 Knex
-很多开发人员都不喜欢把 SQL 直接放在代码里，希望能有个抽象层隔离一下。因为用字符
-串拼接 SQL 语句太繁琐了，而且那些查询可能会变得越来越难以理解和维护。对于 JavaScript
-来说更是如此，因为在 ES2015 的模板常量出来之前，它连表示多行字符串的语法都没有。图 8-1
-是 Knex 的统计数据，其中有下载次数，由此可见它是多么受欢迎。
+很多开发人员都不喜欢把 SQL 直接放在代码里，希望能有个抽象层隔离一下。因为用字符 串拼接 SQL 语句太繁琐了，而且那些查询可能会变得越来越难以理解和维护。对于 JavaScript 来说更是如此，因为在 ES2015 的模板常量出来之前，它连表示多行字符串的语法都没有。图 8-1 是 Knex 的统计数据，其中有下载次数，由此可见它是多么受欢迎。
 图 8-1 Knex 的使用统计
-Knex 是一个轻便的 SQL 抽象包，它被称为查询构建器。我们可以通过查询构建器的声明式
-API 构造出 SQL 字符串， Kenx 的 API 简单直白：
+Knex 是一个轻便的 SQL 抽象包，它被称为查询构建器。我们可以通过查询构建器的声明式 API 构造出 SQL 字符串， Kenx 的 API 简单直白：
+```js
 knex({ client: 'mysql' })
 .select()
 .from('users')168 第 8 章 存储数据
 .where({ id: '123' })
 .toSQL();
+```
 这段代码会生成一个 MySQL 的参数化 SQL 查询：
+```
 select * from `users` where `id` = ?
+```
 8.3.1 查询构建器
-尽管业界在 20 世纪 80 年代中期就已经确立了 ANSI 和 ISO SQL 标准，不过直到现在，大多
-数数据库用的仍然是自己的 SQL 方言。但 PostgreSQL 是个例外，它遵循了 SQL:2008 标准，这
-种选择极其难能可贵，值得尊敬。查询构建器能在支持多种数据库的同时消除各种 SQL 方言的
-差异，提供一个统一的 SQL 生成接口。对于经常要在不同的数据库技术之间进行切换的团队来
-说，查询构建器提供的好处不言而喻。
+尽管业界在 20 世纪 80 年代中期就已经确立了 ANSI 和 ISO SQL 标准，不过直到现在，大多 数数据库用的仍然是自己的 SQL 方言。但 PostgreSQL 是个例外，它遵循了 SQL:2008 标准，这 种选择极其难能可贵，值得尊敬。查询构建器能在支持多种数据库的同时消除各种 SQL 方言的 差异，提供一个统一的 SQL 生成接口。对于经常要在不同的数据库技术之间进行切换的团队来 说，查询构建器提供的好处不言而喻。
 Knex.js 支持的数据库有：
 - PostgreSQL
 - MSSQL
@@ -6771,12 +6764,14 @@ Microsoft SQL Server insert into [users] ([name],[age]) values(?,?)
 Knex 支持 promise 和 Node 风格的回调。
 8.3.2 用 Knex 实现连接和查询
 Knex 不像其他查询构建器，它还可以根据选定的数据库驱动连接数据库并执行查询语句：
+```js
 db('articles')
 .select('title')
 .where({ title: 'Today’s News' })
 .then(articles => {
 console.log(articles);
 });
+```
 Knex 查询默认返回 promise，但也提供了.asCallback 方法，可以依照惯例支持回调函数：
 
 db('articles')
@@ -6786,12 +6781,13 @@ db('articles')
 if (err) throw err;
 console.log(articles);
 });
-第 3 章用到 SQLite 时，是直接跟 sqlite3 包交互的。接下来我们要重写那个例子，这次要用
-上 Knex。先安装 knex 和 sqlite3 包：
+第 3 章用到 SQLite 时，是直接跟 sqlite3 包交互的。接下来我们要重写那个例子，这次要用 上 Knex。先安装 knex 和 sqlite3 包：
+```
 npm install knex@~0.12.0 sqlite3@~3.1.0 --save
-下面的代码用 sqlite3 实现了简单的 Article 模型。将它保存为 db.js，稍后在代码清单 8-7
-中将用它跟数据库交互。
+```
+下面的代码用 sqlite3 实现了简单的 Article 模型。将它保存为 db.js，稍后在代码清单 8-7 中将用它跟数据库交互。
 代码清单 8-6 用 Knex 连接 sqlite3 并进行查询
+```js
 const knex = require('knex');
 const db = knex({
 client: 'sqlite3',
@@ -6821,13 +6817,14 @@ delete(id) {
 return db('articles').del().where({ id });
 }
 };
-在改变后端时将它
-设为默认更有效
-定 义 插 入 时 自
-增长的主键“ id”170 第 8 章 存储数据
-现在可以用 db.Article 添加 Article 记录了。下面这段代码是用来创建 Article 的，
-并会输出全部文章。完整随书源码见 ch08-databases/listing8_7/index.js。
-代码清单 8-7 与用 Knex 实现的 API 交互
+
+// 在改变后端时将它
+// 设为默认更有效
+// 定 义 插 入 时 自
+// 增长的主键“ id”
+// 现在可以用 db.Article 添加 Article 记录了。下面这段代码是用来创建 Article 的，
+// 并会输出全部文章。完整随书源码见 ch08-databases/listing8_7/index.js。
+// 代码清单 8-7 与用 Knex 实现的 API 交互
 db().then(() => {
 db.Article.create({
 title: 'my article',
@@ -6840,13 +6837,13 @@ process.exit();
 });
 })
 .catch(err => { throw err });
-SQLite 几乎不需要配置：不用启动服务器守护进程，也不用在程序外面创建数据库。 SQLite
-把所有东西都写到一个文件里。运行前面的代码后，当前目录下会有个 articles.sqlite 文件。删掉
-这个文件就能把这个数据库抹掉：
+```
+SQLite 几乎不需要配置：不用启动服务器守护进程，也不用在程序外面创建数据库。 SQLite 把所有东西都写到一个文件里。运行前面的代码后，当前目录下会有个 articles.sqlite 文件。删掉 这个文件就能把这个数据库抹掉：
+```
 rm articles.sqlite
-SQLite 还有内存模式，完全不用往硬盘里写东西。在进行自动化测试时，一般会用这种模式
-降低运行时间。带有:memory:的特殊文件名会启用内存模式。在启用内存模式后，如果有多个
-连接，那么每个连接都会有自己的私有数据库：
+```
+SQLite 还有内存模式，完全不用往硬盘里写东西。在进行自动化测试时，一般会用这种模式 降低运行时间。带有:memory:的特殊文件名会启用内存模式。在启用内存模式后，如果有多个 连接，那么每个连接都会有自己的私有数据库：
+```js
 const db = knex({
 client: 'sqlite3',
 connection: {
@@ -6854,14 +6851,15 @@ filename: ':memory:'
 },
 useNullAsDefault: true
 });
+```
 8.3.3 切换数据库
-因为用了 Knex，所以要把代码清单 8-6 和代码清单 8-7 换成使用 PostgreSQL 很容易。
-跟 PostgreSQL 服务器交互需要用到 pg 包，要将其安装好并跑起来。把 pg 包安装到代码清单 8-7
-（随书源码见 ch08-databases/listing8_7）所在的目录中，别忘了用 PostgreSQL 的 createdb 命令
-创建相应的数据库：
+因为用了 Knex，所以要把代码清单 8-6 和代码清单 8-7 换成使用 PostgreSQL 很容易。 跟 PostgreSQL 服务器交互需要用到 pg 包，要将其安装好并跑起来。把 pg 包安装到代码清单 8-7 （随书源码见 ch08-databases/listing8_7）所在的目录中，别忘了用 PostgreSQL 的 createdb 命令 创建相应的数据库：
+```js
 npm install pg --save
 createdb articles
+```
 只要修改 Knex 的配置就能换成这个新数据库。对外的 API 和使用还是一样的：
+```js
 const db = knex({
 client: 'pg',8.4 MySQL 和 PostgreSQL 171
 
@@ -6869,77 +6867,44 @@ connection: {
 database: 'articles'
 }
 })
+```
 不过在现实中，还要迁移数据库。
 8.3.4 注意抽象漏洞
-查询构建器能对 SQL 语法做标准化处理，但改变不了数据库的行为。有些特性只有特定数
-据库提供支持，而且对于同样的查询，不同的数据库可能会作出不同的行为。比如下面这两个定
-义主键的方法：
+查询构建器能对 SQL 语法做标准化处理，但改变不了数据库的行为。有些特性只有特定数 据库提供支持，而且对于同样的查询，不同的数据库可能会作出不同的行为。比如下面这两个定 义主键的方法：
 - table.increments('id').primary();
 - table.integer('id').primary();
 在 SQLite3 上都没问题，但在 PostgreSQL 上插入记录时，第二个会出错：
+```
 "null value in column "id" violates not-null constraint"
-在 SQLite 上，如果插入的记录主键为 null，不管是否配置为自增长主键，都会自动赋给
-它一个自增长的 ID。而 PostgreSQL 只有主键显式定义为自增长主键时才会如此处理。这样的行
-为差异很多，并且有些差异导致的错误可能无法轻易发现。如果换数据库，一定要进行充分地
-测试。
+```
+在 SQLite 上，如果插入的记录主键为 null，不管是否配置为自增长主键，都会自动赋给 它一个自增长的 ID。而 PostgreSQL 只有主键显式定义为自增长主键时才会如此处理。这样的行 为差异很多，并且有些差异导致的错误可能无法轻易发现。如果换数据库，一定要进行充分地 测试。
 ## 8.4 MySQL 和 PostgreSQL
-MySQL 和 PostgreSQL 都是成熟高效的数据库系统，并且对于很多项目来说，它们两个几乎
-没什么差别。直到项目需要扩张时，开发人员才会感觉到它们在接口边缘或接口之下的差异。
-要详尽地列出两个关系型数据库之间的差别是件比较复杂的事情，所以我们这里只会给出一
-些值得注意的差别：
+MySQL 和 PostgreSQL 都是成熟高效的数据库系统，并且对于很多项目来说，它们两个几乎 没什么差别。直到项目需要扩张时，开发人员才会感觉到它们在接口边缘或接口之下的差异。 要详尽地列出两个关系型数据库之间的差别是件比较复杂的事情，所以我们这里只会给出一 些值得注意的差别：
 - PostgreSQL 支持一些表达能力更强的数据类型，比如数组、 JSON 和用户定义的类型；
 - PostgreSQL 自带全文搜索功能；
 - PostgreSQL 全面支持 ANSI SQL:2008 标准；
 - PostgreSQL 的复制功能不如 MySQL 强大，或者说没有经受过那么严苛的考验；
 - MySQL 资历更老、社区更大，有更多的工具和资源；
-- MySQL 有很多有微妙差别的分支（比如 MariaDB 和 WebScaleSQL 这些受到 Facebook、
-Google、 Twitter 等公司支持的版本）；
-- MySQL 的可插拔存储引擎不太好理解，管理和调优也有一定的难度。不过换个角度来看，
-这也意味着可以对它的性能做更精细的控制。
-MySQL 和 PostgreSQL 在规模变大后会表现出不同的性能特点，这要取决于它们要处理哪种
-工作负载。但可能只有等到项目成熟之后，工作负载的类型才会显现出来。172 第 8 章 存储数据
+- MySQL 有很多有微妙差别的分支（比如 MariaDB 和 WebScaleSQL 这些受到 Facebook、 Google、 Twitter 等公司支持的版本）；
+- MySQL 的可插拔存储引擎不太好理解，管理和调优也有一定的难度。不过换个角度来看， 这也意味着可以对它的性能做更精细的控制。
+MySQL 和 PostgreSQL 在规模变大后会表现出不同的性能特点，这要取决于它们要处理哪种 工作负载。但可能只有等到项目成熟之后，工作负载的类型才会显现出来。
 对于各种关系型数据库的比较，网上有很多深入细致的资料可供参考。
 - www.digitalocean.com/community/tutorials/sqlite-vs-mysql-vs-postgresql-a-comparison-ofrelational-database-management-systems
 - https://blog.udemy.com/mysql-vs-postgresql/
 - https://eng.uber.com/mysql-migration/
-选哪个数据库并不会影响项目成功与否，所以不要在这个问题上纠结。如果有必要，以后也
-可以做数据库迁移，但 PostgreSQL 应该足以满足你对功能特性和扩展能力的需求。但如果你恰
-好要对数据库的评估选型负责，则有必要熟悉一下 ACID 保证。
+选哪个数据库并不会影响项目成功与否，所以不要在这个问题上纠结。如果有必要，以后也 可以做数据库迁移，但 PostgreSQL 应该足以满足你对功能特性和扩展能力的需求。但如果你恰 好要对数据库的评估选型负责，则有必要熟悉一下 ACID 保证。
 ## 8.5 ACID 保证
-ACID①是对数据库事务的一组要求：原子性、一致性、隔离性和耐用性。这些术语的确切定
-义可能会变。但一般来说，系统对 ACID 保证越严格，在性能上作出的让步就越大。开发人员用
-ACID 分类来交流不同方案所做的妥协，比如在聊 NoSQL 系统时。
+ACID①是对数据库事务的一组要求：原子性、一致性、隔离性和耐用性。这些术语的确切定 义可能会变。但一般来说，系统对 ACID 保证越严格，在性能上作出的让步就越大。开发人员用 ACID 分类来交流不同方案所做的妥协，比如在聊 NoSQL 系统时。
 8.5.1 原子性：无论成败，事务必须整体执行
-原子性事务不能被部分执行：或者整个操作都完成了，或者数据库保持原样。比如说要删除
-某个用户的所有评论，如果作为一个事务的话，或者全都删掉了，或者一条也没删。最终不能是
-有些删掉了，有些还保持原来的状态。甚至在系统出错或断电后，仍然要保证原子性。 原子性在
-这里的意思是不可再分。
+原子性事务不能被部分执行：或者整个操作都完成了，或者数据库保持原样。比如说要删除 某个用户的所有评论，如果作为一个事务的话，或者全都删掉了，或者一条也没删。最终不能是 有些删掉了，有些还保持原来的状态。甚至在系统出错或断电后，仍然要保证原子性。 原子性在 这里的意思是不可再分。
 8.5.2 一致性：始终确保约束条件
-成功完成的事务必须符合系统中定义的所有数据完整性约束。比如主键必须唯一、数据要符
-合某种特定的模式，或者外键必须指向存在的实体。产生不一致状态的事务一般也会失败，然而
-小问题是可以自动解决的，比如将数据转换成正确的形态。不要把一致性（ Consistency）的 C 跟
-CAP 定理中的 C 搞混了，那个 C 是指在读取分布式存储的数据时，确保呈现的是一个视图。
+成功完成的事务必须符合系统中定义的所有数据完整性约束。比如主键必须唯一、数据要符 合某种特定的模式，或者外键必须指向存在的实体。产生不一致状态的事务一般也会失败，然而 小问题是可以自动解决的，比如将数据转换成正确的形态。不要把一致性（ Consistency）的 C 跟 CAP 定理中的 C 搞混了，那个 C 是指在读取分布式存储的数据时，确保呈现的是一个视图。
 8.5.3 隔离性：并发事务不会相互干扰
-不管是并发还是线性执行，隔离性事务的执行结果应该都是一样的。系统的隔离水平会直接
-影响它执行并发操作的能力。 全局锁是一种比较低幼的隔离方式，由于在事务期间会把整个数据
-库锁住，所以只能串行处理事务。这是很强的隔离性保证，但效率也极低：那些跟事务完全没有
-关联的数据集根本不应该被锁住（比如说，一个用户添加评论时不应该导致另一个用户无法更新
-自己的个人资料）。在现实情况中，数据库系统会提供更加精细的和有选择性的锁模式（比如锁
-表、锁记录或锁数据域），以实现各种程度的隔离水平。更复杂的系统甚至可能会采用隔离水平
-——————————
-① 原子性（ Atomicity）、一致性（ Consistency）、隔离性（ Isolation）和耐用性（ Durability）的缩写。
-
-最低的锁模式，乐观地并行执行所有事务，直到检测到冲突时才会逐步细化锁模式。
+不管是并发还是线性执行，隔离性事务的执行结果应该都是一样的。系统的隔离水平会直接 影响它执行并发操作的能力。 全局锁是一种比较低幼的隔离方式，由于在事务期间会把整个数据 库锁住，所以只能串行处理事务。这是很强的隔离性保证，但效率也极低：那些跟事务完全没有 关联的数据集根本不应该被锁住（比如说，一个用户添加评论时不应该导致另一个用户无法更新 自己的个人资料）。在现实情况中，数据库系统会提供更加精细的和有选择性的锁模式（比如锁 表、锁记录或锁数据域），以实现各种程度的隔离水平。更复杂的系统甚至可能会采用隔离水平 最低的锁模式，乐观地并行执行所有事务，直到检测到冲突时才会逐步细化锁模式。
 8.5.4 耐用性：事务是永久性的
-事务的耐用性是对持久化生效的保证，在重启、断电、系统错误甚至硬件失效的情况下，持
-久化的效果依然不受影响。比如 SQLite 内存模式下的事务就没有耐用性，进程退出后所有数据
-都没了。而在 SQLite 把数据写到硬盘中时，事务的耐用性就很好，因为机器重启后数据还在。
-这看起来好像很简单：只要把数据写到硬盘里就好了，事务就有耐用性了。但硬盘 I/O 是比
-较慢的操作，即便程序规模增长比较温和时， I/O 操作也会迅速变成性能瓶颈。为了保证系统性
-能，有些数据库会提供不同的耐用性折中方案。
+事务的耐用性是对持久化生效的保证，在重启、断电、系统错误甚至硬件失效的情况下，持 久化的效果依然不受影响。比如 SQLite 内存模式下的事务就没有耐用性，进程退出后所有数据 都没了。而在 SQLite 把数据写到硬盘中时，事务的耐用性就很好，因为机器重启后数据还在。 这看起来好像很简单：只要把数据写到硬盘里就好了，事务就有耐用性了。但硬盘 I/O 是比 较慢的操作，即便程序规模增长比较温和时， I/O 操作也会迅速变成性能瓶颈。为了保证系统性 能，有些数据库会提供不同的耐用性折中方案。
 ## 8.6 NoSQL
-非关系模型的数据存储统称为 NoSQL。因为现在有些 NoSQL 数据库确实支持 SQL，所以
-NoSQL 的含义更接近于非关系型，或者被当作不仅是 SQL 的缩写。
+非关系模型的数据存储统称为 NoSQL。因为现在有些 NoSQL 数据库确实支持 SQL，所以 NoSQL 的含义更接近于非关系型，或者被当作不仅是 SQL 的缩写。
 下面举一些 NoSQL 的范式及相应的数据库的例子：
 - 键值/元组存储——DynamoDB、 LevelDB、 Redis、 etcd、 Riak、 Aerospike、 Berkeley DB；
 - 图存储——Neo4J、 OrientDB；
@@ -6948,55 +6913,40 @@ NoSQL 的含义更接近于非关系型，或者被当作不仅是 SQL 的缩写
 - 时间序列存储——Graphite、 InfluxDB、 RRDtool；
 - 多范式——Couchbase（文档数据库、键/值存储、分布式缓存）。
 NoSQL 官网上有更完整的 NoSQL 数据库列表。
-如果你只用过关系型数据库，可能不太容易接受 NoSQL 的概念，因为 NoSQL 的用法经常会
-违反你已经习惯了的最佳实践：没有模式定义、重复的数据、松散的强制性约束。 NoSQL 系统
-经常会将赋予数据库的责任放到应用程序上。这看起来可能会很乱。
-一般情况下，只要一小部分访问模式就会创建大量的数据库工作负载，比如生成程序登录画
-面的查询，需要获取很多域对象。在关系型数据库中，要提高读取性能时一般会做非规范化，给
-客户端的域查询要经过预处理并形成可以降低查询次数的形态。
-一般来说， NoSQL 数据默认就是非规范化的，甚至会跳过域建模。这样就不会在数据模型
-上做过多工作，修改起来会更迅速，并形成更简单、更好执行的设计。
+如果你只用过关系型数据库，可能不太容易接受 NoSQL 的概念，因为 NoSQL 的用法经常会 违反你已经习惯了的最佳实践：没有模式定义、重复的数据、松散的强制性约束。 NoSQL 系统 经常会将赋予数据库的责任放到应用程序上。这看起来可能会很乱。
+一般情况下，只要一小部分访问模式就会创建大量的数据库工作负载，比如生成程序登录画 面的查询，需要获取很多域对象。在关系型数据库中，要提高读取性能时一般会做非规范化，给 客户端的域查询要经过预处理并形成可以降低查询次数的形态。
+一般来说， NoSQL 数据默认就是非规范化的，甚至会跳过域建模。这样就不会在数据模型 上做过多工作，修改起来会更迅速，并形成更简单、更好执行的设计。
 ## 8.7 分布式数据库
-程序可以在垂直和水平两个方向上扩展，垂直扩展是指增加机器的能力，水平扩展是指增加
-机器的数量。垂直扩展一般更简单，但会受限于一台机器所能达到的硬件水平，而且成本上升很
-快。相对来说，水平扩展时，系统的能力是随着处理器和机器的增加而增长的。因为要协调更多174 第 8 章 存储数据
-的动态组件，所以会增加复杂性。所有增长的系统最终都会达到一个点，之后只能做水平扩展。
-分布式数据库从一开始就是按照水平扩展设计的。把数据存储在多台机器上解决了单点故障
-问题，可以提升耐用性。很多关系型系统都可以用分片、主/从、主/主复制等形态进行一定的水
-平扩展，但不会超过几百个节点。比如 MySQL 集群的上限是 255 个节点。而分布式数据库可以
-有几千个节点。
+程序可以在垂直和水平两个方向上扩展，垂直扩展是指增加机器的能力，水平扩展是指增加 机器的数量。垂直扩展一般更简单，但会受限于一台机器所能达到的硬件水平，而且成本上升很 快。相对来说，水平扩展时，系统的能力是随着处理器和机器的增加而增长的。因为要协调更多 的动态组件，所以会增加复杂性。所有增长的系统最终都会达到一个点，之后只能做水平扩展。
+分布式数据库从一开始就是按照水平扩展设计的。把数据存储在多台机器上解决了单点故障 问题，可以提升耐用性。很多关系型系统都可以用分片、主/从、主/主复制等形态进行一定的水 平扩展，但不会超过几百个节点。比如 MySQL 集群的上限是 255 个节点。而分布式数据库可以 有几千个节点。
 ## 8.8 MongoDB
-MongoDB 是面向对象的分布式数据库，使用它的 Node 开发人员特别多。时髦的 MEAN 栈
-中的 M 就是 MongoDB（另外三个是 Express、 Angular 和 Node），一般我们刚开始接触 Node 时
-遇到的第一个数据库就是它。从图 8-2 可以看出 mongodb 模块有多火。
+MongoDB 是面向对象的分布式数据库，使用它的 Node 开发人员特别多。时髦的 MEAN 栈 中的 M 就是 MongoDB（另外三个是 Express、 Angular 和 Node），一般我们刚开始接触 Node 时 遇到的第一个数据库就是它。从图 8-2 可以看出 mongodb 模块有多火。
 图 8-2 MongoDB 的使用统计
-MongoDB 受到的批评和争议非常多。尽管如此，它仍然是很多开发人员的主存储。很多著
-名公司都部署了 MongoDB，包括 Adobe、 LinkedIn、 eBay，甚至欧洲粒子物理研究所（ CERN）
-的大型强子对撞机组件上都在用它。
-MongoDB 数据库把文档存储在无模式的数据集中。不需要预先为文档定义模式，同一个数
-据集中的文档也不用遵循相同的模式。这给了 MongoDB 很大的灵活性，但程序要因此承担起保
-证数据一致性的责任，确保文档的结构是可预测的。
+MongoDB 受到的批评和争议非常多。尽管如此，它仍然是很多开发人员的主存储。很多著 名公司都部署了 MongoDB，包括 Adobe、 LinkedIn、 eBay，甚至欧洲粒子物理研究所（ CERN） 的大型强子对撞机组件上都在用它。
+MongoDB 数据库把文档存储在无模式的数据集中。不需要预先为文档定义模式，同一个数 据集中的文档也不用遵循相同的模式。这给了 MongoDB 很大的灵活性，但程序要因此承担起保 证数据一致性的责任，确保文档的结构是可预测的。
 8.8.1 安装和配置
 不同系统上的 MongoDB 安装是不一样的。 MacOS 上就是简单的：
+```
 brew install mongodb
 MongoDB 服务器是用可执行文件 mongod 启动的：
 mongod --config /usr/local/etc/mongod.conf
 Christian Amor Kvalheim 的官方 mongodb 包是最受欢迎的 MongoDB 驱动：
 npm install mongodb@^2.1.0 --save
 Windows 用户注意一下，这个驱动的安装需要 Microsoft Visual Studio 的 msbuild.exe。
+```
 8.8.2 连接 MongoDB
-装好 mongodb 包，启动了 mongod 服务器之后，可以从 Node 中作为客户端连接它，代码如
-下所示。8.8 MongoDB 175
+装好 mongodb 包，启动了 mongod 服务器之后，可以从 Node 中作为客户端连接它，代码如 下所示。
 
 代码清单 8-8 连接 MongoDB
+```js
 const { MongoClient } = require('mongodb');
 MongoClient.connect('mongodb://localhost:27017/articles')
 .then(db => {
 console.log('Client ready');
 db.close();
 }, console.error);
-连接成功的处理器会得到一个数据库客户端实例，所有数据库命令都是交给它执行的。
-大部分数据库交互都是通过 collection API 完成的：
+```
+连接成功的处理器会得到一个数据库客户端实例，所有数据库命令都是交给它执行的。 大部分数据库交互都是通过 collection API 完成的：
 - collection.insert(doc)——插入一个或多个文档；
 - collection.find(query)——找到跟查询匹配的文档；
 - collection.remove(query)——移除跟查询匹配的文档；
@@ -7009,9 +6959,9 @@ db.close();
 - collection.findOne(query)——找到一个跟查询匹配的文档；
 - collection.updateMany(query)——更新所有跟查询匹配的文档。
 8.8.3 插入文档
-collection.insertOne 将单个对象作为文档存到数据集里，代码如下所示。成功处理器
-会得到一个包含操作元信息的对象。
+collection.insertOne 将单个对象作为文档存到数据集里，代码如下所示。成功处理器 会得到一个包含操作元信息的对象。
 代码清单 8-9 插入文档
+```js
 const article = {
 title: 'I like cake',
 content: 'It is quite good.'
@@ -7021,28 +6971,31 @@ db.collection('articles')
 .then(result => {
 console.log(result.insertedId);
 console.log(article._id); B
+// 如果文档没有_id，会创建一个新
+// 的 ID， insertedId 就是那个 ID
+// 定义文档的原始对象中增
+// 加了一个新属性_id
 });
-insertMany 的用法也差不多，只是参数是包含多个对象的数组。 insertMany 的结果不再
-是一个 insertedId，而是包含多个 ID 的 insertedIds 数组， ID 的顺序跟作为参数的数组中
-的文档顺序一样。
-如果文档没有_id，会创建一个新
-的 ID， insertedId 就是那个 ID
-定义文档的原始对象中增
-加了一个新属性_id176 第 8 章 存储数据
+```
+insertMany 的用法也差不多，只是参数是包含多个对象的数组。 insertMany 的结果不再 是一个 insertedId，而是包含多个 ID 的 insertedIds 数组， ID 的顺序跟作为参数的数组中 的文档顺序一样。
 8.8.4 查询
-从数据集中读取文档的方法（比如 find、 update 和 remove）都会有一个查询参数，用来
-匹配文档。最简单的查询是一个对象， MongoDB 会匹配结构和值相同的文档。比如下面这个查
-询会匹配所有标题为“I like cake”的文档：
+从数据集中读取文档的方法（比如 find、 update 和 remove）都会有一个查询参数，用来 匹配文档。最简单的查询是一个对象， MongoDB 会匹配结构和值相同的文档。比如下面这个查 询会匹配所有标题为“I like cake”的文档：
+```js
 db.collection('articles')
 .find({ title: 'I like cake' })
 .toArray().then(results => {
 console.log(results);
 });
+```
 查询可以用具有唯一性的 _id 进行匹配：
+```js
 collection.findOne({ _id: someID })
+```
 或者基于查询操作符匹配：
+```js
 db.collection('articles')
 .find({title: { $regex: /cake$/I })
+```
 MongoDB 查询语言中的查询操作符很多，比如：
 - $eq——等于某个值；
 - $neq——不等于某个值；
@@ -7051,11 +7004,10 @@ MongoDB 查询语言中的查询操作符很多，比如：
 - $lt、 $lte、 $gt、 $gte——大于/小于或等于比较值；
 - $near——地理位置值在某个区域附近；
 - $not、 $and、 $or、 $nor——逻辑操作符。
-这些操作符几乎可以组合出所有查询条件，创造出可读性强、精巧的、富有表达力的查询语
-句。更多与查询和查询操作符有关的内容请浏览 Query and Projection Operators 网站。
-下面这段代码用 MongoDB 实现了之前那个 Articles API，对外部使用者来说几乎是一样的。
+这些操作符几乎可以组合出所有查询条件，创造出可读性强、精巧的、富有表达力的查询语 句。更多与查询和查询操作符有关的内容请浏览 Query and Projection Operators 网站。 下面这段代码用 MongoDB 实现了之前那个 Articles API，对外部使用者来说几乎是一样的。
 将这个保存为 db.js（示例源码见 listing8_10/db.js）。
 代码清单 8-10 用 MongoDB 实现 Article API
+```js
 const { MongoClient, ObjectID } = require('mongodb');
 let db;
 module.exports = () => {
@@ -7065,13 +7017,13 @@ return MongoClient
 db = client;
 });
 };
-包含所有跟查询匹
-配的文档的数组
-标题以“ cake”结尾的
-文档，大小写敏感
+// 包含所有跟查询匹
+// 配的文档的数组
+// 标题以“ cake”结尾的
+// 文档，大小写敏感
 
-getTimestamp 返回 JavaScript 日期：
-2016-07-08T14:49:05.000Z
+// getTimestamp 返回 JavaScript 日期：
+// 2016-07-08T14:49:05.000Z
 module.exports.Article = {
 all() {
 return db.collection('articles2').find().sort({ title: 1 }).toArray();
@@ -7088,7 +7040,9 @@ if (typeof _id !== 'object') _id = ObjectID(_id);
 return db.collection('articles2').deleteOne({ _id }, { w: 1 });
 }
 };
+```
 下面这段代码是代码清单 8-10 的用法示范（示例源码见 listing8_10/index.js）：
+```js
 const db = require('./db');
 db().then(() => {
 db.Article.create({ title: 'An article!' }).then(() => {
@@ -7098,27 +7052,23 @@ process.exit();
 });
 });
 });
-这段代码用了代码清单 8-10 中连接数据库返回的 promise，然后用 Article 的 create 方
-法创建了一篇文章。再加载所有文章，输出。
+```
+这段代码用了代码清单 8-10 中连接数据库返回的 promise，然后用 Article 的 create 方 法创建了一篇文章。再加载所有文章，输出。
 8.8.5 使用 MongoDB 标识
-MongoDB 的标识是二进制 JSON（ BSON）格式的。文档上的 _id 是一个 JavaScript 对象，
-其内部封装了 BSON 格式的 ObjectID。 BSON 格式是文档在 MongoDB 内部的表示和传输格式，
-它比 JSON 的空间利用率高，解析速度快，也就是说可以用更低的带宽达成更快的数据库交互。
-BSON 格式的 ObjectID 并不是随机的字节序列，它编码了 ID 何时在何处生成的元数据。
-比如 ObjectID 的前四个字节，它们是时间戳。因此文档中没必要再单独存一个 createdAt 时
-间戳：
+MongoDB 的标识是二进制 JSON（ BSON）格式的。文档上的 _id 是一个 JavaScript 对象， 其内部封装了 BSON 格式的 ObjectID。 BSON 格式是文档在 MongoDB 内部的表示和传输格式， 它比 JSON 的空间利用率高，解析速度快，也就是说可以用更低的带宽达成更快的数据库交互。
+BSON 格式的 ObjectID 并不是随机的字节序列，它编码了 ID 何时在何处生成的元数据。 比如 ObjectID 的前四个字节，它们是时间戳。因此文档中没必要再单独存一个 createdAt 时 间戳：
+```js
 const id = new ObjectID(61bd7f57bf1532835dd6174b);
 id.getTimestamp();
-https://docs.mongodb.com/manual/reference/method/ObjectId/中有关于 ObjectID 格式的更多
-信息。
-支持字符串或
-ObjectID 类型
-的_id 参数178 第 8 章 存储数据
-在终端里输出时， ObjectID 表面上看起来可能像字符串一样，但实际上是对象。所以在进
-行比较时，解释器会报告说两个看起来完全一样的值是不同的，因为它们是指向不同对象的引用
-值。这就是经典的对象比较陷阱。
-下面的代码两次提取相同的对象。我们试图用 Node 自带的 assert 模块断言这两个 ID 或者说
-对象是相等的，结果却失败了：
+// 信息。
+// 支持字符串或
+// ObjectID 类型
+// 的_id 参数
+// https://docs.mongodb.com/manual/reference/method/ObjectId/中有关于 ObjectID 格式的更多
+```
+在终端里输出时， ObjectID 表面上看起来可能像字符串一样，但实际上是对象。所以在进 行比较时，解释器会报告说两个看起来完全一样的值是不同的，因为它们是指向不同对象的引用 值。这就是经典的对象比较陷阱。
+下面的代码两次提取相同的对象。我们试图用 Node 自带的 assert 模块断言这两个 ID 或者说 对象是相等的，结果却失败了：
+```js
 const Articles = db.collection('articles');
 Articles.find().then(articles => {
 const article1 = articles[0];
@@ -7128,8 +7078,9 @@ return Articles
 assert.equal(article2._id, article1._id);
 });
 });
-这些断言产生的错误信息看起来会让人觉得很困惑，因为实际值和期望值似乎真的一模
-一样：
+```
+这些断言产生的错误信息看起来会让人觉得很困惑，因为实际值和期望值似乎真的一模 一样：
+```
 operator: equal
 expected: 577f6b45549a3b991e1c3c18
 actual: 577f6b45549a3b991e1c3c18
@@ -7138,50 +7089,47 @@ expected:
 { _id: 577f6b45549a3b991e1c3c18, title: 'attractive-money' ... }
 actual:
 { _id: 577f6b45549a3b991e1c3c18, title: 'attractive-money' ... }
-ObjectID 有个 equal 方法，所有的 _id 都可以用这个方法判断它们是否相等。另外，你也
-可以将标识强制转换为字符串进行比较，或者用 assert 模块的 deepEquals 方法：
+```
+ObjectID 有个 equal 方法，所有的 _id 都可以用这个方法判断它们是否相等。另外，你也 可以将标识强制转换为字符串进行比较，或者用 assert 模块的 deepEquals 方法：
+```
 article1._id.equals(article2._id);
 String(article1._id) === String(article2._id);
 assert.deepEqual(article1._id, article2._id);
-传给 mongodb 驱动的标识必须是 BSON 格式的 ObjectID。 ObjectID 构造器可以将字符串
-转换成 ObjectID：
+```
+传给 mongodb 驱动的标识必须是 BSON 格式的 ObjectID。 ObjectID 构造器可以将字符串 转换成 ObjectID：
+```js
 const { ObjectID } = require('mongodb');
 const stringID = '577f6b45549a3b991e1c3c18';
 const bsonID = new ObjectID(stringID);
-要尽可能保持 BSON 格式。在 BSON 和字符串之间的相互转换会以牺牲性能为代价，这违
-背了 MongoDB 把 BSON 格式的标识交给客户端的初衷。请参阅 BSON 官网了解 BSON 格式的
-详细信息。
-8.8.6 使用复制集
-MongoDB 的分布式功能超出了本书的讨论范围，但我们还是要用一节的篇幅快速介绍一下
-注意，如果断言结果为 false，
-这里会抛出异常8.8 MongoDB 179
 
-让已有实
-例有时间
-关停
-复制集的基础知识。多个 mongod 进程可以作为复制集的节点/成员运行。 复制集是由一个主节
-点和无数个从节点组成的。复制集中的每个成员都会分到唯一的端口和目录存储自己的数据。各
-个实例不能共享端口和目录，并且在启动之前这些目录必须是已经存在了。
-下面的代码为每个成员创建了唯一的目录，并从端口 27017 开始按顺序启动它们。如果不想
-让 mongod 在后台运行（命令中不带&），可以为每个 mongod 命令开一个新的终端标签。
+// 让已有实
+// 例有时间
+// 关停
+```
+要尽可能保持 BSON 格式。在 BSON 和字符串之间的相互转换会以牺牲性能为代价，这违 背了 MongoDB 把 BSON 格式的标识交给客户端的初衷。请参阅 BSON 官网了解 BSON 格式的 详细信息。
+8.8.6 使用复制集 MongoDB 的分布式功能超出了本书的讨论范围，但我们还是要用一节的篇幅快速介绍一下 注意，如果断言结果为 false， 这里会抛出异常 复制集的基础知识。多个 mongod 进程可以作为复制集的节点/成员运行。 复制集是由一个主节 点和无数个从节点组成的。复制集中的每个成员都会分到唯一的端口和目录存储自己的数据。各 个实例不能共享端口和目录，并且在启动之前这些目录必须是已经存在了。
+下面的代码为每个成员创建了唯一的目录，并从端口 27017 开始按顺序启动它们。如果不想 让 mongod 在后台运行（命令中不带&），可以为每个 mongod 命令开一个新的终端标签。
 代码清单 8-11 启动一个复制集
+```js
 mkdir -p ./mongodata/db0 ./mongodata/db1 ./mongodata/db2
 pkill mongod
 sleep 3
 mongod --port 27017 --dbpath ./rs0-data/db0 --replSet rs0 &
 mongod --port 27018 --dbpath ./rs0-data/db1 --replSet rs0 &
 mongod --port 27019 --dbpath ./rs0-data/db2 --replSet rs0 &
-复制集跑起来之后， MongoDB 需要执行一些初始化操作。你需要连接到希望让它做主节点
-的那个实例（默认是 27017），并像下面这样调用 rs.initiate()。然后把这些实例作为成员添
-加到复制集中。注意要提供所连机器的主机名。
+```
+复制集跑起来之后， MongoDB 需要执行一些初始化操作。你需要连接到希望让它做主节点 的那个实例（默认是 27017），并像下面这样调用 rs.initiate()。然后把这些实例作为成员添 加到复制集中。注意要提供所连机器的主机名。
 代码清单 8-12 复制集的初始化
+```js
 mongo --eval "rs.initiate()"
 mongo --eval "rs.add('`hostname`:27017')"
 mongo --eval "rs.add('`hostname`:27018')"
 mongo --eval "rs.add('`hostname`:27019')"
+```
 在建立连接时， MongoDB 客户端需要知道所有的复制集成员，但并不要求所有成员都在线。
 连上之后就可以照常使用了。代码清单 8-13 创建了一个由三个成员组成的复制集。
 代码清单 8-13 创建复制集
+```js
 const os = require('os');
 const { MongoClient } = require('mongodb');
 const hostname = os.hostname();
@@ -7205,69 +7153,48 @@ test 是数据库名；
 rs0 是复制集的名称
 replSetGetStatus
 会输出复制集的成员
-信息和元数据180 第 8 章 存储数据
-即便有节点崩溃，但只要仍在运行的 mongod 节点不少于两个，系统就能继续工作。如果主
-节点崩溃了，系统会自动推举一个从节点升为主节点。
+信息和元数据
+```
+
+即便有节点崩溃，但只要仍在运行的 mongod 节点不少于两个，系统就能继续工作。如果主 节点崩溃了，系统会自动推举一个从节点升为主节点。
 8.8.7 了解写关注
-在使用 MongoDB 时，开发人员能够对性能和安全上的折中选项做精细的控制，以满足程序
-不同区域的需要。要想不出意外，必须掌握 MongoDB 的写关注和读关注这两个概念，特别是在
-复制集中的节点不断增多时。由于篇幅有限，本节只讨论最重要的写关注。
-写关注本质上是个数量值，表明 MongoDB 在返回操作整体成功的响应之前，需要把数据成
-功写入多少个 mongod 实例。如果不特别指明，写关注的默认值是 1，即确保数据成功写入至少
-一个节点。对于重要数据而言，这样的保证水平是不够的。如果在数据复制到其他节点之前，这
-个节点下线了，那数据可能就丢了。
-从程序角度来讲，有可能，实际上是经常希望把写关注设为 0，即程序根本不想为 MongoDB
-的响应而等待：
+在使用 MongoDB 时，开发人员能够对性能和安全上的折中选项做精细的控制，以满足程序 不同区域的需要。要想不出意外，必须掌握 MongoDB 的写关注和读关注这两个概念，特别是在 复制集中的节点不断增多时。由于篇幅有限，本节只讨论最重要的写关注。
+写关注本质上是个数量值，表明 MongoDB 在返回操作整体成功的响应之前，需要把数据成 功写入多少个 mongod 实例。如果不特别指明，写关注的默认值是 1，即确保数据成功写入至少 一个节点。对于重要数据而言，这样的保证水平是不够的。如果在数据复制到其他节点之前，这 个节点下线了，那数据可能就丢了。
+从程序角度来讲，有可能，实际上是经常希望把写关注设为 0，即程序根本不想为 MongoDB 的响应而等待：
+```js
 db.collection('data').insertOne(data, { w: 0 });
-写关注为 0 时性能水平达到最高，但同时耐用性保证降到最低，一般只在临时或不重要的数
-据上使用（比如写日志或缓存）。
-在连到复制集上时，写关注可以大于 1。把数据复制到更多节点上可以降低其丢失的风险，
-但代价是操作延时会更长：
+```
+写关注为 0 时性能水平达到最高，但同时耐用性保证降到最低，一般只在临时或不重要的数 据上使用（比如写日志或缓存）。
+在连到复制集上时，写关注可以大于 1。把数据复制到更多节点上可以降低其丢失的风险， 但代价是操作延时会更长：
+```js
 db.collection('data').insertOne(data, { w: 2 });
 db.collection('data').insertOne(data, { w: 5 });
-写关注也可以随着集群中节点数量的变化而变化。当写关注被设为 majority 时， MongoDB
-能自行动态调整它的值。此时数据一定会写入至少 50%的可用节点：
+```
+写关注也可以随着集群中节点数量的变化而变化。当写关注被设为 majority 时， MongoDB 能自行动态调整它的值。此时数据一定会写入至少 50%的可用节点：
+```js
 db.collection('data').insertOne(data, { w: 'majority' });
-默认值的写关注 1 可能无法充分保证重要数据的安全。如果在数据复制到其他节点之前，这
-个节点下线了，那数据可能就丢了。
-写关注大于 1 时，可以确保在继续操作之前数据会写入到多个 mongod 实例上。在同一台机
-器上运行多个实例确实可以提高数据的安全性，但出现系统性故障时，比如硬盘空间或 RAM 耗
-光了，这样的配置是无济于事的。如果把节点分布在多台机器上，并确保写入操作会传播到这些
-节点上时，可以保证数据不受机器故障的影响，但同样，整个数据中心都出问题时就不行了，并
-且写操作会变得更慢。把节点分布到多个数据中心可以保证数据不受数据中心级故障的影响，但
-将数据复制到多个数据中心对性能的影响非常大。
-保障越多，系统越慢，也越复杂。不仅 MongoDB 如此，所有数据存储都这样。没有完美的
-解决方案，你需要决定将程序各部分的风险水平控制在什么范围内。
-可以参考以下资料进一步了解 MongoDB 复制的工作机制：8.10 Redis 181
+```
+默认值的写关注 1 可能无法充分保证重要数据的安全。如果在数据复制到其他节点之前，这 个节点下线了，那数据可能就丢了。
+写关注大于 1 时，可以确保在继续操作之前数据会写入到多个 mongod 实例上。在同一台机 器上运行多个实例确实可以提高数据的安全性，但出现系统性故障时，比如硬盘空间或 RAM 耗 光了，这样的配置是无济于事的。如果把节点分布在多台机器上，并确保写入操作会传播到这些 节点上时，可以保证数据不受机器故障的影响，但同样，整个数据中心都出问题时就不行了，并 且写操作会变得更慢。把节点分布到多个数据中心可以保证数据不受数据中心级故障的影响，但 将数据复制到多个数据中心对性能的影响非常大。
+保障越多，系统越慢，也越复杂。不仅 MongoDB 如此，所有数据存储都这样。没有完美的 解决方案，你需要决定将程序各部分的风险水平控制在什么范围内。
+可以参考以下资料进一步了解 MongoDB 复制的工作机制：
 
 - https://docs.mongodb.com/manual/faq/replica-sets/
 - https://docs.mongodb.com/manual/faq/concurrency/
 ## 8.9 键/值存储
-键/值存储中的所有记录都是由一个键值对构成的。大多数键/值系统都不对值的数据类型、
-长度和结构做限制。在键/值数据库看来，值是不透明的原子：数据库不知道，或者说不关心值
-的数据类型，并且将值作为一个整体，不会切分或访问其中的部分数据。在关系型数据库中，数
-据一行行地存在表中，每一行都分成预先定义好的列。但键/值存储跟它相反，其把管理数据格
-式的任务交给了应用程序。
-键/值存储经常出现在程序性能的关键路径上。理想情况下，值应该是按照用最少的读取次
-数完成任务的标准来摆放的。相较其他数据库而言，键/值存储的查询能力比较简单。复杂查询
-最好是预先计算好的。否则应该放在程序里，而不是交给数据库执行。有了这样的限制，数据库
-的性能特征就更容易理解和预测了。
-像 Redis 和 Memcached 这些最火的键/值存储经常用来做易失性存储（进程退出后数据就没
-了）。避免写盘操作是提升性能的最佳方式。如果数据可以重新生成，或者丢了也没多大关系时，
-这种折中是可以接受的，比如作为缓存和存储用户会话数据时。
-可能很多人觉得不能用键/值存储做主存储，但实际上并非如此。很多键/值存储的耐用性跟
-“真正的”数据库不相上下。
+键/值存储中的所有记录都是由一个键值对构成的。大多数键/值系统都不对值的数据类型、 长度和结构做限制。在键/值数据库看来，值是不透明的原子：数据库不知道，或者说不关心值 的数据类型，并且将值作为一个整体，不会切分或访问其中的部分数据。在关系型数据库中，数 据一行行地存在表中，每一行都分成预先定义好的列。但键/值存储跟它相反，其把管理数据格 式的任务交给了应用程序。
+键/值存储经常出现在程序性能的关键路径上。理想情况下，值应该是按照用最少的读取次 数完成任务的标准来摆放的。相较其他数据库而言，键/值存储的查询能力比较简单。复杂查询 最好是预先计算好的。否则应该放在程序里，而不是交给数据库执行。有了这样的限制，数据库 的性能特征就更容易理解和预测了。
+像 Redis 和 Memcached 这些最火的键/值存储经常用来做易失性存储（进程退出后数据就没 了）。避免写盘操作是提升性能的最佳方式。如果数据可以重新生成，或者丢了也没多大关系时， 这种折中是可以接受的，比如作为缓存和存储用户会话数据时。
+可能很多人觉得不能用键/值存储做主存储，但实际上并非如此。很多键/值存储的耐用性跟 “真正的”数据库不相上下。
 ## 8.10 Redis
-Redis 是热门的结构化内存数据库。尽管很多人认为 Redis 是键/值存储，但实际上键和值只
-是 Redis 所支持的众多数据结构中的一种，它还支持很多实用的基础结构。图 8-3 是 redis 包在 npm
-上的使用统计。
+Redis 是热门的结构化内存数据库。尽管很多人认为 Redis 是键/值存储，但实际上键和值只 是 Redis 所支持的众多数据结构中的一种，它还支持很多实用的基础结构。图 8-3 是 redis 包在 npm 上的使用统计。
 图 8-3 redis 包在 npm 上的使用统计
 Redis 原生支持的数据结构包括：
 - 字符串
 - 散列表
 - 列表
 - 集合
-- 有序集182 第 8 章 存储数据
+- 有序集
 Redis 还有很多实用的功能：
 - 位图数据——直接在值上进行位操作；
 - 地理位置索引——存储带半径查询的地理位置数据；
@@ -7277,37 +7204,40 @@ Redis 还有很多实用的功能：
 - HyperLogLog——用很低的内存占用求集合基数的高性能算法（不需要存储所有成员）；
 - 复制、集群和分区——水平扩展和数据耐用性；
 - Lua 脚本——可以给 Redis 添加自定义的命令。
-本节会介绍一些 Redis 命令，但我们的出发点不是要给你一份参考手册，而是希望能借此让
-你了解 Redis 的能力。 Redis 真的是一个超强的多面手， http://redis.io/commands 上有更详细的介绍。
+本节会介绍一些 Redis 命令，但我们的出发点不是要给你一份参考手册，而是希望能借此让 你了解 Redis 的能力。 Redis 真的是一个超强的多面手， http://redis.io/commands 上有更详细的介绍。
 8.10.1 安装和配置
 可以用系统上的包管理工具安装 Redis。在 macOS 上用 Homebrew 安装很简单：
+```
 brew install redis
+```
 用可执行文件 redis-server 启动服务器：
+```
 redis-server /usr/local/etc/redis.conf
+```
 服务器默认的监听端口是 6397。
 8.10.2 初始化
 Redis 客户端实例是用 redis npm 包的 createClient 函数创建的：
+```js
 const redis = require('redis');
 const db = redis.createClient(6379, '127.0.0.1');
-这个函数以端口和服务器的主机地址为参数。如果 Redis 运行在本机的默认端口上，则无须
-提供参数：
+```
+这个函数以端口和服务器的主机地址为参数。如果 Redis 运行在本机的默认端口上，则无须 提供参数：
+```js
 const db = redis.createClient();
-就像代码清单 8-14 所展示的，因为 Redis 客户端实例是一个 EventEmitter，所以我们可以
-通过它监听各种 Redis 状态事件。不用等着连接准备好再向客户端发送命令，这些命令会缓存到
-连接就绪。
+```
+就像代码清单 8-14 所展示的，因为 Redis 客户端实例是一个 EventEmitter，所以我们可以 通过它监听各种 Redis 状态事件。不用等着连接准备好再向客户端发送命令，这些命令会缓存到 连接就绪。
 代码清单 8-14 连接到 Redis 监听状态事件
+```js
 const redis = require('redis');
 const db = redis.createClient();
 db.on('connect', () => console.log('Redis client connected to server.'));
 db.on('ready', () => console.log('Redis server is ready.'));
-db.on('error', err => console.error('Redis error', err));8.10 Redis 183
-
-出现连接或客户端方面的问题时会触发错误处理器。如果发生了 error 事件，但没有监听
-该事件的错误处理器，程序会抛出错误然后退出。 Node 中的所有 EventEmitter 都是这样的。
-如果连接失败后有错误处理器， Redis 客户端会尝试重新连接。
+db.on('error', err => console.error('Redis error', err));
+```
+出现连接或客户端方面的问题时会触发错误处理器。如果发生了 error 事件，但没有监听 该事件的错误处理器，程序会抛出错误然后退出。 Node 中的所有 EventEmitter 都是这样的。 如果连接失败后有错误处理器， Redis 客户端会尝试重新连接。
 8.10.3 处理键/值对
-Redis 可以当作普通的键/值存储用，支持字符串和任何二进制数据。分别用 get 和 set 方
-法读写键/值对：
+Redis 可以当作普通的键/值存储用，支持字符串和任何二进制数据。分别用 get 和 set 方 法读写键/值对：
+```js
 db.set('color', 'red', err => {
 if (err) throw err;
 });
@@ -7315,8 +7245,8 @@ db.get('color', (err, value) => {
 if (err) throw err;
 console.log('Got:', value);
 });
-如果写入的键已经存在了，那么原来的值会被覆盖掉。如果读取的键不存在，则会得到值
-null，而不会被当作错误。
+```
+如果写入的键已经存在了，那么原来的值会被覆盖掉。如果读取的键不存在，则会得到值 null，而不会被当作错误。
 下面这些命令是用来获取和处理值的：
 - append
 - decr
@@ -7335,15 +7265,16 @@ null，而不会被当作错误。
 - setex
 - setnx
 - setrange
-- strlen184 第 8 章 存储数据
+- strlen
 8.10.4 处理键
 exists 可以检查某个键是否存在，它能接受任何数据类型：
+```js
 db.exists('users', (err, doesExist) => {
 if (err) throw err;
 console.log('users exists:', doesExist);
 });
-除了 exists，下面这些命令都可以用在键上，任何类型的值都可以（这些命令可以接受字
-符串、集合、列表等类型）：
+```
+除了 exists，下面这些命令都可以用在键上，任何类型的值都可以（这些命令可以接受字 符串、集合、列表等类型）：
 - del
 - exists
 - rename
@@ -7352,14 +7283,17 @@ console.log('users exists:', doesExist);
 - scan
 - type
 8.10.5 编码与数据类型
-在 Redis 服务器里，键和值是二进制对象，跟传给客户端时所用的编码没关系。所有有效的
-JavaScript 字符串（ UCS2/UTF16）都是有效的键或值：
+在 Redis 服务器里，键和值是二进制对象，跟传给客户端时所用的编码没关系。所有有效的 JavaScript 字符串（ UCS2/UTF16）都是有效的键或值：
+```js
 db.set('greeting', '你好', redis.print);
 db.get('greeting', redis.print);
 db.set('icon', '?', redis.print);
 db.get('icon', redis.print);
+```
+
 默认情况下，在写入时会将键和值强制转换成字符串。比如说，如果设定某个键的值是数
 字，那么在读取这条记录时，得到的值将会是个字符串：
+```js
 db.set('colors', 1, (err) => {
 if (err) throw err;
 });
@@ -7367,13 +7301,14 @@ db.get('colors', (err, value) => {
 if (err) throw err;
 console.log('Got: %s as %s', value, typeof value);
 });
-Redis 客户端会默默地将数字、布尔值和日期转换成字符串，它也乐意接受缓冲区对象。除
-此之外，设定其他任何 JavaScript 类型（比如对象、数组、正则表达式）的值时，客户端都会发
-出一个不应被忽略警告：
+```
+Redis 客户端会默默地将数字、布尔值和日期转换成字符串，它也乐意接受缓冲区对象。除 此之外，设定其他任何 JavaScript 类型（比如对象、数组、正则表达式）的值时，客户端都会发 出一个不应被忽略警告：
+```js
 db.set('users', {}, redis.print);
 Deprecated: The SET command contains a argument of type Object.
-值的类型
-是字符串8.10 Redis 185
+// 值的类型
+// 是字符串
+```
 
 This is converted to "[object Object]" by using .toString() now
 and will return an error from v.3.0 on.
@@ -7381,36 +7316,31 @@ Please handle this in your code to make sure everything works
 as you intended it to.
 将来这会变成错误，所以一定要让程序确保传给 Redis 客户端的数据类型是正确的。
 1. 陷阱：单值和多值数组
-如果值是包含多个值的数组，那么客户端会报一个很神秘的错误，即“ReplyError： ERR syntax
-error”：
+如果值是包含多个值的数组，那么客户端会报一个很神秘的错误，即“ReplyError： ERR syntax error”：
+```js
 db.set('users', ['Alice', 'Bob'], redis.print);
+```
 但如果数组中只有一个值，则不会报错：
+```js
 db.set('user', ['Alice'], redis.print);
 db.get('user', redis.print);
-这种 bug 可能要等到程序上线后才会爆发，因为测试集一般都用简版的测试数据，可能生成
-的数组恰好只有一个值，所以让 bug 轻松躲过了检查。一定要注意！
+```
+这种 bug 可能要等到程序上线后才会爆发，因为测试集一般都用简版的测试数据，可能生成 的数组恰好只有一个值，所以让 bug 轻松躲过了检查。一定要注意！
 2. 带缓冲区的二进制数据
-Redis 可以存储任何二进制数据，也就是说它可以存储任何类型的数据。 Node 客户端对这一
-功能的支持是用 Node 的 Buffer 类型实现的。当 Redis 客户端收到缓冲区类型的键或值时，会
-原封不动地将这些字节发给 Redis 服务器。为了避免可能会出现的数据破坏或性能损失，客户端
-不会进行缓冲区和字符串之间的类型转换。比如说，如果要把硬盘或网络上的数据直接写到 Redis
-中，那么直接写缓冲区里的数据明显会比先把数据转成字符串再写更高效。
+Redis 可以存储任何二进制数据，也就是说它可以存储任何类型的数据。 Node 客户端对这一 功能的支持是用 Node 的 Buffer 类型实现的。当 Redis 客户端收到缓冲区类型的键或值时，会 原封不动地将这些字节发给 Redis 服务器。为了避免可能会出现的数据破坏或性能损失，客户端 不会进行缓冲区和字符串之间的类型转换。比如说，如果要把硬盘或网络上的数据直接写到 Redis 中，那么直接写缓冲区里的数据明显会比先把数据转成字符串再写更高效。
 缓 冲 区
-缓冲区是 Node 的核心文件和网络 API 默认提供的结果。它们是二进制数据连续块的容器，
-在 JavaScript 还没有自己的原生二进制数据类型（ Uint8Array、 Float32Array 等）时就已
-经在 Node 里了。现在它是 Uint8Array 的特殊子类。 Buffer API 在 Node 中是可以全局访问的，
-用它不需要 require 任何东西。
+缓冲区是 Node 的核心文件和网络 API 默认提供的结果。它们是二进制数据连续块的容器， 在 JavaScript 还没有自己的原生二进制数据类型（ Uint8Array、 Float32Array 等）时就已 经在 Node 里了。现在它是 Uint8Array 的特殊子类。 Buffer API 在 Node 中是可以全局访问的， 用它不需要 require 任何东西。
 参见 https://github.com/nodejs/node/blob/master/lib/buffer.js
 Redis 最近添了一些操作字符串上单个位的命令，在处理缓冲区时也可以用：
 - bitcount
 - bitfield
 - bitop
 - setbit
-- bitpos186 第 8 章 存储数据
+- bitpos
 8.10.6 使用散列表
-散列表是键/值对的数据集。 hmset 命令的参数是一个键和一个表示散列键/值对的对象。
-hmget 可以读出这个包含键/值对的对象，代码如下所示。
+散列表是键/值对的数据集。 hmset 命令的参数是一个键和一个表示散列键/值对的对象。 hmget 可以读出这个包含键/值对的对象，代码如下所示。
 代码清单 8-15 将数据存在 Redis 散列表中
+```js
 db.hmset('camping', {
 shelter: '2-person tent',
 cooking: 'campstove'
@@ -7423,6 +7353,13 @@ db.hkeys('camping', (err, keys) => {
 if (err) throw err;
 keys.forEach(key => console.log(` ${key}`));
 });
+// 设定散列表
+// 键/值对
+// 获取“ camping.cooking”
+// 的值
+// 以数组形式
+// 获取散列键
+```
 Redis 散列表中不能存储带嵌入结构的对象，只能有一层。
 下面这些是操作散列表的命令：
 - hdel
@@ -7443,26 +7380,18 @@ Redis 散列表中不能存储带嵌入结构的对象，只能有一层。
 8.10.7 使用列表
 列表是包含字符串值的有序数据集，可以存在同一值的多个副本。列表在概念上跟数组类似。
 最好当作栈（ LIFO：后进先出）或队列（ FIFO：先进先出）来用。
-设定散列表
-键/值对
-获取“ camping.cooking”
-的值
-以数组形式
-获取散列键8.10 Redis 187
 
 下面的代码演示了如何将值存到列表中然后读取出来。 lpush 命令向列表中添加了一个值。
-lrange 命令按范围读取，有起始和结束索引。因为-1 表示列表中的最后一个元素，所以下例中
-的 lrange 会取出列表中的所有元素：
+lrange 命令按范围读取，有起始和结束索引。因为-1 表示列表中的最后一个元素，所以下例中 的 lrange 会取出列表中的所有元素：
+```js
 client.lpush('tasks', 'Paint the bikeshed red.', redis.print);
 client.lpush('tasks', 'Paint the bikeshed green.', redis.print);
 client.lrange('tasks', 0, -1, (err, items) => {
 if (err) throw err;
 items.forEach(item => console.log(` ${item}`));
 });
-列表既没有提供确定某个值是否存在其中的办法，也没有提供确定某个值的索引的办法。我
-们只能通过手动遍历获取这些信息，但做这件事效率很低，应该尽量避免。如果你确实需要这样
-的功能，应该考虑使用其他数据结构，比如集合，甚至可以跟列表配合使用。为了充分利用各种
-性能特性，把数据复制到多个数据结构中并没什么稀奇的。
+```
+列表既没有提供确定某个值是否存在其中的办法，也没有提供确定某个值的索引的办法。我 们只能通过手动遍历获取这些信息，但做这件事效率很低，应该尽量避免。如果你确实需要这样 的功能，应该考虑使用其他数据结构，比如集合，甚至可以跟列表配合使用。为了充分利用各种 性能特性，把数据复制到多个数据结构中并没什么稀奇的。
 下面这些是操作列表的命令：
 - blpop
 - brpop
@@ -7480,8 +7409,8 @@ items.forEach(item => console.log(` ${item}`));
 - rpush
 - rpushx
 8.10.8 使用集合
-集合是无序数据集，其中不允许有重复值。集合是一种高性能的数据结构，检查成员、添加
-和移除记录都可以在 O(1) 时间内完成，所以其非常适合对性能要求比较高的任务：
+集合是无序数据集，其中不允许有重复值。集合是一种高性能的数据结构，检查成员、添加 和移除记录都可以在 O(1) 时间内完成，所以其非常适合对性能要求比较高的任务：
+```js
 db.sadd('admins', 'Alice', redis.print);
 db.sadd('admins', 'Bob', redis.print);
 db.sadd('admins', 'Alice', redis.print);
@@ -7489,6 +7418,7 @@ db.smembers('admins', (err, members) => {
 if (err) throw err;188 第 8 章 存储数据
 console.log(members);
 });
+```
 下面这些是操作集合的命令：
 - sadd
 - scard
@@ -7505,19 +7435,17 @@ console.log(members);
 - sunionstore
 - sscan
 8.10.9 用频道实现发布/订阅功能
-Redis 不仅仅是传统意义上的数据存储系统，它还提供了频道。 频道是可以实现发布/订阅功
-能的数据传输机制，图 8-4 是频道的概念图。聊天和博彩等实时程序都需要这样的功能。
+Redis 不仅仅是传统意义上的数据存储系统，它还提供了频道。 频道是可以实现发布/订阅功 能的数据传输机制，图 8-4 是频道的概念图。聊天和博彩等实时程序都需要这样的功能。
 图 8-4 Redis 频道为一种常用的数据传输场景提供了简单的解决方案
-Redis 客户端既可以订阅频道上的消息，也可以向频道发布消息。发给频道的消息会传递给
-所有订阅该频道的客户端。发布者不需要知道谁是订阅者，订阅者也不知道发布者是谁。将发布
-者和订阅者解耦是种强大清晰的模式。
+Redis 客户端既可以订阅频道上的消息，也可以向频道发布消息。发给频道的消息会传递给 所有订阅该频道的客户端。发布者不需要知道谁是订阅者，订阅者也不知道发布者是谁。将发布 者和订阅者解耦是种强大清晰的模式。
 下面这个例子用 Redis 的发布/订阅功能实现了一个 TCP/IP 聊天服务器。
 代码清单 8-16 用 Redis 的发布/订阅功能实现的聊天服务器
+```js
 const net = require('net');
 const redis = require('redis');
 const server = net.createServer(socket => {
-为每个连接到聊天服务器
-的用户定义的配置逻辑8.11 嵌入式数据库 189
+// 为每个连接到聊天服务器
+// 的用户定义的配置逻辑
 
 const subscriber = redis.createClient();
 subscriber.subscribe('main');
@@ -7535,59 +7463,43 @@ publisher.end(true);
 });
 });
 server.listen(3000);
+// 为每个用户创
+// 频道 建订阅客户端
+// 订阅
+// 从频道收到
+// 消息后显示
+// 给用户看
+// 为每个用户创建
+// 用户输入 发布客户端
+// 消息后，
+// 发布它
+// 如果用户断开了连接，
+// 结束订阅客户端
+```
 8.10.10 提升性能
-npm 包 hiredis 是从 JavaScript 到官方 Hiredis 的 C 语言库的本地绑定。 Hiredis 能显著提升
-Node Redis 程序的性能，特别是在大型数据库上使用 sunion、 sinter、 lrange 和 zrange 这
-些操作时。
+npm 包 hiredis 是从 JavaScript 到官方 Hiredis 的 C 语言库的本地绑定。 Hiredis 能显著提升 Node Redis 程序的性能，特别是在大型数据库上使用 sunion、 sinter、 lrange 和 zrange 这 些操作时。
 只要装好 hiredis， redis 包下次启动时就会自动检测到 hiredis，然后自动使用：
+```
 npm install hiredis --save
-hiredis 几乎没什么缺点，但因为它是从 C 代码编译来的，所以在某些平台上构建 hiredis 可
-能会受到一些限制，或者比较复杂。跟所有本地添加包一样，升级 Node 后可能需要用 npm
-rebuild 重新构建 hiredis。
+```
+hiredis 几乎没什么缺点，但因为它是从 C 代码编译来的，所以在某些平台上构建 hiredis 可 能会受到一些限制，或者比较复杂。跟所有本地添加包一样，升级 Node 后可能需要用 npm rebuild 重新构建 hiredis。
 ## 8.11 嵌入式数据库
-使用嵌入式数据库时不需要安装或管理一个外部服务器。它是嵌入在程序进程里运行的。程
-序一般通过直接的过程调用跟嵌入式数据库通信，不需要通过进程间通信（ IPC）通道或网络。
-因为很多时候程序要做成自包含的，所以只能选嵌入式数据库（比如移动端或桌面程序）。
-嵌入式数据库也可以用在 Web 服务器上，经常用来实现高吞吐性的功能，比如用户会话或缓存，
-有时甚至会作为主存储。
+使用嵌入式数据库时不需要安装或管理一个外部服务器。它是嵌入在程序进程里运行的。程 序一般通过直接的过程调用跟嵌入式数据库通信，不需要通过进程间通信（ IPC）通道或网络。 因为很多时候程序要做成自包含的，所以只能选嵌入式数据库（比如移动端或桌面程序）。 嵌入式数据库也可以用在 Web 服务器上，经常用来实现高吞吐性的功能，比如用户会话或缓存， 有时甚至会作为主存储。
 Node 和 Electron 程序中常用的嵌入式数据库有：
 - SQLite
 - LevelDB
 - RocksDB
-为每个用户创
-频道 建订阅客户端
-订阅
-从频道收到
-消息后显示
-给用户看
-为每个用户创建
-用户输入 发布客户端
-消息后，
-发布它
-如果用户断开了连接，
-结束订阅客户端
 - Aerospike
 - EJDB
 - NeDB
 - LokiJS
 - Lowdb
-NeDB、 LokiJS 和 Lowdb 都是用纯 JavaScript 写的，天生就适合嵌入到 Node 和 Electron 程序
-中。尽管有 SQLite 这样著名的可嵌入关系型数据库，但大多数嵌入式数据库都是简单的键/值或
-文档存储。
+NeDB、 LokiJS 和 Lowdb 都是用纯 JavaScript 写的，天生就适合嵌入到 Node 和 Electron 程序 中。尽管有 SQLite 这样著名的可嵌入关系型数据库，但大多数嵌入式数据库都是简单的键/值或 文档存储。
 ## 8.12 LevelDB
-LevelDB 是 Google 在 2011 年初开发的嵌入式持久化键/值存储，最开始是要给 Chrome 里实
-现的 IndexedDB 做后台存储的。 LevelDB 的设计理念源于 Google 的 Bigtable 数据库。它的竞争对
-手是 Berkley DB、 Tokyo/Kyoto Cabinet 和 Aerospike 这些数据库，但就本书所讨论的内容而言，
-可以把它当作最小功能集的嵌入式 Redis。跟大多数嵌入式数据库一样， LevelDB 也不是多线程
-的，不支持使用同一个底层文件存储的多实例，所以无法脱离程序的封装分布式使用。
-LevelDB 中的键是按字典顺序排好序的，值是用 Google 的 Snappy 压缩算法压缩过的。跟
-Redis 之类的内存数据库不同， LevelDB 总是把数据写到硬盘上，所以总的数据容量不受机器内
-存的限制。
-LevelDB 只提供了几个一看就明白的操作命令： Get、 Put、 Del 和 Batch。 LevelDB 还能
-用快照捕获当前的数据库状态，创建能在数据集上前后移动的双向循环器。创建循环器也会隐含
-着创建快照，后续写操作无法改变循环器见到的数据。
-LevelDB 还形成了一些支脉，演化出了其他一些数据库。由于有数量众多的支脉， LevelDB
-自身反而可以变得越来越简单：
+LevelDB 是 Google 在 2011 年初开发的嵌入式持久化键/值存储，最开始是要给 Chrome 里实 现的 IndexedDB 做后台存储的。 LevelDB 的设计理念源于 Google 的 Bigtable 数据库。它的竞争对 手是 Berkley DB、 Tokyo/Kyoto Cabinet 和 Aerospike 这些数据库，但就本书所讨论的内容而言， 可以把它当作最小功能集的嵌入式 Redis。跟大多数嵌入式数据库一样， LevelDB 也不是多线程 的，不支持使用同一个底层文件存储的多实例，所以无法脱离程序的封装分布式使用。
+LevelDB 中的键是按字典顺序排好序的，值是用 Google 的 Snappy 压缩算法压缩过的。跟 Redis 之类的内存数据库不同， LevelDB 总是把数据写到硬盘上，所以总的数据容量不受机器内 存的限制。
+LevelDB 只提供了几个一看就明白的操作命令： Get、 Put、 Del 和 Batch。 LevelDB 还能 用快照捕获当前的数据库状态，创建能在数据集上前后移动的双向循环器。创建循环器也会隐含 着创建快照，后续写操作无法改变循环器见到的数据。
+LevelDB 还形成了一些支脉，演化出了其他一些数据库。由于有数量众多的支脉， LevelDB 自身反而可以变得越来越简单：
 - Facebook 的 RocksDB；
 - Hyperdex 的 HyperLevelDB；
 - Basho 的 Riak；
@@ -7595,20 +7507,14 @@ LevelDB 还形成了一些支脉，演化出了其他一些数据库。由于有
 - 用于比特币项目的 bitcoin/leveldb。
 关于 LevelDB 的更多信息参见其官网。
 8.12.1 LevelUP 与 LevelDOWN
-Node 中对 LevelDB 提供支持的是 LevelUP 和 LevelDOWN 包，二者是由 Node 基金会主席和
-多产的澳大利亚开发者 Rod Vag 所写的。 LevelDOWN 用 C++简单直白地将 LevelDB 绑定到 Node
-上，我们不太可能直接跟它交互。 LevelUP 对 LevelDOWN 的 API 做了封装，为我们提供了更方
-便、也更习惯的 Node 接口。 LevelUP 还增加了一些功能，包括键/值编码、 JSON、等待数据库打8.12 LevelDB 191
-
-开的写缓存，以及将 LevelDB 循环器接口封装在了 Node 流中。图 8-5 是 LevelUP 在 npm 上的使
-用统计。
+Node 中对 LevelDB 提供支持的是 LevelUP 和 LevelDOWN 包，二者是由 Node 基金会主席和 多产的澳大利亚开发者 Rod Vag 所写的。 LevelDOWN 用 C++简单直白地将 LevelDB 绑定到 Node 上，我们不太可能直接跟它交互。 LevelUP 对 LevelDOWN 的 API 做了封装，为我们提供了更方 便、也更习惯的 Node 接口。 LevelUP 还增加了一些功能，包括键/值编码、 JSON、等待数据库打 开的写缓存，以及将 LevelDB 循环器接口封装在了 Node 流中。图 8-5 是 LevelUP 在 npm 上的使 用统计。
 图 8-5 LevelUP 在 npm 上的使用统计
 8.12.2 安装
-在 Node 程序中使用 LevelDB 最方便的地方就是它是嵌入式的：所有需要的东西都可以用
-npm 安装。不需要安装任何额外的软件，执行完下面这个命令就可以用了：
+在 Node 程序中使用 LevelDB 最方便的地方就是它是嵌入式的：所有需要的东西都可以用 npm 安装。不需要安装任何额外的软件，执行完下面这个命令就可以用了：
+```
 npm install level --save
-level 包里封装了 LevelUP 和 LevelDOWN，提供了预先配置好用 LevelDOWN 做后台的
-LevelUP API。 level 提供的 LevelUP API 在 LevelUP 的介绍文件里：
+```
+level 包里封装了 LevelUP 和 LevelDOWN，提供了预先配置好用 LevelDOWN 做后台的 LevelUP API。 level 提供的 LevelUP API 在 LevelUP 的介绍文件里：
 - www.npmjs.com/package/levelup
 - www.npmjs.com/package/leveldown
 8.12.3 API 概览
@@ -7620,18 +7526,17 @@ LevelDB 客户端存储和获取数据的主要方法如下：
 - db.createKeyStream(options)——创建数据库中键的流；
 - db.createValueStream(options)——创建数据库中值的流。
 8.12.4 初始化
-初始化 level 时需要提供一个存储数据的路径，如果指定的目录不存在，会自动创建。人们
-一般会用 .db 做这个目录的后缀（比如 ./app.db）。代码如下所示。
+初始化 level 时需要提供一个存储数据的路径，如果指定的目录不存在，会自动创建。人们 一般会用 .db 做这个目录的后缀（比如 ./app.db）。代码如下所示。
 代码清单 8-17 初始化 level 数据库
+```js
 const level = require('level');
 const db = level('./app.db', {
 valueEncoding: 'json'
-});192 第 8 章 存储数据
-调用过 level()后，返回的 LevelUP 实例可以马上接收命令，以同步方式执行。在 LevelDB
-存储打开之前发出的命令会缓存起来，一直等到存储打开。
+});
+```
+调用过 level()后，返回的 LevelUP 实例可以马上接收命令，以同步方式执行。在 LevelDB 存储打开之前发出的命令会缓存起来，一直等到存储打开。
 8.12.5 键/值编码
-因为 LevelDB 中的键和值可以是任何类型的数据，所以程序要负责处理数据的序列化和反
-序列化。可以将 LevelUP 配置为直接支持下面这些数据类型：
+因为 LevelDB 中的键和值可以是任何类型的数据，所以程序要负责处理数据的序列化和反 序列化。可以将 LevelUP 配置为直接支持下面这些数据类型：
 - utf8
 - json
 - binary
@@ -7641,16 +7546,11 @@ valueEncoding: 'json'
 - base64
 - ucs2
 - utf16le
-键和值默认都是 UTF-8 的字符串。在代码清单 8-17 中，键仍然是 UTF-8 字符串，但值是用
-JSON 编码/解码的。经过 JSON 编码后，在某种程度上来讲，对象或数组这样的结构化数据的存
-储和获取都可以像用 MongoDB 那样的文档存储一样了。但并不像真正的文档存储， LevelDB 没
-办法读取值里面的键，值是不透明的。用户也可以用自己定制的编码，比如支持像 MessagePack
-这样的结构化数据形态。
+键和值默认都是 UTF-8 的字符串。在代码清单 8-17 中，键仍然是 UTF-8 字符串，但值是用 JSON 编码/解码的。经过 JSON 编码后，在某种程度上来讲，对象或数组这样的结构化数据的存 储和获取都可以像用 MongoDB 那样的文档存储一样了。但并不像真正的文档存储， LevelDB 没 办法读取值里面的键，值是不透明的。用户也可以用自己定制的编码，比如支持像 MessagePack 这样的结构化数据形态。
 8.12.6 键/值对的读写
-核心 API 很简单：用 put(key, value)写，用 get(key)读，用 del(key)删除。请看代码清
-单 8-18，这段代码应当添加到代码清单 8-17 中代码的后面。完整的示例在随书源码 ch08-databases/
-listing8_18/index.js 中。
+核心 API 很简单：用 put(key, value)写，用 get(key)读，用 del(key)删除。请看代码清 单 8-18，这段代码应当添加到代码清单 8-17 中代码的后面。完整的示例在随书源码 ch08-databases/ listing8_18/index.js 中。
 代码清单 8-18 读写值
+```js
 const key = 'user';
 const value = {
 name: 'Alice'
@@ -7667,18 +7567,19 @@ console.log('value was deleted');8.12 LevelDB 193
 });
 });
 });
-如果把值放到已经存在的键上，旧值会被覆盖掉。当试图读取的键不存在时会发生错误。错
-误对象的类型是 NotFoundError，还有个特殊的属性 err.notFound，可以把它跟其他错误区
-分开。大部分数据库一般不会将其作为错误，但因为 LevelDB 没有提供检查某个键是否存在的方
-法，所以 LevelUP 需要区分不存在的值和未定义的值。与 get 不同， del 不存在的键不会报错。
+```
+如果把值放到已经存在的键上，旧值会被覆盖掉。当试图读取的键不存在时会发生错误。错 误对象的类型是 NotFoundError，还有个特殊的属性 err.notFound，可以把它跟其他错误区 分开。大部分数据库一般不会将其作为错误，但因为 LevelDB 没有提供检查某个键是否存在的方 法，所以 LevelUP 需要区分不存在的值和未定义的值。与 get 不同， del 不存在的键不会报错。
 代码清单 8-19 读取不存在的键
+```js
 db.get('this-key-does-not-exist', (err, value) => {
 if (err && !err.notFound) throw err;
 if (err && err.notFound) return console.log('Value was not found.');
 console.log('Value was found:', value);
 });
+```
 所有的数据读写操作都可以通过一个可选的参数改变当前操作的编码，代码如下所示。
 代码清单 8-20 覆盖具体操作的编码
+```js
 const options = {
 keyEncoding: 'binary',
 valueEncoding: 'hex'
@@ -7690,10 +7591,9 @@ if (err) throw err;
 console.log(value);
 });
 });
+```
 8.12.7 可插拔的后台
-把 LevelUP/LevelDOWN 分开还有个好处， LevelUP 可以用其他数据库做存储后台。所有能
-用 MemDown API 封装的东西都可以变成 LevelUP 的存储后台，从而允许你用完全相同的 API 跟
-这些数据存储交互。
+把 LevelUP/LevelDOWN 分开还有个好处， LevelUP 可以用其他数据库做存储后台。所有能 用 MemDown API 封装的东西都可以变成 LevelUP 的存储后台，从而允许你用完全相同的 API 跟 这些数据存储交互。
 下面这些数据库都可以做 LevelUP 的存储后台：
 - MySQL
 - Redis
@@ -7703,13 +7603,15 @@ console.log(value);
 - AWS DynamoDB194 第 8 章 存储数据
 - Windows Azure 表存储
 - 浏览器 Web 存储（ IndexedDB/localStorage）
-拥有了这种可以轻松切换存储介质，甚至编写自己的存储后台的能力，我们就可以用一套数
-据库 API 应对各种情况和环境。用一套数据库 API 掌管一切！
+拥有了这种可以轻松切换存储介质，甚至编写自己的存储后台的能力，我们就可以用一套数 据库 API 应对各种情况和环境。用一套数据库 API 掌管一切！
 memdown 是比较常用的后台，它把值都存在内存里，就像使用内存模式的 SQLite 一样，
 非常适合放在测试环境里来降低测试配置和重置的成本。
 运行下面的代码需要安装 LevelUP 和 memdown：
+```
 npm install --save levelup memdown
+```
 代码清单 8-21 通过 LevelUP 使用 memdown
+```js
 const level = require('levelup')
 const memdown = require('memdown')
 const db = level('./level-articles.db', {
@@ -7717,11 +7619,14 @@ keyEncoding: 'json',
 valueEncoding: 'json',
 db: memdown
 });
-这个例子仍然用了之前用的 level 包，因为它只是 LevelUP 的封装。但如果你不想用 level 中
-的 LevelDOWN，可以直接用 LevelUP，以免因为 LevelDOWN 形成对 LevelDB 的依赖。
+// 唯一的区别是将参数
+// db 设为 memdown
+// 对于 memdown 来说，这里的“路径”可以
+// 是任意字符串，因为它根本不用硬盘
+```
+这个例子仍然用了之前用的 level 包，因为它只是 LevelUP 的封装。但如果你不想用 level 中 的 LevelDOWN，可以直接用 LevelUP，以免因为 LevelDOWN 形成对 LevelDB 的依赖。
 8.12.8 模块化数据库
-很多 Node 开发人员都被 LevelDB 的性能和精简所打动，并由此发起了一场模块化数据库运
-动。其理念是应该可以根据需要挑选数据库的功能，让它跟程序完全匹配。
+很多 Node 开发人员都被 LevelDB 的性能和精简所打动，并由此发起了一场模块化数据库运 动。其理念是应该可以根据需要挑选数据库的功能，让它跟程序完全匹配。
 下面是一些可以通过 npm 包实现的 LevelDB 模块化功能：
 - 原子更新
 - 自增长的键
@@ -7735,23 +7640,15 @@ db: memdown
 - 二级索引
 - 触发器
 - 版本化数据
-唯一的区别是将参数
-db 设为 memdown
-对于 memdown 来说，这里的“路径”可以
-是任意字符串，因为它根本不用硬盘
 
-LevelUP 的 wiki 上有相当完备的 LevelDB 生态系统概述，在 npm 上搜 leveldb 也能找到很多
-包，在写这本书时我们搜到了 898 个。图 8-6 可以说明 LevelDB 在 npm 上有多受欢迎。
+LevelUP 的 wiki 上有相当完备的 LevelDB 生态系统概述，在 npm 上搜 leveldb 也能找到很多 包，在写这本书时我们搜到了 898 个。图 8-6 可以说明 LevelDB 在 npm 上有多受欢迎。
 图 8-6 npm 上的一些第三方 LevelDB 包
 ## 8.13 昂贵的序列化和反序列化
-一定要记住， JSON 操作是昂贵的阻塞式操作。在进程将数据装进 JSON，或从 JSON 中取出
-数据时，根本做不了别的事情。大多数序列化格式都是如此。所以序列化操作一般都是 Web 服
-务器上的瓶颈。要想降低影响，最好的办法就是减少这种操作的频率和要处理的数据量。
-改变序列化格式（比如 MessagePack 或 Protocol Buffer）可能会加快处理速度，但在考虑改
-变序列化格式之前，要尽可能先通过降低负载和优化序列化/反序列化步骤来改善性能。
-JSON.stringify 和 JSON.parse 是原生函数，已经充分优化过了，但在需要处理以兆字
-节为单位的数据时，还是很容易垮掉。下面演示一下序列化和反序列化 10MB 数据时的性能表现。
+一定要记住， JSON 操作是昂贵的阻塞式操作。在进程将数据装进 JSON，或从 JSON 中取出 数据时，根本做不了别的事情。大多数序列化格式都是如此。所以序列化操作一般都是 Web 服 务器上的瓶颈。要想降低影响，最好的办法就是减少这种操作的频率和要处理的数据量。
+改变序列化格式（比如 MessagePack 或 Protocol Buffer）可能会加快处理速度，但在考虑改 变序列化格式之前，要尽可能先通过降低负载和优化序列化/反序列化步骤来改善性能。
+JSON.stringify 和 JSON.parse 是原生函数，已经充分优化过了，但在需要处理以兆字 节为单位的数据时，还是很容易垮掉。下面演示一下序列化和反序列化 10MB 数据时的性能表现。
 代码清单 8-22 序列化的性能基准测试
+```js
 const bytes = require('pretty-bytes');
 const obj = {};
 for (let i = 0; i < 200000; i++) {
@@ -7766,29 +7663,15 @@ console.log('Serialised Size', bytes(Buffer.byteLength(jsonString)));
 console.time('deserialise');
 const obj2 = JSON.parse(jsonString);
 console.timeEnd('deserialise');
-在一台装了 Node 6.2.2 的 2015 3.1GHZ Intel Core i7MacBook Pro 上，对这将近 10MB 的数据，
-序列化几乎用了 140 毫秒，反序列化用了 335 毫秒。这样的负载放到 Web 服务器上就是场灾难，
-因为这些步骤是阻塞式的，只能串行处理。在序列化时，这样的服务器每秒大概只能处理 7 个请
-求，反序列化时每秒只处理 3 个。
+```
+在一台装了 Node 6.2.2 的 2015 3.1GHZ Intel Core i7MacBook Pro 上，对这将近 10MB 的数据， 序列化几乎用了 140 毫秒，反序列化用了 335 毫秒。这样的负载放到 Web 服务器上就是场灾难， 因为这些步骤是阻塞式的，只能串行处理。在序列化时，这样的服务器每秒大概只能处理 7 个请 求，反序列化时每秒只处理 3 个。
 ## 8.14 浏览器内存储
-Node 采用的异步编程模型可以适用于很多场景，因为对大多数 Web 程序来说，最大的瓶颈
-就是 I/O。所以利用客户端数据存储既能降低服务器负载，还可以提升用户体验，这是效果最显
-著的做法。不用等着程序在网上跑来跑去取数据的用户会很开心。客户端存储还可以提高程序的
-可用性，因为即便用户或者服务掉线了，程序里有些功能还是可以用的。
+Node 采用的异步编程模型可以适用于很多场景，因为对大多数 Web 程序来说，最大的瓶颈 就是 I/O。所以利用客户端数据存储既能降低服务器负载，还可以提升用户体验，这是效果最显 著的做法。不用等着程序在网上跑来跑去取数据的用户会很开心。客户端存储还可以提高程序的 可用性，因为即便用户或者服务掉线了，程序里有些功能还是可以用的。
 8.14.1 Web 存储： localStorage 和 sessionStorage
-Web 存储定义了简单的键/值存储，其在客户端和移动端浏览器上都有很好的支持。域可以
-用 Web 存储在浏览器里保存一定量的数据，即便在经过网站刷新、标签页关闭，甚至浏览器关
-闭后，这些数据依然存在。 Web 存储是客户端持久化的首选，简单朴素是它的优势。
-有两种 Web 存储 API： localStorage 和 sessionStorage。 sessionStorage 的 API 跟 localStorage
-一样，只是持久化行为不同。虽然它们存储的数据在页面重新加载之后都会得以保留，但
-sessionStorage 数据只会保留到页面会话结束（标签或浏览器关闭时），并且不能在不同的浏览器
-窗口之间共享。
-开发 Web 存储 API 是为了克服浏览器 cookie 的限制。确切地说， cookie 不太适合在多个活
-跃标签间共享同一域中的数据。如果用户要跨越多个标签完成一项任务，可以用 sessionStorage
-保存这些标签共享的状态数据，从而省掉因网络传输带来的开销。
-要保留跨越多个会话、标签和窗口的长期数据（比如用户撰写的文档或邮件）时， cookie 也
-不好用。设计 localStorage 就是为了解决这些问题的。不同浏览器有不同的数据存储空间上限。
-移动端浏览器中只有 5MB 的存储空间。
+Web 存储定义了简单的键/值存储，其在客户端和移动端浏览器上都有很好的支持。域可以 用 Web 存储在浏览器里保存一定量的数据，即便在经过网站刷新、标签页关闭，甚至浏览器关 闭后，这些数据依然存在。 Web 存储是客户端持久化的首选，简单朴素是它的优势。
+有两种 Web 存储 API： localStorage 和 sessionStorage。 sessionStorage 的 API 跟 localStorage 一样，只是持久化行为不同。虽然它们存储的数据在页面重新加载之后都会得以保留，但 sessionStorage 数据只会保留到页面会话结束（标签或浏览器关闭时），并且不能在不同的浏览器 窗口之间共享。
+开发 Web 存储 API 是为了克服浏览器 cookie 的限制。确切地说， cookie 不太适合在多个活 跃标签间共享同一域中的数据。如果用户要跨越多个标签完成一项任务，可以用 sessionStorage 保存这些标签共享的状态数据，从而省掉因网络传输带来的开销。
+要保留跨越多个会话、标签和窗口的长期数据（比如用户撰写的文档或邮件）时， cookie 也 不好用。设计 localStorage 就是为了解决这些问题的。不同浏览器有不同的数据存储空间上限。移动端浏览器中只有 5MB 的存储空间。
 API 概览
 localStorage API 提供的方法包括：
 - localStorage.setItem(key, value)——存储键值对；
@@ -7799,11 +7682,9 @@ localStorage API 提供的方法包括：
 - localStorage.key(index)——获取指定索引处的值；
 - localStorage.length——localStorage 中的键总数。
 8.14.2 值的读写
-键和值只能是字符串。如果提供的值不是字符串，会被强制转换成字符串。这种转换用的
-是.toString，不会产生 JSON 字符串。所以对象的序列化结果就是[object Object]。因此，
-要想在 Web 存储中存放比较复杂的数据类型，只能让应用程序做转换处理。下面是在 localStorage
-中存放 JSON 的例子。
+键和值只能是字符串。如果提供的值不是字符串，会被强制转换成字符串。这种转换用的 是.toString，不会产生 JSON 字符串。所以对象的序列化结果就是[object Object]。因此， 要想在 Web 存储中存放比较复杂的数据类型，只能让应用程序做转换处理。下面是在 localStorage 中存放 JSON 的例子。
 代码清单 8-23 在 Web 存储中存放 JSON
+```js
 const examplePreferences = {
 temperature: 'Celcius'
 };
@@ -7812,15 +7693,11 @@ localStorage.setItem('preferences', JSON.stringify(examplePreferences));
 // 读时反序列化
 const preferences = JSON.parse(localStorage.getItem('preferences'));
 console.log('Loaded preferences:', preferences);
-访问 Web 存储中的数据是同步操作，也就是说在执行读写操作时， Web 存储会阻塞 UI 线程，
-但速度仍然相当快。在工作负载比较小时，用户甚至察觉不到这种阻塞，但还是要注意，应该尽
-量避免过度读写，尤其要避免出现大量数据的读写操作。可惜 Web worker 无法访问 Web 存储，
-所以所有读写只能在主 UI 线程中进行。 PouchDB 的作者 Nolan Lawson 写过一篇文章，详细分析
-了各种客户端存储技术对性能的影响，读者可以在他的博客上搜索关键字找到这篇文章。
-Web 存储 API 没有查询操作，也不能按范围选择键，或者搜索特定的值，只能通过键来访问
-数据项。如果想实现搜索功能，只能自己维护一套索引；或者数据集非常小的话，可以进行循环
-遍历。下面就是对 localStorage 中的所有键进行循环遍历的代码。
+```
+访问 Web 存储中的数据是同步操作，也就是说在执行读写操作时， Web 存储会阻塞 UI 线程， 但速度仍然相当快。在工作负载比较小时，用户甚至察觉不到这种阻塞，但还是要注意，应该尽 量避免过度读写，尤其要避免出现大量数据的读写操作。可惜 Web worker 无法访问 Web 存储， 所以所有读写只能在主 UI 线程中进行。 PouchDB 的作者 Nolan Lawson 写过一篇文章，详细分析 了各种客户端存储技术对性能的影响，读者可以在他的博客上搜索关键字找到这篇文章。
+Web 存储 API 没有查询操作，也不能按范围选择键，或者搜索特定的值，只能通过键来访问 数据项。如果想实现搜索功能，只能自己维护一套索引；或者数据集非常小的话，可以进行循环 遍历。下面就是对 localStorage 中的所有键进行循环遍历的代码。
 代码清单 8-24 循环遍历 localStorage 中的整个数据集
+```js
 function getAllKeys() {
 return Object.keys(localStorage);
 }
@@ -7830,28 +7707,29 @@ return getAllKeys()
 obj[str] = localStorage.getItem(str);
 return obj;
 }, {});
-}198 第 8 章 存储数据
+}
 // 得到所有的值
 const allValues = getAllKeys().map(key => localStorage.getItem(key));
 // 作为对象输出
 console.log(getAllKeysAndValues());
-跟大多数键/值存储一样， Web 存储中的键也只有一个命名空间。比如说，我们不能分别为
-posts 和 comments 创建各自的存储。不过可以通过给键增加前缀的方式创建“命名空间”，比
-如像下面这样。
+```
+跟大多数键/值存储一样， Web 存储中的键也只有一个命名空间。比如说，我们不能分别为 posts 和 comments 创建各自的存储。不过可以通过给键增加前缀的方式创建“命名空间”，比 如像下面这样。
 代码清单 8-25 键的命名空间
+```js
 localStorage.setItem(`/posts/${post.id}`, post);
 localStorage.setItem(`/comments/${comment.id}`, comment);
+```
 要获取某个命名空间下的所有数据项，可以通过 getAllKeys 函数进行过滤，代码如下所示。
 代码清单 8-26 获取某个命名空间中的所有数据项
+```js
 function getNamespaceItems(namespace) {
 return getAllKeys().filter(key => key.startsWith(namespace));
 }
 console.log(getNamespaceItems('/exampleNamespace'));
-这样会循环遍历 localStorage 中的所有键，所以如果数据项比较多，要考虑一下对性能的影响。
-因为 localStorage API 是同步的，所以用起来限制还是比较多的。比如说，对于那些以 JSON
-序列化数据为参数，并且返回结果也是这样的数据的函数，你可能会用 localStorage 缓存记忆
-（ memoize）它的返回结果。
+```
+这样会循环遍历 localStorage 中的所有键，所以如果数据项比较多，要考虑一下对性能的影响。 因为 localStorage API 是同步的，所以用起来限制还是比较多的。比如说，对于那些以 JSON 序列化数据为参数，并且返回结果也是这样的数据的函数，你可能会用 localStorage 缓存记忆 （ memoize）它的返回结果。
 代码清单 8-27 用 localStorage 持久化记忆
+```js
 // 以后调用时如果参数相同，可以直接返回之前记住的结果
 function memoizedExpensiveOperation(data) {
 const key = `/memoized/${JSON.stringify(data)}`;
@@ -7863,22 +7741,16 @@ const result = expensiveWork(data);
 localStorage.setItem(key, result);
 return result;
 }
-不过只有操作特别慢时，记住结果的收益才会大于序列化/反序列化处理的开销（比如加密
-算法）。因此最好是用 localStorage 节省因为要在网络上传输数据而开销的时间。
-Web 存储确实会受到限制，但只要使用得当，依然是简单而又强大的工具。接下来要研究的
-浏览器中存储是：
+```
+不过只有操作特别慢时，记住结果的收益才会大于序列化/反序列化处理的开销（比如加密 算法）。因此最好是用 localStorage 节省因为要在网络上传输数据而开销的时间。
+Web 存储确实会受到限制，但只要使用得当，依然是简单而又强大的工具。接下来要研究的 浏览器中存储是：
 - IndexedDB
 - 服务人员
 - 离线优先
 
 8.14.3 localForage
-Web 存储最主要的缺点就是它的阻塞式同步 API 和在某些浏览器中有限的存储空间。除了
-Web 存储，大多数现代浏览器都会支持 WebSQL 或 IndexedDB，或者同时支持两种存储。它们都
-是非阻塞的，并且存储空间比 Web 存储大得多。
-但建议不要像用 Web 存储那样直接用。 WebSQL 已经被废弃了，而它的继任者 IndexedDB，
-提供的 API 既不友好也不简洁，更别提那拼凑出来的浏览器支持了。要想在浏览器中用非阻塞的
-方式存储数据，而且还要方便可靠，我们推荐一种“标准化的”非标配工具，其来自 Mozilla 的
-localForage 库（ http://mozilla.github.io/localForage/）
+Web 存储最主要的缺点就是它的阻塞式同步 API 和在某些浏览器中有限的存储空间。除了 Web 存储，大多数现代浏览器都会支持 WebSQL 或 IndexedDB，或者同时支持两种存储。它们都 是非阻塞的，并且存储空间比 Web 存储大得多。
+但建议不要像用 Web 存储那样直接用。 WebSQL 已经被废弃了，而它的继任者 IndexedDB， 提供的 API 既不友好也不简洁，更别提那拼凑出来的浏览器支持了。要想在浏览器中用非阻塞的 方式存储数据，而且还要方便可靠，我们推荐一种“标准化的”非标配工具，其来自 Mozilla 的 localForage 库（ http://mozilla.github.io/localForage/）
 API 概览
 localForage 的接口基本上跟 Web 存储一模一样，只不过是异步非阻塞方式的：
 - localforage.setItem(key, value, callback)——存储键值对；
@@ -7893,6 +7765,7 @@ localForage API 中还额外增加了一些 Web 存储中没有的功能：
 8.14.4 读和写
 localForage API 有 promise 和回调两种方式。
 代码清单 8-28 localStorage 和 localForage 的数据读取
+```js
 const value = localStorage.getItem(key);
 console.log(value);
 localforage.getItem(key)
@@ -7900,69 +7773,44 @@ localforage.getItem(key)
 localforage.getItem(key, (err, value) => {
 console.log(value);
 });
-localForage 会在底层使用当前浏览器环境中最好的存储机制。如果有 IndexedDB，就用
-IndexedDB。否则就试着用 WebSQL，甚至用 Web 存储。这些存储的优先级是可以配置的，甚至
-可以禁止使用某种存储：
+```
+localForage 会在底层使用当前浏览器环境中最好的存储机制。如果有 IndexedDB，就用 IndexedDB。否则就试着用 WebSQL，甚至用 Web 存储。这些存储的优先级是可以配置的，甚至 可以禁止使用某种存储：
+```js
 //比如不用 localStorage
 localforage.setDriver([localforage.INDEXEDDB,localforage.WEBSQL]);
 localStorage：
-同步阻塞
-localForage：使用 promise
-的异步非阻塞方式
-localForage：
-使用回调的异
-步非阻塞方式
-这样就永远不会尝试用
-localStorage 了200 第 8 章 存储数据
-localForage 可以存储字符串之外的其他类型的数据。它支持大多数的 JavaScript 原始类型，
-比如数组和对象，以及二进制数据类型： TypedArray、 ArrayBuffer 和 Blob。 IndexedDB 是
-唯一支持二进制数据存储的后台，也就是说如果后台用的是 WebSQL 和 localStorage，会有编组
-开销：
+// 同步阻塞
+// localForage：使用 promise
+// 的异步非阻塞方式
+// localForage：
+// 使用回调的异
+// 步非阻塞方式
+// 这样就永远不会尝试用
+// localStorage 了
+```
+localForage 可以存储字符串之外的其他类型的数据。它支持大多数的 JavaScript 原始类型， 比如数组和对象，以及二进制数据类型： TypedArray、 ArrayBuffer 和 Blob。 IndexedDB 是 唯一支持二进制数据存储的后台，也就是说如果后台用的是 WebSQL 和 localStorage，会有编组 开销：
+```js
 Promise.all([
 localforage.setItem('number', 3),
 localforage.setItem('object', { key: 'value' }),
 localforage.setItem('typedarray', new Uint32Array([1,2,3]))
 ]);
+```
 将 API 做成跟 Web 存储一样让 localForage 用起来更简单，也解决了很多缺点和兼容性问题。
 ## 8.15 存储托管
-使用存储托管不需要管理自己的服务器端存储。像 Amazon Web 服务（ AWS）这样的厂商提
-供的那些托管式基础设施一般仅作为扩展和性能优化方案，但在早期巧用这些托管式服务可以免
-于实现不必要的基础设施，从而节省大量时间。
-即便不是全部，也能找到本章中列出的大部分数据库的托管式服务。使用托管式服务可以迅
-速尝试各种工具，甚至无须搭建自己的数据库主机就能部署对外开放的生产程序。但部署自己的
-数据存储越来越简单了。很多云服务提供商都有预先配置好的服务器映像，安装了运行所选数据
-库所需的全部软件，并且全都配置好了。
+使用存储托管不需要管理自己的服务器端存储。像 Amazon Web 服务（ AWS）这样的厂商提 供的那些托管式基础设施一般仅作为扩展和性能优化方案，但在早期巧用这些托管式服务可以免 于实现不必要的基础设施，从而节省大量时间。
+即便不是全部，也能找到本章中列出的大部分数据库的托管式服务。使用托管式服务可以迅 速尝试各种工具，甚至无须搭建自己的数据库主机就能部署对外开放的生产程序。但部署自己的 数据存储越来越简单了。很多云服务提供商都有预先配置好的服务器映像，安装了运行所选数据 库所需的全部软件，并且全都配置好了。
 简单存储服务
-Amazon 的简单存储服务（ S3）是一种远程文件托管服务，包含在大受欢迎的 ASW 包中。
-用 S3 存储和托管向网络开放的文件有成本上的优势。它是云端的文件系统。可以用 RESTful HTTP
-调用将文件和不超过 2KB 的元数据上传到桶中。然后通过 HTTP GET 或 BitTorrent 协议访问这些
-内容。
-我们可以对桶及其中的内容进行各种访问许可配置，包括基于时间的访问。还可以给桶里的
-内容指定一个生存期（ TTL），生存期过了之后就会从桶中删掉，再也访问不到。将 S3 数据提升
-到内容交付网络（ CDN）中也很容易。 AWS 提供了 CloudFront CDN，可以轻松连接到你的文件，
-然后用很低的延时提供给全世界。
-并不是所有的数据都需要存到数据库中。你的数据中是不是有些应当作为文件？在为用户生
-成了一个昂贵的计算结果后，也许应该将这些结果推送到 S3 上，再也不用重蹈覆辙。
-S3 经常用来存储用户上传的图片等资源性文件。要上传的资源性文件先是放在程序所在机
-器的一个临时目录中，然后用 ImageMagick 这样的工具缩小之后上传到 S3，以供浏览器访问。
-如果通过流直接上传到 S3，这个过程就更简单了，到达 S3 之后还可以触发后续处理。客户端程
-序也可以直接上传到 S3。一些面向开发人员的服务甚至要求用户提供他们的 S3 桶访问令牌，实8.17 总结 201
-
-现绝对的零存储。
+Amazon 的简单存储服务（ S3）是一种远程文件托管服务，包含在大受欢迎的 ASW 包中。 用 S3 存储和托管向网络开放的文件有成本上的优势。它是云端的文件系统。可以用 RESTful HTTP 调用将文件和不超过 2KB 的元数据上传到桶中。然后通过 HTTP GET 或 BitTorrent 协议访问这些 内容。
+我们可以对桶及其中的内容进行各种访问许可配置，包括基于时间的访问。还可以给桶里的 内容指定一个生存期（ TTL），生存期过了之后就会从桶中删掉，再也访问不到。将 S3 数据提升 到内容交付网络（ CDN）中也很容易。 AWS 提供了 CloudFront CDN，可以轻松连接到你的文件， 然后用很低的延时提供给全世界。
+并不是所有的数据都需要存到数据库中。你的数据中是不是有些应当作为文件？在为用户生 成了一个昂贵的计算结果后，也许应该将这些结果推送到 S3 上，再也不用重蹈覆辙。
+S3 经常用来存储用户上传的图片等资源性文件。要上传的资源性文件先是放在程序所在机 器的一个临时目录中，然后用 ImageMagick 这样的工具缩小之后上传到 S3，以供浏览器访问。 如果通过流直接上传到 S3，这个过程就更简单了，到达 S3 之后还可以触发后续处理。客户端程 序也可以直接上传到 S3。一些面向开发人员的服务甚至要求用户提供他们的 S3 桶访问令牌，实 现绝对的零存储。
 S3 并不是只能存储图片
-S3 可以存储任何文件，只要不超过 5TB，任何格式都可以。在处理要作为一个整体来访问
-的、不怎么变化的大块数据时， S3 的表现最好。
-安装和维护文件托管及存储服务器是个比较复杂的任务，把数据放到 S3 上可以避开这些麻
-烦。对于那些需要作为一个整体访问的大块数据来说，只要写的次数不频繁，并且可能需要从多
-个位置进行很多次访问，就非常适合放到 S3 上。
+S3 可以存储任何文件，只要不超过 5TB，任何格式都可以。在处理要作为一个整体来访问 的、不怎么变化的大块数据时， S3 的表现最好。
+安装和维护文件托管及存储服务器是个比较复杂的任务，把数据放到 S3 上可以避开这些麻 烦。对于那些需要作为一个整体访问的大块数据来说，只要写的次数不频繁，并且可能需要从多 个位置进行很多次访问，就非常适合放到 S3 上。
 ## 8.16 选哪个数据库
-本章只介绍了 Node 程序中常用的几个数据库。用这些数据库中的任何一个都能搭建出成功
-的应用程序，并且不乏先例。但并不是总能为程序找到理想的数据存储方案。没有银弹。每个数
-据库都有自己独特的折中方案，开发人员要评估哪种折中方案最适合项目当前的状态。一般来说
-采用混合技术是最合适的。
-与其问“我应该用什么数据库”，不如问“如果根本不用数据库，我能坚持多久”。你能用长
-期有效的决策做多少个项目？以后再做决定一般就是最好的决定，等你以后有了更多信息时，总
-能做出更好的决定。
+本章只介绍了 Node 程序中常用的几个数据库。用这些数据库中的任何一个都能搭建出成功 的应用程序，并且不乏先例。但并不是总能为程序找到理想的数据存储方案。没有银弹。每个数 据库都有自己独特的折中方案，开发人员要评估哪种折中方案最适合项目当前的状态。一般来说 采用混合技术是最合适的。
+与其问“我应该用什么数据库”，不如问“如果根本不用数据库，我能坚持多久”。你能用长 期有效的决策做多少个项目？以后再做决定一般就是最好的决定，等你以后有了更多信息时，总 能做出更好的决定。
 ## 8.17 总结
 - Node 既能用关系型数据库，也能用 NoSQL 数据库。
 - 简单的 pg 模块很擅长处理 SQL 语言。
