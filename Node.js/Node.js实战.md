@@ -10436,58 +10436,57 @@ Electron 程序也可以通过编辑厂商提供的二进制文件来打上品�
 - Electron 用的是成熟完备的浏览器，所以可以用最新的 JavaScript 技术（比如 React 或
 Angular）搭建 UI。264 
 
-# 附录A 安装 Node
+# 附录 A 安装 Node
+
 安装 Node
-本附录会详细介绍如何安装 Node.js。如果你刚开始接触 Node，建议使用预先构建好的安装
-程序，每个主流操作系统都有对应的安装程序，我们会在 A.1 中逐一介绍。
+本附录会详细介绍如何安装 Node.js。如果你刚开始接触 Node，建议使用预先构建好的安装 程序，每个主流操作系统都有对应的安装程序，我们会在 A.1 中逐一介绍。
 如果你经验更丰富，或者有特殊的 DevOps 需求，想采用其他的安装方式，可以直接参阅 A.2。
-A.1 用安装程序安装 Node
-Node 有两个安装程序和几个预先构建好的二进制包。如果你用的是 macOS 或 Windows，用
-安装程序或二进制包都可以。二进制包中有可执行文件，安装程序则有安装向导，可以帮你把
-Node 放到好找的地方，这样在终端里运行 node 或 npm 时会更方便。
-如果你刚开始接触 Node，建议使用预先构建好的安装程序。所有版本都能在 Node 网站的下
-载页面上找到。
-A.1.1 macOS 上用的安装程序
-要在 macOS 上安装，需要从 Node 网站下载 64 位的.pkg 文件。 LTS 或 Current 版本都行。下
-载好之后应该是如图 A-1 所示那样的一个包文件，双击会出现安装向导（图 A-2）。
+
+## A.1 用安装程序安装 Node
+
+Node 有两个安装程序和几个预先构建好的二进制包。如果你用的是 macOS 或 Windows，用 安装程序或二进制包都可以。二进制包中有可执行文件，安装程序则有安装向导，可以帮你把 Node 放到好找的地方，这样在终端里运行 node 或 npm 时会更方便。
+如果你刚开始接触 Node，建议使用预先构建好的安装程序。所有版本都能在 Node 网站的下 载页面上找到。
+
+### A.1.1 macOS 上用的安装程序
+
+要在 macOS 上安装，需要从 Node 网站下载 64 位的.pkg 文件。 LTS 或 Current 版本都行。下 载好之后应该是如图 A-1 所示那样的一个包文件，双击会出现安装向导（图 A-2）。
 图 A-1 安装程序.pkg 文件
-附录 A附录 A 安装 Node 265
 
 图 A-2 安装向导
-点击 Continue 按钮，依照指令用默认选项安装。安装过程结束之后，打开终端，输入 node
-应该会进入 Node REPL，如图 A-3 所示。
+点击 Continue 按钮，依照指令用默认选项安装。安装过程结束之后，打开终端，输入 node 应该会进入 Node REPL，如图 A-3 所示。
 图 A-3 Node REPL
 下一节将介绍在 Windows 上的安装。
-A.1.2 Windows 上用的安装程序
-在 Node 网站的下载页面上点击 Windows 安装程序图标，或者点击安装程序的.msi 链接。有
-32-位和 64-位两种，但一般都是选 64-位的。下载好之后双击运行安装向导，如图 A-4 所示。
-图 A-4 Windows .msi 安装程序266 附录 A 安装 Node
-接受所有默认选项，然后打开 cmd.exe 试一下 Node REPL。图 A-5 是 Node REPL 在 Windows
-上的样子。
+
+### A.1.2 Windows 上用的安装程序
+
+在 Node 网站的下载页面上点击 Windows 安装程序图标，或者点击安装程序的.msi 链接。有 32-位和 64-位两种，但一般都是选 64-位的。下载好之后双击运行安装向导，如图 A-4 所示。
+图 A-4 Windows .msi 安装程序
+
+接受所有默认选项，然后打开 cmd.exe 试一下 Node REPL。图 A-5 是 Node REPL 在 Windows 上的样子。
 图 A-5 Windows 上的 Node REPL
 如果你一般不这么安装软件，或者不想做系统范围的安装，可以继续往后看看其他安装方式。
-A.2 其他安装方式
-Node 也可以通过操作系统的包管理器或 Node 版本管理器从源码安装。从源码安装需要安装
-Python，还需要构建系统。
-A.2.1 从源码安装 Node
-Node 的源码可以从 nodejs.org 下载页上下载，也可以用 git 从 GitHub 上下载。 GitHub 上还有
-完整的构建指南 node/Building.md。构建 Node 的前提条件如下。
-- Linux——Python 2.6 或 2.7， gcc 和 g++ 4.8 或以上版本，或 clang 和 clang++ 3.4 或以上版本。
-在 Debian 或其他系统上，都有 build-essentials 这样的包可以满足这一条件。
+
+## A.2 其他安装方式
+
+Node 也可以通过操作系统的包管理器或 Node 版本管理器从源码安装。从源码安装需要安装 Python，还需要构建系统。
+
+### A.2.1 从源码安装 Node
+
+Node 的源码可以从 nodejs.org 下载页上下载，也可以用 git 从 GitHub 上下载。 GitHub 上还有 完整的构建指南 node/Building.md。构建 Node 的前提条件如下。
+
+- Linux——Python 2.6 或 2.7， gcc 和 g++ 4.8 或以上版本，或 clang 和 clang++ 3.4 或以上版本。 在 Debian 或其他系统上，都有 build-essentials 这样的包可以满足这一条件。
 - macOS——Xcode 和一些可以用 Xcode 安装的命令行工具。
 - Windows——Python 2.6 或 2.7， Visual C++ Build Tools， Visual Studio 2015 Update 3。
-构建工具准备好之后，在类 UNIX 系统上运行./configure 和 make，在 Windows 系统上
-运行.\vcbuild nosign。
-A.2.2 用包管理器安装 Node
-在 Linux 和 macOS 上， 用包管理器安装 Node 更新起来更容易。 比如说，如果用的是 Linux Web
-服务器，那你可能希望自己安装的 Node 可以自动安装安全更新。
+
+构建工具准备好之后，在类 UNIX 系统上运行./configure 和 make，在 Windows 系统上 运行.\vcbuild nosign。
+
+### A.2.2 用包管理器安装 Node
+
+在 Linux 和 macOS 上， 用包管理器安装 Node 更新起来更容易。 比如说，如果用的是 Linux Web 服务器，那你可能希望自己安装的 Node 可以自动安装安全更新。
 对于可以用这种形式安装的各个操作系统， Node 网站上有大量针对这些系统的安装指南。
-比如在基于 Debian 和 Ubuntu 的系统中，可以从 NodeSource 二进制分发库中获取 Node。 GitHub
-上有关于这个库的更多介绍。
-在 macOS 上可以用 Homebrew 安装 Node。如果装了 Homebrew，只需要运行 brew install
-node 就可以了。
-Docker Hub 上也有 Node。在 Dockfile 里加上 FROM node:argon 就能在映像文件里装上 LTS
-版本的 Node。
+比如在基于 Debian 和 Ubuntu 的系统中，可以从 NodeSource 二进制分发库中获取 Node。 GitHub 上有关于这个库的更多介绍。
+在 macOS 上可以用 Homebrew 安装 Node。如果装了 Homebrew，只需要运行 brew install node 就可以了。
+Docker Hub 上也有 Node。在 Dockfile 里加上 FROM node:argon 就能在映像文件里装上 LTS 版本的 Node。
 
 # 附录 B 自动化的网络抓取
 
