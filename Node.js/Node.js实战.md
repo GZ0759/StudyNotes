@@ -8148,545 +8148,602 @@ S3 可以存储任何文件，只要不超过 5TB，任何格式都可以。在�
 - 基于 Web 的存储，包括 localForage 和 localStorage，可以将数据保存在浏览器中。
 - 可以用 Amazon S3 这样的存储服务把数据保存到云提供商那里。202
 
-# 第9章 测试 Node 程序
+# 第 9 章 测试 Node 程序
+
 本章内容
+
 - 用 Node 的 assert 模块测试
 - 使用其他断言库
 - 使用 Node 单元测试框架
 - 用 Node 模拟并控制 Web 浏览器
 - 在测试失败时获取更多信息
-添加到程序中的功能越多，出现 bug 的风险就越高。没经过测试的程序是不完整的，而手动
-测试既繁琐又容易出错，所以自动测试越来越受欢迎。自动测试是指编写代码来测试代码，而不
-是手动运行程序中的功能。
-如果之前没接触过，那么可以把自动测试当作机器人，它会帮你做那些乏味的工作，你则可
-以把精力放在有趣的事情上。这个机器人可以确保你修改代码时不会有 bug 溜进来。尽管你可能
-还没完成或开始第一个 Node 程序，但这并不妨碍你掌握如何实现自动测试，因为可以边开发边
-写测试代码。
-本章会介绍两种自动测试：单元测试和验收测试。 单元测试直接测试代码逻辑，通常是在函
-数或方法层面，适用于所有类型的程序。单元测试方法可以分为两大形态：测试驱动开发（ TDD）
-和行为驱动开发（ BDD）。实事求是地讲， TDD 和 BDD 基本是一样的，它们的区别主要体现在
-风格上。这个是否重要取决于阅读测试的人是谁。 TDD 和 BDD 还有其他区别，但那不在本书的
-讨论范围之内。 验收测试一般是对 Web 程序进行的额外测试，需要用脚本控制浏览器来触发 Web
-程序的功能。
-本章会介绍成熟的单元和验收测试方案。对于单元测试，我们会介绍 Node 的 assert 模块，
-Mocha、 Vows、 Should.js 框架和 Chai。对于验收测试，我们会看一下如何在 Node 中使用 Selenium。
-图 9-1 把这些工具和它们各自的测试方法及风格放到了一起。
-第 9 章9.1 单元测试 203
+
+添加到程序中的功能越多，出现 bug 的风险就越高。没经过测试的程序是不完整的，而手动 测试既繁琐又容易出错，所以自动测试越来越受欢迎。自动测试是指编写代码来测试代码，而不 是手动运行程序中的功能。
+如果之前没接触过，那么可以把自动测试当作机器人，它会帮你做那些乏味的工作，你则可 以把精力放在有趣的事情上。这个机器人可以确保你修改代码时不会有 bug 溜进来。尽管你可能 还没完成或开始第一个 Node 程序，但这并不妨碍你掌握如何实现自动测试，因为可以边开发边 写测试代码。
+本章会介绍两种自动测试：单元测试和验收测试。 单元测试直接测试代码逻辑，通常是在函 数或方法层面，适用于所有类型的程序。单元测试方法可以分为两大形态：测试驱动开发（ TDD） 和行为驱动开发（ BDD）。实事求是地讲， TDD 和 BDD 基本是一样的，它们的区别主要体现在 风格上。这个是否重要取决于阅读测试的人是谁。 TDD 和 BDD 还有其他区别，但那不在本书的 讨论范围之内。 验收测试一般是对 Web 程序进行的额外测试，需要用脚本控制浏览器来触发 Web 程序的功能。
+本章会介绍成熟的单元和验收测试方案。对于单元测试，我们会介绍 Node 的 assert 模块， Mocha、 Vows、 Should.js 框架和 Chai。对于验收测试，我们会看一下如何在 Node 中使用 Selenium。 图 9-1 把这些工具和它们各自的测试方法及风格放到了一起。
 
 图 9-1 测试框架概览
 我们先从单元测试开始吧。
+
 ## 9.1 单元测试
-单元测试是指通过编写代码来测试程序中的各个部分。编写测试代码会让你更认真地思考
-程序的设计选择，尽早避开各种陷阱。测试还让你确信自己最近所做的修改没有引入错误。尽管
-单元测试需要在编码前做些工作，但以后每次修改程序后都不用再手动测试了，所以还是能节省
-很多时间的。
-做单元测试需要些技巧，而异步逻辑又带来了新的挑战。因为异步单元测试可以并行运行，
-所以必须小心，确保测试不会相互干扰。比如说，如果测试在硬盘上创建了一个临时文件， 那
-么在完成测试后删除文件时一定要谨慎，以免删掉另外一个未完成的测试正在使用的文件。因此
-很多单元测试框架都有流程控制，可以让测试按顺序运行。
+
+单元测试是指通过编写代码来测试程序中的各个部分。编写测试代码会让你更认真地思考 程序的设计选择，尽早避开各种陷阱。测试还让你确信自己最近所做的修改没有引入错误。尽管 单元测试需要在编码前做些工作，但以后每次修改程序后都不用再手动测试了，所以还是能节省 很多时间的。
+做单元测试需要些技巧，而异步逻辑又带来了新的挑战。因为异步单元测试可以并行运行， 所以必须小心，确保测试不会相互干扰。比如说，如果测试在硬盘上创建了一个临时文件， 那 么在完成测试后删除文件时一定要谨慎，以免删掉另外一个未完成的测试正在使用的文件。因此 很多单元测试框架都有流程控制，可以让测试按顺序运行。
 本节会介绍如何使用：
+
 - Node 自带的 assert 模块——TDD 风格自动化测试的好工具；
 - Mocha——相对比较新的测试框架，可以用来做 TDD-或 BDD-风格的测试；
 - Vows——得到广泛应用的 BDD 风格测试框架；
 - Should.js——构建在 Node assert 模块之上的模块，提供 BDD 风格的断言。
+
 下一节将会演示如何用 assert 模块测试业务逻辑，这是 Node 自带的模块。
-9.1.1 assert 模块
-assert 模块是 Node 中大多数单元测试的基础，它可以测试一个条件，如果条件未满足，则抛
-出错误。很多第三方测试框架都用到了 assert 模块，甚至没有测试框架也可以用它做测试。如果
-你忽然冒出来一个想法，单靠 assert 模块就可以试着验证一下。204 第 9 章 测试 Node 程序
+
+### 9.1.1 assert 模块
+
+assert 模块是 Node 中大多数单元测试的基础，它可以测试一个条件，如果条件未满足，则抛 出错误。很多第三方测试框架都用到了 assert 模块，甚至没有测试框架也可以用它做测试。如果 你忽然冒出来一个想法，单靠 assert 模块就可以试着验证一下。
+
 1. 一个简单的例子
-假设有一个简单的待办事项程序，它把事项存在内存里，而你要断言它做的是你认为它在
-做的。
-下面这个代码清单中定义的模块实现了程序的核心功能，包括待办事项的创建、 获取和删
-除。它还包括一个简单的 doAsync 方法，所以你还能看到如何测试异步方法。将这段代码保存
-到 todo.js 中。
+
+假设有一个简单的待办事项程序，它把事项存在内存里，而你要断言它做的是你认为它在 做的。
+下面这个代码清单中定义的模块实现了程序的核心功能，包括待办事项的创建、 获取和删 除。它还包括一个简单的 doAsync 方法，所以你还能看到如何测试异步方法。将这段代码保存 到 todo.js 中。
 代码清单 9-1 待办事项列表的模型
+
+```js
 class Todo {
-constructor() {
-this.todos = [];
-}
-add(item) {
-if (!item) throw new Error('Todo.prototype.add requires an item');
-this.todos.push(item);
-}
-deleteAll() {
-this.todos = [];
-}
-get length() {
-return this.todos.length;
-}
-doAsync(cb) {
-setTimeout(cb, 2000, true);
-}
+  constructor() {
+    this.todos = [];
+  }
+  add(item) {
+    if (!item) throw new Error("Todo.prototype.add requires an item");
+    this.todos.push(item);
+  }
+  deleteAll() {
+    this.todos = [];
+  }
+  get length() {
+    return this.todos.length;
+  }
+  doAsync(cb) {
+    setTimeout(cb, 2000, true);
+  }
 }
 module.exports = Todo;
-接下来用 assert 模块测试这段代码。下面的代码加载了必需模块，创建了新的待办事项列表，
-还声明了一个变量记录完成的测试数量。将它保存为 test.js。
+```
+
+接下来用 assert 模块测试这段代码。下面的代码加载了必需模块，创建了新的待办事项列表， 还声明了一个变量记录完成的测试数量。将它保存为 test.js。
 代码清单 9-2 设置必需模块
-const assert = require('assert');
-const Todo = require('./todo');
+
+```js
+const assert = require("assert");
+const Todo = require("./todo");
 const todo = new Todo();
 let testsCompleted = 0;
+```
+
 2. 用 equal 检查变量的值
+
 接下来测试待办事项程序的删除功能。将下面的代码加到 test.js 的末尾处。
 代码清单 9-3 测试以确保删除后未留下待办事项
-function deleteTest() {
-todo.add('Delete Me');
-定义待办事
-项数据库
-添加待办
-事项
-删除所有的
-待办事项
-取得待办事
-项的数量
-输出 Todo
-函数
-添加用来测试删
-除的数据
-两秒后带着“ true”
-调用回调
 
-两秒后激
-活回调
-assert.equal(todo.length, 1, '1 item should exist');
-todo.deleteAll();
-assert.equal(todo.length, 0, 'No items should exist');
-testsCompleted++;
+```js
+function deleteTest() {
+  todo.add("Delete Me");
+  // 定义待办事
+  // 项数据库
+  // 添加待办
+  // 事项
+  // 删除所有的
+  // 待办事项
+  // 取得待办事
+  // 项的数量
+  // 输出 Todo
+  // 函数
+  // 添加用来测试删
+  // 除的数据
+  // 两秒后带着“ true”
+  // 调用回调
+
+  // 两秒后激
+  // 活回调
+  assert.equal(todo.length, 1, "1 item should exist");
+  todo.deleteAll();
+  assert.equal(todo.length, 0, "No items should exist");
+  testsCompleted++;
 }
-这个测试先添加了一个待办事项，然后再删掉，所以最后应该没有待办事项。如果程序能正常
-工作，那么 todo.length 的值应该是 0。如果程序出了问题，则会有异常抛出。如果 todo.length
-不是 0，那么这个断言会在栈跟踪中显示一条错误消息，在控制台中输出“No items should exist”。
-在断言后面将 testsCompleted 加一，记录已经完成了一项测试。
+```
+
+这个测试先添加了一个待办事项，然后再删掉，所以最后应该没有待办事项。如果程序能正常 工作，那么 todo.length 的值应该是 0。如果程序出了问题，则会有异常抛出。如果 todo.length 不是 0，那么这个断言会在栈跟踪中显示一条错误消息，在控制台中输出“No items should exist”。 在断言后面将 testsCompleted 加一，记录已经完成了一项测试。
+
 3. 用 notEqual 找出逻辑中的问题
+
 把下面的代码添加到 test.js 中。这段代码测试的是待办事项程序的添加功能。
 代码清单 9-4 测试以确保待办事项添加正常
+
+```js
 function addTest() {
-todo.deleteAll();
-todo.add('Added');
-assert.notEqual(todo.getCount(), 0, '1 item should exist');
-testsCompleted++;
+  todo.deleteAll();
+  todo.add("Added");
+  assert.notEqual(todo.getCount(), 0, "1 item should exist");
+  testsCompleted++;
 }
-assert 模块中还有个 notEqual 断言。当程序产生特定的值表明逻辑有问题时，可以采用这
-种断言。代码清单 9-4 展示了 notEqual 断言的用法。在删除了所有的待办事项后又添加了一个
-事项，然后再获取所有事项。如果事项的数量为 0，断言就会失败并抛出异常。
-4. 其他功能： strictEqual、 notStrictEqual、 deepEqual、 notDeepEqual
-除了 equal 和 notEqual， assert模块还提供了更严格的版本： strictEqual 和 notStrictEqual。
-它们在进行判断时用的是严格的相等操作符===，而不是比较随和的==。
-assert 模块也有用来比较对象的 deepEqual 和 notDeepEqual。这些断言中的 deep 表明它
-们会层层深入地对两个对象进行比较，比较两个对象的属性，如果属性也是对象，则会继续比较
-属性的属性。
+```
+
+assert 模块中还有个 notEqual 断言。当程序产生特定的值表明逻辑有问题时，可以采用这 种断言。代码清单 9-4 展示了 notEqual 断言的用法。在删除了所有的待办事项后又添加了一个 事项，然后再获取所有事项。如果事项的数量为 0，断言就会失败并抛出异常。
+
+4. 其他功能： strictEqual、 notStrictEqual、 deepEqual、 notDeepEqual 除了 equal 和 notEqual， assert 模块还提供了更严格的版本： strictEqual 和 notStrictEqual。 它们在进行判断时用的是严格的相等操作符===，而不是比较随和的==。
+
+assert 模块也有用来比较对象的 deepEqual 和 notDeepEqual。这些断言中的 deep 表明它 们会层层深入地对两个对象进行比较，比较两个对象的属性，如果属性也是对象，则会继续比较 属性的属性。
+
 5. 用 ok 测试异步值是否为 true
-现在该测试 doAsync 方法了，如代码清单 9-5 所示。因为是异步测试，所以要提供一个回调函
-数(cb)，向测试运行者发送测试结束的信号——不能像同步测试那样靠返回语句来表明测试结束
-了。要判断 doAsync 的结果值是否为 true，可以用 ok 断言。用它判断一个值是否为 true 很容易。
+
+现在该测试 doAsync 方法了，如代码清单 9-5 所示。因为是异步测试，所以要提供一个回调函 数(cb)，向测试运行者发送测试结束的信号——不能像同步测试那样靠返回语句来表明测试结束 了。要判断 doAsync 的结果值是否为 true，可以用 ok 断言。用它判断一个值是否为 true 很容易。
 代码清单 9-5 判断 doAsync 回调传入的是否为 true
+
+```js
 function doAsyncTest(cb) {
-todo.doAsync(value => {
-assert.ok(value, 'Callback should be passed true');
-testsCompleted++;
-cb();
-});
+  todo.doAsync((value) => {
+    assert.ok(value, "Callback should be passed true");
+    testsCompleted++;
+    cb();
+  });
 }
-将所有记录
-全部删除
-断言数据添
-加成功
-断言记录删
-除成功
-记录测试已
-完成
-删除之前所
-有的事项
-添加事项
-断言有事项
-记录测试 存在
-已完成
-记录测试
-完成后触发 已完成
-回调函数
-断言值为
-true206 第 9 章 测试 Node 程序
+// 将所有记录
+// 全部删除
+// 断言数据添
+// 加成功
+// 断言记录删
+// 除成功
+// 记录测试已
+// 完成
+// 删除之前所
+// 有的事项
+// 添加事项
+// 断言有事项
+// 记录测试 存在
+// 已完成
+// 记录测试
+// 完成后触发 已完成
+// 回调函数
+// 断言值为
+// true
+```
+
 6. 测试能否正确抛出错误
-assert 模块还可以检查程序抛出的错误消息是否正确，代码如下所示。 throws 调用中的第
-二个参数是一个正则表达式，表示要在错误消息中查找文本 requires。
+
+assert 模块还可以检查程序抛出的错误消息是否正确，代码如下所示。 throws 调用中的第 二个参数是一个正则表达式，表示要在错误消息中查找文本 requires。
 代码清单 9-6 检查缺少参数时 add 是否会抛出错误
+
+```js
 function throwsTest(cb) {
-assert.throws(todo.add, /requires/);
-testsCompleted++;
+  assert.throws(todo.add, /requires/);
+  testsCompleted++;
 }
+```
+
 7. 运行测试
-测试已经定义好了，接下来要在测试文件中添加运行这些测试的代码。下面的代码会运行前
-面定义的所有测试，然后输出完成的测试数量。
+
+测试已经定义好了，接下来要在测试文件中添加运行这些测试的代码。下面的代码会运行前 面定义的所有测试，然后输出完成的测试数量。
 代码清单 9-7 运行测试并报告测试完成的数量
+
+```js
 deleteTest();
 addTest();
 throwsTest();
 doAsyncTest(() => {
-console.log(`Completed ${testsCompleted} tests`);
+  console.log(`Completed ${testsCompleted} tests`);
 });
-用下面的命令运行这些测试：
-$ node chapter09-testing/listing_09_1-7/test.js
-如果测试都成功了，这段脚本会告诉你已完成的测试数量。要防止某个测试出问题，可以追
-踪测试的开始和结束时间。比如说，某个测试可能没能执行到断言的地方。
-使用 Node 自带的 assert 模块时，每个测试用例中都要包含很多套路化的代码用以设置测试
-（比如删除所有事项）， 追踪测试进程（“已完成”计数器）等。这些套路化的代码会占用你编写
-测试用例的时间和精力， 如果能把这些工作交给专用框架，让你能把精力都放在业务逻辑的测
-试上岂不更好。接下来我们要看一看 Mocha，了解一下如何用这个第三方单元测试框架让工作变
-得更轻松。
-9.1.2 Mocha
-Mocha 是个流行的测试框架，很容易上手。尽管 Mocha 默认是 BDD 风格的，但也可以用在
-TDD 风格的测试中。 Mocha 具有多种特性，包括全局变量泄漏检测和客户端测试。
-全局变量泄漏检测
-一般应该不需要整个程序范围内全都可读的全局变量，并且按照编程最佳实践来说，要尽
-量少用全局变量。但在 ES5 中，一不小心就会创建一个全局变量出来，只要在声明变量时忘
-记写关键字 var，这个变量就是全局变量了。 Mocha 能发现这种不小心创建出来的全局变量泄
-漏，如果你创建了全局变量，它会在测试时抛出错误。
-记录测试已
-完成
-表明完
-成数
-没有参数的 todo.add
-调用9.1 单元测试 207
+// 记录测试已
+// 完成
+// 表明完
+// 成数
+// 没有参数的 todo.add
+// 调用
+```
 
-如果想禁用全局泄漏检测，可以在运行 mocha 命令时加上 --ignored-leaks 选项。此
-外， 如果想指明要用的几个全局变量，可以把它们放在 --globals 选项后面，用逗号分开。
-Mocha 测试默认使用 BDD 风格的函数定义和设置，这些函数包括 describe、 it、 before、
-after、 beforeEach 和 afterEach。另外， Mocha 也有 TDD 接口，用 suite 代替 describe，
-test 代替 it， setup 代替 before， teardown 代替 after。不过在我们的例子中用的还是默
-认的 BDD 接口。
+用下面的命令运行这些测试：
+
+```
+$ node chapter09-testing/listing_09_1-7/test.js
+```
+
+如果测试都成功了，这段脚本会告诉你已完成的测试数量。要防止某个测试出问题，可以追 踪测试的开始和结束时间。比如说，某个测试可能没能执行到断言的地方。
+使用 Node 自带的 assert 模块时，每个测试用例中都要包含很多套路化的代码用以设置测试 （比如删除所有事项）， 追踪测试进程（“已完成”计数器）等。这些套路化的代码会占用你编写 测试用例的时间和精力， 如果能把这些工作交给专用框架，让你能把精力都放在业务逻辑的测 试上岂不更好。接下来我们要看一看 Mocha，了解一下如何用这个第三方单元测试框架让工作变 得更轻松。
+
+### 9.1.2 Mocha
+
+Mocha 是个流行的测试框架，很容易上手。尽管 Mocha 默认是 BDD 风格的，但也可以用在 TDD 风格的测试中。 Mocha 具有多种特性，包括全局变量泄漏检测和客户端测试。
+
+全局变量泄漏检测
+一般应该不需要整个程序范围内全都可读的全局变量，并且按照编程最佳实践来说，要尽 量少用全局变量。但在 ES5 中，一不小心就会创建一个全局变量出来，只要在声明变量时忘 记写关键字 var，这个变量就是全局变量了。 Mocha 能发现这种不小心创建出来的全局变量泄 漏，如果你创建了全局变量，它会在测试时抛出错误。
+
+如果想禁用全局泄漏检测，可以在运行 mocha 命令时加上 --ignored-leaks 选项。此 外， 如果想指明要用的几个全局变量，可以把它们放在 --globals 选项后面，用逗号分开。
+Mocha 测试默认使用 BDD 风格的函数定义和设置，这些函数包括 describe、 it、 before、 after、 beforeEach 和 afterEach。另外， Mocha 也有 TDD 接口，用 suite 代替 describe， test 代替 it， setup 代替 before， teardown 代替 after。不过在我们的例子中用的还是默 认的 BDD 接口。
+
 1. 用 Mocha 测试 Node 程序
-我们继续。接下来要创建一个名为 memdb（一个小型的内存数据库）的小项目，看看如何
-用 Mocha 对它进行测试。先创建项目的目录和文件：
+
+我们继续。接下来要创建一个名为 memdb（一个小型的内存数据库）的小项目，看看如何 用 Mocha 对它进行测试。先创建项目的目录和文件：
+
+```
 $ mkdir -p memdb/test
 $ cd memdb
 $ touch index.js
 $ touch test/memdb.js
 $ npm init -y
 $ npm install --save-dev mocha
+```
+
 打开 package.json，添加定义测试运行方式的 scripts 属性：
+
+```js
 "scripts": {
 "test": "mocha"
 },
-测试会放在 test 目录下。 Mocha 默认使用 BDD 接口，代码如下所示（随书源码见 chapter09-
-testing/memdb）。
+```
+
+测试会放在 test 目录下。 Mocha 默认使用 BDD 接口，代码如下所示（随书源码见 chapter09- testing/memdb）。
 代码清单 9-8 Mocha 测试的基本结构
-const memdb = require('..');
-describe('memdb', () => {
-describe('.saveSync(doc)', () => {
-it('should save the document', () => {
+
+```js
+const memdb = require("..");
+describe("memdb", () => {
+  describe(".saveSync(doc)", () => {
+    it("should save the document", () => {});
+  });
 });
-});
-});
-Mocha 也支持 TDD 和 qunit，以及 exports 风格的接口，项目网站上对此有详细介绍（ https://
-mochajs.org/）。比如下面就是一个 exports 接口的例子：
+```
+
+Mocha 也支持 TDD 和 qunit，以及 exports 风格的接口，项目网站上对此有详细介绍（ https:// mochajs.org/）。比如下面就是一个 exports 接口的例子：
+
+```js
 module.exports = {
-'memdb': {
-'.saveSync(doc)': {
-'should save the document': () => {
-}
-}
-}
-}
-这些接口提供的功能都是一样的，我们依然是用默认的 BDD 接口。下面是第一个测试，代
-码放在 test/memdb.js 中。这个测试用到了 assert 模块。
+  memdb: {
+    ".saveSync(doc)": {
+      "should save the document": () => {},
+    },
+  },
+};
+```
+
+这些接口提供的功能都是一样的，我们依然是用默认的 BDD 接口。下面是第一个测试，代 码放在 test/memdb.js 中。这个测试用到了 assert 模块。
 代码清单 9-9 描述 memdb.save 的功能
-const memdb = require('..');
-const assert = require('assert');
-describe('memdb', () => {
-describe('.saveSync(doc)', () => {
-it('should save the document', () => {
-const pet = { name: 'Tobi' };
-memdb.saveSync(pet);
-const ret = memdb.first({ name: 'Tobi' });
-assert(ret == pet);
+
+```js
+const memdb = require("..");
+const assert = require("assert");
+describe("memdb", () => {
+  describe(".saveSync(doc)", () => {
+    it("should save the document", () => {
+      const pet = { name: "Tobi" };
+      memdb.saveSync(pet);
+      const ret = memdb.first({ name: "Tobi" });
+      assert(ret == pet);
+    });
+  });
 });
-});
-});
-执行 npm test 就可以运行这些测试。 Mocha 默认会执行 ./test 目录下的 JavaScript 文件。因
-为.saveSync()方法还没实现，所以测试失败了，如图 9-2 所示。
+```
+
+执行 npm test 就可以运行这些测试。 Mocha 默认会执行 ./test 目录下的 JavaScript 文件。因 为.saveSync()方法还没实现，所以测试失败了，如图 9-2 所示。
 图 9-2 Mocha 中失败的测试
 把下面的代码放到 index.js 中。让测试成功通过!
 代码清单 9-10 添加 saveSync 功能
+
+```js
 const db = [];
 exports.saveSync = (doc) => {
-db.push(doc);
+  db.push(doc);
 };
 exports.first = (obj) => {
-return db.filter((doc) => {
-for (let key in obj) {
-if (doc[key] != obj[key]) {
-描述期
-望值
-确保找到了
-pet
-将 doc 添加到数
-据库数组中
-选择跟 obj 的所有
-属性相匹配的 doc
-描 述 .saveSync()
-方法的功能
-不匹配，返回 false，
-不选择这个 doc
-描述 memdb
-功能
+  return db
+    .filter((doc) => {
+      for (let key in obj) {
+        if (doc[key] != obj[key]) {
+          // 描述期
+          // 望值
+          // 确保找到了
+          // pet
+          // 将 doc 添加到数
+          // 据库数组中
+          // 选择跟 obj 的所有
+          // 属性相匹配的 doc
+          // 描 述 .saveSync()
+          // 方法的功能
+          // 不匹配，返回 false，
+          // 不选择这个 doc
+          // 描述 memdb
+          // 功能
 
-return false;
-}
-}
-return true;
-}).shift();
+          return false;
+        }
+      }
+      return true;
+    })
+    .shift();
 };
+```
+
 用 npm 再次运行测试，结果应该如图 9-3 所示，成功了。
 图 9-3 Mocha 中成功的测试
-2. 用 Mocha 挂钩定义设置和清理逻辑
-因为代码清单 9-10 中的测试用例假定 memdb.first()可以正常工作，所以也要给它添加几
-个测试用例。修改后的 test 文件（代码清单 9-11）用到了一个新概念——Mocha 挂钩。 BDD 接
-口 beforeEach()、 afterEach()、 before()和 after()接受回调，可以用来定义设置和清理
-逻辑。
-代码清单 9-11 添加 beforeEach 挂钩
-const memdb = require('..');
-const assert = require('assert');
-describe('memdb', () => {
-beforeEach(() => {
-memdb.clear();
-});
-describe('synchronous .saveSync(doc)', () => {
-it('should save the document', () => {
-const pet = { name: 'Tobi' };
-memdb.saveSync(pet);
-const ret = memdb.first({ name: 'Tobi' });
-assert(ret == pet);
-});
-});
-describe('.first(obj)', () => {
-it('should return the first matching doc', () => {
-const tobi = { name: 'Tobi' };
-const loki = { name: 'Loki' };
-memdb.saveSync(tobi);
-memdb.saveSync(loki);
-let ret = memdb.first({ name: 'Tobi' });
-assert(ret == tobi);
-ret = memdb.first({ name: 'Loki' });
-assert(ret == loki);
-});
-全都匹配，返回并
-选择这个 doc
-只要第一个
-doc或null
-在每个测试用例之前都要清理数
-据库，保持测试的无状态性
-对.first()的
-第一个期望
-保存两个
-文档 确 保 每 个 都 可
-以正确返回210 第 9 章 测试 Node 程序
-it('should return null when no doc matches', () => {
-const ret = memdb.first({ name: 'Manny' });
-assert(ret == null);
-});
-});
-});
-理想情况下，测试用例不会共享任何状态。要让 memdb 达到这一状态，只需要在 index.js
-中实现.clear()方法来移除所有文档就行了。
-exports.clear = () => {
-db.length = 0;
-};
-再次运行测试，应该看到三个都通过了。
-3. 测试异步逻辑
-我们还没用 Mocha 测试过异步逻辑。为了演示如何做这样的测试，要对之前在 index.js 中定
-义的一个函数做个小改动。把 saveSync 函数变成下面这样，加一个会在短暂的延迟之后执行的
-回调（用来模拟某种异步操作）作为可选的参数：
-exports.save = (doc, cb) => {
-db.push(doc);
-if (cb) {
-setTimeout(() => {
-cb();
-}, 1000);
-}
-};
-只要给定义测试逻辑的函数添加一个参数，就可以把 Mocha 测试用例定义为异步的。这个
-参数通常被命名为 done。下面的代码中演示了如何给异步方法.save()写测试代码。
-代码清单 9-12 测试异步逻辑
-describe('asyncronous .save(doc)', () => {
-it('should save the document', (done) => {
-const pet = { name: 'Tobi' };
-memdb.save(pet, () => {
-const ret = memdb.first({ name: 'Tobi' });
-assert(ret == pet);
-done();
-});
-});
-});
-这个规则适用于所有挂钩。比如给 beforeEach()挂钩加一个清理数据库的回调， Mocha
-可以等它调用后再继续。如果调用 done()时它的第一个参数是个错误， Mocha 会报告这个错误，
-并将这个挂钩或测试用例标记为失败：
-beforeEach((done) => {
-memdb.clear(done);
-});
-保存文档
-用第一个
-文档调用
-回调
-断言文档正
-告诉 Mocha 这个 确保存了
-测试用例做完了
-对.first()的
-第二个期望9.1 单元测试 211
 
-要了解与 Mocha 有关的更多内容，请参见其完整的在线文档。 Mocha 也可以测试客户端
-JavaScript。
+2. 用 Mocha 挂钩定义设置和清理逻辑
+
+因为代码清单 9-10 中的测试用例假定 memdb.first()可以正常工作，所以也要给它添加几 个测试用例。修改后的 test 文件（代码清单 9-11）用到了一个新概念——Mocha 挂钩。 BDD 接 口 beforeEach()、 afterEach()、 before()和 after()接受回调，可以用来定义设置和清理 逻辑。
+代码清单 9-11 添加 beforeEach 挂钩
+
+```js
+const memdb = require("..");
+const assert = require("assert");
+describe("memdb", () => {
+  beforeEach(() => {
+    memdb.clear();
+  });
+  describe("synchronous .saveSync(doc)", () => {
+    it("should save the document", () => {
+      const pet = { name: "Tobi" };
+      memdb.saveSync(pet);
+      const ret = memdb.first({ name: "Tobi" });
+      assert(ret == pet);
+    });
+  });
+  describe(".first(obj)", () => {
+    it("should return the first matching doc", () => {
+      const tobi = { name: "Tobi" };
+      const loki = { name: "Loki" };
+      memdb.saveSync(tobi);
+      memdb.saveSync(loki);
+      let ret = memdb.first({ name: "Tobi" });
+      assert(ret == tobi);
+      ret = memdb.first({ name: "Loki" });
+      assert(ret == loki);
+    });
+    // 全都匹配，返回并
+    // 选择这个 doc
+    // 只要第一个
+    // doc或null
+    // 在每个测试用例之前都要清理数
+    // 据库，保持测试的无状态性
+    // 对.first()的
+    // 第一个期望
+    // 保存两个
+    // 文档 确 保 每 个 都 可
+    // 以正确返回
+    it("should return null when no doc matches", () => {
+      const ret = memdb.first({ name: "Manny" });
+      assert(ret == null);
+    });
+  });
+});
+```
+
+理想情况下，测试用例不会共享任何状态。要让 memdb 达到这一状态，只需要在 index.js 中实现.clear()方法来移除所有文档就行了。
+
+```js
+exports.clear = () => {
+  db.length = 0;
+};
+```
+
+再次运行测试，应该看到三个都通过了。
+
+3. 测试异步逻辑
+
+我们还没用 Mocha 测试过异步逻辑。为了演示如何做这样的测试，要对之前在 index.js 中定 义的一个函数做个小改动。把 saveSync 函数变成下面这样，加一个会在短暂的延迟之后执行的 回调（用来模拟某种异步操作）作为可选的参数：
+
+```js
+exports.save = (doc, cb) => {
+  db.push(doc);
+  if (cb) {
+    setTimeout(() => {
+      cb();
+    }, 1000);
+  }
+};
+```
+
+只要给定义测试逻辑的函数添加一个参数，就可以把 Mocha 测试用例定义为异步的。这个 参数通常被命名为 done。下面的代码中演示了如何给异步方法.save()写测试代码。
+代码清单 9-12 测试异步逻辑
+
+```js
+describe("asyncronous .save(doc)", () => {
+  it("should save the document", (done) => {
+    const pet = { name: "Tobi" };
+    memdb.save(pet, () => {
+      const ret = memdb.first({ name: "Tobi" });
+      assert(ret == pet);
+      done();
+    });
+  });
+});
+```
+
+这个规则适用于所有挂钩。比如给 beforeEach()挂钩加一个清理数据库的回调， Mocha 可以等它调用后再继续。如果调用 done()时它的第一个参数是个错误， Mocha 会报告这个错误， 并将这个挂钩或测试用例标记为失败：
+
+```js
+beforeEach((done) => {
+  memdb.clear(done);
+});
+// 保存文档
+// 用第一个
+// 文档调用
+// 回调
+// 断言文档正
+// 告诉 Mocha 这个 确保存了
+// 测试用例做完了
+// 对.first()的
+// 第二个期望
+```
+
+要了解与 Mocha 有关的更多内容，请参见其完整的在线文档。 Mocha 也可以测试客户端 JavaScript。
+
 Mocha 的非并行测试
-Mocha 的测试不是并行执行的，而是一个接一个地执行。虽然这样执行的慢，但写起来更
-容易。不过 Mocha 不会让测试运行太长时间，一个测试默认不超过 2000 毫秒，超过这个时长
-就会被当作失败的测试。如果有运行时间更长的测试，可以用 --timeout 指定一个更大的数值。
-对于大多数测试而言，串行运行就很好。如果你觉得这种方式有问题，还有其他可以并行
-执行测试的框架，比如 Vows，我们把它放在下一节讨论。
-9.1.3 Vows
-跟很多单元测试框架比，在 Vows 下写的测试代码结构化更强， Vows 想让测试更容易理解和
-维护。
-Vows 用它自己的 BDD 术语定义测试结构。按 Vows 的定义，一个测试套件中包含一或多个
-批次。你可以把批次当作一组相互关联的情境，或者要测试的概念领域。批次和上下文是并行运
-行的。上下文中可能包含主题、一或多个誓约，以及/或者一或多个相关联的情境（内部情境也
-是并行运行的）。 主题是跟情境相关的测试逻辑。 誓约是对主题结果的测试。 Vows 对测试的结构
-化设定如图 9-4 所示。
-图 9-4 Vows 可以用批次、情境、主题和誓约把测试组织在一个套件内
-Vows 跟 Mocha 一样，是专门用来做自动化程序测试的。它们的差别主要体现在风格和并行性
-上， Vows 测试有特定的结构和术语。本节会给出一个例子，介绍如何用 Vows 同时运行多个测试。212 第 9 章 测试 Node 程序
+Mocha 的测试不是并行执行的，而是一个接一个地执行。虽然这样执行的慢，但写起来更 容易。不过 Mocha 不会让测试运行太长时间，一个测试默认不超过 2000 毫秒，超过这个时长 就会被当作失败的测试。如果有运行时间更长的测试，可以用 --timeout 指定一个更大的数值。 对于大多数测试而言，串行运行就很好。如果你觉得这种方式有问题，还有其他可以并行 执行测试的框架，比如 Vows，我们把它放在下一节讨论。
+
+### 9.1.3 Vows
+
+跟很多单元测试框架比，在 Vows 下写的测试代码结构化更强， Vows 想让测试更容易理解和 维护。
+Vows 用它自己的 BDD 术语定义测试结构。按 Vows 的定义，一个测试套件中包含一或多个 批次。你可以把批次当作一组相互关联的情境，或者要测试的概念领域。批次和上下文是并行运 行的。上下文中可能包含主题、一或多个誓约，以及/或者一或多个相关联的情境（内部情境也 是并行运行的）。 主题是跟情境相关的测试逻辑。 誓约是对主题结果的测试。 Vows 对测试的结构 化设定如图 9-4 所示。
+图 9-4 Vows 可以用批次、情境、主题和誓约把测试组织在一个套件内 Vows 跟 Mocha 一样，是专门用来做自动化程序测试的。它们的差别主要体现在风格和并行性 上， Vows 测试有特定的结构和术语。本节会给出一个例子，介绍如何用 Vows 同时运行多个测试。
 执行下面的命令，用 npm 安装 Vows 并添加到 to-do 项目中：
+
+```
 mkdir -p vows-todo/test
 cd vows-todo
 touch todo.js
 touch test/todo-test.js
 npm init -y
 npm install --save-dev -g vows
+```
+
 还要把它加到 package.json 的 test 属性上，以便用 npm test 运行测试：
+
+```json
 "scripts": {
 "test": "vows test/*.js"
 },
+```
+
 用 Vows 测试程序逻辑
-在 Vows 中，既可以运行包含测试逻辑的脚本来触发测试，也可以用 vows 命令行测试运行
-器。下面这个例子是个独立的测试脚本（可以像其他 Node 脚本那样运行），用了待办事项程序核
-心逻辑测试中的一个。
-代码清单 9-13 创建了一个批次。在这个批次内定义了一个情境。在情境内定义了一个主题
-和一个誓约。注意它在主题中如何使用回调处理异步逻辑。如果主题不是异步的，可以直接返回
-值，不用通过回调。将文件保存为 test/todo-test.js。
+在 Vows 中，既可以运行包含测试逻辑的脚本来触发测试，也可以用 vows 命令行测试运行 器。下面这个例子是个独立的测试脚本（可以像其他 Node 脚本那样运行），用了待办事项程序核 心逻辑测试中的一个。
+代码清单 9-13 创建了一个批次。在这个批次内定义了一个情境。在情境内定义了一个主题 和一个誓约。注意它在主题中如何使用回调处理异步逻辑。如果主题不是异步的，可以直接返回 值，不用通过回调。将文件保存为 test/todo-test.js。
 代码清单 9-13 用 Vows 测试待办事项程序
-const vows = require('vows');
-const assert = require('assert');
-const Todo = require('./../todo');
-vows.describe('Todo').addBatch({
-'when adding an item': {
-topic: () => {
-const todo = new Todo();
-todo.add('Feed my cat');
-return todo;
-},
-'it should exist in my todos': (er, todo) => {
-assert.equal(todo.length, 1);
-}
-}
-}).export(module);
-现在应该可以用 npm test 运行这个测试了。如果你用 npm i -g vows 把 Vows 安装在了
-全局环境中，也可以用下面这条命令运行 test 目录下的所有测试：
+
+```js
+const vows = require("vows");
+const assert = require("assert");
+const Todo = require("./../todo");
+vows
+  .describe("Todo")
+  .addBatch({
+    "when adding an item": {
+      topic: () => {
+        const todo = new Todo();
+        todo.add("Feed my cat");
+        return todo;
+      },
+      "it should exist in my todos": (er, todo) => {
+        assert.equal(todo.length, 1);
+      },
+    },
+  })
+  .export(module);
+// 批次
+// 情境
+// 主题
+// 誓约
+```
+
+现在应该可以用 npm test 运行这个测试了。如果你用 npm i -g vows 把 Vows 安装在了 全局环境中，也可以用下面这条命令运行 test 目录下的所有测试：
+
+```
 $ vows test/*
+```
+
 要了解与 Vows 有关的更多内容，请查阅该项目的在线文档，如图 9-5 所示。
-批次
-情境
-主题
-誓约9.1 单元测试 213
 
 图 9-5 Vows 用宏和流程控制实现了全功能的 BDD 测试
-Vows 提供了完备的测试方案，但仍然可以用别的断言库将不同测试库的功能混合搭配到一
-起。可能你喜欢 Mocha，但不喜欢 assertion 模块。下一节会介绍 Chai，它可以代替 assert 模块。
-9.1.4 Chai
-Chai 是个流行的断言库，有三个接口： should、 expect 和 assert。下面的代码中用到了
-assert，其看起来就像 Node 自带的 assertion 模块，但它还有用来比较对象、数组和它们的属性
-的工具。比如用 typeOf 比较类型，用 property 检查某个对象是否有我们想要的属性。
+Vows 提供了完备的测试方案，但仍然可以用别的断言库将不同测试库的功能混合搭配到一 起。可能你喜欢 Mocha，但不喜欢 assertion 模块。下一节会介绍 Chai，它可以代替 assert 模块。
+
+### 9.1.4 Chai
+
+Chai 是个流行的断言库，有三个接口： should、 expect 和 assert。下面的代码中用到了 assert，其看起来就像 Node 自带的 assertion 模块，但它还有用来比较对象、数组和它们的属性 的工具。比如用 typeOf 比较类型，用 property 检查某个对象是否有我们想要的属性。
 代码清单 9-14 Chai 的 assert 接口
-const chai = require('chai');
+
+```js
+const chai = require("chai");
 const assert = chai.assert;
-const foo = 'bar';
-const tea = { flavors: ['chai', 'earl grey', 'pg tips'] };
-assert.typeOf(foo, 'string');
-assert.equal(foo, 'bar');
+const foo = "bar";
+const tea = { flavors: ["chai", "earl grey", "pg tips"] };
+assert.typeOf(foo, "string");
+assert.equal(foo, "bar");
 assert.lengthOf(foo, 3);
-assert.property(tea, 'flavors');
+assert.property(tea, "flavors");
 assert.lengthOf(tea.flavors, 3);
+```
+
 should 和 expect 接口是人们想要尝试 Chai 的主要原因。它们提供了更像 BDD 风格的 API。
 下面是 expect 接口的例子：
-const chai = require('chai');
+
+```js
+const chai = require("chai");
 const expect = chai.expect;
-const foo = 'bar';
-expect(foo).to.be.a('string');
-expect(foo).to.equal('bar');
-选择断言
-接口214 第 9 章 测试 Node 程序
-这个 API 看起来更像英语句子——声明式风格更冗长，但看起来更通顺。 should 换了种风
-格：给对象添加属性，这样就不用把断言放在 expect 调用里了。
-const chai = require('chai');
+const foo = "bar";
+expect(foo).to.be.a("string");
+expect(foo).to.equal("bar");
+// 选择断言
+// 接口
+```
+
+这个 API 看起来更像英语句子——声明式风格更冗长，但看起来更通顺。 should 换了种风 格：给对象添加属性，这样就不用把断言放在 expect 调用里了。
+
+```js
+const chai = require("chai");
 chai.should();
-const foo = 'bar';
-foo.should.be.a('string');
-foo.should.equal('bar');
-要用哪个接口取决于项目。如果先写测试，并将其当作项目的文档，详细的 expect 和 should
-接口很好用。因为不改变原型， JavaScript 纯粹主义者更喜欢 expect，但那些习惯了 Ruby 的人
-可能更熟悉 should 那样的 API。
-Chai 有很多插件，包括一些趁手的工具，比如可以用 promise 写测试代码的 chai-as-promised，
-以及根据统计方法比较数值的 chai-stats。注意，因为 Chai 是断言库，所以要跟 Mocha 这样的测
-试运行者配合使用。
+const foo = "bar";
+foo.should.be.a("string");
+foo.should.equal("bar");
+```
+
+要用哪个接口取决于项目。如果先写测试，并将其当作项目的文档，详细的 expect 和 should 接口很好用。因为不改变原型， JavaScript 纯粹主义者更喜欢 expect，但那些习惯了 Ruby 的人 可能更熟悉 should 那样的 API。
+Chai 有很多插件，包括一些趁手的工具，比如可以用 promise 写测试代码的 chai-as-promised， 以及根据统计方法比较数值的 chai-stats。注意，因为 Chai 是断言库，所以要跟 Mocha 这样的测 试运行者配合使用。
 另一个像 Chai 一样的 BDD 断言库是 Should.js。下一节会介绍如何用 Should.js 写测试。
-9.1.5 Should.js
-Should.js 是个断言库，它用类似于 BDD 的风格表示断言，让测试更容易看懂。 它的设计初
-衷是搭配其他测试框架一起用，所以你可以继续用自己喜欢的框架。本节会介绍如何用 Should.js
-写断言，我们用的例子是编写代码测试一个定制的模块。
-Should.js 跟其他框架的搭配很容易，因为它只是给 Object.prototype 增加了一个 should
-属性。这样你就可以写出表达能力更强的断言，比如 user.role.should.equal('admin')，
-或者 users.should.include('rick')。
-比如说，你要编写一个 Node 命令行的小费计算器，在你跟朋友们采用 AA 制付费时，要用
-它计算每个人该付多少钱。你希望非程序员朋友也能看懂测试计算逻辑的代码，以免他们怀疑你
-耍诈。
-输入下面的命令设置这个小费计算器项目，它会创建一个文件夹，还会创建测试用的 tips.js
-文件：
+
+### 9.1.5 Should.js
+
+Should.js 是个断言库，它用类似于 BDD 的风格表示断言，让测试更容易看懂。 它的设计初 衷是搭配其他测试框架一起用，所以你可以继续用自己喜欢的框架。本节会介绍如何用 Should.js 写断言，我们用的例子是编写代码测试一个定制的模块。
+Should.js 跟其他框架的搭配很容易，因为它只是给 Object.prototype 增加了一个 should 属性。这样你就可以写出表达能力更强的断言，比如 user.role.should.equal('admin')， 或者 users.should.include('rick')。
+比如说，你要编写一个 Node 命令行的小费计算器，在你跟朋友们采用 AA 制付费时，要用 它计算每个人该付多少钱。你希望非程序员朋友也能看懂测试计算逻辑的代码，以免他们怀疑你 耍诈。
+输入下面的命令设置这个小费计算器项目，它会创建一个文件夹，还会创建测试用的 tips.js 文件：
+
+```
 mkdir -p tips/test
 cd tips
 touch index.js
 touch test/tips.js
+```
+
 然后运行下面的命令安装 Should.js：
+
+```
 npm init -y
 npm install --save-dev should
-接下来编辑 index.js，放入实现程序核心功能的代码。具体来说，小费计算器包含四个辅助
-函数：
-- addPercentageToEach——按给定的百分比加大数组中的所有数值；9.1 单元测试 215
+```
 
+接下来编辑 index.js，放入实现程序核心功能的代码。具体来说，小费计算器包含四个辅助 函数：
+
+- addPercentageToEach——按给定的百分比加大数组中的所有数值；
 - sum——计算数组中所有数值的和；
 - percentFormat——将要显示的值变成百分比格式；
 - dollarFormat——将要显示的值变成美元格式。
+
 下面是实现这些逻辑的代码，把它们放到 index.js 中。
 代码清单 9-15 分账时计算小费的逻辑
+
+```js
 exports.addPercentageToEach = (prices, percentage) => {
-return prices.map((total) => {
-total = parseFloat(total);
-return total + (total * percentage);
-});
+  return prices.map((total) => {
+    total = parseFloat(total);
+    return total + total * percentage;
+  });
 };
 exports.sum = (prices) => {
-return prices.reduce((currentSum, currentValue) => {
-return parseFloat(currentSum) + parseFloat(currentValue);
-});
+  return prices.reduce((currentSum, currentValue) => {
+    return parseFloat(currentSum) + parseFloat(currentValue);
+  });
 };
 exports.percentFormat = (percentage) => {
-return parseFloat(percentage) * 100 + '%';
+  return parseFloat(percentage) * 100 + "%";
 };
 exports.dollarFormat = (number) => {
-return `$${parseFloat(number).toFixed(2)}`;
+  return `$${parseFloat(number).toFixed(2)}`;
 };
-现在把代码清单 9-16 中的代码放到 test/tips.js 中。这段代码加载了小费逻辑模块；定义了
-税率、小费百分比，以及账单中的收费条目；测试了每个数组元素的百分比增加额；测试了账
-单总额。
+```
+
+现在把代码清单 9-16 中的代码放到 test/tips.js 中。这段代码加载了小费逻辑模块；定义了 税率、小费百分比，以及账单中的收费条目；测试了每个数组元素的百分比增加额；测试了账 单总额。
 代码清单 9-16 分账时测试计算小费的逻辑
-const tips = require('..');
-const should = require('should');
+
+```js
+const tips = require("..");
+const should = require("should");
 const tax = 0.12;
 const tip = 0.15;
 const prices = [10, 20];
@@ -8694,172 +8751,200 @@ const pricesWithTipAndTax = tips.addPercentageToEach(prices, tip + tax);
 pricesWithTipAndTax[0].should.equal(12.7);
 pricesWithTipAndTax[1].should.equal(25.4);
 const totalAmount = tips.sum(pricesWithTipAndTax).toFixed(2);
-totalAmount.should.equal('38.10');
+totalAmount.should.equal("38.10");
 const totalAmountAsCurrency = tips.dollarFormat(totalAmount);
-totalAmountAsCurrency.should.equal('$38.10');
+totalAmountAsCurrency.should.equal("$38.10");
 const tipAsPercent = tips.percentFormat(tip);
-tipAsPercent.should.equal('15%');
-用下面的命令运行这个脚本。如果一切正常，脚本应该不会输出什么，因为断言没有抛出错
-误。你的朋友更加信任你了。
-按百分比加大数组
-元素中的数值
-计算数组中所
-有数值的和
-将要显示的值变
-成百分比格式
-将要显示的值变
-成美元格式
-使用小费逻辑模块
-定义税率和小费比率
-定义要测试的账单项
-定义税和小费的增加额
-测试账单总额216 第 9 章 测试 Node 程序
+tipAsPercent.should.equal("15%");
+// 按百分比加大数组
+// 元素中的数值
+// 计算数组中所
+// 有数值的和
+// 将要显示的值变
+// 成百分比格式
+// 将要显示的值变
+// 成美元格式
+// 使用小费逻辑模块
+// 定义税率和小费比率
+// 定义要测试的账单项
+// 定义税和小费的增加额
+// 测试账单总额
+```
+
+用下面的命令运行这个脚本。如果一切正常，脚本应该不会输出什么，因为断言没有抛出错 误。你的朋友更加信任你了。
+
+```
 $ node test/tips.js
+```
+
 如果想让运行命令更简单些，可以把它加到 package.json 的 scripts 里面：
+
+```json
 "scripts": {
 "test": "node test/tips.js"
 }
-Should.js 支持很多种断言，从使用正则表达式的到检查对象属性的全都有，其可以对程序生
-成的数据和对象进行全面检查。这个项目的 GitHub 页面上有完整的 Should.js 功能文档。
-除了断言库，测试时还经常要用到探测器、存根和模拟对象。下一节介绍如何用 Sinon.JS 做
-这些事情。
-9.1.6 Sinon.JS 的探测器和存根
-模拟对象和存根库是测试工具箱里的终极工具。我们写单元测试是为了把系统的各个组成部
-分隔离开单独测试，但有时候这很难做到。比如测试图片缩放的代码时，如果不想读写真正的图
-片文件，该怎么写测试代码呢？代码中不应该有避开文件系统读写的特殊测试分支，因为那样就
-不是真正的测试了。在这种情况下，需要创建文件系统功能的存根。我们可以用存根代替尚未准
-备好的依赖项，这有助于实现真正的 TDD。
+```
+
+Should.js 支持很多种断言，从使用正则表达式的到检查对象属性的全都有，其可以对程序生 成的数据和对象进行全面检查。这个项目的 GitHub 页面上有完整的 Should.js 功能文档。 除了断言库，测试时还经常要用到探测器、存根和模拟对象。下一节介绍如何用 Sinon.JS 做 这些事情。
+
+### 9.1.6 Sinon.JS 的探测器和存根
+
+模拟对象和存根库是测试工具箱里的终极工具。我们写单元测试是为了把系统的各个组成部 分隔离开单独测试，但有时候这很难做到。比如测试图片缩放的代码时，如果不想读写真正的图 片文件，该怎么写测试代码呢？代码中不应该有避开文件系统读写的特殊测试分支，因为那样就 不是真正的测试了。在这种情况下，需要创建文件系统功能的存根。我们可以用存根代替尚未准 备好的依赖项，这有助于实现真正的 TDD。
 本节会介绍如何用 Sinon.JS 编写测试探测器、存根和模拟对象。不过我们要先创建个新项目，
 然后安装 Sinon：
+
+```
 mkdir sinon-js-examples
 cd sinon-js-examples
 npm init -y
 mkdir test
 npm i --save-dev sinon
-接着创建要测试的样例文件。这个例子里用了一个简单的 JSON 键/值数据库。我们要创建一
-个文件系统 API 的存根，这样就不用在文件系统里创建真正的文件了。我们也可以像下面这样只
-测试数据库代码，避开处理文件的代码。
-代码清单 9-17 数据库类
-const fs = require('fs');
-class Database {
-constructor(filename) {
-this.filename = filename;
-this.data = {};
-}
-save(cb) {
-fs.writeFile(this.filename, JSON.stringify(this.data), cb);
-}
-insert(key, value) {9.1 单元测试 217
+```
 
-this.data[key] = value;
-}
+接着创建要测试的样例文件。这个例子里用了一个简单的 JSON 键/值数据库。我们要创建一 个文件系统 API 的存根，这样就不用在文件系统里创建真正的文件了。我们也可以像下面这样只 测试数据库代码，避开处理文件的代码。
+代码清单 9-17 数据库类
+
+```js
+const fs = require("fs");
+class Database {
+  constructor(filename) {
+    this.filename = filename;
+    this.data = {};
+  }
+  save(cb) {
+    fs.writeFile(this.filename, JSON.stringify(this.data), cb);
+  }
+  insert(key, value) {
+    this.data[key] = value;
+  }
 }
 module.exports = Database;
+```
+
 将上面的代码存为 db.js，做好用 Sinon 探测器测试它的准备。
+
 1. 探测器
-有时候我们只是想看看某个方法是否被调用了。探测器最适合做这个。借助它的 API，可以将
-某个方法替换成能够进行断言的东西。比如用 Sinon 的方法替身 spy 模拟 db.js 中的 fs.writeFile：
-sinon.spy(fs, 'writeFile');
+
+有时候我们只是想看看某个方法是否被调用了。探测器最适合做这个。借助它的 API，可以将 某个方法替换成能够进行断言的东西。比如用 Sinon 的方法替身 spy 模拟 db.js 中的 fs.writeFile：
+
+```js
+sinon.spy(fs, "writeFile");
+```
+
 测试完成后，可以用 fs.writeFile.restore();复原原来的方法。
-在 Mocha 之类的测试库中使用时，应该把这些操作放在 beforeEach 和 afterEach 中。下
-面是探测器用法的完整示例。将这段代码存为 spies.js。
+在 Mocha 之类的测试库中使用时，应该把这些操作放在 beforeEach 和 afterEach 中。下 面是探测器用法的完整示例。将这段代码存为 spies.js。
 代码清单 9-18 使用探测器
-const sinon = require('sinon');
-const Database = require('./db');
-const fs = require('fs');
-const database = new Database('./sample.json');
-const fsWriteFileSpy = sinon.spy(fs, 'writeFile');
+
+```js
+const sinon = require("sinon");
+const Database = require("./db");
+const fs = require("fs");
+const database = new Database("./sample.json");
+const fsWriteFileSpy = sinon.spy(fs, "writeFile");
 const saveDone = sinon.spy();
-database.insert('name', 'Charles Dickens');
+database.insert("name", "Charles Dickens");
 database.save(saveDone);
 sinon.assert.calledOnce(fsWriteFileSpy);
 fs.writeFile.restore();
-设置好探测器后 运行要测试的代码。然后调用 sinon.assert 确保方法被调用了。恢复
-原来的方法 。这项测试中的恢复操作不是必须的，但恢复之前改变的方法是最佳实践。
+```
+
+设置好探测器后 运行要测试的代码。然后调用 sinon.assert 确保方法被调用了。恢复 原来的方法 。这项测试中的恢复操作不是必须的，但恢复之前改变的方法是最佳实践。
+
 2. 存根
-有时需要控制代码流程。比如在测试错误处理代码时，需要强迫执行错误处理分支。前面那
-个例子可以改写一下，用存根取代探测器，以便执行 writeFile 的回调函数。注意，我们并不
-想调用真正的 writeFile，只是希望能运行那个回调函数。下面是如何使用存根替换函数的例
-子，将它存为 stub.js。
+
+有时需要控制代码流程。比如在测试错误处理代码时，需要强迫执行错误处理分支。前面那 个例子可以改写一下，用存根取代探测器，以便执行 writeFile 的回调函数。注意，我们并不 想调用真正的 writeFile，只是希望能运行那个回调函数。下面是如何使用存根替换函数的例 子，将它存为 stub.js。
 代码清单 9-19 使用存根
-const sinon = require('sinon');
-const Database = require('./db');
-const fs = require('fs');
-const database = new Database('./sample.json');
-替换 fs
-方法
-断言 writeFile
-只调用了一次
-恢复原来
-的方法218 第 9 章 测试 Node 程序
-const stub = sinon.stub(fs, 'writeFile', (file, data, cb) => {
-cb();
+
+```js
+const sinon = require("sinon");
+const Database = require("./db");
+const fs = require("fs");
+const database = new Database("./sample.json");
+// 替换 fs
+// 方法
+// 断言 writeFile
+// 只调用了一次
+// 恢复原来
+// 的方法
+const stub = sinon.stub(fs, "writeFile", (file, data, cb) => {
+  cb();
 });
 const saveDone = sinon.spy();
-database.insert('name', 'Charles Dickens');
+database.insert("name", "Charles Dickens");
 database.save(saveDone);
 sinon.assert.calledOnce(stub);
 sinon.assert.calledOnce(saveDone);
 fs.writeFile.restore();
-在测试有大量用户提供的函数、回调和 promise 的代码时，把存根和探测器结合起来用是最
-理想的办法。看过这些单元测试工具后，我们该去探究另一种风格的测试了：功能测试。
+// 用自己的函数代替
+// writeFile
+// 断言 database.save
+// 的回调运行了
+// 断言 writeFile
+// 被调用了
+```
+
+在测试有大量用户提供的函数、回调和 promise 的代码时，把存根和探测器结合起来用是最 理想的办法。看过这些单元测试工具后，我们该去探究另一种风格的测试了：功能测试。
+
 ## 9.2 功能测试
-在大多数 Web 项目的开发中，进行功能测试的办法都是按用户指定的需求列表驱动浏览器
-执行操作，然后检查各种 DOM 变化。比如在做一个内容管理系统时，要对图片库的上传功能做
-功能测试，也就是上传一张图片，然后检查是不是添加上了，再检查是不是加到了正确的图片列
-表中。
-Node 中做功能测试的工具很多，选起来会让人有种乱花渐欲迷人眼的感觉。不过它们大体
-上可以分成两类：无头测试和基于浏览器的测试。 无头测试基本上都是用 PhantomJS 之类的工具
-提供一个可以在终端里使用的浏览器环境，也有轻便一些的方案会用 Cheerio 和 JSDOM 这样的
-库。 基于浏览器的测试用 Selenium 之类的浏览器自动化工具，通过脚本驱动真正的浏览器。两
-种测试方式用的底层测试工具都是一样的，你可以根据自己的偏好用 Mocha、 Jasmine 甚至
-Cucumber 驱动 Selenium 测试自己的程序。图 9-6 给出了一个测试环境的例子。
+
+在大多数 Web 项目的开发中，进行功能测试的办法都是按用户指定的需求列表驱动浏览器 执行操作，然后检查各种 DOM 变化。比如在做一个内容管理系统时，要对图片库的上传功能做 功能测试，也就是上传一张图片，然后检查是不是添加上了，再检查是不是加到了正确的图片列 表中。
+Node 中做功能测试的工具很多，选起来会让人有种乱花渐欲迷人眼的感觉。不过它们大体 上可以分成两类：无头测试和基于浏览器的测试。 无头测试基本上都是用 PhantomJS 之类的工具 提供一个可以在终端里使用的浏览器环境，也有轻便一些的方案会用 Cheerio 和 JSDOM 这样的 库。 基于浏览器的测试用 Selenium 之类的浏览器自动化工具，通过脚本驱动真正的浏览器。两 种测试方式用的底层测试工具都是一样的，你可以根据自己的偏好用 Mocha、 Jasmine 甚至 Cucumber 驱动 Selenium 测试自己的程序。图 9-6 给出了一个测试环境的例子。
 图 9-6 用浏览器自动化进行测试
 本节会介绍功能测试方案，让你可以根据自己的需求搭建测试环境。
-用自己的函数代替
-writeFile
-断言 database.save
-的回调运行了
-断言 writeFile
-被调用了9.2 功能测试 219
 
 Selenium
-Selenium 是基于 Java 的浏览器自动化库，它很受欢迎。在特定语言驱动器的帮助下，我们
-可以连接到 Selenium 服务器上，用真正的浏览器跑测试用例。本节会介绍如何使用 Node 的
-Selenium 驱动器 WebdriverIO。
-Selenium 用起来比使用纯粹的 Node 测试库困难一些，需要安装 Java，还要下载 Selenium JAR
-文件。下载与你的操作系统对应的 Java，再到 Selenium 网站上下载它的 JAR 文件。然后运行下
-面的命令启动一个 Selenium 服务器：
+Selenium 是基于 Java 的浏览器自动化库，它很受欢迎。在特定语言驱动器的帮助下，我们 可以连接到 Selenium 服务器上，用真正的浏览器跑测试用例。本节会介绍如何使用 Node 的 Selenium 驱动器 WebdriverIO。
+Selenium 用起来比使用纯粹的 Node 测试库困难一些，需要安装 Java，还要下载 Selenium JAR 文件。下载与你的操作系统对应的 Java，再到 Selenium 网站上下载它的 JAR 文件。然后运行下 面的命令启动一个 Selenium 服务器：
+
+```
 java -jar selenium-server-standalone-2.53.0.jar
-你得到的 Selenium 版本可能不一样。另外还要提供浏览器可执行文件所在的路径。比如在
-browserName 被设为 Firefox 的 Windows 10 中，可以像下面这样指定 Firefox 的完整路径：
+```
+
+你得到的 Selenium 版本可能不一样。另外还要提供浏览器可执行文件所在的路径。比如在 browserName 被设为 Firefox 的 Windows 10 中，可以像下面这样指定 Firefox 的完整路径：
+
+```
 java -jar -Dwebdriver.firefox.driver="C:\path\to\firefox.exe" seleniumserver-standalone-3.0.1.jar
+```
+
 确切的路径要看 Firefox 是怎么安装的。 SeleniumHQ 的文档里有 Firefox 驱动的详细介绍。
 Chrome 和 Microsoft Edge 配置跟 Firefox 差不多。
 现在创建新的 Node 项目，安装 WebdriverIO：
+
+```shell
 mkdir -p selenium/test/specs
 cd selenium
 npm init -y
 npm install --save-dev webdriverio
 npm install --save express
+# 从消息头中
+# 获取 title
+```
+
 WebdriverIO 很贴心地提供了一个配置文件生成器。可以用 wdio config 运行它：
+
+```
 ./node_modules/.bin/wdio config
+```
+
 接受所有问题和提供的默认值。图 9-7 是我的截屏。
-图 9-7 用 wdio 配置 Selenium 测试220 第 9 章 测试 Node 程序
-从消息头中
-获取 title
+图 9-7 用 wdio 配置 Selenium 测试
 把 wdio 命令加到 package.json 里，以便以后可以用 npm test 运行测试：
+
+```json
 "scripts": {
 "test": "wdio wdio.conf.js"
 },
-该添加测试对象了，一个简单的 Express 服务器就好。下面这段代码就是我们后面要测试的
-对象。将它存为 index.js（随书源码见 ch09-testing/selenium/index.js）。
+```
+
+该添加测试对象了，一个简单的 Express 服务器就好。下面这段代码就是我们后面要测试的 对象。将它存为 index.js（随书源码见 ch09-testing/selenium/index.js）。
 代码清单 9-20 Express 项目样本
-const express = require('express');
+
+```js
+const express = require("express");
 const app = express();
 const port = process.env.PORT || 4000;
-app.get('/', (req, res) => {
-res.send(`
+app.get("/", (req, res) => {
+  res.send(`
 <html>
 <head>
 <title>My to-do list</title>
@@ -8871,73 +8956,90 @@ res.send(`
 `);
 });
 app.listen(port, () => {
-console.log('Running on port', port);
+  console.log("Running on port", port);
 });
-WebdriverIO 的 API 简单流畅、语法清晰、易于学习掌握——甚至支持用 CSS 选择器写测试
-代码。下面这段代码（随书源码见 test/specs/todo-test.js）演示了如何设置 WebdriverIO 客户端，
-然后用它检查页面的标题。
-代码清单 9-21 WebdriverIO 测试
-const assert = require('assert');
-const webdriverio = require('webdriverio');
-describe('todo tests', () => {
-let client;
-before(() => {
-client = webdriverio.remote();
-return client.init();
-});
-it('todo list test', () => {
-return client
-.url('/')
-.getTitle()
-.then(title => assert.equal(title, 'My to-do list'));
-});
-});
-设置 WebdriverIO
-客户端
-获取首页
-断言 title
-是期望值9.3 处理失败的测试 221
+```
 
-WebdriverIO 连好之后 ，可以用它的客户端实例获取程序页面 。然后查询浏览器中文档
-的当前状态——上面这个例子是用 getTitle 获取文档头部的 title 元素。如果想用 CSS 类获
-取文档元素，可以用.elements。各种操作文档、表单，甚至 cookie 的方法应有尽有。
-虽然这个测试看起来跟 Mocha 测试差不多，但它可以用真正的浏览器测试 Web 程序。在端
-口 4000 上启动服务器：
+WebdriverIO 的 API 简单流畅、语法清晰、易于学习掌握——甚至支持用 CSS 选择器写测试 代码。下面这段代码（随书源码见 test/specs/todo-test.js）演示了如何设置 WebdriverIO 客户端， 然后用它检查页面的标题。
+代码清单 9-21 WebdriverIO 测试
+
+```js
+const assert = require("assert");
+const webdriverio = require("webdriverio");
+describe("todo tests", () => {
+  let client;
+  before(() => {
+    client = webdriverio.remote();
+    return client.init();
+  });
+  it("todo list test", () => {
+    return client
+      .url("/")
+      .getTitle()
+      .then((title) => assert.equal(title, "My to-do list"));
+  });
+});
+// 设置 WebdriverIO
+// 客户端
+// 获取首页
+// 断言 title
+// 是期望值
+```
+
+WebdriverIO 连好之后 ，可以用它的客户端实例获取程序页面 。然后查询浏览器中文档 的当前状态——上面这个例子是用 getTitle 获取文档头部的 title 元素。如果想用 CSS 类获 取文档元素，可以用.elements。各种操作文档、表单，甚至 cookie 的方法应有尽有。
+虽然这个测试看起来跟 Mocha 测试差不多，但它可以用真正的浏览器测试 Web 程序。在端 口 4000 上启动服务器：
+
+```
 PORT=4000 node index.js
-然后运行 npm test，你应该会看到 Firefox，以及在命令行里运行的测试。如果想换成
-Chrome，可以修改 wdio.conf.js 里的 browserName。
+```
+
+然后运行 npm test，你应该会看到 Firefox，以及在命令行里运行的测试。如果想换成 Chrome，可以修改 wdio.conf.js 里的 browserName。
 用 Selenium 完成更高级的测试
-在用 WebdriverIO 和 Selenium 测试比较复杂的程序时，比如那些用到了 React 或 Angular
-的，可能需要测试一些辅助性方法。有些方法要等到特定元素出现才会继续执行，要异步渲染
-文档的 React 程序就是这样的，它会在远程数据陆续到达时多次更新文档。
-看看 waitFor*方法，比如 waitForVisible，了解更多信息。
+在用 WebdriverIO 和 Selenium 测试比较复杂的程序时，比如那些用到了 React 或 Angular 的，可能需要测试一些辅助性方法。有些方法要等到特定元素出现才会继续执行，要异步渲染 文档的 React 程序就是这样的，它会在远程数据陆续到达时多次更新文档。
+看看 waitFor\*方法，比如 waitForVisible，了解更多信息。
+
 ## 9.3 处理失败的测试
-在做已经成形的项目时，总会碰到测试失败的时候。 Node 提供了一些工具，可以获取更详
-细的失败信息，本节会介绍调试失败的测试时如何让测试用例输出更多信息。
-测试失败时，我们要做的第一件事就是生成更详细的日志。接下来会演示如何用 NODE_DEBUG
-完成这项任务。
-9.3.1 获取更详细的日志
-测试失败后，需要知道程序当时在做些什么。在 Node 中有两种途径：一种是用于 Node 内
-部的，另一种是给 npm 模块用的。我们用 NODE_DEBUG 调试 Node 的核心模块。
+
+在做已经成形的项目时，总会碰到测试失败的时候。 Node 提供了一些工具，可以获取更详 细的失败信息，本节会介绍调试失败的测试时如何让测试用例输出更多信息。
+测试失败时，我们要做的第一件事就是生成更详细的日志。接下来会演示如何用 NODE_DEBUG 完成这项任务。
+
+### 9.3.1 获取更详细的日志
+
+测试失败后，需要知道程序当时在做些什么。在 Node 中有两种途径：一种是用于 Node 内 部的，另一种是给 npm 模块用的。我们用 NODE_DEBUG 调试 Node 的核心模块。
+
 1. 使用 NODE_DEBUG
-假设你忘了给一个嵌套很深的文件系统调用提供回调函数，就像下面这段代码一样，它就会
-抛出一个异常：
-const fs = require('fs');
+
+假设你忘了给一个嵌套很深的文件系统调用提供回调函数，就像下面这段代码一样，它就会 抛出一个异常：
+
+```js
+const fs = require("fs");
 function deeplyNested() {
-fs.readFile('/');
+  fs.readFile("/");
 }
 deeplyNested();
+```
+
 关于这个异常，栈跟踪输出的信息很有限，特别是根本就没提供异常源自何处的完整信息：
+
+```
 fs.js:60
 throw err; // Forgot a callback but don't know where? Use
 NODE_DEBUG=fs
 ^
 Error: EISDIR: illegal operation on a directory, read
 at Error (native)
+```
+
 没什么有价值的信息，很多程序员看到这个都会抱怨 Node。但就像注释中指出的那样，可
 以用 NODE_DEBUG=fs 获取更多信息。现在像下面这样运行这个脚本：
+
+```
 NODE_DEBUG=fs node node-debug-example.js
+```
+
 可以看到对调试更有帮助的详细跟踪信息：
+
+```
 fs.js:53
 throw backtrace;
 ^
@@ -8952,69 +9054,97 @@ at Object.Module._extensions..js (module.js:442:10)
 at Module.load (module.js:356:32)
 at Function.Module._load (module.js:311:12)
 at Function.Module.runMain (module.js:467:10)
-这里明确指出问题出在我们的文件里，异常源自第 7 行调用那个函数里的第 4 行代码。有了
-这样的信息，调试使用 Node 核心模块的代码就变得容易多了，不仅是文件系统，还有 HTTP 客
-户端和服务器模块之类的网络库。
+```
+
+这里明确指出问题出在我们的文件里，异常源自第 7 行调用那个函数里的第 4 行代码。有了 这样的信息，调试使用 Node 核心模块的代码就变得容易多了，不仅是文件系统，还有 HTTP 客 户端和服务器模块之类的网络库。
+
 2. 使用 DEBUG
-DEBUG 是 NODE_DEBUG 之外的另一个公共选项， npm 上的很多包都会看这个环境变量。 DEBUG
-的参数风格跟 NODE_DEBUG 一样，也就是说可以指定要调试的模块列表，或者用 DEBUG='*'查
-看所有模块的调试信息。图 9-8 是 DEBUG='*'时运行第 4 章那个项目的截屏。
-图 9-8 DEBUG='*'时运行的 Express 程序9.3 处理失败的测试 223
+
+DEBUG 是 NODE_DEBUG 之外的另一个公共选项， npm 上的很多包都会看这个环境变量。 DEBUG 的参数风格跟 NODE_DEBUG 一样，也就是说可以指定要调试的模块列表，或者用 DEBUG='_'查 看所有模块的调试信息。图 9-8 是 DEBUG='_'时运行第 4 章那个项目的截屏。
+图 9-8 DEBUG='\*'时运行的 Express 程序
 
 如果想在自己的项目中支持 NODE_DEBUG，可以用 util.debuglog 方法：
-const debuglog = require('util').debuglog('example');
-debuglog('You can only see these messages by setting NODE_DEBUG=example!');
-要做用 DEBUG 配置的调试记录器，需要 debug 包。调试记录器的数量没有限制，可以根据
-自己的需要创建。假设你正在做一个 MVC Web 程序，可以为模型、视图和控制器分别创建一个
-调试记录器。这样在测试失败后，你可以指定使用哪个记录器，去掉无关信息，只保留必要的信
-息以便调试。下面是使用 debug 模块的例子 （随书源码见 ch09-testing/debug-example/index.js）。
+
+```js
+const debuglog = require("util").debuglog("example");
+debuglog("You can only see these messages by setting NODE_DEBUG=example!");
+```
+
+要做用 DEBUG 配置的调试记录器，需要 debug 包。调试记录器的数量没有限制，可以根据 自己的需要创建。假设你正在做一个 MVC Web 程序，可以为模型、视图和控制器分别创建一个 调试记录器。这样在测试失败后，你可以指定使用哪个记录器，去掉无关信息，只保留必要的信 息以便调试。下面是使用 debug 模块的例子 （随书源码见 ch09-testing/debug-example/index.js）。
 代码清单 9-22 使用 debug 包
-const debugViews = require('debug')('debug-example:views');
-const debugModels = require('debug')('debug-example:models');
-debugViews('Example view message');
-debugModels('Example model message');
+
+```js
+const debugViews = require("debug")("debug-example:views");
+const debugModels = require("debug")("debug-example:models");
+debugViews("Example view message");
+debugModels("Example model message");
+```
+
 如果只想看视图日志，将 DEBUG 设为 debug-example:views：
+
+```
 DEBUG=debug-example:views node index.js
+```
+
 debug 模块还有一个功能，我们可以在记录器名称前加个连字符号关闭它：
+
+```
 DEBUG='* -debug-example:views' node index.js
-也就是说可以在使用*的同时关闭某些日志器，从而从输出中去掉不需要的，或者说噪音部分。
-9.3.2 更好的栈跟踪
-如果代码中有异步操作，或者包含了使用异步回调或 promise 的任何东西，那么栈跟踪信息
-不够详细时就很难办。 npm 上有能解决这些问题的包。比如说，在回调异步运行时， Node 不会
-在操作排上队列后保留调用栈。我们来做个实验验证一下。先创建两个文件，一个是 async.js，在
-其中定义一个异步函数；另一个是 index.js，只是引入 async.js 就好。下面是 aync.js 的代码（随
-书源码见 ch09-testing/debug-stacktraces/async.js）：
+```
+
+也就是说可以在使用\*的同时关闭某些日志器，从而从输出中去掉不需要的，或者说噪音部分。
+
+### 9.3.2 更好的栈跟踪
+
+如果代码中有异步操作，或者包含了使用异步回调或 promise 的任何东西，那么栈跟踪信息 不够详细时就很难办。 npm 上有能解决这些问题的包。比如说，在回调异步运行时， Node 不会 在操作排上队列后保留调用栈。我们来做个实验验证一下。先创建两个文件，一个是 async.js，在 其中定义一个异步函数；另一个是 index.js，只是引入 async.js 就好。下面是 aync.js 的代码（随 书源码见 ch09-testing/debug-stacktraces/async.js）：
+
+```js
 module.exports = () => {
-setTimeout(() => {
-throw new Error();
-})
+  setTimeout(() => {
+    throw new Error();
+  });
 };
+```
+
 这是 index.js，只需要引入 async.js：
-require('./async.js')();
-用 node index.js 运行 index.js，你会看到一段只显示了抛出异常的位置，没有调用者的
-栈跟踪信息：
+
+```js
+require("./async.js")();
+```
+
+用 node index.js 运行 index.js，你会看到一段只显示了抛出异常的位置，没有调用者的 栈跟踪信息：
+
+```js
 throw new Error();
-^224 第 9 章 测试 Node 程序
+^
 Error
 at null._onTimeout (async.js:3:11)
 at Timer.listOnTimeout (timers.js:92:15)
-trace 包可以改变这种情况，运行 node -r trace index.js，其中 -r 的意思是告诉 Node
-先引入 trace 模块，然后再加载其他东西。
-有时候我们会觉得栈跟踪太详细了，比如包含太多 Node 内部信息时，这也是个问题。这时
-可以用 clarify 清理栈跟踪信息。仍然是带着 -r 运行：
+```
+
+trace 包可以改变这种情况，运行 node -r trace index.js，其中 -r 的意思是告诉 Node 先引入 trace 模块，然后再加载其他东西。
+有时候我们会觉得栈跟踪太详细了，比如包含太多 Node 内部信息时，这也是个问题。这时 可以用 clarify 清理栈跟踪信息。仍然是带着 -r 运行：
+
+```
 $ node -r clarify index.js
 throw new Error();
 ^
 Error
 at null._onTimeout (async.js:3:11)
+```
+
 如果想把栈跟踪放在错误报警邮件里，那就更需要 clarify 了。
-如果运行的是浏览器里的代码，可能是一个同构的 Web 应用程序中的一部分，那么可以用
-source-map-support 改善栈跟踪信息。这个既可以用 -r 指定，也可以放在测试框架中：
+如果运行的是浏览器里的代码，可能是一个同构的 Web 应用程序中的一部分，那么可以用 source-map-support 改善栈跟踪信息。这个既可以用 -r 指定，也可以放在测试框架中：
+
+```
 $ node -r source-map-support/register index.js
 $ mocha --require source-map-support/register index.js
-下次再因为异步代码生成的栈跟踪而倍感挫折时，找找有没有 trace 和 clarify 这样的工具，
-以确保你得到的就是 V8 和 Node 能提供的最好结果。
+```
+
+下次再因为异步代码生成的栈跟踪而倍感挫折时，找找有没有 trace 和 clarify 这样的工具， 以确保你得到的就是 V8 和 Node 能提供的最好结果。
+
 ## 9.4 总结
+
 - 编写单元测试需要 Mocha 这样的测试运行器。
 - Node 自带了一个断言库 assert。
 - 还有其他断言库，包括 Chai 和 Should.js。
