@@ -9152,52 +9152,65 @@ $ mocha --require source-map-support/register index.js
 - Sinon.JS 也可以探测代码，验证某个函数或方法是不是运行了。
 - 通过利用脚本驱动真正的浏览器，可以用 Selenium 编写浏览器测试。
 
-# 第10章 Node 程序的部署及运维
+# 第 10 章 Node 程序的部署及运维
+
 本章内容
+
 - 选择在哪里安置你的 Node 程序
 - 典型程序的部署
 - 保证在线时间及性能最大化
 
 Web 程序的开发是一码事儿，把它放到生产环境中又是另一码事儿。每种 Web 技术都有各 种增强稳定性和提高性能的技巧、窍门， Node 也不例外。本章不仅会让你对如何选择合适的部 署环境有个大体认识，还会介绍如何保证程序的在线时间。
 后面的章节会列出部署环境的主要类型，还有保证在线时长的各种办法。
+
 ## 10.1 安置 Node 程序
+
 本书中开发的 Web 程序用的都是基于 Node 的 HTTP 服务器。浏览器不需要通过 Apache 或 Nginx 这样的专用 HTTP 服务器跟程序通话。但也可以在应用程序之前放一个 Nginx 这样的服务 器，所以 Node 程序基本上可以放在之前你放置 Web 服务器的所有地方。
 云提供商，包括 Heroku 和 Amazon，也支持 Node。因此有三种可靠且可扩展的方式运行 Node 程序：
+
 - 平台即服务——在 Amazon、 Azure 或 Heroku 上运行；
 - 服务器或虚拟主机——在云上、私有主机公司或你们公司内部的服务器上， UNIX 或 Windows 服务器都可以；
 - 容器——用 Docker 这样的软件容器运行你的程序和其他相关服务。
 
 这三种方案选择起来很难，因为即便只是想先试一下也并不是特别容易。每种方案都不止一 个选择：比如说， Amazon 和 Azure 能提供所有这些部署策略。本节会介绍这些方案的需求以及 它们的优点和缺点，以便让你知道哪个更适合你的程序。好在每种方案都有免费或价格合理的选 项，所以对爱好者和专业人士来说，这些方案应该都在能力范围之内。
+
 ### 10.1.1 平台即服务
+
 有了平台即服务（ PaaS），程序部署的准备工作基本上就是注册个账号、创建新程序，然后 给项目添加一个远程 Git 地址。把程序推送到那个地址就部署好了。默认情况下，程序会被放在 单个容器里（各家厂商对容器的定义不太一样），并且如果程序崩溃了的话，服务会尝试重新启 动它。你只能通过日志、 Web 界面和命令行管理程序。一般通过运行多个程序实例实现扩展，这 也就意味着要支付更多费用。表 10-1 是 PaaS 常见特性概览。
 表 10-1 PaaS 的特性
 易用性 高
 功能 Git 推送部署，简单的水平扩展能力
 基础设施 抽象的/黑盒子
 商业适用性 良好：应用程序通常被网络隔离
-价格 a 低流量： $$； 受欢迎的网站： $$$$
+价格 a 低流量： $$； 受欢迎的网站： $$\$$
 厂商 Heroku, Azure, AWS Elastic Beanstalk
-a $：便宜； $$$$$：贵
+a $：便宜； \$\$\$\$\$：贵
 PaaS 提供商们会支持他们喜欢的数据库和第三方数据库。对于 Heroku 来说，就是 PostgreSQL；对 Azure 来说，就是 SQL Database。因为数据库连接的配置会放在环境变量里，所 以不用在项目源码里添加数据库访问凭证。 PaaS 是爱好者的福音，因为它价格便宜，对于流量 不高的小项目来说，甚至可能是免费的。
 有些提供商的产品用起来更容易：对于程序员来说，即便不懂系统管理或 DevOps，只要熟 悉 Git，就会觉得 Heroku 用起来极其容易。一般来讲， PaaS 知道如何运行那些用 Node、 Rails 和 Django 等热门工具开发的项目，可以说基本上都是即插即用的。
 让 Node 在 Heroku 上 10 分钟上线的例子
 接下来我们要在 Heroku 上部署一个程序。按照 Heroku 的默认配置，这个程序会部署在一个 轻便的 Linux 容器上，即 Heroku 所说的 dyno 上，来为你的程序服务。在 Heroku 上部署程序的 前提条件如下。
+
 - 一个等待部署的程序。
 - Heroku 账号： https://signup.heroku.com/。
 - Heroku CLI： https://devcenter.heroku.com/articles/heroku-cli。
 
 这些都准备好后，在命令行里登录 Heroku：
+
 ```
 heroku login
 ```
+
 Heroku 会提示你输入邮箱地址和密码。接下来，创建一个简单的 Express 程序：
+
 ```
 mkdir heroku-example
 npm i -g express-generator
 express
-npm i10.1 安置 Node 程序 227
+npm i
 ```
+
 运行 npm start，访问 http://localhost:3000，确保一切正常。接着初始化 Git 库，然后创建 Heroku 程序：
+
 ```
 git init
 git add .
@@ -9205,16 +9218,19 @@ git commit -m 'Initial commit'
 heroku create
 git push heroku master
 ```
+
 你会看到一个随机生成的 URL 和 Git 远程地址。以后要部署时，只需要将变化提交到 Git 库 中再 git push heroku master 就可以了。程序的名称和 URL 可以用 heroku rename 修改。 现在访问上一步中生成的 URL 应该可以看到刚刚创建的 Express 程序了。如果想看日志，可 以运行 heroku logs；要打开程序所在 dyno 的 shell，可以运行 heroku run bash。
 在 Heroku 上部署 Node 程序简单快捷，无须针对 Node 做任何调整， Heroku 默认就支持简单 的 Node 程序。然而有时需要对运行环境有更多控制权，所以接下来我们要介绍如何在服务器上 部署 Node 程序。
+
 ### 10.1.2 服务器
+
 因为有些东西是 PaaS 无法提供的，所以我们只能用自己的服务器。不用担心在哪里运行数 据库，只要你愿意，可以把 PostgreSQL、 MySQL，甚至 Redis 装在同一台服务器上。你想在服务 器上装什么就装什么：定制的日志软件、 HTTP 服务器、缓存层，你的机器你做主。表 10-2 是使 用自己的服务器的主要特性。
 表 10-2 服务器的特性
 易用性 低
 功能 全面掌控整栈，运行你自己的数据库和缓存层
 基础设施 对开发者（或系统管理员/DevOps）开放
 商业适用性 如果有能维护服务器的职员，那很好
-价格 小型 VM： $；大型托管服务器： $$$$$
+价格 小型 VM： $；大型托管服务器： $\$\$\$\$
 厂商 Azure、 Amazon、主机托管商
 有几种办法可以让你拥有并维护自己的服务器。可以从 Linode 或 Digital Ocean 之类的厂商 那里弄一台便宜的虚拟机，然后根据你的需要进行配置，但硬件资源是跟其他虚拟机共享的。可 以买或租服务器。有些服务器托管厂商会提供托管主机，他们会帮你维护服务器的操作系统。
 你必须决定用什么操作系统。 Debian 有好几个分支， Node 也可以在 Windows 和 Solaris 上运 行，所以实际上选起来还是挺困难的。
@@ -9222,17 +9238,20 @@ git push heroku master
 把代码上传到服务器上办法也很多。可以用 scp、 sftp 或 rsync 手动复制，也可以用 Chef 同 时控制多台服务器，管理版本发布。还有人会搭建跟 Heroku 一样的 Git 钩子，其可以基于特定 分支上的 Git 推送自动更新服务器上的程序。
 你一定要认识到自己管理服务器的困难性。配置服务器很费工夫，还要随时跟进 OS 的错误 补丁和安全更新。如果只是业余爱好，这些事情可能会把你搞垮，但也可能让你学会很多东西， 并发现自己对 DevOps 的兴趣。
 在虚拟机或实体服务器上运行 Node 程序没有什么特殊要求。如果你想了解在服务器上运行 Node 程序并保证它长期运行的技术，可以跳到 10.2 节：部署的基础知识。不过接下来我们要先 介绍 Node 和 Docker。
+
 ### 10.1.3 容器
+
 软件容器可以看作是将程序的部署自动化的 OS 虚拟化技术。 Docker 是其中最著名的项目， 它是开源的，但也提供生产程序部署的商业性服务。表 10-3 是容器的主要特性。
 表 10-3 容器的特性
 易用性 中等
 功能 全面掌控整栈，运行你自己的数据库和缓存层，可以重新部署到各种提供商和本地机器上
 基础设施 对开发者（或系统管理员/DevOps）开放
 商业适用性 非常棒：可以部署到托管主机、 Docker 主机或你自己的数据中心上
-价格 $$$
+价格 \$\$\$
 厂商 Azure、 Amazon、 Docker Cloud、 Google 云平台（带 Kubernetes），以及允许运行 Docker 容器
 的主机托管厂商们
 Docker 允许将程序定义为映像。比如要搭建一个典型的由图片处理微服务、存储程序数据的 主服务和后端数据库组成的内容管理系统，可以分成四个独立的 Docker 映像来部署：
+
 - 映像 1——对上传到 CMS 中的图片进行缩放的微服务；
 - 映像 2——PostgreSQL；
 - 映像 3——带管理界面的 CMS 程序主体；
@@ -9249,6 +9268,7 @@ Docker 允许将程序定义为映像。比如要搭建一个典型的由图片�
 (2) 创建一个 Node 程序。 10.1.1 节中有快速创建 Express 程序的例子。
 (3) 在项目中添加文件 Dockerfile。
 这个 Dockerfile 会告诉 Docker 如何创建程序的映像，以及如何安装这个程序并运行它。在官 方的 Node Docker 映像中， Dockerfile 指定了 FROM node:boron，然后用 RUN 和 CMD 指令运行 npm install 及 npm start。完整的代码如下所示：
+
 ```
 FROM node:argon
 RUN mkdir -p /usr/src/app
@@ -9259,86 +9279,117 @@ COPY . /usr/src/app
 EXPOSE 3000
 CMD ["npm", "start"]
 ```
+
 创建好 Dockerfile 之后，可以在命令行中运行 docker build 构建程序的映像。只需要指定 构建的目录，比如你在 Express 示例程序的根目录下，运行 docker build .就会创建它的映像 并发送给 Docker 后台。
 docker images 是查看映像列表的命令。 docker run -p 8080:3000 -d <image ID>
 是根据映像 ID 运行指定程序的命令。其中-p 8080:3000 是指将内部端口（ 3000）绑定到本机 上的 8080 端口，所以要用 http://localhost:8080 访问这个程序。
 
 ## 10.2 部署的基础知识
+
 对于只是想要展示一下的 Web 程序，或者要在部署到生产环境之前测试一下的商业程序， 可能会先简单部署一下，而那些让在线时长和性能最大化的工作要往后放。本节会从简单的、临 时性的 Git 部署开始讲起，逐步深入到如何保证程序永不掉线的细节中。临时性部署不会做跨越 重启的持久化工作，但配置起来简单快速。
+
 ### 10.2.1 从 Git 库部署
+
 我们先快速浏览一下用 Git 库部署的基本步骤，让你有个感性的认识。大多数部署都是按下 面这些步骤做的。
-(1) 用 SSH 连接到服务器。230 第 10 章 Node 程序的部署及运维
-(2) 如果需要的话，在服务器上安装 Node 和版本控制工具（比如 Git 或 Subversion）。
-(3) 从版本库中将程序文件，包括 Node 脚本、图片、 CSS 样式表等，下载到服务器上。
-(4) 启动程序。
+
+1. 用 SSH 连接到服务器。230 第 10 章 Node 程序的部署及运维
+2. 如果需要的话，在服务器上安装 Node 和版本控制工具（比如 Git 或 Subversion）。
+3. 从版本库中将程序文件，包括 Node 脚本、图片、 CSS 样式表等，下载到服务器上。
+4. 启动程序。
+
 下面是用 Git 下载程序文件后启动程序的例子：
+
 ```
 git clone https://github.com/Marak/hellonode.git
 cd hellonode
 node server.js
 ```
+
 跟 PHP 一样， Node 不是作为后台任务运行的。所以说，如果按我们前面列出的基本步骤部 署， SSH 连接关闭后程序就退出了。不过只需一个简单的工具就可以解决这个问题。 自动化部署
 Node 程序的部署可以实现自动化。比如我们可以用 Fleet 这样的工具，通过 git push 将 程序部署到一到多台服务器上。还可以用 Capistrano 这种比较传统的方式，具体过程请参见 Evan Tahler 的 Bricolage 博客上发表的文章“用 Capistrano 部署 Node.js 程序”。
+
 ### 10.2.2 保证 Node 不掉线
-假设你用 Ghost 博客程序创建了一个个人博客，部署好后，你肯定不想自己一断开 SSH 连接
-它就掉线了。
-Nodejitsu 的 Forever 是解决这个问题最常用的工具。用 Forever 启动的程序在你断开 SSH 连
-接后不会退出，并且如果崩溃的话， Forever 还会重启它。图 10-1 是 Forever 的工作原理概念图。
+
+假设你用 Ghost 博客程序创建了一个个人博客，部署好后，你肯定不想自己一断开 SSH 连接 它就掉线了。
+Nodejitsu 的 Forever 是解决这个问题最常用的工具。用 Forever 启动的程序在你断开 SSH 连 接后不会退出，并且如果崩溃的话， Forever 还会重启它。图 10-1 是 Forever 的工作原理概念图。
 图 10-1 Forever 可以保证程序在线，甚至可以在程序崩溃后重启它
 全局安装 Forever 有时需要用到 sudo 命令。
-sudo 命令 全局安装（带参数-g） npm 模块时，有时需要在 npm 命令前加上 sudo
-以便用超级用户权限安装。第一次用 sudo 命令时系统会提示你输入密码，验证通过后
-才会运行跟在 sudo 后面的命令。10.3 在线时长和性能的最大化 231
+sudo 命令 全局安装（带参数-g） npm 模块时，有时需要在 npm 命令前加上 sudo 以便用超级用户权限安装。第一次用 sudo 命令时系统会提示你输入密码，验证通过后 才会运行跟在 sudo 后面的命令。=
 
 接下来用下面的命令安装 Forever：
+
+```
 npm install -g forever
+```
+
 装好 Forever 之后，可以用下面的命令启动你的博客并保持其运行：
+
+```
 forever start server.js
+```
+
 如果出于某些原因你要停掉博客，可以用 Forever 的 stop 命令：
+
+```
 forever stop server.js
+```
+
 可以用 Forever 的 list 命令查看它所管理的所有程序：
+
+```
 forever list
-Forever 的另一个比较实用的功能是可以在源码发生变化时自动重启程序。让你不用每次添
-加功能或修改缺陷后都手动重启。
+```
+
+Forever 的另一个比较实用的功能是可以在源码发生变化时自动重启程序。让你不用每次添 加功能或修改缺陷后都手动重启。
 可以用 -w 开启 Forever 的这一模式：
+
+```
 forever -w start server.js
-尽管 Forever 是特别好用的部署工具，但可能仍无法满足你对长期部署上的功能需求。所以
-下一节会介绍一些工业级的监测方案，还要看看如何让程序性能达到最优。
+```
+
+尽管 Forever 是特别好用的部署工具，但可能仍无法满足你对长期部署上的功能需求。所以 下一节会介绍一些工业级的监测方案，还要看看如何让程序性能达到最优。
 
 ## 10.3 在线时长和性能的最大化
-在程序值发布后，你肯定希望它能在服务器启动时启动，在服务器停机时关闭，而且能
-在崩溃后自动重启。我们很容易忘记在服务器重启之前关停程序，或者在服务器重启之后启动
-程序。
-你肯定也希望自己做了让性能达到最优所需做的所有事情。比如说，如果在四核服务器上只
-用单核跑你的程序，那么随着 Web 程序的流量不断攀升，单核的处理能力不足，程序的响应也
-会跟不上。
+
+在程序值发布后，你肯定希望它能在服务器启动时启动，在服务器停机时关闭，而且能 在崩溃后自动重启。我们很容易忘记在服务器重启之前关停程序，或者在服务器重启之后启动 程序。
+你肯定也希望自己做了让性能达到最优所需做的所有事情。比如说，如果在四核服务器上只 用单核跑你的程序，那么随着 Web 程序的流量不断攀升，单核的处理能力不足，程序的响应也 会跟不上。
 除了把所有的 CPU 内核都用上，在高容量生产站点上还应该避免用 Node 提供静态文件。
-Node 擅长运行交互式程序，比如 Web 程序和 TCP/IP 协议，在静态文件上，它不如那些专用的软
-件效率高。应该用 Nginx 之类的技术来处理静态文件，它是专门做这个的。另外也可以把所有静
-态文件都放到内容交付网络上（ CDN），比如 Amazon S3，然后在程序中指向这些文件。
+Node 擅长运行交互式程序，比如 Web 程序和 TCP/IP 协议，在静态文件上，它不如那些专用的软 件效率高。应该用 Nginx 之类的技术来处理静态文件，它是专门做这个的。另外也可以把所有静 态文件都放到内容交付网络上（ CDN），比如 Amazon S3，然后在程序中指向这些文件。
 本节会介绍一些保证程序在线时长和性能最大化的技术：
+
 - 用 Upstart 保证程序在线，在服务器重启和崩溃后继续运行；
 - 用 Node 的集群 API 充分利用多核处理器的处理能力；
 - 用 Nginx 提供 Node 程序中的静态文件。
+
 下面先来看一下强大易用的 Upstart。
+
 ### 10.3.1 用 Upstart 保证在线时长
-比如说你终于对程序感到满意了，要把它推向全世界。那么你肯定无论如何都想要保证服务
-器重启后自己不会忘了启动程序。你还希望如果程序崩溃，那么不能只是自动重新启动它，还要
-记下日志，通知你，以便让你调查究竟出了什么问题。
-Upstart 可以优雅地管理所有 Linux 程序的启动和关停，包括 Node 程序。 Ubuntu 和 CentOS
-的现代版都支持 Upstart。在 macOS 上可以创建 launchd 文件（ npm 上的 node-launchd 可以做这个），
-Windows 上可以用 Windows 服务和 npm 上的 node-windows 包。
+
+比如说你终于对程序感到满意了，要把它推向全世界。那么你肯定无论如何都想要保证服务 器重启后自己不会忘了启动程序。你还希望如果程序崩溃，那么不能只是自动重新启动它，还要 记下日志，通知你，以便让你调查究竟出了什么问题。
+Upstart 可以优雅地管理所有 Linux 程序的启动和关停，包括 Node 程序。 Ubuntu 和 CentOS 的现代版都支持 Upstart。在 macOS 上可以创建 launchd 文件（ npm 上的 node-launchd 可以做这个）， Windows 上可以用 Windows 服务和 npm 上的 node-windows 包。
 如果你的 Ubuntu 上还没装 Upstart，可以用下面这个命令安装：
+
+```
 sudo apt-get install upstart
+```
+
 在 CentOS 上用这个命令：
+
+```
 sudo yum install upstart
-装好 Upstart 之后，需要给每个程序添加一个 Upstart 配置文件。这些文件应该放在 /etc/init
-目录中，名称类似于 my_application_name.conf。无须给配置文件分配可执行权限。
+```
+
+装好 Upstart 之后，需要给每个程序添加一个 Upstart 配置文件。这些文件应该放在 /etc/init 目录中，名称类似于 my_application_name.conf。无须给配置文件分配可执行权限。
 用下面的命令给本章中的样例程序创建一个空的 Upstart 配置文件：
+
+```shell
 sudo touch /etc/init/hellonode.conf
-接着将下面的代码放到配置文件里。按照这个配置，程序会在服务器启动后运行，在服务器
-关闭时停止。 Upstart 会执行 exec 部分的命令。
+```
+
+接着将下面的代码放到配置文件里。按照这个配置，程序会在服务器启动后运行，在服务器 关闭时停止。 Upstart 会执行 exec 部分的命令。
 代码清单 10-1 典型的 Upstart 配置文件
+
+```
 author "Robert DeGrimston"
 description "hellonode"
 setuid "nonrootuser"
@@ -9348,159 +9399,167 @@ respawn
 console log
 env NODE_ENV=production
 exec /usr/bin/node /path/to/server.js
-Upstart 会依照这个配置文件保证你的程序在服务器重启，甚至是意外崩溃后运行。程序生成
-的所有输出都会放到 /var/log/upstart/hellonode.log 里， Upstart 还会帮你管理日志的轮转。
+```
+
+Upstart 会依照这个配置文件保证你的程序在服务器重启，甚至是意外崩溃后运行。程序生成 的所有输出都会放到 /var/log/upstart/hellonode.log 里， Upstart 还会帮你管理日志的轮转。
 创建好配置文件后，可以用下面这条命令启动程序：
+
+```shell
 sudo service hellonode
-程序的
-作者 程序的名
-称或描述
-以用户 nonrootuser
-的身份运行程序
-在服务器启动时，等
-文件系统和网络准
-备好之后运行程序
-将 stdin 和 stderr 写入
-/var/log/ upstart/yourapp.log
-设定程序所
-需的所有环
-境变量
-执行程序的
-命令
-在服务
-器关闭
-时关停
-程序
-在程序
-崩溃后
-重新启
-动它10.3 在线时长和性能的最大化 233
+# 程序的
+# 作者 程序的名
+# 称或描述
+# 以用户 nonrootuser
+# 的身份运行程序
+# 在服务器启动时，等
+# 文件系统和网络准
+# 备好之后运行程序
+# 将 stdin 和 stderr 写入
+# /var/log/ upstart/yourapp.log
+# 设定程序所
+# 需的所有环
+# 境变量
+# 执行程序的
+# 命令
+# 在服务
+# 器关闭
+# 时关停
+# 程序
+# 在程序
+# 崩溃后
+# 重新启
+# 动它
+```
 
 如果程序成功启动，那么你将会看到：
+
+```
 hellonode start/running, process 6770
+```
+
 Upstart 的可配置化程度很高。请参考它的在线文档了解其配置项。
 UPSTART 和 RESPAWNING
-如果用了 respawn 选项，在程序崩溃后， 只要没有达到 5 秒内 10 次的频率， Upstart 默认会
-一直重新加载它。可以通过 respawn limit COUNT INTERVAL 修改这个默认的限制，其中 COUNT
-是指在 INTERVAL 秒内重新加载的次数。比如可以像下面这样将上限设定为 5 秒内 20 次：
+如果用了 respawn 选项，在程序崩溃后， 只要没有达到 5 秒内 10 次的频率， Upstart 默认会 一直重新加载它。可以通过 respawn limit COUNT INTERVAL 修改这个默认的限制，其中 COUNT 是指在 INTERVAL 秒内重新加载的次数。比如可以像下面这样将上限设定为 5 秒内 20 次：
 respawn
 respawn limit 20 5
-如果程序在 5 秒内重启了 10 次（默认的上限），一般是代码或配置出错了，基本不太可能成
-功启动了。达到上限后 Upstart 就会放弃，以免占用资源。
-除了 Upstart，还应该通过其他方式对程序进行健康检查，以便用邮件或其他快捷的通信方
-式向开发团队报警。对于 Web 程序来说，健康检查可以是简单地访问一下，看看能否得到有效的
-响应。你可以用自己的办法，也可以借助 Monit 或 Zabbix 之类的工具。
-现在你知道如何让程序撑过崩溃和服务器重启了，接下来自然要考虑性能问题。我们先来看
-看如何用上 Node 的集群 API。
+如果程序在 5 秒内重启了 10 次（默认的上限），一般是代码或配置出错了，基本不太可能成 功启动了。达到上限后 Upstart 就会放弃，以免占用资源。
+除了 Upstart，还应该通过其他方式对程序进行健康检查，以便用邮件或其他快捷的通信方 式向开发团队报警。对于 Web 程序来说，健康检查可以是简单地访问一下，看看能否得到有效的 响应。你可以用自己的办法，也可以借助 Monit 或 Zabbix 之类的工具。
+现在你知道如何让程序撑过崩溃和服务器重启了，接下来自然要考虑性能问题。我们先来看 看如何用上 Node 的集群 API。
+
 ### 10.3.2 集群 API：充分利用多核处理器
-现代计算机的 CPU 基本都是多核的，但 Node 进程是在单核上运行的。如果想让 Node 程序
-最大限度地调动服务器的资源，可以在不同的 TCP/IP 端口上开启多个程序实例，然后通过负载
-平衡将 Web 流量分发到这些实例上，但靠手动来做的话，这个任务还是比较艰巨的。
-Node 的集群 API 可以让单个程序利用多核处理器。通过这个 API，我们可以轻松地让程序
-同时在不同的内核上运行多个工作进程，每个做的工作都一样，用的 TCP/IP 端口也一样。图 10-2
-是用集群 API 在一个四核处理器上组织工作进程的例子。
+
+现代计算机的 CPU 基本都是多核的，但 Node 进程是在单核上运行的。如果想让 Node 程序 最大限度地调动服务器的资源，可以在不同的 TCP/IP 端口上开启多个程序实例，然后通过负载 平衡将 Web 流量分发到这些实例上，但靠手动来做的话，这个任务还是比较艰巨的。
+Node 的集群 API 可以让单个程序利用多核处理器。通过这个 API，我们可以轻松地让程序 同时在不同的内核上运行多个工作进程，每个做的工作都一样，用的 TCP/IP 端口也一样。图 10-2 是用集群 API 在一个四核处理器上组织工作进程的例子。
 图 10-2 在四核处理器上有一个主进程和三个工作进程
-下面的代码清单自动繁殖了一个主进程，并给另外的内核每个一个工作进程。234 第 10 章 Node 程序的部署及运维
+下面的代码清单自动繁殖了一个主进程，并给另外的内核每个一个工作进程。
 代码清单 10-2 Node 集群 API 演示
-const cluster = require('cluster');
-const http = require('http');
-const numCPUs = require('os').cpus().length;
+
+```js
+const cluster = require("cluster");
+const http = require("http");
+const numCPUs = require("os").cpus().length;
 if (cluster.isMaster) {
-for (let i = 0; i < numCPUs; i++) {
-cluster.fork();
-}
-cluster.on('exit', (worker, code, signal) => {
-console.log('Worker %s died.', worker.process.pid);
-});
+  for (let i = 0; i < numCPUs; i++) {
+    cluster.fork();
+  }
+  cluster.on("exit", (worker, code, signal) => {
+    console.log("Worker %s died.", worker.process.pid);
+  });
 } else {
-http.Server((req, res) => {
-res.writeHead(200);
-res.end('I am a worker running in process: ' + process.pid);
-}).listen(8000);
+  http
+    .Server((req, res) => {
+      res.writeHead(200);
+      res.end("I am a worker running in process: " + process.pid);
+    })
+    .listen(8000);
 }
-因为主进程和各个工作进程都是各自独立的系统进程，所以如果它们分别运行在各自的内核
-上，是无法通过全局变量共享状态的。但集群 API 没有提供让主进程跟工作进程通信的办法。
-下面是一个在主进程和工作进程间传递消息的例子。主进程维护着总请求数，当有工作进程
-报告它处理了一个请求后，主进程就会把这个值传给所有工作进程。
+```
+
+因为主进程和各个工作进程都是各自独立的系统进程，所以如果它们分别运行在各自的内核 上，是无法通过全局变量共享状态的。但集群 API 没有提供让主进程跟工作进程通信的办法。
+下面是一个在主进程和工作进程间传递消息的例子。主进程维护着总请求数，当有工作进程 报告它处理了一个请求后，主进程就会把这个值传给所有工作进程。
 代码清单 10-3 Node 集群 API 的例子
-const cluster = require('cluster');
-const http = require('http');
-const numCPUs = require('os').cpus().length;
+
+```js
+const cluster = require("cluster");
+const http = require("http");
+const numCPUs = require("os").cpus().length;
 const workers = {};
 let requests = 0;
 if (cluster.isMaster) {
-for (let i = 0; i < numCPUs; i++) {
-workers[i] = cluster.fork();
-((i) => {
-workers[i].on('message', (message) => {
-if (message.cmd == 'incrementRequestTotal') {
-requests++;
-for (var j = 0; j < numCPUs; j++) {
-workers[j].send({
-cmd: 'updateOfRequestTotal',
-requests: requests
-});
-}
-}
-});
-})(i);
-}
-cluster.on('exit', (worker, code, signal) => {
-console.log('Worker %s died.', worker.process.pid);
-});
+  for (let i = 0; i < numCPUs; i++) {
+    workers[i] = cluster.fork();
+    ((i) => {
+      workers[i].on("message", (message) => {
+        if (message.cmd == "incrementRequestTotal") {
+          requests++;
+          for (var j = 0; j < numCPUs; j++) {
+            workers[j].send({
+              cmd: "updateOfRequestTotal",
+              requests: requests,
+            });
+          }
+        }
+      });
+    })(i);
+  }
+  cluster.on("exit", (worker, code, signal) => {
+    console.log("Worker %s died.", worker.process.pid);
+  });
 } else {
-确 定 服 务 器
-内核的数量
-给 每 个 核 创
-建一个分叉
-定义每个工作
-进程的工作
-增加总
-请求数
-监听来自工作
-进程的消息
-将新的总请求数发
-给所有工作进程
-用闭包保留当前工
-作进程的索引10.3 在线时长和性能的最大化 235
+  // 确 定 服 务 器
+  // 内核的数量
+  // 给 每 个 核 创
+  // 建一个分叉
+  // 定义每个工作
+  // 进程的工作
+  // 增加总
+  // 请求数
+  // 监听来自工作
+  // 进程的消息
+  // 将新的总请求数发
+  // 给所有工作进程
+  // 用闭包保留当前工
+  // 作进程的索引
+  process.on("message", (message) => {
+    if (message.cmd === "updateOfRequestTotal") {
+      requests = message.requests;
+    }
+  });
+  http
+    .Server((req, res) => {
+      res.writeHead(200);
+      res.end(`Worker ${process.pid}: ${requests} requests.`);
+      process.send({ cmd: "incrementRequestTotal" });
+    })
+    .listen(8000);
+}
+```
 
-process.on('message', (message) => {
-if (message.cmd === 'updateOfRequestTotal') {
-requests = message.requests;
-}
-});
-http.Server((req, res) => {
-res.writeHead(200);
-res.end(`Worker ${process.pid}: ${requests} requests.`);
-process.send({ cmd: 'incrementRequestTotal' });
-}).listen(8000);
-}
 通过 Node 集群 API 使用多核处理器是种简单易行的办法。
+
 ### 10.3.3 静态文件及代理
-尽管 Node 可以高效地提供动态 Web 内容，但对于图片、 CSS 样式表或客户端 JavaScript 这
-些静态文件来说，它并不是最有效的办法。最好是让专注于提供静态文件服务很多年的软件来完
-成这项任务，因为它们是专门进行过优化的。
-开源的 Nginx 就是专门提供静态文件服务的，跟 Node 搭配起来也很容易配置。一般在 Nginx/
-Node 的搭配中，所有请求最初都是到 Nginx 那里，然后再由它将非静态文件的请求发给 Node。
+
+尽管 Node 可以高效地提供动态 Web 内容，但对于图片、 CSS 样式表或客户端 JavaScript 这 些静态文件来说，它并不是最有效的办法。最好是让专注于提供静态文件服务很多年的软件来完 成这项任务，因为它们是专门进行过优化的。
+开源的 Nginx 就是专门提供静态文件服务的，跟 Node 搭配起来也很容易配置。一般在 Nginx/ Node 的搭配中，所有请求最初都是到 Nginx 那里，然后再由它将非静态文件的请求发给 Node。
 如图 10-3 所示。
-图 10-3 用 Nginx 做代理将静态文件快速传回 Web 客户端
-下面这段代码是 Nginx 配置文件中的 http 部分，它就是这样配置的。在 Unix 服务器上，
-Nginx 的配置文件一般放在 /etc 目录下，具体路径为 /etc/nginx/nginx.conf。
+图 10-3 用 Nginx 做代理将静态文件快速传回 Web 客户端 下面这段代码是 Nginx 配置文件中的 http 部分，它就是这样配置的。在 Unix 服务器上， Nginx 的配置文件一般放在 /etc 目录下，具体路径为 /etc/nginx/nginx.conf。
 代码清单 10-4 用 Nginx 做 Node.js 的代理并提供静态文件服务的配置文件
+
+```js
 http {
 upstream my_node_app {
 server 127.0.0.1:8000;
 }
-监听来自主进
-程的消息
-根据主进程的消
-息更新请求数
-让主进程知道该
-增加总请求数了
-Node 程序的 IP
-地址和端口
-处理以/static/开头
-的 URL 的请求
+// 监听来自主进
+// 程的消息
+// 根据主进程的消
+// 息更新请求数
+// 让主进程知道该
+// 增加总请求数了
+// Node 程序的 IP
+// 地址和端口
+// 处理以/static/开头
+// 的 URL 的请求
 server {
 listen 80;
 server_name localhost domain.com;
@@ -9521,15 +9580,19 @@ proxy_set_header X-NginX-Proxy true;
 }
 }
 }
+// 指定接收请求
+// 的代理端口
+// 定义代理响应
+// 的 URL 路径
+```
+
 把处理静态 Web 文件的任务交给 Nginx， Node 就可以专心处理它擅长的事情了。
+
 ## 10.4 总结
+
 - Node 程序可以放到 PaaS 提供商、专用服务、虚拟私有服务器和云托管主机上。
 - 在 Linux 上，可以用 Forever 和 Upstart 快速部署 Node 程序。
 - 可以借助 Node 的集群 API 运行多个进程，从而提升程序的性能。
-指定接收请求
-的代理端口
-定义代理响应
-的 URL 路径
 
 # 第三部分 超越 Web 开发
 
@@ -9911,36 +9974,38 @@ build 的运行方式是用命令 `npm run build`，它会先创建一个 bundle
 - 可以根据程序发出的退出码判断它们是否成功完成了。
 - 命令行程序应该符合约定俗成的惯例，以符合用户的使用习惯。
 
-# 第12章 用 Electron 征服桌面
+# 第 12 章 用 Electron 征服桌面
+
 本章内容
+
 - 用 Electron 搭建桌面程序
 - 显示桌面菜单
 - 发送桌面提醒
 - 创建跨平台的版本
-上一章介绍了如何用 Node 做命令行程序。实际上 Node 在桌面软件中也慢慢流行开了。程
-序员们渐渐地把 Web 技术用到了跨平台的开发上。本章要讲的内容是，如何用原生的桌面端功
-能、 Node 和客户端 Web 技术搭建桌面端 Web 程序。这个程序可以在 Linux、 macOS 和 Windows
-上开发和运行，并且几乎可以像在客户端服务器端 Web 程序开发中那样使用 Node 模块。
+  上一章介绍了如何用 Node 做命令行程序。实际上 Node 在桌面软件中也慢慢流行开了。程 序员们渐渐地把 Web 技术用到了跨平台的开发上。本章要讲的内容是，如何用原生的桌面端功 能、 Node 和客户端 Web 技术搭建桌面端 Web 程序。这个程序可以在 Linux、 macOS 和 Windows 上开发和运行，并且几乎可以像在客户端  服务器端 Web 程序开发中那样使用 Node 模块。
+
 ## 12.1 认识 Electron
-Electron 原来叫 Atom Shell，可以用 Web 技术搭建桌面端程序。以 Electron 为基础，可以用
-HTML、 CSS 和 JavaScript 实现程序逻辑和用户界面，而一些桌面端软件开发中的“硬骨头”它
-已经帮我们解决了。包括：
+
+Electron 原来叫 Atom Shell，可以用 Web 技术搭建桌面端程序。以 Electron 为基础，可以用 HTML、 CSS 和 JavaScript 实现程序逻辑和用户界面，而一些桌面端软件开发中的“硬骨头”它 已经帮我们解决了。包括：
+
 - 自动更新；
 - 崩溃报告；
 - Microsoft Windows 的安装包；
 - 调试；
 - 原生菜单和提醒。
-Electron 系已经出了几个很著名的程序了。最开始是 Atom，即 GitHub 发布的文本编辑器，
-最近流行起来的有聊天程序 Slack，还有 Microsoft 的 Visual Studio Code，如图 12-1 所示。
-图 12-1 Visual Studio Code 的程序窗口和原生上下文菜单
-你应该试试这些程序，看看用 Electron 能做些什么。想到能用自己掌握的 Node 和 JavaScript
-技术做出这么有吸引力的桌面软件，还是很振奋人心的。
+  Electron 系已经出了几个很著名的程序了。最开始是 Atom，即 GitHub 发布的文本编辑器， 最近流行起来的有聊天程序 Slack，还有 Microsoft 的 Visual Studio Code，如图 12-1 所示。
+  图 12-1 Visual Studio Code 的程序窗口和原生上下文菜单
+  你应该试试这些程序，看看用 Electron 能做些什么。想到能用自己掌握的 Node 和 JavaScript 技术做出这么有吸引力的桌面软件，还是很振奋人心的。
+
 ### 12.1.1 Electron 的技术栈
-在开始介绍 Electron 之前，要先讲一下 Electron 是如何跟 Node、 HTML 和 CSS 融合到一起
-的。 Electron 程序一般有：
+
+在开始介绍 Electron 之前，要先讲一下 Electron 是如何跟 Node、 HTML 和 CSS 融合到一起 的。 Electron 程序一般有：
+
 - 主进程——启动程序的 Node 脚本，提供对原生 Node 模块的访问；
 - 渲染进程——由 Chromium 管理的 Web 页面。
+
 真正的程序还会有其他依赖项。算上前面提到的，包括：
+
 - 主进程；
 - 连接本地数据库（比如 SQLite）；
 - 跟 Web API 沟通；
@@ -9952,477 +10017,533 @@ Electron 系已经出了几个很著名的程序了。最开始是 Atom，即 Gi
 - 提供构建脚本；
 - 用你喜欢的构建系统（ Grunt、 Gulp、 npm 脚本）生成前端 JavaScript；
 - 准备发布版本。
-图 12-2 中给出了典型 Electron 程序的三个主要组成部分。如你所见， Node 负责运行主进程250 第 12 章 用 Electron 征服桌面
-并跟操作系统沟通，以便完成打开文件、读写数据库和跟 Web 服务通信等工作。尽管渲染进程
-的主要工作集中在 UI 上， Node 仍然是程序架构中的关键构件。
+
+图 12-2 中给出了典型 Electron 程序的三个主要组成部分。如你所见， Node 负责运行主进程 并跟操作系统沟通，以便完成打开文件、读写数据库和跟 Web 服务通信等工作。尽管渲染进程 的主要工作集中在 UI 上， Node 仍然是程序架构中的关键构件。
 图 12-2 典型 Electron 程序的主要组成部分
+
 ### 12.1.2 界面设计
-看过 Electron 程序的主要组成部分后，接下来我们看看如何设计合适的界面。 Electron 程序
-的界面是用 HTML、 CSS 和 JavaScript 实现的，不能用原生部件。比如要实现 Mac 风格的界面，
-可以借助 CSS 渐变仿造 macOS 工具条。 CSS 也可以使用 macOS 和 Windows 上的原生字体，甚
-至还可以通过调整抗锯齿功能使它看起来跟原生程序一样。可以将特定 UI 组件上的文字选择去
-掉，支持拖拽功能。目前大部分 Electron 程序所用的颜色、边框风格、图标和渐变都跟 macOS
-和 Windows 保持一致。
-有些程序在复制原生体验上更进一步，比如 N1 email 程序。还有一些程序，比如 Slack，有
-自己独特的标识体系，其可辨识程度无须针对每个平台进行太多调整。
-在搭建 Electron 程序时，你必须决定哪种方式更合适。如果想让它看起来就是用原生桌面部
-件做的，那就要针对每个平台准备一套样式，因此需要投入更多设计时间。客户可能会更喜欢，
-但也意味着增加新功能时需要做更多的工作。
+
+看过 Electron 程序的主要组成部分后，接下来我们看看如何设计合适的界面。 Electron 程序 的界面是用 HTML、 CSS 和 JavaScript 实现的，不能用原生部件。比如要实现 Mac 风格的界面， 可以借助 CSS 渐变仿造 macOS 工具条。 CSS 也可以使用 macOS 和 Windows 上的原生字体，甚 至还可以通过调整抗锯齿功能使它看起来跟原生程序一样。可以将特定 UI 组件上的文字选择去 掉，支持拖拽功能。目前大部分 Electron 程序所用的颜色、边框风格、图标和渐变都跟 macOS 和 Windows 保持一致。
+有些程序在复制原生体验上更进一步，比如 N1 email 程序。还有一些程序，比如 Slack，有 自己独特的标识体系，其可辨识程度无须针对每个平台进行太多调整。
+在搭建 Electron 程序时，你必须决定哪种方式更合适。如果想让它看起来就是用原生桌面部 件做的，那就要针对每个平台准备一套样式，因此需要投入更多设计时间。客户可能会更喜欢， 但也意味着增加新功能时需要做更多的工作。
 下一节会用 Electron 程序框架创建一个新程序，这是用 Electron 做新项目的标准方法。
+
 ## 12.2 创建一个 Electron 程序
-从 electron-quick-start 项目开始是最简单的办法，它的 GitHub 地址见下面的代码段，包含运
-行基本 Electron 程序所必需的依赖项。
+
+从 electron-quick-start 项目开始是最简单的办法，它的 GitHub 地址见下面的代码段，包含运 行基本 Electron 程序所必需的依赖项。
 检出这个项目，安装依赖项：
+
+```
 git clone https://github.com/atom/electron-quick-start
 cd electron-quick-start
 npm install
-都下载好之后，可以用 npm start 启动主进程。将这个项目作为 Electron 程序的基础完全
-没问题；应该不用再从头开始创建自己的项目。
-程序启动时，应该可以看到一个有 Web 页面和 Chromium 开发者工具的窗口。如果你是熟悉
-Chrome 的 Web 开发人员，可能觉得这再平常不过了：只是一个没有 CSS 的 Web 页面而已。但为
-了这个窗口， Electron 在底层做了大量的工作。图 12-3 是这个窗口在 macOS 上的样子。
+```
+
+都下载好之后，可以用 npm start 启动主进程。将这个项目作为 Electron 程序的基础完全 没问题；应该不用再从头开始创建自己的项目。
+程序启动时，应该可以看到一个有 Web 页面和 Chromium 开发者工具的窗口。如果你是熟悉 Chrome 的 Web 开发人员，可能觉得这再平常不过了：只是一个没有 CSS 的 Web 页面而已。但为 了这个窗口， Electron 在底层做了大量的工作。图 12-3 是这个窗口在 macOS 上的样子。
 图 12-3 在 macOS 上运行的 electron-quick-start 项目
 这是一个自包含的 macOS 程序包：里面有独立的 Node，有自己的菜单项和关于窗口。
-现在你可以在 index.html 中用 HTML、 JavaScript 和 CSS 搭建 Web 程序了。但考虑到作为 Node
-程序员的你可能更想看看能用 Node 做些什么，我们就先介绍一下这个吧。
+现在你可以在 index.html 中用 HTML、 JavaScript 和 CSS 搭建 Web 程序了。但考虑到作为 Node 程序员的你可能更想看看能用 Node 做些什么，我们就先介绍一下这个吧。
 Electron 中有一个 remote 模块，是在主 Node 进程和渲染进程间做进程间通信（ IPC）的。 remote
 模块甚至还可以提供对 Node 模块的访问。我们来试一下，在项目中添加 readfile.js，代码如下。
 代码清单 12-1 简单的 Node 模块
-const fs = require('fs');
+
+```js
+const fs = require("fs");
 module.exports = (cb) => {
-fs.readFile('./main.js', { encoding: 'utf8' }, cb);
+  fs.readFile("./main.js", { encoding: "utf8" }, cb);
 };
+```
+
 打开 index.html，添加一个 ID 为 source 的元素，以及加载 readfile.js 的脚本，代码如下。
 代码清单 12-2 在渲染进程中加载 Node 模块
+
+```html
 <!DOCTYPE html>
 <html>
-<head>
-<meta charset="UTF-8">
-<title>Hello World!</title>
-</head>
-<body>
-<h1>Hello World!</h1>252 第 12 章 用 Electron 征服桌面
-<pre id="source"></pre>
-<script>
-var readfile = require('remote').require('./readfile');
-readfile(function(err, text) {
-console.log('readfile:', err, text);
-document.getElementById('source').innerHTML = text;
-});
-</script>
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Hello World!</title>
+  </head>
+  <body>
+    <h1>Hello World!</h1>
+    252 第 12 章 用 Electron 征服桌面
+    <pre id="source"></pre>
+    <script>
+      var readfile = require("remote").require("./readfile");
+      readfile(function (err, text) {
+        console.log("readfile:", err, text);
+        document.getElementById("source").innerHTML = text;
+      });
+    </script>
+  </body>
 </html>
-上面的代码用 remote 模块加载 readfile.js，然后在主进程里运行它。两个进程可以无缝交互，
-所以看起来跟使用标准的 Node 模块没什么区别。唯一的区别是 require('remote').require
-('./readfile');。
+```
+
+上面的代码用 remote 模块加载 readfile.js，然后在主进程里运行它。两个进程可以无缝交互， 所以看起来跟使用标准的 Node 模块没什么区别。唯一的区别是 require('remote').require ('./readfile');。
 
 ## 12.3 搭建完整的桌面端程序
-现在你已经知道如何创建基本的 Electron 程序了，也知道如何调用 Node 模块了，接下来看
-一下如何搭建一个支持原生功能的桌面端程序。这里以能够发起和查看 HTTP 请求的开发工具为
-例，看怎么做一个带 GUI 的 request 模块。
-尽管只用 HTML、 JavaScript、 CSS 和 Node 就可以做出 Electron 程序，但为了维护和扩展方
-便，还是要借助前端开发工具。这个程序会用到下列内容：
+
+现在你已经知道如何创建基本的 Electron 程序了，也知道如何调用 Node 模块了，接下来看 一下如何搭建一个支持原生功能的桌面端程序。这里以能够发起和查看 HTTP 请求的开发工具为 例，看怎么做一个带 GUI 的 request 模块。
+尽管只用 HTML、 JavaScript、 CSS 和 Node 就可以做出 Electron 程序，但为了维护和扩展方 便，还是要借助前端开发工具。这个程序会用到下列内容：
+
 - 以 electron-quick-start 项目为基础；
 - 发起 HTTP 请求的 request 模块；
 - 做用户界面的 React；
 - 用 Babel 将 ES6 转成对浏览器友好的 ES5；
 - 构建客户端程序的 Webpack。
+
 图 12-4 是程序做好之后的样子。
 图 12-4 HTTP Master Electron 程序
 接下来介绍如何用 Webpack 和 Babel 搭建一个基于 React 的项目。
+
 ### 12.3.1 引导 React 与 Babel
-搭建带有精巧前端的新程序时，最大的挑战就是用可维护的构建系统设置 React 和 Babel 之
-类的库。要从 Grunt、 Gulp 和 Webpack 这些工具中做选择是个难题。何况这些库还在随着时间发
-生变化，相关书籍和教程很快就过时了，所以这些工作变得更加困难了。
-为了减轻飞速发展的前端开发造成的影响，需要指定所有依赖项的具体版本号，以便可以得
-到教程中所讲的结果。如果你被搞糊涂了，可以用 Yeoman 之类的工具生成程序框架。然后按照
-本章给出的纲要进行修改。
+
+搭建带有精巧前端的新程序时，最大的挑战就是用可维护的构建系统设置 React 和 Babel 之 类的库。要从 Grunt、 Gulp 和 Webpack 这些工具中做选择是个难题。何况这些库还在随着时间发 生变化，相关书籍和教程很快就过时了，所以这些工作变得更加困难了。
+为了减轻飞速发展的前端开发造成的影响，需要指定所有依赖项的具体版本号，以便可以得 到教程中所讲的结果。如果你被搞糊涂了，可以用 Yeoman 之类的工具生成程序框架。然后按照 本章给出的纲要进行修改。
+
 ### 12.3.2 安装依赖项
+
 创建新的 electron-quick-start 项目。从 GitHub 上克隆到本地：
+
+```
 git clone https://github.com/atom/electron-quick-start
 cd electron-quick-start
 npm install
+```
+
 安装 react、 react-dom 和 babel-core：
+
+```
 npm install --save-dev react@0.14.3 react-dom@0.14.3 babel-core@6.3.17
-接着安装 Babel 插件。最主要的是 babel-preset-es2015，虽然对于一个只是在 Chromium 运行
-的项目来说有点儿大材小用，但为了能轻松使用 Chromium 还不支持的 ES2015 新特性，只好就
-这样了。安装命令如下：
+```
+
+接着安装 Babel 插件。最主要的是 babel-preset-es2015，虽然对于一个只是在 Chromium 运行 的项目来说有点儿大材小用，但为了能轻松使用 Chromium 还不支持的 ES2015 新特性，只好就 这样了。安装命令如下：
+
+```
 npm install --save-dev babel-preset-es2015@6.3.13
 npm install --save-dev babel-plugin-transform-class-properties@6.3.13
+```
+
 让 Babel 支持 JSX 的插件：
+
+```
 npm install --save-dev babel-plugin-transform-react-jsx@6.3.13
+```
+
 安装 Webpack：
+
+```
 npm install --save-dev webpack@1.12.9
+```
+
 让 Webpack 使用 Babel 的 babel-loader：
+
+```
 npm install --save-dev babel-loader@6.2.0
+```
+
 依赖项基本就绪了，在项目中加一个.babelrc 文件。告诉 Babel 使用 ES2015 和 React 插件：
+
+```json
 {
-"plugins": [
-"transform-react-jsx"
-],
-"presets": ["es2015"]
+  "plugins": ["transform-react-jsx"],
+  "presets": ["es2015"]
 }
+```
+
 最后，打开 package.json，在 scripts 里调用 Webpack：254 第 12 章 用 Electron 征服桌面
+
+```json
 "scripts": {
 "start": "electron main.js",
 "build": "node_modules/.bin/webpack --progress --colors"
 },
-这样运行 npm run build 就可以构建程序了。 Webpack 插件可以用于 React 热加载，这里
-就不展开介绍了。如果想在客户端代码发生变化后自动完成构建，可以用 fswatch 或 nodemon 之
-类的工具。
+```
+
+这样运行 npm run build 就可以构建程序了。 Webpack 插件可以用于 React 热加载，这里 就不展开介绍了。如果想在客户端代码发生变化后自动完成构建，可以用 fswatch 或 nodemon 之 类的工具。
 12.3.3 设置 Webpack
 Webpack 还需要一个配置文件 webpack.config.js。把它放到项目的根目录下。其基本格式是
 使用了 Node 风格 CommonJS 模块的 JavaScript：
-const webpack = require('webpack');
+
+```js
+const webpack = require("webpack");
 module.exports = {
-setting: 'value'
+  setting: "value",
 };
+```
+
 这个项目需要的配置是找到 React 文件（ .jsx），加载程序入口（ /app/index.jsx），然后将构建
 结果放到 Electron UI 能找到的位置（ js/app.js）。 React 文件还要用 Babel 处理一下。下面就是包
 含上述设置的配置文件。
 代码清单 12-3 webpack.config.js
-const webpack = require('webpack');
+
+```js
+const webpack = require("webpack");
 module.exports = {
-module: {
-loaders: [
-{ test: /\.jsx?$/, loaders: ['babel-loader'] }
-]
-},
-entry: [
-'./app/index.jsx'
-],
-resolve: {
-extensions: ['', '.js', '.jsx']
-},
-output: {
-path: __dirname + '/js',
-filename: 'app.js'
-}
+  module: {
+    loaders: [{ test: /\.jsx?$/, loaders: ["babel-loader"] }],
+  },
+  entry: ["./app/index.jsx"],
+  resolve: {
+    extensions: ["", ".js", ".jsx"],
+  },
+  output: {
+    path: __dirname + "/js",
+    filename: "app.js",
+  },
 };
-上面的代码通过 module.loaders 告诉 Webpack 用 Babel 转换.jsx（ React）文件。 Babel 会
-按照.babelrc 中的设置用 transform-react-jsx 处理 React 文件。接下来用 entry 属性定义 React 代
-码的主入口。因为 React 组件是基于 HTML 元素的，而 HTML 元素只能有一个父节点，所以可
-以用一个入口囊括整个程序。
-resolve.extensions 属性告诉 Webpack 必须将.jsx 文件当作模块处理。如果有 import
-{Class} from 'class'之类的语句，它会去找 class.js 和 class.jsx 文件。
-最后， output 属性告诉 Webpack 把输出文件写到哪里。这里用的是 js/，但实际上只要是
-Electron UI 能访问到的路径都可以。
-接下来该介绍一下 React 程序了。我们先从主入口开始，看它是如何将请求和响应的 UI 元
-素拉进来的。
+```
+
+上面的代码通过 module.loaders 告诉 Webpack 用 Babel 转换.jsx（ React）文件。 Babel 会 按照.babelrc 中的设置用 transform-react-jsx 处理 React 文件。接下来用 entry 属性定义 React 代 码的主入口。因为 React 组件是基于 HTML 元素的，而 HTML 元素只能有一个父节点，所以可 以用一个入口囊括整个程序。
+resolve.extensions 属性告诉 Webpack 必须将.jsx 文件当作模块处理。如果有 import {Class} from 'class'之类的语句，它会去找 class.js 和 class.jsx 文件。
+最后， output 属性告诉 Webpack 把输出文件写到哪里。这里用的是 js/，但实际上只要是 Electron UI 能访问到的路径都可以。
+接下来该介绍一下 React 程序了。我们先从主入口开始，看它是如何将请求和响应的 UI 元 素拉进来的。
+
 ## 12.4 React 程序
+
 图 12-4 中有程序的样子。其中的 UI 元素可以分成两大类，七小项。
+
 - 请求
- URL：字符串。
- 方法：字符串。
- 消息头部：包含字符串对的对象。
+  - URL：字符串。
+  - 方法：字符串。
+  - 消息头部：包含字符串对的对象。
 - 响应
- HTTP 状态码。
- 消息头部：包含字符串对的对象。
- 消息主体：字符串。
- 错误：字符串。
-但 React 中不允许出现并列的元素，必须把它们放到同一个父节点中。所以我们需要一个顶
-层的 App 对象，包含请求和响应的 UI 元素。
-假设请求和响应分别命名为 Request 和 Response， App 类应该如下所示。
-代码清单 12-4 App 类
-import React from 'react';
-import ReactDOM from 'react-dom';
-import Request from './request';
-import Response from './response';
+  - HTTP 状态码。
+  - 消息头部：包含字符串对的对象。
+  - 消息主体：字符串。
+  - 错误：字符串。
+    但 React 中不允许出现并列的元素，必须把它们放到同一个父节点中。所以我们需要一个顶 层的 App 对象，包含请求和响应的 UI 元素。
+    假设请求和响应分别命名为 Request 和 Response， App 类应该如下所示。
+    代码清单 12-4 App 类
+
+```js
+import React from "react";
+import ReactDOM from "react-dom";
+import Request from "./request";
+import Response from "./response";
 class App extends React.Component {
-render() {
-return (
-<div className="container">
-<Request />
-<Response />
-</div>
-);
+  render() {
+    return (
+      <div className="container">
+        <Request />
+        <Response />
+      </div>
+    );
+  }
 }
-}
-ReactDOM.render(<App />, document.getElementById('app'));
-将这个文件保存为 app/index.jsx。上面的代码先加载了 Request 和 Response 类，然后放
-在一个 div 中渲染。最后一行用 ReactDOM 渲染 App 类的 DOM 节点。 React 可以用<App />引
-用 App 类。
+ReactDOM.render(<App />, document.getElementById("app"));
+```
+
+将这个文件保存为 app/index.jsx。上面的代码先加载了 Request 和 Response 类，然后放 在一个 div 中渲染。最后一行用 ReactDOM 渲染 App 类的 DOM 节点。 React 可以用`<App />`引 用 App 类。
 接下来定义 Request 和 Response 组件。256 第 12 章 用 Electron 征服桌面
 12.4.1 定义 Request 组件
-Request 类接收输入的 URL 和 HTTP 方法，然后用 Node request 模块提交一个请求。它用
-JSX 渲染用户界面，但跟 app/index.jsx 中的主类 App 不同， Request 类不能直接用 ReactDOM
-渲染元素。
-下面是 app/request.jsx 的完整代码。不过为了节省篇幅，我们去掉了头部编辑功能。可以参
-考 GitHub 上的 HTTP Wizard 项目添加更多功能，包括头部编辑。
+Request 类接收输入的 URL 和 HTTP 方法，然后用 Node request 模块提交一个请求。它用 JSX 渲染用户界面，但跟 app/index.jsx 中的主类 App 不同， Request 类不能直接用 ReactDOM 渲染元素。
+下面是 app/request.jsx 的完整代码。不过为了节省篇幅，我们去掉了头部编辑功能。可以参 考 GitHub 上的 HTTP Wizard 项目添加更多功能，包括头部编辑。
 代码清单 12-5 Request 类
-import React from 'react';
-import Events from './events';
-const request = remote.require('request');
+
+```js
+import React from "react";
+import Events from "./events";
+const request = remote.require("request");
 class Request extends React.Component {
-constructor(props) {
-super(props);
-this.state = { url: null, method: 'GET' };
-}
-handleChange = (e) => {
-const state = {};
-state[e.target.name] = e.target.value;
-this.setState(state);
-}
-makeRequest = () => {
-request(this.state, (err, res, body) => {
-const statusCode = res ? res.statusCode : 'No response';
-const result = {
-response: `(${statusCode})`,
-raw: body ? body : '',
-headers: res ? res.headers : [],
-error: err ? JSON.stringify(err, null, 2) : ''
-};
-Events.emit('result', result);
-new Notification(`HTTP response finished: ${statusCode}`)
-});
-}
-render() {
-return (
-<div className="request">
-<h1>Request</h1>
-<div className="request-options">
-<div className="form-row">
-<label>URL</label>
-<input
-name="url"
-type="url"
-value={this.state.url}
-onChange={this.handleChange} />
-</div>
-<div className="form-row">
-<label>Method</label>
-<input
-name="method"
-type="text"
-value={this.state.method}
-placeholder="GET, POST, PATCH, PUT, DELETE"
-onChange={this.handleChange} />
-</div>
-<div className="form-row">
-<a className="btn" onClick={this.makeRequest}>Make request</a>
-</div>
-</div>
-</div>
-);
-}
+  constructor(props) {
+    super(props);
+    this.state = { url: null, method: "GET" };
+  }
+  handleChange = (e) => {
+    const state = {};
+    state[e.target.name] = e.target.value;
+    this.setState(state);
+  };
+  makeRequest = () => {
+    request(this.state, (err, res, body) => {
+      const statusCode = res ? res.statusCode : "No response";
+      const result = {
+        response: `(${statusCode})`,
+        raw: body ? body : "",
+        headers: res ? res.headers : [],
+        error: err ? JSON.stringify(err, null, 2) : "",
+      };
+      Events.emit("result", result);
+      new Notification(`HTTP response finished: ${statusCode}`);
+    });
+  };
+  render() {
+    return (
+      <div className="request">
+        <h1>Request</h1>
+        <div className="request-options">
+          <div className="form-row">
+            <label>URL</label>
+            <input
+              name="url"
+              type="url"
+              value={this.state.url}
+              onChange={this.handleChange}
+            />
+          </div>
+          <div className="form-row">
+            <label>Method</label>
+            <input
+              name="method"
+              type="text"
+              value={this.state.method}
+              placeholder="GET, POST, PATCH, PUT, DELETE"
+              onChange={this.handleChange}
+            />
+          </div>
+          <div className="form-row">
+            <a className="btn" onClick={this.makeRequest}>
+              Make request
+            </a>
+          </div>
+        </div>
+      </div>
+    );
+  }
 }
 export default Request;
-这段代码中大部分都是 render 方法中的 HTML。在了解 UI 是如何搭起来的之前，我们先
-介绍一下其余的部分。首先是用 EventEmitter 的子孙类（在 app/events.jsx 中定义）实现这个
-组件和响应组件之间的通信。下面是 app/events.jsx 的代码：
-import { EventEmitter } from 'events';
+```
+
+这段代码中大部分都是 render 方法中的 HTML。在了解 UI 是如何搭起来的之前，我们先 介绍一下其余的部分。首先是用 EventEmitter 的子孙类（在 app/events.jsx 中定义）实现这个 组件和响应组件之间的通信。下面是 app/events.jsx 的代码：
+
+```js
+import { EventEmitter } from "events";
 const Events = new EventEmitter();
 export default Events;
-Request 是 React.Component 的子孙类。它的构造器中会设置默认的状态，在 React 中，
-state 是个特殊的属性，只有在构造器中才能直接赋值，在其他地方要用 this.setState 设置。
-handleChange 方法根据 HTML 元素的 name 属性设定 state。 render 方法中的 URL
-<input>元素调用了这个方法：
+```
+
+Request 是 React.Component 的子孙类。它的构造器中会设置默认的状态，在 React 中， state 是个特殊的属性，只有在构造器中才能直接赋值，在其他地方要用 this.setState 设置。
+handleChange 方法根据 HTML 元素的 name 属性设定 state。 render 方法中的 URL <input>元素调用了这个方法：
+
+```html
 <input
-name="url"
-type="url"
-value={this.state.url}
-onChange={this.handleChange} />
-这里指定 name 是为了编辑时设定 URL 的。 state 发生变化时会触发 render，而 React 也
-会根据更新后的状态修改 value 属性。我们去看看这个类是如何使用 request 模块的。
+  name="url"
+  type="url"
+  value="{this.state.url}"
+  onChange="{this.handleChange}"
+/>
+```
+
+这里指定 name 是为了编辑时设定 URL 的。 state 发生变化时会触发 render，而 React 也 会根据更新后的状态修改 value 属性。我们去看看这个类是如何使用 request 模块的。
 这是在 Web 视图中运行的客户端代码，所以要想办法访问 request 模块来制作 HTTP 请求。
 Electron 中有加载远程模块的办法。 这个类先用全局的 remote 对象请求了 Node 的 request 模块：
-const request = remote.require('request');
-然后在 makeRequest 中简单地调用 request()发起 HTTP 请求。请求的参数已经在类的
-state 中设定了，你只需要处理请求完成时运行的回调函数。下面是一个非常小的命令式代码：258 第 12 章 用 Electron 征服桌面
-回调函数根据请求的输出设定 state，然后发出结果，让 Response 组件进行处理。还会显示
-桌面提醒。如果请求比较慢，用户会注意到操作系统的弹出提醒：
-new Notification(`HTTP response finished: ${statusCode}`)
+
+```js
+const request = remote.require("request");
+```
+
+然后在 makeRequest 中简单地调用 request()发起 HTTP 请求。请求的参数已经在类的 state 中设定了，你只需要处理请求完成时运行的回调函数。下面是一个非常小的命令式代码：
+回调函数根据请求的输出设定 state，然后发出结果，让 Response 组件进行处理。还会显示 桌面提醒。如果请求比较慢，用户会注意到操作系统的弹出提醒：
+
+```js
+new Notification(`HTTP response finished: ${statusCode}`);
+```
+
 注意图 12-5 右上角的提醒。
 图 12-5 桌面端提醒
 现在看一下 Response 组件是如何显示 HTTP 响应的。
 
 ### 12.4.2 定义 Response 组件
-Response 组件监听 result 事件，然后根据上一次请求的结果设定自己的 state。它用表
-格显示消息头部，用 div 显示消息体和错误。
+
+Response 组件监听 result 事件，然后根据上一次请求的结果设定自己的 state。它用表 格显示消息头部，用 div 显示消息体和错误。
 下面是完整的 Response 组件，文件名是 app/response.jsx。
 代码清单 12-6 Response 组件
-import React from 'react';
-import Events from './events';
-import Headers from './headers';
+
+```js
+import React from "react";
+import Events from "./events";
+import Headers from "./headers";
 class Response extends React.Component {
-constructor(props) {
-super(props);
-this.state = { result: {}, tab: 'body' };
-}
-componentWillUnmount() {
-Events.removeListener('result', this.handleResult.bind(this));
-}
-componentDidMount() {
-Events.addListener('result', this.handleResult.bind(this));
-}
-handleResult(result) {
-this.setState({ result: result });
-}
-handleSelectTab = (e) => {
-const tab = e.target.dataset.tab;
-this.setState({ tab: tab });
-}
-render() {
-const result = this.state.result;
-const tabClasses = {
-body: this.state.tab === 'body' ? 'active' : null,
-errors: this.state.tab === 'errors' ? 'active' : null,
-};
-const rawStyle = this.state.tab === 'body'
-? null
-: { display: 'none' }
-const errorsStyle = this.state.tab === 'errors'
-? null
-: { display: 'none' };
-return (
-<div className="response">
-<h1>Response <span id="response">{result.response}</span></h1>
-<div className="content-container">
-<div className="content">
-<div id="headers">
-<table className="headers">
-<thead>
-<tr>
-<th className="name">Header Name</th>
-<th className="value">Header Value</th>
-</tr>
-</thead>
-<Headers headers={result.headers} />
-</table>
-</div>
-<div className="results">
-<ul className="nav">
-<li className={tabClasses.body}>
-<a data-tab='body' onClick={this.handleSelectTab}>Body</a>
-</li>
-<li className={tabClasses.errors}>
-<a data-tab='errors' href="#"
-onClick={this.handleSelectTab}>Errors</a>
-</li>
-</ul>
-<div
-className="raw"
-id="raw"260 第 12 章 用 Electron 征服桌面
-style={rawStyle}>{result.raw}</div>
-<div
-className="raw"
-id="error"
-style={errorsStyle}>{result.error}</div>
-</div>
-</div>
-</div>
-</div>
-);
-}
+  constructor(props) {
+    super(props);
+    this.state = { result: {}, tab: "body" };
+  }
+  componentWillUnmount() {
+    Events.removeListener("result", this.handleResult.bind(this));
+  }
+  componentDidMount() {
+    Events.addListener("result", this.handleResult.bind(this));
+  }
+  handleResult(result) {
+    this.setState({ result: result });
+  }
+  handleSelectTab = (e) => {
+    const tab = e.target.dataset.tab;
+    this.setState({ tab: tab });
+  };
+  render() {
+    const result = this.state.result;
+    const tabClasses = {
+      body: this.state.tab === "body" ? "active" : null,
+      errors: this.state.tab === "errors" ? "active" : null,
+    };
+    const rawStyle = this.state.tab === "body" ? null : { display: "none" };
+    const errorsStyle =
+      this.state.tab === "errors" ? null : { display: "none" };
+    return (
+      <div className="response">
+        <h1>
+          Response <span id="response">{result.response}</span>
+        </h1>
+        <div className="content-container">
+          <div className="content">
+            <div id="headers">
+              <table className="headers">
+                <thead>
+                  <tr>
+                    <th className="name">Header Name</th>
+                    <th className="value">Header Value</th>
+                  </tr>
+                </thead>
+                <Headers headers={result.headers} />
+              </table>
+            </div>
+            <div className="results">
+              <ul className="nav">
+                <li className={tabClasses.body}>
+                  <a data-tab="body" onClick={this.handleSelectTab}>
+                    Body
+                  </a>
+                </li>
+                <li className={tabClasses.errors}>
+                  <a data-tab="errors" href="#" onClick={this.handleSelectTab}>
+                    Errors
+                  </a>
+                </li>
+              </ul>
+              <div className="raw" id="raw" style={rawStyle}>
+                {result.raw}
+              </div>
+              <div className="raw" id="error" style={errorsStyle}>
+                {result.error}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 }
 export default Response;
-Response 组件中没有专门用来处理 HTTP 响应的代码，只是用各种 HTML 元素显示它的
-state。它可以实现标签切换，实现机制是将 handleSelectTab 方法绑定到 onclick 事件上，
-这个方法用属性 data-tab 实现消息体和错误之间的切换。
-Response 组件中还用到了渲染 HTTP 响应消息头部的组件 Headers。将组件分解成更小的
-组件是 React 中的标准做法。消息头部中的所有值都通过属性传递给子组件，在 React 中，它们
-被称为 props 或 properties：
-<Headers headers={result.headers} />
+```
+
+Response 组件中没有专门用来处理 HTTP 响应的代码，只是用各种 HTML 元素显示它的 state。它可以实现标签切换，实现机制是将 handleSelectTab 方法绑定到 onclick 事件上， 这个方法用属性 data-tab 实现消息体和错误之间的切换。
+Response 组件中还用到了渲染 HTTP 响应消息头部的组件 Headers。将组件分解成更小的 组件是 React 中的标准做法。消息头部中的所有值都通过属性传递给子组件，在 React 中，它们 被称为 props 或 properties：
+
+```html
+<Headers headers="{result.headers}" />
+```
+
 下面是 Headers 组件，文件名是 app/headers.jsx。
 代码清单 12-7 Headers 组件
-import React from 'react';
+
+```js
+import React from "react";
 class Headers extends React.Component {
-render() {
-const headers = this.props.headers || {};
-const headerRows = Object.keys(headers).map((key, i) => {
-return (
-<tr key={i}>
-<td className="name">{key}</td>
-<td className="value">{headers[key]}</td>
-</tr>
-);
-});
-return (
-<tbody className="header-body">
-{headerRows}
-</tbody>
-);
-}
+  render() {
+    const headers = this.props.headers || {};
+    const headerRows = Object.keys(headers).map((key, i) => {
+      return (
+        <tr key={i}>
+          <td className="name">{key}</td>
+          <td className="value">{headers[key]}</td>
+        </tr>
+      );
+    });
+    return <tbody className="header-body">{headerRows}</tbody>;
+  }
 }
 export default Headers;
+```
+
 注意 render()方法中的 this.props.headers，组件就是这样获取传递给它的属性的。
 
 ### 12.4.3 React 组件之间的通信
-Request 和 Response 类隔离得相当好。它们专注于自己的任务，不会相互调用。 React 还
-有其他更精巧的状态管理方式，这里就不再展开介绍了。这个例子只有两个主要组件，用
-EventEmitter 通信就可以了。
+
+Request 和 Response 类隔离得相当好。它们专注于自己的任务，不会相互调用。 React 还 有其他更精巧的状态管理方式，这里就不再展开介绍了。这个例子只有两个主要组件，用 EventEmitter 通信就可以了。
 我们在单独的文件 app/events.jsx 内初始化 EventEmitter，然后输出它的实例：
-import { EventEmitter } from 'events';
+
+```js
+import { EventEmitter } from "events";
 const Events = new EventEmitter();
 export default Events;
-接下来在组件内引入 events，或者发出事件，或者附着监听器进行沟通。 Request 组件在
-makeRequest 方法内将 HTTP 请求的结果发了出去：
+```
+
+接下来在组件内引入 events，或者发出事件，或者附着监听器进行沟通。 Request 组件在 makeRequest 方法内将 HTTP 请求的结果发了出去：
+
+```js
 Events.emit('result', result);
 Response 类会用之前在组件生命周期方法中设置好的监听器捕获这个结果：
 componentWillUnmount() {
 Events.removeListener('result', this.handleResult.bind(this));
 }
-随着程序中的代码越来越多，这种模式会变得越来越难以维护。追踪事件的名称都会变得特
-别困难。因为这些名称都是字符串，所以很容易忘记或写错。一种解决办法是用常量列表做事件
-名称，如果更进一步，将发送事件和存储数据的职责分开，最终会得到跟 Facebook 的 Redux 状
-态容器类似的东西，所以很多 React 程序员都用它设计和搭建更大的程序。
+```
+
+随着程序中的代码越来越多，这种模式会变得越来越难以维护。追踪事件的名称都会变得特 别困难。因为这些名称都是字符串，所以很容易忘记或写错。一种解决办法是用常量列表做事件 名称，如果更进一步，将发送事件和存储数据的职责分开，最终会得到跟 Facebook 的 Redux 状 态容器类似的东西，所以很多 React 程序员都用它设计和搭建更大的程序。
 
 ## 12.5 构建与分发
-现在这个桌面端程序写完了，可以打包成 macOS、 Linux 和 Windows 上的程序。 Electron 程
-序的分发有三个阶段。
-(1) 用你自己的程序名称和图标重新定义 Electron 程序的标识。
-(2) 把程序打包到一个文件中。
-(3) 为每个平台创建一个二进制文件。
-electron-quick-start 基本上已经具备分发的条件了。如果是 macOS，你只需要把自己的代码
-复制到 Electron 的 Contents/Resources/app 文件夹下； 如果是 Windows 和 Linux，则复制到 electron/
-resources/app 文件夹下。
-但手动复制文件不是构建可分发的二进制文件的最佳方式。用 Max Ogden 的 electron-packager
-是更保险的办法。我们可以用这个包提供的工具为 Windows、 Linux 和 macOS 构建可执行文件。
+
+现在这个桌面端程序写完了，可以打包成 macOS、 Linux 和 Windows 上的程序。 Electron 程 序的分发有三个阶段。
+
+1. 用你自己的程序名称和图标重新定义 Electron 程序的标识。
+2. 把程序打包到一个文件中。
+3. 为每个平台创建一个二进制文件。
+
+electron-quick-start 基本上已经具备分发的条件了。如果是 macOS，你只需要把自己的代码 复制到 Electron 的 Contents/Resources/app 文件夹下； 如果是 Windows 和 Linux，则复制到 electron/ resources/app 文件夹下。
+但手动复制文件不是构建可分发的二进制文件的最佳方式。用 Max Ogden 的 electron-packager 是更保险的办法。我们可以用这个包提供的工具为 Windows、 Linux 和 macOS 构建可执行文件。
+
 ### 12.5.1 用 Electron 打包器构建程序
+
 全局安装 electron-packager，这样就可以用它构建，为各个平台创建相应的二进制文件：
-npm install electron-packager -g262 第 12 章 用 Electron 征服桌面
-装好之后，在程序所在目录下运行它。调用 electron-packager 时必须提供程序路径、名称、
-平台、架构（ 32-位或 64-位）以及 Electron 的版本：
+
+```
+npm install electron-packager -g
+```
+
+装好之后，在程序所在目录下运行它。调用 electron-packager 时必须提供程序路径、名称、 平台、架构（ 32-位或 64-位）以及 Electron 的版本：
 electron-packager . HttpWizard --version=1.4.5
-这条命令会下载 1.4.5 版的 Electron，为所有支持的平台和架构各生成一个二进制文件。这可
-能需要些时间（ Electron 大约是 40MB），但等它完成后，你会得到能在各大主流系统上运行的二
-进制文件。
+这条命令会下载 1.4.5 版的 Electron，为所有支持的平台和架构各生成一个二进制文件。这可 能需要些时间（ Electron 大约是 40MB），但等它完成后，你会得到能在各大主流系统上运行的二 进制文件。
 隐藏开发者工具
-在跟外界分享你的构建成果之前，应该先把 main.js 中打开 Chromium 开发者工具那行代
-码删掉或修改一下：
+在跟外界分享你的构建成果之前，应该先把 main.js 中打开 Chromium 开发者工具那行代 码删掉或修改一下：
+
+```js
 mainWindow.webContents.openDevTools();
+```
+
 或者把它封在一个判定条件内，仅在调试时显示：
-if (process.env.NODE_ENV === 'debug') {
-mainWindow.webContents.openDevTools();
+
+```js
+if (process.env.NODE_ENV === "debug") {
+  mainWindow.webContents.openDevTools();
 }
+```
+
 ### 12.5.2 打包
-为进一步提升程序性能，可以用 Atom Shell 归档工具将客户端和 Node JavaScript 文件打包
-到一起。这些归档文件也被称为 asar 文件，它们就像 UNIX 的 tar 命令一样。这样虽然可以把
-JavaScript 代码藏起来，但并不能防止反解码，所以不能把它当作代码模糊处理的手段。不过确
-实可以解决长文件名在 Windows 中会崩掉的问题，有深度嵌套的依赖项时经常会碰到这个问题。
-在 Electron 中， Chromium 可以读取 asar 文件和 Node 代码，所以不需要额外做什么。另外，
-如果加上 --asar 命令行选项， electron-packager 也可以创建 asar 包。
+
+为进一步提升程序性能，可以用 Atom Shell 归档工具将客户端和 Node JavaScript 文件打包 到一起。这些归档文件也被称为 asar 文件，它们就像 UNIX 的 tar 命令一样。这样虽然可以把 JavaScript 代码藏起来，但并不能防止反解码，所以不能把它当作代码模糊处理的手段。不过确 实可以解决长文件名在 Windows 中会崩掉的问题，有深度嵌套的依赖项时经常会碰到这个问题。
+在 Electron 中， Chromium 可以读取 asar 文件和 Node 代码，所以不需要额外做什么。另外， 如果加上 --asar 命令行选项， electron-packager 也可以创建 asar 包。
 图 12-6 是没有 asar 时打包的程序。
 图 12-6 典型的 Electron 程序打包内容
-即便打包后，仍然能够看到 JavaScript 文件中的源码。在 Electron 程序中，只有图片或二进
-制 Node 模块这些资源性文件才是二进制文件。
+即便打包后，仍然能够看到 JavaScript 文件中的源码。在 Electron 程序中，只有图片或二进 制 Node 模块这些资源性文件才是二进制文件。
 可以在 electron-packager 命令中用 --asar 选项生成带 asar 文件的构建结果：
 electron-packager . HttpWizard --version=0.36.0 --asar=true
-这种做法是最简单的，因为 electron-packager 会运行所有必须的命令。如果要手动来做的话，
-需要先安装 asar，然后调用命令行工具来创建包文件：
+这种做法是最简单的，因为 electron-packager 会运行所有必须的命令。如果要手动来做的话， 需要先安装 asar，然后调用命令行工具来创建包文件：
+
+```
 npm install -g asar
 asar pack path-to-your-app/ app.asar
-有了 asar 归档文件后，下载需要支持的平台对应的 Electron 二进制文件，将归档文件添加到
-resources 目录下，如图 12-6 所示。运行程序的可执行文件或包应该就能启动程序了。
-Electron 程序也可以通过编辑厂商提供的二进制文件来打上品牌。可以用这种办法修改程序
-的名称和图标。如果运行没有经过修改的 Electron 二进制文件，它会提供一个窗口，允许你运行
-用 electron-quick-start 库做的程序。
+```
+
+有了 asar 归档文件后，下载需要支持的平台对应的 Electron 二进制文件，将归档文件添加到 resources 目录下，如图 12-6 所示。运行程序的可执行文件或包应该就能启动程序了。 Electron 程序也可以通过编辑厂商提供的二进制文件来打上品牌。可以用这种办法修改程序 的名称和图标。如果运行没有经过修改的 Electron 二进制文件，它会提供一个窗口，允许你运行 用 electron-quick-start 库做的程序。
+
 ## 12.6 总结
+
 - 在 Electron 上，可以用 Node、 JavaScript、 HTML 和 CSS 做桌面程序。
 - 不用 C++、 C#或 Objective-C 也可以生成原生菜单和提醒。
 - 如果有好用的 Node 模块，在 Electron 程序 UI 的客户端 JavaScript 里也可以用。
-- Electron 用的是成熟完备的浏览器，所以可以用最新的 JavaScript 技术（比如 React 或
-Angular）搭建 UI。264 
+- Electron 用的是成熟完备的浏览器，所以可以用最新的 JavaScript 技术（比如 React 或 Angular）搭建 UI。
 
 # 附录 A 安装 Node
 
