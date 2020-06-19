@@ -10236,8 +10236,8 @@ ReactDOM.render(<App />, document.getElementById("app"));
 ```
 
 将这个文件保存为 app/index.jsx。上面的代码先加载了 Request 和 Response 类，然后放 在一个 div 中渲染。最后一行用 ReactDOM 渲染 App 类的 DOM 节点。 React 可以用`<App />`引 用 App 类。
-接下来定义 Request 和 Response 组件。256 第 12 章 用 Electron 征服桌面
-12.4.1 定义 Request 组件
+接下来定义 Request 和 Response 组件。
+### 12.4.1 定义 Request 组件
 Request 类接收输入的 URL 和 HTTP 方法，然后用 Node request 模块提交一个请求。它用 JSX 渲染用户界面，但跟 app/index.jsx 中的主类 App 不同， Request 类不能直接用 ReactDOM 渲染元素。
 下面是 app/request.jsx 的完整代码。不过为了节省篇幅，我们去掉了头部编辑功能。可以参 考 GitHub 上的 HTTP Wizard 项目添加更多功能，包括头部编辑。
 代码清单 12-5 Request 类
@@ -10924,19 +10924,14 @@ books.forEach((book) => {
 
 # 附录C Connect 的官方中间件
 
-Connect 对 Node 的 HTTP 客户端和服务器模块做了简单的封装，其作者和贡献者们又做了一
-些官方支持的中间件组件，用以实现一些底层的功能，比如 cookie 解析、请求主体解析、会话管
-理、基本认证、跨站请求伪造（ CSRF）等，很多 Web 框架都在用这些中间件组件。本附录对所
-有这些中间件做了介绍，如果你不想用大型框架，完全可以用它们搭建起一个轻便的 Web 程序。
+Connect 对 Node 的 HTTP 客户端和服务器模块做了简单的封装，其作者和贡献者们又做了一 些官方支持的中间件组件，用以实现一些底层的功能，比如 cookie 解析、请求主体解析、会话管 理、基本认证、跨站请求伪造（ CSRF）等，很多 Web 框架都在用这些中间件组件。本附录对所 有这些中间件做了介绍，如果你不想用大型框架，完全可以用它们搭建起一个轻便的 Web 程序。
 ## C.1 解析 cookie、请求主体和查询字符串
-因为 Node 中没有解析 cookie、缓存请求体、解析复杂查询字符串之类 Web 程序高层概念的
-核心模块，所以 Connect 提供了实现这些功能的中间件。本节会讨论三个解析请求数据的中间件
-组件：
+因为 Node 中没有解析 cookie、缓存请求体、解析复杂查询字符串之类 Web 程序高层概念的 核心模块，所以 Connect 提供了实现这些功能的中间件。本节会讨论三个解析请求数据的中间件 组件：
 - cookie-parser——解析来自浏览器的 cookie，放到 req.cookies 中；
 - qs——解析请求 URL 的查询字符串，放到 req.query 中；
 - body-parser——读取并解析请求体，放到 req.body 中。
-我们先从 cookie-parser 开始。借助这个中间件，可以轻松获取存储在网站访问者浏览器
-中的数据，比如授权状态、网站设置等。
+
+我们先从 cookie-parser 开始。借助这个中间件，可以轻松获取存储在网站访问者浏览器 中的数据，比如授权状态、网站设置等。
 ### C.1.1 cookie-parser：解析 HTTP cookie
 Connect 的 cookie 解析器支持常规 cookie、签名 cookie 和特殊的 JSON cookie。 req.cookies
 默认是用常规未签名 cookie 组装而成的。如果需要支持防篡改的签名 cookie，在创建 cookieparser 实例时要传入一个加密用的字符串。
