@@ -5850,7 +5850,7 @@ console.log(ejs.render(template, context));
 const ejs = require("ejs");
 const fs = require("fs");
 const http = require("http");
-// 意模板文件的位置
+// 注意模板文件的位置
 const filename = "./templates/students.ejs";
 // 传给模板引擎的数据
 const students = [
@@ -6148,11 +6148,11 @@ Pug，以前叫 Jade，它用另一种方式来表示 HTML，是 Express 的默�
 
 ```
 html
-head
-title Welcome
-body
-div.content#main
-strong "Hello world!"
+  head
+    title Welcome
+  body
+    div.content#main
+      strong "Hello world!"
 ```
 
 Pug 像 EJS 一样，可以嵌入 JavaScript，可以用在服务器端或客户端。但 Pug 还有其他特性， 比如模板继承和 mixins。用 mixins 可以定义易于重用的小型模板，用来表示常用视觉元素的 HTML，比如条目列表和盒子。 Mixins 很像我们上一节介绍的 Hogan.js 子模板。有了模板继承， 那些把一个 HTML 页面渲染到多个文件中的 Pug 模板组织起来就更容易了。我们稍后会详细介 绍。输入下面这条命令安装 Pug：
@@ -6184,11 +6184,7 @@ div.content.sidebar#featured_content
 ```
 
 > div 标签的快捷表示法
-> 因为 HTML 中经常使用 div， Pug 定义了它的快捷表示法。下面这个例子渲染出来的 HTML 和前面那个例子一样：
-
-```
-.content.sidebar#featured_content
-```
+> 因为 HTML 中经常使用 div， Pug 定义了它的快捷表示法。下面这个例子渲染出来的 HTML 和前面那个例子一样：`.content.sidebar#featured_content`
 
 你已经知道如何表示 HTML 标签、它们的 CSS 类和 ID 了，接下来我们看看如何指定 HTML 标签的属性。
 
@@ -6224,9 +6220,9 @@ Specifying tag content
 
 ```
 textarea
-| This is some default text
-| that the user should be
-| provided with.
+  | This is some default text
+  | that the user should be
+  | provided with.
 ```
 
 如果 HTML 标签只接受文本（即不能嵌入 HTML 元素），比如 style 和 script，则可以去 掉`|`字符，像下面这样：
@@ -6234,8 +6230,8 @@ textarea
 ```css
 style.
 h1 {
-font-size: 6em;
-color: #9DFF0C;
+  font-size: 6em;
+  color: #9DFF0C;
 }
 ```
 
@@ -6247,12 +6243,12 @@ Pug 一般用缩进表示嵌套，但有时缩进形成的空格太多了。比�
 
 ```
 ul
-li
-a(href='http://nodejs.org/') Node.js homepage
-li
-a(href='http://npmjs.org/') NPM homepage
-li
-a(href='http://nodebits.org/') Nodebits blog
+  li
+    a(href='http://nodejs.org/') Node.js homepage
+  li
+    a(href='http://npmjs.org/') NPM homepage
+  li
+    a(href='http://nodebits.org/') Nodebits blog
 ```
 
 如果用 Pug 块扩展，这个例子会更紧凑。块扩展可以在标签后面用冒号表示嵌套。下面这段 代码生成的输出跟前面的一样，但只有四行代码，而前面那段代码有七行：
@@ -6299,22 +6295,22 @@ console.log(fn(context));
 ```
 h3.contacts-header My Contacts
 if contacts.length
-each contact in contacts
-- var fullName = contact.firstName + ' ' + contact.lastName
-.contact-box
-p fullName
-if contact.isEditable
-p: a(href='/edit/+contact.id) Edit Record
-p
-case contact.status
-when 'Active'
-strong User is active in the system
-when 'Inactive'
-em User is inactive
-when 'Pending'
-| User has a pending invitation
+  each contact in contacts
+    - var fullName = contact.firstName + ' ' + contact.lastName
+    .contact-box
+      p fullName
+      if contact.isEditable
+        p: a(href='/edit/+contact.id) Edit Record
+      p
+        case contact.status
+          when 'Active'
+            strong User is active in the system
+          when 'Inactive'
+            em User is inactive
+          when 'Pending'
+            | User has a pending invitation
 else
-p You currently do not have any contacts
+  p You currently do not have any contacts
 ```
 
 下面来看一下 Pug 模板中嵌入 JavaScript 代码时如何处理输出。
@@ -6522,25 +6518,25 @@ block content
 extends layout
 baseUrl = "http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/"
 block title
-title Messages
+  title Messages
 // 定义 style 块
 block style
-link(rel="stylesheet", href= baseUrl+"themes/flick/jquery-ui.css")
+  link(rel="stylesheet", href= baseUrl+"themes/flick/jquery-ui.css")
 block append scripts
-// 把这个 scripts 块追加到layout 中定义的那个上面
-script(src= baseUrl+"jquery-ui.js")
+  // 把这个 scripts 块追加到layout 中定义的那个上面
+  script(src= baseUrl+"jquery-ui.js")
 block content
-count = 0
-each message in messages
-- count = count + 1
-script
-$(function() {
-$("#message_#{count}").dialog({
-height: 140,
-modal: true
-});
-});
-!= '<div id="message_' + count + '">' + message + '</div>'
+  count = 0
+  each message in messages
+    - count = count + 1
+    script
+      $(function() {
+        $("#message_#{count}").dialog({
+          height: 140,
+          modal: true
+        });
+      });
+    != '<div id="message_' + count + '">' + message + '</div>'
 ```
 
 但模板继承不是唯一一种集成多个模板的办法。也可以用 include Pug 命令。
@@ -6685,14 +6681,12 @@ Postgres 服务器跑起来了，数据库创建好了， pg 包也安装上了�
 
 ```js
 const pg = require("pg");
+// 配置连接参数
 const db = new pg.Client({ database: "articles" });
-// 配置连
-// 接参数
-// 关闭数据库连接，
-// Node 进程可以退出
 db.connect((err, client) => {
   if (err) throw err;
   console.log("Connected to database", db.database);
+  // 关闭数据库连接，Node 进程可以退出
   db.end();
 });
 ```
@@ -6816,10 +6810,12 @@ Knex.js 支持的数据库有：
 表 8-1 列出了 Knex 为不同数据库生成的插入语句。
 表 8-1 Knex 为不同数据库生成的 SQL
 
-数 据 库 SQL
-PostgreSQL、 SQLite 和 Oracle insert into "users" ("name","age") values(?,?)
-MySQL 和 MariaDB insert into `users` (`name`,`age`) values(?,?)
-Microsoft SQL Server insert into [users]([name],[age]) values(?,?)
+| 数 据 库 | SQL |
+|---|---|
+| PostgreSQL、 SQLite 和 Oracle | insert into "users" ("name","age") values(?,?) |
+| MySQL 和 MariaDB | insert into `users` (`name`,`age`) values(?,?) |
+| Microsoft SQL Server | insert into [users]([name],[age]) values(?,?) |
+
 Knex 支持 promise 和 Node 风格的回调。
 
 ### 8.3.2 用 Knex 实现连接和查询
@@ -6863,10 +6859,12 @@ const db = knex({
   connection: {
     filename: "tldr.sqlite",
   },
+  // 在改变后端时将它设为默认更有效
   useNullAsDefault: true,
 });
 module.exports = () => {
   return db.schema.createTableIfNotExists("articles", (table) => {
+    // 定义插入时自增长的主键“ id” 
     table.increments("id").primary();
     table.string("title");
     table.text("content");
@@ -6886,14 +6884,12 @@ module.exports.Article = {
     return db("articles").del().where({ id });
   },
 };
+```
 
-// 在改变后端时将它
-// 设为默认更有效
-// 定 义 插 入 时 自
-// 增长的主键“ id”
-// 现在可以用 db.Article 添加 Article 记录了。下面这段代码是用来创建 Article 的，
-// 并会输出全部文章。完整随书源码见 ch08-databases/listing8_7/index.js。
-// 代码清单 8-7 与用 Knex 实现的 API 交互
+现在可以用 db.Article 添加 Article 记录了。下面这段代码是用来创建 Article 的，并会输出全部文章。完整随书源码见 ch08-databases/listing8_7/index.js。
+
+代码清单 8-7 与用 Knex 实现的 API 交互
+```js
 db()
   .then(() => {
     db.Article.create({
@@ -6980,6 +6976,7 @@ MySQL 和 PostgreSQL 都是成熟高效的数据库系统，并且对于很多�
 - MySQL 的可插拔存储引擎不太好理解，管理和调优也有一定的难度。不过换个角度来看， 这也意味着可以对它的性能做更精细的控制。
 
 MySQL 和 PostgreSQL 在规模变大后会表现出不同的性能特点，这要取决于它们要处理哪种 工作负载。但可能只有等到项目成熟之后，工作负载的类型才会显现出来。
+
 对于各种关系型数据库的比较，网上有很多深入细致的资料可供参考。
 
 - www.digitalocean.com/community/tutorials/sqlite-vs-mysql-vs-postgresql-a-comparison-ofrelational-database-management-systems
@@ -7006,14 +7003,16 @@ ACID① 是对数据库事务的一组要求：原子性、一致性、隔离性
 
 ### 8.5.4 耐用性：事务是永久性的
 
-事务的耐用性是对持久化生效的保证，在重启、断电、系统错误甚至硬件失效的情况下，持 久化的效果依然不受影响。比如 SQLite 内存模式下的事务就没有耐用性，进程退出后所有数据 都没了。而在 SQLite 把数据写到硬盘中时，事务的耐用性就很好，因为机器重启后数据还在。 这看起来好像很简单：只要把数据写到硬盘里就好了，事务就有耐用性了。但硬盘 I/O 是比 较慢的操作，即便程序规模增长比较温和时， I/O 操作也会迅速变成性能瓶颈。为了保证系统性 能，有些数据库会提供不同的耐用性折中方案。
+事务的耐用性是对持久化生效的保证，在重启、断电、系统错误甚至硬件失效的情况下，持 久化的效果依然不受影响。比如 SQLite 内存模式下的事务就没有耐用性，进程退出后所有数据 都没了。而在 SQLite 把数据写到硬盘中时，事务的耐用性就很好，因为机器重启后数据还在。 
+
+这看起来好像很简单：只要把数据写到硬盘里就好了，事务就有耐用性了。但硬盘 I/O 是比 较慢的操作，即便程序规模增长比较温和时， I/O 操作也会迅速变成性能瓶颈。为了保证系统性 能，有些数据库会提供不同的耐用性折中方案。
 
 ## 8.6 NoSQL
 
 非关系模型的数据存储统称为 NoSQL。因为现在有些 NoSQL 数据库确实支持 SQL，所以 NoSQL 的含义更接近于非关系型，或者被当作不仅是 SQL 的缩写。
 下面举一些 NoSQL 的范式及相应的数据库的例子：
 
-- 键  值/元组存储——DynamoDB、 LevelDB、 Redis、 etcd、 Riak、 Aerospike、 Berkeley DB；
+- 键-值/元组存储——DynamoDB、 LevelDB、 Redis、 etcd、 Riak、 Aerospike、 Berkeley DB；
 - 图存储——Neo4J、 OrientDB；
 - 文档存储——CouchDB、 MongoDB、 Elastic（以前的 Elasticsearch）；
 - 列存储——Cassandra、 HBase；
@@ -7045,9 +7044,17 @@ MongoDB 数据库把文档存储在无模式的数据集中。不需要预先为
 
 ```
 brew install mongodb
+```
+
 MongoDB 服务器是用可执行文件 mongod 启动的：
+
+```
 mongod --config /usr/local/etc/mongod.conf
+```
+
 Christian Amor Kvalheim 的官方 mongodb 包是最受欢迎的 MongoDB 驱动：
+
+```
 npm install mongodb@^2.1.0 --save
 ```
 
@@ -7096,13 +7103,10 @@ const article = {
 db.collection("articles")
   .insertOne(article)
   .then((result) => {
+    // 如果文档没有_id，会创建一个新的 ID， insertedId 就是那个 ID
     console.log(result.insertedId);
-    console.log(article._id);
-    B;
-    // 如果文档没有_id，会创建一个新
-    // 的 ID， insertedId 就是那个 ID
-    // 定义文档的原始对象中增
-    // 加了一个新属性_id
+    // 定义文档的原始对象中增加了一个新属性_id
+    console.log(article._id); B
   });
 ```
 
@@ -7117,6 +7121,7 @@ db.collection("articles")
   .find({ title: "I like cake" })
   .toArray()
   .then((results) => {
+    // 包含所有跟查询匹配的文档的数组
     console.log(results);
   });
 ```
@@ -7131,7 +7136,8 @@ collection.findOne({ _id: someID });
 
 ```js
 db.collection('articles')
-.find({title: { $regex: /cake$/I })
+  // 标题以“ cake”结尾的文档，大小写敏感
+  .find({title: { $regex: /cake$/I })
 ```
 
 MongoDB 查询语言中的查询操作符很多，比如：
@@ -7159,17 +7165,12 @@ module.exports = () => {
     }
   );
 };
-// 包含所有跟查询匹
-// 配的文档的数组
-// 标题以“ cake”结尾的
-// 文档，大小写敏感
 
-// getTimestamp 返回 JavaScript 日期：
-// 2016-07-08T14:49:05.000Z
 module.exports.Article = {
   all() {
     return db.collection("articles2").find().sort({ title: 1 }).toArray();
   },
+  // 支持字符串或 ObjectID 类型的_id 参数
   find(_id) {
     if (typeof _id !== "object") _id = ObjectID(_id);
     return db.collection("articles2").findOne({ _id });
@@ -7207,13 +7208,12 @@ BSON 格式的 ObjectID 并不是随机的字节序列，它编码了 ID 何时�
 
 ```js
 const id = new ObjectID(61bd7f57bf1532835dd6174b);
+// getTimestamp 返回 JavaScript 日期：
+// 2016-07-08T14:49:05.000Z
 id.getTimestamp();
-// 信息。
-// 支持字符串或
-// ObjectID 类型
-// 的_id 参数
-// https://docs.mongodb.com/manual/reference/method/ObjectId/中有关于 ObjectID 格式的更多
 ```
+
+https://docs.mongodb.com/manual/reference/method/ObjectId/ 中有关于 ObjectID 格式的更多信息。
 
 在终端里输出时， ObjectID 表面上看起来可能像字符串一样，但实际上是对象。所以在进 行比较时，解释器会报告说两个看起来完全一样的值是不同的，因为它们是指向不同对象的引用 值。这就是经典的对象比较陷阱。
 下面的代码两次提取相同的对象。我们试图用 Node 自带的 assert 模块断言这两个 ID 或者说 对象是相等的，结果却失败了：
@@ -7243,9 +7243,10 @@ actual:
 
 ObjectID 有个 equal 方法，所有的 \_id 都可以用这个方法判断它们是否相等。另外，你也 可以将标识强制转换为字符串进行比较，或者用 assert 模块的 deepEquals 方法：
 
-```
+```js
 article1._id.equals(article2._id);
 String(article1._id) === String(article2._id);
+// 注意，如果断言结果为 false，这里会抛出异常
 assert.deepEqual(article1._id, article2._id);
 ```
 
@@ -7255,23 +7256,21 @@ assert.deepEqual(article1._id, article2._id);
 const { ObjectID } = require("mongodb");
 const stringID = "577f6b45549a3b991e1c3c18";
 const bsonID = new ObjectID(stringID);
-
-// 让已有实
-// 例有时间
-// 关停
 ```
 
 要尽可能保持 BSON 格式。在 BSON 和字符串之间的相互转换会以牺牲性能为代价，这违 背了 MongoDB 把 BSON 格式的标识交给客户端的初衷。请参阅 BSON 官网了解 BSON 格式的 详细信息。
 
 ### 8.8.6 使用复制集
 
-MongoDB 的分布式功能超出了本书的讨论范围，但我们还是要用一节的篇幅快速介绍一下 注意，如果断言结果为 false， 这里会抛出异常 复制集的基础知识。多个 mongod 进程可以作为复制集的节点/成员运行。 复制集是由一个主节 点和无数个从节点组成的。复制集中的每个成员都会分到唯一的端口和目录存储自己的数据。各 个实例不能共享端口和目录，并且在启动之前这些目录必须是已经存在了。
+MongoDB 的分布式功能超出了本书的讨论范围，但我们还是要用一节的篇幅快速介绍一下复制集的基础知识。多个 mongod 进程可以作为复制集的节点/成员运行。 复制集是由一个主节 点和无数个从节点组成的。复制集中的每个成员都会分到唯一的端口和目录存储自己的数据。各 个实例不能共享端口和目录，并且在启动之前这些目录必须是已经存在了。
 下面的代码为每个成员创建了唯一的目录，并从端口 27017 开始按顺序启动它们。如果不想 让 mongod 在后台运行（命令中不带&），可以为每个 mongod 命令开一个新的终端标签。
 代码清单 8-11 启动一个复制集
 
-```
+```shell
 mkdir -p ./mongodata/db0 ./mongodata/db1 ./mongodata/db2
+# 确保没有其他 mongod 实例运行
 pkill mongod
+# 让已有实例有时间关停
 sleep 3
 mongod --port 27017 --dbpath ./rs0-data/db0 --replSet rs0 &
 mongod --port 27018 --dbpath ./rs0-data/db1 --replSet rs0 &
@@ -7281,8 +7280,9 @@ mongod --port 27019 --dbpath ./rs0-data/db2 --replSet rs0 &
 复制集跑起来之后， MongoDB 需要执行一些初始化操作。你需要连接到希望让它做主节点 的那个实例（默认是 27017），并像下面这样调用 rs.initiate()。然后把这些实例作为成员添 加到复制集中。注意要提供所连机器的主机名。
 代码清单 8-12 复制集的初始化
 
-```
+```shell
 mongo --eval "rs.initiate()"
+# UNIX 命令 hostname 会输出当前机器的主机名
 mongo --eval "rs.add('`hostname`:27017')"
 mongo --eval "rs.add('`hostname`:27018')"
 mongo --eval "rs.add('`hostname`:27019')"
@@ -7297,8 +7297,10 @@ const os = require("os");
 const { MongoClient } = require("mongodb");
 const hostname = os.hostname();
 const members = [`${hostname}:27018`, `${hostname}:27017`, `${hostname}:27019`];
+// test 是数据库名；rs0 是复制集的名称
 MongoClient.connect(`mongodb://${members.join(",")}/test?replSet=rs0`).then(
   (db) => {
+    // replSetGetStatus 会输出复制集的成员信息和元数据
     db.admin()
       .replSetGetStatus()
       .then((status) => {
@@ -7307,15 +7309,6 @@ MongoClient.connect(`mongodb://${members.join(",")}/test?replSet=rs0`).then(
       });
   }
 );
-// 确保没有其他 mongod
-// 实例运行
-// UNIX 命令 hostname 会
-// 输出当前机器的主机名
-// test 是数据库名；
-// rs0 是复制集的名称
-// replSetGetStatus
-// 会输出复制集的成员
-// 信息和元数据
 ```
 
 即便有节点崩溃，但只要仍在运行的 mongod 节点不少于两个，系统就能继续工作。如果主 节点崩溃了，系统会自动推举一个从节点升为主节点。
@@ -7372,7 +7365,9 @@ Redis 原生支持的数据结构包括：
 - 列表
 - 集合
 - 有序集
-  Redis 还有很多实用的功能：
+
+Redis 还有很多实用的功能：
+
 - 位图数据——直接在值上进行位操作；
 - 地理位置索引——存储带半径查询的地理位置数据；
 - 频道——一种发布/订阅数据传递机制；
@@ -7545,9 +7540,10 @@ db.get("user", redis.print);
 
 Redis 可以存储任何二进制数据，也就是说它可以存储任何类型的数据。 Node 客户端对这一 功能的支持是用 Node 的 Buffer 类型实现的。当 Redis 客户端收到缓冲区类型的键或值时，会 原封不动地将这些字节发给 Redis 服务器。为了避免可能会出现的数据破坏或性能损失，客户端 不会进行缓冲区和字符串之间的类型转换。比如说，如果要把硬盘或网络上的数据直接写到 Redis 中，那么直接写缓冲区里的数据明显会比先把数据转成字符串再写更高效。
 
-缓 冲 区
-缓冲区是 Node 的核心文件和网络 API 默认提供的结果。它们是二进制数据连续块的容器， 在 JavaScript 还没有自己的原生二进制数据类型（ Uint8Array、 Float32Array 等）时就已 经在 Node 里了。现在它是 Uint8Array 的特殊子类。 Buffer API 在 Node 中是可以全局访问的， 用它不需要 require 任何东西。
-参见 https://github.com/nodejs/node/blob/master/lib/buffer.js
+> 缓 冲 区
+> 缓冲区是 Node 的核心文件和网络 API 默认提供的结果。它们是二进制数据连续块的容器， 在 JavaScript 还没有自己的原生二进制数据类型（ Uint8Array、 Float32Array 等）时就已 经在 Node 里了。现在它是 Uint8Array 的特殊子类。 Buffer API 在 Node 中是可以全局访问的， 用它不需要 require 任何东西。
+> 参见 https://github.com/nodejs/node/blob/master/lib/buffer.js
+
 Redis 最近添了一些操作字符串上单个位的命令，在处理缓冲区时也可以用：
 
 - bitcount
@@ -7562,6 +7558,7 @@ Redis 最近添了一些操作字符串上单个位的命令，在处理缓冲�
 代码清单 8-15 将数据存在 Redis 散列表中
 
 ```js
+// 设定散列表键/值对
 db.hmset(
   "camping",
   {
@@ -7570,20 +7567,16 @@ db.hmset(
   },
   redis.print
 );
+// 获取“ camping.cooking”的值
 db.hget("camping", "cooking", (err, value) => {
   if (err) throw err;
   console.log("Will be cooking with:", value);
 });
+// 以数组形式获取散列键
 db.hkeys("camping", (err, keys) => {
   if (err) throw err;
   keys.forEach((key) => console.log(` ${key}`));
 });
-// 设定散列表
-// 键/值对
-// 获取“ camping.cooking”
-// 的值
-// 以数组形式
-// 获取散列键
 ```
 
 Redis 散列表中不能存储带嵌入结构的对象，只能有一层。
@@ -7685,38 +7678,31 @@ Redis 客户端既可以订阅频道上的消息，也可以向频道发布消�
 ```js
 const net = require("net");
 const redis = require("redis");
+// 为每个连接到聊天服务器的用户定义的配置逻辑
 const server = net.createServer((socket) => {
-  // 为每个连接到聊天服务器
-  // 的用户定义的配置逻辑
 
+  // 为每个用户创建订阅客户端
   const subscriber = redis.createClient();
+  // 订阅频道
   subscriber.subscribe("main");
+  // 从频道收到消息后显示给用户看
   subscriber.on("message", (channel, message) => {
     socket.write(`Channel ${channel}: ${message}`);
   });
+  // 为每个用户创建发布客户端
   const publisher = redis.createClient();
   socket.on("data", (data) => {
+    // 用户输入消息后，发布它
     publisher.publish("main", data);
   });
   socket.on("end", () => {
+    // 如果用户断开了连接，结束订阅客户端
     subscriber.unsubscribe("main");
     subscriber.end(true);
     publisher.end(true);
   });
 });
 server.listen(3000);
-// 为每个用户创
-// 频道 建订阅客户端
-// 订阅
-// 从频道收到
-// 消息后显示
-// 给用户看
-// 为每个用户创建
-// 用户输入 发布客户端
-// 消息后，
-// 发布它
-// 如果用户断开了连接，
-// 结束订阅客户端
 ```
 
 ### 8.10.10 提升性能
@@ -7743,7 +7729,8 @@ Node 和 Electron 程序中常用的嵌入式数据库有：
 - NeDB
 - LokiJS
 - Lowdb
-  NeDB、 LokiJS 和 Lowdb 都是用纯 JavaScript 写的，天生就适合嵌入到 Node 和 Electron 程序 中。尽管有 SQLite 这样著名的可嵌入关系型数据库，但大多数嵌入式数据库都是简单的键/值或 文档存储。
+
+NeDB、 LokiJS 和 Lowdb 都是用纯 JavaScript 写的，天生就适合嵌入到 Node 和 Electron 程序 中。尽管有 SQLite 这样著名的可嵌入关系型数据库，但大多数嵌入式数据库都是简单的键/值或 文档存储。
 
 ## 8.12 LevelDB
 
@@ -7899,15 +7886,13 @@ npm install --save levelup memdown
 ```js
 const level = require("levelup");
 const memdown = require("memdown");
+// 对于 memdown 来说，这里的“路径”可以是任意字符串，因为它根本不用硬盘
 const db = level("./level-articles.db", {
   keyEncoding: "json",
   valueEncoding: "json",
+  // 唯一的区别是将参数 db 设为 memdown
   db: memdown,
 });
-// 唯一的区别是将参数
-// db 设为 memdown
-// 对于 memdown 来说，这里的“路径”可以
-// 是任意字符串，因为它根本不用硬盘
 ```
 
 这个例子仍然用了之前用的 level 包，因为它只是 LevelUP 的封装。但如果你不想用 level 中 的 LevelDOWN，可以直接用 LevelUP，以免因为 LevelDOWN 形成对 LevelDB 的依赖。
@@ -7969,7 +7954,9 @@ Web 存储定义了简单的键/值存储，其在客户端和移动端浏览器
 有两种 Web 存储 API： localStorage 和 sessionStorage。 sessionStorage 的 API 跟 localStorage 一样，只是持久化行为不同。虽然它们存储的数据在页面重新加载之后都会得以保留，但 sessionStorage 数据只会保留到页面会话结束（标签或浏览器关闭时），并且不能在不同的浏览器 窗口之间共享。
 开发 Web 存储 API 是为了克服浏览器 cookie 的限制。确切地说， cookie 不太适合在多个活 跃标签间共享同一域中的数据。如果用户要跨越多个标签完成一项任务，可以用 sessionStorage 保存这些标签共享的状态数据，从而省掉因网络传输带来的开销。
 要保留跨越多个会话、标签和窗口的长期数据（比如用户撰写的文档或邮件）时， cookie 也 不好用。设计 localStorage 就是为了解决这些问题的。不同浏览器有不同的数据存储空间上限。移动端浏览器中只有 5MB 的存储空间。
-API 概览
+
+**API 概览**
+
 localStorage API 提供的方法包括：
 
 - localStorage.setItem(key, value)——存储键值对；
@@ -8062,7 +8049,9 @@ Web 存储确实会受到限制，但只要使用得当，依然是简单而又�
 
 Web 存储最主要的缺点就是它的阻塞式同步 API 和在某些浏览器中有限的存储空间。除了 Web 存储，大多数现代浏览器都会支持 WebSQL 或 IndexedDB，或者同时支持两种存储。它们都 是非阻塞的，并且存储空间比 Web 存储大得多。
 但建议不要像用 Web 存储那样直接用。 WebSQL 已经被废弃了，而它的继任者 IndexedDB， 提供的 API 既不友好也不简洁，更别提那拼凑出来的浏览器支持了。要想在浏览器中用非阻塞的 方式存储数据，而且还要方便可靠，我们推荐一种“标准化的”非标配工具，其来自 Mozilla 的 [localForage](http://mozilla.github.io/localForage/) 库
-API 概览
+
+**API 概览**
+
 localForage 的接口基本上跟 Web 存储一模一样，只不过是异步非阻塞方式的：
 
 - localforage.setItem(key, value, callback)——存储键值对；
@@ -8071,7 +8060,9 @@ localForage 的接口基本上跟 Web 存储一模一样，只不过是异步非
 - localforage.clear(callback)——移除所有的键值对；
 - localforage.key(index, callback)——获取指定索引的值；
 - localforage.length(callback)——localForage 中键的总数。
-  localForage API 中还额外增加了一些 Web 存储中没有的功能：
+
+localForage API 中还额外增加了一些 Web 存储中没有的功能：
+
 - localforage.keys(callback)——获取所有的键；
 - localforage.iterate(iterator,callback)——循环遍历键值对。
 
@@ -8081,9 +8072,12 @@ localForage API 有 promise 和回调两种方式。
 代码清单 8-28 localStorage 和 localForage 的数据读取
 
 ```js
+// localStorage：同步阻塞
 const value = localStorage.getItem(key);
 console.log(value);
+// localForage：使用 promise 的异步非阻塞方式
 localforage.getItem(key).then((value) => console.log(value));
+// localForage：使用回调的异步非阻塞方式
 localforage.getItem(key, (err, value) => {
   console.log(value);
 });
@@ -8093,16 +8087,8 @@ localForage 会在底层使用当前浏览器环境中最好的存储机制。�
 
 ```js
 //比如不用 localStorage
+// 这样就永远不会尝试用localStorage 了
 localforage.setDriver([localforage.INDEXEDDB,localforage.WEBSQL]);
-localStorage：
-// 同步阻塞
-// localForage：使用 promise
-// 的异步非阻塞方式
-// localForage：
-// 使用回调的异
-// 步非阻塞方式
-// 这样就永远不会尝试用
-// localStorage 了
 ```
 
 localForage 可以存储字符串之外的其他类型的数据。它支持大多数的 JavaScript 原始类型， 比如数组和对象，以及二进制数据类型： TypedArray、 ArrayBuffer 和 Blob。 IndexedDB 是 唯一支持二进制数据存储的后台，也就是说如果后台用的是 WebSQL 和 localStorage，会有编组 开销：
@@ -8121,18 +8107,27 @@ Promise.all([
 
 使用存储托管不需要管理自己的服务器端存储。像 Amazon Web 服务（ AWS）这样的厂商提 供的那些托管式基础设施一般仅作为扩展和性能优化方案，但在早期巧用这些托管式服务可以免 于实现不必要的基础设施，从而节省大量时间。
 即便不是全部，也能找到本章中列出的大部分数据库的托管式服务。使用托管式服务可以迅 速尝试各种工具，甚至无须搭建自己的数据库主机就能部署对外开放的生产程序。但部署自己的 数据存储越来越简单了。很多云服务提供商都有预先配置好的服务器映像，安装了运行所选数据 库所需的全部软件，并且全都配置好了。
-简单存储服务
+
+**简单存储服务**
+
 Amazon 的简单存储服务（ S3）是一种远程文件托管服务，包含在大受欢迎的 ASW 包中。 用 S3 存储和托管向网络开放的文件有成本上的优势。它是云端的文件系统。可以用 RESTful HTTP 调用将文件和不超过 2KB 的元数据上传到桶中。然后通过 HTTP GET 或 BitTorrent 协议访问这些 内容。
+
 我们可以对桶及其中的内容进行各种访问许可配置，包括基于时间的访问。还可以给桶里的 内容指定一个生存期（ TTL），生存期过了之后就会从桶中删掉，再也访问不到。将 S3 数据提升 到内容交付网络（ CDN）中也很容易。 AWS 提供了 CloudFront CDN，可以轻松连接到你的文件， 然后用很低的延时提供给全世界。
+
 并不是所有的数据都需要存到数据库中。你的数据中是不是有些应当作为文件？在为用户生 成了一个昂贵的计算结果后，也许应该将这些结果推送到 S3 上，再也不用重蹈覆辙。
+
 S3 经常用来存储用户上传的图片等资源性文件。要上传的资源性文件先是放在程序所在机 器的一个临时目录中，然后用 ImageMagick 这样的工具缩小之后上传到 S3，以供浏览器访问。 如果通过流直接上传到 S3，这个过程就更简单了，到达 S3 之后还可以触发后续处理。客户端程 序也可以直接上传到 S3。一些面向开发人员的服务甚至要求用户提供他们的 S3 桶访问令牌，实 现绝对的零存储。
-S3 并不是只能存储图片
+
+**S3 并不是只能存储图片**
+
 S3 可以存储任何文件，只要不超过 5TB，任何格式都可以。在处理要作为一个整体来访问 的、不怎么变化的大块数据时， S3 的表现最好。
+
 安装和维护文件托管及存储服务器是个比较复杂的任务，把数据放到 S3 上可以避开这些麻 烦。对于那些需要作为一个整体访问的大块数据来说，只要写的次数不频繁，并且可能需要从多 个位置进行很多次访问，就非常适合放到 S3 上。
 
 ## 8.16 选哪个数据库
 
 本章只介绍了 Node 程序中常用的几个数据库。用这些数据库中的任何一个都能搭建出成功 的应用程序，并且不乏先例。但并不是总能为程序找到理想的数据存储方案。没有银弹。每个数 据库都有自己独特的折中方案，开发人员要评估哪种折中方案最适合项目当前的状态。一般来说 采用混合技术是最合适的。
+
 与其问“我应该用什么数据库”，不如问“如果根本不用数据库，我能坚持多久”。你能用长 期有效的决策做多少个项目？以后再做决定一般就是最好的决定，等你以后有了更多信息时，总 能做出更好的决定。
 
 ## 8.17 总结
