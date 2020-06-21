@@ -9912,7 +9912,8 @@ build 的运行方式是用命令 `npm run build`，它会先创建一个 bundle
 - 显示桌面菜单
 - 发送桌面提醒
 - 创建跨平台的版本
-  上一章介绍了如何用 Node 做命令行程序。实际上 Node 在桌面软件中也慢慢流行开了。程 序员们渐渐地把 Web 技术用到了跨平台的开发上。本章要讲的内容是，如何用原生的桌面端功 能、 Node 和客户端 Web 技术搭建桌面端 Web 程序。这个程序可以在 Linux、 macOS 和 Windows 上开发和运行，并且几乎可以像在客户端  服务器端 Web 程序开发中那样使用 Node 模块。
+
+上一章介绍了如何用 Node 做命令行程序。实际上 Node 在桌面软件中也慢慢流行开了。程 序员们渐渐地把 Web 技术用到了跨平台的开发上。本章要讲的内容是，如何用原生的桌面端功 能、 Node 和客户端 Web 技术搭建桌面端 Web 程序。这个程序可以在 Linux、 macOS 和 Windows 上开发和运行，并且几乎可以像在客户端  服务器端 Web 程序开发中那样使用 Node 模块。
 
 ## 12.1 认识 Electron
 
@@ -9923,9 +9924,10 @@ Electron 原来叫 Atom Shell，可以用 Web 技术搭建桌面端程序。以 
 - Microsoft Windows 的安装包；
 - 调试；
 - 原生菜单和提醒。
-  Electron 系已经出了几个很著名的程序了。最开始是 Atom，即 GitHub 发布的文本编辑器， 最近流行起来的有聊天程序 Slack，还有 Microsoft 的 Visual Studio Code，如图 12-1 所示。
-  图 12-1 Visual Studio Code 的程序窗口和原生上下文菜单
-  你应该试试这些程序，看看用 Electron 能做些什么。想到能用自己掌握的 Node 和 JavaScript 技术做出这么有吸引力的桌面软件，还是很振奋人心的。
+
+Electron 系已经出了几个很著名的程序了。最开始是 Atom，即 GitHub 发布的文本编辑器， 最近流行起来的有聊天程序 Slack，还有 Microsoft 的 Visual Studio Code，如图 12-1 所示。
+图 12-1 Visual Studio Code 的程序窗口和原生上下文菜单
+你应该试试这些程序，看看用 Electron 能做些什么。想到能用自己掌握的 Node 和 JavaScript 技术做出这么有吸引力的桌面软件，还是很振奋人心的。
 
 ### 12.1.1 Electron 的技术栈
 
@@ -10103,9 +10105,7 @@ module.exports = {
 };
 ```
 
-这个项目需要的配置是找到 React 文件（ .jsx），加载程序入口（ /app/index.jsx），然后将构建
-结果放到 Electron UI 能找到的位置（ js/app.js）。 React 文件还要用 Babel 处理一下。下面就是包
-含上述设置的配置文件。
+这个项目需要的配置是找到 React 文件（ .jsx），加载程序入口（ /app/index.jsx），然后将构建 结果放到 Electron UI 能找到的位置（ js/app.js）。 React 文件还要用 Babel 处理一下。下面就是包 含上述设置的配置文件。
 代码清单 12-3 webpack.config.js
 
 ```js
@@ -10144,8 +10144,9 @@ resolve.extensions 属性告诉 Webpack 必须将.jsx 文件当作模块处理�
   - 消息主体：字符串。
   - 错误：字符串。
     但 React 中不允许出现并列的元素，必须把它们放到同一个父节点中。所以我们需要一个顶 层的 App 对象，包含请求和响应的 UI 元素。
-    假设请求和响应分别命名为 Request 和 Response， App 类应该如下所示。
-    代码清单 12-4 App 类
+
+假设请求和响应分别命名为 Request 和 Response， App 类应该如下所示。
+代码清单 12-4 App 类
 
 ```js
 import React from "react";
@@ -10167,7 +10168,9 @@ ReactDOM.render(<App />, document.getElementById("app"));
 
 将这个文件保存为 app/index.jsx。上面的代码先加载了 Request 和 Response 类，然后放 在一个 div 中渲染。最后一行用 ReactDOM 渲染 App 类的 DOM 节点。 React 可以用`<App />`引 用 App 类。
 接下来定义 Request 和 Response 组件。
+
 ### 12.4.1 定义 Request 组件
+
 Request 类接收输入的 URL 和 HTTP 方法，然后用 Node request 模块提交一个请求。它用 JSX 渲染用户界面，但跟 app/index.jsx 中的主类 App 不同， Request 类不能直接用 ReactDOM 渲染元素。
 下面是 app/request.jsx 的完整代码。不过为了节省篇幅，我们去掉了头部编辑功能。可以参 考 GitHub 上的 HTTP Wizard 项目添加更多功能，包括头部编辑。
 代码清单 12-5 Request 类
@@ -10433,10 +10436,15 @@ npm install electron-packager -g
 ```
 
 装好之后，在程序所在目录下运行它。调用 electron-packager 时必须提供程序路径、名称、 平台、架构（ 32-位或 64-位）以及 Electron 的版本：
+
+```
 electron-packager . HttpWizard --version=1.4.5
+```
+
 这条命令会下载 1.4.5 版的 Electron，为所有支持的平台和架构各生成一个二进制文件。这可 能需要些时间（ Electron 大约是 40MB），但等它完成后，你会得到能在各大主流系统上运行的二 进制文件。
-隐藏开发者工具
-在跟外界分享你的构建成果之前，应该先把 main.js 中打开 Chromium 开发者工具那行代 码删掉或修改一下：
+
+> 隐藏开发者工具
+> 在跟外界分享你的构建成果之前，应该先把 main.js 中打开 Chromium 开发者工具那行代 码删掉或修改一下：
 
 ```js
 mainWindow.webContents.openDevTools();
@@ -10458,7 +10466,11 @@ if (process.env.NODE_ENV === "debug") {
 图 12-6 典型的 Electron 程序打包内容
 即便打包后，仍然能够看到 JavaScript 文件中的源码。在 Electron 程序中，只有图片或二进 制 Node 模块这些资源性文件才是二进制文件。
 可以在 electron-packager 命令中用 --asar 选项生成带 asar 文件的构建结果：
+
+```
 electron-packager . HttpWizard --version=0.36.0 --asar=true
+```
+
 这种做法是最简单的，因为 electron-packager 会运行所有必须的命令。如果要手动来做的话， 需要先安装 asar，然后调用命令行工具来创建包文件：
 
 ```
