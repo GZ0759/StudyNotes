@@ -9913,7 +9913,7 @@ build 的运行方式是用命令 `npm run build`，它会先创建一个 bundle
 - 发送桌面提醒
 - 创建跨平台的版本
 
-上一章介绍了如何用 Node 做命令行程序。实际上 Node 在桌面软件中也慢慢流行开了。程 序员们渐渐地把 Web 技术用到了跨平台的开发上。本章要讲的内容是，如何用原生的桌面端功 能、 Node 和客户端 Web 技术搭建桌面端 Web 程序。这个程序可以在 Linux、 macOS 和 Windows 上开发和运行，并且几乎可以像在客户端  服务器端 Web 程序开发中那样使用 Node 模块。
+上一章介绍了如何用 Node 做命令行程序。实际上 Node 在桌面软件中也慢慢流行开了。程序员们渐渐地把 Web 技术用到了跨平台的开发上。本章要讲的内容是，如何用原生的桌面端功能、 Node 和客户端 Web 技术搭建桌面端 Web 程序。这个程序可以在 Linux、 macOS 和 Windows 上开发和运行，并且几乎可以像在客户端  服务器端 Web 程序开发中那样使用 Node 模块。
 
 ## 12.1 认识 Electron
 
@@ -10864,499 +10864,563 @@ books.forEach((book) => {
 - 主要工具是静态 HTML 解析器（ cheerio）和能够运行 JavaScript 的解析器（ jsdom），以及能够找到 CSS 选择器的浏览器开发者工具。
 - 因为有时数据的格式化程度比较低，所以可能需要将日期或货币之类的数据转换成适用于数据库的格式。
 
-# 附录C Connect 的官方中间件
+# 附录 C Connect 的官方中间件
 
 Connect 对 Node 的 HTTP 客户端和服务器模块做了简单的封装，其作者和贡献者们又做了一 些官方支持的中间件组件，用以实现一些底层的功能，比如 cookie 解析、请求主体解析、会话管 理、基本认证、跨站请求伪造（ CSRF）等，很多 Web 框架都在用这些中间件组件。本附录对所 有这些中间件做了介绍，如果你不想用大型框架，完全可以用它们搭建起一个轻便的 Web 程序。
+
 ## C.1 解析 cookie、请求主体和查询字符串
+
 因为 Node 中没有解析 cookie、缓存请求体、解析复杂查询字符串之类 Web 程序高层概念的 核心模块，所以 Connect 提供了实现这些功能的中间件。本节会讨论三个解析请求数据的中间件 组件：
+
 - cookie-parser——解析来自浏览器的 cookie，放到 req.cookies 中；
 - qs——解析请求 URL 的查询字符串，放到 req.query 中；
 - body-parser——读取并解析请求体，放到 req.body 中。
 
 我们先从 cookie-parser 开始。借助这个中间件，可以轻松获取存储在网站访问者浏览器 中的数据，比如授权状态、网站设置等。
+
 ### C.1.1 cookie-parser：解析 HTTP cookie
+
 Connect 的 cookie 解析器支持常规 cookie、签名 cookie 和特殊的 JSON cookie。 req.cookies
 默认是用常规未签名 cookie 组装而成的。如果需要支持防篡改的签名 cookie，在创建 cookieparser 实例时要传入一个加密用的字符串。
-在服务器端设定 cookie 中间件 cookie-parser 不会为设定出站 cookie 提供任何
-帮助。应该用 res.setHeader()函数设定名为 Set-Cookie 的响应头。针对 Set-Cookie
-响应头这一特殊情况， Connect 为 Node 默认的 res.setHeader()函数打了补丁，所以
-它可以按你期望的方式工作。
+在服务器端设定 cookie 中间件 cookie-parser 不会为设定出站 cookie 提供任何 帮助。应该用 res.setHeader()函数设定名为 Set-Cookie 的响应头。针对 Set-Cookie 响应头这一特殊情况， Connect 为 Node 默认的 res.setHeader()函数打了补丁，所以 它可以按你期望的方式工作。
+
 1. 常规 cookie
+
 我们需要先加载这个模块，将它添加到中间件栈中，然后才能读取请求中的 cookie。下面是
 附录 C278 附录 C Connect 的官方中间件
 按这个步骤读取 cookie 的例子。
 代码清单 C-1 读取请求中的 cookie
-const connect = require('connect');
-const cookieParser = require('cookie-parser');
+
+```js
+const connect = require("connect");
+// 加载 cookie-parser 中间件
+const cookieParser = require("cookie-parser");
 connect()
-.use(cookieParser())
-.use((req, res, next) => {
-res.end(JSON.stringify(req.cookies));
-})
-.listen(3000);
-这段代码加载了中间件组件 。别忘了先用 npm install cookie-parser 把它装上。然
-后将 cookie 解析器的实例添加到程序的中间件栈中 。最后一步是以字符串形式将 cookie 发回
-给浏览器 ，以便你能看到效果。
-这个例子需要在请求中设定 cookie。所以用浏览器访问 http://localhost:3000 可能看不到什么，
-它会返回一个空对象（ {}）。可以像下面这样用 cURL 设定 cookie：
+  // 将它添加到中间件栈中
+  .use(cookieParser())
+  .use((req, res, next) => {
+    // 以字符串形式的 cookie 作为响应
+    res.end(JSON.stringify(req.cookies));
+  })
+  .listen(3000);
+```
+
+这段代码加载了中间件组件 。别忘了先用 npm install cookie-parser 把它装上。然 后将 cookie 解析器的实例添加到程序的中间件栈中 。最后一步是以字符串形式将 cookie 发回 给浏览器 ，以便你能看到效果。
+这个例子需要在请求中设定 cookie。所以用浏览器访问 http://localhost:3000 可能看不到什么， 它会返回一个空对象（ {}）。可以像下面这样用 cURL 设定 cookie：
+
+```
 curl http://localhost:3000/ -H “ Cookie:foo=bar,bar=baz”
+```
+
 2. 签名 cookie
-签名 cookie 更适合敏感数据，因为用它可以验证 cookie 数据的完整性，有助于防止中间人
-攻击。有效的签名 cookie 被放在 req.signedCookies 对象中。把两个对象分开是为了体现开
-发者的意图。如果把签名的和未签名的 cookie 放到同一个对象中，常规 cookie 可能就会被改造，
-仿冒签名的 cookie。
-签名 cookie 看起来像 s:tobi.DDm3AcVxE9oneYnbmpqxoy[...],①一样，点号（ .）左边
-是 cookie 的值，右边是在服务器上用 SHA-256 HMAC 生成的加密哈希值（基于哈希的消息认证
-码）。如果 cookie 的值或者 HMAC 被改变的话， Connect 的解签会失败。
-假设你设定了一个键为 name，值为 luna 的签名 cookie。 cookieParser 会将 cookie 编码
-为 s:luna.PQLM0wNvqOQEObZX[...]。每个请求中的哈希值都会检查，如果 cookie 完好无损
-地传上来，那么它会被解析为 req.signedCookies.name：
+
+签名 cookie 更适合敏感数据，因为用它可以验证 cookie 数据的完整性，有助于防止中间人 攻击。有效的签名 cookie 被放在 req.signedCookies 对象中。把两个对象分开是为了体现开 发者的意图。如果把签名的和未签名的 cookie 放到同一个对象中，常规 cookie 可能就会被改造， 仿冒签名的 cookie。
+签名 cookie 看起来像 s:tobi.DDm3AcVxE9oneYnbmpqxoy[...],① 一样，点号（ .）左边 是 cookie 的值，右边是在服务器上用 SHA-256 HMAC 生成的加密哈希值（基于哈希的消息认证 码）。如果 cookie 的值或者 HMAC 被改变的话， Connect 的解签会失败。
+假设你设定了一个键为 name，值为 luna 的签名 cookie。 cookieParser 会将 cookie 编码 为 s:luna.PQLM0wNvqOQEObZX[...]。每个请求中的哈希值都会检查，如果 cookie 完好无损 地传上来，那么它会被解析为 req.signedCookies.name：
+
+```
 $ curl http://localhost:3000/ -H "Cookie:
 ➥ name=s:luna.PQLM0wNvqOQEObZXU […] "
 {}
 { name: 'luna' }
 GET / 200 4ms
-如果 cookie 的值变了，像下一个 curl 命令那样， cookie name 会被解析为 req.cookies.
-name，因为它是无效的。但仍可用来调试或满足程序的特定需要：
+```
+
+如果 cookie 的值变了，像下一个 curl 命令那样， cookie name 会被解析为 req.cookies. name，因为它是无效的。但仍可用来调试或满足程序的特定需要：
+
+```
 $ curl http://localhost:3000/ -H "Cookie:
 ➥ name=manny.PQLM0wNvqOQEOb […] "
 { name: 'manny.PQLM0wNvqOQEOb […] ' }
-——————————
-① 这是缩写后的签名值。
-将它添加到中间件
-栈中
-以字符串形式的
-cookie 作为响应
-加载 cookie-parser
-中间件附录 C Connect 的官方中间件 279
-
 {}
 GET / 200 1ms
-cookieParser 的第一个参数是用来对 cookie 签名的密钥。下面这段代码中用的密钥是 tobi
-is a cool ferret。
+```
+
+cookieParser 的第一个参数是用来对 cookie 签名的密钥。下面这段代码中用的密钥是 tobi is a cool ferret。
 代码清单 C-2 解析签名 cookie
-const connect = require('connect');
-const cookieParser = require('cookie-parser');
-const secret = 'tobi is a cool ferret';
+
+```js
+const connect = require("connect");
+const cookieParser = require("cookie-parser");
+const secret = "tobi is a cool ferret";
 connect()
-.use(cookieParser(secret))
-.use((req, res) => {
-console.log('Cookies:', req.cookies);
-console.log('Signed cookies:', req.signedCookies);
-res.end('hello\n');
-}).listen(3000);
-在这个例子中，因为 cookieParser 中间件组件中有参数 secret，所以签名 cookie 是自动
-解析的 。解析结果在 request 对象中 。 cookie-parser 模块的 cookie 解析功能还可以通
-过 signedCookie 和 signedCookies 方法调用。
-在介绍 JSON cookie 之前，我们先看一下如何使用这个例子。对于代码清单 C-1 来说，可以
-用带 -H 选项的 curl 发送 cookie。但签名 cookie 需要按某种方式进行编码。
-signedCookie 方法是用 Node 的 crypto 模块解签的。如果想试验一下代码清单 C-2，需要
-安装 cookie-signature，然后用相同的密钥签名一个字符串：
+  // 签名 cookie 是自动添加到 request 对象中的
+  .use(cookieParser(secret))
+  .use((req, res) => {
+    console.log("Cookies:", req.cookies);
+    // 从 request 对象中访问签名的 cookie
+    console.log("Signed cookies:", req.signedCookies);
+    res.end("hello\n");
+  })
+  .listen(3000);
+```
+
+在这个例子中，因为 cookieParser 中间件组件中有参数 secret，所以签名 cookie 是自动 解析的 。解析结果在 request 对象中 。 cookie-parser 模块的 cookie 解析功能还可以通 过 signedCookie 和 signedCookies 方法调用。
+在介绍 JSON cookie 之前，我们先看一下如何使用这个例子。对于代码清单 C-1 来说，可以 用带 -H 选项的 curl 发送 cookie。但签名 cookie 需要按某种方式进行编码。
+signedCookie 方法是用 Node 的 crypto 模块解签的。如果想试验一下代码清单 C-2，需要 安装 cookie-signature，然后用相同的密钥签名一个字符串：
+
+```js
 const signature = require('cookie-signature');
 const message = 'luna';
 const secret = 'tobi is a cool ferret';
 console.log(signature.sign(message, secret);
-如果签名或消息被改掉了，服务器能判断出来。除了签名 cookie，这个模块还支持 JSON 编
-码的 cookie。我们接下来就介绍它。
+```
+
+如果签名或消息被改掉了，服务器能判断出来。除了签名 cookie，这个模块还支持 JSON 编 码的 cookie。我们接下来就介绍它。
+
 3. JSON cookie
-特别的 JSON cookie 带有前缀 j:，用以告诉 Connect 它是一个串行化的 JSON。 JSON cookie
-既可以是签名的，也可以是未签名的。
-Express 之类的框架可以用这个功能给开发人员提供更直观的 cookie 接口，而不是让他们手
-工做 JSON cookie 值的串行化和解析工作。下面是 Connect 解析 JSON cookie 的例子：
+
+特别的 JSON cookie 带有前缀 j:，用以告诉 Connect 它是一个串行化的 JSON。 JSON cookie 既可以是签名的，也可以是未签名的。
+Express 之类的框架可以用这个功能给开发人员提供更直观的 cookie 接口，而不是让他们手 工做 JSON cookie 值的串行化和解析工作。下面是 Connect 解析 JSON cookie 的例子：
+
+```
 $ curl http://localhost:3000/ -H 'Cookie: foo=bar,
 bar=j:{"foo":"bar"}'
 { foo: 'bar', bar: { foo: 'bar' } }
 {}
 GET / 200 1ms
+```
+
 就像前面提到的， JSON cookie 也可以是签名的，比如像下面这个请求中这样的：
-签名 cookie 是自动添加
-到 request 对象中的
-从 request 对象中访问
-签名的 cookie280 附录 C Connect 的官方中间件
+
+```
 $ curl http://localhost:3000/ -H "Cookie:
 ➥ cart=j:{\"items\":[1]}.sD5p6xFFBO/4ketA1OP43bcjS3Y"
 {}
 { cart: { items: [ 1 ] } }
 GET / 200 1ms
+```
+
 4. 设定出站 cookie
-我们之前提到过， cookie-parser 模块没有提供任何通过 Set-Cookie 响应头向 HTTP 客
-户端写出站 cookie 的功能。但 Connect 可以通过 res.setHeader()函数写入多个 Set-Cookie
-响应头。
-假设你想设定一个名为 foo，值为字符串 bar 的 cookie。调用 res.setHeader()， Connect
-让你用一行代码搞定。你还可以设定 cookie 的各种选项，比如有效期，像下面的第二个 setHeader()
-一样：
-var connect = require('connect');
+
+我们之前提到过， cookie-parser 模块没有提供任何通过 Set-Cookie 响应头向 HTTP 客 户端写出站 cookie 的功能。但 Connect 可以通过 res.setHeader()函数写入多个 Set-Cookie 响应头。
+假设你想设定一个名为 foo，值为字符串 bar 的 cookie。调用 res.setHeader()， Connect 让你用一行代码搞定。你还可以设定 cookie 的各种选项，比如有效期，像下面的第二个 setHeader() 一样：
+
+```js
+var connect = require("connect");
 connect()
-.use((req, res) => {
-res.setHeader('Set-Cookie', 'foo=bar');
-res.setHeader('Set-Cookie',
-'tobi=ferret; Expires=Tue, 08 Jun 2021 10:18:14 GMT'
-);
-res.end();
-})
-.listen(3000);
-如果用 curl 的 --head 标记检查这个服务器对 HTTP 请求的响应，应该能看到 Set-Cookie
-响应头：
+  .use((req, res) => {
+    res.setHeader("Set-Cookie", "foo=bar");
+    res.setHeader(
+      "Set-Cookie",
+      "tobi=ferret; Expires=Tue, 08 Jun 2021 10:18:14 GMT"
+    );
+    res.end();
+  })
+  .listen(3000);
+```
+
+如果用 curl 的 --head 标记检查这个服务器对 HTTP 请求的响应，应该能看到 Set-Cookie 响应头：
+
+```
 $ curl http://localhost:3000/ --head
 HTTP/1.1 200 OK
 Set-Cookie: foo=bar
 Set-Cookie: tobi=ferret; Expires=Tue, 08 Jun 2021 10:18:14 GMT
 Connection: keep-alive
-在 HTTP 响应中发送 cookie 的知识全在这里了。你可以在 cookie 中存放任意类型的文本数
-据，但通常是在客户端存放一个会话 cookie，这样你就可以在服务器端保留完整的用户状态。这
-项会话技术封装在 express-session 模块中，我们稍后再介绍。
-你已经知道怎么处理 cookie 了，现在可能急切地想知道处理其他接收用户输入的常用方法。
-后面两节将会介绍查询字符串和请求消息主体的解析，你会发现，尽管 Connect 是比较底层的框
-架，但我们要实现更加复杂的 Web 框架所提供的功能并不需要写太多代码。
-### C.1.2 解析查询字符串
-GET 参数是接受输入的办法之一。在 URL 后面加一个问号，后面是用 & 号分开的一列参数：
-http://localhost:3000/page?name=tobi&species=ferret
-设定为用 GET 方法提交的表单，以及页面模板中的链接元素都会产生这样的 URL。比如常
-见的分页链接。附录 C Connect 的官方中间件 281
+```
 
-在 Connect 程序中，传给每个中间件的 request 对象中都有 url 属性，但一般只需要最后一
-部分，即问号之后的那些。 Node 有 URL-parsing 模块，所以从技术角度来讲，可以用 url.parse
-获取查询字符串。但 Connect 也要解析 URL，所以它将解析过的版本设为了一个内部属性。
-推荐使用 qs 解析查询字符串。这不是 Connect 官方的模块， npm 上也有很多替代模块。 qs
-及类似的模块的用法都是在其他中间件中调用它的.parse()方法。
+在 HTTP 响应中发送 cookie 的知识全在这里了。你可以在 cookie 中存放任意类型的文本数 据，但通常是在客户端存放一个会话 cookie，这样你就可以在服务器端保留完整的用户状态。这 项会话技术封装在 express-session 模块中，我们稍后再介绍。
+你已经知道怎么处理 cookie 了，现在可能急切地想知道处理其他接收用户输入的常用方法。
+后面两节将会介绍查询字符串和请求消息主体的解析，你会发现，尽管 Connect 是比较底层的框 架，但我们要实现更加复杂的 Web 框架所提供的功能并不需要写太多代码。
+
+### C.1.2 解析查询字符串
+
+GET 参数是接受输入的办法之一。在 URL 后面加一个问号，后面是用 & 号分开的一列参数：
+
+```
+http://localhost:3000/page?name=tobi&species=ferret
+```
+
+设定为用 GET 方法提交的表单，以及页面模板中的链接元素都会产生这样的 URL。比如常 见的分页链接。附录 C Connect 的官方中间件 281
+
+在 Connect 程序中，传给每个中间件的 request 对象中都有 url 属性，但一般只需要最后一 部分，即问号之后的那些。 Node 有 URL-parsing 模块，所以从技术角度来讲，可以用 url.parse 获取查询字符串。但 Connect 也要解析 URL，所以它将解析过的版本设为了一个内部属性。
+推荐使用 qs 解析查询字符串。这不是 Connect 官方的模块， npm 上也有很多替代模块。 qs 及类似的模块的用法都是在其他中间件中调用它的.parse()方法。
 基本用法
-下面这段代码用 qs.parse 方法创建了一个对象，并赋值给 req.query 属性供后续中间件
-组件使用。
+下面这段代码用 qs.parse 方法创建了一个对象，并赋值给 req.query 属性供后续中间件 组件使用。
 代码清单 C-3 解析查询字符串
-const connect = require('connect');
-const qs = require('qs');
+
+```js
+const connect = require("connect");
+const qs = require("qs");
 connect()
-.use((req, res, next) => {
-console.log(req._parsedUrl.query);
-req.query = qs.parse(req._parsedUrl.query);
-next();
-})
-.use((req, res) => {
-console.log('query string:', req.query);
-res.end('\n');
-})
-.listen(3000);
-在上面这段代码中，我们用中间件组件获取解析过的 URL，然后用 qs.parse 对它进行解
-析 ，并在后面的中间件里显示解析结果。
+  .use((req, res, next) => {
+    console.log(req._parsedUrl.query);
+    // 用qs解析查询字符串
+    req.query = qs.parse(req._parsedUrl.query);
+    next();
+  })
+  .use((req, res) => {
+    // 显示解析出来的查询字符串
+    console.log("query string:", req.query);
+    res.end("\n");
+  })
+  .listen(3000);
+```
+
+在上面这段代码中，我们用中间件组件获取解析过的 URL，然后用 qs.parse 对它进行解 析 ，并在后面的中间件里显示解析结果。
 假定你要构建一个音乐库程序，需要实现搜索功能，则可以用查询字符串提交搜索参数，比如：
 /songSearch?artist=Bob%20Marley&track=Jammin.
 这个查询会产生下面这样的 req.query 对象：
+
+```js
 { artist: 'Bob Marley', track: 'Jammin' }
-qs.parse 方法支持嵌入数组，所以像 ?images[]=foo.png&images[]= bar.png 这样
-的复杂查询会生成下面这种对象：
-{ images: [ 'foo.png', 'bar.png' ] }
-如果在 HTTP 请求中没有查询字符串参数，那么像 /songSearch， req.query 这样的会默
-认为空对象：
+```
+
+qs.parse 方法支持嵌入数组，所以像 ?images[]=foo.png&images[]= bar.png 这样 的复杂查询会生成下面这种对象：
+
+```js
+{
+  images: ["foo.png", "bar.png"];
+}
+```
+
+如果在 HTTP 请求中没有查询字符串参数，那么像 /songSearch， req.query 这样的会默 认为空对象：
 {}
-对于 Web 开发来说，这是非常基本的需求，所以 Express 之类的高层框架一般都有自己的查
-询字符串解析。 Web 框架的另外一个基本需求是解析请求消息主体，以便获取表单中提交上来的
-数据。下一节会介绍如何解析请求消息主体，处理表单和文件上传，并对这些请求进行验证以确
-保其安全性。
-用qs解析查询
-字符串
-显示解析出来
-的查询字符串
+对于 Web 开发来说，这是非常基本的需求，所以 Express 之类的高层框架一般都有自己的查 询字符串解析。 Web 框架的另外一个基本需求是解析请求消息主体，以便获取表单中提交上来的 数据。下一节会介绍如何解析请求消息主体，处理表单和文件上传，并对这些请求进行验证以确 保其安全性。
+
 ### C.1.3 body-parser：解析请求主体
-大多数 Web 程序都需要接受并处理用户的输入。可能是来自表单的数据，甚至也可能是通
-过 RESTful API 由其他程序传来的数据。 HTTP 请求和响应被统称为 HTTP 消息，由一组消息头
-和一个消息体组成。在 Node Web 程序中，消息体通常是流，能够按各种方式编码：来自表单的
-POST 消息通常是 application/x-www-form-urlencoded，而 RESTful JSON 请求通常是
-application/json。
-所以说， Connect 程序里的中间件需要对经过编码的数据流进行解码，包括表单编码、 JSON，
-甚至是用 gzip 或 deflate 压缩过的数据。本节将要介绍如何：
+
+大多数 Web 程序都需要接受并处理用户的输入。可能是来自表单的数据，甚至也可能是通 过 RESTful API 由其他程序传来的数据。 HTTP 请求和响应被统称为 HTTP 消息，由一组消息头 和一个消息体组成。在 Node Web 程序中，消息体通常是流，能够按各种方式编码：来自表单的 POST 消息通常是 application/x-www-form-urlencoded，而 RESTful JSON 请求通常是 application/json。
+所以说， Connect 程序里的中间件需要对经过编码的数据流进行解码，包括表单编码、 JSON， 甚至是用 gzip 或 deflate 压缩过的数据。本节将要介绍如何：
+
 - 处理表单输入；
 - 解析 JSON 请求；
 - 基于内容和大小验证消息体；
 - 接受文件上传。
+
 1. 表单
-假设要通过表单接受注册信息，你要做的只是把 body-parser 组件放在所有会访问 req.body
-对象的中间件前面。如图 C-1 所示。
+
+假设要通过表单接受注册信息，你要做的只是把 body-parser 组件放在所有会访问 req.body 对象的中间件前面。如图 C-1 所示。
 图 C-1 body-parser 对表单的处理
 下面是用 body-parser 模块处理来自表单的 HTTP POST 请求的代码。
 代码清单 C-4 解析表单请求
-const connect = require('connect');
-const bodyParser = require('body-parser');附录 C Connect 的官方中间件 283
+
+```js
+const connect = require("connect");
+const bodyParser = require("body-parser");
 
 connect()
-.use(bodyParser.urlencoded({ extended: false }))
-.use((req, res, next) => {
-res.setHeader('Content-Type', 'text/plain');
-res.end('You sent: ' + JSON.stringify(req.body) + '\n');
-})
-.listen(3000);
-使用这个例子需要安装 body-parser 模块①，还需要发起一个带有 URL 编码消息体的 HTTP
-请求。最简单的办法就是用 curl 的选项-d：
+  // 将 body-parser添加到中间件栈
+  .use(bodyParser.urlencoded({ extended: false }))
+  .use((req, res, next) => {
+    res.setHeader("Content-Type", "text/plain");
+    // 以字符串形式返回请求消息体
+    res.end("You sent: " + JSON.stringify(req.body) + "\n");
+  })
+  .listen(3000);
+```
+
+使用这个例子需要安装 body-parser 模块 ①，还需要发起一个带有 URL 编码消息体的 HTTP 请求。最简单的办法就是用 curl 的选项-d：
+
+```
 curl -d name=tobi http://localhost:3000
-这应该会让服务器显示 You sent: {"name":"tobi"}。 在上面的代码中，先是将 body-parser
-添加到中间件栈中 ，然后将 req.body 中经过解析的消息体转换成字符串 以便于显示。
-urlencoded 消息体解析器可以接受以 UTF-8 编码的字符串，并且它会自动解压用 gzip 或 deflate
-编码的请求消息体。
-在这个例子中，传给消息体解析器的参数是 extended: false。当设为 true 时，消息体
-解析器会用另外一个库解析查询字符串格式。这个参数可以是更加复杂的、嵌入的类 JSON 格式
-的对象。下一节介绍请求的校验时会介绍其他参数。
+```
+
+这应该会让服务器显示 You sent: {"name":"tobi"}。 在上面的代码中，先是将 body-parser 添加到中间件栈中 ，然后将 req.body 中经过解析的消息体转换成字符串 以便于显示。
+urlencoded 消息体解析器可以接受以 UTF-8 编码的字符串，并且它会自动解压用 gzip 或 deflate 编码的请求消息体。
+在这个例子中，传给消息体解析器的参数是 extended: false。当设为 true 时，消息体 解析器会用另外一个库解析查询字符串格式。这个参数可以是更加复杂的、嵌入的类 JSON 格式 的对象。下一节介绍请求的校验时会介绍其他参数。
+
 2. 请求的校验
-body-parser 模块中的所有解析器都支持两个请求校验参数： limit 和 verify。 limit
-的意思是阻止超过特定大小的请求：默认是 100KB，如果需要接收更大的表单，可以修改这个参
-数。比如像内容管理系统或博客之类的程序，人们可能会输入很长的数据。
-verify 用来指定对请求进行校验的函数。在需要对原始的请求消息体进行检查，比如要确
-保 API 方法收到的 XML 消息是以正确的 XML 头部开始的，可以用这个。下面的代码展示了这
-两个参数的用法。
+
+body-parser 模块中的所有解析器都支持两个请求校验参数： limit 和 verify。 limit 的意思是阻止超过特定大小的请求：默认是 100KB，如果需要接收更大的表单，可以修改这个参 数。比如像内容管理系统或博客之类的程序，人们可能会输入很长的数据。
+verify 用来指定对请求进行校验的函数。在需要对原始的请求消息体进行检查，比如要确 保 API 方法收到的 XML 消息是以正确的 XML 头部开始的，可以用这个。下面的代码展示了这 两个参数的用法。
 代码清单 C-5 验证表单请求
-const connect = require('connect');
-const bodyParser = require('body-parser');
+
+```js
+const connect = require("connect");
+const bodyParser = require("body-parser");
 function verifyRequest(req, res, buf, encoding) {
-if (!buf.toString().match(/^name=/)) {
-throw new Error('Bad format');
-}
+  if (!buf.toString().match(/^name=/)) {
+    // 格式不对时抛出错误
+    throw new Error("Bad format");
+  }
 }
 connect()
-.use(bodyParser.urlencoded({
-extended: false,
-limit: 10,
-verify: verifyRequest
-}))
-——————————
-① 我们用的版本是 1.11.0。
-将 body-parser
-添加到中间件栈
-以字符串形式返
-回请求消息体
-格式不对时
-抛出错误
-设定对请求大小的限制
-添加验证函数284 附录 C Connect 的官方中间件
-.use(function(req, res, next) {
-res.setHeader('Content-Type', 'text/plain');
-res.end('You sent: ' + JSON.stringify(req.body) + '\n');
-})
-.listen(3000);
-抛出 Error 时应该用关键字 throw 。按照 body-parser 模块的设置，会在解析请求之
-前捕获这些错误，交回给 Connect。在创建了请求验证函数之后，需要用 verify 参数传给
-body-parser 中间件组件 。
-消息体大小限制的单位是字节，这个例子中设定的很小，只有 10 字节 。想看到请求太大
-时会怎么样很容易，只需要把前面那个 curl 中的 name 值换成更长的就可以了。如果想看看抛
-出验证错误时会怎么样，把 curl 中的 name 换掉就可以了。
+  .use(
+    bodyParser.urlencoded({
+      extended: false,
+      // 设定对请求大小的限制
+      limit: 10,
+      // 添加验证函数
+      verify: verifyRequest,
+    })
+  )
+
+  .use(function (req, res, next) {
+    res.setHeader("Content-Type", "text/plain");
+    res.end("You sent: " + JSON.stringify(req.body) + "\n");
+  })
+  .listen(3000);
+```
+
+抛出 Error 时应该用关键字 throw 。按照 body-parser 模块的设置，会在解析请求之 前捕获这些错误，交回给 Connect。在创建了请求验证函数之后，需要用 verify 参数传给 body-parser 中间件组件 。
+消息体大小限制的单位是字节，这个例子中设定的很小，只有 10 字节 。想看到请求太大 时会怎么样很容易，只需要把前面那个 curl 中的 name 值换成更长的就可以了。如果想看看抛 出验证错误时会怎么样，把 curl 中的 name 换掉就可以了。
+
 3. 为什么需要 LIMIT
-下面来看一下恶意用户如何废掉一个脆弱的服务器。先创建下面这个名为 server.js 的小型
-Connect 程序，它只是单纯地用 bodyParser()中间件解析请求主体：
-const connect = require('connect');
-const bodyParser = require('body-parser');
+
+下面来看一下恶意用户如何废掉一个脆弱的服务器。先创建下面这个名为 server.js 的小型 Connect 程序，它只是单纯地用 bodyParser()中间件解析请求主体：
+
+```js
+const connect = require("connect");
+const bodyParser = require("body-parser");
 connect()
-.use(bodyParser.json({ limit: 99999999, extended: false }))
-.use((req, res, next) => {
-res.end('OK\n');
-})
-.listen(3000);
-创建 dos.js，代码如下所示。只需要像这样发送几兆 JSON 数据，恶意用户就可以用 Node
-的 HTTP 客户端攻击前面那个 Connect 程序了：
-const http = require('http');
+  .use(bodyParser.json({ limit: 99999999, extended: false }))
+  .use((req, res, next) => {
+    res.end("OK\n");
+  })
+  .listen(3000);
+```
+
+创建 dos.js，代码如下所示。只需要像这样发送几兆 JSON 数据，恶意用户就可以用 Node 的 HTTP 客户端攻击前面那个 Connect 程序了：
+
+```js
+const http = require("http");
 let req = http.request({
-method: 'POST',
-port: 3000,
-headers: {
-'Content-Type': 'application/json'
-}
+  method: "POST",
+  port: 3000,
+  headers: {
+    // 告诉服务器 你要发送 JSON 数据
+    "Content-Type": "application/json",
+  },
 });
-req.write('[');
+// 开始发送一 个超大的数组对象
+req.write("[");
 let n = 300000;
 while (n--) {
-req.write('"foo",');
+  // 数组中包含 300 000个字符串“ foo”
+  req.write('"foo",');
 }
 req.write('"bar"]');
 req.end();
+```
+
 启动服务器，运行攻击脚本：
+
+```
 $ node server.js &
 $ node dos.js
-告 诉服务器 你要
-发送 JSON 数据
-开 始发送一 个超
-大的数组对象
-数组中包含 300 000
-个字符串“ foo”附录 C Connect 的官方中间件 285
+```
 
-如果这时候用 top 监控 node 进程，将会看到它在 dos.js 启动之后消耗的 CPU 和内存越来
-越多。这很糟糕，但好在 Connect 提供的 limit 参数可以防止出现这种状况。
+如果这时候用 top 监控 node 进程，将会看到它在 dos.js 启动之后消耗的 CPU 和内存越来 越多。这很糟糕，但好在 Connect 提供的 limit 参数可以防止出现这种状况。
+
 4. 解析 JSON 数据
-用 Node 做 Web 程序时要处理大量的 JSON 数据。之前的例子中已经有一些使用 JSON 解析
-器的示范了。下面的例子演示了 JSON 的解析和结果的使用。
+
+用 Node 做 Web 程序时要处理大量的 JSON 数据。之前的例子中已经有一些使用 JSON 解析 器的示范了。下面的例子演示了 JSON 的解析和结果的使用。
 代码清单 C-6 解析 JSON 请求
-const connect = require('connect');
-const bodyParser = require('body-parser');
+
+```js
+const connect = require("connect");
+const bodyParser = require("body-parser");
 connect()
-.use(bodyParser.json())
-.use((req, res, next) => {
-res.setHeader('Content-Type', 'application/json');
-res.end(`Name: ${req.body.name}\n`);
-})
-.listen(3000);
-加载了 JSON 解析器后 ，请求处理器不再把 req.body 看作字符串，而是变成了一个 JavaScript
-对象。这个例子假定会收到一个带有 name 属性的 JSON 对象，然后将 name 的值取出来送回去 。
-这意味着请求的 Content-Type 必须是 application/json，并且发送的是有效的 JSON。默
-认情况下， json 中间件的解析会很严格，但可以将这个设为 false 以降低对编码的要求。
+  // 添加 JSON 消息体解析器
+  .use(bodyParser.json())
+  .use((req, res, next) => {
+    res.setHeader("Content-Type", "application/json");
+    // 从 body 对象中取值
+    res.end(`Name: ${req.body.name}\n`);
+  })
+  .listen(3000);
+```
+
+加载了 JSON 解析器后 ，请求处理器不再把 req.body 看作字符串，而是变成了一个 JavaScript 对象。这个例子假定会收到一个带有 name 属性的 JSON 对象，然后将 name 的值取出来送回去 。 这意味着请求的 Content-Type 必须是 application/json，并且发送的是有效的 JSON。默 认情况下， json 中间件的解析会很严格，但可以将这个设为 false 以降低对编码的要求。
 设定 JSON Content-Type 参数
-我们要知道参数 type，可以用它修改被解析为 JSON 的 Content-Type。下面的例子中
-用的是默认值，即 application/json。但有时候可能 HTTP 客户端不会发送这个消息头，
-一定要注意一下。
-可以用下面这个 curl 请求向程序提交数据，发送一个 username 属性的值为 tobi 的 JSON
-对象：
+我们要知道参数 type，可以用它修改被解析为 JSON 的 Content-Type。下面的例子中 用的是默认值，即 application/json。但有时候可能 HTTP 客户端不会发送这个消息头， 一定要注意一下。
+可以用下面这个 curl 请求向程序提交数据，发送一个 username 属性的值为 tobi 的 JSON 对象：
+
+```
 curl -d '{"name":"tobi"}' -H "Content-Type: application/json"
 ➥ http://localhost:3000
 Name: tobi
+```
+
 5. 解析 MULTIPART <FORM> 数据
-body-parser 模块不处理 multipart 请求消息体。但文件上传是 multipart 消息，所以如果要
-支持用户头像上传之类的功能的话，都需要处理 multipart 请求。
-虽然 Connect 没有官方支持的 multipart 解析器，但也能找到维护得不错的模块。 比如 busboy
-和 multiparty， 并且这两个都有相应的 connect 模块： connect-busboy 和 connect-multiparty。
-这是因为 multipart 解析器本身依赖于 Node 的底层 HTTP 模块，所以很多框架都可以使用，并不
-是专门针对 Connect 做的。
-添加 JSON 消息
-体解析器
-从 body 对象中
-取值286 附录 C Connect 的官方中间件
+
+body-parser 模块不处理 multipart 请求消息体。但文件上传是 multipart 消息，所以如果要 支持用户头像上传之类的功能的话，都需要处理 multipart 请求。
+虽然 Connect 没有官方支持的 multipart 解析器，但也能找到维护得不错的模块。 比如 busboy 和 multiparty， 并且这两个都有相应的 connect 模块： connect-busboy 和 connect-multiparty。 这是因为 multipart 解析器本身依赖于 Node 的底层 HTTP 模块，所以很多框架都可以使用，并不 是专门针对 Connect 做的。
+
 下面这段代码是基于 multiparty 的，会在控制台中输出所上传文件的内容。
 代码清单 C-7 处理上传的文件
-const connect = require('connect');
-const multipart = require('connect-multiparty');
+
+```js
+const connect = require("connect");
+const multipart = require("connect-multiparty");
 connect()
-.use(multipart())
-.use((req, res, next) => {
-console.log(req.files);
-res.end('Upload received\n');
-})
-.listen(3000);
-这个简短的例子添加了 multiparty 中间件 然后输出接收到的文件 。这个文件会被上
-传到一个临时位置上，所以在程序结束时必须用 fs 模块把它们删掉。
-在试用这个例子之前，要先装好 connect-multiparty①，然后启动服务器，用 curl 的 -F
-参数发给它一个文件：
+  // 添加 multiparty 中间件
+  .use(multipart())
+  .use((req, res, next) => {
+    // 输出发送的文件
+    console.log(req.files);
+    res.end("Upload received\n");
+  })
+  .listen(3000);
+```
+
+这个简短的例子添加了 multiparty 中间件 然后输出接收到的文件 。这个文件会被上 传到一个临时位置上，所以在程序结束时必须用 fs 模块把它们删掉。
+在试用这个例子之前，要先装好 connect-multiparty①，然后启动服务器，用 curl 的 -F 参数发给它一个文件：
+
+```
 curl -F file=@index.js http://localhost:3000
-文件名放在 @ 符号后面，前缀是输入域的名称。这个输入域的名称会出现在 req.files 对
-象里，以便于区分传上来的不同文件。
+```
+
+文件名放在 @ 符号后面，前缀是输入域的名称。这个输入域的名称会出现在 req.files 对 象里，以便于区分传上来的不同文件。
 程序的输出应该会像下面这样。能得到 req.files.file.path，并且可以重命名文件，将
 数据传给工作线程处理，上传到内容交付网络，或者做其他需要做的事情：
+
+```
 { fieldName: 'file',
 originalFilename: 'index.js',
 path: '/var/folders/d0/_jqj3lf96g37s5wrf79v_g4c0000gn/T/60201-p4pohc.js',
 headers:
 { 'content-disposition': 'form-data; name="file"; filename="index.js"',
 'content-type': 'application/octet-stream' },
-尽管 body-parser 可以进行压缩，但你可能还是想知道如何压缩响应。接下来我们会介绍
-可以降低带宽成本、提高体验速度的 compression 组件。
-### C.1.4 compression：压缩响应
-你可能注意到了，上一节介绍消息体解析器时，它能解压 gzip 或 deflate 的请求。 Node 有个
-处理压缩的核心模块 zlib，一般用于实现压缩和解压缩方法。中间件 compression 可以用来压
-缩出站响应，也就是服务器发送出去的数据。
-Google 的 PageSpeed Insights 工具建议启用 gzip 压缩，你可以用浏览器中的开发者工具看一
-下，会发现很多网站发送回来的响应都是 gzip 的。压缩会增加 CPU 的负载，但普通文本和 HTML
-等格式的压缩率很高，所以对网站的性能和带宽的占用都会有明显的改善作用。
-——————————
-① 我们测试这个例子用的是 1.2.5 版。
-输出发送
-的文件
-添加 multiparty
-中间件
+```
 
-Deflate 还是 gzip
-你可能不知道哪种压缩更好，甚至不知道为什么会有两种。从标准（ RFC 1950 和 RFC 2616）
-来看，这两种压缩用的算法是一样的，区别在于对头部和校验码的处理方式上。
-但有些浏览器并不能正确处理 deflate，所以一般建议用 gzip。对于消息体解析来说，最好
-是两种都支持，但如果要压缩服务器的输出，用 gzip 比较保险。
+尽管 body-parser 可以进行压缩，但你可能还是想知道如何压缩响应。接下来我们会介绍 可以降低带宽成本、提高体验速度的 compression 组件。
+
+### C.1.4 compression：压缩响应
+
+你可能注意到了，上一节介绍消息体解析器时，它能解压 gzip 或 deflate 的请求。 Node 有个 处理压缩的核心模块 zlib，一般用于实现压缩和解压缩方法。中间件 compression 可以用来压 缩出站响应，也就是服务器发送出去的数据。
+Google 的 PageSpeed Insights 工具建议启用 gzip 压缩，你可以用浏览器中的开发者工具看一 下，会发现很多网站发送回来的响应都是 gzip 的。压缩会增加 CPU 的负载，但普通文本和 HTML 等格式的压缩率很高，所以对网站的性能和带宽的占用都会有明显的改善作用。
+
+> Deflate 还是 gzip
+> 你可能不知道哪种压缩更好，甚至不知道为什么会有两种。从标准（ RFC 1950 和 RFC 2616） 来看，这两种压缩用的算法是一样的，区别在于对头部和校验码的处理方式上。
+> 但有些浏览器并不能正确处理 deflate，所以一般建议用 gzip。对于消息体解析来说，最好 是两种都支持，但如果要压缩服务器的输出，用 gzip 比较保险。
+
 compression 模块会检查消息头部的 Accept-Encoding，判断客户端能接受哪种编码。
-如果消息头部没有这个域，则不会对响应消息做任何处理。如果有 gzip 或 deflate，或者两个都
-有，则压缩响应。
+如果消息头部没有这个域，则不会对响应消息做任何处理。如果有 gzip 或 deflate，或者两个都 有，则压缩响应。
+
 1. 基本用法
+
 因为要封装 res.write()和 res.end()方法，所以一般会把 compression 放在 Connect
 栈的上部。
 下面是对内容进行压缩的例子：
-const connect = require('connect');
-const compression = require('compression');
+
+```js
+const connect = require("connect");
+const compression = require("compression");
 connect()
-.use(compression({ threshold: 0 }))
-.use((req, res) => {
-res.setHeader('Content-Type', 'text/plain');
-res.end('This response is compressed!\n');
-})
-.listen(3000);
-在运行这个例子之前要先安装 compression 模块，然后启动服务器，用 curl 发送一个
-Accept-Encoding 为 gzip 的请求：
+  .use(compression({ threshold: 0 }))
+  .use((req, res) => {
+    res.setHeader("Content-Type", "text/plain");
+    res.end("This response is compressed!\n");
+  })
+  .listen(3000);
+```
+
+在运行这个例子之前要先安装 compression 模块，然后启动服务器，用 curl 发送一个 Accept-Encoding 为 gzip 的请求：
+
+```
 $ curl http://localhost:3000 -i -H "Accept-Encoding: gzip"
+```
+
 参数 -i 的意思是让 cURL 显示消息头部，所以你应该看到 ContentEncoding 是 gzip。
-消息主体应该是乱码，因为压缩过的数据不会是标准的字符。去掉 -i，把响应消息通过管道转给
-gunzip 应该能看到解压后的内容：
+消息主体应该是乱码，因为压缩过的数据不会是标准的字符。去掉 -i，把响应消息通过管道转给 gunzip 应该能看到解压后的内容：
+
+```
 $ curl http://localhost:3000 -H "Accept-Encoding: gzip" | gunzip
-这很强，设置也不难，但并不是所有从服务器发出来的东西都需要压缩，可以用定制的
-filter 函数跳过某些内容。
+```
+
+这很强，设置也不难，但并不是所有从服务器发出来的东西都需要压缩，可以用定制的 filter 函数跳过某些内容。
+
 2. 使用定制的 filter 函数
-compression 在默认的 filter 函数中包含了 MIME 类型 text/*、*/json 和*/javascript，
-所以只会压缩这些响应数据：
-exports.filter = function(req, res){
-const type = res.getHeader('Content-Type') || '';
-return type.match(/json|text|javascript/);
-};288 附录 C Connect 的官方中间件
+
+compression 在默认的 filter 函数中包含了 MIME 类型 text/_、_/json 和\*/javascript， 所以只会压缩这些响应数据：
+
+```js
+exports.filter = function (req, res) {
+  const type = res.getHeader("Content-Type") || "";
+  return type.match(/json|text|javascript/);
+};
+```
+
 要改变这种行为，可以给选项对象传入定制的 filter 函数，代码如下所示：
+
+```js
 function filter(req) {
-const type = req.getHeader('Content-Type') || '';
-return 0 === type.indexOf('text/plain');
+  const type = req.getHeader("Content-Type") || "";
+  return 0 === type.indexOf("text/plain");
 }
-connect()
-.use(compression({ filter: filter }));
+connect().use(compression({ filter: filter }));
+```
+
 这样只会压缩普通文本。
+
 3. 指定压缩和内存水平
-Node 的 zlib 的性能和压缩特性是可以通过参数调节的，把参数传给 compression 函数就行。
-在下面这个例子中，压缩 level 被设为 3，压缩率低，但速度快； memLevel 被设为 8，使
-用更多内存以加快压缩速度。给这些参数取什么值完全取决于程序本身及可用的资源。 Node 的
-zlib 文档里有更详细的介绍。
-connect()
-.use(compression({ level: 3, memLevel: 8 }));
+
+Node 的 zlib 的性能和压缩特性是可以通过参数调节的，把参数传给 compression 函数就行。 在下面这个例子中，压缩 level 被设为 3，压缩率低，但速度快； memLevel 被设为 8，使 用更多内存以加快压缩速度。给这些参数取什么值完全取决于程序本身及可用的资源。 Node 的 zlib 文档里有更详细的介绍。
+
+```js
+connect().use(compression({ level: 3, memLevel: 8 }));
+```
+
 好了，接下来我们要看看覆盖 Web 程序核心需求的中间件，比如日志和会话。
+
 ## C.2 实现 Web 程序核心功能的中间件
-Connect 要为大多数常见的 Web 程序需求提供中间件，这样开发人员就不用一次次地重新
-实现它们了。在 Connect 中，像日志、会话和虚拟主机这些 Web 程序的核心功能都有自带的中
-间件。
+
+Connect 要为大多数常见的 Web 程序需求提供中间件，这样开发人员就不用一次次地重新 实现它们了。在 Connect 中，像日志、会话和虚拟主机这些 Web 程序的核心功能都有自带的中 间件。
 本节会介绍五个非常实用的中间件，你很可能会在自己的程序中用到它们：
+
 - morgan——提供灵活的请求日志；
 - serve-favicon——处理 /favicon.ico 请求；
 - method-override——让没有能力的客户端透明地重写 req.method；
 - vhost——在一个服务器上设置多个网站（虚拟主机）；
 - express-session——管理会话数据。
+
 之前你创建过自己的日志中间件，但 Connect 提供了更灵活的 morgan，我们先来了解一下吧。
+
 ### C.2.1 morgan：记录请求
+
 morgan 是一个灵活的请求日志中间件，可定制日志格式。还能通过参数调节日志输出缓冲
 区以减少写硬盘的次数。另外，如果你想把日志输出到控制台之外的其他地方，比如文件或 socket
 中，还可以指定日志流。
+
 1. 基本用法
+
 morgan 模块的用法如下所示，调用函数让它返回一个中间件函数。附录 C Connect 的官方中间件 289
 
 代码清单 C-8 使用 morgan 模块记录日志
-const connect = require('connect');
-const morgan = require('morgan');
+
+```js
+const connect = require("connect");
+const morgan = require("morgan");
 connect()
-.use(morgan('combined'))
-.use((req, res) => {
-res.setHeader('Content-Type', 'application/json');
-res.end('Logging\n');
-})
-.listen(3000);
-运行这个例子之前要先安装 morgan。 ①我们把这个模块放在了中间件栈的最顶端 ，然后输
-出了一条简单的响应消息 。 combined 是指定日志格式的参数 ，表示这个 Connect 程序会按
-照 Apache 格式输出日志。这种格式很灵活，很多命令行工具都能解析，所以可以用日志处理程
-序生成统计数据。如果想通过不同的客户端（比如 curl、 wget 和浏览器）发送请求，应该看一
-下日志中的用户代理字段。
+  // 给所有请求用“ combined”日志
+  .use(morgan("combined"))
+  .use((req, res) => {
+    res.setHeader("Content-Type", "application/json");
+    // 用消息响应请求
+    res.end("Logging\n");
+  })
+  .listen(3000);
+```
+
+运行这个例子之前要先安装 morgan。 ① 我们把这个模块放在了中间件栈的最顶端 ，然后输 出了一条简单的响应消息 。 combined 是指定日志格式的参数 ，表示这个 Connect 程序会按 照 Apache 格式输出日志。这种格式很灵活，很多命令行工具都能解析，所以可以用日志处理程 序生成统计数据。如果想通过不同的客户端（比如 curl、 wget 和浏览器）发送请求，应该看一 下日志中的用户代理字段。
 combined 的日志格式如下所示：
+
+```
 :remote-addr - :remote-user [:date[clf]] ":method :url
 ➥ HTTP/:http-version" :status :res[content-length] ":referrer" ":user-agent"
-每个:something 都是一些信令，在真正的日志记录中它们包含的是来自 HTTP 请求的真实
-值。比如说，一个简单的 curl(1)请求会生成下面这样一条日志：
+```
+
+每个:something 都是一些信令，在真正的日志记录中它们包含的是来自 HTTP 请求的真实 值。比如说，一个简单的 curl(1)请求会生成下面这样一条日志：
+
+```
 127.0.0.1 - - [Thu, 05 Feb 2015 04:27:07 GMT]
 ➥ "GET / HTTP/1.1" 200 - "-"
 ➥ "curl/7.37.1"
+```
+
 2. 定制日志格式
-日志的格式可以通过传入一个信令字符串来进行定制。比如下面这种格式会输出 GET
-/users 15 ms 格式的日志：
-connect()
-.use(morgan(':method :url :response-time ms'))
-.use(hello)
-.listen(3000);
+
+日志的格式可以通过传入一个信令字符串来进行定制。比如下面这种格式会输出 GET /users 15 ms 格式的日志：
+
+```js
+connect().use(morgan(":method :url :response-time ms")).use(hello).listen(3000);
+```
+
 默认可以使用下面这些信令（注意，头名称对大小写不敏感）：
+
 - :req[头名称] 比如： :req[Accept]
 - :res[头名称] 比如： :res[Content-Length]
 - :http-version
@@ -11364,193 +11428,199 @@ connect()
 - :remote-addr
 - :date
 - :method
-——————————
-① 我们用的是 1.5.1 版。
-给所有请求用“ combined”
-日志
-用消息响应
-请求290 附录 C Connect 的官方中间件
 - :url
 - :referrer
 - :user-agent
 - :status
-定义定制的信令也不难。只需要给 connect.logger.token 函数提供信令名称和回调函数
-就行。比如说，你想记录所有请求的查询字符，可以这样定义它：
+
+定义定制的信令也不难。只需要给 connect.logger.token 函数提供信令名称和回调函数 就行。比如说，你想记录所有请求的查询字符，可以这样定义它：
+
+```
 var url = require('url');
 morgan.token('query-string', function(req, res){
 return url.parse(req.url).query;
 });
-除了默认的格式， morgan 还有其他预定义的格式，比如 short 和 tiny。另一个预定义的
-格式是 dev， 其可以为开发输出简洁的日志，适用于那种只有你一个人在网站上，并且不关心 HTTP
-请求细节时的情况。这个格式还会根据响应状态码设置不同的颜色： 200 是绿色， 300 是蓝色，
-400 是黄色， 500 是红色。这种颜色划分对开发很有帮助。
+```
+
+除了默认的格式， morgan 还有其他预定义的格式，比如 short 和 tiny。另一个预定义的 格式是 dev， 其可以为开发输出简洁的日志，适用于那种只有你一个人在网站上，并且不关心 HTTP 请求细节时的情况。这个格式还会根据响应状态码设置不同的颜色： 200 是绿色， 300 是蓝色， 400 是黄色， 500 是红色。这种颜色划分对开发很有帮助。
 要使用预定义的格式，只需要把名字传给 morgan()：
+
+```js
 connect()
 .use(morgan('dev'))
 .use(hello);
 .listen(3000);
-你已经知道如何格式化 morgan 的输出了，接下来看看你能提供哪些选项给它。
-3. 日志选项： stream 和 immediate
-如前所述，你可以用选项调整 morgan 的行为。
-stream 就是这样的选项，你可以给 morgan 传递一个 Node Stream 实例来代替 stdout，让
-它把日志写到这个 Stream 实例中。这样你可以用 fs.createWriteStream 创建一个 Stream
-实例，把日志输出到独立的日志文件中，脱离开服务器自己的输出。
-在使用这些选项时，通常应该包括 format 属性。下面这个例子使用了定制的格式，将日志
-输出到 /var/log/myapp.log 中，因为有追加标记，所以在程序启动时日志文件不会被截断：
-const fs = require('fs');
-const morgan = require('morgan');
-const log = fs.createWriteStream('/var/log/myapp.log', { flags: 'a' })
-connect()
-.use(morgan({ format: ':method :url', stream: log }))
-.use('/error', error)
-.use(hello)
-.listen(3000);
-immediate 是另一个常用的选项，使用这个选项时，一收到请求就写日志，而不是等到响
-应后才写。如果服务器保持请求长开，并且你想知道连接什么时候开始，就可以用这个选项。或
-者用它来调试程序中的关键部分。不能使用 :status 和 :response-time 之类的信令，因为它
-们是跟响应相关的。要启用即刻模式，可以传入取值为 true 的 immediate，代码如下所示：附录 C Connect 的官方中间件 291
+```
 
+你已经知道如何格式化 morgan 的输出了，接下来看看你能提供哪些选项给它。
+
+3. 日志选项： stream 和 immediate
+
+如前所述，你可以用选项调整 morgan 的行为。
+stream 就是这样的选项，你可以给 morgan 传递一个 Node Stream 实例来代替 stdout，让 它把日志写到这个 Stream 实例中。这样你可以用 fs.createWriteStream 创建一个 Stream 实例，把日志输出到独立的日志文件中，脱离开服务器自己的输出。
+在使用这些选项时，通常应该包括 format 属性。下面这个例子使用了定制的格式，将日志 输出到 /var/log/myapp.log 中，因为有追加标记，所以在程序启动时日志文件不会被截断：
+
+```js
+const fs = require("fs");
+const morgan = require("morgan");
+const log = fs.createWriteStream("/var/log/myapp.log", { flags: "a" });
+connect()
+  .use(morgan({ format: ":method :url", stream: log }))
+  .use("/error", error)
+  .use(hello)
+  .listen(3000);
+```
+
+immediate 是另一个常用的选项，使用这个选项时，一收到请求就写日志，而不是等到响 应后才写。如果服务器保持请求长开，并且你想知道连接什么时候开始，就可以用这个选项。或 者用它来调试程序中的关键部分。不能使用 :status 和 :response-time 之类的信令，因为它 们是跟响应相关的。要启用即刻模式，可以传入取值为 true 的 immediate，代码如下所示：
+
+```js
 const app = connect()
-.use(connect.logger({ immediate: true }))
-.use('/error', error)
-.use(hello);
+  .use(connect.logger({ immediate: true }))
+  .use("/error", error)
+  .use(hello);
+```
+
 这就是日志记录！接下来我们去看看 serve-favicon 中间件。
+
 ### C.2.2 serve-favicon：地址栏和书签图标
-favicon 是网站的小图标，显示在浏览器的地址栏和书签里。为了得到这个图标，浏览器会
-请求 /favicon.ico 文件。一般来说，最好尽快响应对 favicon 文件的请求，这样程序的其他部分就
-可以忽略它们了。serve-favicon 中间件默认会返回 Connect 的 favicon （当没有参数传给它时）。
+
+favicon 是网站的小图标，显示在浏览器的地址栏和书签里。为了得到这个图标，浏览器会 请求 /favicon.ico 文件。一般来说，最好尽快响应对 favicon 文件的请求，这样程序的其他部分就 可以忽略它们了。serve-favicon 中间件默认会返回 Connect 的 favicon （当没有参数传给它时）。
 这个 favicon 如图 C-2 所示。
 图 C-2 favicon
 基本用法
-serve-favicon 一般放在中间件栈的最顶端，所以连下面的日志组件都会忽略对 favicon
-的请求。然后这个图标就会缓存在内存中，可以更快地响应后续请求。
-下面这个例子给 serve-favicon 传入了一个参数，这是一个 .ico 文件的路径，从而用这
-个 .ico 文件响应对 favicon 文件的请求：
-const connect = require('connect');
-const favicon = require('serve-favicon');
-connect()
-.use(favicon(__dirname + '/favicon.ico'))
-.use((req, res) => {
-res.end('Hello World!\n');
-});
-要测试这段代码需要准备一个 favicon.ico 文件。此外，还可以传入一个 maxAge 参数，指明
-浏览器应该把 favicon 放在内存中缓存多长时间。
-接下来我们还有一个小而实用的中间件： method-override。当客户端能力有限时，它可
-以提供一种方案，用于伪造 HTTP 请求方法。
-### C.2.3 method-override：伪造 HTTP 方法
-有时需要使用 GET 或 POST 之外的 HTTP 谓词。比如要搭建一个博客系统，想让用户创建、
-更新和删除文章。使用 DELETE /articles 感觉比用 GET 或 POST 更好，可惜并不是所有浏览器都292 附录 C Connect 的官方中间件
-支持 DELETE。
-一种常见的解决办法是通过请求参数、表单值，有时甚至是 HTTP 请求头来提示服务器用的
-是哪个 HTTP 方法。比如添加一个<input type=hidden>，将其值设定为你想用的方法名，然
-后让服务器检查那个值并“假装”它是这个请求的请求方法。
-很多 Web 框架都支持这种技术， Connect 推荐使用 method-override 模块。
-1. 基本用法
-HTML 输入控件默认的名称是_method，不过可以给 methodOverride()传入一个参数来
-定制它，代码如下所示：
-connect()
-const connect = require('connect');
-const methodOverride = require('method-override');
-connect()
-.use(methodOverride('__method__'))
-.listen(3000)
-为了阐明 methodOverride()是如何实现的，我们来创建一个更新用户信息的微型程序。
-这个程序中会有一个表单，当表单经浏览器提交并被服务器处理后，会用一个简单的成功消息做
-响应，如图 C-3 所示。
-图 C-3 用 methodOverride()模拟 PUT 请求，更新浏览器中的表单
-这个程序用两个中间件更新用户数据。在 update 函数中，如果请求方法不是 PUT，就调用
-next()。就像前面说过的，大多数浏览器都会无视表单属性 method="put"，所以下面这段代
-码不能正常工作。
-代码清单 C-9 不可用的用户更新程序
-const connect = require('connect');
-const morgan = require('morgan');
-const bodyParser = require('body-parser');附录 C Connect 的官方中间件 293
+serve-favicon 一般放在中间件栈的最顶端，所以连下面的日志组件都会忽略对 favicon 的请求。然后这个图标就会缓存在内存中，可以更快地响应后续请求。
+下面这个例子给 serve-favicon 传入了一个参数，这是一个 .ico 文件的路径，从而用这 个 .ico 文件响应对 favicon 文件的请求：
 
-发送 PUT 而不是
-GET 或 POST 方
-法的表单
+```js
+const connect = require("connect");
+const favicon = require("serve-favicon");
+connect()
+  .use(favicon(__dirname + "/favicon.ico"))
+  .use((req, res) => {
+    res.end("Hello World!\n");
+  });
+```
+
+要测试这段代码需要准备一个 favicon.ico 文件。此外，还可以传入一个 maxAge 参数，指明 浏览器应该把 favicon 放在内存中缓存多长时间。
+接下来我们还有一个小而实用的中间件： method-override。当客户端能力有限时，它可 以提供一种方案，用于伪造 HTTP 请求方法。
+
+### C.2.3 method-override：伪造 HTTP 方法
+
+有时需要使用 GET 或 POST 之外的 HTTP 谓词。比如要搭建一个博客系统，想让用户创建、 更新和删除文章。使用 DELETE /articles 感觉比用 GET 或 POST 更好，可惜并不是所有浏览器都 292 附录 C Connect 的官方中间件 支持 DELETE。
+一种常见的解决办法是通过请求参数、表单值，有时甚至是 HTTP 请求头来提示服务器用的 是哪个 HTTP 方法。比如添加一个<input type=hidden>，将其值设定为你想用的方法名，然 后让服务器检查那个值并“假装”它是这个请求的请求方法。
+很多 Web 框架都支持这种技术， Connect 推荐使用 method-override 模块。
+
+1. 基本用法
+
+HTML 输入控件默认的名称是\_method，不过可以给 methodOverride()传入一个参数来 定制它，代码如下所示：
+
+```js
+connect();
+const connect = require("connect");
+const methodOverride = require("method-override");
+connect().use(methodOverride("__method__")).listen(3000);
+```
+
+为了阐明 methodOverride()是如何实现的，我们来创建一个更新用户信息的微型程序。 这个程序中会有一个表单，当表单经浏览器提交并被服务器处理后，会用一个简单的成功消息做 响应，如图 C-3 所示。
+图 C-3 用 methodOverride()模拟 PUT 请求，更新浏览器中的表单
+这个程序用两个中间件更新用户数据。在 update 函数中，如果请求方法不是 PUT，就调用 next()。就像前面说过的，大多数浏览器都会无视表单属性 method="put"，所以下面这段代 码不能正常工作。
+代码清单 C-9 不可用的用户更新程序
+
+```js
+const connect = require("connect");
+const morgan = require("morgan");
+const bodyParser = require("body-parser");
+
 function edit(req, res, next) {
-if ('GET' != req.method) return next();
-res.setHeader('Content-Type', 'text/html');
-res.write('<form method="put">');
-res.write('<input type="text" name="user[name]" value="Tobi" />');
-res.write('<input type="submit" value="Update" />');
-res.write('</form>');
-res.end();
+  if ("GET" != req.method) return next();
+  res.setHeader("Content-Type", "text/html");
+  // 发送 PUT 而不是GET 或 POST 方法的表单
+  res.write('<form method="put">');
+  res.write('<input type="text" name="user[name]" value="Tobi" />');
+  res.write('<input type="submit" value="Update" />');
+  res.write("</form>");
+  res.end();
 }
 function update(req, res, next) {
-if ('PUT' != req.method) return next();
-res.end('Updated name to ' + req.body.user.name);
+  // 确保请求是用 PUT 发送的
+  if ("PUT" != req.method) return next();
+  res.end("Updated name to " + req.body.user.name);
 }
 connect()
-.use(morgan('combined'))
-.use(bodyParser.urlencoded({ extended: false }))
-.use(edit)
-.use(update)
-.listen(3000);
-这个例子中的表单要发送一个 PUT 给服务器 。并且只有通过 PUT 发送时，表单的数据才
-会给 update 函数 。你可以用不同的浏览器和 HTTP 客户端试一下。使用 curl 时，可以用 -X
-选项指定 HTTP 谓词。
-可以添加 method-override 模块来改善对浏览器的支持。这里在表单中加了一个名为
-_method 的输入控件，并且在 bodyParser()下面加上了 methodOverride()，因为它要引用
-req.body 访问表单数据。
+  .use(morgan("combined"))
+  .use(bodyParser.urlencoded({ extended: false }))
+  .use(edit)
+  .use(update)
+  .listen(3000);
+```
+
+这个例子中的表单要发送一个 PUT 给服务器 。并且只有通过 PUT 发送时，表单的数据才 会给 update 函数 。你可以用不同的浏览器和 HTTP 客户端试一下。使用 curl 时，可以用 -X 选项指定 HTTP 谓词。
+可以添加 method-override 模块来改善对浏览器的支持。这里在表单中加了一个名为 \_method 的输入控件，并且在 bodyParser()下面加上了 methodOverride()，因为它要引用 req.body 访问表单数据。
 代码清单 C-10 使用 method-override 支持 HTTP PUT
-const connect = require('connect');
-const morgan = require('morgan');
-const bodyParser = require('body-parser');
-const methodOverride = require('method-override');
+
+```js
+const connect = require("connect");
+const morgan = require("morgan");
+const bodyParser = require("body-parser");
+const methodOverride = require("method-override");
 function edit(req, res, next) {
-if ('GET' != req.method) return next();
-res.setHeader('Content-Type', 'text/html');
-res.write('<form method="post">');
-res.write('<input type="hidden" name="_method" value="put" />');
-res.write('<input type="text" name="user[name]" value="Tobi" />');
-res.write('<input type="submit" value="Update" />');
-res.write('</form>');
-res.end();
+  if ("GET" != req.method) return next();
+  res.setHeader("Content-Type", "text/html");
+  res.write('<form method="post">');
+  // 通过表单变量_method 来提示HTTP 方法
+  res.write('<input type="hidden" name="_method" value="put" />');
+  res.write('<input type="text" name="user[name]" value="Tobi" />');
+  res.write('<input type="submit" value="Update" />');
+  res.write("</form>");
+  res.end();
 }
 function update(req, res, next) {
-if ('PUT' != req.method) return next();
-res.end('Updated name to ${req.body.user.name}');;
+  if ("PUT" != req.method) return next();
+  res.end("Updated name to ${req.body.user.name}");
 }
-通 过 表 单 变 量
-_method 来提示
-HTTP 方法
-确保请求是用
-PUT 发送的294 附录 C Connect 的官方中间件
 connect()
-.use(morgan('dev'))
-.use(bodyParser.urlencoded({ extended: false }))
-.use(methodOverride('_method'))
-.use(edit)
-.use(update)
-.listen(3000);
+  .use(morgan("dev"))
+  .use(bodyParser.urlencoded({ extended: false }))
+  // 用 methodOverride 中间件组件检查表单变量
+  .use(methodOverride("_method"))
+  .use(edit)
+  .use(update)
+  .listen(3000);
+```
+
 现在你会发现几乎所有的浏览器都可以发送 PUT 请求了。
+
 2. 访问原始的 req.method
-methodOverride()修改了原始的 req.method 属性，但 Connect 留了一份副本，随时可以通
-过 req.originalMethod 得到原始值。也就是说对于前面那个表单而言，可以输出下面这样的值：
+
+methodOverride()修改了原始的 req.method 属性，但 Connect 留了一份副本，随时可以通 过 req.originalMethod 得到原始值。也就是说对于前面那个表单而言，可以输出下面这样的值：
+
+```js
 console.log(req.method);
 // "PUT"
 console.log(req.originalMethod);
 // "POST"
-如果不想引入额外的表单变量，也可以用 HTTP 消息头部域。因为不同的厂商所用的头部域
-也不同，所以要让服务器支持多种头部域。有些客户端工具和库也会发送特定的头部域。下面这
-个例子支持三种头部域：
-app.use(methodOverride('X-HTTP-Method'))
-app.use(methodOverride('X-HTTP-Method-Override'))
-app.use(methodOverride('X-Method-Override'))
-基于头部域的路由是常规任务。对虚拟主机的支持就是这么做的。想用少量 IP 地址支持多
-个网站时， Apache 服务器就会使用虚拟主机。 Apache 和 Nginx 会根据头部域 Host 来决定访问的
-是哪个网站。
+```
+
+如果不想引入额外的表单变量，也可以用 HTTP 消息头部域。因为不同的厂商所用的头部域 也不同，所以要让服务器支持多种头部域。有些客户端工具和库也会发送特定的头部域。下面这 个例子支持三种头部域：
+
+```js
+app.use(methodOverride("X-HTTP-Method"));
+app.use(methodOverride("X-HTTP-Method-Override"));
+app.use(methodOverride("X-Method-Override"));
+```
+
+基于头部域的路由是常规任务。对虚拟主机的支持就是这么做的。想用少量 IP 地址支持多 个网站时， Apache 服务器就会使用虚拟主机。 Apache 和 Nginx 会根据头部域 Host 来决定访问的 是哪个网站。
 Connect 也可以，而且会比你想象得简单。接下来我们介绍 vhost 模块和虚拟主机。
+
 ### C.2.4 vhost：虚拟主机
-vhost（虚拟主机）模块是一种通过请求头 Host 路由请求的中间件组件。这项任务通常是由
-反向代理完成的，然后把请求转发到运行在不同端口上的本地服务器那里。使用 vhost 组件，可以
-在同一个 Node 进程中完成这一操作，它可以将控制权交给跟 vhost 实例关联的 Node HTTP 服务器。
+
+vhost（虚拟主机）模块是一种通过请求头 Host 路由请求的中间件组件。这项任务通常是由 反向代理完成的，然后把请求转发到运行在不同端口上的本地服务器那里。使用 vhost 组件，可以 在同一个 Node 进程中完成这一操作，它可以将控制权交给跟 vhost 实例关联的 Node HTTP 服务器。
+
 1. 基本用法
-跟大多数中间件一样，一行代码就可以把 vhost 跑起来。它有两个参数：第一个是主机名，
-vhost 实例会用它进行匹配。第二个是 http.Server 实例，用来处理对相匹配的主机名发起的
-HTTP 请求（ Connect 程序都是 http.Server 的子类，所以程序实例可以胜任这项工作）：
+
+跟大多数中间件一样，一行代码就可以把 vhost 跑起来。它有两个参数：第一个是主机名， vhost 实例会用它进行匹配。第二个是 http.Server 实例，用来处理对相匹配的主机名发起的 HTTP 请求（ Connect 程序都是 http.Server 的子类，所以程序实例可以胜任这项工作）：
+
+```js
 const connect = require('connect');
 const server = connect();
 const vhost = require('vhost');
@@ -11560,9 +11630,6 @@ server.listen(3000);
 Microsoft
 Google/GData
 IBM
-用 methodOverride
-中间件组件检查表单
-变量附录 C Connect 的官方中间件 295
 
 为了能用前面那个 ./sites/expressjs.dev 模块，它应该像下面这个例子这样，把 HTTP 服务器
 赋给 module.exports：
@@ -11570,99 +11637,107 @@ const http = require('http')
 module.exports = http.createServer((req, res) => {
 res.end('hello from expressjs.com\n');
 });
+```
+
 2. 使用多个 vhost 实例
+
 跟其他中间件一样，在一个程序中可以多次使用 vhost，将几个主机关联到它们的程序上：
-const app = require('./sites/expressjs.dev');
-server.use(vhost('expressjs.dev', app));
-const app = require('./sites/learnboost.dev');
-server.use(vhost('learnboost.dev', app));
-也可以不这样手动设置 vhost，而是从文件系统中生成一个主机列表。具体做法如下例所示，
-用 fs.readdirSync()方法返回一个目录实体的数组：
+
+```js
+const app = require("./sites/expressjs.dev");
+server.use(vhost("expressjs.dev", app));
+const app = require("./sites/learnboost.dev");
+server.use(vhost("learnboost.dev", app));
+```
+
+也可以不这样手动设置 vhost，而是从文件系统中生成一个主机列表。具体做法如下例所示， 用 fs.readdirSync()方法返回一个目录实体的数组：
+
+```js
 const connect = require('connect')
 const fs = require('fs');
 cons app = connect()
 const sites = fs.readdirSync('source/sites');
 sites.forEach((site) => {
 console.log(' ... %s', site);
+
 app.use(vhost(site, require('./sites/' + site)));
 });
 app.listen(3000);
-vhost 用起来比反向代理简单。可以把所有程序作为一个单元管理。对于一些小网站，或者
-大部分由静态内容构成的网站来说，这种方式很理想。但它也有缺点，如果一个网站引发了崩溃，
-你的所有网站都会宕掉（因为它们都运行在同一个进程中）。
+```
+
+vhost 用起来比反向代理简单。可以把所有程序作为一个单元管理。对于一些小网站，或者 大部分由静态内容构成的网站来说，这种方式很理想。但它也有缺点，如果一个网站引发了崩溃， 你的所有网站都会宕掉（因为它们都运行在同一个进程中）。
 接下来我们要看一个最基础的 Connect 中间件：会话管理组件 express-session。
-C.2.5 express-session：会话管理
-Web 程序处理会话的方式取决于变化的需求。比如后端存储的选择：有些程序为了性能使用
-Redis 这样的高性能数据库；有些为了简单使用跟主程序一样的数据库。 express-session 模
-块提供了可以通过扩展适用不同数据库的 API，所以它的扩展模块很多。本节将会介绍如何使用
-基于内存和 Redis 的模块。
+
+### C.2.5 express-session：会话管理
+
+Web 程序处理会话的方式取决于变化的需求。比如后端存储的选择：有些程序为了性能使用 Redis 这样的高性能数据库；有些为了简单使用跟主程序一样的数据库。 express-session 模 块提供了可以通过扩展适用不同数据库的 API，所以它的扩展模块很多。本节将会介绍如何使用 基于内存和 Redis 的模块。
 我们先把中间件设置起来，并探索一下它有哪些选项可用。
+
 1. 基本用法
-代码清单 C-11 实现了一个最简配置的页面浏览计数程序，数据存在用户会话中。默认的会
-话 cookie 名是 connect.sid，并且被设定为 httpOnly，也就是说客户端脚本不能访问它的值。
-在服务器端，会话数据是放在内存里的。下面的代码是 express-session 在 Connect 中的基本
-用法。 ①
-——————————
-① 用 1.10.2 版本的 express-session 做的测试。296 附录 C Connect 的官方中间件
+
+代码清单 C-11 实现了一个最简配置的页面浏览计数程序，数据存在用户会话中。默认的会 话 cookie 名是 connect.sid，并且被设定为 httpOnly，也就是说客户端脚本不能访问它的值。 在服务器端，会话数据是放在内存里的。下面的代码是 express-session 在 Connect 中的基本
 代码清单 C-11 在 Connect 中使用会话
-const connect = require('connect');
-const session = require('express-session');
+
+```js
+const connect = require("connect");
+const session = require("express-session");
 connect()
-.use(session({
-secret: 'example secret',
-resave: false,
-saveUninitialized: true
-}))
-.use((req, res) => {
-req.session.views = req.session.views || 0;
-req.session.views++;
-res.end('Views:' + req.session.views);
-})
-.listen(3000);
-这个小例子配置好了会话，并对一个名为 views 的会话变量进行操作。先是用必需的选项
-初始化会话中间件，这些选项包括： secret、 resave 和 saveUninitialized 。 选项 secret
-决定了是否对识别会话用的 cookie 进行签名。 resave 迫使所有请求都要保存会话，即便它没有
-变化也要保存。有些会话存储后台需要这个选项，所以在启用它之前，要先检查一下。最后一个
-选项， saveUninitialized，表示即便没有要保存的值也要创建会话。如果想遵循保存 cookie
-之前先征求用户同意的法则，可以把这个关掉。
+  .use(
+    session({
+      // 这是使用会话的基本选项
+      secret: "example secret",
+      resave: false,
+      saveUninitialized: true,
+    })
+  )
+  .use((req, res) => {
+    // 设置会话变量“ views” ，每次访问加 1
+    req.session.views = req.session.views || 0;
+    req.session.views++;
+    // 把结果值送回给浏览器
+    res.end("Views:" + req.session.views);
+  })
+  .listen(3000);
+```
+
+这个小例子配置好了会话，并对一个名为 views 的会话变量进行操作。先是用必需的选项 初始化会话中间件，这些选项包括： secret、 resave 和 saveUninitialized 。 选项 secret 决定了是否对识别会话用的 cookie 进行签名。 resave 迫使所有请求都要保存会话，即便它没有 变化也要保存。有些会话存储后台需要这个选项，所以在启用它之前，要先检查一下。最后一个 选项， saveUninitialized，表示即便没有要保存的值也要创建会话。如果想遵循保存 cookie 之前先征求用户同意的法则，可以把这个关掉。
+
 2. 设定会话有效期
-假定你想让会话在 24 小时后过期，只在使用 HTTPS 时才发送会话 cookie，并且要配置 cookie
-的名称。在 req.session 对象上设定 expries 或 maxAge 可以控制会话持续多长时间：
-const hour = 3600000
+
+假定你想让会话在 24 小时后过期，只在使用 HTTPS 时才发送会话 cookie，并且要配置 cookie 的名称。在 req.session 对象上设定 expries 或 maxAge 可以控制会话持续多长时间：
+
+```js
+const hour = 3600000;
 req.session.cookie.expires = new Date(Date.now() + hour * 24);
 req.session.cookie.maxAge = hour * 24;
-使用 Connect 时经常要设定 maxAge，以毫秒为单位指定从那一时点开始的时长。这种表示
-未来时间的表达方法通常更直观，本质上等同于 new Date(Date. now() + maxAge)。
-会话设置好了，接下来我们来看一下处理会话数据时的方法和属性。
-3. 处理会话数据
-express-session 的数据管理 API 非常简单。其基本原理是当请求完成时，赋给 req.session
-对象的所有属性都会被保存下来。然后当相同的用户（浏览器）再次发来请求时，会加载它们。
-比如说，保存购物车信息就像将一个对象赋给 cart 属性那么简单，如下所示：
-req.session.cart = { items: [1,2,3] };
-在后续的请求中访问 req.session.cart 时，就可以得到.items 数组。因为这是个常规
-的 JavaScript 对象，所以可以在后续的请求中调用这个嵌入对象上的方法，就像下面这个例子中
-这样，并且它们能像你期望的那样保存下来：
-req.session.cart.items.push(4);
-这是使用会话
-的基本选项
-设置会话变量“ views” ，
-每次访问加 1
-把结果值送回
-给浏览器
+```
 
-在使用会话对象时，有一点一定要记住，会话对象在各个请求间会被串行化为 JSON 对象，
-所以 req.session 对象有跟 JSON 一样的局限性：不允许循环属性，不能用 function 对象，
-Date 对象无法正确串行化，等等。在使用会话对象时，一定要记住这些限制。
-Connect 会自动保存会话数据，但它内部是通过调用 Session#save([callback])方法完成的，
-这是一个公开的 API。此外还有两个辅助方法， Session#destroy()和 Session#regenerate()，
-在对用户进行认证以防止会话固定攻击时经常用到它们。在用 Express 构建程序时，要用这些方
-法实现用户认证。
+使用 Connect 时经常要设定 maxAge，以毫秒为单位指定从那一时点开始的时长。这种表示 未来时间的表达方法通常更直观，本质上等同于 new Date(Date. now() + maxAge)。 会话设置好了，接下来我们来看一下处理会话数据时的方法和属性。
+
+3. 处理会话数据
+
+express-session 的数据管理 API 非常简单。其基本原理是当请求完成时，赋给 req.session 对象的所有属性都会被保存下来。然后当相同的用户（浏览器）再次发来请求时，会加载它们。 比如说，保存购物车信息就像将一个对象赋给 cart 属性那么简单，如下所示：
+
+```js
+req.session.cart = { items: [1, 2, 3] };
+```
+
+在后续的请求中访问 req.session.cart 时，就可以得到.items 数组。因为这是个常规 的 JavaScript 对象，所以可以在后续的请求中调用这个嵌入对象上的方法，就像下面这个例子中 这样，并且它们能像你期望的那样保存下来：
+
+```js
+req.session.cart.items.push(4);
+```
+
+在使用会话对象时，有一点一定要记住，会话对象在各个请求间会被串行化为 JSON 对象， 所以 req.session 对象有跟 JSON 一样的局限性：不允许循环属性，不能用 function 对象， Date 对象无法正确串行化，等等。在使用会话对象时，一定要记住这些限制。
+Connect 会自动保存会话数据，但它内部是通过调用 Session#save([callback])方法完成的， 这是一个公开的 API。此外还有两个辅助方法， Session#destroy()和 Session#regenerate()， 在对用户进行认证以防止会话固定攻击时经常用到它们。在用 Express 构建程序时，要用这些方 法实现用户认证。
 接下来我们介绍会话 cookie。
+
 4. 操纵会话 cookie
-Connect 允许你为会话提供全局 cookie 设定，但也可以通过 Session#cookie 操纵特定的
-cookie，它默认是全局设定。
-在调整那些属性之前，我们先把前面那个会话程序扩展一下，把所有属性都写入响应 HTML
-中的单个<p>标记中，看看这些会话 cookie 的属性，如下所示：
+
+Connect 允许你为会话提供全局 cookie 设定，但也可以通过 Session#cookie 操纵特定的 cookie，它默认是全局设定。
+在调整那些属性之前，我们先把前面那个会话程序扩展一下，把所有属性都写入响应 HTML 中的单个<p>标记中，看看这些会话 cookie 的属性，如下所示：
+
+```js
 ...
 res.write('<p>views: ' + sess.views + '</p>');
 res.write('<p>expires in: ' + (sess.cookie.maxAge / 1000) + 's</p>');
@@ -11671,136 +11746,156 @@ res.write('<p>path: ' + sess.cookie.path + '</p>');
 res.write('<p>domain: ' + sess.cookie.domain + '</p>');
 res.write('<p>secure: ' + sess.cookie.secure + '</p>');
 ...
-在 express-session 中， cookie 的所有属性，比如 expires、 httpOnly、 secure、 path
-和 domain，都可以针对每个会话进行程序性修改。比如说，你可以像下面这样让一个活动的会
-话在 5 秒内失效：
+```
+
+在 express-session 中， cookie 的所有属性，比如 expires、 httpOnly、 secure、 path 和 domain，都可以针对每个会话进行程序性修改。比如说，你可以像下面这样让一个活动的会 话在 5 秒内失效：
+
+```js
 req.session.cookie.expires = new Date(Date.now() + 5000);
-设置过期时间的另一个更直观的 API 是.maxAge 访问器，可以按毫秒获取和设定相对当前
-时间的时间值。下面这段代码也会让会话在 5 秒内过期：
+```
+
+设置过期时间的另一个更直观的 API 是.maxAge 访问器，可以按毫秒获取和设定相对当前 时间的时间值。下面这段代码也会让会话在 5 秒内过期：
+
+```js
 req.session.cookie.maxAge = 5000;
-剩下的属性， domain、 path 和 secure，限定了 cookie 的作用域，按域名、路径或安全连
-接来限定它，而 httpOnly 可以防止客户端脚本访问 cookie 数据。这些属性都可以按相同的方
-式操纵：
-req.session.cookie.path = '/admin';
+```
+
+剩下的属性， domain、 path 和 secure，限定了 cookie 的作用域，按域名、路径或安全连 接来限定它，而 httpOnly 可以防止客户端脚本访问 cookie 数据。这些属性都可以按相同的方 式操纵：
+
+```js
+req.session.cookie.path = "/admin";
 req.session.cookie.httpOnly = false;
-之前你一直在用默认的内存存储保存会话数据，接下来我们要看看如何插入其他的会话数据
-存储方式。
+```
+
+之前你一直在用默认的内存存储保存会话数据，接下来我们要看看如何插入其他的会话数据 存储方式。
+
 5. 会话存储
-内置的 MemoryStore 是一种简单的内存数据存储，非常适合运行程序测试，因为它不需要
-其他依赖项。但在开发和生产期间，最好有一个持久化的、可扩展的数据库存放你的会话数据，
-否则服务器一重启这些数据就丢了。
-虽然任何数据库都可以做会话存储，但低延迟的键/值存储最适合这种易失性数据。 Connect
-社区已经创建了几个使用数据库的会话存储，包括 CouchDB 、 MongoDB、 Redis、 Memcached、
-PostgreSQL 等。
-我们以 Redis 和 connect-redis 模块为例介绍一下如何将会话数据存储在数据库中。 Redis 支持
-键的有效期，性能很好，并且易于安装，所以很适合用来支持会话数据的存储。
+
+内置的 MemoryStore 是一种简单的内存数据存储，非常适合运行程序测试，因为它不需要 其他依赖项。但在开发和生产期间，最好有一个持久化的、可扩展的数据库存放你的会话数据， 否则服务器一重启这些数据就丢了。
+虽然任何数据库都可以做会话存储，但低延迟的键/值存储最适合这种易失性数据。 Connect 社区已经创建了几个使用数据库的会话存储，包括 CouchDB 、 MongoDB、 Redis、 Memcached、 PostgreSQL 等。
+我们以 Redis 和 connect-redis 模块为例介绍一下如何将会话数据存储在数据库中。 Redis 支持 键的有效期，性能很好，并且易于安装，所以很适合用来支持会话数据的存储。
 运行 redis-server，以确保已经安装过 Redis 了：
+
+```shell
 $ redis-server
 [11790] 16 Oct 16:11:54 * Server started, Redis version 2.0.4
 [11790] 16 Oct 16:11:54 * DB loaded from disk: 0 seconds
 [11790] 16 Oct 16:11:54 * The server is now ready to accept
 ➥ connections on port 6379
 [11790] 16 Oct 16:11:55 - DB 0: 522 keys (0 volatile) in 1536 slots HT.
-接下来，把 connect-redis 添加到 package.json 文件中，运行 npm install 安装它，或者直
-接执行 npm install --save connect-redis。 ①connect-redis 模块提供了一个函数，需要一
-个 express-session 的实例做参数，代码如下所示。
+```
+
+接下来，把 connect-redis 添加到 package.json 文件中，运行 npm install 安装它，或者直 接执行 npm install --save connect-redis。 ①connect-redis 模块提供了一个函数，需要一 个 express-session 的实例做参数，代码如下所示。
 代码清单 C-12 使用 Redis 作为会话存储
-const connect = require('connect');
-const session = require('express-session');
-const RedisStore = require('connect-redis')(session);
-const favicon = require('serve-favicon');
+
+```js
+const connect = require("connect");
+const session = require("express-session");
+// 将 express-session 的实例传给 RedisStore
+const RedisStore = require("connect-redis")(session);
+const favicon = require("serve-favicon");
 const options = {
-host: 'localhost'
+  host: "localhost",
 };
 connect()
-.use(favicon(__dirname + '/favicon.ico'))
-.use(session({
-store: new RedisStore(options),
-secret: 'keyboard cat',
-resave: false,
-saveUninitialized: true
-}))
-.use((req, res) => {
-req.session.views = req.session.views || 0;
-req.session.views++;
-res.end('Views: ' + req.session.views);
-})
-.listen(3000);
-这个例子配置了一个使用 Redis 的会话存储。将 express-session 引用传给 connect-redis，
-以允许它继承 session.Store.prototype。因为在 Node 中，一个进程里可能会同时使用多个
-——————————
-① 写作本书时用的是 2.2.0 版。
-用默认选项和 RedisStore
-配置 session
-修改会话值的
-常规方式
-将 express-session 的
-实例传给 RedisStore附录 C Connect 的官方中间件 299
+  .use(favicon(__dirname + "/favicon.ico"))
+  .use(
+    session({
+      // 用默认选项和 RedisStore配置 session
+      store: new RedisStore(options),
+      secret: "keyboard cat",
+      resave: false,
+      saveUninitialized: true,
+    })
+  )
+  .use((req, res) => {
+    // 修改会话值的常规方式
+    req.session.views = req.session.views || 0;
+    req.session.views++;
+    res.end("Views: " + req.session.views);
+  })
+  .listen(3000);
+```
 
-版本的模块，所以这很重要。把指定版本的 express-session 传给它可以确保 connect-redis 用
-的是正确的副本。
-RedisStore 作为 store 的值传给了 session()，你想用的所有选项，比如会话用的键前
-缀，都可以传给 RedisStore 构造器。做完这两步后，可以像使用 MemoryStore 时那样访问会
-话变量。这个例子中有个小细节需要注意一下，在 session 上面有个中间件组件 favicon，我们把它
-放在那里是为了防止每次访问会让 views 加 2，因为浏览器每次获取页面时都会请求 /favicon.ico。
-哎呀！讨论了这么多跟会话有关的内容，终于把核心概念中间件全部介绍了。接下来我们要
-讨论处理 Web 程序安全的内置中间件。对于需要保证数据安全的程序来说，这是一个非常重要的
-主题。
+这个例子配置了一个使用 Redis 的会话存储。将 express-session 引用传给 connect-redis， 以允许它继承 session.Store.prototype。因为在 Node 中，一个进程里可能会同时使用多个
+
+版本的模块，所以这很重要。把指定版本的 express-session 传给它可以确保 connect-redis 用 的是正确的副本。
+RedisStore 作为 store 的值传给了 session()，你想用的所有选项，比如会话用的键前 缀，都可以传给 RedisStore 构造器。做完这两步后，可以像使用 MemoryStore 时那样访问会 话变量。这个例子中有个小细节需要注意一下，在 session 上面有个中间件组件 favicon，我们把它 放在那里是为了防止每次访问会让 views 加 2，因为浏览器每次获取页面时都会请求 /favicon.ico。
+哎呀！讨论了这么多跟会话有关的内容，终于把核心概念中间件全部介绍了。接下来我们要 讨论处理 Web 程序安全的内置中间件。对于需要保证数据安全的程序来说，这是一个非常重要的 主题。
+
 ## C.3 处理 Web 程序安全的中间件
+
 我们已经说过很多次了， Node 的核心 API 刻意停留在底层。也就是说它没有为构建 Web 程
 序提供内置的安全或最佳实践。好在 Connect 中间件组件实现了这些安全实践。
 本节会介绍三个与安全有关的模块，可以用 npm 安装：
+
 - basic-auth——为保护数据提供了 HTTP 基本认证；
 - csurf——实现对跨站请求伪造（ CSRF）攻击的防护；
 - errorhandler——帮你在开发过程中进行调试。
+
 我们先来看看实现了 HTTP 基本认证，对程序中的受限区域进行保护的 basic-auth。
+
 ### C.3.1 basic-auth： HTTP 基本认证
-在第 4 章，你创建了一个简陋的基本认证中间件组件。好吧，实际上有好几个 Connect 模块
-都可以干这个。如前所述，基本认证是非常简单的 HTTP 认证机制，并且在使用时应该小心，因
-为如果不是通过 HTTPS 进行认证，用户凭证很可能会被攻击者截获。不过可以用它给小型或个
-人的程序添加一个简单粗陋的认证方式。
-如果你的程序用了 basic-auth 组件，浏览器会在用户第一次连接程序时提示用户输入凭
-证，如图 C-4 所示。
+
+在第 4 章，你创建了一个简陋的基本认证中间件组件。好吧，实际上有好几个 Connect 模块 都可以干这个。如前所述，基本认证是非常简单的 HTTP 认证机制，并且在使用时应该小心，因 为如果不是通过 HTTPS 进行认证，用户凭证很可能会被攻击者截获。不过可以用它给小型或个 人的程序添加一个简单粗陋的认证方式。
+如果你的程序用了 basic-auth 组件，浏览器会在用户第一次连接程序时提示用户输入凭 证，如图 C-4 所示。
 图 C-4 基本认证提示框
+
 1. 基本用法
-basic-auth 模块提供了从 HTTP 请求消息头部域 Authorization 中获取凭证的方法。下300 附录 C Connect 的官方中间件
-面是通过 basic-auth 使用自己的密码验证函数进行认证的示例代码。
+
+basic-auth 模块提供了从 HTTP 请求消息头部域 Authorization 中获取凭证的方法。下 300 附录 C Connect 的官方中间件 面是通过 basic-auth 使用自己的密码验证函数进行认证的示例代码。
 代码清单 C-13 使用 basic-auth 模块
-const auth = require('basic-auth');
-const connect = require('connect');
+
+```js
+const auth = require("basic-auth");
+const connect = require("connect");
+// 检查用户名和密码的有效性，这里用的是硬编码的用户名和密码
 function passwordValid(credentials) {
-return credentials
-&& credentials.name === 'tj'
-&& credentials.pass === 'tobi';
+  return (
+    credentials &&
+    credentials.name === "tj" &&
+    // 获取经过解析的凭证
+    credentials.pass === "tobi"
+  );
 }
 connect()
-.use((req, res, next) => {
-const credentials = auth(req);
-if (passwordValid(credentials)) {
-next();
-} else {
-res.writeHead(401, {
-'WWW-Authenticate': 'Basic realm="example"'
-});
-res.end();
-}
-})
-.use((req, res) => {
-res.end('This is the secret area\n');
-})
-.listen(3000);
-basic-auth 只提供了头部域 Authorization 的解析，要完成整个验证流程，你需要提供
-自己的密码检查函数，并在中间件组件中调用，认证失败的话还要发送相应的消息头回去。在这
-个例子中，认证成功后会调用 next()，从而继续执行程序受保护的部分。
+  .use((req, res, next) => {
+    const credentials = auth(req);
+    if (passwordValid(credentials)) {
+      next();
+    } else {
+      // 密码不正确时回送WWW-Authenticate头部域
+      res.writeHead(401, {
+        "WWW-Authenticate": 'Basic realm="example"',
+      });
+      res.end();
+    }
+  })
+  .use((req, res) => {
+    // 如果密码正确，则next()进入“秘密区域”
+    res.end("This is the secret area\n");
+  })
+  .listen(3000);
+```
+
+basic-auth 只提供了头部域 Authorization 的解析，要完成整个验证流程，你需要提供 自己的密码检查函数，并在中间件组件中调用，认证失败的话还要发送相应的消息头回去。在这 个例子中，认证成功后会调用 next()，从而继续执行程序受保护的部分。
+
 2. 使用 curl 的例子
+
 现在试着用 curl 向服务器发送一个 HTTP 请求，然后你会看到你未被授权：
+
+```
 $ curl http://localhost:3000 -i
 HTTP/1.1 401 Unauthorized
 WWW-Authenticate: Basic realm="Authorization Required"
 Connection: keep-alive
 Transfer-Encoding: chunked
 Unauthorized
+```
+
 用 HTTP 基本授权凭证发起相同的请求（注意 URL 的开始部分）可以访问：
+
+```
 $ curl --user tj:tobi http://localhost:3000 -i
 HTTP/1.1 200 OK
 Date: Sun, 16 Oct 2011 22:42:06 GMT
@@ -11808,117 +11903,105 @@ Cache-Control: public, max-age=0
 Last-Modified: Sun, 16 Oct 2011 22:41:02 GMT
 ETag: "13-1318804862000"
 Content-Type: text/plain; charset=UTF-8
-检查用户名和密码的有效性，这
-里用的是硬编码的用户名和密码
-获取经过解析
-的凭证
-如果密码正确，则
-next()进入“秘密
-区域”
-密码不正确时回送
-WWW-Authenticate
-头部域
 
 Accept-Ranges: bytes
 Content-Length: 13
 Connection: keep-alive
 I'm a secret
+```
+
 继续本节安全这一主题，我们去看一下 csurf 中间件，它是用来防护跨站请求伪造攻击的。
+
 ### C.3.2 csurf：跨站请求伪造防护
-跨站请求伪造（ CSRF）利用站点对浏览器的信任漏洞进行攻击。经过你的程序认证的用户
-访问攻击者创建或攻陷的站点时，这种站点会在用户不知情的情况下代表用户向你的程序发起请
-求，从而实施攻击。
-我们举例说明。假定在你的程序中，请求 DELETE /account 会导致用户的账号被销毁（尽
-管只有已登录用户可以发起请求）。而用户此时又恰好访问了一个不能防护 CSRF 的论坛。攻击
-者可以提交一段脚本发起 DELETE /account 请求，销毁用户的账号。对于你的程序来说，这是
-很糟糕的状况， csurf 中间件可以防护这样的攻击。
-csurf 模块会生成一个包含 24 个字符的唯一 ID， 认证令牌，作为 req.session._csrf 附
-到用户的会话上。这个令牌会作为隐藏的输入控件 _csrf 出现在表单中， CSRF 在提交时会验证
-这个令牌。这个过程每次交互都会执行。
+
+跨站请求伪造（ CSRF）利用站点对浏览器的信任漏洞进行攻击。经过你的程序认证的用户 访问攻击者创建或攻陷的站点时，这种站点会在用户不知情的情况下代表用户向你的程序发起请 求，从而实施攻击。
+我们举例说明。假定在你的程序中，请求 DELETE /account 会导致用户的账号被销毁（尽 管只有已登录用户可以发起请求）。而用户此时又恰好访问了一个不能防护 CSRF 的论坛。攻击 者可以提交一段脚本发起 DELETE /account 请求，销毁用户的账号。对于你的程序来说，这是 很糟糕的状况， csurf 中间件可以防护这样的攻击。
+csurf 模块会生成一个包含 24 个字符的唯一 ID， 认证令牌，作为 req.session.\_csrf 附 到用户的会话上。这个令牌会作为隐藏的输入控件 \_csrf 出现在表单中， CSRF 在提交时会验证 这个令牌。这个过程每次交互都会执行。
 基本用法
-为了确保 csurf 可以访问 req.body._csrf（隐藏输入控件的值）和 req.session._csrf，
+为了确保 csurf 可以访问 req.body.\_csrf（隐藏输入控件的值）和 req.session.\_csrf，
 你要确保 csurf 添加在了 body-parser 和 express-session 的下面，如下例所示。 ①
 代码清单 C-14 CSRF 防护
-const bodyParser = require('body-parser');
-const connect = require('connect');
-const csurf = require('csurf');
-const session = require('express-session');
+
+```js
+const bodyParser = require("body-parser");
+const connect = require("connect");
+const csurf = require("csurf");
+const session = require("express-session");
 const sesionOptions = {
-resave: false,
-saveUninitialized: false,
-secret: '1234'
+  resave: false,
+  saveUninitialized: false,
+  secret: "1234",
 };
 connect()
-.use(bodyParser.urlencoded({ extended: false }))
-.use(session(sesionOptions))
-.use(csurf())
-.use((req, res, next) => {
-if ('/' != req.url) return next();
-const token = req.csrfToken();
-const html = `
+  .use(bodyParser.urlencoded({ extended: false }))
+  .use(session(sesionOptions))
+  .use(csurf())
+  // 在消息体解析器和会话 处 理 器 后 面 加 载csurf 中间件组件
+  .use((req, res, next) => {
+    // 访问 / 时显示一个表单
+    if ("/" != req.url) return next();
+    // 用这个 csurf 添加的方法获取当前的CSRF 令牌
+    const token = req.csrfToken();
+    const html = `
 <form method="post" action="/save">
 <input type="text" name="_csrf" value="${token}">
-——————————
-① 我们用的是 1.6.6 版的 csurf。
-访问 / 时显示一个表单
-用这个 csurf 添加
-的方法获取当前的
-CSRF 令牌
-在消息体解析器和会
-话 处 理 器 后 面 加 载
-csurf 中间件组件302 附录 C Connect 的官方中间件
 <button type="submit">Submit</button>
 </form>`;
-res.setHeader('Content-Type', 'text/html');
-res.end(html);
-})
-.use((req, res) => {
-const html = `
+    res.setHeader("Content-Type", "text/html");
+    res.end(html);
+  })
+  .use((req, res) => {
+    // 得到带有正确令牌的 POST请求后会运行这个函数
+    const html = `
 <p>Body: ${req.body._csrf}</p>
 <p>Session secret: ${req.session.csrfSecret}</p>
 `;
-res.end(html);
-})
-.use((err, req, res, next) => {
-console.error(err);
-res.end('Did you get the csrf token wrong?');
-})
-.listen(3000);
+    res.end(html);
+  })
+  // 令牌不正确时的错误处理
+  .use((err, req, res, next) => {
+    console.error(err);
+    res.end("Did you get the csrf token wrong?");
+  })
+  .listen(3000);
+```
+
 要使用 csurf，必须首先加载 body-parser 和会话中间件组件。然后访问 / 时会显示一个
-表单，其中有值为当前 CSRF 令牌的文本域。因为有这个令牌，程序会根据会话中的密钥对所有
-特定类型的请求进行检查。当前令牌可以用 req.csrfToken 获取，这个方法是 csurf 添加的。
-csurf 会自动标记令牌不正确的请求，所以我们又做了“令牌正确”处理器和错误处理器。因为
-这个例子中用的是文本域，所以你可以修改令牌的值，看看会发生什么。
+表单，其中有值为当前 CSRF 令牌的文本域。因为有这个令牌，程序会根据会话中的密钥对所有 特定类型的请求进行检查。当前令牌可以用 req.csrfToken 获取，这个方法是 csurf 添加的。 csurf 会自动标记令牌不正确的请求，所以我们又做了“令牌正确”处理器和错误处理器。因为 这个例子中用的是文本域，所以你可以修改令牌的值，看看会发生什么。
 从这个例子来看， csurf 会自动忽略特定类型的请求。这是由选项 ignoreMethods 决定的。
 默认会忽略 HTTP GET、HEAD 和 OPTIONS，如果需要的话， 可以给 csurf 传入选项 ignoreMethods
 修改。
-在 Web 开发的安全问题中，还有一点需要注意，即要确保冗长的日志和详细的错误报告不能同
-时出现在生产和开发环境中。下面我们来看一下 errorhandler 模块，它就是要解决这个问题的。
-C.3.3 errorhandler：开发过程中的错误显示
-errorhandler 模块很适合在开发时使用，它可以基于请求头域 Accept 提供详尽的 HTML、
-JSON 和普通文本错误响应。也就是说它应该在开发过程中使用，不应该出现在生产环境中。
+在 Web 开发的安全问题中，还有一点需要注意，即要确保冗长的日志和详细的错误报告不能同 时出现在生产和开发环境中。下面我们来看一下 errorhandler 模块，它就是要解决这个问题的。
+
+### C.3.3 errorhandler：开发过程中的错误显示
+
+errorhandler 模块很适合在开发时使用，它可以基于请求头域 Accept 提供详尽的 HTML、 JSON 和普通文本错误响应。也就是说它应该在开发过程中使用，不应该出现在生产环境中。
+
 1. 基本用法
+
 这个组件一般应该放在最后，这样它才能捕获所有错误：
+
+```js
 connect()
-.use((req, res, next) => {
-setTimeout(function () {
-next(new Error('something broke!'));
-}, 500);
-})
-.use(errorhandler());
+  .use((req, res, next) => {
+    setTimeout(function () {
+      next(new Error("something broke!"));
+    }, 500);
+  })
+  .use(errorhandler());
+```
+
 2. 接收 HTML 错误响应
-如果按照这里的配置，你在浏览器中查看任何页面时都会看到图 C-5 所示的 Connect 错误页
-面，显示错误消息、响应状态和全部栈跟踪信息。
-得到带有正确令牌的 POST
-请求后会运行这个函数
-令牌不正确时的
-错误处理附录 C Connect 的官方中间件 303
+
+如果按照这里的配置，你在浏览器中查看任何页面时都会看到图 C-5 所示的 Connect 错误页 面，显示错误消息、响应状态和全部栈跟踪信息。
 
 图 C-5 默认的 errorhandler HTML 显示在浏览器中的样子
+
 3. 接收普通文本错误响应
-假定你正在测试一个用 Connect 搭建的 API，它离返回一大堆 HTML 的理想状况还有很大距
-离，所以 errorhandler 默认会用 text/plain 格式做响应，这非常适合 curl(1)这样的命令
-行 HTTP 客户端。在 stdout 中的输出如下所示：
+
+假定你正在测试一个用 Connect 搭建的 API，它离返回一大堆 HTML 的理想状况还有很大距 离，所以 errorhandler 默认会用 text/plain 格式做响应，这非常适合 curl(1)这样的命令 行 HTTP 客户端。在 stdout 中的输出如下所示：
+
+```
 $ curl localhost:3000 -H "Accept: text/plain"
 Error: something broke!
 at Object.handle (/Users/tj/Projects/node-in-action/source
@@ -11933,9 +12016,13 @@ at Server.emit (events.js:67:17)
 at HTTPParser.onIncoming (http.js:1134:12)
 at HTTPParser.onHeadersComplete (http.js:108:31)
 at Socket.ondata (http.js:1029:22)
+```
+
 4. 接收 JSON 错误响应
-如果你发送的 HTTP 请求带有 HTTP 请求头 Accept: application/json，会得到下面的
-JSON 响应：
+
+如果你发送的 HTTP 请求带有 HTTP 请求头 Accept: application/json，会得到下面的 JSON 响应：
+
+```
 $ curl http://localhost:3000 -H "Accept: application/json"
 {"error":{"stack":"Error: something broke!\n
 ➥ at Object.handle (/Users/tj/Projects/node-in-action
@@ -11951,34 +12038,40 @@ proto.js:192:3)\n
 ➥ at HTTPParser.onIncoming (http.js:1134:12)\n
 ➥ at HTTPParser.onHeadersComplete (http.js:108:31)\n
 ➥ at Socket.ondata (http.js:1029:22)","message":"something broke!"}}
-我们已经对 JSON 响应做了额外的格式化处理，这样看起来更清晰，但 errorhandler 发
-送的 JSON 响应是经过 JSON.stringify()处理的紧凑格式。
-觉得自己是 Connect 安全高手了吗？或许还不是，但你掌握的基础知识已经可以保证程序的
-安全了。接下来我们要介绍一个非常常见的 Web 程序功能：提供静态文件。
+```
+
+我们已经对 JSON 响应做了额外的格式化处理，这样看起来更清晰，但 errorhandler 发 送的 JSON 响应是经过 JSON.stringify()处理的紧凑格式。
+觉得自己是 Connect 安全高手了吗？或许还不是，但你掌握的基础知识已经可以保证程序的 安全了。接下来我们要介绍一个非常常见的 Web 程序功能：提供静态文件。
+
 ## C.4 提供静态文件
-提供静态文件是另一个很多 Web 程序需要，但 Node 核心没有提供的功能。不过 Connect 用
-一些简单的模块满足了这个需求。
-本节会再介绍两个 Connect 的官方支持模块，这次主要是用于返回来自文件系统的文件，就
-像 Apache 和 Nginx 之类的 HTTP 服务器做的那样，但只需稍作配置就可以添加到 Connect 项目中：
+
+提供静态文件是另一个很多 Web 程序需要，但 Node 核心没有提供的功能。不过 Connect 用 一些简单的模块满足了这个需求。
+本节会再介绍两个 Connect 的官方支持模块，这次主要是用于返回来自文件系统的文件，就 像 Apache 和 Nginx 之类的 HTTP 服务器做的那样，但只需稍作配置就可以添加到 Connect 项目中：
+
 - serve-static——将文件系统中给定根目录下的文件返回给客户端；
 - serve-index——当请求的是目录时，返回那个目录的列表。
+
 我们先介绍如何用一行代码通过 serve-static 模块提供静态文件服务。
+
 ### C.4.1 serve-static：自动将文件发给浏览器
-serve-static 模块实现了一个高性能的、 灵活的、 功能丰富的静态文件服务器， 支持 HTTP
-缓存机制、范围请求等。更重要的是，它有对恶意路径的安全检查，默认不允许访问隐藏文件（文
-件名以.开头），会拒绝有害的 null 字节。 serve-static 本质上是一个安全的、完全能胜任的
-静态文件服务中间件组件，可以保证跟目前各种 HTTP 客户端的兼容。
+
+serve-static 模块实现了一个高性能的、 灵活的、 功能丰富的静态文件服务器， 支持 HTTP 缓存机制、范围请求等。更重要的是，它有对恶意路径的安全检查，默认不允许访问隐藏文件（文 件名以.开头），会拒绝有害的 null 字节。 serve-static 本质上是一个安全的、完全能胜任的 静态文件服务中间件组件，可以保证跟目前各种 HTTP 客户端的兼容。
+
 1. 基本用法
-假定你的程序遵循典型的场景，要返回 ./public 目录下的静态资源文件。这可以用一行代码
-实现：
-app.use(serveStatic('public'));
-按照这个配置， serve-static 会根据请求的 URL 检查 ./public/ 中的普通文件。如果文件存
-在，响应中 Content-Type 域的值默认会根据文件的扩展名设定，并传输文件中的数据。如果
-被请求的路径不是文件，则调用 next()，让后续的中间件（如果有的话）处理该请求。
+
+假定你的程序遵循典型的场景，要返回 ./public 目录下的静态资源文件。这可以用一行代码 实现：
+
+```js
+app.use(serveStatic("public"));
+```
+
+按照这个配置， serve-static 会根据请求的 URL 检查 ./public/ 中的普通文件。如果文件存 在，响应中 Content-Type 域的值默认会根据文件的扩展名设定，并传输文件中的数据。如果 被请求的路径不是文件，则调用 next()，让后续的中间件（如果有的话）处理该请求。
 我们来测试一下，创建一个名为 ./public/foo.js 的文件，其内容为 console.log('tobi')，
 用带-i 标记的 curl(1)向服务器发送请求，告诉它输出 HTTP 响应头。你会看到正确设定的与附录 C Connect 的官方中间件 305
 
 缓存相关的 HTTP 响应头，反映.js 扩展名的 Content-Type，以及传过来的内容：
+
+```
 $ curl http://localhost/foo.js -i
 HTTP/1.1 200 OK
 Date: Thu, 06 Oct 2011 03:06:33 GMT
@@ -11990,52 +12083,67 @@ Accept-Ranges: bytes
 Content-Length: 21
 Connection: keep-alive
 console.log('tobi');
-因为请求路径就是当作文件路径用的，所以在目录内层的文件也能按你期望的那样访问。比如
-说，你的服务器上可能收到了一个 GET /javascripts/jquery.js 请求和一个 GET /stylesheets/
-app.css 请求，它会分别返回 ./public/javascripts/jquery.js 和 ./public/stylesheets/ app.css 文件。
+```
+
+因为请求路径就是当作文件路径用的，所以在目录内层的文件也能按你期望的那样访问。比如 说，你的服务器上可能收到了一个 GET /javascripts/jquery.js 请求和一个 GET /stylesheets/ app.css 请求，它会分别返回 ./public/javascripts/jquery.js 和 ./public/stylesheets/ app.css 文件。
+
 2. 使用带挂载的 serve-static
-有时程序会用 /public、 /assets 和 /static 之类的路径做前缀路径名。 Connect 中有挂载的概念，
-可以从多个目录中提供静态文件。只需把程序挂载到你想要的位置。我们在第 5 章讲过，中间件
-本身不知道它是从哪里挂载的，因为前缀被去掉了。
-比如说，请求 GET /app/files/js/jquery.js 对挂载在 /app/files 上的 serve-static
-来说就相当于 GET /js/jquery。这能很好地实现前缀功能，因为前缀的 /app/files 不会出现在
-文件路径解析中：
-app.use('/app/files', connect.static('public'));
-原来那个请求 GET /foo.js 不能用了。因为请求中没有出现挂载点，所以中间件不会被调
-用，但带前缀的请求 GET /app/files/foo.js 会得到这个文件：
+
+有时程序会用 /public、 /assets 和 /static 之类的路径做前缀路径名。 Connect 中有挂载的概念， 可以从多个目录中提供静态文件。只需把程序挂载到你想要的位置。我们在第 5 章讲过，中间件 本身不知道它是从哪里挂载的，因为前缀被去掉了。
+比如说，请求 GET /app/files/js/jquery.js 对挂载在 /app/files 上的 serve-static 来说就相当于 GET /js/jquery。这能很好地实现前缀功能，因为前缀的 /app/files 不会出现在 文件路径解析中：
+
+```js
+app.use("/app/files", connect.static("public"));
+```
+
+原来那个请求 GET /foo.js 不能用了。因为请求中没有出现挂载点，所以中间件不会被调 用，但带前缀的请求 GET /app/files/foo.js 会得到这个文件：
+
+```js
 $ curl http://localhost/foo.js
 Cannot get /foo.js
 $ curl http://localhost/app/files/foo.js
 console.log('tobi');
+```
+
 3. 绝对与相对目录路径
-请记住传到 serve-static 中的路径是相对于当前工作目录的。也就是说将"public"作为
-路径传入会被解析为 process.cwd() + "public"。
-然而有时你可能想用绝对路径指定根目录，变量 __dirname 可以帮你达成这一目的：
-app.use('/app/files', connect.static(__dirname + '/public'));
+
+请记住传到 serve-static 中的路径是相对于当前工作目录的。也就是说将"public"作为 路径传入会被解析为 process.cwd() + "public"。
+然而有时你可能想用绝对路径指定根目录，变量 \_\_dirname 可以帮你达成这一目的：
+
+```js
+app.use("/app/files", connect.static(__dirname + "/public"));
+```
+
 4. 请求目录时返回 index.html
-serve-static 还能提供 index.html 服务。当请求的是目录，并且那个目录下有 index.html
-时，它可以返回这个文件作为响应。
-对于 Web 程序中的资源型文件来说，比如 CSS、 JavaScript 和图片， serve-static 很好用，
-但如果想让用户下载目录中的文件列表怎么办？这是 serve-index 要解决的问题。306 附录 C Connect 的官方中间件
-C.4.2 serve-index：生成目录列表
-serve-index 模块是一个提供目录列表的小型中间件，用户可以用它浏览远程文件。图 C-6
-展示了这个组件提供的界面，其有完整的搜索输入框、文件图标和可点击的面包屑导航。
+
+serve-static 还能提供 index.html 服务。当请求的是目录，并且那个目录下有 index.html 时，它可以返回这个文件作为响应。
+对于 Web 程序中的资源型文件来说，比如 CSS、 JavaScript 和图片， serve-static 很好用， 但如果想让用户下载目录中的文件列表怎么办？这是 serve-index 要解决的问题。306 附录 C Connect 的官方中间件
+
+### C.4.2 serve-index：生成目录列表
+
+serve-index 模块是一个提供目录列表的小型中间件，用户可以用它浏览远程文件。图 C-6 展示了这个组件提供的界面，其有完整的搜索输入框、文件图标和可点击的面包屑导航。
 图 C-6 用 serve-index 中间件组件提供目录列表服务
+
 1. 基本用法
+
 这个组件要配合 serve-static 使用，由 serve-static 提供真正的文件服务；而 serveindex 只是提供列表。其设置可能像下面的代码这样简单，请求 GET /会得到 ./public 目录的列表：
-const connect = require('connect');
-const serveStatic = require('serve-static');
-const serveIndex = require('serve-index');
-connect()
-.use(serveIndex('public'))
-.use(serveStatic('public'))
-.listen(3000);
+
+```js
+const connect = require("connect");
+const serveStatic = require("serve-static");
+const serveIndex = require("serve-index");
+connect().use(serveIndex("public")).use(serveStatic("public")).listen(3000);
+```
+
 2. 使用带挂载的 serve-index
-通过中间件挂载，你可以给 serve-static 和 serve-index 中间件加上任何你想要的路
-径做前缀，比如下例中的 GET /files。这里的选项 icons 用来启用图标， hidden 表明两个组
-件都可以查看并返回隐藏文件：
+
+通过中间件挂载，你可以给 serve-static 和 serve-index 中间件加上任何你想要的路 径做前缀，比如下例中的 GET /files。这里的选项 icons 用来启用图标， hidden 表明两个组 件都可以查看并返回隐藏文件：
+
+```js
 connect()
-.use('/files', serveIndex('public', { icons: true, hidden: true }))
-.use('/files', serveStatic('public', { hidden: true }))
-.listen(3000);
+  .use("/files", serveIndex("public", { icons: true, hidden: true }))
+  .use("/files", serveStatic("public", { hidden: true }))
+  .listen(3000);
+```
+
 现在可以轻松地在文件和目录中导航了。
