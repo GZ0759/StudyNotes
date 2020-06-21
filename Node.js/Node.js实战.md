@@ -9126,14 +9126,17 @@ Web 程序的开发是一码事儿，把它放到生产环境中又是另一码�
 ### 10.1.1 平台即服务
 
 有了平台即服务（ PaaS），程序部署的准备工作基本上就是注册个账号、创建新程序，然后 给项目添加一个远程 Git 地址。把程序推送到那个地址就部署好了。默认情况下，程序会被放在 单个容器里（各家厂商对容器的定义不太一样），并且如果程序崩溃了的话，服务会尝试重新启 动它。你只能通过日志、 Web 界面和命令行管理程序。一般通过运行多个程序实例实现扩展，这 也就意味着要支付更多费用。表 10-1 是 PaaS 常见特性概览。
+
 表 10-1 PaaS 的特性
-易用性 高
-功能 Git 推送部署，简单的水平扩展能力
-基础设施 抽象的/黑盒子
-商业适用性 良好：应用程序通常被网络隔离
-价格 a 低流量： $$； 受欢迎的网站： $$\$$
-厂商 Heroku, Azure, AWS Elastic Beanstalk
-a $：便宜； \$\$\$\$\$：贵
+
+| 易用性 | 高 |
+|---|---|
+| 功能 | Git 推送部署，简单的水平扩展能力 |
+| 基础设施 | 抽象的/黑盒子 |
+| 商业适用性 | 良好：应用程序通常被网络隔离 |
+| 价格 | 低流量： $$； 受欢迎的网站： $$$$ |
+| 厂商 | Heroku, Azure, AWS Elastic Beanstalk |
+
 PaaS 提供商们会支持他们喜欢的数据库和第三方数据库。对于 Heroku 来说，就是 PostgreSQL；对 Azure 来说，就是 SQL Database。因为数据库连接的配置会放在环境变量里，所 以不用在项目源码里添加数据库访问凭证。 PaaS 是爱好者的福音，因为它价格便宜，对于流量 不高的小项目来说，甚至可能是免费的。
 有些提供商的产品用起来更容易：对于程序员来说，即便不懂系统管理或 DevOps，只要熟 悉 Git，就会觉得 Heroku 用起来极其容易。一般来讲， PaaS 知道如何运行那些用 Node、 Rails 和 Django 等热门工具开发的项目，可以说基本上都是即插即用的。
 让 Node 在 Heroku 上 10 分钟上线的例子
@@ -9174,13 +9177,17 @@ git push heroku master
 ### 10.1.2 服务器
 
 因为有些东西是 PaaS 无法提供的，所以我们只能用自己的服务器。不用担心在哪里运行数 据库，只要你愿意，可以把 PostgreSQL、 MySQL，甚至 Redis 装在同一台服务器上。你想在服务 器上装什么就装什么：定制的日志软件、 HTTP 服务器、缓存层，你的机器你做主。表 10-2 是使 用自己的服务器的主要特性。
+
 表 10-2 服务器的特性
-易用性 低
-功能 全面掌控整栈，运行你自己的数据库和缓存层
-基础设施 对开发者（或系统管理员/DevOps）开放
-商业适用性 如果有能维护服务器的职员，那很好
-价格 小型 VM： $；大型托管服务器： $\$\$\$\$
-厂商 Azure、 Amazon、主机托管商
+
+| 易用性 | 低 |
+|---|---|
+| 功能 | 全面掌控整栈，运行你自己的数据库和缓存层 |
+| 基础设施 | 对开发者（或系统管理员/DevOps）开放 |
+| 商业适用性 | 如果有能维护服务器的职员，那很好 |
+| 价格 | 小型 VM： $；大型托管服务器： $\$\$\$\$ |
+| 厂商 | Azure、 Amazon、主机托管商 |
+
 有几种办法可以让你拥有并维护自己的服务器。可以从 Linode 或 Digital Ocean 之类的厂商 那里弄一台便宜的虚拟机，然后根据你的需要进行配置，但硬件资源是跟其他虚拟机共享的。可 以买或租服务器。有些服务器托管厂商会提供托管主机，他们会帮你维护服务器的操作系统。
 你必须决定用什么操作系统。 Debian 有好几个分支， Node 也可以在 Windows 和 Solaris 上运 行，所以实际上选起来还是挺困难的。
 另外一个很关键的决定是如何向外界开放对程序的访问：可以将访问流从 80 和 443 端口转 发给你的程序，也可以在前面部署 Nginx 做代理，同时让它处理静态文件。
@@ -9192,13 +9199,15 @@ git push heroku master
 
 软件容器可以看作是将程序的部署自动化的 OS 虚拟化技术。 Docker 是其中最著名的项目， 它是开源的，但也提供生产程序部署的商业性服务。表 10-3 是容器的主要特性。
 表 10-3 容器的特性
-易用性 中等
-功能 全面掌控整栈，运行你自己的数据库和缓存层，可以重新部署到各种提供商和本地机器上
-基础设施 对开发者（或系统管理员/DevOps）开放
-商业适用性 非常棒：可以部署到托管主机、 Docker 主机或你自己的数据中心上
-价格 \$\$\$
-厂商 Azure、 Amazon、 Docker Cloud、 Google 云平台（带 Kubernetes），以及允许运行 Docker 容器
-的主机托管厂商们
+
+| 易用性 中等 |  |
+|---|---|
+| 功能 | 全面掌控整栈，运行你自己的数据库和缓存层，可以重新部署到各种提供商和本地机器上 |
+| 基础设施 | 对开发者（或系统管理员/DevOps）开放 |
+| 商业适用性 | 非常棒：可以部署到托管主机、 Docker 主机或你自己的数据中心上 |
+| 价格 | \$\$\$ |
+| 厂商 | Azure、 Amazon、 Docker Cloud、 Google 云平台（带 Kubernetes），以及允许运行 Docker 容器的主机托管厂商们 |
+
 Docker 允许将程序定义为映像。比如要搭建一个典型的由图片处理微服务、存储程序数据的 主服务和后端数据库组成的内容管理系统，可以分成四个独立的 Docker 映像来部署：
 
 - 映像 1——对上传到 CMS 中的图片进行缩放的微服务；
@@ -9338,15 +9347,24 @@ sudo touch /etc/init/hellonode.conf
 接着将下面的代码放到配置文件里。按照这个配置，程序会在服务器启动后运行，在服务器 关闭时停止。 Upstart 会执行 exec 部分的命令。
 代码清单 10-1 典型的 Upstart 配置文件
 
-```
+```shell
+# 程序的作者 
 author "Robert DeGrimston"
+# 程序的名称或描述
 description "hellonode"
+# 以用户 nonrootuser 的身份运行程序
 setuid "nonrootuser"
+# 在服务器启动时，等文件系统和网络准备好之后运行程序
 start on (local-filesystems and net-device-up IFACE=eth0)
+# 在服务器关闭时关停程序
 stop on shutdown
+# 在程序崩溃后重新启动它
 respawn
+# 将 stdin 和 stderr 写入 /var/log/ upstart/yourapp.log
 console log
+# 设定程序所需的所有环境变量
 env NODE_ENV=production
+# 执行程序的命令
 exec /usr/bin/node /path/to/server.js
 ```
 
@@ -9355,29 +9373,6 @@ Upstart 会依照这个配置文件保证你的程序在服务器重启，甚至
 
 ```shell
 sudo service hellonode
-# 程序的
-# 作者 程序的名
-# 称或描述
-# 以用户 nonrootuser
-# 的身份运行程序
-# 在服务器启动时，等
-# 文件系统和网络准
-# 备好之后运行程序
-# 将 stdin 和 stderr 写入
-# /var/log/ upstart/yourapp.log
-# 设定程序所
-# 需的所有环
-# 境变量
-# 执行程序的
-# 命令
-# 在服务
-# 器关闭
-# 时关停
-# 程序
-# 在程序
-# 崩溃后
-# 重新启
-# 动它
 ```
 
 如果程序成功启动，那么你将会看到：
@@ -9406,8 +9401,10 @@ Node 的集群 API 可以让单个程序利用多核处理器。通过这个 API
 ```js
 const cluster = require("cluster");
 const http = require("http");
+// 确定服务器内核的数量
 const numCPUs = require("os").cpus().length;
 if (cluster.isMaster) {
+  // 给每个核创建一个分叉
   for (let i = 0; i < numCPUs; i++) {
     cluster.fork();
   }
@@ -9415,6 +9412,7 @@ if (cluster.isMaster) {
     console.log("Worker %s died.", worker.process.pid);
   });
 } else {
+  // 定义每个工作进程的工作
   http
     .Server((req, res) => {
       res.writeHead(200);
@@ -9437,11 +9435,15 @@ let requests = 0;
 if (cluster.isMaster) {
   for (let i = 0; i < numCPUs; i++) {
     workers[i] = cluster.fork();
+    // 用闭包保留当前工作进程的索引
     ((i) => {
+      // 监听来自工作进程的消息
       workers[i].on("message", (message) => {
         if (message.cmd == "incrementRequestTotal") {
+          // 增加总请求数
           requests++;
           for (var j = 0; j < numCPUs; j++) {
+            // 将新的总请求数发给所有工作进程
             workers[j].send({
               cmd: "updateOfRequestTotal",
               requests: requests,
@@ -9455,22 +9457,10 @@ if (cluster.isMaster) {
     console.log("Worker %s died.", worker.process.pid);
   });
 } else {
-  // 确 定 服 务 器
-  // 内核的数量
-  // 给 每 个 核 创
-  // 建一个分叉
-  // 定义每个工作
-  // 进程的工作
-  // 增加总
-  // 请求数
-  // 监听来自工作
-  // 进程的消息
-  // 将新的总请求数发
-  // 给所有工作进程
-  // 用闭包保留当前工
-  // 作进程的索引
+  // 监听来自主进程的消息
   process.on("message", (message) => {
     if (message.cmd === "updateOfRequestTotal") {
+      // 根据主进程的消息更新请求数
       requests = message.requests;
     }
   });
@@ -9478,6 +9468,7 @@ if (cluster.isMaster) {
     .Server((req, res) => {
       res.writeHead(200);
       res.end(`Worker ${process.pid}: ${requests} requests.`);
+      // 让主进程知道该增加总请求数了
       process.send({ cmd: "incrementRequestTotal" });
     })
     .listen(8000);
@@ -9496,43 +9487,33 @@ if (cluster.isMaster) {
 
 ```js
 http {
-upstream my_node_app {
-server 127.0.0.1:8000;
+  upstream my_node_app {
+    // Node 程序的 IP 地址和端口
+    server 127.0.0.1:8000;
+  }
+  server {
+    // 指定接收请求的代理端口
+    listen 80;
+  server_name localhost domain.com;
+  access_log /var/log/nginx/my_node_app.log;
+  // 处理以/static/开头的 URL 的请求
+  location ~ /static/ {
+  root /home/node/my_node_app;
+  if (!-f $request_filename) {
+  return 404;
+  }
+  }
+  // 定义代理响应的 URL 路径
+  location / {
+  proxy_pass http://my_node_app;
+  proxy_redirect off;
+  proxy_set_header X-Real-IP $remote_addr;
+  proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+  proxy_set_header Host $http_host;
+  proxy_set_header X-NginX-Proxy true;
+  }
+  }
 }
-// 监听来自主进
-// 程的消息
-// 根据主进程的消
-// 息更新请求数
-// 让主进程知道该
-// 增加总请求数了
-// Node 程序的 IP
-// 地址和端口
-// 处理以/static/开头
-// 的 URL 的请求
-server {
-listen 80;
-server_name localhost domain.com;
-access_log /var/log/nginx/my_node_app.log;
-location ~ /static/ {
-root /home/node/my_node_app;
-if (!-f $request_filename) {
-return 404;
-}
-}
-location / {
-proxy_pass http://my_node_app;
-proxy_redirect off;
-proxy_set_header X-Real-IP $remote_addr;
-proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-proxy_set_header Host $http_host;
-proxy_set_header X-NginX-Proxy true;
-}
-}
-}
-// 指定接收请求
-// 的代理端口
-// 定义代理响应
-// 的 URL 路径
 ```
 
 把处理静态 Web 文件的任务交给 Nginx， Node 就可以专心处理它擅长的事情了。
