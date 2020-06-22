@@ -9912,11 +9912,11 @@ build 的运行方式是用命令 `npm run build`，它会先创建一个 bundle
 - 发送桌面提醒
 - 创建跨平台的版本
 
-上一章介绍了如何用 Node 做命令行程序。实际上 Node 在桌面软件中也慢慢流行开了。程序员们渐渐地把 Web 技术用到了跨平台的开发上。本章要讲的内容是，如何用原生的桌面端功能、 Node 和客户端 Web 技术搭建桌面端 Web 程序。这个程序可以在 Linux、 macOS 和 Windows 上开发和运行，并且几乎可以像在客户端  服务器端 Web 程序开发中那样使用 Node 模块。
+上一章介绍了如何用 Node 做命令行程序。实际上 Node 在桌面软件中也慢慢流行开了。程序员们渐渐地把 Web 技术用到了跨平台的开发上。本章要讲的内容是，如何用原生的桌面端功能、 Node 和客户端 Web 技术搭建桌面端 Web 程序。这个程序可以在 Linux、 macOS 和 Windows 上开发和运行，并且几乎可以像在客户端-服务器端 Web 程序开发中那样使用 Node 模块。
 
 ## 12.1 认识 Electron
 
-Electron 原来叫 Atom Shell，可以用 Web 技术搭建桌面端程序。以 Electron 为基础，可以用 HTML、 CSS 和 JavaScript 实现程序逻辑和用户界面，而一些桌面端软件开发中的“硬骨头”它 已经帮我们解决了。包括：
+Electron 原来叫 Atom Shell，可以用 Web 技术搭建桌面端程序。以 Electron 为基础，可以用 HTML、 CSS 和 JavaScript 实现程序逻辑和用户界面，而一些桌面端软件开发中的“硬骨头”它已经帮我们解决了。包括：
 
 - 自动更新；
 - 崩溃报告；
@@ -10091,7 +10091,7 @@ npm install --save-dev babel-loader@6.2.0
 ```
 
 这样运行 npm run build 就可以构建程序了。 Webpack 插件可以用于 React 热加载，这里 就不展开介绍了。如果想在客户端代码发生变化后自动完成构建，可以用 fswatch 或 nodemon 之 类的工具。
-12.3.3 设置 Webpack
+### 12.3.3 设置 Webpack
 Webpack 还需要一个配置文件 webpack.config.js。把它放到项目的根目录下。其基本格式是
 使用了 Node 风格 CommonJS 模块的 JavaScript：
 
@@ -10245,7 +10245,7 @@ export default Events;
 ```
 
 Request 是 React.Component 的子孙类。它的构造器中会设置默认的状态，在 React 中， state 是个特殊的属性，只有在构造器中才能直接赋值，在其他地方要用 this.setState 设置。
-handleChange 方法根据 HTML 元素的 name 属性设定 state。 render 方法中的 URL <input>元素调用了这个方法：
+handleChange 方法根据 HTML 元素的 name 属性设定 state。 render 方法中的 URL `<input>`元素调用了这个方法：
 
 ```html
 <input
@@ -10902,7 +10902,7 @@ connect()
 ```
 
 这段代码加载了中间件组件 。别忘了先用 npm install cookie-parser 把它装上。然 后将 cookie 解析器的实例添加到程序的中间件栈中 。最后一步是以字符串形式将 cookie 发回 给浏览器 ，以便你能看到效果。
-这个例子需要在请求中设定 cookie。所以用浏览器访问 http://localhost:3000 可能看不到什么， 它会返回一个空对象（ {}）。可以像下面这样用 cURL 设定 cookie：
+这个例子需要在请求中设定 cookie。所以用浏览器访问 http://localhost:3000 可能看不到什么， 它会返回一个空对象`{}`。可以像下面这样用 cURL 设定 cookie：
 
 ```
 curl http://localhost:3000/ -H “ Cookie:foo=bar,bar=baz”
@@ -10911,8 +10911,8 @@ curl http://localhost:3000/ -H “ Cookie:foo=bar,bar=baz”
 2. 签名 cookie
 
 签名 cookie 更适合敏感数据，因为用它可以验证 cookie 数据的完整性，有助于防止中间人 攻击。有效的签名 cookie 被放在 req.signedCookies 对象中。把两个对象分开是为了体现开 发者的意图。如果把签名的和未签名的 cookie 放到同一个对象中，常规 cookie 可能就会被改造， 仿冒签名的 cookie。
-签名 cookie 看起来像 s:tobi.DDm3AcVxE9oneYnbmpqxoy[...],① 一样，点号（ .）左边 是 cookie 的值，右边是在服务器上用 SHA-256 HMAC 生成的加密哈希值（基于哈希的消息认证 码）。如果 cookie 的值或者 HMAC 被改变的话， Connect 的解签会失败。
-假设你设定了一个键为 name，值为 luna 的签名 cookie。 cookieParser 会将 cookie 编码 为 s:luna.PQLM0wNvqOQEObZX[...]。每个请求中的哈希值都会检查，如果 cookie 完好无损 地传上来，那么它会被解析为 req.signedCookies.name：
+签名 cookie 看起来像 `s:tobi.DDm3AcVxE9oneYnbmpqxoy[...]`,① 一样，点号（ .）左边 是 cookie 的值，右边是在服务器上用 SHA-256 HMAC 生成的加密哈希值（基于哈希的消息认证 码）。如果 cookie 的值或者 HMAC 被改变的话， Connect 的解签会失败。
+假设你设定了一个键为 name，值为 luna 的签名 cookie。 cookieParser 会将 cookie 编码 为 `s:luna.PQLM0wNvqOQEObZX[...]`。每个请求中的哈希值都会检查，如果 cookie 完好无损 地传上来，那么它会被解析为 req.signedCookies.name：
 
 ```
 $ curl http://localhost:3000/ -H "Cookie:
@@ -11031,7 +11031,7 @@ http://localhost:3000/page?name=tobi&species=ferret
 设定为用 GET 方法提交的表单，以及页面模板中的链接元素都会产生这样的 URL。比如常 见的分页链接。
 
 在 Connect 程序中，传给每个中间件的 request 对象中都有 url 属性，但一般只需要最后一 部分，即问号之后的那些。 Node 有 URL-parsing 模块，所以从技术角度来讲，可以用 url.parse 获取查询字符串。但 Connect 也要解析 URL，所以它将解析过的版本设为了一个内部属性。
-推荐使用 qs 解析查询字符串。这不是 Connect 官方的模块， npm 上也有很多替代模块。 qs 及类似的模块的用法都是在其他中间件中调用它的.parse()方法。
+推荐使用 qs 解析查询字符串。这不是 Connect 官方的模块， npm 上也有很多替代模块。 qs 及类似的模块的用法都是在其他中间件中调用它的`.parse()`方法。
 基本用法
 下面这段代码用 qs.parse 方法创建了一个对象，并赋值给 req.query 属性供后续中间件 组件使用。
 代码清单 C-3 解析查询字符串
@@ -11063,7 +11063,7 @@ connect()
 { artist: 'Bob Marley', track: 'Jammin' }
 ```
 
-qs.parse 方法支持嵌入数组，所以像 ?images[]=foo.png&images[]= bar.png 这样 的复杂查询会生成下面这种对象：
+qs.parse 方法支持嵌入数组，所以像 `?images[]=foo.png&images[]= bar.png` 这样 的复杂查询会生成下面这种对象：
 
 ```js
 {
@@ -11113,7 +11113,7 @@ connect()
 curl -d name=tobi http://localhost:3000
 ```
 
-这应该会让服务器显示 You sent: {"name":"tobi"}。 在上面的代码中，先是将 body-parser 添加到中间件栈中 ，然后将 req.body 中经过解析的消息体转换成字符串 以便于显示。
+这应该会让服务器显示 `You sent: {"name":"tobi"}`。 在上面的代码中，先是将 body-parser 添加到中间件栈中 ，然后将 req.body 中经过解析的消息体转换成字符串 以便于显示。
 urlencoded 消息体解析器可以接受以 UTF-8 编码的字符串，并且它会自动解压用 gzip 或 deflate 编码的请求消息体。
 在这个例子中，传给消息体解析器的参数是 extended: false。当设为 true 时，消息体 解析器会用另外一个库解析查询字符串格式。这个参数可以是更加复杂的、嵌入的类 JSON 格式 的对象。下一节介绍请求的校验时会介绍其他参数。
 
@@ -11230,7 +11230,7 @@ curl -d '{"name":"tobi"}' -H "Content-Type: application/json"
 Name: tobi
 ```
 
-5. 解析 MULTIPART <FORM> 数据
+5. 解析 MULTIPART `<FORM>` 数据
 
 body-parser 模块不处理 multipart 请求消息体。但文件上传是 multipart 消息，所以如果要 支持用户头像上传之类的功能的话，都需要处理 multipart 请求。
 虽然 Connect 没有官方支持的 multipart 解析器，但也能找到维护得不错的模块。 比如 busboy 和 multiparty， 并且这两个都有相应的 connect 模块： connect-busboy 和 connect-multiparty。 这是因为 multipart 解析器本身依赖于 Node 的底层 HTTP 模块，所以很多框架都可以使用，并不 是专门针对 Connect 做的。
@@ -11263,7 +11263,7 @@ curl -F file=@index.js http://localhost:3000
 程序的输出应该会像下面这样。能得到 req.files.file.path，并且可以重命名文件，将
 数据传给工作线程处理，上传到内容交付网络，或者做其他需要做的事情：
 
-```
+```js
 { fieldName: 'file',
 originalFilename: 'index.js',
 path: '/var/folders/d0/_jqj3lf96g37s5wrf79v_g4c0000gn/T/60201-p4pohc.js',
@@ -11288,7 +11288,7 @@ compression 模块会检查消息头部的 Accept-Encoding，判断客户端能�
 
 1. 基本用法
 
-因为要封装 res.write()和 res.end()方法，所以一般会把 compression 放在 Connect
+因为要封装 `res.write()`和 `res.end()`方法，所以一般会把 compression 放在 Connect
 栈的上部。
 下面是对内容进行压缩的例子：
 
@@ -11367,9 +11367,7 @@ Connect 要为大多数常见的 Web 程序需求提供中间件，这样开发�
 
 ### C.2.1 morgan：记录请求
 
-morgan 是一个灵活的请求日志中间件，可定制日志格式。还能通过参数调节日志输出缓冲
-区以减少写硬盘的次数。另外，如果你想把日志输出到控制台之外的其他地方，比如文件或 socket
-中，还可以指定日志流。
+morgan 是一个灵活的请求日志中间件，可定制日志格式。还能通过参数调节日志输出缓冲区以减少写硬盘的次数。另外，如果你想把日志输出到控制台之外的其他地方，比如文件或 socket 中，还可以指定日志流。
 
 1. 基本用法
 
@@ -11503,7 +11501,7 @@ connect()
 ### C.2.3 method-override：伪造 HTTP 方法
 
 有时需要使用 GET 或 POST 之外的 HTTP 谓词。比如要搭建一个博客系统，想让用户创建、 更新和删除文章。使用 DELETE /articles 感觉比用 GET 或 POST 更好，可惜并不是所有浏览器都支持 DELETE。
-一种常见的解决办法是通过请求参数、表单值，有时甚至是 HTTP 请求头来提示服务器用的 是哪个 HTTP 方法。比如添加一个<input type=hidden>，将其值设定为你想用的方法名，然 后让服务器检查那个值并“假装”它是这个请求的请求方法。
+一种常见的解决办法是通过请求参数、表单值，有时甚至是 HTTP 请求头来提示服务器用的 是哪个 HTTP 方法。比如添加一个`<input type=hidden>`，将其值设定为你想用的方法名，然 后让服务器检查那个值并“假装”它是这个请求的请求方法。
 很多 Web 框架都支持这种技术， Connect 推荐使用 method-override 模块。
 
 1. 基本用法
@@ -11725,7 +11723,7 @@ req.session.cart.items.push(4);
 ```
 
 在使用会话对象时，有一点一定要记住，会话对象在各个请求间会被串行化为 JSON 对象， 所以 req.session 对象有跟 JSON 一样的局限性：不允许循环属性，不能用 function 对象， Date 对象无法正确串行化，等等。在使用会话对象时，一定要记住这些限制。
-Connect 会自动保存会话数据，但它内部是通过调用 Session#save([callback])方法完成的， 这是一个公开的 API。此外还有两个辅助方法， Session#destroy()和 Session#regenerate()， 在对用户进行认证以防止会话固定攻击时经常用到它们。在用 Express 构建程序时，要用这些方 法实现用户认证。
+Connect 会自动保存会话数据，但它内部是通过调用 `Session#save([callback])`方法完成的， 这是一个公开的 API。此外还有两个辅助方法， Session#destroy()和 Session#regenerate()， 在对用户进行认证以防止会话固定攻击时经常用到它们。在用 Express 构建程序时，要用这些方 法实现用户认证。
 接下来我们介绍会话 cookie。
 
 4. 操纵会话 cookie
@@ -11813,9 +11811,7 @@ connect()
   .listen(3000);
 ```
 
-这个例子配置了一个使用 Redis 的会话存储。将 express-session 引用传给 connect-redis， 以允许它继承 session.Store.prototype。因为在 Node 中，一个进程里可能会同时使用多个
-
-版本的模块，所以这很重要。把指定版本的 express-session 传给它可以确保 connect-redis 用 的是正确的副本。
+这个例子配置了一个使用 Redis 的会话存储。将 express-session 引用传给 connect-redis， 以允许它继承 session.Store.prototype。因为在 Node 中，一个进程里可能会同时使用多个版本的模块，所以这很重要。把指定版本的 express-session 传给它可以确保 connect-redis 用 的是正确的副本。
 RedisStore 作为 store 的值传给了 session()，你想用的所有选项，比如会话用的键前 缀，都可以传给 RedisStore 构造器。做完这两步后，可以像使用 MemoryStore 时那样访问会 话变量。这个例子中有个小细节需要注意一下，在 session 上面有个中间件组件 favicon，我们把它 放在那里是为了防止每次访问会让 views 加 2，因为浏览器每次获取页面时都会请求 /favicon.ico。
 哎呀！讨论了这么多跟会话有关的内容，终于把核心概念中间件全部介绍了。接下来我们要 讨论处理 Web 程序安全的内置中间件。对于需要保证数据安全的程序来说，这是一个非常重要的 主题。
 
@@ -11962,11 +11958,9 @@ connect()
   .listen(3000);
 ```
 
-要使用 csurf，必须首先加载 body-parser 和会话中间件组件。然后访问 / 时会显示一个
-表单，其中有值为当前 CSRF 令牌的文本域。因为有这个令牌，程序会根据会话中的密钥对所有 特定类型的请求进行检查。当前令牌可以用 req.csrfToken 获取，这个方法是 csurf 添加的。 csurf 会自动标记令牌不正确的请求，所以我们又做了“令牌正确”处理器和错误处理器。因为 这个例子中用的是文本域，所以你可以修改令牌的值，看看会发生什么。
+要使用 csurf，必须首先加载 body-parser 和会话中间件组件。然后访问 / 时会显示一个表单，其中有值为当前 CSRF 令牌的文本域。因为有这个令牌，程序会根据会话中的密钥对所有 特定类型的请求进行检查。当前令牌可以用 req.csrfToken 获取，这个方法是 csurf 添加的。 csurf 会自动标记令牌不正确的请求，所以我们又做了“令牌正确”处理器和错误处理器。因为 这个例子中用的是文本域，所以你可以修改令牌的值，看看会发生什么。
 从这个例子来看， csurf 会自动忽略特定类型的请求。这是由选项 ignoreMethods 决定的。
-默认会忽略 HTTP GET、HEAD 和 OPTIONS，如果需要的话， 可以给 csurf 传入选项 ignoreMethods
-修改。
+默认会忽略 HTTP GET、HEAD 和 OPTIONS，如果需要的话， 可以给 csurf 传入选项 ignoreMethods 修改。
 在 Web 开发的安全问题中，还有一点需要注意，即要确保冗长的日志和详细的错误报告不能同 时出现在生产和开发环境中。下面我们来看一下 errorhandler 模块，它就是要解决这个问题的。
 
 ### C.3.3 errorhandler：开发过程中的错误显示
@@ -12101,7 +12095,7 @@ console.log('tobi');
 
 3. 绝对与相对目录路径
 
-请记住传到 serve-static 中的路径是相对于当前工作目录的。也就是说将"public"作为 路径传入会被解析为 process.cwd() + "public"。
+请记住传到 serve-static 中的路径是相对于当前工作目录的。也就是说将"public"作为 路径传入会被解析为 `process.cwd() + "public"`。
 然而有时你可能想用绝对路径指定根目录，变量 \_\_dirname 可以帮你达成这一目的：
 
 ```js
