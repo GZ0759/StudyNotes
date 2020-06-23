@@ -2,7 +2,7 @@
 > 出版时间：2013-12-01  
 > 作者：朴灵
 
-# 第 1 章　 Node 简介
+# 第 1 章 Node 简介
 
 Node 应是今最的技术了，从本开始，我们它的多。
 
@@ -229,10 +229,21 @@ LinkedIn 在他们的动网上的实践了这个问题。有的系统有定的�
 本的源下
 
 - http://www.infoq.com/cn/articles/what-is-nodejs
-- https://github.com/popular/watched - http://groups.google.com/group/nodejs/browse_thread/thread/85f6a3829bc64cb6 - http://groups.google.com/groups/profile?enc_user=dPo6jggAAACthftLMWCfUq8U6obMz179
-- http://search.npmjs.org/ - http://code.google.com/p/v8/ - http://cnodejs.org/topic/4f16442ccae1f4aa27001137 - http://weibo.com/1744667943/eBszJXcEsX1 - http://stackoverflow.com/questions/5621812/why-is-node-js-named-node-js - http://www.theregister.co.uk/2011/03/01/the_rise_and_rise_of_node_dot_js/page4.html - http://ued.taobao.com/blog/2011/09/02/what-is-nod/ - http://www.infoq.com/cn/news/2012/04/interview-xueqiu-using-nodejs - http://teddziuba.com/2011/10/node-js-is-cancer.html - http://www.cnblogs.com/fengmk2/archive/2011/12/14/2288147.html
+- https://github.com/popular/watched 
+- http://groups.google.com/group/nodejs/browse_thread/thread/85f6a3829bc64cb6 
+- http://groups.google.com/groups/profile?enc_user=dPo6jggAAACthftLMWCfUq8U6obMz179
+- http://search.npmjs.org/ 
+- http://code.google.com/p/v8/ 
+- http://cnodejs.org/topic/4f16442ccae1f4aa27001137 
+- http://weibo.com/1744667943/eBszJXcEsX1 
+- http://stackoverflow.com/questions/5621812/why-is-node-js-named-node-js 
+- http://www.theregister.co.uk/2011/03/01/the_rise_and_rise_of_node_dot_js/page4.html 
+- http://ued.taobao.com/blog/2011/09/02/what-is-nod/ 
+- http://www.infoq.com/cn/news/2012/04/interview-xueqiu-using-nodejs 
+- http://teddziuba.com/2011/10/node-js-is-cancer.html 
+- http://www.cnblogs.com/fengmk2/archive/2011/12/14/2288147.html
 
-# 第 2 章　模块机制
+# 第 2 章 模块机制
 
 ，我想从为你 Node。
 JavaScript 自生以，经没有人它做一门的编程语言，认为它不过是一网页小脚本已，在 Web1.0 时，这脚本语言在网中要有个作用广为，一个是，一个是网页。一，由于创，以它自的也编程人广为。到 Web 2.0 时，前端工程用它大大了网页上的用。在这个过程中，B/S 应用 C/S 应用优的。至，JavaScript 才广起。
@@ -243,7 +254,7 @@ JavaScript 自生以，经没有人它做一门的编程语言，认为它不过
 在他高语言中，Java 有，Python 有 import 机，Ruby 有 require，PHP 有 include require。JavaScript 过<script>入的杂，语言自组织能。人们不不用人为，以到用的目的。
 是起的 JavaScript 编程并不着社区没有，JavaScript 的本编程之一在探索中。在 Node 之前，服务端 JavaScript 本没有场，与的前端 JavaScript 应用相，Rhino 后端 JavaScript 环境本只是用于小工，是经多年的发后，社区也为 JavaScript 定了相应的，中 CommonJS 的是最为要的程。
 
-2.1 　 CommonJS 规范
+2.1 CommonJS 规范
 CommonJS 为 JavaScript 定了一个好的景——JavaScript 能在。
 2.1.1CommonJS
 在 JavaScript 的发程中，它要在前端发发。由于（ECMAScript）的时，的小。这些中包、、上下、、（statement）、、对语言的本要。在实应用中，JavaScript 的能决于环境中的 API 程。在 Web1.0 时，只有对 DOM、BOM 本的。着 Web2.0 的推，HTML5，它 Web 网页 Web 应用的时，在中了多、强大的 APIJavaScript 用，这 W3C 组织对 HTML5 的推以大对的大。是，Web 在发，中了多的 API，这些过程发生在前端，后端 JavaScript 的后。对于 JavaScript 自言，它的是的，还有以下。
@@ -307,7 +318,7 @@ return math.add(val, 1); };
 图 2-3 定
 CommonJS 的这入机使用不量，与之相相。
 
-2.## 2.2 　 Node 的模块实现
+2.## 2.2 Node 的模块实现
 
 Node 在实中并实，是对了一定的，时也加了自要的性。管中 exports、requiremodule 起分，是 Node 在实它们的过程中经了，这个过程要。
 在 Node 中入，要经下 3 个。
@@ -470,7 +481,7 @@ console.log(a); // => 10
    JSON 在用作目的时有用。你定了一个 JSON 作为，就不用 fs 读解，接用 require()入可。外，你还可以享到的，并且次入时也没有性能。
    这我们到的编都是，用自己编写的。在下一中，我们开心中的 JavaScriptC/C++。
 
-## 2.3 　核心模块
+## 2.3 核心模块
 
 前到，Node 的心在编可的过程中编了。心实分为 C/C++编写的 JavaScript 编写的部分，中 C/C++在 Node 目的 src 目下，JavaScript 在 lib 目下。
 2.3.1JavaScript
@@ -570,7 +581,7 @@ NODE_STRINGIFY(modname)  \
 Node 在动时，会生一个量 process，并 Binding()加内。Binding()的实在 src/node.cc 中，下
 static Handle<Value> Binding(const Arguments& args) { HandleScope scope;
 Local<String> module = args[0]->ToString(); String::Utf8Value module*v(module); node_module_struct* modp;
-if (binding_cache.IsEmpty()) {
+if (binding*cache.IsEmpty()) {
 binding_cache = Persistent<Object>::New(Object::New()); }
 Local<Object> exports;
 if (binding_cache->Has(module)) { exports = binding_cache->Get(module)->ToObject(); return scope.Close(exports);
@@ -581,7 +592,7 @@ if ((modp = get_builtin_module(*module_v)) != NULL) { exports = Object::New(); m
 #ifdef **POSIX**
 } else if (!strcmp(*module_v, "io_watcher")) { exports = Object::New(); IOWatcher::Initialize(exports); binding_cache->Set(module, exports);
 #endif
-} else if (!strcmp(*module_v, "natives")) { exports = Object::New(); DefineJavaScript(exports); binding_cache->Set(module, exports);
+} else if (!strcmp(\_module_v, "natives")) { exports = Object::New(); DefineJavaScript(exports); binding_cache->Set(module, exports);
 } else {
 return ThrowException(Exception::Error(String::New("No such module"))); }
 return scope.Close(exports); }
@@ -618,7 +629,7 @@ HandleScope scope; return scope.Close(String::New("Hello world!")); }
 \$ node > var hello = process.binding('hello'); undefined > hello.sayHello(); 'Hello world!' >
 至，生编写过程中要的都已过了。可以，的过 JavaScript 编写可以大大高生产。这我们写作本的目的是有能的读者可以深入 Node 的心，学习它者它。
 
-## 2.4 　 C/C++扩展模块
+## 2.4 C/C++扩展模块
 
 对于前端工程，C/C++生，是你了解了它，在性能时会对你有极大的。
 JavaScript 的一个就是。JavaScript 的 Java 的实，是 Java 是在 int 数的上的，JavaScript 中只有 double 的数，在的过程中，要 double 为 int，后。以，在 JavaScript 上做的
@@ -716,7 +727,7 @@ C/C++与 JavaScript 的区在于加之后不要编，接之后就可以外部用
 使用 C/C++的一个好在于可以灵活动加它们，Node 自性的时，Node 的可性。
 关于 node-gyp 工的多可以https://github.com/TooTallNate/node-gyp（作者为Nathan Rajlich，Node 源的心贡献者之一）。
 
-## 2.5 　模块调用栈
+## 2.5 模块调用栈
 
 、心、内、C/C++的之后，有要一下之的用关系，图 2-8。
 C/C++内于最的，它于心，要 APIJavaScript 心 JavaScript 用。你不是了解要用的 C/C++内，请量过 process.binding()接用，这是不推荐的。
@@ -725,7 +736,7 @@ JavaScript 心要的有一是作为 C/C++内的接，用一是的能，它不要
 图 2-8 之的用关系
 由编写，包括 JavaScriptC/C++，要用为 JavaScript 用。
 
-## 2.6 　包与 NPM
+## 2.6 包与 NPM
 
 Node 组织了自的心，也使可以有序编写使用。是在中，与之是在的，相之不能接用。在之外，包 NPM 是系起的一机。
 在 NPM 之前，不不起 CommonJS 的包。JavaScript 不 Java 者他语言样，有包。Node 对的实，一定程上解决了量、关系组织性问题。包的，是在的上一组织 JavaScript。图 2-9 为包组织图。
@@ -933,7 +944,7 @@ $ npm owner ls eventproxy npm http GET https://registry.npmjs.org/eventproxy npm
 好的（README、API）。好的测试。好的编。多。CPAN 社区定了相多的。，NPM 社区也会有多的。
 读者可以这些区分些优的的。
 
-## 2.7 　前后端共用模块
+## 2.7 前后端共用模块
 
 了多后端的实后，在我们 CommonJS 次到前端上。JavaScript 在 Node 之后，的编程语言多了一优势，就是一些可以在前后端实
 用，这是因为很多 API 在个环境下都。是在实情中，前后端的环境是有
@@ -983,11 +994,11 @@ if (hasDefine) { // AMD 环境 CMD 环境 define(definition);
 })('hello', function () { var hello = function () {}; return hello;
 });
 
-## 2.8 　总结
+## 2.8 总结
 
 CommonJS 的分，是实分强大。Node 过，组织了自的生，弥补 JavaScript 性的问题，了定的，并外服务。NPM 过对包的，有组织了，这使目开发中的问题到很好的解决，并有了分享的，开源量，使 Node 的发前有，这对于他后端 JavaScript 语言实言是从有过的。从一定的上，CommonJSNode 了它的。只有的，才能的，并为天大树。是这些的实践，使 Node 有序发着，过 JavaScript 解的，性的生系统。
 
-## 2.9 　参考资源
+## 2.9 参考资源
 
 本的源下
 
@@ -998,14 +1009,17 @@ CommonJS 的分，是实分强大。Node 过，组织了自的生，弥补 JavaS
 - http://addyosmani.com/writing-modular-js/
 - http://seajs.org/docs/
 - http://zh.wikipedia.org/zh/JavaScript
-- http://zh.wikipedia.org/wiki/ECMAScript - http://www.ecma-international.org/publications/files/ECMA-ST/Ecma-262.pdf - http://www.w3.org/TR/html5/ - http://arstechnica.com/web/news/2009/12/commonjs-effort-sets-javascript-on-path-for-world-d
-  omination.ars - http://cnodejs.org/topic/4f16442ccae1f4aa270010d7 - http://wiki.commonjs.org/wiki/Packages/1.0
-
+- http://zh.wikipedia.org/wiki/ECMAScript 
+- http://www.ecma-international.org/publications/files/ECMA-ST/Ecma-262.pdf 
+- http://www.w3.org/TR/html5/ 
+- http://arstechnica.com/web/news/2009/12/commonjs-effort-sets-javascript-on-path-for-world-domination.ars 
+- http://cnodejs.org/topic/4f16442ccae1f4aa270010d7 
+- http://wiki.commonjs.org/wiki/Packages/1.0
 - http://npmjs.org/doc/developers.html#The-package-json-File
 
 I/O
 
-# 第 3 章　异步 I/O
+# 第 3 章 异步 I/O
 
 在 1 中，我们过 I/O。这个实很就生了，它的大是在 Web 2.0 中，它着 AJAX 的一个 A（Asynchronous）了 Web。Node 在之前，最习编程的程序过于前端工程了。前端编程 GUI 编程的一，中了 Ajax 事，这些都是的应用场景。
 事实上，就在于作系统的。在系统中，过信量、有了广的应用。外的是，在绝大多数高编程语言中，并不多，了一。这个的要因也人程序不过程序。
@@ -1017,7 +1031,7 @@ PHP 这门语言的最能这个。它对用不仅了，甚至多线程都不。P
 Nginx 用 C 编写，性能优。它们的区在于，Nginx 客端管接的强大能，是它的后于的编程语言。Node 是的，可以作为服务端客端的大量并发请，也能作为客端网中的个应用并发请。
 Web 的是网，Node 的就它的一样，是网中灵活的一个。
 
-## 3.1 　为什么要异步 I/O
+## 3.1 为什么要异步 I/O
 
 关于 I/O 为在 Node 要，这与 Node 网不关系
 。Web 应用已经不是服务就能的时了，在网的下，并发已经是编程中的了。到实，可以从用源分这个起。
@@ -1065,7 +1079,7 @@ O。这部分内在 9 中。I/O 的是 I/O 的用不后续，有 I/O 的这时�
 
 图 3-1 I/O 的用图
 
-## 3.2 　异步 I/O 实现现状
+## 3.2 异步 I/O 实现现状
 
 I/O 在 Node 中应用最为广，是它并 Node 的创。BrendanEich18 国学，它的优之并创，它的创之
 并不优，以之他自己创的 JavaScript 一样，Node 的优之也并创。下我们作系统对 I/O 实的。
@@ -1134,7 +1148,7 @@ IOCP 的 I/O 与 Node 的用分。在 Windows 下用了 IOCP 实 I/O。
 、、接几有机源都为了，因这的的情样能于接。
 一个要强的在于我们时到 Node 是线程的，这的线程仅仅只是 JavaScript 在线程中了。在 Node 中，是*nix 还是 Windows，内部 I/O 务的有线程。
 
-## 3.3 　 Node 的异步 I/O
+## 3.3 Node 的异步 I/O
 
 系统对 I/O 的后，我们继续 Node 是实 I/O 的。这我们了 I/O 的实外，还 Node 的。个 I/O 环的有事环、者
 请对。
@@ -1201,7 +1215,7 @@ Windows 下要过 IOCP 系统内发 I/O 用从内已的 I/O 作，以事环，�
 3.3.5
 从前实 I/O 的过程中，我们可以 I/O 的几个关线程、事环、者 I/O 线程。这线程与 I/O 线程之起有些的样。由于我们 JavaScript 是线程的，以识很解为它不能分用多 CPU。事实上，在 Node 中，了 JavaScript 是线程外，Node 自实是多线程的，只是 I/O 线程使用的 CPU。一个要的是，了用并外，有的 I/O（I/O 网 I/O）是可以并起的。
 
-## 3.4 　非 I/O 的异步 API
+## 3.4 非 I/O 的异步 API
 
 管我们在 Node 的时候，多数情下都会到 I/O，是 Node 中实还在一些与 I/O 关的 API，这一部分也关一下，它们分是 setTimeout()、setInterval()、
 setImmediate()process.nextTick()。
@@ -1255,7 +1269,7 @@ console.log('setImmediate 执行 2'); }); console.log('正常执行');
 正常执行 nextTick 执行 1 nextTick 执行 2 setImmediate 执行 1 势入 setImmediate 执行 2
 从上可以，一个 setImmediate()的数后，并没有立个，是入了下一环，次 process.nextTick()优、setImmediate()次后的序。之以这样，是为了环能，CPU 用过多后续 I/O 用的情。
 
-## 3.5 　事件驱动与高性能服务器
+## 3.5 事件驱动与高性能服务器
 
 前要了的实，在这个过程中，我们也本了事驱动的实质，
 过环加事触发的程序。
@@ -1280,30 +1294,32 @@ console.log('setImmediate 执行 2'); }); console.log('正常执行');
 因为在这些熟的语言上，不是，管有这些事驱动的实，开发者会习性用 I/O，这想的高性能接。RyanDahl 在他最的时，Lua 一是最他的语言，是由于 I/O 是 I/O，他使这样一个事驱动的实，也不会到大的使用。在 Node 广之后，社区的 Tim CaswellNode 的这想新到了 Lua，目 luavit。
 JavaScript 中的作用数在端已有熟的应用，也很好了 Ryan Dahl 实它的想。JavaScript 在服务端，使 Node 没有包，Node 在性能上的使它一下就在社区中起了。
 
-## 3.6 　总结
+## 3.6 总结
 
 本了 I/O 一些 I/O 的。可以，事环是实的心，它与中的本了一。像的 Rhino，管是就能在服务端的 JavaScript 时，是并不像用事驱动，是像他语言一用 I/O 作为要，这它在性能上发。Node 是了一的高性能 I/O，了 JavaScript 在服务端不前的。
 
-## 3.7 　参考资源
+## 3.7 参考资源
 
 本的源下
 
 - http://cnodejs.org/blog/?p=244
 - http://cnodejs.org/blog/?p=2426
 - http://cnodejs.org/blog/?p=2489
-- http://nodejs.org/nodeconf.pdf - http://blog.dccmx.com/2011/04/select-poll-epoll-in-kernel/
+- http://nodejs.org/nodeconf.pdf 
+- http://blog.dccmx.com/2011/04/select-poll-epoll-in-kernel/
 - http://www.ibm.com/developerworks/cn/linux/l-async/
 - http://twistedmatrix.com/trac/
-- http://luvit.io/ - http://forum.nginx.org/read.php?2,113524,113587#msg-113587
+- http://luvit.io/ 
+- http://forum.nginx.org/read.php?2,113524,113587#msg-113587
 
-# 第 4 章　异步编程
+# 第 4 章 异步编程
 
 有 I/O，有编程。
 上一了 Node 过事环实，包括与 I/O 多复用实的 I/O 以与 I/O 关的。Node 是个大到应用的，它从内在机到 API 的，不的。的高性能为它了高的，编程也为部分的。
 前中过 I/O 在应用不的因，是编程在程中，务并不自语言的线性习。人能应接对事驱动编程，对它熟悉的要是 GUI 开发者，前端工程 GUI 工程。前端工程习以为并能熟 DOM 事中的事。RyanDahl 好事驱动，Java Script 在中也事驱动的过程，这也使前后端的 JavaScript 在上都于一。语言在不的环境，了的 API 有不外，并不人是一门新语言。
 V8I/O 在性能上的，前后端 JavaScript 编程一，是 Node 能并起的要因。
 
-## 4.1 　函数式编程
+## 4.1 函数式编程
 
 在开始编程之前，JavaScript 今的数深的。在 JavaScript 中，数（function）作为一，使用上自由，用它，者作为数，者作为可。数的灵活性是 JavaScript 人的之一，它与的 Lisp 语言源。JavaScript 在生之前，Brendan Eich 了 Scheme 语言（Scheme 作为 Lisp 的生），收了数编程的，数作为一是。
 于数编程在年新，前端图书中这部分识，这作补，因为它是 JavaScript 编程的。
@@ -1334,7 +1350,7 @@ var isString = isType('String'); var isFunction = isType('Function');
 if (--times < 1) { return func.apply(this, arguments); } }; };
 这个数可以入的 times 数，生一个要用多次才实数的数。
 
-## 4.2 　异步编程的优势与难点
+## 4.2 异步编程的优势与难点
 
 经的线程在 I/O 的下，由于 I/O 用，在应用 CPU 与 I/O。为了编程人的阅读习，I/O 了很多年。在新月的技术大前，性能问题在了编程人的前。性能的过多用多线程的解决，是多线程的入在务的也不。从作系统多线程的上下开，到实编程的、问题，开发人的时候也并不。一个解决 I/O 性能的是过 C/C++用作系统接，自己工 I/O，这能到很高的性能，是试开发门分高，在务解决问题上，要大的。Node 用 JavaScript 内部，接到务，这是一创新。
 4.2.1
@@ -1424,7 +1440,7 @@ WebWorkers 的，开发人要多线程的编程，这对于以的 JavaScript 编
 5. 5
    习编程的学，也能从对编程的产品，、务分问题。Node 了绝大部分的 API 量的 API，的会因为没有 API 开发者从。目前，Node 中试图编程，并不能到生，要者编实。对于用，过好的程，还是能序的。
 
-## 4.3 　异步编程解决方案
+## 4.3 异步编程解决方案
 
 前了因编程的一些问题，与编程的性能相，编程过程起没有想中好，是事实也没有。与问题相，解决问题的是多，本开个的解决。
 目前，编程的要解决有下 3。
@@ -2040,7 +2056,7 @@ var readFileAsync = Wind.Async.Binding.fromStandard(fs.readFile);
 这对下几的区事发/阅相对是一为始的，Promise/Deferred 贡献了一个不的务的。上的这些程与 Promise/Deferred 的不，Promise/Deferred 的在于的用部分，程没有，在数的入上。从自由上，async、Step 这要相对灵活多。EventProxy 要事发/阅程过高数生数的实。
 了 async、Step、EventProxy、wind 外，还有一过源编的实程的，streamline 是的。这并不在本的内，读者有，可以自阅相关。
 
-## 4.4 　异步并发控制
+## 4.4 异步并发控制
 
 在续的编程，解决的问题外的性能优势，编程，是这有一个过不的。
 在 Node 中，我们可以分用发起并用。使用下的，我们可以发起 100 次用
@@ -2141,13 +2157,13 @@ q.push(file, function (err, data) { // TODO }); });
 管 queue()实了动加并务，是相 parallelLimit()，由于 queue()接收的数是定的，它了 parallelLimit()的多样性，我心认为 bagpipe 灵活，可以加的务，也可以动加务，时还能在实时场景中加入绝时
 。在实应用中，开发者可以场景。
 
-## 4.5 　总结
+## 4.5 总结
 
 在接触 Node 的过程中，很多人接触了几个数之后就了。管编程，是并一是，一习，就自。从社区过的经言，JavaScript 编程的题已经本解决，是过事，还是过 Promise/Deferred，者程。相信在以上技之后，编程不是事，习编程之后，会收多享的编程。
 本要了的几编程解决，这是目前 JavaScript 中要使用的。对于他语言言，还有程（coroutine）。是由于 Node 于 V8 的因，在目前 EMCAScript5 的实下还不程。这些还在定中，以时不作。的 V8Generator，也在 Node 中能接使用。
 最后，因为人们是习性以线性的，以编程相对为以。这个以的本质是不会因为大线性的性。就像月不会因为你的心情自有的。
 
-## 4.6 　参考资源
+## 4.6 参考资源
 
 本的源下
 
@@ -2161,13 +2177,13 @@ q.push(file, function (err, data) { // TODO }); });
 - https://github.com/JeffreyZhao/wind
 - http://wiki.commonjs.org/wiki/Promises
 
-# 第 5 章　内存控制
+# 第 5 章 内存控制
 
 也读者会好为会有这样一在于本书中，因为在过很一时内，JavaScript 开发者很在开发过程中到要对内的场景，也的。到内，大想起的也只是本的 IE 中 JavaScript 与 DOM 时发生的问题。页的内用过多，本不到收，用已经不新了前页。
 着 Node 的发，JavaScript 已经实了 CommonJS 的生大一统的想，JavaScript 的应用场景已不在中。本时开些时的场景，网页应用、工，这场景由于时，且在用的机上，使内使用过多内，也只会到端用。由于时，着程的，内会，几没有内管的要。着 Node 在服务端的广应用，他语言在着的问题在 JavaScript 中也了。
 于、事驱动立的 Node 服务，有内的优，海量的网请。在海量请的前下，开发者就要一些不会的问题。本书写到这是服务端编程的了，内是在海量请时的前下探的。在服务端，源就，要为海量用服务，就使一源都要高环用。在 3 中，不多已 Node 是用 CPUI/O 这个服务源，本在 Node 中高使用内。
 
-## 5.1 　 V8 的垃圾回收机制与内存限制
+## 5.1 V8 的垃圾回收机制与内存限制
 
 我们在学习 JavaScript 编程时过，它与 Java 一样，由收机自动内管，这使开发者不要像 C/C++程序样在编写的过程中时关内的分问题。在中开发时，几很有人能到收对应用程序性能的情。Node 极大了 JavaScript 的应用场景，应用场景从客端到服务端之后，我们就能发，对于性能的服务端程序，内管的好、收是否优，都会对服务。在 Node 中，这一都与 Node 的 JavaScriptV8 相关。
 5.1.1Node V8
@@ -2204,22 +2220,22 @@ node --max-old-space-size=1700 test.js //单位为 MB //者 node --max-new-space
 V8 的大小就是新生用内加上生的内。前我们的--max-old-space-size 数可以用于生内的最大，--max-new-space-size 数用于新生内的大小的。的是，这个最大要在动时就定。这着 V8 使用的内没有办使用情自动，内分过程中过极时，就会起程。
 前到过，在认下，一分内，在 64 系统 32 系统下会分只能使用 1.4GB0.7 GB 的大小。这个可以从 V8 的源中到。在下的中，Page::kPageSize 的为 1MB。可以到，生的在 64 系统下为 1400 MB，在 32 系统下为 700 MB
 // semispace*size* should be a power of 2 and old*generation_size* should be // a multiple of Page::kPageSize #if defined(V8*TARGET_ARCH_X64) #define LUMP_OF_MEMORY (2 \* MB)
-code_range_size*(512*MB), #else #define LUMP*OF_MEMORY MB
+code_range_size*(512*MB), #else #define LUMP*OF*MEMORY MB
 code_range_size*(0), #endif #if defined(ANDROID)
-reserved*semispace_size*(4 * Max(LUMP*OF_MEMORY, Page::kPageSize)), max_semispace_size*(4 * Max(LUMP*OF_MEMORY, Page::kPageSize)), initial_semispace_size*(Page::kPageSize), max*old_generation_size*(192*MB), max*executable_size*(max*old_generation_size*),
-#else reserved*semispace_size*(8 _ Max(LUMP*OF_MEMORY, Page::kPageSize)), max_semispace_size*(8 _ Max(LUMP*OF_MEMORY, Page::kPageSize)), initial_semispace_size*(Page::kPageSize), max*old_generation_size*(700ul _ LUMP*OF_MEMORY), max_executable_size*(256l _ LUMP*OF_MEMORY),
+reserved*semispace_size*(4 * Max(LUMP*OF*MEMORY, Page::kPageSize)), max_semispace_size*(4 * Max(LUMP*OF_MEMORY, Page::kPageSize)), initial_semispace_size*(Page::kPageSize), max*old_generation_size*(192*MB), max*executable_size*(max*old_generation_size*),
+#else reserved*semispace_size*(8 * Max(LUMP*OF_MEMORY, Page::kPageSize)), max_semispace_size*(8 * Max(LUMP*OF_MEMORY, Page::kPageSize)), initial_semispace_size*(Page::kPageSize), max*old_generation_size*(700ul _ LUMP*OF_MEMORY), max_executable_size*(256l _ LUMP*OF_MEMORY),
 #endif
 对于新生内，它由个 reserved_semispace_size*，后因。机
 数不，reserved*semispace_size*在 64 系统 32 系统上分为 16 MB8 MB。以新生
 内的最大在 64 系统 32 系统上分为 32 MB16 MB。
-V8 内的最大可以从下的中，为 4 _ reserved*semispace* size* + max_old_generation_size*
+V8 内的最大可以从下的中，为 4 \_ reserved*semispace* size* + max_old_generation_size*
 // Returns the maximum amount of memory reserved for the heap. For
 // the young generation, we reserve 4 times the amount needed for a
 // semi space. The young generation consists of two semi spaces and
 // we reserve twice the amount needed for those in order to ensure
 // that new space can be aligned to its size
-intptr_t MaxReserved() {
-return 4 _ reserved*semispace_size* + max*old_generation_size*;
+intptr*t MaxReserved() {
+return 4 * reserved*semispace_size* + max*old_generation_size*;
 }
 因，认情下，V8 内的最大在 64 系统上为 1464 MB，32 系统上为 732 MB。这个数可以解为在 64 系统下只能使用 1.4 GB 内在 32 系统下只能使用 0.7 GB 内。
 . Scavenge 在分的上，新生中的对要过 Scavenge 收。在 Scavenge 的实中，要用了 Cheney，由 C.J.Cheney 于 1970 年次发在 ACM 上。
@@ -2303,7 +2319,7 @@ ticks parent name 28 75.7 % /usr/local/bin/node ...
 [GC]: ticks total nonlib name 2 5.4%
 由于不分对，收的时为 5.4%。，这着事环 1000 的过程中要 54 的时用于收。
 
-## 5.2 　高效使用内存
+## 5.2 高效使用内存
 
 在 V8 前，开发者要的是收机高工作。
 5.2.1
@@ -2357,7 +2373,7 @@ return local;
 5.2.3
 在的 JavaScript 中，立收的内有包量用这情。由于 V8 的内，要分小心量是否加，因为它会生中的对多。
 
-## 5.3 　内存指标
+## 5.3 内存指标
 
 一言，应用中在一些性的对是的，且在的使用中，量都会自动收。是也会在一些我们认为会收是没有收的对，这会内用。一到 V8 的内，会到内，程。
 5.3.1
@@ -2426,7 +2442,7 @@ $ node out_of_heap.js Process: heapTotal 3.86 MB heapUsed 2.07 MB rss 11.12 MB P
 5.3.3
 从上的可以，Node 的内要由过 V8 分的部分 Node 自分的部分。V8 的收的要是 V8 的内。
 
-## 5.4 　内存泄漏
+## 5.4 内存泄漏
 
 Node 对内分，一线上应用有上的量，是一个的内也会，收过程中会多时对，应用应，到程内，应用。
 在 V8 的收机下，在的编写中，很会内的情。是内产生于，。管内的情不相，实质只有一个，就是应收的对外没有收，了在生中的对。
@@ -2487,7 +2503,7 @@ var leakArray = []; exports.leak = function () { leakArray.push("leak" + Math.ra
 深的解决应是的，一，应过系统产生并相关人。一个解决是用都应包时机，一在定的时内应，过数时，使用的都可的应时，一个下。
 对于 Bagpipe 言，它了时绝。用时时，用加入到中就开始时，时就接应一个时。用绝时，时，新到的用会接应。这都能有的内问题。
 
-## 5.5 　内存泄漏排查
+## 5.5 内存泄漏排查
 
 前了几内的。在 Node 中，由于 V8 的内大小的，它对内。在线服务的请量大时，是一个的都会内用过高。这一下到内时的。在已经有多工用于定 Node 应用的内，下是一些的工。
 . v8-profiler 由 Danny Coates，它可以用于对 V8 内对 CPU 分，目已经有 3 年没有了。
@@ -2568,7 +2584,7 @@ for (var i = 0; i < 10000; i++) { leak(); }
 5.5.3
 从本的内我们可以，内的因要过对内分到。node-heapdumpnode-memwatch 有，读者可以它们的优势内。
 
-## 5.6 　大内存应用
+## 5.6 大内存应用
 
 在 Node 中，不可还是会在作大的场景。由于 Node 的内，作大也要小心，好在 Node 了 stream 用于大。
 stream 是 Node 的生，接用可。stream 继自 EventEmitter，本的自定事能，时的事。它分可读可写。Node 中的大多数都有 stream 的应用，fs 的 createReadStream()createWriteStream()可以分用于创的可读可写，process 中的 stdinstdout 分是可读可写的。
@@ -2581,23 +2597,29 @@ var reader = fs.createReadStream('in.txt'); var writer = fs.createWriteStream('o
 可读了管 pipe()，了 data 事写入作。过的，上不会到 V8 内的，有高了程序的性。
 不要的作，不要 V8，可以试的 Buffer 作，这不会到 V8 内的。是这大使用内的情要小心，使 V8 不内的大小，内有。
 
-## 5.7 　总结
+## 5.7 总结
 
 NodeJavaScript 的要应用场景到了服务端，相应要的也与端不，要为一源作。的，内在 Node 中不能心使用，也不是不。本了内的，读者可以在使用中，与生系统中的，发 Node 的。
 
-## 5.8 　参考资源
+## 5.8 参考资源
 
 在这，我对本的。本的源下
 
-- https://github.com/joyent/node/wiki/FAQ - http://www.cs.sunysb.edu/~cse304/Fall08/Lectures/mem-handout.pdf
+- https://github.com/joyent/node/wiki/FAQ 
+- http://www.cs.sunysb.edu/~cse304/Fall08/Lectures/mem-handout.pdf
 - http://en.wikipedia.org/wiki/Resident_set_size
 - https://github.com/isaacs/node-lru-cache
-- https://github.com/mranney/node_redis - https://github.com/3rd-Eden/node-memcached
-- http://nodejs.org/docs/latest/api/stream.html - http://www.showmuch.com/a/20111012/215033.html
+- https://github.com/mranney/node_redis 
+- https://github.com/3rd-Eden/node-memcached
+- http://nodejs.org/docs/latest/api/stream.html 
+- http://www.showmuch.com/a/20111012/215033.html
 - https://github.com/lloyd/node-memwatch
-- https://github.com/bnoordhuis/node-heapdump - http://www.williamlong.info/archives/3042.html - https://code.google.com/p/v8/issues/detail?id=847 - http://blog.chromium.org/2011/11/game-changer-for-interactive.html
+- https://github.com/bnoordhuis/node-heapdump 
+- http://www.williamlong.info/archives/3042.html 
+- https://code.google.com/p/v8/issues/detail?id=847 
+- http://blog.chromium.org/2011/11/game-changer-for-interactive.html
 
-# 第 6 章　理解 Buffer
+# 第 6 章 理解 Buffer
 
 JavaScript 对于（string）的作分友好，是还是，都认为是一个。下
 console.log("0123456789".length); // 10 console.log("".length); //10 console.log("\u00bd".length); // 1
@@ -2607,7 +2629,7 @@ console.log("0123456789".length); // 10 console.log("".length); //10 console.log
 
 与 5 的内一样，本的也是前端 JavaScript 开发者不的内。网 I/O 对于前端开发者言都是不有的应用场景，因为前端只做一些的作 DOM 作本就能务，在 ECMAScript 中，也没有对这些做的定，只有 CommonJS 中有部分的定。由于应用场景不，在 Node 中，应用要网、作数、图、接收上，在网的作中，还要大量数，JavaScript 自有的不能这些，于是 Buffer 对应生。
 
-## 6.1 　 Buffer 结构
+## 6.1 Buffer 结构
 
 Buffer 是一个像 Array 的对，它要用于作。下我们从对的上认识它。
 6.1.1
@@ -2665,7 +2687,7 @@ new Buffer(3000);
 图 6-4 从 slab 中次分一个 Buffer 对
 slab 余的不，会新的 slab，slab 中余的会。，一次 1 的 Buffer 对，次 8192 的 Buffer 对，由于次分时 slab 中的
 
-## 6.2 　 Buffer 的转换
+## 6.2 Buffer 的转换
 
 不，以创并使用新的 slab，一个 slab 的 8 KB 会一个 1 的 Buffer 对。下的一使用了个 slab
 new Buffer(1); new Buffer(8192);
@@ -2706,7 +2728,7 @@ iconv-lite 用 JavaScript 实，iconv 过 C++用 libiconv。前者后者量，�
 var iconv = require('iconv-lite');
 // Buffer 转字符串 var str = iconv.decode(buf, 'win1251');
 
-## 6.3 　 Buffer 的拼接
+## 6.3 Buffer 的拼接
 
 //字符串转 Buffer var buf = iconv.encode("Sample input string", 'win1251');
 外，iconviconv-lite 对的内时的不相。iconv-lite 的内是多，会
@@ -2777,7 +2799,7 @@ var buffer = new Buffer(length); var pos = 0; for (var i = 0; i < list.length; i
 var buf = list[i]; buf.copy(buffer, pos); pos += buf.length;
 } return buffer; };
 
-## 6.4 　 Buffer 与性能
+## 6.4 Buffer 与性能
 
 Buffer 在 I/O 网 I/O 中用广，在网中，它的性能。在应用中，我们会作，一在网中，都要为 Buffer，以数。在 Web 应用中，到 Buffer 是时时发生的，高到 Buffer 的，可以很大程高网。
 在开 Buffer 与网的关系之前，我们可以一次性能测试。下的中了一个 10 KB 大小的。我们过的客端发，下
@@ -2823,29 +2845,30 @@ rs.on('end', function() { try { fs.unlinkSync(filename); } catch (e) {} // MB/se
 fs/read-stream-throughput.js type=buf size=1024: 46.284 fs/read-stream-throughput.js type=buf size=4096: 139.62 fs/read-stream-throughput.js type=buf size=65535: 681.88 fs/read-stream-throughput.js type=buf size=1048576: 857.98
 从上的我们可以到，读一个相的大时，highWaterMark 的大小与读的关系大，读。
 
-## 6.5 　总结
+## 6.5 总结
 
 过 JavaScript 友好的作后，有些开发者可能会定势，Buffer 做解。与 Buffer 之有实质上的，Buffer 是数，与 Buffer 之在编关系。因，解 Buffer 的多分要，对于高数分有用。
 
-## 6.6 　参考资源
+## 6.6 参考资源
 
 本的源下
 
 - http://nodejs.org/docs/latest/api/buffer.html
 - http://nodejs.org/docs/latest/api/string_decoder.html
 - https://github.com/bnoordhuis/node-iconv
-- https://github.com/ashtuchkin/iconv-lite - http://httpd.apache.org/docs/2.2/programs/ab.html
+- https://github.com/ashtuchkin/iconv-lite 
+- http://httpd.apache.org/docs/2.2/programs/ab.html
 - http://cnodejs.org/user/fool
 - http://en.wikipedia.org/wiki/Slab_allocation
 - https://www.ibm.com/developerworks/cn/linux/l-linux-slab-allocator/
 
-## 第 7 章　网络编程
+# 第 7 章 网络编程
 
 Node 是一个网生的，它有事驱动、、线程性，好的可性，使它分量，在分网中样的。时 Node 的 API 分网，用它的 API 灵活的网服务。从本起，我 Node 在网服务的能。
 用 Node 可以分网服务。在 Web，大多数的编程语言要门的 Web 服务作为，ASP、ASP.NET 要 IIS 作为服务，PHP 要 ApacheNginx 环境，JSP 要 Tomcat 服务。对于 Node 言，只要几可服务，外的。
 Node 了 net、dgram、http、https 这 4 个，分用于 TCP、UDP、HTTP、HTTPS，用于服务端客端。
 
-## 7.1 　构建 TCP 服务
+## 7.1 构建 TCP 服务
 
 TCP 服务在网应用中分，目前大多数的应用都是于 TCP 的。
 7.1.1TCP
@@ -2935,7 +2958,7 @@ server.listen(1337, '127.0.0.1');
 在 Node 中，由于 TCP 认用了 Nagle，可以用 socket.setNoDelay(true)Nagle，使 write()可以立发数到网中。
 一个要的是，管在网的一端用 write()会触发一端的 data 事，是并不着次 write()都会触发一次 data 事，在关 Nagle 后，一端可能会接收到的多个小数包并，后只触发一次 data 事。
 
-## 7.2 　构建 UDP 服务
+## 7.2 构建 UDP 服务
 
 UDP 用数包，与 TCP 一样于网。UDP 与 TCP 最大的不是 UDP 不是接的。TCP 中接一立，有的会都于接
 ，客端要与一个 TCP 服务信，要创一个接接
@@ -2975,7 +2998,7 @@ UDP 接相对 TCP 接使用起，它只是一个 EventEmitter 的实，Stream �
 
 . error 发生时触发事，不，接，使程。
 
-## 7.3 　构建 HTTP 服务
+## 7.3 构建 HTTP 服务
 
 TCP 与 UDP 都于网，要高的网应用，就应从着。
 是对于经的应用场景，从入自己的应用，HTTPSMTP，这些经的应用对于应用言有余。Node 了本的 httphttps 用于 HTTP HTTPS 的，对于他应用的，也能从社区中到实。
@@ -3005,7 +3028,7 @@ connected
 
 -
 
-Connected to 127.0.0.1 (127.0.0.1) port 1337 (#0) > GET / HTTP/1.1 > User-Agent: curl/7.24.0 (x86_64-apple-darwin12.0) libcurl/7.24.0 OpenSSL/0.9.8r zlib/1.2.5 > Host: 127.0.0.1:1337 > Accept: _/_ > < HTTP/1.1 200 OK < Content-Type: text/plain < Date: Sat, 06 Apr 2013 08:01:44 GMT < Connection: keep-alive < Transfer-Encoding: chunked < Hello World
+Connected to 127.0.0.1 (127.0.0.1) port 1337 (#0) > GET / HTTP/1.1 > User-Agent: curl/7.24.0 (x86*64-apple-darwin12.0) libcurl/7.24.0 OpenSSL/0.9.8r zlib/1.2.5 > Host: 127.0.0.1:1337 > Accept: */\_ > < HTTP/1.1 200 OK < Content-Type: text/plain < Date: Sat, 06 Apr 2013 08:01:44 GMT < Connection: keep-alive < Transfer-Encoding: chunked < Hello World
 
 -
 
@@ -3031,7 +3054,7 @@ Connected to 127.0.0.1 (127.0.0.1) port 1337 (#0)
 
 部分是在之后，客端服务端发请，下
 
-> GET / HTTP/1.1 > User-Agent: curl/7.24.0 (x86_64-apple-darwin12.0) libcurl/7.24.0 OpenSSL/0.9.8r zlib/1.2.5 > Host: 127.0.0.1:1337 > Accept: _/_ >
+> GET / HTTP/1.1 > User-Agent: curl/7.24.0 (x86*64-apple-darwin12.0) libcurl/7.24.0 OpenSSL/0.9.8r zlib/1.2.5 > Host: 127.0.0.1:1337 > Accept: */\_ >
 > 部分是服务端后，客端发应内，包括应应，下
 > < HTTP/1.1 200 OK < Content-Type: text/plain < Date: Sat, 06 Apr 2013 08:01:44 GMT < Connection: keep-alive < Transfer-Encoding: chunked < Hello World
 > 最后部分是会的信，下
@@ -3062,16 +3085,16 @@ function (req, res) { res.writeHead(200, {'Content-Type': 'text/plain'}); res.en
 1- HTTP
 对于 TCP 接的读作，http 为 ServerRequest 对。我们次前的请，部会过 http_parser 解。请的下
 
-> GET / HTTP/1.1 > User-Agent: curl/7.24.0 (x86_64-apple-darwin12.0) libcurl/7.24.0 OpenSSL/0.9.8r zlib/1.2.5 > Host: 127.0.0.1:1337 > Accept: _/_ >
+> GET / HTTP/1.1 > User-Agent: curl/7.24.0 (x86*64-apple-darwin12.0) libcurl/7.24.0 OpenSSL/0.9.8r zlib/1.2.5 > Host: 127.0.0.1:1337 > Accept: */\_ >
 > 一 GET / HTTP/1.1 解之后分解为下性。
 > . req.method 性为 GET，是为请，的请有 GET、POST、DELETE、PUT、CONNECT 几。
 > . req.url 性为/。. req.httpVersion 性为 1.1。余是很的 Key: Value，解后在 req.headers 性上务以
 
 用，下
 headers:  
-{ 'user-agent': 'curl/7.24.0 (x86_64-apple-darwin12.0) libcurl/7.24.0 OpenSSL/0.9.8r zlib/1.2.5',
+{ 'user-agent': 'curl/7.24.0 (x86*64-apple-darwin12.0) libcurl/7.24.0 OpenSSL/0.9.8r zlib/1.2.5',
 host: '127.0.0.1:1337',
-accept: '_/_' },
+accept: '*/\_' },
 部分为一个只读对，务要读中的数，要在这个数后才能作，下
 function (req, res) {
 // console.log(req.headers);
@@ -3169,7 +3192,7 @@ hostname: '127.0.0.1', port: 1334, path: '/', method: 'GET', agent: agent
 . continue 客端服务端发起 Expect: 100-continue 信，以试图发大数量，
 服务端应 100 Continue，客端触发事。
 
-## 7.4 　构建 WebSocket 服务
+## 7.4 构建 WebSocket 服务
 
 到 Node，不能过的是 WebSocket。它与 Node 之的，由有。
 . WebSocket 客端于事的编程与 Node 中自定事相几。
@@ -3275,7 +3298,7 @@ fin(1) + res(000) + opcode(0001) + masked(0) + payload length(1100000) + payload
 于 JavaScript，以好的 WebSocket 实，API 与客端可以高相。
 外，Node 于事驱动的使它应对 WebSocket 这接的应用场景可以大量并发请。管 Node 没有内 WebSocket 的，是社区的 ws 了 WebSocket 的实。socket.io 是在它的上实的。
 
-## 7.5 　网络服务与安全
+## 7.5 网络服务与安全
 
 在网中，数在服务端客端之，由于是的内，一在网人，数就可能一余在中的者前。为我们要数加后网，这样使数，者也数的实内是。是对于我们的应用言，HTTP、FTP，我们能数，心网过程中的问题。在网景的 NetScape 推之初就了 SSL（Secure Sockets Layer，
 接）。SSL 作为一，它在
@@ -3401,22 +3424,22 @@ $ node client.js hello world
 [Error: UNABLE_TO_VERIFY_LEAF_SIGNATURE]
 解决的是加性 rejectUnauthorized 为 false，它的与 curl 工加-k 一样，都会在数过程中会加，是服务端的书不是的。
 
-## 7.6 　总结
+## 7.6 总结
 
 Node 于事驱动，在分环境中能发它的，于事驱动可以实与大量的客端接，它可以好网的应。Node 了相对的网用，以于事的编程接，使开发者在这些上分网应用。下一我们在本的上探的 Web 应用。
 
-## 7.7 　参考资源
+## 7.7 参考资源
 
 本的源下
 
-- http://tools.ietf.org/html/rfc2616 
-- http://hi.baidu.com/miracletan2008/item/0bc16c9d7af261de7b7f01a2 
-- http://tools.ietf.org/html/rfc6455 
+- http://tools.ietf.org/html/rfc2616
+- http://hi.baidu.com/miracletan2008/item/0bc16c9d7af261de7b7f01a2
+- http://tools.ietf.org/html/rfc6455
 - http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html
 - http://en.wikipedia.org/wiki/OSI_model
-- http://upload.wikimedia.org/wikipedia/commons/a/ae/SSL_handshake_with_two_way_authenti cation_with_certificates.svg
+- http://upload.wikimedia.org/wikipedia/commons/a/ae/SSL_handshake_with_two_way_authentication_with_certificates.svg
 
-# 第 8 章　构建 Web 应用
+# 第 8 章 构建 Web 应用
 
 今，Web 应用是网的，Web1.0、Web2.0 一走，HTTP 了网中的大多数量。着动网时的到，Web 开始在动上发。在 Web
 的过后，Web 开始应用发，JavaScript 在前端可。多本在服务端实的务，前到端，前端 MV\*的也熟。与之的是，Node 的前后端的次，JavaScript 这门最初就能在服务端的语言，在经了前端的后端的后，事驱动 V8 的高性能，次为了服务端的者。在 Web 应用中，JavaScript 不仅仅在前端中，因为 Node 的，前端会新定。
@@ -3428,7 +3451,7 @@ Node 于事驱动，在分环境中能发它的，于事驱动可以实与大量
 
 语言相，以小。本会开 Web 应用在后端实中的。
 
-## 8.1 　基础功能
+## 8.1 基础功能
 
 在 7 中，我们了 Node 的网编程部分。从中我们可以发，Node 是分网的，它的、事机使我们在网编程时分。本的 Web 应用的内，从 http 中服务端的 request 事开始分。request 事发生于网接立，客端服务端发，服务端解，发 HTTP 请的时。在已触发 reqeust 事前，它已好 ServerRequestServerResponse 对以对请应的作。
 以经的 HelloWorld 为，就是用 ServerResponse 实应的，下
@@ -3451,7 +3474,7 @@ var app = connect(); // var app = express(); // TODO http.createServer(app).list
 8.1.1
 在 Web 应用中，最的请是 GETPOST，之外，还有 HEAD、DELETE、PUT、CONNECT。请在于的一的一个，是大写。下为一个的
 
-> GET /path?foo=bar HTTP/1.1 > User-Agent: curl/7.24.0 (x86_64-apple-darwin12.0) libcurl/7.24.0 OpenSSL/0.9.8r zlib/1.2.5 > Host: 127.0.0.1:1337 > Accept: _/_ >
+> GET /path?foo=bar HTTP/1.1 > User-Agent: curl/7.24.0 (x86*64-apple-darwin12.0) libcurl/7.24.0 OpenSSL/0.9.8r zlib/1.2.5 > Host: 127.0.0.1:1337 > Accept: */\_ >
 > HTTP_Parser 在解请的时候，，为 req.method。，我们只要 GETPOST 请，是在 RESTfulWeb 服务中请分要，因为它会决定源的作为。PUT 新一个源，POST 要新一个源，GET 一个源，DELETE 一个源。
 > 我们可以过请决定应为，下
 > function (req, res) { switch (req.method) { case 'POST':
@@ -3553,8 +3576,8 @@ Set-Cookie: foo=bar; Path=/; Expires=Sun, 23-Apr-23 09:01:35 GMT; Domain=.domain
    为了解决 Cookie 数的问题，Session 应生。Session 的数只在服务端，客端，这样数的性到一定的，数也在中次都。在服务端数分，是个客服务中的数一一对应起，这有的实。
    . Cookie 数据的
    有数都在 Cookie 中不可，是在 Cookie 中还是可以的。因为一，就了关系，也服务端在的数了。并且 Session 的有，遍的是 20 分，在 20 分内客端服务端没有产生，服务端就数。由于数过时，且在服务端数，因性相对高。是产生的
-   一服务端用了 Session，它定一个作为 Session 的，这个可以定，Connect 认用 connect_uid，Tomcat 会用 jsessionid。一服务到用请 Cookie 中没有，它就会为之生一个，这个是一且不复的，并定时时。以下为生 session 的
-   var sessions = {}; var key = 'session_id'; var EXPIRES = 20 _ 60 _ 1000;
+   一服务端用了 Session，它定一个作为 Session 的，这个可以定，Connect 认用 connect*uid，Tomcat 会用 jsessionid。一服务到用请 Cookie 中没有，它就会为之生一个，这个是一且不复的，并定时时。以下为生 session 的
+   var sessions = {}; var key = 'session_id'; var EXPIRES = 20 * 60 \_ 1000;
    var generate = function () { var session = {}; session.id = (new Date()).getTime() + Math.random(); session.cookie = {
    expire: (new Date()).getTime() + EXPIRES }; sessions[session.id] = session; return session;
    };
@@ -3717,7 +3740,7 @@ res.end(file);
 8.1.7Basic
 Basic 认是客端与服务端请时，过用实的一认。这要它的它在服务端过 Node 的程。
 一个页要 Basic 认，它会请中的 Authorization 的内，的由认加，下
-\$ curl -v "http://user:pass@www.baidu.com/" > GET / HTTP/1.1 > Authorization: Basic dXNlcjpwYXNz > User-Agent: curl/7.24.0 (x86_64-apple-darwin12.0) libcurl/7.24.0 OpenSSL/0.9.8r zlib/1.2.5 > Host: www.baidu.com > Accept: _/_
+\$ curl -v "http://user:pass@www.baidu.com/" > GET / HTTP/1.1 > Authorization: Basic dXNlcjpwYXNz > User-Agent: curl/7.24.0 (x86*64-apple-darwin12.0) libcurl/7.24.0 OpenSSL/0.9.8r zlib/1.2.5 > Host: www.baidu.com > Accept: */\_
 在 Basic 认中，它会用部分组 username + ":" + password。后 Base64 编，下
 var encode = function (username, password) {
 return new Buffer(username + ':' + password).toString('base64');
@@ -3746,7 +3769,7 @@ handle(req, res);
 Basic 认有多的，它经过 Base64 加后在网中，是这于，分，一只有在 HTTPS 的情下才会使用。不过 Basic 认的分广，几有的都它。
 为了 Basic 认，RFC 2069 了要问认，它加入了服务端机数认过程，在不做深入的解。
 
-## 8.2 　数据上传
+## 8.2 数据上传
 
 上的内本都中在 HTTP 请中，用于 GET 请大多数他请。部中的内已经能服务端大多数务作了，是的部大量的数，在务中，我们要接收一些数，、、JSON 上、XML 上。
 Node 的 http 只对 HTTP 的部了解，后触发 request 事。请中还有内部分（POST 请，它有内），内部分要用自接收解。过的 Transfer-EncodingContent-Length 可请中是否有内，下
@@ -3867,7 +3890,7 @@ if (token !== _csrf) {  res.writeHead(403);  res.end("访问");
 } else {  handle(req, res); } } 
 _csrf也可以在于者请中。
 
-## 8.3 　路由解析
+## 8.3 路由解析
 
 前了多 Web 请过程中的过程，对于不的务，我们还是有不的
 ，这了由的问题。本会、MVC、RESTful 由。
@@ -4032,7 +4055,7 @@ handle404(req, res);
 ，我们了实 RESTful 的要。这的实过程用了工的，事实上过自也能 RESTful 的，是 Controller/Action 的定要为 Resource/Method 的定，已经实，不。
 目前 RESTful 应用已经开始广起，着务前端、客端的多样，RESTful 以量的，到广大开发者的。对于多数的应用言，只要一 RESTful 服务接，就能应动端、PC 端的客端应用。
 
-## 8.4 　中间件
+## 8.4 中间件
 
 接触 Web 应用的能由能后，我们发从应 Hello World 的到实的目，实有多的工作要，上内只是了要的部分。对于 Web 应用言，我们不用接触到这多性的，为我们入中（middleware）这些与务之的，开发者能关在务的开发上，以到开发的目的。
 在最的中的定中，它是一在作系统上为应用服务的机。它不是作系统的一部分，也不是应用的一部分，它于作系统与应用之，应用好、使用服务。今中的了这，为上服务的，并定在作系统。这要到的中，就是为我们上的有 HTTP 请的中，开发者可以这部分，在务上。
@@ -4171,7 +4194,7 @@ app.use('/public', staticFile);
 中使前的能，从的发收很的组织。对于个中言，它，一。与像一样杂在一起的相，它好的可测试性。中机使 Web 应用好的可性可组性，可以数。从它就是 Unix 学的一个实，，小，后过组使用，发强大的能量。
 中是 Connect 的经，过本的，我们已经可以到个 Connect 是的。本试图解 Web 开发过程的前，了多，管与实的 Connect 不相，着这些，开发者都能立写应自己务的。
 
-## 8.5 　页面渲染
+## 8.5 页面渲染
 
 过中机组织能我们的请后，不管是过 MVC 还是过 RESTful 由，开发者者是用了数，者是了作，者是了内，这时我们于到了应客端的部分了。这的页是个的题，我们实应的可能是一个 HTML 网页，也可能是 CSS、JS，者是他多。这我们要接上的 HTTP 应实的技术，要包内应页个部分。
 对于过的 ASP、PHP、JSP 动网页技术，页是一内的能。对于 Node，它并没有这样的内能，在本的中，你会到是因为能的，我们可以，发多好的技术，社区的创使 Node 在 HTTP 应上加多的。
@@ -4539,28 +4562,31 @@ Bigpipe.prototype.set = function (key, data) { var callbacks = this.callbacks[ke
 4. 
 Bigpipe网页数分，使用在上网页前好了，着数的过程页，使用能到页是活的。这一开始页，后在个时候好用的好。Node在这个过程中，性使数的能并，数的与数用的序关，用的数可以到页中，这个性使Bigpipe。
 要Bigpipe这样页的过程，实过Ajax也能，是Ajax的后是HTTP用，要多的网接，Bigpipe数与前页用相的网接，开分小。Bigpipe要的多，MVC中的接要复杂多，在网要的且数请时的页中使用。
-## 8.6　总结
+## 8.6 总结
 本的内为，在Web应用的个过程中，从请到应请的个过程都有性，本就可以一个能的Web开发。过的Web技术，着的，开发者应用，不的实，这好没有图在。本的内能为Node开发者图的发，在开发Web应用时能心有，了。
 在熟的Web有Connect、Express，本中的内在这些中都有实，因为的因，本中的实为，实使用请使用这些熟的。
-## 8.7　参考资源
+## 8.7 参考资源
 本的源下
-- http://tools.ietf.org/html/rfc3875 - http://tools.ietf.org/html/rfc2069 - http://www.ietf.org/rfc/rfc1867.txt 
+- http://tools.ietf.org/html/rfc3875 
+- http://tools.ietf.org/html/rfc2069 
+- http://www.ietf.org/rfc/rfc1867.txt 
 - http://en.wikipedia.org/wiki/Cross-site_request_forgery 
-- https://github.com/senchalabs/connect/blob/master/lib/middleware/csrf.js - http://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93controller 
+- https://github.com/senchalabs/connect/blob/master/lib/middleware/csrf.js 
+- http://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93controller 
 - http://www.ibm.com/developerworks/webservices/library/ws-restful/ 
 - http://en.wikipedia.org/wiki/Middleware 
 - http://mustache.github.io/ 
 - https://github.com/joyent/node/wiki/modules#wiki-templating 
 - https://developer.mozilla.org/zh-CN/docs/JavaScript/Reference/Global_Objects/Function
 
-# 第 9 章　玩转进程
+# 第 9 章 玩转进程
 
 Node 在时决定在 V8 之上，也就着它的与。我们的 JavaScript 会在个程的个线程上。它的好是程序是一的，在没有多线程的情下没有、线程问题，作系统在时也因为上下的，可以很好高 CPU 的使用。
 是程线程并的，今 CPU 本是多的，的服务（VPS）还有多个 CPU。一个 Node 程只能用一个，这 Node 实应用的一个问题 CPU
 外，由于 Node 在线程上，一线程上的没有，会起个程的。这 Node 的实应用了个问题的定在这个问题中，前者只是用不的问题，后者对于实产品一定的。本关于程的会解决这个问题。
 从的上言，Node 并的线程，在 3 中我们有过 Node 自还有一定的 I/O 线程在，这些 I/O 线程由 libuv，这部分线程对于 JavaScript 开发者言是的，只在 C++开发时才会关到。JavaScript 在 V8 上，是线程的。本 JavaScript 部分开，以的。
 
-## 9.1 　服务模型的变迁
+## 9.1 服务模型的变迁
 
 从到今，Web 服务的已经了几次。服务客端请的并发量，就是个程的。
 9.1.1
@@ -4579,7 +4605,7 @@ Node 在时决定在 V8 之上，也就着它的与。我们的 JavaScript 会�
 于事的服务在的问题是本起始时的个问题 CPU 的用程的性。线程的并不，中以 PHP 最为——在 PHP 中没有线程的。它的性是由它个请都立立的上下实的。是对于 Node，有请的上下都是统一的，它的定性是解决的问题。
 由于有都在线程上，事驱动服务性能的在于 CPU 的能，它的上决定这服务的性能上，它不多程多线程中源上的，可性前者高。解决多 CPU 的用问题，的性能上是可的。
 
-## 9.2 　多进程架构
+## 9.2 多进程架构
 
 对程线程对多使用不的问题，前人的经是动多程可。想下个程自用一个 CPU，以实多 CPU 的用。，Node 了 child_process，并且也了 child_process.fork()数我们实程的复。
 我们一次经的为 worker.js，下
@@ -4753,7 +4779,7 @@ setsockopt(tcp->io_watcher.fd, SOL_SOCKET, SO_REUSEADDR, &on, sizeof(on))
 至，我们了创程、程信的 IPC 实、在程的发还、
 端用。过这些技术，用 child_process 在机上 Node 是相对的事情。因在多 CPU 的环境下，Node 程能分用源不是题。
 
-## 9.3 　集群稳定之路
+## 9.3 集群稳定之路
 
 好了，分用了多 CPU 源，就可以接客端大量的请了。请，
 我们还有一些要。性能问题。多个工作程的活管。工作程的。
@@ -4900,7 +4926,7 @@ Round-Robin，可以 CPUI/O 的不。Round-Robin 也可以过服务实，是它�
 图 9-11 动图
 这推机程信，在多服务时会，是可以用 TCPUDP 的。程在动时从服务了读一次数外，还程信到服务。一过发有数新后，信，新后的数发工作程。由于不多程一，应的不至于过大，一的服务的并不大，以可以时，一发新，就能实时推到个程中。
 
-## 9.4 　 Cluster 模块
+## 9.4 Cluster 模块
 
 前了 child_process 中的大多数，以过这个强大的机。熟 Node，也你会为不 cluster。上的问题，Node 在 v0.8 本时新的 cluster 就能解决。在 v0.8 本之前，实多程过 child_process 实，要创机 Node，由于有这多要，对工程言是一相对的工作，于是 v0.8 时接入了 cluster，用以解决多 CPU 的用问题，时也了的 API，用以程的性问题。
 对于本开到的创 Node 程，cluster 实起也是很的事情，下
@@ -4941,12 +4967,12 @@ cluster.isWorker = ('NODE_UNIQUE_ID' in process.env); cluster.isMaster = (cluste
 
 这些事大多 child_process 的事相关，在程的上的。这些事对于强应用的性已经了。
 
-## 9.5 　总结
+## 9.5 总结
 
 管 Node 从线程的它有的不能分用多 CPU 源，定性也到。是的量是强大的，过的从，就可以应用的质量一个次。在实的复杂务中，我们可能要动很多程务，甚至从复杂，是个程应是到只做好一事，后过程信技术它们接起可。这 Unix 的，个程只做一事，并做好一事，复杂分解为，组强大。
 管过 child_process 可以大 Node 的定性，是一程问题，有程会管。在 Node 的程管之外，还要用程数量的个系统的定性，使程，也能时到，使开发者可以时。
 
-## 9.6 　参考资源
+## 9.6 参考资源
 
 本的源下
 
@@ -4954,16 +4980,18 @@ cluster.isWorker = ('NODE_UNIQUE_ID' in process.env); cluster.isMaster = (cluste
 - http://nodejs.org/docs/latest/api/cluster.html
 - https://github.com/aleafs/pmProcess
 - http://en.wikipedia.org/wiki/Inter-process_communication
-- http://en.wikipedia.org/wiki/Pipeline_(Unix) - http://www.w3.org/TR/workers/ - http://man7.org/linux/man-pages/man7/unix.7.html
+- http://en.wikipedia.org/wiki/Pipeline_(Unix) 
+- http://www.w3.org/TR/workers/ 
+- http://man7.org/linux/man-pages/man7/unix.7.html
 
-# 第 10 章　测试
+# 第 10 章 测试
 
 在使用 Node 实的目开发之前，我内心也分。管 JavaScript，相熟的后端语言言，Node 且是新学。甚至对于前端，因为样的因，JavaScript 的测试都分。Node 编写的在线产品，在上用前能否好的质量，我是心问的。
 从最写的自己不着，定 bug 到于一程序的个，到后很实对自己产的，对自己的了解心了。从对问题时的动到动，测试在这个过程中起到了至关要的作用。
 测试的在于，在用产的之前，开发者它，要的质量。这的是，JavaScript 开发者要，自己的，对自己产的。为自己的写测试用是一之有的，它能开发者到的为性能。
 测试包测试、性能测试、测试能测试几个，本从 Node 实践的测试性能测试。
 
-## 10.1 　单元测试
+## 10.1 单元测试
 
 测试在目中着的，是几质量的中入产最高的一。管在过的 JavaScript 开发中，绝大多数人都了这个环，今天 Node 的我们不不新这。
 10.1.1
@@ -5217,7 +5245,7 @@ node_js:
   并做过多，测试 Web 应用，读者可以自用 Web 的测试，Connect Express 了 supertest 测试的编写。
   在目中经会因为的产生务的动，没有测试的，发生后，很定动的。一为目的测试，目的会因为测试了于心。的测试在一定程上也着目的熟。
 
-## 10.2 　性能测试
+## 10.2 性能测试
 
 测试要用于测的为是否。在的为测后，还要对已有的性能作，测已有能是否能生产环境的性能要，能否实务的。，性能也是能。
 性能测试的广，包括测试、测试测试。由于这部分内并 Node 有，为了收，这只会下测试。了测试，这还对 Web 应用网的性能测试务的。
@@ -5324,12 +5352,12 @@ Percentage of the requests served within a certain time (ms)
 个页天的问量为 100。实务情，要问量大中在 10 个小时 10 以内，就是
 QPS =PV/10h 100 的务问量为 QPS，于 27.7，服务要 27.7 个请才能务量。
 
-## 10.3 　总结
+## 10.3 总结
 
 测试是应用者系统最要的质量。有测试实践的目，对的次都好。测试能目个部的性，也能在目过程中很好反质量。没有测试，就没有的走。
 对于性能，在编过程中一定在部分性认，与实情有部分，性能测试能很好这。
 
-## 10.4 　参考资源
+## 10.4 参考资源
 
 本的源下
 
@@ -5339,15 +5367,16 @@ QPS =PV/10h 100 的务问量为 QPS，于 27.7，服务要 27.7 个请才能务�
 - https://github.com/fent/node-muk
 - https://github.com/alex-seville/blanket
 - http://about.travis-ci.org/docs/
-- https://github.com/JacksonTian/unittesting - https://speakerdeck.com/felixge/faster-than-c-3
+- https://github.com/JacksonTian/unittesting 
+- https://speakerdeck.com/felixge/faster-than-c-3
 
-## 第 11 章　产品化
+# 第 11 章 产品化
 
 Node 相对于大多数 Web 技术还是年的，这着没有熟的应用系统可以接上使用，还于。反过，这也能开发者接触到多的，HTTP、程、服务，这些与他有技术并实质性的。对于 Node 开发者言，很多他语言走过的要开发者着 Node 性新践一遍。这并不是事，Node 接使开发者对于的可高。
 目前，在国内大多数人都 Node 以实性质的使用，国外已经有的目 Node 应用在实的生产环境中，eBay 的数中、Linkedin 动应用的服务端。本-Node 产品过程中要的一些，这些实是性的，并 Node 有。于部分 Node 开发者可能从前端，为了 Node 生的，以加了。管因为熟悉 JavaScript，可以好上 Node，是事实上从到产品还有的要补。
 在实的产品中，要很多编相关的工作以目的产品的，这些包括工程、、、部。只有这些务在续性，才目是活着的。
 
-## 11.1 　项目工程化
+## 11.1 项目工程化
 
 的工程，可以解为目的组织能。在上，就是的组织能。对于不的目，组织也有不。之外，还应有能个目起的灵性。
 目的组织就作的，目的的几不可能，有、有的组织的生才会，才。
@@ -5428,7 +5457,7 @@ reinstall: clean @$(MAKE) install
 要一定的，一些可以自动的工作可以由工自动，编的。后的，还要人工认。管实会一定的，是质量的的好还是会产品的。
 在并的过程中，一还会测试的环境，一都没有问题之后才会上线部。
 
-## 11.2 　部署流程
+## 11.2 部署流程
 
 在开发、、并之后，才会入部程。管经过一系的人工测试的质量，也并不能接上线到生产环境中接，还要在测试环境中测试之后才入生产环境线上测试。
 11.2.1
@@ -5449,6 +5478,7 @@ process.on('SIGTERM', function () { if (fs.existsSync(pidfile)) {
  fs.unlinkSync(pidfile); } process.exit(0); 
 }); 
 下是一个的bash脚本，用于应用的动、作
+```bash
 #!/bin/sh DIR=`pwd` NODE=`which node` # get action ACTION=$1
 
 # help
@@ -5476,11 +5506,12 @@ start ;; stop)
 stop ;; restart)
 restart ;; \*)
 usage ;; esac
+```
 在部的过程中，只要这个 bash 脚本可，工管程
 ./appctl.sh start ./appctl.sh stop ./appctl.sh restart
 这个脚本的心就是 run/app.pid 作的。要程 ID，只要读可。
 
-## 11.3 　性能
+## 11.3 性能
 
 Node 产品的性能与多因相关，这我们到 Web 应用中，只一些的性能的。对于 Web 应用言，最接有的过于动分、多程、分，中的几个分下。
 做一的事。的工做的事情。。分。之外，也能很大的性能。
@@ -5500,7 +5531,7 @@ Node 产品的性能与多因相关，这我们到 Web 应用中，只一些的�
 了动分外，一个为要的分是读写分，这要对数言。就数言，读的高于写入的。些数在写入时为了数一性，会作，这时会到读的。些系统为了性能，会数的读写分，数从，这样读数作不到写入的，了性能的。
 外，还有他多用以系统性能，以应对海量的请，这不一一开。
 
-## 11.4 　日志
+## 11.4 日志
 
 在实的目中，开发只是个入的一小部分。应用系统上线起时，问题有可能会接。者，有一。多的编写，一些问题是可能在个不定的时候。这情下，与 bug 复它，不立的机，就是实这机的关。在的系统中，的最能还问题场。过定问题是一本小的。这、量的实，也。
 11.4.1
@@ -5609,7 +5640,7 @@ Host: Jackson.local Data: "{error: format}" 2013-06-12 17:18:19.776
 11.4.5
 相对言是为的事情，是一好这个过程，有问题产生时可以解决。很多开发者在开发过程中不（没），到线上产生问题时会脚。好的可以为系统的，问题时，我们都能做到心中有数。
 
-## 11.5 　监控报警
+## 11.5 监控报警
 
 部好程，好之后，应用就可以自了。实上，这时候的应用初生的，学会了走，不管，就它到大上的人中。就像大的 11 要有一个人一，应用也应有一个系统。对于走到大上的，，要时起。应用了，也要过时发，后复它。
 应用的要有，一是务的，一是的。要过定时样。之外，还要对的信上，一大的动，就要发开发者。为了好开发者使用，到的信一还要过数可的反，以。
@@ -5680,7 +5711,7 @@ res.end(new Date());
     我们发为了应用的定性，实不不入了一个大的系统。系统自的定性对应用要，这的，不能心，，是有系统不没有。
     系统自己的定性是外一个题，本不继续开。
 
-## 11.6 　稳定性
+## 11.6 稳定性
 
 关于应用的定性，实在部分中都有，在 49 这中有，这从程多程的了定性。一服务不了务的（有的），这就要 Node 多程的部到多机中。这样机，也能有余机为用服务。之外，为了能好服务用，绝大多数都会在机以因为的网问题。为了好的定性，的就是多程、多机、多机，这样的分在在的网并不。
 . 多机部应用的好是能用多的源，为多的请服务。时能在有时，继续服务用请，系统的高可用性。是一分，就要、享数一性问题。在机中请分发到多个程上一样，部多机也要请
@@ -5695,7 +5726,7 @@ res.end(new Date());
 要的是，今技术已经熟，在多服务部中，要量多个服务在相的实机上。因为一实机，多服务一起服务。
 应用自的部问题到解决后，还要的是应用的服务的，的数、服务。
 
-## 11.7 　异构共存
+## 11.7 异构共存
 
 在技术的产品的，一门新技术应用在生产环境中就与已有的系统者服务能否。为了应用一新技术已有的有技术推，并不是一个的。一门新的语言者新的技术在推广应用的过程中都要这样的问题。对于 Node 言，我在本书中了它的多。可以，它并一个不入的新事，它于 C/C++之上，以 JavaScript 为用语言，以好的事驱动网的，的都能从作系统到它的起源。
 在应用 Node 的过程中，一部分是在新的目中应用，一部分是已有系统过 Node 性能。几没有已有系统推用 Node 的。
@@ -5706,24 +5737,24 @@ res.end(new Date());
 对于一系统，可能并 TCP 的网，是 RESTful 的服务接。者的不在于一个是 HTTP，于应用一个是 TCP，于。次不，性能会。TCP 会立的接，甚至接，HTTP 可能接，在性能上在。TCP 要客端驱动，HTTP 本上有的客端。
 之，在应用 Node 的过程中，不在为了用它推已有的情。Node 能过与已有的系统很好。Node 用于系统的开发者要的是已有的系统是否好的服务，是否多端，是否多语言用。
 
-## 11.8 　总结
+## 11.8 总结
 
 一言，决定用一技术产品开发时，只有最是与这门技术相关的。着时的，要解决的已经不是的问题了，一门技术只能在一定上发它的优势。用 Node 也是一样，着开发的、的多，我们到在产品的要解决的问题是大部分技术都要解决的问题。我们读者能 Node 入到新的上，使它应产品，在产品中发大的优势。
 
-## 11.9 　参考资源
+## 11.9 参考资源
 
 本的源为https://github.com/andris9/Nodemailer。
 Node  
 G
 
-# 附录 A 　安装 Node
+# 附录 A 安装 Node
 
 Node 的开发环境分，只要一个时的本编就可以开始开发了，分量。
 在经的发友时（v0.2 到 v0.4），Node 要一定的才能在中，并且在 Windows 下。从 v0.6 开始，Node 用了 GYP 目生工，时用 libuv 作为，实了\*nix 与 Windows，这在 2 中已过，不深。至时候起，Node 了在 Windows 下过 Cygwin 的。今 Node 在个本发时，会编好个下的本，接可，编。Node 的页http://nodejs.org会你的作系统不的接用下，用只Install可。
 在 Node 的过程中，实上还会上 NPM 工。对于 NPM 的作用，2 也有。在 Nodev0.6.3 之前，NPM 工的是与 Node 分的，要外。在 v0.6.3 时，Node 中就开始了 NPM 的。在不之后，NPM 的作者 Isaac Z. Schlueter 从 Ryan Dahl 中接过 Node 门人的，Node 的问题复本发。
 下个下的，只是上有不。
 
-## A.1 　 Windows 系统下的 Node 安装
+## A.1 Windows 系统下的 Node 安装
 
 对于 Windows 用，32 系统会到http://nodejs.org/dist/<version>/node-<version>-x86.msi 这样一个，中 version 是的本，64 系统会到http://nodejs.org/dist/ <version>/x64/node-<version>-x64.msi。下.msi 后，接它，时-的一 Next 可个程。图 A-1 为 Node 在 Windows 系统下的-。
 后，开，node -v 是否。不外，会到前本的本。样也可以 npm -vNPM 工是否 Node。
@@ -5731,7 +5762,7 @@ Node 的开发环境分，只要一个时的本编就可以开始开发了，分
 
 图 A-1 Node 在 Windows 系统下的
 
-## A.2 　 Mac 系统下 Node 的安装
+## A.2 Mac 系统下 Node 的安装
 
 Mac 系统下的用与 Windows 用不的是会到.pkg 的包，接也与本相关http://nodejs.org/dist/<version>/node-<version>.pkg。
 下后，开.pkg 包，也会 Windows 用样到一个，图 A-2。
@@ -5741,7 +5772,7 @@ Mac 系统下的用与 Windows 用不的是会到.pkg 的包，接也与本相�
 后，在 node -vnpm -v 可。下是我时的环境
 $ node -v v0.8.14 $ npm -v 1.1.65
 
-## A.3 　 Linux 系统下 Node 的安装
+## A.3 Linux 系统下 Node 的安装
 
 对于 Linux 系统下的用，推荐过源。开 Node 页，会到源接http://nodejs.org/dist/<version>/node-<version>.tar.gz。你可以过 wgetcurl 工下。要的是，编 Node 时要的几个环境下。
 . Python 2.6Python 2.7Node 不 Python3.0。要因在于 GYP 目工是用 Python 开发的，这 Python 2.7，因为 node-gyp 要 Python 2.7 才能使用。
@@ -5766,7 +5797,7 @@ $ node -v v0.8.14 $ npm -v 1.1.65
 $ git clone https://github.com/joyent/node.git \$ cd node
 git tag，你会到有以的（tag）。到最新的，git checkout <version>到上编可。
 
-## A.4 　总结
+## A.4 总结
 
 在 Node 后，可以试着用自己喜欢的本编的经为 example.js，下
 var http = require('http');
@@ -5776,16 +5807,16 @@ http.createServer(function (req, res) { res.writeHead(200, {'Content-Type': 'tex
 Server running at http://127.0.0.1:1337/
 用试着开这个，是否到 Hello World 的。可以到这个，喜你了。
 
-## A.5 　参考资源
+## A.5 参考资源
 
 本的源为https://github.com/joyent/node/wiki/Installation Installation。
 Node
 
-## 附录 B 　调试 Node
+## 附录 B 调试 Node
 
 JavaScript 作为 Node 的要编程语言。在大多数的脚本语言中，试是一的事情，JavaScript 也不外。在 Firefox 的 Firebug 之前，的 JavaScript 试是在中编写 alert()，这的试之前在了很。对于 Node 言，试的不会像 Web 开发。这会 Node 开发中要的几试。
 
-## B.1 　 Debugger
+## B.1 Debugger
 
 Node 的试接于 V8。V8 了的试 API，使可以从程内部试。时还了于 API 的 TCP 试，使过试，可以从程外试。Node 内了试的客端，以在动时上 debug 数就可以实对 JavaScript 的试。
 在试前，要过 debugger;语在中，这样在时会中。以下为
@@ -5817,7 +5848,7 @@ debug>
 \$ node server.js Hit SIGUSR1 -starting debugger agent. debugger listening on port 5858
 试客端动后，可以过问http://localhost:5858/试。这入我们下一个试工的Node Inspector 工就是在这个上实的图试。
 
-## B.2 　 Node Inspector
+## B.2 Node Inspector
 
 Node Inspector 工是于 DebuggerBlink 开发者工创的试。在的试能
 ，源自 Node 为 V8 内的试，能自 Blink 的开发者工。有 Blink 开发者工的有 Chrome、Opera。这着我们可以像试中的 JavaScript 一样试 Node 中的 JavaScript。
@@ -5836,15 +5867,15 @@ Visit http://127.0.0.1:8080/debug?port=5858 to start debugging.
 图 B-1 开后的试
 在 Sources 中可以的 JavaScript 脚本，后续的试过程就在中试 JavaScript 一样。
 
-## B.3 　总结
+## B.3 总结
 
 由于 Node 要在服务中，试会起中，中服务，不于在有大问量的情下。试只于开发，并且由于过程，不在开发中过于。好的是编写好的测试做的，这对于程序开发量，信也高。
 Node
 G
 
-## 附录 C 　 Node 编码规范
+# 附录 C Node 编码规范
 
-## C.1 　根源
+## C.1 根源
 
 JavaScript 作为一门编程语言，在语上可是最为灵活的语言了。有人喜欢它的灵活，也有人它的。它的灵活也好，也，都不开生的。Brendan Eich 在 1995 年了 10 天了这门语言，后在 1996 年也发了 JavaScript 的 IE3.0。网景为了自己，在 1996 年 11 月 JavaScriptECMA 组织，次年 6 月一发，为 ECMAScript，编 262。
 年的 JavaScript 编写分。它的灵活性都高，使开发者可以编，最它在一定程上。在编上，一个要的人是 DouglasCrockford，他是 JavaScript 开发社区最的，是 JSON、JSLint、JSMinADSafe 之，中 JSLint 在是最要的 JavaScript 质量测工。他的 JavaScript: TheGoodParts 一书对于 JavaScript 社区深。
@@ -5852,7 +5883,7 @@ JavaScript 作为一门编程语言，在语上可是最为灵活的语言了。
 与他语言（PythonRuby）的程序相，JavaScript 程序要多的自才能写读、的。为这个问题，部分开发者 TypeScriptCoffeeScript 编写应用。我认为了解一门语言为是下这情是有要的。编的目的是在一定程上程序，使之能在中并且。
 管 JavaScript 已经相熟，用 JSLint 能解决大部分问题，是着 Node 的，了一些新的，这些要起我们。本是在了 JavaScript 的编的上，Node 的环境社区的习。
 
-## C.2 　编码规范
+## C.2 编码规范
 
 C.2.1
 
@@ -6073,7 +6104,7 @@ query('SELECT * FROM table', function (err, data) {
 // ... };
 dox 的源自于 JSDoc。可以过生对应的 API。
 
-## C.3 　最佳实践
+## C.3 最佳实践
 
 的编有很多，有的也，这并不我们到。
 C.3.1
@@ -6092,14 +6123,14 @@ C.3.4
 一可以过中的统质量的好势，。统可以定中的个
 人对编的情，决定用的质量管还是的。
 
-## C.4 　总结
+## C.4 总结
 
 质量关产品的质量，最的是编，收也是最高的，它
 测试要实践。一定了编，就应，绝中编后的。
 也可以用 CoffeeScript 的编的问题，是我相信在使用 CoffeeScript 之前，了解这些会好你解 CoffeeScript。
 你还用编 JavaScript 编写你的应用，请这些编。管因为因一到这些，是为优，为，就应优做一习。
 
-## C.5 　参考资源
+## C.5 参考资源
 
 本的源下
 
@@ -6108,7 +6139,7 @@ C.3.4
 - http://nodeguide.com/style.htmlFelix’sNode.js
 - https://npmjs.org/doc/coding-style.htmlNPM
 
-## 附录 D 　搭建局域 NPM 仓库
+# 附录 D 搭建局域 NPM 仓库
 
 2 到了 NPM，它由今 Node 的门人 Isaac Z. Schlueter 创。最初，NPM 与 Node 自发，在 Node v0.6.3 时，它为 Node 的一部分。NPM 的了 Node 的个生，
 为用，管为很的事情，个生性发。今，在 GitHub 上托管源，在 NPM 上发，在中使用包，这者 Node 应用的环。这在开源社区中是极的。
@@ -6125,7 +6156,7 @@ NPM 过加--force 强发，管它会发，是对于不在自己中的，性发�
 在 package.json 中编写，过 NPM 工从有中，自动的，这与使用开源社区的一样。没有有 NPM，享的过程甚至会
 为复的工活，本高。
 
-## D.1 　 NPM 仓库的安装
+## D.1 NPM 仓库的安装
 
 NPM 的源托管在 GitHub 上，是http://github.com/isaacs/npmjs.org。相对于中的NPM，NPM是的服务。
 NPM 的于 CouchDB 实。CouchDB 是一 NoSQL 数，于，它的
@@ -6175,7 +6206,7 @@ $ npm config set registry http://127.0.0.1:5984/registry/_design/scratch/_rewrit
   这个的一个问题在于，经要在本，就。为，我们可以用 bash 中的 alias 能解决这个问题。在~/.bashrc~/.profile 的加下这
   alias lnpm='npm --registry=http://127.0.0.1:5984/registry/_design/scratch/_rewrite'新动，npm作的是，lnpm作的是本。余数相。
 
-## D.2 　高阶应用
+## D.2 高阶应用
 
 在上过程中，我们了一个 NPM 的。我们可以这个本用作像，也可以用作自己新的。
 D.2.1
@@ -6228,12 +6259,12 @@ sync_package 的是对源中的信目中的信，不，源中的到目中。实�
 
 过对有加入机、产品作后，上在者的（数）已经有过一年的经。了多个数个产品的开发线上部。上的 Web 系统是我们的管系统，由于开发过程中与有一些，之后会这部分，后开源到社区中。
 
-## D.3 　总结
+## D.3 总结
 
 NPM 在 Node 的发程中有着不可没的作用。没有 NPM，Node 就没有多的可
 以使用。没有 NPM，CommonJS 组织 JavaScript 应用到的想不可能这实。NPM 对应用的，很多在应用 Node 的过程中要经很多。本的解决在应用 Node 时能在的时享到开源社区的好，NPM 工不应因为环境的不不能使用。
 
-## D.4 　参考资源
+## D.4 参考资源
 
 - https://www.irisnpm.com/
 - http://www.erlang.org/doc/installation_guide/INSTALL.html
