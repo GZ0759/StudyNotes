@@ -4,110 +4,115 @@
 
 # 第 1 章 Node 简介
 
-Node 应是今最的技术了，从本开始，我们它的多。
+Node 应该是如今最火热的技术了，从本章开始，我们将逐步揭示它的诸多细节。
 
 ## 1.1 Node 的诞生历程
 
-Node 的生程下。. 2009 年 3 月，RyanDahl 在客上于 V8 创一个量的 Web 服务并一。
-. 2009 年 5 月，RyanDahl 在 GitHub 上发了最初的本。. 2009 年 12 月 2010 年 4 月，JSConf 大会都了 Node 的。
-. 2010 年年，Node 服务 Joyent 的，创始人 Ryan Dahl 加入
-JoyentNode 的发。. 2011 年 7 月，Node 在的下发了 Windows 本。
+Node 的诞生历程如下所示。
 
-. 2011 年 11 月，NodeRuby on Rails，为 GitHub 上关最高的目（后 Bootstrap 目，目前）。
-. 2012 年 1 月，RyanDahl 在对 Node 的情下，门人的 IsaacZ. Schlueter，自己一些研目。IsaacZ.Schlueter 是 Node 的包管 NPM 的作者，之后 Node 的本发 bug 复工作由他接。
-至者之（2013 年 7 月 13），发的 Node 定为 v0.10.13，定为 v0.11.4，
-
-NPM 的数到 34 943 个，的下量为 1479 次。后，Node 的发要中在性能上，在 v0.14 之后，发 v1.0 本。
+- 2009 年 3 月，Ryan Dahl 在其博客上宣布准备基于 V8 创建一个轻量级的 Web 服务器并提供一套库。
+- 2009 年 5 月，Ryan Dahl 在 GitHub 上发布了最初的版本。
+- 2009 年 12 月和 2010 年 4 月，两届 JSConf 大会都安排了 Node 的讲座。
+- 2010 年年底，Node 获得硅谷云计算服务商 Joyent 公司的资助，其创始人 Ryan Dahl 加入 Joyent 公司全职负责 Node 的发展。
+- 2011 年 7 月，Node 在微软的支持下发布了其 Windows 版本。
+- 2011 年 11 月，Node 超越 Ruby on Rails，成为 GitHub 上关注度最高的项目（随后被 Bootstrap 项目超越，目前仍居第二）。
+- 2012 年 1 月底，Ryan Dahl 在对 Node 架构设计满意的情况下，将掌门人的身份转交给 Isaac Z. Schlueter，自己转向一些研究项目。Isaac Z. Schlueter 是 Node 的包管理器 NPM 的作者，之后 Node 的版本发布和 bug 修复等工作由他接手
+- 截至笔者执笔之日（2013 年 7 月 13 日），发布的 Node 稳定版为 v0.10.13，非稳定版为 v0.11.4, NPM 的官方模块数达到 34943 个，模块的周下载量为 1479 万次。
+- 随后，Node 的发布计划主要集中在性能提升上，在 v0.14 之后，正式发布出 v1.0 版本。
 
 ## 1.2 Node 的命名与起源
 
-在 Node 的网（http://nodejs.org）之外，Node有很多Nodejs、NodeJS、Node.js。本书在写作过程中的，会一使用Node这个，是在前语境之外，为了与余的技术相区，可以上.js它是Node。在到这些时，应识到，它们的是一事。了本书的会用到Node.js外，余都会以Node作为。
-Node 的由，实它的起源是有关系的。
-1.2.1 JavaScript
-Ryan Dahl 是一深的 C/C++程序，在创 Node 之前，他的要工作都是高性能 Web 服务的。经过一些试之后，他到了高性能，Web 服务的几个要事驱动、I/O。
-以 Ryan Dahl 最初的目是写一个于事驱动、I/O 的 Web 服务，以到高的性能，Apache 服务之外的。他到，大多数人不一有的程序的要因是他们用到了 I/O 的。写作 Node 的时候，RyanDahl 经过 C、Lua、Haskell、Ruby 语言作为实，为 C 的开发门高，可以不会有多的开发者能它用于的务开发，以它 RyanDahl 自己还不 Haskell，以它 Lua 自已经有很多 I/O，为 I/O 也不能人们继续使用 I/O 的习，以也它 Ruby 的机由于性能不好。
-相之下，JavaScriptC 的开发门要，Lua 的包要。管服务端 JavaScript 在已经很多年了，是后端部分一没有场，可以包为，为入 I/O 没有外。外，JavaScript 在中有广的事驱动的应用，Ryan Dahl 喜好于事驱动的。时，次大也分高下，Chrome 的 JavaScriptV8 性能一的，且于新 BSD 可发，自到 Ryan Dahl 的欢。到高性能、事驱动、没有包这个要因，JavaScript 为了 Node 的实语言。
+在 Node 的[官方网站](http://nodejs.org)之外，Node 具有很多别称：Nodejs、NodeJS、Node.js 等。本书在写作过程中遵循官方的说法，将会一直使用 Node 这个名字，但是在当前语境之外，为了与其余表示节点的技术或名词相区别，均可以带上`.js`表明它是 Node。在听到这些词汇时，应该意识到，它们说的是一码事。除了本书的封面和此处会用到 Node.js 外，其余地方都会以 Node 作为正式称谓。
 
-1.2.2 Node
-起初，RyanDahl 他的目为 web.js，就是一个 Web 服务，是目的发过了他最初开发一个 Web 服务的想，了网应用的一个，这样可以在它的上多的，服务、客端、工。Node 发为一个强不享源的线程、程系统，包分网的，为大分应用程序，目
-也是为一个、可的网应用。它自，过信组织多 Node，过大网应用的目的。一个 Node 程都这个网应用中的一个，这是它的。
+Node 名字的来由，其实跟它的起源是有密切关系的。
+
+### 1.2.1 为什么是 JavaScript
+
+Ryan Dahl 是一名资深的 C/C++程序员，在创造出 Node 之前，他的主要工作都是围绕高性能 Web 服务器进行的。经历过一些尝试和失败之后，他找到了设计高性能，Web 服务器的几个要点：事件驱动、非阻塞 I/O。
+
+所以 Ryan Dahl 最初的目标是写一个基于事件驱动、非阻塞 I/O 的 Web 服务器，以达到更高的性能，提供 Apache 等服务器之外的选择。他提到，大多数人不设计一种更简单和更有效率的程序的主要原因是他们用到了阻塞 I/O 的库。写作 Node 的时候，Ryan Dahl 曾经评估过 C、Lua、Haskell、Ruby 等语言作为备选实现，结论为：C 的开发门槛高，可以预见不会有太多的开发者能将它用于日常的业务开发，所以舍弃它；Ryan Dahl 觉得自己还不足够玩转 Haskell，所以舍弃它；Lua 自身已经含有很多阻塞 I/O 库，为其构建非阻塞 I/O 库也不能改变人们继续使用阻塞 I/O 库的习惯，所以也舍弃它；而 Ruby 的虚拟机由于性能不好而落选。
+
+相比之下，JavaScript 比 C 的开发门槛要低，比 Lua 的历史包袱要少。尽管服务器端 JavaScript 存在已经很多年了，但是后端部分一直没有市场，可以说历史包袱为零，为其导入非阻塞 I/O 库没有额外阻力。另外，JavaScript 在浏览器中有广泛的事件驱动方面的应用，暗合 Ryan Dahl 喜好基于事件驱动的需求。当时，第二次浏览器大战也渐渐分出高下，Chrome 浏览器的 JavaScript 引擎 V8 摘得性能第一的桂冠，而且其基于新 BSD 许可证发布，自然受到 Ryan Dahl 的欢迎。考虑到高性能、符合事件驱动、没有历史包袱这 3 个主要原因，JavaScript 成为了 Node 的实现语言。
+
+### 1.2.2 为什么叫 Node
+
+起初，Ryan Dahl 称他的项目为 web.js，就是一个 Web 服务器，但是项目的发展超过了他最初单纯开发一个 Web 服务器的想法，变成了构建网络应用的一个基础框架，这样可以在它的基础上构建更多的东西，诸如服务器、客户端、命令行工具等。Node 发展为一个强制不共享任何资源的单线程、单进程系统，包含十分适宜网络的库，为构建大型分布式应用程序提供基础设施，其目标也是成为一个构建快速、可伸缩的网络应用平台。它自身非常简单，通过通信协议来组织许多 Node，非常容易通过扩展来达成构建大型网络应用的目的。每一个 Node 进程都构成这个网络应用中的一个节点，这是它名字所含意义的真谛。
 
 ## 1.3 Node 给 JavaScript 带来的意义
 
-V8Chrome 了一个强的心，使它在大中，也使 Ryan Dahl 在语言中为 JavaScript 加了一个极大的。这我们要 NodeJavaScript
-1.3 Node K JavaScript 的   3
-的一个新。于 Node 之前些不的后端 JavaScript 实，在性能编程没能到与他语言一高下的程，这开不，Node 与的对。
-ChromeNode 的组图 1-1。我们中了 V8 作为 JavaScript 外，还有一个 WebKit。 HTML5 在发过程中定了多的 API。在实上，了多的能 JavaScriptHTML。这个景好，对于前端的发言，HTML5 统一的过程是相对的。JavaScript 作为一门图灵的语言，以在的中，它的能决于中的有多。
+V8 给 Chrome 浏览器带来了一个强劲的心脏，使得它在浏览器大战中脱颖而出，也使得 Ryan Dahl 在语言评估中为选择 JavaScript 增加了一个极大的权重值。这里我们要谈谈 Node 给 JavaScript 带来的一个新局面。鉴于 Node 之前那些不给力的后端 JavaScript 实现，在性能和编程模型等方面没能达到与其他语言一较高下的程度，这里先撇开不谈，先谈谈 Node 与浏览器的对比。
 
-图 1-1 ChromeNode 的组
-了 HTML、WebKit 这些 UI 相关技术没有外，Node 的与 Chrome 分相。它们都是于事驱动的，过事驱动服务上的，Node 过事驱动服务 I/O，这个在 3 中。在 Node 中，JavaScript 可以心问本，可以 WebSocket 服务端，可以接数，可以 Web Workers 一样多程。今，JavaScript 可以在不的，不继续在中与 CSS 样、DOM 树。HTTP 是，Node 就是在一的。Node 不 UI，用与相的机。Node 了过 JavaScript 只能在中的。前后端编程环境统一，可以大大前后端要的上下。
-对于前端工程言，自己熟悉的 JavaScript 今可以在一个，不他因，仅仅因为好，就关探它。
-Node 的  JavaScript 的总无的。社区  node-webkit 样的. 2012 的 JS。文的的 node-webkit 中 Node 中的事. WebKit 的事) HTMLCSS 的 UI/ 的。的 t HTMLCSSJavaScript。
+Chrome 浏览器和 Node 的组件构成如图 1-1 所示。我们知道浏览器中除了 V8 作为 JavaScript 引擎外，还有一个 WebKit 布局引擎。HTML5 在发展过程中定义了更多更丰富的 API。在实现上，浏览器提供了越来越多的功能暴露给 JavaScript 和 HTML 标签。这个愿景美好，但对于前端浏览器的发展现状而言，HTML5 标准统一的过程是相对缓慢的。JavaScript 作为一门图灵完备的语言，长久以来却限制在浏览器的沙箱中运行，它的能力取决于浏览器中间层提供的支持有多少。
+
+除了 HTML、WebKit 和显卡这些 UI 相关技术没有支持外，Node 的结构与 Chrome 十分相似。它们都是基于事件驱动的异步架构，浏览器通过事件驱动来服务界面上的交互，Node 通过事件驱动来服务 I/O，这个细节将在第 3 章中详述。在 Node 中，JavaScript 可以随心所欲地访问本地文件，可以搭建 WebSocket 服务器端，可以连接数据库，可以如 Web Workers 一样玩转多进程。如今，JavaScript 可以运行在不同的地方，不再继续限制在浏览器中与 CSS 样式表、DOM 树打交道。如果 HTTP 协议栈是水平面，Node 就是浏览器在协议栈另一边的倒影。Node 不处理 UI，但用与浏览器相同的机制和原理运行。Node 打破了过去 JavaScript 只能在浏览器中运行的局面。前后端编程环境统一，可以大大降低前后端转换所需要的上下文交换代价。
+
+对于前端工程师而言，自己所熟悉的 JavaScript 如今竟然可以在另一个地方放出异彩，不谈其他原因，仅仅因为好奇，就值得去关注和探究它。
+
+> 随着 Node 的出现，关于 JavaScript 的想象总是无限的。目前，社区已经出现 node-webkit 这样的项目，这个项目在 2012 年的沪 JS 会议上首次介绍给了公众。如同上文提及的关于浏览器的优势和限制，在 node-webkit 项目中，它将 Node 中的事件循环和 WebKit 的事件循环融合在一起，既可以通过它享受 HTML、CSS 带来的 UI 构建，也能通过它访问本地资源，将两者的优势整合到一起。桌面应用程序的开发可以完全通过 HTML、CSS、JavaScript 完成。
 
 ## 1.4 Node 的特点
 
-作为后端 JavaScript 的，Node 了前端 JavaScript 中些熟悉的接，没有
-写语言本的性，于作用，区在于它前端中广用的想到了服务端。下我们 Node 相他语言的一些。
-1.4.1 I/O
-关于 I/O，前端工程解起会一些，因为发起 Ajax 用对于前端工程言是熟悉不过的场景了。下的用于发起一个 Ajax 请
+作为后端 JavaScript 的运行平台，Node 保留了前端浏览器 JavaScript 中那些熟悉的接口，没有改写语言本身的任何特性，依旧基于作用域和原型链，区别在于它将前端中广泛运用的思想迁移到了服务器端。下面我们来看看 Node 相较其他语言的一些特点。
+
+### 1.4.1 异步 I/O
+
+关于异步 I/O，向前端工程师解释起来或许会容易一些，因为发起 Ajax 调用对于前端工程师而言是再熟悉不过的场景了。下面的代码用于发起一个 Ajax 请求：
 
 ```js
-$.post("/url", { title: "入出 Node.js" }, function (data) {
-  console.log("收响应 ");
+$.post("/url", { title: "深入浅出 Node.js" }, function (data) {
+  console.log("收到响应");
 });
-console.log("发Ajax结");
+console.log("发送Ajax结束");
 ```
 
-熟悉的用，收到应是在发 Ajax 之后的。在用\$.post()后，后续是立的，收到应的时是不的。我们只它在这个请后，并不的时。用中对于的是 Don’t call me, I will call you 的的，这也是，不关心过程的一。图 1-2 是一个经的 Ajax 用。
+熟悉异步的用户必然知道，“收到响应”是在“发送 Ajax 结束”之后输出的。在调用`$.post()`后，后续代码是被立即执行的，而“收到响应”的执行时间是不被预期的。我们只知道它将在这个异步请求结束后执行，但并不知道具体的时间点。异步调用中对于结果值的捕获是符合“Don't call me, I willcall you”的原则的，这也是注重结果，不关心过程的一种表现。图 1-2 是一个经典的 Ajax 调用。
 
-图 1-2 经的 Ajax 用
-在 Node 中，I/O 也很。以读为，我们可以到它与前端 Ajax 用的是极的
-1.4 Node 的   5
+在 Node 中，异步 I/O 也很常见。以读取文件为例，我们可以看到它与前端 Ajax 调用的方式是极其类似的：
 
 ```js
 var fs = require("fs");
 fs.readFile("/path", function (err, file) {
-  console.log("读文件成 ");
+  console.log("读取文件完成");
 });
-console.log("发读文件 ");
+console.log("发起读取文件");
 ```
 
-这的发起读是在读之前的。样，读的也决于读的用时。图 1-3 是一个经的用。
+在 Node 中，绝大多数的操作都以异步的方式进行调用。Ryan Dahl 排除万难，在底层构建了很多异步 I/O 的 API，从文件读取到网络请求等，均是如此。这样的意义在于，在 Node 中，我们可以从语言层面很自然地进行并行 I/O 操作。每个调用之间无须等待之前的 I/O 调用结束。在编程模型上可以极大提升效率。
 
-图 1-3 经的用
-在 Node 中，绝大多数的作都以的
-用。Ryan Dahl，在了很多 I/O 的 API，从读到网请，是。这样的在于，在 Node 中，我们可以从语言很自并 I/O 作。个用之之前的 I/O 用。在编程上可以极大。
-下的个读务的时决于最的个读的时
+下面的两个文件读取任务的耗时取决于最慢的那个文件读取的耗时：
 
 ```js
 fs.readFile("/path1", function (err, file) {
-  console.log("读文件 1成");
+  console.log("读取文件1完成");
 });
 fs.readFile("/path2", function (err, file) {
-  console.log("读文件 2成");
+  console.log("读取文件2完成");
 });
 ```
 
-对于 I/O 言，它们的时是个务的时之。这的优势是的。
-关于 I/O 是的本的机实，我们在 3 中。
-1.4.2
-着 Web 2.0 时的到，JavaScript 在前端了多的，事也到了广的应用。Node 不像 Rhino 样 Java 的很大，是前端中应用广且熟的事入后端，
-I/O，事务。
-下的的是 Ajax 的服务端过程。Node 创一个 Web 服务，并 8080 端。对于服务，我们为定了 request 事，对于请对，我们为定了 data 事 end 事
+而对于同步 I/O 而言，它们的耗时是两个任务的耗时之和。这里异步带来的优势是显而易见的。
+
+关于异步 I/O 是如何提升效率的及其本身的机制和实现，我们将在第 3 章中详述。
+
+### 1.4.2 事件与回调函数
+
+随着 Web 2.0 时代的到来，JavaScript 在前端担任了更多的职责，事件也得到了广泛的应用。Node 不像 Rhino 那样受 Java 的影响很大，而是将前端浏览器中应用广泛且成熟的事件引入后端，配合异步 I/O，将事件点暴露给业务逻辑。
+
+下面的例子展示的是 Ajax 异步提交的服务器端处理过程。Node 创建一个 Web 服务器，并侦听 8080 端口。对于服务器，我们为其绑定了 request 事件，对于请求对象，我们为其绑定了 data 事件和 end 事件：
 
 ```js
 var http = require("http");
 var querystring = require("querystring");
-//服务器的 request事件
+// 侦听服务器的request事件
 http
   .createServer(function (req, res) {
     var postData = "";
     req.setEncoding("utf8");
-    // 请求的 data事件
+    // 侦听请求的data事件
     req.on("data", function (trunk) {
       postData += trunk;
     });
-    // 请求的 end事件
+    // 侦听请求的end事件
     req.on("end", function () {
       res.end(postData);
     });
@@ -116,8 +121,7 @@ http
 console.log("服务器启动成 ");
 ```
 
-相应，我们在前端为 Ajax 请定了 success 事，在发请后，只关心请时
-相应的务可，相关下
+相应地，我们在前端为 Ajax 请求绑定了 success 事件，在发出请求后，只需关心请求成功时执行相应的业务逻辑即可，相关代码如下：
 
 ```js
 $.ajax({
@@ -130,229 +134,260 @@ $.ajax({
 });
 ```
 
-相之下，在前端还是后端，事都是用的。对于他语言，这拾是 JavaScript 的熟悉是本不会的。
-事的编程有量、、只关事务优势，是在多个务的场景下，事与事之自立，作是一个问题。
-从前可以到，数不在。这是因为在 JavaScript 中，我们数作为一对，可以数作为对作为实用。
-与他的 Web 后端编程语言相，Node 了事外，数是一大。下，数也是最好的接用数的。是这编程对于很多习编程的人，也是分不习的。的编写序与序并关系，这对他们可能阅
-1.4 Node 的   7
-读上的。在程，因为了数，与的相，不一目了了。
-在为编程后，过对务的分对事的，在程务的复杂与实上是一的。
-关于程事作的技，我们在 4 中一探。
+相比之下，无论在前端还是后端，事件都是常用的。对于其他语言来说，这种俯拾皆是 JavaScript 的熟悉感觉是基本不会出现的。
 
-1.4.3
-Node 了 JavaScript 在中线程的。且在 Node 中，JavaScript 与余线程是
-享的。线程的最大好是不用像多线程编程样在的问题，这没有的在，也没有线程上下的性能上的开。
-样，线程也有它自的，这些是学习 Node 的过程中要对的。极对这些，可以享到 Node 的好，也能在的问题，使以高用。线程的有以下 3。
-用多 CPU。
-会起个应用，应用的性。
-大量用 CPU 继续用 I/O。
+事件的编程方式具有轻量级、松耦合、只关注事务点等优势，但是在多个异步任务的场景下，事件与事件之间各自独立，如何协作是一个问题。
 
-像中 JavaScript 与 UI 用一个线程一样，JavaScript 时会 UI 的应中。在 Node 中，时的 CPU 用也会后续的 I/O 发不用，已的 I/O 的数也会不到时。
-最解决这大量问题的是 Google 开发的 Gears。它用一个立的程，要的程序发这个程，在后，过事。这个量分发到他程上，以的几。后，HTML5 定了 WebWorkers 的，Google 了 Gears，WebWorkers。WebWorkers 能创工作线程，以解决 JavaScript 大 UI 的问题。工作线程为了不线程，过的，这也使工作线程不能问到线程中的 UI。
-Node 用了与 WebWorkers 相的解决线程中大量的问题 child_process。
-程的，着 Node 可以从应对线程在性用多 CPU 的问题。过分发到个程，可以大量分解，后过程之的事，这可以很好应用的。过 Master-Worker 的管，也可以很好管个工作程，以到高的性。
-关于过程分用源应用的性，这是一个探的题。样才能使我们享到的线程编程，高用源请到 9。
-1.4.4
-起初，Node 只可以在 Linux 上。想在 Windows 上学习使用 Node，
-过 Cygwin 者 MinGW。着 Node 的发，到了它的在，并入了一个 Node 实 Windows 的，在 v0.6.0 本发时，Node 已经能接在 Windows 上了。图 1-4 是 Node 于 libuv 实的图。
+从前面可以看到，回调函数无处不在。这是因为在 JavaScript 中，我们将函数作为第一等公民来对待，可以将函数作为对象传递给方法作为实参进行调用。
 
-图 1-4 Node 于 libuv 实的图
-Windows\*nix 要于 Node 在的动，它在作系统与 Node 上系统之了一，libuv。目前，libuv 已经为多系统实的组。关于 libuv 的，我们在 3 中。
-过好的，Node 的 C++也可以 libuv 实。目前，了没有新的 C++外，大部分 C++都能实的。
+与其他的 Web 后端编程语言相比，Node 除了异步和事件外，回调函数是一大特色。纵观下来，回调函数也是最好的接受异步调用返回数据的方式。但是这种编程方式对于很多习惯同步思路编程的人来说，也许是十分不习惯的。代码的编写顺序与执行顺序并无关系，这对他们可能造成阅读上的障碍。在流程控制方面，因为穿插了异步方法和回调函数，与常规的同步方式相比，变得不那么一目了然了。
+
+在转变为异步编程思维后，通过对业务的划分和对事件的提炼，在流程控制方面处理业务的复杂度与同步方式实际上是一致的。
+
+关于流程控制和事件协作的方法和技巧，我们将在第 4 章中进一步探讨。
+
+### 1.4.3 单线程
+
+Node 保持了 JavaScript 在浏览器中单线程的特点。而且在 Node 中，JavaScript 与其余线程是无法共享任何状态的。单线程的最大好处是不用像多线程编程那样处处在意状态的同步问题，这里没有死锁的存在，也没有线程上下文交换所带来的性能上的开销。
+
+同样，单线程也有它自身的弱点，这些弱点是学习 Node 的过程中必须要面对的。积极面对这些弱点，可以享受到 Node 带来的好处，也能避免潜在的问题，使其得以高效利用。单线程的弱点具体有以下 3 方面。
+
+- 无法利用多核 CPU。
+- 错误会引起整个应用退出，应用的健壮性值得考验。
+- 大量计算占用 CPU 导致无法继续调用异步 I/O。
+
+像浏览器中 JavaScript 与 UI 共用一个线程一样，JavaScript 长时间执行会导致 UI 的渲染和响应被中断。在 Node 中，长时间的 CPU 占用也会导致后续的异步 I/O 发不出调用，已完成的异步 I/O 的回调函数也会得不到及时执行。
+
+最早解决这种大计算量问题的方案是 Google 公司开发的 Gears。它启用一个完全独立的进程，将需要计算的程序发送给这个进程，在结果得出后，通过事件将结果传递回来。这个模型将计算量分发到其他进程上，以此来降低运算造成阻塞的几率。后来，HTML5 定制了 Web Workers 的标准，Google 放弃了 Gears，全力支持 Web Workers。Web Workers 能够创建工作线程来进行计算，以解决 JavaScript 大计算阻塞 UI 渲染的问题。工作线程为了不阻塞主线程，通过消息传递的方式来传递运行结果，这也使得工作线程不能访问到主线程中的 UI。
+
+Node 采用了与 Web Workers 相同的思路来解决单线程中大计算量的问题：child_process。
+
+子进程的出现，意味着 Node 可以从容地应对单线程在健壮性和无法利用多核 CPU 方面的问题。通过将计算分发到各个子进程，可以将大量计算分解掉，然后再通过进程之间的事件消息来传递结果，这可以很好地保持应用模型的简单和低依赖。通过 Master-Worker 的管理方式，也可以很好地管理各个工作进程，以达到更高的健壮性。
+
+关于如何通过子进程来充分利用硬件资源和提升应用的健壮性，这是一个值得探究的话题。怎样才能使我们既享受到无忧无虑的单线程编程，又高效利用资源呢？请挪步到第 9 章。
+
+### 1.4.4 跨平台
+
+起初，Node 只可以在 Linux 平台上运行。如果想在 Windows 平台上学习和使用 Node，则必须通过 Cygwin 或者 MinGW。随着 Node 的发展，微软注意到了它的存在，并投入了一个团队帮助 Node 实现 Windows 平台的兼容，在 v0.6.0 版本发布时，Node 已经能够直接在 Windows 平台上运行了。图 1-4 是 Node 基于 libuv 实现跨平台的架构示意图。
+
+兼容 Windows 和 Linux 平台主要得益于 Node 在架构层面的改动，它在操作系统与 Node 上层模块系统之间构建了一层平台层架构，即 libuv。目前，libuv 已经成为许多系统实现跨平台的基础组件。关于 libuv 的设计，我们将在第 3 章中介绍。
+
+通过良好的架构，Node 的第三方 C++模块也可以借助 libuv 实现跨平台。目前，除了没有保持更新的 C++模块外，大部分 C++模块都能实现跨平台的兼容。
 
 ## 1.5 Node 的应用场景
 
-在技术之前，要了解一新技术样的场景，的技术用在的场景可以起到想不到的。关于 Node，探多的要有 I/OCPU。
-1.5.1I/O
-在 Node 的推广过程中，数次有人问起 Node 的应用场景是。有的脚本语言到一，从线程的，NodeI/O 的能是起的。，
-NodeI/O 的应用场景本上是没人反对的。Node 网且并 I/O，能有
-组织起多的源，从多好的服务。I/O 的优势
-要在于 Node 用事环的能
-，不是动一个线程为一个请服务，源用极。
-1.5.2CPU
-一个，在 CPU 的应用场景中，Node 是否能实上，V8 的是分高的。以做，V8 的是的。
-1.5 Node 的   9
-我们相的数（F0=0，F1=1，Fn =F(n1)+F(n2)(n2)）分用脚本语言写了实，并了 n =40 的，以性能。这个测试要 CPU 作，1-1 是中一次时的。在这些脚本语言中（中 CGo 语言是语言，用于），Node 是高的，它优的能要自 V8 的深性能优。
-1-1
+在进行技术选型之前，需要了解一项新技术具体适合什么样的场景，毕竟合适的技术用在合适的场景可以起到意想不到的效果。关于 Node，探讨得较多的主要有 I/O 密集型和 CPU 密集型。
 
-C with -O2 0m0.202s #0 i686-apple-darwin11-llvm-gcc-4.2 (GCC) 4.2.1 (Based on Apple Inc. build 5658) (LLVM build 2336.11.00)
-Node（C++）0m1.001s #1 v0.8.8,gcc -O2
-Java 0m1.305s #2 Java(TM)SERuntimeEnvironment (build 1.6.0_35-b10-428-11M3811) JavaHotSpot(TM)64-BitServerVM(build20.10-b01-428,mixedmode)
-Go 0m1.667s #3 Goversiongo1.0.2
-Scala 0m1.808s #4 Scalacoderunnerversion 2.9.2 --Copyright 2002-2011,LAMP/EPFL
-LuaJIT 0m2.579s #5 LuaJIT2.0.0-beta10--Copyright(C)2005-2012MikePall.
-Node 0m2.872s #6 v0.8.8
-Ruby2.0.0-p0 0m27.777s #7 ruby2.0.0p0 (2013-02-24 revision 39474)[x86_64-darwin12.2.0]
-pypy 0m30.010s #8 Python2.7.2(341e1e3821ff,Jun072012,15:42:54)[PyPy1.9.0 with GCC 4.2.1]
-Ruby1.9.x 0m37.404s #9 ruby1.9.3p194 (2012-04-20 revision 35410)[x86_64-darwin12.1.0]
-Lua 0m40.709s #10 Lua5.1.4Copyright(C)1994-2008Lua.org,PUC-Rio
-Jython 0m53.699s #11 Jython2.5.2
-PHP 1m17.728s #12 PHP5.4.6(cli) (built: Sep 8 2012 23:49:53)
-Python 1m17.979s #13 Python2.7.2
-Perl 2m41.259s #14 Thisisperl5,version12,subversion4(v5.12.4)built for darwin-thread-multi-2level
-Ruby 1.8.x 3m35.135s #15 ruby 1.8.7 (2012-02-08 patchlevel 358)[universal-darwin12.0]
-这样的测试管不能反个语言的性能优，已经可以 Node 在性能上不的。从一个，这可以 CPU 应用实并不可。CPU 应用 Node 的要是由于 JavaScript 线程的因，有时的（大环），
-会 CPU 时不能，使后续 I/O 发起。是分解大务为多个
-小务，使能时，不 I/O 用的发起，这样可时享到并 I/O 的好
-，能分用 CPU。
-关于 CPU 应用，Node 的 I/O
-已经解决了在线程上 CPU 与 I/O 之用的问题，I/O 的性能 CPU 的小。对于时的，它的时过 I/O 的时，应用场景就要新，因为这 I/O 还，甚至就是一个的场景，本没有 I/O。应用场景应用多线程的。Node 没有多线程用于，是还是有以下个分用 CPU。
-. Node 可以过编写 C/C++的高用 CPU，一些 V8 不能做到性能极的
-过 C/C++实。由上的测试可以到，过 C/C++的实数，Java 还。
-线程的 Node 不能，甚至用了 C/C++后还不，过程的
-，一部分 Node 程做服务程用于，后用程的，与 I/O 分，这样还能分用多 CPU。
+1.5.1 I/O 密集型
 
-CPU 不可，是。
-1.5.3
-有人会 JavaScript 一统前后端了，会不会他的语言言语中了机。
-在 Web 端，过大多都是的编写的程序，这用下应用数的过程中着的时，用多线程解决这，多小题大作。在 Node 中，语言可天并的性在这场景中分有。对于已有的定系统，并着我们要。
-LinkedIn 在他们的动网上的实践了这个问题。有的系统有定的数，续为统网服务，时为动数源，Node 数源做数接，发并的优势，不用关心它后是用语言实的。
-这，国内的经也有很好的实践。经是从有的 Java 目中分一个目，在这个目中，没有继续用 Java/JSP 是用 NodeWeb 端的开发，使前端工程在 HTTP 的端能高灵活开发，了 Java 的一，用 Java 作为后端接中，使有好的定性。者相，补。
+在 Node 的推广过程中，无数次有人问起 Node 的应用场景是什么。如果将所有的脚本语言拿到一处来评判，那么从单线程的角度来说，Node 处理 I/O 的能力是值得竖起拇指称赞的。通常，说 Node 擅长 I/O 密集型的应用场景基本上是没人反对的。Node 面向网络且擅长并行 I/O，能够有效地组织起更多的硬件资源，从而提供更多好的服务。
 
-1.5.4
-的数对 Node 的分应用是一个的。分应用着对可性的要高。数要在一个数中要的数。开发了中应用 NodeFox、ITier，数做了分，用是对 SQL，中分解 SQL，并多数中数并并。NodeFox 能实对多 MySQL 数的，一 MySQL 一样，ITier 强大，多个数个数一样，这的多个数是不的数，MySQL 他的数。
-这个实也是高用并 I/O 的。Node 高用并 I/O 的过程，也是高使用数的过程。对于 Node，这个为只是一次的 I/O。对于数言，是一次复杂的，以也是分源的过程。
+I/O 密集的优势主要在于 Node 利用事件循环的处理能力，而不是启动每一个线程为每一个请求服务，资源占用极少。
+
+1.5.2 是否不擅长 CPU 密集型业务
+换一个角度，在 CPU 密集的应用场景中，Node 是否能胜任呢？实际上，V8 的执行效率是十分高的。单以执行效率来做评判，V8 的执行效率是毋庸置疑的。
+
+我们将相同的斐波那契数列计算（F0=0, F1=1, Fn=F(n-1)+F(n-2)(n≥2)）分别用各种脚本语言写了算法实现，并进行了 n = 40 的计算，以比较性能。这个测试主要偏重 CPU 栈操作，表 1-1 是其中一次运算耗时的排行。在这些脚本语言中（其中 C 和 Go 语言是静态语言，用于参考）, Node 是足够高效的，它优秀的运算能力主要来自 V8 的深度性能优化。
+
+这样的测试结果尽管不能完全反映出各个语言的性能优劣，但已经可以表明 Node 在性能上不俗的表现。从另一个角度来说，这可以表明 CPU 密集型应用其实并不可怕。CPU 密集型应用给 Node 带来的挑战主要是：由于 JavaScript 单线程的原因，如果有长时间运行的计算（比如大循环），将会导致 CPU 时间片不能释放，使得后续 I/O 无法发起。但是适当调整和分解大型运算任务为多个小任务，使得运算能够适时释放，不阻塞 I/O 调用的发起，这样既可同时享受到并行异步 I/O 的好处，又能充分利用 CPU。
+
+关于 CPU 密集型应用，Node 的异步 I/O 已经解决了在单线程上 CPU 与 I/O 之间阻塞无法重叠利用的问题，I/O 阻塞造成的性能浪费远比 CPU 的影响小。对于长时间运行的计算，如果它的耗时超过普通阻塞 I/O 的耗时，那么应用场景就需要重新评估，因为这类计算比阻塞 I/O 还影响效率，甚至说就是一个纯计算的场景，根本没有 I/O。此类应用场景或许应当采用多线程的方式进行计算。Node 虽然没有提供多线程用于计算支持，但是还是有以下两个方式来充分利用 CPU。
+
+- Node 可以通过编写 C/C++扩展的方式更高效地利用 CPU，将一些 V8 不能做到性能极致的地方通过 C/C++来实现。由上面的测试结果可以看到，通过 C/C++扩展的方式实现斐波那契数列计算，速度比 Java 还快。
+- 如果单线程的 Node 不能满足需求，甚至用了 C/C++扩展后还觉得不够，那么通过子进程的方式，将一部分 Node 进程当做常驻服务进程用于计算，然后利用进程间的消息来传递结果，将计算与 I/O 分离，这样还能充分利用多 CPU。
+
+CPU 密集不可怕，如何合理调度是诀窍。
+
+1.5.3 与遗留系统和平共处
+有人会说：“JavaScript 一统前后端了，将来会不会干掉其他的语言？”言语中充满了危机感。
+
+在 Web 端，过去大多都是同步的方式编写的程序，这种串行调用下层应用数据的过程中充斥着串行的等待时间，如果采用多线程来解决这种串行等待，又或多或少地显得小题大作。在 Node 中，语言层面即可天然并行的特性在这种场景中显得十分有效。对于已有的稳定系统，并非意味着我们要抛弃掉。
+
+LinkedIn 在他们的移动版网站上的实践非常典型地说明了这个问题。旧有的系统具有非常稳定的数据输出，持续为传统网站服务，同时为移动版提供数据源，Node 将该数据源当做数据接口，发挥异步并行的优势，而不用关心它背后是用什么语言实现的。
+
+这方面，国内的雪球财经也有很好的实践。雪球财经是从旧有的 Java 项目中分离出一个子项目，在这个子项目中，没有继续采用 Java/JSP 而是采用 Node 来完成 Web 端的开发，使得前端工程师在 HTTP 协议栈的两端能够高效灵活地开发，避免了 Java 烦琐的表达；另一方面，又利用 Java 作为后端接口和中间件，使其具有良好的稳定性。两者互相结合，取长补短。
+
+1.5.4 分布式应用
+阿里巴巴的数据平台对 Node 的分布式应用算是一个典型的例子。分布式应用意味着对可伸缩性的要求非常高。数据平台通常要在一个数据库集群中去寻找需要的数据。阿里巴巴开发了中间层应用 NodeFox、ITier，将数据库集群做了划分和映射，查询调用依旧是针对单张表进行 SQL 查询，中间层分解查询 SQL，并行地去多台数据库中获取数据并合并。NodeFox 能实现对多台 MySQL 数据库的查询，如同查询一台 MySQL 一样，而 ITier 更强大，查询多个数据库如同查询单个数据库一样，这里的多个数据库是指不同的数据库，如 MySQL 或其他的数据库。
+
+这个案例其实也是高效利用并行 I/O 的例子。Node 高效利用并行 I/O 的过程，也是高效使用数据库的过程。对于 Node，这个行为只是一次普通的 I/O。对于数据库而言，却是一次复杂的计算，所以也是进而充分压榨硬件资源的过程。
 
 ## 1.6 Node 的使用者
 
-在年多的时，Node 门，使用者也多。这些使用者对于 Node 的自也不相。经过，要有下几。
-一这的是。开了 Cocktail，用自己深的前端，YUI3 这个前端的能 Node 到服务端，使使用者了工作中一写 JavaScript 一写 PHP 的上下。
-. NodeI/OVoxerNode 应用在实时语上。国内的朋友网 Node 应用在接中，以实时能，网、过 socket.io 实实时的能。
-. I/OeBay 是这的。的 NodeFoxeBay 的 ql.io 都是用 Node 并 I/O 的能，高使用已有的数。
-. I/OWeb 经 LinkedIn 的动网是这，的序请，大用并 I/O，加数的 Web 的。
-. NodeNode 入 Azure 的开发中，、在服务上 Node 应用托管服务，Joyent 是中 Node 的。这 JavaScript 的开发上的优势，以源用、高性能的。
-. 对实时并发有很高的要，网开源了 pomelo 实时，可以应用在高实时应用中。
-. 过 Java 他语言的前端工应用，一些前端工程用 Node 写，用前端熟悉的语言为前端熟悉的工。
+在短短四年多的时间里，Node 变得非常热门，使用者也非常多。这些使用者对于 Node 的各自倚重点也各不相同。经过整理，主要有下面几类。
+
+- 前后端编程语言环境统一。这类倚重点的代表是雅虎。雅虎开放了 Cocktail 框架，利用自己深厚的前端沉淀，将 YUI3 这个前端框架的能力借助 Node 延伸到服务器端，使得使用者摆脱了日常工作中一边写 JavaScript 一边写 PHP 所带来的上下文交换负担。
+- Node 带来的高性能 I/O 用于实时应用。Voxer 将 Node 应用在实时语音上。国内腾讯网的朋友将 Node 应用在长连接中，以提供实时功能，花瓣网、蘑菇街等公司通过 socket.io 实现实时通知的功能。
+- 并行 I/O 使得使用者可以更高效地利用分布式环境。阿里巴巴和 eBay 是这方面的典型。阿里巴巴的 NodeFox 和 eBay 的 ql.io 都是借用 Node 并行 I/O 的能力，更高效地使用已有的数据。
+- 并行 I/O，有效利用稳定接口提升 Web 渲染能力。雪球财经和 LinkedIn 的移动版网站均是这种案例，撇弃同步等待式的顺序请求，大胆采用并行 I/O，加速数据的获取进而提升 Web 的渲染速度。
+- 云计算平台提供 Node 支持。微软将 Node 引入 Azure 的开发中，阿里云、百度均纷纷在云服务器上提供 Node 应用托管服务，Joyent 更是云计算中提供 Node 支持的代表。这类平台看重 JavaScript 带来的开发上的优势，以及低资源占用、高性能的特点。
+- 游戏开发领域。游戏领域对实时和并发有很高的要求，网易开源了 pomelo 实时框架，可以应用在游戏和高实时应用中。
+- 工具类应用。过去依赖 Java 或其他语言构建的前端工具类应用，纷纷被一些前端工程师用 Node 重写，用前端熟悉的语言为前端构建熟悉的工具。
 
 ## 1.7 参考资源
 
-本的源下
+本章参考的资源如下：
 
 - http://www.infoq.com/cn/articles/what-is-nodejs
-- https://github.com/popular/watched 
-- http://groups.google.com/group/nodejs/browse_thread/thread/85f6a3829bc64cb6 
+- https://github.com/popular/watched
+- http://groups.google.com/group/nodejs/browse_thread/thread/85f6a3829bc64cb6
 - http://groups.google.com/groups/profile?enc_user=dPo6jggAAACthftLMWCfUq8U6obMz179
-- http://search.npmjs.org/ 
-- http://code.google.com/p/v8/ 
-- http://cnodejs.org/topic/4f16442ccae1f4aa27001137 
-- http://weibo.com/1744667943/eBszJXcEsX1 
-- http://stackoverflow.com/questions/5621812/why-is-node-js-named-node-js 
-- http://www.theregister.co.uk/2011/03/01/the_rise_and_rise_of_node_dot_js/page4.html 
-- http://ued.taobao.com/blog/2011/09/02/what-is-nod/ 
-- http://www.infoq.com/cn/news/2012/04/interview-xueqiu-using-nodejs 
-- http://teddziuba.com/2011/10/node-js-is-cancer.html 
+- http://search.npmjs.org/
+- http://code.google.com/p/v8/
+- http://cnodejs.org/topic/4f16442ccae1f4aa27001137
+- http://weibo.com/1744667943/eBszJXcEsX1
+- http://stackoverflow.com/questions/5621812/why-is-node-js-named-node-js
+- http://www.theregister.co.uk/2011/03/01/the_rise_and_rise_of_node_dot_js/page4.html
+- http://ued.taobao.com/blog/2011/09/02/what-is-nod/
+- http://www.infoq.com/cn/news/2012/04/interview-xueqiu-using-nodejs
+- http://teddziuba.com/2011/10/node-js-is-cancer.html
 - http://www.cnblogs.com/fengmk2/archive/2011/12/14/2288147.html
 
 # 第 2 章 模块机制
 
-，我想从为你 Node。
-JavaScript 自生以，经没有人它做一门的编程语言，认为它不过是一网页小脚本已，在 Web1.0 时，这脚本语言在网中要有个作用广为，一个是，一个是网页。一，由于创，以它自的也编程人广为。到 Web 2.0 时，前端工程用它大大了网页上的用。在这个过程中，B/S 应用 C/S 应用优的。至，JavaScript 才广起。
-在 Web 2.0 的过程中，前端开发，它们最初用于个本的，后着多的用在前端实，JavaScript 也从跃到应用开发的上。在这个过程中，它大经了工、组、前端、前端应用的，图 2-1。
+首先，我想从模块为你娓娓道来 Node。
 
-图 2-1 JavaScript 的
-经了的后天过程，JavaScript 不，以好组织务。从一个言，它也了 JavaScript 天就的一能。
-在他高语言中，Java 有，Python 有 import 机，Ruby 有 require，PHP 有 include require。JavaScript 过<script>入的杂，语言自组织能。人们不不用人为，以到用的目的。
-是起的 JavaScript 编程并不着社区没有，JavaScript 的本编程之一在探索中。在 Node 之前，服务端 JavaScript 本没有场，与的前端 JavaScript 应用相，Rhino 后端 JavaScript 环境本只是用于小工，是经多年的发后，社区也为 JavaScript 定了相应的，中 CommonJS 的是最为要的程。
+JavaScript 自诞生以来，曾经没有人拿它当做一门真正的编程语言，认为它不过是一种网页小脚本而已，在 Web 1.0 时代，这种脚本语言在网络中主要有两个作用广为流传，一个是表单校验，另一个是网页特效。另一方面，由于仓促地被创造出来，所以它自身的各种陷阱和缺点也被各种编程人员广为诟病。直到 Web 2.0 时代，前端工程师利用它大大提升了网页上的用户体验。在这个过程中，B/S 应用展现出比 C/S 应用优越的地方。至此，JavaScript 才被广泛重视起来。
 
-2.1 CommonJS 规范
-CommonJS 为 JavaScript 定了一个好的景——JavaScript 能在。
-2.1.1CommonJS
-在 JavaScript 的发程中，它要在前端发发。由于（ECMAScript）的时，的小。这些中包、、上下、、（statement）、、对语言的本要。在实应用中，JavaScript 的能决于环境中的 API 程。在 Web1.0 时，只有对 DOM、BOM 本的。着 Web2.0 的推，HTML5，它 Web 网页 Web 应用的时，在中了多、强大的 APIJavaScript 用，这 W3C 组织对 HTML5 的推以大对的大。是，Web 在发，中了多的 API，这些过程发生在前端，后端 JavaScript 的后。对于 JavaScript 自言，它的是的，还有以下。
-.
-. ECMAScript 仅定了部分心，对于系统，I/O 没有
-的 API。就 HTML5 的发言，W3C 在一定上是在推这个过程，是它仅于端。
+在 Web 2.0 流行的过程中，各种前端库和框架被开发出来，它们最初用于兼容各个版本的浏览器，随后随着更多的用户需求在前端被实现，JavaScript 也从表单校验跃迁到应用开发的级别上。在这个过程中，它大致经历了工具类库、组件库、前端框架、前端应用的变迁，如图 2-1 所示。
 
-. 在 JavaScript 中，几没有定过 Web 服务者数之的统一接。
-. 这 JavaScript 应用中本没有自动加的能。
+经历了长长的后天努力过程，JavaScript 不断被类聚和抽象，以更好地组织业务逻辑。从另一个角度而言，它也道出了 JavaScript 先天就缺乏的一项功能：模块。
 
-CommonJS 的，要是为了弥补前 JavaScript 没有的，以到像 Python、RubyJava 开发大应用的能，不是在小脚本程序的。他们些用 CommonJSAPI 写的应用可以环境的能，这样不仅可以用 JavaScript 开发客端应用，且还可以编写以下应用。
-服务端 JavaScript 应用程序。工。
-图应用程序。
-应用（TitaniumAdobe AIR 的应用）。
+在其他高级语言中，Java 有类文件，Python 有 import 机制，Ruby 有 require, PHP 有 include 和 require。而 JavaScript 通过`<script>`标签引入代码的方式显得杂乱无章，语言自身毫无组织和约束能力。人们不得不用命名空间等方式人为地约束代码，以求达到安全和易用的目的。
 
-今，CommonJS 中的大部分是，是已经初，为 JavaScript 开发大应用程序了一的。目前，它在中，这些了、、Buffer、编、I/O、程环境、系统、接、测试、Web 服务网关接、包管。
-实践是相的，Node 能以一熟的，不开 CommonJS 的。在服务端，CommonJS 能以一的写个的目中，不开 Node 优的。实的优不开最初优的，因实的推广以。图 2-2 是 Node 与以 W3C 组织、CommonJS 组织、ECMAScript 之的关系，了一个的生系统。
+但是看起来凌乱的 JavaScript 编程现状并不代表着社区没有进步，JavaScript 的本地化编程之路一直在探索中。在 Node 出现之前，服务器端 JavaScript 基本没有市场，与欣欣向荣的前端 JavaScript 应用相比，Rhino 等后端 JavaScript 运行环境基本只是用于小工具，但是经历十多年的发展后，社区也为 JavaScript 制定了相应的规范，其中 CommonJS 规范的提出算是最为重要的里程碑。
 
-图 2-2 Node 与以 W3C 组织、CommonJS 组织、ECMAScript 之的关系
-NodeCommonJS 的 Modules 实了一用的系统，NPM 对 Packages 的好使 Node 应用在开发过程中事。在本中，我们要就 Node 的包的实开。
+## 2.1 CommonJS 规范
 
-2.1.2CommonJS
-CommonJS
-对的定分，要分为用、定识 3 个部分。
+CommonJS 规范为 JavaScript 制定了一个美好的愿景——希望 JavaScript 能够在任何地方运行。
 
-1.
+2.1.1 CommonJS 的出发点
+在 JavaScript 的发展历程中，它主要在浏览器前端发光发热。由于官方规范（ECMAScript）规范化的时间较早，规范涵盖的范畴非常小。这些规范中包含词法、类型、上下文、表达式、声明（statement）、方法、对象等语言的基本要素。在实际应用中，JavaScript 的表现能力取决于宿主环境中的 API 支持程度。在 Web 1.0 时代，只有对 DOM、BOM 等基本的支持。随着 Web 2.0 的推进，HTML5 崭露头角，它将 Web 网页带进 Web 应用的时代，在浏览器中出现了更多、更强大的 API 供 JavaScript 调用，这得感谢 W3C 组织对 HTML5 规范的推进以及各大浏览器厂商对规范的大力支持。但是，Web 在发展，浏览器中出现了更多的标准 API，这些过程发生在前端，后端 JavaScript 的规范却远远落后。对于 JavaScript 自身而言，它的规范依然是薄弱的，还有以下缺陷。
 
-用的下
+- 没有模块系统。
+- 标准库较少。ECMAScript 仅定义了部分核心库，对于文件系统，I/O 流等常见需求却没有标准的 API。就 HTML5 的发展状况而言，W3C 标准化在一定意义上是在推进这个过程，但是它仅限于浏览器端。
+- 没有标准接口。在 JavaScript 中，几乎没有定义过如 Web 服务器或者数据库之类的标准统一接口。
+- 缺乏包管理系统。这导致 JavaScript 应用中基本没有自动加载和安装依赖的能力。
+
+CommonJS 规范的提出，主要是为了弥补当前 JavaScript 没有标准的缺陷，以达到像 Python、Ruby 和 Java 具备开发大型应用的基础能力，而不是停留在小脚本程序的阶段。他们期望那些用 CommonJS API 写出的应用可以具备跨宿主环境执行的能力，这样不仅可以利用 JavaScript 开发富客户端应用，而且还可以编写以下应用。
+
+- 服务器端 JavaScript 应用程序。
+- 命令行工具。
+- 桌面图形界面应用程序。
+- 混合应用（Titanium 和 Adobe AIR 等形式的应用）。
+
+如今，CommonJS 中的大部分规范虽然依旧是草案，但是已经初显成效，为 JavaScript 开发大型应用程序指明了一条非常棒的道路。目前，它依旧在成长中，这些规范涵盖了模块、二进制、Buffer、字符集编码、I/O 流、进程环境、文件系统、套接字、单元测试、Web 服务器网关接口、包管理等。
+
+理论和实践总是相互影响和促进的，Node 能以一种比较成熟的姿态出现，离不开 CommonJS 规范的影响。在服务器端，CommonJS 能以一种寻常的姿态写进各个公司的项目代码中，离不开 Node 优异的表现。实现的优良表现离不开规范最初优秀的设计，规范因实现的推广而得以普及。图 2-2 是 Node 与浏览器以及 W3C 组织、CommonJS 组织、ECMAScript 之间的关系，共同构成了一个繁荣的生态系统。
+
+图 2-2 Node 与浏览器以及 W3C 组织、CommonJS 组织、ECMAScript 之间的关系
+
+Node 借鉴 CommonJS 的 Modules 规范实现了一套非常易用的模块系统，NPM 对 Packages 规范的完好支持使得 Node 应用在开发过程中事半功倍。在本章中，我们主要就 Node 的模块和包的实现进行展开说明。
+
+2.1.2 CommonJS 的模块规范
+
+CommonJS 对模块的定义十分简单，主要分为模块引用、模块定义和模块标识 3 个部分。
+
+1. 模块引用
+
+模块引用的示例代码如下：
 
 ```js
 var math = require("math");
 ```
 
-在 CommonJS 中，在 require()，这个接识，以入一个的 API 到前上下中。
+在 CommonJS 规范中，存在 require()方法，这个方法接受模块标识，以此引入一个模块的 API 到当前上下文中。
 
-2.
-
-在中，上下 require()入外部。对应入的能，上下了 exports 对用于前的者量
-，并且它是一的。在中，还在一个 module 对，它自，exports 是 module 的性。在 Node 中，一个就是一个，在 exports 对上作为性可定的
+2. 模块定义在模块中，上下文提供 require()方法来引入外部模块。对应引入的功能，上下文提供了 exports 对象用于导出当前模块的方法或者变量，并且它是唯一导出的出口。在模块中，还存在一个 module 对象，它代表模块自身，而 exports 是 module 的属性。在 Node 中，一个文件就是一个模块，将方法挂载在 exports 对象上作为属性即可定义导出的方式：
 
 ```js
 // math.js
 exports.add = function () {
-var sum = 0,
- i = 0,
- args = arguments,
-l = args.length;
-while (i < l) {
- sum += args[i++]; } return sum;
+  var sum = 0,
+    i = 0,
+    args = arguments,
+    l = args.length;
+  while (i < l) {
+    sum += args[i++];
+  }
+  return sum;
 };
-在一个中，我们过require()入后，就能用定的性了
-// program.js var math = require('math'); exports.increment = function (val) {
-return math.add(val, 1); };
 ```
 
-3.
+在另一个文件中，我们通过 require()方法引入模块后，就能调用定义的属性或方法了：
 
-识实就是 require()的数，它是小的，者以.、..开的相对，者绝对。它可以没有后.js。
-的定分，接也分。它的在于的量定在有的作用中，时入能以接上下。图 2-3，个有立的，它们不，在用时也。
+```js
+// program.js
+var math = require("math");
+exports.increment = function (val) {
+  return math.add(val, 1);
+};
+```
 
-图 2-3 定
-CommonJS 的这入机使用不量，与之相相。
+3. 模块标识模块标识其实就是传递给 require()方法的参数，它必须是符合小驼峰命名的字符串，或者以`.`、`..`开头的相对路径，或者绝对路径。它可以没有文件名后缀`.js`。
 
-2.## 2.2 Node 的模块实现
+模块的定义十分简单，接口也十分简洁。它的意义在于将类聚的方法和变量等限定在私有的作用域中，同时支持引入和导出功能以顺畅地连接上下游依赖。如图 2-3 所示，每个模块具有独立的空间，它们互不干扰，在引用时也显得干净利落。
 
-Node 在实中并实，是对了一定的，时也加了自要的性。管中 exports、requiremodule 起分，是 Node 在实它们的过程中经了，这个过程要。
-在 Node 中入，要经下 3 个。
-(1) 分
-(2) 定
-(3) 编
+图 2-3 模块定义
 
-在 Node 中，分为一是 Node 的，为心一是用编写的，为。
-心部分在 Node 源的编过程中，编了。在 Node 程动
-时，部分心就接加内中，以这部分心入时，定编这个可以，并且在分中优，以它的加是最的。
-是在时动加，要的分、定、编过程，
+CommonJS 构建的这套模块导出和引入机制使得用户完全不必考虑变量污染，命名空间等方案与之相比相形见绌。
 
-心。接下，我们开的加过程。
-2.2.1
-开分定之前，我们要的一是，与前端会脚本以高性能一样，Node 对入过的都会，以次入时的开。不的在于，仅仅，Node 的是编之后的对。不是心还是，require()对相的次加都一用优的，这是的。不之在于心的于的。
-2.2.2
-因为识有几，对于不的识，的定有不程上的。
+2.2 Node 的模块实现
 
-1.
+Node 在实现中并非完全按照规范实现，而是对模块规范进行了一定的取舍，同时也增加了少许自身需要的特性。尽管规范中 exports、require 和 module 听起来十分简单，但是 Node 在实现它们的过程中究竟经历了什么，这个过程需要知晓。
 
-前到过，require()接一个识作为数。在 Node 实中，是于这样一个识的。识在 Node 中要分为以下几。
-心，http、fs、path。. ...开始的相对。
-以/开始的绝对。的，自定的 connect。.
-心的优仅次于加，它在 Node 的源编过程中已经编为，加过程最。
-试图加一个与心识相的自定，是不会的。自己编写了一个 http 用，想要加，一个不的识者用的。
-式的文
-以.、../开始的识，这都做。在分时，require()会为实，并以实作为索，编后的到中，以使次加时。
-由于 Node 了的，以在过程中可以大量时，加于心。
-定
-自定的是心，也不是的识。它是一的，可能
-是一个者包的。这的是最时的，也是有中最的一。在自定的之前，要一下这个。是 Node 在定的时定的，为一个组的
-数组。关于这个的生，我们可以动试一。
-(1) 创 module_path.js，内为 console.log(module.paths);。
-(2) 到一个目中后 node module_path.js。在 Linux 下，你可能到的是这样一个数组
+在 Node 中引入模块，需要经历如下 3 个步骤。
+
+1. 路径分析
+2. 文件定位
+3. 编译执行
+
+在 Node 中，模块分为两类：一类是 Node 提供的模块，称为核心模块；另一类是用户编写的模块，称为文件模块。
+
+- 核心模块部分在 Node 源代码的编译过程中，编译进了二进制执行文件。在 Node 进程启动时，部分核心模块就被直接加载进内存中，所以这部分核心模块引入时，文件定位和编译执行这两个步骤可以省略掉，并且在路径分析中优先判断，所以它的加载速度是最快的。
+- 文件模块则是在运行时动态加载，需要完整的路径分析、文件定位、编译执行过程，速度比核心模块慢。
+
+接下来，我们展开详细的模块加载过程。
+
+2.2.1 优先从缓存加载
+展开介绍路径分析和文件定位之前，我们需要知晓的一点是，与前端浏览器会缓存静态脚本文件以提高性能一样，Node 对引入过的模块都会进行缓存，以减少二次引入时的开销。不同的地方在于，浏览器仅仅缓存文件，而 Node 缓存的是编译和执行之后的对象。
+
+不论是核心模块还是文件模块，require()方法对相同模块的二次加载都一律采用缓存优先的方式，这是第一优先级的。不同之处在于核心模块的缓存检查先于文件模块的缓存检查。
+
+2.2.2 路径分析和文件定位
+因为标识符有几种形式，对于不同的标识符，模块的查找和定位有不同程度上的差异。
+
+1. 模块标识符分析
+
+前面提到过，require()方法接受一个标识符作为参数。在 Node 实现中，正是基于这样一个标识符进行模块查找的。模块标识符在 Node 中主要分为以下几类。
+
+- 核心模块，如 http、fs、path 等。
+- .或.开始的相对路径文件模块。
+- 以/开始的绝对路径文件模块。
+- 非路径形式的文件模块，如自定义的 connect 模块。
+
+**核心模块**
+核心模块的优先级仅次于缓存加载，它在 Node 的源代码编译过程中已经编译为二进制代码，其加载过程最快。
+
+如果试图加载一个与核心模块标识符相同的自定义模块，那是不会成功的。如果自己编写了一个 http 用户模块，想要加载成功，必须选择一个不同的标识符或者换用路径的方式。
+
+**路径形式的文件模块**
+
+以`.`、`..`和`/`开始的标识符，这里都被当做文件模块来处理。在分析文件模块时，require()方法会将路径转为真实路径，并以真实路径作为索引，将编译执行后的结果存放到缓存中，以使二次加载时更快。
+
+由于文件模块给 Node 指明了确切的文件位置，所以在查找过程中可以节约大量时间，其加载速度慢于核心模块。
+**自定义模块**
+
+自定义模块指的是非核心模块，也不是路径形式的标识符。它是一种特殊的文件模块，可能是一个文件或者包的形式。这类模块的查找是最费时的，也是所有方式中最慢的一种。
+
+在介绍自定义模块的查找方式之前，需要先介绍一下模块路径这个概念。
+
+模块路径是 Node 在定位文件模块的具体文件时制定的查找策略，具体表现为一个路径组成的数组。关于这个路径的生成规则，我们可以手动尝试一番。
+
+1. 创建 module_path.js 文件，其内容为 console.log(module.paths);。
+2. 将其放到任意一个目录中然后执行 nodemodule_path.js。
+
+在 Linux 下，你可能得到的是这样一个数组输出：
 
 ```js
 [
@@ -363,32 +398,46 @@ Node 在实中并实，是对了一定的，时也加了自要的性。管中 ex
 ];
 ```
 
-在 Windows 下，也是这样
+而在 Windows 下，也许是这样：
 
 ```js
 ["c:\\nodejs\\node_modules", "c:\\node_modules"];
 ```
 
-可以，的生下。
-前目下的 node_modules 目。目下的 node_modules 目。目的目下的 node_modules 目。
-上，到目下的 node_modules 目。
+可以看出，模块路径的生成规则如下所示。
 
-它的生与 JavaScript 的作用
-的分。在加的过程中，Node 会个试中的，到到目为。可以，前的深，
-时会多，这是自定的加是最的因。
+- 当前文件目录下的 node_modules 目录。
+- 父目录下的 node_modules 目录。
+- 父目录的父目录下的 node_modules 目录。
+- 沿路径向上逐级递归，直到根目录下的 node_modules 目录。
+
+它的生成方式与 JavaScript 的原型链或作用域链的查找方式十分类似。在加载的过程中，Node 会逐个尝试模块路径中的路径，直到找到目标文件为止。可以看出，当前文件的路径越深，模块查找耗时会越多，这是自定义模块的加载速度是最慢的原因。
 
 2. 文件定位
-   从加的优使次入时不要分、定编的过程，大大高了次加时的。在的定过程中，还有一些要，这要包括的分、目包的。
-   文 a
-   require()在分识的过程中，会识中不包的情。CommonJS 也在识中不包，这情下，Node 会.js、.json、.node 的次序补，次试。
-   在试的过程中，要用 fs 是否在。因为 Node 是线程的，以这是一个会起性能问题的。小是是.node.json，在 require()的识中上，会加一。一个是，可以大解 Node
-   线程中用的。
-   .
-   在分识的过程中，require()过分之后，可能没有到对应，到一个目，这在入自定个时经会，时 Node 会目做一个包。
-   在这个过程中，Node 对 CommonJS 包了一定程的。，Node 在前目下 package.json（CommonJS 包定的包），过 JSON.parse()解包对，从中 main 性定的定。，会入分的。
-   main 性定的，者没有 package.json，Node 会 index 做认，后次 index.js、index.json、index.node。在目分的过程中没有定，自定入下一个。数组都遍，没有到目，会的。
-   2.2.3 模块编译
-   在 Node 中，个都是一个对，它的定下
+
+从缓存加载的优化策略使得二次引入时不需要路径分析、文件定位和编译执行的过程，大大提高了再次加载模块时的效率。
+
+但在文件的定位过程中，还有一些细节需要注意，这主要包括文件扩展名的分析、目录和包的处理。
+
+**文件扩展名分析**
+
+require()在分析标识符的过程中，会出现标识符中不包含文件扩展名的情况。CommonJS 模块规范也允许在标识符中不包含文件扩展名，这种情况下，Node 会按.js、.json、.node 的次序补足扩展名，依次尝试。
+
+在尝试的过程中，需要调用 fs 模块同步阻塞式地判断文件是否存在。因为 Node 是单线程的，所以这里是一个会引起性能问题的地方。小诀窍是：如果是.node 和.json 文件，在传递给 require()的标识符中带上扩展名，会加快一点速度。另一个诀窍是：同步配合缓存，可以大幅度缓解 Node 单线程中阻塞式调用的缺陷。
+
+**目录分析和包**
+
+在分析标识符的过程中，require()通过分析文件扩展名之后，可能没有查找到对应文件，但却得到一个目录，这在引入自定义模块和逐个模块路径进行查找时经常会出现，此时 Node 会将目录当做一个包来处理。
+
+在这个过程中，Node 对 CommonJS 包规范进行了一定程度的支持。首先，Node 在当前目录下查找 package.json（CommonJS 包规范定义的包描述文件），通过 JSON.parse()解析出包描述对象，从中取出 main 属性指定的文件名进行定位。如果文件名缺少扩展名，将会进入扩展名分析的步骤。
+
+而如果 main 属性指定的文件名错误，或者压根没有 package.json 文件，Node 会将 index 当做默认文件名，然后依次查找 index.js、index.json、index.node。
+
+如果在目录分析的过程中没有定位成功任何文件，则自定义模块进入下一个模块路径进行查找。如果模块路径数组都被遍历完毕，依然没有查找到目标文件，则会抛出查找失败的异常。
+
+2.2.3 模块编译
+
+在 Node 中，每个文件模块都是一个对象，它的定义如下：
 
 ```js
 function Module(id, parent) {
@@ -404,15 +453,16 @@ function Module(id, parent) {
 }
 ```
 
-编是入的最后一个。定到的后，Node 会新一个对，后入并编。对于不的，入也有不，下。
-. .js 文件。过 fs 读后编。
-. .node 文件。这是用 C/C++编写的
-，过 dlopen()加最后编生的。
-. .json 文件。过 fs 读后，用 JSON.parse()解。
-其余扩展名文件。它们都做.js 入。
-一个编的都会作为索在 Module.\_cache 对上，以高
+编译和执行是引入文件模块的最后一个阶段。定位到具体的文件后，Node 会新建一个模块对象，然后根据路径载入并编译。对于不同的文件扩展名，其载入方法也有所不同，具体如下所示。
 
-次入的性能。不的，Node 会用不的读，.json 的用下
+- .js 文件。通过 fs 模块同步读取文件后编译执行。
+- .node 文件。这是用 C/C++编写的扩展文件，通过 dlopen()方法加载最后编译生成的文件。
+- .json 文件。通过 fs 模块同步读取文件后，用 JSON.parse()解析返回结果。
+- 其余扩展名文件。它们都被当做.js 文件载入。
+
+每一个编译成功的模块都会将其文件路径作为索引缓存在 Module.\_cache 对象上，以提高二次引入的性能。
+
+根据不同的文件扩展名，Node 会调用不同的读取方式，如.json 文件的调用如下：
 
 ```js
 // Native extension for .json
@@ -427,29 +477,42 @@ Module._extensions[".json"] = function (module, filename) {
 };
 ```
 
-中，Module.\_extensions 会 require()的 extensions 性，以过在中问 require.extensions 可以系统中已有的加。编写下测试一下
+其中，Module.\_extensions 会被赋值给 require()的 extensions 属性，所以通过在代码中访问 require.extensions 可以知道系统中已有的扩展加载方式。编写如下代码测试一下：
 
 ```js
 console.log(require.extensions);
 ```
 
-到的下
+得到的执行结果如下：
+
+```js
 { '.js': [Function], '.json': [Function], '.node': [Function] }
-想对自定的的加，可以过 require.extensions['.ext']的实。的 CoffeeScript 就是过加 require.extensions['.coffee']的实加的。是从 v0.10.6 本开始，不过这自定的加，是他语言编 JavaScript 后加，这样做的好在于不的编加过程入 Node 的过程中。
-在定的之后，Node 用的编后用者。
+```
 
-1. JavaScript
-   到 CommonJS，我们个中在着 require、exports、module 这 3 个
+如果想对自定义的扩展名进行特殊的加载，可以通过类似 require.extensions['.ext']的方式实现。早期的 CoffeeScript 文件就是通过添加 require.extensions['.coffee']扩展的方式来实现加载的。但是从 v0.10.6 版本开始，官方不鼓励通过这种方式来进行自定义扩展名的加载，而是期望先将其他语言或文件编译成 JavaScript 文件后再加载，这样做的好处在于不将烦琐的编译加载等过程引入 Node 的执行过程中。
 
-至在 Node 的 API 中，我们
-量，是它们在中并没有定，从甚个中还有**filename、**dirname 这个量的在，它们是从的我们接定的过程在端，会在量的情。
-事实上，在编的过程中，Node 对的 JavaScript 内了包。在部加了(function (exports, require, module, **filename, **dirname) {\n，在部加了\n});。一个的 JavaScript 会包下的样
-(function (exports, require, module, **filename, **dirname) { var math = require('math'); exports.area = function (radius) {
-return Math.PI _ radius _ radius; }; });
-这样个之都了作用。包之后的会过 vm 生的 runInThisContext()（eval，只是有上下，不），一个的 function 对。最后，前对的 exports 性、require()、module（对自），以在定中到的目作为数这个 function()。
-这就是这些量并没有定在个中在的因。在之后，的 exports 性了用。exports 性上的性都可以外部用到，是中的余量性不可接用。
-至，require、exports、module 的程已经，这就是 Node 对 CommonJS 的实。
-外，多初学者都经过为在 exports 的情下，还在 module.exports。想情下，只要 exports 可
+在确定文件的扩展名之后，Node 将调用具体的编译方式来将文件执行后返回给调用者。
+
+1. JavaScript 模块的编译
+
+回到 CommonJS 模块规范，我们知道每个模块文件中存在着 require、exports、module 这 3 个变量，但是它们在模块文件中并没有定义，那么从何而来呢？甚至在 Node 的 API 文档中，我们知道每个模块中还有**filename、**dirname 这两个变量的存在，它们又是从何而来的呢？如果我们把直接定义模块的过程放诸在浏览器端，会存在污染全局变量的情况。
+
+事实上，在编译的过程中，Node 对获取的 JavaScript 文件内容进行了头尾包装。在头部添加了(function (exports, require, module,**filename, **dirname) {\n，在尾部添加了\n});。一个正常的 JavaScript 文件会被包装成如下的样子：
+
+```js
+(function (exports, require, module, __filename, __dirname) {
+  var math = require("math");
+  exports.area = function (radius) {
+    return Math.PI * radius * radius;
+  };
+});
+```
+
+这样每个模块文件之间都进行了作用域隔离。包装之后的代码会通过 vm 原生模块的 runInThisContext()方法执行（类似 eval，只是具有明确上下文，不污染全局），返回一个具体的 function 对象。最后，将当前模块对象的 exports 属性、require()方法、module（模块对象自身），以及在文件定位中得到的完整文件路径和文件目录作为参数传递给这个 function()执行。
+
+这就是这些变量并没有定义在每个模块文件中却存在的原因。在执行之后，模块的 exports 属性被返回给了调用方。exports 属性上的任何方法和属性都可以被外部调用到，但是模块中的其余变量或属性则不可直接被调用。
+
+至此，require、exports、module 的流程已经完整，这就是 Node 对 CommonJS 模块规范的实现。此外，许多初学者都曾经纠结过为何存在 exports 的情况下，还存在 module.exports。理想情况下，只要赋值给 exports 即可：
 
 ```js
 exports = function () {
@@ -457,7 +520,7 @@ exports = function () {
 };
 ```
 
-是都会到一个的。因在于，exports 对是过的入的，接会的用，并不能作用外的。测试下
+但是通常都会得到一个失败的结果。其原因在于，exports 对象是通过形参的方式传入的，直接赋值形参会改变形参的引用，但并不能改变作用域外的值。测试代码如下：
 
 ```js
 var change = function (a) {
@@ -469,46 +532,49 @@ change(a);
 console.log(a); // => 10
 ```
 
-要到 require 入一个的，请 module.exports 对。这个的不
-的用。
+如果要达到 require 引入一个类的效果，请赋值给 module.exports 对象。这个迂回的方案不改变形参的引用。
 
-2. C/C++
-   Node 用 process.dlopen()加。在 Node 的下，dlopen()在 Windows \*nix 下分有不的实，过 libuv 了。
-   实上，.node 的并不要编，因为它是编写 C/C++之后编生的，以这只有加的过程。在的过程中，的 exports 对与.node 产生系，后用者。
-   C/C++Node 使用者的优势要是的，势是 C/C++的编写门 JavaScript 高。
-3. JSON
-   .json 的编是 3 编中最的。Node 用 fs 读 JSON 的内之后，用 JSON.parse()到对，后它对的 exports，以外部用。
-   JSON 在用作目的时有用。你定了一个 JSON 作为，就不用 fs 读解，接用 require()入可。外，你还可以享到的，并且次入时也没有性能。
-   这我们到的编都是，用自己编写的。在下一中，我们开心中的 JavaScriptC/C++。
+2. C/C++模块的编译 Node 调用 process.dlopen()方法进行加载和执行。在 Node 的架构下，dlopen()方法在 Windows 和\*nix 平台下分别有不同的实现，通过 libuv 兼容层进行了封装。
+
+实际上，.node 的模块文件并不需要编译，因为它是编写 C/C++模块之后编译生成的，所以这里只有加载和执行的过程。在执行的过程中，模块的 exports 对象与.node 模块产生联系，然后返回给调用者。
+
+C/C++模块给 Node 使用者带来的优势主要是执行效率方面的，劣势则是 C/C++模块的编写门槛比 JavaScript 高。
+
+3. JSON 文件的编译
+
+.json 文件的编译是 3 种编译方式中最简单的。Node 利用 fs 模块同步读取 JSON 文件的内容之后，调用 JSON.parse()方法得到对象，然后将它赋给模块对象的 exports，以供外部调用。
+
+JSON 文件在用作项目的配置文件时比较有用。如果你定义了一个 JSON 文件作为配置，那就不必调用 fs 模块去异步读取和解析，直接调用 require()引入即可。此外，你还可以享受到模块缓存的便利，并且二次引入时也没有性能影响。
+
+这里我们提到的模块编译都是指文件模块，即用户自己编写的模块。在下一节中，我们将展开介绍核心模块中的 JavaScript 模块和 C/C++模块。
 
 ## 2.3 核心模块
 
-前到，Node 的心在编可的过程中编了。心实分为 C/C++编写的 JavaScript 编写的部分，中 C/C++在 Node 目的 src 目下，JavaScript 在 lib 目下。
-2.3.1JavaScript
-在编有 C/C++之前，编程序要有的 JavaScript 编为 C/C++，时是否接编为可了实不是。
+前面提到，Node 的核心模块在编译成可执行文件的过程中被编译进了二进制文件。核心模块其实分为 C/C++编写的和 JavaScript 编写的两部分，其中 C/C++文件存放在 Node 项目的 src 目录下，JavaScript 文件存放在 lib 目录下。
 
-1. C/C++
-   Node 用了 V8 的 js2c.py 工，有内的 JavaScript（src/node.jslib/\*.js）C++的数组，生 node_natives.h，相关下
+2.3.1 JavaScript 核心模块的编译过程
 
-```js
+在编译所有 C/C++文件之前，编译程序需要将所有的 JavaScript 模块文件编译为 C/C++代码，此时是否直接将其编译为可执行代码了呢？其实不是。
+
+1.转存为 C/C++代码 Node 采用了 V8 附带的 js2c.py 工具，将所有内置的 JavaScript 代码（src/node.js 和 lib/\*.js）转换成 C++里的数组，生成 node_natives.h 头文件，相关代码如下：
+
+```c#
 namespace node {
 const char node_native[] = { 47, 47, ..}; const char dgram_native[] = { 47, 47, ..}; const char console_native[] = { 47, 47, ..}; const char buffer_native[] = { 47, 47, ..}; const char querystring_native[] = { 47, 47, ..}; const char punycode_native[] = { 47, 42, ..}; ... struct _native {
  const char* name;  const char* source;  size_t source_len;
 };
 static const struct _native natives[] = {  { "node", node_native, sizeof(node_native)-1 },  { "dgram", dgram_native, sizeof(dgram_native)-1 },  ...
 };
+}
 ```
 
-} 在这个过程中，JavaScript 以的在 node 中，是不可接的。在动 Node 程时，JavaScript 接加内中。在加的过程中，JavaScript 心经
-识分后接定到内中，的从中一一要很多。
+在这个过程中，JavaScript 代码以字符串的形式存储在 node 命名空间中，是不可直接执行的。在启动 Node 进程时，JavaScript 代码直接加载进内存中。在加载的过程中，JavaScript 核心模块经历标识符分析后直接定位到内存中，比普通的文件模块从磁盘中一处一处查找要快很多。
 
-2. JavaScript
+2. 编译 JavaScript 核心模块
 
-lib 目下的有也没有定 require、module、exports 这些量。在入 JavaScript
-心的过程中，也经了包的过程，后才了 exports 对。与
-有区的在于源的（心是从内中加的）以的。
-JavaScript 心的定下的，源过 process.binding('natives')，
-编的到 NativeModule.\_cache 对上，到 Module.\_cache 对上
+lib 目录下的所有模块文件也没有定义 require、module、exports 这些变量。在引入 JavaScript 核心模块的过程中，也经历了头尾包装的过程，然后才执行和导出了 exports 对象。与文件模块有区别的地方在于：获取源代码的方式（核心模块是从内存中加载的）以及缓存执行结果的位置。
+
+JavaScript 核心模块的定义如下面的代码所示，源文件通过 process.binding('natives')取出，编译成功的模块缓存到 NativeModule.\_cache 对象上，文件模块则缓存到 Module.\_cache 对象上：
 
 ```js
 function NativeModule(id) {
@@ -521,13 +587,13 @@ NativeModule._source = process.binding("natives");
 NativeModule._cache = {};
 ```
 
-2.3.2C/C++
-在心中，有些部由 C/C++编写，有些由 C/C++心部分，他部分由 JavaScript 实包外，以性能。后这 C++内心，JavaScript 外实的是 Node 能高性能的。，脚本语言的开发优于语言，是性能于语言。Node 的这复可以在开发性能之到。
-这我们些由 C/C++编写的部分统一为内，因为它们不用接用。Node 的 buffer、crypto、evals、fs、os 都是部分过 C/C++编写的。
+2.3.2 C/C++核心模块的编译过程
 
-1.
+在核心模块中，有些模块全部由 C/C++编写，有些模块则由 C/C++完成核心部分，其他部分则由 JavaScript 实现包装或向外导出，以满足性能需求。后面这种 C++模块主内完成核心，JavaScript 主外实现封装的模式是 Node 能够提高性能的常见方式。通常，脚本语言的开发速度优于静态语言，但是其性能则弱于静态语言。而 Node 的这种复合模式可以在开发速度和性能之间找到平衡点。
 
-在 Node 中，内的内部定下
+这里我们将那些由纯 C/C++编写的部分统一称为内建模块，因为它们通常不被用户直接调用。Node 的 buffer、crypto、evals、fs、os 等模块都是部分通过 C/C++编写的。
+
+1. 内建模块的组织形式在 Node 中，内建模块的内部结构定义如下：
 
 ```js
 struct node_module_struct {
@@ -538,10 +604,9 @@ void (*register_func) (v8::Handle<v8::Object> target);
 const char *modname; };
 ```
 
-一个内在定之后，都过 NODE_MODULE 定到 node 中，的
-初始为的 register_func
+每一个内建模块在定义之后，都通过 NODE_MODULE 宏将模块定义到 node 命名空间中，模块的具体初始化方法挂载为结构的 register_func 成员：
 
-```js
+```c#
 #define NODE_MODULE(modname, regfunc)  \
 extern "C" {  \
  NODE_MODULE_EXPORT node::node_module_struct modname ## _module =  \
@@ -550,35 +615,43 @@ NODE_STANDARD_MODULE_STUFF,  \
 regfunc,  \
 NODE_STRINGIFY(modname)  \
  };  \
+}
 ```
 
-} node_extensions.h 这些的内统一了一个 node_module_list 的数组中，这些有
-. node_buffer
-. node_crypto
-. node_evals
-. node_fs
-. node_http_parser
-. node_os
-. node_zlib
-. node_timer_wrap
-. node_tcp_wrap
-. node_udp_wrap
-. node_pipe_wrap
-. node_cares_wrap
-. node_tty_wrap
-. node_process_wrap
-. node_fs_event_wrap
+node_extensions.h 文件将这些散列的内建模块统一放进了一个叫 node_module_list 的数组中，这些模块有：
 
-. node_signal_watcher 这些内的也分。Node 了 get_builtin_module()从 node_module_list 数组中这些。内的优势在于，它们本由 C/C++编写，性能上优于脚本语言次，在
-编时，它们编。一 Node 开始，它们接加内中，次做识定、定、编过程，接就可。
+- node_buffer
+- node_crypto
+- node_evals
+- node_fs
+- node_http_parser
+- node_os
+- node_zlib
+- node_timer_wrap
+- node_tcp_wrap
+- node_udp_wrap
+- node_pipe_wrap
+- node_cares_wrap
+- node_tty_wrap
+- node_process_wrap
+- node_fs_event_wrap
+- node_signal_watcher
 
-2.
+这些内建模块的取出也十分简单。Node 提供了 get_builtin_module()方法从 node_module_list 数组中取出这些模块。
 
-在 Node 的有中，在着图 2-4 的一关系，可能会心，心可能会内。
+内建模块的优势在于：首先，它们本身由 C/C++编写，性能上优于脚本语言；其次，在进行文件编译时，它们被编译进二进制文件。一旦 Node 开始执行，它们被直接加载进内存中，无须再次做标识符定位、文件定位、编译等过程，直接就可执行。
 
-图 2-4 关系
-，不推荐接用内。用，接用心可，因为心中本都了内。内是内部量，以外部 JavaScript 心用的
-Node 在动时，会生一个量 process，并 Binding()加内。Binding()的实在 src/node.cc 中，下
+2. 内建模块的导出
+
+在 Node 的所有模块类型中，存在着如图 2-4 所示的一种依赖层级关系，即文件模块可能会依赖核心模块，核心模块可能会依赖内建模块。
+
+图 2-4 依赖层级关系
+
+通常，不推荐文件模块直接调用内建模块。如需调用，直接调用核心模块即可，因为核心模块中基本都封装了内建模块。那么内建模块是如何将内部变量或方法导出，以供外部 JavaScript 核心模块调用的呢？
+
+Node 在启动时，会生成一个全局变量 process，并提供 Binding()方法来协助加载内建模块。Binding()的实现代码在 src/node.cc 中，具体如下所示：
+
+```c#
 static Handle<Value> Binding(const Arguments& args) { HandleScope scope;
 Local<String> module = args[0]->ToString(); String::Utf8Value module*v(module); node_module_struct* modp;
 if (binding*cache.IsEmpty()) {
@@ -586,413 +659,268 @@ binding_cache = Persistent<Object>::New(Object::New()); }
 Local<Object> exports;
 if (binding_cache->Has(module)) { exports = binding_cache->Get(module)->ToObject(); return scope.Close(exports);
 }
-// Append a string to process.moduleLoadList char buf[1024]; snprintf(buf, 1024, "Binding %s", *module_v); uint32_t l = module_load_list->Length(); module_load_list->Set(l, String::New(buf));
-if ((modp = get_builtin_module(*module_v)) != NULL) { exports = Object::New(); modp->register_func(exports); binding_cache->Set(module, exports);
-} else if (!strcmp(*module_v, "constants")) { exports = Object::New(); DefineConstants(exports); binding_cache->Set(module, exports);
+// Append a string to process.moduleLoadList char buf[1024]; snprintf(buf, 1024, "Binding %s", *module*v); uint32_t l = module_load_list->Length(); module_load_list->Set(l, String::New(buf));
+if ((modp = get_builtin_module(*module*v)) != NULL) { exports = Object::New(); modp->register_func(exports); binding_cache->Set(module, exports);
+} else if (!strcmp(\_module_v, "constants")) { exports = Object::New(); DefineConstants(exports); binding_cache->Set(module, exports);
 #ifdef **POSIX**
-} else if (!strcmp(*module_v, "io_watcher")) { exports = Object::New(); IOWatcher::Initialize(exports); binding_cache->Set(module, exports);
+} else if (!strcmp(\_module_v, "io_watcher")) { exports = Object::New(); IOWatcher::Initialize(exports); binding_cache->Set(module, exports);
 #endif
 } else if (!strcmp(\_module_v, "natives")) { exports = Object::New(); DefineJavaScript(exports); binding_cache->Set(module, exports);
 } else {
 return ThrowException(Exception::Error(String::New("No such module"))); }
 return scope.Close(exports); }
-在加内时，我们创一个 exports 对，后用 get_builtin_module()
-内对，过 register_func()exports 对，最后 exports 对，
-并用。这个不仅可以内，还能一些的内。前到的 JavaScript 心
-为 C/C++数组后，是过 process.binding('natives')在 NativeModule.* source 中的
-NativeModule.\_source = process.binding('natives');
-过 js2c.py 工的数组，后新为，以对 JavaScript 心编。
-2.3.3
-前了心的，也解了心的入为是最的。
-从图 2-5 的 os 生的入程可以到，为了 CommonJS，从 JavaScript 到 C/C++的过程是相复杂的，它要经 C/C++的内定、（JavaScript）心的定入以（JavaScript）的入。是对于用言，require()分、友好。
+```
 
-图 2-5 os 生的入程
-2.3.4
-心编要一定。作为 Node 的使用者，管几没有机会与心的开发，是了解开发心有于我们加深入了解 Node。心中的 JavaScript 部分几与的开发相，CommonJS，上
-下中了有 require、module、exports 外，还可以用 Node 中的一些量，这不做。下我们以 C/C++为编写内。为了于解，我们编写一个极的 JavaScript 本的，这个一个 Hello world!
-exports.sayHello = function () { return 'Hello world!'; };
-编写内分编写编写 C/C++。
-(1) 以下为 node*hello.h，到 Node 的 src 目下
+在加载内建模块时，我们先创建一个 exports 空对象，然后调用 get_builtin_module()方法取出内建模块对象，通过执行 register_func()填充 exports 对象，最后将 exports 对象按模块名缓存，并返回给调用方完成导出。
+
+这个方法不仅可以导出内建方法，还能导出一些别的内容。前面提到的 JavaScript 核心文件被转换为 C/C++数组存储后，便是通过 process.binding('natives')取出放置在 NativeModule.\_source 中的：
+
+```js
+NativeModule._source = process.binding("natives");
+```
+
+该方法将通过 js2c.py 工具转换出的字符串数组取出，然后重新转换为普通字符串，以对 JavaScript 核心模块进行编译和执行。
+
+2.3.3 核心模块的引入流程
+
+前面讲述了核心模块的原理，也解释了核心模块的引入速度为何是最快的。
+
+从图 2-5 所示的 os 原生模块的引入流程可以看到，为了符合 CommonJS 模块规范，从 JavaScript 到 C/C++的过程是相当复杂的，它要经历 C/C++层面的内建模块定义、（JavaScript）核心模块的定义和引入以及（JavaScript）文件模块层面的引入。但是对于用户而言，require()十分简洁、友好。
+
+图 2-5 os 原生模块的引入流程
+
+2.3.4 编写核心模块核心模块被编译进二进制文件需要遵循一定规则。作为 Node 的使用者，尽管几乎没有机会参与核心模块的开发，但是了解如何开发核心模块有助于我们更加深入地了解 Node。
+
+核心模块中的 JavaScript 部分几乎与文件模块的开发相同，遵循 CommonJS 模块规范，上下文中除了拥有 require、module、exports 外，还可以调用 Node 中的一些全局变量，这里不做描述。
+
+下面我们以 C/C++模块为例演示如何编写内建模块。为了便于理解，我们先编写一个极其简单的 JavaScript 版本的原型，这个方法返回一个 Helloworld！字符串：
+
+```js
+exports.sayHello = function () {
+  return "Hello world!";
+};
+```
+
+编写内建模块通常分两步完成：编写头文件和编写 C/C++文件。
+
+(1) 将以下代码保存为 node_hello.h，存放到 Node 的 src 目录下：
+
+```js
 #ifndef NODE_HELLO_H* #define NODE*HELLO_H* #include <v8.h>
 namespace node { // 定义方法 v8::Handle<v8::Value> SayHello(const v8::Arguments& args);
 } #endif
-(2) 编写 node_hello.cc，并到 src 目下
+```
+
+(2) 编写 node_hello.cc，并存储到 src 目录下：
+
+```js
 #include <node.h> #include <node_hello.h> #include <v8.h>
 namespace node {
 using namespace v8; //实现定义的方法 Handle<Value> SayHello(const Arguments& args) {
 HandleScope scope; return scope.Close(String::New("Hello world!")); }
 //给传入的目对象加 sayHello 方法 void Init_Hello(Handle<Object> target) { target->Set(String::NewSymbol("sayHello"), FunctionTemplate::New(SayHello)->GetFunction()); }
 } //调用 NODE_MODULE()将注方法定义内存中 NODE_MODULE(node_hello, node::Init_Hello)
-以上了内的编写，是要 Node 认为它是内，还要 src/node_extensions.h，在 NODE_EXT_LIST_END 前加 NODE_EXT_LIST_ITEM(node_hello)，以 node_hello 加 node_module_list 数组中。
-次，还要编写的编，时要 Node 的目生 node.gyp，并在'target_name': 'node'的 sources 中加上新编写的个。后编个 Node 目，的编请 A。
-编后，接在中以下，会到的
-\$ node > var hello = process.binding('hello'); undefined > hello.sayHello(); 'Hello world!' >
-至，生编写过程中要的都已过了。可以，的过 JavaScript 编写可以大大高生产。这我们写作本的目的是有能的读者可以深入 Node 的心，学习它者它。
+```
+
+以上两步完成了内建模块的编写，但是真正要让 Node 认为它是内建模块，还需要更改 src/node_extensions.h，在 NODE_EXT_LIST_END 前添加 NODE_EXT_LIST_ITEM(node_hello)，以将 node_hello 模块添加进 node_module_list 数组中。
+
+其次，还需要让编写的两份代码编译进执行文件，同时需要更改 Node 的项目生成文件 node.gyp，并在’target_name': 'node’节点的 sources 中添加上新编写的两个文件。然后编译整个 Node 项目，具体的编译步骤请参见附录 A。
+
+编译和安装后，直接在命令行中运行以下代码，将会得到期望的效果：
+
+```shell
+$ node > var hello = process.binding('hello'); undefined > hello.sayHello(); 'Hello world!' >
+```
+
+至此，原生编写过程中需要注意的细节都已表述过了。可以看出，简单的模块通过 JavaScript 来编写可以大大提高生产效率。这里我们写作本节的目的是希望有能力的读者可以深入 Node 的核心模块，去学习它或者改进它。
 
 ## 2.4 C/C++扩展模块
 
-对于前端工程，C/C++生，是你了解了它，在性能时会对你有极大的。
-JavaScript 的一个就是。JavaScript 的 Java 的实，是 Java 是在 int 数的上的，JavaScript 中只有 double 的数，在的过程中，要 double 为 int，后。以，在 JavaScript 上做的
-不高。在应用中，会的，包括、编过程，过 JavaScript 实，CPU 源会很多，这时编写 C/C++性能的机会了。
-C/C++于中的一。前的编部分时到，C/C++过编为.node，后用 process.dlopen()加。在这一中，我们分个 C/C++的编写、编、加、的过程。
-在开始编写之前，要强的一是，Node 的生一定程上是可以的，前是源可以在*nixWindows 上编，中*nix 下过 g++/gcc 编编为动接享对（.so），在 Windows 下要过 VisualC++的编编为动接（.dll），图 2-6。这有一个人的，就是用加时是.node。实.node 的只是为了起自一，不会因为产生不的。实上，在 Windows 下它是一个.dll，在\*nix 下是一个.so。为了实，dlopen()在内部实时区分了，分用的是加.so.dll 的。图 2-6 为在不上编加的过程。
-的是，一个下的.node 在一个下是加的，新用自下的编编为的.node。
+对于前端工程师来说，C/C++扩展模块或许比较生疏和晦涩，但是如果你了解了它，在模块出现性能瓶颈时将会对你有极大的帮助。JavaScript 的一个典型弱点就是位运算。JavaScript 的位运算参照 Java 的位运算实现，但是 Java 位运算是在 int 型数字的基础上进行的，而 JavaScript 中只有 double 型的数据类型，在进行位运算的过程中，需要将 double 型转换为 int 型，然后再进行。所以，在 JavaScript 层面上做位运算的效率不高。在应用中，会频繁出现位运算的需求，包括转码、编码等过程，如果通过 JavaScript 来实现，CPU 资源将会耗费很多，这时编写 C/C++扩展模块来提升性能的机会来了。C/C++扩展模块属于文件模块中的一类。前面讲述文件模块的编译部分时提到，C/C++模块通过预先编译为．node 文件，然后调用 process.dlopen()方法加载执行。在这一节中，我们将分析整个 C/C++扩展模块的编写、编译、加载、导出的过程。
 
-图 2-6 不上的编加过程
-2.4.1
-想要编写高质量的 C/C++，还要深的 C/C++编程才。之外，以
-下这些目都是不能开的，在了解它们之后，可以你在编写过程中事。. GYP 在 Node0.6 中，过它自的 node_waf 工实编，是它是\*nix 下的产，实编。在 Node 0.8 中，Node 决定 node_waf 用好的目生，它就是 GYP 工，Generate Your Projects 的写。它的好在于，可以你生个下的目，Windows 下的 Visual Studio 解决（.sln）、Mac 下的 XCode 目以 Scons 工。在这个上，动用自下的编编目。这大大了在目组织上的入。Node 源中一过目，后统一为 GYP 工。这了可以编写目的工作量外，一个的因就是 Node 自的源就是过 GYP 编的。为，Nathan Rajlich 于 GYP 为 Node 了一个有的工 node-gyp，这个工过 npm install -g node-gyp 这个可。
-. V8C++V8 是 Node 自的动源之一。它自由 C++写，可以实 JavaScript 与 C++的相用。
-. libuv 它是 Node 自的动源之。Node 能实的一个就是它的 libuv，这个是的一，过它用一些作，自己在个下编写实要高多。libuv 的能包括事环、作。
-. Node 写 C++时，不了要做一些对的编程工作，Node 自了一些 C++，node::ObjectWrap 可以用包你的自定，它可以实对收工作。
+在开始编写扩展模块之前，需要强调的一点是，Node 的原生模块一定程度上是可以跨平台的，其前提条件是源代码可以支持在*nix 和 Windows 上编译，其中*nix 下通过 g++/gcc 等编译器编译为动态链接共享对象文件（.so），在 Windows 下则需要通过 Visual C++的编译器编译为动态链接库文件（.dll），如图 2-6 所示。这里有一个让人迷惑的地方，那就是引用加载时却是．node 文件。其实．node 的扩展名只是为了看起来更自然一点，不会因为平台差异产生不同的感觉。实际上，在 Windows 下它是一个．dll 文件，在\*nix 下则是一个．so 文件。为了实现跨平台，dlopen()方法在内部实现时区分了平台，分别用的是加载．so 和．dll 的方式。图 2-6 为扩展模块在不同平台上编译和加载的详细过程。
 
-. 他在 deps 目下的在编写时也可以你，zlib、openssl、http_parser。
+图 2-6 扩展模块不同平台上的编译和加载过程值得注意的是，一个平台下的．node 文件在另一个平台下是无法加载执行的，必须重新用各自平台下的编译器编译为正确的．node 文件。2.4.1 前提条件如果想要编写高质量的 C/C++扩展模块，还需要深厚的 C/C++编程功底才行。除此之外，以下这些条目都是不能避开的，在了解它们之后，可以让你在编写过程中事半功倍。
 
-2.4.2C/C++
-在 C/C++内时，实已经了 C/C++的编写。的与内的区在于源编 Node，是过 dlopen()动加。以在编写的时，源写 node，也不要。下我们用一个 C/C++的编写。
-它的 JavaScript 与前的一样
-exports.sayHello = function () { return 'Hello world!'; };
-新 hello 目作为自己的目，编写 hello.cc 并到 src 目下，相关下
+❑ GYP 项目生成工具。在 Node 0.6 中，第三方模块通过它自身提供的 node_waf 工具实现编译，但是它是\*nix 平台下的产物，无法实现跨平台编译。在 Node 0.8 中，Node 决定摒弃掉 node_waf 而采用跨平台效果更好的项目生成器，它就是 GYP 工具，即“Generate YourProjects”短句的缩写。它的好处在于，可以帮助你生成各个平台下的项目文件，比如 Windows 下的 Visual Studio 解决方案文件（.sln）、Mac 下的 XCode 项目配置文件以及 Scons 工具。在这个基础上，再动用各自平台下的编译器编译项目。这大大减少了跨平台模块在项目组织上的精力投入。Node 源码中一度出现过各种项目文件，后来均统一为 GYP 工具。这除了可以减少编写跨平台项目文件的工作量外，另一个简单的原因就是 Node 自身的源码就是通过 GYP 编译的。为此，NathanRajlich 基于 GYP 为 Node 提供了一个专有的扩展构建工具 node-gyp，这个工具通过 npm install -gnode-gyp 这个命令即可安装。❑ V8 引擎 C++库。V8 是 Node 自身的动力来源之一。它自身由 C++写成，可以实现 JavaScript 与 C++的互相调用。❑ libuv 库。它是 Node 自身的动力来源之二。Node 能够实现跨平台的一个诀窍就是它的 libuv 库，这个库是跨平台的一层封装，通过它去调用一些底层操作，比自己在各个平台下编写实现要高效得多。libuv 封装的功能包括事件循环、文件操作等。❑ Node 内部库。写 C++模块时，免不了要做一些面向对象的编程工作，而 Node 自身提供了一些 C++代码，比如 node::ObjectWrap 类可以用来包装你的自定义类，它可以帮助实现对象回收等工作。❑ 其他库。其他存在 deps 目录下的库在编写扩展模块时也许可以帮助你，比如 zlib、openssl、http_parser 等。2.4.2 C/C++扩展模块的编写在介绍 C/C++内建模块时，其实已经介绍了 C/C++模块的编写方式。普通的扩展模块与内建模块的区别在于无须将源代码编译进 Node，而是通过 dlopen()方法动态加载。所以在编写普通的扩展模块时，无须将源代码写进 node 命名空间，也不需要提供头文件。下面我们将采用同一个例子来介绍 C/C++扩展模块的编写。
+
+它的 JavaScript 原型代码与前面的例子一样：
+
+```js
+exports.sayHello = function () {
+  return "Hello world!";
+};
+```
+
+新建 hello 目录作为自己的项目位置，编写 hello.cc 并将其存储到 src 目录下，相关代码如下：
+
+```c#
 #include <node.h> #include <v8.h>
 using namespace v8; //实现定义的方法 Handle<Value> SayHello(const Arguments& args) {
 HandleScope scope; return scope.Close(String::New("Hello world!")); }
 //给传入的目对象加 sayHello()方法 void Init_Hello(Handle<Object> target) {
 target->Set(String::NewSymbol("sayHello"), FunctionTemplate::New(SayHello)->GetFunction()); } //调用 NODE_MODULE()方法将注方法定义内存中 NODE_MODULE(hello, Init_Hello)
-C/C++与内的一样，在 target 对上，后过 NODE_MODULE 可。由于不像编写内样对到 node_module_list 中，以认作是一个生，只能过 dlopen()动加，后 JavaScript 用。
-2.4.3C/C++
-在 GYP 工的下，C/C++的编是一心的事情，为个编写不的目编。写好.gyp 目是编外的大事，你也心事，因
-为.gyp 目是的。node-gyp 定.gyp
+```
+
+C/C++扩展模块与内建模块的套路一样，将方法挂载在 target 对象上，然后通过 NODE_MODULE 声明即可。由于不像编写内建模块那样将对象声明到 node_module_list 链表中，所以无法被认作是一个原生模块，只能通过 dlopen()来动态加载，然后导出给 JavaScript 调用。2.4.3 C/C++扩展模块的编译
+
+在 GYP 工具的帮助下，C/C++扩展模块的编译是一件省心的事情，无须为每个平台编写不同的项目编译文件。写好．gyp 项目文件是除编码外的头等大事，然而你也无须担心此事太难，因为．gyp 项目文件是足够简单的。node-gyp 约定．gyp 文件为 binding.gyp，其内容如下所示：
+
+```js
 { 'targets': [
 { 'target_name': 'hello', 'sources': [
 'src/hello.cc' ], 'conditions': [
 ['OS == "win"', {
 'libraries': ['-lnode.lib'] } ]
 ] } ] }
-后用
-\$ node-gyp configure
-会到下的
-gyp info it worked if it ends with ok gyp info using node-gyp@0.8.3 gyp info using node@0.8.14 | darwin | x64 gyp info spawn python
-为 binding.gyp，内下
-gyp info spawn args [ '/usr/local/lib/node_modules/node-gyp/gyp/gyp',
-gyp info spawn args 'binding.gyp',
-gyp info spawn args '-f',
-gyp info spawn args 'make',
-gyp info spawn args '-I',
-gyp info spawn args '/Users/jacksontian/git/diveintonode/examples/02/addon/build/config.gypi',
-gyp info spawn args '-I',
-gyp info spawn args '/usr/local/lib/node_modules/node-gyp/addon.gypi',
-gyp info spawn args '-I',
-gyp info spawn args '/Users/jacksontian/.node-gyp/0.8.14/common.gypi',
-gyp info spawn args '-Dlibrary=shared_library',
-gyp info spawn args '-Dvisibility=default',
-gyp info spawn args '-Dnode_root_dir=/Users/jacksontian/.node-gyp/0.8.14',
-gyp info spawn args '-Dmodule_root_dir=/Users/jacksontian/git/diveintonode/examples/02/addon',
-gyp info spawn args '--depth=.',
-gyp info spawn args '--generator-output',
-gyp info spawn args 'build',
-gyp info spawn args '-Goutput_dir=.' ]  
-gyp info ok
+```
 
-node-gyp configure 这个会在前目中创 build 目，并生系统相关的目。在*nix 下，build 目中会 Makefile 在 Windows 下，会生 vcxproj。继续下
-\$ node-gyp build
-会到下的
-gyp info it worked if it ends with ok
-gyp info using node-gyp@0.8.3
-gyp info using node@0.8.14 | darwin | x64
-gyp info spawn make
-gyp info spawn args [ 'BUILDTYPE=Release', '-C', 'build' ]
-CXX(target) Release/obj.target/hello/hello.o
-SOLINK_MODULE(target) Release/hello.node
-SOLINK_MODULE(target) Release/hello.node: Finished
-gyp info ok
-编过程会不，分过 makevcbuild 编。编后，hello.node
-会生在 build/Release 目下。
-2.4.4C/C++
-到 hello.node 后，用实在前已经。require()过解识、分、定，后加可。下的入前编到的.node，并用中的
-var hello = require('./build/Release/hello.node');
-console.log(hello.sayHello());
-以上为 hello.js，用 node hello.js 可到下的
-Hello world!
-对于以.node 为的，Node 会用 process.dlopen()加
-//Native extension for .node
-Module.\_extensions['.node'] = process.dlopen;
-对于用者言，require()是的。对于的编写者，process.dlopen()中的过程了解一。
-图 2-7，require()在入.node 的过程中，实上经了 4 个上的用。
-加.node 实上经了个，一个是用 uv_dlopen()开动接，个是用 uv_dlsym()到动接中过 NODE_MODULE 定的。这个过程都是过 libuv 的在*nix 下实上用的是 dlfcn.h 中定的 dlopen()dlsym()个在 Windows 是过 LoadLibraryExW()GetProcAddress()这个实的，它们分加.so.dll（实为.node）。
+然后调用：
 
-图 2-7 require()入.node 的过程
-这对 libuv 数的用分 Node 用 libuv 实的，这样的情景在很多还会。
-由于编写时过 NODE_MODULE 定为 node_module_struct，以在数之后，它为 node_module_struct 几是对接的。接下的过程就是入的 exports 对作为实，C++中定的在 exports 对上，后用者就可以用了。
-C/C++与 JavaScript 的区在于加之后不要编，接之后就可以外部用了，加 JavaScript。
-使用 C/C++的一个好在于可以灵活动加它们，Node 自性的时，Node 的可性。
-关于 node-gyp 工的多可以https://github.com/TooTallNate/node-gyp（作者为Nathan Rajlich，Node 源的心贡献者之一）。
+```
+$ node-gyp configure
+```
+
+会得到如下的输出结果：
+
+node-gyp configure 这个命令会在当前目录中创建 build 目录，并生成系统相关的项目文件。在\*nix 平台下，build 目录中会出现 Makefile 等文件；在 Windows 下，则会生成 vcxproj 等文件。继续执行如下代码：
+
+会得到如下的输出结果：
+
+编译过程会根据平台不同，分别通过 make 或 vcbuild 进行编译。编译完成后，hello.node 文件会生成在 build/Release 目录下。
+
+2.4.4 C/C++扩展模块的加载得到 hello.node 结果文件后，如何调用扩展模块其实在前面已经提及。require()方法通过解析标识符、路径分析、文件定位，然后加载执行即可。下面的代码引入前面编译得到的．node 文件，并调用执行其中的方法：
+
+以上代码存为 hello.js，调用 node hello.js 命令即可得到如下的输出结果：
+
+对于以．node 为扩展名的文件，Node 将会调用 process.dlopen()方法去加载文件：
+
+对于调用者而言，require()是轻松愉快的。对于扩展模块的编写者来说，process.dlopen()中隐含的过程值得了解一番。如图 2-7 所示，require()在引入．node 文件的过程中，实际上经历了 4 个层面上的调用。
+
+图 2-7 require()引入．node 文件的过程加载．node 文件实际上经历了两个步骤，第一个步骤是调用 uv_dlopen()方法去打开动态链接库，第二个步骤是调用 uv_dlsym()方法找到动态链接库中通过 NODE_MODULE 宏定义的方法地址。这两个过程都是通过 libuv 库进行封装的：在\*nix 平台下实际上调用的是 dlfcn.h 头文件中定义的 dlopen()和 dlsym()两个方法；在 Windows 平台则是通过 LoadLibraryExW()和 GetProcAddress()这两个方法实现的，它们分别加载．so 和．dll 文件（实际为．node 文件）。这里对 libuv 函数的调用充分表现 Node 利用 libuv 实现跨平台的方式，这样的情景在很多地方还会出现。
+
+由于编写模块时通过 NODE_MODULE 将模块定义为 node_module_struct 结构，所以在获取函数地址之后，将它映射为 node_module_struct 结构几乎是无缝对接的。接下来的过程就是将传入的 exports 对象作为实参运行，将 C++中定义的方法挂载在 exports 对象上，然后调用者就可以轻松调用了。C/C++扩展模块与 JavaScript 模块的区别在于加载之后不需要编译，直接执行之后就可以被外部调用了，其加载速度比 JavaScript 模块略快。使用 C/C++扩展模块的一个好处在于可以更灵活和动态地加载它们，保持 Node 模块自身简单性的同时，给予 Node 无限的可扩展性。关于 node-gyp 工具的更多细节可以参见https://github.com/TooTallNate/node-gyp（作者为Nathan Rajlich, Node 源码的核心贡献者之一）。
 
 ## 2.5 模块调用栈
 
-、心、内、C/C++的之后，有要一下之的用关系，图 2-8。
-C/C++内于最的，它于心，要 APIJavaScript 心 JavaScript 用。你不是了解要用的 C/C++内，请量过 process.binding()接用，这是不推荐的。
-JavaScript 心要的有一是作为 C/C++内的接，用一是的能，它不要，是分要。
+结束文件模块、核心模块、内建模块、C/C++扩展模块等的阐述之后，有必要明确一下各种模块之间的调用关系，如图 2-8 所示。
 
-图 2-8 之的用关系
-由编写，包括 JavaScriptC/C++，要用为 JavaScript 用。
+图 2-8 模块之间的调用关系 C/C++内建模块属于最底层的模块，它属于核心模块，主要提供 API 给 JavaScript 核心模块和第三方 JavaScript 文件模块调用。如果你不是非常了解要调用的 C/C++内建模块，请尽量避免通过 process.binding()方法直接调用，这是不推荐的。JavaScript 核心模块主要扮演的职责有两类：一类是作为 C/C++内建模块的封装层和桥接层，供文件模块调用；一类是纯粹的功能模块，它不需要跟底层打交道，但是又十分重要。文件模块通常由第三方编写，包括普通 JavaScript 模块和 C/C++扩展模块，主要调用方向为普通 JavaScript 模块调用扩展模块。
 
 ## 2.6 包与 NPM
 
-Node 组织了自的心，也使可以有序编写使用。是在中，与之是在的，相之不能接用。在之外，包 NPM 是系起的一机。
-在 NPM 之前，不不起 CommonJS 的包。JavaScript 不 Java 者他语言样，有包。Node 对的实，一定程上解决了量、关系组织性问题。包的，是在的上一组织 JavaScript。图 2-9 为包组织图。
+Node 组织了自身的核心模块，也使得第三方文件模块可以有序地编写和使用。但是在第三方模块中，模块与模块之间仍然是散列在各地的，相互之间不能直接引用。而在模块之外，包和 NPM 则是将模块联系起来的一种机制。在介绍 NPM 之前，不得不提起 CommonJS 的包规范。JavaScript 不似 Java 或者其他语言那样，具有模块和包结构。Node 对模块规范的实现，一定程度上解决了变量依赖、依赖关系等代码组织性问题。包的出现，则是在模块的基础上进一步组织 JavaScript 代码。图 2-9 为包组织模块示意图。
 
-图 2-9 包组织图
-CommonJS 的包的定实也分，它由包包个部分组，前者用于组织包中的，后者用于包的相关信，以外部读分。
-2.6.1
-包实上是一个，一个目接包为.ziptar.gz 的，后解还为目。CommonJS 的包目应包下这些。
-. package.json 包。
-. bin 用于可的目。
-. lib 用于 JavaScript 的目。
-. doc 用于的目。
-. test 用于测试用的。
+图 2-9 包组织模块示意图 CommonJS 的包规范的定义其实也十分简单，它由包结构和包描述文件两个部分组成，前者用于组织包中的各种文件，后者则用于描述包的相关信息，以供外部读取分析。
+2.6.1 包结构包实际上是一个存档文件，即一个目录直接打包为.zip 或 tar.gz 格式的文件，安装后解压还原为目录。完全符合 CommonJS 规范的包目录应该包含如下这些文件。
 
-可以到，CommonJS 包从、测试都做过。一个包后外时，用到测试的时候，会他们一实可的。
+- package.json：包描述文件。
+- bin：用于存放可执行二进制文件的目录。
+- lib：用于存放 JavaScript 代码的目录。
+- doc：用于存放文档的目录。
+- test：用于存放单元测试用例的代码。可以看到，CommonJS 包规范从文档、测试等方面都做过考虑。当一个包完成后向外公布时，用户看到单元测试和文档的时候，会给他们一种踏实可靠的感觉。2.6.2 包描述文件与 NPM 包描述文件用于表达非代码相关的信息，它是一个 JSON 格式的文件——package.json，位于包的根目录下，是包的重要组成部分。而 NPM 的所有行为都与包描述文件的字段息息相关。由于 CommonJS 包规范尚处于草案阶段，NPM 在实践中做了一定的取舍，具体细节在后面会介绍到。CommonJS 为 package.json 文件定义了如下一些必需的字段。
+- name。包名。规范定义它需要由小写的字母和数字组成，可以包含.、\_和-，但不允许出现空格。包名必须是唯一的，以免对外公布时产生重名冲突的误解。除此之外，NPM 还建议不要在包名中附带上 node 或 js 来重复标识它是 JavaScript 或 Node 模块。
+- description。包简介。
+- version。版本号。一个语义化的版本号，这在http://semver.org/上有详细定义，通常为major.minor.revision格式。该版本号十分重要，常常用于一些版本控制的场合。
+- keywords。关键词数组，NPM 中主要用来做分类搜索。一个好的关键词数组有利于用户快速找到你编写的包。
+- maintainers。包维护者列表。每个维护者由 name、email 和 web 这 3 个属性组成。示例如下："maintainers": [{ "name": "JacksonTian", "email": "shyvo1987@gmail.com","web": "http://html5ify.com" }]NPM 通过该属性进行权限认证。
+- contributors。贡献者列表。在开源社区中，为开源项目提供代码是经常出现的事情，如果名字能出现在知名项目的 contributors 列表中，是一件比较有荣誉感的事。列表中的第一个贡献应当是包的作者本人。它的格式与维护者列表相同。
+- bugs。一个可以反馈 bug 的网页地址或邮件地址。
+- licenses。当前包所使用的许可证列表，表示这个包可以在哪些许可证下使用。它的格式如下：
 
-2.6.2NPM
-包用于相关的信，它是一个 JSON 的 package.json，于包的目下，是包的要组部分。NPM 的有为都与包的相关。由于 CommonJS 包于，NPM 在实践中做了一定的，在后会到。
-CommonJS 为 package.json 定了下一些的。
-. name。包。定它要由小写的数组，可以包.、\_-，不。包是一的，以对外时产生的解。之外，NPM 还不要在包中上 nodejs 复识它是 JavaScriptNode。
-. description。包。
-. version。本。一个语的本，这在http://semver.org/上有定，为major.minor.revision。本分要，用于一些本的场。
-. keywords。关数组，NPM 中要用做分索。一个好的关数组有于用
-到你编写的包。
+* repositories。托管源代码的位置列表，表明可以通过哪些方式和地址访问包的源代码。
+* dependencies。使用当前包所需要依赖的包列表。这个属性十分重要，NPM 会通过这个属性帮助自动加载依赖的包。
 
-. maintainers。包者。个者由 name、emailweb 这 3 个性组。下"maintainers": [{ "name": "Jackson Tian", "email": "shyvo1987@gmail.com", "web": "http://html5ify.
-com" }]  
-NPM 过性认。
-. contributors。贡献者。在开源社区中，为开源目是经的事情，能在目的 contributors 中，是一有的事。中的一个贡献应是包的作者本人。它的与者相。
-. bugs。一个可以反 bug 的网页。
-. licenses。前包使用的可，这个包可以在些可下使用。它的下
-"licenses": [{ "type": "GPLv2", "url": "http://www.example.com/licenses/gpl.html", }]
+除了必选字段外，规范还定义了一部分可选字段，具体如下所示。
 
-. repositories。托管源的，可以过些问包的源。2
-. dependencies。使用前包要的包。这个性分要，NPM 会过这个
+- homepage。当前包的网站地址。
+- os。操作系统支持列表。这些操作系统的取值包括 aix、freebsd、linux、macos、solaris、vxworks、windows。如果设置了列表为空，则不对操作系统做任何假设。
+- cpu。CPU 架构的支持列表，有效的架构名称有 arm、mips、ppc、sparc、x86 和 x86_64。同 os 一样，如果列表为空，则不对 CPU 架构做任何假设。
+- engine。支持的 JavaScript 引擎列表，有效的引擎取值包括 ejs、flusspferd、gpsee、jsc、spidermonkey、narwhal、node 和 v8。
+- builtin。标志当前包是否是内建在底层系统的标准组件。
+- directories。包目录说明。
+- implements。实现规范的列表。标志当前包实现了 CommonJS 的哪些规范。
+- scripts。脚本说明对象。它主要被包管理器用来安装、编译、测试和卸载包。示例如下：
 
-性自动加的包。了外，还定了一部分可，下。
-. homepage。前包的网。
-. os。作系统。这些作系统的包括 aix、freebsd、linux、macos、solaris、vxworks、windows。了为，不对作系统做。
+包规范的定义可以帮助 Node 解决依赖包安装的问题，而 NPM 正是基于该规范进行了实现。最初，NPM 工具是由 Isaac Z. Schlueter 单独创建，提供给 Node 服务的 Node 包管理器，需要单独安装。后来，在 v0.6.3 版本时集成进 Node 中作为默认包管理器，作为软件包的一部分一起安装。之后，Isaac Z. Schlueter 也成为 Node 的掌门人。在包描述文件的规范中，NPM 实际需要的字段主要有 name、version、description、keywords、repositories、author、bin、main、scripts、engines、dependencies、devDependencies。
 
-. cpu。CPU 的，有的有 arm、mips、ppc、sparc、x86x86_64。os 一样，为，不对 CPU 做。
-. engine。的 JavaScript，有的包括 ejs、flusspferd、gpsee、jsc、spidermonkey、narwhal、nodev8。
-. builtin。前包是否是内在系统的组。
-. directories。包目。. implements。实的。前包实了 CommonJS 的些。
-. scripts。脚本对。它要包管用、编、测试包
-。下
+与包规范的区别在于多了 author、bin、main 和 devDependencies 这 4 个字段，下面补充说明一下。
 
-"scripts": { "install": "install.js",
-"uninstall": "uninstall.js",
-"build": "build.js",  
-"doc": "make-doc.js",
-"test": "test.js" }
-包的定可以 Node 解决包的问题，NPM 是于了实。最初，NPM 工是由 IsaacZ.Schlueter 创，Node 服务的 Node 包管，要。后，在 v0.6.3 本时 Node 中作为认包管，作为包的一部分一起。之后，Isaac Z.Schlueter 也为 Node 的门人。
-在包的中，NPM 实要的要有 name、version、description、keywords、repositories、author、bin、main、scripts、engines、dependencies、devDependencies。
-与包的区在于多了 author、bin、maindevDependencies 这 4 个，下补一下。
-. author。包作者。
-. bin。一些包作者包可以作为工使用。好 bin 后，过 npm install package_name -g 可以脚本加到中，之后可以在中接。前的 node-gyp 是这样的。过-g 的包为。
+- author。包作者。
+- bin。一些包作者希望包可以作为命令行工具使用。配置好 bin 字段后，通过 npm installpackage_name -g 命令可以将脚本添加到执行路径中，之后可以在命令行中直接执行。前面的 node-gyp 即是这样安装的。通过-g 命令安装的模块包称为全局模式。
+- main。模块引入方法 require()在引入包时，会优先检查这个字段，并将其作为包中其余模块的入口。如果不存在这个字段，require()方法会查找包目录下的 index.js、index.node、index.json 文件作为默认入口。
+- devDependencies。一些模块只在开发时需要依赖。配置这个属性，可以提示包的后续开发者安装依赖包。下面是知名框架 express 项目的 package.json 文件，具有一定的参考意义：
 
-. main。入 require()在入包时，会优这个，并作为包中余的入。不在这个，require()会包目下的 index.js、index.node、
-index.json 作为认入。
-. devDependencies。一些只在开发时要。这个性，可以包的后续开
-发者包。下是 express 目的 package.json，有一定的
-{ "name": "express", "description": "Sinatra inspired web development framework", "version": "3.3.4", "author": "TJ Holowaychuk <tj@vision-media.ca>", "contributors": [
-{ "name": "TJ Holowaychuk", "email": "tj@vision-media.ca"
-},
-{ "name": "Aaron Heckmann", "email": "aaron.heckmann+github@gmail.com"
-},
-{ "name": "Ciaran Jessup", "email": "ciaranj@gmail.com"
-},
-{ "name": "Guillermo Rauch", "email": "rauchg@gmail.com"
-} ], "dependencies": {
-"connect": "2.8.4", "commander": "1.2.0", "range-parser": "0.0.4", "mkdirp": "0.3.5", "cookie": "0.1.0", "buffer-crc32": "0.2.1", "fresh": "0.1.0", "methods": "0.0.1", "send": "0.1.3", "cookie-signature": "1.0.1", "debug": "_"
-},
-"devDependencies": { "ejs": "_", "mocha": "_", "jade": "0.30.0", "hjs": "_", "stylus": "_", "should": "_", "connect-redis": "_", "marked": "_", "supertest": "0.6.0"
-},
-"keywords": [ "express", "framework", "sinatra", "web", "rest", "restful", "router", "app", "api"
-], "repository": "git://github.com/visionmedia/express", "main": "index", "bin": {
-"express": "./bin/express" }, "scripts": {
-"prepublish": "npm prune",
-"test": "make test" }, "engines": {
-"node": "\*" } }
-2.6.3NPM
-CommonJS 包是，NPM 是中的一实践。NPM 之于 Node，相于 gem 之于 Ruby，
-pear 之于 PHP。对于 Node 言，NPM 了的发、。NPM，Node 与之了很好的一个生系统。
-NPM，可以用管包。之外，NPM 还有一些的用，下我们一下。
+  2.6.3 NPM 常用功能 CommonJS 包规范是理论，NPM 是其中的一种实践。NPM 之于 Node，相当于 gem 之于 Ruby,pear 之于 PHP。对于 Node 而言，NPM 帮助完成了第三方模块的发布、安装和依赖等。借助 NPM,Node 与第三方模块之间形成了很好的一个生态系统。借助 NPM，可以帮助用户快速安装和管理依赖包。除此之外，NPM 还有一些巧妙的用法，下面我们详细介绍一下。
 
-1.
+  1.查看帮助在安装 Node 之后，执行 npm -v 命令可以查看当前 NPM 的版本：
 
-在 Node 之后，npm –v 可以前 NPM 的本
-$ npm -v 1.2.32 
-在不熟悉NPM的之前，可以接NPM到
-$ npm
-Usage: npm <command>
-where <command> is one of: add-user, adduser, apihelp, author, bin, bugs, c, cache, completion, config, ddp, dedupe, deprecate, docs, edit, explore, faq, find, find-dupes, get, help, help-search, home, i, info, init, install, isntall, issues, la, link, list, ll, ln, login, ls, outdated, owner, pack, prefix,
-prune, publish, r, rb, rebuild, remove, restart, rm, root, run-script, s, se, search, set, show, shrinkwrap, star, stars, start, stop, submodule, tag, test, tst, un, uninstall, unlink, unpublish, unstar, up, update, version, view, whoami
-npm <cmd> -h quick help on <cmd> npm -l display full usage info npm faq commonly asked questions npm help <term> search for help on <term> npm help npm involved overview
-Specify configs in the ini-formatted file:
-/Users/jacksontian/.npmrc or on the command line via: npm <command> --key value Config info can be viewed via: npm help config
-npm@1.2.32 /usr/local/lib/node_modules/npm 可以到，中了有的，中 npm help <command>可以的。
+在不熟悉 NPM 的命令之前，可以直接执行 NPM 查看到帮助引导说明：
 
-2.
+可以看到，帮助中列出了所有的命令，其中 npmhelp <command>可以查看具体的命令说明。2.安装依赖包安装依赖包是 NPM 最常见的用法，它的执行语句是 npm install express。执行该命令后，NPM 会在当前目录下创建 node_modules 目录，然后在 node_modules 目录下创建 express 目录，接着将包解压到这个目录下。
 
-包是 NPM 最的用，它的语是 npm install express。后，NPM 会在前目下创 node*modules 目，后在 node_modules 目下创 express 目，接着包解到这个目下。
-好包后，接在中用 require('express');可入包。require()在做分的时候会过到 express 在的。入包的这个是相相的。
-式
-包中有工，要 npm install express –g。要的是，并不是一个包为一个包的，它并不着可以从过 require()用到它。
-这个实并不，在多。实上，-g 是一个包为可用的
-可。它包中的 bin，实脚本接到与 Node 可相的下
-"bin": { "express": "./bin/express" },
-事实上，过的有包都了一个统一的目下，这个目可以过下推
-path.resolve(process.execPath, '..', '..', 'lib', 'node_modules');
-Node 可的是/usr/local/bin/node，目就是/usr/local/lib/node*
-modules。最后，过接的 bin 的可接到 Node 的可目下。
-.
-对于一些没有发到 NPM 上的包，是因为网因接的包，可以过包下到本，后以本。本只为 NPMpackage.json 在的可它可以是一个包 package.json 的，也可以是一个 URL，也可以是一个目下有 package.json 的目。数下
-npm install <tarball file> npm install <tarball url> npm install <folder>
-.
-不能过源，可以过像源。在时，加--registry=http:// registry.url 可，下 npm install underscore --registry=http://registry.url
+安装好依赖包后，直接在代码中调用 require('express')；即可引入该包。require()方法在做路径分析的时候会通过模块路径查找到 express 所在的位置。模块引入和包的安装这两个步骤是相辅相承的。● 全局模式安装如果包中含有命令行工具，那么需要执行 npminstall express -g 命令进行全局模式安装。需要注意的是，全局模式并不是将一个模块包安装为一个全局包的意思，它并不意味着可以从任何地方通过 require()来引用到它。全局模式这个称谓其实并不精确，存在诸多误导。实际上，-g 是将一个包安装为全局可用的可执行命令。它根据包描述文件中的 bin 字段配置，将实际脚本链接到与 Node 可执行文件相同的路径下：
 
-使用过程中几都用像源，可以以下定认源
-npm config set registry http://registry.url
+事实上，通过全局模式安装的所有模块包都被安装进了一个统一的目录下，这个目录可以通过如下方式推算出来：
 
-3. NPM
-   一个要的是 C/C++实上是编后才能使用的。package.json 中 scripts 的就是包在者过程中机，下
-   "scripts": { "preinstall": "preinstall.js", "install": "install.js", "uninstall": "uninstall.js", "test": "test.js"
-   }
-   在以上中 npm install <package>时，preinstall 的脚本会加，后 install 的脚本会。在 npm uninstall <package>时，uninstall 的脚本也会做一些工作。
-   在一个的包目下 npm test 时，会 test 的脚本。一个优的包应包测试用，并在 package.json 中好测试的，用测试用，以包是否定可。
-4.
+如果 Node 可执行文件的位置是/usr/local/bin/node，那么模块目录就是/usr/local/lib/node_modules。最后，通过软链接的方式将 bin 字段配置的可执行文件链接到 Node 的可执行目录下。● 从本地安装对于一些没有发布到 NPM 上的包，或是因为网络原因导致无法直接安装的包，可以通过将包下载到本地，然后以本地安装。本地安装只需为 NPM 指明 package.json 文件所在的位置即可：它可以是一个包含 package.json 的存档文件，也可以是一个 URL 地址，也可以是一个目录下有 package.json 文件的目录位置。具体参数如下：
 
-为了个 NPM 的程起，这编写一个包，发到 NPM 中，并过 NPM 本。
-.
-的内我们量，这还是以 sayHello 作为，相关下
-exports.sayHello = function () { return 'Hello, world.'; };
-这为 hello.js 可。
-始文
-package.json 的内管相对多，是实发一个包时并不要一一编写。NPM 的 npm init 会你生 package.json，下
-$ npm init This utility will walk you through creating a package.json file. It only covers the most common items, and tries to guess sane defaults. 
-See `npm help json` for definitive documentation on these fields and exactly what they do. 
-Use `npm install <pkg> --save` afterwards to install a package and save it as a dependency in the package.json file. 
-Press ^C at any time to quit. name: (module) hello_test_jackson version: (0.0.0) 0.0.1 description: A hello world package entry point: (hello.js) ./hello.js test command: git repository: keywords: Hello world author: Jackson Tian license: (BSD) MIT About to write to /Users/jacksontian/git/diveintonode/examples/03/module/package.json: 
-{ "name": "hello_test_jackson", "version": "0.0.1", "description": "A hello world package", "main": "./hello.js", "scripts": {
- "test": "echo \"Error: no test specified\" && exit 1" }, "repository": "", "keywords": [
- "Hello", 
- "world" ], "author": "Jackson Tian", "license": "MIT" 
-} 
-Is this ok? (yes) yes npm WARN package.json hello_test_jackson@0.0.1 No README.md file found! 
-NPM过问的个入，最后生的包。你，入yes，时会在目下到package.json。
-. 
-为了包，NPM要使用才包发到中。的是npm 
-adduser。这也是一个问的过程，序可
-$ npm adduser Username: (jacksontian) Email: (shyvo1987@gmail.com)
-.
+● 从非官方源安装如果不能通过官方源安装，可以通过镜像源安装。在执行命令时，添加--registry=http://registry.url即可，示例如下：
 
-上包的是 npm publish <folder>。在创的 package.json 在的目下，npm publish .开始上包，相关下
-\$ npm publish .
-npm http PUT http://registry.npmjs.org/hello_test_jackson
-npm http 201 http://registry.npmjs.org/hello_test_jackson
-npm http GET http://registry.npmjs.org/hello_test_jackson
-npm http 200 http://registry.npmjs.org/hello_test_jackson
-npm http PUT http://registry.npmjs.org/hello_test_jackson/0.0.1/-tag/latest
-npm http 201 http://registry.npmjs.org/hello_test_jackson/0.0.1/-tag/latest
-npm http GET http://registry.npmjs.org/hello_test_jackson
-npm http 200 http://registry.npmjs.org/hello_test_jackson
-npm http PUT
-http://registry.npmjs.org/hello_test_jackson/-/hello_test_jackson-0.0.1.tgz/-rev/2-2d64e0946b86687
-8bb252f182070c1d5
-npm http 201
-http://registry.npmjs.org/hello_test_jackson/-/hello_test_jackson-0.0.1.tgz/-rev/2-2d64e0946b86687
-8bb252f182070c1d5
+如果使用过程中几乎都采用镜像源安装，可以执行以下命令指定默认源：
 
-- hello_test_jackson@0.0.1
-  在这个过程中，NPM 会目包为一个，后上到源中。
-  .
-  为了测试自己上的包，可以一个目 npm install hello_test_jackson 它
-  $ npm install hello_test_jackson --registry=http://registry.npmjs.org npm http GET http://registry.npmjs.org/hello_test_jackson npm http 200 http://registry.npmjs.org/hello_test_jackson hello_test_jackson@0.0.1 ./node_modules/hello_test_jackson 
-. 
-，一个包只有一个人有发。要多人发，可以使用npm owner你管包的有者
-$ npm owner ls eventproxy npm http GET https://registry.npmjs.org/eventproxy npm http 200 https://registry.npmjs.org/eventproxy jacksontian <shyvo1987@gmail.com>
-  使用这个，也可以加包的有者，一个包的有者
-  npm owner ls <package name> npm owner add <user> <package name> npm owner rm <user> <package name>
+3. NPM 钩子命令另一个需要说明的是 C/C++模块实际上是编译后才能使用的。package.json 中 scripts 字段的提出就是让包在安装或者卸载等过程中提供钩子机制，示例如下：
 
-5.
+在以上字段中执行 npm install <package>时，preinstall 指向的脚本将会被加载执行，然后 install 指向的脚本会被执行。在执行 npmuninstall <package>时，uninstall 指向的脚本也许会做一些清理工作等。当在一个具体的包目录下执行 npm test 时，将会运行 test 指向的脚本。一个优秀的包应当包含测试用例，并在 package.json 文件中配置好运行测试的命令，方便用户运行测试用例，以便检验包是否稳定可靠。4.发布包为了将整个 NPM 的流程串联起来，这里将演示如何编写一个包，将其发布到 NPM 仓库中，并通过 NPM 安装回本地。● 编写模块模块的内容我们尽量保持简单，这里还是以 sayHello 作为例子，相关代码如下：
 
-在使用 NPM 的过程中，你不能认前目下能否过 require()入想要的包，这时可以 npm ls 分包。
-这个可以为你分前下能过到的有包，并生树，下
-\$ npm ls /Users/jacksontian connect@2.0.3 crc@0.1.0 debug@0.6.0 formidable@1.0.9 mime@1.2.4 qs@0.4.2 hello_test_jackson@0.0.1 urllib@0.2.3
-2.6.4NPM
-在的内部应用中使用 NPM 与开源社区中使用有一定的。的在于，一要享到开发的目组织上的好，一要到性的问题。以，过 NPM 享发在在的。
-为了时能享到 NPM 上多的包，时对自己的包，有的解决就是自己的 NPM。， NPM 自是开源的，是它的服务端客端。过源自己的并
-不是。NPM 的与像（情可 D）的几一样。与像不的在于，NPM 可以不源中的包。图 2-10 为
-中使用的图。
+将这段代码保存为 hello.js 即可。● 初始化包描述文件 package.json 文件的内容尽管相对较多，但是实际发布一个包时并不需要一行一行编写。NPM 提供的 npm init 命令会帮助你生成 package.json 文件，具体如下所示：
 
-图 2-10 使用的图
-对于内部言，有的可用可以包到 NPM 中，这样可以新的中心，不至于个小目自相能的，绝过复实享的为。
-2.6.5NPM
-作为为包服务的工，NPM 分。它实质上已经是一个包享，有人都可以贡献并包分享到这个上，也可以在可（大多是 MIT 可）的下使用它们。NPM 的这些，接到一个享上，了贡献者与使用者之的，这分有于的，也分于 Node 的推广。几没有一语言有 Node 这样才 3 年多就有上个的情景。这个一部分是因为 Node 了 JavaScript，这门语言有极大的开发人数，有强大的生产一部分是因为 CommonJS NPM，它们使产品能好组织、使用。
-在的问题在于，在 NPM 上，个人都可以分享包到上，于开发人不一，上的包的质量也不。一个问题是，Node 可以在服务端，要问题。
-对于包的使用者言，包质量问题要作为是否的一个。
-管 NPM 没有性的一个包的质量，好在开源社区也有它内在的发机，就是应，中 NPM 页（https://npmjs.org/）上的可以的质量可性。个可以质量的是GitHub，NPM中大多的包都是过GitHub托管的，目的者数量分数量也能从反这个的可性。个可以量包质量的在于包中的测试用的，一个没有测试的包本上是信的，没有的包，使用者使用时内心也是不实的。
-在问题上，在经过质量的之后，应可以一大候包。于使用者大多是 JavaScript 程序，实在于 C/C++，这在的部门之后可使用。
-事实上，为了解决上问题，Isaac Z. Schlueter 入 CPAN 社区中的 Kwalitee 自序。Kwalitee 是一个，发与 quality 相。CPAN 社区对它的始定下 Kwaliteeis somethingthatlooks like quality, sounds like quality, butis notquite quality.
-大就是认一个的质量是否优并不是，只能从一些，都过，也并不能定它就是高质量的。这个能大部分不的，不是有。言，Kwalitee 的要的与上的大相。
-好的测试。
-好的（README、API）。好的测试。好的编。多。CPAN 社区定了相多的。，NPM 社区也会有多的。
-读者可以这些区分些优的的。
+NPM 通过提问式的交互逐个填入选项，最后生成预览的包描述文件。如果你满意，输入 yes，此时会在目录下得到 package.json 文件。● 注册包仓库账号为了维护包，NPM 必须要使用仓库账号才允许将包发布到仓库中。注册账号的命令是 npmadduser。这也是一个提问式的交互过程，按顺序进行即可：
+
+● 上传包上传包的命令是 npm publish <folder>。在刚刚创建的 package.json 文件所在的目录下，执行 npm publish .开始上传包，相关代码如下：
+
+在这个过程中，NPM 会将目录打包为一个存档文件，然后上传到官方源仓库中。● 安装包为了体验和测试自己上传的包，可以换一个目录执行 npm install hello_test_jackson 安装它：
+
+● 管理包权限通常，一个包只有一个人拥有权限进行发布。如果需要多人进行发布，可以使用 npm owner 命令帮助你管理包的所有者：
+
+使用这个命令，也可以添加包的拥有者，删除一个包的拥有者：
+
+5.分析包在使用 NPM 的过程中，或许你不能确认当前目录下能否通过 require()顺利引入想要的包，这时可以执行 npm ls 分析包。这个命令可以为你分析出当前路径下能够通过模块路径找到的所有包，并生成依赖树，如下：
+
+2.6.4 局域 NPM 在企业的内部应用中使用 NPM 与开源社区中使用有一定的差别。企业的限制在于，一方面需要享受到模块开发带来的低耦合和项目组织上的好处，另一方面却要考虑到模块保密性的问题。所以，通过 NPM 共享和发布存在潜在的风险。为了同时能够享受到 NPM 上众多的包，同时对自己的包进行保密和限制，现有的解决方案就是企业搭建自己的 NPM 仓库。
+
+所幸，NPM 自身是开源的，无论是它的服务器端和客户端。通过源代码搭建自己的仓库并不是什么秘密。局域 NPM 仓库的搭建方法与搭建镜像站（详情可参见附录 D）的方式几乎一样。与镜像仓库不同的地方在于，企业局域 NPM 可以选择不同步官方源仓库中的包。图 2-10 为企业中混合使用官方仓库和局域仓库的示意图。
+
+图 2-10 混合使用官方仓库和局域仓库的示意图对于企业内部而言，私有的可重用模块可以打包到局域 NPM 仓库中，这样可以保持更新的中心化，不至于让各个小项目各自维护相同功能的模块，杜绝通过复制粘贴实现代码共享的行为。2.6.5 NPM 潜在问题
+
+作为为模块和包服务的工具，NPM 十分便捷。它实质上已经是一个包共享平台，所有人都可以贡献模块并将其打包分享到这个平台上，也可以在许可证（大多是 MIT 许可证）的允许下免费使用它们。NPM 提供的这些便捷，将模块链接到一个共享平台上，缩短了贡献者与使用者之间的距离，这十分有利于模块的传播，进而也十分利于 Node 的推广。几乎没有一种语言或平台有 Node 这样出现才 3 年多就拥有成千上万个第三方模块的情景。这个功劳一部分是因为 Node 选择了 JavaScript，这门语言拥有极大的开发人员基数，具有强大的生产力；另一部分则是因为 CommonJS 规范和 NPM，它们使得产品能够更好地组织、传播和使用。潜在的问题在于，在 NPM 平台上，每个人都可以分享包到平台上，鉴于开发人员水平不一，上面的包的质量也良莠不齐。另一个问题则是，Node 代码可以运行在服务器端，需要考虑安全问题。对于包的使用者而言，包质量和安全问题需要作为是否采纳模块的一个判断条件。
+
+尽管 NPM 没有硬性的方式去评判一个包的质量和安全，好在开源社区也有它内在的健康发展机制，那就是口碑效应，其中 NPM 模块首页（https://npmjs.org/）上的依赖榜可以说明模块的质量和可靠性。第二个可以考查质量的地方是GitHub, NPM 中大多的包都是通过 GitHub 托管的，模块项目的观察者数量和分支数量也能从侧面反映这个模块的可靠性和流行度。第三个可以考量包质量的地方在于包中的测试用例和文档的状况，一个没有单元测试的包基本上是无法被信任的，没有文档的包，使用者使用时内心也是不踏实的。在安全问题上，在经过模块质量的考查之后，应该可以去掉一大半候选包。基于使用者大多是 JavaScript 程序员，难点其实存在于第三方 C/C++扩展模块，这类模块建议在企业的安全部门检查之后方可允许使用。事实上，为了解决上述问题，Isaac Z. Schlueter 计划引入 CPAN 社区中的 Kwalitee 风格来让模块进行自然排序。Kwalitee 是一个拟声词，发音与 quality 相同。CPAN 社区对它的原始定义如下：“Kwalitee”is something that looks likequality, sounds like quality, but is not quitequality.
+
+大致意思就是确认一个模块的质量是否优秀并不是那么容易，只能从一些表象来进行考查，但即便考查都通过，也并不能确定它就是高质量的模块。这个方法能够排除大部分不合格的模块，虽然不够精确但是有效。总体而言，符合 Kwalitee 的模块要满足的条件与上述提及的考查点大致相同。
+
+- 具备良好的测试。
+- 具备良好的文档（README、API）。
+- 具备良好的测试覆盖率。
+- 具备良好的编码规范。
+- 更多条件。CPAN 社区制定了相当多的规范来考查模块。未来，NPM 社区也会有更多的规范来考查模块。读者可以根据这些条款区分出那些优秀的模块和糟粕的模块。
 
 ## 2.7 前后端共用模块
 
-了多后端的实后，在我们 CommonJS 次到前端上。JavaScript 在 Node 之后，的编程语言多了一优势，就是一些可以在前后端实
-用，这是因为很多 API 在个环境下都。是在实情中，前后端的环境是有
-的。
-2.7.1
-前后端 JavaScript 分在 HTTP 的端，它们的并不。端的 JavaScript 要经从一个服务端分发到多个客端，服务端 JavaScript 是相的要多次。前者的在于，后者的在于 CPU 内源。前者要过网加，后者从中加，者的加不在一个数量上。
-Node 的入过程，几都是的。管与 Node 强的为有些相反，它是的。是前端也用的入，会在用上很大的问题。UI 在初始过程中要很多时脚本加。
-于网的因，CommonJS 为后端 JavaScript 定的并不前端的应用场景。经过一之后，AMD 最在前端应用场景中。
-它的是 Asynchronous Module Definition，是定
-，https://github.com/amdjs/amdjs-api/wiki/AMD。之外，还有定的CMD。
-2.7.2AMD
-AMD 是 CommonJS 的一个，它的定下
-define(id?, dependencies?, factory);
-它的 id 是可的，与 Node 相的在于 factory 的内就是实的内。下的定了一个的
+谈论了许多后端模块的具体实现后，现在我们围绕 CommonJS 规范再次回到前端模块上。JavaScript 在 Node 出现之后，比别的编程语言多了一项优势，那就是一些模块可以在前后端实现共用，这是因为很多 API 在各个宿主环境下都提供。但是在实际情况中，前后端的环境是略有差别的。2.7.1 模块的侧重点前后端 JavaScript 分别搁置在 HTTP 的两端，它们扮演的角色并不同。浏览器端的 JavaScript 需要经历从同一个服务器端分发到多个客户端执行，而服务器端 JavaScript 则是相同的代码需要多次执行。前者的瓶颈在于带宽，后者的瓶颈则在于 CPU 和内存等资源。前者需要通过网络加载代码，后者从磁盘中加载，两者的加载速度不在一个数量级上。纵观 Node 的模块引入过程，几乎全都是同步的。尽管与 Node 强调异步的行为有些相反，但它是合理的。但是如果前端模块也采用同步的方式来引入，那将会在用户体验上造成很大的问题。UI 在初始化过程中需要花费很多时间来等待脚本加载完成。鉴于网络的原因，CommonJS 为后端 JavaScript 制定的规范并不完全适合前端的应用场景。经过一段争执之后，AMD 规范最终在前端应用场景中胜出。它的全称是 Asynchronous ModuleDefinition，即是“异步模块定义”，详见https://github.com/amdjs/amdjs-api/wiki/AMD。除此之外，还有玉伯定义的CMD规范。
+2.7.2 AMD 规范 AMD 规范是 CommonJS 模块规范的一个延伸，它的模块定义如下：
 
-define(function() {
-var exports = {};
-exports.sayHello = function() {
-alert('Hello from module: ' + module.id);
-};
-return exports;
-});
-不之在于 AMD 要用 define 定一个，在 Node 实中是包的，它们的目的是作用，仅在要的时候入，过过量者
-的，以量不小心。一个区是内要过的实。
-2.7.3CMD
+它的模块 id 和依赖是可选的，与 Node 模块相似的地方在于 factory 的内容就是实际代码的内容。下面的代码定义了一个简单的模块：
 
-CMD 由国内的，与 AMD 的要区在于定入的部分。AMD 要在的时候定有的，过到内中
+不同之处在于 AMD 模块需要用 define 来明确定义一个模块，而在 Node 实现中是隐式包装的，它们的目的是进行作用域隔离，仅在需要的时候被引入，避免掉过去那种通过全局变量或者全局命名空间的方式，以免变量污染和不小心被修改。另一个区别则是内容需要通过返回的方式实现导出。2.7.3 CMD 规范 CMD 规范由国内的玉伯提出，与 AMD 规范的主要区别在于定义模块和依赖引入的部分。AMD 需要在声明模块的时候指定所有的依赖，通过形参传递依赖到模块内容中：
 
-define(['dep1', 'dep2'], function (dep1, dep2) { return function () {}; });
-与 AMD 相，CMD 接于 Node 对 CommonJS 的定
-define(factory);
-在
-部分，CMD 动入，下
-define(function(require, exports, module) { // The module code goes here
+与 AMD 模块规范相比，CMD 模块更接近于 Node 对 CommonJS 规范的定义：
 
-});
-require、exportsmodule 过，在要时，时用 require()
-入可。
-2.7.4
-为了一个可以在前后端，在写作过程中要前端也实了的环境。为了前后端的一性，开发者要包在一个包内。以下 hello()定到不的环境中，它能 Node、AMD、CMD 以的环境中
-;(function (name, definition) { // 检测上文环境是否为 AMDCMD var hasDefine = typeof define === 'function',
-//检查上文环境是否为 Node hasExports = typeof module !== 'undefined' && module.exports;
-if (hasDefine) { // AMD 环境 CMD 环境 define(definition);
-} else if (hasExports) { //定义为通 Node 模块 module.exports = definition();
-} else { //将模块的执行结在 window 量中在器中 thiswindow 对象 this[name] = definition();
-}
-})('hello', function () { var hello = function () {}; return hello;
-});
+在依赖部分，CMD 支持动态引入，示例如下：
+
+require、exports 和 module 通过形参传递给模块，在需要依赖模块时，随时调用 require()引入即可。
+
+2.7.4 兼容多种模块规范为了让同一个模块可以运行在前后端，在写作过程中需要考虑兼容前端也实现了模块规范的环境。为了保持前后端的一致性，类库开发者需要将类库代码包装在一个闭包内。以下代码演示如何将 hello()方法定义到不同的运行环境中，它能够兼容 Node、AMD、CMD 以及常见的浏览器环境中：
 
 ## 2.8 总结
 
@@ -1000,7 +928,7 @@ CommonJS 的分，是实分强大。Node 过，组织了自的生，弥补 JavaS
 
 ## 2.9 参考资源
 
-本的源下
+本章参考的资源如下：
 
 - http://www.commonjs.org
 - http://npmjs.org/doc/README.html
@@ -1009,11 +937,11 @@ CommonJS 的分，是实分强大。Node 过，组织了自的生，弥补 JavaS
 - http://addyosmani.com/writing-modular-js/
 - http://seajs.org/docs/
 - http://zh.wikipedia.org/zh/JavaScript
-- http://zh.wikipedia.org/wiki/ECMAScript 
-- http://www.ecma-international.org/publications/files/ECMA-ST/Ecma-262.pdf 
-- http://www.w3.org/TR/html5/ 
-- http://arstechnica.com/web/news/2009/12/commonjs-effort-sets-javascript-on-path-for-world-domination.ars 
-- http://cnodejs.org/topic/4f16442ccae1f4aa270010d7 
+- http://zh.wikipedia.org/wiki/ECMAScript
+- http://www.ecma-international.org/publications/files/ECMA-ST/Ecma-262.pdf
+- http://www.w3.org/TR/html5/
+- http://arstechnica.com/web/news/2009/12/commonjs-effort-sets-javascript-on-path-for-world-domination.ars
+- http://cnodejs.org/topic/4f16442ccae1f4aa270010d7
 - http://wiki.commonjs.org/wiki/Packages/1.0
 - http://npmjs.org/doc/developers.html#The-package-json-File
 
@@ -1300,16 +1228,16 @@ JavaScript 中的作用数在端已有熟的应用，也很好了 Ryan Dahl 实�
 
 ## 3.7 参考资源
 
-本的源下
+本章参考的资源如下：
 
 - http://cnodejs.org/blog/?p=244
 - http://cnodejs.org/blog/?p=2426
 - http://cnodejs.org/blog/?p=2489
-- http://nodejs.org/nodeconf.pdf 
+- http://nodejs.org/nodeconf.pdf
 - http://blog.dccmx.com/2011/04/select-poll-epoll-in-kernel/
 - http://www.ibm.com/developerworks/cn/linux/l-async/
 - http://twistedmatrix.com/trac/
-- http://luvit.io/ 
+- http://luvit.io/
 - http://forum.nginx.org/read.php?2,113524,113587#msg-113587
 
 # 第 4 章 异步编程
@@ -2165,7 +2093,7 @@ q.push(file, function (err, data) { // TODO }); });
 
 ## 4.6 参考资源
 
-本的源下
+本章参考的资源如下：
 
 - http://nodejs.org/docs/latest/api/events.html
 - https://github.com/JacksonTian/eventproxy/blob/master/README.md
@@ -2222,8 +2150,8 @@ V8 的大小就是新生用内加上生的内。前我们的--max-old-space-size
 // semispace*size* should be a power of 2 and old*generation_size* should be // a multiple of Page::kPageSize #if defined(V8*TARGET_ARCH_X64) #define LUMP_OF_MEMORY (2 \* MB)
 code_range_size*(512*MB), #else #define LUMP*OF*MEMORY MB
 code_range_size*(0), #endif #if defined(ANDROID)
-reserved*semispace_size*(4 * Max(LUMP*OF*MEMORY, Page::kPageSize)), max_semispace_size*(4 * Max(LUMP*OF_MEMORY, Page::kPageSize)), initial_semispace_size*(Page::kPageSize), max*old_generation_size*(192*MB), max*executable_size*(max*old_generation_size*),
-#else reserved*semispace_size*(8 * Max(LUMP*OF_MEMORY, Page::kPageSize)), max_semispace_size*(8 * Max(LUMP*OF_MEMORY, Page::kPageSize)), initial_semispace_size*(Page::kPageSize), max*old_generation_size*(700ul _ LUMP*OF_MEMORY), max_executable_size*(256l _ LUMP*OF_MEMORY),
+reserved*semispace_size*(4 * Max(LUMP*OF*MEMORY, Page::kPageSize)), max_semispace_size*(4 * Max(LUMP*OF*MEMORY, Page::kPageSize)), initial_semispace_size*(Page::kPageSize), max*old_generation_size*(192*MB), max*executable_size*(max*old_generation_size*),
+#else reserved*semispace_size*(8 * Max(LUMP*OF_MEMORY, Page::kPageSize)), max_semispace_size*(8 * Max(LUMP*OF_MEMORY, Page::kPageSize)), initial_semispace_size*(Page::kPageSize), max*old_generation_size*(700ul * LUMP*OF_MEMORY), max_executable_size*(256l \_ LUMP*OF_MEMORY),
 #endif
 对于新生内，它由个 reserved_semispace_size*，后因。机
 数不，reserved*semispace_size*在 64 系统 32 系统上分为 16 MB8 MB。以新生
@@ -2603,20 +2531,20 @@ NodeJavaScript 的要应用场景到了服务端，相应要的也与端不，�
 
 ## 5.8 参考资源
 
-在这，我对本的。本的源下
+本章参考的资源如下：
 
-- https://github.com/joyent/node/wiki/FAQ 
+- https://github.com/joyent/node/wiki/FAQ
 - http://www.cs.sunysb.edu/~cse304/Fall08/Lectures/mem-handout.pdf
 - http://en.wikipedia.org/wiki/Resident_set_size
 - https://github.com/isaacs/node-lru-cache
-- https://github.com/mranney/node_redis 
+- https://github.com/mranney/node_redis
 - https://github.com/3rd-Eden/node-memcached
-- http://nodejs.org/docs/latest/api/stream.html 
+- http://nodejs.org/docs/latest/api/stream.html
 - http://www.showmuch.com/a/20111012/215033.html
 - https://github.com/lloyd/node-memwatch
-- https://github.com/bnoordhuis/node-heapdump 
-- http://www.williamlong.info/archives/3042.html 
-- https://code.google.com/p/v8/issues/detail?id=847 
+- https://github.com/bnoordhuis/node-heapdump
+- http://www.williamlong.info/archives/3042.html
+- https://code.google.com/p/v8/issues/detail?id=847
 - http://blog.chromium.org/2011/11/game-changer-for-interactive.html
 
 # 第 6 章 理解 Buffer
@@ -2851,12 +2779,12 @@ fs/read-stream-throughput.js type=buf size=1024: 46.284 fs/read-stream-throughpu
 
 ## 6.6 参考资源
 
-本的源下
+本章参考的资源如下：
 
 - http://nodejs.org/docs/latest/api/buffer.html
 - http://nodejs.org/docs/latest/api/string_decoder.html
 - https://github.com/bnoordhuis/node-iconv
-- https://github.com/ashtuchkin/iconv-lite 
+- https://github.com/ashtuchkin/iconv-lite
 - http://httpd.apache.org/docs/2.2/programs/ab.html
 - http://cnodejs.org/user/fool
 - http://en.wikipedia.org/wiki/Slab_allocation
@@ -3430,7 +3358,7 @@ Node 于事驱动，在分环境中能发它的，于事驱动可以实与大量
 
 ## 7.7 参考资源
 
-本的源下
+本章参考的资源如下：
 
 - http://tools.ietf.org/html/rfc2616
 - http://hi.baidu.com/miracletan2008/item/0bc16c9d7af261de7b7f01a2
@@ -4566,7 +4494,7 @@ Bigpipe网页数分，使用在上网页前好了，着数的过程页，使用�
 本的内为，在Web应用的个过程中，从请到应请的个过程都有性，本就可以一个能的Web开发。过的Web技术，着的，开发者应用，不的实，这好没有图在。本的内能为Node开发者图的发，在开发Web应用时能心有，了。
 在熟的Web有Connect、Express，本中的内在这些中都有实，因为的因，本中的实为，实使用请使用这些熟的。
 ## 8.7 参考资源
-本的源下
+本章参考的资源如下：
 - http://tools.ietf.org/html/rfc3875 
 - http://tools.ietf.org/html/rfc2069 
 - http://www.ietf.org/rfc/rfc1867.txt 
@@ -4974,14 +4902,14 @@ cluster.isWorker = ('NODE_UNIQUE_ID' in process.env); cluster.isMaster = (cluste
 
 ## 9.6 参考资源
 
-本的源下
+本章参考的资源如下：
 
 - http://nodejs.org/docs/latest/api/child_process.html
 - http://nodejs.org/docs/latest/api/cluster.html
 - https://github.com/aleafs/pmProcess
 - http://en.wikipedia.org/wiki/Inter-process_communication
-- http://en.wikipedia.org/wiki/Pipeline_(Unix) 
-- http://www.w3.org/TR/workers/ 
+- http://en.wikipedia.org/wiki/Pipeline_(Unix)
+- http://www.w3.org/TR/workers/
 - http://man7.org/linux/man-pages/man7/unix.7.html
 
 # 第 10 章 测试
@@ -5359,7 +5287,7 @@ QPS =PV/10h 100 的务问量为 QPS，于 27.7，服务要 27.7 个请才能务�
 
 ## 10.4 参考资源
 
-本的源下
+本章参考的资源如下：
 
 - http://nodejs.org/docs/latest/api/assert.html
 - http://visionmedia.github.com/mocha/
@@ -5367,7 +5295,7 @@ QPS =PV/10h 100 的务问量为 QPS，于 27.7，服务要 27.7 个请才能务�
 - https://github.com/fent/node-muk
 - https://github.com/alex-seville/blanket
 - http://about.travis-ci.org/docs/
-- https://github.com/JacksonTian/unittesting 
+- https://github.com/JacksonTian/unittesting
 - https://speakerdeck.com/felixge/faster-than-c-3
 
 # 第 11 章 产品化
@@ -5469,15 +5397,16 @@ reinstall: clean @$(MAKE) install
 就的言，我们接在中 node file.js 以动应用。这对于开发中的应用言，时中程并问题。是对时的服务程言，这在个问题这会一个，次着的会开的程一并。为了能程续，我们可能会用到 nohup&以不程的
 nohup node app.js &
 动程很，是还有个要程程。工管的会，为，我们要一个脚本实应用的动、作。要这样的作，bash 脚本是最的。bash 脚本的内过与 Web 应用以定的实。这的定，实就是要解决程 ID 不的问题。没有定，我们要到应用对应的程，后用 kill 程。这要用 ps，相关下
-$ ps aux | grep node jacksontian 3618 0.0 0.0 2432768 592 s002 R+ 3:00PM 0:00.00 grep node jacksontian 3614 0.0 0.4 3054400 32612 s000 S+ 2:59PM 0:00.69 /usr/local/bin/node /Users/jacksontian/git/h5/app.js 
-后对应的Node程kill 3614。这的定是，程在动时程ID写入到一个pid中，这个可以在一个定的下，应用的run/app.pid。下是pid写入到中的
-var fs = require('fs'); var path = require('path'); 
-var pidfile = path.join(__dirname, 'run/app.pid'); fs.writeFileSync(pidfile, process.pid); 
-脚本在应用时过kill程发SIGTERM信，程收到信时app.pid，时程，相关下
-process.on('SIGTERM', function () { if (fs.existsSync(pidfile)) { 
- fs.unlinkSync(pidfile); } process.exit(0); 
-}); 
-下是一个的bash脚本，用于应用的动、作
+\$ ps aux | grep node jacksontian 3618 0.0 0.0 2432768 592 s002 R+ 3:00PM 0:00.00 grep node jacksontian 3614 0.0 0.4 3054400 32612 s000 S+ 2:59PM 0:00.69 /usr/local/bin/node /Users/jacksontian/git/h5/app.js
+后对应的 Node 程 kill 3614。这的定是，程在动时程 ID 写入到一个 pid 中，这个可以在一个定的下，应用的 run/app.pid。下是 pid 写入到中的
+var fs = require('fs'); var path = require('path');
+var pidfile = path.join(\_\_dirname, 'run/app.pid'); fs.writeFileSync(pidfile, process.pid);
+脚本在应用时过 kill 程发 SIGTERM 信，程收到信时 app.pid，时程，相关下
+process.on('SIGTERM', function () { if (fs.existsSync(pidfile)) {
+fs.unlinkSync(pidfile); } process.exit(0);
+});
+下是一个的 bash 脚本，用于应用的动、作
+
 ```bash
 #!/bin/sh DIR=`pwd` NODE=`which node` # get action ACTION=$1
 
@@ -5497,16 +5426,17 @@ fi }
 
 stop() { pid=`get_pid` if [ -z $pid ]; then
 echo 'server not running'
-else echo "server is stopping ..." kill -15 $pid  echo "server stopped !" 
-fi } 
-restart() { stop sleep 0.5 echo ===== start 
-} 
+else echo "server is stopping ..." kill -15 $pid  echo "server stopped !"
+fi }
+restart() { stop sleep 0.5 echo ===== start
+}
 case "$ACTION" in start)
 start ;; stop)
 stop ;; restart)
 restart ;; \*)
 usage ;; esac
 ```
+
 在部的过程中，只要这个 bash 脚本可，工管程
 ./appctl.sh start ./appctl.sh stop ./appctl.sh restart
 这个脚本的心就是 run/app.pid 作的。要程 ID，只要读可。
@@ -6132,7 +6062,7 @@ C.3.4
 
 ## C.5 参考资源
 
-本的源下
+本章参考的资源如下：
 
 - http://google-styleguide.googlecode.com/svn/trunk/javascriptguide.xml
 - http://caolanmcmahon.com/posts/nodejs_style_and_structure/
