@@ -46,7 +46,9 @@ Git的版本库里存了很多东西，其中最重要的就是称为stage（或
 
 第一次修改 -> `git add` -> 第二次修改 -> `git commit`
 
-第二次修改的内容没有放入暂存区。
+第二次修改的内容没有放入暂存区。`git commit`只负责把暂存区的修改提交了，也就是第一次的修改被提交了，第二次的修改不会被提交。
+
+提交后，用`git diff HEAD -- readme.txt`命令可以查看工作区和版本库里面最新版本的区别。
 
 ## 撤销修改
 
@@ -158,9 +160,9 @@ Git用`<<<<<<<`，`=======`，`>>>>>>>`标记出不同分支的内容。
 
 修复bug时，我们会通过创建新的bug分支进行修复，然后合并，最后删除；
 
-Git还提供了一个stash功能，可以把当前工作现场“储藏”起来，等以后恢复现场后继续工作。用git status查看工作区，就是干净的（除非有没有被Git管理的文件）。
+Git还提供了一个stash功能，可以把当前工作现场“储藏”起来，等以后恢复现场后继续工作。用`git status`查看工作区，就是干净的（除非有没有被Git管理的文件）。
 
-用git stash list命令看看工作现场。Git把stash内容存在某个地方了，但是需要恢复一下，有两个办法：
+用`git stash list`命令看看工作现场。Git把stash内容存在某个地方了，但是需要恢复一下，有两个办法：
 
 - 用`git stash apply`恢复，但是恢复后，stash内容并不删除，你需要用`git stash drop`来删除；
 
@@ -228,7 +230,7 @@ rebase 的目的是使得我们在查看历史提交的变化时更容易，因�
 
 # 自定义Git
 
-注意git config命令的--global参数，用了这个参数，表示你这台机器上所有的Git仓库都会使用这个配置，当然也可以对某个仓库指定不同的用户名和Email地址。
+注意`git config`命令的--global参数，用了这个参数，表示你这台机器上所有的Git仓库都会使用这个配置，当然也可以对某个仓库指定不同的用户名和Email地址。
 
 ```
 $ git config --global user.name "Your Name"
@@ -245,18 +247,39 @@ $ git config --global color.ui true
 
 在Git工作区的根目录下创建一个特殊的`.gitignore`文件，然后把要忽略的文件名填进去，Git就会自动忽略这些文件。
 
-不需要从头写`.gitignore文`件，GitHub已经为我们准备了各种配置文件，只需要组合一下就可以使用了。所有配置文件可以直接在线浏览：https://github.com/github/gitignore
+不需要从头写`.gitignore`文件，GitHub已经为我们准备了各种配置文件，只需要组合一下就可以使用了。所有配置文件可以直接在线浏览：https://github.com/github/gitignore
 
 忽略文件的原则是：
 
-忽略操作系统自动生成的文件，比如缩略图等；
-忽略编译生成的中间文件、可执行文件等，也就是如果一个文件是通过另一个文件自动生成的，那自动生成的文件就没必要放进版本库，比如Java编译产生的.class文件；
-忽略你自己的带有敏感信息的配置文件，比如存放口令的配置文件。
+- 忽略操作系统自动生成的文件，比如缩略图等；
+- 忽略编译生成的中间文件、可执行文件等，也就是如果一个文件是通过另一个文件自动生成的，那自动生成的文件就没必要放进版本库，比如Java编译产生的.class文件；
+- 忽略你自己的带有敏感信息的配置文件，比如存放口令的配置文件。
 
 ## 配置别名
 
+签出
+
+```
+git config --global alias.co checkout
+```
+
+把暂存区的修改撤销掉（unstage），重新放回工作区。
+
+```
+$ git config --global alias.unstage 'reset HEAD'
+```
+
+历史记录
+
 ```
 git config --global alias.lg "log --color --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit"
+```
+
+比较差异文件而并非文件所有内容。
+
+```
+git config --global alias.sw "show --color --compact-summary --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit"
+git config --global alias.df "diff --compact-summary"
 ```
 
 ## 搭建Git服务器
