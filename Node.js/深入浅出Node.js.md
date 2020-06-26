@@ -62,7 +62,7 @@ Chrome 浏览器和 Node 的组件构成如图 1-1 所示。我们知道浏览�
 $.post("/url", { title: "深入浅出 Node.js" }, function (data) {
   console.log("收到响应");
 });
-console.log("发送Ajax结束");
+console.log("发送 Ajax 结束");
 ```
 
 熟悉异步的用户必然知道，“收到响应”是在“发送 Ajax 结束”之后输出的。在调用`$.post()`后，后续代码是被立即执行的，而“收到响应”的执行时间是不被预期的。我们只知道它将在这个异步请求结束后执行，但并不知道具体的时间点。异步调用中对于结果值的捕获是符合“Don't call me, I willcall you”的原则的，这也是注重结果，不关心过程的一种表现。图 1-2 是一个经典的 Ajax 调用。
@@ -76,6 +76,8 @@ fs.readFile("/path", function (err, file) {
 });
 console.log("发起读取文件");
 ```
+
+这里的“发起读取文件”是在“读取文件完成”之前输出的。同样，“读取文件完成”的执行也取决于读取文件的异步调用何时结束。图 1-3 是一个经典的异步调用。
 
 在 Node 中，绝大多数的操作都以异步的方式进行调用。Ryan Dahl 排除万难，在底层构建了很多异步 I/O 的 API，从文件读取到网络请求等，均是如此。这样的意义在于，在 Node 中，我们可以从语言层面很自然地进行并行 I/O 操作。每个调用之间无须等待之前的 I/O 调用结束。在编程模型上可以极大提升效率。
 
@@ -300,9 +302,9 @@ CommonJS 对模块的定义十分简单，主要分为模块引用、模块定�
 var math = require("math");
 ```
 
-在 CommonJS 规范中，存在 `require()`方法，这个方法接受模块标识，以此引入一个模块的 API 到当前上下文中。
+在 CommonJS 规范中，存在`require()`方法，这个方法接受模块标识，以此引入一个模块的 API 到当前上下文中。
 
-2. 模块定义在模块中，上下文提供 `require()`方法来引入外部模块。对应引入的功能，上下文提供了 exports 对象用于导出当前模块的方法或者变量，并且它是唯一导出的出口。在模块中，还存在一个 module 对象，它代表模块自身，而 exports 是 module 的属性。在 Node 中，一个文件就是一个模块，将方法挂载在 exports 对象上作为属性即可定义导出的方式：
+2. 模块定义在模块中，上下文提供`require()`方法来引入外部模块。对应引入的功能，上下文提供了 exports 对象用于导出当前模块的方法或者变量，并且它是唯一导出的出口。在模块中，还存在一个 module 对象，它代表模块自身，而 exports 是 module 的属性。在 Node 中，一个文件就是一个模块，将方法挂载在 exports 对象上作为属性即可定义导出的方式：
 
 ```js
 // math.js
@@ -328,7 +330,9 @@ exports.increment = function (val) {
 };
 ```
 
-3. 模块标识模块标识其实就是传递给 `require()`方法的参数，它必须是符合小驼峰命名的字符串，或者以`.`、`..`开头的相对路径，或者绝对路径。它可以没有文件名后缀`.js`。
+3. 模块标识
+
+模块标识其实就是传递给 `require()`方法的参数，它必须是符合小驼峰命名的字符串，或者以`.`、`..`开头的相对路径，或者绝对路径。它可以没有文件名后缀`.js`。
 
 模块的定义十分简单，接口也十分简洁。它的意义在于将类聚的方法和变量等限定在私有的作用域中，同时支持引入和导出功能以顺畅地连接上下游依赖。如图 2-3 所示，每个模块具有独立的空间，它们互不干扰，在引用时也显得干净利落。
 
@@ -485,7 +489,7 @@ Module._extensions[".json"] = function (module, filename) {
 };
 ```
 
-其中，`Module._extensions` 会被赋值给 `require()`的 extensions 属性，所以通过在代码中访问 require.extensions 可以知道系统中已有的扩展加载方式。编写如下代码测试一下：
+其中，`Module._extensions` 会被赋值给 `require()`的 extensions 属性，所以通过在代码中访问 `require.extensions` 可以知道系统中已有的扩展加载方式。编写如下代码测试一下：
 
 ```js
 console.log(require.extensions);
@@ -503,9 +507,9 @@ console.log(require.extensions);
 
 1. JavaScript 模块的编译
 
-回到 CommonJS 模块规范，我们知道每个模块文件中存在着 require、exports、module 这 3 个变量，但是它们在模块文件中并没有定义，那么从何而来呢？甚至在 Node 的 API 文档中，我们知道每个模块中还有 filename、dirname 这两个变量的存在，它们又是从何而来的呢？如果我们把直接定义模块的过程放诸在浏览器端，会存在污染全局变量的情况。
+回到 CommonJS 模块规范，我们知道每个模块文件中存在着 require、exports、module 这 3 个变量，但是它们在模块文件中并没有定义，那么从何而来呢？甚至在 Node 的 API 文档中，我们知道每个模块中还有 `__filename`、`__dirname` 这两个变量的存在，它们又是从何而来的呢？如果我们把直接定义模块的过程放诸在浏览器端，会存在污染全局变量的情况。
 
-事实上，在编译的过程中，Node 对获取的 JavaScript 文件内容进行了头尾包装。在头部添加了`(function (exports, require, module,filename, dirname) {\n，在尾部添加了\n});`。一个正常的 JavaScript 文件会被包装成如下的样子：
+事实上，在编译的过程中，Node 对获取的 JavaScript 文件内容进行了头尾包装。在头部添加了`(function (exports, require, module,filename, dirname) {\n`，在尾部添加了`\n});`。一个正常的 JavaScript 文件会被包装成如下的样子：
 
 ```js
 (function (exports, require, module, __filename, __dirname) {
@@ -520,7 +524,9 @@ console.log(require.extensions);
 
 这就是这些变量并没有定义在每个模块文件中却存在的原因。在执行之后，模块的 exports 属性被返回给了调用方。exports 属性上的任何方法和属性都可以被外部调用到，但是模块中的其余变量或属性则不可直接被调用。
 
-至此，require、exports、module 的流程已经完整，这就是 Node 对 CommonJS 模块规范的实现。此外，许多初学者都曾经纠结过为何存在 exports 的情况下，还存在 `module.exports`。理想情况下，只要赋值给 exports 即可：
+至此，require、exports、module 的流程已经完整，这就是 Node 对 CommonJS 模块规范的实现。
+
+此外，许多初学者都曾经纠结过为何存在 exports 的情况下，还存在 `module.exports`。理想情况下，只要赋值给 exports 即可：
 
 ```js
 exports = function () {
@@ -542,7 +548,9 @@ console.log(a); // => 10
 
 如果要达到 require 引入一个类的效果，请赋值给 `module.exports` 对象。这个迂回的方案不改变形参的引用。
 
-2. C/C++模块的编译 Node 调用 `process.dlopen()`方法进行加载和执行。在 Node 的架构下，`dlopen()`方法在 Windows 和\`*nix` 平台下分别有不同的实现，通过 libuv 兼容层进行了封装。
+2. C/C++模块的编译
+
+Node 调用 `process.dlopen()`方法进行加载和执行。在 Node 的架构下，`dlopen()`方法在 Windows 和 `*nix` 平台下分别有不同的实现，通过 libuv 兼容层进行了封装。
 
 实际上，`.node` 的模块文件并不需要编译，因为它是编写 C/C++模块之后编译生成的，所以这里只有加载和执行的过程。在执行的过程中，模块的 exports 对象与`.node` 模块产生联系，然后返回给调用者。
 
@@ -550,7 +558,7 @@ C/C++模块给 Node 使用者带来的优势主要是执行效率方面的，劣
 
 3. JSON 文件的编译
 
-.json 文件的编译是 3 种编译方式中最简单的。Node 利用 fs 模块同步读取 JSON 文件的内容之后，调用 `JSON.parse()`方法得到对象，然后将它赋给模块对象的 exports，以供外部调用。
+`.json` 文件的编译是 3 种编译方式中最简单的。Node 利用 fs 模块同步读取 JSON 文件的内容之后，调用 `JSON.parse()`方法得到对象，然后将它赋给模块对象的 exports，以供外部调用。
 
 JSON 文件在用作项目的配置文件时比较有用。如果你定义了一个 JSON 文件作为配置，那就不必调用 fs 模块去异步读取和解析，直接调用 `require()`引入即可。此外，你还可以享受到模块缓存的便利，并且二次引入时也没有性能影响。
 
@@ -564,15 +572,29 @@ JSON 文件在用作项目的配置文件时比较有用。如果你定义了一
 
 在编译所有 C/C++文件之前，编译程序需要将所有的 JavaScript 模块文件编译为 C/C++代码，此时是否直接将其编译为可执行代码了呢？其实不是。
 
-1.转存为 C/C++代码 Node 采用了 V8 附带的 js2c.py 工具，将所有内置的 JavaScript 代码（src/node.js 和 lib/\*.js）转换成 C++里的数组，生成 node_natives.h 头文件，相关代码如下：
+1. 转存为 C/C++代码
+
+Node 采用了 V8 附带的 js2c.py 工具，将所有内置的 JavaScript 代码（src/node.js 和 `lib/*.js`）转换成 C++里的数组，生成 node_natives.h 头文件，相关代码如下：
 
 ```c#
 namespace node {
-const char node_native[] = { 47, 47, ..}; const char dgram_native[] = { 47, 47, ..}; const char console_native[] = { 47, 47, ..}; const char buffer_native[] = { 47, 47, ..}; const char querystring_native[] = { 47, 47, ..}; const char punycode_native[] = { 47, 42, ..}; ... struct _native {
- const char* name;  const char* source;  size_t source_len;
-};
-static const struct _native natives[] = {  { "node", node_native, sizeof(node_native)-1 },  { "dgram", dgram_native, sizeof(dgram_native)-1 },  ...
-};
+  const char node_native[] = { 47, 47, ..};
+  const char dgram_native[] = { 47, 47, ..};
+  const char console_native[] = { 47, 47, ..};
+  const char buffer_native[] = { 47, 47, ..};
+  const char querystring_native[] = { 47, 47, ..};
+  const char punycode_native[] = { 47, 42, ..};
+  // ...
+  struct _native {
+    const char* name;
+    const char* source;
+    size_t source_len;
+  };
+  static const struct _native natives[] = {
+    { "node", node_native, sizeof(node_native)-1 },
+    { "dgram", dgram_native, sizeof(dgram_native)-1 },
+    // ...
+  };
 }
 ```
 
@@ -582,7 +604,7 @@ static const struct _native natives[] = {  { "node", node_native, sizeof(node_na
 
 lib 目录下的所有模块文件也没有定义 require、module、exports 这些变量。在引入 JavaScript 核心模块的过程中，也经历了头尾包装的过程，然后才执行和导出了 exports 对象。与文件模块有区别的地方在于：获取源代码的方式（核心模块是从内存中加载的）以及缓存执行结果的位置。
 
-JavaScript 核心模块的定义如下面的代码所示，源文件通过 `process.binding('natives')`取出，编译成功的模块缓存到 NativeModule.\_cache 对象上，文件模块则缓存到 Module.\_cache 对象上：
+JavaScript 核心模块的定义如下面的代码所示，源文件通过 `process.binding('natives')`取出，编译成功的模块缓存到 `NativeModule._cache` 对象上，文件模块则缓存到 `Module._cache` 对象上：
 
 ```js
 function NativeModule(id) {
@@ -601,29 +623,32 @@ NativeModule._cache = {};
 
 这里我们将那些由纯 C/C++编写的部分统一称为内建模块，因为它们通常不被用户直接调用。Node 的 buffer、crypto、evals、fs、os 等模块都是部分通过 C/C++编写的。
 
-1. 内建模块的组织形式在 Node 中，内建模块的内部结构定义如下：
+1. 内建模块的组织形式
 
-```js
+在 Node 中，内建模块的内部结构定义如下：
+
+```c#
 struct node_module_struct {
-int version;
-void *dso_handle;
-const char *filename;
-void (*register_func) (v8::Handle<v8::Object> target);
-const char *modname; };
+  int version;
+  void *dso_handle;
+  const char *filename;
+  void (*register_func) (v8::Handle<v8::Object> target);
+  const char *modname;
+};
 ```
 
 每一个内建模块在定义之后，都通过 NODE_MODULE 宏将模块定义到 node 命名空间中，模块的具体初始化方法挂载为结构的 register_func 成员：
 
 ```c#
 #define NODE_MODULE(modname, regfunc)  \
-extern "C" {  \
- NODE_MODULE_EXPORT node::node_module_struct modname ## _module =  \
-{  \
-NODE_STANDARD_MODULE_STUFF,  \
-regfunc,  \
-NODE_STRINGIFY(modname)  \
- };  \
-}
+  extern "C" {  \
+    NODE_MODULE_EXPORT node::node_module_struct modname ## _module =  \
+    {  \
+      NODE_STANDARD_MODULE_STUFF,  \
+      regfunc,  \
+      NODE_STRINGIFY(modname)  \
+    };  \
+  }
 ```
 
 node_extensions.h 文件将这些散列的内建模块统一放进了一个叫 node_module_list 的数组中，这些模块有：
@@ -660,28 +685,52 @@ node_extensions.h 文件将这些散列的内建模块统一放进了一个叫 n
 Node 在启动时，会生成一个全局变量 process，并提供 `Binding()`方法来协助加载内建模块。`Binding()`的实现代码在 src/node.cc 中，具体如下所示：
 
 ```c#
-static Handle<Value> Binding(const Arguments& args) { HandleScope scope;
-Local<String> module = args[0]->ToString(); String::Utf8Value module*v(module); node_module_struct* modp;
-if (binding*cache.IsEmpty()) {
-binding_cache = Persistent<Object>::New(Object::New()); }
-Local<Object> exports;
-if (binding_cache->Has(module)) { exports = binding_cache->Get(module)->ToObject(); return scope.Close(exports);
+static Handle < Value > Binding(const Arguments & args) {
+  HandleScope scope;
+  Local < String > module = args[0] - > ToString();
+  String::Utf8Value module * v(module);
+  node_module_struct * modp;
+  if(binding * cache.IsEmpty()) {
+    binding_cache = Persistent < Object > ::New(Object::New());
+  }
+  Local < Object > exports;
+  if(binding_cache - > Has(module)) {
+    exports = binding_cache - > Get(module) - > ToObject();
+    return scope.Close(exports);
+  }
+  // Append a string to process.moduleLoadList
+  char buf[1024];
+  snprintf(buf, 1024, "Binding %s", * module * v);
+  uint32_t l = module_load_list - > Length();
+  module_load_list - > Set(l, String::New(buf));
+  if((modp = get_builtin_module( * module * v)) != NULL) {
+    exports = Object::New();
+    modp - > register_func(exports);
+    binding_cache - > Set(module, exports);
+  } else if(!strcmp(\_module_v, "constants")) {
+    exports = Object::New();
+    DefineConstants(exports);
+    binding_cache - > Set(module, exports);#
+    ifdef * * POSIX * *
+  } else if(!strcmp(\_module_v, "io_watcher")) {
+    exports = Object::New();
+    IOWatcher::Initialize(exports);
+    binding_cache - > Set(module, exports);#
+    endif
+  } else if(!strcmp(\_module_v, "natives")) {
+    exports = Object::New();
+    DefineJavaScript(exports);
+    binding_cache - > Set(module, exports);
+  } else {
+    return ThrowException(Exception::Error(String::New("No such module")));
+  }
+  return scope.Close(exports);
 }
-// Append a string to process.moduleLoadList char buf[1024]; snprintf(buf, 1024, "Binding %s", *module*v); uint32_t l = module_load_list->Length(); module_load_list->Set(l, String::New(buf));
-if ((modp = get_builtin_module(*module*v)) != NULL) { exports = Object::New(); modp->register_func(exports); binding_cache->Set(module, exports);
-} else if (!strcmp(\_module_v, "constants")) { exports = Object::New(); DefineConstants(exports); binding_cache->Set(module, exports);
-#ifdef **POSIX**
-} else if (!strcmp(\_module_v, "io_watcher")) { exports = Object::New(); IOWatcher::Initialize(exports); binding_cache->Set(module, exports);
-#endif
-} else if (!strcmp(\_module_v, "natives")) { exports = Object::New(); DefineJavaScript(exports); binding_cache->Set(module, exports);
-} else {
-return ThrowException(Exception::Error(String::New("No such module"))); }
-return scope.Close(exports); }
 ```
 
 在加载内建模块时，我们先创建一个 exports 空对象，然后调用 `get_builtin_module()`方法取出内建模块对象，通过执行 `register_func()`填充 exports 对象，最后将 exports 对象按模块名缓存，并返回给调用方完成导出。
 
-这个方法不仅可以导出内建方法，还能导出一些别的内容。前面提到的 JavaScript 核心文件被转换为 C/C++数组存储后，便是通过 `process.binding('natives')`取出放置在 NativeModule.\_source 中的：
+这个方法不仅可以导出内建方法，还能导出一些别的内容。前面提到的 JavaScript 核心文件被转换为 C/C++数组存储后，便是通过 `process.binding('natives')`取出放置在 `NativeModule._source` 中的：
 
 ```js
 NativeModule._source = process.binding("natives");
@@ -703,7 +752,7 @@ NativeModule._source = process.binding("natives");
 
 核心模块中的 JavaScript 部分几乎与文件模块的开发相同，遵循 CommonJS 模块规范，上下文中除了拥有 require、module、exports 外，还可以调用 Node 中的一些全局变量，这里不做描述。
 
-下面我们以 C/C++模块为例演示如何编写内建模块。为了便于理解，我们先编写一个极其简单的 JavaScript 版本的原型，这个方法返回一个 Helloworld！字符串：
+下面我们以 C/C++模块为例演示如何编写内建模块。为了便于理解，我们先编写一个极其简单的 JavaScript 版本的原型，这个方法返回一个 `Helloworld！`字符串：
 
 ```js
 exports.sayHello = function () {
@@ -715,56 +764,99 @@ exports.sayHello = function () {
 
 (1) 将以下代码保存为 node_hello.h，存放到 Node 的 src 目录下：
 
-```js
-#ifndef NODE_HELLO_H* #define NODE*HELLO_H* #include <v8.h>
-namespace node { // 定义方法 v8::Handle<v8::Value> SayHello(const v8::Arguments& args);
-} #endif
+```c
+#ifndef NODE_HELLO_H_
+#define NODE_HELLO_H_
+#include <v8.h>
+namespace node {
+  // 定义方法
+  v8::Handle<v8::Value> SayHello(const v8::Arguments& args);
+}
+#endif
 ```
 
 (2) 编写 node_hello.cc，并存储到 src 目录下：
 
-```js
-#include <node.h> #include <node_hello.h> #include <v8.h>
+```c#
+#include <node.h>
+#include <node_hello.h>
+#include <v8.h>
 namespace node {
-using namespace v8; //实现定义的方法 Handle<Value> SayHello(const Arguments& args) {
-HandleScope scope; return scope.Close(String::New("Hello world!")); }
-//给传入的目对象加 sayHello 方法 void Init_Hello(Handle<Object> target) { target->Set(String::NewSymbol("sayHello"), FunctionTemplate::New(SayHello)->GetFunction()); }
-} //调用 NODE_MODULE()将注方法定义内存中 NODE_MODULE(node_hello, node::Init_Hello)
+	using namespace v8;
+	//实现定义的方法
+	Handle<Value> SayHello(const Arguments& args) {
+		HandleScope scope;
+		return scope.Close(String::New("Hello world!"));
+	}
+	//给传入的目对象加 sayHello 方法
+	void Init_Hello(Handle<Object> target) {
+		target->Set(String::NewSymbol("sayHello"), FunctionTemplate::New(SayHello)->GetFunction());
+	}
+}
+//调用 NODE_MODULE()将注方法定义内存中
+NODE_MODULE(node_hello, node::Init_Hello)
 ```
 
 以上两步完成了内建模块的编写，但是真正要让 Node 认为它是内建模块，还需要更改 src/node_extensions.h，在 NODE_EXT_LIST_END 前添加 `NODE_EXT_LIST_ITEM(node_hello)`，以将 node_hello 模块添加进 node_module_list 数组中。
 
-其次，还需要让编写的两份代码编译进执行文件，同时需要更改 Node 的项目生成文件 node.gyp，并在’target_name': 'node’节点的 sources 中添加上新编写的两个文件。然后编译整个 Node 项目，具体的编译步骤请参见附录 A。
+其次，还需要让编写的两份代码编译进执行文件，同时需要更改 Node 的项目生成文件 node.gyp，并在`'target_name': 'node'`节点的 sources 中添加上新编写的两个文件。然后编译整个 Node 项目，具体的编译步骤请参见附录 A。
 
 编译和安装后，直接在命令行中运行以下代码，将会得到期望的效果：
 
 ```shell
-$ node > var hello = process.binding('hello'); undefined > hello.sayHello(); 'Hello world!' >
+$ node
+> var hello = process.binding('hello');
+undefined
+> hello.sayHello();
+'Hello world!'
+>
 ```
 
 至此，原生编写过程中需要注意的细节都已表述过了。可以看出，简单的模块通过 JavaScript 来编写可以大大提高生产效率。这里我们写作本节的目的是希望有能力的读者可以深入 Node 的核心模块，去学习它或者改进它。
 
 ## 2.4 C/C++扩展模块
 
-对于前端工程师来说，C/C++扩展模块或许比较生疏和晦涩，但是如果你了解了它，在模块出现性能瓶颈时将会对你有极大的帮助。JavaScript 的一个典型弱点就是位运算。JavaScript 的位运算参照 Java 的位运算实现，但是 Java 位运算是在 int 型数字的基础上进行的，而 JavaScript 中只有 double 型的数据类型，在进行位运算的过程中，需要将 double 型转换为 int 型，然后再进行。所以，在 JavaScript 层面上做位运算的效率不高。在应用中，会频繁出现位运算的需求，包括转码、编码等过程，如果通过 JavaScript 来实现，CPU 资源将会耗费很多，这时编写 C/C++扩展模块来提升性能的机会来了。C/C++扩展模块属于文件模块中的一类。前面讲述文件模块的编译部分时提到，C/C++模块通过预先编译为．node 文件，然后调用 process.dlopen()方法加载执行。在这一节中，我们将分析整个 C/C++扩展模块的编写、编译、加载、导出的过程。
+对于前端工程师来说，C/C++扩展模块或许比较生疏和晦涩，但是如果你了解了它，在模块出现性能瓶颈时将会对你有极大的帮助。
 
-在开始编写扩展模块之前，需要强调的一点是，Node 的原生模块一定程度上是可以跨平台的，其前提条件是源代码可以支持在`*nix` 和 Windows 上编译，其中`*nix` 下通过 g++/gcc 等编译器编译为动态链接共享对象文件（.so），在 Windows 下则需要通过 Visual C++的编译器编译为动态链接库文件（.dll），如图 2-6 所示。这里有一个让人迷惑的地方，那就是引用加载时却是．node 文件。其实．node 的扩展名只是为了看起来更自然一点，不会因为平台差异产生不同的感觉。实际上，在 Windows 下它是一个．dll 文件，在\`*nix` 下则是一个．so 文件。为了实现跨平台，dlopen()方法在内部实现时区分了平台，分别用的是加载．so 和．dll 的方式。图 2-6 为扩展模块在不同平台上编译和加载的详细过程。
+JavaScript 的一个典型弱点就是位运算。JavaScript 的位运算参照 Java 的位运算实现，但是 Java 位运算是在 int 型数字的基础上进行的，而 JavaScript 中只有 double 型的数据类型，在进行位运算的过程中，需要将 double 型转换为 int 型，然后再进行。所以，在 JavaScript 层面上做位运算的效率不高。
 
-图 2-6 扩展模块不同平台上的编译和加载过程值得注意的是，一个平台下的．node 文件在另一个平台下是无法加载执行的，必须重新用各自平台下的编译器编译为正确的．node 文件。
+在应用中，会频繁出现位运算的需求，包括转码、编码等过程，如果通过 JavaScript 来实现，CPU 资源将会耗费很多，这时编写 C/C++扩展模块来提升性能的机会来了。
+
+C/C++扩展模块属于文件模块中的一类。前面讲述文件模块的编译部分时提到，C/C++模块通过预先编译为`.node` 文件，然后调用 `process.dlopen()`方法加载执行。在这一节中，我们将分析整个 C/C++扩展模块的编写、编译、加载、导出的过程。
+
+在开始编写扩展模块之前，需要强调的一点是，Node 的原生模块一定程度上是可以跨平台的，其前提条件是源代码可以支持在`*nix` 和 Windows 上编译，其中`*nix` 下通过 g++/gcc 等编译器编译为动态链接共享对象文件（.so），在 Windows 下则需要通过 Visual C++的编译器编译为动态链接库文件（.dll），如图 2-6 所示。这里有一个让人迷惑的地方，那就是引用加载时却是`.node` 文件。其实`.node` 的扩展名只是为了看起来更自然一点，不会因为平台差异产生不同的感觉。实际上，在 Windows 下它是一个`.dll` 文件，在`*nix` 下则是一个`.so` 文件。为了实现跨平台，`dlopen()`方法在内部实现时区分了平台，分别用的是加载`.so` 和`.dll` 的方式。图 2-6 为扩展模块在不同平台上编译和加载的详细过程。
+
+图 2-6 扩展模块不同平台上的编译和加载过程
+
+值得注意的是，一个平台下的`.node` 文件在另一个平台下是无法加载执行的，必须重新用各自平台下的编译器编译为正确的`.node` 文件。
 
 ### 2.4.1 前提条件
 
 如果想要编写高质量的 C/C++扩展模块，还需要深厚的 C/C++编程功底才行。除此之外，以下这些条目都是不能避开的，在了解它们之后，可以让你在编写过程中事半功倍。
 
-- GYP 项目生成工具。在 Node 0.6 中，第三方模块通过它自身提供的 node_waf 工具实现编译，但是它是\`*nix` 平台下的产物，无法实现跨平台编译。在 Node 0.8 中，Node 决定摒弃掉 node_waf 而采用跨平台效果更好的项目生成器，它就是 GYP 工具，即“Generate YourProjects”短句的缩写。它的好处在于，可以帮助你生成各个平台下的项目文件，比如 Windows 下的 Visual Studio 解决方案文件（.sln）、Mac 下的 XCode 项目配置文件以及 Scons 工具。在这个基础上，再动用各自平台下的编译器编译项目。这大大减少了跨平台模块在项目组织上的精力投入。Node 源码中一度出现过各种项目文件，后来均统一为 GYP 工具。这除了可以减少编写跨平台项目文件的工作量外，另一个简单的原因就是 Node 自身的源码就是通过 GYP 编译的。为此，NathanRajlich 基于 GYP 为 Node 提供了一个专有的扩展构建工具 node-gyp，这个工具通过 npm install -gnode-gyp 这个命令即可安装。
-- V8 引擎 C++库。V8 是 Node 自身的动力来源之一。它自身由 C++写成，可以实现 JavaScript 与 C++的互相调用。
-- libuv 库。它是 Node 自身的动力来源之二。Node 能够实现跨平台的一个诀窍就是它的 libuv 库，这个库是跨平台的一层封装，通过它去调用一些底层操作，比自己在各个平台下编写实现要高效得多。libuv 封装的功能包括事件循环、文件操作等。
-- Node 内部库。写 C++模块时，免不了要做一些面向对象的编程工作，而 Node 自身提供了一些 C++代码，比如 node::ObjectWrap 类可以用来包装你的自定义类，它可以帮助实现对象回收等工作。
-- 其他库。其他存在 deps 目录下的库在编写扩展模块时也许可以帮助你，比如 zlib、openssl、http_parser 等。
+1. GYP 项目生成工具。
+
+在 Node 0.6 中，第三方模块通过它自身提供的 node_waf 工具实现编译，但是它是`*nix` 平台下的产物，无法实现跨平台编译。在 Node 0.8 中，Node 决定摒弃掉 node_waf 而采用跨平台效果更好的项目生成器，它就是 GYP 工具，即“Generate YourProjects”短句的缩写。它的好处在于，可以帮助你生成各个平台下的项目文件，比如 Windows 下的 Visual Studio 解决方案文件（.sln）、Mac 下的 XCode 项目配置文件以及 Scons 工具。在这个基础上，再动用各自平台下的编译器编译项目。这大大减少了跨平台模块在项目组织上的精力投入。
+
+Node 源码中一度出现过各种项目文件，后来均统一为 GYP 工具。这除了可以减少编写跨平台项目文件的工作量外，另一个简单的原因就是 Node 自身的源码就是通过 GYP 编译的。为此，NathanRajlich 基于 GYP 为 Node 提供了一个专有的扩展构建工具 node-gyp，这个工具通过 `npm install -g node-gyp` 这个命令即可安装。
+
+2. V8 引擎 C++库。
+
+V8 是 Node 自身的动力来源之一。它自身由 C++写成，可以实现 JavaScript 与 C++的互相调用。
+
+3. libuv 库。
+
+它是 Node 自身的动力来源之二。Node 能够实现跨平台的一个诀窍就是它的 libuv 库，这个库是跨平台的一层封装，通过它去调用一些底层操作，比自己在各个平台下编写实现要高效得多。libuv 封装的功能包括事件循环、文件操作等。
+
+4. Node 内部库。
+
+写 C++模块时，免不了要做一些面向对象的编程工作，而 Node 自身提供了一些 C++代码，比如 `node::ObjectWrap` 类可以用来包装你的自定义类，它可以帮助实现对象回收等工作。
+
+5. 其他库。其他存在 deps 目录下的库在编写扩展模块时也许可以帮助你，比如 zlib、openssl、http_parser 等。
 
 ### 2.4.2 C/C++扩展模块的编写
 
-在介绍 C/C++内建模块时，其实已经介绍了 C/C++模块的编写方式。普通的扩展模块与内建模块的区别在于无须将源代码编译进 Node，而是通过 dlopen()方法动态加载。所以在编写普通的扩展模块时，无须将源代码写进 node 命名空间，也不需要提供头文件。下面我们将采用同一个例子来介绍 C/C++扩展模块的编写。
+在介绍 C/C++内建模块时，其实已经介绍了 C/C++模块的编写方式。普通的扩展模块与内建模块的区别在于无须将源代码编译进 Node，而是通过 `dlopen()`方法动态加载。所以在编写普通的扩展模块时，无须将源代码写进 node 命名空间，也不需要提供头文件。下面我们将采用同一个例子来介绍 C/C++扩展模块的编写。
 
 它的 JavaScript 原型代码与前面的例子一样：
 
@@ -777,18 +869,29 @@ exports.sayHello = function () {
 新建 hello 目录作为自己的项目位置，编写 hello.cc 并将其存储到 src 目录下，相关代码如下：
 
 ```c#
-#include <node.h> #include <v8.h>
-using namespace v8; //实现定义的方法 Handle<Value> SayHello(const Arguments& args) {
-HandleScope scope; return scope.Close(String::New("Hello world!")); }
-//给传入的目对象加 sayHello()方法 void Init_Hello(Handle<Object> target) {
-target->Set(String::NewSymbol("sayHello"), FunctionTemplate::New(SayHello)->GetFunction()); } //调用 NODE_MODULE()方法将注方法定义内存中 NODE_MODULE(hello, Init_Hello)
+#include <node.h>
+#include <v8.h>
+using namespace v8;
+//实现定义的方法
+Handle<Value> SayHello(const Arguments& args) {
+	HandleScope scope;
+	return scope.Close(String::New("Hello world!"));
+}
+//给传入的目对象加
+sayHello()方法 void Init_Hello(Handle<Object> target) {
+	target->Set(String::NewSymbol("sayHello"), FunctionTemplate::New(SayHello)->GetFunction());
+}
+//调用 NODE_MODULE()方法将注方法定义内存中
+NODE_MODULE(hello, Init_Hello)
 ```
 
-C/C++扩展模块与内建模块的套路一样，将方法挂载在 target 对象上，然后通过 NODE_MODULE 声明即可。由于不像编写内建模块那样将对象声明到 node_module_list 链表中，所以无法被认作是一个原生模块，只能通过 dlopen()来动态加载，然后导出给 JavaScript 调用。
+C/C++扩展模块与内建模块的套路一样，将方法挂载在 target 对象上，然后通过 NODE_MODULE 声明即可。
+
+由于不像编写内建模块那样将对象声明到 node_module_list 链表中，所以无法被认作是一个原生模块，只能通过 `dlopen()`来动态加载，然后导出给 JavaScript 调用。
 
 ### 2.4.3 C/C++扩展模块的编译
 
-在 GYP 工具的帮助下，C/C++扩展模块的编译是一件省心的事情，无须为每个平台编写不同的项目编译文件。写好．gyp 项目文件是除编码外的头等大事，然而你也无须担心此事太难，因为．gyp 项目文件是足够简单的。node-gyp 约定．gyp 文件为 binding.gyp，其内容如下所示：
+在 GYP 工具的帮助下，C/C++扩展模块的编译是一件省心的事情，无须为每个平台编写不同的项目编译文件。写好`.gyp` 项目文件是除编码外的头等大事，然而你也无须担心此事太难，因为`.gyp` 项目文件是足够简单的。node-gyp 约定`.gyp` 文件为 binding.gyp，其内容如下所示：
 
 ```js
 { 'targets': [
@@ -807,37 +910,119 @@ $ node-gyp configure
 
 会得到如下的输出结果：
 
-node-gyp configure 这个命令会在当前目录中创建 build 目录，并生成系统相关的项目文件。在\`*nix` 平台下，build 目录中会出现 Makefile 等文件；在 Windows 下，则会生成 vcxproj 等文件。继续执行如下代码：
+```
+gyp info it worked if it ends with ok
+gyp info using node-gyp@0.8.3
+gyp info using node@0.8.14 | darwin | x64
+gyp info spawn python
+gyp info spawn args [ '/usr/local/lib/node_modules/node-gyp/gyp/gyp',
+gyp info spawn args 'binding.gyp',
+gyp info spawn args '-f',
+gyp info spawn args 'make',
+gyp info spawn args '-I',
+gyp info spawn args '/Users/jacksontian/git/diveintonode/examples/02/addon/build/config.gypi',
+gyp info spawn args '-I',
+gyp info spawn args '/usr/local/lib/node_modules/node-gyp/addon.gypi',
+gyp info spawn args '-I',
+gyp info spawn args '/Users/jacksontian/.node-gyp/0.8.14/common.gypi',
+gyp info spawn args '-Dlibrary=shared_library',
+gyp info spawn args '-Dvisibility=default',
+gyp info spawn args '-Dnode_root_dir=/Users/jacksontian/.node-gyp/0.8.14',
+gyp info spawn args '-Dmodule_root_dir=/Users/jacksontian/git/diveintonode/examples/02/addon',
+gyp info spawn args '--depth=.',
+gyp info spawn args '--generator-output',
+gyp info spawn args 'build',
+gyp info spawn args '-Goutput_dir=.' ]
+gyp info ok
+```
+
+`node-gyp configure` 这个命令会在当前目录中创建 build 目录，并生成系统相关的项目文件。
+
+在`*nix` 平台下，build 目录中会出现 Makefile 等文件；在 Windows 下，则会生成 vcxproj 等文件。
+
+继续执行如下代码：
+
+```shell
+$ node-gyp build
+```
 
 会得到如下的输出结果：
+
+```
+gyp info it worked if it ends with ok
+gyp info using node-gyp@0.8.3
+gyp info using node@0.8.14 | darwin | x64
+gyp info spawn make
+gyp info spawn args [ 'BUILDTYPE=Release', '-C', 'build' ]
+CXX(target) Release/obj.target/hello/hello.o
+SOLINK_MODULE(target) Release/hello.node
+SOLINK_MODULE(target) Release/hello.node: Finished
+gyp info ok
+```
 
 编译过程会根据平台不同，分别通过 make 或 vcbuild 进行编译。编译完成后，hello.node 文件会生成在 build/Release 目录下。
 
 ### 2.4.4 C/C++扩展模块的加载
 
-得到 hello.node 结果文件后，如何调用扩展模块其实在前面已经提及。`require()`方法通过解析标识符、路径分析、文件定位，然后加载执行即可。下面的代码引入前面编译得到的．node 文件，并调用执行其中的方法：
+得到 hello.node 结果文件后，如何调用扩展模块其实在前面已经提及。`require()`方法通过解析标识符、路径分析、文件定位，然后加载执行即可。下面的代码引入前面编译得到的`.node` 文件，并调用执行其中的方法：
 
-以上代码存为 hello.js，调用 node hello.js 命令即可得到如下的输出结果：
+```js
+var hello = require("./build/Release/hello.node");
+console.log(hello.sayHello());
+```
 
-对于以．node 为扩展名的文件，Node 将会调用 process.dlopen()方法去加载文件：
+以上代码存为 hello.js，调用 `node hello.js` 命令即可得到如下的输出结果：
 
-对于调用者而言，`require()`是轻松愉快的。对于扩展模块的编写者来说，process.dlopen()中隐含的过程值得了解一番。如图 2-7 所示，`require()`在引入．node 文件的过程中，实际上经历了 4 个层面上的调用。
+```
+Hello world!
+```
 
-图 2-7 `require()`引入．node 文件的过程加载．node 文件实际上经历了两个步骤，第一个步骤是调用 uv_dlopen()方法去打开动态链接库，第二个步骤是调用 uv_dlsym()方法找到动态链接库中通过 NODE_MODULE 宏定义的方法地址。这两个过程都是通过 libuv 库进行封装的：在\`*nix` 平台下实际上调用的是 dlfcn.h 头文件中定义的 dlopen()和 dlsym()两个方法；在 Windows 平台则是通过 LoadLibraryExW()和 GetProcAddress()这两个方法实现的，它们分别加载．so 和．dll 文件（实际为．node 文件）。这里对 libuv 函数的调用充分表现 Node 利用 libuv 实现跨平台的方式，这样的情景在很多地方还会出现。
+对于以`.node` 为扩展名的文件，Node 将会调用 `process.dlopen()`方法去加载文件：
 
-由于编写模块时通过 NODE_MODULE 将模块定义为 node_module_struct 结构，所以在获取函数地址之后，将它映射为 node_module_struct 结构几乎是无缝对接的。接下来的过程就是将传入的 exports 对象作为实参运行，将 C++中定义的方法挂载在 exports 对象上，然后调用者就可以轻松调用了。C/C++扩展模块与 JavaScript 模块的区别在于加载之后不需要编译，直接执行之后就可以被外部调用了，其加载速度比 JavaScript 模块略快。使用 C/C++扩展模块的一个好处在于可以更灵活和动态地加载它们，保持 Node 模块自身简单性的同时，给予 Node 无限的可扩展性。关于 node-gyp 工具的更多细节可以参见https://github.com/TooTallNate/node-gyp（作者为Nathan Rajlich, Node 源码的核心贡献者之一）。
+```js
+//Native extension for .node
+Module._extensions[".node"] = process.dlopen;
+```
+
+对于调用者而言，`require()`是轻松愉快的。对于扩展模块的编写者来说，`process.dlopen()`中隐含的过程值得了解一番。
+
+如图 2-7 所示，`require()`在引入`.node` 文件的过程中，实际上经历了 4 个层面上的调用。
+
+图 2-7 `require()`引入`.node` 文件的过程
+
+加载`.node` 文件实际上经历了两个步骤，第一个步骤是调用 `uv_dlopen()`方法去打开动态链接库，第二个步骤是调用 `uv_dlsym()`方法找到动态链接库中通过 NODE_MODULE 宏定义的方法地址。这两个过程都是通过 libuv 库进行封装的：在`*nix` 平台下实际上调用的是 dlfcn.h 头文件中定义的 dlopen()和 dlsym()两个方法；在 Windows 平台则是通过 `LoadLibraryExW()`和 `GetProcAddress()`这两个方法实现的，它们分别加载`.so` 和`.dll` 文件（实际为`.node` 文件）。
+
+这里对 libuv 函数的调用充分表现 Node 利用 libuv 实现跨平台的方式，这样的情景在很多地方还会出现。
+
+由于编写模块时通过 NODE_MODULE 将模块定义为 node_module_struct 结构，所以在获取函数地址之后，将它映射为 node_module_struct 结构几乎是无缝对接的。接下来的过程就是将传入的 exports 对象作为实参运行，将 C++中定义的方法挂载在 exports 对象上，然后调用者就可以轻松调用了。
+
+C/C++扩展模块与 JavaScript 模块的区别在于加载之后不需要编译，直接执行之后就可以被外部调用了，其加载速度比 JavaScript 模块略快。
+
+使用 C/C++扩展模块的一个好处在于可以更灵活和动态地加载它们，保持 Node 模块自身简单性的同时，给予 Node 无限的可扩展性。
+
+关于 node-gyp 工具的更多细节可以参见https://github.com/TooTallNate/node-gyp（作者为Nathan Rajlich, Node 源码的核心贡献者之一）。
 
 ## 2.5 模块调用栈
 
 结束文件模块、核心模块、内建模块、C/C++扩展模块等的阐述之后，有必要明确一下各种模块之间的调用关系，如图 2-8 所示。
 
-图 2-8 模块之间的调用关系 C/C++内建模块属于最底层的模块，它属于核心模块，主要提供 API 给 JavaScript 核心模块和第三方 JavaScript 文件模块调用。如果你不是非常了解要调用的 C/C++内建模块，请尽量避免通过 process.binding()方法直接调用，这是不推荐的。JavaScript 核心模块主要扮演的职责有两类：一类是作为 C/C++内建模块的封装层和桥接层，供文件模块调用；一类是纯粹的功能模块，它不需要跟底层打交道，但是又十分重要。文件模块通常由第三方编写，包括普通 JavaScript 模块和 C/C++扩展模块，主要调用方向为普通 JavaScript 模块调用扩展模块。
+图 2-8 模块之间的调用关系
+
+C/C++内建模块属于最底层的模块，它属于核心模块，主要提供 API 给 JavaScript 核心模块和第三方 JavaScript 文件模块调用。如果你不是非常了解要调用的 C/C++内建模块，请尽量避免通过 `process.binding()`方法直接调用，这是不推荐的。
+
+JavaScript 核心模块主要扮演的职责有两类：一类是作为 C/C++内建模块的封装层和桥接层，供文件模块调用；一类是纯粹的功能模块，它不需要跟底层打交道，但是又十分重要。
+
+文件模块通常由第三方编写，包括普通 JavaScript 模块和 C/C++扩展模块，主要调用方向为普通 JavaScript 模块调用扩展模块。
 
 ## 2.6 包与 NPM
 
-Node 组织了自身的核心模块，也使得第三方文件模块可以有序地编写和使用。但是在第三方模块中，模块与模块之间仍然是散列在各地的，相互之间不能直接引用。而在模块之外，包和 NPM 则是将模块联系起来的一种机制。在介绍 NPM 之前，不得不提起 CommonJS 的包规范。JavaScript 不似 Java 或者其他语言那样，具有模块和包结构。Node 对模块规范的实现，一定程度上解决了变量依赖、依赖关系等代码组织性问题。包的出现，则是在模块的基础上进一步组织 JavaScript 代码。图 2-9 为包组织模块示意图。
+Node 组织了自身的核心模块，也使得第三方文件模块可以有序地编写和使用。但是在第三方模块中，模块与模块之间仍然是散列在各地的，相互之间不能直接引用。而在模块之外，包和 NPM 则是将模块联系起来的一种机制。
 
-图 2-9 包组织模块示意图 CommonJS 的包规范的定义其实也十分简单，它由包结构和包描述文件两个部分组成，前者用于组织包中的各种文件，后者则用于描述包的相关信息，以供外部读取分析。
+在介绍 NPM 之前，不得不提起 CommonJS 的包规范。JavaScript 不似 Java 或者其他语言那样，具有模块和包结构。Node 对模块规范的实现，一定程度上解决了变量依赖、依赖关系等代码组织性问题。包的出现，则是在模块的基础上进一步组织 JavaScript 代码。图 2-9 为包组织模块示意图。
+
+图 2-9 包组织模块示意图
+
+CommonJS 的包规范的定义其实也十分简单，它由包结构和包描述文件两个部分组成，前者用于组织包中的各种文件，后者则用于描述包的相关信息，以供外部读取分析。
 
 ### 2.6.1 包结构
 
@@ -847,23 +1032,26 @@ Node 组织了自身的核心模块，也使得第三方文件模块可以有序
 - bin：用于存放可执行二进制文件的目录。
 - lib：用于存放 JavaScript 代码的目录。
 - doc：用于存放文档的目录。
-- test：用于存放单元测试用例的代码。可以看到，CommonJS 包规范从文档、测试等方面都做过考虑。当一个包完成后向外公布时，用户看到单元测试和文档的时候，会给他们一种踏实可靠的感觉。
+- test：用于存放单元测试用例的代码。
 
-### 2.6.2 包描述文件
+可以看到，CommonJS 包规范从文档、测试等方面都做过考虑。当一个包完成后向外公布时，用户看到单元测试和文档的时候，会给他们一种踏实可靠的感觉。
 
-与 NPM 包描述文件用于表达非代码相关的信息，它是一个 JSON 格式的文件——package.json，位于包的根目录下，是包的重要组成部分。而 NPM 的所有行为都与包描述文件的字段息息相关。由于 CommonJS 包规范尚处于草案阶段，NPM 在实践中做了一定的取舍，具体细节在后面会介绍到。CommonJS 为 package.json 文件定义了如下一些必需的字段。
+### 2.6.2 包描述文件与 NPM
 
-- name。包名。规范定义它需要由小写的字母和数字组成，可以包含.、\_和-，但不允许出现空格。包名必须是唯一的，以免对外公布时产生重名冲突的误解。除此之外，NPM 还建议不要在包名中附带上 node 或 js 来重复标识它是 JavaScript 或 Node 模块。
+包描述文件用于表达非代码相关的信息，它是一个 JSON 格式的文件——package.json，位于包的根目录下，是包的重要组成部分。而 NPM 的所有行为都与包描述文件的字段息息相关。由于 CommonJS 包规范尚处于草案阶段，NPM 在实践中做了一定的取舍，具体细节在后面会介绍到。
+
+CommonJS 为 package.json 文件定义了如下一些必需的字段。
+
+- name。包名。规范定义它需要由小写的字母和数字组成，可以包含`.`、`_`和`-`，但不允许出现空格。包名必须是唯一的，以免对外公布时产生重名冲突的误解。除此之外，NPM 还建议不要在包名中附带上 node 或 js 来重复标识它是 JavaScript 或 Node 模块。
 - description。包简介。
-- version。版本号。一个语义化的版本号，这在http://semver.org/上有详细定义，通常为major.minor.revision格式。该版本号十分重要，常常用于一些版本控制的场合。
+- version。版本号。一个语义化的版本号，这在 http://semver.org/ 上有详细定义，通常为 major.minor.revision 格式。该版本号十分重要，常常用于一些版本控制的场合。
 - keywords。关键词数组，NPM 中主要用来做分类搜索。一个好的关键词数组有利于用户快速找到你编写的包。
-- maintainers。包维护者列表。每个维护者由 name、email 和 web 这 3 个属性组成。示例如下："maintainers": [{ "name": "JacksonTian", "email": "shyvo1987@gmail.com","web": "http://html5ify.com" }]NPM 通过该属性进行权限认证。
+- maintainers。包维护者列表。每个维护者由 name、email 和 web 这 3 个属性组成。示例如下：`"maintainers": [{ "name": "JacksonTian", "email": "shyvo1987@gmail.com","web": "http://html5ify.com" }]`NPM 通过该属性进行权限认证。
 - contributors。贡献者列表。在开源社区中，为开源项目提供代码是经常出现的事情，如果名字能出现在知名项目的 contributors 列表中，是一件比较有荣誉感的事。列表中的第一个贡献应当是包的作者本人。它的格式与维护者列表相同。
 - bugs。一个可以反馈 bug 的网页地址或邮件地址。
-- licenses。当前包所使用的许可证列表，表示这个包可以在哪些许可证下使用。它的格式如下：
-
-* repositories。托管源代码的位置列表，表明可以通过哪些方式和地址访问包的源代码。
-* dependencies。使用当前包所需要依赖的包列表。这个属性十分重要，NPM 会通过这个属性帮助自动加载依赖的包。
+- licenses。当前包所使用的许可证列表，表示这个包可以在哪些许可证下使用。它的格式如下：`"licenses": [{ "type": "GPLv2", "url": "http://www.example.com/licenses/gpl.html", }]`
+- repositories。托管源代码的位置列表，表明可以通过哪些方式和地址访问包的源代码。
+- dependencies。使用当前包所需要依赖的包列表。这个属性十分重要，NPM 会通过这个属性帮助自动加载依赖的包。
 
 除了必选字段外，规范还定义了一部分可选字段，具体如下所示。
 
@@ -876,66 +1064,385 @@ Node 组织了自身的核心模块，也使得第三方文件模块可以有序
 - implements。实现规范的列表。标志当前包实现了 CommonJS 的哪些规范。
 - scripts。脚本说明对象。它主要被包管理器用来安装、编译、测试和卸载包。示例如下：
 
-包规范的定义可以帮助 Node 解决依赖包安装的问题，而 NPM 正是基于该规范进行了实现。最初，NPM 工具是由 Isaac Z. Schlueter 单独创建，提供给 Node 服务的 Node 包管理器，需要单独安装。后来，在 v0.6.3 版本时集成进 Node 中作为默认包管理器，作为软件包的一部分一起安装。之后，Isaac Z. Schlueter 也成为 Node 的掌门人。在包描述文件的规范中，NPM 实际需要的字段主要有 name、version、description、keywords、repositories、author、bin、main、scripts、engines、dependencies、devDependencies。
+```json
+"scripts": { "install": "install.js",
+"uninstall": "uninstall.js",
+"build": "build.js",
+"doc": "make-doc.js",
+"test": "test.js" }
+```
+
+包规范的定义可以帮助 Node 解决依赖包安装的问题，而 NPM 正是基于该规范进行了实现。最初，NPM 工具是由 Isaac Z. Schlueter 单独创建，提供给 Node 服务的 Node 包管理器，需要单独安装。后来，在 v0.6.3 版本时集成进 Node 中作为默认包管理器，作为软件包的一部分一起安装。之后，Isaac Z. Schlueter 也成为 Node 的掌门人。
+
+在包描述文件的规范中，NPM 实际需要的字段主要有 name、version、description、keywords、repositories、author、bin、main、scripts、engines、dependencies、devDependencies。
 
 与包规范的区别在于多了 author、bin、main 和 devDependencies 这 4 个字段，下面补充说明一下。
 
 - author。包作者。
-- bin。一些包作者希望包可以作为命令行工具使用。配置好 bin 字段后，通过 npm installpackage_name -g 命令可以将脚本添加到执行路径中，之后可以在命令行中直接执行。前面的 node-gyp 即是这样安装的。通过-g 命令安装的模块包称为全局模式。
+- bin。一些包作者希望包可以作为命令行工具使用。配置好 bin 字段后，通过 `npm installpackage_name -g` 命令可以将脚本添加到执行路径中，之后可以在命令行中直接执行。前面的 node-gyp 即是这样安装的。通过`-g` 命令安装的模块包称为全局模式。
 - main。模块引入方法 `require()`在引入包时，会优先检查这个字段，并将其作为包中其余模块的入口。如果不存在这个字段，`require()`方法会查找包目录下的 index.js、index.node、index.json 文件作为默认入口。
-- devDependencies。一些模块只在开发时需要依赖。配置这个属性，可以提示包的后续开发者安装依赖包。下面是知名框架 express 项目的 package.json 文件，具有一定的参考意义：
+- devDependencies。一些模块只在开发时需要依赖。配置这个属性，可以提示包的后续开发者安装依赖包。
+
+下面是知名框架 express 项目的 package.json 文件，具有一定的参考意义：
+
+```json
+{
+  "name": "express",
+  "description": "Sinatra inspired web development framework",
+  "version": "3.3.4",
+  "author": "TJ Holowaychuk <tj@vision-media.ca>",
+  "contributors": [
+    {
+      "name": "TJ Holowaychuk",
+      "email": "tj@vision-media.ca"
+    },
+    {
+      "name": "Aaron Heckmann",
+      "email": "aaron.heckmann+github@gmail.com"
+    },
+    {
+      "name": "Ciaran Jessup",
+      "email": "ciaranj@gmail.com"
+    },
+    {
+      "name": "Guillermo Rauch",
+      "email": "rauchg@gmail.com"
+    }
+  ],
+  "dependencies": {
+    "connect": "2.8.4",
+    "commander": "1.2.0",
+    "range-parser": "0.0.4",
+    "mkdirp": "0.3.5",
+    "cookie": "0.1.0",
+    "buffer-crc32": "0.2.1",
+    "fresh": "0.1.0",
+    "methods": "0.0.1",
+    "send": "0.1.3",
+    "cookie-signature": "1.0.1",
+    "debug": "*"
+  },
+  "devDependencies": {
+    "ejs": "*",
+    "mocha": "*",
+    "jade": "0.30.0",
+    "hjs": "*",
+    "stylus": "*",
+    "should": "*",
+    "connect-redis": "*",
+    "marked": "*",
+    "supertest": "0.6.0"
+  },
+  "keywords": [
+    "express",
+    "framework",
+    "sinatra",
+    "web",
+    "rest",
+    "restful",
+    "router",
+    "app",
+    "api"
+  ],
+  "repository": "git://github.com/visionmedia/express",
+  "main": "index",
+  "bin": {
+    "express": "./bin/express"
+  },
+  "scripts": {
+    "prepublish": "npm prune",
+    "test": "make test"
+  },
+  "engines": {
+    "node": "*"
+  }
+}
+```
 
 ### 2.6.3 NPM 常用功能
 
-CommonJS 包规范是理论，NPM 是其中的一种实践。NPM 之于 Node，相当于 gem 之于 Ruby,pear 之于 PHP。对于 Node 而言，NPM 帮助完成了第三方模块的发布、安装和依赖等。借助 NPM,Node 与第三方模块之间形成了很好的一个生态系统。借助 NPM，可以帮助用户快速安装和管理依赖包。除此之外，NPM 还有一些巧妙的用法，下面我们详细介绍一下。
+CommonJS 包规范是理论，NPM 是其中的一种实践。NPM 之于 Node，相当于 gem 之于 Ruby,pear 之于 PHP。对于 Node 而言，NPM 帮助完成了第三方模块的发布、安装和依赖等。借助 NPM,Node 与第三方模块之间形成了很好的一个生态系统。
 
-1.查看帮助在安装 Node 之后，执行 npm -v 命令可以查看当前 NPM 的版本：
+借助 NPM，可以帮助用户快速安装和管理依赖包。除此之外，NPM 还有一些巧妙的用法，下面我们详细介绍一下。
+
+1. 查看帮助
+
+在安装 Node 之后，执行 `npm -v` 命令可以查看当前 NPM 的版本：
+
+```
+$ npm -v
+1.2.32
+```
 
 在不熟悉 NPM 的命令之前，可以直接执行 NPM 查看到帮助引导说明：
 
-可以看到，帮助中列出了所有的命令，其中 npmhelp <command>可以查看具体的命令说明。2.安装依赖包安装依赖包是 NPM 最常见的用法，它的执行语句是 npm install express。执行该命令后，NPM 会在当前目录下创建 node_modules 目录，然后在 node_modules 目录下创建 express 目录，接着将包解压到这个目录下。
+```
+$ npm
+Usage: npm <command>
+where <command> is one of:
+add-user, adduser, apihelp, author, bin, bugs, c, cache,
+completion, config, ddp, dedupe, deprecate, docs, edit,
+explore, faq, find, find-dupes, get, help, help-search,
+home, i, info, init, install, isntall, issues, la, link,
+list, ll, ln, login, ls, outdated, owner, pack, prefix,
+prune, publish, r, rb, rebuild, remove, restart, rm, root,
+run-script, s, se, search, set, show, shrinkwrap, star,
+stars, start, stop, submodule, tag, test, tst, un,
+uninstall, unlink, unpublish, unstar, up, update, version,
+view, whoami
+npm <cmd> -h quick help on <cmd>
+npm -l display full usage info
+npm faq commonly asked questions
+npm help <term> search for help on <term>
+npm help npm involved overview
+Specify configs in the ini-formatted file:
+/Users/jacksontian/.npmrc
+or on the command line via: npm <command> --key value
+Config info can be viewed via: npm help config
+npm@1.2.32 /usr/local/lib/node_modules/npm
+```
 
-安装好依赖包后，直接在代码中调用 require('express')；即可引入该包。`require()`方法在做路径分析的时候会通过模块路径查找到 express 所在的位置。模块引入和包的安装这两个步骤是相辅相承的。● 全局模式安装如果包中含有命令行工具，那么需要执行 npminstall express -g 命令进行全局模式安装。需要注意的是，全局模式并不是将一个模块包安装为一个全局包的意思，它并不意味着可以从任何地方通过 `require()`来引用到它。全局模式这个称谓其实并不精确，存在诸多误导。实际上，-g 是将一个包安装为全局可用的可执行命令。它根据包描述文件中的 bin 字段配置，将实际脚本链接到与 Node 可执行文件相同的路径下：
+可以看到，帮助中列出了所有的命令，其中 `npm help <command>`可以查看具体的命令说明。
+
+2. 安装依赖包
+
+安装依赖包是 NPM 最常见的用法，它的执行语句是 `npm install express`。执行该命令后，NPM 会在当前目录下创建 node_modules 目录，然后在 node_modules 目录下创建 express 目录，接着将包解压到这个目录下。
+
+安装好依赖包后，直接在代码中调用 `require('express');` 即可引入该包。`require()`方法在做路径分析的时候会通过模块路径查找到 express 所在的位置。模块引入和包的安装这两个步骤是相辅相承的。
+
+**全局模式安装**
+
+如果包中含有命令行工具，那么需要执行 `npm install express -g` 命令进行全局模式安装。需要注意的是，全局模式并不是将一个模块包安装为一个全局包的意思，它并不意味着可以从任何地方通过 `require()`来引用到它。
+
+全局模式这个称谓其实并不精确，存在诸多误导。实际上，`-g` 是将一个包安装为全局可用的可执行命令。它根据包描述文件中的 bin 字段配置，将实际脚本链接到与 Node 可执行文件相同的路径下：
+
+```js
+"bin": {
+"express": "./bin/express"
+},
+```
 
 事实上，通过全局模式安装的所有模块包都被安装进了一个统一的目录下，这个目录可以通过如下方式推算出来：
 
-如果 Node 可执行文件的位置是/usr/local/bin/node，那么模块目录就是/usr/local/lib/node_modules。最后，通过软链接的方式将 bin 字段配置的可执行文件链接到 Node 的可执行目录下。● 从本地安装对于一些没有发布到 NPM 上的包，或是因为网络原因导致无法直接安装的包，可以通过将包下载到本地，然后以本地安装。本地安装只需为 NPM 指明 package.json 文件所在的位置即可：它可以是一个包含 package.json 的存档文件，也可以是一个 URL 地址，也可以是一个目录下有 package.json 文件的目录位置。具体参数如下：
+```js
+path.resolve(process.execPath, "..", "..", "lib", "node_modules");
+```
 
-● 从非官方源安装如果不能通过官方源安装，可以通过镜像源安装。在执行命令时，添加--registry=http://registry.url即可，示例如下：
+如果 Node 可执行文件的位置是/usr/local/bin/node，那么模块目录就是/usr/local/lib/node_modules。最后，通过软链接的方式将 bin 字段配置的可执行文件链接到 Node 的可执行目录下。
+
+**从本地安装**
+
+对于一些没有发布到 NPM 上的包，或是因为网络原因导致无法直接安装的包，可以通过将包下载到本地，然后以本地安装。本地安装只需为 NPM 指明 package.json 文件所在的位置即可：它可以是一个包含 package.json 的存档文件，也可以是一个 URL 地址，也可以是一个目录下有 package.json 文件的目录位置。具体参数如下：
+
+```
+npm install <tarball file>
+npm install <tarball url>
+npm install <folder>
+```
+
+**从非官方源安装**
+
+如果不能通过官方源安装，可以通过镜像源安装。在执行命令时，添加 `--registry=http://registry.url` 即可，示例如下：
+
+```
+npm install underscore --registry=http://registry.url
+```
 
 如果使用过程中几乎都采用镜像源安装，可以执行以下命令指定默认源：
 
-3. NPM 钩子命令另一个需要说明的是 C/C++模块实际上是编译后才能使用的。package.json 中 scripts 字段的提出就是让包在安装或者卸载等过程中提供钩子机制，示例如下：
+```
+npm config set registry http://registry.url
+```
 
-在以上字段中执行 npm install <package>时，preinstall 指向的脚本将会被加载执行，然后 install 指向的脚本会被执行。在执行 npmuninstall <package>时，uninstall 指向的脚本也许会做一些清理工作等。当在一个具体的包目录下执行 npm test 时，将会运行 test 指向的脚本。一个优秀的包应当包含测试用例，并在 package.json 文件中配置好运行测试的命令，方便用户运行测试用例，以便检验包是否稳定可靠。4.发布包为了将整个 NPM 的流程串联起来，这里将演示如何编写一个包，将其发布到 NPM 仓库中，并通过 NPM 安装回本地。● 编写模块模块的内容我们尽量保持简单，这里还是以 sayHello 作为例子，相关代码如下：
+3. NPM 钩子命令
 
-将这段代码保存为 hello.js 即可。● 初始化包描述文件 package.json 文件的内容尽管相对较多，但是实际发布一个包时并不需要一行一行编写。NPM 提供的 npm init 命令会帮助你生成 package.json 文件，具体如下所示：
+另一个需要说明的是 C/C++模块实际上是编译后才能使用的。package.json 中 scripts 字段的提出就是让包在安装或者卸载等过程中提供钩子机制，示例如下：
 
-NPM 通过提问式的交互逐个填入选项，最后生成预览的包描述文件。如果你满意，输入 yes，此时会在目录下得到 package.json 文件。● 注册包仓库账号为了维护包，NPM 必须要使用仓库账号才允许将包发布到仓库中。注册账号的命令是 npmadduser。这也是一个提问式的交互过程，按顺序进行即可：
+```json
+"scripts": {
+"preinstall": "preinstall.js",
+"install": "install.js",
+"uninstall": "uninstall.js",
+"test": "test.js"
+}
+```
 
-● 上传包上传包的命令是 npm publish <folder>。在刚刚创建的 package.json 文件所在的目录下，执行 npm publish .开始上传包，相关代码如下：
+在以上字段中执行 `npm install <package>`时，preinstall 指向的脚本将会被加载执行，然后 install 指向的脚本会被执行。在执行 `npm uninstall <package>`时，uninstall 指向的脚本也许会做一些清理工作等。
 
-在这个过程中，NPM 会将目录打包为一个存档文件，然后上传到官方源仓库中。● 安装包为了体验和测试自己上传的包，可以换一个目录执行 npm install hello_test_jackson 安装它：
+当在一个具体的包目录下执行 `npm test` 时，将会运行 test 指向的脚本。一个优秀的包应当包含测试用例，并在 package.json 文件中配置好运行测试的命令，方便用户运行测试用例，以便检验包是否稳定可靠。
 
-● 管理包权限通常，一个包只有一个人拥有权限进行发布。如果需要多人进行发布，可以使用 npm owner 命令帮助你管理包的所有者：
+4. 发布包
+
+为了将整个 NPM 的流程串联起来，这里将演示如何编写一个包，将其发布到 NPM 仓库中，并通过 NPM 安装回本地。
+
+**编写模块**
+
+模块的内容我们尽量保持简单，这里还是以 sayHello 作为例子，相关代码如下：
+
+```js
+exports.sayHello = function () {
+  return "Hello, world.";
+};
+```
+
+将这段代码保存为 hello.js 即可。
+
+**初始化包描述文件**
+
+package.json 文件的内容尽管相对较多，但是实际发布一个包时并不需要一行一行编写。NPM 提供的 npm init 命令会帮助你生成 package.json 文件，具体如下所示：
+
+```
+$ npm init
+This utility will walk you through creating a package.json file.
+It only covers the most common items, and tries to guess sane defaults.
+See `npm help json` for definitive documentation on these fields
+and exactly what they do.
+Use `npm install <pkg> --save` afterwards to install a package and
+save it as a dependency in the package.json file.
+Press ^C at any time to quit.
+name: (module) hello_test_jackson
+version: (0.0.0) 0.0.1
+description: A hello world package
+entry point: (hello.js) ./hello.js
+test command:
+git repository:
+keywords: Hello world
+author: Jackson Tian
+license: (BSD) MIT
+About to write to /Users/jacksontian/git/diveintonode/examples/03/module/package.json:
+{
+"name": "hello_test_jackson",
+"version": "0.0.1",
+"description": "A hello world package",
+"main": "./hello.js",
+"scripts": {
+"test": "echo \"Error: no test specified\" && exit 1"
+},
+"repository": "",
+"keywords": [
+"Hello",
+"world"
+],
+"author": "Jackson Tian",
+"license": "MIT"
+}
+Is this ok? (yes) yes
+npm WARN package.json hello_test_jackson@0.0.1 No README.md file found!
+```
+
+NPM 通过提问式的交互逐个填入选项，最后生成预览的包描述文件。如果你满意，输入 yes，此时会在目录下得到 package.json 文件。
+
+**注册包仓库账号**
+
+为了维护包，NPM 必须要使用仓库账号才允许将包发布到仓库中。注册账号的命令是 npmadduser。这也是一个提问式的交互过程，按顺序进行即可：
+
+```
+$ npm adduser
+Username: (jacksontian)
+Email: (shyvo1987@gmail.com)
+```
+
+**上传包**
+
+上传包的命令是 `npm publish <folder>`。在刚刚创建的 package.json 文件所在的目录下，执行 npm publish .开始上传包，相关代码如下：
+
+```shell
+$ npm publish .
+npm http PUT http://registry.npmjs.org/hello_test_jackson
+npm http 201 http://registry.npmjs.org/hello_test_jackson
+npm http GET http://registry.npmjs.org/hello_test_jackson
+npm http 200 http://registry.npmjs.org/hello_test_jackson
+npm http PUT http://registry.npmjs.org/hello_test_jackson/0.0.1/-tag/latest
+npm http 201 http://registry.npmjs.org/hello_test_jackson/0.0.1/-tag/latest
+npm http GET http://registry.npmjs.org/hello_test_jackson
+npm http 200 http://registry.npmjs.org/hello_test_jackson
+npm http PUT http://registry.npmjs.org/hello_test_jackson/-/hello_test_jackson-0.0.1.tgz/-rev/2-2d64e0946b866878bb252f182070c1d5
+npm http 201 http://registry.npmjs.org/hello_test_jackson/-/hello_test_jackson-0.0.1.tgz/-rev/2-2d64e0946b866878bb252f182070c1d5
++ hello_test_jackson@0.0.1
+```
+
+在这个过程中，NPM 会将目录打包为一个存档文件，然后上传到官方源仓库中。
+
+**安装包**
+
+为了体验和测试自己上传的包，可以换一个目录执行 `npm install hello_test_jackson` 安装它：
+
+```
+$ npm install hello_test_jackson --registry=http://registry.npmjs.org
+npm http GET http://registry.npmjs.org/hello_test_jackson
+npm http 200 http://registry.npmjs.org/hello_test_jackson
+hello_test_jackson@0.0.1 ./node_modules/hello_test_jackson
+```
+
+**管理包权限**
+
+通常，一个包只有一个人拥有权限进行发布。如果需要多人进行发布，可以使用 `npm owner` 命令帮助你管理包的所有者：
+
+```
+$ npm owner ls eventproxy
+npm http GET https://registry.npmjs.org/eventproxy
+npm http 200 https://registry.npmjs.org/eventproxy
+jacksontian <shyvo1987@gmail.com>
+```
 
 使用这个命令，也可以添加包的拥有者，删除一个包的拥有者：
 
-5.分析包在使用 NPM 的过程中，或许你不能确认当前目录下能否通过 `require()`顺利引入想要的包，这时可以执行 npm ls 分析包。这个命令可以为你分析出当前路径下能够通过模块路径找到的所有包，并生成依赖树，如下：
+```
+npm owner ls <package name>
+npm owner add <user> <package name>
+npm owner rm <user> <package name>
+```
+
+5. 分析包
+
+在使用 NPM 的过程中，或许你不能确认当前目录下能否通过 `require()`顺利引入想要的包，这时可以执行 npm ls 分析包。
+
+这个命令可以为你分析出当前路径下能够通过模块路径找到的所有包，并生成依赖树，如下：
+
+```
+$ npm ls
+/Users/jacksontian
+├─┬ connect@2.0.3
+│ ├── crc@0.1.0
+│ ├── debug@0.6.0
+│ ├── formidable@1.0.9
+│ ├── mime@1.2.4
+│ └── qs@0.4.2
+├── hello_test_jackson@0.0.1
+└── urllib@0.2.3
+```
 
 ### 2.6.4 局域 NPM
 
-在企业的内部应用中使用 NPM 与开源社区中使用有一定的差别。企业的限制在于，一方面需要享受到模块开发带来的低耦合和项目组织上的好处，另一方面却要考虑到模块保密性的问题。所以，通过 NPM 共享和发布存在潜在的风险。为了同时能够享受到 NPM 上众多的包，同时对自己的包进行保密和限制，现有的解决方案就是企业搭建自己的 NPM 仓库。
+在企业的内部应用中使用 NPM 与开源社区中使用有一定的差别。企业的限制在于，一方面需要享受到模块开发带来的低耦合和项目组织上的好处，另一方面却要考虑到模块保密性的问题。所以，通过 NPM 共享和发布存在潜在的风险。
 
-所幸，NPM 自身是开源的，无论是它的服务器端和客户端。通过源代码搭建自己的仓库并不是什么秘密。局域 NPM 仓库的搭建方法与搭建镜像站（详情可参见附录 D）的方式几乎一样。与镜像仓库不同的地方在于，企业局域 NPM 可以选择不同步官方源仓库中的包。图 2-10 为企业中混合使用官方仓库和局域仓库的示意图。
+为了同时能够享受到 NPM 上众多的包，同时对自己的包进行保密和限制，现有的解决方案就是企业搭建自己的 NPM 仓库。
 
-图 2-10 混合使用官方仓库和局域仓库的示意图对于企业内部而言，私有的可重用模块可以打包到局域 NPM 仓库中，这样可以保持更新的中心化，不至于让各个小项目各自维护相同功能的模块，杜绝通过复制粘贴实现代码共享的行为。
+所幸，NPM 自身是开源的，无论是它的服务器端和客户端。通过源代码搭建自己的仓库并不是什么秘密。
+
+局域 NPM 仓库的搭建方法与搭建镜像站（详情可参见附录 D）的方式几乎一样。
+
+与镜像仓库不同的地方在于，企业局域 NPM 可以选择不同步官方源仓库中的包。图 2-10 为企业中混合使用官方仓库和局域仓库的示意图。
+
+图 2-10 混合使用官方仓库和局域仓库的示意图
+
+对于企业内部而言，私有的可重用模块可以打包到局域 NPM 仓库中，这样可以保持更新的中心化，不至于让各个小项目各自维护相同功能的模块，杜绝通过复制粘贴实现代码共享的行为。
 
 ### 2.6.5 NPM 潜在问题
 
-作为为模块和包服务的工具，NPM 十分便捷。它实质上已经是一个包共享平台，所有人都可以贡献模块并将其打包分享到这个平台上，也可以在许可证（大多是 MIT 许可证）的允许下免费使用它们。NPM 提供的这些便捷，将模块链接到一个共享平台上，缩短了贡献者与使用者之间的距离，这十分有利于模块的传播，进而也十分利于 Node 的推广。几乎没有一种语言或平台有 Node 这样出现才 3 年多就拥有成千上万个第三方模块的情景。这个功劳一部分是因为 Node 选择了 JavaScript，这门语言拥有极大的开发人员基数，具有强大的生产力；另一部分则是因为 CommonJS 规范和 NPM，它们使得产品能够更好地组织、传播和使用。潜在的问题在于，在 NPM 平台上，每个人都可以分享包到平台上，鉴于开发人员水平不一，上面的包的质量也良莠不齐。另一个问题则是，Node 代码可以运行在服务器端，需要考虑安全问题。对于包的使用者而言，包质量和安全问题需要作为是否采纳模块的一个判断条件。
+作为为模块和包服务的工具，NPM 十分便捷。它实质上已经是一个包共享平台，所有人都可以贡献模块并将其打包分享到这个平台上，也可以在许可证（大多是 MIT 许可证）的允许下免费使用它们。NPM 提供的这些便捷，将模块链接到一个共享平台上，缩短了贡献者与使用者之间的距离，这十分有利于模块的传播，进而也十分利于 Node 的推广。几乎没有一种语言或平台有 Node 这样出现才 3 年多就拥有成千上万个第三方模块的情景。这个功劳一部分是因为 Node 选择了 JavaScript，这门语言拥有极大的开发人员基数，具有强大的生产力；另一部分则是因为 CommonJS 规范和 NPM，它们使得产品能够更好地组织、传播和使用。
 
-尽管 NPM 没有硬性的方式去评判一个包的质量和安全，好在开源社区也有它内在的健康发展机制，那就是口碑效应，其中 NPM 模块首页（https://npmjs.org/）上的依赖榜可以说明模块的质量和可靠性。第二个可以考查质量的地方是GitHub, NPM 中大多的包都是通过 GitHub 托管的，模块项目的观察者数量和分支数量也能从侧面反映这个模块的可靠性和流行度。第三个可以考量包质量的地方在于包中的测试用例和文档的状况，一个没有单元测试的包基本上是无法被信任的，没有文档的包，使用者使用时内心也是不踏实的。在安全问题上，在经过模块质量的考查之后，应该可以去掉一大半候选包。基于使用者大多是 JavaScript 程序员，难点其实存在于第三方 C/C++扩展模块，这类模块建议在企业的安全部门检查之后方可允许使用。事实上，为了解决上述问题，Isaac Z. Schlueter 计划引入 CPAN 社区中的 Kwalitee 风格来让模块进行自然排序。Kwalitee 是一个拟声词，发音与 quality 相同。CPAN 社区对它的原始定义如下：“Kwalitee”is something that looks likequality, sounds like quality, but is not quitequality.
+潜在的问题在于，在 NPM 平台上，每个人都可以分享包到平台上，鉴于开发人员水平不一，上面的包的质量也良莠不齐。另一个问题则是，Node 代码可以运行在服务器端，需要考虑安全问题。
+
+对于包的使用者而言，包质量和安全问题需要作为是否采纳模块的一个判断条件。
+
+尽管 NPM 没有硬性的方式去评判一个包的质量和安全，好在开源社区也有它内在的健康发展机制，那就是口碑效应，其中 [NPM 模块首页](https://npmjs.org/)上的依赖榜可以说明模块的质量和可靠性。第二个可以考查质量的地方是 GitHub, NPM 中大多的包都是通过 GitHub 托管的，模块项目的观察者数量和分支数量也能从侧面反映这个模块的可靠性和流行度。第三个可以考量包质量的地方在于包中的测试用例和文档的状况，一个没有单元测试的包基本上是无法被信任的，没有文档的包，使用者使用时内心也是不踏实的。
+
+在安全问题上，在经过模块质量的考查之后，应该可以去掉一大半候选包。基于使用者大多是 JavaScript 程序员，难点其实存在于第三方 C/C++扩展模块，这类模块建议在企业的安全部门检查之后方可允许使用。
+
+事实上，为了解决上述问题，Isaac Z. Schlueter 计划引入 CPAN 社区中的 Kwalitee 风格来让模块进行自然排序。Kwalitee 是一个拟声词，发音与 quality 相同。CPAN 社区对它的原始定义如下：
+
+“Kwalitee”is something that looks likequality, sounds like quality, but is not quitequality.
 
 大致意思就是确认一个模块的质量是否优秀并不是那么容易，只能从一些表象来进行考查，但即便考查都通过，也并不能确定它就是高质量的模块。这个方法能够排除大部分不合格的模块，虽然不够精确但是有效。总体而言，符合 Kwalitee 的模块要满足的条件与上述提及的考查点大致相同。
 
@@ -943,7 +1450,9 @@ NPM 通过提问式的交互逐个填入选项，最后生成预览的包描述�
 - 具备良好的文档（README、API）。
 - 具备良好的测试覆盖率。
 - 具备良好的编码规范。
-- 更多条件。CPAN 社区制定了相当多的规范来考查模块。未来，NPM 社区也会有更多的规范来考查模块。读者可以根据这些条款区分出那些优秀的模块和糟粕的模块。
+- 更多条件。
+
+CPAN 社区制定了相当多的规范来考查模块。未来，NPM 社区也会有更多的规范来考查模块。读者可以根据这些条款区分出那些优秀的模块和糟粕的模块。
 
 ## 2.7 前后端共用模块
 
@@ -951,13 +1460,31 @@ NPM 通过提问式的交互逐个填入选项，最后生成预览的包描述�
 
 ### 2.7.1 模块的侧重点
 
-前后端 JavaScript 分别搁置在 HTTP 的两端，它们扮演的角色并不同。浏览器端的 JavaScript 需要经历从同一个服务器端分发到多个客户端执行，而服务器端 JavaScript 则是相同的代码需要多次执行。前者的瓶颈在于带宽，后者的瓶颈则在于 CPU 和内存等资源。前者需要通过网络加载代码，后者从磁盘中加载，两者的加载速度不在一个数量级上。纵观 Node 的模块引入过程，几乎全都是同步的。尽管与 Node 强调异步的行为有些相反，但它是合理的。但是如果前端模块也采用同步的方式来引入，那将会在用户体验上造成很大的问题。UI 在初始化过程中需要花费很多时间来等待脚本加载完成。鉴于网络的原因，CommonJS 为后端 JavaScript 制定的规范并不完全适合前端的应用场景。经过一段争执之后，AMD 规范最终在前端应用场景中胜出。它的全称是 Asynchronous ModuleDefinition，即是“异步模块定义”，详见https://github.com/amdjs/amdjs-api/wiki/AMD。除此之外，还有玉伯定义的CMD规范。
+前后端 JavaScript 分别搁置在 HTTP 的两端，它们扮演的角色并不同。浏览器端的 JavaScript 需要经历从同一个服务器端分发到多个客户端执行，而服务器端 JavaScript 则是相同的代码需要多次执行。前者的瓶颈在于带宽，后者的瓶颈则在于 CPU 和内存等资源。前者需要通过网络加载代码，后者从磁盘中加载，两者的加载速度不在一个数量级上。
+
+纵观 Node 的模块引入过程，几乎全都是同步的。尽管与 Node 强调异步的行为有些相反，但它是合理的。但是如果前端模块也采用同步的方式来引入，那将会在用户体验上造成很大的问题。UI 在初始化过程中需要花费很多时间来等待脚本加载完成。
+
+鉴于网络的原因，CommonJS 为后端 JavaScript 制定的规范并不完全适合前端的应用场景。经过一段争执之后，AMD 规范最终在前端应用场景中胜出。它的全称是 Asynchronous ModuleDefinition，即是“异步模块定义”，详见https://github.com/amdjs/amdjs-api/wiki/AMD。除此之外，还有玉伯定义的CMD规范。
 
 ### 2.7.2 AMD 规范
 
 AMD 规范是 CommonJS 模块规范的一个延伸，它的模块定义如下：
 
+```
+define(id?, dependencies?, factory);
+```
+
 它的模块 id 和依赖是可选的，与 Node 模块相似的地方在于 factory 的内容就是实际代码的内容。下面的代码定义了一个简单的模块：
+
+```js
+define(function () {
+  var exports = {};
+  exports.sayHello = function () {
+    alert("Hello from module: " + module.id);
+  };
+  return exports;
+});
+```
 
 不同之处在于 AMD 模块需要用 define 来明确定义一个模块，而在 Node 实现中是隐式包装的，它们的目的是进行作用域隔离，仅在需要的时候被引入，避免掉过去那种通过全局变量或者全局命名空间的方式，以免变量污染和不小心被修改。另一个区别则是内容需要通过返回的方式实现导出。
 
@@ -965,15 +1492,53 @@ AMD 规范是 CommonJS 模块规范的一个延伸，它的模块定义如下：
 
 CMD 规范由国内的玉伯提出，与 AMD 规范的主要区别在于定义模块和依赖引入的部分。AMD 需要在声明模块的时候指定所有的依赖，通过形参传递依赖到模块内容中：
 
+```js
+define(["dep1", "dep2"], function (dep1, dep2) {
+  return function () {};
+});
+```
+
 与 AMD 模块规范相比，CMD 模块更接近于 Node 对 CommonJS 规范的定义：
 
+```js
+define(factory);
+```
+
 在依赖部分，CMD 支持动态引入，示例如下：
+
+```js
+define(function (require, exports, module) {
+  // The module code goes here
+});
+```
 
 require、exports 和 module 通过形参传递给模块，在需要依赖模块时，随时调用 `require()`引入即可。
 
 ### 2.7.4 兼容多种模块
 
-规范为了让同一个模块可以运行在前后端，在写作过程中需要考虑兼容前端也实现了模块规范的环境。为了保持前后端的一致性，类库开发者需要将类库代码包装在一个闭包内。以下代码演示如何将 hello()方法定义到不同的运行环境中，它能够兼容 Node、AMD、CMD 以及常见的浏览器环境中：
+规范为了让同一个模块可以运行在前后端，在写作过程中需要考虑兼容前端也实现了模块规范的环境。为了保持前后端的一致性，类库开发者需要将类库代码包装在一个闭包内。以下代码演示如何将 `hello()`方法定义到不同的运行环境中，它能够兼容 Node、AMD、CMD 以及常见的浏览器环境中：
+
+```js
+(function (name, definition) {
+  // 检测上ူ文环境是否为AMDई CMD
+  var hasDefine = typeof define === "function",
+    // 检查上ူ文环境是否为Node
+    hasExports = typeof module !== "undefined" && module.exports;
+  if (hasDefine) {
+    // AMD环境ई CMD环境
+    define(definition);
+  } else if (hasExports) {
+    // 定义为೵通Node模块
+    module.exports = definition();
+  } else {
+    // 将模块的执行结ࠬࡕ在windowՎ量中ǈ在៓બ器中thisኸၠ window对象
+    this[name] = definition();
+  }
+})("hello", function () {
+  var hello = function () {};
+  return hello;
+});
+```
 
 ## 2.8 总结
 
