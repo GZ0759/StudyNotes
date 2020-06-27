@@ -1609,7 +1609,7 @@ getData("from_remote_api", function (result) {
 
 对比两者的时间总消耗，前者为 M+N，后者为 max（M, N）。
 
-随着应用复杂性的增加，情景将会变成 M + N + …和 max（M, N, …），同步与异步的优劣将会凸显出来。另一方面，随着网站或应用不断膨胀，数据将会分布到多台服务器上，分布式将会是常态。分布也意味着 M 与 N 的值会线性增长，这也会放大异步和同步在性能方面的差异。为了让读者感知到 M 和 N 值具体多昂贵，表 3-1 列出了从 CPU 一级缓存到网络的数据访问所需要的开销。
+随着应用复杂性的增加，情景将会变成 M + N + … 和 max（M, N, …），同步与异步的优劣将会凸显出来。另一方面，随着网站或应用不断膨胀，数据将会分布到多台服务器上，分布式将会是常态。分布也意味着 M 与 N 的值会线性增长，这也会放大异步和同步在性能方面的差异。为了让读者感知到 M 和 N 值具体多昂贵，表 3-1 列出了从 CPU 一级缓存到网络的数据访问所需要的开销。
 
 表 3-1 不同的 I/O 类型及其对应的开销
 
@@ -1662,9 +1662,9 @@ Node 在两者之间给出了它的方案：利用单线程，远离多线程死
 
 阻塞 I/O 造成 CPU 等待 I/O，浪费等待时间，CPU 的处理能力不能得到充分利用。为了提高性能，内核提供了非阻塞 I/O。非阻塞 I/O 跟阻塞 I/O 的差别为调用之后会立即返回，如图 3-3 所示。
 
-图 3-3 调用非阻塞 I/O 的过程
-
 > 操作系统对计算机进行了抽象，将所有输入输出设备抽象为文件。内核在进行文件 I/O 操作时，通过文件描述符进行管理，而文件描述符类似于应用程序与系统内核之间的凭证。应用程序如果需要进行 I/O 调用，需要先打开文件描述符，然后再根据文件描述符去实现文件的数据读写。此处非阻塞 I/O 与阻塞 I/O 的区别在于阻塞 I/O 完成整个获取数据的过程，而非阻塞 I/O 则不带数据直接返回，要获取数据，还需要通过文件描述符再次读取。
+
+图 3-3 调用非阻塞 I/O 的过程
 
 非阻塞 I/O 返回之后，CPU 的时间片可以用来处理其他事务，此时的性能提升是明显的。
 
@@ -1736,7 +1736,7 @@ IOCP 的异步 I/O 模型与 Node 的异步调用模型十分近似。在 Window
 
 首先，我们着重强调一下 Node 自身的执行模型——事件循环，正是它使得回调函数十分普遍。
 
-在进程启动时，Node 便会创建一个类似于 while(true)的循环，每执行一次循环体的过程我们称为 Tick。每个 Tick 的过程就是查看是否有事件待处理，如果有，就取出事件及其相关的回调函数。如果存在关联的回调函数，就执行它们。然后进入下个循环，如果不再有事件处理，就退出进程。流程图如图 3-11 所示。
+在进程启动时，Node 便会创建一个类似于 `while(true)`的循环，每执行一次循环体的过程我们称为 Tick。每个 Tick 的过程就是查看是否有事件待处理，如果有，就取出事件及其相关的回调函数。如果存在关联的回调函数，就执行它们。然后进入下个循环，如果不再有事件处理，就退出进程。流程图如图 3-11 所示。
 
 图 3-11 Tick 流程图
 
@@ -1768,7 +1768,7 @@ var forEach = function (list, callback) {
 
 对于 Node 中的异步 I/O 调用而言，回调函数却不由开发者来调用。那么从我们发出调用后，到回调函数被执行，中间发生了什么呢？事实上，从 JavaScript 发起调用到内核执行完 I/O 操作的过渡过程中，存在一种中间产物，它叫做请求对象。
 
-下面我们以最简单的 fs.open()方法来作为例子，探索 Node 与底层之间是如何执行异步 I/O 调用以及回调函数究竟是如何被调用执行的：
+下面我们以最简单的 `fs.open()`方法来作为例子，探索 Node 与底层之间是如何执行异步 I/O 调用以及回调函数究竟是如何被调用执行的：
 
 ```js
 fs.open = function (path, flags, mode, callback) {
@@ -1782,23 +1782,25 @@ fs.open = function (path, flags, mode, callback) {
 };
 ```
 
-fs.open()的作用是根据指定路径和参数去打开一个文件，从而得到一个文件描述符，这是后续所有 I/O 操作的初始操作。从前面的代码中可以看到，JavaScript 层面的代码通过调用 C++核心模块进行下层的操作。图 3-12 为调用示意图。
+`fs.open()`的作用是根据指定路径和参数去打开一个文件，从而得到一个文件描述符，这是后续所有 I/O 操作的初始操作。从前面的代码中可以看到，JavaScript 层面的代码通过调用 C++核心模块进行下层的操作。图 3-12 为调用示意图。
 
-图 3-12 调用示意图从 JavaScript 调用 Node 的核心模块，核心模块调用 C++内建模块，内建模块通过 libuv 进行系统调用，这是 Node 里经典的调用方式。这里 libuv 作为封装层，有两个平台的实现，实质上是调用了 uv_fs_open()方法。在 uv_fs_open()的调用过程中，我们创建了一个 FSReqWrap 请求对象。从 JavaScript 层传入的参数和当前方法都被封装在这个请求对象中，其中我们最为关注的回调函数则被设置在这个对象的 oncomplete_sym 属性上：
+图 3-12 调用示意图
+
+从 JavaScript 调用 Node 的核心模块，核心模块调用 C++内建模块，内建模块通过 libuv 进行系统调用，这是 Node 里经典的调用方式。这里 libuv 作为封装层，有两个平台的实现，实质上是调用了 `uv_fs_open()`方法。在 `uv_fs_open()`的调用过程中，我们创建了一个 FSReqWrap 请求对象。从 JavaScript 层传入的参数和当前方法都被封装在这个请求对象中，其中我们最为关注的回调函数则被设置在这个对象的 oncomplete_sym 属性上：
 
 ```
 req_wrap->object_->Set(oncomplete_sym, callback);
 ```
 
-对象包装完毕后，在 Windows 下，则调用 QueueUserWorkItem()方法将这个 FSReqWrap 对象推入线程池中等待执行，该方法的代码如下所示：
+对象包装完毕后，在 Windows 下，则调用 `QueueUserWorkItem()`方法将这个 FSReqWrap 对象推入线程池中等待执行，该方法的代码如下所示：
 
-```
+```c#
 QueueUserWorkItem(&uv_fs_thread_proc, \
 req, \
 WT_EXECUTEDEFAULT)
 ```
 
-QueueUserWorkItem()方法接受 3 个参数：第一个参数是将要执行的方法的引用，这里引用的是 uv_fs_thread_proc，第二个参数是 uv_fs_thread_proc 方法运行时所需要的参数；第三个参数是执行的标志。当线程池中有可用线程时，我们会调用 uv_fs_thread_proc()方法。uv_fs_thread_proc()方法会根据传入参数的类型调用相应的底层函数。以 uv_fs_open()为例，实际上调用 fs\_\_open()方法。
+`QueueUserWorkItem()`方法接受 3 个参数：第一个参数是将要执行的方法的引用，这里引用的是 uv_fs_thread_proc，第二个参数是 uv_fs_thread_proc 方法运行时所需要的参数；第三个参数是执行的标志。当线程池中有可用线程时，我们会调用 `uv_fs_thread_proc()``方法。uv_fs_thread_proc()`方法会根据传入参数的类型调用相应的底层函数。以 `uv_fs_open()`为例，实际上调用 `fs__open()`方法。
 
 至此，JavaScript 调用立即返回，由 JavaScript 层面发起的异步调用的第一阶段就此结束。JavaScript 线程可以继续执行当前任务的后续操作。当前的 I/O 操作在线程池中等待执行，不管它是否阻塞 I/O，都不会影响到 JavaScript 线程的后续执行，如此就达到了异步的目的。
 
@@ -1808,15 +1810,15 @@ QueueUserWorkItem()方法接受 3 个参数：第一个参数是将要执行的�
 
 组装好请求对象、送入 I/O 线程池等待执行，实际上完成了异步 I/O 的第一部分，回调通知是第二部分。
 
-线程池中的 I/O 操作调用完毕之后，会将获取的结果储存在 req->result 属性上，然后调用 PostQueuedCompletionStatus()通知 IOCP，告知当前对象操作已经完成：
+线程池中的 I/O 操作调用完毕之后，会将获取的结果储存在 req->result 属性上，然后调用 `PostQueuedCompletionStatus()`通知 IOCP，告知当前对象操作已经完成：
 
-```
+```c#
 PostQueuedCompletionStatus((loop)->iocp, 0, 0, &((req)->overlapped))
 ```
 
-PostQueuedCompletionStatus()方法的作用是向 IOCP 提交执行状态，并将线程归还线程池。通过 PostQueuedCompletionStatus()方法提交的状态，可以通过 GetQueuedCompletionStatus()提取。
+`PostQueuedCompletionStatus()`方法的作用是向 IOCP 提交执行状态，并将线程归还线程池。通过 `PostQueuedCompletionStatus()`方法提交的状态，可以通过 `GetQueuedCompletionStatus()`提取。
 
-在这个过程中，我们其实还动用了事件循环的 I/O 观察者。在每次 Tick 的执行中，它会调用 IOCP 相关的 GetQueuedCompletionStatus()方法检查线程池中是否有执行完的请求，如果存在，会将请求对象加入到 I/O 观察者的队列中，然后将其当做事件处理。
+在这个过程中，我们其实还动用了事件循环的 I/O 观察者。在每次 Tick 的执行中，它会调用 IOCP 相关的 `GetQueuedCompletionStatus()`方法检查线程池中是否有执行完的请求，如果存在，会将请求对象加入到 I/O 观察者的队列中，然后将其当做事件处理。
 
 I/O 观察者回调函数的行为就是取出请求对象的 result 属性作为参数，取出 oncomplete_sym 属性作为方法，然后调用执行，以此达到调用 JavaScript 中传入的回调函数的目的。
 
@@ -1834,21 +1836,21 @@ Windows 下主要通过 IOCP 来向系统内核发送 I/O 调用和从内核获�
 
 ## 3.4 非 I/O 的异步 API
 
-尽管我们在介绍 Node 的时候，多数情况下都会提到异步 I/O，但是 Node 中其实还存在一些与 I/O 无关的异步 API，这一部分也值得略微关注一下，它们分别是 setTimeout()、setInterval()、setImmediate()和 process.nextTick()。
+尽管我们在介绍 Node 的时候，多数情况下都会提到异步 I/O，但是 Node 中其实还存在一些与 I/O 无关的异步 API，这一部分也值得略微关注一下，它们分别是 `setTimeout()`、`setInterval()`、`setImmediate()`和 `process.nextTick()`。
 
 ### 3.4.1 定时器
 
-setTimeout()和 setInterval()与浏览器中的 API 是一致的，分别用于单次和多次定时执行任务。它们的实现原理与异步 I/O 比较类似，只是不需要 I/O 线程池的参与。调用 setTimeout()或者 setInterval()创建的定时器会被插入到定时器观察者内部的一个红黑树中。每次 Tick 执行时，会从该红黑树中迭代取出定时器对象，检查是否超过定时时间，如果超过，就形成一个事件，它的回调函数将立即执行。
+`setTimeout()`和 `setInterval()`与浏览器中的 API 是一致的，分别用于单次和多次定时执行任务。它们的实现原理与异步 I/O 比较类似，只是不需要 I/O 线程池的参与。调用 `setTimeout()`或者 `setInterval()`创建的定时器会被插入到定时器观察者内部的一个红黑树中。每次 Tick 执行时，会从该红黑树中迭代取出定时器对象，检查是否超过定时时间，如果超过，就形成一个事件，它的回调函数将立即执行。
 
-图 3-14 提到的主要是 setTimeout()的行为。setInterval()与之相同，区别在于后者是重复性的检测和执行。
+图 3-14 提到的主要是 `setTimeout()`的行为。`setInterval()`与之相同，区别在于后者是重复性的检测和执行。
 
 图 3-14 setTimeout()的行为
 
-定时器的问题在于，它并非精确的（在容忍范围内）。尽管事件循环十分快，但是如果某一次循环占用的时间较多，那么下次循环时，它也许已经超时很久了。譬如通过 setTimeout()设定一个任务在 10 毫秒后执行，但是在 9 毫秒后，有一个任务占用了 5 毫秒的 CPU 时间片，再次轮到定时器执行时，时间就已经过期 4 毫秒。
+定时器的问题在于，它并非精确的（在容忍范围内）。尽管事件循环十分快，但是如果某一次循环占用的时间较多，那么下次循环时，它也许已经超时很久了。譬如通过 `setTimeout()`设定一个任务在 10 毫秒后执行，但是在 9 毫秒后，有一个任务占用了 5 毫秒的 CPU 时间片，再次轮到定时器执行时，时间就已经过期 4 毫秒。
 
 ### 3.4.2 process.nextTick()
 
-在未了解 process.nextTick()之前，很多人也许为了立即异步执行一个任务，会这样调用 setTimeout()来达到所需的效果：
+在未了解 `process.nextTick()`之前，很多人也许为了立即异步执行一个任务，会这样调用 `setTimeout()`来达到所需的效果：
 
 ```js
 setTimeout(function () {
@@ -1856,7 +1858,7 @@ setTimeout(function () {
 }, 0);
 ```
 
-由于事件循环自身的特点，定时器的精确度不够。而事实上，采用定时器需要动用红黑树，创建定时器对象和迭代等操作，而 setTimeout(fn, 0)的方式较为浪费性能。实际上，process.nextTick()方法的操作相对较为轻量，具体代码如下：
+由于事件循环自身的特点，定时器的精确度不够。而事实上，采用定时器需要动用红黑树，创建定时器对象和迭代等操作，而 `setTimeout(fn, 0)`的方式较为浪费性能。实际上，`process.nextTick()`方法的操作相对较为轻量，具体代码如下：
 
 ```js
 process.nextTick = function (callback) {
@@ -1873,40 +1875,32 @@ process.nextTick = function (callback) {
 };
 ```
 
-每次调用 process.nextTick()方法，只会将回调函数放入队列中，在下一轮 Tick 时取出执行。定时器中采用红黑树的操作时间复杂度为 O(lg(n)), nextTick()的时间复杂度为 O(1)。相较之下，process.nextTick()更高效。
+每次调用 `process.nextTick()`方法，只会将回调函数放入队列中，在下一轮 Tick 时取出执行。定时器中采用红黑树的操作时间复杂度为 O(lg(n)), `nextTick()`的时间复杂度为 O(1)。相较之下，`process.nextTick()`更高效。
 
 ### 3.4.3 setImmediate()
 
-setImmediate()方法与 process.nextTick()方法十分类似，都是将回调函数延迟执行。在 Node v0.9.1 之前，setImmediate()还没有实现，那时候实现类似的功能主要是通过 process.nextTick()来完成，该方法的代码如下所示：
+`setImmediate()`方法与 `process.nextTick()`方法十分类似，都是将回调函数延迟执行。在 Node v0.9.1 之前，`setImmediate()`还没有实现，那时候实现类似的功能主要是通过 `process.nextTick()`来完成，该方法的代码如下所示：
 
 ```js
 process.nextTick(function () {
   console.log("延迟执行");
 });
 console.log("正常执行");
+// 上述代码的输出结果如下：
+// 正常执行
+// 延迟执行
 ```
 
-上述代码的输出结果如下：
-
-```
-正常执行
-延迟执行
-```
-
-而用 setImmediate()实现时，相关代码如下：
+而用 `setImmediate()`实现时，相关代码如下：
 
 ```js
 setImmediate(function () {
   console.log("延迟执行");
 });
 console.log("正常执行");
-```
-
-其结果完全一样：
-
-```
-正常执行
-延迟执行
+// 其结果完全一样：
+// 正常执行
+// 延迟执行
 ```
 
 但是两者之间其实是有细微差别的。将它们放在一起时，又会是怎样的优先级呢。示例代码如下：
@@ -1919,19 +1913,15 @@ setImmediate(function () {
   console.log("setImmediate延迟执行");
 });
 console.log("正常执行");
+// 其执行结果如下：
+// 正常执行
+// nextTick延迟执行
+// setImmediate延迟执行
 ```
 
-其执行结果如下：
+从结果里可以看到，`process.nextTick()`中的回调函数执行的优先级要高于 `setImmediate()`。这里的原因在于事件循环对观察者的检查是有先后顺序的，`process.nextTick()`属于 idle 观察者，`setImmediate()`属于 check 观察者。在每一个轮循环检查中，idle 观察者先于 I/O 观察者，I/O 观察者先于 check 观察者。
 
-```
-正常执行
-nextTick延迟执行
-setImmediate延迟执行
-```
-
-从结果里可以看到，process.nextTick()中的回调函数执行的优先级要高于 setImmediate()。这里的原因在于事件循环对观察者的检查是有先后顺序的，process.nextTick()属于 idle 观察者，setImmediate()属于 check 观察者。在每一个轮循环检查中，idle 观察者先于 I/O 观察者，I/O 观察者先于 check 观察者。
-
-在具体实现上，process.nextTick()的回调函数保存在一个数组中，setImmediate()的结果则是保存在链表中。在行为上，process.nextTick()在每轮循环中会将数组中的回调函数全部执行完，而 setImmediate()在每轮循环中执行链表中的一个回调函数。如下的示例代码可以佐证：
+在具体实现上，`process.nextTick()`的回调函数保存在一个数组中，`setImmediate()`的结果则是保存在链表中。在行为上，`process.nextTick()`在每轮循环中会将数组中的回调函数全部执行完，而 `setImmediate()`在每轮循环中执行链表中的一个回调函数。如下的示例代码可以佐证：
 
 ```js
 // 加入两个nextTick()的回调函数
@@ -1953,26 +1943,22 @@ setImmediate(function () {
   console.log("setImmediate延迟执行2");
 });
 console.log("正常执行");
+// 其执行结果如下：
+// 正常执行
+// nextTick延迟执行1
+// nextTick延迟执行2
+// setImmediate延迟执行1
+// 强势插入
+// setImmediate延迟执行2
 ```
 
-其执行结果如下：
-
-```
-正常执行
-nextTick延迟执行1
-nextTick延迟执行2
-setImmediate延迟执行1
-强势插入
-setImmediate延迟执行2
-```
-
-从执行结果上可以看出，当第一个 setImmediate()的回调函数执行后，并没有立即执行第二个，而是进入了下一轮循环，再次按 process.nextTick()优先、setImmediate()次后的顺序执行。之所以这样设计，是为了保证每轮循环能够较快地执行结束，防止 CPU 占用过多而阻塞后续 I/O 调用的情况。
+从执行结果上可以看出，当第一个 `setImmediate()`的回调函数执行后，并没有立即执行第二个，而是进入了下一轮循环，再次按 `process.nextTick()`优先、`setImmediate()`次后的顺序执行。之所以这样设计，是为了保证每轮循环能够较快地执行结束，防止 CPU 占用过多而阻塞后续 I/O 调用的情况。
 
 ## 3.5 事件驱动与高性能服务器
 
 前面主要介绍了异步的实现原理，在这个过程中，我们也基本勾勒出了事件驱动的实质，即通过主循环加事件触发的方式来运行程序。
 
-尽管本章只用了 fs.open()方法作为例子来阐述 Node 如何实现异步 I/O。而实质上，异步 I/O 不仅仅应用在文件操作中。对于网络套接字的处理，Node 也应用到了异步 I/O，网络套接字上侦听到的请求都会形成事件交给 I/O 观察者。事件循环会不停地处理这些网络 I/O 事件。如果 JavaScript 有传入回调函数，这些事件将会最终传递到业务逻辑层进行处理。利用 Node 构建 Web 服务器，正是在这样一个基础上实现的，其流程图如图 3-15 所示。
+尽管本章只用了 `fs.open()`方法作为例子来阐述 Node 如何实现异步 I/O。而实质上，异步 I/O 不仅仅应用在文件操作中。对于网络套接字的处理，Node 也应用到了异步 I/O，网络套接字上侦听到的请求都会形成事件交给 I/O 观察者。事件循环会不停地处理这些网络 I/O 事件。如果 JavaScript 有传入回调函数，这些事件将会最终传递到业务逻辑层进行处理。利用 Node 构建 Web 服务器，正是在这样一个基础上实现的，其流程图如图 3-15 所示。
 
 图 3-15 利用 Node 构建 Web 服务器的流程图
 
@@ -2032,31 +2018,97 @@ V8 和异步 I/O 在性能上带来的提升，前后端 JavaScript 编程风格
 
 鉴于函数式编程在近年来重新火热，而前端类图书中较少述及这部分知识，这里稍作补充，因为它是 JavaScript 异步编程的基础。
 
-4.1.1 高阶函数
+### 4.1.1 高阶函数
 
 在通常的语言中，函数的参数只接受基本的数据类型或是对象引用，返回值也只是基本数据类型和对象引用。下面的代码为常规的参数传递和返回：
 
+```js
+function foo(x) {
+  return x;
+}
+```
+
 高阶函数则是可以把函数作为参数，或是将函数作为返回值的函数，如下面的代码所示：
+
+```js
+function foo(x) {
+  return function () {
+    return x;
+  };
+}
+```
 
 高阶函数可以将函数作为输入或返回值的变化看起来虽细小，但是对于 C/C++语言而言，通过指针也可以达到相同的效果。但对于程序编写，高阶函数则比普通的函数要灵活许多。除了通常意义的函数调用返回外，还形成了一种后续传递风格（Continuation Passing Style）的结果接收方式，而非单一的返回值形式。后续传递风格的程序编写将函数的业务重点从返回值转移到了回调函数中：
 
-以上面的代码为例，对于相同的 foo()函数，传入的 bar 参数不同，则可以得到不同的结果。一个经典的例子便是数组的 sort()方法，它是一个货真价实的高阶函数，可以接受一个方法作为参数参与运算排序：
+```js
+function foo(x, bar) {
+  return bar(x);
+}
+```
 
-通过改动 sort()方法的参数，可以决定不同的排序方式，从这里可以看出高阶函数的灵活性来。结合 Node 提供的最基本的事件模块可以看到，事件的处理方式正是基于高阶函数的特性来完成的。在自定义事件实例中，通过为相同事件注册不同的回调函数，可以很灵活地处理业务逻辑。示例代码如下：
+以上面的代码为例，对于相同的 `foo()`函数，传入的 bar 参数不同，则可以得到不同的结果。一个经典的例子便是数组的 `sort()`方法，它是一个货真价实的高阶函数，可以接受一个方法作为参数参与运算排序：
+
+```js
+var points = [40, 100, 1, 5, 25, 10];
+points.sort(function (a, b) {
+  return a - b;
+});
+// [ 1, 5, 10, 25, 40, 100 ]
+```
+
+通过改动 `sort()`方法的参数，可以决定不同的排序方式，从这里可以看出高阶函数的灵活性来。结合 Node 提供的最基本的事件模块可以看到，事件的处理方式正是基于高阶函数的特性来完成的。在自定义事件实例中，通过为相同事件注册不同的回调函数，可以很灵活地处理业务逻辑。示例代码如下：
+
+```js
+var emitter = new events.EventEmitter();
+emitter.on("event_foo", function () {
+  // TODO
+});
+```
 
 本书时常提到事件可以十分方便地进行复杂业务逻辑的解耦，它其实受益于高阶函数。
 
 高阶函数在 JavaScript 中比比皆是，其中 ECMAScript5 中提供的一些数组方法（forEach()、map()、reduce()、reduceRight()、filter()、every()、some()）十分典型。
 
-4.1.2 偏函数用法
+### 4.1.2 偏函数用法
 
 偏函数用法是指创建一个调用另外一个部分——参数或变量已经预置的函数——的函数的用法。这句话相对较为拗口，下面我们以实例来说明：
 
+```js
+var toString = Object.prototype.toString;
+var isString = function (obj) {
+  return toString.call(obj) == "[object String]";
+};
+var isFunction = function (obj) {
+  return toString.call(obj) == "[object Function]";
+};
+```
+
 在 JavaScript 中进行类型判断时，我们通常会进行类似上述代码的方法定义。这段代码固然不复杂，只有两个函数的定义，但是里面存在的问题是我们需要重复去定义一些相似的函数，如果有更多的 isXXX()，就会出现更多的冗余代码。为了解决重复定义的问题，我们引入一个新函数，这个新函数可以如工厂一样批量创建一些类似的函数。在下面的代码中，我们通过 isType()函数预先指定 type 的值，然后返回一个新的函数：
+
+```js
+var isType = function (type) {
+  return function (obj) {
+    return toString.call(obj) == "[object " + type + "]";
+  };
+};
+var isString = isType("String");
+var isFunction = isType("Function");
+```
 
 可以看出，引入 isType()函数后，创建 isString()、isFunction()函数就变得简单多了。这种通过指定部分参数来产生一个新的定制函数的形式就是偏函数。
 
 偏函数应用在异步编程中也十分常见，著名类库 Underscore 提供的 after()方法即是偏函数应用，其定义如下：
+
+```js
+_.after = function (times, func) {
+  if (times <= 0) return func();
+  return function () {
+    if (--times < 1) {
+      return func.apply(this, arguments);
+    }
+  };
+};
+```
 
 这个函数可以根据传入的 times 参数和具体方法，生成一个需要调用多次才真正执行实际函数的函数。
 
@@ -2064,7 +2116,7 @@ V8 和异步 I/O 在性能上带来的提升，前后端 JavaScript 编程风格
 
 曾经的单线程模型在同步 I/O 的影响下，由于 I/O 调用缓慢，在应用层面导致 CPU 与 I/O 无法重叠进行。为了照顾编程人员的阅读思维习惯，同步 I/O 盛行了很多年。但在日新月异的技术大潮面前，性能问题摆在了编程人员的面前。提升性能的方式过去多用多线程的方式解决，但是多线程的引入在业务逻辑方面制造的麻烦也不少。从操作系统调度多线程的上下文切换开销，到实际编程里的锁、同步等问题，让开发人员头疼的时候也并不少。另一个解决 I/O 性能的方案是通过 C/C++调用操作系统底层接口，自己手工完成异步 I/O，这能够达到很高的性能，但是调试和开发门槛均十分高，在帮助业务解决问题上，需要花费较大的精力。Node 利用 JavaScript 及其内部异步库，将异步直接提升到业务层面，这是一种创新。
 
-4.2.1 优势
+### 4.2.1 优势
 
 Node 带来的最大特性莫过于基于事件驱动的非阻塞 I/O 模型，这是它的灵魂所在。非阻塞 I/O 可以使 CPU 与 I/O 并不相互依赖等待，让资源得到更好的利用。对于网络应用而言，并行带来的想象空间更大，延展而开的是分布式和云。并行使得各个单点之间能够更有效地组织起来，这也是 Node 在云计算厂商中广受青睐的原因，图 4-1 为异步 I/O 调用的示意图。
 
@@ -2084,17 +2136,47 @@ Node 带来的最大特性莫过于基于事件驱动的非阻塞 I/O 模型，�
 
 由于事件循环模型需要应对海量请求，海量请求同时作用在单线程上，就需要防止任何一个计算耗费过多的 CPU 时间片。至于是计算密集型，还是 I/O 密集型，只要计算不影响异步 I/O 的调度，那就不构成问题。建议对 CPU 的耗用不要超过 10ms，或者将大量的计算分解为诸多的小量计算，通过 setImmediate()进行调度。只要合理利用 Node 的异步模型与 V8 的高性能，就可以充分发挥 CPU 和 I/O 资源的优势。
 
-4.2.2 难点
+### 4.2.2 难点
 
 Node 令异步编程如此风行，这也是异步编程首次大规模出现在业务层面。它借助异步 I/O 模型及 V8 高性能引擎，突破单线程的性能瓶颈，让 JavaScript 在后端达到实用价值。另一方面，它也统一了前后端 JavaScript 的编程模型。对于异步编程带来的新鲜感与不适感，开发者们有着不同程度的感受。接下来，我们梳理一下异步编程的难点，以更好地利用 Node。
 
-1．难点 1：异常处理过去我们处理异常时，通常使用类 Java 的 try/catch/final 语句块进行异常捕获，示例代码如下：
+1. 难点 1：异常处理
+
+过去我们处理异常时，通常使用类 Java 的 try/catch/final 语句块进行异常捕获，示例代码如下：
+
+```js
+try {
+  JSON.parse(json);
+} catch (e) {
+  // TODO
+}
+```
 
 但是这对于异步编程而言并不一定适用。第 3 章提到过，异步 I/O 的实现主要包含两个阶段：提交请求和处理结果。这两个阶段中间有事件循环的调度，两者彼此不关联。异步方法则通常在第一个阶段提交请求后立即返回，因为异常并不一定发生在这个阶段，try/catch 的功效在此处不会发挥任何作用。异步方法的定义如下所示：
 
+```js
+var async = function (callback) {
+  process.nextTick(callback);
+};
+```
+
 调用 async()方法后，callback 被存放起来，直到下一个事件循环（Tick）才会取出来执行。尝试对异步方法进行 try/catch 操作只能捕获当次事件循环内的异常，对 callback 执行时抛出的异常将无能为力，示例代码如下：
 
+```js
+try {
+  async(callback);
+} catch (e) {
+  // TODO
+}
+```
+
 Node 在处理异常上形成了一种约定，将异常作为回调函数的第一个实参传回，如果为空值，则表明异步调用没有异常抛出：
+
+```js
+async(function (err, results) {
+  // TODO
+});
+```
 
 在我们自行编写的异步方法上，也需要去遵循这样一些原则：
 
@@ -2103,31 +2185,103 @@ Node 在处理异常上形成了一种约定，将异常作为回调函数的第
 
 示例代码如下：
 
+```js
+var async = function (callback) {
+  process.nextTick(function () {
+    var results = something;
+    if (error) {
+      return callback(error);
+    }
+    callback(null, results);
+  });
+};
+```
+
 在异步方法的编写中，另一个容易犯的错误是对用户传递的回调函数进行异常捕获，示例代码如下：
+
+```js
+try {
+  req.body = JSON.parse(buf, options.reviver);
+  callback();
+} catch (err) {
+  err.body = buf;
+  err.status = 400;
+  callback(err);
+}
+```
 
 上述代码的意图是捕获 JSON.parse()中可能出现的异常，但是却不小心包含了用户传递的回调函数。这意味着如果回调函数中有异常抛出，将会进入 catch()代码块中执行，于是回调函数将会被执行两次。这显然不是预期的情况，可能导致业务混乱。正确的捕获应当为：
 
+```js
+try {
+  req.body = JSON.parse(buf, options.reviver);
+} catch (err) {
+  err.body = buf;
+  err.status = 400;
+  return callback(err);
+}
+callback();
+```
+
 在编写异步方法时，只要将异常正确地传递给用户的回调方法即可，无须过多处理。
 
-2．难点 2：函数嵌套过深
+2. 难点 2：函数嵌套过深
 
 这或许是 Node 被人诟病最多的地方。在前端开发中，DOM 事件相对而言不会存在互相依赖或需要多个事件一起协作的场景，较少存在异步多级依赖的情况。下面的代码为彼此独立的 DOM 事件绑定：
 
+```js
+$(selector).click(function (event) {
+  // TODO
+});
+$(selector).change(function (event) {
+  // TODO
+});
+```
+
 但是对于 Node 而言，事务中存在多个异步调用的场景比比皆是。比如一个遍历目录的操作，其代码如下：
+
+```js
+fs.readdir(path.join(__dirname, ".."), function (err, files) {
+  files.forEach(function (filename, index) {
+    fs.readFile(filename, "utf8", function (err, file) {
+      // TODO
+    });
+  });
+});
+```
 
 对于上述场景，由于两次操作存在依赖关系，函数嵌套的行为也许情有可原。那么，在网页渲染的过程中，通常需要数据、模板、资源文件，这三者互相之间并不依赖，但最终渲染结果中三者缺一不可。如果采用默认的异步方法调用，程序也许将会如下所示：
 
+```js
+fs.readFile(template_path, "utf8", function (err, template) {
+  db.query(sql, function (err, data) {
+    l10n.get(function (err, resources) {
+      // TODO
+    });
+  });
+});
+```
+
 这在结果的保证上是没有问题的，问题在于这并没有利用好异步 I/O 带来的并行优势。这是异步编程的典型问题，为此有人曾说，因为嵌套的深度，未来最难看的代码必将从 Node 中诞生。但是实际情况没有想象得那么糟糕，且看后面如何解决该问题。
 
-3．难点 3：阻塞代码
+3. 难点 3：阻塞代码
 
 对于进入 JavaScript 世界不久的开发者，比较纳闷这门编程语言竟然没有 sleep()这样的线程沉睡功能，唯独能用于延时操作的只有 setInterval()和 setTimeout()这两个函数。但是让人惊讶的是，这两个函数并不能阻塞后续代码的持续执行。所以，有多半的开发者会写出下述这样的代码来实现 sleep(1000)的效果：
+
+```js
+// TODO
+var start = new Date();
+while (new Date() - start < 1000) {
+  // TODO
+}
+// 需要阻塞的代码
+```
 
 但是事实是糟糕的，这段代码会持续占用 CPU 进行判断，与真正的线程沉睡相去甚远，完全破坏了事件循环的调度。由于 Node 单线程的原因，CPU 资源全都会用于为这段代码服务，导致其余任何请求都会得不到响应。
 
 遇见这样的需求时，在统一规划业务逻辑之后，调用 setTimeout()的效果会更好。
 
-4．难点 4：多线程编程
+4. 难点 4：多线程编程
 
 我们在谈论 JavaScript 的时候，通常谈的是单一线程上执行的代码，这在浏览器中指的是 JavaScript 执行线程与 UI 渲染共用的一个线程；在 Node 中，只是没有 UI 渲染的部分，模型基本相同。对于服务器端而言，如果服务器是多核 CPU，单个 Node 进程实质上是没有充分利用多核 CPU 的。随着现今业务的复杂化，对于多核 CPU 利用的要求也越来越高。浏览器提出了 Web Workers，它通过将 JavaScript 执行与 UI 渲染分离，可以很好地利用多核 CPU 为大量计算服务。同时前端 WebWorkers 也是一个利用消息机制合理使用多核 CPU 的理想模型。图 4-3 为 WebWorkers 的工作示意图。
 
@@ -2135,7 +2289,7 @@ Node 在处理异常上形成了一种约定，将异常作为回调函数的第
 
 遗憾在于前端浏览器存在对标准的滞后性，Web Workers 并没有广泛应用起来。另外 Web Workers 能解决利用 CPU 和减少阻塞 UI 渲染，但是不能解决 UI 渲染的效率问题。Node 借鉴了这个模式，child_process 是其基础 API, cluster 模块是更深层次的应用。借助 Web Workers 的模式，开发人员要更多地去面临跨线程的编程，这对于以往的 JavaScript 编程经验是较少考虑的。在第 9 章中，我们将详细分析 Node 的进程，以展开这部分内容。
 
-5．难点 5：异步转同步
+5. 难点 5：异步转同步
 
 习惯异步编程的同学，也许能够从容面对异步编程带来的副产品，比如嵌套回调、业务分散等问题。Node 提供了绝大部分的异步 API 和少量的同步 API，偶尔出现的同步需求将会因为没有同步 API 让开发者突然无所适从。目前，Node 中试图同步式编程，但并不能得到原生支持，需要借助库或者编译等手段来实现。但对于异步调用，通过良好的流程控制，还是能够将逻辑梳理成顺序式的形式。
 
@@ -2149,9 +2303,20 @@ Node 在处理异常上形成了一种约定，将异常作为回调函数的第
 - Promise/Deferred 模式。
 - 流程控制库。
 
-  4.3.1 事件发布/订阅模式
+### 4.3.1 事件发布/订阅模式
 
-事件监听器模式是一种广泛用于异步编程的模式，是回调函数的事件化，又称发布/订阅模式。Node 自身提供的[events 模块](http://nodejs.org/docs/latest/api/events.html)是发布/订阅模式的一个简单实现，Node 中部分模块都继承自它，这个模块比前端浏览器中的大量 DOM 事件简单，不存在事件冒泡，也不存在 preventDefault()、stopPropagation()和 stopImmediatePropagation()等控制事件传递的方法。它具有 addListener/on()、once()、removeListener()、removeAllListeners()和 emit()等基本的事件监听模式的方法实现。事件发布/订阅模式的操作极其简单，示例代码如下：
+事件监听器模式是一种广泛用于异步编程的模式，是回调函数的事件化，又称发布/订阅模式。
+
+Node 自身提供的[events 模块](http://nodejs.org/docs/latest/api/events.html)是发布/订阅模式的一个简单实现，Node 中部分模块都继承自它，这个模块比前端浏览器中的大量 DOM 事件简单，不存在事件冒泡，也不存在 preventDefault()、stopPropagation()和 stopImmediatePropagation()等控制事件传递的方法。它具有 addListener/on()、once()、removeListener()、removeAllListeners()和 emit()等基本的事件监听模式的方法实现。事件发布/订阅模式的操作极其简单，示例代码如下：
+
+```js
+// 订阅
+emitter.on("event1", function (message) {
+  console.log(message);
+});
+// 发布
+emitter.emit("event1", "I am message!");
+```
 
 可以看到，订阅事件就是一个高阶函数的应用。事件发布/订阅模式可以实现一个事件与多个回调函数的关联，这些回调函数又称为事件侦听器。通过 emit()发布事件后，消息会立即传递给当前事件的所有侦听器执行。侦听器可以很灵活地添加和删除，使得事件和具体处理逻辑之间可以很轻松地关联和解耦。
 
@@ -2161,6 +2326,33 @@ Node 在处理异常上形成了一种约定，将异常作为回调函数的第
 
 从另一个角度来看，事件侦听器模式也是一种钩子（hook）机制，利用钩子导出内部数据或状态给外部的调用者。Node 中的很多对象大多具有黑盒的特点，功能点较少，如果不通过事件钩子的形式，我们就无法获取对象在运行期间的中间值或内部状态。这种通过事件钩子的方式，可以使编程者不用关注组件是如何启动和执行的，只需关注在需要的事件点上即可。下面的 HTTP 请求是典型场景：
 
+```js
+var options = {
+  host: "www.google.com",
+  port: 80,
+  path: "/upload",
+  method: "POST",
+};
+var req = http.request(options, function (res) {
+  console.log("STATUS: " + res.statusCode);
+  console.log("HEADERS: " + JSON.stringify(res.headers));
+  res.setEncoding("utf8");
+  res.on("data", function (chunk) {
+    console.log("BODY: " + chunk);
+  });
+  res.on("end", function () {
+    // TODO
+  });
+});
+req.on("error", function (e) {
+  console.log("problem with request: " + e.message);
+});
+// write data to request body
+req.write("data\n");
+req.write("data\n");
+req.end();
+```
+
 在这段 HTTP 请求的代码中，程序员只需要将视线放在 error、data、end 这些业务事件点上即可，至于内部的流程如何，无需过于关注。
 
 值得一提的是，Node 对事件发布/订阅的机制做了一些额外的处理，这大多是基于健壮性而考虑的。下面为两个具体的细节点。
@@ -2168,13 +2360,21 @@ Node 在处理异常上形成了一种约定，将异常作为回调函数的第
 - 如果对一个事件添加了超过 10 个侦听器，将会得到一条警告。这一处设计与 Node 自身单线程运行有关，设计者认为侦听器太多可能导致内存泄漏，所以存在这样一条警告。调用 emitter.setMaxListeners(0)；可以将这个限制去掉。另一方面，由于事件发布会引起一系列侦听器执行，如果事件相关的侦听器过多，可能存在过多占用 CPU 的情景。
 - 为了处理异常，EventEmitter 对象对 error 事件进行了特殊对待。如果运行期间的错误触发了 error 事件，EventEmitter 会检查是否有对 error 事件添加过侦听器。如果添加了，这个错误将会交由该侦听器处理，否则这个错误将会作为异常抛出。如果外部没有捕获这个异常，将会引起线程退出。一个健壮的 EventEmitter 实例应该对 error 事件做处理。
 
-1．继承 events 模块
+1. 继承 events 模块
 
 实现一个继承 EventEmitter 的类是十分简单的，以下代码是 Node 中 Stream 对象继承 EventEmitter 的例子：
 
+```js
+var events = require("events");
+function Stream() {
+  events.EventEmitter.call(this);
+}
+util.inherits(Stream, events.EventEmitter);
+```
+
 Node 在 util 模块中封装了继承的方法，所以此处可以很便利地调用。开发者可以通过这样的方式轻松继承 EventEmitter 类，利用事件机制解决业务问题。在 Node 提供的核心模块中，有近半数都继承自 EventEmitter。
 
-2．利用事件队列解决雪崩问题
+2. 利用事件队列解决雪崩问题
 
 在事件订阅/发布模式中，通常也有一个 once()方法，通过它添加的侦听器只能执行一次，在执行之后就会将它与事件的关联移除。这个特性常常可以帮助我们过滤一些重复性的事件响应。下面我们介绍一下如何采用 once()来解决雪崩问题。
 
@@ -2182,9 +2382,45 @@ Node 在 util 模块中封装了继承的方法，所以此处可以很便利地
 
 以下是一条数据库查询语句的调用：
 
+```js
+var select = function (callback) {
+  db.select("SQL", function (results) {
+    callback(results);
+  });
+};
+```
+
 如果站点刚好启动，这时缓存中是不存在数据的，而如果访问量巨大，同一句 SQL 会被发送到数据库中反复查询，会影响服务的整体性能。一种改进方案是添加一个状态锁，相关代码如下：
 
+```js
+var status = "ready";
+var select = function (callback) {
+  if (status === "ready") {
+    status = "pending";
+    db.select("SQL", function (results) {
+      status = "ready";
+      callback(results);
+    });
+  }
+};
+```
+
 但是在这种情景下，连续地多次调用 select()时，只有第一次调用是生效的，后续的 select()是没有数据服务的，这个时候可以引入事件队列，相关代码如下：
+
+```js
+var proxy = new events.EventEmitter();
+var status = "ready";
+var select = function (callback) {
+  proxy.once("selected", callback);
+  if (status === "ready") {
+    status = "pending";
+    db.select("SQL", function (results) {
+      proxy.emit("selected", results);
+      status = "ready";
+    });
+  }
+};
+```
 
 这里我们利用了 once()方法，将所有请求的回调都压入事件队列中，利用其执行一次就会将监视器移除的特点，保证每一个回调只会被执行一次。对于相同的 SQL 语句，保证在同一个查询开始到结束的过程中永远只有一次。SQL 在进行查询时，新到来的相同调用只需在队列中等待数据就绪即可，一旦查询结束，得到的结果可以被这些调用共同使用。这种方式能节省重复的数据库调用产生的开销。由于 Node 单线程执行的原因，此处无须担心状态同步问题。这种方式其实也可以应用到其他远程调用的场景中，即使外部没有缓存策略，也能有效节省重复开销。
 
@@ -2192,15 +2428,68 @@ Node 在 util 模块中封装了继承的方法，所以此处可以很便利地
 
 once()方法产生的效果，也可以在著名的 Gearman 异步应用框架中实现。但在 JavaScript 中，实现这个效果十分容易。
 
-3．多异步之间的协作方案
+3. 多异步之间的协作方案
 
 事件发布/订阅模式有着它的优点。利用高阶函数的优势，侦听器作为回调函数可以随意添加和删除，它帮助开发者轻松处理随时可能添加的业务逻辑。也可以隔离业务逻辑，保持业务逻辑单元的职责单一。一般而言，事件与侦听器的关系是一对多，但在异步编程中，也会出现事件与侦听器的关系是多对一的情况，也就是说一个业务逻辑可能依赖两个通过回调或事件传递的结果。前面提及的回调嵌套过深的原因即是如此。
 
 这里我们尝试通过原生代码解决“难点 2”中为了最终结果的处理而导致可以并行调用但实际只能串行执行的问题。我们的目标是既要享受异步 I/O 带来的性能提升，也要保持良好的编码风格。这里以渲染页面所需要的模板读取、数据读取和本地化资源读取为例简要介绍一下，相关代码如下：
 
+```js
+var count = 0;
+var results = {};
+var done = function (key, value) {
+  results[key] = value;
+  count++;
+  if (count === 3) {
+    // 渲染页面
+    render(results);
+  }
+};
+fs.readFile(template_path, "utf8", function (err, template) {
+  done("template", template);
+});
+db.query(sql, function (err, data) {
+  done("data", data);
+});
+l10n.get(function (err, resources) {
+  done("resources", resources);
+});
+```
+
 由于多个异步场景中回调函数的执行并不能保证顺序，且回调函数之间互相没有任何交集，所以需要借助一个第三方函数和第三方变量来处理异步协作的结果。通常，我们把这个用于检测次数的变量叫做哨兵变量。聪明的你也许已经想到利用偏函数来处理哨兵变量和第三方函数的关系了，相关代码如下：
 
+```js
+var after = function (times, callback) {
+  var count = 0,
+    results = {};
+  return function (key, value) {
+    results[key] = value;
+    count++;
+    if (count === times) {
+      callback(results);
+    }
+  };
+};
+var done = after(times, render);
+```
+
 上述方案实现了多对一的目的。如果业务继续增长，我们依然可以继续利用发布/订阅方式来完成多对多的方案，相关代码如下：
+
+```js
+var emitter = new events.Emitter();
+var done = after(times, render);
+emitter.on("done", done);
+emitter.on("done", other);
+fs.readFile(template_path, "utf8", function (err, template) {
+  emitter.emit("done", "template", template);
+});
+db.query(sql, function (err, data) {
+  emitter.emit("done", "data", data);
+});
+l10n.get(function (err, resources) {
+  emitter.emit("done", "resources", resources);
+});
+```
 
 这种方案结合了前者用简单的偏函数完成多对一的收敛和事件订阅/发布模式中一对多的发散。
 
@@ -2208,11 +2497,38 @@ once()方法产生的效果，也可以在著名的 Gearman 异步应用框架�
 
 另一个方案则是来自笔者自己写的 EventProxy 模块，它是对事件订阅/发布模式的扩充，可以自由订阅组合事件。由于依旧采用的是事件订阅/发布模式，与 Node 十分契合，相关代码如下：
 
+```js
+var proxy = new EventProxy();
+proxy.all("template", "data", "resources", function (
+  template,
+  data,
+  resources
+) {
+  // TODO
+});
+fs.readFile(template_path, "utf8", function (err, template) {
+  proxy.emit("template", template);
+});
+db.query(sql, function (err, data) {
+  proxy.emit("data", data);
+});
+l10n.get(function (err, resources) {
+  proxy.emit("resources", resources);
+});
+```
+
 EventProxy 提供了一个 all()方法来订阅多个事件，当每个事件都被触发之后，侦听器才会执行。另外的一个方法是 tail()方法，它与 all()方法的区别在于 all()方法的侦听器在满足条件之后只会执行一次，tail()方法的侦听器则在满足条件时执行一次之后，如果组合事件中的某个事件被再次触发，侦听器会用最新的数据继续执行。
 
 all()方法带来的另一个改进则是：在侦听器中返回数据的参数列表与订阅组合事件的事件列表是一致对应的。
 
 除此之外，在异步的场景下，我们常常需要从一个接口多次读取数据，此时触发的事件名或许是相同的。EventProxy 提供了 after()方法来实现事件在执行多少次后执行侦听器的单一事件组合订阅方式，示例代码如下：
+
+```js
+var proxy = new EventProxy();
+proxy.after("data", 10, function (datas) {
+  // TODO
+});
+```
 
 这段代码表示执行 10 次 data 事件后执行侦听器。这个侦听器得到的数据为 10 次按事件触发次序排序的数组。
 
@@ -2222,45 +2538,201 @@ EventProxy 模块除了可以应用于 Node 中外，还可以用在前端浏览
 
 EventProxy 来自于 Backbone 的事件模块，Backbone 的事件模块是 Model、View 模块的基础功能，在前端有广泛的使用。它在每个非 all 事件触发时都会触发一次 all 事件，相关代码如下：
 
+```js
+// Trigger an event, firing all bound callbacks. Callbacks are passed the
+// same arguments as `trigger` is, apart from the event name.
+// Listening for `"all"` passes the true event name as the first argument
+trigger : function(eventName) {
+var list, calls, ev, callback, args;
+var both = 2;
+if (!(calls = this._callbacks)) return this;
+while (both--) {
+ev = both ? eventName : 'all';
+if (list = calls[ev]) {
+for (var i = 0, l = list.length; i < l; i++) {
+if (!(callback = list[i])) {
+list.splice(i, 1); i--; l--;
+} else {
+args = both ? Array.prototype.slice.call(arguments, 1) : arguments;
+callback[0].apply(callback[1] || this, args);
+}
+}
+}
+}
+return this;
+}
+```
+
 EventProxy 则是将 all 当做一个事件流的拦截层，在其中注入一些业务来处理单一事件无法解决的异步处理问题。类似的扩展方法还有 all()、tail()、after()、not()和 any()等。
 
 5. EventProxy 的异常处理
 
 EventProxy 在事件发布/订阅模式的基础上还完善了异常处理。在异步方法中，异常处理需要占用一定比例的精力。在过去一段时间内，我们都是通过额外添加 error 事件来进行异常统一处理的，代码大致如下：
 
+```js
+exports.getContent = function (callback) {
+  var ep = new EventProxy();
+  ep.all("tpl", "data", function (tpl, data) {
+    // 成功回调
+    callback(null, {
+      template: tpl,
+      data: data,
+    });
+  });
+  // 侦听error事件
+  ep.bind("error", function (err) {
+    // ႂ卸载掉所有处理函数
+    ep.unbind();
+    // 异常回调
+    callback(err);
+  });
+  fs.readFile("template.tpl", "utf-8", function (err, content) {
+    if (err) {
+      // 一旦发生异常，一律交给error事件的处理函数处理
+      return ep.emit("error", err);
+    }
+    ep.emit("tpl", content);
+  });
+  db.get("some sql", function (err, result) {
+    if (err) {
+      // 一旦发生异常，一律交给error事件的处理函数处理
+      return ep.emit("error", err);
+    }
+    ep.emit("data", result);
+  });
+};
+```
+
 因为异常处理的原因，代码量一下子多起来了，而 EventProxy 在实践过程中改进了这个问题，相关代码如下：
+
+```js
+exports.getContent = function (callback) {
+  var ep = new EventProxy();
+  ep.all("tpl", "data", function (tpl, data) {
+    // 成功回调
+    callback(null, {
+      template: tpl,
+      data: data,
+    });
+  });
+  //绑定错误处理函数
+  ep.fail(callback);
+  fs.readFile("template.tpl", "utf-8", ep.done("tpl"));
+  db.get("some sql", ep.done("data"));
+};
+```
 
 在上述代码中，EventProxy 提供了 fail()和 done()这两个实例方法来优化异常处理，使得开发者将精力关注在业务部分，而不是在异常捕获上。
 
 关于 fail()方法的实现，可以参见以下的变换：
 
+```js
+ep.fail(callback);
+```
+
 上面这行代码等价于下面的代码：
+
+```js
+ep.fail(function (err) {
+  callback(err);
+});
+```
 
 又等价于：
 
+```js
+ep.bind("error", function (err) {
+  // 卸载所有处理函数
+  ep.unbind();
+  // 异常回调
+  callback(err);
+});
+```
+
 而 done()方法的实现，也可参见以下的变换：
+
+```js
+ep.done("tpl");
+```
 
 它等价于：
 
+```js
+function (err, content) {
+if (err) {
+// 一旦发生异常，一律交给error事件处理函数处理
+return ep.emit('error', err);
+}
+ep.emit('tpl', content);
+}
+```
+
 同时，done()方法也接受一个函数作为参数，相关代码如下所示：
+
+```js
+ep.done(function (content) {
+  // TODO
+  // 这里无须考虑异常
+  ep.emit("tpl", content);
+});
+```
 
 这段代码等价于：
 
+```js
+function (err, content) {
+if (err) {
+// 一旦发生异常，一律交给error事件的处理函数处理
+return ep.emit('error', err);
+}
+(function (content) {
+// TODO
+// 这里无须考虑异常
+ep.emit('tpl', content);
+}(content));
+}
+```
+
 当只传入一个回调函数时，需要手工调用 emit()触发事件。另一个改进是同时传入事件名和回调函数，相关代码如下：
+
+```js
+ep.done("tpl", function (content) {
+  // content.replace('s', 'S');
+  // TODO
+  // 无须关注异常
+  return content;
+});
+```
 
 在这种方式下，我们无须在回调函数中处理事件的触发，只需将处理过的数据返回即可。返回的结果将在 done()方法中用作事件的数据而触发。
 
 这里的 fail()和 done()十分类似 Promise 模式中的 fail()和 done()。换句话而言，这可以算作事件发布/订阅模式向 Promise 模式的借鉴。这样的完善既提升了程序的健壮性，同时也降低了代码量。
 
-4.3.2 Promise/Deferred 模式
+### 4.3.2 Promise/Deferred 模式
 
 使用事件的方式时，执行流程需要被预先设定。即便是分支，也需要预先设定，这是由发布/订阅模式的运行机制所决定的。下面为普通的 Ajax 调用：
+
+```js
+$.get("/api", {
+  success: onSuccess,
+  error: onError,
+  complete: onComplete,
+});
+```
 
 在上面的异步调用中，必须严谨地设置目标。那么是否有一种先执行异步调用，延迟传递处理的方式呢？答案是 Promise/Deferred 模式。
 
 Promise/Deferred 模式在 JavaScript 框架中最早出现于 Dojo 的代码中，被广为所知则来自于 jQuery 1.5 版本，该版本几乎重写了 Ajax 部分，使得调用 Ajax 时可以通过如下的形式进行：
 
+```js
+$.get("/api").success(onSuccess).error(onError).complete(onComplete);
+```
+
 这使得即使不调用 success()、error()等方法，Ajax 也会执行，这样的调用方式比预先传入回调让人觉得舒适一些。在原始的 API 中，一个事件只能处理一个回调，而通过 Deferred 对象，可以对事件加入任意的业务处理逻辑，示例代码如下：
+
+```js
+$.get("/api").success(onSuccess1).success(onSuccess2);
+```
 
 Promise/Deferred 模式在 2009 年时被 Kris Zyp 抽象为一个提议草案，发布在 CommonJS 规范中。随着使用 Promise/Deferred 模式的应用逐渐增多，CommonJS 草案目前已经抽象出了 Promises/A、Promises/B、Promises/D 这样典型的异步 Promise/Deferred 模型，这使得异步操作可以以一种优雅的方式出现。
 
@@ -2289,9 +2761,56 @@ Promise 的状态转化示意图如图 4-4 所示。
 
 then()方法的定义如下：
 
+```js
+then(fulfilledHandler, errorHandler, progressHandler);
+```
+
 为了演示 Promises/A 提议，这里我们尝试通过继承 Node 的 events 模块来完成一个简单的实现，相关代码如下：
 
+```js
+var Promise = function () {
+  EventEmitter.call(this);
+};
+util.inherits(Promise, EventEmitter);
+Promise.prototype.then = function (
+  fulfilledHandler,
+  errorHandler,
+  progressHandler
+) {
+  if (typeof fulfilledHandler === "function") {
+    // 利用once()方法，保证成功回调只执行一次
+    this.once("success", fulfilledHandler);
+  }
+  if (typeof errorHandler === "function") {
+    // 利用once()方法，保证异常回调只执行一次
+    this.once("error", errorHandler);
+  }
+  if (typeof progressHandler === "function") {
+    this.on("progress", progressHandler);
+  }
+  return this;
+};
+```
+
 这里看到 then()方法所做的事情是将回调函数存放起来。为了完成整个流程，还需要触发执行这些回调函数的地方，实现这些功能的对象通常被称为 Deferred，即延迟对象，示例代码如下：
+
+```js
+var Deferred = function () {
+  this.state = "unfulfilled";
+  this.promise = new Promise();
+};
+Deferred.prototype.resolve = function (obj) {
+  this.state = "fulfilled";
+  this.promise.emit("success", obj);
+};
+Deferred.prototype.reject = function (err) {
+  this.state = "failed";
+  this.promise.emit("error", err);
+};
+Deferred.prototype.progress = function (data) {
+  this.promise.emit("progress", data);
+};
+```
 
 这里的状态和方法之间的对应关系如图 4-5 所示。
 
@@ -2299,9 +2818,71 @@ then()方法的定义如下：
 
 利用 Promises/A 提议的模式，我们可以对一个典型的响应对象进行封装，相关代码如下：
 
+```js
+res.setEncoding("utf8");
+res.on("data", function (chunk) {
+  console.log("BODY: " + chunk);
+});
+res.on("end", function () {
+  // Done
+});
+res.on("error", function (err) {
+  // Error
+});
+```
+
+上述代码可以转换为如下的简略形式：
+
+```js
+res.then(
+  function () {
+    // Done
+  },
+  function (err) {
+    // Error
+  },
+  function (chunk) {
+    console.log("BODY: " + chunk);
+  }
+);
+```
+
 要实现如此简单的 API，只需要简单地改造一下即可，相关代码如下：
 
+```js
+var promisify = function (res) {
+  var deferred = new Deferred();
+  var result = "";
+  res.on("data", function (chunk) {
+    result += chunk;
+    deferred.progress(chunk);
+  });
+  res.on("end", function () {
+    deferred.resolve(result);
+  });
+  res.on("error", function (err) {
+    deferred.reject(err);
+  });
+  return deferred.promise;
+};
+```
+
 如此就得到了简单的结果。这里返回 deferred.promise 的目的是为了不让外部程序调用 resolve()和 reject()方法，更改内部状态的行为交由定义者处理。下面为定义好 Promise 后的调用示例：
+
+```js
+promisify(res).then(
+  function () {
+    // Done
+  },
+  function (err) {
+    // Error
+  },
+  function (chunk) {
+    // progress
+    console.log("BODY: " + chunk);
+  }
+);
+```
 
 这里回到 Promise 和 Deferred 的差别上。从上面的代码可以看出，Deferred 主要是用于内部，用于维护异步模型的状态；Promise 则作用于外部，通过 then()方法暴露给外部以添加自定义逻辑。Promise 和 Deferred 的整体关系如图 4-6 所示。
 
@@ -2313,13 +2894,65 @@ Promise 是高级接口，事件是低级接口。低级接口可以构成更多
 
 这里再介绍一下 Q。Q 模块是 Promises/A 规范的一个实现，可以通过 npm install q 进行安装使用。它对 Node 中常见回调函数的 Promise 实现如下：
 
+```js
+/**
+ * Creates a Node-style callback that will resolve or reject the deferred
+ * promise.
+ * @returns a nodeback
+ */
+defer.prototype.makeNodeResolver = function () {
+  var self = this;
+  return function (error, value) {
+    if (error) {
+      self.reject(error);
+    } else if (arguments.length > 2) {
+      self.resolve(array_slice(arguments, 1));
+    } else {
+      self.resolve(value);
+    }
+  };
+};
+```
+
 可以看到这里是一个高阶函数的使用，makeNodeResolver 返回了一个 Node 风格的回调函数。对于 fs.readFile()的调用，将会演化为如下形式：
 
+```js
+var readFile = function (file, encoding) {
+  var deferred = Q.defer();
+  fs.readFile(file, encoding, deferred.makeNodeResolver());
+  return deferred.promise;
+};
+```
+
 定义之后的调用示例如下：
+
+```js
+readFile("foo.txt", "utf-8").then(
+  function (data) {
+    // Success case
+  },
+  function (err) {
+    // Failed case
+  }
+);
+```
 
 Promise 通过封装异步调用，实现了正向用例和反向用例的分离以及逻辑处理延迟，这使得回调函数相对优雅。
 
 前面分析了 Q 对 Node 异步回调的处理。事实上，异步编程中需要花费很多精力进行异常的判断和处理，为了分离异常和正常情况，我写了一个模块 memeda 用于处理 makeNodeResolver 相似的事情。在下面的调用示例中可以看到，正常结果和异常结果被分离到两个函数中：
+
+```js
+var failing = require("memeda").failing;
+fs.readFile(
+  file,
+  encoding,
+  failing(function (err) {
+    // TODO
+  }).passing(function (data) {
+    // TODO
+  })
+);
+```
 
 我们可以对 Q 和 memeda 模块略做比较。两者相似之处在于分离逻辑，使开发者侧重关注正常情况。不同之处在于 Q 通过 promise()可以实现延迟处理，以及通过多次调用 then()附加更多结果处理逻辑。可以看到，Promise 需要封装，但是强大，具备很强的侵入性；纯粹的函数则较为轻量，但功能相对弱小。
 
@@ -2329,7 +2962,44 @@ Promise 通过封装异步调用，实现了正向用例和反向用例的分离
 
 类似于 EventProxy，这里给出了一个简单的原型实现，相关代码如下：
 
+```js
+Deferred.prototype.all = function (promises) {
+  var count = promises.length;
+  var that = this;
+  var results = [];
+  promises.forEach(function (promise, i) {
+    promise.then(
+      function (data) {
+        count--;
+        results[i] = data;
+        if (count === 0) {
+          that.resolve(results);
+        }
+      },
+      function (err) {
+        that.reject(err);
+      }
+    );
+  });
+  return this.promise;
+};
+```
+
 对于多次文件的读取场景，以下面的代码为例，all()方法将两个单独的 Promise 重新抽象组合成一个新的 Promise：
+
+```js
+var promise1 = readFile("foo.txt", "utf-8");
+var promise2 = readFile("bar.txt", "utf-8");
+var deferred = new Deferred();
+deferred.all([promise1, promise2]).then(
+  function (results) {
+    // TODO
+  },
+  function (err) {
+    // TODO
+  }
+);
+```
 
 这里通过 all()方法抽象多个异步操作。只有所有异步操作成功，这个异步操作才算成功，一旦其中一个异步操作失败，整个异步操作就失败。
 
@@ -2343,54 +3013,275 @@ Promise 的秘诀其实在于对队列的操作。这里介绍一个实际的案
 
 现在有一组纯异步的 API，为了完成一串事情，我们的代码大致如下：
 
+```js
+obj.api1(function (value1) {
+  obj.api2(value1, function (value2) {
+    obj.api3(value2, function (value3) {
+      obj.api4(value3, function (value4) {
+        callback(value4);
+      });
+    });
+  });
+});
+```
+
 由于有按每个步骤依次执行的需求，所以必须嵌套执行。但那样我们会得到难看的嵌套，超过 10 个连续嵌套就会让代码十分难看。于是我们得到了“Pyramid ofDoom”，译为中文，是谓“恶魔金字塔”。相信初入 Node 世界的人，也写过不少此类代码。
 
 下面我们通过普通的函数将上面的代码尝试展开：
 
+```js
+var handler1 = function (value1) {
+obj.api2(value1, handler2);
+};
+var handler2 = function (value2) {
+obj.api3(value2, handler3);
+};
+var handler3 = function (value3) {
+obj.api4(value3, hander4);
+};
+var handler4 = function (value4) {
+callback(value4);
+});
+obj.api1(handler1);
+```
+
 对于喜欢利用事件的开发者，我们展开后的代码又将会是怎样的情况呢？具体如下所示：
+
+```js
+var emitter = new event.Emitter();
+emitter.on("step1", function () {
+  obj.api1(function (value1) {
+    emitter.emit("step2", value1);
+  });
+});
+emitter.on("step2", function (value1) {
+  obj.api2(value1, function (value2) {
+    emitter.emit("step3", value2);
+  });
+});
+emitter.on("step3", function (value2) {
+  obj.api3(value2, function (value3) {
+    emitter.emit("step4", value3);
+  });
+});
+emitter.on("step4", function (value3) {
+  obj.api4(value3, function (value4) {
+    callback(value4);
+  });
+});
+emitter.emit("step1");
+```
 
 利用事件展开后的效果变得越来越糟糕了。与纯粹嵌套相比，代码量明显增加了，这显然不会带来良好的编程体验。为此，我们需要一种更好的方式。
 
-● 支持序列执行的 Promise
+**支持序列执行的 Promise**
 
 理想的编程体验应当是前一个的调用结果作为下一个调用的开始，是传说中的链式调用，相关代码如下：
 
+```js
+promise()
+  .then(obj.api1)
+  .then(obj.api2)
+  .then(obj.api3)
+  .then(obj.api4)
+  .then(
+    function (value4) {
+      // Do something with value4
+    },
+    function (error) {
+      // Handle any error from step1 through step4
+    }
+  )
+  .done();
+```
+
 尝试改造一下代码以实现链式调用，具体如下所示：
+
+```js
+var Deferred = function () {
+  this.promise = new Promise();
+};
+//完成态
+Deferred.prototype.resolve = function (obj) {
+  var promise = this.promise;
+  var handler;
+  while ((handler = promise.queue.shift())) {
+    if (handler && handler.fulfilled) {
+      var ret = handler.fulfilled(obj);
+      if (ret && ret.isPromise) {
+        ret.queue = promise.queue;
+        this.promise = ret;
+        return;
+      }
+    }
+  }
+};
+//失败态
+Deferred.prototype.reject = function (err) {
+  var promise = this.promise;
+  var handler;
+  while ((handler = promise.queue.shift())) {
+    if (handler && handler.error) {
+      var ret = handler.error(err);
+      if (ret && ret.isPromise) {
+        ret.queue = promise.queue;
+        this.promise = ret;
+        return;
+      }
+    }
+  }
+};
+// 生成回调函数
+Deferred.prototype.callback = function () {
+  var that = this;
+  return function (err, file) {
+    if (err) {
+      return that.reject(err);
+    }
+    that.resolve(file);
+  };
+};
+var Promise = function () {
+  // 队列用ᇀ存ځئ执行的回调函数
+  this.queue = [];
+  this.isPromise = true;
+};
+Promise.prototype.then = function (
+  fulfilledHandler,
+  errorHandler,
+  progressHandler
+) {
+  var handler = {};
+  if (typeof fulfilledHandler === "function") {
+    handler.fulfilled = fulfilledHandler;
+  }
+  if (typeof errorHandler === "function") {
+    handler.error = errorHandler;
+  }
+  this.queue.push(handler);
+  return this;
+};
+```
 
 这里我们以两次文件读取作为例子，以验证该设计的可行性。这里假设读取第二个文件是依赖于第一个文件中的内容的，相关代码如下：
 
+```js
+var readFile1 = function (file, encoding) {
+  var deferred = new Deferred();
+  fs.readFile(file, encoding, deferred.callback());
+  return deferred.promise;
+};
+var readFile2 = function (file, encoding) {
+  var deferred = new Deferred();
+  fs.readFile(file, encoding, deferred.callback());
+  return deferred.promise;
+};
+readFile1("file1.txt", "utf8")
+  .then(function (file1) {
+    return readFile2(file1.trim(), "utf8");
+  })
+  .then(function (file2) {
+    console.log(file2);
+  });
+```
+
 将这段代码存为 sequence.js 文件。执行该代码，将会得到以下的输出结果：
+
+```
+$ node sequence.js
+I am file2
+```
 
 要让 Promise 支持链式执行，主要通过以下两个步骤。
 
-(1) 将所有的回调都存到队列中。
-(2) Promise 完成时，逐个执行回调，一旦检测到返回了新的 Promise 对象，停止执行，然后将当前 Deferred 对象的 promise 引用改变为新的 Promise 对象，并将队列中余下的回调转交给它。
+1. 将所有的回调都存到队列中。
+2. Promise 完成时，逐个执行回调，一旦检测到返回了新的 Promise 对象，停止执行，然后将当前 Deferred 对象的 promise 引用改变为新的 Promise 对象，并将队列中余下的回调转交给它。
 
 写到这里，你是否明了恶魔金字塔该如何优化？
 
 再次重申，这里的代码主要用于研究 Promise 的实现原理。在更多细节的优化方面，Q 或者 when 等 Promise 库做得更好，实际应用时请采用这些成熟库。
 
-● 将 API Promise 化
+**将 API Promise 化**
 
 这里仍然会发现，为了体验更好的 API，需要做较多的准备工作。这里提供了一个方法可以批量将方法 Promise 化，相关代码如下：
 
+```js
+// smooth(fs.readFile);
+var smooth = function (method) {
+  return function () {
+    var deferred = new Deferred();
+    var args = Array.prototype.slice.call(arguments, 1);
+    args.push(deferred.callback());
+    method.apply(null, args);
+    return deferred.promise;
+  };
+};
+```
+
 于是前面的两次文件读取的构造：
+
+```js
+var readFile1 = function (file, encoding) {
+  var deferred = new Deferred();
+  fs.readFile(file, encoding, deferred.callback());
+  return deferred.promise;
+};
+var readFile2 = function (file, encoding) {
+  var deferred = new Deferred();
+  fs.readFile(file, encoding, deferred.callback());
+  return deferred.promise;
+};
+```
 
 可以简化为：
 
+```js
+var readFile = smooth(fs.readFile);
+```
+
 要实现同样的效果，代码量将会锐减到：
 
-4.3.3 流程控制库
+```js
+var readFile = smooth(fs.readFile);
+readFile("file1.txt", "utf8")
+  .then(function (file1) {
+    return readFile(file1.trim(), "utf8");
+  })
+  .then(function (file2) {
+    // file2 => I am file2
+    console.log(file2);
+  });
+```
+
+### 4.3.3 流程控制库
 
 前面叙述了最为主流的模式——事件发布/订阅模式和 Promise/Deferred 模式，这些是经典的模式或者是写进规范里的解决方案，但一旦涉及模式或者规范，就需要为它们做较多的准备工作。这一节将会介绍一些非模式化的应用，虽非规范，但更灵活。
 
-1．尾触发与 Next
+1. 尾触发与 Next
 
 除了事件和 Promise 外，还有一类方法是需要手工调用才能持续执行后续调用的，我们将此类方法叫做尾触发，常见的关键词是 next。事实上，尾触发目前应用最多的地方是 Connect 的中间件。
-
 这里我们暂且不关注 Connect 的具体应用，先看一下 Connect 的 API 暴露方式，相关代码如下：
 
+```js
+var app = connect();
+// Middleware
+app.use(connect.staticCache());
+app.use(connect.static(__dirname + "/public"));
+app.use(connect.cookieParser());
+app.use(connect.session());
+app.use(connect.query());
+app.use(connect.bodyParser());
+app.use(connect.csrf());
+app.listen(3001);
+```
+
 在通过 use()方法注册好一系列中间件后，监听端口上的请求。中间件利用了尾触发的机制，最简单的中间件如下：
+
+```js
+function (req, res, next) {
+// 中间件
+}
+```
 
 每个中间件传递请求对象、响应对象和尾触发函数，通过队列形成一个处理流，如图 4-7 所示。
 
@@ -2398,15 +3289,68 @@ Promise 的秘诀其实在于对队列的操作。这里介绍一个实际的案
 
 下面我们来看 Connect 的核心实现，相关代码如下：
 
+```js
+function createServer() {
+  function app(req, res) {
+    app.handle(req, res);
+  }
+  utils.merge(app, proto);
+  utils.merge(app, EventEmitter.prototype);
+  app.route = "/";
+  app.stack = [];
+  for (var i = 0; i < arguments.length; ++i) {
+    app.use(arguments[i]);
+  }
+  return app;
+}
+```
+
 这段代码通过如下代码创建了 HTTP 服务器的 request 事件处理函数：
+
+```js
+function app(req, res) {
+  app.handle(req, res);
+}
+```
 
 但真正的核心代码是 app.stack = []；这句。stack 属性是这个服务器内部维护的中间件队列。通过调用 use()方法我们可以将中间件放进队列中。下面的代码为 use()方法的重要部分：
 
+```js
+app.use = function (route, fn) {
+  // some code
+  this.stack.push({ route: route, handle: fn });
+  return this;
+};
+```
+
 此时就建好处理模型了。接下来，结合 Node 原生 http 模块实现监听即可。监听函数的实现如下：
+
+```js
+app.listen = function () {
+  var server = http.createServer(this);
+  return server.listen.apply(server, arguments);
+};
+```
 
 最终回到 app.handle()方法，每一个监听到的网络请求都将从这里开始处理。该方法的代码如下：
 
+```js
+app.handle = function (req, res, out) {
+  // some code
+  next();
+};
+```
+
 原始的 next()方法较为复杂，下面是简化后的内容，其原理十分简单，取出队列中的中间件并执行，同时传入当前方法以实现递归调用，达到持续触发的目的：
+
+```js
+function next(err) {
+  // some code
+  // next callback
+  layer = stack[index++];
+  layer.handle(req, res, next);
+}
+```
 
 所有嫌异步编程复杂的开发者均可以参考 Connect 的流式处理，这对于划分业务逻辑、逐步处理均有效。
 
@@ -2418,69 +3362,331 @@ Promise 的秘诀其实在于对队列的操作。这里介绍一个实际的案
 
 接下来，我们要介绍最知名的流程控制模块 async。async 长期占据 NPM 依赖榜的前三名，可见在 Node 开发中，流程控制是开发过程中的基本需求。async 模块提供了 20 多个方法用于处理异步的各种协作模式，这里我们介绍几种典型用法。
 
-● 异步的串行执行
+**异步的串行执行**
 
-这里我们依旧采用前面读取两个文件的例子，看一下 async 是如何解决“恶魔金字塔”问题的。async 提供了 series()方法来实现一组任务的串行执行，示例代码如下：
+这里我们依旧采用前面读取两个文件的例子，看一下 async 是如何解决“恶魔金字塔”问题的。
+
+async 提供了 series()方法来实现一组任务的串行执行，示例代码如下：
+
+```js
+async.series(
+  [
+    function (callback) {
+      fs.readFile("file1.txt", "utf-8", callback);
+    },
+    function (callback) {
+      fs.readFile("file2.txt", "utf-8", callback);
+    },
+  ],
+  function (err, results) {
+    // results => [file1.txt, file2.txt]
+  }
+);
+```
 
 这段代码等价于：
 
+```js
+fs.readFile("file1.txt", "utf-8", function (err, content) {
+  if (err) {
+    return callback(err);
+  }
+  fs.readFile("file2.txt ", "utf-8", function (err, data) {
+    if (err) {
+      return callback(err);
+    }
+    callback(null, [content, data]);
+  });
+});
+```
+
 这段代码值得玩味的是回调函数。可以发现，series()方法中传入的函数 callback()并非由使用者指定。事实上，此处的回调函数由 async 通过高阶函数的方式注入，这里隐含了特殊的逻辑。每个 callback()执行时会将结果保存起来，然后执行下一个调用，直到结束所有调用。最终的回调函数执行时，队列里的异步调用保存的结果以数组的方式传入。这里的异常处理规则是一旦出现异常，就结束所有调用，并将异常传递给最终回调函数的第一个参数。
 
-● 异步的并行执行
+**异步的并行执行**
 
 当我们需要通过并行来提升性能时，async 提供了 parallel()方法，用以并行执行一些异步操作。以下为读取两个文件的并行版本：
 
+```js
+async.parallel(
+  [
+    function (callback) {
+      fs.readFile("file1.txt", "utf-8", callback);
+    },
+    function (callback) {
+      fs.readFile("file2.txt", "utf-8", callback);
+    },
+  ],
+  function (err, results) {
+    // results => [file1.txt, file2.txt]
+  }
+);
+```
+
 上面这段代码等价于下面的代码：
+
+```js
+var counter = 2;
+var results = [];
+var done = function (index, value) {
+  results[index] = value;
+  counter--;
+  if (counter === 0) {
+    callback(null, results);
+  }
+};
+// ኻ传递ڼᅃ߲异常
+var hasErr = false;
+var fail = function (err) {
+  if (!hasErr) {
+    hasErr = true;
+    callback(err);
+  }
+};
+fs.readFile("file1.txt", "utf-8", function (err, content) {
+  if (err) {
+    return fail(err);
+  }
+  done(0, content);
+});
+fs.readFile("file2.txt", "utf-8", function (err, data) {
+  if (err) {
+    return fail(err);
+  }
+  done(1, data);
+});
+```
 
 同样，通过 async 编写的代码既没有深度的嵌套，也没有复杂的状态判断，它的诀窍依然来自于注入的回调函数。parallel()方法对于异常的判断依然是一旦某个异步调用产生了异常，就会将异常作为第一个参数传入给最终的回调函数。只有所有异步调用都正常完成时，才会将结果以数组的方式传入。
 
 也许你还记得 EventProxy 的方案，如下所示：
 
+```js
+var EventProxy = require("eventproxy");
+var proxy = new EventProxy();
+proxy.all("content", "data", function (content, data) {
+  callback(null, [content, data]);
+});
+proxy.fail(callback);
+fs.readFile("file1.txt", "utf-8", proxy.done("content"));
+fs.readFile("file2.txt", "utf-8", proxy.done("data"));
+```
+
 与通过 async 编写所产生的代码量相差并不大。EventProxy 虽然基于事件发布/订阅模式而设计，但也用到了与 async 相同的原理，通过特殊的回调函数来隐含返回值的处理。所不同的是，在 async 的框架模式下，这个回调函数由 async 封装后传递出来，而 EventProxy 则通过 done()和 fail()方法来生成新的回调函数。这两种实现方式都是高阶函数的应用。
 
-● 异步调用的依赖处理
+**异步调用的依赖处理**
 
 series()适合无依赖的异步串行执行，但当前一个的结果是后一个调用的输入时，series()方法就无法满足需求了。所幸，这种典型场景的需求，async 提供了 waterfall()方法来满足，相关代码如下：
 
+```js
+async.waterfall(
+  [
+    function (callback) {
+      fs.readFile("file1.txt", "utf-8", function (err, content) {
+        callback(err, content);
+      });
+    },
+    function (arg1, callback) {
+      // arg1 => file2.txt
+      fs.readFile(arg1, "utf-8", function (err, content) {
+        callback(err, content);
+      });
+    },
+    function (arg1, callback) {
+      // arg1 => file3.txt
+      fs.readFile(arg1, "utf-8", function (err, content) {
+        callback(err, content);
+      });
+    },
+  ],
+  function (err, result) {
+    // result => file4.txt
+  }
+);
+```
+
 这段代码等价于如下代码：
 
-● 自动依赖处理
+```js
+fs.readFile("file1.txt", "utf-8", function (err, data1) {
+  if (err) {
+    return callback(err);
+  }
+  fs.readFile(data1, "utf-8", function (err, data2) {
+    if (err) {
+      return callback(err);
+    }
+    fs.readFile(data2, "utf-8", function (err, data3) {
+      if (err) {
+        return callback(err);
+      }
+      callback(null, data3);
+    });
+  });
+});
+```
+
+**自动依赖处理**
 
 在现实的业务环境中，具有很多复杂的依赖关系，这些业务或是异步，或是同步。这种混杂的编程环境经常让人处于理不清顺序的情况。为此，async 提供了一个强大的方法 auto()实现复杂业务处理。
 
 假设我们的业务场景如下：
-(1) 从磁盘读取配置文件。
-(2) 根据配置文件连接 MongoDB。
-(3) 根据配置文件连接 Redis。
-(4) 编译静态文件。
-(5) 上传静态文件到 CDN。
-(6) 启动服务器。
+
+1. 从磁盘读取配置文件。
+2. 根据配置文件连接 MongoDB。
+3. 根据配置文件连接 Redis。
+4. 编译静态文件。
+5. 上传静态文件到 CDN。
+6. 启动服务器。
 
 简单映射一下上述业务：
 
+```js
+{
+readConfig: function () {},
+connectMongoDB: function () {},
+connectRedis: function () {},
+complieAsserts: function () {},
+uploadAsserts: function () {},
+startup: function () {}
+}
+```
+
 接下来分析一下依赖关系。可以看出，connectMongoDB 和 connectRedis 依赖 readConfig, uploadAsserts 依赖 complieAsserts, startup 则依赖所有完成。依赖关系如下：
+
+```js
+var deps = {
+  readConfig: function (callback) {
+    // read config file
+    callback();
+  },
+  connectMongoDB: [
+    "readConfig",
+    function (callback) {
+      // connect to mongodb
+      callback();
+    },
+  ],
+  connectRedis: [
+    "readConfig",
+    function (callback) {
+      // connect to redis
+      callback();
+    },
+  ],
+  complieAsserts: function (callback) {
+    // complie asserts
+    callback();
+  },
+  uploadAsserts: [
+    "complieAsserts",
+    function (callback) {
+      // upload to assert
+      callback();
+    },
+  ],
+  startup: [
+    "connectMongoDB",
+    "connectRedis",
+    "uploadAsserts",
+    function (callback) {
+      // startup
+    },
+  ],
+};
+```
 
 auto()方法能根据依赖关系自动分析，以最佳的顺序执行以上业务：
 
+```js
+async.auto(deps);
+```
+
 转换到 EventProxy 的实现，则需要更细腻的事件分配，相关代码如下：
 
-● 小结
+```js
+proxy
+  .assp("readtheconfig", function () {
+    // read config file
+    proxy.emit("readConfig");
+  })
+  .on("readConfig", function () {
+    // connect to mongodb
+    proxy.emit("connectMongoDB");
+  })
+  .on("readConfig", function () {
+    // connect to redis
+    proxy.emit("connectRedis");
+  })
+  .assp("complietheasserts", function () {
+    // complie asserts
+    proxy.emit("complieAsserts");
+  })
+  .on("complieAsserts", function () {
+    // upload to assert
+    proxy.emit("uploadAsserts");
+  })
+  .all("connectMongoDB", "connectRedis", "uploadAsserts", function () {
+    // Startup
+  });
+```
 
-本节主要介绍 async 的几种常见用法。此外，async 还提供了 forEach、map 等类 ECMAScript5 中数组的方法，更多细节可关注https://github.com/caolan/async。
+**小结**
+
+本节主要介绍 async 的几种常见用法。此外，async 还提供了 forEach、map 等类 ECMAScript5 中数组的方法，更多细节可关注 https://github.com/caolan/async 。
 
 3. Step
 
 另一个知名的流程控制库是 Tim Caswell 的 Step，它比 async 更轻量，在 API 的暴露上也更具备一致性，因为它只有一个接口 Step。通过 npm install step 即可安装使用。示例代码如下：
 
+```js
+Step(task1, task2, task3);
+```
+
 Step 接受任意数量的任务，所有的任务都将会串行依次执行。下面的示例代码将依次读取文件：
+
+```js
+Step(
+  function readFile1() {
+    fs.readFile("file1.txt", "utf-8", this);
+  },
+  function readFile2(err, content) {
+    fs.readFile("file2.txt", "utf-8", this);
+  },
+  function done(err, content) {
+    console.log(content);
+  }
+);
+```
 
 可以看到，Step 与前面介绍的事件模式、Promise 甚至 async 都不同的一点在于 Step 用到了 this 关键字。事实上，它是 Step 内部的一个 next()方法，将异步调用的结果传递给下一个任务作为参数，并调用执行。
 
-● 并行任务执行
+**并行任务执行**
 
 那么，Step 如何实现多个异步任务并行执行呢？this 具有一个 parallel()方法，它告诉 Step，需要等所有任务完成时才进行下一个任务，相关代码如下：
 
+```js
+Step(
+  function readFile1() {
+    fs.readFile("file1.txt", "utf-8", this.parallel());
+    fs.readFile("file2.txt", "utf-8", this.parallel());
+  },
+  function done(err, content1, content2) {
+    // content1 => file1
+    // content2 => file2
+    console.log(arguments);
+  }
+);
+```
+
 使用 parallel()的时候需要小心的是，如果异步方法的结果传回的是多个参数，Step 将只会取前两个参数，相关代码如下：
+
+```js
+var asyncCall = function (callback) {
+  process.nextTick(function () {
+    callback(null, "result1", "result2");
+  });
+};
+```
 
 在调用 parallel()时，result2 将会被丢弃。
 
@@ -2488,13 +3694,43 @@ Step 的 parallel()方法的原理是每次执行时将内部的计数器加 1�
 
 Step 与 async 相同的是异常处理，一旦有一个异常产生，这个异常会作为下一个方法的第一个参数传入。
 
-● 结果分组
+**结果分组**
 
 Step 提供的另外一个方法是 group()，它类似于 parallel()的效果，但是在结果传递上略有不同。下面的代码用于读取一个目录，然后迭代其中文件的操作：
 
+```js
+Step(
+  function readDir() {
+    fs.readdir(__dirname, this);
+  },
+  function readFiles(err, results) {
+    if (err) throw err;
+    // Create a new group
+    var group = this.group();
+    results.forEach(function (filename) {
+      if (/\.js$/.test(filename)) {
+        fs.readFile(__dirname + "/" + filename, "utf8", group());
+      }
+    });
+  },
+  function showAll(err, files) {
+    if (err) throw err;
+    console.dir(files);
+  }
+);
+```
+
 我们注意到有两次 group()的调用。第一次调用是告知 Step 要并行执行，第二次调用的结果将会生成一个回调函数，而回调函数接受的返回值将会按组存储。parallel()传递给下一个任务的结果是如下形式：
 
+```js
+function (err, result1, result2, ...);
+```
+
 group()传递的结果是：
+
+```js
+function (err, results);
+```
 
 这个函数返回的数据保存在数组中。
 
@@ -2504,12 +3740,58 @@ group()传递的结果是：
 
 异步编程有时需要面临的场景非常特殊，下面我们由一个冒泡排序来了解 wind 的特殊之处：
 
+```js
+var compare = function (x, y) {
+  return x - y;
+};
+var swap = function (a, i, j) {
+  var t = a[i];
+  a[i] = a[j];
+  a[j] = t;
+};
+var bubbleSort = function (array) {
+  for (var i = 0; i < array.length; i++) {
+    for (var j = 0; j < array.length - i - 1; j++) {
+      if (compare(array[j], array[j + 1]) > 0) {
+        swap(array, j, j + 1);
+      }
+    }
+  }
+};
+```
+
 现在我们要添加的需求是，将这个冒泡排序动画起来。这意味着在 swap()方法中需要添加动画逻辑，这在 JavaScript 中并不是一件难事，困难的地方在于动画需要延时的方式完成。但在 JavaScript 中只有 setTimeout()能够实现延时功能（用 while 判断时间的方式不可取，这在前面有所描述）。我们知道，setTimeout()是一个异步方法，在执行后，将立即返回。所以，难点出现在：
 
 - 动画执行时无法停止排序算法的执行；
 - 排序算法的继续执行将会启动更多动画。
 
 因此，逐步骤的动画将难以实现，而 wind 在解决这个问题上体现出了它的独特魅力之处，相关代码如下：
+
+```js
+var compare = function (x, y) {
+  return x - y;
+};
+var swapAsync = eval(
+  Wind.compile("async", function (a, i, j) {
+    $await(Wind.Async.sleep(20)); // ሡཕ 20ࡹ௱
+    var t = a[i];
+    a[i] = a[j];
+    a[j] = t;
+    paint(a); // 重ࣼ数组
+  })
+);
+var bubbleSort = eval(
+  Wind.compile("async", function (array) {
+    for (var i = 0; i < array.length; i++) {
+      for (var j = 0; j < array.length - i - 1; j++) {
+        if (compare(array[j], array[j + 1]) > 0) {
+          $await(swapAsync(array, j, j + 1));
+        }
+      }
+    }
+  })
+);
+```
 
 上述代码实现了暂停 20 毫秒、绘制动画、继续排序的效果。从代码的角度来说，这里虽然介入了异步方法，但是并没有如同其他异步流程控制库那样变得异步化，逻辑并没有因为异步被拆分。同时可以注意到，我们的代码中引入了一些新的东西：
 
@@ -2519,31 +3801,95 @@ group()传递的结果是：
 
 下面我们将详细介绍以上 3 行代码的特异之处。
 
-● 异步任务定义
+**异步任务定义**
 
 eval()函数在业界一向是一个需要谨慎对待的函数，Douglas Crockford 更是深恶痛绝地将其称为魔鬼，因为它能访问上下文和编译器，可能导致上下文混乱。大多数利用 eval()函数的人都不能把握好它的用法，导致 Douglas Crockford 认为它是 JavaScript 可有可无的功能。
 
 但是在 wind 的世界里，恰好反 Douglas Crockford 之道而行之，巧妙地利用了 eval()访问上下文的特性。Wind.compile()会将普通的函数进行编译，然后交给 eval()执行。换言之，eval(Wind.compile("async", function () {}))；定义了异步任务。Wind.Async.sleep()；则内置了对 setTimeout()的封装。
 
-●`$await()`与任务模型
+**\$await()与任务模型**
 
 在定义完异步方法后，wind 提供了`$await()`方法实现等待完成异步方法。但事实上，它并不是一个方法，也不存在于上下文中，只是一个等待的占位符，告之编译器这里需要等待。
 
 `$await()`接受的参数是一个任务对象，表示等待任务结束后才会执行后续操作。每一个异步操作都可以转化为一个任务，wind 正是基于任务模型实现的。下面的代码用于将 fs.readFile()调用转化为一个任务模型：
 
+```js
+var Wind = require("wind");
+var Task = Wind.Async.Task;
+var readFileAsync = function (file, encoding) {
+  return Task.create(function (t) {
+    fs.readFile(file, encoding, function (err, file) {
+      if (err) {
+        t.complete("failure", err);
+      } else {
+        t.complete("success", file);
+      }
+    });
+  });
+};
+```
+
 除了通过 eval(Wind.compile("async", function () {}))；定义任务外，正式的任务创建方法为 Task.create()。执行 readFileAsync()进行偏函数转换得到真正的任务。异步方法在执行结束时，可以通过 complete()传递 failure 或 success 信息，告知任务执行完毕。如果是 failure 则可以通过 try/catch 捕获异常。这略微有些打破前述 try/catch 无法捕获回调函数中异常的定论。下面的代码为调用 readFileAsync()得到一个任务的示例：
+
+```js
+var task = readFileAsync("file1.txt", "utf-8");
+```
 
 下面我们如同介绍 async 或者 Step 的串行执行示例一样，尝试感受一下 wind 的风采：
 
+```js
+var serial = eval(
+  Wind.compile("async", function () {
+    var file1 = $await(readFileAsync("file1.txt", "utf-8"));
+    console.log(file1);
+    var file2 = $await(readFileAsync("file2.txt", "utf-8"));
+    console.log(file2);
+    try {
+      var file3 = $await(readFileAsync("file3.txt", "utf-8"));
+    } catch (err) {
+      console.log(err);
+    }
+  })
+);
+serial().start();
+```
+
 执行上述代码，将得到如下输出：
+
+```
+file1
+file2
+{ [Error: ENOENT, open 'file3.txt'] errno: 34, code: 'ENOENT', path: 'file3.txt' }
+```
 
 异步方法在 JavaScript 中通常会立即返回，在 wind 中做到了不阻塞 CPU 但阻塞代码的目的。接下来我们尝试下并行的效果，相关代码如下：
 
+```js
+var parallel = eval(
+  Wind.compile("async", function () {
+    var result = $await(
+      Task.whenAll({
+        file1: readFileAsync("file1.txt", "utf-8"),
+        file2: readFileAsync("file2.txt", "utf-8"),
+      })
+    );
+    console.log(result.file1);
+    console.log(result.file2);
+  })
+);
+parallel().start();
+```
+
 得到输出：
+
+```
+file1
+file2
+```
 
 wind 提供了 whenAll()来处理并发，通过`$await`关键字将等待配置的所有任务完成后才向下继续执行。
 
-● 异步方法转换辅助函数
+**异步方法转换辅助函数**
 
 可以看到，除了 eval(Wind.compile("async", function () {}))在实际代码中稍显冗长外，异步调用在代码层面上已经与同步调用相差无几。这十分适合从已有的采用同步编写方式的代码向 Node 迁移，可以省掉重写代码的开销。
 
@@ -2554,15 +3900,31 @@ wind 提供了 whenAll()来处理并发，通过`$await`关键字将等待配置
 
 在 Node 中异步方法的回调传值有两种，一种是无异常的调用，通常只有一个参数返回，如下所示：
 
+```js
+fs.exists("/etc/passwd", function (exists) {
+  // exists֖数表๖是否存在
+});
+```
+
 而 fromCallback 用于转换这类异步调用为 wind 中的任务。
 
 另一类是带异常的调用，遵循规范将返回参数列表的第一个参数作为异常标示，如下所示：
+
+```js
+fs.readFile("file1.txt", function (err, data) {
+  // err表๖异常
+});
+```
 
 而 fromStandard 用于转换这类异步调用到 wind 中的任务。
 
 是故，readFileAsync 的定义其实只要一行代码即可实现：
 
-5．流程控制小结
+```js
+var readFileAsync = Wind.Async.Binding.fromStandard(fs.readFile);
+```
+
+5. 流程控制小结
 
 从本书介绍的各个流程控制案例来看，从解决“恶魔金字塔”到解决异步协作的方法有多种，几个类库几乎各显神通。异步编程虽然相对复杂，但并非难事，相同的问题通过各种技巧依然能将复杂的事情简化。
 
@@ -2576,11 +3938,21 @@ wind 提供了 whenAll()来处理并发，通过`$await`关键字将等待配置
 
 在 Node 中，我们可以十分方便地利用异步发起并行调用。使用下面的代码，我们可以轻松发起 100 次异步调用：
 
+```js
+for (var i = 0, i < 100; i++) {
+async();
+}
+```
+
 但是如果并发量过大，我们的下层服务器将会吃不消。如果是对文件系统进行大量并发调用，操作系统的文件描述符数量将会被瞬间用光，抛出如下错误：
+
+```
+Error: EMFILE, too many open files
+```
 
 可以看出，异步 I/O 与同步 I/O 的显著差距：同步 I/O 因为每个 I/O 都是彼此阻塞的，在循环体中，总是一个接着一个调用，不会出现耗用文件描述符太多的情况，同时性能也是低下的；对于异步 I/O，虽然并发容易实现，但是由于太容易实现，依然需要控制。换言之，尽管是要压榨底层系统的性能，但还是需要给予一定的过载保护，以防止过犹不及。
 
-4.4.1 bagpipe 的解决方案
+### 4.4.1 bagpipe 的解决方案
 
 如何对既有的异步 API 添加过载保护，我们期望的当然不是去改动 API。那么如何实现呢？我写的 bagpipe 模块的解决思路是这样的。
 
@@ -2591,25 +3963,145 @@ wind 提供了 whenAll()来处理并发，通过`$await`关键字将等待配置
 
 bagpipe 的 API 主要暴露了一个 push()方法和 full 事件，示例代码如下：
 
+```js
+var Bagpipe = require("bagpipe");
+// 设定最大并发数为10
+var bagpipe = new Bagpipe(10);
+for (var i = 0; i < 100; i++) {
+  bagpipe.push(async, function () {
+    // 异步回调执行
+  });
+}
+bagpipe.on("full", function (length) {
+  console.warn(
+    "֫底层系统处理不能及时完成时，队列拥堵，目前队列长度为:" + length
+  );
+});
+```
+
 这里的实现细节类似于前文的 smooth()。push()方法依然是通过函数变换的方式实现，假设第一个参数是方法，最后一个参数是回调函数，其余为其他参数，其核心实现如下：
+
+```js
+/**
+ *推入方法，参数。最后一个参数为回调函数
+ * @param {Function} method 异步方法
+ * @param {Mix} args 参数列表，最后一个参数为回调函数
+ */
+Bagpipe.prototype.push = function (method) {
+  var args = [].slice.call(arguments, 1);
+  var callback = args[args.length - 1];
+  if (typeof callback !== "function") {
+    args.push(function () {});
+  }
+  if (this.options.disabled || this.limit < 1) {
+    method.apply(null, args);
+    return this;
+  }
+  // 队列长度也超过限制值时
+  if (this.queue.length < this.queueLength || !this.options.refuse) {
+    this.queue.push({
+      method: method,
+      args: args,
+    });
+  } else {
+    var err = new Error("Too much async call in queue");
+    err.name = "TooMuchAsyncCallError";
+    callback(err);
+  }
+  if (this.queue.length > 1) {
+    this.emit("full", this.queue.length);
+  }
+  this.next();
+  return this;
+};
+```
 
 将调用推入队列后，调用一次 next()方法尝试触发。next()方法的定义如下：
 
+```js
+/*!
+ * 继续执行队列中的后续动作
+ */
+Bagpipe.prototype.next = function () {
+  var that = this;
+  if (that.active < that.limit && that.queue.length) {
+    var req = that.queue.shift();
+    that.run(req.method, req.args);
+  }
+};
+```
+
 next()方法主要判断活跃调用的数量，如果正常，将调用内部方法 run()来执行真正的调用。这里为了判断回调函数是否执行，采用了一个注入代码的技巧，具体代码如下：
+
+```js
+/*!
+ * 执行队列中的方法
+ */
+Bagpipe.prototype.run = function (method, args) {
+  var that = this;
+  that.active++;
+  var callback = args[args.length - 1];
+  var timer = null;
+  var called = false;
+  // inject logic
+  args[args.length - 1] = function (err) {
+    // anyway, clear the timer
+    if (timer) {
+      clearTimeout(timer);
+      timer = null;
+    }
+    // if timeout, don't execute
+    if (!called) {
+      that._next();
+      callback.apply(null, arguments);
+    } else {
+      // pass the outdated error
+      if (err) {
+        that.emit("outdated", err);
+      }
+    }
+  };
+  var timeout = that.options.timeout;
+  if (timeout) {
+    timer = setTimeout(function () {
+      // set called as true
+      called = true;
+      that._next();
+      // pass the exception
+      var err = new Error(timeout + "ms timeout");
+      err.name = "BagpipeTimeoutError";
+      err.data = {
+        name: method.name,
+        method: method.toString(),
+        args: args.slice(0, -1),
+      };
+      callback(err);
+    }, timeout);
+  }
+  method.apply(null, args);
+};
+```
 
 用户传入的回调函数被真正执行前，被封装替换过。这个封装的回调函数内部的逻辑将活跃值的计数器减 1 后，主动调用 next()执行后续等待的异步调用。
 
 bagpipe 类似于打开了一道窗口，允许异步调用并行进行，但是严格限定上限。仅仅在调用 push()时分开传递，并不对原有 API 有任何侵入。
 
-● 拒绝模式
+**拒绝模式**
 
 事实上，bagpipe 还有一些深度的使用方式。对于大量的异步调用，也需要分场景进行区分，因为涉及并发控制，必然会造成部分调用需要进行等待。如果调用有实时方面的需求，那么需要快速返回，因为等到方法被真正执行时，可能已经超过了等待时间，即使返回了数据，也没有意义了。这种场景下需要快速失败，让调用方尽早返回，而不用浪费不必要的等待时间。bagpipe 为此支持了拒绝模式。
 
 拒绝模式的使用只要设置下参数即可，相关代码如下：
 
+```js
+// 设定最大并发数为10
+var bagpipe = new Bagpipe(10, {
+  refuse: true,
+});
+```
+
 在拒绝模式下，如果等待的调用队列也满了之后，新来的调用就直接返给它一个队列太忙的拒绝异常。
 
-● 超时控制
+**超时控制**
 
 造成队列拥塞的主要原因是异步调用耗时太久，调用产生的速度远远高于执行的速度。为了防止某些异步调用使用了太多的时间，我们需要设置一个时间基线，将那些执行时间太久的异步调用清理出活跃队列，让排队中的异步调用尽快执行。否则在拒绝模式下，会有太多的调用因为某个执行得慢，导致得到拒绝异常。相对而言，这种场景下得到拒绝异常显得比较无辜。为了公平地对待在实时需求场景下的每个调用，必须要控制每个调用的执行时间，将那些害群之马踢出队伍。
 
@@ -2617,17 +4109,55 @@ bagpipe 类似于打开了一道窗口，允许异步调用并行进行，但是
 
 超时的设置如下：
 
-● 小结
+```js
+// 设定最大并发数为10
+var bagpipe = new Bagpipe(10, {
+  timeout: 3000,
+});
+```
+
+**小结**
 
 异步调用的并发限制在不同场景下的需求不同：非实时场景下，让超出限制的并发暂时等待执行已经可以满足需求；但在实时场景下，需要更细粒度、更合理的控制。
 
-4.4.2 async 的解决方案
+### 4.4.2 async 的解决方案
 
 无独有偶，async 也提供了一个方法用于处理异步调用的限制：parallelLimit()。如下是 async 的示例代码：
+
+```js
+async.parallelLimit(
+  [
+    function (callback) {
+      fs.readFile("file1.txt", "utf-8", callback);
+    },
+    function (callback) {
+      fs.readFile("file2.txt", "utf-8", callback);
+    },
+  ],
+  1,
+  function (err, results) {
+    // TODO
+  }
+);
+```
 
 parallelLimit()与 parallel()类似，但多了一个用于限制并发数量的参数，使得任务只能同时并发一定数量，而不是无限制并发。
 
 parallelLimit()方法的缺陷在于无法动态地增加并行任务。为此，async 提供了 queue()方法来满足该需求，这对于遍历文件目录等操作十分有效。以下是 queue()的示例代码：
+
+```js
+var q = async.queue(function (file, callback) {
+  fs.readFile(file, "utf-8", callback);
+}, 2);
+q.drain = function () {
+  // 完成了队列中的所有任务
+};
+fs.readdirSync(".").forEach(function (file) {
+  q.push(file, function (err, data) {
+    // TODO
+  });
+});
+```
 
 尽管 queue()实现了动态添加并行任务，但是相比 parallelLimit()，由于 queue()接收的参数是固定的，它丢失了 parallelLimit()的多样性，我私心地认为 bagpipe 更灵活，可以添加任意类型的异步任务，也可以动态添加异步任务，同时还能够在实时处理场景中加入拒绝模式和超时控制。在实际应用中，开发者可以根据场景进行取舍。
 
@@ -2711,7 +4241,7 @@ Scavenge的缺点是只能使用堆内存中的一半，这是由划分空间和
 
 图5-8 增量标记示意图
 
-V8在经过增量标记的改进后，垃圾回收的最大停顿时间可以减少到原本的1/6左右。V8后续还引入了延迟清理（lazy sweeping）与增量式整理（incremental compaction），让清理与整理动作也变成增量式的。同时还计划引入并行标记与并行清理，进一步利用多核性能降低每次停顿的时间。鉴于篇幅有限，此处不再深入讲解了。2．小结从V8的自动垃圾回收机制的设计角度可以看到，V8对内存使用进行限制的缘由。新生代设计为一个较小的内存空间是合理的，而老生代空间过大对于垃圾回收并无特别意义。V8对内存限制的设置对于Chrome浏览器这种每个选项卡页面使用一个V8实例而言，内存的使用是绰绰有余了。对于Node编写的服务器端来说，内存限制也并不影响正常场景下的使用。但是对于V8的垃圾回收特点和JavaScript在单线程上的执行情况，垃圾回收是影响性能的因素之一。想要高性能的执行效率，需要注意让垃圾回收尽量少地进行，尤其是全堆垃圾回收。以Web服务器中的会话实现为例，一般通过内存来存储，但在访问量大的时候会导致老生代中的存活对象骤增，不仅造成清理/整理过程费时，还会造成内存紧张，甚至溢出（详情可参见第8章）。5.1.5 查看垃圾回收日志
+V8在经过增量标记的改进后，垃圾回收的最大停顿时间可以减少到原本的1/6左右。V8后续还引入了延迟清理（lazy sweeping）与增量式整理（incremental compaction），让清理与整理动作也变成增量式的。同时还计划引入并行标记与并行清理，进一步利用多核性能降低每次停顿的时间。鉴于篇幅有限，此处不再深入讲解了。2. 小结从V8的自动垃圾回收机制的设计角度可以看到，V8对内存使用进行限制的缘由。新生代设计为一个较小的内存空间是合理的，而老生代空间过大对于垃圾回收并无特别意义。V8对内存限制的设置对于Chrome浏览器这种每个选项卡页面使用一个V8实例而言，内存的使用是绰绰有余了。对于Node编写的服务器端来说，内存限制也并不影响正常场景下的使用。但是对于V8的垃圾回收特点和JavaScript在单线程上的执行情况，垃圾回收是影响性能的因素之一。想要高性能的执行效率，需要注意让垃圾回收尽量少地进行，尤其是全堆垃圾回收。以Web服务器中的会话实现为例，一般通过内存来存储，但在访问量大的时候会导致老生代中的存活对象骤增，不仅造成清理/整理过程费时，还会造成内存紧张，甚至溢出（详情可参见第8章）。5.1.5 查看垃圾回收日志
 
 查看垃圾回收日志的方式主要是在启动时添加--trace_gc参数。在进行垃圾回收时，将会从标准输出中打印垃圾回收的日志信息。下面是一段示例，执行结束后，将会在gc.log文件中得到所有垃圾回收信息：
 
@@ -2739,15 +4269,15 @@ V8在经过增量标记的改进后，垃圾回收的最大停顿时间可以减
 
 在V8面前，开发者所要具备的责任是如何让垃圾回收机制更高效地工作。5.2.1 作用域提到如何触发垃圾回收，第一个要介绍的是作用域（scope）。在JavaScript中能形成作用域的有函数调用、with以及全局作用域。以如下代码为例：
 
-foo()函数在每次被调用时会创建对应的作用域，函数执行结束后，该作用域将会销毁。同时作用域中声明的局部变量分配在该作用域上，随作用域的销毁而销毁。只被局部变量引用的对象存活周期较短。在这个示例中，由于对象非常小，将会分配在新生代中的From空间中。在作用域释放后，局部变量local失效，其引用的对象将会在下次垃圾回收时被释放。以上就是最基本的内存回收过程。1．标识符查找与作用域相关的即是标识符查找。所谓标识符，可以理解为变量名。在下面的代码中，执行bar()函数时，将会遇到local变量：
+foo()函数在每次被调用时会创建对应的作用域，函数执行结束后，该作用域将会销毁。同时作用域中声明的局部变量分配在该作用域上，随作用域的销毁而销毁。只被局部变量引用的对象存活周期较短。在这个示例中，由于对象非常小，将会分配在新生代中的From空间中。在作用域释放后，局部变量local失效，其引用的对象将会在下次垃圾回收时被释放。以上就是最基本的内存回收过程。1. 标识符查找与作用域相关的即是标识符查找。所谓标识符，可以理解为变量名。在下面的代码中，执行bar()函数时，将会遇到local变量：
 
 JavaScript在执行时会去查找该变量定义在哪里。它最先查找的是当前作用域，如果在当前作用域中无法找到该变量的声明，将会向上级的作用域里查找，直到查到为止。
 
-2．作用域链在下面的代码中：
+2. 作用域链在下面的代码中：
 
 local变量在baz()函数形成的作用域里查找不到，继而将在bar()的作用域里寻找。如果去掉上述代码bar()中的local声明，将会继续向上查找，一直到全局作用域。这样的查找方式使得作用域像一个链条。由于标识符的查找方向是向上的，所以变量只能向外访问，而不能向内访问。图5-9为变量在作用域中的查找示意图。
 
-图5-9 变量在作用域中的查找示意图当我们在baz()函数中访问local变量时，由于作用域中的变量列表中没有local，所以会向上一个作用域中查找，接着会在bar()函数执行得到的变量列表中找到了一个local变量的定义，于是使用它。尽管在再上一层的作用域中也存在local的定义，但是不会继续查找了。如果查找一个不存在的变量，将会一直沿着作用域链查找到全局作用域，最后抛出未定义错误。了解了作用域，有助于我们了解变量的分配和释放。3．变量的主动释放
+图5-9 变量在作用域中的查找示意图当我们在baz()函数中访问local变量时，由于作用域中的变量列表中没有local，所以会向上一个作用域中查找，接着会在bar()函数执行得到的变量列表中找到了一个local变量的定义，于是使用它。尽管在再上一层的作用域中也存在local的定义，但是不会继续查找了。如果查找一个不存在的变量，将会一直沿着作用域链查找到全局作用域，最后抛出未定义错误。了解了作用域，有助于我们了解变量的分配和释放。3. 变量的主动释放
 
 如果变量是全局变量（不通过var声明或定义在global变量上），由于全局作用域需要直到进程退出才能释放，此时将导致引用的对象常驻内存（常驻在老生代中）。如果需要释放常驻内存的对象，可以通过delete操作来删除引用关系。或者将变量重新赋值，让旧的对象脱离引用关系。在接下来的老生代内存清除和整理的过程中，会被回收释放。下面为示例代码：
 
@@ -2763,7 +4293,7 @@ local变量在baz()函数形成的作用域里查找不到，继而将在bar()�
 
 ## 5.3 内存指标
 
-一般而言，应用中存在一些全局性的对象是正常的，而且在正常的使用中，变量都会自动释放回收。但是也会存在一些我们认为会回收但是却没有被回收的对象，这会导致内存占用无限增长。一旦增长达到V8的内存限制，将会得到内存溢出错误，进而导致进程退出。5.3.1 查看内存使用情况前面我们提到了process.memoryUsage()可以查看内存使用情况。除此之外，os模块中的totalmem()和freemem()方法也可以查看内存使用情况。1．查看进程的内存占用调用process.memoryUsage()可以看到Node进程的内存占用情况，示例代码如下：
+一般而言，应用中存在一些全局性的对象是正常的，而且在正常的使用中，变量都会自动释放回收。但是也会存在一些我们认为会回收但是却没有被回收的对象，这会导致内存占用无限增长。一旦增长达到V8的内存限制，将会得到内存溢出错误，进而导致进程退出。5.3.1 查看内存使用情况前面我们提到了process.memoryUsage()可以查看内存使用情况。除此之外，os模块中的totalmem()和freemem()方法也可以查看内存使用情况。1. 查看进程的内存占用调用process.memoryUsage()可以看到Node进程的内存占用情况，示例代码如下：
 
 rss是resident set size的缩写，即进程的常驻内存部分。进程的内存总共有几部分，一部分是rss，其余部分在交换区（swap）或者文件系统（filesystem）中。除了rss外，heapTotal和heapUsed对应的是V8的堆内存信息。heapTotal是堆中总共申请的内存量，heapUsed表示目前堆中使用中的内存量。这3个值的单位都是字节。为了更好地查看效果，我们格式化一下输出结果：
 
@@ -2773,7 +4303,7 @@ rss是resident set size的缩写，即进程的常驻内存部分。进程的内
 
 将以上代码存为outofmemory.js并执行它，得到的输出结果如下：
 
-可以看到，每次调用useMem都导致了3个值的增长。在接近1500 MB的时候，无法继续分配内存，然后进程内存溢出了，连循环体都无法执行完成，仅执行了7次。2．查看系统的内存占用与process.memoryUsage()不同的是，os模块中的totalmem()和freemem()这两个方法用于查看操作系统的内存使用情况，它们分别返回系统的总内存和闲置内存，以字节为单位。示例代码如下：
+可以看到，每次调用useMem都导致了3个值的增长。在接近1500 MB的时候，无法继续分配内存，然后进程内存溢出了，连循环体都无法执行完成，仅执行了7次。2. 查看系统的内存占用与process.memoryUsage()不同的是，os模块中的totalmem()和freemem()这两个方法用于查看操作系统的内存使用情况，它们分别返回系统的总内存和闲置内存，以字节为单位。示例代码如下：
 
 从输出信息可以看到我的电脑的总内存为8 GB，当前闲置内存大致为4.2 GB。
 
@@ -2796,7 +4326,7 @@ Node对内存泄漏十分敏感，一旦线上应用有成千上万的流量，�
 
 上述示例在解释原理后，十分容易理解，如果需要，只要限定缓存对象的大小，加上完善的过期策略以防止内存无限制增长，还是可以一用的。这里给出一个可能无意识造成内存泄漏的场景：memoize。下面是著名类库underscore对memoize的实现：
 
-它的原理是以参数作为键进行缓存，以内存空间换CPU执行时间。这里潜藏的陷阱即是每个被执行的结果都会按参数缓存在memo对象上，不会被清除。这在前端网页这种短时应用场景中不存在大问题，但是执行量大和参数多样性的情况下，会造成内存占用不释放。所以在Node中，任何试图拿内存当缓存的行为都应当被限制。当然，这种限制并不是不允许使用的意思，而是要小心为之。1．缓存限制策略为了解决缓存中的对象永远无法释放的问题，需要加入一种策略来限制缓存的无限增长。为此我曾写过一个模块limitablemap，它可以实现对键值数量的限制。下面是其实现：
+它的原理是以参数作为键进行缓存，以内存空间换CPU执行时间。这里潜藏的陷阱即是每个被执行的结果都会按参数缓存在memo对象上，不会被清除。这在前端网页这种短时应用场景中不存在大问题，但是执行量大和参数多样性的情况下，会造成内存占用不释放。所以在Node中，任何试图拿内存当缓存的行为都应当被限制。当然，这种限制并不是不允许使用的意思，而是要小心为之。1. 缓存限制策略为了解决缓存中的对象永远无法释放的问题，需要加入一种策略来限制缓存的无限增长。为此我曾写过一个模块limitablemap，它可以实现对键值数量的限制。下面是其实现：
 
 可以看到，实现过程还是非常简单的。记录键在数组中，一旦超过数量，就以先进先出的方式进行淘汰。
 
@@ -2804,7 +4334,7 @@ Node对内存泄漏十分敏感，一旦线上应用有成千上万的流量，�
 
 由于模块的缓存机制，模块是常驻老生代的。在设计模块时，要十分小心内存泄漏的出现。在下面的代码，每次调用leak()方法时，都导致局部变量leakArray不停增加内存的占用，且不被释放：
 
-如果模块不可避免地需要这么设计，那么请添加清空队列的相应接口，以供调用者释放内存。2．缓存的解决方案
+如果模块不可避免地需要这么设计，那么请添加清空队列的相应接口，以供调用者释放内存。2. 缓存的解决方案
 
 直接将内存作为缓存的方案要十分慎重。除了限制缓存的大小外，另外要考虑的事情是，进程之间无法共享内存。如果在进程内使用缓存，这些缓存不可避免地有重复，对物理内存的使用是一种浪费。如何使用大量缓存，目前比较好的解决方案是采用进程外的缓存，进程自身不存储状态。外部的缓存软件有着良好的缓存过期淘汰策略以及自有的内存管理，不影响Node进程的性能。它的好处多多，在Node中主要可以解决以下两个问题。(1) 将缓存转移到外部，减少常驻内存的对象的数量，让垃圾回收更高效。(2) 进程之间可以共享缓存。目前，市面上较好的缓存有Redis和Memcached。Node模块的生态系统十分完善，这两个产品的客户端都有，通过以下地址可以查看具体使用详情。❑Redis:https://github.com/mranney/node_redis。
 - Memcached:https://github.com/3rd-Eden/node-memcached。5.4.2 关注队列状态
@@ -2842,7 +4372,7 @@ Node对内存泄漏十分敏感，一旦线上应用有成千上万的流量，�
 
 在这些数据中，num_full_gc和num_inc_gc比较直观地反应了垃圾回收的情况。2. leak事件如果经过连续5次垃圾回收后，内存仍然没有被释放，这意味着有内存泄漏的产生，node-memwatch会出发一个leak事件。某次leak事件得到的数据如下所示：
 
-这个数据能显示5次垃圾回收的过程中内存增长了多少。3．堆内存比较最终得到的leak事件的信息只能告知我们应用中存在内存泄漏，具体问题产生在何处还需要从V8的堆内存上定位。node-memwatch提供了抓取快照和比较快照的功能，它能够比较堆上对象的名称和分配数量，从而找出导致内存泄漏的元凶。下面为一段导致内存泄漏的代码，这是通过node-memwatch获取堆内存差异结果的示例：
+这个数据能显示5次垃圾回收的过程中内存增长了多少。3. 堆内存比较最终得到的leak事件的信息只能告知我们应用中存在内存泄漏，具体问题产生在何处还需要从V8的堆内存上定位。node-memwatch提供了抓取快照和比较快照的功能，它能够比较堆上对象的名称和分配数量，从而找出导致内存泄漏的元凶。下面为一段导致内存泄漏的代码，这是通过node-memwatch获取堆内存差异结果的示例：
 
 执行上面这段代码，得到的输出结果如下所示：
 
