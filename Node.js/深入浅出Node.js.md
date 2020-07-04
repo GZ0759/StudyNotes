@@ -5189,84 +5189,201 @@ Node 将 JavaScript 的主要应用场景扩展到了服务器端，相应要考
 
 # 第 6 章 理解 Buffer
 
-JavaScript对于字符串（string）的操作十分友好，无论是宽字节字符串还是单字节字符串，都被认为是一个字符串。示例代码如下所示：
+JavaScript 对于字符串（string）的操作十分友好，无论是宽字节字符串还是单字节字符串，都被认为是一个字符串。示例代码如下所示：
 
-对比PHP中的字符串统计，我们需要动用额外的函数来获取字符串的长度。示例代码如下所示：
+```js
+console.log("0123456789".length); // 10
+console.log("零一二三四五六七八九".length); //10
+console.log("\u00bd".length); // 1
+```
 
-与第5章介绍的内容一样，本章讲述的也是前端JavaScript开发者不曾涉及的内容。文件和网络I/O对于前端开发者而言都是不曾有的应用场景，因为前端只需做一些简单的字符串操作或DOM操作基本就能满足业务需求，在ECMAScript规范中，也没有对这些方面做任何的定义，只有CommonJS中有部分二进制的定义。由于应用场景不同，在Node中，应用需要处理网络协议、操作数据库、处理图片、接收上传文件等，在网络流和文件的操作中，还要处理大量二进制数据，JavaScript自有的字符串远远不能满足这些需求，于是Buffer对象应运而生。
+对比 PHP 中的字符串统计，我们需要动用额外的函数来获取字符串的长度。示例代码如下所示：
+
+```php
+<?php
+echo strlen("0123456789"); // 10
+echo "\n";
+echo strlen("零一二三四五六七八九"); // 30
+echo "\n";
+echo mb_strlen("零一二三四五六七八九", "utf-8"); //10
+echo "\n";
+?>
+```
+
+与第 5 章介绍的内容一样，本章讲述的也是前端 JavaScript 开发者不曾涉及的内容。文件和网络 I/O 对于前端开发者而言都是不曾有的应用场景，因为前端只需做一些简单的字符串操作或 DOM 操作基本就能满足业务需求，在 ECMAScript 规范中，也没有对这些方面做任何的定义，只有 CommonJS 中有部分二进制的定义。由于应用场景不同，在 Node 中，应用需要处理网络协议、操作数据库、处理图片、接收上传文件等，在网络流和文件的操作中，还要处理大量二进制数据，JavaScript 自有的字符串远远不能满足这些需求，于是 Buffer 对象应运而生。
 
 ## 6.1 Buffer 结构
 
-Buffer是一个像Array的对象，但它主要用于操作字节。下面我们从模块结构和对象结构的层面上来认识它。
+Buffer 是一个像 Array 的对象，但它主要用于操作字节。下面我们从模块结构和对象结构的层面上来认识它。
 
 ### 6.1.1 模块结构
 
-Buffer是一个典型的JavaScript与C++结合的模块，它将性能相关部分用C++实现，将非性能相关的部分用JavaScript实现，如图6-1所示。
+Buffer 是一个典型的 JavaScript 与 C++结合的模块，它将性能相关部分用 C++实现，将非性能相关的部分用 JavaScript 实现，如图 6-1 所示。
 
-图6-1 Buffer的分工第5章揭示了Buffer所占用的内存不是通过V8分配的，属于堆外内存。由于V8垃圾回收性能的影响，将常用的操作对象用更高效和专有的内存分配回收策略来管理是个不错的思路。由于Buffer太过常见，Node在进程启动时就已经加载了它，并将其放在全局对象（global）上。所以在使用Buffer时，无须通过require()即可直接使用。
+图 6-1 Buffer 的分工
 
-### 6.1.2 Buffer对象
+第 5 章揭示了 Buffer 所占用的内存不是通过 V8 分配的，属于堆外内存。由于 V8 垃圾回收性能的影响，将常用的操作对象用更高效和专有的内存分配回收策略来管理是个不错的思路。
 
-Buffer对象类似于数组，它的元素为16进制的两位数，即0到255的数值。示例代码如下所示：
+由于 Buffer 太过常见，Node 在进程启动时就已经加载了它，并将其放在全局对象（global）上。所以在使用 Buffer 时，无须通过 require()即可直接使用。
 
-由上面的示例可见，不同编码的字符串占用的元素个数各不相同，上面代码中的中文字在UTF-8编码下占用3个元素，字母和半角标点符号占用1个元素。Buffer受Array类型的影响很大，可以访问length属性得到长度，也可以通过下标访问元素，在构造对象时也十分相似，代码如下：
+### 6.1.2 Buffer 对象
 
-上述代码分配了一个长100字节的Buffer对象。可以通过下标访问刚初始化的Buffer的元素，代码如下：
+Buffer 对象类似于数组，它的元素为 16 进制的两位数，即 0 到 255 的数值。示例代码如下所示：
 
-这里会得到一个比较奇怪的结果，它的元素值是一个0到255的随机值。同样，我们也可以通过下标对它进行赋值：
+```js
+var str = "深入浅出node.js";
+var buf = new Buffer(str, "utf-8");
+console.log(buf);
+// => <Buffer e6 b7 b1 e5 85 a5 e6 b5 85 e5 87 ba 6e 6f 64 65 2e 6a 73>
+```
 
-值得注意的是，如果给元素赋值不是0到255的整数而是小数时会怎样呢？示例代码如下所示：
+由上面的示例可见，不同编码的字符串占用的元素个数各不相同，上面代码中的中文字在 UTF-8 编码下占用 3 个元素，字母和半角标点符号占用 1 个元素。
 
-给元素的赋值如果小于0，就将该值逐次加256，直到得到一个0到255之间的整数。如果得到的数值大于255，就逐次减256，直到得到0~255区间内的数值。如果是小数，舍弃小数部分，只保留整数部分。
+Buffer 受 Array 类型的影响很大，可以访问 length 属性得到长度，也可以通过下标访问元素，在构造对象时也十分相似，代码如下：
 
-### 6.1.3 Buffer内存分配
+```js
+var buf = new Buffer(100);
+console.log(buf.length); // => 100
+```
 
-Buffer对象的内存分配不是在V8的堆内存中，而是在Node的C++层面实现内存的申请的。因为处理大量的字节数据不能采用需要一点内存就向操作系统申请一点内存的方式，这可能造成大量的内存申请的系统调用，对操作系统有一定压力。为此Node在内存的使用上应用的是在C++层面申请内存、在JavaScript中分配内存的策略。为了高效地使用申请来的内存，Node采用了slab分配机制。slab是一种动态内存管理机制，最早诞生于SunOS操作系统（Solaris）中，目前在一些*nix操作系统中有广泛的应用，如FreeBSD和Linux。简单而言，slab就是一块申请好的固定大小的内存区域。slab具有如下3种状态。
+上述代码分配了一个长 100 字节的 Buffer 对象。可以通过下标访问刚初始化的 Buffer 的元素，代码如下：
+
+```js
+console.log(buf[10]);
+```
+
+这里会得到一个比较奇怪的结果，它的元素值是一个 0 到 255 的随机值。同样，我们也可以通过下标对它进行赋值：
+
+```js
+buf[10] = 100;
+console.log(buf[10]); // => 100
+```
+
+值得注意的是，如果给元素赋值不是 0 到 255 的整数而是小数时会怎样呢？示例代码如下所示：
+
+```js
+buf[20] = -100;
+console.log(buf[20]); // 156
+buf[21] = 300;
+console.log(buf[21]); // 44
+buf[22] = 3.1415;
+console.log(buf[22]); // 3
+```
+
+给元素的赋值如果小于 0，就将该值逐次加 256，直到得到一个 0 到 255 之间的整数。如果得到的数值大于 255，就逐次减 256，直到得到 0~255 区间内的数值。如果是小数，舍弃小数部分，只保留整数部分。
+
+### 6.1.3 Buffer 内存分配
+
+Buffer 对象的内存分配不是在 V8 的堆内存中，而是在 Node 的 C++层面实现内存的申请的。因为处理大量的字节数据不能采用需要一点内存就向操作系统申请一点内存的方式，这可能造成大量的内存申请的系统调用，对操作系统有一定压力。为此 Node 在内存的使用上应用的是在 C++层面申请内存、在 JavaScript 中分配内存的策略。
+
+为了高效地使用申请来的内存，Node 采用了 slab 分配机制。slab 是一种动态内存管理机制，最早诞生于 SunOS 操作系统（Solaris）中，目前在一些\*nix 操作系统中有广泛的应用，如 FreeBSD 和 Linux。
+
+简单而言，slab 就是一块申请好的固定大小的内存区域。slab 具有如下 3 种状态。
+
 - full：完全分配状态。
 - partial：部分分配状态。
 - empty：没有被分配状态。
 
-当我们需要一个Buffer对象，可以通过以下方式分配指定大小的Buffer对象：
+当我们需要一个 Buffer 对象，可以通过以下方式分配指定大小的 Buffer 对象：
 
-Node以8 KB为界限来区分Buffer是大对象还是小对象：
+```js
+new Buffer(size);
+```
 
-这个8 KB的值也就是每个slab的大小值，在JavaScript层面，以它作为单位单元进行内存的分配。
+Node 以 8 KB 为界限来区分 Buffer 是大对象还是小对象：
 
-1. 分配小Buffer对象
+```js
+Buffer.poolSize = 8 * 1024;
+```
 
-如果指定Buffer的大小少于8 KB, Node会按照小对象的方式进行分配。Buffer的分配过程中主要使用一个局部变量pool作为中间处理对象，处于分配状态的slab单元都指向它。以下是分配一个全新的slab单元的操作，它会将新申请的SlowBuffer对象指向它：
+这个 8 KB 的值也就是每个 slab 的大小值，在 JavaScript 层面，以它作为单位单元进行内存的分配。
 
-图6-2为一个新构造的slab单元示例。
+1. 分配小 Buffer 对象
 
-图6-2 新构造的slab单元示例在图6-2中，slab处于empty状态。构造小Buffer对象时的代码如下：
+如果指定 Buffer 的大小少于 8 KB, Node 会按照小对象的方式进行分配。Buffer 的分配过程中主要使用一个局部变量 pool 作为中间处理对象，处于分配状态的 slab 单元都指向它。以下是分配一个全新的 slab 单元的操作，它会将新申请的 SlowBuffer 对象指向它：
 
-这次构造将会去检查pool对象，如果pool没有被创建，将会创建一个新的slab单元指向它：
+```js
+var pool;
+function allocPool() {
+  pool = new SlowBuffer(Buffer.poolSize);
+  pool.used = 0;
+}
+```
 
-同时当前Buffer对象的parent属性指向该slab，并记录下是从这个slab的哪个位置（offset）开始使用的，slab对象自身也记录被使用了多少字节，代码如下：
+图 6-2 为一个新构造的 slab 单元示例。
 
-图6-3为从一个新的slab单元中初次分配一个Buffer对象的示意图。
+图 6-2 新构造的 slab 单元示例
 
-图6-3 从一个新的slab单元中初次分配一个Buffer对象这时候的slab状态为partial。当再次创建一个Buffer对象时，构造过程中将会判断这个slab的剩余空间是否足够。如果足够，使用剩余空间，并更新slab的分配状态。下面的代码创建了一个新的Buffer对象，它会引起一次slab分配：
+在图 6-2 中，slab 处于 empty 状态。
 
-图6-4为再次分配的示意图。
+构造小 Buffer 对象时的代码如下：
 
-图6-4 从slab单元中再次分配一个Buffer对象如果slab剩余的空间不够，将会构造新的slab，原slab中剩余的空间会造成浪费。例如，第一次构造1字节的Buffer对象，第二次构造8192字节的Buffer对象，由于第二次分配时slab中的空间不够，所以创建并使用新的slab，第一个slab的8 KB将会被第一个1字节的Buffer对象独占。下面的代码一共使用了两个slab单元：
+```js
+new Buffer(1024);
+```
 
-这里要注意的事项是，由于同一个slab可能分配给多个Buffer对象使用，只有这些小Buffer对象在作用域释放并都可以回收时，slab的8 KB空间才会被回收。尽管创建了1个字节的Buffer对象，但是如果不释放它，实际可能是8 KB的内存没有释放。
+这次构造将会去检查 pool 对象，如果 pool 没有被创建，将会创建一个新的 slab 单元指向它：
 
-2. 分配大Buffer对象
+```js
+if (!pool || pool.length - pool.used < this.length) allocPool();
+```
 
-如果需要超过8 KB的Buffer对象，将会直接分配一个SlowBuffer对象作为slab单元，这个slab单元将会被这个大Buffer对象独占。
+同时当前 Buffer 对象的 parent 属性指向该 slab，并记录下是从这个 slab 的哪个位置（offset）开始使用的，slab 对象自身也记录被使用了多少字节，代码如下：
 
-这里的SlowBuffer类是在C++中定义的，虽然引用buffer模块可以访问到它，但是不推荐直接操作它，而是用Buffer替代。上面提到的Buffer对象都是JavaScript层面的，能够被V8的垃圾回收标记回收。但是其内部的parent属性指向的SlowBuffer对象却来自于Node自身C++中的定义，是C++层面上的Buffer对象，所用内存不在V8的堆中。
+```js
+this.parent = pool;
+this.offset = pool.used;
+pool.used += this.length;
+if (pool.used & 7) pool.used = (pool.used + 8) & ~7;
+```
+
+图 6-3 为从一个新的 slab 单元中初次分配一个 Buffer 对象的示意图。
+
+图 6-3 从一个新的 slab 单元中初次分配一个 Buffer 对象
+
+这时候的 slab 状态为 partial。
+
+当再次创建一个 Buffer 对象时，构造过程中将会判断这个 slab 的剩余空间是否足够。如果足够，使用剩余空间，并更新 slab 的分配状态。下面的代码创建了一个新的 Buffer 对象，它会引起一次 slab 分配：
+
+```js
+new Buffer(3000);
+```
+
+图 6-4 为再次分配的示意图。
+
+图 6-4 从 slab 单元中再次分配一个 Buffer 对象
+
+如果 slab 剩余的空间不够，将会构造新的 slab，原 slab 中剩余的空间会造成浪费。例如，第一次构造 1 字节的 Buffer 对象，第二次构造 8192 字节的 Buffer 对象，由于第二次分配时 slab 中的空间不够，所以创建并使用新的 slab，第一个 slab 的 8 KB 将会被第一个 1 字节的 Buffer 对象独占。下面的代码一共使用了两个 slab 单元：
+
+```js
+new Buffer(1);
+new Buffer(8192);
+```
+
+这里要注意的事项是，由于同一个 slab 可能分配给多个 Buffer 对象使用，只有这些小 Buffer 对象在作用域释放并都可以回收时，slab 的 8 KB 空间才会被回收。尽管创建了 1 个字节的 Buffer 对象，但是如果不释放它，实际可能是 8 KB 的内存没有释放。
+
+2. 分配大 Buffer 对象
+
+如果需要超过 8 KB 的 Buffer 对象，将会直接分配一个 SlowBuffer 对象作为 slab 单元，这个 slab 单元将会被这个大 Buffer 对象独占。
+
+```js
+// Big buffer, just alloc one
+this.parent = new SlowBuffer(this.length);
+this.offset = 0;
+```
+
+这里的 SlowBuffer 类是在 C++中定义的，虽然引用 buffer 模块可以访问到它，但是不推荐直接操作它，而是用 Buffer 替代。
+
+上面提到的 Buffer 对象都是 JavaScript 层面的，能够被 V8 的垃圾回收标记回收。但是其内部的 parent 属性指向的 SlowBuffer 对象却来自于 Node 自身 C++中的定义，是 C++层面上的 Buffer 对象，所用内存不在 V8 的堆中。
 
 3. 小结
 
-简单而言，真正的内存是在Node的C++层面提供的，JavaScript层面只是使用它。当进行小而频繁的Buffer操作时，采用slab的机制进行预先申请和事后分配，使得JavaScript到操作系统之间不必有过多的内存申请方面的系统调用。对于大块的Buffer而言，则直接使用C++层面提供的内存，而无需细腻的分配操作。
+简单而言，真正的内存是在 Node 的 C++层面提供的，JavaScript 层面只是使用它。当进行小而频繁的 Buffer 操作时，采用 slab 的机制进行预先申请和事后分配，使得 JavaScript 到操作系统之间不必有过多的内存申请方面的系统调用。对于大块的 Buffer 而言，则直接使用 C++层面提供的内存，而无需细腻的分配操作。
 
 ## 6.2 Buffer 的转换
 
-Buffer对象可以与字符串之间相互转换。目前支持的字符串编码类型有如下这几种。
+Buffer 对象可以与字符串之间相互转换。目前支持的字符串编码类型有如下这几种。
+
 - ASCII
 - UTF-8
 - UTF-16LE/UCS-2
@@ -5274,115 +5391,365 @@ Buffer对象可以与字符串之间相互转换。目前支持的字符串编�
 - Binary
 - Hex
 
-### 6.2.1 字符串转Buffer
+### 6.2.1 字符串转 Buffer
 
-字符串转Buffer对象主要是通过构造函数完成的：
+字符串转 Buffer 对象主要是通过构造函数完成的：
 
-通过构造函数转换的Buffer对象，存储的只能是一种编码类型。encoding参数不传递时，默认按UTF-8编码进行转码和存储。
+```js
+new Buffer(str, [encoding]);
+```
 
-一个Buffer对象可以存储不同编码类型的字符串转码的值，调用write()方法可以实现该目的，代码如下：
+通过构造函数转换的 Buffer 对象，存储的只能是一种编码类型。encoding 参数不传递时，默认按 UTF-8 编码进行转码和存储。
 
-由于可以不断写入内容到Buffer对象中，并且每次写入可以指定编码，所以Buffer对象中可以存在多种编码转化后的内容。需要小心的是，每种编码所用的字节长度不同，将Buffer反转回字符串时需要谨慎处理。
+一个 Buffer 对象可以存储不同编码类型的字符串转码的值，调用 write()方法可以实现该目的，代码如下：
 
-### 6.2.2 Buffer转字符串
+```js
+buf.write(string, [offset], [length], [encoding]);
+```
 
-实现Buffer向字符串的转换也十分简单，Buffer对象的toString()可以将Buffer对象转换为字符串，代码如下：
+由于可以不断写入内容到 Buffer 对象中，并且每次写入可以指定编码，所以 Buffer 对象中可以存在多种编码转化后的内容。需要小心的是，每种编码所用的字节长度不同，将 Buffer 反转回字符串时需要谨慎处理。
 
-比较精巧的是，可以设置encoding（默认为UTF-8）、start、end这3个参数实现整体或局部的转换。如果Buffer对象由多种编码写入，就需要在局部指定不同的编码，才能转换回正常的编码。
+### 6.2.2 Buffer 转字符串
 
-### 6.2.3 Buffer不支持的编码类型
+实现 Buffer 向字符串的转换也十分简单，Buffer 对象的 toString()可以将 Buffer 对象转换为字符串，代码如下：
 
-目前比较遗憾的是，Node的Buffer对象支持的编码类型有限，只有少数的几种编码类型可以在字符串和Buffer之间转换。为此，Buffer提供了一个isEncoding()函数来判断编码是否支持转换：
+```js
+buf.toString([encoding], [start], [end]);
+```
 
-将编码类型作为参数传入上面的函数，如果支持转换返回值为true，否则为false。很遗憾的是，在中国常用的GBK、GB2312和BIG-5编码都不在支持的行列中。对于不支持的编码类型，可以借助Node生态圈中的模块完成转换。iconv和iconv-lite两个模块可以支持更多的编码类型转换，包括Windows 125系列、ISO-8859系列、IBM/DOS代码页系列、Macintosh系列、KOI8系列，以及Latin1、US-ASCII，也支持宽字节编码GBK和GB2312。iconv-lite采用纯JavaScript实现，iconv则通过C++调用libiconv库完成。前者比后者更轻量，无须编译和处理环境依赖直接使用。在性能方面，由于转码都是耗用CPU，在V8的高性能下，少了C++到JavaScript的层次转换，纯JavaScript的性能比C++实现得更好。
+比较精巧的是，可以设置 encoding（默认为 UTF-8）、start、end 这 3 个参数实现整体或局部的转换。如果 Buffer 对象由多种编码写入，就需要在局部指定不同的编码，才能转换回正常的编码。
 
-以下为iconv-lite的示例代码：
+### 6.2.3 Buffer 不支持的编码类型
 
-另外，iconv和iconv-lite对无法转换的内容进行降级处理时的方案不尽相同。iconv-lite无法转换的内容如果是多字节，会输出
+目前比较遗憾的是，Node 的 Buffer 对象支持的编码类型有限，只有少数的几种编码类型可以在字符串和 Buffer 之间转换。为此，Buffer 提供了一个 isEncoding()函数来判断编码是否支持转换：
 
-；如果是单字节，则输出？。iconv则有三级降级策略，会尝试翻译无法转换的内容，或者忽略这些内容。如果不设置忽略，iconv对于无法转换的内容将会得到EILSEQ异常。如下是iconv的示例代码兼选项设置方式：
+```js
+Buffer.isEncoding(encoding);
+```
 
+将编码类型作为参数传入上面的函数，如果支持转换返回值为 true，否则为 false。很遗憾的是，在中国常用的 GBK、GB2312 和 BIG-5 编码都不在支持的行列中。
 
+对于不支持的编码类型，可以借助 Node 生态圈中的模块完成转换。iconv 和 iconv-lite 两个模块可以支持更多的编码类型转换，包括 Windows 125 系列、ISO-8859 系列、IBM/DOS 代码页系列、Macintosh 系列、KOI8 系列，以及 Latin1、US-ASCII，也支持宽字节编码 GBK 和 GB2312。
+
+iconv-lite 采用纯 JavaScript 实现，iconv 则通过 C++调用 libiconv 库完成。前者比后者更轻量，无须编译和处理环境依赖直接使用。在性能方面，由于转码都是耗用 CPU，在 V8 的高性能下，少了 C++到 JavaScript 的层次转换，纯 JavaScript 的性能比 C++实现得更好。
+
+以下为 iconv-lite 的示例代码：
+
+```js
+var iconv = require("iconv-lite");
+// Buffer转字符串
+var str = iconv.decode(buf, "win1251");
+// 字符串转Buffer
+var buf = iconv.encode("Sample input string", "win1251");
+```
+
+另外，iconv 和 iconv-lite 对无法转换的内容进行降级处理时的方案不尽相同。iconv-lite 无法转换的内容如果是多字节，会输出；如果是单字节，则输出？。iconv 则有三级降级策略，会尝试翻译无法转换的内容，或者忽略这些内容。如果不设置忽略，iconv 对于无法转换的内容将会得到 EILSEQ 异常。如下是 iconv 的示例代码兼选项设置方式：
+
+```js
+var iconv = new Iconv("UTF-8", "ASCII");
+iconv.convert("ça va"); // throws EILSEQ
+var iconv = new Iconv("UTF-8", "ASCII//IGNORE");
+iconv.convert("ça va"); // returns "a va"
+var iconv = new Iconv("UTF-8", "ASCII//TRANSLIT");
+iconv.convert("ça va"); // "ca va"
+var iconv = new Iconv("UTF-8", "ASCII//TRANSLIT//IGNORE");
+iconv.convert("ça va Ȧ "); // "ca va "
+```
 
 ## 6.3 Buffer 的拼接
 
-Buffer在使用场景中，通常是以一段一段的方式传输。以下是常见的从输入流中读取内容的示例代码：
+Buffer 在使用场景中，通常是以一段一段的方式传输。以下是常见的从输入流中读取内容的示例代码：
 
-上面这段代码常见于国外，用于流读取的示范，data事件中获取的chunk对象即是Buffer对象。对于初学者而言，容易将Buffer当做字符串来理解，所以在接受上面的示例时不会觉得有任何异常。一旦输入流中有宽字节编码时，问题就会暴露出来。如果你在通过Node开发的网站上看到
+```js
+var fs = require("fs");
+var rs = fs.createReadStream("test.md");
+var data = "";
+rs.on("data", function (chunk) {
+  data += chunk;
+});
+rs.on("end", function () {
+  console.log(data);
+});
+```
 
-乱码符号，那么该问题的起源多半来自于这里。
+上面这段代码常见于国外，用于流读取的示范，data 事件中获取的 chunk 对象即是 Buffer 对象。对于初学者而言，容易将 Buffer 当做字符串来理解，所以在接受上面的示例时不会觉得有任何异常。一旦输入流中有宽字节编码时，问题就会暴露出来。如果你在通过 Node 开发的网站上看到乱码符号，那么该问题的起源多半来自于这里。
 
 这里潜藏的问题在于如下这句代码：
 
-这句代码里隐藏了toString()操作，它等价于如下的代码：
+```js
+data += chunk;
+```
 
-值得注意的是，外国人的语境通常是指英文环境，在他们的场景下，这个toString()不会造成任何问题。但对于宽字节的中文，却会形成问题。为了重现这个问题，下面我们模拟近似的场景，将文件可读流的每次读取的Buffer长度限制为11，代码如下：
+这句代码里隐藏了 toString()操作，它等价于如下的代码：
+
+```js
+data = data.toString() + chunk.toString();
+```
+
+值得注意的是，外国人的语境通常是指英文环境，在他们的场景下，这个 toString()不会造成任何问题。但对于宽字节的中文，却会形成问题。为了重现这个问题，下面我们模拟近似的场景，将文件可读流的每次读取的 Buffer 长度限制为 11，代码如下：
+
+```js
+var rs = fs.createReadStream("test.md", { highWaterMark: 11 });
+```
 
 搭配该代码的测试数据为李白的《静夜思》。执行该程序，将会得到以下输出：
 
 ### 6.3.1 乱码是如何产生的
 
-上面的诗歌中，“月”、“是”、“望”、“低”4个字没有被正常输出，取而代之的是3个
+上面的诗歌中，“月”、“是”、“望”、“低”4 个字没有被正常输出，取而代之的是 3 个。产生这个输出结果的原因在于文件可读流在读取时会逐个读取 Buffer。这首诗的原始 Buffer 应存储为：
 
-。产生这个输出结果的原因在于文件可读流在读取时会逐个读取Buffer。这首诗的原始Buffer应存储为：
+```
+<Buffer e5 ba 8a e5 89 8d e6 98 8e e6 9c 88 e5 85 89 ef bc 8c e7 96 91 e6 98 af e5 9c b0 e4 b8 8a e9
+9c 9c ef bc 9b e4 b8 be e5 a4 b4 e6 9c 9b e6 98 8e e6 9c 88 ...>
+```
 
-由于我们限定了Buffer对象的长度为11，因此只读流需要读取7次才能完成完整的读取，结果是以下几个Buffer对象依次输出：
+由于我们限定了 Buffer 对象的长度为 11，因此只读流需要读取 7 次才能完成完整的读取，结果是以下几个 Buffer 对象依次输出：
 
-上文提到的buf.toString()方法默认以UTF-8为编码，中文字在UTF-8下占3个字节。所以第一个Buffer对象在输出时，只能显示3个字符，Buffer中剩下的2个字节（e6 9c）将会以乱码的形式显示。第二个Buffer对象的第一个字节也不能形成文字，只能显示乱码。于是形成一些文字无法正常显示的问题。在这个示例中我们构造了11这个限制，但是对于任意长度的Buffer而言，宽字节字符串都有可能存在被截断的情况，只不过Buffer的长度越大出现的概率越低而已，但该问题依然不可忽视。
+```
+<Buffer e5 ba 8a e5 89 8d e6 98 8e e6 9c>
+<Buffer 88 e5 85 89 ef bc 8c e7 96 91 e6>
+...
+```
 
-### 6.3.2 setEncoding()与string_decoder()
+上文提到的 buf.toString()方法默认以 UTF-8 为编码，中文字在 UTF-8 下占 3 个字节。所以第一个 Buffer 对象在输出时，只能显示 3 个字符，Buffer 中剩下的 2 个字节（e6 9c）将会以乱码的形式显示。第二个 Buffer 对象的第一个字节也不能形成文字，只能显示乱码。于是形成一些文字无法正常显示的问题。
 
-在看过上述的示例后，也许我们忘记了可读流还有一个设置编码的方法setEncoding()，示例如下：
+在这个示例中我们构造了 11 这个限制，但是对于任意长度的 Buffer 而言，宽字节字符串都有可能存在被截断的情况，只不过 Buffer 的长度越大出现的概率越低而已，但该问题依然不可忽视。
 
-该方法的作用是让data事件中传递的不再是一个Buffer对象，而是编码后的字符串。为此，我们继续改进前面诗歌的程序，添加setEncoding()的步骤如下：
+### 6.3.2 setEncoding()与 string_decoder()
+
+在看过上述的示例后，也许我们忘记了可读流还有一个设置编码的方法 setEncoding()，示例如下：
+
+```js
+readable.setEncoding(encoding);
+```
+
+该方法的作用是让 data 事件中传递的不再是一个 Buffer 对象，而是编码后的字符串。为此，我们继续改进前面诗歌的程序，添加 setEncoding()的步骤如下：
+
+```js
+var rs = fs.createReadStream("test.md", { highWaterMark: 11 });
+rs.setEncoding("utf8");
+```
 
 重新执行程序，得到输出：
 
-这是令人开心的输出结果，说明输出不再受Buffer大小的影响了。那Node是如何实现这个输出结果的呢？要知道，无论如何设置编码，触发data事件的次数依旧相同，这意味着设置编码并未改变按段读取的基本方式。事实上，在调用setEncoding()时，可读流对象在内部设置了一个decoder对象。每次data事件都通过该decoder对象进行Buffer到字符串的解码，然后传递给调用者。是故设置编码后，data不再收到原始的Buffer对象。但是这依旧无法解释为何设置编码后乱码问题被解决掉了，因为在前述分析中，无论如何转码，总是存在宽字节字符串被截断的问题。最终乱码问题得以解决，还是在于decoder的神奇之处。decoder对象来自于string_decoder模块StringDecoder的实例对象。它神奇的原理是什么，下面我们以代码来说明：
+```
+床前明月光，疑是地上霜。举头望明月，低头思故乡。
+```
 
-我将前文提到的前两个Buffer对象写入decoder中。奇怪的地方在于“月”的转码并没有如平常一样在两个部分分开输出。StringDecoder在得到编码后，知道宽字节字符串在UTF-8编码下是以3个字节的方式存储的，所以第一次write()时，只输出前9个字节转码形成的字符，“月”字的前两个字节被保留在StringDecoder实例内部。第二次write()时，会将这2个剩余字节和后续11个字节组合在一起，再次用3的整数倍字节进行转码。于是乱码问题通过这种中间形式被解决了。虽然string_decoder模块很奇妙，但是它也并非万能药，它目前只能处理UTF-8、Base64和UCS-2/UTF-16LE这3种编码。所以，通过setEncoding()的方式不可否认能解决大部分的乱码问题，但并不能从根本上解决该问题。
+这是令人开心的输出结果，说明输出不再受 Buffer 大小的影响了。那 Node 是如何实现这个输出结果的呢？
 
-### 6.3.3 正确拼接Buffer
+要知道，无论如何设置编码，触发 data 事件的次数依旧相同，这意味着设置编码并未改变按段读取的基本方式。
 
-淘汰掉setEncoding()方法后，剩下的解决方案只有将多个小Buffer对象拼接为一个Buffer对象，然后通过iconv-lite一类的模块来转码这种方式。+=的方式显然不行，那么正确的Buffer拼接方法应该如下面展示的形式：
+事实上，在调用 setEncoding()时，可读流对象在内部设置了一个 decoder 对象。每次 data 事件都通过该 decoder 对象进行 Buffer 到字符串的解码，然后传递给调用者。是故设置编码后，data 不再收到原始的 Buffer 对象。但是这依旧无法解释为何设置编码后乱码问题被解决掉了，因为在前述分析中，无论如何转码，总是存在宽字节字符串被截断的问题。
 
-正确的拼接方式是用一个数组来存储接收到的所有Buffer片段并记录下所有片段的总长度，然后调用Buffer.concat()方法生成一个合并的Buffer对象。Buffer.concat()方法封装了从小Buffer对象向大Buffer对象的复制过程，实现十分细腻，值得围观学习：
+最终乱码问题得以解决，还是在于 decoder 的神奇之处。decoder 对象来自于 string_decoder 模块 StringDecoder 的实例对象。它神奇的原理是什么，下面我们以代码来说明：
+
+```js
+var StringDecoder = require("string_decoder").StringDecoder;
+var decoder = new StringDecoder("utf8");
+var buf1 = new Buffer([ 0xe5, 0xba, 0x8a, 0xe5, 0x89, 0x8d, 0xe6, 0x98, 0x8e, 0xe6, 0x9c, ]);
+console.log(decoder.write(buf1));
+// => 床前明
+var buf2 = new Buffer([ 0x88, 0xe5, 0x85, 0x89, 0xef, 0xbc, 0x8c, 0xe7, 0x96, 0x91, 0xe6, ]);
+console.log(decoder.write(buf2));
+// => 月光，疑
+```
+
+我将前文提到的前两个 Buffer 对象写入 decoder 中。奇怪的地方在于“月”的转码并没有如平常一样在两个部分分开输出。StringDecoder 在得到编码后，知道宽字节字符串在 UTF-8 编码下是以 3 个字节的方式存储的，所以第一次 write()时，只输出前 9 个字节转码形成的字符，“月”字的前两个字节被保留在 StringDecoder 实例内部。第二次 write()时，会将这 2 个剩余字节和后续 11 个字节组合在一起，再次用 3 的整数倍字节进行转码。于是乱码问题通过这种中间形式被解决了。
+
+虽然 string_decoder 模块很奇妙，但是它也并非万能药，它目前只能处理 UTF-8、Base64 和 UCS-2/UTF-16LE 这 3 种编码。所以，通过 setEncoding()的方式不可否认能解决大部分的乱码问题，但并不能从根本上解决该问题。
+
+### 6.3.3 正确拼接 Buffer
+
+淘汰掉 setEncoding()方法后，剩下的解决方案只有将多个小 Buffer 对象拼接为一个 Buffer 对象，然后通过 iconv-lite 一类的模块来转码这种方式。+=的方式显然不行，那么正确的 Buffer 拼接方法应该如下面展示的形式：
+
+```js
+var chunks = [];
+var size = 0;
+res.on("data", function (chunk) {
+  chunks.push(chunk);
+  size += chunk.length;
+});
+res.on("end", function () {
+  var buf = Buffer.concat(chunks, size);
+  var str = iconv.decode(buf, "utf8");
+  console.log(str);
+});
+```
+
+正确的拼接方式是用一个数组来存储接收到的所有 Buffer 片段并记录下所有片段的总长度，然后调用 Buffer.concat()方法生成一个合并的 Buffer 对象。Buffer.concat()方法封装了从小 Buffer 对象向大 Buffer 对象的复制过程，实现十分细腻，值得围观学习：
+
+```js
+Buffer.concat = function (list, length) {
+  if (!Array.isArray(list)) {
+    throw new Error("Usage: Buffer.concat(list, [length])");
+  }
+  if (list.length === 0) {
+    return new Buffer(0);
+  } else if (list.length === 1) {
+    return list[0];
+  }
+  if (typeof length !== "number") {
+    length = 0;
+    for (var i = 0; i < list.length; i++) {
+      var buf = list[i];
+      length += buf.length;
+    }
+  }
+  var buffer = new Buffer(length);
+  var pos = 0;
+  for (var i = 0; i < list.length; i++) {
+    var buf = list[i];
+    buf.copy(buffer, pos);
+    pos += buf.length;
+  }
+  return buffer;
+};
+```
 
 ## 6.4 Buffer 与性能
 
-Buffer在文件I/O和网络I/O中运用广泛，尤其在网络传输中，它的性能举足轻重。在应用中，我们通常会操作字符串，但一旦在网络中传输，都需要转换为Buffer，以进行二进制数据传输。在Web应用中，字符串转换到Buffer是时时刻刻发生的，提高字符串到Buffer的转换效率，可以很大程度地提高网络吞吐率。在展开Buffer与网络传输的关系之前，我们可以先来进行一次性能测试。下面的例子中构造了一个10 KB大小的字符串。我们首先通过纯字符串的方式向客户端发送，代码如下：
+Buffer 在文件 I/O 和网络 I/O 中运用广泛，尤其在网络传输中，它的性能举足轻重。在应用中，我们通常会操作字符串，但一旦在网络中传输，都需要转换为 Buffer，以进行二进制数据传输。在 Web 应用中，字符串转换到 Buffer 是时时刻刻发生的，提高字符串到 Buffer 的转换效率，可以很大程度地提高网络吞吐率。
 
-我们通过ab进行一次性能测试，发起200个并发客户端：
+在展开 Buffer 与网络传输的关系之前，我们可以先来进行一次性能测试。下面的例子中构造了一个 10 KB 大小的字符串。我们首先通过纯字符串的方式向客户端发送，代码如下：
+
+```js
+var http = require("http");
+var helloworld = "";
+for (var i = 0; i < 1024 * 10; i++) {
+  helloworld += "a";
+}
+// helloworld = new Buffer(helloworld);
+http
+  .createServer(function (req, res) {
+    res.writeHead(200);
+    res.end(helloworld);
+  })
+  .listen(8001);
+```
+
+我们通过 ab 进行一次性能测试，发起 200 个并发客户端：
+
+```
+ab -c 200 -t 100 http://127.0.0.1:8001/
+```
 
 得到的测试结果如下所示：
 
-测试的QPS（每秒查询次数）是2527.64，传输率为每秒25370.16KB。接下来我们取消掉helloworld = new Buffer(helloworld)；前的注释，使向客户端输出的是一个Buffer对象，无须在每次响应时进行转换。再次进行性能测试的结果如下所示：
+```
+HTML transferred: 512000000 bytes
+Requests per second: 2527.64 [#/sec] (mean)
+Time per request: 79.125 [ms] (mean)
+Time per request: 0.396 [ms] (mean, across all concurrent requests)
+Transfer rate: 25370.16 [Kbytes/sec] received
+```
 
-QPS的提升到4843.28，传输率为每秒48612.56 KB，性能提高近一倍。通过预先转换静态内容为Buffer对象，可以有效地减少CPU的重复使用，节省服务器资源。在Node构建的Web应用中，可以选择将页面中的动态内容和静态内容分离，静态内容部分可以通过预先转换为Buffer的方式，使性能得到提升。由于文件自身是二进制数据，所以在不需要改变内容的场景下，尽量只读取Buffer，然后直接传输，不做额外的转换，避免损耗。
+测试的 QPS（每秒查询次数）是 2527.64，传输率为每秒 25370.16KB。
 
-●文件读取
+接下来我们取消掉 helloworld = new Buffer(helloworld)；前的注释，使向客户端输出的是一个 Buffer 对象，无须在每次响应时进行转换。再次进行性能测试的结果如下所示：
 
-Buffer的使用除了与字符串的转换有性能损耗外，在文件的读取时，有一个highWaterMark设置对性能的影响至关重要。在fs.createReadStream(path,opts)时，我们可以传入一些参数，代码如下：
+```
+Total transferred: 513900000 bytes
+HTML transferred: 512000000 bytes
+Requests per second: 4843.28 [#/sec] (mean)
+Time per request: 41.294 [ms] (mean)
+Time per request: 0.206 [ms] (mean, across all concurrent requests)
+Transfer rate: 48612.56 [Kbytes/sec] received
+```
 
-我们还可以传递start和end来指定读取文件的位置范围：
+QPS 的提升到 4843.28，传输率为每秒 48612.56 KB，性能提高近一倍。
 
-fs.createReadStream()的工作方式是在内存中准备一段Buffer，然后在fs.read()读取时逐步从磁盘中将字节复制到Buffer中。完成一次读取时，则从这个Buffer中通过slice()方法取出部分数据作为一个小Buffer对象，再通过data事件传递给调用方。如果Buffer用完，则重新分配一个；如果还有剩余，则继续使用。下面为分配一个新的Buffer对象的操作：
+通过预先转换静态内容为 Buffer 对象，可以有效地减少 CPU 的重复使用，节省服务器资源。在 Node 构建的 Web 应用中，可以选择将页面中的动态内容和静态内容分离，静态内容部分可以通过预先转换为 Buffer 的方式，使性能得到提升。由于文件自身是二进制数据，所以在不需要改变内容的场景下，尽量只读取 Buffer，然后直接传输，不做额外的转换，避免损耗。
 
-在理想的状况下，每次读取的长度就是用户指定的highWaterMark。但是有可能读到了文件结尾，或者文件本身就没有指定的highWaterMark那么大，这个预先指定的Buffer对象将会有部分剩余，不过好在这里的内存可以分配给下次读取时使用。pool是常驻内存的，只有当pool单元剩余数量小于128（kMinPoolSpace）字节时，才会重新分配一个新的Buffer对象。Node源代码中分配新的Buffer对象的判断条件如下所示：
+**文件读取**
 
-这里与Buffer的内存分配比较类似，highWaterMark的大小对性能有两个影响的点。
-- highWaterMark设置对Buffer内存的分配和使用有一定影响。
-- highWaterMark设置过小，可能导致系统调用次数过多。
+Buffer 的使用除了与字符串的转换有性能损耗外，在文件的读取时，有一个 highWaterMark 设置对性能的影响至关重要。在 fs.createReadStream(path,opts)时，我们可以传入一些参数，代码如下：
 
-文件流读取基于Buffer分配，Buffer则基于SlowBuffer分配，这可以理解为两个维度的分配策略。如果文件较小（小于8 KB），有可能造成slab未能完全使用。由于fs.createReadStream()内部采用fs.read()实现，将会引起对磁盘的系统调用，对于大文件而言，highWaterMark的大小决定会触发系统调用和data事件的次数。以下为Node自带的基准测试，在benchmark/fs/read-stream-throughput.js中可以找到：
+```js
+{
+flags: 'r',
+encoding: null,
+fd: null,
+mode: 0666,
+highWaterMark: 64 * 1024
+}
+```
+
+我们还可以传递 start 和 end 来指定读取文件的位置范围：
+
+```js
+{start: 90, end: 99}
+```
+
+fs.createReadStream()的工作方式是在内存中准备一段 Buffer，然后在 fs.read()读取时逐步从磁盘中将字节复制到 Buffer 中。完成一次读取时，则从这个 Buffer 中通过 slice()方法取出部分数据作为一个小 Buffer 对象，再通过 data 事件传递给调用方。如果 Buffer 用完，则重新分配一个；如果还有剩余，则继续使用。下面为分配一个新的 Buffer 对象的操作：
+
+```js
+var pool;
+function allocNewPool(poolSize) {
+  pool = new Buffer(poolSize);
+  pool.used = 0;
+}
+```
+
+在理想的状况下，每次读取的长度就是用户指定的 highWaterMark。但是有可能读到了文件结尾，或者文件本身就没有指定的 highWaterMark 那么大，这个预先指定的 Buffer 对象将会有部分剩余，不过好在这里的内存可以分配给下次读取时使用。pool 是常驻内存的，只有当 pool 单元剩余数量小于 128（kMinPoolSpace）字节时，才会重新分配一个新的 Buffer 对象。Node 源代码中分配新的 Buffer 对象的判断条件如下所示：
+
+```js
+if (!pool || pool.length - pool.used < kMinPoolSpace) {
+  // discard the old pool
+  pool = null;
+  allocNewPool(this._readableState.highWaterMark);
+}
+```
+
+这里与 Buffer 的内存分配比较类似，highWaterMark 的大小对性能有两个影响的点。
+
+- highWaterMark 设置对 Buffer 内存的分配和使用有一定影响。
+- highWaterMark 设置过小，可能导致系统调用次数过多。
+
+文件流读取基于 Buffer 分配，Buffer 则基于 SlowBuffer 分配，这可以理解为两个维度的分配策略。如果文件较小（小于 8 KB），有可能造成 slab 未能完全使用。
+
+由于 fs.createReadStream()内部采用 fs.read()实现，将会引起对磁盘的系统调用，对于大文件而言，highWaterMark 的大小决定会触发系统调用和 data 事件的次数。
+
+以下为 Node 自带的基准测试，在 benchmark/fs/read-stream-throughput.js 中可以找到：
+
+```js
+function runTest() {
+  assert(fs.statSync(filename).size === filesize);
+  var rs = fs.createReadStream(filename, {
+    highWaterMark: size,
+    encoding: encoding,
+  });
+  rs.on("open", function () {
+    bench.start();
+  });
+  var bytes = 0;
+  rs.on("data", function (chunk) {
+    bytes += chunk.length;
+  });
+  rs.on("end", function () {
+    try {
+      fs.unlinkSync(filename);
+    } catch (e) {}
+    // MB/sec
+    bench.end(bytes / (1024 * 1024));
+  });
+}
+```
 
 下面为某次执行的结果：
 
-从上面的执行结果我们可以看到，读取一个相同的大文件时，highWaterMark值的大小与读取速度的关系：该值越大，读取速度越快。
+```
+fs/read-stream-throughput.js type=buf size=1024: 46.284
+fs/read-stream-throughput.js type=buf size=4096: 139.62
+fs/read-stream-throughput.js type=buf size=65535: 681.88
+fs/read-stream-throughput.js type=buf size=1048576: 857.98
+```
+
+从上面的执行结果我们可以看到，读取一个相同的大文件时，highWaterMark 值的大小与读取速度的关系：该值越大，读取速度越快。
 
 ## 6.5 总结
 
-体验过JavaScript友好的字符串操作后，有些开发者可能会形成思维定势，将Buffer当做字符串来理解。但字符串与Buffer之间有实质上的差异，即Buffer是二进制数据，字符串与Buffer之间存在编码关系。因此，理解Buffer的诸多细节十分必要，对于如何高效处理二进制数据十分有用。
+体验过 JavaScript 友好的字符串操作后，有些开发者可能会形成思维定势，将 Buffer 当做字符串来理解。但字符串与 Buffer 之间有实质上的差异，即 Buffer 是二进制数据，字符串与 Buffer 之间存在编码关系。因此，理解 Buffer 的诸多细节十分必要，对于如何高效处理二进制数据十分有用。
 
 ## 6.6 参考资源
 
@@ -5852,15 +6219,15 @@ HTTP_Parser会将所有的报文字段解析到req.headers上，那么Cookie就�
 
 由于Cookie的实现机制，一旦服务器端向客户端发送了设置Cookie的意图，除非Cookie过期，否则客户端每次请求都会发送这些Cookie到服务器端，一旦设置的Cookie过多，将会导致报头较大。大多数的Cookie并不需要每次都用上，因为这会造成带宽的部分浪费。在YSlow的性能优化规则中有这么一条：
 
-●减小Cookie的大小
+**减小Cookie的大小**
 
 更严重的情况是，如果在域名的根节点设置Cookie，几乎所有子路径下的请求都会带上这些Cookie，这些Cookie在某些情况下是有用的，但是在有些情况下是完全无用的。其中以静态文件最为典型，静态文件的业务定位几乎不关心状态，Cookie对它而言几乎是无用的，但是一旦有Cookie设置到相同域下，它的请求中就会带上Cookie。好在Cookie在设计时限定了它的域，只有域名相同时才会发送。所以YSlow中有另外一条规则用来避免Cookie带来的性能影响。
 
-●为静态组件使用不同的域名
+**为静态组件使用不同的域名**
 
 简而言之就是，为不需要Cookie的组件换个域名可以实现减少无效Cookie的传输。所以很多网站的静态文件会有特别的域名，使得业务相关的Cookie不再影响静态资源。当然换用额外的域名带来的好处不只这点，还可以突破浏览器下载线程数量的限制，因为域名不同，可以将下载线程数翻倍。但是换用额外域名还是有一定的缺点的，那就是将域名转换为IP需要进行DNS查询，多一个域名就多一次DNS查询。YSlow中有这样一条规则：
 
-●减少DNS查询
+**减少DNS查询**
 
 看起来减少DNS查询和使用不同的域名是冲突的两条规则，但是好在现今的浏览器都会进行DNS缓存，以削弱这个副作用的影响。Cookie除了可以通过后端添加协议头的字段设置外，在前端浏览器中也可以通过JavaScript进行修改，浏览器将Cookie通过document.cookie暴露给了JavaScript。前端在修改Cookie之后，后续的网络请求中就会携带上修改过后的值。目前，广告和在线统计领域是最为依赖Cookie的，通过嵌入第三方的广告或者统计脚本，将Cookie和当前页面绑定，这样就可以标识用户，得到用户的浏览行为，广告商就可以定向投放广告了。尽管这样的行为看起来很可怕，但是从Cookie的原理来说，它只能做到标识，而不能做任何具有破坏性的事情。如果依然担心自己站点的用户被记录下行为，那就不要挂任何第三方的脚本。
 
@@ -5868,7 +6235,7 @@ HTTP_Parser会将所有的报文字段解析到req.headers上，那么Cookie就�
 
 通过Cookie，浏览器和服务器可以实现状态的记录。但是Cookie并非是完美的，前文提及的体积过大就是一个显著的问题，最为严重的问题是Cookie可以在前后端进行修改，因此数据就极容易被篹改和伪造。如果服务器端有部分逻辑是根据Cookie中的isVIP字段进行判断，那么一个普通用户通过修改Cookie就可以轻松享受到VIP服务了。综上所述，Cookie对于敏感数据的保护是无效的。为了解决Cookie敏感数据的问题，Session应运而生。Session的数据只保留在服务器端，客户端无法修改，这样数据的安全性得到一定的保障，数据也无须在协议中每次都被传递。虽然在服务器端存储数据十分方便，但是如何将每个客户和服务器中的数据一一对应起来，这里有常见的两种实现方式。
 
-●第一种：基于Cookie来实现用户和数据的映射
+**第一种：基于Cookie来实现用户和数据的映射**
 
 虽然将所有数据都放在Cookie中不可取，但是将口令放在Cookie中还是可以的。因为口令一旦被篹改，就丢失了映射关系，也无法修改服务器端存在的数据了。并且Session的有效期通常较短，普遍的设置是20分钟，如果在20分钟内客户端和服务器端没有交互产生，服务器端就将数据删除。由于数据过期时间较短，且在服务器端存储数据，因此安全性相对较高。那么口令是如何产生的呢？一旦服务器端启用了Session，它将约定一个键值作为Session的口令，这个值可以随意约定，比如Connect默认采用connect_uid, Tomcat会采用jsessionid等。一旦服务器检查到用户请求Cookie中没有携带该值，它就会为之生成一个值，这个值是唯一且不重复的值，并设定超时时间。以下为生成session的代码：
 
@@ -5880,7 +6247,7 @@ HTTP_Parser会将所有的报文字段解析到req.headers上，那么Cookie就�
 
 这样在session中保存的数据比直接在Cookie中保存数据要安全得多。这种实现方案依赖Cookie实现，而且也是目前大多数Web应用的方案。如果客户端禁止使用Cookie，这个世界上大多数的网站将无法实现登录等操作。
 
-●第二种：通过查询字符串来实现
+**第二种：通过查询字符串来实现**
 
 浏览器端和服务器端数据的对应它的原理是检查请求的查询字符串，如果没有值，会先生成新的带值的URL，如下所示：
 
@@ -5913,7 +6280,7 @@ HTTP_Parser会将所有的报文字段解析到req.headers上，那么Cookie就�
 
 这样一来，即使攻击者知道口令中．号前的值是服务器端Session的ID值，只要不知道secret私钥的值，就无法伪造签名信息，以此实现对Session的保护。该方法被Connect中间件框架所使用，保护好私钥，就是在保障自己Web应用的安全。当然，将口令进行签名是一个很好的解决方案，但是如果攻击者通过某种方式获取了一个真实的口令和签名，他就能实现身份的伪装。一种方案是将客户端的某些独有信息与口令作为原值，然后签名，这样攻击者一旦不在原始的客户端上进行访问，就会导致签名失败。这些独有信息包括用户IP和用户代理（User Agent）。但是原始用户与攻击者之间也存在上述信息相同的可能性，如局域网出口IP相同，相同的客户端信息等，不过纳入这些考虑能够提高安全性。通常而言，将口令存在Cookie中不容易被他人获取，但是一些别的漏洞可能导致这个口令被泄漏，典型的有XSS漏洞，下面简单介绍一下如何通过XSS拿到用户的口令，实现伪造。
 
-●XSS漏洞
+**XSS漏洞**
 
 XSS的全称是跨站脚本攻击（Cross Site Scripting，通常简称为XSS），通常都是由网站开发者决定哪些脚本可以执行在浏览器端，不过XSS漏洞会让别的脚本执行。它的主要形成原因多数是用户的输入没有被转义，而被直接执行。
 
@@ -5956,7 +6323,7 @@ Expires是一个GMT格式的时间字符串。浏览器在接到这个过期值�
 
 上面的代码为Cache-Control设置了max-age值，它比Expires优秀的地方在于，Cache-Control能够避免浏览器端与服务器端时间不同步带来的不一致性问题，只要进行类似倒计时的方式计算过期时间即可。除此之外，Cache-Control的值还能设置public、private、no-cache、no-store等能够更精细地控制缓存的选项。由于在HTTP1.0时还不支持max-age，如今的服务器端在模块的支持下多半同时对Expires和Cache-Control进行支持。在浏览器中如果两个值同时存在，且被同时支持时，max-age会覆盖Expires。
 
-●清除缓存
+**清除缓存**
 
 虽然我们知晓了如何设置缓存，以达到节省网络带宽的目的，但是缓存一旦设定，当服务器端意外更新内容时，却无法通知客户端更新。这使得我们在使用缓存时也要为其设定版本号，所幸浏览器是根据URL进行缓存，那么一旦内容有所更新时，我们就让浏览器发起新的URL请求，使得新内容能够被客户端更新。一般的更新机制有如下两种。
 - 每次发布，路径中跟随Web应用的版本号：http://url.com/?v=20130501。
@@ -6092,7 +6459,7 @@ _csrf字段也可以存在于查询字符串或者请求头中。
 
 手工映射十分方便，由于它对URL十分灵活，所以我们可以将两个路径都映射到相同的业务逻辑，如下所示：
 
-●正则匹配
+**正则匹配**
 
 对于简单的路径，采用上述的硬匹配方式即可，但是如下的路径请求就完全无法满足需求了：
 
@@ -6108,7 +6475,7 @@ _csrf字段也可以存在于查询字符串或者请求头中。
 
 现在我们的路由功能就能够实现正则匹配了，无须再为大量的用户进行手工路由映射了。
 
-●参数解析
+**参数解析**
 
 尽管完成了正则匹配，可以实现相似URL的匹配，但是：username到底匹配了啥，还没有解决。为此我们还需要进一步将匹配到的内容抽取出来，希望在业务中能如下这样调用：
 
@@ -6144,7 +6511,7 @@ MVC模式大行其道了很多年，直到RESTful的流行，大家才意识到U
 
 具体格式，我们称之为具体的表现。所以REST的设计就是，通过URL设计资源、请求方法定义资源的操作，通过Accept决定资源的表现形式。RESTful与MVC设计并不冲突，而且是更好的改进。相比MVC, RESTful只是将HTTP请求方法也加入了路由的过程，以及在URL路径上体现得更资源化。
 
-●请求方法
+**请求方法**
 
 为了让Node能够支持RESTful需求，我们改进了我们的设计。如果use是对所有请求方法的处理，那么在RESTful的场景下，我们需要区分请求方法设计。示例如下所示：
 
