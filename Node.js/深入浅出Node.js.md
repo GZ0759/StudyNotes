@@ -4299,7 +4299,7 @@ V8 堆内存的最大保留空间可以从下面的代码中看出来，其公�
 // we reserve twice the amount needed for those in order to ensure
 // that new space can be aligned to its size
 intptr_t MaxReserved() {
-return 4 * reserved_semispace_size_ + max_old_generation_size_;
+  return 4 * reserved_semispace_size_ + max_old_generation_size_;
 }
 ```
 
@@ -5224,7 +5224,7 @@ Buffer 是一个典型的 JavaScript 与 C++结合的模块，它将性能相关
 
 第 5 章揭示了 Buffer 所占用的内存不是通过 V8 分配的，属于堆外内存。由于 V8 垃圾回收性能的影响，将常用的操作对象用更高效和专有的内存分配回收策略来管理是个不错的思路。
 
-由于 Buffer 太过常见，Node 在进程启动时就已经加载了它，并将其放在全局对象（global）上。所以在使用 Buffer 时，无须通过 require()即可直接使用。
+由于 Buffer 太过常见，Node 在进程启动时就已经加载了它，并将其放在全局对象（global）上。所以在使用 Buffer 时，无须通过 `require()`即可直接使用。
 
 ### 6.1.2 Buffer 对象
 
@@ -5276,7 +5276,7 @@ console.log(buf[22]); // 3
 
 Buffer 对象的内存分配不是在 V8 的堆内存中，而是在 Node 的 C++层面实现内存的申请的。因为处理大量的字节数据不能采用需要一点内存就向操作系统申请一点内存的方式，这可能造成大量的内存申请的系统调用，对操作系统有一定压力。为此 Node 在内存的使用上应用的是在 C++层面申请内存、在 JavaScript 中分配内存的策略。
 
-为了高效地使用申请来的内存，Node 采用了 slab 分配机制。slab 是一种动态内存管理机制，最早诞生于 SunOS 操作系统（Solaris）中，目前在一些\*nix 操作系统中有广泛的应用，如 FreeBSD 和 Linux。
+为了高效地使用申请来的内存，Node 采用了 slab 分配机制。slab 是一种动态内存管理机制，最早诞生于 SunOS 操作系统（Solaris）中，目前在一些`*nix` 操作系统中有广泛的应用，如 FreeBSD 和 Linux。
 
 简单而言，slab 就是一块申请好的固定大小的内存区域。slab 具有如下 3 种状态。
 
@@ -5401,7 +5401,7 @@ new Buffer(str, [encoding]);
 
 通过构造函数转换的 Buffer 对象，存储的只能是一种编码类型。encoding 参数不传递时，默认按 UTF-8 编码进行转码和存储。
 
-一个 Buffer 对象可以存储不同编码类型的字符串转码的值，调用 write()方法可以实现该目的，代码如下：
+一个 Buffer 对象可以存储不同编码类型的字符串转码的值，调用 `write()`方法可以实现该目的，代码如下：
 
 ```js
 buf.write(string, [offset], [length], [encoding]);
@@ -5411,7 +5411,7 @@ buf.write(string, [offset], [length], [encoding]);
 
 ### 6.2.2 Buffer 转字符串
 
-实现 Buffer 向字符串的转换也十分简单，Buffer 对象的 toString()可以将 Buffer 对象转换为字符串，代码如下：
+实现 Buffer 向字符串的转换也十分简单，Buffer 对象的 `toString()`可以将 Buffer 对象转换为字符串，代码如下：
 
 ```js
 buf.toString([encoding], [start], [end]);
@@ -5421,7 +5421,7 @@ buf.toString([encoding], [start], [end]);
 
 ### 6.2.3 Buffer 不支持的编码类型
 
-目前比较遗憾的是，Node 的 Buffer 对象支持的编码类型有限，只有少数的几种编码类型可以在字符串和 Buffer 之间转换。为此，Buffer 提供了一个 isEncoding()函数来判断编码是否支持转换：
+目前比较遗憾的是，Node 的 Buffer 对象支持的编码类型有限，只有少数的几种编码类型可以在字符串和 Buffer 之间转换。为此，Buffer 提供了一个 `isEncoding()`函数来判断编码是否支持转换：
 
 ```js
 Buffer.isEncoding(encoding);
@@ -5480,13 +5480,13 @@ rs.on("end", function () {
 data += chunk;
 ```
 
-这句代码里隐藏了 toString()操作，它等价于如下的代码：
+这句代码里隐藏了 `toString()`操作，它等价于如下的代码：
 
 ```js
 data = data.toString() + chunk.toString();
 ```
 
-值得注意的是，外国人的语境通常是指英文环境，在他们的场景下，这个 toString()不会造成任何问题。但对于宽字节的中文，却会形成问题。为了重现这个问题，下面我们模拟近似的场景，将文件可读流的每次读取的 Buffer 长度限制为 11，代码如下：
+值得注意的是，外国人的语境通常是指英文环境，在他们的场景下，这个 `toString()`不会造成任何问题。但对于宽字节的中文，却会形成问题。为了重现这个问题，下面我们模拟近似的场景，将文件可读流的每次读取的 Buffer 长度限制为 11，代码如下：
 
 ```js
 var rs = fs.createReadStream("test.md", { highWaterMark: 11 });
@@ -5511,19 +5511,19 @@ var rs = fs.createReadStream("test.md", { highWaterMark: 11 });
 ...
 ```
 
-上文提到的 buf.toString()方法默认以 UTF-8 为编码，中文字在 UTF-8 下占 3 个字节。所以第一个 Buffer 对象在输出时，只能显示 3 个字符，Buffer 中剩下的 2 个字节（e6 9c）将会以乱码的形式显示。第二个 Buffer 对象的第一个字节也不能形成文字，只能显示乱码。于是形成一些文字无法正常显示的问题。
+上文提到的 `buf.toString()`方法默认以 UTF-8 为编码，中文字在 UTF-8 下占 3 个字节。所以第一个 Buffer 对象在输出时，只能显示 3 个字符，Buffer 中剩下的 2 个字节（e6 9c）将会以乱码的形式显示。第二个 Buffer 对象的第一个字节也不能形成文字，只能显示乱码。于是形成一些文字无法正常显示的问题。
 
 在这个示例中我们构造了 11 这个限制，但是对于任意长度的 Buffer 而言，宽字节字符串都有可能存在被截断的情况，只不过 Buffer 的长度越大出现的概率越低而已，但该问题依然不可忽视。
 
 ### 6.3.2 setEncoding()与 string_decoder()
 
-在看过上述的示例后，也许我们忘记了可读流还有一个设置编码的方法 setEncoding()，示例如下：
+在看过上述的示例后，也许我们忘记了可读流还有一个设置编码的方法 `setEncoding()`，示例如下：
 
 ```js
 readable.setEncoding(encoding);
 ```
 
-该方法的作用是让 data 事件中传递的不再是一个 Buffer 对象，而是编码后的字符串。为此，我们继续改进前面诗歌的程序，添加 setEncoding()的步骤如下：
+该方法的作用是让 data 事件中传递的不再是一个 Buffer 对象，而是编码后的字符串。为此，我们继续改进前面诗歌的程序，添加 `setEncoding()`的步骤如下：
 
 ```js
 var rs = fs.createReadStream("test.md", { highWaterMark: 11 });
@@ -5540,7 +5540,7 @@ rs.setEncoding("utf8");
 
 要知道，无论如何设置编码，触发 data 事件的次数依旧相同，这意味着设置编码并未改变按段读取的基本方式。
 
-事实上，在调用 setEncoding()时，可读流对象在内部设置了一个 decoder 对象。每次 data 事件都通过该 decoder 对象进行 Buffer 到字符串的解码，然后传递给调用者。是故设置编码后，data 不再收到原始的 Buffer 对象。但是这依旧无法解释为何设置编码后乱码问题被解决掉了，因为在前述分析中，无论如何转码，总是存在宽字节字符串被截断的问题。
+事实上，在调用 `setEncoding()`时，可读流对象在内部设置了一个 decoder 对象。每次 data 事件都通过该 decoder 对象进行 Buffer 到字符串的解码，然后传递给调用者。是故设置编码后，data 不再收到原始的 Buffer 对象。但是这依旧无法解释为何设置编码后乱码问题被解决掉了，因为在前述分析中，无论如何转码，总是存在宽字节字符串被截断的问题。
 
 最终乱码问题得以解决，还是在于 decoder 的神奇之处。decoder 对象来自于 string_decoder 模块 StringDecoder 的实例对象。它神奇的原理是什么，下面我们以代码来说明：
 
@@ -5557,11 +5557,11 @@ console.log(decoder.write(buf2));
 
 我将前文提到的前两个 Buffer 对象写入 decoder 中。奇怪的地方在于“月”的转码并没有如平常一样在两个部分分开输出。StringDecoder 在得到编码后，知道宽字节字符串在 UTF-8 编码下是以 3 个字节的方式存储的，所以第一次 write()时，只输出前 9 个字节转码形成的字符，“月”字的前两个字节被保留在 StringDecoder 实例内部。第二次 write()时，会将这 2 个剩余字节和后续 11 个字节组合在一起，再次用 3 的整数倍字节进行转码。于是乱码问题通过这种中间形式被解决了。
 
-虽然 string_decoder 模块很奇妙，但是它也并非万能药，它目前只能处理 UTF-8、Base64 和 UCS-2/UTF-16LE 这 3 种编码。所以，通过 setEncoding()的方式不可否认能解决大部分的乱码问题，但并不能从根本上解决该问题。
+虽然 string_decoder 模块很奇妙，但是它也并非万能药，它目前只能处理 UTF-8、Base64 和 UCS-2/UTF-16LE 这 3 种编码。所以，通过 `setEncoding()`的方式不可否认能解决大部分的乱码问题，但并不能从根本上解决该问题。
 
 ### 6.3.3 正确拼接 Buffer
 
-淘汰掉 setEncoding()方法后，剩下的解决方案只有将多个小 Buffer 对象拼接为一个 Buffer 对象，然后通过 iconv-lite 一类的模块来转码这种方式。+=的方式显然不行，那么正确的 Buffer 拼接方法应该如下面展示的形式：
+淘汰掉 `setEncoding()`方法后，剩下的解决方案只有将多个小 Buffer 对象拼接为一个 Buffer 对象，然后通过 iconv-lite 一类的模块来转码这种方式。+=的方式显然不行，那么正确的 Buffer 拼接方法应该如下面展示的形式：
 
 ```js
 var chunks = [];
