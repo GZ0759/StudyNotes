@@ -5555,13 +5555,13 @@ console.log(decoder.write(buf2));
 // => 月光，疑
 ```
 
-我将前文提到的前两个 Buffer 对象写入 decoder 中。奇怪的地方在于“月”的转码并没有如平常一样在两个部分分开输出。StringDecoder 在得到编码后，知道宽字节字符串在 UTF-8 编码下是以 3 个字节的方式存储的，所以第一次 write()时，只输出前 9 个字节转码形成的字符，“月”字的前两个字节被保留在 StringDecoder 实例内部。第二次 write()时，会将这 2 个剩余字节和后续 11 个字节组合在一起，再次用 3 的整数倍字节进行转码。于是乱码问题通过这种中间形式被解决了。
+我将前文提到的前两个 Buffer 对象写入 decoder 中。奇怪的地方在于“月”的转码并没有如平常一样在两个部分分开输出。StringDecoder 在得到编码后，知道宽字节字符串在 UTF-8 编码下是以 3 个字节的方式存储的，所以第一次 `write()`时，只输出前 9 个字节转码形成的字符，“月”字的前两个字节被保留在 StringDecoder 实例内部。第二次 `write()`时，会将这 2 个剩余字节和后续 11 个字节组合在一起，再次用 3 的整数倍字节进行转码。于是乱码问题通过这种中间形式被解决了。
 
 虽然 string_decoder 模块很奇妙，但是它也并非万能药，它目前只能处理 UTF-8、Base64 和 UCS-2/UTF-16LE 这 3 种编码。所以，通过 `setEncoding()`的方式不可否认能解决大部分的乱码问题，但并不能从根本上解决该问题。
 
 ### 6.3.3 正确拼接 Buffer
 
-淘汰掉 `setEncoding()`方法后，剩下的解决方案只有将多个小 Buffer 对象拼接为一个 Buffer 对象，然后通过 iconv-lite 一类的模块来转码这种方式。+=的方式显然不行，那么正确的 Buffer 拼接方法应该如下面展示的形式：
+淘汰掉 `setEncoding()`方法后，剩下的解决方案只有将多个小 Buffer 对象拼接为一个 Buffer 对象，然后通过 iconv-lite 一类的模块来转码这种方式。`+=`的方式显然不行，那么正确的 Buffer 拼接方法应该如下面展示的形式：
 
 ```js
 var chunks = [];
@@ -5577,7 +5577,7 @@ res.on("end", function () {
 });
 ```
 
-正确的拼接方式是用一个数组来存储接收到的所有 Buffer 片段并记录下所有片段的总长度，然后调用 Buffer.concat()方法生成一个合并的 Buffer 对象。Buffer.concat()方法封装了从小 Buffer 对象向大 Buffer 对象的复制过程，实现十分细腻，值得围观学习：
+正确的拼接方式是用一个数组来存储接收到的所有 Buffer 片段并记录下所有片段的总长度，然后调用 `Buffer.concat()`方法生成一个合并的 Buffer 对象。`Buffer.concat()`方法封装了从小 Buffer 对象向大 Buffer 对象的复制过程，实现十分细腻，值得围观学习：
 
 ```js
 Buffer.concat = function (list, length) {
@@ -5646,7 +5646,7 @@ Transfer rate: 25370.16 [Kbytes/sec] received
 
 测试的 QPS（每秒查询次数）是 2527.64，传输率为每秒 25370.16KB。
 
-接下来我们取消掉 helloworld = new Buffer(helloworld)；前的注释，使向客户端输出的是一个 Buffer 对象，无须在每次响应时进行转换。再次进行性能测试的结果如下所示：
+接下来我们取消掉 `helloworld = new Buffer(helloworld);`前的注释，使向客户端输出的是一个 Buffer 对象，无须在每次响应时进行转换。再次进行性能测试的结果如下所示：
 
 ```
 Total transferred: 513900000 bytes
@@ -5663,15 +5663,15 @@ QPS 的提升到 4843.28，传输率为每秒 48612.56 KB，性能提高近一�
 
 **文件读取**
 
-Buffer 的使用除了与字符串的转换有性能损耗外，在文件的读取时，有一个 highWaterMark 设置对性能的影响至关重要。在 fs.createReadStream(path,opts)时，我们可以传入一些参数，代码如下：
+Buffer 的使用除了与字符串的转换有性能损耗外，在文件的读取时，有一个 highWaterMark 设置对性能的影响至关重要。在 `fs.createReadStream(path,opts)`时，我们可以传入一些参数，代码如下：
 
 ```js
 {
-flags: 'r',
-encoding: null,
-fd: null,
-mode: 0666,
-highWaterMark: 64 * 1024
+  flags: 'r',
+  encoding: null,
+  fd: null,
+  mode: 0666,
+  highWaterMark: 64 * 1024
 }
 ```
 
@@ -5681,7 +5681,7 @@ highWaterMark: 64 * 1024
 {start: 90, end: 99}
 ```
 
-fs.createReadStream()的工作方式是在内存中准备一段 Buffer，然后在 fs.read()读取时逐步从磁盘中将字节复制到 Buffer 中。完成一次读取时，则从这个 Buffer 中通过 slice()方法取出部分数据作为一个小 Buffer 对象，再通过 data 事件传递给调用方。如果 Buffer 用完，则重新分配一个；如果还有剩余，则继续使用。下面为分配一个新的 Buffer 对象的操作：
+`fs.createReadStream()`的工作方式是在内存中准备一段 Buffer，然后在 `fs.read()`读取时逐步从磁盘中将字节复制到 Buffer 中。完成一次读取时，则从这个 Buffer 中通过 `slice()`方法取出部分数据作为一个小 Buffer 对象，再通过 data 事件传递给调用方。如果 Buffer 用完，则重新分配一个；如果还有剩余，则继续使用。下面为分配一个新的 Buffer 对象的操作：
 
 ```js
 var pool;
@@ -5708,7 +5708,7 @@ if (!pool || pool.length - pool.used < kMinPoolSpace) {
 
 文件流读取基于 Buffer 分配，Buffer 则基于 SlowBuffer 分配，这可以理解为两个维度的分配策略。如果文件较小（小于 8 KB），有可能造成 slab 未能完全使用。
 
-由于 fs.createReadStream()内部采用 fs.read()实现，将会引起对磁盘的系统调用，对于大文件而言，highWaterMark 的大小决定会触发系统调用和 data 事件的次数。
+由于 `fs.createReadStream()`内部采用 `fs.read()`实现，将会引起对磁盘的系统调用，对于大文件而言，highWaterMark 的大小决定会触发系统调用和 data 事件的次数。
 
 以下为 Node 自带的基准测试，在 benchmark/fs/read-stream-throughput.js 中可以找到：
 
@@ -5793,23 +5793,23 @@ TCP 是面向连接的协议，其显著的特征是在传输之前需要 3 次�
 在基本了解 TCP 的工作原理之后，我们可以开始创建一个 TCP 服务器端来接受网络请求，代码如下：
 
 ```js
-var net = require('net');
+var net = require("net");
 var server = net.createServer(function (socket) {
-// 新的连接
-socket.on('data', function (data) {
-socket.write("ే;") ࡻ
-});
-socket.on('end', function () {
-console.log('૶接܏开');
-});
-socket.write("࣌ᆓ࠼ଣĖ深入浅出Node.jsė๖૩： \n");
+  // 新的连接
+  socket.on("data", function (data) {
+    socket.write("你好");
+  });
+  socket.on("end", function () {
+    console.log("连接断开");
+  });
+  socket.write("欢迎光临深入浅出Node.js示例： \n");
 });
 server.listen(8124, function () {
-console.log('server bound');
+  console.log("server bound");
 });
 ```
 
-我们通过 net.createServer(listener)即可创建一个 TCP 服务器，listener 是连接事件 connection 的侦听器，也可以采用如下的方式进行侦听：
+我们通过 `net.createServer(listener)`即可创建一个 TCP 服务器，listener 是连接事件 connection 的侦听器，也可以采用如下的方式进行侦听：
 
 ```js
 var server = net.createServer();
@@ -5887,26 +5887,26 @@ var client = net.connect({ path: "/tmp/echo.sock" });
 
 1. 服务器事件
 
-对于通过 net.createServer()创建的服务器而言，它是一个 EventEmitter 实例，它的自定义事件有如下几种。
+对于通过 `net.createServer()`创建的服务器而言，它是一个 EventEmitter 实例，它的自定义事件有如下几种。
 
-- listening：在调用 server.listen()绑定端口或者 Domain Socket 后触发，简洁写法为 server.listen(port, listeningListener)，通过 listen()方法的第二个参数传入。
-- connection：每个客户端套接字连接到服务器端时触发，简洁写法为通过 net.create-Server()，最后一个参数传递。
-- close：当服务器关闭时触发，在调用 server.close()后，服务器将停止接受新的套接字连接，但保持当前存在的连接，等待所有连接都断开后，会触发该事件。
+- listening：在调用 `server.listen()`绑定端口或者 Domain Socket 后触发，简洁写法为 `server.listen(port, listeningListener)`，通过 `listen()`方法的第二个参数传入。
+- connection：每个客户端套接字连接到服务器端时触发，简洁写法为通过 `net.create-Server()`，最后一个参数传递。
+- close：当服务器关闭时触发，在调用 `server.close()`后，服务器将停止接受新的套接字连接，但保持当前存在的连接，等待所有连接都断开后，会触发该事件。
 - error：当服务器发生异常时，将会触发该事件。比如侦听一个使用中的端口，将会触发一个异常，如果不侦听 error 事件，服务器将会抛出异常。
 
 2. 连接事件
 
-服务器可以同时与多个客户端保持连接，对于每个连接而言是典型的可写可读 Stream 对象。Stream 对象可以用于服务器端和客户端之间的通信，既可以通过 data 事件从一端读取另一端发来的数据，也可以通过 write()方法从一端向另一端发送数据。它具有如下自定义事件。
+服务器可以同时与多个客户端保持连接，对于每个连接而言是典型的可写可读 Stream 对象。Stream 对象可以用于服务器端和客户端之间的通信，既可以通过 data 事件从一端读取另一端发来的数据，也可以通过 `write()`方法从一端向另一端发送数据。它具有如下自定义事件。
 
-- data：当一端调用 write()发送数据时，另一端会触发 data 事件，事件传递的数据即是 write()发送的数据。
+- data：当一端调用 `write()`发送数据时，另一端会触发 data 事件，事件传递的数据即是 `write()`发送的数据。
 - end：当连接中的任意一端发送了 FIN 数据时，将会触发该事件。
 - connect：该事件用于客户端，当套接字与服务器端连接成功时会被触发。
-- drain：当任意一端调用 write()发送数据时，当前这端会触发该事件。
+- drain：当任意一端调用 `write()`发送数据时，当前这端会触发该事件。
 - error：当异常发生时，触发该事件。
 - close：当套接字完全关闭时，触发该事件。
 - timeout：当一定时间后连接不再活跃时，该事件将会被触发，通知用户当前该连接已经被闲置了。
 
-另外，由于 TCP 套接字是可写可读的 Stream 对象，可以利用 pipe()方法巧妙地实现管道操作，如下代码实现了一个 echo 服务器：
+另外，由于 TCP 套接字是可写可读的 Stream 对象，可以利用 `pipe()`方法巧妙地实现管道操作，如下代码实现了一个 echo 服务器：
 
 ```js
 var net = require("net");
@@ -5919,9 +5919,9 @@ server.listen(1337, "127.0.0.1");
 
 值得注意的是，TCP 针对网络中的小数据包有一定的优化策略：Nagle 算法。如果每次只发送一个字节的内容而不优化，网络中将充满只有极少数有效数据的数据包，将十分浪费网络资源。Nagle 算法针对这种情况，要求缓冲区的数据达到一定数量或者一定时间后才将其发出，所以小数据包将会被 Nagle 算法合并，以此来优化网络。这种优化虽然使网络带宽被有效地使用，但是数据有可能被延迟发送。
 
-在 Node 中，由于 TCP 默认启用了 Nagle 算法，可以调用 socket.setNoDelay(true)去掉 Nagle 算法，使得 write()可以立即发送数据到网络中。
+在 Node 中，由于 TCP 默认启用了 Nagle 算法，可以调用 `socket.setNoDelay(true)`去掉 Nagle 算法，使得 `write()`可以立即发送数据到网络中。
 
-另一个需要注意的是，尽管在网络的一端调用 write()会触发另一端的 data 事件，但是并不意味着每次 write()都会触发一次 data 事件，在关闭掉 Nagle 算法后，另一端可能会将接收到的多个小数据包合并，然后只触发一次 data 事件。
+另一个需要注意的是，尽管在网络的一端调用 `write()`会触发另一端的 data 事件，但是并不意味着每次 `write()`都会触发一次 data 事件，在关闭掉 Nagle 算法后，另一端可能会将接收到的多个小数据包合并，然后只触发一次 data 事件。
 
 ## 7.2 构建 UDP 服务
 
@@ -5938,7 +5938,7 @@ var socket = dgram.createSocket("udp4");
 
 ### 7.2.2 创建 UDP 服务器端
 
-若想让 UDP 套接字接收网络消息，只要调用 dgram.bind(port, [address])方法对网卡和端口进行绑定即可。以下为一个完整的服务器端示例：
+若想让 UDP 套接字接收网络消息，只要调用 `dgram.bind(port, [address])`方法对网卡和端口进行绑定即可。以下为一个完整的服务器端示例：
 
 ```js
 var dgram = require("dgram");
@@ -5981,13 +5981,13 @@ server listening 0.0.0.0:41234
 server got: 深入浅出Node.js from 127.0.0.1:58682
 ```
 
-当套接字对象用在客户端时，可以调用 send()方法发送消息到网络中。send()方法的参数如下：
+当套接字对象用在客户端时，可以调用 `send()`方法发送消息到网络中。`send()`方法的参数如下：
 
 ```js
 socket.send(buf, offset, length, port, address, [callback]);
 ```
 
-这些参数分别为要发送的 Buffer、Buffer 的偏移、Buffer 的长度、目标端口、目标地址、发送完成后的回调。与 TCP 套接字的 write()相比，send()方法的参数列表相对复杂，但是它更灵活的地方在于可以随意发送数据到网络中的服务器端，而 TCP 如果要发送数据给另一个服务器端，则需要重新通过套接字构造新的连接。
+这些参数分别为要发送的 Buffer、Buffer 的偏移、Buffer 的长度、目标端口、目标地址、发送完成后的回调。与 TCP 套接字的 `write()`相比，`send()`方法的参数列表相对复杂，但是它更灵活的地方在于可以随意发送数据到网络中的服务器端，而 TCP 如果要发送数据给另一个服务器端，则需要重新通过套接字构造新的连接。
 
 ### 7.2.4 UDP 套接字
 
@@ -6185,7 +6185,7 @@ res.writeHead(200, { "Content-Type": "text/plain" });
 <
 ```
 
-报文体部分则是调用 res.write()和 res.end()方法实现，后者与前者的差别在于 res.end()会先调用 write()发送数据，然后发送信号告知服务器这次响应结束，响应结果如下所示：
+报文体部分则是调用 res.`write()`和 `res.end()`方法实现，后者与前者的差别在于 `res.end()`会先调用 `write()`发送数据，然后发送信号告知服务器这次响应结束，响应结果如下所示：
 
 ```
 Hello World
@@ -6193,14 +6193,14 @@ Hello World
 
 响应结束后，HTTP 服务器可能会将当前的连接用于下一个请求，或者关闭连接。值得注意的是，报头是在报文体发送前发送的，一旦开始了数据的发送，writeHead()和 setHeader()将不再生效。这由协议的特性决定。
 
-另外，无论服务器端在处理业务逻辑时是否发生异常，务必在结束时调用 res.end()结束请求，否则客户端将一直处于等待的状态。当然，也可以通过延迟 res.end()的方式实现客户端与服务器端之间的长连接，但结束时务必关闭连接。
+另外，无论服务器端在处理业务逻辑时是否发生异常，务必在结束时调用 `res.end()`结束请求，否则客户端将一直处于等待的状态。当然，也可以通过延迟 `res.end()`的方式实现客户端与服务器端之间的长连接，但结束时务必关闭连接。
 
 3. HTTP 服务的事件
 
 如同 TCP 服务一样，HTTP 服务器也抽象了一些事件，以供应用层使用，同样典型的是，服务器也是一个 EventEmitter 实例。
 
 - connection 事件：在开始 HTTP 请求和响应前，客户端与服务器端需要建立底层的 TCP 连接，这个连接可能因为开启了 keep-alive，可以在多次请求响应之间使用；当这个连接建立时，服务器触发一次 connection 事件。
-- request 事件：建立 TCP 连接后，http 模块底层将在数据流中抽象出 HTTP 请求和 HTTP 响应，当请求数据发送到服务器端，在解析出 HTTP 请求头后，将会触发该事件；在 res.end()后，TCP 连接可能将用于下一次请求响应。
+- request 事件：建立 TCP 连接后，http 模块底层将在数据流中抽象出 HTTP 请求和 HTTP 响应，当请求数据发送到服务器端，在解析出 HTTP 请求头后，将会触发该事件；在 `res.end()`后，TCP 连接可能将用于下一次请求响应。
 - close 事件：与 TCP 服务器的行为一致，调用 server.close()方法停止接受新的连接，当已有的连接都断开时，触发该事件；可以给 server.close()传递一个回调函数来快速注册该事件。
 - checkContinue 事件：某些客户端在发送较大的数据时，并不会将数据直接发送，而是先发送一个头部带 Expect: 100-continue 的请求到服务器，服务器将会触发 checkContinue 事件；如果没有为服务器监听这个事件，服务器将会自动响应客户端 100 Continue 的状态码，表示接受数据上传；如果不接受数据的较多时，响应客户端 400 Bad Request 拒绝客户端继续发送数据即可。需要注意的是，当该事件发生时不会触发 request 事件，两个事件之间互斥。当客户端收到 100 Continue 后重新发起请求时，才会触发 request 事件。
 - connect 事件：当客户端发起 CONNECT 请求时触发，而发起 CONNECT 请求通常在 HTTP 代理时出现；如果不监听该事件，发起该请求的连接将会关闭。
@@ -6253,7 +6253,7 @@ Hello World
 - headers：请求头对象。
 - auth:Basic 认证，这个值将被计算成请求头中的 Authorization 部分。
 
-报文体的内容由请求对象的 write()和 end()方法实现：通过 write()方法向连接中写入数据，通过 end()方法告知报文结束。它与浏览器中的 Ajax 调用几近相同，Ajax 的实质就是一个异步的网络 HTTP 请求。
+报文体的内容由请求对象的 `write()`和 end()方法实现：通过 `write()`方法向连接中写入数据，通过 end()方法告知报文结束。它与浏览器中的 Ajax 调用几近相同，Ajax 的实质就是一个异步的网络 HTTP 请求。
 
 1. HTTP 响应
 
@@ -6340,7 +6340,7 @@ socket.onmessage = function (event) {
 
 上述代码中，浏览器与服务器端创建 WebSocket 协议请求，在请求完成后连接打开，每 50 毫秒向服务器端发送一次数据，同时可以通过 onmessage()方法接收服务器端传来的数据。这行为与 TCP 客户端十分相似，相较于 HTTP，它能够双向通信。浏览器一旦能够使用 WebSocket，可以想象应用的使用空间极大。
 
-在 WebSocket 之前，网页客户端与服务器端进行通信最高效的是 Comet 技术。实现 Comet 技术的细节是采用长轮询（long-polling）或 iframe 流。长轮询的原理是客户端向服务器端发起请求，服务器端只在超时或有数据响应时断开连接（res.end()）；客户端在收到数据或者超时后重新发起请求。这个请求行为拖着长长的尾巴，是故用 Comet（彗星）来命名它。
+在 WebSocket 之前，网页客户端与服务器端进行通信最高效的是 Comet 技术。实现 Comet 技术的细节是采用长轮询（long-polling）或 iframe 流。长轮询的原理是客户端向服务器端发起请求，服务器端只在超时或有数据响应时断开连接（`res.end()`）；客户端在收到数据或者超时后重新发起请求。这个请求行为拖着长长的尾巴，是故用 Comet（彗星）来命名它。
 
 使用 WebSocket 的话，网页客户端只需一个 TCP 连接即可完成双向通信，在服务器端与客户端频繁通信时，无须频繁断开连接和重发请求。连接可以得到高效应用，编程模型也十分简洁。
 
@@ -6531,7 +6531,7 @@ WebSocket.prototype.send = function (data) {
 
 客户端发送消息时，需要构造一个或多个数据帧协议报文。由于 hello world！较短，不存在分割为多个数据帧的情况，又由于 hello world！会以文本的方式发送，它的 payload length 长度为 96（12 字节 ×8 位/字节），二进制表示为 1100000。所以报文应当如下：
 
-```js
+```
 fin(1) + res(000) + opcode(0001) + masked(1) + payload length(1100000) + masking key(32位) + payload
 data(hello world!加密后的二进制)
 ```
@@ -6548,7 +6548,7 @@ socket.onmessage = function (event) {
 
 服务器端再回复 yakexi 的时候，剩下的事情就是无须掩码，其余相同，如下所示：
 
-```js
+```
 fin(1) + res(000) + opcode(0001) + masked(0) + payload length(1100000) + payload data(yakexi的二进制)
 ```
 
