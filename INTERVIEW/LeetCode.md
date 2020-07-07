@@ -828,3 +828,76 @@ var strStr = function (haystack, needle) {
   return -1
 };
 ```
+
+# 070 - 爬楼梯（climbing-stairs）
+
+* 难度：简单
+* 涉及知识：动态规划
+* 题目地址：https://leetcode-cn.com/problems/climbing-stairs/
+* 题目内容：
+
+假设你正在爬楼梯。需要 n 阶你才能到达楼顶。
+
+每次你可以爬 1 或 2 个台阶。你有多少种不同的方法可以爬到楼顶呢？
+
+注意：给定 n 是一个正整数。
+
+示例 1：
+输入： 2
+输出： 2
+解释： 有两种方法可以爬到楼顶。
+1.  1 阶 + 1 阶
+2.  2 阶
+
+示例 2：
+输入： 3
+输出： 3
+解释： 有三种方法可以爬到楼顶。
+1.  1 阶 + 1 阶 + 1 阶
+2.  1 阶 + 2 阶
+3.  2 阶 + 1 阶
+
+## 解法 - 直接递归
+
+而递归，是需要时间的，递归的次数越多，耗费的时间越长，就会出现超时情况。
+
+```js
+// Time Limit Exceeded
+var climbStairs = function (n) {
+  if(n == 1){ return 1 }
+  if(n == 2){ return 2 }
+  return climbStairs(n - 1) + climbStairs(n - 2)
+};
+```
+
+## 解法 - 两数相加
+
+```js
+var climbStairs = function (n) {
+  if(n == 1){ return 1 }
+  if(n == 2){ return 2 }
+  let last = 1, next = 2;
+  for(let i = 3; i <= n; i++){
+    [last, next] = [next, last + next]
+  }
+  return next;   
+};
+```
+
+## 解法 - 数组遍历
+
+将递归转换成数组的遍历添加，从而做到最简优化。
+
+```js
+var climbStairs = function(n) {
+  if (n === 1 || n === 2 || n === 3) {
+    return n;
+  }
+
+  let memory = [0, 1, 2, 3];
+  for (let i = 4; i <= n; i++) {
+    memory[i] = memory[i - 1] + memory[i - 2];
+  }
+  return memory[n];
+};
+```
