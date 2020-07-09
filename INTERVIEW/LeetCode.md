@@ -966,10 +966,10 @@ var climbStairs = function(n) {
 
 # 053 - 最大子序和（maximum-subarray）
 
-*难度：简单
-*涉及知识：数组、分治算法、动态规划
-*题目地址：https://leetcode-cn.com/problems/maximum-subarray/
-*题目内容：
+* 难度：简单
+* 涉及知识：数组、分治算法、动态规划
+* 题目地址：https://leetcode-cn.com/problems/maximum-subarray/
+* 题目内容：
 
 给定一个整数数组 nums ，找到一个具有最大和的连续子数组（子数组最少包含一个元素），返回其最大和。
 
@@ -1025,5 +1025,47 @@ var maxSubArray = function(nums) {
     return Math.max(acc, 0);
   }, 0)
   return max;
+};
+```
+
+# 058 - 最后一个单词的长度（length-of-last-word）
+
+* 难度：简单
+* 涉及知识：字符串
+* 题目地址：https://leetcode-cn.com/problems/length-of-last-word/
+* 题目内容：
+
+给定一个仅包含大小写字母和空格 ' ' 的字符串，返回其最后一个单词的长度。
+
+如果不存在最后一个单词，请返回 0 。
+
+说明：一个单词是指由字母组成，但不包含任何空格的字符串。
+
+示例:
+输入: "Hello World"
+输出: 5
+
+## 解法 - 暴力破解
+
+```js
+// 'b   a  cc'
+// 'a  '
+var lengthOfLastWord = function(s) {
+  let words = [...new Set(s.split(' '))];
+  let last = '';
+  do {
+    last = words.pop();
+  } while (!last && words.length > 0);
+  return last.length
+};
+```
+
+## 解法 - 正则表达式
+
+```js
+var lengthOfLastWord = function(s) {
+  s = s.replace(/(\s*$)/g, "");
+  let res = s.split(' ').pop().length;
+  return res;
 };
 ```
