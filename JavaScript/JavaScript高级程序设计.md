@@ -64,8 +64,9 @@ DOM3 级则进一步扩展了 DOM，引入了以统一方式加载和保存文�
 - 对 cookies 的支持；
 - 像 XMLHttpRequest 和 IE 的 ActiveXObject 这样的自定义对象。
 
-  1.3 JavaScript 版本　
-  1.4 小结
+1.3 JavaScript 版本　
+
+## 1.4 小结
 
 JavaScript 是一种专为与网页交互而设计的脚本语言，由下列三个不同的部分组成：
 
@@ -108,9 +109,9 @@ JavaScript 的这三个组成部分，在当前五个主要浏览器（ IE、 Fi
 
 ```html
 <script type="text/javascript">
-function sayScript(){
-alert("</script>");
-}
+  function sayScript(){
+    alert("</script>");
+  }
 </script>
 ```
 
@@ -243,7 +244,7 @@ HTML5 为`<script>`元素定义了 async 属性。这个属性与 defer 属性�
 在 HTML 中嵌入 JavaScript 代码虽然没有问题，但一般认为最好的做法还是尽可能使用外部文件来包含 JavaScript 代码。优点如下：
 
 - 可维护性：遍及不同 HTML 页面的 JavaScript 会造成维护问题。
-- 可缓存：浏览器能够根据具体的设置缓存链接的所有外部 JavaScript 文件,加快页面加载的速度。
+- 可缓存：浏览器能够根据具体的设置缓存链接的所有外部 JavaScript 文件，加快页面加载的速度。
 - 适应未来：通过外部文件来包含 JavaScript 无须使用前面提到 XHTML 或注释 hack。
 
 ## 2.3 文档模式　
