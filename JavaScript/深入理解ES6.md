@@ -2024,6 +2024,20 @@ console.log(allNumbers);    // [0, 1, 2, 3, 100, 101, 102]
 
 在本章的示例中，已经展示了一些迭代器向外传值的方法，既可以用迭代器的`next()`方法返回值，也可以在生成器内部使用yield关键字来生成值。如果给迭代器的`next()`方法传递参数，则这个参数的值就会替代生成器内部上一条yield语句的返回值。而如果要实现更多像异步编程这样的高级功能，那么这种给迭代器传值的能力就变得至关重要。请看这个简单的示例：
 
+```js
+function *createIterator() {
+    let first = yield 1;
+    let second = yield first + 2;       // 4 + 2
+    yield second + 3;                   // 5 + 3
+}
+
+let iterator = createIterator();
+
+console.log(iterator.next());           // "{ value: 1, done: false }"
+console.log(iterator.next(4));          // "{ value: 6, done: false }"
+console.log(iterator.next(5));          // "{ value: 8, done: false }"
+console.log(iterator.next());           // "{ value: undefined, done: true }"
+```
 
 这里有一个特例，第一次调用`next()`方法时无论传入什么参数都会被丢弃。由于传给`next()`方法的参数会替代上一次yield的返回值，而在第一次调用`next()`方法前不会执行任何yield语句，因此在第一次调用`next()`方法时传递参数是毫无意义的。
 
@@ -2042,8 +2056,42 @@ console.log(allNumbers);    // [0, 1, 2, 3, 100, 101, 102]
 
 除了给迭代器传递数据外，还可以给它传递错误条件。通过`throw()`方法，当迭代器恢复执行时可令其抛出一个错误。这种主动抛出错误的能力对于异步编程而言至关重要，也能为你提供模拟结束函数执行的两种方法（返回值或抛出错误）,从而增强生成器内部的编程弹性。将错误对象传给 `throw()`方法后，在迭代器继续执行时其会被抛出。例如：
 
+```js
+function *createIterator() {
+    let first = yield 1;
+    let second = yield first + 2;       // yield 4 + 2, then throw
+    yield second + 3;                   // never is executed
+}
+
+let iterator = createIterator();
+
+console.log(iterator.next());                   // "{ value: 1, done: false }"
+console.log(iterator.next(4));                  // "{ value: 6, done: false }"
+console.log(iterator.throw(new Error("Boom"))); // error thrown from generator
+```
 
 在此示例中，try-catch代码块包裹着第二条yield语句。尽管这条语句本身没有错误，但在给变量second赋值前还是会主动抛出错误，catch代码块捕获错误后将second变量赋值为6,下一条yield语句继续执行后返回9。
+
+```js
+function *createIterator() {
+    let first = yield 1;
+    let second;
+
+    try {
+        second = yield first + 2;       // yield 4 + 2, then throw
+    } catch (ex) {
+        second = 6;                     // on error, assign a different value
+    }
+    yield second + 3;
+}
+
+let iterator = createIterator();
+
+console.log(iterator.next());                   // "{ value: 1, done: false }"
+console.log(iterator.next(4));                  // "{ value: 6, done: false }"
+console.log(iterator.throw(new Error("Boom"))); // "{ value: 9, done: false }"
+console.log(iterator.next());                   // "{ value: undefined, done: true }"
+```
 
 请注意这里有一个有趣的现象：调用`throw()`方法后也会像调用`next()`方法一样返回一个结果对象。由于在生成器内部捕获了这个错误，因而会继续执行下一条yield语句，最终返回数值9。
 
@@ -2056,6 +2104,32 @@ console.log(allNumbers);    // [0, 1, 2, 3, 100, 101, 102]
 
 由于生成器也是函数，因此可以通过return语句提前退出函数执行，对于最后一次`next()`方法调用，可以主动为其指定一个返回值。在本章的绝大多数示例中，最后一次调用返回的都是undefined,正如在其他函数中那样，你可以通过return语句指定一个返回值。而在生成器中，return表示所有操作已经完成，属性done被设置为true;如果同时提供了相应的值，则属性value会被设置为这个值。这里有一个简单的示例：
 
+```js
+function *createIterator() {
+    yield 1;
+    return;
+    yield 2;
+    yield 3;
+}
+
+let iterator = createIterator();
+
+console.log(iterator.next());           // "{ value: 1, done: false }"
+console.log(iterator.next());           // "{ value: undefined, done: true }"
+```
+
+```js
+function *createIterator() {
+    yield 1;
+    return 42;
+}
+
+let iterator = createIterator();
+
+console.log(iterator.next());           // "{ value: 1, done: false }"
+console.log(iterator.next());           // "{ value: 42, done: true }"
+console.log(iterator.next());           // "{ value: undefined, done: true }"
+```
 
 > 展开运算符与for-of循环语句会直接忽略通过return语句指定的任何返回值，只要done一变为true就立即停止读取其他的值。不管怎样，迭代器的返回值依然是一个非常有用的特性，比如即将要讲到的委托生成器。
 
@@ -2063,6 +2137,90 @@ console.log(allNumbers);    // [0, 1, 2, 3, 100, 101, 102]
 
 在某些情况下，我们需要将两个迭代器合二为一，这时可以创建一个生成器，再给yield语句添加一个星号，就可以将生成数据的过程委托给其他生成器。当定义这些生成器时，只需将星号放置在关键字yield和生成器的函数名之间即可，就像这样：
 
+```js
+function *createNumberIterator() {
+    yield 1;
+    yield 2;
+}
+
+function *createColorIterator() {
+    yield "red";
+    yield "green";
+}
+
+function *createCombinedIterator() {
+    yield *createNumberIterator();
+    yield *createColorIterator();
+    yield true;
+}
+
+var iterator = createCombinedIterator();
+
+console.log(iterator.next());           // "{ value: 1, done: false }"
+console.log(iterator.next());           // "{ value: 2, done: false }"
+console.log(iterator.next());           // "{ value: "red", done: false }"
+console.log(iterator.next());           // "{ value: "green", done: false }"
+console.log(iterator.next());           // "{ value: true, done: false }"
+console.log(iterator.next());           // "{ value: undefined, done: true }"
+```
+
+```js
+function *createNumberIterator() {
+    yield 1;
+    yield 2;
+    return 3;
+}
+
+function *createRepeatingIterator(count) {
+    for (let i=0; i < count; i++) {
+        yield "repeat";
+    }
+}
+
+function *createCombinedIterator() {
+    let result = yield *createNumberIterator();
+    yield *createRepeatingIterator(result);
+}
+
+var iterator = createCombinedIterator();
+
+console.log(iterator.next());           // "{ value: 1, done: false }"
+console.log(iterator.next());           // "{ value: 2, done: false }"
+console.log(iterator.next());           // "{ value: "repeat", done: false }"
+console.log(iterator.next());           // "{ value: "repeat", done: false }"
+console.log(iterator.next());           // "{ value: "repeat", done: false }"
+console.log(iterator.next());           // "{ value: undefined, done: true }"
+```
+
+```js
+function *createNumberIterator() {
+    yield 1;
+    yield 2;
+    return 3;
+}
+
+function *createRepeatingIterator(count) {
+    for (let i=0; i < count; i++) {
+        yield "repeat";
+    }
+}
+
+function *createCombinedIterator() {
+    let result = yield *createNumberIterator();
+    yield result;
+    yield *createRepeatingIterator(result);
+}
+
+var iterator = createCombinedIterator();
+
+console.log(iterator.next());           // "{ value: 1, done: false }"
+console.log(iterator.next());           // "{ value: 2, done: false }"
+console.log(iterator.next());           // "{ value: 3, done: false }"
+console.log(iterator.next());           // "{ value: "repeat", done: false }"
+console.log(iterator.next());           // "{ value: "repeat", done: false }"
+console.log(iterator.next());           // "{ value: "repeat", done: false }"
+console.log(iterator.next());           // "{ value: undefined, done: true }"
+```
 
 ## 8.8 异步任务执行
 
@@ -2070,14 +2228,49 @@ console.log(allNumbers);    // [0, 1, 2, 3, 100, 101, 102]
 
 执行异步操作的传统方式一般是调用一个函数并执行相应回调函数。举个例子，我们用Node.js编写一段从磁盘读取文件的代码：
 
+```js
+let fs = require("fs");
+
+fs.readFile("config.json", function(err, contents) {
+    if (err) {
+        throw err;
+    }
+
+    doSomethingWith(contents);
+    console.log("Done");
+});
+```
 
 调用fs.readFile()方法时要求传入要读取的文件名和一个回调函数，操作结束后会调用该回调函数并检查是否存在错误，如果没有就可以处理返回的内容。如果要执行的任务很少，那么这样的方式可以很好地完成任务；如若需要嵌套回调或序列化一系列的异步操作，事情会变得非常复杂。此时，生成器和yield语句就派上用场了。
-
 
 ### 8.8.1 简单任务执行器
 
 由于执行yield语句会暂停当前函数的执行过程并等待下一次调用`next()`方法，因此你可以创建一个函数，在函数中调用生成器生成相应的迭代器，从而在不用回调函数的基础上实现异步调用`next()`方法，就像这样：
 
+```js
+function run(taskDef) {
+
+    // create the iterator, make available elsewhere
+    let task = taskDef();
+
+    // start the task
+    let result = task.next();
+
+    // recursive function to keep calling next()
+    function step() {
+
+        // if there's more to do
+        if (!result.done) {
+            result = task.next();
+            step();
+        }
+    }
+
+    // start the process
+    step();
+
+}
+```
 
 函数run()接受一个生成器函数作为参数，这个函数定义了后续要执行的任务，生成一个迭代器并将它储存在变量task中。首次调用迭代器的`next()`方法时，返回的结果被储存起来稍后继续使用。step()函数会检查result.done的值，如果为false则执行迭代器的`next()`方法，并再次执行step()操作。每次调用`next()`方法时，返回的最新信息总会覆写变量result。在代码的最后，初始化执行step()函数并开始整个的迭代过程，每次通过检查result.done来确定是否有更多任务需要执行。
 
