@@ -1533,7 +1533,7 @@ function setCookie(name, value, { secure, path, domain, expires } = {}) {
 
 用循环语句迭代数据时，必须要初始化一个变量来记录每一次迭代在数据集合中的位置，而在许多编程语言中，已经开始通过程序化的方式用迭代器对象返回迭代过程中集合的每一个元素。
 
-迭代器的使用可以极大地简化数据操作，于是 ECMAScript 6 也向 JavaScript 中添加了这个法代器特性。新的数组方法和新的集合类型（例如 Set 集合与 Map 集合）都依赖法代器的实现，这个新特性对于高效的数据处理而言是不可或缺的，你也会发现在语言的其他特性中也都有迭代器的身影：新的 for-of 循环、展开运算符`...`，甚至连异步编程都可以使用迭代器。
+迭代器的使用可以极大地简化数据操作，于是 ECMAScript 6 也向 JavaScript 中添加了这个迭代器特性。新的数组方法和新的集合类型（例如 Set 集合与 Map 集合）都依赖迭代器的实现，这个新特性对于高效的数据处理而言是不可或缺的，你也会发现在语言的其他特性中也都有迭代器的身影：新的 for-of 循环、展开运算符`...`，甚至连异步编程都可以使用迭代器。
 
 ## 8.1 循环语句的问题
 
@@ -1541,7 +1541,6 @@ function setCookie(name, value, { secure, path, domain, expires } = {}) {
 
 ```js
 var colors = ["red", "green", "blue"];
-
 for (var i = 0, len = colors.length; i < len; i++) {
   console.log(colors[i]);
 }
@@ -1571,12 +1570,10 @@ function createIterator(items) {
 }
 
 var iterator = createIterator([1, 2, 3]);
-
 console.log(iterator.next()); // "{ value: 1, done: false }"
 console.log(iterator.next()); // "{ value: 2, done: false }"
 console.log(iterator.next()); // "{ value: 3, done: false }"
 console.log(iterator.next()); // "{ value: undefined, done: true }"
-
 // 之后所有的调用都会返回相同内容
 console.log(iterator.next()); // "{ value: undefined, done: true }"
 ```
@@ -1597,7 +1594,6 @@ function* createIterator() {
 
 // 生成器的调用方式与普通函数相同，只不过返回的是一个迭代器
 let iterator = createIterator();
-
 console.log(iterator.next().value); // 1
 console.log(iterator.next().value); // 2
 console.log(iterator.next().value); // 3
@@ -1615,12 +1611,10 @@ function* createIterator(items) {
 }
 
 let iterator = createIterator([1, 2, 3]);
-
 console.log(iterator.next()); // "{ value: 1, done: false }"
 console.log(iterator.next()); // "{ value: 2, done: false }"
 console.log(iterator.next()); // "{ value: 3, done: false }"
 console.log(iterator.next()); // "{ value: undefined, done: true }"
-
 // 之后所有的调用都会返回相同内容
 console.log(iterator.next()); // "{ value: undefined, done: true }"
 ```
@@ -1651,14 +1645,6 @@ let createIterator = function* (items) {
 };
 
 let iterator = createIterator([1, 2, 3]);
-
-console.log(iterator.next()); // "{ value: 1, done: false }"
-console.log(iterator.next()); // "{ value: 2, done: false }"
-console.log(iterator.next()); // "{ value: 3, done: false }"
-console.log(iterator.next()); // "{ value: undefined, done: true }"
-
-// 之后所有的调用都会返回相同内容
-console.log(iterator.next()); // "{ value: undefined, done: true }"
 ```
 
 > 不能用箭头函数来创建生成器
@@ -1703,7 +1689,6 @@ for-of 循环每执行一次都会调用可迭代对象的 `next()` 方法，并
 
 ```js
 let values = [1, 2, 3];
-
 for (let num of values) {
   console.log(num);
 }
@@ -1774,7 +1759,7 @@ for (let x of collection) {
 // 3
 ```
 
-在这个示例中，先创建一个生成器（注意，型号仍然在属性名前）并将其赋值给对象的 `Symbol.iterator` 属性来创建默认的迭代器；而在生成器中通过 for-of 循环迭代 this.items 并用 yield 返回每一个值。collection 对象默认迭代器的返回值由迭代器 this.items 自动生成，而非手动遍历来定义返回值。
+在这个示例中，先创建一个生成器（注意，型号仍然在属性名前）并将其赋值给对象的 `Symbol.iterator` 属性来创建默认的迭代器；而在生成器中通过 for-of 循环迭代 `this.items` 并用 yield 返回每一个值。collection 对象默认迭代器的返回值由迭代器 `this.items` 自动生成，而非手动遍历来定义返回值。
 
 > 在后面的“委托生成器”中，将会讲解对象迭代器的另一种使用方式。
 
@@ -1782,13 +1767,13 @@ for (let x of collection) {
 
 ## 8.5 内建迭代器
 
-迭代器是 ES6 的 一个重要组成部分，在 ECMAScript 6 中，已经默认为许多内建类型提供了内建迭代器，只有当这些内建法代器无法实现你的目标时才需要自己创建 。 通常来说当定义自己的对象和类时才会遇到这种情况，否则，完全可以依靠内建的迭代器完成工作，而最常使用的可能是集合的那些迭代器。
+迭代器是 ES6 的 一个重要组成部分，在 ECMAScript 6 中，已经默认为许多内建类型提供了内建迭代器，只有当这些内建迭代器无法实现你的目标时才需要自己创建。通常来说当定义自己的对象和类时才会遇到这种情况，否则，完全可以依靠内建的迭代器完成工作，而最常使用的可能是集合的那些迭代器。
 
 ### 8.5.1 集合对象迭代器
 
 在 ECMAScript 6 中有 3 种类型的集合对象：数组、 Map 集合与 Set 集合 。为了更好地访问对象中的内容，这 3 种对象都内建了以下三种迭代器：
 
-- `entries()` 返回一个法代器，其值为多个键值对。
+- `entries()` 返回一个迭代器，其值为多个键值对。
 - `values()` 返回一个迭代器，其值为集合的值。
 - `keys()` 返回一个迭代器，其值为集合中的所有键名。
 
@@ -1858,7 +1843,7 @@ for (let value of data.values()) {
 // "ebook"
 ```
 
-`keys()` 迭代器。`keys()` 迭代器会返回集合中存在的每一个键。如果遍历的是数组，则会返回数字类型的键，数组本身的其他属性不会被返回；如果是 Set 集合 ， 由于键与值是相同的 ， 因此 `keys()`和 `values()`返回的也是相同的法代器；如果是 Map 集合，则 `keys()`迭代器会返回每个独立的键。
+`keys()` 迭代器。`keys()` 迭代器会返回集合中存在的每一个键。如果遍历的是数组，则会返回数字类型的键，数组本身的其他属性不会被返回；如果是 Set 集合 ， 由于键与值是相同的 ， 因此 `keys()`和 `values()`返回的也是相同的迭代器；如果是 Map 集合，则 `keys()`迭代器会返回每个独立的键。
 
 ```js
 let colors = ["red", "green", "blue"];
@@ -1890,7 +1875,7 @@ for (let key of data.keys()) {
 // "format"
 ```
 
-不同集合类型的默认迭代器。每个集合类型都有一个默认的法代器， 在 for-of 循环中，如果没有显式指定则使用默认的法代器。数组和 Set 集合的默认迭代器是 `values()` 方法， Map 集合的默认迭代器是 `entries()`方法。有了这些默认的法代器，可以更轻松地在 for-of 循环中使用集合对象。
+不同集合类型的默认迭代器。每个集合类型都有一个默认的迭代器， 在 for-of 循环中，如果没有显式指定则使用默认的迭代器。数组和 Set 集合的默认迭代器是 `values()` 方法， Map 集合的默认迭代器是 `entries()`方法。有了这些默认的迭代器，可以更轻松地在 for-of 循环中使用集合对象。
 
 ```js
 let colors = ["red", "green", "blue"];
@@ -1991,7 +1976,7 @@ let set = new Set([1, 2, 3, 3, 3, 4, 5]),
 console.log(array); // [1,2,3,4,5]
 ```
 
-展开运算符可以把 Map 集合转换成包含多个数组的数组， Map 集合的默认法代器返回的是多组键值对，所以结果数组与执行 `new Map()` 时传入的数组看起来一样 。
+展开运算符可以把 Map 集合转换成包含多个数组的数组， Map 集合的默认迭代器返回的是多组键值对，所以结果数组与执行 `new Map()` 时传入的数组看起来一样 。
 
 ```js
 let map = new Map([
@@ -2047,7 +2032,7 @@ console.log(iterator.next()); // "{ value: undefined, done: true }"
 
 如果想理解程序内部的具体细节，想清楚这些会对你很有帮助：在生成器内部，代码每次继续执行前，正在执行的代码是哪一段。图 8-1 通过灰色阴影展示了每次 yield 前正在执行的代码。
 
-在生成器内部，浅灰色高亮的是`next()`方法的第一次调用，中灰色标示了 next(4)的调用过程，深灰色标示了 next(5)的调用过程，分别返回每一次 yield 生成的值。这里有一个过程很复杂，在执行左侧代码前，右侧的每一个表达式会先执行再停止。比起普通的函数，调试复杂的生成器会花费更多的精力。
+在生成器内部，浅灰色高亮的是`next()`方法的第一次调用，中灰色标示了 `next(4)`的调用过程，深灰色标示了 `next(5)`的调用过程，分别返回每一次 yield 生成的值。这里有一个过程很复杂，在执行左侧代码前，右侧的每一个表达式会先执行再停止。比起普通的函数，调试复杂的生成器会花费更多的精力。
 
 给迭代器的`next()`方法传值时，yield 语句可以返回相应计算后的值，而在生成器的内部，还有很多诸如此类的执行技巧可以使用，例如在迭代器中手动抛出错误。
 
@@ -2239,7 +2224,7 @@ fs.readFile("config.json", function (err, contents) {
 });
 ```
 
-调用 fs.readFile()方法时要求传入要读取的文件名和一个回调函数，操作结束后会调用该回调函数并检查是否存在错误，如果没有就可以处理返回的内容。如果要执行的任务很少，那么这样的方式可以很好地完成任务；如若需要嵌套回调或序列化一系列的异步操作，事情会变得非常复杂。此时，生成器和 yield 语句就派上用场了。
+调用 `fs.readFile()`方法时要求传入要读取的文件名和一个回调函数，操作结束后会调用该回调函数并检查是否存在错误，如果没有就可以处理返回的内容。如果要执行的任务很少，那么这样的方式可以很好地完成任务；如若需要嵌套回调或序列化一系列的异步操作，事情会变得非常复杂。此时，生成器和 yield 语句就派上用场了。
 
 ### 8.8.1 简单任务执行器
 
@@ -2267,9 +2252,9 @@ function run(taskDef) {
 }
 ```
 
-函数 run()接受一个生成器函数作为参数，这个函数定义了后续要执行的任务，生成一个迭代器并将它储存在变量 task 中。首次调用迭代器的`next()`方法时，返回的结果被储存起来稍后继续使用。step()函数会检查 result.done 的值，如果为 false 则执行迭代器的`next()`方法，并再次执行 step()操作。每次调用`next()`方法时，返回的最新信息总会覆写变量 result。在代码的最后，初始化执行 step()函数并开始整个的迭代过程，每次通过检查 result.done 来确定是否有更多任务需要执行。
+函数 `run()`接受一个生成器函数作为参数，这个函数定义了后续要执行的任务，生成一个迭代器并将它储存在变量 task 中。首次调用迭代器的`next()`方法时，返回的结果被储存起来稍后继续使用。`step()`函数会检查 result.done 的值，如果为 false 则执行迭代器的`next()`方法，并再次执行 `step()`操作。每次调用`next()`方法时，返回的最新信息总会覆写变量 result。在代码的最后，初始化执行 `step()`函数并开始整个的迭代过程，每次通过检查 result.done 来确定是否有更多任务需要执行。
 
-借助这个 run()函数，可以像这样执行一个包含多条 yield 语句的生成器：
+借助这个 `run()`函数，可以像这样执行一个包含多条 yield 语句的生成器：
 
 ### 8.8.2 向任务执行器传递数据
 
