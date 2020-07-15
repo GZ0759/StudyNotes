@@ -1,62 +1,6 @@
 > CSS 世界  
-> 张鑫旭   
+> 张鑫旭  
 > 2017 年 12 第一次出版
-
-<!-- TOC -->
-
-- [第 1 章 概述](#第1章-概述)
-- [第 2 章 需提前了解的术语和概念](#第2章-需提前了解的术语和概念)
-- [第 3 章 第 3 章　流、元素与基本尺寸](#第3章-流、元素与基本尺寸)
-- [第 4 章 盒尺寸大家族](#第4章-盒尺寸大家族)
-  - [4.1 深入理解 content](#41-深入理解content)
-  - [4.2 温和的 padding 属性](#42-温和的padding属性)
-  - [4.3 激进的 margin 属性](#43-激进的margin属性)
-  - [4.4 功勋卓越的 border 属性](#44-功勋卓越的border属性)
-- [第 5 章 内联元素与流](#第5章-内联元素与流)
-  - [5.1 字母 x—CSS 世界中隐匿的举足轻重的角色](#51-字母xcss世界中隐匿的举足轻重的角色)
-  - [5.2 内联元素的基石 line-height](#52-内联元素的基石line-height)
-  - [5.3 line-height 的好朋友 vertical-align](#53-line-height的好朋友vertical-align)
-- [第 6 章 流的破坏与保护](#第6章-流的破坏与保护)
-  - [6.1 魔鬼属性 float](#61-魔鬼属性-float)
-  - [6.2 float 的天然克星 clear](#62-float-的天然克星-clear)
-  - [6.3 CSS 世界的结界——BFC](#63-css-世界的结界bfc)
-  - [6.4 最佳结界 overflow](#64-最佳结界-overflow)
-  - [6.5 float 的兄弟 position:absolute](#65-float-的兄弟-positionabsolute)
-  - [6.6 absolute 与 overflow](#66-absolute-与-overflow)
-  - [6.7 absolute 与 clip](#67-absolute-与-clip)
-  - [6.8 absolute 的流体特性](#68-absolute-的流体特性)
-  - [6.9 position:relative 才是大哥](#69-positionrelative-才是大哥)
-  - [6.10 强悍的 position:fixed 固定定位](#610-强悍的-positionfixed-固定定位)
-- [第 7 章 CSS 世界的层叠规则](#第7章-css世界的层叠规则)
-  - [7.1 z-index 只是 CSS 层叠规则中的一叶小舟](#71-z-index-只是-css-层叠规则中的一叶小舟)
-  - [7.2 理解 CSS 世界的层叠上下文和层叠水平](#72-理解-css-世界的层叠上下文和层叠水平)
-  - [7.3 理解元素的层叠顺序](#73-理解元素的层叠顺序)
-  - [7.4 务必牢记的层叠准则](#74-务必牢记的层叠准则)
-  - [7.5 深入了解层叠上下文](#75-深入了解层叠上下文)
-  - [7.6 z-index 负值深入理解](#76-z-index-负值深入理解)
-  - [7.7 z-index“不犯二”准则](#77-z-index不犯二准则)
-- [第 8 章 强大的文本处理能力](#第8章-强大的文本处理能力)
-  - [8.1 line-height 的另外一个朋友 font-size](#81-line-height-的另外一个朋友-font-size)
-  - [8.2 字体属性家族的大家长 font-family](#82-字体属性家族的大家长-font-family)
-  - [8.3 字体家族其他成员](#83-字体家族其他成员)
-  - [8.4 font 属性](#84-font-属性)
-  - [8.5 真正了解@font face 规则](#85-真正了解font-face-规则)
-  - [8.6 文本的控制](#86-文本的控制)
-  - [8.7 了解:first-letter/:first-line 伪元素](#87-了解first-letterfirst-line-伪元素)
-- [第 9 章 元素的装饰与美化](#第9章-元素的装饰与美化)
-  - [9.1 CSS 世界的 color 很单调](#91-css-世界的-color-很单调)
-  - [9.2 CSS 世界的 background 很单调](#92-css-世界的-background-很单调)
-- [第 10 章 元素的显示与隐藏](#第10章-元素的显示与隐藏)
-  - [10.1 display 与元素的显隐](#101-display-与元素的显隐)
-  - [10.2 visibility 与元素的显隐](#102-visibility-与元素的显隐)
-- [第 11 章 用户界面样式](#第11章-用户界面样式)
-  - [11.1 和 border 形似的 outline 属性](#111-和-border-形似的-outline-属性)
-  - [11.2 光标属性 cursor](#112-光标属性-cursor)
-- [第 12 章 流向的改变](#第12章-流向的改变)
-  - [12.1 改变水平流向的 direction](#121-改变水平流向的-direction)
-  - [12.2 改变 CSS 世界纵横规则的 writing-mode](#122-改变-css-世界纵横规则的-writing-mode)
-
-<!-- /TOC -->
 
 # 第 1 章 概述
 
@@ -271,6 +215,7 @@ min-width/min-height 的初始值是 auto，max-width/max-height 的初始值是
 从定义看，“内联盒子”的“内联”特指“外在盒子”，和“display 为 inline 的元素”不是一个概念。inline-block 和 inline-table 都是“内联元素”，因为它们的“外在盒子”都是内联盒子。从表现看，“内联元素”的典型特征就是可以和文字在一行显示。
 
 内联世界深入的基础——内联盒模型。
+
 - 内容区域（content area），内容区域指一种围绕文字看不见的盒子，其大小仅受字符本身特性控制，本质上是一个字符盒子。
 - 内联盒子（inline box），“内联盒子”不会让内容成块显示，而是排成一行，该盒子又可以细分为“内联盒子”和“匿名内联盒子”两类。
   - 如果外部含内联标签则属于“内联盒子”；
@@ -309,13 +254,13 @@ min-width/min-height 的初始值是 auto，max-width/max-height 的初始值是
 2. 不能左右`:empty`伪类。也就是说添加 content 的空内容还是会被这个伪类选择到。
 3. content 动态生成值无法获取。
 
-content内容生成技术。在实际项目中，content 属性几乎都是用在`::before`或`::after`这两个伪元素中，因此，content 内容生成技术有时候也称为`::before`或`::after`伪元素技术。
+content 内容生成技术。在实际项目中，content 属性几乎都是用在`::before`或`::after`这两个伪元素中，因此，content 内容生成技术有时候也称为`::before`或`::after`伪元素技术。
 
 1. content 辅助元素生成。通常，我们会把 content 的属性值设置为空字符串。然后，利用其他 CSS 代码来生成辅助元素，或实现图形效果，或实现特定布局。与使用显式的 HTML 标签元素相比，这样做的好处是 HTML 代码会显得更加干净和精简。
 
 ```css
 .clear:after {
-  content: '';
+  content: "";
   display: table; /* 也可以是'block' */
   clear: both;
 }
@@ -331,26 +276,26 @@ content内容生成技术。在实际项目中，content 属性几乎都是用�
 /* 单个计算器 */
 body {
   /* 重置计数器成0 */
-  counter-reset: section; 
+  counter-reset: section;
 }
 h3:before {
   /* 增加计数器值 */
-  counter-increment: section; 
+  counter-increment: section;
   /* 显示计数器 */
-  content: "Section " counter(section) ": "; 
+  content: "Section " counter(section) ": ";
 }
 
 /* 计算器嵌套 */
 ol {
   /* 为每个ol元素创建新的计数器实例 */
-  counter-reset: section; 
+  counter-reset: section;
   list-style-type: none;
 }
 li:before {
   /* 只增加计数器的当前实例 */
-  counter-increment: section; 
+  counter-increment: section;
   /* 为所有计数器实例增加以“.”分隔的值 */
-  content: counters(section, ".") " "; 
+  content: counters(section, ".") " ";
 }
 ```
 
@@ -460,8 +405,12 @@ margin 合并的计算规则总结为“正正取大值”“正负值相加”�
 ```css
 .son {
   position: absolute;
-  top: 0; right: 0; bottom: 0; left: 0;
-  width: 200px; height: 100px;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  width: 200px;
+  height: 100px;
   margin: auto;
 }
 ```
@@ -540,12 +489,12 @@ margin + padding 可以实现等高布局，同样，border 属性也可以实�
 
 ```html
 <style>
-.box {
-  line-height: 256px;
-}
+  .box {
+    line-height: 256px;
+  }
 </style>
 <div class="box">
-  <img src="1.jpg" height="128">
+  <img src="1.jpg" height="128" />
 </div>
 ```
 
@@ -567,39 +516,53 @@ line-height 在这个混合元素的“行框盒子”中扮演的角色是决�
 
 ```html
 <style>
-.box {
-  line-height: 120px;
-}
-.content {
-  display: inline-block;
-  vertical-align: middle;
-}
+  .box {
+    line-height: 120px;
+  }
+  .content {
+    display: inline-block;
+    vertical-align: middle;
+  }
 </style>
 
 <div class="box">
-  <div class="content">基于行高实现的多行文字垂直居中效果，需要vertical-align属性帮助。</div>
+  <div class="content">
+    基于行高实现的多行文字垂直居中效果，需要vertical-align属性帮助。
+  </div>
 </div>
 ```
 
 实现的原理大致是有两点。
 
-- 多行文本使用一个标签包裹，然后设置 display 为 inline-block。好处在于既重置外部的 line-height 为正常的大小，又能保持内联元素特性，从而可以设置 vertical-align 属性，以及产生非常关键的"行框盒子"，这样就能在`.content`元素前面撑起了一个高度为 120px 的宽度为0 的内联元素。
+- 多行文本使用一个标签包裹，然后设置 display 为 inline-block。好处在于既重置外部的 line-height 为正常的大小，又能保持内联元素特性，从而可以设置 vertical-align 属性，以及产生非常关键的"行框盒子"，这样就能在`.content`元素前面撑起了一个高度为 120px 的宽度为 0 的内联元素。
 - 因为内联元素默认都是基线对齐的，所以通过对`.content`元素`vertical-align: middle`来调整多行文本的垂直位置，从而实现想要的垂直居中效果。如果是要借助 line-height 实现图片垂直居中效果，也是类似的原理和做法。
 
-深入line-height 的各类属性值。line-height 的默认值是 normal，还支持数值、百分比值以及长度值。 乍一看，似乎`line-height: 1.5`、`line-height: 150%`和`line-height: 1.5em`这 3 种用法是一模一样的，最终的行高大小都是和 font-size 计算的值，但是实际上，`line-height: 1.5`和另外两个有一点儿不同，那就是继承细节有所差别。如果使用数值（1.5）作为 line-height 的属性值，那么所有的子元素继承的都是这个已计算的数值；但是，如果使用百分比值（150%）或者长度值（1,5em）作为属性值，那么所有的子元素继承未计算前的值。
+深入 line-height 的各类属性值。line-height 的默认值是 normal，还支持数值、百分比值以及长度值。 乍一看，似乎`line-height: 1.5`、`line-height: 150%`和`line-height: 1.5em`这 3 种用法是一模一样的，最终的行高大小都是和 font-size 计算的值，但是实际上，`line-height: 1.5`和另外两个有一点儿不同，那就是继承细节有所差别。如果使用数值（1.5）作为 line-height 的属性值，那么所有的子元素继承的都是这个已计算的数值；但是，如果使用百分比值（150%）或者长度值（1,5em）作为属性值，那么所有的子元素继承未计算前的值。
 
 ```css
-.box   { font-size: 14px; }
+.box {
+  font-size: 14px;
+}
 
 /* 当h3字体为32px时，子元素继承结果值48px */
-.box-1 { line-height: 1.5; }
+.box-1 {
+  line-height: 1.5;
+}
 
 /* 当h3字体为32px时，子元素继承结果值21px */
-.box-2 { line-height: 150%; }
-.box-3 { line-height: 1.5em; }
+.box-2 {
+  line-height: 150%;
+}
+.box-3 {
+  line-height: 1.5em;
+}
 
-h3 { font-size: 32px; }
-p  { font-size: 20px; }
+h3 {
+  font-size: 32px;
+}
+p {
+  font-size: 20px;
+}
 ```
 
 内联元素 line-height 的“大值特性”。无论内联元素 line-height 如何设置，最终父级元素的高度都是由数值大的那个 line-height 决定的，称之为“内联元素 line-height 的大值特性”。因为“幽灵空白节点”的干扰会让内联元素的行高增大，而行框盒子的高度是由高度最高的那个“内联盒子”决定的。所以，通过设置子元素`display: inline-block`，创建一个独立的“行框盒子”，这样元素设置的 line-height 才可以生效了,这也是多行文本垂直居中设置的原因。
@@ -634,18 +597,17 @@ vertical-align 起作用是有前提条件的，这个前提条件就是：只�
 
 ```html
 <style>
-.box {
-  height: 128px;
-  line-height: 128px; /* 关键 CSS 属性 */
-}
-.box > img {
-  height: 96px;
-  vertical-align: middle;
-}
-
+  .box {
+    height: 128px;
+    line-height: 128px; /* 关键 CSS 属性 */
+  }
+  .box > img {
+    height: 96px;
+    vertical-align: middle;
+  }
 </style>
 <div class="box">
-  <img src="1.jpg">
+  <img src="1.jpg" />
 </div>
 ```
 
@@ -668,8 +630,12 @@ vertical-align 和 line-height 之间的关系。第一点是，前者的百分�
 
 ```html
 <style>
-.box { line-height: 32px; }
-.box > span { font-size: 24px; }
+  .box {
+    line-height: 32px;
+  }
+  .box > span {
+    font-size: 24px;
+  }
 </style>
 
 <div class="box">
@@ -811,23 +777,26 @@ float 属性的种种归根结底还是由于自身各种特性导致的。 floa
 
 ```html
 <div class="father">
-    <img src="zxx.jpg">
-    <p class="girl">美女1，美女2，美女3，美女4，美女5，美女6，后宫1，后宫2，后宫36</p>
+  <img src="zxx.jpg" />
+  <p class="girl">
+    美女1，美女2，美女3，美女4，美女5，美女6，后宫1，后宫2，后宫36
+  </p>
 </div>
 ```
 
 ```css
 .father {
-    border: 1px solid #444;
-    overflow: hidden;
+  border: 1px solid #444;
+  overflow: hidden;
 }
 .father > img {
-    width: 60px; height: 64px;
-    float: left;
+  width: 60px;
+  height: 64px;
+  float: left;
 }
 .girl {
-    /* 环绕和自适应的区别所在 */
-    margin-left: 70px;
+  /* 环绕和自适应的区别所在 */
+  margin-left: 70px;
 }
 ```
 
@@ -988,7 +957,7 @@ HTML 中有两个标签是默认可以产生滚动条的，一个是根元素`<h
 - 两者都能“块状格式化上下文”， 也就是 BFC。
 - 两者都具有“包裹性”，也就是尺寸收缩包裹，同时具有自适应性。和 float 或其他“包裹性”声明带来的“自适应性”相比，absolute 有一个平时不太被人注意的差异，那就是 absolute 的自适应性最大宽度往往不是由父元素决定的，本质上说，这个差异是由“包含块”的差异决定的。换句话说， absolute 元素具有与众不同的“包含块”。
 
-absolute 的包含块。包含块（containing block）这个就是元素用来计算和定位的一个框。根元素（很多场景下可以看成是`<html>`）被称为“初始包含块”��其尺寸等同于浏览器可视窗口的大小。对于其他元素，如果该元素的 position 是 relative 或者 static，则“包含块” 由其最近的块容器祖先盒的 content box 边界形成。如果元素`position: fixed`，则“包含块”是“初始包含块”。如果元素`position: absolute`，则“包含块”由最近的 position 不为 static 的祖先元素建立，具体方式如下。
+absolute 的包含块。包含块（containing block）这个就是元素用来计算和定位的一个框。根元素（很多场景下可以看成是`<html>`）被称为“初始包含块”�� 其尺寸等同于浏览器可视窗口的大小。对于其他元素，如果该元素的 position 是 relative 或者 static，则“包含块” 由其最近的块容器祖先盒的 content box 边界形成。如果元素`position: fixed`，则“包含块”是“初始包含块”。如果元素`position: absolute`，则“包含块”由最近的 position 不为 static 的祖先元素建立，具体方式如下。
 
 如果该祖先元素是纯 inline 元素，则规则略复杂：假设给内联元素的前后各生成一个宽度为 0 的内联盒子（ inline box），则这两个内联盒子的 padding box 外面的包围盒就是内联元素的“包含块”；如果该内联元素被跨行分割了，那么“包含块”是未定义的，也就是 CSS2.1 规范并没有明确定义，浏览器自行发挥。 否则，“包含块”由该祖先的 padding box 边界形成。如果没有符合条件的祖先元素，则“包含块”是“初始包含块”。
 
@@ -1003,9 +972,7 @@ absolute 的包含块。包含块（containing block）这个就是元素用来�
 要实现导航文字右上方的定位很简单，直接对加图标这个元素进行样式设定就可以了了，原来纯文字导航时的样式完全不需要有一丁点儿的修改。实际上，即使是普通的水平对齐的图标也可以使用“无依赖绝对定位”实现。此方法兼容性很好，与 inline-block 对齐相比的好处在于，inline-block 对齐的最终行框并不是 20px，因为中文下沉，图标居中，要想视觉上水平，图标 vertical-align 对齐要比实际低一点，这就会导致最终整个航诳的高度是 21px 或者更大。
 
 ```html
-<span class="icon-x">
-  <i class="icon-warn"></i>邮箱格式不准确
-</span>
+<span class="icon-x"> <i class="icon-warn"></i>邮箱格式不准确 </span>
 ```
 
 ```css
@@ -1016,7 +983,8 @@ absolute 的包含块。包含块（containing block）这个就是元素用来�
 .icon-warn {
   position: absolute;
   margin-left: -20px;
-  width: 20px; height: 20px;
+  width: 20px;
+  height: 20px;
   background: url(warn.png) no-repeat center;
 }
 ```
@@ -1182,14 +1150,16 @@ top 和 bottom 这两个垂直方向的百分比值计算跟 height 的百分比
 ```html
 <div class="father">
   <div class="right">
-    &nbsp;<div class="son"></div>
+    &nbsp;
+    <div class="son"></div>
   </div>
 </div>
 ```
 
 ```css
 .father {
-  width: 300px; height: 200px;
+  width: 300px;
+  height: 200px;
   position: relative;
 }
 .right {
@@ -1199,7 +1169,8 @@ top 和 bottom 这两个垂直方向的百分比值计算跟 height 的百分比
 }
 .son {
   display: inline;
-  width: 40px; height: 40px;
+  width: 40px;
+  height: 40px;
   position: fixed;
   margin-left: -40px;
 }
@@ -1423,7 +1394,7 @@ unicode-range 的作用是可以让特定的字符或者特定范围的字符使
 
 CSS 有很多属性专门用来对文本进行控制，由于这些属性的作用机制往往是基于内联盒模型的，因此对于内联块状元素同样也是有效果的，这就使得这些 CSS 属性作用范围更广了，甚至可以影响布局。
 
-### 8.61. text-indent与内联元素缩进
+### 8.61. text-indent 与内联元素缩进
 
 text-indent 就是对文本进行缩进控制，但是这种缩进对内容要求比较高，如果段落掺杂英文、数字或者图片等内容，缩进反而可能会给人以参差不齐的感觉，加上现代 Web 形式更加多样，text-indent 在实际项目中的应用已经脱离了它原本的设计初衷。
 
@@ -1463,6 +1434,7 @@ text-indent 就是对文本进行缩进控制，但是这种缩进对内容要�
 <p>提问：问题内容...</p>
 <p>回答：回答内容...</p>
 ```
+
 ```css
 p {
   text-indent: -3em;
@@ -1478,7 +1450,7 @@ p {
 4. `<button>`标签按钮 text-indent 值有效，但是存在兼容性差异。
 5. `<input>`和`<textarea>`输入框的 text-indent 在低版本 IE 浏览器下有兼容问题。
 
-### 8.6.2 letter-spacing与字符间距
+### 8.6.2 letter-spacing 与字符间距
 
 letter-spacing 可以用来控制字符之间的间距，这里说的“字符”包括英文字母、汉字以及空格等。
 
@@ -1518,7 +1490,7 @@ letter-spacing 具有以下一些特性。
 }
 ```
 
-### 8.6.3 word-spacing与单词间距
+### 8.6.3 word-spacing 与单词间距
 
 word-spacing 和 letter-spacing 名称类似，其特性也有很多共通之处：
 
@@ -1536,8 +1508,9 @@ word-spacing 和 letter-spacing 名称类似，其特性也有很多共通之处
   word-spacing: 20px;
 }
 ```
+
 ```html
-<p class="wp">我 love 前端！ </p>
+<p class="wp">我 love 前端！</p>
 ```
 
 换句话说，word-spacing 的作用就是增加空格的间隙宽度。有空格就有效。在命名上，word-spacing 之所以称为 word-spacing 而不是 blank-spacing 之类的，主要原因是此属性当初主要为英文类排版设计，而英文单词和单词之间是以空格分隔的，要想控制单词之间的间距，自然就向“空格”开刀了。
@@ -1577,11 +1550,11 @@ white-space 属性声明了如何处理元素内的空白字符，这类空白�
 
 - 水平列表切换效果。 水平列表切换是网页中常见的交互效果，如果列表的数目是不固定的，使用`white-space: nowrap`使列表一行显示会是个非常不错的处理。
 
-###　8.6.6 text-align与元素对齐
+###　 8.6.6 text-align 与元素对齐
 
 IE 浏览器（至少到 IE11）到目前为止使用`text-align: justify`都无法让中文两端对齐，而 Chrome、 Firefox 和 Safari 等浏览器都是可以的。不过，好在 IE 有一个私有的 CSS 属性 text-justify（目前也写入规范草案了）可以实现中文两端对齐的。
 
-`text-align: justify`除了实现文本的两端对齐，还可以实现容错性更强的两端对齐布局效果。 
+`text-align: justify`除了实现文本的两端对齐，还可以实现容错性更强的两端对齐布局效果。
 
 在默认设置下，`text-align: justify`要想有两端对齐的效果，需要满足两点：一是有分隔点，如空格；二是要超过一行，此时非最后一行内容会两端对齐。
 
@@ -1619,10 +1592,11 @@ text-transform 也是为英文字符设计的，要么全大写`text-transform: 
 
 - `:first-line` 和`:first-letter` 伪元素一样，只能作用在块级元素上，也就是 display 为 block、 inline-block、 list-item、 table-cell 或者 tablecaption 的元素设置`:first-line` 才有效， table、 flex 之类都是无效的。
 
-- `:first-line` 和`:first-letter` 伪元素一样，仅支持部分 CSS 属性，例如： 
-  - 所有字体相关属性； 
-  - color 属性； 
-  - 所有背景相关属性； 
+- `:first-line` 和`:first-letter` 伪元素一样，仅支持部分 CSS 属性，例如：
+
+  - 所有字体相关属性；
+  - color 属性；
+  - 所有背景相关属性；
   - text-decoration、 text-transfor、 letter-spacing、 word-spacing、 line-height 和 vertical-align 等属性。
 
 - `:first-line` 和`:first-letter` 伪元素一样， color 等继承属性的权重总是多了 一层，毕竟称为“伪元素”，就好像里面还有个子元素。如果`:first-line` 和`:first-letter` 同时设置颜色， `:first-letter` 级别比`:first-line` 高，即使`:first-line` 写在后面，甚至加!important（如果浏览器支持）也是如此。
