@@ -1649,7 +1649,7 @@ CSS 世界中的 background 大部分有意思的内容都是在 CSS3 新世界�
 
 # 第 10 章 元素的显示与隐藏
 
-如果希望元素不可见，同时不占据空间，辅助设备无法访问，同时不渲染，可以使用`<script>`标签隐藏。`<script>`标签是不支持嵌套的，因此，如果希望在`<script>`标签中再放置其他不渲染的模板内容，可以试试使用`<textarea>`元素。另外，`<script>`标签隐藏内容获取使用 `script.innerHTML`，`<textarea>`使用 textarea.value。
+如果希望元素不可见，同时不占据空间，辅助设备无法访问，同时不渲染，可以使用`<script>`标签隐藏。`<script>`标签是不支持嵌套的，因此，如果希望在`<script>`标签中再放置其他不渲染的模板内容，可以试试使用`<textarea>`元素。另外，`<script>`标签隐藏内容获取使用 `script.innerHTML`，`<textarea>`使用 `textarea.value`。
 
 如果希望元素不可见，同时不占据空间，辅助设备无法访问，但资源有加载，DOM 可访问，则可以直接使用`display: none`隐藏。
 
@@ -1669,13 +1669,13 @@ CSS 世界中的 background 大部分有意思的内容都是在 CSS3 新世界�
 
 对一个元素而言，如果 display 计算值是 none 则该元素以及所有后代元素都隐藏，如果是其他 display 计算值则显示。
 
-在 Firefox 浏览器下， display:none 的元素的 background-image 图片是不加载的， 包括父元素 display:none 也是如此；如果是 Chrome 和 Safari 浏览器，则要分情况，若父元 素 display:none，图片不加载，若本身背景图所在元素隐藏，则图片依旧会去加载；对 IE 浏览器而言，无论怎样都会请求图片资源。
+在 Firefox 浏览器下， `display: none` 的元素的 background-image 图片是不加载的， 包括父元素 `display: none` 也是如此；如果是 Chrome 和 Safari 浏览器，则要分情况，若父元素 `display: none`，图片不加载，若本身背景图所在元素隐藏，则图片依旧会去加载；对 IE 浏览器而言，无论怎样都会请求图片资源。
 
 ## 10.2 visibility 与元素的显隐
 
-父元素设置 visibility:hidden，子元素也会看不见，究其原因是继承性，子元素继承了 visibility:hidden，但是，如果子元素设置了 visibility:visible，则子元素又会显示出来。这个和 display 隐藏有着质的区别。
+父元素设置 `visibility: hidden`，子元素也会看不见，究其原因是继承性，子元素继承了 `visibility: hidden`，但是，如果子元素设置了 `visibility: visible`，则子元素又会显示出来。这个和 display 隐藏有着质的区别。
 
-visibility:hidden 不会影响计数器的计数，这和 display:none 完全不一样。
+`visibility: hidden` 不会影响计数器的计数，这和 `display: none` 完全不一样。
 
 因为 CSS3 transition 支持的 CSS 属性中有 visibility，transition 可以延时执行，因此，和 visibility 配合可以使用纯 CSS 实现 hover 延时显示效果，由此提升我们的交互体验。
 
