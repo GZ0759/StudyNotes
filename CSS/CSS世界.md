@@ -227,7 +227,7 @@ min-width/min-height 的初始值是 auto，max-width/max-height 的初始值是
 
 # 第 4 章 盒尺寸大家族
 
-盒尺寸中的 4 个盒子 content box、 padding box、 border box 和 margin box 分别对应 CSS 世界中的 content、 padding、 border 和 margin 属性，作者把这 4 个属性称为“盒尺寸四大家族” 。
+盒尺寸中的 4 个盒子 content box、 padding box、 border box 和 margin box 分别对应 CSS 世界中的 content、 padding、 border 和 margin 属性，这 4 个属性可称为“盒尺寸四大家族” 。
 
 ## 4.1 深入理解 content
 
@@ -704,7 +704,8 @@ vertical-align 属性的默认值 baseline 在文本之类的内联元素那里�
 }
 ```
 
-`vertial-align: top`和`vertial-align: bottom`基本表现类似，只是一个“上”一个“下”，因此合在一起讲。顾名思义，`vertial-align:top`就是垂直上边缘对齐，具体定义如下。内联元素：元素底部和当前行框盒子的顶部对齐。table-cell 元素：元素底 padding 边缘和表格行的顶部对齐。  
+`vertial-align: top`和`vertial-align: bottom`基本表现类似，只是一个“上”一个“下”，因此合在一起讲。顾名思义，`vertial-align:top`就是垂直上边缘对齐，具体定义如下。内联元素：元素底部和当前行框盒子的顶部对齐。table-cell 元素：元素底 padding 边缘和表格行的顶部对齐。
+
 `vertial-align: middle`近似垂直居中的原因与定义有关。内联元素：元素的垂直中心点和行框盒子基线往上 1/2 x-height 处对齐。table-cell 元素：单元格填充盒子相对于外面的表格行居中对齐。
 
 深入理解 vertical-align 文本类属性值。`vertical-align: text-top`：盒子的顶部和父级内容区域的顶部对齐。`vertical-align: text-bottom`：盒子的底部和父级内容区域的底部对齐。
@@ -997,9 +998,11 @@ absolute 的包含块。包含块（containing block）这个就是元素用来�
 
 这是非常简约的定位表现。此时，只要 margin-left 一半图片宽度负值大小，就可以实现图片的水平居中效果了，与元素`position: relative`然后定位元素设置`left: 50%`的方法相比，其优势在于不需要改变父元素的定位属性，避免可能不希望出现的层级问题等。如果不兼容，还可以通过插入显式的内联字符，而非借助缥缈的“幽灵空白节点”实现所有浏览器下的一致表现。
 
+```html
+<p><img src="1.jpg" /></p>
 ```
-<p><img src="1.jpg"></p>
 
+```css
 p {
   text-align: center;
 }
@@ -1545,9 +1548,7 @@ white-space 属性声明了如何处理元素内的空白字符，这类空白�
 当 white-space 设置为 nowrap 的时候，元素的宽度此时表现为“最大可用宽度”，换行符和一些空格全部合并，文本一行显示。
 
 - “包含块”尺寸过小处理。绝对定位以及 inline-block 元素都具有包裹性，当文本内容宽度超过包含块宽度的时候，就会发生文本环绕现象。可以对其使用`white-space: nowrap`声明让其如预期的那样一行显示。
-
 - 单行文字溢出点点点效果。`text-overflow: ellipsis`文字内容超出打点效果离不开`white-space: nowrap`声明。
-
 - 水平列表切换效果。 水平列表切换是网页中常见的交互效果，如果列表的数目是不固定的，使用`white-space: nowrap`使列表一行显示会是个非常不错的处理。
 
 ###　 8.6.6 text-align 与元素对齐
@@ -1611,7 +1612,7 @@ CSS1 的时候只支持 16 个基本颜色关键字，如 black、 white。 CSS2
 
 传统 HTML 的部分属性可以直接支持 color 属性，同时，我们也可以通过 style 属性书写 color 声明。如果浏览器认识这些颜色关键字，则该什么颜色就显示什么颜色；但是，如果浏览器无法 识别这些颜色关键字，则两种书写的最终表现会有差异。在 HTML 中，会使用其他算法将非识别颜色关键字转换成另外一个完全不同的颜色值；而 在 CSS 中则是直接使用默认颜色值。
 
-transparent 关键字是一个很有意思的关键字，让相应属性值作为透明出现， background-color:transparent 包括 IE6 浏览器都支持， border-color:transparent 从 IE7 浏览器开始支持， 但是 color: transparent 却从 IE9 浏览器才开始支持。
+transparent 关键字是一个很有意思的关键字，让相应属性值作为透明出现， background-color:transparent 包括 IE6 浏览器都支持， border-color:transparent 从 IE7 浏览器开始支持， 但是 `color: transparent` 却从 IE9 浏览器才开始支持。
 
 currentColor 可以使用当前 color 计算值，即所谓颜色值。但是同样地， IE9+浏览器才支持它。实际上， CSS 中很多属性值默认就是 currentColor 的表现，我们一般（除了部分浏览器 animation 需要）无须画蛇添足地再声明这个关键字。如 border、 text-shadow、 box-shadow 等，尤其 border，包括 IE7 在内的浏览器都是如此特性。
 
@@ -1648,7 +1649,7 @@ CSS 世界中的 background 大部分有意思的内容都是在 CSS3 新世界�
 
 # 第 10 章 元素的显示与隐藏
 
-如果希望元素不可见，同时不占据空间，辅助设备无法访问，同时不渲染，可以使用`<script>`标签隐藏。`<script>`标签是不支持嵌套的，因此，如果希望在`<script>`标签中再放置其他不渲染的模板内容，可以试试使用`<textarea>`元素。另外，`<script>`标签隐藏内容获取使用 script.innerHTML，`<textarea>`使用 textarea.value。
+如果希望元素不可见，同时不占据空间，辅助设备无法访问，同时不渲染，可以使用`<script>`标签隐藏。`<script>`标签是不支持嵌套的，因此，如果希望在`<script>`标签中再放置其他不渲染的模板内容，可以试试使用`<textarea>`元素。另外，`<script>`标签隐藏内容获取使用 `script.innerHTML`，`<textarea>`使用 textarea.value。
 
 如果希望元素不可见，同时不占据空间，辅助设备无法访问，但资源有加载，DOM 可访问，则可以直接使用`display: none`隐藏。
 
