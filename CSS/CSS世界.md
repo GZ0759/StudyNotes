@@ -1649,21 +1649,97 @@ CSS 世界中的 background 大部分有意思的内容都是在 CSS3 新世界�
 
 # 第 10 章 元素的显示与隐藏
 
+使用 CSS 让元素不可见的方法很多，剪裁、定位到屏幕外、明度变化等都是可以的。虽然它们都是肉眼不可见，但背后却在多个维度上都有差别。
+
 如果希望元素不可见，同时不占据空间，辅助设备无法访问，同时不渲染，可以使用`<script>`标签隐藏。`<script>`标签是不支持嵌套的，因此，如果希望在`<script>`标签中再放置其他不渲染的模板内容，可以试试使用`<textarea>`元素。另外，`<script>`标签隐藏内容获取使用 `script.innerHTML`，`<textarea>`使用 `textarea.value`。
+
+```html
+<script type="text/html">
+  <img src="1.jpg">
+</script>
+
+<script type="text/html">
+  <img src="1.jpg">
+  <textarea style="display:none;">
+    <img src="2.jpg">
+  </textarea>
+</script>
+```
 
 如果希望元素不可见，同时不占据空间，辅助设备无法访问，但资源有加载，DOM 可访问，则可以直接使用`display: none`隐藏。
 
-如果希望元素不可见，同时不占据空间，辅助设备无法访问，但显隐的时候可以有 transition 淡入淡出效果，则可以使用：`.hidden { position: absolute; visibility: hidden; }`
+```css
+.dn {
+  display: none;
+}
+```
+
+如果希望元素不可见，同时不占据空间，辅助设备无法访问，但显隐的时候可以有 transition 淡入淡出效果，则可以使用：
+
+```css
+.hidden {
+  position: absolute;
+  visibility: hidden;
+}
+```
 
 如果希望元素不可见，不能点击，辅助设备无法访问，但占据空间保留，则可以使用`visibility: hidden`隐藏。
 
+```css
+.vh {
+  visibility: hidden;
+}
+```
+
 如果希望元素不可见，不能点击，不占据空间，但键盘可访问，则可以使用 clip 剪裁隐藏。
+
+```css
+.clip {
+  position: absolute;
+  clip: rect(0 0 0 0);
+}
+.out {
+  position: relative;
+  left: -999em;
+}
+```
 
 如果希望元素不可见，不能点击，但占据空间，且键盘可访问，则可以试试 relative 隐藏。例如，如果条件允许，也就是和层叠上下文之间存在设置了背景色的父元素， 则也可以使用更友好的 z-index 负值隐藏。
 
+```css
+.lower {
+  position: relative;
+  z-index: -1;
+}
+```
+
 如果希望元素不可见，但可以点击，而且不占据空间，则可以使用透明度。
 
+```css
+.opacity {
+  position: absolute;
+  opacity: 0;
+  filter: Alpha(opacity=0);
+}
+```
+
 如果单纯希望元素看不见，但位置保留，依然可以点可以选，则直接让透明度为 0。
+
+```css
+.opacity {
+  opacity: 0;
+  filter: Alpha(opacity=0);
+}
+```
+
+可以根据实际的隐藏场景选择合适的隐藏方法。不过，实际开发场景千变万化，上面罗列的实践不足以覆盖全部情形。例如，在标签受限的情况下希望隐藏某文字，可能使用 text-indent 缩进是最友好的方法。如果希望显示的时候可以加一个 transition 动画，就可能要使用 max-height 进行隐藏了。例如：
+
+```css
+.hidden {
+  max-height: 0;
+  overflow: hidden;
+}
+```
 
 ## 10.1 display 与元素的显隐
 
