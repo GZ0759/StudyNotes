@@ -3993,13 +3993,9282 @@ export function createAsyncPlaceholder (
 
 详细讲解了数据的变化如何驱动视图的变化，分析了响应式对象的创建，依赖收集、派发更新的实现过程，一些特殊情况的处理，并对比了计算属性和侦听属性的实现，最后分析了组件更新的过程。
 
+## 4.1 深入响应式原理
+
+前面 2 章介绍的都是 Vue 怎么实现数据渲染和组件化的，主要讲的是初始化的过程，把原始的数据最终映射到 DOM 中，但并没有涉及到数据变化到 DOM 变化的部分。而 Vue 的数据驱动除了数据渲染 DOM 之外，还有一个很重要的体现就是数据的变更会触发 DOM 的变化。
+
+其实前端开发最重要的 2 个工作，一个是把数据渲染到页面，另一个是处理用户交互。Vue 把数据渲染到页面的能力我们已经通过源码分析出其中的原理了，但是由于一些用户交互或者是其它方面导致数据发生变化重新对页面渲染的原理我们还未分析。
+
+考虑如下示例：
+
+```html
+<div id="app" @click="changeMsg">
+  {{ message }}
+</div>
+```
+
+```js
+var app = new Vue({
+  el: '#app',
+  data: {
+    message: 'Hello Vue!'
+  },
+  methods: {
+    changeMsg() {
+      this.message = 'Hello World!'
+    }
+  }
+})
+```
+当我们去修改 `this.message` 的时候，模板对应的插值也会渲染成新的数据，那么这一切是怎么做到的呢？
+
+在分析前，我们先直观的想一下，如果不用 Vue 的话，我们会通过最简单的方法实现这个需求：监听点击事件，修改数据，手动操作 DOM 重新渲染。这个过程和使用 Vue 的最大区别就是多了一步“手动操作 DOM 重新渲染”。这一步看上去并不多，但它背后又潜在的几个要处理的问题：
+
+1. 我需要修改哪块的 DOM？
+2. 我的修改效率和性能是不是最优的？
+3. 我需要对数据每一次的修改都去操作 DOM 吗？
+4. 我需要 case by case 去写修改 DOM 的逻辑吗？
+
+如果我们使用了 Vue，那么上面几个问题 Vue 内部就帮你做了，那么 Vue 是如何在我们对数据修改后自动做这些事情呢，接下来我们将进入一些 Vue 响应式系统的底层的细节。
+
+## 4.2 响应式对象
+
+可能很多小伙伴之前都了解过 Vue.js 实现响应式的核心是利用了 ES5 的 `Object.defineProperty`，这也是为什么 Vue.js 不能兼容 IE8 及以下浏览器的原因，我们先来对它有个直观的认识。
+
+### 4.2.1 Object.defineProperty    
+
+`Object.defineProperty` 方法会直接在一个对象上定义一个新属性，或者修改一个对象的现有属性， 并返回这个对象，先来看一下它的语法：
+
+```js
+Object.defineProperty(obj, prop, descriptor)
+```
+
+`obj` 是要在其上定义属性的对象；`prop` 是要定义或修改的属性的名称；`descriptor` 是将被定义或修改的属性描述符。
+
+比较核心的是 `descriptor`，它有很多可选键值，具体的可以去参阅它的[文档](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Object/defineProperty)。这里我们最关心的是 `get` 和 `set`，`get` 是一个给属性提供的 getter 方法，当我们访问了该属性的时候会触发 getter 方法；`set` 是一个给属性提供的 setter 方法，当我们对该属性做修改的时候会触发 setter 方法。
+
+一旦对象拥有了 getter 和 setter，我们可以简单地把这个对象称为响应式对象。那么 Vue.js 把哪些对象变成了响应式对象了呢，接下来我们从源码层面分析。
+
+### 4.2.2 initState
+
+在 Vue 的初始化阶段，`_init` 方法执行的时候，会执行 `initState(vm)` 方法，它的定义在 `src/core/instance/state.js` 中。
+
+```js
+export function initState (vm: Component) {
+  vm._watchers = []
+  const opts = vm.$options
+  if (opts.props) initProps(vm, opts.props)
+  if (opts.methods) initMethods(vm, opts.methods)
+  if (opts.data) {
+    initData(vm)
+  } else {
+    observe(vm._data = {}, true /* asRootData */)
+  }
+  if (opts.computed) initComputed(vm, opts.computed)
+  if (opts.watch && opts.watch !== nativeWatch) {
+    initWatch(vm, opts.watch)
+  }
+}
+```
+`initState` 方法主要是对 `props`、`methods`、`data`、`computed` 和 `wathcer` 等属性做了初始化操作。这里我们重点分析 `props` 和 `data`，对于其它属性的初始化我们之后再详细分析。
+
+- initProps
+
+```js
+function initProps (vm: Component, propsOptions: Object) {
+  const propsData = vm.$options.propsData || {}
+  const props = vm._props = {}
+  // cache prop keys so that future props updates can iterate using Array
+  // instead of dynamic object key enumeration.
+  const keys = vm.$options._propKeys = []
+  const isRoot = !vm.$parent
+  // root instance props should be converted
+  if (!isRoot) {
+    toggleObserving(false)
+  }
+  for (const key in propsOptions) {
+    keys.push(key)
+    const value = validateProp(key, propsOptions, propsData, vm)
+    /* istanbul ignore else */
+    if (process.env.NODE_ENV !== 'production') {
+      const hyphenatedKey = hyphenate(key)
+      if (isReservedAttribute(hyphenatedKey) ||
+          config.isReservedAttr(hyphenatedKey)) {
+        warn(
+          `"${hyphenatedKey}" is a reserved attribute and cannot be used as component prop.`,
+          vm
+        )
+      }
+      defineReactive(props, key, value, () => {
+        if (vm.$parent && !isUpdatingChildComponent) {
+          warn(
+            `Avoid mutating a prop directly since the value will be ` +
+            `overwritten whenever the parent component re-renders. ` +
+            `Instead, use a data or computed property based on the prop's ` +
+            `value. Prop being mutated: "${key}"`,
+            vm
+          )
+        }
+      })
+    } else {
+      defineReactive(props, key, value)
+    }
+    // static props are already proxied on the component's prototype
+    // during Vue.extend(). We only need to proxy props defined at
+    // instantiation here.
+    if (!(key in vm)) {
+      proxy(vm, `_props`, key)
+    }
+  }
+  toggleObserving(true)
+}
+```
+`props` 的初始化主要过程，就是遍历定义的 `props` 配置。遍历的过程主要做两件事情：一个是调用 `defineReactive` 方法把每个 `prop` 对应的值变成响应式，可以通过 `vm._props.xxx` 访问到定义 `props` 中对应的属性。对于 `defineReactive` 方法，我们稍后会介绍；另一个是通过 `proxy` 把 `vm._props.xxx` 的访问代理到 `vm.xxx` 上，我们稍后也会介绍。
+
+- initData
+
+```js
+function initData (vm: Component) {
+  let data = vm.$options.data
+  data = vm._data = typeof data === 'function'
+    ? getData(data, vm)
+    : data || {}
+  if (!isPlainObject(data)) {
+    data = {}
+    process.env.NODE_ENV !== 'production' && warn(
+      'data functions should return an object:\n' +
+      'https://vuejs.org/v2/guide/components.html#data-Must-Be-a-Function',
+      vm
+    )
+  }
+  // proxy data on instance
+  const keys = Object.keys(data)
+  const props = vm.$options.props
+  const methods = vm.$options.methods
+  let i = keys.length
+  while (i--) {
+    const key = keys[i]
+    if (process.env.NODE_ENV !== 'production') {
+      if (methods && hasOwn(methods, key)) {
+        warn(
+          `Method "${key}" has already been defined as a data property.`,
+          vm
+        )
+      }
+    }
+    if (props && hasOwn(props, key)) {
+      process.env.NODE_ENV !== 'production' && warn(
+        `The data property "${key}" is already declared as a prop. ` +
+        `Use prop default value instead.`,
+        vm
+      )
+    } else if (!isReserved(key)) {
+      proxy(vm, `_data`, key)
+    }
+  }
+  // observe data
+  observe(data, true /* asRootData */)
+}
+```
+
+`data` 的初始化主要过程也是做两件事，一个是对定义 `data` 函数返回对象的遍历，通过 `proxy` 把每一个值 `vm._data.xxx` 都代理到 `vm.xxx` 上；另一个是调用 `observe` 方法观测整个 `data` 的变化，把 `data` 也变成响应式，可以通过 `vm._data.xxx` 访问到定义 `data` 返回函数中对应的属性，`observe` 我们稍后会介绍。
+
+可以看到，无论是 `props` 或是 `data` 的初始化都是把它们变成响应式对象，这个过程我们接触到几个函数，接下来我们来详细分析它们。
+
+### 4.2.3 proxy
+
+首先介绍一下代理，代理的作用是把 `props` 和 `data` 上的属性代理到 `vm` 实例上，这也就是为什么比如我们定义了如下 props，却可以通过 vm 实例访问到它。
+
+```js
+let comP = {
+  props: {
+    msg: 'hello'
+  },
+  methods: {
+    say() {
+      console.log(this.msg)
+    }
+  }
+}
+```
+
+我们可以在 `say` 函数中通过 `this.msg` 访问到我们定义在 `props` 中的 `msg`，这个过程发生在 `proxy` 阶段：
+
+```js
+const sharedPropertyDefinition = {
+  enumerable: true,
+  configurable: true,
+  get: noop,
+  set: noop
+}
+
+export function proxy (target: Object, sourceKey: string, key: string) {
+  sharedPropertyDefinition.get = function proxyGetter () {
+    return this[sourceKey][key]
+  }
+  sharedPropertyDefinition.set = function proxySetter (val) {
+    this[sourceKey][key] = val
+  }
+  Object.defineProperty(target, key, sharedPropertyDefinition)
+}
+```
+
+`proxy` 方法的实现很简单，通过 `Object.defineProperty` 把 `target[sourceKey][key]` 的读写变成了对 `target[key]`  的读写。所以对于 `props` 而言，对 `vm._props.xxx` 的读写变成了 `vm.xxx` 的读写，而对于 `vm._props.xxx` 我们可以访问到定义在 `props` 中的属性，所以我们就可以通过 `vm.xxx` 访问到定义在 `props` 中的 `xxx` 属性了。同理，对于 `data` 而言，对 `vm._data.xxxx` 的读写变成了对 `vm.xxxx` 的读写，而对于 `vm._data.xxxx` 我们可以访问到定义在 `data` 函数返回对象中的属性，所以我们就可以通过 `vm.xxxx` 访问到定义在 `data` 函数返回对象中的 `xxxx` 属性了。
+
+### 4.2.4 observe
+
+`observe` 的功能就是用来监测数据的变化，它的定义在 `src/core/observer/index.js` 中：
+
+```js
+/**
+ * Attempt to create an observer instance for a value,
+ * returns the new observer if successfully observed,
+ * or the existing observer if the value already has one.
+ */
+export function observe (value: any, asRootData: ?boolean): Observer | void {
+  if (!isObject(value) || value instanceof VNode) {
+    return
+  }
+  let ob: Observer | void
+  if (hasOwn(value, '__ob__') && value.__ob__ instanceof Observer) {
+    ob = value.__ob__
+  } else if (
+    shouldObserve &&
+    !isServerRendering() &&
+    (Array.isArray(value) || isPlainObject(value)) &&
+    Object.isExtensible(value) &&
+    !value._isVue
+  ) {
+    ob = new Observer(value)
+  }
+  if (asRootData && ob) {
+    ob.vmCount++
+  }
+  return ob
+}
+```
+
+`observe` 方法的作用就是给非 VNode 的对象类型数据添加一个 `Observer`，如果已经添加过则直接返回，否则在满足一定条件下去实例化一个 `Observer` 对象实例。接下来我们来看一下 `Observer` 的作用。
+
+### 4.2.5 Observer
+
+`Observer` 是一个类，它的作用是给对象的属性添加 getter 和 setter，用于依赖收集和派发更新：
+
+```js
+/**
+ * Observer class that is attached to each observed
+ * object. Once attached, the observer converts the target
+ * object's property keys into getter/setters that
+ * collect dependencies and dispatch updates.
+ */
+export class Observer {
+  value: any;
+  dep: Dep;
+  vmCount: number; // number of vms that has this object as root $data
+
+  constructor (value: any) {
+    this.value = value
+    this.dep = new Dep()
+    this.vmCount = 0
+    def(value, '__ob__', this)
+    if (Array.isArray(value)) {
+      const augment = hasProto
+        ? protoAugment
+        : copyAugment
+      augment(value, arrayMethods, arrayKeys)
+      this.observeArray(value)
+    } else {
+      this.walk(value)
+    }
+  }
+
+  /**
+   * Walk through each property and convert them into
+   * getter/setters. This method should only be called when
+   * value type is Object.
+   */
+  walk (obj: Object) {
+    const keys = Object.keys(obj)
+    for (let i = 0; i < keys.length; i++) {
+      defineReactive(obj, keys[i])
+    }
+  }
+
+  /**
+   * Observe a list of Array items.
+   */
+  observeArray (items: Array<any>) {
+    for (let i = 0, l = items.length; i < l; i++) {
+      observe(items[i])
+    }
+  }
+}
+```
+
+`Observer` 的构造函数逻辑很简单，首先实例化 `Dep` 对象，这块稍后会介绍，接着通过执行 `def` 函数把自身实例添加到数据对象 `value` 的 `__ob__` 属性上，`def` 的定义在 `src/core/util/lang.js` 中：
+
+```js
+/**
+ * Define a property.
+ */
+export function def (obj: Object, key: string, val: any, enumerable?: boolean) {
+  Object.defineProperty(obj, key, {
+    value: val,
+    enumerable: !!enumerable,
+    writable: true,
+    configurable: true
+  })
+}
+```
+
+`def` 函数是一个非常简单的`Object.defineProperty` 的封装，这就是为什么我在开发中输出 `data` 上对象类型的数据，会发现该对象多了一个 `__ob__` 的属性。
+
+回到 `Observer` 的构造函数，接下来会对 `value` 做判断，对于数组会调用 `observeArray` 方法，否则对纯对象调用 `walk` 方法。可以看到 `observeArray` 是遍历数组再次调用 `observe` 方法，而 `walk` 方法是遍历对象的 key 调用 `defineReactive` 方法，那么我们来看一下这个方法是做什么的。
+
+### 4.2.6 defineReactive
+
+`defineReactive` 的功能就是定义一个响应式对象，给对象动态添加 getter 和 setter，它的定义在 `src/core/observer/index.js` 中：
+
+```js
+/**
+ * Define a reactive property on an Object.
+ */
+export function defineReactive (
+  obj: Object,
+  key: string,
+  val: any,
+  customSetter?: ?Function,
+  shallow?: boolean
+) {
+  const dep = new Dep()
+
+  const property = Object.getOwnPropertyDescriptor(obj, key)
+  if (property && property.configurable === false) {
+    return
+  }
+
+  // cater for pre-defined getter/setters
+  const getter = property && property.get
+  const setter = property && property.set
+  if ((!getter || setter) && arguments.length === 2) {
+    val = obj[key]
+  }
+
+  let childOb = !shallow && observe(val)
+  Object.defineProperty(obj, key, {
+    enumerable: true,
+    configurable: true,
+    get: function reactiveGetter () {
+      const value = getter ? getter.call(obj) : val
+      if (Dep.target) {
+        dep.depend()
+        if (childOb) {
+          childOb.dep.depend()
+          if (Array.isArray(value)) {
+            dependArray(value)
+          }
+        }
+      }
+      return value
+    },
+    set: function reactiveSetter (newVal) {
+      const value = getter ? getter.call(obj) : val
+      /* eslint-disable no-self-compare */
+      if (newVal === value || (newVal !== newVal && value !== value)) {
+        return
+      }
+      /* eslint-enable no-self-compare */
+      if (process.env.NODE_ENV !== 'production' && customSetter) {
+        customSetter()
+      }
+      if (setter) {
+        setter.call(obj, newVal)
+      } else {
+        val = newVal
+      }
+      childOb = !shallow && observe(newVal)
+      dep.notify()
+    }
+  })
+}
+```
+
+`defineReactive` 函数最开始初始化 `Dep` 对象的实例，接着拿到 `obj` 的属性描述符，然后对子对象递归调用 `observe` 方法，这样就保证了无论 `obj` 的结构多复杂，它的所有子属性也能变成响应式的对象，这样我们访问或修改 `obj` 中一个嵌套较深的属性，也能触发 getter 和 setter。最后利用 `Object.defineProperty` 去给 `obj` 的属性 `key` 添加 getter 和 setter。而关于 getter 和 setter 的具体实现，我们会在之后介绍。
+
+### 总结
+
+这一节我们介绍了响应式对象，核心就是利用 `Object.defineProperty` 给数据添加了 getter 和 setter，目的就是为了在我们访问数据以及写数据的时候能自动执行一些逻辑：getter 做的事情是依赖收集，setter 做的事情是派发更新，那么在接下来的章节我们会重点对这两个过程分析。
+ 
+## 4.3 依赖收集
+
+通过上一节的分析我们了解 Vue 会把普通对象变成响应式对象，响应式对象 getter 相关的逻辑就是做依赖收集，这一节我们来详细分析这个过程。
+
+我们先来回顾一下 getter 部分的逻辑：
+
+```js
+export function defineReactive (
+  obj: Object,
+  key: string,
+  val: any,
+  customSetter?: ?Function,
+  shallow?: boolean
+) {
+  const dep = new Dep()
+
+  const property = Object.getOwnPropertyDescriptor(obj, key)
+  if (property && property.configurable === false) {
+    return
+  }
+
+  // cater for pre-defined getter/setters
+  const getter = property && property.get
+  const setter = property && property.set
+  if ((!getter || setter) && arguments.length === 2) {
+    val = obj[key]
+  }
+
+  let childOb = !shallow && observe(val)
+  Object.defineProperty(obj, key, {
+    enumerable: true,
+    configurable: true,
+    get: function reactiveGetter () {
+      const value = getter ? getter.call(obj) : val
+      if (Dep.target) {
+        dep.depend()
+        if (childOb) {
+          childOb.dep.depend()
+          if (Array.isArray(value)) {
+            dependArray(value)
+          }
+        }
+      }
+      return value
+    },
+    // ...
+  })
+}
+```
+这段代码我们只需要关注 2 个地方，一个是 `const dep = new Dep()` 实例化一个 `Dep` 的实例，另一个是在 `get` 函数中通过 `dep.depend` 做依赖收集，这里还有个对 `childOb` 判断的逻辑，我们之后会介绍它的作用。
+
+### 4.3.1 Dep
+
+`Dep` 是整个 getter 依赖收集的核心，它的定义在 `src/core/observer/dep.js` 中：
+
+```js
+import type Watcher from './watcher'
+import { remove } from '../util/index'
+
+let uid = 0
+
+/**
+ * A dep is an observable that can have multiple
+ * directives subscribing to it.
+ */
+export default class Dep {
+  static target: ?Watcher;
+  id: number;
+  subs: Array<Watcher>;
+
+  constructor () {
+    this.id = uid++
+    this.subs = []
+  }
+
+  addSub (sub: Watcher) {
+    this.subs.push(sub)
+  }
+
+  removeSub (sub: Watcher) {
+    remove(this.subs, sub)
+  }
+
+  depend () {
+    if (Dep.target) {
+      Dep.target.addDep(this)
+    }
+  }
+
+  notify () {
+    // stabilize the subscriber list first
+    const subs = this.subs.slice()
+    for (let i = 0, l = subs.length; i < l; i++) {
+      subs[i].update()
+    }
+  }
+}
+
+// the current target watcher being evaluated.
+// this is globally unique because there could be only one
+// watcher being evaluated at any time.
+Dep.target = null
+const targetStack = []
+
+export function pushTarget (_target: ?Watcher) {
+  if (Dep.target) targetStack.push(Dep.target)
+  Dep.target = _target
+}
+
+export function popTarget () {
+  Dep.target = targetStack.pop()
+}
+```
+
+`Dep` 是一个 Class，它定义了一些属性和方法，这里需要特别注意的是它有一个静态属性 `target`，这是一个全局唯一 `Watcher`，这是一个非常巧妙的设计，因为在同一时间只能有一个全局的 `Watcher` 被计算，另外它的自身属性 `subs` 也是 `Watcher` 的数组。
+
+`Dep` 实际上就是对 `Watcher` 的一种管理，`Dep`  脱离 `Watcher` 单独存在是没有意义的，为了完整地讲清楚依赖收集过程，我们有必要看一下 `Watcher` 的一些相关实现，它的定义在 `src/core/observer/watcher.js` 中：
+
+
+### 4.3.2 Watcher
+
+```js
+let uid = 0
+
+/**
+ * A watcher parses an expression, collects dependencies,
+ * and fires callback when the expression value changes.
+ * This is used for both the $watch() api and directives.
+ */
+export default class Watcher {
+  vm: Component;
+  expression: string;
+  cb: Function;
+  id: number;
+  deep: boolean;
+  user: boolean;
+  computed: boolean;
+  sync: boolean;
+  dirty: boolean;
+  active: boolean;
+  dep: Dep;
+  deps: Array<Dep>;
+  newDeps: Array<Dep>;
+  depIds: SimpleSet;
+  newDepIds: SimpleSet;
+  before: ?Function;
+  getter: Function;
+  value: any;
+
+  constructor (
+    vm: Component,
+    expOrFn: string | Function,
+    cb: Function,
+    options?: ?Object,
+    isRenderWatcher?: boolean
+  ) {
+    this.vm = vm
+    if (isRenderWatcher) {
+      vm._watcher = this
+    }
+    vm._watchers.push(this)
+    // options
+    if (options) {
+      this.deep = !!options.deep
+      this.user = !!options.user
+      this.computed = !!options.computed
+      this.sync = !!options.sync
+      this.before = options.before
+    } else {
+      this.deep = this.user = this.computed = this.sync = false
+    }
+    this.cb = cb
+    this.id = ++uid // uid for batching
+    this.active = true
+    this.dirty = this.computed // for computed watchers
+    this.deps = []
+    this.newDeps = []
+    this.depIds = new Set()
+    this.newDepIds = new Set()
+    this.expression = process.env.NODE_ENV !== 'production'
+      ? expOrFn.toString()
+      : ''
+    // parse expression for getter
+    if (typeof expOrFn === 'function') {
+      this.getter = expOrFn
+    } else {
+      this.getter = parsePath(expOrFn)
+      if (!this.getter) {
+        this.getter = function () {}
+        process.env.NODE_ENV !== 'production' && warn(
+          `Failed watching path: "${expOrFn}" ` +
+          'Watcher only accepts simple dot-delimited paths. ' +
+          'For full control, use a function instead.',
+          vm
+        )
+      }
+    }
+    if (this.computed) {
+      this.value = undefined
+      this.dep = new Dep()
+    } else {
+      this.value = this.get()
+    }
+  }
+
+  /**
+   * Evaluate the getter, and re-collect dependencies.
+   */
+  get () {
+    pushTarget(this)
+    let value
+    const vm = this.vm
+    try {
+      value = this.getter.call(vm, vm)
+    } catch (e) {
+      if (this.user) {
+        handleError(e, vm, `getter for watcher "${this.expression}"`)
+      } else {
+        throw e
+      }
+    } finally {
+      // "touch" every property so they are all tracked as
+      // dependencies for deep watching
+      if (this.deep) {
+        traverse(value)
+      }
+      popTarget()
+      this.cleanupDeps()
+    }
+    return value
+  }
+
+  /**
+   * Add a dependency to this directive.
+   */
+  addDep (dep: Dep) {
+    const id = dep.id
+    if (!this.newDepIds.has(id)) {
+      this.newDepIds.add(id)
+      this.newDeps.push(dep)
+      if (!this.depIds.has(id)) {
+        dep.addSub(this)
+      }
+    }
+  }
+
+  /**
+   * Clean up for dependency collection.
+   */
+  cleanupDeps () {
+    let i = this.deps.length
+    while (i--) {
+      const dep = this.deps[i]
+      if (!this.newDepIds.has(dep.id)) {
+        dep.removeSub(this)
+      }
+    }
+    let tmp = this.depIds
+    this.depIds = this.newDepIds
+    this.newDepIds = tmp
+    this.newDepIds.clear()
+    tmp = this.deps
+    this.deps = this.newDeps
+    this.newDeps = tmp
+    this.newDeps.length = 0
+  }
+  // ...
+}
+```
+
+`Watcher` 是一个 Class，在它的构造函数中，定义了一些和 `Dep` 相关的属性：
+
+```js
+this.deps = []
+this.newDeps = []
+this.depIds = new Set()
+this.newDepIds = new Set()
+```
+
+其中，`this.deps` 和 `this.newDeps` 表示 `Watcher` 实例持有的 `Dep` 实例的数组；而 `this.depIds` 和 `this.newDepIds` 分别代表 `this.deps` 和 `this.newDeps` 的 `id` Set（这个 Set 是 ES6 的数据结构，它的实现在 `src/core/util/env.js` 中）。那么这里为何需要有 2 个 `Dep` 实例数组呢，稍后我们会解释。
+
+`Watcher` 还定义了一些原型的方法，和依赖收集相关的有 `get`、`addDep` 和 `cleanupDeps` 方法，单个介绍它们的实现不方便理解，我会结合整个依赖收集的过程把这几个方法讲清楚。
+
+### 4.3.3 过程分析
+
+之前我们介绍当对数据对象的访问会触发他们的 getter 方法，那么这些对象什么时候被访问呢？还记得之前我们介绍过 Vue 的 mount 过程是通过 `mountComponent` 函数，其中有一段比较重要的逻辑，大致如下：
+
+```js
+updateComponent = () => {
+  vm._update(vm._render(), hydrating)
+}
+new Watcher(vm, updateComponent, noop, {
+  before () {
+    if (vm._isMounted) {
+      callHook(vm, 'beforeUpdate')
+    }
+  }
+}, true /* isRenderWatcher */)
+```
+
+当我们去实例化一个渲染 `watcher` 的时候，首先进入 `watcher` 的构造函数逻辑，然后会执行它的 `this.get()` 方法，进入 `get` 函数，首先会执行：
+
+```js
+pushTarget(this)
+```
+
+`pushTarget` 的定义在 `src/core/observer/dep.js` 中：
+ 
+```js
+export function pushTarget (_target: Watcher) {
+  if (Dep.target) targetStack.push(Dep.target)
+  Dep.target = _target
+}
+```
+实际上就是把 `Dep.target` 赋值为当前的渲染 `watcher` 并压栈（为了恢复用）。接着又执行了：
+
+```js
+value = this.getter.call(vm, vm)
+```
+
+`this.getter` 对应就是 `updateComponent` 函数，这实际上就是在执行：
+```js
+vm._update(vm._render(), hydrating)
+```
+
+它会先执行 `vm._render()` 方法，因为之前分析过这个方法会生成 渲染 VNode，并且在这个过程中会对 `vm` 上的数据访问，这个时候就触发了数据对象的 getter。
+
+那么每个对象值的 getter 都持有一个 `dep`，在触发 getter 的时候会调用 `dep.depend()` 方法，也就会执行 `Dep.target.addDep(this)`。
+
+刚才我们提到这个时候 `Dep.target` 已经被赋值为渲染 `watcher`，那么就执行到 `addDep` 方法：
+
+```js
+addDep (dep: Dep) {
+  const id = dep.id
+  if (!this.newDepIds.has(id)) {
+    this.newDepIds.add(id)
+    this.newDeps.push(dep)
+    if (!this.depIds.has(id)) {
+      dep.addSub(this)
+    }
+  }
+}
+```
+
+这时候会做一些逻辑判断（保证同一数据不会被添加多次）后执行 `dep.addSub(this)`，那么就会执行 `this.subs.push(sub)`，也就是说把当前的 `watcher` 订阅到这个数据持有的 `dep` 的 `subs` 中，这个目的是为后续数据变化时候能通知到哪些 `subs` 做准备。
+
+所以在 `vm._render()` 过程中，会触发所有数据的 getter，这样实际上已经完成了一个依赖收集的过程。那么到这里就结束了么，其实并没有，在完成依赖收集后，还有几个逻辑要执行，首先是：
+
+```js
+if (this.deep) {
+  traverse(value)
+}
+```
+这个是要递归去访问 `value`，触发它所有子项的 `getter`，这个之后会详细讲。接下来执行：
+
+```js
+popTarget()
+```
+`popTarget` 的定义在 `src/core/observer/dep.js` 中：
+
+```js
+Dep.target = targetStack.pop()
+```
+
+实际上就是把 `Dep.target` 恢复成上一个状态，因为当前 vm 的数据依赖收集已经完成，那么对应的渲染`Dep.target` 也需要改变。最后执行：
+
+```js
+this.cleanupDeps()
+```
+
+其实很多人都分析过并了解到 Vue 有依赖收集的过程，但我几乎没有看到有人分析依赖清空的过程，其实这是大部分同学会忽视的一点，也是 Vue 考虑特别细的一点。
+
+```js
+cleanupDeps () {
+  let i = this.deps.length
+  while (i--) {
+    const dep = this.deps[i]
+    if (!this.newDepIds.has(dep.id)) {
+      dep.removeSub(this)
+    }
+  }
+  let tmp = this.depIds
+  this.depIds = this.newDepIds
+  this.newDepIds = tmp
+  this.newDepIds.clear()
+  tmp = this.deps
+  this.deps = this.newDeps
+  this.newDeps = tmp
+  this.newDeps.length = 0
+}
+```
+
+考虑到 Vue 是数据驱动的，所以每次数据变化都会重新 render，那么 `vm._render()` 方法又会再次执行，并再次触发数据的 getters，所以 `Wathcer` 在构造函数中会初始化 2 个 `Dep` 实例数组，`newDeps` 表示新添加的 `Dep` 实例数组，而 `deps` 表示上一次添加的 `Dep` 实例数组。
+
+在执行 `cleanupDeps` 函数的时候，会首先遍历 `deps`，移除对 `dep.subs` 数组中 `Wathcer` 的订阅，然后把 `newDepIds` 和 `depIds` 交换，`newDeps` 和 `deps` 交换，并把 `newDepIds` 和 `newDeps` 清空。
+
+那么为什么需要做 `deps` 订阅的移除呢，在添加 `deps` 的订阅过程，已经能通过 `id` 去重避免重复订阅了。
+
+考虑到一种场景，我们的模板会根据 `v-if` 去渲染不同子模板 a 和 b，当我们满足某种条件的时候渲染 a 的时候，会访问到 a 中的数据，这时候我们对 a 使用的数据添加了 getter，做了依赖收集，那么当我们去修改 a 的数据的时候，理应通知到这些订阅者。那么如果我们一旦改变了条件渲染了 b 模板，又会对 b 使用的数据添加了 getter，如果我们没有依赖移除的过程，那么这时候我去修改 a 模板的数据，会通知 a 数据的订阅的回调，这显然是有浪费的。
+
+因此 Vue 设计了在每次添加完新的订阅，会移除掉旧的订阅，这样就保证了在我们刚才的场景中，如果渲染 b 模板的时候去修改 a 模板的数据，a 数据订阅回调已经被移除了，所以不会有任何浪费，真的是非常赞叹 Vue 对一些细节上的处理。
+
+### 4.3.4 总结
+
+通过这一节的分析，我们对 Vue 数据的依赖收集过程已经有了认识，并且对这其中的一些细节做了分析。收集依赖的目的是为了当这些响应式数据发生变化，触发它们的 setter 的时候，能知道应该通知哪些订阅者去做相应的逻辑处理，我们把这个过程叫派发更新，其实 `Watcher` 和 `Dep` 就是一个非常经典的观察者设计模式的实现，下一节我们来详细分析一下派发更新的过程。
+
+## 4.4 派发更新
+
+通过上一节分析我们了解了响应式数据依赖收集过程，收集的目的就是为了当我们修改数据的时候，可以对相关的依赖派发更新，那么这一节我们来详细分析这个过程。
+
+我们先来回顾一下 setter 部分的逻辑：
+
+```js
+/**
+ * Define a reactive property on an Object.
+ */
+export function defineReactive (
+  obj: Object,
+  key: string,
+  val: any,
+  customSetter?: ?Function,
+  shallow?: boolean
+) {
+  const dep = new Dep()
+
+  const property = Object.getOwnPropertyDescriptor(obj, key)
+  if (property && property.configurable === false) {
+    return
+  }
+
+  // cater for pre-defined getter/setters
+  const getter = property && property.get
+  const setter = property && property.set
+  if ((!getter || setter) && arguments.length === 2) {
+    val = obj[key]
+  }
+
+  let childOb = !shallow && observe(val)
+  Object.defineProperty(obj, key, {
+    enumerable: true,
+    configurable: true,
+    // ...
+    set: function reactiveSetter (newVal) {
+      const value = getter ? getter.call(obj) : val
+      /* eslint-disable no-self-compare */
+      if (newVal === value || (newVal !== newVal && value !== value)) {
+        return
+      }
+      /* eslint-enable no-self-compare */
+      if (process.env.NODE_ENV !== 'production' && customSetter) {
+        customSetter()
+      }
+      if (setter) {
+        setter.call(obj, newVal)
+      } else {
+        val = newVal
+      }
+      childOb = !shallow && observe(newVal)
+      dep.notify()
+    }
+  })
+}
+```
+
+setter 的逻辑有 2 个关键的点，一个是 `childOb = !shallow && observe(newVal)`，如果 `shallow` 为 false 的情况，会对新设置的值变成一个响应式对象；另一个是 `dep.notify()`，通知所有的订阅者，这是本节的关键，接下来我会带大家完整的分析整个派发更新的过程。
+
+### 4.4.1 过程分析
+
+当我们在组件中对响应的数据做了修改，就会触发 setter 的逻辑，最后调用 `dep.notify()` 方法，它是 `Dep` 的一个实例方法，定义在 `src/core/observer/dep.js` 中：
+
+```js
+class Dep {
+  // ...
+  notify () {
+  // stabilize the subscriber list first
+    const subs = this.subs.slice()
+    for (let i = 0, l = subs.length; i < l; i++) {
+      subs[i].update()
+    }
+  }
+}
+```
+
+这里的逻辑非常简单，遍历所有的 `subs`，也就是 `Watcher` 的实例数组，然后调用每一个 `watcher` 的 `update` 方法，它的定义在 `src/core/observer/watcher.js` 中：
+
+```js
+class Watcher {
+  // ...
+  update () {
+    /* istanbul ignore else */
+    if (this.computed) {
+      // A computed property watcher has two modes: lazy and activated.
+      // It initializes as lazy by default, and only becomes activated when
+      // it is depended on by at least one subscriber, which is typically
+      // another computed property or a component's render function.
+      if (this.dep.subs.length === 0) {
+        // In lazy mode, we don't want to perform computations until necessary,
+        // so we simply mark the watcher as dirty. The actual computation is
+        // performed just-in-time in this.evaluate() when the computed property
+        // is accessed.
+        this.dirty = true
+      } else {
+        // In activated mode, we want to proactively perform the computation
+        // but only notify our subscribers when the value has indeed changed.
+        this.getAndInvoke(() => {
+          this.dep.notify()
+        })
+      }
+    } else if (this.sync) {
+      this.run()
+    } else {
+      queueWatcher(this)
+    }
+  }
+}  
+```
+
+这里对于 `Watcher` 的不同状态，会执行不同的逻辑，`computed` 和 `sync` 等状态的分析我会之后抽一小节详细介绍，在一般组件数据更新的场景，会走到最后一个 `queueWatcher(this)` 的逻辑，`queueWatcher` 的定义在 `src/core/observer/scheduler.js` 中：
+
+```js
+const queue: Array<Watcher> = []
+let has: { [key: number]: ?true } = {}
+let waiting = false
+let flushing = false
+/**
+ * Push a watcher into the watcher queue.
+ * Jobs with duplicate IDs will be skipped unless it's
+ * pushed when the queue is being flushed.
+ */
+export function queueWatcher (watcher: Watcher) {
+  const id = watcher.id
+  if (has[id] == null) {
+    has[id] = true
+    if (!flushing) {
+      queue.push(watcher)
+    } else {
+      // if already flushing, splice the watcher based on its id
+      // if already past its id, it will be run next immediately.
+      let i = queue.length - 1
+      while (i > index && queue[i].id > watcher.id) {
+        i--
+      }
+      queue.splice(i + 1, 0, watcher)
+    }
+    // queue the flush
+    if (!waiting) {
+      waiting = true
+      nextTick(flushSchedulerQueue)
+    }
+  }
+}
+```
+
+这里引入了一个队列的概念，这也是 Vue 在做派发更新的时候的一个优化的点，它并不会每次数据改变都触发 `watcher` 的回调，而是把这些 `watcher` 先添加到一个队列里，然后在 `nextTick` 后执行 `flushSchedulerQueue`。
+
+这里有几个细节要注意一下，首先用 `has` 对象保证同一个 `Watcher` 只添加一次；接着对 `flushing` 的判断，else 部分的逻辑稍后我会讲；最后通过 `waiting` 保证对 `nextTick(flushSchedulerQueue)` 的调用逻辑只有一次，另外 `nextTick` 的实现我之后会抽一小节专门去讲，目前就可以理解它是在下一个 tick，也就是异步的去执行 `flushSchedulerQueue`。
+
+接下来我们来看 `flushSchedulerQueue` 的实现，它的定义在 `src/core/observer/scheduler.js` 中。
+
+```js
+let flushing = false
+let index = 0
+/**
+ * Flush both queues and run the watchers.
+ */
+function flushSchedulerQueue () {
+  flushing = true
+  let watcher, id
+
+  // Sort queue before flush.
+  // This ensures that:
+  // 1. Components are updated from parent to child. (because parent is always
+  //    created before the child)
+  // 2. A component's user watchers are run before its render watcher (because
+  //    user watchers are created before the render watcher)
+  // 3. If a component is destroyed during a parent component's watcher run,
+  //    its watchers can be skipped.
+  queue.sort((a, b) => a.id - b.id)
+
+  // do not cache length because more watchers might be pushed
+  // as we run existing watchers
+  for (index = 0; index < queue.length; index++) {
+    watcher = queue[index]
+    if (watcher.before) {
+      watcher.before()
+    }
+    id = watcher.id
+    has[id] = null
+    watcher.run()
+    // in dev build, check and stop circular updates.
+    if (process.env.NODE_ENV !== 'production' && has[id] != null) {
+      circular[id] = (circular[id] || 0) + 1
+      if (circular[id] > MAX_UPDATE_COUNT) {
+        warn(
+          'You may have an infinite update loop ' + (
+            watcher.user
+              ? `in watcher with expression "${watcher.expression}"`
+              : `in a component render function.`
+          ),
+          watcher.vm
+        )
+        break
+      }
+    }
+  }
+
+  // keep copies of post queues before resetting state
+  const activatedQueue = activatedChildren.slice()
+  const updatedQueue = queue.slice()
+
+  resetSchedulerState()
+
+  // call component updated and activated hooks
+  callActivatedHooks(activatedQueue)
+  callUpdatedHooks(updatedQueue)
+
+  // devtool hook
+  /* istanbul ignore if */
+  if (devtools && config.devtools) {
+    devtools.emit('flush')
+  }
+}
+```
+
+这里有几个重要的逻辑要梳理一下，对于一些分支逻辑如 `keep-alive` 组件相关和之前提到过的 `updated` 钩子函数的执行会略过。
+
+- 队列排序
+
+`queue.sort((a, b) => a.id - b.id)` 对队列做了从小到大的排序，这么做主要有以下要确保以下几点：
+
+1. 组件的更新由父到子；因为父组件的创建过程是先于子的，所以 `watcher` 的创建也是先父后子，执行顺序也应该保持先父后子。
+2. 用户的自定义 `watcher` 要优先于渲染 `watcher` 执行；因为用户自定义 `watcher` 是在渲染 `watcher` 之前创建的。
+3. 如果一个组件在父组件的 `watcher` 执行期间被销毁，那么它对应的 `watcher` 执行都可以被跳过，所以父组件的 `watcher` 应该先执行。
+
+- 队列遍历
+
+在对 `queue` 排序后，接着就是要对它做遍历，拿到对应的 `watcher`，执行 `watcher.run()`。这里需要注意一个细节，在遍历的时候每次都会对 `queue.length` 求值，因为在 `watcher.run()` 的时候，很可能用户会再次添加新的 `watcher`，这样会再次执行到 `queueWatcher`，如下：
+
+```js
+export function queueWatcher (watcher: Watcher) {
+  const id = watcher.id
+  if (has[id] == null) {
+    has[id] = true
+    if (!flushing) {
+      queue.push(watcher)
+    } else {
+      // if already flushing, splice the watcher based on its id
+      // if already past its id, it will be run next immediately.
+      let i = queue.length - 1
+      while (i > index && queue[i].id > watcher.id) {
+        i--
+      }
+      queue.splice(i + 1, 0, watcher)
+    }
+    // ...
+  }
+}
+```
+可以看到，这时候 `flushing` 为 true，就会执行到 else 的逻辑，然后就会从后往前找，找到第一个待插入 `watcher` 的 id 比当前队列中 `watcher` 的 id 大的位置。把 `watcher` 按照 `id `的插入到队列中，因此 `queue` 的长度发生了变化。
+
+- 状态恢复
+
+这个过程就是执行 `resetSchedulerState` 函数，它的定义在 `src/core/observer/scheduler.js` 中。
+
+```js
+const queue: Array<Watcher> = []
+let has: { [key: number]: ?true } = {}
+let circular: { [key: number]: number } = {}
+let waiting = false
+let flushing = false
+let index = 0
+/**
+ * Reset the scheduler's state.
+ */
+function resetSchedulerState () {
+  index = queue.length = activatedChildren.length = 0
+  has = {}
+  if (process.env.NODE_ENV !== 'production') {
+    circular = {}
+  }
+  waiting = flushing = false
+}
+```
+逻辑非常简单，就是把这些控制流程状态的一些变量恢复到初始值，把 `watcher` 队列清空。
+
+接下来我们继续分析 `watcher.run()` 的逻辑，它的定义在 `src/core/observer/watcher.js` 中。
+
+```js
+class Watcher {
+  /**
+   * Scheduler job interface.
+   * Will be called by the scheduler.
+   */
+  run () {
+    if (this.active) {
+      this.getAndInvoke(this.cb)
+    }
+  }
+
+  getAndInvoke (cb: Function) {
+    const value = this.get()
+    if (
+      value !== this.value ||
+      // Deep watchers and watchers on Object/Arrays should fire even
+      // when the value is the same, because the value may
+      // have mutated.
+      isObject(value) ||
+      this.deep
+    ) {
+      // set new value
+      const oldValue = this.value
+      this.value = value
+      this.dirty = false
+      if (this.user) {
+        try {
+          cb.call(this.vm, value, oldValue)
+        } catch (e) {
+          handleError(e, this.vm, `callback for watcher "${this.expression}"`)
+        }
+      } else {
+        cb.call(this.vm, value, oldValue)
+      }
+    }
+  }
+}
+```
+
+`run` 函数实际上就是执行 `this.getAndInvoke` 方法，并传入 `watcher` 的回调函数。`getAndInvoke` 函数逻辑也很简单，先通过 `this.get()` 得到它当前的值，然后做判断，如果满足新旧值不等、新值是对象类型、`deep` 模式任何一个条件，则执行 `watcher` 的回调，注意回调函数执行的时候会把第一个和第二个参数传入新值 `value` 和旧值 `oldValue`，这就是当我们添加自定义 `watcher` 的时候能在回调函数的参数中拿到新旧值的原因。
+
+那么对于渲染 `watcher` 而言，它在执行 `this.get()` 方法求值的时候，会执行 `getter` 方法：
+
+```js
+updateComponent = () => {
+  vm._update(vm._render(), hydrating)
+}
+```
+
+所以这就是当我们去修改组件相关的响应式数据的时候，会触发组件重新渲染的原因，接着就会重新执行 `patch` 的过程，但它和首次渲染有所不同，之后我们会花一小节去详细介绍。
+
+### 4.4.2 总结
+
+通过这一节的分析，我们对 Vue 数据修改派发更新的过程也有了认识，实际上就是当数据发生变化的时候，触发 setter 逻辑，把在依赖过程中订阅的的所有观察者，也就是 `watcher`，都触发它们的 `update` 过程，这个过程又利用了队列做了进一步优化，在 `nextTick` 后执行所有 `watcher` 的 `run`，最后执行它们的回调函数。`nextTick` 是 Vue 一个比较核心的实现了，下一节我们来重点分析它的实现。
+
+## 4.5 nextTick
+
+`nextTick` 是 Vue 的一个核心实现，在介绍 Vue 的 nextTick 之前，为了方便大家理解，我先简单介绍一下 JS 的运行机制。
+
+### 4.5.1 JS 运行机制
+
+JS 执行是单线程的，它是基于事件循环的。事件循环大致分为以下几个步骤：
+
+1. 所有同步任务都在主线程上执行，形成一个执行栈（execution context stack）。
+2. 主线程之外，还存在一个"任务队列"（task queue）。只要异步任务有了运行结果，就在"任务队列"之中放置一个事件。
+3. 一旦"执行栈"中的所有同步任务执行完毕，系统就会读取"任务队列"，看看里面有哪些事件。那些对应的异步任务，于是结束等待状态，进入执行栈，开始执行。
+4. 主线程不断重复上面的第三步。
+
+<img :src="$withBase('/assets/event-loop.png')"/>
+
+主线程的执行过程就是一个 tick，而所有的异步结果都是通过 “任务队列” 来调度。 消息队列中存放的是一个个的任务（task）。 规范中规定 task 分为两大类，分别是 macro task 和 micro task，并且每个 macro task 结束后，都要清空所有的 micro task。
+
+关于 macro task 和 micro task 的概念，这里不会细讲，简单通过一段代码演示他们的执行顺序：
+
+```js
+for (macroTask of macroTaskQueue) {
+    // 1. Handle current MACRO-TASK
+    handleMacroTask();
+      
+    // 2. Handle all MICRO-TASK
+    for (microTask of microTaskQueue) {
+        handleMicroTask(microTask);
+    }
+}
+```
+在浏览器环境中，常见的 macro task 有 setTimeout、MessageChannel、postMessage、setImmediate；常见的 micro task 有 MutationObsever 和 Promise.then。
+
+### 4.5.2 Vue 的实现
+
+在 Vue 源码 2.5+ 后，`nextTick` 的实现单独有一个 JS 文件来维护它，它的源码并不多，总共也就 100 多行。接下来我们来看一下它的实现，在 `src/core/util/next-tick.js` 中：
+
+```js
+import { noop } from 'shared/util'
+import { handleError } from './error'
+import { isIOS, isNative } from './env'
+
+const callbacks = []
+let pending = false
+
+function flushCallbacks () {
+  pending = false
+  const copies = callbacks.slice(0)
+  callbacks.length = 0
+  for (let i = 0; i < copies.length; i++) {
+    copies[i]()
+  }
+}
+
+// Here we have async deferring wrappers using both microtasks and (macro) tasks.
+// In < 2.4 we used microtasks everywhere, but there are some scenarios where
+// microtasks have too high a priority and fire in between supposedly
+// sequential events (e.g. #4521, #6690) or even between bubbling of the same
+// event (#6566). However, using (macro) tasks everywhere also has subtle problems
+// when state is changed right before repaint (e.g. #6813, out-in transitions).
+// Here we use microtask by default, but expose a way to force (macro) task when
+// needed (e.g. in event handlers attached by v-on).
+let microTimerFunc
+let macroTimerFunc
+let useMacroTask = false
+
+// Determine (macro) task defer implementation.
+// Technically setImmediate should be the ideal choice, but it's only available
+// in IE. The only polyfill that consistently queues the callback after all DOM
+// events triggered in the same loop is by using MessageChannel.
+/* istanbul ignore if */
+if (typeof setImmediate !== 'undefined' && isNative(setImmediate)) {
+  macroTimerFunc = () => {
+    setImmediate(flushCallbacks)
+  }
+} else if (typeof MessageChannel !== 'undefined' && (
+  isNative(MessageChannel) ||
+  // PhantomJS
+  MessageChannel.toString() === '[object MessageChannelConstructor]'
+)) {
+  const channel = new MessageChannel()
+  const port = channel.port2
+  channel.port1.onmessage = flushCallbacks
+  macroTimerFunc = () => {
+    port.postMessage(1)
+  }
+} else {
+  /* istanbul ignore next */
+  macroTimerFunc = () => {
+    setTimeout(flushCallbacks, 0)
+  }
+}
+
+// Determine microtask defer implementation.
+/* istanbul ignore next, $flow-disable-line */
+if (typeof Promise !== 'undefined' && isNative(Promise)) {
+  const p = Promise.resolve()
+  microTimerFunc = () => {
+    p.then(flushCallbacks)
+    // in problematic UIWebViews, Promise.then doesn't completely break, but
+    // it can get stuck in a weird state where callbacks are pushed into the
+    // microtask queue but the queue isn't being flushed, until the browser
+    // needs to do some other work, e.g. handle a timer. Therefore we can
+    // "force" the microtask queue to be flushed by adding an empty timer.
+    if (isIOS) setTimeout(noop)
+  }
+} else {
+  // fallback to macro
+  microTimerFunc = macroTimerFunc
+}
+
+/**
+ * Wrap a function so that if any code inside triggers state change,
+ * the changes are queued using a (macro) task instead of a microtask.
+ */
+export function withMacroTask (fn: Function): Function {
+  return fn._withTask || (fn._withTask = function () {
+    useMacroTask = true
+    const res = fn.apply(null, arguments)
+    useMacroTask = false
+    return res
+  })
+}
+
+export function nextTick (cb?: Function, ctx?: Object) {
+  let _resolve
+  callbacks.push(() => {
+    if (cb) {
+      try {
+        cb.call(ctx)
+      } catch (e) {
+        handleError(e, ctx, 'nextTick')
+      }
+    } else if (_resolve) {
+      _resolve(ctx)
+    }
+  })
+  if (!pending) {
+    pending = true
+    if (useMacroTask) {
+      macroTimerFunc()
+    } else {
+      microTimerFunc()
+    }
+  }
+  // $flow-disable-line
+  if (!cb && typeof Promise !== 'undefined') {
+    return new Promise(resolve => {
+      _resolve = resolve
+    })
+  }
+}
+```
+`next-tick.js` 申明了 `microTimerFunc` 和 `macroTimerFunc` 2 个变量，它们分别对应的是 micro task 的函数和 macro task 的函数。对于 macro task 的实现，优先检测是否支持原生 `setImmediate`，这是一个高版本 IE 和 Edge 才支持的特性，不支持的话再去检测是否支持原生的 `MessageChannel`，如果也不支持的话就会降级为 `setTimeout 0`；而对于 micro task 的实现，则检测浏览器是否原生支持 Promise，不支持的话直接指向 macro task 的实现。
+
+`next-tick.js` 对外暴露了 2 个函数，先来看 `nextTick`，这就是我们在上一节执行 `nextTick(flushSchedulerQueue)` 所用到的函数。它的逻辑也很简单，把传入的回调函数 `cb` 压入 `callbacks` 数组，最后一次性地根据 `useMacroTask` 条件执行 `macroTimerFunc` 或者是 `microTimerFunc`，而它们都会在下一个 tick 执行 `flushCallbacks`，`flushCallbacks` 的逻辑非常简单，对 `callbacks` 遍历，然后执行相应的回调函数。
+
+这里使用 `callbacks` 而不是直接在 `nextTick` 中执行回调函数的原因是保证在同一个 tick 内多次执行 `nextTick`，不会开启多个异步任务，而把这些异步任务都压成一个同步任务，在下一个 tick 执行完毕。
+
+`nextTick` 函数最后还有一段逻辑：
+```js
+ if (!cb && typeof Promise !== 'undefined') {
+  return new Promise(resolve => {
+    _resolve = resolve
+  })
+}
+```
+这是当 `nextTick` 不传 `cb` 参数的时候，提供一个 Promise 化的调用，比如：
+```js
+nextTick().then(() => {})
+```
+当 `_resolve` 函数执行，就会跳到 `then` 的逻辑中。
+
+`next-tick.js` 还对外暴露了 `withMacroTask` 函数，它是对函数做一层包装，确保函数执行过程中对数据任意的修改，触发变化执行 `nextTick` 的时候强制走 `macroTimerFunc`。比如对于一些 DOM 交互事件，如 `v-on` 绑定的事件回调函数的处理，会强制走 macro task。
+
+### 4.5.3 总结
+
+通过这一节对 `nextTick` 的分析，并结合上一节的 setter 分析，我们了解到数据的变化到 DOM 的重新渲染是一个异步过程，发生在下一个 tick。这就是我们平时在开发的过程中，比如从服务端接口去获取数据的时候，数据做了修改，如果我们的某些方法去依赖了数据修改后的 DOM 变化，我们就必须在 `nextTick` 后执行。比如下面的伪代码：
+
+```js
+getData(res).then(()=>{
+  this.xxx = res.data
+  this.$nextTick(() => {
+    // 这里我们可以获取变化后的 DOM
+  })
+})
+```
+
+Vue.js 提供了 2 种调用 `nextTick` 的方式，一种是全局 API `Vue.nextTick`，一种是实例上的方法 `vm.$nextTick`，无论我们使用哪一种，最后都是调用 `next-tick.js` 中实现的 `nextTick` 方法。
+
+
+## 4.6 检测变化的注意事项
+
+通过前面几节的分析，我们对响应式数据对象以及它的 getter 和 setter 部分做了了解，但是对于一些特殊情况是需要注意的，接下来我们就从源码的角度来看 Vue 是如何处理这些特殊情况的。
+
+### 4.6.1 对象添加属性
+
+对于使用 `Object.defineProperty` 实现响应式的对象，当我们去给这个对象添加一个新的属性的时候，是不能够触发它的 setter 的，比如：
+
+```js
+var vm = new Vue({
+  data:{
+    a:1
+  }
+})
+// vm.b 是非响应的
+vm.b = 2
+```
+
+但是添加新属性的场景我们在平时开发中会经常遇到，那么 Vue 为了解决这个问题，定义了一个全局 API `Vue.set` 方法，它在 `src/core/global-api/index.js` 中初始化：
+
+```js
+Vue.set = set
+```
+这个 `set` 方法的定义在 `src/core/observer/index.js` 中：
+
+```js
+/**
+ * Set a property on an object. Adds the new property and
+ * triggers change notification if the property doesn't
+ * already exist.
+ */
+export function set (target: Array<any> | Object, key: any, val: any): any {
+  if (process.env.NODE_ENV !== 'production' &&
+    (isUndef(target) || isPrimitive(target))
+  ) {
+    warn(`Cannot set reactive property on undefined, null, or primitive value: ${(target: any)}`)
+  }
+  if (Array.isArray(target) && isValidArrayIndex(key)) {
+    target.length = Math.max(target.length, key)
+    target.splice(key, 1, val)
+    return val
+  }
+  if (key in target && !(key in Object.prototype)) {
+    target[key] = val
+    return val
+  }
+  const ob = (target: any).__ob__
+  if (target._isVue || (ob && ob.vmCount)) {
+    process.env.NODE_ENV !== 'production' && warn(
+      'Avoid adding reactive properties to a Vue instance or its root $data ' +
+      'at runtime - declare it upfront in the data option.'
+    )
+    return val
+  }
+  if (!ob) {
+    target[key] = val
+    return val
+  }
+  defineReactive(ob.value, key, val)
+  ob.dep.notify()
+  return val
+}
+```
+
+`set` 方法接收 3个参数，`target` 可能是数组或者是普通对象，`key` 代表的是数组的下标或者是对象的键值，`val` 代表添加的值。首先判断如果 `target` 是数组且 `key` 是一个合法的下标，则之前通过 `splice` 去添加进数组然后返回，这里的 `splice` 其实已经不仅仅是原生数组的 `splice` 了，稍后我会详细介绍数组的逻辑。接着又判断 `key` 已经存在于 `target` 中，则直接赋值返回，因为这样的变化是可以观测到了。接着再获取到 `target.__ob__` 并赋值给 `ob`，之前分析过它是在 `Observer` 的构造函数执行的时候初始化的，表示 `Observer` 的一个实例，如果它不存在，则说明 `target` 不是一个响应式的对象，则直接赋值并返回。最后通过 ` defineReactive(ob.value, key, val)` 把新添加的属性变成响应式对象，然后再通过 `ob.dep.notify()` 手动的触发依赖通知，还记得我们在给对象添加 getter 的时候有这么一段逻辑：
+
+```js
+export function defineReactive (
+  obj: Object,
+  key: string,
+  val: any,
+  customSetter?: ?Function,
+  shallow?: boolean
+) {
+  // ...
+  let childOb = !shallow && observe(val)
+  Object.defineProperty(obj, key, {
+    enumerable: true,
+    configurable: true,
+    get: function reactiveGetter () {
+      const value = getter ? getter.call(obj) : val
+      if (Dep.target) {
+        dep.depend()
+        if (childOb) {
+          childOb.dep.depend()
+          if (Array.isArray(value)) {
+            dependArray(value)
+          }
+        }
+      }
+      return value
+    },
+    // ...
+  })
+}
+```
+
+在 getter 过程中判断了 `childOb`，并调用了 `childOb.dep.depend()` 收集了依赖，这就是为什么执行 `Vue.set` 的时候通过 `ob.dep.notify()` 能够通知到 `watcher `，从而让添加新的属性到对象也可以检测到变化。这里如果 `value` 是个数组，那么就通过 `dependArray` 把数组每个元素也去做依赖收集。
+
+### 4.6.2 数组
+
+接着说一下数组的情况，Vue 也是不能检测到以下变动的数组：
+
+1. 当你利用索引直接设置一个项时，例如：`vm.items[indexOfItem] = newValue`
+2. 当你修改数组的长度时，例如：`vm.items.length = newLength`
+
+对于第一种情况，可以使用：`Vue.set(example1.items, indexOfItem, newValue)`；而对于第二种情况，可以使用 `vm.items.splice(newLength)`。
+
+我们刚才也分析到，对于 `Vue.set` 的实现，当 `target` 是数组的时候，也是通过 `target.splice(key, 1, val)` 来添加的，那么这里的 `splice` 到底有什么黑魔法，能让添加的对象变成响应式的呢。
+
+其实之前我们也分析过，在通过 `observe` 方法去观察对象的时候会实例化 `Observer`，在它的构造函数中是专门对数组做了处理，它的定义在 `src/core/observer/index.js` 中。
+
+```js
+export class Observer {
+  constructor (value: any) {
+    this.value = value
+    this.dep = new Dep()
+    this.vmCount = 0
+    def(value, '__ob__', this)
+    if (Array.isArray(value)) {
+      const augment = hasProto
+        ? protoAugment
+        : copyAugment
+      augment(value, arrayMethods, arrayKeys)
+      this.observeArray(value)
+    } else {
+      // ...
+    }
+  }
+}
+```
+这里我们只需要关注 `value` 是 Array 的情况，首先获取 `augment`，这里的 `hasProto` 实际上就是判断对象中是否存在 `__proto__`，如果存在则 `augment` 指向 `protoAugment`， 否则指向 `copyAugment`，来看一下这两个函数的定义：
+
+```js
+/**
+ * Augment an target Object or Array by intercepting
+ * the prototype chain using __proto__
+ */
+function protoAugment (target, src: Object, keys: any) {
+  /* eslint-disable no-proto */
+  target.__proto__ = src
+  /* eslint-enable no-proto */
+}
+
+/**
+ * Augment an target Object or Array by defining
+ * hidden properties.
+ */
+/* istanbul ignore next */
+function copyAugment (target: Object, src: Object, keys: Array<string>) {
+  for (let i = 0, l = keys.length; i < l; i++) {
+    const key = keys[i]
+    def(target, key, src[key])
+  }
+}
+```
+
+`protoAugment` 方法是直接把 `target.__proto__` 原型直接修改为 `src`，而 `copyAugment` 方法是遍历 keys，通过 `def`，也就是 `Object.defineProperty` 去定义它自身的属性值。对于大部分现代浏览器都会走到 `protoAugment`，那么它实际上就把 `value` 的原型指向了 `arrayMethods`，`arrayMethods` 的定义在 `src/core/observer/array.js` 中：
+
+```js
+import { def } from '../util/index'
+
+const arrayProto = Array.prototype
+export const arrayMethods = Object.create(arrayProto)
+
+const methodsToPatch = [
+  'push',
+  'pop',
+  'shift',
+  'unshift',
+  'splice',
+  'sort',
+  'reverse'
+]
+
+/**
+ * Intercept mutating methods and emit events
+ */
+methodsToPatch.forEach(function (method) {
+  // cache original method
+  const original = arrayProto[method]
+  def(arrayMethods, method, function mutator (...args) {
+    const result = original.apply(this, args)
+    const ob = this.__ob__
+    let inserted
+    switch (method) {
+      case 'push':
+      case 'unshift':
+        inserted = args
+        break
+      case 'splice':
+        inserted = args.slice(2)
+        break
+    }
+    if (inserted) ob.observeArray(inserted)
+    // notify change
+    ob.dep.notify()
+    return result
+  })
+})
+```
+可以看到，`arrayMethods` 首先继承了 `Array`，然后对数组中所有能改变数组自身的方法，如 `push、pop` 等这些方法进行重写。重写后的方法会先执行它们本身原有的逻辑，并对能增加数组长度的 3 个方法 `push、unshift、splice` 方法做了判断，获取到插入的值，然后把新添加的值变成一个响应式对象，并且再调用 ` ob.dep.notify()` 手动触发依赖通知，这就很好地解释了之前的示例中调用 `vm.items.splice(newLength)` 方法可以检测到变化。
+
+### 4.6.3 总结
+
+通过这一节的分析，我们对响应式对象又有了更全面的认识，如果在实际工作中遇到了这些特殊情况，我们就可以知道如何把它们也变成响应式的对象。其实对于对象属性的删除也会用同样的问题，Vue 同样提供了 `Vue.del` 的全局 API，它的实现和 `Vue.set` 大同小异，甚至还要更简单一些，这里我就不去分析了，感兴趣的同学可以自行去了解。
+
+## 4.7 计算属性 VS 侦听属性
+
+Vue 的组件对象支持了计算属性 `computed` 和侦听属性 `watch` 2 个选项，很多同学不了解什么时候该用 `computed` 什么时候该用 `watch`。先不回答这个问题，我们接下来从源码实现的角度来分析它们两者有什么区别。
+
+### 4.7.1 computed
+
+计算属性的初始化是发生在 Vue 实例初始化阶段的 `initState` 函数中，执行了 `if (opts.computed) initComputed(vm, opts.computed)`，`initComputed` 的定义在 `src/core/instance/state.js` 中：
+
+```js
+const computedWatcherOptions = { computed: true }
+function initComputed (vm: Component, computed: Object) {
+  // $flow-disable-line
+  const watchers = vm._computedWatchers = Object.create(null)
+  // computed properties are just getters during SSR
+  const isSSR = isServerRendering()
+
+  for (const key in computed) {
+    const userDef = computed[key]
+    const getter = typeof userDef === 'function' ? userDef : userDef.get
+    if (process.env.NODE_ENV !== 'production' && getter == null) {
+      warn(
+        `Getter is missing for computed property "${key}".`,
+        vm
+      )
+    }
+
+    if (!isSSR) {
+      // create internal watcher for the computed property.
+      watchers[key] = new Watcher(
+        vm,
+        getter || noop,
+        noop,
+        computedWatcherOptions
+      )
+    }
+
+    // component-defined computed properties are already defined on the
+    // component prototype. We only need to define computed properties defined
+    // at instantiation here.
+    if (!(key in vm)) {
+      defineComputed(vm, key, userDef)
+    } else if (process.env.NODE_ENV !== 'production') {
+      if (key in vm.$data) {
+        warn(`The computed property "${key}" is already defined in data.`, vm)
+      } else if (vm.$options.props && key in vm.$options.props) {
+        warn(`The computed property "${key}" is already defined as a prop.`, vm)
+      }
+    }
+  }
+}
+```
+
+函数首先创建 `vm._computedWatchers` 为一个空对象，接着对 `computed` 对象做遍历，拿到计算属性的每一个 `userDef`，然后尝试获取这个 `userDef` 对应的 `getter` 函数，拿不到则在开发环境下报警告。接下来为每一个 `getter` 创建一个 `watcher`，这个 `watcher` 和渲染 `watcher` 有一点很大的不同，它是一个 `computed watcher`，因为 `const computedWatcherOptions = { computed: true }`。`computed watcher` 和普通 `watcher` 的差别我稍后会介绍。最后对判断如果 `key` 不是 `vm` 的属性，则调用 `defineComputed(vm, key, userDef)`，否则判断计算属性对于的 `key` 是否已经被 `data` 或者 `prop` 所占用，如果是的话则在开发环境报相应的警告。
+ 
+ 那么接下来需要重点关注 `defineComputed` 的实现：
+ 
+```js
+export function defineComputed (
+  target: any,
+  key: string,
+  userDef: Object | Function
+) {
+  const shouldCache = !isServerRendering()
+  if (typeof userDef === 'function') {
+    sharedPropertyDefinition.get = shouldCache
+      ? createComputedGetter(key)
+      : userDef
+    sharedPropertyDefinition.set = noop
+  } else {
+    sharedPropertyDefinition.get = userDef.get
+      ? shouldCache && userDef.cache !== false
+        ? createComputedGetter(key)
+        : userDef.get
+      : noop
+    sharedPropertyDefinition.set = userDef.set
+      ? userDef.set
+      : noop
+  }
+  if (process.env.NODE_ENV !== 'production' &&
+      sharedPropertyDefinition.set === noop) {
+    sharedPropertyDefinition.set = function () {
+      warn(
+        `Computed property "${key}" was assigned to but it has no setter.`,
+        this
+      )
+    }
+  }
+  Object.defineProperty(target, key, sharedPropertyDefinition)
+}
+```
+
+这段逻辑很简单，其实就是利用 `Object.defineProperty` 给计算属性对应的 `key` 值添加 getter 和 setter，setter 通常是计算属性是一个对象，并且拥有 `set` 方法的时候才有，否则是一个空函数。在平时的开发场景中，计算属性有 setter 的情况比较少，我们重点关注一下 getter 部分，缓存的配置也先忽略，最终 getter 对应的是 `createComputedGetter(key)` 的返回值，来看一下它的定义：
+
+```js
+function createComputedGetter (key) {
+  return function computedGetter () {
+    const watcher = this._computedWatchers && this._computedWatchers[key]
+    if (watcher) {
+      watcher.depend()
+      return watcher.evaluate()
+    }
+  }
+}
+```
+`createComputedGetter` 返回一个函数 `computedGetter`，它就是计算属性对应的 getter。
+
+整个计算属性的初始化过程到此结束，我们知道计算属性是一个 `computed watcher`，它和普通的 `watcher` 有什么区别呢，为了更加直观，接下来来我们来通过一个例子来分析 `computed watcher` 的实现。
+
+```js
+var vm = new Vue({
+  data: {
+    firstName: 'Foo',
+    lastName: 'Bar'
+  },
+  computed: {
+    fullName: function () {
+      return this.firstName + ' ' + this.lastName
+    }
+  }
+})
+```
+
+当初始化这个 `computed watcher` 实例的时候，构造函数部分逻辑稍有不同：
+
+```js
+constructor (
+  vm: Component,
+  expOrFn: string | Function,
+  cb: Function,
+  options?: ?Object,
+  isRenderWatcher?: boolean
+) {
+  // ...
+  if (this.computed) {
+    this.value = undefined
+    this.dep = new Dep()
+  } else {
+    this.value = this.get()
+  }
+}  
+```
+
+可以发现 `computed watcher` 会并不会立刻求值，同时持有一个 `dep` 实例。
+
+然后当我们的 `render` 函数执行访问到 `this.fullName` 的时候，就触发了计算属性的 `getter`，它会拿到计算属性对应的 `watcher`，然后执行 `watcher.depend()`，来看一下它的定义：
+
+```js
+/**
+  * Depend on this watcher. Only for computed property watchers.
+  */
+depend () {
+  if (this.dep && Dep.target) {
+    this.dep.depend()
+  }
+}
+```
+
+注意，这时候的 `Dep.target` 是渲染 `watcher`，所以 `this.dep.depend()` 相当于渲染 `watcher` 订阅了这个 `computed watcher` 的变化。
+
+然后再执行 `watcher.evaluate()` 去求值，来看一下它的定义：
+
+```js
+/**
+  * Evaluate and return the value of the watcher.
+  * This only gets called for computed property watchers.
+  */
+evaluate () {
+  if (this.dirty) {
+    this.value = this.get()
+    this.dirty = false
+  }
+  return this.value
+}
+```
+`evaluate` 的逻辑非常简单，判断 `this.dirty`，如果为 `true` 则通过 `this.get()` 求值，然后把 `this.dirty` 设置为 false。在求值过程中，会执行 `value = this.getter.call(vm, vm)`，这实际上就是执行了计算属性定义的 `getter` 函数，在我们这个例子就是执行了 `return this.firstName + ' ' + this.lastName`。
+
+这里需要特别注意的是，由于 `this.firstName` 和 `this.lastName` 都是响应式对象，这里会触发它们的 getter，根据我们之前的分析，它们会把自身持有的 `dep` 添加到当前正在计算的 `watcher` 中，这个时候 `Dep.target` 就是这个 `computed watcher`。
+
+最后通过 `return this.value` 拿到计算属性对应的值。我们知道了计算属性的求值过程，那么接下来看一下它依赖的数据变化后的逻辑。
+
+一旦我们对计算属性依赖的数据做修改，则会触发 setter 过程，通知所有订阅它变化的 `watcher` 更新，执行 `watcher.update()` 方法：
+
+````js
+/* istanbul ignore else */
+if (this.computed) {
+  // A computed property watcher has two modes: lazy and activated.
+  // It initializes as lazy by default, and only becomes activated when
+  // it is depended on by at least one subscriber, which is typically
+  // another computed property or a component's render function.
+  if (this.dep.subs.length === 0) {
+    // In lazy mode, we don't want to perform computations until necessary,
+    // so we simply mark the watcher as dirty. The actual computation is
+    // performed just-in-time in this.evaluate() when the computed property
+    // is accessed.
+    this.dirty = true
+  } else {
+    // In activated mode, we want to proactively perform the computation
+    // but only notify our subscribers when the value has indeed changed.
+    this.getAndInvoke(() => {
+      this.dep.notify()
+    })
+  }
+} else if (this.sync) {
+  this.run()
+} else {
+  queueWatcher(this)
+}
+````
+
+那么对于计算属性这样的 `computed watcher`，它实际上是有 2 种模式，lazy 和 active。如果 `this.dep.subs.length === 0` 成立，则说明没有人去订阅这个 `computed watcher` 的变化，仅仅把 `this.dirty = true`，只有当下次再访问这个计算属性的时候才会重新求值。在我们的场景下，渲染 `watcher` 订阅了这个 `computed watcher` 的变化，那么它会执行：
+
+```js
+this.getAndInvoke(() => {
+  this.dep.notify()
+})
+
+getAndInvoke (cb: Function) {
+  const value = this.get()
+  if (
+    value !== this.value ||
+    // Deep watchers and watchers on Object/Arrays should fire even
+    // when the value is the same, because the value may
+    // have mutated.
+    isObject(value) ||
+    this.deep
+  ) {
+    // set new value
+    const oldValue = this.value
+    this.value = value
+    this.dirty = false
+    if (this.user) {
+      try {
+        cb.call(this.vm, value, oldValue)
+      } catch (e) {
+        handleError(e, this.vm, `callback for watcher "${this.expression}"`)
+      }
+    } else {
+      cb.call(this.vm, value, oldValue)
+    }
+  }
+}
+
+```
+
+`getAndInvoke` 函数会重新计算，然后对比新旧值，如果变化了则执行回调函数，那么这里这个回调函数是 `this.dep.notify()`，在我们这个场景下就是触发了渲染 `watcher` 重新渲染。
+
+通过以上的分析，我们知道计算属性本质上就是一个 `computed watcher`，也了解了它的创建过程和被访问触发 getter 以及依赖更新的过程，其实这是最新的计算属性的实现，之所以这么设计是因为 Vue 想确保不仅仅是计算属性依赖的值发生变化，而是当计算属性最终计算的值发生变化才会触发渲染 `watcher` 重新渲染，本质上是一种优化。
+
+接下来我们来分析一下侦听属性 `watch` 是怎么实现的。
+
+### 4.7.2 watch
+
+侦听属性的初始化也是发生在 Vue 的实例初始化阶段的 `initState` 函数中，在 `computed` 初始化之后，执行了：
+
+```js
+if (opts.watch && opts.watch !== nativeWatch) {
+  initWatch(vm, opts.watch)
+}
+```
+来看一下 `initWatch` 的实现，它的定义在 `src/core/instance/state.js` 中：
+
+```js
+function initWatch (vm: Component, watch: Object) {
+  for (const key in watch) {
+    const handler = watch[key]
+    if (Array.isArray(handler)) {
+      for (let i = 0; i < handler.length; i++) {
+        createWatcher(vm, key, handler[i])
+      }
+    } else {
+      createWatcher(vm, key, handler)
+    }
+  }
+}
+```
+这里就是对 `watch` 对象做遍历，拿到每一个  `handler`，因为 Vue 是支持 `watch` 的同一个 `key` 对应多个 `handler`，所以如果 `handler` 是一个数组，则遍历这个数组，调用 `createWatcher` 方法，否则直接调用 `createWatcher`：
+
+```js
+function createWatcher (
+  vm: Component,
+  expOrFn: string | Function,
+  handler: any,
+  options?: Object
+) {
+  if (isPlainObject(handler)) {
+    options = handler
+    handler = handler.handler
+  }
+  if (typeof handler === 'string') {
+    handler = vm[handler]
+  }
+  return vm.$watch(expOrFn, handler, options)
+}
+```
+这里的逻辑也很简单，首先对 `hanlder` 的类型做判断，拿到它最终的回调函数，最后调用 `vm.$watch(keyOrFn, handler, options)` 函数，`$watch` 是 Vue 原型上的方法，它是在执行 `stateMixin` 的时候定义的：
+
+```js
+Vue.prototype.$watch = function (
+  expOrFn: string | Function,
+  cb: any,
+  options?: Object
+): Function {
+  const vm: Component = this
+  if (isPlainObject(cb)) {
+    return createWatcher(vm, expOrFn, cb, options)
+  }
+  options = options || {}
+  options.user = true
+  const watcher = new Watcher(vm, expOrFn, cb, options)
+  if (options.immediate) {
+    cb.call(vm, watcher.value)
+  }
+  return function unwatchFn () {
+    watcher.teardown()
+  }
+}
+```
+
+也就是说，侦听属性 `watch` 最终会调用 `$watch` 方法，这个方法首先判断 `cb` 如果是一个对象，则调用 `createWatcher` 方法，这是因为 `$watch` 方法是用户可以直接调用的，它可以传递一个对象，也可以传递函数。接着执行 `const watcher = new Watcher(vm, expOrFn, cb, options)` 实例化了一个 `watcher`，这里需要注意一点这是一个 `user watcher`，因为 `options.user = true`。通过实例化 `watcher` 的方式，一旦我们 `watch` 的数据发送变化，它最终会执行 `watcher` 的 `run` 方法，执行回调函数 `cb`，并且如果我们设置了 `immediate` 为 true，则直接会执行回调函数 `cb`。最后返回了一个 `unwatchFn` 方法，它会调用 `teardown` 方法去移除这个 `watcher`。
+
+所以本质上侦听属性也是基于 `Watcher` 实现的，它是一个 `user watcher`。其实 `Watcher` 支持了不同的类型，下面我们梳理一下它有哪些类型以及它们的作用。
+
+### 4.7.3 Watcher options
+
+`Watcher` 的构造函数对 `options` 做的了处理，代码如下：
+
+```js
+if (options) {
+  this.deep = !!options.deep
+  this.user = !!options.user
+  this.computed = !!options.computed
+  this.sync = !!options.sync
+  // ...
+} else {
+  this.deep = this.user = this.computed = this.sync = false
+}
+```
+所以 `watcher` 总共有 4 种类型，我们来一一分析它们，看看不同的类型执行的逻辑有哪些差别。
+
+#### deep watcher
+
+通常，如果我们想对一下对象做深度观测的时候，需要设置这个属性为 true，考虑到这种情况：
+
+```js
+var vm = new Vue({
+  data() {
+    a: {
+      b: 1
+    }
+  },
+  watch: {
+    a: {
+      handler(newVal) {
+        console.log(newVal)
+      }
+    }
+  }
+})
+vm.a.b = 2
+```
+这个时候是不会 log 任何数据的，因为我们是 watch 了 `a` 对象，只触发了 `a` 的 getter，并没有触发 `a.b` 的 getter，所以并没有订阅它的变化，导致我们对 `vm.a.b = 2` 赋值的时候，虽然触发了 setter，但没有可通知的对象，所以也并不会触发 watch 的回调函数了。
+
+而我们只需要对代码做稍稍修改，就可以观测到这个变化了
+
+```js
+watch: {
+  a: {
+    deep: true,
+    handler(newVal) {
+      console.log(newVal)
+    }
+  }
+}
+```
+
+这样就创建了一个 `deep watcher` 了，在 `watcher ` 执行 `get` 求值的过程中有一段逻辑：
+
+```js
+get() {
+  let value = this.getter.call(vm, vm)
+  // ...
+  if (this.deep) {
+    traverse(value)
+  }
+}
+```
+在对 watch 的表达式或者函数求值后，会调用 `traverse` 函数，它的定义在 `src/core/observer/traverse.js` 中：
+
+```js
+import { _Set as Set, isObject } from '../util/index'
+import type { SimpleSet } from '../util/index'
+import VNode from '../vdom/vnode'
+
+const seenObjects = new Set()
+
+/**
+ * Recursively traverse an object to evoke all converted
+ * getters, so that every nested property inside the object
+ * is collected as a "deep" dependency.
+ */
+export function traverse (val: any) {
+  _traverse(val, seenObjects)
+  seenObjects.clear()
+}
+
+function _traverse (val: any, seen: SimpleSet) {
+  let i, keys
+  const isA = Array.isArray(val)
+  if ((!isA && !isObject(val)) || Object.isFrozen(val) || val instanceof VNode) {
+    return
+  }
+  if (val.__ob__) {
+    const depId = val.__ob__.dep.id
+    if (seen.has(depId)) {
+      return
+    }
+    seen.add(depId)
+  }
+  if (isA) {
+    i = val.length
+    while (i--) _traverse(val[i], seen)
+  } else {
+    keys = Object.keys(val)
+    i = keys.length
+    while (i--) _traverse(val[keys[i]], seen)
+  }
+}
+```
+
+`traverse` 的逻辑也很简单，它实际上就是对一个对象做深层递归遍历，因为遍历过程中就是对一个子对象的访问，会触发它们的 getter 过程，这样就可以收集到依赖，也就是订阅它们变化的 `watcher`，这个函数实现还有一个小的优化，遍历过程中会把子响应式对象通过它们的 `dep id` 记录到 `seenObjects`，避免以后重复访问。
+
+那么在执行了 `traverse` 后，我们再对 watch 的对象内部任何一个值做修改，也会调用 `watcher` 的回调函数了。
+
+对 `deep watcher` 的理解非常重要，今后工作中如果大家观测了一个复杂对象，并且会改变对象内部深层某个值的时候也希望触发回调，一定要设置 `deep` 为 true，但是因为设置了 `deep` 后会执行 `traverse` 函数，会有一定的性能开销，所以一定要根据应用场景权衡是否要开启这个配置。
+
+#### user watcher
+
+前面我们分析过，通过 `vm.$watch` 创建的 `watcher` 是一个 `user watcher`，其实它的功能很简单，在对 `watcher` 求值以及在执行回调函数的时候，会处理一下错误，如下：
+
+```js
+get() {
+  if (this.user) {
+    handleError(e, vm, `getter for watcher "${this.expression}"`)
+  } else {
+    throw e
+  }
+},
+getAndInvoke() {
+  // ...
+  if (this.user) {
+    try {
+      this.cb.call(this.vm, value, oldValue)
+    } catch (e) {
+      handleError(e, this.vm, `callback for watcher "${this.expression}"`)
+    }
+  } else {
+    this.cb.call(this.vm, value, oldValue)
+  }
+}
+```
+`handleError` 在 Vue 中是一个错误捕获并且暴露给用户的一个利器。
+
+#### computed watcher
+
+`computed watcher` 几乎就是为计算属性量身定制的，我们刚才已经对它做了详细的分析，这里不再赘述了。
+
+#### sync watcher
+
+在我们之前对 `setter` 的分析过程知道，当响应式数据发送变化后，触发了 `watcher.update()`，只是把这个 `watcher` 推送到一个队列中，在 `nextTick` 后才会真正执行 `watcher` 的回调函数。而一旦我们设置了 `sync`，就可以在当前 `Tick` 中同步执行 `watcher` 的回调函数。
+
+```js
+update () {
+  if (this.computed) {
+    // ...
+  } else if (this.sync) {
+    this.run()
+  } else {
+    queueWatcher(this)
+  }
+}
+```
+只有当我们需要 watch 的值的变化到执行 `watcher` 的回调函数是一个同步过程的时候才会去设置该属性为 true。
+
+### 4.7.4 总结
+
+通过这一小节的分析我们对计算属性和侦听属性的实现有了深入的了解，计算属性本质上是 `computed watcher`，而侦听属性本质上是 `user watcher`。就应用场景而言，计算属性适合用在模板渲染中，某个值是依赖了其它的响应式对象甚至是计算属性计算而来；而侦听属性适用于观测某个值的变化去完成一段复杂的业务逻辑。
+
+同时我们又了解了 `watcher` 的 4 个 `options`，通常我们会在创建 `user watcher` 的时候配置 `deep` 和 `sync`，可以根据不同的场景做相应的配置。
+
+## 4.8 组件更新
+
+在组件化章节，我们介绍了 Vue 的组件化实现过程，不过我们只讲了 Vue 组件的创建过程，并没有涉及到组件数据发生变化，更新组件的过程。而通过我们这一章对数据响应式原理的分析，了解到当数据发生变化的时候，会触发渲染 `watcher` 的回调函数，进而执行组件的更新过程，接下来我们来详细分析这一过程。
+
+```js
+updateComponent = () => {
+  vm._update(vm._render(), hydrating)
+}
+new Watcher(vm, updateComponent, noop, {
+  before () {
+    if (vm._isMounted) {
+      callHook(vm, 'beforeUpdate')
+    }
+  }
+}, true /* isRenderWatcher */)
+```
+
+组件的更新还是调用了 `vm._update` 方法，我们再回顾一下这个方法，它的定义在 `src/core/instance/lifecycle.js` 中：
+
+```js
+Vue.prototype._update = function (vnode: VNode, hydrating?: boolean) {
+  const vm: Component = this
+  // ...
+  const prevVnode = vm._vnode
+  if (!prevVnode) {
+     // initial render
+    vm.$el = vm.__patch__(vm.$el, vnode, hydrating, false /* removeOnly */)
+  } else {
+    // updates
+    vm.$el = vm.__patch__(prevVnode, vnode)
+  }
+  // ...
+}
+```
+
+组件更新的过程，会执行 `vm.$el = vm.__patch__(prevVnode, vnode)`，它仍然会调用 `patch` 函数，在 `src/core/vdom/patch.js` 中定义：
+
+```js
+return function patch (oldVnode, vnode, hydrating, removeOnly) {
+  if (isUndef(vnode)) {
+    if (isDef(oldVnode)) invokeDestroyHook(oldVnode)
+    return
+  }
+
+  let isInitialPatch = false
+  const insertedVnodeQueue = []
+
+  if (isUndef(oldVnode)) {
+    // empty mount (likely as component), create new root element
+    isInitialPatch = true
+    createElm(vnode, insertedVnodeQueue)
+  } else {
+    const isRealElement = isDef(oldVnode.nodeType)
+    if (!isRealElement && sameVnode(oldVnode, vnode)) {
+      // patch existing root node
+      patchVnode(oldVnode, vnode, insertedVnodeQueue, removeOnly)
+    } else {
+      if (isRealElement) {
+         // ...
+      }
+
+      // replacing existing element
+      const oldElm = oldVnode.elm
+      const parentElm = nodeOps.parentNode(oldElm)
+
+      // create new node
+      createElm(
+        vnode,
+        insertedVnodeQueue,
+        // extremely rare edge case: do not insert if old element is in a
+        // leaving transition. Only happens when combining transition +
+        // keep-alive + HOCs. (#4590)
+        oldElm._leaveCb ? null : parentElm,
+        nodeOps.nextSibling(oldElm)
+      )
+
+      // update parent placeholder node element, recursively
+      if (isDef(vnode.parent)) {
+        let ancestor = vnode.parent
+        const patchable = isPatchable(vnode)
+        while (ancestor) {
+          for (let i = 0; i < cbs.destroy.length; ++i) {
+            cbs.destroy[i](ancestor)
+          }
+          ancestor.elm = vnode.elm
+          if (patchable) {
+            for (let i = 0; i < cbs.create.length; ++i) {
+              cbs.create[i](emptyNode, ancestor)
+            }
+            // #6513
+            // invoke insert hooks that may have been merged by create hooks.
+            // e.g. for directives that uses the "inserted" hook.
+            const insert = ancestor.data.hook.insert
+            if (insert.merged) {
+              // start at index 1 to avoid re-invoking component mounted hook
+              for (let i = 1; i < insert.fns.length; i++) {
+                insert.fns[i]()
+              }
+            }
+          } else {
+            registerRef(ancestor)
+          }
+          ancestor = ancestor.parent
+        }
+      }
+
+      // destroy old node
+      if (isDef(parentElm)) {
+        removeVnodes(parentElm, [oldVnode], 0, 0)
+      } else if (isDef(oldVnode.tag)) {
+        invokeDestroyHook(oldVnode)
+      }
+    }
+  }
+
+  invokeInsertHook(vnode, insertedVnodeQueue, isInitialPatch)
+  return vnode.elm
+}
+```
+这里执行 `patch` 的逻辑和首次渲染是不一样的，因为 `oldVnode` 不为空，并且它和 `vnode` 都是 VNode 类型，接下来会通过 `sameVNode(oldVnode, vnode)` 判断它们是否是相同的 VNode 来决定走不同的更新逻辑：
+
+```js
+function sameVnode (a, b) {
+  return (
+    a.key === b.key && (
+      (
+        a.tag === b.tag &&
+        a.isComment === b.isComment &&
+        isDef(a.data) === isDef(b.data) &&
+        sameInputType(a, b)
+      ) || (
+        isTrue(a.isAsyncPlaceholder) &&
+        a.asyncFactory === b.asyncFactory &&
+        isUndef(b.asyncFactory.error)
+      )
+    )
+  )
+}
+```
+`sameVnode` 的逻辑非常简单，如果两个 `vnode` 的 `key` 不相等，则是不同的；否则继续判断对于同步组件，则判断 `isComment`、`data`、`input` 类型等是否相同，对于异步组件，则判断 `asyncFactory` 是否相同。
+
+所以根据新旧 `vnode` 是否为 `sameVnode`，会走到不同的更新逻辑，我们先来说一下不同的情况。
+
+### 4.8.1 新旧节点不同
+
+如果新旧 `vnode` 不同，那么更新的逻辑非常简单，它本质上是要替换已存在的节点，大致分为 3 步
+
+- 创建新节点
+
+```js
+const oldElm = oldVnode.elm
+const parentElm = nodeOps.parentNode(oldElm)
+// create new node
+createElm(
+  vnode,
+  insertedVnodeQueue,
+  // extremely rare edge case: do not insert if old element is in a
+  // leaving transition. Only happens when combining  transition +
+  // keep-alive + HOCs. (#4590)
+  oldElm._leaveCb ? null : parentElm,
+  nodeOps.nextSibling(oldElm)
+)
+```
+
+以当前旧节点为参考节点，创建新的节点，并插入到 DOM 中，`createElm` 的逻辑我们之前分析过。
+
+- 更新父的占位符节点
+
+```js
+// update parent placeholder node element, recursively
+if (isDef(vnode.parent)) {
+  let ancestor = vnode.parent
+  const patchable = isPatchable(vnode)
+  while (ancestor) {
+    for (let i = 0; i < cbs.destroy.length; ++i) {
+      cbs.destroy[i](ancestor)
+    }
+    ancestor.elm = vnode.elm
+    if (patchable) {
+      for (let i = 0; i < cbs.create.length; ++i) {
+        cbs.create[i](emptyNode, ancestor)
+      }
+      // #6513
+      // invoke insert hooks that may have been merged by create hooks.
+      // e.g. for directives that uses the "inserted" hook.
+      const insert = ancestor.data.hook.insert
+      if (insert.merged) {
+        // start at index 1 to avoid re-invoking component mounted hook
+        for (let i = 1; i < insert.fns.length; i++) {
+          insert.fns[i]()
+        }
+      }
+    } else {
+      registerRef(ancestor)
+    }
+    ancestor = ancestor.parent
+  }
+}
+```
+我们只关注主要逻辑即可，找到当前 `vnode` 的父的占位符节点，先执行各个 `module` 的 `destroy` 的钩子函数，如果当前占位符是一个可挂载的节点，则执行 `module` 的 `create` 钩子函数。对于这些钩子函数的作用，在之后的章节会详细介绍。
+
+- 删除旧节点
+
+```js
+// destroy old node
+if (isDef(parentElm)) {
+  removeVnodes(parentElm, [oldVnode], 0, 0)
+} else if (isDef(oldVnode.tag)) {
+  invokeDestroyHook(oldVnode)
+}
+```
+把 `oldVnode` 从当前 DOM 树中删除，如果父节点存在，则执行 `removeVnodes` 方法：
+
+```js
+function removeVnodes (parentElm, vnodes, startIdx, endIdx) {
+  for (; startIdx <= endIdx; ++startIdx) {
+    const ch = vnodes[startIdx]
+    if (isDef(ch)) {
+      if (isDef(ch.tag)) {
+        removeAndInvokeRemoveHook(ch)
+        invokeDestroyHook(ch)
+      } else { // Text node
+        removeNode(ch.elm)
+      }
+    }
+  }
+}
+
+function removeAndInvokeRemoveHook (vnode, rm) {
+  if (isDef(rm) || isDef(vnode.data)) {
+    let i
+    const listeners = cbs.remove.length + 1
+    if (isDef(rm)) {
+      // we have a recursively passed down rm callback
+      // increase the listeners count
+      rm.listeners += listeners
+    } else {
+      // directly removing
+      rm = createRmCb(vnode.elm, listeners)
+    }
+    // recursively invoke hooks on child component root node
+    if (isDef(i = vnode.componentInstance) && isDef(i = i._vnode) && isDef(i.data)) {
+      removeAndInvokeRemoveHook(i, rm)
+    }
+    for (i = 0; i < cbs.remove.length; ++i) {
+      cbs.remove[i](vnode, rm)
+    }
+    if (isDef(i = vnode.data.hook) && isDef(i = i.remove)) {
+      i(vnode, rm)
+    } else {
+      rm()
+    }
+  } else {
+    removeNode(vnode.elm)
+  }
+}
+
+function invokeDestroyHook (vnode) {
+  let i, j
+  const data = vnode.data
+  if (isDef(data)) {
+    if (isDef(i = data.hook) && isDef(i = i.destroy)) i(vnode)
+    for (i = 0; i < cbs.destroy.length; ++i) cbs.destroy[i](vnode)
+  }
+  if (isDef(i = vnode.children)) {
+    for (j = 0; j < vnode.children.length; ++j) {
+      invokeDestroyHook(vnode.children[j])
+    }
+  }
+}
+```
+
+删除节点逻辑很简单，就是遍历待删除的 `vnodes` 做删除，其中 `removeAndInvokeRemoveHook`  的作用是从 DOM 中移除节点并执行 `module` 的 `remove` 钩子函数，并对它的子节点递归调用 `removeAndInvokeRemoveHook` 函数；`invokeDestroyHook` 是执行 `module` 的 `destory` 钩子函数以及 `vnode` 的 `destory` 钩子函数，并对它的子 `vnode` 递归调用 `invokeDestroyHook` 函数；`removeNode` 就是调用平台的 DOM API 去把真正的 DOM 节点移除。
+
+在之前介绍组件生命周期的时候提到 `beforeDestroy & destroyed` 这两个生命周期钩子函数，它们就是在执行 `invokeDestroyHook` 过程中，执行了 `vnode` 的 `destory` 钩子函数，它的定义在 `src/core/vdom/create-component.js` 中：
+
+```js
+const componentVNodeHooks = {
+  destroy (vnode: MountedComponentVNode) {
+    const { componentInstance } = vnode
+    if (!componentInstance._isDestroyed) {
+      if (!vnode.data.keepAlive) {
+        componentInstance.$destroy()
+      } else {
+        deactivateChildComponent(componentInstance, true /* direct */)
+      }
+    }
+  }
+}
+```
+
+当组件并不是 `keepAlive` 的时候，会执行 `componentInstance.$destroy()` 方法，然后就会执行 `beforeDestroy & destroyed` 两个钩子函数。
+
+### 4.8.2 新旧节点相同
+
+对于新旧节点不同的情况，这种创建新节点 -> 更新占位符节点 -> 删除旧节点的逻辑是很容易理解的。还有一种组件 `vnode` 的更新情况是新旧节点相同，它会调用 `patchVNode` 方法，它的定义在 `src/core/vdom/patch.js` 中：
+
+```js
+function patchVnode (oldVnode, vnode, insertedVnodeQueue, removeOnly) {
+  if (oldVnode === vnode) {
+    return
+  }
+
+  const elm = vnode.elm = oldVnode.elm
+
+  if (isTrue(oldVnode.isAsyncPlaceholder)) {
+    if (isDef(vnode.asyncFactory.resolved)) {
+      hydrate(oldVnode.elm, vnode, insertedVnodeQueue)
+    } else {
+      vnode.isAsyncPlaceholder = true
+    }
+    return
+  }
+
+  // reuse element for static trees.
+  // note we only do this if the vnode is cloned -
+  // if the new node is not cloned it means the render functions have been
+  // reset by the hot-reload-api and we need to do a proper re-render.
+  if (isTrue(vnode.isStatic) &&
+    isTrue(oldVnode.isStatic) &&
+    vnode.key === oldVnode.key &&
+    (isTrue(vnode.isCloned) || isTrue(vnode.isOnce))
+  ) {
+    vnode.componentInstance = oldVnode.componentInstance
+    return
+  }
+
+  let i
+  const data = vnode.data
+  if (isDef(data) && isDef(i = data.hook) && isDef(i = i.prepatch)) {
+    i(oldVnode, vnode)
+  }
+
+  const oldCh = oldVnode.children
+  const ch = vnode.children
+  if (isDef(data) && isPatchable(vnode)) {
+    for (i = 0; i < cbs.update.length; ++i) cbs.update[i](oldVnode, vnode)
+    if (isDef(i = data.hook) && isDef(i = i.update)) i(oldVnode, vnode)
+  }
+  if (isUndef(vnode.text)) {
+    if (isDef(oldCh) && isDef(ch)) {
+      if (oldCh !== ch) updateChildren(elm, oldCh, ch, insertedVnodeQueue, removeOnly)
+    } else if (isDef(ch)) {
+      if (isDef(oldVnode.text)) nodeOps.setTextContent(elm, '')
+      addVnodes(elm, null, ch, 0, ch.length - 1, insertedVnodeQueue)
+    } else if (isDef(oldCh)) {
+      removeVnodes(elm, oldCh, 0, oldCh.length - 1)
+    } else if (isDef(oldVnode.text)) {
+      nodeOps.setTextContent(elm, '')
+    }
+  } else if (oldVnode.text !== vnode.text) {
+    nodeOps.setTextContent(elm, vnode.text)
+  }
+  if (isDef(data)) {
+    if (isDef(i = data.hook) && isDef(i = i.postpatch)) i(oldVnode, vnode)
+  }
+}
+```
+`patchVnode` 的作用就是把新的 `vnode` `patch` 到旧的 `vnode` 上，这里我们只关注关键的核心逻辑，我把它拆成四步骤：
+
+- 执行 `prepatch` 钩子函数
+
+```js
+let i
+const data = vnode.data
+if (isDef(data) && isDef(i = data.hook) && isDef(i = i.prepatch)) {
+  i(oldVnode, vnode)
+}
+```
+
+当更新的 `vnode` 是一个组件 `vnode` 的时候，会执行 `prepatch` 的方法，它的定义在 `src/core/vdom/create-component.js` 中：
+
+```js
+const componentVNodeHooks = {
+  prepatch (oldVnode: MountedComponentVNode, vnode: MountedComponentVNode) {
+    const options = vnode.componentOptions
+    const child = vnode.componentInstance = oldVnode.componentInstance
+    updateChildComponent(
+      child,
+      options.propsData, // updated props
+      options.listeners, // updated listeners
+      vnode, // new parent vnode
+      options.children // new children
+    )
+  }
+}
+```
+
+`prepatch` 方法就是拿到新的 `vnode` 的组件配置以及组件实例，去执行 `updateChildComponent` 方法，它的定义在 `src/core/instance/lifecycle.js` 中：
+
+```js
+export function updateChildComponent (
+  vm: Component,
+  propsData: ?Object,
+  listeners: ?Object,
+  parentVnode: MountedComponentVNode,
+  renderChildren: ?Array<VNode>
+) {
+  if (process.env.NODE_ENV !== 'production') {
+    isUpdatingChildComponent = true
+  }
+
+  // determine whether component has slot children
+  // we need to do this before overwriting $options._renderChildren
+  const hasChildren = !!(
+    renderChildren ||               // has new static slots
+    vm.$options._renderChildren ||  // has old static slots
+    parentVnode.data.scopedSlots || // has new scoped slots
+    vm.$scopedSlots !== emptyObject // has old scoped slots
+  )
+
+  vm.$options._parentVnode = parentVnode
+  vm.$vnode = parentVnode // update vm's placeholder node without re-render
+
+  if (vm._vnode) { // update child tree's parent
+    vm._vnode.parent = parentVnode
+  }
+  vm.$options._renderChildren = renderChildren
+
+  // update $attrs and $listeners hash
+  // these are also reactive so they may trigger child update if the child
+  // used them during render
+  vm.$attrs = parentVnode.data.attrs || emptyObject
+  vm.$listeners = listeners || emptyObject
+
+  // update props
+  if (propsData && vm.$options.props) {
+    toggleObserving(false)
+    const props = vm._props
+    const propKeys = vm.$options._propKeys || []
+    for (let i = 0; i < propKeys.length; i++) {
+      const key = propKeys[i]
+      const propOptions: any = vm.$options.props // wtf flow?
+      props[key] = validateProp(key, propOptions, propsData, vm)
+    }
+    toggleObserving(true)
+    // keep a copy of raw propsData
+    vm.$options.propsData = propsData
+  }
+
+  // update listeners
+  listeners = listeners || emptyObject
+  const oldListeners = vm.$options._parentListeners
+  vm.$options._parentListeners = listeners
+  updateComponentListeners(vm, listeners, oldListeners)
+
+  // resolve slots + force update if has children
+  if (hasChildren) {
+    vm.$slots = resolveSlots(renderChildren, parentVnode.context)
+    vm.$forceUpdate()
+  }
+
+  if (process.env.NODE_ENV !== 'production') {
+    isUpdatingChildComponent = false
+  }
+}
+```
+
+`updateChildComponent` 的逻辑也非常简单，由于更新了 `vnode`，那么 `vnode` 对应的实例 `vm` 的一系列属性也会发生变化，包括占位符 `vm.$vnode` 的更新、`slot` 的更新，`listeners` 的更新，`props` 的更新等等。 
+
+- 执行 `update` 钩子函数
+
+```js
+if (isDef(data) && isPatchable(vnode)) {
+  for (i = 0; i < cbs.update.length; ++i) cbs.update[i](oldVnode, vnode)
+  if (isDef(i = data.hook) && isDef(i = i.update)) i(oldVnode, vnode)
+}
+```
+
+回到 `patchVNode` 函数，在执行完新的 `vnode` 的 `prepatch` 钩子函数，会执行所有 `module` 的 `update` 钩子函数以及用户自定义 `update` 钩子函数，对于 `module` 的钩子函数，之后我们会有具体的章节针对一些具体的 case 分析。
+
+- 完成 `patch` 过程
+
+```js
+const oldCh = oldVnode.children
+const ch = vnode.children
+if (isDef(data) && isPatchable(vnode)) {
+  for (i = 0; i < cbs.update.length; ++i) cbs.update[i](oldVnode, vnode)
+  if (isDef(i = data.hook) && isDef(i = i.update)) i(oldVnode, vnode)
+}
+if (isUndef(vnode.text)) {
+  if (isDef(oldCh) && isDef(ch)) {
+    if (oldCh !== ch) updateChildren(elm, oldCh, ch, insertedVnodeQueue, removeOnly)
+  } else if (isDef(ch)) {
+    if (isDef(oldVnode.text)) nodeOps.setTextContent(elm, '')
+    addVnodes(elm, null, ch, 0, ch.length - 1, insertedVnodeQueue)
+  } else if (isDef(oldCh)) {
+    removeVnodes(elm, oldCh, 0, oldCh.length - 1)
+  } else if (isDef(oldVnode.text)) {
+    nodeOps.setTextContent(elm, '')
+  }
+} else if (oldVnode.text !== vnode.text) {
+  nodeOps.setTextContent(elm, vnode.text)
+}
+```
+
+如果 `vnode` 是个文本节点且新旧文本不相同，则直接替换文本内容。如果不是文本节点，则判断它们的子节点，并分了几种情况处理：
+
+1. `oldCh` 与 `ch` 都存在且不相同时，使用 `updateChildren` 函数来更新子节点，这个后面重点讲。
+
+2.如果只有 `ch` 存在，表示旧节点不需要了。如果旧的节点是文本节点则先将节点的文本清除，然后通过 `addVnodes` 将 `ch` 批量插入到新节点 `elm` 下。
+                    
+3.如果只有 `oldCh` 存在，表示更新的是空节点，则需要将旧的节点通过 `removeVnodes` 全部清除。
+          
+4.当只有旧节点是文本节点的时候，则清除其节点文本内容。
+
+- 执行 `postpatch` 钩子函数
+
+```js
+if (isDef(data)) {
+  if (isDef(i = data.hook) && isDef(i = i.postpatch)) i(oldVnode, vnode)
+}
+```
+再执行完 `patch` 过程后，会执行 `postpatch` 钩子函数，它是组件自定义的钩子函数，有则执行。
+
+那么在整个 `pathVnode` 过程中，最复杂的就是 `updateChildren` 方法了，下面我们来单独介绍它。
+
+### 4.8.3 updateChildren
+
+```js
+function updateChildren (parentElm, oldCh, newCh, insertedVnodeQueue, removeOnly) {
+  let oldStartIdx = 0
+  let newStartIdx = 0
+  let oldEndIdx = oldCh.length - 1
+  let oldStartVnode = oldCh[0]
+  let oldEndVnode = oldCh[oldEndIdx]
+  let newEndIdx = newCh.length - 1
+  let newStartVnode = newCh[0]
+  let newEndVnode = newCh[newEndIdx]
+  let oldKeyToIdx, idxInOld, vnodeToMove, refElm
+
+  // removeOnly is a special flag used only by <transition-group>
+  // to ensure removed elements stay in correct relative positions
+  // during leaving transitions
+  const canMove = !removeOnly
+
+  if (process.env.NODE_ENV !== 'production') {
+    checkDuplicateKeys(newCh)
+  }
+
+  while (oldStartIdx <= oldEndIdx && newStartIdx <= newEndIdx) {
+    if (isUndef(oldStartVnode)) {
+      oldStartVnode = oldCh[++oldStartIdx] // Vnode has been moved left
+    } else if (isUndef(oldEndVnode)) {
+      oldEndVnode = oldCh[--oldEndIdx]
+    } else if (sameVnode(oldStartVnode, newStartVnode)) {
+      patchVnode(oldStartVnode, newStartVnode, insertedVnodeQueue)
+      oldStartVnode = oldCh[++oldStartIdx]
+      newStartVnode = newCh[++newStartIdx]
+    } else if (sameVnode(oldEndVnode, newEndVnode)) {
+      patchVnode(oldEndVnode, newEndVnode, insertedVnodeQueue)
+      oldEndVnode = oldCh[--oldEndIdx]
+      newEndVnode = newCh[--newEndIdx]
+    } else if (sameVnode(oldStartVnode, newEndVnode)) { // Vnode moved right
+      patchVnode(oldStartVnode, newEndVnode, insertedVnodeQueue)
+      canMove && nodeOps.insertBefore(parentElm, oldStartVnode.elm, nodeOps.nextSibling(oldEndVnode.elm))
+      oldStartVnode = oldCh[++oldStartIdx]
+      newEndVnode = newCh[--newEndIdx]
+    } else if (sameVnode(oldEndVnode, newStartVnode)) { // Vnode moved left
+      patchVnode(oldEndVnode, newStartVnode, insertedVnodeQueue)
+      canMove && nodeOps.insertBefore(parentElm, oldEndVnode.elm, oldStartVnode.elm)
+      oldEndVnode = oldCh[--oldEndIdx]
+      newStartVnode = newCh[++newStartIdx]
+    } else {
+      if (isUndef(oldKeyToIdx)) oldKeyToIdx = createKeyToOldIdx(oldCh, oldStartIdx, oldEndIdx)
+      idxInOld = isDef(newStartVnode.key)
+        ? oldKeyToIdx[newStartVnode.key]
+        : findIdxInOld(newStartVnode, oldCh, oldStartIdx, oldEndIdx)
+      if (isUndef(idxInOld)) { // New element
+        createElm(newStartVnode, insertedVnodeQueue, parentElm, oldStartVnode.elm, false, newCh, newStartIdx)
+      } else {
+        vnodeToMove = oldCh[idxInOld]
+        if (sameVnode(vnodeToMove, newStartVnode)) {
+          patchVnode(vnodeToMove, newStartVnode, insertedVnodeQueue)
+          oldCh[idxInOld] = undefined
+          canMove && nodeOps.insertBefore(parentElm, vnodeToMove.elm, oldStartVnode.elm)
+        } else {
+          // same key but different element. treat as new element
+          createElm(newStartVnode, insertedVnodeQueue, parentElm, oldStartVnode.elm, false, newCh, newStartIdx)
+        }
+      }
+      newStartVnode = newCh[++newStartIdx]
+    }
+  }
+  if (oldStartIdx > oldEndIdx) {
+    refElm = isUndef(newCh[newEndIdx + 1]) ? null : newCh[newEndIdx + 1].elm
+    addVnodes(parentElm, refElm, newCh, newStartIdx, newEndIdx, insertedVnodeQueue)
+  } else if (newStartIdx > newEndIdx) {
+    removeVnodes(parentElm, oldCh, oldStartIdx, oldEndIdx)
+  }
+}
+```
+
+`updateChildren` 的逻辑比较复杂，直接读源码比较晦涩，我们可以通过一个具体的示例来分析它。
+
+```html
+<template>
+  <div id="app">
+    <div>
+      <ul>
+        <li v-for="item in items" :key="item.id">{{ item.val }}</li>
+      </ul>
+    </div>
+    <button @click="change">change</button>
+  </div>
+</template>
+
+<script>
+  export default {
+    name: 'App',
+    data() {
+      return {
+        items: [
+          {id: 0, val: 'A'},
+          {id: 1, val: 'B'},
+          {id: 2, val: 'C'},
+          {id: 3, val: 'D'}
+        ]
+      }
+    },
+    methods: {
+      change() {
+        this.items.reverse().push({id: 4, val: 'E'})
+      }
+    }
+  }
+</script>
+```
+
+当我们点击 `change` 按钮去改变数据，最终会执行到 `updateChildren` 去更新 `li` 部分的列表数据，我们通过图的方式来描述一下它的更新过程：
+
+第一步：
+<img :src="$withBase('/assets/update-children-1.png')">
+
+第二步：
+<img :src="$withBase('/assets/update-children-2.png')">
+
+第三步：
+<img :src="$withBase('/assets/update-children-3.png')">
+
+第四步：
+<img :src="$withBase('/assets/update-children-4.png')">
+
+第五步：
+<img :src="$withBase('/assets/update-children-5.png')">
+
+第六步：
+<img :src="$withBase('/assets/update-children-6.png')">
+
+### 4.8.4 总结
+
+组件更新的过程核心就是新旧 vnode diff，对新旧节点相同以及不同的情况分别做不同的处理。新旧节点不同的更新流程是创建新节点->更新父占位符节点->删除旧节点；而新旧节点相同的更新流程是去获取它们的 children，根据不同情况做不同的更新逻辑。最复杂的情况是新旧节点相同且它们都存在子节点，那么会执行 `updateChildren` 逻辑，这块儿可以借助画图的方式配合理解。
+
+## 4.9 Props (v2.6.11)
+
+`Props` 作为组件的核心特性之一，也是我们平时开发 Vue 项目中接触最多的特性之一，它可以让组件的功能变得丰富，也是父子组件通讯的一个渠道。那么它的实现原理是怎样的，我们来一探究竟。
+
+### 4.9.1 规范化
+
+在初始化 `props` 之前，首先会对 `props` 做一次 `normalize`，它发生在 `mergeOptions` 的时候，在 `src/core/util/options.js` 中：
+
+```js
+export function mergeOptions (
+  parent: Object,
+  child: Object,
+  vm?: Component
+): Object {
+  // ...
+  normalizeProps(child, vm)
+  // ...
+}
+
+function normalizeProps (options: Object, vm: ?Component) {
+  const props = options.props
+  if (!props) return
+  const res = {}
+  let i, val, name
+  if (Array.isArray(props)) {
+    i = props.length
+    while (i--) {
+      val = props[i]
+      if (typeof val === 'string') {
+        name = camelize(val)
+        res[name] = { type: null }
+      } else if (process.env.NODE_ENV !== 'production') {
+        warn('props must be strings when using array syntax.')
+      }
+    }
+  } else if (isPlainObject(props)) {
+    for (const key in props) {
+      val = props[key]
+      name = camelize(key)
+      res[name] = isPlainObject(val)
+        ? val
+        : { type: val }
+    }
+  } else if (process.env.NODE_ENV !== 'production') {
+    warn(
+      `Invalid value for option "props": expected an Array or an Object, ` +
+      `but got ${toRawType(props)}.`,
+      vm
+    )
+  }
+  options.props = res
+}
+```
+
+合并配置我们在组件化章节讲过，它主要就是处理我们定义组件的对象 `option`，然后挂载到组件的实例 `this.$options` 中。
+
+我们接下来重点看 `normalizeProps` 的实现，其实这个函数的主要目的就是把我们编写的 `props` 转成对象格式，因为实际上 `props` 除了对象格式，还允许写成数组格式。
+
+当 `props` 是一个数组，每一个数组元素 `prop` 只能是一个 `string`，表示 `prop` 的 `key`，转成驼峰格式，`prop` 的类型为空。
+
+当 `props` 是一个对象，对于 `props` 中每个 `prop` 的 `key`，我们会转驼峰格式，而它的 `value`，如果不是一个对象，我们就把它规范成一个对象。
+
+如果 `props` 既不是数组也不是对象，就抛出一个警告。
+
+举个例子：
+
+```js
+export default {
+  props: ['name', 'nick-name']
+}
+```
+
+经过 `normalizeProps` 后，会被规范成：
+
+```js
+options.props = {
+  name: { type: null },
+  nickName: { type: null }
+}
+```
+
+```js
+export default {
+  props: {
+    name: String,
+    nickName: {
+      type: Boolean
+    }
+  }
+}
+```
+
+经过 `normalizeProps` 后，会被规范成：
+
+```js
+options.props = {
+  name: { type: String },
+  nickName: { type: Boolean }
+}
+```
+
+由于对象形式的 `props` 可以指定每个 `prop` 的类型和定义其它的一些属性，推荐用对象形式定义 `props`。
+
+### 4.9.2 初始化
+
+`Props` 的初始化主要发生在 `new Vue` 中的 `initState` 阶段，在 `src/core/instance/state.js` 中：
+
+```js
+export function initState (vm: Component) {
+  // ....
+  const opts = vm.$options
+  if (opts.props) initProps(vm, opts.props)
+  // ...
+}
+
+
+function initProps (vm: Component, propsOptions: Object) {
+  const propsData = vm.$options.propsData || {}
+  const props = vm._props = {}
+  // cache prop keys so that future props updates can iterate using Array
+  // instead of dynamic object key enumeration.
+  const keys = vm.$options._propKeys = []
+  const isRoot = !vm.$parent
+  // root instance props should be converted
+  if (!isRoot) {
+    toggleObserving(false)
+  }
+  for (const key in propsOptions) {
+    keys.push(key)
+    const value = validateProp(key, propsOptions, propsData, vm)
+    /* istanbul ignore else */
+    if (process.env.NODE_ENV !== 'production') {
+      const hyphenatedKey = hyphenate(key)
+      if (isReservedAttribute(hyphenatedKey) ||
+          config.isReservedAttr(hyphenatedKey)) {
+        warn(
+          `"${hyphenatedKey}" is a reserved attribute and cannot be used as component prop.`,
+          vm
+        )
+      }
+      defineReactive(props, key, value, () => {
+        if (!isRoot && !isUpdatingChildComponent) {
+          warn(
+            `Avoid mutating a prop directly since the value will be ` +
+            `overwritten whenever the parent component re-renders. ` +
+            `Instead, use a data or computed property based on the prop's ` +
+            `value. Prop being mutated: "${key}"`,
+            vm
+          )
+        }
+      })
+    } else {
+      defineReactive(props, key, value)
+    }
+    // static props are already proxied on the component's prototype
+    // during Vue.extend(). We only need to proxy props defined at
+    // instantiation here.
+    if (!(key in vm)) {
+      proxy(vm, `_props`, key)
+    }
+  }
+  toggleObserving(true)
+}
+``` 
+
+`initProps` 主要做 3 件事情：校验、响应式和代理。
+
+#### 校验
+
+校验的逻辑很简单，遍历 `propsOptions`，执行 `validateProp(key, propsOptions, propsData, vm)` 方法。这里的 `propsOptions` 就是我们定义的 `props` 在规范后生成的 `options.props` 对象，`propsData` 是从父组件传递的 `prop` 数据。所谓校验的目的就是检查一下我们传递的数据是否满足 `prop `的定义规范。再来看一下 `validateProp` 方法，它定义在 `src/core/util/options.js` 中：
+
+```js
+export function validateProp (
+  key: string,
+  propOptions: Object,
+  propsData: Object,
+  vm?: Component
+): any {
+  const prop = propOptions[key]
+  const absent = !hasOwn(propsData, key)
+  let value = propsData[key]
+  // boolean casting
+  const booleanIndex = getTypeIndex(Boolean, prop.type)
+  if (booleanIndex > -1) {
+    if (absent && !hasOwn(prop, 'default')) {
+      value = false
+    } else if (value === '' || value === hyphenate(key)) {
+      // only cast empty string / same name to boolean if
+      // boolean has higher priority
+      const stringIndex = getTypeIndex(String, prop.type)
+      if (stringIndex < 0 || booleanIndex < stringIndex) {
+        value = true
+      }
+    }
+  }
+  // check default value
+  if (value === undefined) {
+    value = getPropDefaultValue(vm, prop, key)
+    // since the default value is a fresh copy,
+    // make sure to observe it.
+    const prevShouldObserve = shouldObserve
+    toggleObserving(true)
+    observe(value)
+    toggleObserving(prevShouldObserve)
+  }
+  if (
+    process.env.NODE_ENV !== 'production' &&
+    // skip validation for weex recycle-list child component props
+    !(__WEEX__ && isObject(value) && ('@binding' in value))
+  ) {
+    assertProp(prop, key, value, vm, absent)
+  }
+  return value
+}
+```
+
+`validateProp` 主要就做 3 件事情：处理 `Boolean` 类型的数据，处理默认数据，`prop` 断言，并最终返回 `prop` 的值。
+
+先来看 `Boolean` 类型数据的处理逻辑：
+
+```js
+const prop = propOptions[key]
+const absent = !hasOwn(propsData, key)
+let value = propsData[key]
+// boolean casting
+const booleanIndex = getTypeIndex(Boolean, prop.type)
+if (booleanIndex > -1) {
+  if (absent && !hasOwn(prop, 'default')) {
+    value = false
+  } else if (value === '' || value === hyphenate(key)) {
+    // only cast empty string / same name to boolean if
+    // boolean has higher priority
+    const stringIndex = getTypeIndex(String, prop.type)
+    if (stringIndex < 0 || booleanIndex < stringIndex) {
+      value = true
+    }
+  }
+}
+```
+
+先通过 `const booleanIndex = getTypeIndex(Boolean, prop.type)` 来判断 `prop` 的定义是否是 `Boolean` 类型的。
+
+```js
+function getType (fn) {
+  const match = fn && fn.toString().match(/^\s*function (\w+)/)
+  return match ? match[1] : ''
+}
+
+function isSameType (a, b) {
+  return getType(a) === getType(b)
+}
+
+function getTypeIndex (type, expectedTypes): number {
+  if (!Array.isArray(expectedTypes)) {
+    return isSameType(expectedTypes, type) ? 0 : -1
+  }
+  for (let i = 0, len = expectedTypes.length; i < len; i++) {
+    if (isSameType(expectedTypes[i], type)) {
+      return i
+    }
+  }
+  return -1
+}
+```
+
+`getTypeIndex` 函数就是找到 `type` 和 `expectedTypes` 匹配的索引并返回。
+
+`prop` 类型定义的时候可以是某个原生构造函数，也可以是原生构造函数的数组，比如：
+
+```js
+export default {
+  props: {
+    name: String,
+    value: [String, Boolean]
+  }
+}
+```
+
+如果 `expectedTypes` 是单个构造函数，就执行 `isSameType` 去判断是否是同一个类型；如果是数组，那么就遍历这个数组，找到第一个同类型的，返回它的索引。
+
+回到 `validateProp` 函数，通过 `const booleanIndex = getTypeIndex(Boolean, prop.type)` 得到 `booleanIndex`，如果 `prop.type` 是一个 `Boolean` 类型，则通过 `absent && !hasOwn(prop, 'default')` 来判断如果父组件没有传递这个 `prop` 数据并且没有设置 `default` 的情况，则 `value` 为 false。
+
+接着判断`value === '' || value === hyphenate(key)` 的情况，如果满足则先通过 `const stringIndex = getTypeIndex(String, prop.type)` 获取匹配 `String` 类型的索引，然后判断 `stringIndex < 0 || booleanIndex < stringIndex` 的值来决定 `value` 的值是否为 `true`。这块逻辑稍微有点绕，我们举 2 个例子来说明：
+
+例如你定义一个组件 `Student`:
+
+```js
+export default {
+  name: String,
+  nickName: [Boolean, String]
+}
+```
+
+然后在父组件中引入这个组件：
+
+```vue
+<template>
+  <div>
+    <student name="Kate" nick-name></student>
+  </div>
+</template>
+```
+
+或者是：
+
+```vue
+<template>
+  <div>
+    <student name="Kate" nick-name="nick-name"></student>
+  </div>
+</template>
+```
+
+第一种情况没有写属性的值，满足 `value === ''`，第二种满足 `value === hyphenate(key)` 的情况，另外 `nickName` 这个 `prop` 的类型是 `Boolean` 或者是 `String`，并且满足 `booleanIndex < stringIndex`，所以对 `nickName` 这个 `prop` 的 `value` 为 `true`。
+
+接下来看一下默认数据处理逻辑：
+
+```js
+// check default value
+if (value === undefined) {
+  value = getPropDefaultValue(vm, prop, key)
+  // since the default value is a fresh copy,
+  // make sure to observe it.
+  const prevShouldObserve = shouldObserve
+  toggleObserving(true)
+  observe(value)
+  toggleObserving(prevShouldObserve)
+}
+```
+
+当 `value` 的值为 `undefined` 的时候，说明父组件根本就没有传这个 `prop`，那么我们就需要通过 `getPropDefaultValue(vm, prop, key)` 获取这个 `prop` 的默认值。我们这里只关注 `getPropDefaultValue` 的实现，`toggleObserving` 和 `observe` 的作用我们之后会说。
+
+```js
+function getPropDefaultValue (vm: ?Component, prop: PropOptions, key: string): any {
+  // no default, return undefined
+  if (!hasOwn(prop, 'default')) {
+    return undefined
+  }
+  const def = prop.default
+  // warn against non-factory defaults for Object & Array
+  if (process.env.NODE_ENV !== 'production' && isObject(def)) {
+    warn(
+      'Invalid default value for prop "' + key + '": ' +
+      'Props with type Object/Array must use a factory function ' +
+      'to return the default value.',
+      vm
+    )
+  }
+  // the raw prop value was also undefined from previous render,
+  // return previous default value to avoid unnecessary watcher trigger
+  if (vm && vm.$options.propsData &&
+    vm.$options.propsData[key] === undefined &&
+    vm._props[key] !== undefined
+  ) {
+    return vm._props[key]
+  }
+  // call factory function for non-Function types
+  // a value is Function if its prototype is function even across different execution context
+  return typeof def === 'function' && getType(prop.type) !== 'Function'
+    ? def.call(vm)
+    : def
+}
+```
+
+检测如果 `prop` 没有定义 `default` 属性，那么返回 `undefined`，通过这块逻辑我们知道除了 `Boolean` 类型的数据，其余没有设置 `default` 属性的 `prop` 默认值都是 `undefined`。
+
+接着是开发环境下对 `prop` 的默认值是否为对象或者数组类型的判断，如果是的话会报警告，因为对象和数组类型的 `prop`，他们的默认值必须要返回一个工厂函数。
+
+接下来的判断是如果上一次组件渲染父组件传递的 `prop` 的值是 `undefined`，则直接返回 上一次的默认值 `vm._props[key]`，这样可以避免触发不必要的 `watcher` 的更新。
+
+最后就是判断 `def` 如果是工厂函数且 `prop` 的类型不是 `Function` 的时候，返回工厂函数的返回值，否则直接返回 `def`。
+
+至此，我们讲完了 `validateProp` 函数的 `Boolean` 类型数据的处理逻辑和默认数据处理逻辑，最后来看一下 `prop` 断言逻辑。
+
+```js
+if (
+process.env.NODE_ENV !== 'production' &&
+// skip validation for weex recycle-list child component props
+!(__WEEX__ && isObject(value) && ('@binding' in value))
+) {
+  assertProp(prop, key, value, vm, absent)
+}
+```
+
+在开发环境且非 `weex` 的某种环境下，执行 `assertProp` 做属性断言。
+
+```js
+function assertProp (
+  prop: PropOptions,
+  name: string,
+  value: any,
+  vm: ?Component,
+  absent: boolean
+) {
+  if (prop.required && absent) {
+    warn(
+      'Missing required prop: "' + name + '"',
+      vm
+    )
+    return
+  }
+  if (value == null && !prop.required) {
+    return
+  }
+  let type = prop.type
+  let valid = !type || type === true
+  const expectedTypes = []
+  if (type) {
+    if (!Array.isArray(type)) {
+      type = [type]
+    }
+    for (let i = 0; i < type.length && !valid; i++) {
+      const assertedType = assertType(value, type[i])
+      expectedTypes.push(assertedType.expectedType || '')
+      valid = assertedType.valid
+    }
+  }
+
+  if (!valid) {
+    warn(
+      getInvalidTypeMessage(name, value, expectedTypes),
+      vm
+    )
+    return
+  }
+  const validator = prop.validator
+  if (validator) {
+    if (!validator(value)) {
+      warn(
+        'Invalid prop: custom validator check failed for prop "' + name + '".',
+        vm
+      )
+    }
+  }
+}
+```
+
+`assertProp` 函数的目的是断言这个 `prop` 是否合法。
+
+首先判断如果 `prop` 定义了 `required` 属性但父组件没有传递这个 `prop` 数据的话会报一个警告。
+
+接着判断如果 `value` 为空且 `prop` 没有定义 `required` 属性则直接返回。
+
+然后再去对 `prop` 的类型做校验，先是拿到 `prop` 中定义的类型 `type`，并尝试把它转成一个类型数组，然后依次遍历这个数组，执行 `assertType(value, type[i])` 去获取断言的结果，直到遍历完成或者是 `valid` 为 `true` 的时候跳出循环。
+
+```js
+const simpleCheckRE = /^(String|Number|Boolean|Function|Symbol)$/
+function assertType (value: any, type: Function): {
+  valid: boolean;
+  expectedType: string;
+} {
+  let valid
+  const expectedType = getType(type)
+  if (simpleCheckRE.test(expectedType)) {
+    const t = typeof value
+    valid = t === expectedType.toLowerCase()
+    // for primitive wrapper objects
+    if (!valid && t === 'object') {
+      valid = value instanceof type
+    }
+  } else if (expectedType === 'Object') {
+    valid = isPlainObject(value)
+  } else if (expectedType === 'Array') {
+    valid = Array.isArray(value)
+  } else {
+    valid = value instanceof type
+  }
+  return {
+    valid,
+    expectedType
+  }
+}
+```
+
+`assertType` 的逻辑很简单，先通过 `getType(type)` 获取 `prop` 期望的类型 `expectedType`，然后再去根据几种不同的情况对比 `prop` 的值 `value` 是否和 `expectedType` 匹配，最后返回匹配的结果。
+
+如果循环结束后 `valid` 仍然为 `false`，那么说明 `prop` 的值 `value` 与 `prop` 定义的类型都不匹配，那么就会输出一段通过 `getInvalidTypeMessage(name, value, expectedTypes)` 生成的警告信息，就不细说了。
+
+最后判断当 `prop` 自己定义了 `validator` 自定义校验器，则执行 `validator` 校验器方法，如果校验不通过则输出警告信息。
+
+#### 响应式
+
+回到 `initProps` 方法，当我们通过 `const value = validateProp(key, propsOptions, propsData, vm)` 对 `prop` 做验证并且获取到 `prop` 的值后，接下来需要通过 `defineReactive` 把 `prop` 变成响应式。
+
+`defineReactive` 我们之前已经介绍过，这里要注意的是，在开发环境中我们会校验 `prop` 的 `key` 是否是 `HTML` 的保留属性，并且在 `defineReactive` 的时候会添加一个自定义 `setter`，当我们直接对 `prop` 赋值的时候会输出警告：
+
+```js
+if (process.env.NODE_ENV !== 'production') {
+  const hyphenatedKey = hyphenate(key)
+  if (isReservedAttribute(hyphenatedKey) ||
+      config.isReservedAttr(hyphenatedKey)) {
+    warn(
+      `"${hyphenatedKey}" is a reserved attribute and cannot be used as component prop.`,
+      vm
+    )
+  }
+  defineReactive(props, key, value, () => {
+    if (!isRoot && !isUpdatingChildComponent) {
+      warn(
+        `Avoid mutating a prop directly since the value will be ` +
+        `overwritten whenever the parent component re-renders. ` +
+        `Instead, use a data or computed property based on the prop's ` +
+        `value. Prop being mutated: "${key}"`,
+        vm
+      )
+    }
+  })
+} 
+```
+
+关于 `prop` 的响应式有一点不同的是当 `vm` 是非根实例的时候，会先执行 `toggleObserving(false)`，它的目的是为了响应式的优化，我们先跳过，之后会详细说明。
+
+#### 代理
+
+在经过响应式处理后，我们会把 `prop` 的值添加到 `vm._props` 中，比如 key 为 `name` 的 `prop`，它的值保存在 `vm._props.name` 中，但是我们在组件中可以通过 `this.name` 访问到这个 `prop`，这就是代理做的事情。
+
+```js
+// static props are already proxied on the component's prototype
+// during Vue.extend(). We only need to proxy props defined at
+// instantiation here.
+if (!(key in vm)) {
+  proxy(vm, `_props`, key)
+}
+```
+
+通过 `proxy` 函数实现了上述需求。
+
+```js
+const sharedPropertyDefinition = {
+  enumerable: true,
+  configurable: true,
+  get: noop,
+  set: noop
+}
+
+export function proxy (target: Object, sourceKey: string, key: string) {
+  sharedPropertyDefinition.get = function proxyGetter () {
+    return this[sourceKey][key]
+  }
+  sharedPropertyDefinition.set = function proxySetter (val) {
+    this[sourceKey][key] = val
+  }
+  Object.defineProperty(target, key, sharedPropertyDefinition)
+}
+```
+
+当访问 `this.name` 的时候就相当于访问 `this._props.name`。
+
+其实对于非根实例的子组件而言，`prop` 的代理发生在 `Vue.extend` 阶段，在 `src/core/global-api/extend.js` 中：
+
+```js
+Vue.extend = function (extendOptions: Object): Function {
+  // ...
+  const Sub = function VueComponent (options) {
+    this._init(options)
+  }
+  // ...
+
+  // For props and computed properties, we define the proxy getters on
+  // the Vue instances at extension time, on the extended prototype. This
+  // avoids Object.defineProperty calls for each instance created.
+  if (Sub.options.props) {
+    initProps(Sub)
+  }
+  if (Sub.options.computed) {
+    initComputed(Sub)
+  }
+
+  // ...
+  return Sub
+}
+
+function initProps (Comp) {
+  const props = Comp.options.props
+  for (const key in props) {
+    proxy(Comp.prototype, `_props`, key)
+  }
+}
+```
+
+这么做的好处是不用为每个组件实例都做一层 `proxy`，是一种优化手段。
+
+### 4.9.3 Props 更新
+
+我们知道，当父组件传递给子组件的 `props` 值变化，子组件对应的值也会改变，同时会触发子组件的重新渲染。那么接下来我们就从源码角度来分析这两个过程。
+
+#### 子组件 props 更新
+
+首先，`prop` 数据的值变化在父组件，我们知道在父组件的 `render` 过程中会访问到这个 `prop` 数据，所以当 `prop` 数据变化一定会触发父组件的重新渲染，那么重新渲染是如何更新子组件对应的 `prop` 的值呢？
+
+在父组件重新渲染的最后，会执行 `patch` 过程，进而执行 `patchVnode` 函数，`patchVnode` 通常是一个递归过程，当它遇到组件 `vnode` 的时候，会执行组件更新过程的 `prepatch` 钩子函数，在 `src/core/vdom/patch.js` 中：
+
+```js
+function patchVnode (
+  oldVnode,
+  vnode,
+  insertedVnodeQueue,
+  ownerArray,
+  index,
+  removeOnly
+) {
+  // ...
+
+  let i
+  const data = vnode.data
+  if (isDef(data) && isDef(i = data.hook) && isDef(i = i.prepatch)) {
+    i(oldVnode, vnode)
+  }
+  // ...
+}
+```
+
+`prepatch` 函数定义在 `src/core/vdom/create-component.js` 中：
+
+```js
+prepatch (oldVnode: MountedComponentVNode, vnode: MountedComponentVNode) {
+  const options = vnode.componentOptions
+  const child = vnode.componentInstance = oldVnode.componentInstance
+  updateChildComponent(
+    child,
+    options.propsData, // updated props
+    options.listeners, // updated listeners
+    vnode, // new parent vnode
+    options.children // new children
+  )
+}
+```
+
+内部会调用 `updateChildComponent` 方法来更新 `props`，注意第二个参数就是父组件的 `propData`，那么为什么 `vnode.componentOptions.propsData` 就是父组件传递给子组件的 `prop` 数据呢（这个也同样解释了第一次渲染的 `propsData` 来源）？原来在组件的 `render` 过程中，对于组件节点会通过 `createComponent` 方法来创建组件 `vnode`：
+
+```js
+export function createComponent (
+  Ctor: Class<Component> | Function | Object | void,
+  data: ?VNodeData,
+  context: Component,
+  children: ?Array<VNode>,
+  tag?: string
+): VNode | Array<VNode> | void {
+  // ...
+
+  // extract props
+  const propsData = extractPropsFromVNodeData(data, Ctor, tag)
+
+  // ...
+  
+  const vnode = new VNode(
+    `vue-component-${Ctor.cid}${name ? `-${name}` : ''}`,
+    data, undefined, undefined, undefined, context,
+    { Ctor, propsData, listeners, tag, children },
+    asyncFactory
+  )
+
+  // ...
+  
+  return vnode
+}
+```
+
+在创建组件 `vnode` 的过程中，首先从 `data` 中提取出 `propData`，然后在 `new VNode` 的时候，作为第七个参数 `VNodeComponentOptions` 中的一个属性传入，所以我们可以通过 `vnode.componentOptions.propsData` 拿到 `prop` 数据。
+
+接着看 `updateChildComponent` 函数，它的定义在 `src/core/instance/lifecycle.js` 中：
+
+```js
+export function updateChildComponent (
+  vm: Component,
+  propsData: ?Object,
+  listeners: ?Object,
+  parentVnode: MountedComponentVNode,
+  renderChildren: ?Array<VNode>
+) {
+  // ...
+
+  // update props
+  if (propsData && vm.$options.props) {
+    toggleObserving(false)
+    const props = vm._props
+    const propKeys = vm.$options._propKeys || []
+    for (let i = 0; i < propKeys.length; i++) {
+      const key = propKeys[i]
+      const propOptions: any = vm.$options.props // wtf flow?
+      props[key] = validateProp(key, propOptions, propsData, vm)
+    }
+    toggleObserving(true)
+    // keep a copy of raw propsData
+    vm.$options.propsData = propsData
+  }
+
+  // ...
+}
+```
+
+我们重点来看更新 `props` 的相关逻辑，这里的 `propsData` 是父组件传递的 `props` 数据，`vm` 是子组件的实例。`vm._props` 指向的就是子组件的 `props` 值，`propKeys` 就是在之前 `initProps` 过程中，缓存的子组件中定义的所有 `prop` 的 `key`。主要逻辑就是遍历 `propKeys`，然后执行 `props[key] = validateProp(key, propOptions, propsData, vm)` 重新验证和计算新的 `prop` 数据，更新 `vm._props`，也就是子组件的 `props`，这个就是子组件  `props` 的更新过程。
+
+#### 子组件重新渲染
+
+其实子组件的重新渲染有 2 种情况，一个是 `prop` 值被修改，另一个是对象类型的 `prop` 内部属性的变化。
+
+先来看一下 `prop` 值被修改的情况，当执行 `props[key] = validateProp(key, propOptions, propsData, vm)` 更新子组件 `prop` 的时候，会触发 `prop` 的 `setter` 过程，只要在渲染子组件的时候访问过这个 `prop` 值，那么根据响应式原理，就会触发子组件的重新渲染。
+
+再来看一下当对象类型的 `prop` 的内部属性发生变化的时候，这个时候其实并没有触发子组件 `prop` 的更新。但是在子组件的渲染过程中，访问过这个对象 `prop`，所以这个对象 `prop` 在触发 `getter` 的时候会把子组件的 `render watcher` 收集到依赖中，然后当我们在父组件更新这个对象 `prop` 的某个属性的时候，会触发 `setter` 过程，也就会通知子组件 `render watcher` 的 `update`，进而触发子组件的重新渲染。
+
+以上就是当父组件 `props` 更新，触发子组件重新渲染的 2 种情况。
+ 
+### 4.9.4 toggleObserving
+
+最后我们在来聊一下 `toggleObserving`，它的定义在 `src/core/observer/index.js` 中：
+
+```js
+export let shouldObserve: boolean = true
+
+export function toggleObserving (value: boolean) {
+  shouldObserve = value
+}
+```
+
+它在当前模块中定义了 `shouldObserve` 变量，用来控制在 `observe` 的过程中是否需要把当前值变成一个 `Observer` 对象。
+
+那么为什么在 `props` 的初始化和更新过程中，多次执行 `toggleObserving(false)` 呢，接下来我们就来分析这几种情况。
+
+在 `initProps` 的过程中：
+
+```js
+const isRoot = !vm.$parent
+// root instance props should be converted
+if (!isRoot) {
+  toggleObserving(false)
+}
+for (const key in propsOptions) {
+  // ...
+  const value = validateProp(key, propsOptions, propsData, vm)
+  defineReactive(props, key, value)
+  // ...
+}
+toggleObserving(true)
+```
+
+对于非根实例的情况，我们会执行 `toggleObserving(false)`，然后对于每一个 `prop` 值，去执行 `defineReactive(props, key, value)` 去把它变成响应式。
+
+回顾一下 `defineReactive` 的定义：
+
+```js
+export function defineReactive (
+  obj: Object,
+  key: string,
+  val: any,
+  customSetter?: ?Function,
+  shallow?: boolean
+) {
+  // ...
+  
+  let childOb = !shallow && observe(val)
+  Object.defineProperty(obj, key, {
+    enumerable: true,
+    configurable: true,
+    get: function reactiveGetter () {
+      // ...
+    },
+    set: function reactiveSetter (newVal) {
+      // ...
+    }
+  })
+}
+```
+
+通常对于值 `val` 会执行 `observe` 函数，然后遇到 `val` 是对象或者数组的情况会递归执行 `defineReactive` 把它们的子属性都变成响应式的，但是由于 `shouldObserve` 的值变成了 `false`，这个递归过程被省略了。为什么会这样呢？
+
+因为正如我们前面分析的，对于对象的 `prop` 值，子组件的 `prop` 值始终指向父组件的 `prop` 值，只要父组件的 `prop` 值变化，就会触发子组件的重新渲染，所以这个 `observe` 过程是可以省略的。
+ 
+最后再执行 `toggleObserving(true)` 恢复 `shouldObserve` 为 `true`。
+
+在 `validateProp` 的过程中：
+
+```js
+// check default value
+if (value === undefined) {
+  value = getPropDefaultValue(vm, prop, key)
+  // since the default value is a fresh copy,
+  // make sure to observe it.
+  const prevShouldObserve = shouldObserve
+  toggleObserving(true)
+  observe(value)
+  toggleObserving(prevShouldObserve)
+}
+```
+
+这种是父组件没有传递 `prop` 值对默认值的处理逻辑，因为这个值是一个拷贝，所以我们需要 `toggleObserving(true)`，然后执行 `observe(value)` 把值变成响应式。
+
+在 `updateChildComponent` 过程中：
+
+```js
+// update props
+if (propsData && vm.$options.props) {
+  toggleObserving(false)
+  const props = vm._props
+  const propKeys = vm.$options._propKeys || []
+  for (let i = 0; i < propKeys.length; i++) {
+    const key = propKeys[i]
+    const propOptions: any = vm.$options.props // wtf flow?
+    props[key] = validateProp(key, propOptions, propsData, vm)
+  }
+  toggleObserving(true)
+  // keep a copy of raw propsData
+  vm.$options.propsData = propsData
+}
+```
+
+其实和 `initProps` 的逻辑一样，不需要对引用类型 `props` 递归做响应式处理，所以也需要 `toggleObserving(false)`。
+
+### 4.9.5 总结
+
+通过这一节的分析，我们了解了 `props` 的规范化、初始化、更新等过程的实现原理；也了解了 Vue 内部对 `props` 如何做响应式的优化；同时还了解到 `props` 的变化是如何触发子组件的更新。了解这些对我们平时对 `props` 的应用，遇到问题时的定位追踪会有很大的帮助。
+
+## 4.10 原理图
+
+<img :src="$withBase('/assets/reactive.png')">
+
 # 第五章：编译
 
 从编译的入口函数开始，分析了编译的三个核心流程的实现：parse -> optimize -> codegen。
 
+## 5.1 编译
+
+之前我们分析过模板到真实 DOM 渲染的过程，中间有一个环节是把模板编译成 `render` 函数，这个过程我们把它称作编译。
+
+虽然我们可以直接为组件编写 `render` 函数，但是编写 `template` 模板更加直观，也更符合我们的开发习惯。
+
+Vue.js 提供了 2 个版本，一个是 Runtime + Compiler 的，一个是 Runtime only 的，前者是包含编译代码的，可以把编译过程放在运行时做，后者是不包含编译代码的，需要借助 webpack 的 `vue-loader` 事先把模板编译成 `render `函数。
+
+这一章我们就来分析编译的过程，对编译过程的了解会让我们对 Vue 的指令、内置组件等有更好的理解。不过由于编译的过程是一个相对复杂的过程，我们只要求理解整体的流程、输入和输出即可，对于细节我们不必抠太细。有些细节比如对于 `slot` 的处理我们可以在之后去分析插槽实现的时候再详细分析。
+
+## 5.2 编译入口
+
+当我们使用 Runtime + Compiler 的 Vue.js，它的入口是 `src/platforms/web/entry-runtime-with-compiler.js`，看一下它对 `$mount` 函数的定义：
+
+```js
+const mount = Vue.prototype.$mount
+Vue.prototype.$mount = function (
+  el?: string | Element,
+  hydrating?: boolean
+): Component {
+  el = el && query(el)
+
+  /* istanbul ignore if */
+  if (el === document.body || el === document.documentElement) {
+    process.env.NODE_ENV !== 'production' && warn(
+      `Do not mount Vue to <html> or <body> - mount to normal elements instead.`
+    )
+    return this
+  }
+
+  const options = this.$options
+  // resolve template/el and convert to render function
+  if (!options.render) {
+    let template = options.template
+    if (template) {
+      if (typeof template === 'string') {
+        if (template.charAt(0) === '#') {
+          template = idToTemplate(template)
+          /* istanbul ignore if */
+          if (process.env.NODE_ENV !== 'production' && !template) {
+            warn(
+              `Template element not found or is empty: ${options.template}`,
+              this
+            )
+          }
+        }
+      } else if (template.nodeType) {
+        template = template.innerHTML
+      } else {
+        if (process.env.NODE_ENV !== 'production') {
+          warn('invalid template option:' + template, this)
+        }
+        return this
+      }
+    } else if (el) {
+      template = getOuterHTML(el)
+    }
+    if (template) {
+      /* istanbul ignore if */
+      if (process.env.NODE_ENV !== 'production' && config.performance && mark) {
+        mark('compile')
+      }
+
+      const { render, staticRenderFns } = compileToFunctions(template, {
+        shouldDecodeNewlines,
+        shouldDecodeNewlinesForHref,
+        delimiters: options.delimiters,
+        comments: options.comments
+      }, this)
+      options.render = render
+      options.staticRenderFns = staticRenderFns
+
+      /* istanbul ignore if */
+      if (process.env.NODE_ENV !== 'production' && config.performance && mark) {
+        mark('compile end')
+        measure(`vue ${this._name} compile`, 'compile', 'compile end')
+      }
+    }
+  }
+  return mount.call(this, el, hydrating)
+}
+```
+
+这段函数逻辑之前分析过，关于编译的入口就是在这里：
+
+```js
+const { render, staticRenderFns } =  compileToFunctions(template, {
+    shouldDecodeNewlines,
+    shouldDecodeNewlinesForHref,
+    delimiters: options.delimiters,
+    comments: options.comments
+  }, this)
+options.render = render
+options.staticRenderFns = staticRenderFns
+```
+
+`compileToFunctions` 方法就是把模板 `template` 编译生成 `render` 以及 `staticRenderFns`，它的定义在 `src/platforms/web/compiler/index.js` 中：
+
+```js
+import { baseOptions } from './options'
+import { createCompiler } from 'compiler/index'
+
+const { compile, compileToFunctions } = createCompiler(baseOptions)
+
+export { compile, compileToFunctions }
+```
+可以看到 `compileToFunctions` 方法实际上是 `createCompiler` 方法的返回值，该方法接收一个编译配置参数，接下来我们来看一下 `createCompiler` 方法的定义，在 `src/compiler/index.js` 中：
+
+```js
+// `createCompilerCreator` allows creating compilers that use alternative
+// parser/optimizer/codegen, e.g the SSR optimizing compiler.
+// Here we just export a default compiler using the default parts.
+export const createCompiler = createCompilerCreator(function baseCompile (
+  template: string,
+  options: CompilerOptions
+): CompiledResult {
+  const ast = parse(template.trim(), options)
+  if (options.optimize !== false) {
+    optimize(ast, options)
+  }
+  const code = generate(ast, options)
+  return {
+    ast,
+    render: code.render,
+    staticRenderFns: code.staticRenderFns
+  }
+})
+```
+
+`createCompiler` 方法实际上是通过调用 `createCompilerCreator` 方法返回的，该方法传入的参数是一个函数，真正的编译过程都在这个 `baseCompile` 函数里执行，那么 `createCompilerCreator` 又是什么呢，它的定义在 `src/compiler/create-compiler.js` 中：
+
+```js
+export function createCompilerCreator (baseCompile: Function): Function {
+  return function createCompiler (baseOptions: CompilerOptions) {
+    function compile (
+      template: string,
+      options?: CompilerOptions
+    ): CompiledResult {
+      const finalOptions = Object.create(baseOptions)
+      const errors = []
+      const tips = []
+      finalOptions.warn = (msg, tip) => {
+        (tip ? tips : errors).push(msg)
+      }
+
+      if (options) {
+        // merge custom modules
+        if (options.modules) {
+          finalOptions.modules =
+            (baseOptions.modules || []).concat(options.modules)
+        }
+        // merge custom directives
+        if (options.directives) {
+          finalOptions.directives = extend(
+            Object.create(baseOptions.directives || null),
+            options.directives
+          )
+        }
+        // copy other options
+        for (const key in options) {
+          if (key !== 'modules' && key !== 'directives') {
+            finalOptions[key] = options[key]
+          }
+        }
+      }
+
+      const compiled = baseCompile(template, finalOptions)
+      if (process.env.NODE_ENV !== 'production') {
+        errors.push.apply(errors, detectErrors(compiled.ast))
+      }
+      compiled.errors = errors
+      compiled.tips = tips
+      return compiled
+    }
+
+    return {
+      compile,
+      compileToFunctions: createCompileToFunctionFn(compile)
+    }
+  }
+}
+```
+
+可以看到该方法返回了一个 `createCompiler` 的函数，它接收一个 `baseOptions` 的参数，返回的是一个对象，包括 `compile` 方法属性和 `compileToFunctions` 属性，这个 `compileToFunctions` 对应的就是 `$mount` 函数调用的 `compileToFunctions` 方法，它是调用 `createCompileToFunctionFn` 方法的返回值，我们接下来看一下 `createCompileToFunctionFn` 方法，它的定义在 `src/compiler/to-function/js` 中：
+
+```js
+export function createCompileToFunctionFn (compile: Function): Function {
+  const cache = Object.create(null)
+
+  return function compileToFunctions (
+    template: string,
+    options?: CompilerOptions,
+    vm?: Component
+  ): CompiledFunctionResult {
+    options = extend({}, options)
+    const warn = options.warn || baseWarn
+    delete options.warn
+
+    /* istanbul ignore if */
+    if (process.env.NODE_ENV !== 'production') {
+      // detect possible CSP restriction
+      try {
+        new Function('return 1')
+      } catch (e) {
+        if (e.toString().match(/unsafe-eval|CSP/)) {
+          warn(
+            'It seems you are using the standalone build of Vue.js in an ' +
+            'environment with Content Security Policy that prohibits unsafe-eval. ' +
+            'The template compiler cannot work in this environment. Consider ' +
+            'relaxing the policy to allow unsafe-eval or pre-compiling your ' +
+            'templates into render functions.'
+          )
+        }
+      }
+    }
+
+    // check cache
+    const key = options.delimiters
+      ? String(options.delimiters) + template
+      : template
+    if (cache[key]) {
+      return cache[key]
+    }
+
+    // compile
+    const compiled = compile(template, options)
+
+    // check compilation errors/tips
+    if (process.env.NODE_ENV !== 'production') {
+      if (compiled.errors && compiled.errors.length) {
+        warn(
+          `Error compiling template:\n\n${template}\n\n` +
+          compiled.errors.map(e => `- ${e}`).join('\n') + '\n',
+          vm
+        )
+      }
+      if (compiled.tips && compiled.tips.length) {
+        compiled.tips.forEach(msg => tip(msg, vm))
+      }
+    }
+
+    // turn code into functions
+    const res = {}
+    const fnGenErrors = []
+    res.render = createFunction(compiled.render, fnGenErrors)
+    res.staticRenderFns = compiled.staticRenderFns.map(code => {
+      return createFunction(code, fnGenErrors)
+    })
+
+    // check function generation errors.
+    // this should only happen if there is a bug in the compiler itself.
+    // mostly for codegen development use
+    /* istanbul ignore if */
+    if (process.env.NODE_ENV !== 'production') {
+      if ((!compiled.errors || !compiled.errors.length) && fnGenErrors.length) {
+        warn(
+          `Failed to generate render function:\n\n` +
+          fnGenErrors.map(({ err, code }) => `${err.toString()} in\n\n${code}\n`).join('\n'),
+          vm
+        )
+      }
+    }
+
+    return (cache[key] = res)
+  }
+}
+```
+
+至此我们总算找到了 `compileToFunctions` 的最终定义，它接收 3 个参数、编译模板 `template`，编译配置 `options` 和 Vue 实例 `vm`。核心的编译过程就一行代码：
+
+```js
+const compiled = compile(template, options)
+```
+
+`compile` 函数在执行 `createCompileToFunctionFn` 的时候作为参数传入，它是 `createCompiler` 函数中定义的 `compile` 函数，如下：
+
+```js
+function compile (
+  template: string,
+  options?: CompilerOptions
+): CompiledResult {
+  const finalOptions = Object.create(baseOptions)
+  const errors = []
+  const tips = []
+  finalOptions.warn = (msg, tip) => {
+    (tip ? tips : errors).push(msg)
+  }
+
+  if (options) {
+    // merge custom modules
+    if (options.modules) {
+      finalOptions.modules =
+        (baseOptions.modules || []).concat(options.modules)
+    }
+    // merge custom directives
+    if (options.directives) {
+      finalOptions.directives = extend(
+        Object.create(baseOptions.directives || null),
+        options.directives
+      )
+    }
+    // copy other options
+    for (const key in options) {
+      if (key !== 'modules' && key !== 'directives') {
+        finalOptions[key] = options[key]
+      }
+    }
+  }
+
+  const compiled = baseCompile(template, finalOptions)
+  if (process.env.NODE_ENV !== 'production') {
+    errors.push.apply(errors, detectErrors(compiled.ast))
+  }
+  compiled.errors = errors
+  compiled.tips = tips
+  return compiled
+}
+```
+
+`compile` 函数执行的逻辑是先处理配置参数，真正执行编译过程就一行代码：
+
+```js
+const compiled = baseCompile(template, finalOptions)
+```
+
+`baseCompile` 在执行 `createCompilerCreator` 方法时作为参数传入，如下：
+
+````js
+export const createCompiler = createCompilerCreator(function baseCompile (
+  template: string,
+  options: CompilerOptions
+): CompiledResult {
+  const ast = parse(template.trim(), options)
+  optimize(ast, options)
+  const code = generate(ast, options)
+  return {
+    ast,
+    render: code.render,
+    staticRenderFns: code.staticRenderFns
+  }
+})
+````
+
+所以编译的入口我们终于找到了，它主要就是执行了如下几个逻辑：
+
+- 解析模板字符串生成 AST
+
+```js
+const ast = parse(template.trim(), options)
+```
+
+- 优化语法树
+
+```js
+optimize(ast, options)
+```
+
+- 生成代码
+
+```js
+const code = generate(ast, options)
+```
+
+那么接下来的章节我会带大家去逐步分析这几个过程。
+ 
+### 总结
+
+编译入口逻辑之所以这么绕，是因为 Vue.js 在不同的平台下都会有编译的过程，因此编译过程中的依赖的配置 `baseOptions` 会有所不同。而编译过程会多次执行，但这同一个平台下每一次的编译过程配置又是相同的，为了不让这些配置在每次编译过程都通过参数传入，Vue.js 利用了函数柯里化的技巧很好的实现了 `baseOptions` 的参数保留。同样，Vue.js 也是利用函数柯里化技巧把基础的编译过程函数抽出来，通过 `createCompilerCreator(baseCompile)` 的方式把真正编译的过程和其它逻辑如对编译配置处理、缓存处理等剥离开，这样的设计还是非常巧妙的。
+
+## 5.3 parse
+
+编译过程首先就是对模板做解析，生成 AST，它是一种抽象语法树，是对源代码的抽象语法结构的树状表现形式。在很多编译技术中，如 babel 编译 ES6 的代码都会先生成 AST。
+
+这个过程是比较复杂的，它会用到大量正则表达式对字符串解析，如果对正则不是很了解，建议先去补习正则表达式的知识。为了直观地演示 `parse` 的过程，我们先来看一个例子：
+
+```html
+<ul :class="bindCls" class="list" v-if="isShow">
+    <li v-for="(item,index) in data" @click="clickItem(index)">{{item}}:{{index}}</li>
+</ul>
+```
+
+经过 `parse` 过程后，生成的 AST 如下：
+
+```js
+ast = {
+  'type': 1,
+  'tag': 'ul',
+  'attrsList': [],
+  'attrsMap': {
+    ':class': 'bindCls',
+    'class': 'list',
+    'v-if': 'isShow'
+  },
+  'if': 'isShow',
+  'ifConditions': [{
+    'exp': 'isShow',
+    'block': // ul ast element
+  }],
+  'parent': undefined,
+  'plain': false,
+  'staticClass': 'list',
+  'classBinding': 'bindCls',
+  'children': [{
+    'type': 1,
+    'tag': 'li',
+    'attrsList': [{
+      'name': '@click',
+      'value': 'clickItem(index)'
+    }],
+    'attrsMap': {
+      '@click': 'clickItem(index)',
+      'v-for': '(item,index) in data'
+     },
+    'parent': // ul ast element
+    'plain': false,
+    'events': {
+      'click': {
+        'value': 'clickItem(index)'
+      }
+    },
+    'hasBindings': true,
+    'for': 'data',
+    'alias': 'item',
+    'iterator1': 'index',
+    'children': [
+      'type': 2,
+      'expression': '_s(item)+":"+_s(index)'
+      'text': '{{item}}:{{index}}',
+      'tokens': [
+        {'@binding':'item'},
+        ':',
+        {'@binding':'index'}
+      ]
+    ]
+  }]
+}
+```
+
+可以看到，生成的 AST 是一个树状结构，每一个节点都是一个 `ast element`，除了它自身的一些属性，还维护了它的父子关系，如 `parent` 指向它的父节点，`children` 指向它的所有子节点。先对 AST 有一些直观的印象，那么接下来我们来分析一下这个 AST 是如何得到的。
+
+### 整体流程
+
+首先来看一下 `parse` 的定义，在 `src/compiler/parser/index.js` 中：
+
+```js
+export function parse (
+  template: string,
+  options: CompilerOptions
+): ASTElement | void {
+  getFnsAndConfigFromOptions(options)
+
+  parseHTML(template, {
+    // options ...
+    start (tag, attrs, unary) {
+      let element = createASTElement(tag, attrs)
+      processElement(element)
+      treeManagement()
+    },
+
+    end () {
+      treeManagement()
+      closeElement()
+    },
+
+    chars (text: string) {
+      handleText()
+      createChildrenASTOfText()
+    },
+    comment (text: string) {
+      createChildrenASTOfComment()
+    }
+  })
+  return astRootElement
+}
+```
+
+`parse` 函数的代码很长，贴一遍对同学的理解没有好处，我先把它拆成伪代码的形式，方便同学们对整体流程先有一个大致的了解。接下来我们就来分解分析每段伪代码的作用。
+
+#### 从 options 中获取方法和配置
+
+对应伪代码：
+
+```js
+getFnsAndConfigFromOptions(options)
+```
+
+`parse` 函数的输入是 `template` 和 `options`，输出是 AST 的根节点。`template` 就是我们的模板字符串，而 `options` 实际上是和平台相关的一些配置，它的定义在 `src/platforms/web/compiler/options` 中：
+
+```js
+import {
+  isPreTag,
+  mustUseProp,
+  isReservedTag,
+  getTagNamespace
+} from '../util/index'
+
+import modules from './modules/index'
+import directives from './directives/index'
+import { genStaticKeys } from 'shared/util'
+import { isUnaryTag, canBeLeftOpenTag } from './util'
+
+export const baseOptions: CompilerOptions = {
+  expectHTML: true,
+  modules,
+  directives,
+  isPreTag,
+  isUnaryTag,
+  mustUseProp,
+  canBeLeftOpenTag,
+  isReservedTag,
+  getTagNamespace,
+  staticKeys: genStaticKeys(modules)
+}
+```
+这些属性和方法之所以放到 `platforms` 目录下是因为它们在不同的平台（web 和 weex）的实现是不同的。
+
+我们用伪代码 `getFnsAndConfigFromOptions` 表示了这一过程，它的实际代码如下：
+
+```js
+warn = options.warn || baseWarn
+
+platformIsPreTag = options.isPreTag || no
+platformMustUseProp = options.mustUseProp || no
+platformGetTagNamespace = options.getTagNamespace || no
+
+transforms = pluckModuleFunction(options.modules, 'transformNode')
+preTransforms = pluckModuleFunction(options.modules, 'preTransformNode')
+postTransforms = pluckModuleFunction(options.modules, 'postTransformNode')
+
+delimiters = options.delimiters
+```
+
+这些方法和配置都是后续解析时候需要的，可以不用去管它们的具体作用，我们先往后看。
+
+#### 解析 HTML 模板
+
+对应伪代码：
+
+```js
+parseHTML(template, options)
+```
+
+对于 `template` 模板的解析主要是通过 `parseHTML` 函数，它的定义在 `src/compiler/parser/html-parser` 中：
+
+```js
+export function parseHTML (html, options) {
+  let lastTag
+  while (html) {
+    if (!lastTag || !isPlainTextElement(lastTag)){
+      let textEnd = html.indexOf('<')
+      if (textEnd === 0) {
+         if(matchComment) {
+           advance(commentLength)
+           continue
+         }
+         if(matchDoctype) {
+           advance(doctypeLength)
+           continue
+         }
+         if(matchEndTag) {
+           advance(endTagLength)
+           parseEndTag()
+           continue
+         }
+         if(matchStartTag) {
+           parseStartTag()
+           handleStartTag()
+           continue
+         }
+      }
+      handleText()
+      advance(textLength)
+    } else {
+       handlePlainTextElement()
+       parseEndTag()
+    }
+  }
+}
+```
+由于 `parseHTML` 的逻辑也非常复杂，因此我也用了伪代码的方式表达，整体来说它的逻辑就是循环解析 `template` ，用正则做各种匹配，对于不同情况分别进行不同的处理，直到整个 template 被解析完毕。
+在匹配的过程中会利用 `advance` 函数不断前进整个模板字符串，直到字符串末尾。
+
+```js
+function advance (n) {
+  index += n
+  html = html.substring(n)
+}
+```
+
+为了更加直观地说明 `advance` 的作用，可以通过一副图表示：
+
+<img :src="$withBase('/assets/advance-1.png')">
+
+调用 `advance` 函数：
+
+```js
+advance(4)
+```
+
+得到结果：
+
+
+<img :src="$withBase('/assets/advance-2.png')">
+
+
+匹配的过程中主要利用了正则表达式，如下：
+
+```js
+const attribute = /^\s*([^\s"'<>\/=]+)(?:\s*(=)\s*(?:"([^"]*)"+|'([^']*)'+|([^\s"'=<>`]+)))?/
+const ncname = '[a-zA-Z_][\\w\\-\\.]*'
+const qnameCapture = `((?:${ncname}\\:)?${ncname})`
+const startTagOpen = new RegExp(`^<${qnameCapture}`)
+const startTagClose = /^\s*(\/?)>/
+const endTag = new RegExp(`^<\\/${qnameCapture}[^>]*>`)
+const doctype = /^<!DOCTYPE [^>]+>/i
+const comment = /^<!\--/
+const conditionalComment = /^<!\[/
+```
+通过这些正则表达式，我们可以匹配注释节点、文档类型节点、开始闭合标签等。
+
+- 注释节点、文档类型节点
+
+对于注释节点和文档类型节点的匹配，如果匹配到我们仅仅做的是做前进即可。
+
+```js
+if (comment.test(html)) {
+  const commentEnd = html.indexOf('-->')
+
+  if (commentEnd >= 0) {
+    if (options.shouldKeepComment) {
+      options.comment(html.substring(4, commentEnd))
+    }
+    advance(commentEnd + 3)
+    continue
+  }
+}
+
+if (conditionalComment.test(html)) {
+  const conditionalEnd = html.indexOf(']>')
+
+  if (conditionalEnd >= 0) {
+    advance(conditionalEnd + 2)
+    continue
+  }
+}
+
+const doctypeMatch = html.match(doctype)
+if (doctypeMatch) {
+  advance(doctypeMatch[0].length)
+  continue
+}
+```
+
+对于注释和条件注释节点，前进至它们的末尾位置；对于文档类型节点，则前进它自身长度的距离。
+
+- 开始标签
+
+```js
+const startTagMatch = parseStartTag()
+if (startTagMatch) {
+  handleStartTag(startTagMatch)
+  if (shouldIgnoreFirstNewline(lastTag, html)) {
+    advance(1)
+  }
+  continue
+}
+```
+
+首先通过 `parseStartTag` 解析开始标签：
+
+```js
+function parseStartTag () {
+  const start = html.match(startTagOpen)
+  if (start) {
+    const match = {
+      tagName: start[1],
+      attrs: [],
+      start: index
+    }
+    advance(start[0].length)
+    let end, attr
+    while (!(end = html.match(startTagClose)) && (attr = html.match(attribute))) {
+      advance(attr[0].length)
+      match.attrs.push(attr)
+    }
+    if (end) {
+      match.unarySlash = end[1]
+      advance(end[0].length)
+      match.end = index
+      return match
+    }
+  }
+}
+```
+对于开始标签，除了标签名之外，还有一些标签相关的属性。函数先通过正则表达式 `startTagOpen` 匹配到开始标签，然后定义了 `match` 对象，接着循环去匹配开始标签中的属性并添加到 `match.attrs` 中，直到匹配的开始标签的闭合符结束。如果匹配到闭合符，则获取一元斜线符，前进到闭合符尾，并把当前索引赋值给 `match.end`。
+
+`parseStartTag` 对开始标签解析拿到 `match` 后，紧接着会执行 `handleStartTag` 对 `match` 做处理：
+
+```js
+function handleStartTag (match) {
+  const tagName = match.tagName
+  const unarySlash = match.unarySlash
+  
+  if (expectHTML) {
+    if (lastTag === 'p' && isNonPhrasingTag(tagName)) {
+      parseEndTag(lastTag)
+    }
+    if (canBeLeftOpenTag(tagName) && lastTag === tagName) {
+      parseEndTag(tagName)
+    }
+  }
+  
+  const unary = isUnaryTag(tagName) || !!unarySlash
+  
+  const l = match.attrs.length
+  const attrs = new Array(l)
+  for (let i = 0; i < l; i++) {
+    const args = match.attrs[i]
+    if (IS_REGEX_CAPTURING_BROKEN && args[0].indexOf('""') === -1) {
+      if (args[3] === '') { delete args[3] }
+      if (args[4] === '') { delete args[4] }
+      if (args[5] === '') { delete args[5] }
+    }
+    const value = args[3] || args[4] || args[5] || ''
+    const shouldDecodeNewlines = tagName === 'a' && args[1] === 'href'
+      ? options.shouldDecodeNewlinesForHref
+      : options.shouldDecodeNewlines
+    attrs[i] = {
+      name: args[1],
+      value: decodeAttr(value, shouldDecodeNewlines)
+    }
+  }
+  
+  if (!unary) {
+    stack.push({ tag: tagName, lowerCasedTag: tagName.toLowerCase(), attrs: attrs })
+    lastTag = tagName
+  }
+  
+  if (options.start) {
+    options.start(tagName, attrs, unary, match.start, match.end)
+  }
+}
+```
+
+`handleStartTag` 的核心逻辑很简单，先判断开始标签是否是一元标签，类似 `<img>、<br/>` 这样，接着对 `match.attrs` 遍历并做了一些处理，最后判断如果非一元标签，则往 `stack` 里 push 一个对象，并且把 `tagName` 赋值给 `lastTag`。至于 `stack` 的作用，稍后我会介绍。
+
+最后调用了 `options.start` 回调函数，并传入一些参数，这个回调函数的作用稍后我会详细介绍。
+ 
+- 闭合标签
+
+```js
+const endTagMatch = html.match(endTag)
+if (endTagMatch) {
+  const curIndex = index
+  advance(endTagMatch[0].length)
+  parseEndTag(endTagMatch[1], curIndex, index)
+  continue
+}
+```
+
+先通过正则 `endTag` 匹配到闭合标签，然后前进到闭合标签末尾，然后执行 `parseEndTag` 方法对闭合标签做解析。
+
+```js
+
+function parseEndTag (tagName, start, end) {
+  let pos, lowerCasedTagName
+  if (start == null) start = index
+  if (end == null) end = index
+  
+  if (tagName) {
+    lowerCasedTagName = tagName.toLowerCase()
+  }
+  
+  if (tagName) {
+    for (pos = stack.length - 1; pos >= 0; pos--) {
+      if (stack[pos].lowerCasedTag === lowerCasedTagName) {
+        break
+      }
+    }
+  } else {
+    pos = 0
+  }
+  
+  if (pos >= 0) {
+    for (let i = stack.length - 1; i >= pos; i--) {
+      if (process.env.NODE_ENV !== 'production' &&
+        (i > pos || !tagName) &&
+        options.warn
+      ) {
+        options.warn(
+          `tag <${stack[i].tag}> has no matching end tag.`
+        )
+      }
+      if (options.end) {
+        options.end(stack[i].tag, start, end)
+      }
+    }
+    stack.length = pos
+    lastTag = pos && stack[pos - 1].tag
+  } else if (lowerCasedTagName === 'br') {
+    if (options.start) {
+      options.start(tagName, [], true, start, end)
+    }
+  } else if (lowerCasedTagName === 'p') {
+    if (options.start) {
+      options.start(tagName, [], false, start, end)
+    }
+    if (options.end) {
+      options.end(tagName, start, end)
+    }
+  }
+}
+```
+
+`parseEndTag` 的核心逻辑很简单，在介绍之前我们回顾一下在执行 `handleStartTag` 的时候，对于非一元标签（有 endTag）我们都把它构造成一个对象压入到 `stack` 中，如图所示：
+
+<img :src="$withBase('/assets/stack.png')">
+
+那么对于闭合标签的解析，就是倒序 `stack`，找到第一个和当前 `endTag` 匹配的元素。如果是正常的标签匹配，那么 `stack` 的最后一个元素应该和当前的 `endTag` 匹配，但是考虑到如下错误情况：
+
+```html
+<div><span></div>
+```
+这个时候当 `endTag` 为 `</div>` 的时候，从 `stack` 尾部找到的标签是 `<span>`，就不能匹配，因此这种情况会报警告。匹配后把栈到 `pos` 位置的都弹出，并从 `stack` 尾部拿到 `lastTag`。
+
+最后调用了 `options.end` 回调函数，并传入一些参数，这个回调函数的作用稍后我会详细介绍。
+
+- 文本
+
+```js
+let text, rest, next
+if (textEnd >= 0) {
+  rest = html.slice(textEnd)
+  while (
+    !endTag.test(rest) &&
+    !startTagOpen.test(rest) &&
+    !comment.test(rest) &&
+    !conditionalComment.test(rest)
+  ) {
+    next = rest.indexOf('<', 1)
+    if (next < 0) break
+    textEnd += next
+    rest = html.slice(textEnd)
+  }
+  text = html.substring(0, textEnd)
+  advance(textEnd)
+}
+
+if (textEnd < 0) {
+  text = html
+  html = ''
+}
+
+if (options.chars && text) {
+  options.chars(text)
+}
+```
+
+接下来判断 `textEnd` 是否大于等于 0 的，满足则说明到从当前位置到 `textEnd` 位置都是文本，并且如果 `<` 是纯文本中的字符，就继续找到真正的文本结束的位置，然后前进到结束的位置。
+
+再继续判断 `textEnd` 小于 0 的情况，则说明整个 `template` 解析完毕了，把剩余的 `html` 都赋值给了 `text`。
+
+最后调用了 `options.chars` 回调函数，并传 `text` 参数，这个回调函数的作用稍后我会详细介绍。
+
+因此，在循环解析整个 `template` 的过程中，会根据不同的情况，去执行不同的回调函数，下面我们来看看这些回调函数的作用。
+
+#### 处理开始标签 
+
+对应伪代码：
+
+```js
+start (tag, attrs, unary) {
+  let element = createASTElement(tag, attrs)
+  processElement(element)
+  treeManagement()
+}
+```
+
+当解析到开始标签的时候，最后会执行 `start` 回调函数，函数主要就做 3 件事情，创建 AST 元素，处理 AST 元素，AST 树管理。下面我们来分别来看这几个过程。
+
+- 创建 AST 元素
+
+```js
+// check namespace.
+// inherit parent ns if there is one
+const ns = (currentParent && currentParent.ns) || platformGetTagNamespace(tag)
+
+// handle IE svg bug
+/* istanbul ignore if */
+if (isIE && ns === 'svg') {
+  attrs = guardIESVGBug(attrs)
+}
+
+let element: ASTElement = createASTElement(tag, attrs, currentParent)
+if (ns) {
+  element.ns = ns
+}
+
+export function createASTElement (
+  tag: string,
+  attrs: Array<Attr>,
+  parent: ASTElement | void
+): ASTElement {
+  return {
+    type: 1,
+    tag,
+    attrsList: attrs,
+    attrsMap: makeAttrsMap(attrs),
+    parent,
+    children: []
+  }
+}
+```
+
+通过 `createASTElement` 方法去创建一个 AST 元素，并添加了 namespace。可以看到，每一个 AST 元素就是一个普通的 JavaScript 对象，其中，`type` 表示 AST 元素类型，`tag` 表示标签名，`attrsList` 表示属性列表，`attrsMap` 表示属性映射表，`parent` 表示父的 AST 元素，`children` 表示子 AST 元素集合。
+
+- 处理 AST 元素
+
+```js
+if (isForbiddenTag(element) && !isServerRendering()) {
+  element.forbidden = true
+  process.env.NODE_ENV !== 'production' && warn(
+    'Templates should only be responsible for mapping the state to the ' +
+    'UI. Avoid placing tags with side-effects in your templates, such as ' +
+    `<${tag}>` + ', as they will not be parsed.'
+  )
+}
+
+// apply pre-transforms
+for (let i = 0; i < preTransforms.length; i++) {
+  element = preTransforms[i](element, options) || element
+}
+
+if (!inVPre) {
+  processPre(element)
+  if (element.pre) {
+    inVPre = true
+  }
+}
+if (platformIsPreTag(element.tag)) {
+  inPre = true
+}
+if (inVPre) {
+  processRawAttrs(element)
+} else if (!element.processed) {
+  // structural directives
+  processFor(element)
+  processIf(element)
+  processOnce(element)
+  // element-scope stuff
+  processElement(element, options)
+}
+```
+首先是对模块 `preTransforms` 的调用，其实所有模块的 `preTransforms`、 `transforms` 和 `postTransforms` 的定义都在 `src/platforms/web/compiler/modules` 目录中，这部分我们暂时不会介绍，之后会结合具体的例子说。接着判断 `element` 是否包含各种指令通过 `processXXX` 做相应的处理，处理的结果就是扩展 AST 元素的属性。这里我并不会一一介绍所有的指令处理，而是结合我们当前的例子，我们来看一下 `processFor` 和 `processIf`：
+
+```js
+export function processFor (el: ASTElement) {
+  let exp
+  if ((exp = getAndRemoveAttr(el, 'v-for'))) {
+    const res = parseFor(exp)
+    if (res) {
+      extend(el, res)
+    } else if (process.env.NODE_ENV !== 'production') {
+      warn(
+        `Invalid v-for expression: ${exp}`
+      )
+    }
+  }
+}
+
+export const forAliasRE = /(.*?)\s+(?:in|of)\s+(.*)/
+export const forIteratorRE = /,([^,\}\]]*)(?:,([^,\}\]]*))?$/
+const stripParensRE = /^\(|\)$/g
+export function parseFor (exp: string): ?ForParseResult {
+  const inMatch = exp.match(forAliasRE)
+  if (!inMatch) return
+  const res = {}
+  res.for = inMatch[2].trim()
+  const alias = inMatch[1].trim().replace(stripParensRE, '')
+  const iteratorMatch = alias.match(forIteratorRE)
+  if (iteratorMatch) {
+    res.alias = alias.replace(forIteratorRE, '')
+    res.iterator1 = iteratorMatch[1].trim()
+    if (iteratorMatch[2]) {
+      res.iterator2 = iteratorMatch[2].trim()
+    }
+  } else {
+    res.alias = alias
+  }
+  return res
+}
+```
+
+`processFor` 就是从元素中拿到 `v-for` 指令的内容，然后分别解析出 `for`、`alias`、`iterator1`、`iterator2` 等属性的值添加到 AST 的元素上。就我们的示例 `v-for="(item,index) in data"` 而言，解析出的的 `for` 是 `data`，`alias` 是 `item`，`iterator1` 是 `index`，没有 `iterator2`。
+
+```js
+function processIf (el) {
+  const exp = getAndRemoveAttr(el, 'v-if')
+  if (exp) {
+    el.if = exp
+    addIfCondition(el, {
+      exp: exp,
+      block: el
+    })
+  } else {
+    if (getAndRemoveAttr(el, 'v-else') != null) {
+      el.else = true
+    }
+    const elseif = getAndRemoveAttr(el, 'v-else-if')
+    if (elseif) {
+      el.elseif = elseif
+    }
+  }
+}
+export function addIfCondition (el: ASTElement, condition: ASTIfCondition) {
+  if (!el.ifConditions) {
+    el.ifConditions = []
+  }
+  el.ifConditions.push(condition)
+}
+```
+
+`processIf` 就是从元素中拿 `v-if` 指令的内容，如果拿到则给 AST 元素添加 `if` 属性和 `ifConditions` 属性；否则尝试拿 `v-else` 指令及 `v-else-if` 指令的内容，如果拿到则给 AST 元素分别添加 `else` 和 `elseif` 属性。 
+
+- AST 树管理
+
+我们在处理开始标签的时候为每一个标签创建了一个 AST 元素，在不断解析模板创建 AST 元素的时候，我们也要为它们建立父子关系，就像 DOM 元素的父子关系那样。
+
+AST 树管理相关代码如下：
+
+```js
+function checkRootConstraints (el) {
+  if (process.env.NODE_ENV !== 'production') {
+    if (el.tag === 'slot' || el.tag === 'template') {
+      warnOnce(
+        `Cannot use <${el.tag}> as component root element because it may ` +
+        'contain multiple nodes.'
+      )
+    }
+    if (el.attrsMap.hasOwnProperty('v-for')) {
+      warnOnce(
+        'Cannot use v-for on stateful component root element because ' +
+        'it renders multiple elements.'
+      )
+    }
+  }
+}
+
+
+// tree management
+if (!root) {
+  root = element
+  checkRootConstraints(root)
+} else if (!stack.length) {
+  // allow root elements with v-if, v-else-if and v-else
+  if (root.if && (element.elseif || element.else)) {
+    checkRootConstraints(element)
+    addIfCondition(root, {
+      exp: element.elseif,
+      block: element
+    })
+  } else if (process.env.NODE_ENV !== 'production') {
+    warnOnce(
+      `Component template should contain exactly one root element. ` +
+      `If you are using v-if on multiple elements, ` +
+      `use v-else-if to chain them instead.`
+    )
+  }
+}
+if (currentParent && !element.forbidden) {
+  if (element.elseif || element.else) {
+    processIfConditions(element, currentParent)
+  } else if (element.slotScope) { // scoped slot
+    currentParent.plain = false
+    const name = element.slotTarget || '"default"'
+    ;(currentParent.scopedSlots || (currentParent.scopedSlots = {}))[name] = element
+  } else {
+    currentParent.children.push(element)
+    element.parent = currentParent
+  }
+}
+if (!unary) {
+  currentParent = element
+  stack.push(element)
+} else {
+  closeElement(element)
+}
+```
+
+AST 树管理的目标是构建一颗 AST 树，本质上它要维护 `root` 根节点和当前父节点 `currentParent`。为了保证元素可以正确闭合，这里也利用了 `stack` 栈的数据结构，和我们之前解析模板时用到的 `stack` 类似。
+
+当我们在处理开始标签的时候，判断如果有 `currentParent`，会把当前 AST 元素 push 到 `currentParent.chilldren` 中，同时把 AST 元素的 `parent` 指向 `currentParent`。
+
+ 接着就是更新 `currentParent` 和 `stack` ，判断当前如果不是一个一元标签，我们要把它生成的 AST 元素 push 到 `stack` 中，并且把当前的 AST 元素赋值给 `currentParent`。
+
+`stack` 和 `currentParent` 除了在处理开始标签的时候会变化，在处理闭合标签的时候也会变化，因此整个 AST 树管理要结合闭合标签的处理逻辑看。
+
+#### 处理闭合标签
+
+对应伪代码：
+
+```js
+end () {
+  treeManagement()
+  closeElement()
+}
+```
+
+当解析到闭合标签的时候，最后会执行 `end` 回调函数：
+
+```js
+// remove trailing whitespace
+const element = stack[stack.length - 1]
+const lastNode = element.children[element.children.length - 1]
+if (lastNode && lastNode.type === 3 && lastNode.text === ' ' && !inPre) {
+  element.children.pop()
+}
+// pop stack
+stack.length -= 1
+currentParent = stack[stack.length - 1]
+closeElement(element)
+```
+
+首先处理了尾部空格的情况，然后把 `stack` 的元素弹一个出栈，并把 `stack` 最后一个元素赋值给 `currentParent`，这样就保证了当遇到闭合标签的时候，可以正确地更新 `stack` 的长度以及 `currentParent` 的值，这样就维护了整个 AST 树。
+
+最后执行了 `closeElement(element)`：
+
+```js
+function closeElement (element) {
+  // check pre state
+  if (element.pre) {
+    inVPre = false
+  }
+  if (platformIsPreTag(element.tag)) {
+    inPre = false
+  }
+  // apply post-transforms
+  for (let i = 0; i < postTransforms.length; i++) {
+    postTransforms[i](element, options)
+  }
+}
+```
+`closeElement` 逻辑很简单，就是更新一下 `inVPre` 和 `inPre` 的状态，以及执行 `postTransforms` 函数，这些我们暂时都不必了解。
+
+#### 处理文本内容
+
+对应伪代码：
+
+```js
+chars (text: string) {
+  handleText()
+  createChildrenASTOfText()
+}
+```
+
+除了处理开始标签和闭合标签，我们还会在解析模板的过程中去处理一些文本内容：
+
+```js
+const children = currentParent.children
+text = inPre || text.trim()
+  ? isTextTag(currentParent) ? text : decodeHTMLCached(text)
+  // only preserve whitespace if its not right after a starting tag
+  : preserveWhitespace && children.length ? ' ' : ''
+if (text) {
+  let res
+  if (!inVPre && text !== ' ' && (res = parseText(text, delimiters))) {
+    children.push({
+      type: 2,
+      expression: res.expression,
+      tokens: res.tokens,
+      text
+    })
+  } else if (text !== ' ' || !children.length || children[children.length - 1].text !== ' ') {
+    children.push({
+      type: 3,
+      text
+    })
+  }
+}
+```
+文本构造的 AST 元素有 2 种类型，一种是有表达式的，`type` 为 2，一种是纯文本，`type` 为 3。在我们的例子中，文本就是 `{{item}}:{{index}}`，是个表达式，通过执行 `parseText(text, delimiters)` 对文本解析，它的定义在 `src/compiler/parser/text-parser.js` 中：
+
+```js
+const defaultTagRE = /\{\{((?:.|\n)+?)\}\}/g
+const regexEscapeRE = /[-.*+?^${}()|[\]\/\\]/g
+
+const buildRegex = cached(delimiters => {
+  const open = delimiters[0].replace(regexEscapeRE, '\\$&')
+  const close = delimiters[1].replace(regexEscapeRE, '\\$&')
+  return new RegExp(open + '((?:.|\\n)+?)' + close, 'g')
+})
+
+export function parseText (
+  text: string,
+  delimiters?: [string, string]
+): TextParseResult | void {
+  const tagRE = delimiters ? buildRegex(delimiters) : defaultTagRE
+  if (!tagRE.test(text)) {
+    return
+  }
+  const tokens = []
+  const rawTokens = []
+  let lastIndex = tagRE.lastIndex = 0
+  let match, index, tokenValue
+  while ((match = tagRE.exec(text))) {
+    index = match.index
+    // push text token
+    if (index > lastIndex) {
+      rawTokens.push(tokenValue = text.slice(lastIndex, index))
+      tokens.push(JSON.stringify(tokenValue))
+    }
+    // tag token
+    const exp = parseFilters(match[1].trim())
+    tokens.push(`_s(${exp})`)
+    rawTokens.push({ '@binding': exp })
+    lastIndex = index + match[0].length
+  }
+  if (lastIndex < text.length) {
+    rawTokens.push(tokenValue = text.slice(lastIndex))
+    tokens.push(JSON.stringify(tokenValue))
+  }
+  return {
+    expression: tokens.join('+'),
+    tokens: rawTokens
+  }
+}
+```
+
+`parseText` 首先根据分隔符（默认是 `{{}}`）构造了文本匹配的正则表达式，然后再循环匹配文本，遇到普通文本就 push 到 `rawTokens` 和 `tokens` 中，如果是表达式就转换成 `_s(${exp})` push 到 `tokens` 中，以及转换成 `{@binding:exp}` push 到 `rawTokens` 中。
+  
+ 对于我们的例子 `{{item}}:{{index}}`，`tokens` 就是 `[_s(item),'":"',_s(index)]`；`rawTokens` 就是 `[{'@binding':'item'},':',{'@binding':'index'}]`。那么返回的对象如下：
+ 
+ ```js
+return {
+  expression: '_s(item)+":"+_s(index)',
+  tokens: [{'@binding':'item'},':',{'@binding':'index'}]
+}
+```
+
+### 流程图
+
+<img :src="$withBase('/assets/parse.png')">
+
+### 总结
+
+那么至此，`parse` 的过程就分析完了，看似复杂，但我们可以抛开细节理清它的整体流程。`parse` 的目标是把 `template` 模板字符串转换成 AST 树，它是一种用 JavaScript 对象的形式来描述整个模板。那么整个 `parse` 的过程是利用正则表达式顺序解析模板，当解析到开始标签、闭合标签、文本的时候都会分别执行对应的回调函数，来达到构造 AST 树的目的。
+
+AST 元素节点总共有 3 种类型，`type` 为 1 表示是普通元素，为 2 表示是表达式，为 3 表示是纯文本。其实这里我觉得源码写的不够友好，这种是典型的魔术数字，如果转换成用常量表达会更利于源码阅读。
+
+当 AST 树构造完毕，下一步就是 `optimize` 优化这颗树。
+
+## 5.4 optimize
+
+当我们的模板 `template` 经过 `parse` 过程后，会输出生成 AST 树，那么接下来我们需要对这颗树做优化，`optimize` 的逻辑是远简单于 `parse` 的逻辑，所以理解起来会轻松很多。
+
+为什么要有优化过程，因为我们知道 Vue 是数据驱动，是响应式的，但是我们的模板并不是所有数据都是响应式的，也有很多数据是首次渲染后就永远不会变化的，那么这部分数据生成的 DOM 也不会变化，我们可以在 `patch` 的过程跳过对他们的比对。
+
+来看一下 `optimize` 方法的定义，在 `src/compiler/optimizer.js` 中：
+
+```js
+/**
+ * Goal of the optimizer: walk the generated template AST tree
+ * and detect sub-trees that are purely static, i.e. parts of
+ * the DOM that never needs to change.
+ *
+ * Once we detect these sub-trees, we can:
+ *
+ * 1. Hoist them into constants, so that we no longer need to
+ *    create fresh nodes for them on each re-render;
+ * 2. Completely skip them in the patching process.
+ */
+export function optimize (root: ?ASTElement, options: CompilerOptions) {
+  if (!root) return
+  isStaticKey = genStaticKeysCached(options.staticKeys || '')
+  isPlatformReservedTag = options.isReservedTag || no
+  // first pass: mark all non-static nodes.
+  markStatic(root)
+  // second pass: mark static roots.
+  markStaticRoots(root, false)
+}
+
+function genStaticKeys (keys: string): Function {
+  return makeMap(
+    'type,tag,attrsList,attrsMap,plain,parent,children,attrs' +
+    (keys ? ',' + keys : '')
+  )
+}
+```
+
+我们在编译阶段可以把一些 AST 节点优化成静态节点，所以整个 `optimize` 的过程实际上就干 2 件事情，`markStatic(root)` 标记静态节点 ，`markStaticRoots(root, false)` 标记静态根。
+
+### 标记静态节点
+
+```js
+function markStatic (node: ASTNode) {
+  node.static = isStatic(node)
+  if (node.type === 1) {
+    // do not make component slot content static. this avoids
+    // 1. components not able to mutate slot nodes
+    // 2. static slot content fails for hot-reloading
+    if (
+      !isPlatformReservedTag(node.tag) &&
+      node.tag !== 'slot' &&
+      node.attrsMap['inline-template'] == null
+    ) {
+      return
+    }
+    for (let i = 0, l = node.children.length; i < l; i++) {
+      const child = node.children[i]
+      markStatic(child)
+      if (!child.static) {
+        node.static = false
+      }
+    }
+    if (node.ifConditions) {
+      for (let i = 1, l = node.ifConditions.length; i < l; i++) {
+        const block = node.ifConditions[i].block
+        markStatic(block)
+        if (!block.static) {
+          node.static = false
+        }
+      }
+    }
+  }
+}
+
+function isStatic (node: ASTNode): boolean {
+  if (node.type === 2) { // expression
+    return false
+  }
+  if (node.type === 3) { // text
+    return true
+  }
+  return !!(node.pre || (
+    !node.hasBindings && // no dynamic bindings
+    !node.if && !node.for && // not v-if or v-for or v-else
+    !isBuiltInTag(node.tag) && // not a built-in
+    isPlatformReservedTag(node.tag) && // not a component
+    !isDirectChildOfTemplateFor(node) &&
+    Object.keys(node).every(isStaticKey)
+  ))
+}
+```
+
+首先执行 `node.static = isStatic(node)`
+
+`isStatic` 是对一个 AST 元素节点是否是静态的判断，如果是表达式，就是非静态；如果是纯文本，就是静态；对于一个普通元素，如果有 pre 属性，那么它使用了 `v-pre` 指令，是静态，否则要同时满足以下条件：没有使用 `v-if`、`v-for`，没有使用其它指令（不包括 `v-once`），非内置组件，是平台保留的标签，非带有 `v-for` 的 `template` 标签的直接子节点，节点的所有属性的 `key` 都满足静态 key；这些都满足则这个 AST 节点是一个静态节点。
+
+如果这个节点是一个普通元素，则遍历它的所有 `children`，递归执行 `markStatic`。因为所有的 `elseif` 和 `else` 节点都不在 `children` 中， 如果节点的 `ifConditions` 不为空，则遍历 `ifConditions` 拿到所有条件中的 `block`，也就是它们对应的 AST 节点，递归执行 `markStatic`。在这些递归过程中，一旦子节点有不是 `static` 的情况，则它的父节点的 `static` 均变成 false。
+
+### 标记静态根
+
+```js
+function markStaticRoots (node: ASTNode, isInFor: boolean) {
+  if (node.type === 1) {
+    if (node.static || node.once) {
+      node.staticInFor = isInFor
+    }
+    // For a node to qualify as a static root, it should have children that
+    // are not just static text. Otherwise the cost of hoisting out will
+    // outweigh the benefits and it's better off to just always render it fresh.
+    if (node.static && node.children.length && !(
+      node.children.length === 1 &&
+      node.children[0].type === 3
+    )) {
+      node.staticRoot = true
+      return
+    } else {
+      node.staticRoot = false
+    }
+    if (node.children) {
+      for (let i = 0, l = node.children.length; i < l; i++) {
+        markStaticRoots(node.children[i], isInFor || !!node.for)
+      }
+    }
+    if (node.ifConditions) {
+      for (let i = 1, l = node.ifConditions.length; i < l; i++) {
+        markStaticRoots(node.ifConditions[i].block, isInFor)
+      }
+    }
+  }
+}
+```
+
+`markStaticRoots` 第二个参数是 `isInFor`，对于已经是 `static` 的节点或者是 `v-once` 指令的节点，`node.staticInFor = isInFor`。
+接着就是对于 `staticRoot` 的判断逻辑，从注释中我们可以看到，对于有资格成为 `staticRoot` 的节点，除了本身是一个静态节点外，必须满足拥有 `children`，并且 `children` 不能只是一个文本节点，不然的话把它标记成静态根节点的收益就很小了。
+
+接下来和标记静态节点的逻辑一样，遍历 `children` 以及 `ifConditions`，递归执行 `markStaticRoots`。
+
+回归我们之前的例子，经过 `optimize` 后，AST 树变成了如下：
+
+```js
+ast = {
+  'type': 1,
+  'tag': 'ul',
+  'attrsList': [],
+  'attrsMap': {
+    ':class': 'bindCls',
+    'class': 'list',
+    'v-if': 'isShow'
+  },
+  'if': 'isShow',
+  'ifConditions': [{
+    'exp': 'isShow',
+    'block': // ul ast element
+  }],
+  'parent': undefined,
+  'plain': false,
+  'staticClass': 'list',
+  'classBinding': 'bindCls',
+  'static': false,
+  'staticRoot': false,
+  'children': [{
+    'type': 1,
+    'tag': 'li',
+    'attrsList': [{
+      'name': '@click',
+      'value': 'clickItem(index)'
+    }],
+    'attrsMap': {
+      '@click': 'clickItem(index)',
+      'v-for': '(item,index) in data'
+     },
+    'parent': // ul ast element
+    'plain': false,
+    'events': {
+      'click': {
+        'value': 'clickItem(index)'
+      }
+    },
+    'hasBindings': true,
+    'for': 'data',
+    'alias': 'item',
+    'iterator1': 'index',
+    'static': false,
+    'staticRoot': false,
+    'children': [
+      'type': 2,
+      'expression': '_s(item)+":"+_s(index)'
+      'text': '{{item}}:{{index}}',
+      'tokens': [
+        {'@binding':'item'},
+        ':',
+        {'@binding':'index'}
+      ],
+      'static': false
+    ]
+  }]
+}
+```
+
+我们发现每一个 AST 元素节点都多了 `staic` 属性，并且 `type` 为 1 的普通元素 AST 节点多了 `staticRoot` 属性。
+
+### 总结
+
+那么至此我们分析完了 `optimize` 的过程，就是深度遍历这个 AST 树，去检测它的每一颗子树是不是静态节点，如果是静态节点则它们生成 DOM 永远不需要改变，这对运行时对模板的更新起到极大的优化作用。
+
+我们通过 `optimize` 我们把整个 AST 树中的每一个 AST 元素节点标记了 `static` 和 `staticRoot`，它会影响我们接下来执行代码生成的过程。
+
+## 5.5 codegen
+
+编译的最后一步就是把优化后的 AST 树转换成可执行的代码，这部分内容也比较多，我并不打算把所有的细节都讲了，了解整体流程即可。部分细节我们会在之后的章节配合一个具体 case 去详细讲。
+
+为了方便理解，我们还是用之前的例子：
+
+```html
+<ul :class="bindCls" class="list" v-if="isShow">
+    <li v-for="(item,index) in data" @click="clickItem(index)">{{item}}:{{index}}</li>
+</ul>
+```
+
+它经过编译，执行 `const code = generate(ast, options)`，生成的 `render` 代码串如下：
+
+```js
+with(this){
+  return (isShow) ?
+    _c('ul', {
+        staticClass: "list",
+        class: bindCls
+      },
+      _l((data), function(item, index) {
+        return _c('li', {
+          on: {
+            "click": function($event) {
+              clickItem(index)
+            }
+          }
+        },
+        [_v(_s(item) + ":" + _s(index))])
+      })
+    ) : _e()
+}
+```
+
+这里的 `_c` 函数定义在 `src/core/instance/render.js` 中。
+
+```js
+vm._c = (a, b, c, d) => createElement(vm, a, b, c, d, false)
+```
+
+而 `_l`、`_v` 定义在 `src/core/instance/render-helpers/index.js` 中：
+
+```js
+export function installRenderHelpers (target: any) {
+  target._o = markOnce
+  target._n = toNumber
+  target._s = toString
+  target._l = renderList
+  target._t = renderSlot
+  target._q = looseEqual
+  target._i = looseIndexOf
+  target._m = renderStatic
+  target._f = resolveFilter
+  target._k = checkKeyCodes
+  target._b = bindObjectProps
+  target._v = createTextVNode
+  target._e = createEmptyVNode
+  target._u = resolveScopedSlots
+  target._g = bindObjectListeners
+}
+```
+顾名思义，`_c` 就是执行 `createElement` 去创建 VNode，而 `_l` 对应 `renderList` 渲染列表；`_v` 对应 `createTextVNode` 创建文本 VNode；`_e` 对于 `createEmptyVNode`创建空的 VNode。 
+
+在 `compileToFunctions` 中，会把这个 `render` 代码串转换成函数，它的定义在 `src/compler/to-function.js` 中：
+
+```js
+const compiled = compile(template, options)
+res.render = createFunction(compiled.render, fnGenErrors)
+
+function createFunction (code, errors) {
+  try {
+    return new Function(code)
+  } catch (err) {
+    errors.push({ err, code })
+    return noop
+  }
+}
+```
+
+实际上就是把 `render` 代码串通过 `new Function` 的方式转换成可执行的函数，赋值给 `vm.options.render`，这样当组件通过 `vm._render` 的时候，就会执行这个 `render` 函数。那么接下来我们就重点关注一下这个 `render` 代码串的生成过程。
+
+### generate
+
+```js
+const code = generate(ast, options)
+```
+
+`generate` 函数的定义在 `src/compiler/codegen/index.js` 中：
+
+```js
+export function generate (
+  ast: ASTElement | void,
+  options: CompilerOptions
+): CodegenResult {
+  const state = new CodegenState(options)
+  const code = ast ? genElement(ast, state) : '_c("div")'
+  return {
+    render: `with(this){return ${code}}`,
+    staticRenderFns: state.staticRenderFns
+  }
+}
+```
+
+`generate` 函数首先通过 `genElement(ast, state)` 生成 `code`，再把 `code` 用 `with(this){return ${code}}}` 包裹起来。这里的 `state` 是 `CodegenState` 的一个实例，稍后我们在用到它的时候会介绍它。先来看一下 `genElement`：
+
+```js
+export function genElement (el: ASTElement, state: CodegenState): string {
+  if (el.staticRoot && !el.staticProcessed) {
+    return genStatic(el, state)
+  } else if (el.once && !el.onceProcessed) {
+    return genOnce(el, state)
+  } else if (el.for && !el.forProcessed) {
+    return genFor(el, state)
+  } else if (el.if && !el.ifProcessed) {
+    return genIf(el, state)
+  } else if (el.tag === 'template' && !el.slotTarget) {
+    return genChildren(el, state) || 'void 0'
+  } else if (el.tag === 'slot') {
+    return genSlot(el, state)
+  } else {
+    // component or element
+    let code
+    if (el.component) {
+      code = genComponent(el.component, el, state)
+    } else {
+      const data = el.plain ? undefined : genData(el, state)
+
+      const children = el.inlineTemplate ? null : genChildren(el, state, true)
+      code = `_c('${el.tag}'${
+        data ? `,${data}` : '' // data
+      }${
+        children ? `,${children}` : '' // children
+      })`
+    }
+    // module transforms
+    for (let i = 0; i < state.transforms.length; i++) {
+      code = state.transforms[i](el, code)
+    }
+    return code
+  }
+}
+```
+基本就是判断当前 AST 元素节点的属性执行不同的代码生成函数，在我们的例子中，我们先了解一下 `genFor` 和 `genIf`。
+
+### `genIf`
+
+```js
+export function genIf (
+  el: any,
+  state: CodegenState,
+  altGen?: Function,
+  altEmpty?: string
+): string {
+  el.ifProcessed = true // avoid recursion
+  return genIfConditions(el.ifConditions.slice(), state, altGen, altEmpty)
+}
+
+function genIfConditions (
+  conditions: ASTIfConditions,
+  state: CodegenState,
+  altGen?: Function,
+  altEmpty?: string
+): string {
+  if (!conditions.length) {
+    return altEmpty || '_e()'
+  }
+
+  const condition = conditions.shift()
+  if (condition.exp) {
+    return `(${condition.exp})?${
+      genTernaryExp(condition.block)
+    }:${
+      genIfConditions(conditions, state, altGen, altEmpty)
+    }`
+  } else {
+    return `${genTernaryExp(condition.block)}`
+  }
+
+  // v-if with v-once should generate code like (a)?_m(0):_m(1)
+  function genTernaryExp (el) {
+    return altGen
+      ? altGen(el, state)
+      : el.once
+        ? genOnce(el, state)
+        : genElement(el, state)
+  }
+}
+```
+
+`genIf` 主要是通过执行 `genIfConditions`，它是依次从 `conditions` 获取第一个 `condition`，然后通过对 `condition.exp` 去生成一段三元运算符的代码，`:` 后是递归调用 `genIfConditions`，这样如果有多个 `conditions`，就生成多层三元运算逻辑。这里我们暂时不考虑 `v-once` 的情况，所以
+`genTernaryExp` 最终是调用了 `genElement`。
+
+在我们的例子中，只有一个 `condition`，`exp` 为 `isShow`，因此生成如下伪代码：
+
+```js
+return (isShow) ? genElement(el, state) : _e()
+```
+
+### `genFor`
+
+```js
+export function genFor (
+  el: any,
+  state: CodegenState,
+  altGen?: Function,
+  altHelper?: string
+): string {
+  const exp = el.for
+  const alias = el.alias
+  const iterator1 = el.iterator1 ? `,${el.iterator1}` : ''
+  const iterator2 = el.iterator2 ? `,${el.iterator2}` : ''
+
+  if (process.env.NODE_ENV !== 'production' &&
+    state.maybeComponent(el) &&
+    el.tag !== 'slot' &&
+    el.tag !== 'template' &&
+    !el.key
+  ) {
+    state.warn(
+      `<${el.tag} v-for="${alias} in ${exp}">: component lists rendered with ` +
+      `v-for should have explicit keys. ` +
+      `See https://vuejs.org/guide/list.html#key for more info.`,
+      true /* tip */
+    )
+  }
+
+  el.forProcessed = true // avoid recursion
+  return `${altHelper || '_l'}((${exp}),` +
+    `function(${alias}${iterator1}${iterator2}){` +
+      `return ${(altGen || genElement)(el, state)}` +
+    '})'
+}
+```
+
+`genFor` 的逻辑很简单，首先 AST 元素节点中获取了和 `for` 相关的一些属性，然后返回了一个代码字符串。
+
+在我们的例子中，`exp` 是 `data`，`alias` 是 `item`，`iterator1` ，因此生成如下伪代码：
+
+```js
+_l((data), function(item, index) {
+  return genElememt(el, state)
+})
+```
+
+### `genData` & `genChildren`
+
+再次回顾我们的例子，它的最外层是 `ul`，首先执行 `genIf`，它最终调用了 `genElement(el, state)` 去生成子节点，注意，这里的 `el` 仍然指向的是 `ul` 对应的 AST 节点，但是此时的 `el.ifProcessed` 为 true，所以命中最后一个 else 逻辑：
+
+```js
+// component or element
+let code
+if (el.component) {
+  code = genComponent(el.component, el, state)
+} else {
+  const data = el.plain ? undefined : genData(el, state)
+
+  const children = el.inlineTemplate ? null : genChildren(el, state, true)
+  code = `_c('${el.tag}'${
+    data ? `,${data}` : '' // data
+  }${
+    children ? `,${children}` : '' // children
+  })`
+}
+// module transforms
+for (let i = 0; i < state.transforms.length; i++) {
+  code = state.transforms[i](el, code)
+}
+return code
+```
+
+这里我们只关注 2 个逻辑，`genData` 和 `genChildren`：
+
+- genData
+
+```js
+export function genData (el: ASTElement, state: CodegenState): string {
+  let data = '{'
+
+  // directives first.
+  // directives may mutate the el's other properties before they are generated.
+  const dirs = genDirectives(el, state)
+  if (dirs) data += dirs + ','
+
+  // key
+  if (el.key) {
+    data += `key:${el.key},`
+  }
+  // ref
+  if (el.ref) {
+    data += `ref:${el.ref},`
+  }
+  if (el.refInFor) {
+    data += `refInFor:true,`
+  }
+  // pre
+  if (el.pre) {
+    data += `pre:true,`
+  }
+  // record original tag name for components using "is" attribute
+  if (el.component) {
+    data += `tag:"${el.tag}",`
+  }
+  // module data generation functions
+  for (let i = 0; i < state.dataGenFns.length; i++) {
+    data += state.dataGenFns[i](el)
+  }
+  // attributes
+  if (el.attrs) {
+    data += `attrs:{${genProps(el.attrs)}},`
+  }
+  // DOM props
+  if (el.props) {
+    data += `domProps:{${genProps(el.props)}},`
+  }
+  // event handlers
+  if (el.events) {
+    data += `${genHandlers(el.events, false, state.warn)},`
+  }
+  if (el.nativeEvents) {
+    data += `${genHandlers(el.nativeEvents, true, state.warn)},`
+  }
+  // slot target
+  // only for non-scoped slots
+  if (el.slotTarget && !el.slotScope) {
+    data += `slot:${el.slotTarget},`
+  }
+  // scoped slots
+  if (el.scopedSlots) {
+    data += `${genScopedSlots(el.scopedSlots, state)},`
+  }
+  // component v-model
+  if (el.model) {
+    data += `model:{value:${
+      el.model.value
+    },callback:${
+      el.model.callback
+    },expression:${
+      el.model.expression
+    }},`
+  }
+  // inline-template
+  if (el.inlineTemplate) {
+    const inlineTemplate = genInlineTemplate(el, state)
+    if (inlineTemplate) {
+      data += `${inlineTemplate},`
+    }
+  }
+  data = data.replace(/,$/, '') + '}'
+  // v-bind data wrap
+  if (el.wrapData) {
+    data = el.wrapData(data)
+  }
+  // v-on data wrap
+  if (el.wrapListeners) {
+    data = el.wrapListeners(data)
+  }
+  return data
+}
+```
+
+`genData` 函数就是根据 AST 元素节点的属性构造出一个 `data` 对象字符串，这个在后面创建 VNode 的时候的时候会作为参数传入。
+
+之前我们提到了 `CodegenState` 的实例 `state`，这里有一段关于 `state` 的逻辑：
+
+```js
+for (let i = 0; i < state.dataGenFns.length; i++) {
+  data += state.dataGenFns[i](el)
+}
+```
+
+`state.dataGenFns` 的初始化在它的构造器中。
+
+```js
+export class CodegenState {
+  constructor (options: CompilerOptions) {
+    // ...
+    this.dataGenFns = pluckModuleFunction(options.modules, 'genData')
+    // ...
+  }
+}
+```
+
+实际上就是获取所有 `modules` 中的 `genData` 函数，其中，`class module` 和 `style module` 定义了 `genData` 函数。比如定义在 `src/platforms/web/compiler/modules/class.js` 中的 `genData` 方法：
+
+```js
+function genData (el: ASTElement): string {
+  let data = ''
+  if (el.staticClass) {
+    data += `staticClass:${el.staticClass},`
+  }
+  if (el.classBinding) {
+    data += `class:${el.classBinding},`
+  }
+  return data
+}
+```
+
+在我们的例子中，`ul` AST 元素节点定义了 `el.staticClass` 和 `el.classBinding`，因此最终生成的 `data` 字符串如下：
+
+```js
+{
+  staticClass: "list",
+  class: bindCls
+}
+```
+
+- genChildren
+
+接下来我们再来看一下 `genChildren`，它的定义在 `src/compiler/codegen/index.js` 中：
+
+```js
+export function genChildren (
+  el: ASTElement,
+  state: CodegenState,
+  checkSkip?: boolean,
+  altGenElement?: Function,
+  altGenNode?: Function
+): string | void {
+  const children = el.children
+  if (children.length) {
+    const el: any = children[0]
+    if (children.length === 1 &&
+      el.for &&
+      el.tag !== 'template' &&
+      el.tag !== 'slot'
+    ) {
+      return (altGenElement || genElement)(el, state)
+    }
+    const normalizationType = checkSkip
+      ? getNormalizationType(children, state.maybeComponent)
+      : 0
+    const gen = altGenNode || genNode
+    return `[${children.map(c => gen(c, state)).join(',')}]${
+      normalizationType ? `,${normalizationType}` : ''
+    }`
+  }
+}
+```
+
+在我们的例子中，`li` AST 元素节点是 `ul` AST 元素节点的 `children` 之一，满足 `(children.length === 1 && el.for && el.tag !== 'template' && el.tag !== 'slot')` 条件，因此通过 `genElement(el, state)` 生成 `li` AST元素节点的代码，也就回到了我们之前调用 `genFor` 生成的代码，把它们拼在一起生成的伪代码如下：
+
+```js
+return (isShow) ?
+    _c('ul', {
+        staticClass: "list",
+        class: bindCls
+      },
+      _l((data), function(item, index) {
+        return genElememt(el, state)
+      })
+    ) : _e()
+```
+
+在我们的例子中，在执行 `genElememt(el, state)` 的时候，`el` 还是 `li` AST 元素节点，`el.forProcessed` 已为 true，所以会继续执行 `genData` 和 `genChildren` 的逻辑。由于 `el.events` 不为空，在执行 `genData` 的时候，会执行 如下逻辑：
+
+```js
+if (el.events) {
+  data += `${genHandlers(el.events, false, state.warn)},`
+}
+```
+
+`genHandlers` 的定义在 `src/compiler/codegen/events.js` 中：
+
+```js
+export function genHandlers (
+  events: ASTElementHandlers,
+  isNative: boolean,
+  warn: Function
+): string {
+  let res = isNative ? 'nativeOn:{' : 'on:{'
+  for (const name in events) {
+    res += `"${name}":${genHandler(name, events[name])},`
+  }
+  return res.slice(0, -1) + '}'
+}
+```
+`genHandler` 的逻辑就不介绍了，很大部分都是对修饰符 `modifier` 的处理，感兴趣同学可以自己看，对于我们的例子，它最终 `genData` 生成的 `data` 字符串如下：
+
+```js
+{
+  on: {
+    "click": function($event) {
+      clickItem(index)
+    }
+  }
+}
+```
+
+`genChildren` 的时候，会执行到如下逻辑：
+
+```js
+export function genChildren (
+  el: ASTElement,
+  state: CodegenState,
+  checkSkip?: boolean,
+  altGenElement?: Function,
+  altGenNode?: Function
+): string | void {
+  // ...
+  const normalizationType = checkSkip
+    ? getNormalizationType(children, state.maybeComponent)
+    : 0
+  const gen = altGenNode || genNode
+  return `[${children.map(c => gen(c, state)).join(',')}]${
+    normalizationType ? `,${normalizationType}` : ''
+  }`
+}
+
+function genNode (node: ASTNode, state: CodegenState): string {
+  if (node.type === 1) {
+    return genElement(node, state)
+  } if (node.type === 3 && node.isComment) {
+    return genComment(node)
+  } else {
+    return genText(node)
+  }
+}
+```
+`genChildren` 的就是遍历 `children`，然后执行 `genNode` 方法，根据不同的 `type` 执行具体的方法。在我们的例子中，`li` AST 元素节点的 `children` 是 type 为 2 的表达式 AST 元素节点，那么会执行到 `genText(node)` 逻辑。
+
+```js
+export function genText (text: ASTText | ASTExpression): string {
+  return `_v(${text.type === 2
+    ? text.expression
+    : transformSpecialNewlines(JSON.stringify(text.text))
+  })`
+}
+```
+
+因此在我们的例子中，`genChildren` 生成的代码串如下：
+
+```js
+[_v(_s(item) + ":" + _s(index))]
+```
+
+和之前拼在一起，最终生成的 `code` 如下：
+
+```js
+ return (isShow) ?
+    _c('ul', {
+        staticClass: "list",
+        class: bindCls
+      },
+      _l((data), function(item, index) {
+        return _c('li', {
+          on: {
+            "click": function($event) {
+              clickItem(index)
+            }
+          }
+        },
+        [_v(_s(item) + ":" + _s(index))])
+      })
+    ) : _e()
+```
+
+### 总结
+
+这一节通过例子配合解析，我们对从 `ast -> code ` 这一步有了一些了解，编译后生成的代码就是在运行时执行的代码。由于 `genCode` 的内容有很多，所以我对大家的建议是没必要把所有的细节都一次性看完，我们应该根据具体一个 case，走完一条主线即可。
+
+在之后的章节我们会对 `slot` 的实现做解析，我们会重新复习编译的章节，针对具体问题做具体分析，有利于我们排除干扰，对编译过程的学习有更深入的理解。
+
 # 第六章：扩展
 
 详细讲解了 event、v-model、slot、keep-alive、transition、transition-group 等常用功能的原理实现，该章节作为一个可扩展章节，未来会分析更多 Vue 提供的特性。
+
+## 6.1 扩展
+
+前面几章我们分析了 Vue 的核心以及编译过程，除此之外，Vue 还提供了很多好用的 feature 如 `event`、`v-model`、`slot`、`keep-alive`、`transition` 等等。对他们的理解有助于我们在平时开发中更好地应用这些 feature，即使出现 bug 我们也可以很从容地应对。
+
+这一章是一个可扩展的章节，除了已分析的这些 feature 外，未来我们可能会扩展更多的内容。
+
+## 6.2 event
+
+我们平时开发工作中，处理组件间的通讯，原生的交互，都离不开事件。对于一个组件元素，我们不仅仅可以绑定原生的 DOM 事件，还可以绑定自定义事件，非常灵活和方便。那么接下来我们从源码角度来看看它的实现原理。
+
+为了更加直观，我们通过一个例子来分析它的实现：
+
+```js
+let Child = {
+  template: '<button @click="clickHandler($event)">' +
+  'click me' +
+  '</button>',
+  methods: {
+    clickHandler(e) {
+      console.log('Button clicked!', e)
+      this.$emit('select')
+    }
+  }
+}
+
+let vm = new Vue({
+  el: '#app',
+  template: '<div>' +
+  '<child @select="selectHandler" @click.native.prevent="clickHandler"></child>' +
+  '</div>',
+  methods: {
+    clickHandler() {
+      console.log('Child clicked!')
+    },
+    selectHandler() {
+      console.log('Child select!')
+    }
+  },
+  components: {
+    Child
+  }
+})
+```
+
+### 编译
+
+先从编译阶段开始看起，在 `parse` 阶段，会执行 `processAttrs` 方法，它的定义在 `src/compiler/parser/index.js` 中：
+
+```js
+export const onRE = /^@|^v-on:/
+export const dirRE = /^v-|^@|^:/
+export const bindRE = /^:|^v-bind:/
+function processAttrs (el) {
+  const list = el.attrsList
+  let i, l, name, rawName, value, modifiers, isProp
+  for (i = 0, l = list.length; i < l; i++) {
+    name = rawName = list[i].name
+    value = list[i].value
+    if (dirRE.test(name)) {   
+      el.hasBindings = true
+      modifiers = parseModifiers(name)
+      if (modifiers) {
+        name = name.replace(modifierRE, '')
+      }
+      if (bindRE.test(name)) {
+        // ..
+      } else if (onRE.test(name)) {
+        name = name.replace(onRE, '')
+        addHandler(el, name, value, modifiers, false, warn)
+      } else {
+        // ...
+      }
+    } else {
+      // ...
+    }
+  }
+}
+
+function parseModifiers (name: string): Object | void {
+  const match = name.match(modifierRE)
+  if (match) {
+    const ret = {}
+    match.forEach(m => { ret[m.slice(1)] = true })
+    return ret
+  }
+}
+```
+
+在对标签属性的处理过程中，判断如果是指令，首先通过 `parseModifiers` 解析出修饰符，然后判断如果事件的指令，则执行 `addHandler(el, name, value, modifiers, false, warn)` 方法，它的定义在 `src/compiler/helpers.js` 中：
+
+```js
+export function addHandler (
+  el: ASTElement,
+  name: string,
+  value: string,
+  modifiers: ?ASTModifiers,
+  important?: boolean,
+  warn?: Function
+) {
+  modifiers = modifiers || emptyObject
+  // warn prevent and passive modifier
+  /* istanbul ignore if */
+  if (
+    process.env.NODE_ENV !== 'production' && warn &&
+    modifiers.prevent && modifiers.passive
+  ) {
+    warn(
+      'passive and prevent can\'t be used together. ' +
+      'Passive handler can\'t prevent default event.'
+    )
+  }
+
+  // check capture modifier
+  if (modifiers.capture) {
+    delete modifiers.capture
+    name = '!' + name // mark the event as captured
+  }
+  if (modifiers.once) {
+    delete modifiers.once
+    name = '~' + name // mark the event as once
+  }
+  /* istanbul ignore if */
+  if (modifiers.passive) {
+    delete modifiers.passive
+    name = '&' + name // mark the event as passive
+  }
+
+  // normalize click.right and click.middle since they don't actually fire
+  // this is technically browser-specific, but at least for now browsers are
+  // the only target envs that have right/middle clicks.
+  if (name === 'click') {
+    if (modifiers.right) {
+      name = 'contextmenu'
+      delete modifiers.right
+    } else if (modifiers.middle) {
+      name = 'mouseup'
+    }
+  }
+
+  let events
+  if (modifiers.native) {
+    delete modifiers.native
+    events = el.nativeEvents || (el.nativeEvents = {})
+  } else {
+    events = el.events || (el.events = {})
+  }
+
+  const newHandler: any = {
+    value: value.trim()
+  }
+  if (modifiers !== emptyObject) {
+    newHandler.modifiers = modifiers
+  }
+
+  const handlers = events[name]
+  /* istanbul ignore if */
+  if (Array.isArray(handlers)) {
+    important ? handlers.unshift(newHandler) : handlers.push(newHandler)
+  } else if (handlers) {
+    events[name] = important ? [newHandler, handlers] : [handlers, newHandler]
+  } else {
+    events[name] = newHandler
+  }
+
+  el.plain = false
+}
+```
+
+`addHandler` 函数看起来长，实际上就做了 3 件事情，首先根据 `modifier` 修饰符对事件名 `name` 做处理，接着根据 `modifier.native` 判断是一个纯原生事件还是普通事件，分别对应 `el.nativeEvents` 和 `el.events`，最后按照 `name` 对事件做归类，并把回调函数的字符串保留到对应的事件中。
+
+在我们的例子中，父组件的 `child` 节点生成的 `el.events` 和 `el.nativeEvents` 如下：
+
+```js
+el.events = {
+  select: {
+    value: 'selectHandler'
+  }
+}
+
+el.nativeEvents = {
+  click: {
+    value: 'clickHandler',
+    modifiers: {
+      prevent: true
+    }
+  }
+}
+```
+
+子组件的 `button` 节点生成的 `el.events` 如下：
+
+```js
+el.events = {
+  click: {
+    value: 'clickHandler($event)'
+  }
+}
+```
+ 
+然后在 `codegen` 的阶段，会在 `genData` 函数中根据 AST 元素节点上的 `events` 和 `nativeEvents` 生成 `data` 数据，它的定义在 `src/compiler/codegen/index.js` 中：
+
+```js
+export function genData (el: ASTElement, state: CodegenState): string {
+  let data = '{'
+  // ...
+  if (el.events) {
+    data += `${genHandlers(el.events, false, state.warn)},`
+  }
+  if (el.nativeEvents) {
+    data += `${genHandlers(el.nativeEvents, true, state.warn)},`
+  }
+  // ...
+  return data
+}
+```
+对于这两个属性，会调用 `genHandlers` 函数，定义在 `src/compiler/codegen/events.js` 中：
+
+```js
+export function genHandlers (
+  events: ASTElementHandlers,
+  isNative: boolean,
+  warn: Function
+): string {
+  let res = isNative ? 'nativeOn:{' : 'on:{'
+  for (const name in events) {
+    res += `"${name}":${genHandler(name, events[name])},`
+  }
+  return res.slice(0, -1) + '}'
+}
+
+const fnExpRE = /^\s*([\w$_]+|\([^)]*?\))\s*=>|^function\s*\(/
+const simplePathRE = /^\s*[A-Za-z_$][\w$]*(?:\.[A-Za-z_$][\w$]*|\['.*?']|\[".*?"]|\[\d+]|\[[A-Za-z_$][\w$]*])*\s*$/
+function genHandler (
+  name: string,
+  handler: ASTElementHandler | Array<ASTElementHandler>
+): string {
+  if (!handler) {
+    return 'function(){}'
+  }
+
+  if (Array.isArray(handler)) {
+    return `[${handler.map(handler => genHandler(name, handler)).join(',')}]`
+  }
+
+  const isMethodPath = simplePathRE.test(handler.value)
+  const isFunctionExpression = fnExpRE.test(handler.value)
+
+  if (!handler.modifiers) {
+    if (isMethodPath || isFunctionExpression) {
+      return handler.value
+    }
+    /* istanbul ignore if */
+    if (__WEEX__ && handler.params) {
+      return genWeexHandler(handler.params, handler.value)
+    }
+    return `function($event){${handler.value}}` // inline statement
+  } else {
+    let code = ''
+    let genModifierCode = ''
+    const keys = []
+    for (const key in handler.modifiers) {
+      if (modifierCode[key]) {
+        genModifierCode += modifierCode[key]
+        // left/right
+        if (keyCodes[key]) {
+          keys.push(key)
+        }
+      } else if (key === 'exact') {
+        const modifiers: ASTModifiers = (handler.modifiers: any)
+        genModifierCode += genGuard(
+          ['ctrl', 'shift', 'alt', 'meta']
+            .filter(keyModifier => !modifiers[keyModifier])
+            .map(keyModifier => `$event.${keyModifier}Key`)
+            .join('||')
+        )
+      } else {
+        keys.push(key)
+      }
+    }
+    if (keys.length) {
+      code += genKeyFilter(keys)
+    }
+    // Make sure modifiers like prevent and stop get executed after key filtering
+    if (genModifierCode) {
+      code += genModifierCode
+    }
+    const handlerCode = isMethodPath
+      ? `return ${handler.value}($event)`
+      : isFunctionExpression
+        ? `return (${handler.value})($event)`
+        : handler.value
+    /* istanbul ignore if */
+    if (__WEEX__ && handler.params) {
+      return genWeexHandler(handler.params, code + handlerCode)
+    }
+    return `function($event){${code}${handlerCode}}`
+  }
+}
+
+```
+
+`genHandlers` 方法遍历事件对象 `events`，对同一个事件名称的事件调用 `genHandler(name, events[name])` 方法，它的内容看起来多，但实际上逻辑很简单，首先先判断如果 `handler` 是一个数组，就遍历它然后递归调用 `genHandler` 方法并拼接结果，然后判断 `hanlder.value` 是一个函数的调用路径还是一个函数表达式， 接着对 `modifiers` 做判断，对于没有 `modifiers` 的情况，就根据 `handler.value` 不同情况处理，要么直接返回，要么返回一个函数包裹的表达式；对于有 `modifiers` 的情况，则对各种不同的 `modifer` 情况做不同处理，添加相应的代码串。
+
+那么对于我们的例子而言，父组件生成的 `data` 串为：
+
+```js
+{
+  on: {"select": selectHandler},
+  nativeOn: {"click": function($event) {
+      $event.preventDefault();
+      return clickHandler($event)
+    }
+  }
+}
+```
+子组件生成的 `data` 串为：
+
+```js
+{
+  on: {"click": function($event) {
+      clickHandler($event)
+    }
+  }
+}
+```
+
+那么到这里，编译部分完了，接下来我们来看一下运行时部分是如何实现的。其实 Vue 的事件有 2 种，一种是原生 DOM 事件，一种是用户自定义事件，我们分别来看。
+
+### DOM 事件
+
+还记得我们之前在 `patch` 的时候执行各种 `module` 的钩子函数吗，当时这部分是略过的，我们之前只分析了 DOM 是如何渲染的，而 DOM 元素相关的属性、样式、事件等都是通过这些 `module` 的钩子函数完成设置的。
+
+所有和 web 相关的 `module` 都定义在 `src/platforms/web/runtime/modules` 目录下，我们这次只关注目录下的 `events.js` 即可。
+
+在 `patch` 过程中的创建阶段和更新阶段都会执行 `updateDOMListeners`：
+
+```js
+let target: any
+function updateDOMListeners (oldVnode: VNodeWithData, vnode: VNodeWithData) {
+  if (isUndef(oldVnode.data.on) && isUndef(vnode.data.on)) {
+    return
+  }
+  const on = vnode.data.on || {}
+  const oldOn = oldVnode.data.on || {}
+  target = vnode.elm
+  normalizeEvents(on)
+  updateListeners(on, oldOn, add, remove, vnode.context)
+  target = undefined
+}
+```
+
+首先获取 `vnode.data.on`，这就是我们之前的生成的 `data` 中对应的事件对象，`target` 是当前 `vnode` 对于的 DOM 对象，`normalizeEvents` 主要是对 `v-model` 相关的处理，我们之后分析 `v-model` 的时候会介绍，接着调用 `updateListeners(on, oldOn, add, remove, vnode.context)` 方法，它的定义在 `src/core/vdom/helpers/update-listeners.js` 中：
+
+```js
+export function updateListeners (
+  on: Object,
+  oldOn: Object,
+  add: Function,
+  remove: Function,
+  vm: Component
+) {
+  let name, def, cur, old, event
+  for (name in on) {
+    def = cur = on[name]
+    old = oldOn[name]
+    event = normalizeEvent(name)
+    /* istanbul ignore if */
+    if (__WEEX__ && isPlainObject(def)) {
+      cur = def.handler
+      event.params = def.params
+    }
+    if (isUndef(cur)) {
+      process.env.NODE_ENV !== 'production' && warn(
+        `Invalid handler for event "${event.name}": got ` + String(cur),
+        vm
+      )
+    } else if (isUndef(old)) {
+      if (isUndef(cur.fns)) {
+        cur = on[name] = createFnInvoker(cur)
+      }
+      add(event.name, cur, event.once, event.capture, event.passive, event.params)
+    } else if (cur !== old) {
+      old.fns = cur
+      on[name] = old
+    }
+  }
+  for (name in oldOn) {
+    if (isUndef(on[name])) {
+      event = normalizeEvent(name)
+      remove(event.name, oldOn[name], event.capture)
+    }
+  }
+}
+```
+
+`updateListeners` 的逻辑很简单，遍历 `on` 去添加事件监听，遍历 `oldOn` 去移除事件监听，关于监听和移除事件的方法都是外部传入的，因为它既处理原生 DOM 事件的添加删除，也处理自定义事件的添加删除。
+
+对于 `on` 的遍历，首先获得每一个事件名，然后做 `normalizeEvent` 的处理：
+
+```js
+const normalizeEvent = cached((name: string): {
+  name: string,
+  once: boolean,
+  capture: boolean,
+  passive: boolean,
+  handler?: Function,
+  params?: Array<any>
+} => {
+  const passive = name.charAt(0) === '&'
+  name = passive ? name.slice(1) : name
+  const once = name.charAt(0) === '~' // Prefixed last, checked first
+  name = once ? name.slice(1) : name
+  const capture = name.charAt(0) === '!'
+  name = capture ? name.slice(1) : name
+  return {
+    name,
+    once,
+    capture,
+    passive
+  }
+})
+```
+
+根据我们的的事件名的一些特殊标识（之前在 `addHandler` 的时候添加上的）区分出这个事件是否有 `once`、`capture`、`passive` 等修饰符。
+
+处理完事件名后，又对事件回调函数做处理，对于第一次，满足 `isUndef(old)` 并且 `isUndef(cur.fns)`，会执行 `cur = on[name] = createFnInvoker(cur)` 方法去创建一个回调函数，然后在执行 `add(event.name, cur, event.once, event.capture, event.passive, event.params)` 完成一次事件绑定。我们先看一下 `createFnInvoker` 的实现：
+
+```js
+export function createFnInvoker (fns: Function | Array<Function>): Function {
+  function invoker () {
+    const fns = invoker.fns
+    if (Array.isArray(fns)) {
+      const cloned = fns.slice()
+      for (let i = 0; i < cloned.length; i++) {
+        cloned[i].apply(null, arguments)
+      }
+    } else {
+      return fns.apply(null, arguments)
+    }
+  }
+  invoker.fns = fns
+  return invoker
+}
+```
+
+这里定义了 `invoker` 方法并返回，由于一个事件可能会对应多个回调函数，所以这里做了数组的判断，多个回调函数就依次调用。注意最后的赋值逻辑， `invoker.fns = fns`，每一次执行 `invoker` 函数都是从 `invoker.fns` 里取执行的回调函数，回到 `updateListeners`，当我们第二次执行该函数的时候，判断如果 `cur !== old`，那么只需要更改 `old.fns = cur` 把之前绑定的 `involer.fns`  赋值为新的回调函数即可，并且 通过 `on[name] = old` 保留引用关系，这样就保证了事件回调只添加一次，之后仅仅去修改它的回调函数的引用。
+
+`updateListeners` 函数的最后遍历 `oldOn` 拿到事件名称，判断如果满足 `isUndef(on[name])`，则执行 `remove(event.name, oldOn[name], event.capture)` 去移除事件回调。
+
+了解了 `updateListeners` 的实现后，我们来看一下在原生 DOM 事件中真正添加回调和移除回调函数的实现，它们的定义都在 `src/platforms/web/runtime/modules/event.js` 中：
+
+```js
+function add (
+  event: string,
+  handler: Function,
+  once: boolean,
+  capture: boolean,
+  passive: boolean
+) {
+  handler = withMacroTask(handler)
+  if (once) handler = createOnceHandler(handler, event, capture)
+  target.addEventListener(
+    event,
+    handler,
+    supportsPassive
+      ? { capture, passive }
+      : capture
+  )
+}
+
+function remove (
+  event: string,
+  handler: Function,
+  capture: boolean,
+  _target?: HTMLElement
+) {
+  (_target || target).removeEventListener(
+    event,
+    handler._withTask || handler,
+    capture
+  )
+}
+```
+
+`add` 和 `remove` 的逻辑很简单，就是实际上调用原生 `addEventListener` 和 `removeEventListener`，并根据参数传递一些配置，注意这里的 `hanlder` 会用 `withMacroTask(hanlder)` 包裹一下，它的定义在 `src/core/util/next-tick.js` 中：
+
+```js
+export function withMacroTask (fn: Function): Function {
+  return fn._withTask || (fn._withTask = function () {
+    useMacroTask = true
+    const res = fn.apply(null, arguments)
+    useMacroTask = false
+    return res
+  })
+}
+```
+
+实际上就是强制在 DOM 事件的回调函数执行期间如果修改了数据，那么这些数据更改推入的队列会被当做 `macroTask` 在 `nextTick` 后执行。
+
+### 自定义事件
+
+除了原生 DOM 事件，Vue 还支持了自定义事件，并且自定义事件只能作用在组件上，如果在组件上使用原生事件，需要加 `.native` 修饰符，普通元素上使用 `.native` 修饰符无效，接下来我们就来分析它的实现。
+
+在 `render` 阶段，如果是一个组件节点，则通过 `createComponent` 创建一个组件 `vnode`，我们再来回顾这个方法，定义在 `src/core/vdom/create-component.js` 中：
+
+```js
+export function createComponent (
+  Ctor: Class<Component> | Function | Object | void,
+  data: ?VNodeData,
+  context: Component,
+  children: ?Array<VNode>,
+  tag?: string
+): VNode | Array<VNode> | void {
+  // ...
+  const listeners = data.on
+  
+  data.on = data.nativeOn
+  
+  // ...
+  const name = Ctor.options.name || tag
+  const vnode = new VNode(
+    `vue-component-${Ctor.cid}${name ? `-${name}` : ''}`,
+    data, undefined, undefined, undefined, context,
+    { Ctor, propsData, listeners, tag, children },
+    asyncFactory
+  )
+
+  return vnode
+}
+```
+我们只关注事件相关的逻辑，可以看到，它把 `data.on` 赋值给了 `listeners`，把 `data.nativeOn` 赋值给了 `data.on`，这样所有的原生 DOM 事件处理跟我们刚才介绍的一样，它是在当前组件环境中处理的。而对于自定义事件，我们把 `listeners` 作为 `vnode` 的 `componentOptions` 传入，它是在子组件初始化阶段中处理的，所以它的处理环境是子组件。
+
+然后在子组件的初始化的时候，会执行 `initInternalComponent` 方法，它的定义在 `src/core/instance/init.js` 中：
+
+```js
+export function initInternalComponent (vm: Component, options: InternalComponentOptions) {
+  const opts = vm.$options = Object.create(vm.constructor.options)
+  // ....
+  const vnodeComponentOptions = parentVnode.componentOptions
+ 
+  opts._parentListeners = vnodeComponentOptions.listeners
+  // ...
+}
+```
+这里拿到了父组件传入的 `listeners`，然后在执行 `initEvents` 的过程中，会处理这个 `listeners`，定义在 `src/core/instance/events.js` 中：
+
+```js
+export function initEvents (vm: Component) {
+  vm._events = Object.create(null)
+  vm._hasHookEvent = false
+  // init parent attached events
+  const listeners = vm.$options._parentListeners
+  if (listeners) {
+    updateComponentListeners(vm, listeners)
+  }
+}
+```
+
+拿到 `listeners` 后，执行 `updateComponentListeners(vm, listeners)` 方法：
+
+```js
+let target: any
+export function updateComponentListeners (
+  vm: Component,
+  listeners: Object,
+  oldListeners: ?Object
+) {
+  target = vm
+  updateListeners(listeners, oldListeners || {}, add, remove, vm)
+  target = undefined
+}
+```
+
+`updateListeners` 我们之前介绍过，所以对于自定义事件和原生 DOM 事件处理的差异就在事件添加和删除的实现上，来看一下自定义事件 `add` 和 `remove` 的实现：
+
+```js
+function add (event, fn, once) {
+  if (once) {
+    target.$once(event, fn)
+  } else {
+    target.$on(event, fn)
+  }
+}
+
+function remove (event, fn) {
+  target.$off(event, fn)
+}
+```
+
+实际上是利用 Vue 定义的事件中心，简单分析一下它的实现：
+
+```js
+export function eventsMixin (Vue: Class<Component>) {
+  const hookRE = /^hook:/
+  Vue.prototype.$on = function (event: string | Array<string>, fn: Function): Component {
+    const vm: Component = this
+    if (Array.isArray(event)) {
+      for (let i = 0, l = event.length; i < l; i++) {
+        this.$on(event[i], fn)
+      }
+    } else {
+      (vm._events[event] || (vm._events[event] = [])).push(fn)
+      // optimize hook:event cost by using a boolean flag marked at registration
+      // instead of a hash lookup
+      if (hookRE.test(event)) {
+        vm._hasHookEvent = true
+      }
+    }
+    return vm
+  }
+
+  Vue.prototype.$once = function (event: string, fn: Function): Component {
+    const vm: Component = this
+    function on () {
+      vm.$off(event, on)
+      fn.apply(vm, arguments)
+    }
+    on.fn = fn
+    vm.$on(event, on)
+    return vm
+  }
+
+  Vue.prototype.$off = function (event?: string | Array<string>, fn?: Function): Component {
+    const vm: Component = this
+    // all
+    if (!arguments.length) {
+      vm._events = Object.create(null)
+      return vm
+    }
+    // array of events
+    if (Array.isArray(event)) {
+      for (let i = 0, l = event.length; i < l; i++) {
+        this.$off(event[i], fn)
+      }
+      return vm
+    }
+    // specific event
+    const cbs = vm._events[event]
+    if (!cbs) {
+      return vm
+    }
+    if (!fn) {
+      vm._events[event] = null
+      return vm
+    }
+    if (fn) {
+      // specific handler
+      let cb
+      let i = cbs.length
+      while (i--) {
+        cb = cbs[i]
+        if (cb === fn || cb.fn === fn) {
+          cbs.splice(i, 1)
+          break
+        }
+      }
+    }
+    return vm
+  }
+
+  Vue.prototype.$emit = function (event: string): Component {
+    const vm: Component = this
+    if (process.env.NODE_ENV !== 'production') {
+      const lowerCaseEvent = event.toLowerCase()
+      if (lowerCaseEvent !== event && vm._events[lowerCaseEvent]) {
+        tip(
+          `Event "${lowerCaseEvent}" is emitted in component ` +
+          `${formatComponentName(vm)} but the handler is registered for "${event}". ` +
+          `Note that HTML attributes are case-insensitive and you cannot use ` +
+          `v-on to listen to camelCase events when using in-DOM templates. ` +
+          `You should probably use "${hyphenate(event)}" instead of "${event}".`
+        )
+      }
+    }
+    let cbs = vm._events[event]
+    if (cbs) {
+      cbs = cbs.length > 1 ? toArray(cbs) : cbs
+      const args = toArray(arguments, 1)
+      for (let i = 0, l = cbs.length; i < l; i++) {
+        try {
+          cbs[i].apply(vm, args)
+        } catch (e) {
+          handleError(e, vm, `event handler for "${event}"`)
+        }
+      }
+    }
+    return vm
+  }
+}
+```
+非常经典的事件中心的实现，把所有的事件用 `vm._events` 存储起来，当执行 `vm.$on(event,fn)` 的时候，按事件的名称 `event` 把回调函数 `fn` 存储起来 `vm._events[event].push(fn)`。当执行 `vm.$emit(event)` 的时候，根据事件名 `event` 找到所有的回调函数 `let cbs = vm._events[event]`，然后遍历执行所有的回调函数。当执行 `vm.$off(event,fn)` 的时候会移除指定事件名 `event` 和指定的 `fn` 当执行 `vm.$once(event,fn)` 的时候，内部就是执行 `vm.$on`，并且当回调函数执行一次后再通过 `vm.$off` 移除事件的回调，这样就确保了回调函数只执行一次。
+
+所以对于用户自定义的事件添加和删除就是利用了这几个事件中心的 API。需要注意的事一点，`vm.$emit` 是给当前的 `vm` 上派发的实例，之所以我们常用它做父子组件通讯，是因为它的回调函数的定义是在父组件中，对于我们这个例子而言，当子组件的 `button` 被点击了，它通过 `this.$emit('select')` 派发事件，那么子组件的实例就监听到了这个 `select` 事件，并执行它的回调函数——定义在父组件中的 `selectHandler` 方法，这样就相当于完成了一次父子组件的通讯。
+
+### 总结
+
+那么至此我们对 Vue 的事件实现有了进一步的了解，Vue 支持 2 种事件类型，原生 DOM 事件和自定义事件，它们主要的区别在于添加和删除事件的方式不一样，并且自定义事件的派发是往当前实例上派发，但是可以利用在父组件环境定义回调函数来实现父子组件的通讯。另外要注意一点，只有组件节点才可以添加自定义事件，并且添加原生 DOM 事件需要使用 `native` 修饰符；而普通元素使用 `.native` 修饰符是没有作用的，也只能添加原生 DOM 事件。
+  
+## 6.3 v-model
+
+很多同学在理解 Vue 的时候都把 Vue 的数据响应原理理解为双向绑定，但实际上这是不准确的，我们之前提到的数据响应，都是通过数据的改变去驱动 DOM 视图的变化，而双向绑定除了数据驱动 DOM 外， DOM 的变化反过来影响数据，是一个双向关系，在 Vue 中，我们可以通过 `v-model` 来实现双向绑定。
+
+`v-model` 即可以作用在普通表单元素上，又可以作用在组件上，它其实是一个语法糖，接下来我们就来分析 `v-model` 的实现原理。
+
+### 表单元素
+
+为了更加直观，我们还是结合示例来分析:
+
+```js
+let vm = new Vue({
+  el: '#app',
+  template: '<div>'
+  + '<input v-model="message" placeholder="edit me">' +
+  '<p>Message is: {{ message }}</p>' +
+  '</div>',
+  data() {
+    return {
+      message: ''
+    }
+  }
+})
+```
+
+这是一个非常简单 demo，我们在 `input` 元素上设置了 `v-model` 属性，绑定了 `message`，当我们在 `input` 上输入了内容，`message` 也会同步变化。接下来我们就来分析 Vue 是如何实现这一效果的，其实非常简单。
+
+也是先从编译阶段分析，首先是 `parse` 阶段， `v-model` 被当做普通的指令解析到 `el.directives` 中，然后在 `codegen` 阶段，执行 `genData` 的时候，会执行 `const dirs = genDirectives(el, state)`，它的定义在 `src/compiler/codegen/index.js` 中：
+
+```js
+function genDirectives (el: ASTElement, state: CodegenState): string | void {
+  const dirs = el.directives
+  if (!dirs) return
+  let res = 'directives:['
+  let hasRuntime = false
+  let i, l, dir, needRuntime
+  for (i = 0, l = dirs.length; i < l; i++) {
+    dir = dirs[i]
+    needRuntime = true
+    const gen: DirectiveFunction = state.directives[dir.name]
+    if (gen) {
+      // compile-time directive that manipulates AST.
+      // returns true if it also needs a runtime counterpart.
+      needRuntime = !!gen(el, dir, state.warn)
+    }
+    if (needRuntime) {
+      hasRuntime = true
+      res += `{name:"${dir.name}",rawName:"${dir.rawName}"${
+        dir.value ? `,value:(${dir.value}),expression:${JSON.stringify(dir.value)}` : ''
+      }${
+        dir.arg ? `,arg:"${dir.arg}"` : ''
+      }${
+        dir.modifiers ? `,modifiers:${JSON.stringify(dir.modifiers)}` : ''
+      }},`
+    }
+  }
+  if (hasRuntime) {
+    return res.slice(0, -1) + ']'
+  }
+}
+```
+
+`genDrirectives` 方法就是遍历 `el.directives`，然后获取每一个指令对应的方法 `
+const gen: DirectiveFunction = state.directives[dir.name]`，这个指令方法实际上是在实例化 `CodegenState` 的时候通过 `option`
+传入的，这个 `option` 就是编译相关的配置，它在不同的平台下配置不同，在 `web` 环境下的定义在 `src/platforms/web/compiler/options.js` 下：
+
+```js
+export const baseOptions: CompilerOptions = {
+  expectHTML: true,
+  modules,
+  directives,
+  isPreTag,
+  isUnaryTag,
+  mustUseProp,
+  canBeLeftOpenTag,
+  isReservedTag,
+  getTagNamespace,
+  staticKeys: genStaticKeys(modules)
+}
+```
+
+`directives` 定义在 `src/platforms/web/compiler/directives/index.js` 中：
+
+```js
+export default {
+  model,
+  text,
+  html
+}
+```
+
+那么对于 `v-model` 而言，对应的 `directive` 函数是在 `src/platforms/web/compiler/directives/model.js` 中定义的 `model` 函数：
+
+```js
+export default function model (
+  el: ASTElement,
+  dir: ASTDirective,
+  _warn: Function
+): ?boolean {
+  warn = _warn
+  const value = dir.value
+  const modifiers = dir.modifiers
+  const tag = el.tag
+  const type = el.attrsMap.type
+
+  if (process.env.NODE_ENV !== 'production') {
+    // inputs with type="file" are read only and setting the input's
+    // value will throw an error.
+    if (tag === 'input' && type === 'file') {
+      warn(
+        `<${el.tag} v-model="${value}" type="file">:\n` +
+        `File inputs are read only. Use a v-on:change listener instead.`
+      )
+    }
+  }
+
+  if (el.component) {
+    genComponentModel(el, value, modifiers)
+    // component v-model doesn't need extra runtime
+    return false
+  } else if (tag === 'select') {
+    genSelect(el, value, modifiers)
+  } else if (tag === 'input' && type === 'checkbox') {
+    genCheckboxModel(el, value, modifiers)
+  } else if (tag === 'input' && type === 'radio') {
+    genRadioModel(el, value, modifiers)
+  } else if (tag === 'input' || tag === 'textarea') {
+    genDefaultModel(el, value, modifiers)
+  } else if (!config.isReservedTag(tag)) {
+    genComponentModel(el, value, modifiers)
+    // component v-model doesn't need extra runtime
+    return false
+  } else if (process.env.NODE_ENV !== 'production') {
+    warn(
+      `<${el.tag} v-model="${value}">: ` +
+      `v-model is not supported on this element type. ` +
+      'If you are working with contenteditable, it\'s recommended to ' +
+      'wrap a library dedicated for that purpose inside a custom component.'
+    )
+  }
+
+  // ensure runtime directive metadata
+  return true
+}
+```
+也就是说我们执行 `needRuntime = !!gen(el, dir, state.warn)` 就是在执行 `model` 函数，它会根据 AST 元素节点的不同情况去执行不同的逻辑，对于我们这个 case 而言，它会命中 `genDefaultModel(el, value, modifiers)` 的逻辑，稍后我们也会介绍组件的处理，其它分支同学们可以自行去看。我们来看一下 `genDefaultModel` 的实现：
+
+```js
+function genDefaultModel (
+  el: ASTElement,
+  value: string,
+  modifiers: ?ASTModifiers
+): ?boolean {
+  const type = el.attrsMap.type
+
+  // warn if v-bind:value conflicts with v-model
+  // except for inputs with v-bind:type
+  if (process.env.NODE_ENV !== 'production') {
+    const value = el.attrsMap['v-bind:value'] || el.attrsMap[':value']
+    const typeBinding = el.attrsMap['v-bind:type'] || el.attrsMap[':type']
+    if (value && !typeBinding) {
+      const binding = el.attrsMap['v-bind:value'] ? 'v-bind:value' : ':value'
+      warn(
+        `${binding}="${value}" conflicts with v-model on the same element ` +
+        'because the latter already expands to a value binding internally'
+      )
+    }
+  }
+
+  const { lazy, number, trim } = modifiers || {}
+  const needCompositionGuard = !lazy && type !== 'range'
+  const event = lazy
+    ? 'change'
+    : type === 'range'
+      ? RANGE_TOKEN
+      : 'input'
+
+  let valueExpression = '$event.target.value'
+  if (trim) {
+    valueExpression = `$event.target.value.trim()`
+  }
+  if (number) {
+    valueExpression = `_n(${valueExpression})`
+  }
+
+  let code = genAssignmentCode(value, valueExpression)
+  if (needCompositionGuard) {
+    code = `if($event.target.composing)return;${code}`
+  }
+
+  addProp(el, 'value', `(${value})`)
+  addHandler(el, event, code, null, true)
+  if (trim || number) {
+    addHandler(el, 'blur', '$forceUpdate()')
+  }
+}
+```
+`genDefaultModel` 函数先处理了 `modifiers`，它的不同主要影响的是 `event` 和 `valueExpression` 的值，对于我们的例子，`event` 为 `input`，`valueExpression` 为 `$event.target.value`。然后去执行 `genAssignmentCode` 去生成代码，它的定义在 `src/compiler/directives/model.js` 中：
+
+```js
+/**
+ * Cross-platform codegen helper for generating v-model value assignment code.
+ */
+export function genAssignmentCode (
+  value: string,
+  assignment: string
+): string {
+  const res = parseModel(value)
+  if (res.key === null) {
+    return `${value}=${assignment}`
+  } else {
+    return `$set(${res.exp}, ${res.key}, ${assignment})`
+  }
+}
+```
+
+该方法首先对 `v-model` 对应的 `value` 做了解析，它处理了非常多的情况，对我们的例子，`value` 就是 `messgae`，所以返回的 `res.key` 为 `null`，然后我们就得到 `${value}=${assignment}`，也就是 `message=$event.target.value`。然后我们又命中了 `needCompositionGuard` 为 true 的逻辑，所以最终的 `code` 为 `if($event.target.composing)return;message=$event.target.value`。
+
+`code` 生成完后，又执行了 2 句非常关键的代码：
+
+```js
+addProp(el, 'value', `(${value})`)
+addHandler(el, event, code, null, true)
+```
+
+这实际上就是 `input` 实现 `v-model` 的精髓，通过修改 AST 元素，给 `el` 添加一个 `prop`，相当于我们在 `input` 上动态绑定了 `value`，又给 `el` 添加了事件处理，相当于在 `input` 上绑定了 `input` 事件，其实转换成模板如下：
+
+```js
+<input
+  v-bind:value="message"
+  v-on:input="message=$event.target.value">
+```
+
+其实就是动态绑定了 `input` 的 `value` 指向了 `messgae` 变量，并且在触发 `input` 事件的时候去动态把 `message` 设置为目标值，这样实际上就完成了数据双向绑定了，所以说 `v-model` 实际上就是语法糖。
+ 
+再回到 `genDirectives`，它接下来的逻辑就是根据指令生成一些 `data` 的代码：
+
+```js
+if (needRuntime) {
+  hasRuntime = true
+  res += `{name:"${dir.name}",rawName:"${dir.rawName}"${
+    dir.value ? `,value:(${dir.value}),expression:${JSON.stringify(dir.value)}` : ''
+  }${
+    dir.arg ? `,arg:"${dir.arg}"` : ''
+  }${
+    dir.modifiers ? `,modifiers:${JSON.stringify(dir.modifiers)}` : ''
+  }},`
+}
+```
+
+对我们的例子而言，最终生成的 `render` 代码如下：
+
+```js
+with(this) {
+  return _c('div',[_c('input',{
+    directives:[{
+      name:"model",
+      rawName:"v-model",
+      value:(message),
+      expression:"message"
+    }],
+    attrs:{"placeholder":"edit me"},
+    domProps:{"value":(message)},
+    on:{"input":function($event){
+      if($event.target.composing)
+        return;
+      message=$event.target.value
+    }}}),_c('p',[_v("Message is: "+_s(message))])
+    ])
+}
+```
+
+关于事件的处理我们之前的章节已经分析过了，所以对于 `input` 的 `v-model` 而言，完全就是语法糖，并且对于其它表单元素套路都是一样，区别在于生成的事件代码会略有不同。
+
+`v-model` 除了作用在表单元素上，新版的 Vue 还把这一语法糖用在了组件上，接下来我们来分析它的实现。
+
+### 组件
+
+为了更加直观，我们也是通过一个例子分析：
+
+```js
+let Child = {
+  template: '<div>'
+  + '<input :value="value" @input="updateValue" placeholder="edit me">' +
+  '</div>',
+  props: ['value'],
+  methods: {
+    updateValue(e) {
+      this.$emit('input', e.target.value)
+    }
+  }
+}
+
+let vm = new Vue({
+  el: '#app',
+  template: '<div>' +
+  '<child v-model="message"></child>' +
+  '<p>Message is: {{ message }}</p>' +
+  '</div>',
+  data() {
+    return {
+      message: ''
+    }
+  },
+  components: {
+    Child
+  }
+})
+```
+
+可以看到，父组件引用 `child` 子组件的地方使用了 `v-model` 关联了数据 `message`；而子组件定义了一个 `value` 的 `prop`，并且在 `input` 事件的回调函数中，通过 `this.$emit('input', e.target.value)` 派发了一个事件，为了让 `v-model` 生效，这两点是必须的。
+
+接着我们从源码角度分析实现原理，还是从编译阶段说起，对于父组件而言，在编译阶段会解析 `v-modle` 指令，依然会执行 `genData` 函数中的 `genDirectives` 函数，接着执行 `src/platforms/web/compiler/directives/model.js` 中定义的 `model` 函数，并命中如下逻辑：
+
+```js
+else if (!config.isReservedTag(tag)) {
+  genComponentModel(el, value, modifiers);
+  return false
+}
+```
+
+`genComponentModel` 函数定义在 `src/compiler/directives/model.js` 中：
+
+```js
+export function genComponentModel (
+  el: ASTElement,
+  value: string,
+  modifiers: ?ASTModifiers
+): ?boolean {
+  const { number, trim } = modifiers || {}
+
+  const baseValueExpression = '$$v'
+  let valueExpression = baseValueExpression
+  if (trim) {
+    valueExpression =
+      `(typeof ${baseValueExpression} === 'string'` +
+        `? ${baseValueExpression}.trim()` +
+        `: ${baseValueExpression})`
+  }
+  if (number) {
+    valueExpression = `_n(${valueExpression})`
+  }
+  const assignment = genAssignmentCode(value, valueExpression)
+
+  el.model = {
+    value: `(${value})`,
+    expression: `"${value}"`,
+    callback: `function (${baseValueExpression}) {${assignment}}`
+  }
+}
+```
+
+`genComponentModel` 的逻辑很简单，对我们的例子而言，生成的 `el.model` 的值为：
+
+```js
+el.model = {
+  callback:'function ($$v) {message=$$v}',
+  expression:'"message"',
+  value:'(message)'
+}
+```
+
+那么在 `genDirectives` 之后，`genData` 函数中有一段逻辑如下：
+
+```js
+if (el.model) {
+  data += `model:{value:${
+    el.model.value
+  },callback:${
+    el.model.callback
+  },expression:${
+    el.model.expression
+  }},`
+}
+```
+
+那么父组件最终生成的 `render` 代码如下：
+
+```js
+with(this){
+  return _c('div',[_c('child',{
+    model:{
+      value:(message),
+      callback:function ($$v) {
+        message=$$v
+      },
+      expression:"message"
+    }
+  }),
+  _c('p',[_v("Message is: "+_s(message))])],1)
+}
+```
+
+然后在创建子组件 `vnode` 阶段，会执行 `createComponent` 函数，它的定义在 `src/core/vdom/create-component.js` 中：
+ 
+ ```js
+export function createComponent (
+  Ctor: Class<Component> | Function | Object | void,
+  data: ?VNodeData,
+  context: Component,
+  children: ?Array<VNode>,
+  tag?: string
+): VNode | Array<VNode> | void {
+  // ...
+  // transform component v-model data into props & events
+  if (isDef(data.model)) {
+    transformModel(Ctor.options, data)
+  }
+ 
+  // extract props
+  const propsData = extractPropsFromVNodeData(data, Ctor, tag)
+  // ...
+  // extract listeners, since these needs to be treated as
+  // child component listeners instead of DOM listeners
+  const listeners = data.on
+  // ...
+  const vnode = new VNode(
+    `vue-component-${Ctor.cid}${name ? `-${name}` : ''}`,
+    data, undefined, undefined, undefined, context,
+    { Ctor, propsData, listeners, tag, children },
+    asyncFactory
+  )
+  
+  return vnode
+}
+```
+
+其中会对 `data.model` 的情况做处理，执行 `transformModel(Ctor.options, data)` 方法：
+
+```js
+// transform component v-model info (value and callback) into
+// prop and event handler respectively.
+function transformModel (options, data: any) {
+  const prop = (options.model && options.model.prop) || 'value'
+  const event = (options.model && options.model.event) || 'input'
+  ;(data.props || (data.props = {}))[prop] = data.model.value
+  const on = data.on || (data.on = {})
+  if (isDef(on[event])) {
+    on[event] = [data.model.callback].concat(on[event])
+  } else {
+    on[event] = data.model.callback
+  }
+}
+```
+
+`transformModel` 逻辑很简单，给 `data.props` 添加 `data.model.value`，并且给`data.on` 添加 `data.model.callback`，对我们的例子而言，扩展结果如下：
+ 
+```js
+data.props = {
+  value: (message),
+}
+data.on = {
+  input: function ($$v) {
+    message=$$v
+  }
+} 
+```
+
+其实就相当于我们在这样编写父组件：
+
+```js
+let vm = new Vue({
+  el: '#app',
+  template: '<div>' +
+  '<child :value="message" @input="message=arguments[0]"></child>' +
+  '<p>Message is: {{ message }}</p>' +
+  '</div>',
+  data() {
+    return {
+      message: ''
+    }
+  },
+  components: {
+    Child
+  }
+})
+```
+
+子组件传递的 `value` 绑定到当前父组件的 `message`，同时监听自定义 `input` 事件，当子组件派发 `input` 事件的时候，父组件会在事件回调函数中修改 `message` 的值，同时 `value` 也会发生变化，子组件的 `input` 值被更新。
+
+这就是典型的 Vue 的父子组件通讯模式，父组件通过 `prop` 把数据传递到子组件，子组件修改了数据后把改变通过 `$emit` 事件的方式通知父组件，所以说组件上的 `v-model` 也是一种语法糖。
+
+另外我们注意到组件 `v-model` 的实现，子组件的 `value prop` 以及派发的 `input` 事件名是可配的，可以看到 `transformModel` 中对这部分的处理：
+
+```js
+function transformModel (options, data: any) {
+  const prop = (options.model && options.model.prop) || 'value'
+  const event = (options.model && options.model.event) || 'input'
+  // ...
+}
+```
+
+也就是说可以在定义子组件的时候通过 `model` 选项配置子组件接收的 `prop` 名以及派发的事件名，举个例子：
+
+```js
+let Child = {
+  template: '<div>'
+  + '<input :value="msg" @input="updateValue" placeholder="edit me">' +
+  '</div>',
+  props: ['msg'],
+  model: {
+    prop: 'msg',
+    event: 'change'
+  },
+  methods: {
+    updateValue(e) {
+      this.$emit('change', e.target.value)
+    }
+  }
+}
+
+let vm = new Vue({
+  el: '#app',
+  template: '<div>' +
+  '<child v-model="message"></child>' +
+  '<p>Message is: {{ message }}</p>' +
+  '</div>',
+  data() {
+    return {
+      message: ''
+    }
+  },
+  components: {
+    Child
+  }
+})
+```
+
+子组件修改了接收的 `prop` 名以及派发的事件名，然而这一切父组件作为调用方是不用关心的，这样做的好处是我们可以把 `value` 这个 `prop` 作为其它的用途。
+
+### 总结
+
+那么至此，`v-model` 的实现就分析完了，我们了解到它是 Vue 双向绑定的真正实现，但本质上就是一种语法糖，它即可以支持原生表单元素，也可以支持自定义组件。在组件的实现中，我们是可以配置子组件接收的 `prop` 名称，以及派发的事件名称。
+ 
+## 6.4 slot
+
+Vue 的组件提供了一个非常有用的特性 —— `slot` 插槽，它让组件的实现变的更加灵活。我们平时在开发组件库的时候，为了让组件更加灵活可定制，经常用插槽的方式让用户可以自定义内容。插槽分为普通插槽和作用域插槽，它们可以解决不同的场景，但它是怎么实现的呢，下面我们就从源码的角度来分析插槽的实现原理。
+
+### 普通插槽
+
+为了更加直观，我们还是通过一个例子来分析插槽的实现：
+
+```js
+let AppLayout = {
+  template: '<div class="container">' +
+  '<header><slot name="header"></slot></header>' +
+  '<main><slot>默认内容</slot></main>' +
+  '<footer><slot name="footer"></slot></footer>' +
+  '</div>'
+}
+
+let vm = new Vue({
+  el: '#app',
+  template: '<div>' +
+  '<app-layout>' +
+  '<h1 slot="header">{{title}}</h1>' +
+  '<p>{{msg}}</p>' +
+  '<p slot="footer">{{desc}}</p>' +
+  '</app-layout>' +
+  '</div>',
+  data() {
+    return {
+      title: '我是标题',
+      msg: '我是内容',
+      desc: '其它信息'
+    }
+  },
+  components: {
+    AppLayout
+  }
+})
+```
+
+这里我们定义了 `AppLayout` 子组件，它内部定义了 3 个插槽，2 个为具名插槽，一个 `name` 为 `header`，一个 `name` 为 `footer`，还有一个没有定义 `name` 的是默认插槽。 `<slot>` 和 `</slot>` 之前填写的内容为默认内容。我们的父组件注册和引用了 `AppLayout` 的组件，并在组件内部定义了一些元素，用来替换插槽，那么它最终生成的 DOM 如下：
+
+```html
+<div>
+  <div class="container">
+    <header><h1>我是标题</h1></header>
+    <main><p>我是内容</p></main>
+    <footer><p>其它信息</p></footer>
+  </div>
+</div>
+``` 
+### 编译
+
+还是先从编译说起，我们知道编译是发生在调用 `vm.$mount` 的时候，所以编译的顺序是先编译父组件，再编译子组件。
+
+首先编译父组件，在 `parse` 阶段，会执行 `processSlot` 处理 `slot`，它的定义在 `src/compiler/parser/index.js` 中：
+
+```js
+function processSlot (el) {
+  if (el.tag === 'slot') {
+    el.slotName = getBindingAttr(el, 'name')
+    if (process.env.NODE_ENV !== 'production' && el.key) {
+      warn(
+        `\`key\` does not work on <slot> because slots are abstract outlets ` +
+        `and can possibly expand into multiple elements. ` +
+        `Use the key on a wrapping element instead.`
+      )
+    }
+  } else {
+    let slotScope
+    if (el.tag === 'template') {
+      slotScope = getAndRemoveAttr(el, 'scope')
+      /* istanbul ignore if */
+      if (process.env.NODE_ENV !== 'production' && slotScope) {
+        warn(
+          `the "scope" attribute for scoped slots have been deprecated and ` +
+          `replaced by "slot-scope" since 2.5. The new "slot-scope" attribute ` +
+          `can also be used on plain elements in addition to <template> to ` +
+          `denote scoped slots.`,
+          true
+        )
+      }
+      el.slotScope = slotScope || getAndRemoveAttr(el, 'slot-scope')
+    } else if ((slotScope = getAndRemoveAttr(el, 'slot-scope'))) {
+      /* istanbul ignore if */
+      if (process.env.NODE_ENV !== 'production' && el.attrsMap['v-for']) {
+        warn(
+          `Ambiguous combined usage of slot-scope and v-for on <${el.tag}> ` +
+          `(v-for takes higher priority). Use a wrapper <template> for the ` +
+          `scoped slot to make it clearer.`,
+          true
+        )
+      }
+      el.slotScope = slotScope
+    }
+    const slotTarget = getBindingAttr(el, 'slot')
+    if (slotTarget) {
+      el.slotTarget = slotTarget === '""' ? '"default"' : slotTarget
+      // preserve slot as an attribute for native shadow DOM compat
+      // only for non-scoped slots.
+      if (el.tag !== 'template' && !el.slotScope) {
+        addAttr(el, 'slot', slotTarget)
+      }
+    }
+  }
+}
+```
+当解析到标签上有 `slot` 属性的时候，会给对应的 AST
+元素节点添加 `slotTarget` 属性，然后在 `codegen` 阶段，在 `genData` 中会处理 `slotTarget`，相关代码在 `src/compiler/codegen/index.js` 中：
+
+```js
+if (el.slotTarget && !el.slotScope) {
+  data += `slot:${el.slotTarget},`
+}
+```
+会给 `data` 添加一个 `slot` 属性，并指向 `slotTarget`，之后会用到。在我们的例子中，父组件最终生成的代码如下：
+
+```js
+with(this){
+  return _c('div',
+    [_c('app-layout',
+      [_c('h1',{attrs:{"slot":"header"},slot:"header"},
+         [_v(_s(title))]),
+       _c('p',[_v(_s(msg))]),
+       _c('p',{attrs:{"slot":"footer"},slot:"footer"},
+         [_v(_s(desc))]
+         )
+       ])
+     ],
+   1)}
+```
+
+接下来编译子组件，同样在 `parser` 阶段会执行 `processSlot` 处理函数，它的定义在 `src/compiler/parser/index.js` 中：
+
+```js
+function processSlot (el) {
+  if (el.tag === 'slot') {
+    el.slotName = getBindingAttr(el, 'name')
+  }
+  // ...
+}
+```
+当遇到 `slot` 标签的时候会给对应的 AST 元素节点添加 `slotName` 属性，然后在 `codegen` 阶段，会判断如果当前 AST 元素节点是 `slot` 标签，则执行 `genSlot` 函数，它的定义在 `src/compiler/codegen/index.js` 中：
+
+```js
+function genSlot (el: ASTElement, state: CodegenState): string {
+  const slotName = el.slotName || '"default"'
+  const children = genChildren(el, state)
+  let res = `_t(${slotName}${children ? `,${children}` : ''}`
+  const attrs = el.attrs && `{${el.attrs.map(a => `${camelize(a.name)}:${a.value}`).join(',')}}`
+  const bind = el.attrsMap['v-bind']
+  if ((attrs || bind) && !children) {
+    res += `,null`
+  }
+  if (attrs) {
+    res += `,${attrs}`
+  }
+  if (bind) {
+    res += `${attrs ? '' : ',null'},${bind}`
+  }
+  return res + ')'
+}
+```
+
+我们先不考虑 `slot` 标签上有 `attrs` 以及 `v-bind` 的情况，那么它生成的代码实际上就只有：
+
+```js
+const slotName = el.slotName || '"default"'
+const children = genChildren(el, state)
+let res = `_t(${slotName}${children ? `,${children}` : ''}`
+```
+
+这里的 `slotName` 从 AST 元素节点对应的属性上取，默认是 `default`，而 `children` 对应的就是 `slot` 开始和闭合标签包裹的内容。来看一下我们例子的子组件最终生成的代码，如下：
+
+```js
+with(this) {
+  return _c('div',{
+    staticClass:"container"
+    },[
+      _c('header',[_t("header")],2),
+      _c('main',[_t("default",[_v("默认内容")])],2),
+      _c('footer',[_t("footer")],2)
+      ]
+   )
+}
+```
+在编译章节我们了解到，`_t` 函数对应的就是 `renderSlot` 方法，它的定义在 `src/core/instance/render-heplpers/render-slot.js` 中：
+
+```js
+/**
+ * Runtime helper for rendering <slot>
+ */
+export function renderSlot (
+  name: string,
+  fallback: ?Array<VNode>,
+  props: ?Object,
+  bindObject: ?Object
+): ?Array<VNode> {
+  const scopedSlotFn = this.$scopedSlots[name]
+  let nodes
+  if (scopedSlotFn) { // scoped slot
+    props = props || {}
+    if (bindObject) {
+      if (process.env.NODE_ENV !== 'production' && !isObject(bindObject)) {
+        warn(
+          'slot v-bind without argument expects an Object',
+          this
+        )
+      }
+      props = extend(extend({}, bindObject), props)
+    }
+    nodes = scopedSlotFn(props) || fallback
+  } else {
+    const slotNodes = this.$slots[name]
+    // warn duplicate slot usage
+    if (slotNodes) {
+      if (process.env.NODE_ENV !== 'production' && slotNodes._rendered) {
+        warn(
+          `Duplicate presence of slot "${name}" found in the same render tree ` +
+          `- this will likely cause render errors.`,
+          this
+        )
+      }
+      slotNodes._rendered = true
+    }
+    nodes = slotNodes || fallback
+  }
+
+  const target = props && props.slot
+  if (target) {
+    return this.$createElement('template', { slot: target }, nodes)
+  } else {
+    return nodes
+  }
+}
+```
+
+`render-slot` 的参数 `name` 代表插槽名称 `slotName`，`fallback` 代表插槽的默认内容生成的 `vnode` 数组。先忽略 `scoped-slot`，只看默认插槽逻辑。如果 `this.$slot[name]` 有值，就返回它对应的 `vnode` 数组，否则返回 `fallback`。那么这个 `this.$slot` 是哪里来的呢？我们知道子组件的 `init` 时机是在父组件执行 `patch` 过程的时候，那这个时候父组件已经编译完成了。并且子组件在 `init` 过程中会执行 `initRender` 函数，`initRender` 的时候获取到 `  vm.$slot`，相关代码在 `src/core/instance/render.js` 中：
+
+```js
+export function initRender (vm: Component) {
+  // ...
+  const parentVnode = vm.$vnode = options._parentVnode // the placeholder node in parent tree
+  const renderContext = parentVnode && parentVnode.context
+  vm.$slots = resolveSlots(options._renderChildren, renderContext)
+}
+```
+
+`vm.$slots` 是通过执行 `resolveSlots(options._renderChildren, renderContext)` 返回的，它的定义在 `src/core/instance/render-helpers/resolve-slots.js` 中：
+
+```js
+/**
+ * Runtime helper for resolving raw children VNodes into a slot object.
+ */
+export function resolveSlots (
+  children: ?Array<VNode>,
+  context: ?Component
+): { [key: string]: Array<VNode> } {
+  const slots = {}
+  if (!children) {
+    return slots
+  }
+  for (let i = 0, l = children.length; i < l; i++) {
+    const child = children[i]
+    const data = child.data
+    // remove slot attribute if the node is resolved as a Vue slot node
+    if (data && data.attrs && data.attrs.slot) {
+      delete data.attrs.slot
+    }
+    // named slots should only be respected if the vnode was rendered in the
+    // same context.
+    if ((child.context === context || child.fnContext === context) &&
+      data && data.slot != null
+    ) {
+      const name = data.slot
+      const slot = (slots[name] || (slots[name] = []))
+      if (child.tag === 'template') {
+        slot.push.apply(slot, child.children || [])
+      } else {
+        slot.push(child)
+      }
+    } else {
+      (slots.default || (slots.default = [])).push(child)
+    }
+  }
+  // ignore slots that contains only whitespace
+  for (const name in slots) {
+    if (slots[name].every(isWhitespace)) {
+      delete slots[name]
+    }
+  }
+  return slots
+}
+```
+
+`resolveSlots` 方法接收 2 个参数，第一个参数 `chilren` 对应的是父 `vnode` 的 `children`，在我们的例子中就是 `<app-layout>` 和 `</app-layout>` 包裹的内容。第二个参数 `context` 是父 `vnode` 的上下文，也就是父组件的 `vm` 实例。
+
+`resolveSlots` 函数的逻辑就是遍历 `chilren`，拿到每一个 `child` 的 `data`，然后通过 `data.slot` 获取到插槽名称，这个 `slot` 就是我们之前编译父组件在 `codegen` 阶段设置的 `data.slot`。接着以插槽名称为 `key` 把 `child` 添加到 `slots` 中，如果 `data.slot` 不存在，则是默认插槽的内容，则把对应的 `child` 添加到 `slots.defaults` 中。这样就获取到整个 `slots`，它是一个对象，`key` 是插槽名称，`value` 是一个 `vnode` 类型的数组，因为它可以有多个同名插槽。
+
+这样我们就拿到了 `vm.$slots` 了，回到 `renderSlot` 函数，`const slotNodes = this.$slots[name]`，我们也就能根据插槽名称获取到对应的 `vnode` 数组了，这个数组里的 `vnode` 都是在父组件创建的，这样就实现了在父组替换子组件插槽的内容了。
+
+对应的 `slot` 渲染成 `vnodes`，作为当前组件渲染 `vnode` 的 `children`，之后的渲染过程之前分析过，不再赘述。
+
+我们知道在普通插槽中，父组件应用到子组件插槽里的数据都是绑定到父组件的，因为它渲染成 `vnode` 的时机的上下文是父组件的实例。但是在一些实际开发中，我们想通过子组件的一些数据来决定父组件实现插槽的逻辑，Vue 提供了另一种插槽——作用域插槽，接下来我们就来分析一下它的实现原理。
+
+### 作用域插槽
+
+为了更加直观，我们也是通过一个例子来分析作用域插槽的实现：
+
+```js
+let Child = {
+  template: '<div class="child">' +
+  '<slot text="Hello " :msg="msg"></slot>' +
+  '</div>',
+  data() {
+    return {
+      msg: 'Vue'
+    }
+  }
+}
+
+let vm = new Vue({
+  el: '#app',
+  template: '<div>' +
+  '<child>' +
+  '<template slot-scope="props">' +
+  '<p>Hello from parent</p>' +
+  '<p>{{ props.text + props.msg}}</p>' +
+  '</template>' +
+  '</child>' +
+  '</div>',
+  components: {
+    Child
+  }
+})
+```
+
+最终生成的 DOM 结构如下：
+
+```html
+<div>
+  <div class="child">
+    <p>Hello from parent</p>
+    <p>Hello Vue</p>
+  </div>
+</div>
+```
+
+我们可以看到子组件的 `slot` 标签多了 `text` 属性，以及 `:msg` 属性。父组件实现插槽的部分多了一个 `template` 标签，以及 `scope-slot` 属性，其实在 Vue 2.5+ 版本，`scoped-slot` 可以作用在普通元素上。这些就是作用域插槽和普通插槽在写法上的差别。
+
+在编译阶段，仍然是先编译父组件，同样是通过 `processSlot` 函数去处理 `scoped-slot`，它的定义在在 `src/compiler/parser/index.js` 中：
+
+```js
+function processSlot (el) {
+  // ...
+  let slotScope
+  if (el.tag === 'template') {
+    slotScope = getAndRemoveAttr(el, 'scope')
+    /* istanbul ignore if */
+    if (process.env.NODE_ENV !== 'production' && slotScope) {
+      warn(
+        `the "scope" attribute for scoped slots have been deprecated and ` +
+        `replaced by "slot-scope" since 2.5. The new "slot-scope" attribute ` +
+        `can also be used on plain elements in addition to <template> to ` +
+        `denote scoped slots.`,
+        true
+      )
+    }
+    el.slotScope = slotScope || getAndRemoveAttr(el, 'slot-scope')
+  } else if ((slotScope = getAndRemoveAttr(el, 'slot-scope'))) {
+    /* istanbul ignore if */
+    if (process.env.NODE_ENV !== 'production' && el.attrsMap['v-for']) {
+      warn(
+        `Ambiguous combined usage of slot-scope and v-for on <${el.tag}> ` +
+        `(v-for takes higher priority). Use a wrapper <template> for the ` +
+        `scoped slot to make it clearer.`,
+        true
+      )
+    }
+    el.slotScope = slotScope
+  }
+  // ...
+} 
+```
+这块逻辑很简单，读取 `scoped-slot` 属性并赋值给当前 AST 元素节点的 `slotScope` 属性，接下来在构造 AST 树的时候，会执行以下逻辑：
+
+```js
+if (element.elseif || element.else) {
+  processIfConditions(element, currentParent)
+} else if (element.slotScope) { 
+  currentParent.plain = false
+  const name = element.slotTarget || '"default"'
+  ;(currentParent.scopedSlots || (currentParent.scopedSlots = {}))[name] = element
+} else {
+  currentParent.children.push(element)
+  element.parent = currentParent
+}
+```
+可以看到对于拥有 `scopedSlot` 属性的 AST 元素节点而言，是不会作为 `children` 添加到当前 AST 树中，而是存到父 AST 元素节点的 `scopedSlots` 属性上，它是一个对象，以插槽名称 `name` 为 `key`。
+
+然后在 `genData` 的过程，会对 `scopedSlots` 做处理：
+
+```js
+if (el.scopedSlots) {
+  data += `${genScopedSlots(el.scopedSlots, state)},`
+}
+
+function genScopedSlots (
+  slots: { [key: string]: ASTElement },
+  state: CodegenState
+): string {
+  return `scopedSlots:_u([${
+    Object.keys(slots).map(key => {
+      return genScopedSlot(key, slots[key], state)
+    }).join(',')
+  }])`
+}
+
+function genScopedSlot (
+  key: string,
+  el: ASTElement,
+  state: CodegenState
+): string {
+  if (el.for && !el.forProcessed) {
+    return genForScopedSlot(key, el, state)
+  }
+  const fn = `function(${String(el.slotScope)}){` +
+    `return ${el.tag === 'template'
+      ? el.if
+        ? `${el.if}?${genChildren(el, state) || 'undefined'}:undefined`
+        : genChildren(el, state) || 'undefined'
+      : genElement(el, state)
+    }}`
+  return `{key:${key},fn:${fn}}`
+}
+```
+
+`genScopedSlots` 就是对 `scopedSlots` 对象遍历，执行 `genScopedSlot`，并把结果用逗号拼接，而 `genScopedSlot` 是先生成一段函数代码，并且函数的参数就是我们的 `slotScope`，也就是写在标签属性上的 `scoped-slot` 对应的值，然后再返回一个对象，`key` 为插槽名称，`fn` 为生成的函数代码。
+
+对于我们这个例子而言，父组件最终生成的代码如下：
+
+```js
+with(this){
+  return _c('div',
+    [_c('child',
+      {scopedSlots:_u([
+        {
+          key: "default",
+          fn: function(props) {
+            return [
+              _c('p',[_v("Hello from parent")]),
+              _c('p',[_v(_s(props.text + props.msg))])
+            ]
+          }
+        }])
+      }
+    )],
+  1)
+}
+```
+
+可以看到它和普通插槽父组件编译结果的一个很明显的区别就是没有 `children` 了，`data` 部分多了一个对象，并且执行了 `_u` 方法，在编译章节我们了解到，`_u` 函数对的就是 `resolveScopedSlots` 方法，它的定义在 `src/core/instance/render-heplpers/resolve-slots.js` 中：
+
+```js
+export function resolveScopedSlots (
+  fns: ScopedSlotsData, // see flow/vnode
+  res?: Object
+): { [key: string]: Function } {
+  res = res || {}
+  for (let i = 0; i < fns.length; i++) {
+    if (Array.isArray(fns[i])) {
+      resolveScopedSlots(fns[i], res)
+    } else {
+      res[fns[i].key] = fns[i].fn
+    }
+  }
+  return res
+}
+```
+
+其中，`fns` 是一个数组，每一个数组元素都有一个 `key` 和一个 `fn`，`key` 对应的是插槽的名称，`fn` 对应一个函数。整个逻辑就是遍历这个 `fns` 数组，生成一个对象，对象的 `key` 就是插槽名称，`value` 就是函数。这个函数的执行时机稍后我们会介绍。
+
+接着我们再来看一下子组件的编译，和普通插槽的过程基本相同，唯一一点区别是在 `genSlot` 的时候：
+
+```js
+function genSlot (el: ASTElement, state: CodegenState): string {
+  const slotName = el.slotName || '"default"'
+  const children = genChildren(el, state)
+  let res = `_t(${slotName}${children ? `,${children}` : ''}`
+  const attrs = el.attrs && `{${el.attrs.map(a => `${camelize(a.name)}:${a.value}`).join(',')}}`
+  const bind = el.attrsMap['v-bind']
+  if ((attrs || bind) && !children) {
+    res += `,null`
+  }
+  if (attrs) {
+    res += `,${attrs}`
+  }
+  if (bind) {
+    res += `${attrs ? '' : ',null'},${bind}`
+  }
+  return res + ')'
+}
+```
+它会对 `attrs` 和 `v-bind` 做处理，对应到我们的例子，最终生成的代码如下：
+
+```js
+with(this){
+  return _c('div',
+    {staticClass:"child"},
+    [_t("default",null,
+      {text:"Hello ",msg:msg}
+    )],
+  2)}
+```
+
+`_t` 方法我们之前介绍过，对应的是 `renderSlot` 方法：
+
+```js
+export function renderSlot (
+  name: string,
+  fallback: ?Array<VNode>,
+  props: ?Object,
+  bindObject: ?Object
+): ?Array<VNode> {
+  const scopedSlotFn = this.$scopedSlots[name]
+  let nodes
+  if (scopedSlotFn) {
+    props = props || {}
+    if (bindObject) {
+      if (process.env.NODE_ENV !== 'production' && !isObject(bindObject)) {
+        warn(
+          'slot v-bind without argument expects an Object',
+          this
+        )
+      }
+      props = extend(extend({}, bindObject), props)
+    }
+    nodes = scopedSlotFn(props) || fallback
+  } else {
+    // ...
+  }
+
+  const target = props && props.slot
+  if (target) {
+    return this.$createElement('template', { slot: target }, nodes)
+  } else {
+    return nodes
+  }
+}
+```
+
+我们只关注作用域插槽的逻辑，那么这个 `this.$scopedSlots` 又是在什么地方定义的呢，原来在子组件的渲染函数执行前，在 `vm_render` 方法内，有这么一段逻辑，定义在 `src/core/instance/render.js` 中：
+
+```js
+ if (_parentVnode) {
+  vm.$scopedSlots = _parentVnode.data.scopedSlots || emptyObject
+}
+```
+这个 `_parentVNode.data.scopedSlots` 对应的就是我们在父组件通过执行 `resolveScopedSlots` 返回的对象。所以回到 `genSlot` 函数，我们就可以通过插槽的名称拿到对应的 `scopedSlotFn`，然后把相关的数据扩展到 `props` 上，作为函数的参数传入，原来之前我们提到的函数这个时候执行，然后返回生成的 `vnodes`，为后续渲染节点用。
+
+后续流程之前已介绍过，不再赘述，那么至此，作用域插槽的实现也就分析完毕。
+
+### 总结
+
+通过这一章的分析，我们了解了普通插槽和作用域插槽的实现。它们有一个很大的差别是数据作用域，普通插槽是在父组件编译和渲染阶段生成 `vnodes`，所以数据的作用域是父组件实例，子组件渲染的时候直接拿到这些渲染好的 `vnodes`。而对于作用域插槽，父组件在编译和渲染阶段并不会直接生成 `vnodes`，而是在父节点 `vnode` 的 `data` 中保留一个 `scopedSlots` 对象，存储着不同名称的插槽以及它们对应的渲染函数，只有在编译和渲染子组件阶段才会执行这个渲染函数生成 `vnodes`，由于是在子组件环境执行的，所以对应的数据作用域是子组件实例。
+
+简单地说，两种插槽的目的都是让子组件 `slot` 占位符生成的内容由父组件来决定，但数据的作用域会根据它们 `vnodes` 渲染时机不同而不同。
+
+## 6.5 keep-alive
+
+在我们的平时开发工作中，经常为了组件的缓存优化而使用 `<keep-alive>` 组件，乐此不疲，但很少有人关注它的实现原理，下面就让我们来一探究竟。
+
+### 内置组件
+
+`<keep-alive>` 是 Vue 源码中实现的一个组件，也就是说 Vue 源码不仅实现了一套组件化的机制，也实现了一些内置组件，它的定义在 `src/core/components/keep-alive.js` 中：
+
+```js
+export default {
+  name: 'keep-alive,
+  abstract: true,
+
+  props: {
+    include: patternTypes,
+    exclude: patternTypes,
+    max: [String, Number]
+  },
+
+  created () {
+    this.cache = Object.create(null)
+    this.keys = []
+  },
+
+  destroyed () {
+    for (const key in this.cache) {
+      pruneCacheEntry(this.cache, key, this.keys)
+    }
+  },
+
+  mounted () {
+    this.$watch('include', val => {
+      pruneCache(this, name => matches(val, name))
+    })
+    this.$watch('exclude', val => {
+      pruneCache(this, name => !matches(val, name))
+    })
+  },
+
+  render () {
+    const slot = this.$slots.default
+    const vnode: VNode = getFirstComponentChild(slot)
+    const componentOptions: ?VNodeComponentOptions = vnode && vnode.componentOptions
+    if (componentOptions) {
+      // check pattern
+      const name: ?string = getComponentName(componentOptions)
+      const { include, exclude } = this
+      if (
+        // not included
+        (include && (!name || !matches(include, name))) ||
+        // excluded
+        (exclude && name && matches(exclude, name))
+      ) {
+        return vnode
+      }
+
+      const { cache, keys } = this
+      const key: ?string = vnode.key == null
+        // same constructor may get registered as different local components
+        // so cid alone is not enough (#3269)
+        ? componentOptions.Ctor.cid + (componentOptions.tag ? `::${componentOptions.tag}` : '')
+        : vnode.key
+      if (cache[key]) {
+        vnode.componentInstance = cache[key].componentInstance
+        // make current key freshest
+        remove(keys, key)
+        keys.push(key)
+      } else {
+        cache[key] = vnode
+        keys.push(key)
+        // prune oldest entry
+        if (this.max && keys.length > parseInt(this.max)) {
+          pruneCacheEntry(cache, keys[0], keys, this._vnode)
+        }
+      }
+
+      vnode.data.keepAlive = true
+    }
+    return vnode || (slot && slot[0])
+  }
+}
+```
+
+可以看到 `<keep-alive>` 组件的实现也是一个对象，注意它有一个属性 `abstract` 为 true，是一个抽象组件，Vue 的文档没有提这个概念，实际上它在组件实例建立父子关系的时候会被忽略，发生在 `initLifecycle` 的过程中：
+
+```js
+// locate first non-abstract parent
+let parent = options.parent
+if (parent && !options.abstract) {
+  while (parent.$options.abstract && parent.$parent) {
+    parent = parent.$parent
+  }
+  parent.$children.push(vm)
+}
+vm.$parent = parent
+```
+
+`<keep-alive>` 在 `created` 钩子里定义了 `this.cache` 和 `this.keys`，本质上它就是去缓存已经创建过的 `vnode`。它的 `props` 定义了 `include`，`exclude`，它们可以字符串或者表达式，`include` 表示只有匹配的组件会被缓存，而 `exclude` 表示任何匹配的组件都不会被缓存，`props` 还定义了 `max`，它表示缓存的大小，因为我们是缓存的 `vnode` 对象，它也会持有 DOM，当我们缓存很多的时候，会比较占用内存，所以该配置允许我们指定缓存大小。
+
+`<keep-alive>` 直接实现了 `render` 函数，而不是我们常规模板的方式，执行 `<keep-alive>` 组件渲染的时候，就会执行到这个 `render` 函数，接下来我们分析一下它的实现。
+
+首先获取第一个子元素的 `vnode`：
+
+```js
+const slot = this.$slots.default
+const vnode: VNode = getFirstComponentChild(slot)
+```
+
+由于我们也是在 `<keep-alive>` 标签内部写 DOM，所以可以先获取到它的默认插槽，然后再获取到它的第一个子节点。`<keep-alive>` 只处理第一个子元素，所以一般和它搭配使用的有 `component` 动态组件或者是 `router-view`，这点要牢记。
+
+然后又判断了当前组件的名称和 `include`、`exclude` 的关系：
+
+```js
+// check pattern
+const name: ?string = getComponentName(componentOptions)
+const { include, exclude } = this
+if (
+  // not included
+  (include && (!name || !matches(include, name))) ||
+  // excluded
+  (exclude && name && matches(exclude, name))
+) {
+  return vnode
+}
+
+function matches (pattern: string | RegExp | Array<string>, name: string): boolean {
+  if (Array.isArray(pattern)) {
+    return pattern.indexOf(name) > -1
+  } else if (typeof pattern === 'string') {
+    return pattern.split(',').indexOf(name) > -1
+  } else if (isRegExp(pattern)) {
+    return pattern.test(name)
+  }
+  return false
+}
+```
+
+`matches` 的逻辑很简单，就是做匹配，分别处理了数组、字符串、正则表达式的情况，也就是说我们平时传的 `include` 和 `exclude` 可以是这三种类型的任意一种。并且我们的组件名如果满足了配置 `include` 且不匹配或者是配置了 `exclude` 且匹配，那么就直接返回这个组件的 `vnode`，否则的话走下一步缓存：
+
+```js
+const { cache, keys } = this
+const key: ?string = vnode.key == null
+  // same constructor may get registered as different local components
+  // so cid alone is not enough (#3269)
+  ? componentOptions.Ctor.cid + (componentOptions.tag ? `::${componentOptions.tag}` : '')
+  : vnode.key
+if (cache[key]) {
+  vnode.componentInstance = cache[key].componentInstance
+  // make current key freshest
+  remove(keys, key)
+  keys.push(key)
+} else {
+  cache[key] = vnode
+  keys.push(key)
+  // prune oldest entry
+  if (this.max && keys.length > parseInt(this.max)) {
+    pruneCacheEntry(cache, keys[0], keys, this._vnode)
+  }
+}
+```
+
+这部分逻辑很简单，如果命中缓存，则直接从缓存中拿 `vnode` 的组件实例，并且重新调整了 key 的顺序放在了最后一个；否则把 `vnode` 设置进缓存，最后还有一个逻辑，如果配置了 `max` 并且缓存的长度超过了 `this.max`，还要从缓存中删除第一个：
+
+```js
+function pruneCacheEntry (
+  cache: VNodeCache,
+  key: string,
+  keys: Array<string>,
+  current?: VNode
+) {
+  const cached = cache[key]
+  if (cached && (!current || cached.tag !== current.tag)) {
+    cached.componentInstance.$destroy()
+  }
+  cache[key] = null 
+  remove(keys, key)
+}
+```
+除了从缓存中删除外，还要判断如果要删除的缓存并的组件 `tag` 不是当前渲染组件 `tag`，也执行删除缓存的组件实例的 `$destroy` 方法。
+
+最后设置 `vnode.data.keepAlive = true` ，这个作用稍后我们介绍。
+
+注意，`<keep-alive>` 组件也是为观测 `include` 和 `exclude` 的变化，对缓存做处理：
+
+```js
+watch: {
+  include (val: string | RegExp | Array<string>) {
+    pruneCache(this, name => matches(val, name))
+  },
+  exclude (val: string | RegExp | Array<string>) {
+    pruneCache(this, name => !matches(val, name))
+  }
+}
+
+function pruneCache (keepAliveInstance: any, filter: Function) {
+  const { cache, keys, _vnode } = keepAliveInstance
+  for (const key in cache) {
+    const cachedNode: ?VNode = cache[key]
+    if (cachedNode) {
+      const name: ?string = getComponentName(cachedNode.componentOptions)
+      if (name && !filter(name)) {
+        pruneCacheEntry(cache, key, keys, _vnode)
+      }
+    }
+  }
+}
+```
+逻辑很简单，观测他们的变化执行 `pruneCache` 函数，其实就是对 `cache` 做遍历，发现缓存的节点名称和新的规则没有匹配上的时候，就把这个缓存节点从缓存中摘除。
+
+### 组件渲染
+
+到此为止，我们只了解了 `<keep-alive>` 的组件实现，但并不知道它包裹的子组件渲染和普通组件有什么不一样的地方。我们关注 2 个方面，首次渲染和缓存渲染。
+
+同样为了更好地理解，我们也结合一个示例来分析：
+
+```js
+let A = {
+  template: '<div class="a">' +
+  '<p>A Comp</p>' +
+  '</div>',
+  name: 'A'
+}
+
+let B = {
+  template: '<div class="b">' +
+  '<p>B Comp</p>' +
+  '</div>',
+  name: 'B'
+}
+
+let vm = new Vue({
+  el: '#app',
+  template: '<div>' +
+  '<keep-alive>' +
+  '<component :is="currentComp">' +
+  '</component>' +
+  '</keep-alive>' +
+  '<button @click="change">switch</button>' +
+  '</div>',
+  data: {
+    currentComp: 'A'
+  },
+  methods: {
+    change() {
+      this.currentComp = this.currentComp === 'A' ? 'B' : 'A'
+    }
+  },
+  components: {
+    A,
+    B
+  }
+})
+```
+
+#### 首次渲染
+
+我们知道 Vue 的渲染最后都会到 `patch` 过程，而组件的 `patch` 过程会执行 `createComponent` 方法，它的定义在 `src/core/vdom/patch.js` 中：
+
+```js
+function createComponent (vnode, insertedVnodeQueue, parentElm, refElm) {
+  let i = vnode.data
+  if (isDef(i)) {
+    const isReactivated = isDef(vnode.componentInstance) && i.keepAlive
+    if (isDef(i = i.hook) && isDef(i = i.init)) {
+      i(vnode, false /* hydrating */)
+    }
+    // after calling the init hook, if the vnode is a child component
+    // it should've created a child instance and mounted it. the child
+    // component also has set the placeholder vnode's elm.
+    // in that case we can just return the element and be done.
+    if (isDef(vnode.componentInstance)) {
+      initComponent(vnode, insertedVnodeQueue)
+      insert(parentElm, vnode.elm, refElm)
+      if (isTrue(isReactivated)) {
+        reactivateComponent(vnode, insertedVnodeQueue, parentElm, refElm)
+      }
+      return true
+    }
+  }
+}
+```
+
+`createComponent` 定义了 `isReactivated` 的变量，它是根据 `vnode.componentInstance` 以及 `vnode.data.keepAlive` 的判断，第一次渲染的时候，`vnode.componentInstance` 为 `undefined`，`vnode.data.keepAlive` 为 true，因为它的父组件 `<keep-alive>` 的 `render` 函数会先执行，那么该 `vnode` 缓存到内存中，并且设置 `vnode.data.keepAlive` 为 true，因此 `isReactivated` 为 `false`，那么走正常的 `init` 的钩子函数执行组件的 `mount`。当 `vnode` 已经执行完 `patch` 后，执行 `initComponent` 函数：
+
+```js
+function initComponent (vnode, insertedVnodeQueue) {
+  if (isDef(vnode.data.pendingInsert)) {
+    insertedVnodeQueue.push.apply(insertedVnodeQueue, vnode.data.pendingInsert)
+    vnode.data.pendingInsert = null
+  }
+  vnode.elm = vnode.componentInstance.$el
+  if (isPatchable(vnode)) {
+    invokeCreateHooks(vnode, insertedVnodeQueue)
+    setScope(vnode)
+  } else {
+    // empty component root.
+    // skip all element-related modules except for ref (#3455)
+    registerRef(vnode)
+    // make sure to invoke the insert hook
+    insertedVnodeQueue.push(vnode)
+  }
+}
+```
+这里会有 `vnode.elm` 缓存了 `vnode` 创建生成的 DOM 节点。所以对于首次渲染而言，除了在 `<keep-alive>` 中建立缓存，和普通组件渲染没什么区别。
+
+所以对我们的例子，初始化渲染 `A` 组件以及第一次点击 `switch` 渲染 `B` 组件，都是首次渲染。
+
+#### 缓存渲染
+
+当我们从 `B` 组件再次点击 `switch` 切换到 `A` 组件，就会命中缓存渲染。
+
+我们之前分析过，当数据发送变化，在 `patch` 的过程中会执行 `patchVnode` 的逻辑，它会对比新旧 `vnode` 节点，甚至对比它们的子节点去做更新逻辑，但是对于组件 `vnode` 而言，是没有 `children` 的，那么对于 `<keep-alive>` 组件而言，如何更新它包裹的内容呢？
+
+原来 `patchVnode` 在做各种 diff 之前，会先执行 `prepatch` 的钩子函数，它的定义在 `src/core/vdom/create-component` 中：
+
+```js
+const componentVNodeHooks = {
+  prepatch (oldVnode: MountedComponentVNode, vnode: MountedComponentVNode) {
+    const options = vnode.componentOptions
+    const child = vnode.componentInstance = oldVnode.componentInstance
+    updateChildComponent(
+      child,
+      options.propsData, // updated props
+      options.listeners, // updated listeners
+      vnode, // new parent vnode
+      options.children // new children
+    )
+  },
+  // ...
+}
+```
+
+`prepatch` 核心逻辑就是执行 `updateChildComponent` 方法，它的定义在 `src/core/instance/lifecycle.js` 中：
+
+```js
+export function updateChildComponent (
+  vm: Component,
+  propsData: ?Object,
+  listeners: ?Object,
+  parentVnode: MountedComponentVNode,
+  renderChildren: ?Array<VNode>
+) {
+  const hasChildren = !!(
+    renderChildren ||          
+    vm.$options._renderChildren ||
+    parentVnode.data.scopedSlots || 
+    vm.$scopedSlots !== emptyObject 
+  )
+
+  // ...
+  if (hasChildren) {
+    vm.$slots = resolveSlots(renderChildren, parentVnode.context)
+    vm.$forceUpdate()
+  }
+}
+```
+
+`updateChildComponent` 方法主要是去更新组件实例的一些属性，这里我们重点关注一下 `slot` 部分，由于 `<keep-alive>` 组件本质上支持了 `slot`，所以它执行 `prepatch` 的时候，需要对自己的 `children`，也就是这些 `slots` 做重新解析，并触发 `<keep-alive>` 组件实例 `$forceUpdate` 逻辑，也就是重新执行 `<keep-alive>` 的 `render` 方法，这个时候如果它包裹的第一个组件 `vnode` 命中缓存，则直接返回缓存中的 `vnode.componentInstance`，在我们的例子中就是缓存的 `A` 组件，接着又会执行 `patch` 过程，再次执行到 `createComponent` 方法，我们再回顾一下：
+
+```js
+function createComponent (vnode, insertedVnodeQueue, parentElm, refElm) {
+  let i = vnode.data
+  if (isDef(i)) {
+    const isReactivated = isDef(vnode.componentInstance) && i.keepAlive
+    if (isDef(i = i.hook) && isDef(i = i.init)) {
+      i(vnode, false /* hydrating */)
+    }
+    // after calling the init hook, if the vnode is a child component
+    // it should've created a child instance and mounted it. the child
+    // component also has set the placeholder vnode's elm.
+    // in that case we can just return the element and be done.
+    if (isDef(vnode.componentInstance)) {
+      initComponent(vnode, insertedVnodeQueue)
+      insert(parentElm, vnode.elm, refElm)
+      if (isTrue(isReactivated)) {
+        reactivateComponent(vnode, insertedVnodeQueue, parentElm, refElm)
+      }
+      return true
+    }
+  }
+}
+```
+这个时候 `isReactivated` 为 true，并且在执行 `init` 钩子函数的时候不会再执行组件的 `mount` 过程了，相关逻辑在 `src/core/vdom/create-component.js` 中：
+
+```js
+const componentVNodeHooks = {
+  init (vnode: VNodeWithData, hydrating: boolean): ?boolean {
+    if (
+      vnode.componentInstance &&
+      !vnode.componentInstance._isDestroyed &&
+      vnode.data.keepAlive
+    ) {
+      // kept-alive components, treat as a patch
+      const mountedNode: any = vnode // work around flow
+      componentVNodeHooks.prepatch(mountedNode, mountedNode)
+    } else {
+      const child = vnode.componentInstance = createComponentInstanceForVnode(
+        vnode,
+        activeInstance
+      )
+      child.$mount(hydrating ? vnode.elm : undefined, hydrating)
+    }
+  },
+  // ...
+}
+```
+
+这也就是被 `<keep-alive>` 包裹的组件在有缓存的时候就不会在执行组件的 `created`、`mounted` 等钩子函数的原因了。回到 `createComponent` 方法，在 `isReactivated` 为 true 的情况下会执行 `reactivateComponent` 方法：
+
+```js
+function reactivateComponent (vnode, insertedVnodeQueue, parentElm, refElm) {
+  let i
+  // hack for #4339: a reactivated component with inner transition
+  // does not trigger because the inner node's created hooks are not called
+  // again. It's not ideal to involve module-specific logic in here but
+  // there doesn't seem to be a better way to do it.
+  let innerNode = vnode
+  while (innerNode.componentInstance) {
+    innerNode = innerNode.componentInstance._vnode
+    if (isDef(i = innerNode.data) && isDef(i = i.transition)) {
+      for (i = 0; i < cbs.activate.length; ++i) {
+        cbs.activate[i](emptyNode, innerNode)
+      }
+      insertedVnodeQueue.push(innerNode)
+      break
+    }
+  }
+  // unlike a newly created component,
+  // a reactivated keep-alive component doesn't insert itself
+  insert(parentElm, vnode.elm, refElm)
+}
+```
+前面部分的逻辑是解决对 `reactived` 组件 `transition` 动画不触发的问题，可以先不关注，最后通过执行 `insert(parentElm, vnode.elm, refElm)` 就把缓存的 DOM 对象直接插入到目标元素中，这样就完成了在数据更新的情况下的渲染过程。
+
+### 生命周期
+
+之前我们提到，组件一旦被 `<keep-alive>` 缓存，那么再次渲染的时候就不会执行 `created`、`mounted` 等钩子函数，但是我们很多业务场景都是希望在我们被缓存的组件再次被渲染的时候做一些事情，好在 Vue 提供了 `activated` 钩子函数，它的执行时机是 `<keep-alive>` 包裹的组件渲染的时候，接下来我们从源码角度来分析一下它的实现原理。
+
+在渲染的最后一步，会执行 `invokeInsertHook(vnode, insertedVnodeQueue, isInitialPatch)` 函数执行 `vnode` 的 `insert` 钩子函数，它的定义在 `src/core/vdom/create-component.js` 中：
+
+```js
+const componentVNodeHooks = {
+  insert (vnode: MountedComponentVNode) {
+    const { context, componentInstance } = vnode
+    if (!componentInstance._isMounted) {
+      componentInstance._isMounted = true
+      callHook(componentInstance, 'mounted')
+    }
+    if (vnode.data.keepAlive) {
+      if (context._isMounted) {
+        // vue-router#1212
+        // During updates, a kept-alive component's child components may
+        // change, so directly walking the tree here may call activated hooks
+        // on incorrect children. Instead we push them into a queue which will
+        // be processed after the whole patch process ended.
+        queueActivatedComponent(componentInstance)
+      } else {
+        activateChildComponent(componentInstance, true /* direct */)
+      }
+    }
+  },
+  // ...
+}
+```
+
+这里判断如果是被 `<keep-alive>` 包裹的组件已经 `mounted`，那么则执行 `queueActivatedComponent(componentInstance)` ，否则执行 `activateChildComponent(componentInstance, true)`。我们先分析非 `mounted` 的情况，`activateChildComponent` 的定义在 `src/core/instance/lifecycle.js` 中：
+
+```js
+export function activateChildComponent (vm: Component, direct?: boolean) {
+  if (direct) {
+    vm._directInactive = false
+    if (isInInactiveTree(vm)) {
+      return
+    }
+  } else if (vm._directInactive) {
+    return
+  }
+  if (vm._inactive || vm._inactive === null) {
+    vm._inactive = false
+    for (let i = 0; i < vm.$children.length; i++) {
+      activateChildComponent(vm.$children[i])
+    }
+    callHook(vm, 'activated')
+  }
+}
+```
+
+可以看到这里就是执行组件的 `acitvated` 钩子函数，并且递归去执行它的所有子组件的 `activated` 钩子函数。
+
+那么再看 `queueActivatedComponent` 的逻辑，它定义在 `src/core/observer/scheduler.js` 中：
+
+```js
+export function queueActivatedComponent (vm: Component) {
+  vm._inactive = false
+  activatedChildren.push(vm)
+}
+```
+这个逻辑很简单，把当前 `vm` 实例添加到 `activatedChildren` 数组中，等所有的渲染完毕，在 `nextTick`后会执行 `flushSchedulerQueue`，这个时候就会执行：
+
+```js
+function flushSchedulerQueue () {
+  // ...
+  const activatedQueue = activatedChildren.slice()
+  callActivatedHooks(activatedQueue)
+  // ...
+} 
+
+function callActivatedHooks (queue) {
+  for (let i = 0; i < queue.length; i++) {
+    queue[i]._inactive = true
+    activateChildComponent(queue[i], true)  }
+}
+```
+也就是遍历所有的 `activatedChildren`，执行 `activateChildComponent` 方法，通过队列调的方式就是把整个 `activated` 时机延后了。
+
+有 `activated` 钩子函数，也就有对应的 `deactivated` 钩子函数，它是发生在 `vnode` 的 `destory` 钩子函数，定义在 `src/core/vdom/create-component.js` 中：
+
+```js
+const componentVNodeHooks = {
+  destroy (vnode: MountedComponentVNode) {
+    const { componentInstance } = vnode
+    if (!componentInstance._isDestroyed) {
+      if (!vnode.data.keepAlive) {
+        componentInstance.$destroy()
+      } else {
+        deactivateChildComponent(componentInstance, true /* direct */)
+      }
+    }
+  }
+}
+```
+
+对于 `<keep-alive>` 包裹的组件而言，它会执行 `deactivateChildComponent(componentInstance, true)` 方法，定义在 `src/core/instance/lifecycle.js` 中：
+
+```js
+export function deactivateChildComponent (vm: Component, direct?: boolean) {
+  if (direct) {
+    vm._directInactive = true
+    if (isInInactiveTree(vm)) {
+      return
+    }
+  }
+  if (!vm._inactive) {
+    vm._inactive = true
+    for (let i = 0; i < vm.$children.length; i++) {
+      deactivateChildComponent(vm.$children[i])
+    }
+    callHook(vm, 'deactivated')
+  }
+}
+```
+
+和 `activateChildComponent` 方法类似，就是执行组件的 `deacitvated` 钩子函数，并且递归去执行它的所有子组件的 `deactivated` 钩子函数。
+
+### 总结
+
+那么至此，`<keep-alive>` 的实现原理就介绍完了，通过分析我们知道了 `<keep-alive>` 组件是一个抽象组件，它的实现通过自定义 `render` 函数并且利用了插槽，并且知道了 `<keep-alive>` 缓存 `vnode`，了解组件包裹的子元素——也就是插槽是如何做更新的。且在 `patch` 过程中对于已缓存的组件不会执行 `mounted`，所以不会有一般的组件的生命周期函数但是又提供了 `activated` 和 `deactivated` 钩子函数。另外我们还知道了 `<keep-alive>` 的 `props` 除了 `include` 和 `exclude` 还有文档中没有提到的 `max`，它能控制我们缓存的个数。 
+
+## 6.6 transition
+
+在我们平时的前端项目开发中，经常会遇到如下需求，一个 DOM 节点的插入和删除或者是显示和隐藏，我们不想让它特别生硬，通常会考虑加一些过渡效果。
+
+Vue.js 除了实现了强大的数据驱动，组件化的能力，也给我们提供了一整套过渡的解决方案。它内置了 `<transition>` 组件，我们可以利用它配合一些 CSS3 样式很方便地实现过渡动画，也可以利用它配合 JavaScript 的钩子函数实现过渡动画，在下列情形中，可以给任何元素和组件添加 entering/leaving 过渡：
+
+- 条件渲染 (使用 `v-if`)
+- 条件展示 (使用 `v-show`)
+- 动态组件
+- 组件根节点
+
+那么举一个最简单的实例，如下：
+
+```js
+let vm = new Vue({
+  el: '#app',
+  template: '<div id="demo">' +
+  '<button v-on:click="show = !show">' +
+  'Toggle' +
+  '</button>' +
+  '<transition :appear="true" name="fade">' +
+  '<p v-if="show">hello</p>' +
+  '</transition>' +
+  '</div>',
+  data() {
+    return {
+      show: true
+    }
+  }
+})
+```
+
+```css
+.fade-enter-active, .fade-leave-active {
+  transition: opacity .5s;
+}
+.fade-enter, .fade-leave-to {
+  opacity: 0;
+}
+```
+
+当我们点击按钮切换显示状态的时候，被 `<transition>` 包裹的内容会有过渡动画。那么接下来我们从源码的角度来分析它的实现原理。
+
+### 内置组件
+
+`<transition>` 组件和 `<keep-alive>` 组件一样，都是 Vue 的内置组件，而 `<transition>` 的定义在 `src/platforms/web/runtime/component/transtion.js` 中，之所以在这里定义，是因为 `<transition>` 组件是 web 平台独有的，先来看一下它的实现：
+
+```js
+export default {
+  name: 'transition',
+  props: transitionProps,
+  abstract: true,
+
+  render (h: Function) {
+    let children: any = this.$slots.default
+    if (!children) {
+      return
+    }
+
+    // filter out text nodes (possible whitespaces)
+    children = children.filter((c: VNode) => c.tag || isAsyncPlaceholder(c))
+    /* istanbul ignore if */
+    if (!children.length) {
+      return
+    }
+
+    // warn multiple elements
+    if (process.env.NODE_ENV !== 'production' && children.length > 1) {
+      warn(
+        '<transition> can only be used on a single element. Use ' +
+        '<transition-group> for lists.',
+        this.$parent
+      )
+    }
+
+    const mode: string = this.mode
+
+    // warn invalid mode
+    if (process.env.NODE_ENV !== 'production' &&
+      mode && mode !== 'in-out' && mode !== 'out-in'
+    ) {
+      warn(
+        'invalid <transition> mode: ' + mode,
+        this.$parent
+      )
+    }
+
+    const rawChild: VNode = children[0]
+
+    // if this is a component root node and the component's
+    // parent container node also has transition, skip.
+    if (hasParentTransition(this.$vnode)) {
+      return rawChild
+    }
+
+    // apply transition data to child
+    // use getRealChild() to ignore abstract components e.g. keep-alive
+    const child: ?VNode = getRealChild(rawChild)
+    /* istanbul ignore if */
+    if (!child) {
+      return rawChild
+    }
+
+    if (this._leaving) {
+      return placeholder(h, rawChild)
+    }
+
+    // ensure a key that is unique to the vnode type and to this transition
+    // component instance. This key will be used to remove pending leaving nodes
+    // during entering.
+    const id: string = `__transition-${this._uid}-`
+    child.key = child.key == null
+      ? child.isComment
+        ? id + 'comment'
+        : id + child.tag
+      : isPrimitive(child.key)
+        ? (String(child.key).indexOf(id) === 0 ? child.key : id + child.key)
+        : child.key
+
+    const data: Object = (child.data || (child.data = {})).transition = extractTransitionData(this)
+    const oldRawChild: VNode = this._vnode
+    const oldChild: VNode = getRealChild(oldRawChild)
+
+    // mark v-show
+    // so that the transition module can hand over the control to the directive
+    if (child.data.directives && child.data.directives.some(d => d.name === 'show')) {
+      child.data.show = true
+    }
+
+    if (
+      oldChild &&
+      oldChild.data &&
+      !isSameChild(child, oldChild) &&
+      !isAsyncPlaceholder(oldChild) &&
+      // #6687 component root is a comment node
+      !(oldChild.componentInstance && oldChild.componentInstance._vnode.isComment)
+    ) {
+      // replace old child transition data with fresh one
+      // important for dynamic transitions!
+      const oldData: Object = oldChild.data.transition = extend({}, data)
+      // handle transition mode
+      if (mode === 'out-in') {
+        // return placeholder node and queue update when leave finishes
+        this._leaving = true
+        mergeVNodeHook(oldData, 'afterLeave', () => {
+          this._leaving = false
+          this.$forceUpdate()
+        })
+        return placeholder(h, rawChild)
+      } else if (mode === 'in-out') {
+        if (isAsyncPlaceholder(child)) {
+          return oldRawChild
+        }
+        let delayedLeave
+        const performLeave = () => { delayedLeave() }
+        mergeVNodeHook(data, 'afterEnter', performLeave)
+        mergeVNodeHook(data, 'enterCancelled', performLeave)
+        mergeVNodeHook(oldData, 'delayLeave', leave => { delayedLeave = leave })
+      }
+    }
+
+    return rawChild
+  }
+}
+```
+
+`<transition>` 组件和 `<keep-alive>` 组件有几点实现类似，同样是抽象组件，同样直接实现 `render` 函数，同样利用了默认插槽。`<transition>` 组件非常灵活，支持的 `props` 非常多：
+
+```js
+export const transitionProps = {
+  name: String,
+  appear: Boolean,
+  css: Boolean,
+  mode: String,
+  type: String,
+  enterClass: String,
+  leaveClass: String,
+  enterToClass: String,
+  leaveToClass: String,
+  enterActiveClass: String,
+  leaveActiveClass: String,
+  appearClass: String,
+  appearActiveClass: String,
+  appearToClass: String,
+  duration: [Number, String, Object]
+}
+```
+
+这些配置我们稍后会分析它们的作用，`<transition>` 组件另一个重要的就是 `render` 函数的实现，`render` 函数主要作用就是渲染生成 `vnode`，下面来看一下这部分的逻辑。
+
+- 处理 `children`
+
+```js
+let children: any = this.$slots.default
+if (!children) {
+  return
+}
+
+// filter out text nodes (possible whitespaces)
+children = children.filter((c: VNode) => c.tag || isAsyncPlaceholder(c))
+/* istanbul ignore if */
+if (!children.length) {
+  return
+}
+
+// warn multiple elements
+if (process.env.NODE_ENV !== 'production' && children.length > 1) {
+  warn(
+    '<transition> can only be used on a single element. Use ' +
+    '<transition-group> for lists.',
+    this.$parent
+  )
+}
+```
+
+先从默认插槽中获取 `<transition>` 包裹的子节点，并且判断了子节点的长度，如果长度为 0，则直接返回，否则判断长度如果大于 1，也会在开发环境报警告，因为 `<transition>` 组件是只能包裹一个子节点的。
+
+- 处理 `model`
+
+```js
+const mode: string = this.mode
+
+// warn invalid mode
+if (process.env.NODE_ENV !== 'production' &&
+  mode && mode !== 'in-out' && mode !== 'out-in'
+) {
+  warn(
+    'invalid <transition> mode: ' + mode,
+    this.$parent
+  )
+}
+```
+
+过渡组件的对 `mode` 的支持只有 2 种，`in-out` 或者是 `out-in`。
+
+- 获取 `rawChild` & `child`
+
+```js
+const rawChild: VNode = children[0]
+
+// if this is a component root node and the component's
+// parent container node also has transition, skip.
+if (hasParentTransition(this.$vnode)) {
+  return rawChild
+}
+
+// apply transition data to child
+// use getRealChild() to ignore abstract components e.g. keep-alive
+const child: ?VNode = getRealChild(rawChild)
+/* istanbul ignore if */
+if (!child) {
+  return rawChild
+}
+
+```
+
+`rawChild` 就是第一个子节点 `vnode`，接着判断当前 `<transition>` 如果是组件根节点并且外面包裹该组件的容器也是 `<transition>` 的时候要跳过。来看一下 `hasParentTransition` 的实现：
+
+```js
+function hasParentTransition (vnode: VNode): ?boolean {
+  while ((vnode = vnode.parent)) {
+    if (vnode.data.transition) {
+      return true
+    }
+  }
+}
+```
+因为传入的是 `this.$vnode`，也就是 `<transition>` 组件的 占位 `vnode`，只有当它同时作为根 `vnode`，也就是 `vm._vnode` 的时候，它的 `parent` 才不会为空，并且判断 `parent` 也是 `<transition>` 组件，才返回 true，`vnode.data.transition` 我们稍后会介绍。
+
+`getRealChild` 的目的是获取组件的非抽象子节点，因为 `<transition>` 很可能会包裹一个 `keep-alive`，它的实现如下：
+
+```js
+// in case the child is also an abstract component, e.g. <keep-alive>
+// we want to recursively retrieve the real component to be rendered
+function getRealChild (vnode: ?VNode): ?VNode {
+  const compOptions: ?VNodeComponentOptions = vnode && vnode.componentOptions
+  if (compOptions && compOptions.Ctor.options.abstract) {
+    return getRealChild(getFirstComponentChild(compOptions.children))
+  } else {
+    return vnode
+  }
+}
+```
+会递归找到第一个非抽象组件的 `vnode` 并返回，在我们这个 case 下，`rawChild === child`。
+
+- 处理 `id` & `data`
+
+```js
+// ensure a key that is unique to the vnode type and to this transition
+// component instance. This key will be used to remove pending leaving nodes
+// during entering.
+const id: string = `__transition-${this._uid}-`
+child.key = child.key == null
+  ? child.isComment
+    ? id + 'comment'
+    : id + child.tag
+  : isPrimitive(child.key)
+    ? (String(child.key).indexOf(id) === 0 ? child.key : id + child.key)
+    : child.key
+
+const data: Object = (child.data || (child.data = {})).transition = extractTransitionData(this)
+const oldRawChild: VNode = this._vnode
+const oldChild: VNode = getRealChild(oldRawChild)
+
+// mark v-show
+// so that the transition module can hand over the control to the directive
+if (child.data.directives && child.data.directives.some(d => d.name === 'show')) {
+  child.data.show = true
+}
+```
+
+先根据 `key` 等一系列条件获取 `id`，接着从当前通过 `extractTransitionData` 组件实例上提取出过渡所需要的数据：
+
+```js
+export function extractTransitionData (comp: Component): Object {
+  const data = {}
+  const options: ComponentOptions = comp.$options
+  // props
+  for (const key in options.propsData) {
+    data[key] = comp[key]
+  }
+  // events.
+  // extract listeners and pass them directly to the transition methods
+  const listeners: ?Object = options._parentListeners
+  for (const key in listeners) {
+    data[camelize(key)] = listeners[key]
+  }
+  return data
+}
+```
+首先是遍历 `props` 赋值到 `data` 中，接着是遍历所有父组件的事件也把事件回调赋值到 `data` 中。
+
+这样 `child.data.transition` 中就包含了过渡所需的一些数据，这些稍后都会用到，对于 `child` 如果使用了 `v-show` 指令，也会把 `child.data.show` 设置为 true，在我们的例子中，得到的 `child.data` 如下：
+
+```js
+{
+  transition: {
+    appear: true,
+    name: 'fade'
+  }
+}
+```
+
+至于 `oldRawChild` 和 `oldChild` 是与后面的判断逻辑相关，这些我们这里先不介绍。
+
+### transition module
+
+刚刚我们介绍完 `<transition>` 组件的实现，它的 `render` 阶段只获取了一些数据，并且返回了渲染的 `vnode`，并没有任何和动画相关，而动画相关的逻辑全部在 `src/platforms/web/modules/transition.js` 中：
+
+```js
+function _enter (_: any, vnode: VNodeWithData) {
+  if (vnode.data.show !== true) {
+    enter(vnode)
+  }
+}
+
+export default inBrowser ? {
+  create: _enter,
+  activate: _enter,
+  remove (vnode: VNode, rm: Function) {
+    /* istanbul ignore else */
+    if (vnode.data.show !== true) {
+      leave(vnode, rm)
+    } else {
+      rm()
+    }
+  }
+} : {}
+```
+
+在之前介绍事件实现的章节中我们提到过在 `vnode patch` 的过程中，会执行很多钩子函数，那么对于过渡的实现，它只接收了 `create` 和 `activate` 2 个钩子函数，我们知道 `create` 钩子函数只有当节点的创建过程才会执行，而 `remove` 会在节点销毁的时候执行，这也就印证了 `<transition>` 必须要满足 `v-if` 、动态组件、组件根节点条件之一了，对于 `v-show` 在它的指令的钩子函数中也会执行相关逻辑，这块儿先不介绍。
+
+过渡动画提供了 2 个时机，一个是 `create` 和 `activate` 的时候提供了 entering 进入动画，一个是 `remove` 的时候提供了 leaving 离开动画，那么接下来我们就来分别去分析这两个过程。
+
+### entering
+
+整个 entering 过程的实现是 `enter` 函数：
+
+```js
+export function enter (vnode: VNodeWithData, toggleDisplay: ?() => void) {
+  const el: any = vnode.elm
+
+  // call leave callback now
+  if (isDef(el._leaveCb)) {
+    el._leaveCb.cancelled = true
+    el._leaveCb()
+  }
+
+  const data = resolveTransition(vnode.data.transition)
+  if (isUndef(data)) {
+    return
+  }
+
+  /* istanbul ignore if */
+  if (isDef(el._enterCb) || el.nodeType !== 1) {
+    return
+  }
+
+  const {
+    css,
+    type,
+    enterClass,
+    enterToClass,
+    enterActiveClass,
+    appearClass,
+    appearToClass,
+    appearActiveClass,
+    beforeEnter,
+    enter,
+    afterEnter,
+    enterCancelled,
+    beforeAppear,
+    appear,
+    afterAppear,
+    appearCancelled,
+    duration
+  } = data
+
+  // activeInstance will always be the <transition> component managing this
+  // transition. One edge case to check is when the <transition> is placed
+  // as the root node of a child component. In that case we need to check
+  // <transition>'s parent for appear check.
+  let context = activeInstance
+  let transitionNode = activeInstance.$vnode
+  while (transitionNode && transitionNode.parent) {
+    transitionNode = transitionNode.parent
+    context = transitionNode.context
+  }
+
+  const isAppear = !context._isMounted || !vnode.isRootInsert
+
+  if (isAppear && !appear && appear !== '') {
+    return
+  }
+
+  const startClass = isAppear && appearClass
+    ? appearClass
+    : enterClass
+  const activeClass = isAppear && appearActiveClass
+    ? appearActiveClass
+    : enterActiveClass
+  const toClass = isAppear && appearToClass
+    ? appearToClass
+    : enterToClass
+
+  const beforeEnterHook = isAppear
+    ? (beforeAppear || beforeEnter)
+    : beforeEnter
+  const enterHook = isAppear
+    ? (typeof appear === 'function' ? appear : enter)
+    : enter
+  const afterEnterHook = isAppear
+    ? (afterAppear || afterEnter)
+    : afterEnter
+  const enterCancelledHook = isAppear
+    ? (appearCancelled || enterCancelled)
+    : enterCancelled
+
+  const explicitEnterDuration: any = toNumber(
+    isObject(duration)
+      ? duration.enter
+      : duration
+  )
+
+  if (process.env.NODE_ENV !== 'production' && explicitEnterDuration != null) {
+    checkDuration(explicitEnterDuration, 'enter', vnode)
+  }
+
+  const expectsCSS = css !== false && !isIE9
+  const userWantsControl = getHookArgumentsLength(enterHook)
+
+  const cb = el._enterCb = once(() => {
+    if (expectsCSS) {
+      removeTransitionClass(el, toClass)
+      removeTransitionClass(el, activeClass)
+    }
+    if (cb.cancelled) {
+      if (expectsCSS) {
+        removeTransitionClass(el, startClass)
+      }
+      enterCancelledHook && enterCancelledHook(el)
+    } else {
+      afterEnterHook && afterEnterHook(el)
+    }
+    el._enterCb = null
+  })
+
+  if (!vnode.data.show) {
+    // remove pending leave element on enter by injecting an insert hook
+    mergeVNodeHook(vnode, 'insert', () => {
+      const parent = el.parentNode
+      const pendingNode = parent && parent._pending && parent._pending[vnode.key]
+      if (pendingNode &&
+        pendingNode.tag === vnode.tag &&
+        pendingNode.elm._leaveCb
+      ) {
+        pendingNode.elm._leaveCb()
+      }
+      enterHook && enterHook(el, cb)
+    })
+  }
+
+  // start enter transition
+  beforeEnterHook && beforeEnterHook(el)
+  if (expectsCSS) {
+    addTransitionClass(el, startClass)
+    addTransitionClass(el, activeClass)
+    nextFrame(() => {
+      removeTransitionClass(el, startClass)
+      if (!cb.cancelled) {
+        addTransitionClass(el, toClass)
+        if (!userWantsControl) {
+          if (isValidDuration(explicitEnterDuration)) {
+            setTimeout(cb, explicitEnterDuration)
+          } else {
+            whenTransitionEnds(el, type, cb)
+          }
+        }
+      }
+    })
+  }
+
+  if (vnode.data.show) {
+    toggleDisplay && toggleDisplay()
+    enterHook && enterHook(el, cb)
+  }
+
+  if (!expectsCSS && !userWantsControl) {
+    cb()
+  }
+}
+```
+
+`enter` 的代码很长，我们先分析其中的核心逻辑。
+
+- 解析过渡数据
+
+```js
+const data = resolveTransition(vnode.data.transition)
+  if (isUndef(data)) {
+    return
+}
+
+const {
+  css,
+  type,
+  enterClass,
+  enterToClass,
+  enterActiveClass,
+  appearClass,
+  appearToClass,
+  appearActiveClass,
+  beforeEnter,
+  enter,
+  afterEnter,
+  enterCancelled,
+  beforeAppear,
+  appear,
+  afterAppear,
+  appearCancelled,
+  duration
+} = data
+```
+
+从 `vnode.data.transition` 中解析出过渡相关的一些数据，`resolveTransition` 的定义在 `src/platforms/web/transition-util.js` 中：
+
+```js
+export function resolveTransition (def?: string | Object): ?Object {
+  if (!def) {
+    return
+  }
+  /* istanbul ignore else */
+  if (typeof def === 'object') {
+    const res = {}
+    if (def.css !== false) {
+      extend(res, autoCssTransition(def.name || 'v'))
+    }
+    extend(res, def)
+    return res
+  } else if (typeof def === 'string') {
+    return autoCssTransition(def)
+  }
+}
+
+const autoCssTransition: (name: string) => Object = cached(name => {
+  return {
+    enterClass: `${name}-enter`,
+    enterToClass: `${name}-enter-to`,
+    enterActiveClass: `${name}-enter-active`,
+    leaveClass: `${name}-leave`,
+    leaveToClass: `${name}-leave-to`,
+    leaveActiveClass: `${name}-leave-active`
+  }
+})
+```
+`resolveTransition` 会通过 `autoCssTransition` 处理 `name` 属性，生成一个用来描述各个阶段的 `Class` 名称的对象，扩展到 `def` 中并返回给 `data`，这样我们就可以从 `data` 中获取到过渡相关的所有数据。
+
+- 处理边界情况
+
+```js
+// activeInstance will always be the <transition> component managing this
+// transition. One edge case to check is when the <transition> is placed
+// as the root node of a child component. In that case we need to check
+// <transition>'s parent for appear check.
+let context = activeInstance
+let transitionNode = activeInstance.$vnode
+while (transitionNode && transitionNode.parent) {
+  transitionNode = transitionNode.parent
+  context = transitionNode.context
+}
+
+const isAppear = !context._isMounted || !vnode.isRootInsert
+
+if (isAppear && !appear && appear !== '') {
+  return
+}
+```
+
+这是为了处理当 `<transition>` 作为子组件的根节点，那么我们需要检查它的父组件作为 `appear` 的检查。`isAppear` 表示当前上下文实例还没有 `mounted`，第一次出现的时机。如果是第一次并且 `<transition>` 组件没有配置 `appear` 的话，直接返回。
+
+- 定义过渡类名、钩子函数和其它配置
+
+```js
+const startClass = isAppear && appearClass
+    ? appearClass
+    : enterClass
+const activeClass = isAppear && appearActiveClass
+  ? appearActiveClass
+  : enterActiveClass
+const toClass = isAppear && appearToClass
+  ? appearToClass
+  : enterToClass
+
+const beforeEnterHook = isAppear
+  ? (beforeAppear || beforeEnter)
+  : beforeEnter
+const enterHook = isAppear
+  ? (typeof appear === 'function' ? appear : enter)
+  : enter
+const afterEnterHook = isAppear
+  ? (afterAppear || afterEnter)
+  : afterEnter
+const enterCancelledHook = isAppear
+  ? (appearCancelled || enterCancelled)
+  : enterCancelled
+
+const explicitEnterDuration: any = toNumber(
+  isObject(duration)
+    ? duration.enter
+    : duration
+)
+
+if (process.env.NODE_ENV !== 'production' && explicitEnterDuration != null) {
+  checkDuration(explicitEnterDuration, 'enter', vnode)
+}
+
+const expectsCSS = css !== false && !isIE9
+const userWantsControl = getHookArgumentsLength(enterHook)
+
+const cb = el._enterCb = once(() => {
+  if (expectsCSS) {
+    removeTransitionClass(el, toClass)
+    removeTransitionClass(el, activeClass)
+  }
+  if (cb.cancelled) {
+    if (expectsCSS) {
+      removeTransitionClass(el, startClass)
+    }
+    enterCancelledHook && enterCancelledHook(el)
+  } else {
+    afterEnterHook && afterEnterHook(el)
+  }
+  el._enterCb = null
+})
+```
+
+对于过渡类名方面，`startClass` 定义进入过渡的开始状态，在元素被插入时生效，在下一个帧移除；`activeClass` 定义过渡的状态，在元素整个过渡过程中作用，在元素被插入时生效，在 `transition/animation` 完成之后移除；`toClass` 定义进入过渡的结束状态，在元素被插入一帧后生效 (与此同时 `startClass` 被删除)，在 `<transition>/animation` 完成之后移除。
+
+对于过渡钩子函数方面，`beforeEnterHook` 是过渡开始前执行的钩子函数，`enterHook` 是在元素插入后或者是 `v-show` 显示切换后执行的钩子函数。`afterEnterHook` 是在过渡动画执行完后的钩子函数。
+
+`explicitEnterDuration` 表示 enter 动画执行的时间。
+
+`expectsCSS` 表示过渡动画是受 CSS 的影响。
+
+`cb` 定义的是过渡完成执行的回调函数。
+
+- 合并 `insert` 钩子函数
+
+```js
+if (!vnode.data.show) {
+  // remove pending leave element on enter by injecting an insert hook
+  mergeVNodeHook(vnode, 'insert', () => {
+    const parent = el.parentNode
+    const pendingNode = parent && parent._pending && parent._pending[vnode.key]
+    if (pendingNode &&
+      pendingNode.tag === vnode.tag &&
+      pendingNode.elm._leaveCb
+    ) {
+      pendingNode.elm._leaveCb()
+    }
+    enterHook && enterHook(el, cb)
+  })
+}
+```
+
+`mergeVNodeHook` 的定义在 `src/core/vdom/helpers/merge-hook.js` 中：
+
+```js
+export function mergeVNodeHook (def: Object, hookKey: string, hook: Function) {
+  if (def instanceof VNode) {
+    def = def.data.hook || (def.data.hook = {})
+  }
+  let invoker
+  const oldHook = def[hookKey]
+
+  function wrappedHook () {
+    hook.apply(this, arguments)
+    // important: remove merged hook to ensure it's called only once
+    // and prevent memory leak
+    remove(invoker.fns, wrappedHook)
+  }
+
+  if (isUndef(oldHook)) {
+    // no existing hook
+    invoker = createFnInvoker([wrappedHook])
+  } else {
+    /* istanbul ignore if */
+    if (isDef(oldHook.fns) && isTrue(oldHook.merged)) {
+      // already a merged invoker
+      invoker = oldHook
+      invoker.fns.push(wrappedHook)
+    } else {
+      // existing plain hook
+      invoker = createFnInvoker([oldHook, wrappedHook])
+    }
+  }
+
+  invoker.merged = true
+  def[hookKey] = invoker
+}
+```
+`mergeVNodeHook` 的逻辑很简单，就是把 `hook` 函数合并到 `def.data.hook[hookey]` 中，生成新的 `invoker`，`createFnInvoker` 方法我们在分析事件章节的时候已经介绍过了。
+
+我们之前知道组件的 `vnode` 原本定义了 `init`、`prepatch`、`insert`、`destroy` 四个钩子函数，而 `mergeVNodeHook` 函数就是把一些新的钩子函数合并进来，例如在 `<transition>` 过程中合并的 `insert` 钩子函数，就会合并到组件 `vnode` 的 `insert` 钩子函数中，这样当组件插入后，就会执行我们定义的 `enterHook` 了。
+
+- 开始执行过渡动画
+
+```js
+// start enter transition
+beforeEnterHook && beforeEnterHook(el)
+if (expectsCSS) {
+  addTransitionClass(el, startClass)
+  addTransitionClass(el, activeClass)
+  nextFrame(() => {
+    removeTransitionClass(el, startClass)
+    if (!cb.cancelled) {
+      addTransitionClass(el, toClass)
+      if (!userWantsControl) {
+        if (isValidDuration(explicitEnterDuration)) {
+          setTimeout(cb, explicitEnterDuration)
+        } else {
+          whenTransitionEnds(el, type, cb)
+        }
+      }
+    }
+  })
+}
+```
+
+首先执行 `beforeEnterHook` 钩子函数，把当前元素的 DOM 节点 `el` 传入，然后判断 `expectsCSS`，如果为 true 则表明希望用 CSS 来控制动画，那么会执行 ` addTransitionClass(el, startClass)` 和 ` addTransitionClass(el, activeClass)`，它的定义在 `src/platforms/runtime/transition-util.js` 中：
+
+```js
+export function addTransitionClass (el: any, cls: string) {
+  const transitionClasses = el._transitionClasses || (el._transitionClasses = [])
+  if (transitionClasses.indexOf(cls) < 0) {
+    transitionClasses.push(cls)
+    addClass(el, cls)
+  }
+}
+```
+
+其实非常简单，就是给当前 DOM 元素 `el` 添加样式 `cls`，所以这里添加了 `startClass` 和 `activeClass`，在我们的例子中就是给 `p` 标签添加了 `fade-enter` 和 `fade-enter-active` 2 个样式。
+
+接下来执行了 `nextFrame`：
+
+```js
+const raf = inBrowser
+  ? window.requestAnimationFrame
+    ? window.requestAnimationFrame.bind(window)
+    : setTimeout
+  : fn => fn()
+
+export function nextFrame (fn: Function) {
+  raf(() => {
+    raf(fn)
+  })
+}
+```
+
+它就是一个简单的 `requestAnimationFrame` 的实现，它的参数 fn 会在下一帧执行，因此下一帧执行了 `removeTransitionClass(el, startClass)`：
+
+```js
+export function removeTransitionClass (el: any, cls: string) {
+  if (el._transitionClasses) {
+    remove(el._transitionClasses, cls)
+  }
+  removeClass(el, cls)
+}
+```
+
+把 `startClass` 移除，在我们的等例子中就是移除 `fade-enter` 样式。然后判断此时过渡没有被取消，则执行 `addTransitionClass(el, toClass)` 添加 `toClass`，在我们的例子中就是添加了 `fade-enter-to`。然后判断 `!userWantsControl`，也就是用户不通过 `enterHook` 钩子函数控制动画，这时候如果用户指定了 `explicitEnterDuration`，则延时这个时间执行 `cb`，否则通过 `whenTransitionEnds(el, type, cb)` 决定执行 `cb` 的时机：
+
+```js
+export function whenTransitionEnds (
+  el: Element,
+  expectedType: ?string,
+  cb: Function
+) {
+  const { type, timeout, propCount } = getTransitionInfo(el, expectedType)
+  if (!type) return cb()
+  const event: string = type === <transition> ? transitionEndEvent : animationEndEvent
+  let ended = 0
+  const end = () => {
+    el.removeEventListener(event, onEnd)
+    cb()
+  }
+  const onEnd = e => {
+    if (e.target === el) {
+      if (++ended >= propCount) {
+        end()
+      }
+    }
+  }
+  setTimeout(() => {
+    if (ended < propCount) {
+      end()
+    }
+  }, timeout + 1)
+  el.addEventListener(event, onEnd)
+}
+```
+`whenTransitionEnds` 的逻辑具体不深讲了，本质上就利用了过渡动画的结束事件来决定 `cb` 函数的执行。
+
+最后再回到 `cb` 函数：
+
+```js
+const cb = el._enterCb = once(() => {
+  if (expectsCSS) {
+    removeTransitionClass(el, toClass)
+    removeTransitionClass(el, activeClass)
+  }
+  if (cb.cancelled) {
+    if (expectsCSS) {
+      removeTransitionClass(el, startClass)
+    }
+    enterCancelledHook && enterCancelledHook(el)
+  } else {
+    afterEnterHook && afterEnterHook(el)
+  }
+  el._enterCb = null
+})
+```
+
+其实很简单，执行了 `removeTransitionClass(el, toClass)` 和 `removeTransitionClass(el, activeClass)` 把 `toClass` 和 `activeClass` 移除，然后判断如果有没有取消，如果取消则移除 `startClass` 并执行 `enterCancelledHook`，否则执行 `afterEnterHook(el)`。
+
+那么到这里，`entering` 的过程就介绍完了。
+ 
+### leaving
+
+与 `entering` 相对的就是 `leaving` 阶段了，`entering` 主要发生在组件插入后，而 `leaving` 主要发生在组件销毁前。
+
+```js
+export function leave (vnode: VNodeWithData, rm: Function) {
+  const el: any = vnode.elm
+
+  // call enter callback now
+  if (isDef(el._enterCb)) {
+    el._enterCb.cancelled = true
+    el._enterCb()
+  }
+
+  const data = resolveTransition(vnode.data.transition)
+  if (isUndef(data) || el.nodeType !== 1) {
+    return rm()
+  }
+
+  /* istanbul ignore if */
+  if (isDef(el._leaveCb)) {
+    return
+  }
+
+  const {
+    css,
+    type,
+    leaveClass,
+    leaveToClass,
+    leaveActiveClass,
+    beforeLeave,
+    leave,
+    afterLeave,
+    leaveCancelled,
+    delayLeave,
+    duration
+  } = data
+
+  const expectsCSS = css !== false && !isIE9
+  const userWantsControl = getHookArgumentsLength(leave)
+
+  const explicitLeaveDuration: any = toNumber(
+    isObject(duration)
+      ? duration.leave
+      : duration
+  )
+
+  if (process.env.NODE_ENV !== 'production' && isDef(explicitLeaveDuration)) {
+    checkDuration(explicitLeaveDuration, 'leave', vnode)
+  }
+
+  const cb = el._leaveCb = once(() => {
+    if (el.parentNode && el.parentNode._pending) {
+      el.parentNode._pending[vnode.key] = null
+    }
+    if (expectsCSS) {
+      removeTransitionClass(el, leaveToClass)
+      removeTransitionClass(el, leaveActiveClass)
+    }
+    if (cb.cancelled) {
+      if (expectsCSS) {
+        removeTransitionClass(el, leaveClass)
+      }
+      leaveCancelled && leaveCancelled(el)
+    } else {
+      rm()
+      afterLeave && afterLeave(el)
+    }
+    el._leaveCb = null
+  })
+
+  if (delayLeave) {
+    delayLeave(performLeave)
+  } else {
+    performLeave()
+  }
+
+  function performLeave () {
+    // the delayed leave may have already been cancelled
+    if (cb.cancelled) {
+      return
+    }
+    // record leaving element
+    if (!vnode.data.show) {
+      (el.parentNode._pending || (el.parentNode._pending = {}))[(vnode.key: any)] = vnode
+    }
+    beforeLeave && beforeLeave(el)
+    if (expectsCSS) {
+      addTransitionClass(el, leaveClass)
+      addTransitionClass(el, leaveActiveClass)
+      nextFrame(() => {
+        removeTransitionClass(el, leaveClass)
+        if (!cb.cancelled) {
+          addTransitionClass(el, leaveToClass)
+          if (!userWantsControl) {
+            if (isValidDuration(explicitLeaveDuration)) {
+              setTimeout(cb, explicitLeaveDuration)
+            } else {
+              whenTransitionEnds(el, type, cb)
+            }
+          }
+        }
+      })
+    }
+    leave && leave(el, cb)
+    if (!expectsCSS && !userWantsControl) {
+      cb()
+    }
+  }
+}
+```
+
+纵观 `leave` 的实现，和 `enter` 的实现几乎是一个镜像过程，不同的是从 `data` 中解析出来的是 `leave` 相关的样式类名和钩子函数。还有一点不同是可以配置 `delayLeave`，它是一个函数，可以延时执行 `leave` 的相关过渡动画，在 `leave` 动画执行完后，它会执行 `rm` 函数把节点从 DOM 中真正做移除。
+
+### 总结
+
+那么到此为止基本的 `<transition>` 过渡的实现分析完毕了，总结起来，Vue 的过渡实现分为以下几个步骤：
+
+1. 自动嗅探目标元素是否应用了 CSS 过渡或动画，如果是，在恰当的时机添加/删除 CSS 类名。
+
+2. 如果过渡组件提供了 JavaScript 钩子函数，这些钩子函数将在恰当的时机被调用。
+
+3. 如果没有找到 JavaScript 钩子并且也没有检测到 CSS 过渡/动画，DOM 操作 (插入/删除) 在下一帧中立即执行。
+
+所以真正执行动画的是我们写的 CSS 或者是 JavaScript 钩子函数，而 Vue 的 `<transition>` 只是帮我们很好地管理了这些 CSS 的添加/删除，以及钩子函数的执行时机。
+
+## 6.7 transition-group
+
+前一节我们介绍了 `<transiiton>` 组件的实现原理，它只能针对单一元素实现过渡效果。我们做前端开发经常会遇到列表的需求，我们对列表元素进行添加和删除，有时候也希望有过渡效果，Vue.js 提供了 `<transition-group>` 组件，很好地帮助我们实现了列表的过渡效果。那么接下来我们就来分析一下它的实现原理。
+
+为了更直观，我们也是通过一个示例来说明：
+
+```js
+let vm = new Vue({
+  el: '#app',
+  template: '<div id="list-complete-demo" class="demo">' +
+  '<button v-on:click="add">Add</button>' +
+  '<button v-on:click="remove">Remove</button>' +
+  '<transition-group name="list-complete" tag="p">' +
+  '<span v-for="item in items" v-bind:key="item" class="list-complete-item">' +
+  '{{ item }}' +
+  '</span>' +
+  '</transition-group>' +
+  '</div>',
+  data: {
+    items: [1, 2, 3, 4, 5, 6, 7, 8, 9],
+    nextNum: 10
+  },
+  methods: {
+    randomIndex: function () {
+      return Math.floor(Math.random() * this.items.length)
+    },
+    add: function () {
+      this.items.splice(this.randomIndex(), 0, this.nextNum++)
+    },
+    remove: function () {
+      this.items.splice(this.randomIndex(), 1)
+    }
+  }
+})
+```
+
+```css
+ .list-complete-item {
+  display: inline-block;
+  margin-right: 10px;
+}
+.list-complete-move {
+  transition: all 1s;
+}
+.list-complete-enter, .list-complete-leave-to {
+  opacity: 0;
+  transform: translateY(30px);
+}
+.list-complete-enter-active {
+  transition: all 1s;
+}
+.list-complete-leave-active {
+  transition: all 1s;
+  position: absolute;
+}
+```
+
+这个示例初始会展现 1-9 十个数字，当我们点击 `Add` 按钮时，会生成 `nextNum` 并随机在当前数列表中插入；当我们点击 `Remove` 按钮时，会随机删除掉一个数。我们会发现在数添加删除的过程中在列表中会有过渡动画，这就是 `<transition-group>` 组件配合我们定义的 CSS 产生的效果。
+
+我们首先还是来分析 `<transtion-group>` 组件的实现，它的定义在 `src/platforms/web/runtime/components/transitions.js` 中：
+
+```js
+const props = extend({
+  tag: String,
+  moveClass: String
+}, transitionProps)
+
+delete props.mode
+
+export default {
+  props,
+
+  beforeMount () {
+    const update = this._update
+    this._update = (vnode, hydrating) => {
+      // force removing pass
+      this.__patch__(
+        this._vnode,
+        this.kept,
+        false, // hydrating
+        true // removeOnly (!important, avoids unnecessary moves)
+      )
+      this._vnode = this.kept
+      update.call(this, vnode, hydrating)
+    }
+  },
+
+  render (h: Function) {
+    const tag: string = this.tag || this.$vnode.data.tag || 'span'
+    const map: Object = Object.create(null)
+    const prevChildren: Array<VNode> = this.prevChildren = this.children
+    const rawChildren: Array<VNode> = this.$slots.default || []
+    const children: Array<VNode> = this.children = []
+    const transitionData: Object = extractTransitionData(this)
+
+    for (let i = 0; i < rawChildren.length; i++) {
+      const c: VNode = rawChildren[i]
+      if (c.tag) {
+        if (c.key != null && String(c.key).indexOf('__vlist') !== 0) {
+          children.push(c)
+          map[c.key] = c
+          ;(c.data || (c.data = {})).transition = transitionData
+        } else if (process.env.NODE_ENV !== 'production') {
+          const opts: ?VNodeComponentOptions = c.componentOptions
+          const name: string = opts ? (opts.Ctor.options.name || opts.tag || '') : c.tag
+          warn(`<transition-group> children must be keyed: <${name}>`)
+        }
+      }
+    }
+
+    if (prevChildren) {
+      const kept: Array<VNode> = []
+      const removed: Array<VNode> = []
+      for (let i = 0; i < prevChildren.length; i++) {
+        const c: VNode = prevChildren[i]
+        c.data.transition = transitionData
+        c.data.pos = c.elm.getBoundingClientRect()
+        if (map[c.key]) {
+          kept.push(c)
+        } else {
+          removed.push(c)
+        }
+      }
+      this.kept = h(tag, null, kept)
+      this.removed = removed
+    }
+
+    return h(tag, null, children)
+  },
+
+  updated () {
+    const children: Array<VNode> = this.prevChildren
+    const moveClass: string = this.moveClass || ((this.name || 'v') + '-move')
+    if (!children.length || !this.hasMove(children[0].elm, moveClass)) {
+      return
+    }
+
+    // we divide the work into three loops to avoid mixing DOM reads and writes
+    // in each iteration - which helps prevent layout thrashing.
+    children.forEach(callPendingCbs)
+    children.forEach(recordPosition)
+    children.forEach(applyTranslation)
+
+    // force reflow to put everything in position
+    // assign to this to avoid being removed in tree-shaking
+    // $flow-disable-line
+    this._reflow = document.body.offsetHeight
+
+    children.forEach((c: VNode) => {
+      if (c.data.moved) {
+        var el: any = c.elm
+        var s: any = el.style
+        addTransitionClass(el, moveClass)
+        s.transform = s.WebkitTransform = s.transitionDuration = ''
+        el.addEventListener(transitionEndEvent, el._moveCb = function cb (e) {
+          if (!e || /transform$/.test(e.propertyName)) {
+            el.removeEventListener(transitionEndEvent, cb)
+            el._moveCb = null
+            removeTransitionClass(el, moveClass)
+          }
+        })
+      }
+    })
+  },
+
+  methods: {
+    hasMove (el: any, moveClass: string): boolean {
+      /* istanbul ignore if */
+      if (!hasTransition) {
+        return false
+      }
+      /* istanbul ignore if */
+      if (this._hasMove) {
+        return this._hasMove
+      }
+      // Detect whether an element with the move class applied has
+      // CSS transitions. Since the element may be inside an entering
+      // transition at this very moment, we make a clone of it and remove
+      // all other transition classes applied to ensure only the move class
+      // is applied.
+      const clone: HTMLElement = el.cloneNode()
+      if (el._transitionClasses) {
+        el._transitionClasses.forEach((cls: string) => { removeClass(clone, cls) })
+      }
+      addClass(clone, moveClass)
+      clone.style.display = 'none'
+      this.$el.appendChild(clone)
+      const info: Object = getTransitionInfo(clone)
+      this.$el.removeChild(clone)
+      return (this._hasMove = info.hasTransform)
+    }
+  }
+}
+```
+
+### render 函数
+
+`<transition-group>` 组件也是由 `render` 函数渲染生成 `vnode`，接下来我们先分析 `render` 的实现。
+
+- 定义一些变量
+ 
+```js
+const tag: string = this.tag || this.$vnode.data.tag || 'span'
+const map: Object = Object.create(null)
+const prevChildren: Array<VNode> = this.prevChildren = this.children
+const rawChildren: Array<VNode> = this.$slots.default || []
+const children: Array<VNode> = this.children = []
+const transitionData: Object = extractTransitionData(this)
+```
+不同于 `<transition>` 组件，`<transition-group>` 组件非抽象组件，它会渲染成一个真实元素，默认 `tag` 是 `span`。 `prevChildren` 用来存储上一次的子节点；`children` 用来存储当前的子节点；`rawChildren` 表示 `<transtition-group>` 包裹的原始子节点；`transtionData` 是从 `<transtition-group>` 组件上提取出来的一些渲染数据，这点和 `<transition>` 组件的实现是一样的。
+
+- 遍历 `rawChidren`，初始化 `children`
+
+```js
+for (let i = 0; i < rawChildren.length; i++) {
+  const c: VNode = rawChildren[i]
+  if (c.tag) {
+    if (c.key != null && String(c.key).indexOf('__vlist') !== 0) {
+      children.push(c)
+      map[c.key] = c
+      ;(c.data || (c.data = {})).transition = transitionData
+    } else if (process.env.NODE_ENV !== 'production') {
+      const opts: ?VNodeComponentOptions = c.componentOptions
+      const name: string = opts ? (opts.Ctor.options.name || opts.tag || '') : c.tag
+      warn(`<transition-group> children must be keyed: <${name}>`)
+    }
+  }
+}
+```
+
+其实就是对 `rawChildren` 遍历，拿到每个 `vnode`，然后会判断每个 `vnode` 是否设置了 `key`，这个是 `<transition-group>` 对列表元素的要求。然后把 `vnode` 添加到 `children` 中，然后把刚刚提取的过渡数据 `transitionData` 添加的 `vnode.data.transition` 中，这点很关键，只有这样才能实现列表中单个元素的过渡动画。
+
+- 处理 prevChildren
+
+```js
+if (prevChildren) {
+  const kept: Array<VNode> = []
+  const removed: Array<VNode> = []
+  for (let i = 0; i < prevChildren.length; i++) {
+    const c: VNode = prevChildren[i]
+    c.data.transition = transitionData
+    c.data.pos = c.elm.getBoundingClientRect()
+    if (map[c.key]) {
+      kept.push(c)
+    } else {
+      removed.push(c)
+    }
+  }
+  this.kept = h(tag, null, kept)
+  this.removed = removed
+}
+
+return h(tag, null, children)
+```
+
+当有 `prevChildren` 的时候，我们会对它做遍历，获取到每个 `vnode`，然后把 `transitionData` 赋值到 `vnode.data.transition`，这个是为了当它在 `enter` 和 `leave` 的钩子函数中有过渡动画，我们在上节介绍 `transition` 的实现中说过。接着又调用了原生 DOM 的 `getBoundingClientRect` 方法获取到原生 DOM 的位置信息，记录到 `vnode.data.pos` 中，然后判断一下 `vnode.key` 是否在 `map` 中，如果在则放入 `kept` 中，否则表示该节点已被删除，放入 `removed` 中，然后通过执行 `h(tag, null, kept)` 渲染后放入 `this.kept` 中，把 `removed` 用 `this.removed` 保存。最后整个 `render` 函数通过 `h(tag, null, children)` 生成渲染 `vnode`。
+
+如果 `transition-group` 只实现了这个 `render` 函数，那么每次插入和删除的元素的缓动动画是可以实现的，在我们的例子中，当新增一个元素，它的插入的过渡动画是有的，但是剩余元素平移的过渡效果是出不来的，所以接下来我们来分析 `<transition-group>` 组件是如何实现剩余元素平移的过渡效果的。
+
+### move 过渡实现
+
+其实我们在实现元素的插入和删除，无非就是操作数据，控制它们的添加和删除。比如我们新增数据的时候，会添加一条数据，除了重新执行 `render` 函数渲染新的节点外，还要触发 `updated` 钩子函数，接着我们就来分析 `updated` 钩子函数的实现。
+
+- 判断子元素是否定义 `move` 相关样式
+
+```js
+const children: Array<VNode> = this.prevChildren
+const moveClass: string = this.moveClass || ((this.name || 'v') + '-move')
+if (!children.length || !this.hasMove(children[0].elm, moveClass)) {
+  return
+}
+
+hasMove (el: any, moveClass: string): boolean {
+  /* istanbul ignore if */
+  if (!hasTransition) {
+    return false
+  }
+  /* istanbul ignore if */
+  if (this._hasMove) {
+    return this._hasMove
+  }
+  // Detect whether an element with the move class applied has
+  // CSS transitions. Since the element may be inside an entering
+  // transition at this very moment, we make a clone of it and remove
+  // all other transition classes applied to ensure only the move class
+  // is applied.
+  const clone: HTMLElement = el.cloneNode()
+  if (el._transitionClasses) {
+    el._transitionClasses.forEach((cls: string) => { removeClass(clone, cls) })
+  }
+  addClass(clone, moveClass)
+  clone.style.display = 'none'
+  this.$el.appendChild(clone)
+  const info: Object = getTransitionInfo(clone)
+  this.$el.removeChild(clone)
+  return (this._hasMove = info.hasTransform)
+}
+```
+核心就是 `hasMove` 的判断，首先克隆一个 DOM 节点，然后为了避免影响，移除它的所有其他的过渡 `Class`；接着添加了 `moveClass` 样式，设置 `display` 为 `none`，添加到组件根节点上；接下来通过 `getTransitionInfo` 获取它的一些缓动相关的信息，这个函数在上一节我们也介绍过，然后从组件根节点上删除这个克隆节点，并通过判断 `info.hasTransform` 来判断 `hasMove`，在我们的例子中，该值为 `true`。
+
+- 子节点预处理
+
+```js
+children.forEach(callPendingCbs)
+children.forEach(recordPosition)
+children.forEach(applyTranslation)
+```
+
+对 `children` 做了 3 轮循环，分别做了如下一些处理：
+
+```js
+function callPendingCbs (c: VNode) {
+  if (c.elm._moveCb) {
+    c.elm._moveCb()
+  }
+  if (c.elm._enterCb) {
+    c.elm._enterCb()
+  }
+}
+
+function recordPosition (c: VNode) {
+  c.data.newPos = c.elm.getBoundingClientRect()
+}
+
+function applyTranslation (c: VNode) {
+  const oldPos = c.data.pos
+  const newPos = c.data.newPos
+  const dx = oldPos.left - newPos.left
+  const dy = oldPos.top - newPos.top
+  if (dx || dy) {
+    c.data.moved = true
+    const s = c.elm.style
+    s.transform = s.WebkitTransform = `translate(${dx}px,${dy}px)`
+    s.transitionDuration = '0s'
+  }
+}
+```
+
+`callPendingCbs` 方法是在前一个过渡动画没执行完又再次执行到该方法的时候，会提前执行 `_moveCb` 和 `_enterCb`。
+
+`recordPosition` 的作用是记录节点的新位置。
+
+`applyTranslation` 的作用是先计算节点新位置和旧位置的差值，如果差值不为 0，则说明这些节点是需要移动的，所以记录 `vnode.data.moved` 为 true，并且通过设置 `transform` 把需要移动的节点的位置又偏移到之前的旧位置，目的是为了做 `move` 缓动做准备。
+
+- 遍历子元素实现 move 过渡
+
+```js
+this._reflow = document.body.offsetHeight
+
+children.forEach((c: VNode) => {
+  if (c.data.moved) {
+    var el: any = c.elm
+    var s: any = el.style
+    addTransitionClass(el, moveClass)
+    s.transform = s.WebkitTransform = s.transitionDuration = ''
+    el.addEventListener(transitionEndEvent, el._moveCb = function cb (e) {
+      if (!e || /transform$/.test(e.propertyName)) {
+        el.removeEventListener(transitionEndEvent, cb)
+        el._moveCb = null
+        removeTransitionClass(el, moveClass)
+      }
+    })
+  }
+})
+```
+
+首先通过 `document.body.offsetHeight` 强制触发浏览器重绘，接着再次对 `children` 遍历，先给子节点添加 `moveClass`，在我们的例子中，`moveClass` 定义了 `transition: all 1s;` 缓动；接着把子节点的 `style.transform` 设置为空，由于我们前面把这些节点偏移到之前的旧位置，所以它就会从旧位置按照 `1s` 的缓动时间过渡偏移到它的当前目标位置，这样就实现了 move 的过渡动画。并且接下来会监听 `transitionEndEvent` 过渡结束的事件，做一些清理的操作。
+
+另外，由于虚拟 DOM 的子元素更新算法是不稳定的，它不能保证被移除元素的相对位置，所以我们强制 `<transition-group>` 组件更新子节点通过 2 个步骤：第一步我们移除需要移除的 `vnode`，同时触发它们的 `leaving` 过渡；第二步我们需要把插入和移动的节点达到它们的最终态，同时还要保证移除的节点保留在应该的位置，而这个是通过 `beforeMount` 钩子函数来实现的：
+
+```js
+beforeMount () {
+  const update = this._update
+  this._update = (vnode, hydrating) => {
+    // force removing pass
+    this.__patch__(
+      this._vnode,
+      this.kept,
+      false, // hydrating
+      true // removeOnly (!important, avoids unnecessary moves)
+    )
+    this._vnode = this.kept
+    update.call(this, vnode, hydrating)
+  }
+}
+```
+
+通过把 `__patch__` 方法的第四个参数 `removeOnly` 设置为 true，这样在 `updateChildren` 阶段，是不会移动 `vnode` 节点的。
+
+### 总结
+
+那么到此，`<transtion-group>` 组件的实现原理就介绍完毕了，它和 `<transition>` 组件相比，实现了列表的过渡，以及它会渲染成真实的元素。当我们去修改列表的数据的时候，如果是添加或者删除数据，则会触发相应元素本身的过渡动画，这点和 `<transition>` 组件实现效果一样，除此之外 `<transtion-group>` 还实现了 move 的过渡效果，让我们的列表过渡动画更加丰富。
 
 # 第七章：Vue-Router
 
