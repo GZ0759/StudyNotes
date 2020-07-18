@@ -234,7 +234,6 @@ Vue.js 源码是基于 [Rollup](https://github.com/rollup/rollup) 构建的，�
     "build:weex": "npm run build -- weex"
   }
 }
- 
 ```
 
 这里总共有 3 条命令，作用都是构建 Vue.js，后面 2 条是在第一条命令的基础上，添加一些环境参数。
@@ -575,6 +574,7 @@ Vue.prototype.$mount = function (
 export default Vue
 
 ```
+
 这里关键的代码是 `import Vue from 'core/index'`，之后的逻辑都是对 Vue 这个对象做一些扩展，可以先不用看，我们来看一下真正初始化 Vue 的地方，在 `src/core/index.js` 中：
 
 ```js
@@ -640,7 +640,7 @@ export default Vue
 
 有些同学看到这不禁想问，为何 Vue 不用 ES6 的 Class 去实现呢？我们往后看这里有很多 `xxxMixin` 的函数调用，并把 `Vue` 当参数传入，它们的功能都是给 Vue 的 prototype 上扩展一些方法（这里具体的细节会在之后的文章介绍，这里不展开），Vue 按功能把这些扩展分散到多个模块中去实现，而不是在一个模块里实现所有，这种方式是用 Class 难以实现的。这么做的好处是非常方便代码的维护和管理，这种编程技巧也非常值得我们去学习。
 
-**`initGlobalAPI`**
+**initGlobalAPI**
 
 Vue.js 在整个初始化过程中，除了给它的原型 prototype 上扩展方法，还会给 `Vue` 这个对象本身扩展全局的静态方法，它的定义在 `src/core/global-api/index.js` 中：
 
@@ -689,6 +689,7 @@ export function initGlobalAPI (Vue: GlobalAPI) {
   initAssetRegisters(Vue)
 }
 ```
+
 这里就是在 Vue 上扩展的一些全局方法的定义，Vue 官网中关于全局 API 都可以在这里找到，这里不会介绍细节，会在之后的章节我们具体介绍到某个 API 的时候会详细介绍。有一点要注意的是，`Vue.util` 暴露的方法最好不要依赖，因为它可能经常会发生变化，是不稳定的。
 
 ### 1.4.2 总结
