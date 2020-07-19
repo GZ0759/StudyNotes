@@ -1,6 +1,6 @@
-> 《Vue.js 源码揭秘》视频课程的辅助教材
-> 作者：黄轶
-> [原文地址](https://github.com/ustbhuangyi/vue-analysis)
+> 《Vue.js 源码揭秘》视频课程的辅助教材  
+> 作者：黄轶  
+> [原文地址](https://github.com/ustbhuangyi/vue-analysis)  
 
 # 第一章：准备工作
 
@@ -737,6 +737,7 @@ function Vue (options) {
   this._init(options)
 }
 ```
+
 可以看到 `Vue` 只能通过 new 关键字初始化，然后会调用 `this._init` 方法， 该方法在 `src/core/instance/init.js` 中定义。
 
 ```js
@@ -880,6 +881,7 @@ Vue.prototype.$mount = function (
   return mount.call(this, el, hydrating)
 }
 ```
+
 这段代码首先缓存了原型上的 `$mount` 方法，再重新定义该方法，我们先来分析这段代码。首先，它对 `el` 做了限制，Vue 不能挂载在 `body`、`html` 这样的根节点上。接下来的是很关键的逻辑 —— 如果没有定义 `render` 方法，则会把 `el` 或者 `template` 字符串转换成 `render` 方法。这里我们要牢记，在 Vue 2.0 版本中，所有 Vue 的组件的渲染最终都需要 `render` 方法，无论我们是用单文件 .vue 方式开发组件，还是写了 `el` 或者 `template` 属性，最终都会转换成 `render` 方法，那么这个过程是 Vue 的一个“在线编译”的过程，它是调用 `compileToFunctions` 方法实现的，编译过程我们之后会介绍。最后，调用原先原型上的 `$mount` 方法挂载。
 
 原先原型上的 `$mount` 方法在 `src/platform/web/runtime/index.js` 中定义，之所以这么设计完全是为了复用，因为它是可以被 `runtime only` 版本的 Vue 直接使用的。
@@ -974,6 +976,7 @@ export function mountComponent (
   return vm
 }
 ```
+
 从上面的代码可以看到，`mountComponent` 核心就是先实例化一个渲染`Watcher`，在它的回调函数中会调用 `updateComponent` 方法，在此方法中调用 `vm._render` 方法先生成虚拟 Node，最终调用 `vm._update` 更新 DOM。
 
 `Watcher` 在这里起到两个作用，一个是初始化的时候会执行回调函数，另一个是当 vm 实例中的监测的数据发生变化的时候执行回调函数，这块儿我们会在之后的章节中介绍。
