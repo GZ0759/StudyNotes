@@ -1922,6 +1922,7 @@ var app = new Vue({
   render: h => h(App)
 })
 ```
+
 这段代码相信很多同学都很熟悉，它和我们上一章相同的点也是通过 `render` 函数去渲染的，不同的这次通过 `createElement` 传的参数是一个组件而不是一个原生的标签，那么接下来我们就开始分析这一过程。
 
 ## 3.2 createComponent
@@ -2290,6 +2291,7 @@ function mergeHook (f1: any, f2: any): Function {
   return merged
 }
 ```
+
 整个 `installComponentHooks` 的过程就是把 `componentVNodeHooks` 的钩子函数合并到 `data.hook` 中，在 VNode 执行 `patch` 的过程中执行相关的钩子函数，具体的执行我们稍后在介绍 `patch` 过程中会详细介绍。这里要注意的是合并策略，在合并过程中，如果某个时机的钩子已经存在 `data.hook` 中，那么通过执行 `mergeHook` 函数做合并，这个逻辑很简单，就是在最终执行的时候，依次执行这两个钩子函数即可。
 
 ### 3.2.3 实例化 VNode
@@ -2480,6 +2482,7 @@ if (vm.$options.el) {
    vm.$mount(vm.$options.el)
 }
 ```
+
 由于组件初始化的时候是不传 el 的，因此组件是自己接管了 `$mount` 的过程，这个过程的主要流程在上一章介绍过了，回到组件 `init` 的过程，`componentVNodeHooks` 的 `init` 钩子函数，在完成实例化的 `_init` 后，接着会执行 `child.$mount(hydrating ? vnode.elm : undefined, hydrating)` 。这里 `hydrating` 为 true 一般是服务端渲染的情况，我们只考虑客户端渲染，所以这里 `$mount` 相当于执行 `child.$mount(undefined, false)`，它最终会调用 `mountComponent` 方法，进而执行 `vm._render()` 方法：
 
 ```js
@@ -2656,6 +2659,7 @@ function createElm (
   }
 }
 ```
+
 注意，这里我们传入的 `vnode` 是组件渲染的 `vnode`，也就是我们之前说的 `vm._vnode`，如果组件的根节点是个普通元素，那么 `vm._vnode` 也是普通的 `vnode`，这里 `createComponent(vnode, insertedVnodeQueue, parentElm, refElm)` 的返回值是 false。接下来的过程就和我们上一章一样了，先创建一个父节点占位符，然后再遍历所有子 VNode 递归调用 `createElm`，在遍历的过程中，如果遇到子 VNode 是一个组件的 VNode，则重复本节开始的过程，这样通过一个递归的方式就可以完整地构建了整个组件树。
 
 由于我们这个时候传入的 `parentElm` 是空，所以对组件的插入，在 `createComponent` 有这么一段逻辑：
@@ -3230,6 +3234,7 @@ export function mountComponent (
 }
 
 ```
+
 注意这里有个判断，也就是在组件已经 `mounted` 之后，才会去调用这个钩子函数。
 
 `update` 的执行时机是在`flushSchedulerQueue` 函数调用的时候，它的定义在 `src/core/observer/scheduler.js` 中：
@@ -4520,7 +4525,6 @@ export function popTarget () {
 
 `Dep` 实际上就是对 `Watcher` 的一种管理，`Dep`  脱离 `Watcher` 单独存在是没有意义的，为了完整地讲清楚依赖收集过程，我们有必要看一下 `Watcher` 的一些相关实现，它的定义在 `src/core/observer/watcher.js` 中：
 
-
 ### 4.3.2 Watcher
 
 ```js
@@ -5333,7 +5337,6 @@ getData(res).then(()=>{
 ```
 
 Vue.js 提供了 2 种调用 `nextTick` 的方式，一种是全局 API `Vue.nextTick`，一种是实例上的方法 `vm.$nextTick`，无论我们使用哪一种，最后都是调用 `next-tick.js` 中实现的 `nextTick` 方法。
-
 
 ## 4.6 检测变化的注意事项
 
