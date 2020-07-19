@@ -2702,7 +2702,7 @@ JavaScript 引擎同一时刻只能执行一个代码块，所以需要跟踪即
 
 ### 11.1.1 事件模型
 
-用户点击按钮或按下键盘上的按键会触发类似 onclick 这样的事件，它会向任务队列添加一个新任务来响应用户的操作，这是 JavaScript 中最基础的异步编程形式，直到事件触发时才执行事件处理程序，且执行时上下文与定义时的相同 。
+用户点击按钮或按下键盘上的按键会触发类似 onclick 这样的事件，它会向任务队列添加一个新任务来响应用户的操作，这是 JavaScript 中最基础的异步编程形式，直到事件触发时才执行事件处理程序，且执行时上下文与定义时的相同。
 
 ```js
 let button = document.getElementById("my-btn");
@@ -2711,7 +2711,9 @@ button.onclick = function (event) {
 };
 ```
 
-事件模型适用于处理简单的交互，然而将多个独立的异步调用连接在一起会使程序更加复杂，因为必须跟踪每个事件的事件目标（如示例中的 button ）。此外，必须要保证事件在添加事件处理程序之后才被触发。
+在这段代码中，单击 button 后会执行 `console.log("Clicked")`，赋值给 onclick 的函数被添加到任务队列中，只有当前面的任务都完成后它才会被执行。
+
+事件模型适用于处理简单的交互，然而将多个独立的异步调用连接在一起会使程序更加复杂，因为必须跟踪每个事件的事件目标（如示例中的 button ）。此外，必须要保证事件在添加事件处理程序之后才被触发。举个例子，如果先单击 button 再给 onclick 赋值，则任何事情都不会发生。
 
 ### 11.1.2 回调模式
 
@@ -2728,7 +2730,7 @@ readFile("example.txt", function (err, contents) {
 console.log("Hi!");
 ```
 
-调用 `readFile()` 函数后，`console.log("Hi")`语句立即执行并输出“Hi” ；当 `readFile()` 结束执行时，会向任务队列的末尾添加一个新任务，该任务包含回调函数及相应的参数，当队列前面所有的任务完成后才执行该任务，并最终执行 `console.log(contents)`输出所有内容 。
+此示例使用 Node.js 传统的错误优先（error-first）回调风格。调用 `readFile()` 函数后，`console.log("Hi")`语句立即执行并输出“Hi” ；当 `readFile()` 结束执行时，会向任务队列的末尾添加一个新任务，该任务包含回调函数及相应的参数，当队列前面所有的任务完成后才执行该任务，并最终执行 `console.log(contents)`输出所有内容 。
 
 回调模式比事件模型更灵活，因为相比之下，通过回调模式链接多个调用更容易。
 
@@ -2778,6 +2780,8 @@ method1(function (err, result) {
 });
 ```
 
+像示例中这样嵌套多个方法调用，会创建一堆难以理解和调试的代码。如果想实现更复杂的功能，回调函数的局限性同样也会显现出来，例如，并行执行两个异步操作，当两个操作都结束时才通知；或者同时进行两个异步操作，只取优先完成的操作结果。在这种情况下，需要跟踪多个回调函数并清理这些操作，而 Promise 就能非常好地改进这样的情况。
+
 ## 11.2 Promise 的基础知识
 
 Promise 相当于异步操作结果的占位符，它不会去订阅一个事件，也不会传递一个回调函数给目标函数，而是让函数返回一个 Promise 对象，未来对这个对象的操作完全取决于 Promise 的生命周期。
@@ -2797,6 +2801,8 @@ let promise = readFile("example.txt");
 内部属性`[[PromiseState]]`被用来表示 Promise 的 3 种状态："pending", "fulfilled", 和 "rejected"。这个属性不暴露在 Promise 对象上，所以不能以编程的方式检测 Promise 的状态，只有当 Promise 的状态改变时，通过`then()`方法来采取特定的行动。
 
 所有 Promise 都有`then()`方法，它接受两个参数：第一个是当 Promise 的状态变为 fulfilled 时要调用的函数，与异步操作相关的附加数据都会传递给这个完成函数（fulfillment function）；第二个是当 Promise 的状态变为 rejected 时要调用的函数，其与完成时调用的函数类似，所有与失败状态相关的附加数据都会传递给这个拒绝函数（rejection function）。
+
+> 如果一个对象实现了上诉的 `then()` 方法，那这个对象我们称之为 thenable 对象。所有的 Promise 都是 thenable 对象，但并非所有的 thenable 对象都是 Promise。
 
 `then()`的两个参数都是可选的，所以可以按照任意组合的方式来监听 Promise，执行完成或被拒绝都会被响应。
 
@@ -2840,17 +2846,34 @@ promise.then(null, function (err) {
 });
 ```
 
-`then()`方法和 `catch()`方法一起使用才能更好地处理异步操作结果。这套体系能够清楚地指明操作结果是成功还是失败，比事件和回调函数更好用。如果使用事件，在遇到错误时不会主动触发；如果使用回调函数，则必须要记得每
-次都检查错误参数。你要知道，如果不给 Promise 添加拒绝处理程序，那所有失败就自动被忽略了，所以一定要添加拒绝处理程序，即使只在函数内部记录失败的结果也行。
+`then()`方法和 `catch()`方法一起使用才能更好地处理异步操作结果。这套体系能够清楚地指明操作结果是成功还是失败，比事件和回调函数更好用。如果使用事件，在遇到错误时不会主动触发；如果使用回调函数，则必须要记得每次都检查错误参数。你要知道，如果不给 Promise 添加拒绝处理程序，那所有失败就自动被忽略了，所以一定要添加拒绝处理程序，即使只在函数内部记录失败的结果也行。
 
-如果一个 Promise 处于己处理状态，在这之后添加到任务队列中的处理程序仍将执行。所以无论何时你都可以添加新的完成处理程序或拒绝处理程序，同时也可以保证这些处理程序能被调用。举个例子 ：
+如果一个 Promise 处于己处理状态，在这之后添加到任务队列中的处理程序仍将执行。所以无论何时你都可以添加新的完成处理程序或拒绝处理程序，同时也可以保证这些处理程序能被调用。举个例子：
+
+```js
+let promise = readFile("example.txt");
+
+// 最初的完成处理程序
+promise.then(function(contents) {
+  console.log(contents);
+
+  // 现在又添加一个
+  promise.then(function(contents) {
+    console.log(contents);
+  });
+});
+```
+
+在这段代码中，一个完成处理程序被调用时向同一个 Promise 添加了另一个完成处理程序，此时这个 Promise 已经完成，所以新的处理程序会被添加到任务队列中，当前面的任务完成后其才被调用。这对拒绝处理程序也同样使用。
+
+> 每次调用 `then()` 方法或 `catch()` 方法都会创建一个新任务，当 Promise 被解决（resolved）时执行。这些任务最终会被加入到一个为 Promise 量身定制的独立队列中，这个任务队列的具体细节对于理解如何使用 Promise 而言不重要，通常只要理解人物队列是如何运行的就可以了。
 
 ### 11.2.2 创建未完成的 Promise
 
 用 Promise 构造函数可以创建新的 Promise，构造函数只接受一个参数：包含初始化 Promise 代码的执行器（executor）函数。执行器接受两个参数，分别是 `resolve()` 函数和 `reject()` 函数。执行器成功完成时调用 `resolve()` 函数，反之，失败时则调用 `reject()` 函数。
 
 ```js
-// Node.js example
+// Node.js 示例
 let fs = require("fs");
 function readFile(filename) {
   return new Promise(function (resolve, reject) {
@@ -2882,21 +2905,24 @@ promise.then(
 );
 ```
 
-在执行器中，无论是调用 `resolve()` 还是`reject()`，都会向任务队列中添加一个任务来解决这个 Promise。像`setTimeout()`或`setInterval()`函数一样，这种是名为任务编排的过程。当编排任务时，会向任务队列中添加一个新任务，并明确指定将任务延后执行。
+在这个示例中，用 Promise 包裹了一个原生 Node.js 的 `fs.readFile()` 异步调用。如果失败，执行器向 `reject()` 函数传递错误对象；如果成功，执行器想 `resolve()` 函数传递文件内容。
+
+要记住，`readFile()`方法被调用时执行器会立刻执行，在执行器中，无论是调用 `resolve()` 还是`reject()`，都会向任务队列中添加一个任务来解决这个 Promise。像`setTimeout()`或`setInterval()`函数一样，这种是名为任务编排（job scheduling）的过程。当编排任务时，会向任务队列中添加一个新任务，并明确指定将任务延后执行。例如，使用 `setTimeout()` 函数可以指定将任务添加到队列前的延时。
 
 ```js
 // 500ms 之后将这个函数添加到任务队列
 setTimeout(function () {
   console.log("Timeout");
 }, 500);
-
 console.log("Hi!");
 
 // Hi!
 // Timeout
 ```
 
-Promise 具有类似的工作原理， Promise 的执行器会立即执行，然后才执行后续流程中的代码。调用 `resolve()`后回触发一个异步操作，传入`then()`和`catch()`方法的函数会被添加到任务队列中并异步执行。请注意，即使在代码中`then()`调用位于`console.log()`之前，但其与执行器不同，它并没有立即执行。这是因为，完成处理程序和拒绝程序总是在执行器完成后被添加到任务队列的末尾。
+这段代码编排了一个 500ms 后才被添加到任务队列的任务，两次 `console.log()` 调用分别输入内容顺序如上。
+
+Promise 具有类似的工作原理， Promise 的执行器会立即执行，然后才执行后续流程中的代码。
 
 ```js
 let promise = new Promise(function (resolve, reject) {
@@ -2915,11 +2941,15 @@ console.log("Hi!");
 // Resolved
 ```
 
+调用 `resolve()`后回触发一个异步操作，传入`then()`和`catch()`方法的函数会被添加到任务队列中并异步执行。请注意，即使在代码中`then()`调用位于`console.log()`之前，但其与执行器不同，它并没有立即执行。这是因为，完成处理程序和拒绝程序总是在执行器完成后被添加到任务队列的末尾。
+
 ### 11.2.3 创建已处理的 Promise
 
 创建未处理 Promise 的最好方法是使用 Promise 的构造函数，这是由于 Promise 执行器具有动态性。但如果你想用 Promise 来表示一个己知值，则编排一个只是简单地给 `resolve()` 函数传值的任务并无实际意义，反倒是可以用以下两种方法根据特定的值来创建己解决 Promise。
 
-使用`Promise.resolve()`。`Promise.resolve()` 方法只接受一个参数并返回一个完成态的 Promise，也就是说不会有任务编排的过程，而且需要向 Promise 添加一至多个完成处理程序来获取值。
+**使用Promise.resolve()**
+
+`Promise.resolve()` 方法只接受一个参数并返回一个完成态的 Promise，也就是说不会有任务编排的过程，而且需要向 Promise 添加一至多个完成处理程序来获取值。
 
 ```js
 let promise = Promise.resolve(42);
@@ -2929,7 +2959,11 @@ promise.then(function (value) {
 });
 ```
 
-使用`Promise.reject()`。你也可以使用 `Promise.reject()` 方法来创建已拒绝的 Promise，它与`Promise.resolve()`很像，唯一的区别是创建出来的是拒绝态的 Promise。
+这段代码创建了一个已完成 Promise，完成处理程序的形参 value 接受了传入值 42，由于该 Promise 永远不会存在拒绝状态，因而该 Promise 的拒绝处理程序永远不会被调用。
+
+**使用Promise.reject()**
+
+也可以使用 `Promise.reject()` 方法来创建已拒绝的 Promise，它与`Promise.resolve()`很像，唯一的区别是创建出来的是拒绝态的 Promise。
 
 ```js
 let promise = Promise.reject(42);
@@ -2939,9 +2973,13 @@ promise.catch(function (value) {
 });
 ```
 
+任何附加到这个 Promise 的拒绝处理程序都将被调用，但却不会调用完成处理程序。
+
 > 如果向 `Promise.resolve()` 或 `Promise.reject()` 方法传递了一个 promise，那么该 promise 不会做任何修改而直接返回。
 
-非 promise 的 thenable 对象。`Promise.resolve()` 和 `Promise.reject()` 都可以接收非 promise 的 thenable 对象作为参数。在传递它之后，这些方法在调用`then()`之后创建一个新的 promise ，并在`then()`函数中被调用。
+**非 promise 的 thenable 对象**
+
+`Promise.resolve()` 和 `Promise.reject()` 都可以接收非 promise 的 thenable 对象作为参数。在传递它之后，这些方法在调用`then()`之后创建一个新的 promise ，并在`then()`函数中被调用。
 
 拥有`then()`方法且接受 resolve 和 reject 这两个参数的普通对象就是非 Promise 的 Thenable 对象。
 
@@ -2953,7 +2991,7 @@ let thenable = {
 };
 ```
 
-Thenable 对象和 Promise 之间只有`then()`方法这一个相似之处，可以调用`Promise.resolve()`方法将 Thenable 对象转变成一个已完成 Promise。
+在此示例中，Thenable 对象和 Promise 之间只有`then()`方法这一个相似之处，可以调用`Promise.resolve()`方法将 thenable 对象转换成一个已完成 Promise：
 
 ```js
 let thenable = {
@@ -2962,13 +3000,14 @@ let thenable = {
   },
 };
 
-// Promise.resolve()调用的是 thenable.then()
-// then()方法内部调用了 resolve(42)
 let p1 = Promise.resolve(thenable);
 p1.then(function (value) {
   console.log(value); // 42
 });
 ```
+
+在此示例中，`Promise.resolve()`调用的是 `thenable.then()`，所以 Promise 的状态可以被检测到。由于是在 `then()` 方法内部调用了 `resolve(42)`，因此 Thenable 对象的 Promise 状态是已完成。新创建的已完成状态 Promise p1 从 Thenable 对象接受传入的值（也就是42），怕
+的完成处理程序将 42 赋值给形参 value。
 
 可以使用与`Promise.resolve()`相同的过程创建基于 Thenable 对象的己拒绝 Promise。
 
@@ -3021,7 +3060,9 @@ promise.catch(function (error) {
 
 ## 11.3 全局的 Promise 拒绝处理
 
-有关 Promise 的其中一个最争议的问题是，如果没有拒绝处理程序的情况下拒绝一个 Promise，那么不会提示失败信息。这是 JavaScript 语言中唯一一处没有强制报错的地方，一些人认为这是标准中最大的缺陷。Promise 的特性决定了很难检测一个 Promise 是否被处理过。
+有关 Promise 的其中一个最争议的问题是，如果没有拒绝处理程序的情况下拒绝一个 Promise，那么不会提示失败信息。这是 JavaScript 语言中唯一一处没有强制报错的地方，一些人认为这是标准中最大的缺陷。
+
+Promise 的特性决定了很难检测一个 Promise 是否被处理过。
 
 ```js
 // Promise被立即拒绝
@@ -3036,14 +3077,18 @@ rejected.catch(function (value) {
 });
 ```
 
-任何时候都可以调用`then()`或`catch()`方法，无论 Promise 是否已解决这两个方法都可以正常运行，但这样就很难知道一个 Promise 何时被处理。
+任何时候都可以调用`then()`或`catch()`方法，无论 Promise 是否已解决这两个方法都可以正常运行，但这样就很难知道一个 Promise 何时被处理。在此示例中 ，Promise 被立即拒绝，但是稍后才被处理。
+
+尽管这个问题在未来版本的 ECMAScript 中可能会被解决，但是 Node.js 和浏览器环境都已分别做出了一些改变来解决开发者的这个痛点，这些改变不是 ECMAScript6 标准的一部分，不过当使用 Promise 的时候它们确实是非常有价值的工具。
 
 ### 11.3.1 Node.js 环境的拒绝处理
 
-在 Node.js 中，处理 Promise 拒绝时会触发 Process 对象中的两个事件。设计这些事件是用来识别那些被拒绝却又没被处理过的 Promise 的。
+在 Node.js 中，处理 Promise 拒绝时会触发 Process 对象中的两个事件：
 
-- unhandledRejection 在一个事件循环中，当 Promise 被拒绝，并且没有提供拒绝处理程序时被调用。
-- rejectionHandled 在一个事件循环后，当 Promise 被拒绝，并且拥有提供拒绝处理程序时被调用。
+1. unhandledRejection 在一个事件循环中，当 Promise 被拒绝，并且没有提供拒绝处理程序时被调用。
+2. rejectionHandled 在一个事件循环后，当 Promise 被拒绝，并且拥有提供拒绝处理程序时被调用。
+
+设计这些事件是用来识别那些被拒绝却又没被处理过的 Promise 的。
 
 拒绝原因（通常是一个错误对象）及被拒绝的 Promise 作为参数被传入 unhandledRejection 事件处理程序中。
 
@@ -3058,7 +3103,7 @@ process.on("unhandledRejection", function (reason, promise) {
 rejected = Promise.reject(new Error("Explosion!"));
 ```
 
-rejectionHandled 事件处理程序只有一个参数，就是被拒绝的 Promise。这里的 rejectionHandled 事件在拒绝处理程序最后被调用时触发，如果在创建 rejected 之后直接添加拒绝处理程序，那么该事件不会被触发，因为 rejected 创建的过程与拒绝处理程序的调用在同一个事件循环中，此时 rejectionHandled 事件尚未生效。
+rejectionHandled 事件处理程序只有一个参数，就是被拒绝的 Promise。
 
 ```js
 let rejected;
@@ -3076,6 +3121,8 @@ setTimeout(function () {
   });
 }, 1000);
 ```
+
+这里的 rejectionHandled 事件在拒绝处理程序最后被调用时触发，如果在创建 rejected 之后直接添加拒绝处理程序，那么该事件不会被触发，因为 rejected 创建的过程与拒绝处理程序的调用在同一个事件循环中，此时 rejectionHandled 事件尚未生效。
 
 通过事件 rejectionHandled 和事件 unhandledRejection 将潜在未处理的拒绝存储为一个列表，等待一段时间后检查列表便能够正确地跟踪潜在的未处理拒绝。例如下面这个简单的未处理拒绝跟踪器。
 
@@ -3102,6 +3149,10 @@ setInterval(function () {
   possiblyUnhandledRejections.clear();
 }, 60000);
 ```
+
+这段代码使用 Map 集合来存储 Promise 及其拒绝原因，每个 Promise 键都有一个拒绝原因的相关值。每当触发 unhandledRejection 事件时，会向 Map 集合中添加一组 Promise 及拒绝原因；每当触发 rejectionHandled 事件时，已处理的 Promise 会从 Map 集合中移除。结果是，possiblyUnhandledRejections 会随着事件调用不断扩充或收缩。`setInterval()`调用会定期检查列表，将可能未处理的拒绝输出到控制台(实际上会通过其他方式记录或者直接处理掉这个拒绝)。在这个示例中使用的是 Map 集合而不是 WeakMap 集合，这是因为需要定期检查 Map 集合来确认一个 Promise 是否存在，而这是 WeakMap 无法实现的。
+
+尽管这个示例针对 Node.js 设计，但是浏览器也实现了一套类似的机制来提示开发者哪些拒绝还没有被处理。
 
 ### 11.3.2 浏览器环境的拒绝处理
 
