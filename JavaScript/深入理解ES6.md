@@ -2696,7 +2696,7 @@ Promise 可以实现其他语言中类似 Future 和 Deferred 一样的功能，
 
 ## 11.1 异步编程的背景知识
 
-JavaScript 引擎是基于单线程（Single-threaded） 事件循环的概念构建的，同一时刻只允许一个代码块在执行，与之相反的是像 Java 和 C ＋＋一样的语言，它们允许多个不同的代码块同时执行。对于基于线程的软件而言，当多个代码块同时访问并改变状态时，程序很难维护并保证状态不会出错。
+JavaScript 引擎是基于单线程（Single-threaded）事件循环的概念构建的，同一时刻只允许一个代码块在执行，与之相反的是像 Java 和 C＋＋ 一样的语言，它们允许多个不同的代码块同时执行。对于基于线程的软件而言，当多个代码块同时访问并改变状态时，程序很难维护并保证状态不会出错。
 
 JavaScript 引擎同一时刻只能执行一个代码块，所以需要跟踪即将运行的代码，那些代码被放在一个任务队列（job queue）中，每当一段代码准备执行时，都会被添加到任务队列。每当 JavaScript 引擎中的一段代码结束执行，事件循环（event loop）会执行队列中的下一个任务，它是 JavaScript 引擎中的一段程序，负责监控代码执行井管理任务队列。请记住，队列中的任务会从第一个一直执行到最后一个。
 
@@ -2730,7 +2730,7 @@ readFile("example.txt", function (err, contents) {
 console.log("Hi!");
 ```
 
-此示例使用 Node.js 传统的错误优先（error-first）回调风格。调用 `readFile()` 函数后，`console.log("Hi")`语句立即执行并输出“Hi” ；当 `readFile()` 结束执行时，会向任务队列的末尾添加一个新任务，该任务包含回调函数及相应的参数，当队列前面所有的任务完成后才执行该任务，并最终执行 `console.log(contents)`输出所有内容 。
+此示例使用 Node.js 传统的错误优先（error-first）回调风格。调用 `readFile()` 函数后，`console.log("Hi")`语句立即执行并输出“Hi” ；当 `readFile()` 结束执行时，会向任务队列的末尾添加一个新任务，该任务包含回调函数及相应的参数，当队列前面所有的任务完成后才执行该任务，并最终执行 `console.log(contents)` 输出所有内容 。
 
 回调模式比事件模型更灵活，因为相比之下，通过回调模式链接多个调用更容易。
 
@@ -2791,7 +2791,7 @@ Promise 相当于异步操作结果的占位符，它不会去订阅一个事件
 let promise = readFile("example.txt");
 ```
 
-### 11.2.1 Promise 的声明周期。
+### 11.2.1 Promise 的声明周期
 
 每个 Promise 都会经历一个短暂的声明周期：先是处于进行中（pending）的状态，此时操作尚未完成，所以它也是未处理（unsettled）的；一旦异步操作执行结束，Promise 则变成已处理（settled）的状态。操作结束后，Promise 可能会进入到以下两种状态中的其中一个：
 
@@ -2866,7 +2866,7 @@ promise.then(function(contents) {
 
 在这段代码中，一个完成处理程序被调用时向同一个 Promise 添加了另一个完成处理程序，此时这个 Promise 已经完成，所以新的处理程序会被添加到任务队列中，当前面的任务完成后其才被调用。这对拒绝处理程序也同样使用。
 
-> 每次调用 `then()` 方法或 `catch()` 方法都会创建一个新任务，当 Promise 被解决（resolved）时执行。这些任务最终会被加入到一个为 Promise 量身定制的独立队列中，这个任务队列的具体细节对于理解如何使用 Promise 而言不重要，通常只要理解人物队列是如何运行的就可以了。
+> 每次调用 `then()` 方法或 `catch()` 方法都会创建一个新任务，当 Promise 被解决（resolved）时执行。这些任务最终会被加入到一个为 Promise 量身定制的独立队列中，这个任务队列的具体细节对于理解如何使用 Promise 而言不重要，通常只要理解任务队列是如何运行的就可以了。
 
 ### 11.2.2 创建未完成的 Promise
 
@@ -2941,7 +2941,7 @@ console.log("Hi!");
 // Resolved
 ```
 
-调用 `resolve()`后回触发一个异步操作，传入`then()`和`catch()`方法的函数会被添加到任务队列中并异步执行。请注意，即使在代码中`then()`调用位于`console.log()`之前，但其与执行器不同，它并没有立即执行。这是因为，完成处理程序和拒绝程序总是在执行器完成后被添加到任务队列的末尾。
+调用 `resolve()` 后回触发一个异步操作，传入`then()`和`catch()`方法的函数会被添加到任务队列中并异步执行。请注意，即使在代码中`then()`调用位于`console.log()`之前，但其与执行器不同，它并没有立即执行。这是因为，完成处理程序和拒绝程序总是在执行器完成后被添加到任务队列的末尾。
 
 ### 11.2.3 创建已处理的 Promise
 
@@ -3006,8 +3006,7 @@ p1.then(function (value) {
 });
 ```
 
-在此示例中，`Promise.resolve()`调用的是 `thenable.then()`，所以 Promise 的状态可以被检测到。由于是在 `then()` 方法内部调用了 `resolve(42)`，因此 Thenable 对象的 Promise 状态是已完成。新创建的已完成状态 Promise p1 从 Thenable 对象接受传入的值（也就是42），怕
-的完成处理程序将 42 赋值给形参 value。
+在此示例中，`Promise.resolve()`调用的是 `thenable.then()`，所以 Promise 的状态可以被检测到。由于是在 `then()` 方法内部调用了 `resolve(42)`，因此 Thenable 对象的 Promise 状态是已完成。新创建的已完成状态 Promise p1 从 Thenable 对象接受传入的值（也就是42），p1 的完成处理程序将 42 赋值给形参 value。
 
 可以使用与`Promise.resolve()`相同的过程创建基于 Thenable 对象的己拒绝 Promise。
 

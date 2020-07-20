@@ -517,7 +517,6 @@ function getOuterHTML (el: Element): string {
 Vue.compile = compileToFunctions
 
 export default Vue
-
 ````
 
 那么，当我们的代码执行 `import Vue from 'vue'` 的时候，就是从这个入口执行代码来初始化 Vue，那么 Vue 到底是什么，它是怎么初始化的，我们来一探究竟。
@@ -572,7 +571,6 @@ Vue.prototype.$mount = function (
 // ...
 
 export default Vue
-
 ```
 
 这里关键的代码是 `import Vue from 'core/index'`，之后的逻辑都是对 Vue 这个对象做一些扩展，可以先不用看，我们来看一下真正初始化 Vue 的地方，在 `src/core/index.js` 中：
