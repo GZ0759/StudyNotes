@@ -2854,7 +2854,7 @@ Promise 可以实现其他语言中类似 Future 和 Deferred 一样的功能，
 
 ## 11.1 异步编程的背景知识
 
-JavaScript 引擎是基于单线程（Single-threaded）事件循环的概念构建的，同一时刻只允许一个代码块在执行，与之相反的是像 Java 和 C＋＋ 一样的语言，它们允许多个不同的代码块同时执行。对于基于线程的软件而言，当多个代码块同时访问并改变状态时，程序很难维护并保证状态不会出错。
+JavaScript 引擎是基于单线程（Single-threaded）事件循环的概念构建的，同一时刻只允许一个代码块在执行，与之相反的是像 Java 和 C ＋＋ 一样的语言，它们允许多个不同的代码块同时执行。对于基于线程的软件而言，当多个代码块同时访问并改变状态时，程序很难维护并保证状态不会出错。
 
 JavaScript 引擎同一时刻只能执行一个代码块，所以需要跟踪即将运行的代码，那些代码被放在一个任务队列（job queue）中，每当一段代码准备执行时，都会被添加到任务队列。每当 JavaScript 引擎中的一段代码结束执行，事件循环（event loop）会执行队列中的下一个任务，它是 JavaScript 引擎中的一段程序，负责监控代码执行井管理任务队列。请记住，队列中的任务会从第一个一直执行到最后一个。
 
@@ -3012,11 +3012,11 @@ promise.then(null, function (err) {
 let promise = readFile("example.txt");
 
 // 最初的完成处理程序
-promise.then(function(contents) {
+promise.then(function (contents) {
   console.log(contents);
 
   // 现在又添加一个
-  promise.then(function(contents) {
+  promise.then(function (contents) {
     console.log(contents);
   });
 });
@@ -3105,7 +3105,7 @@ console.log("Hi!");
 
 创建未处理 Promise 的最好方法是使用 Promise 的构造函数，这是由于 Promise 执行器具有动态性。但如果你想用 Promise 来表示一个己知值，则编排一个只是简单地给 `resolve()` 函数传值的任务并无实际意义，反倒是可以用以下两种方法根据特定的值来创建己解决 Promise。
 
-**使用Promise.resolve()**
+**使用 Promise.resolve()**
 
 `Promise.resolve()` 方法只接受一个参数并返回一个完成态的 Promise，也就是说不会有任务编排的过程，而且需要向 Promise 添加一至多个完成处理程序来获取值。
 
@@ -3119,7 +3119,7 @@ promise.then(function (value) {
 
 这段代码创建了一个已完成 Promise，完成处理程序的形参 value 接受了传入值 42，由于该 Promise 永远不会存在拒绝状态，因而该 Promise 的拒绝处理程序永远不会被调用。
 
-**使用Promise.reject()**
+**使用 Promise.reject()**
 
 也可以使用 `Promise.reject()` 方法来创建已拒绝的 Promise，它与`Promise.resolve()`很像，唯一的区别是创建出来的是拒绝态的 Promise。
 
@@ -3164,7 +3164,7 @@ p1.then(function (value) {
 });
 ```
 
-在此示例中，`Promise.resolve()`调用的是 `thenable.then()`，所以 Promise 的状态可以被检测到。由于是在 `then()` 方法内部调用了 `resolve(42)`，因此 Thenable 对象的 Promise 状态是已完成。新创建的已完成状态 Promise p1 从 Thenable 对象接受传入的值（也就是42），p1 的完成处理程序将 42 赋值给形参 value。
+在此示例中，`Promise.resolve()`调用的是 `thenable.then()`，所以 Promise 的状态可以被检测到。由于是在 `then()` 方法内部调用了 `resolve(42)`，因此 Thenable 对象的 Promise 状态是已完成。新创建的已完成状态 Promise p1 从 Thenable 对象接受传入的值（也就是 42），p1 的完成处理程序将 42 赋值给形参 value。
 
 可以使用与`Promise.resolve()`相同的过程创建基于 Thenable 对象的己拒绝 Promise。
 
@@ -3364,16 +3364,16 @@ p1.then(function (value) {
 });
 ```
 
-调用`p1.then()`后返回第二个Promise，紧接着又调用了它的`then()`方法，只有当第一个Promise被解决之后才会调用第二个`then()`方法的完成处理程序。如果将这个示例拆解开，看起来是这样的
+调用`p1.then()`后返回第二个 Promise，紧接着又调用了它的`then()`方法，只有当第一个 Promise 被解决之后才会调用第二个`then()`方法的完成处理程序。如果将这个示例拆解开，看起来是这样的
 
 ```js
-let p1 = new Promise(function(resolve, reject) {
+let p1 = new Promise(function (resolve, reject) {
   resolve(42);
 });
-let p2 = p1.then(function(value) {
+let p2 = p1.then(function (value) {
   console.log(value);
-})
-p2.then(function() {
+});
+p2.then(function () {
   console.log("Finished");
 });
 ```
@@ -3394,16 +3394,16 @@ p1.then(function (value) {
 });
 ```
 
-在这段代码中，p1的完成处理程序抛出了一个错误，链式调用第二个Promise的`catch()`方法后，可以通过它的拒绝处理程序接收这个错误。如果拒绝处理程序抛出错误，也可以通过相同的方式接收到这个错误：
+在这段代码中，p1 的完成处理程序抛出了一个错误，链式调用第二个 Promise 的`catch()`方法后，可以通过它的拒绝处理程序接收这个错误。如果拒绝处理程序抛出错误，也可以通过相同的方式接收到这个错误：
 
 ```js
-let p1 = new Promise(function(resolve, reject) {
+let p1 = new Promise(function (resolve, reject) {
   throw new Error("Explosion!");
 });
-p1.catch(function(error) {
+p1.catch(function (error) {
   console.log(error.message); // "Explosion!"
   throw new Error("Boom!");
-}).catch(function(error) {
+}).catch(function (error) {
   console.log(error.message); // "Boom!"
 });
 ```
@@ -3452,31 +3452,31 @@ p1.then(function (value) {
 });
 ```
 
-在这段代码中，p1编排的任务解决并传入42，然后p1的完成处理程序返回一个已解决状态的Promise p2，由于p2已经被完成，因此第二个完成处理程序被调用。如果p2被拒绝，则调用拒绝处理程序
+在这段代码中，p1 编排的任务解决并传入 42，然后 p1 的完成处理程序返回一个已解决状态的 Promise p2，由于 p2 已经被完成，因此第二个完成处理程序被调用。如果 p2 被拒绝，则调用拒绝处理程序
 
-关于这个模式，最需要注意的是，第二个完成处理程序被添加到了第三个Promise而不是p2，所以之前的示例等价于：
+关于这个模式，最需要注意的是，第二个完成处理程序被添加到了第三个 Promise 而不是 p2，所以之前的示例等价于：
 
 ```js
-let p1 = new Promise(function(resolve, reject) {
+let p1 = new Promise(function (resolve, reject) {
   resolve(42);
 });
-let p2 = new Promise(function(resolve, reject) {
+let p2 = new Promise(function (resolve, reject) {
   resolve(43);
 });
-let p3 = p1.then(function(value) {
+let p3 = p1.then(function (value) {
   // 第一个完成处理函数
   console.log(value); // 42
   return p2;
 });
-p3.then(function(value) {
+p3.then(function (value) {
   // 第二个完成处理函数
   console.log(value); // 43
 });
 ```
 
-很明显的是，此处第二个完成处理程序被添加到p3而非p2，这个差异虽小但非常重要，如果p2被拒绝那么第二个完成处理程序将不会被调用。
+很明显的是，此处第二个完成处理程序被添加到 p3 而非 p2，这个差异虽小但非常重要，如果 p2 被拒绝那么第二个完成处理程序将不会被调用。
 
-在完成或拒绝处理程序中返回 Thenable 对象不会改变 Promise 执行器的执行时机，先定义的 Promise 的执行器先执行，后定义的后执行，以此类推。返回Thenable对象仅允许为这些promise结果定义额外的响应。在完成处理程序中创建新的Promise可以推迟完成处理程序的执行。
+在完成或拒绝处理程序中返回 Thenable 对象不会改变 Promise 执行器的执行时机，先定义的 Promise 的执行器先执行，后定义的后执行，以此类推。返回 Thenable 对象仅允许为这些 promise 结果定义额外的响应。在完成处理程序中创建新的 Promise 可以推迟完成处理程序的执行。
 
 ```js
 let p1 = new Promise(function (resolve, reject) {
@@ -3528,7 +3528,7 @@ p4.then(function(value) {
 });
 ```
 
-在这段代码中，每个Promise解决时都传入一个数字，调用`Promise.all()`方法创建Promise p4，最终当Promise p1、p2和p3都处于完成状态后p4才被完成。传入p4完成处理程序的结果是一个包含每个解决值(42、43和44)的数组，这些值按照Promise被解决的顺序存储，所以可以根据每个结果来匹配对应的Promise。
+在这段代码中，每个 Promise 解决时都传入一个数字，调用`Promise.all()`方法创建 Promise p4，最终当 Promise p1、p2 和 p3 都处于完成状态后 p4 才被完成。传入 p4 完成处理程序的结果是一个包含每个解决值(42、43 和 44)的数组，这些值按照 Promise 被解决的顺序存储，所以可以根据每个结果来匹配对应的 Promise。
 
 所有传入`Promise.all()`方法的 Promise 只要有一个被拒绝，那么返回的 Promise 没等所有 Promise 都完成就立即被拒绝了。
 
@@ -3553,9 +3553,9 @@ p4.catch(function (value) {
 });
 ```
 
-在这个示例中，p2被拒绝并传入值43，没等p1或p3结束执行，p4的拒绝处理程序就立即被调用。(p1和p3的执行过程会结束，只是p4并未等待)。
+在这个示例中，p2 被拒绝并传入值 43，没等 p1 或 p3 结束执行，p4 的拒绝处理程序就立即被调用。(p1 和 p3 的执行过程会结束，只是 p4 并未等待)。
 
-拒绝处理程序总是接受一个值而非数组，该值来自被拒绝Promise的拒绝值。在本示例中，传入拒绝处理程序的43表示该拒绝来自p2。
+拒绝处理程序总是接受一个值而非数组，该值来自被拒绝 Promise 的拒绝值。在本示例中，传入拒绝处理程序的 43 表示该拒绝来自 p2。
 
 ### 11.5.2 Promise.race()方法
 
@@ -3579,7 +3579,7 @@ p4.then(function (value) {
 });
 ```
 
-在这段代码中，p1创建时便处于已完成状态，其他Promise用于编排任务。随后，p4的完成处理程序被调用并传入值42，其他Promise则被忽略。实际上，传给`Promise.race()`方法的Promise会进行竞选，以决出哪一个先被解决，如果先解决的是已完成Promise，则返回己完成Promise；如果先解决的是已拒绝Promise，则返回已拒绝Promise。
+在这段代码中，p1 创建时便处于已完成状态，其他 Promise 用于编排任务。随后，p4 的完成处理程序被调用并传入值 42，其他 Promise 则被忽略。实际上，传给`Promise.race()`方法的 Promise 会进行竞选，以决出哪一个先被解决，如果先解决的是已完成 Promise，则返回己完成 Promise；如果先解决的是已拒绝 Promise，则返回已拒绝 Promise。
 
 ```js
 let p1 = new Promise(function (resolve, reject) {
@@ -3607,8 +3607,7 @@ p4.catch(function (value) {
 
 ## 11.6 自 Promise 继承
 
-Promise与其他内建类型一样，也可以作为基类派生其他类，所以可以定义自己的Promise变量来扩展内建Promise的功能。例如，假设创建一个既支持`then()`方法和`catch()`方法又支持`success()`方法和`failure()`方法的Promise，则可以这样创建该Promise类型：
-
+Promise 与其他内建类型一样，也可以作为基类派生其他类，所以可以定义自己的 Promise 变量来扩展内建 Promise 的功能。例如，假设创建一个既支持`then()`方法和`catch()`方法又支持`success()`方法和`failure()`方法的 Promise，则可以这样创建该 Promise 类型：
 
 ```js
 class MyPromise extends Promise {
@@ -3634,28 +3633,28 @@ promise
   });
 ```
 
-在这个示例中，派生自Promise的MyPromise扩展了另外两个方法模仿`resolve()`的`success()`方法以及模仿`reject()`的`failure()`方法。
+在这个示例中，派生自 Promise 的 MyPromise 扩展了另外两个方法模仿`resolve()`的`success()`方法以及模仿`reject()`的`failure()`方法。
 
-这两个新增方法都通过this来调用它模仿的方法，派生Promise与内建Promise的功能一样，只不过多了`success()`和`failure()`这两个可以调用的方法。
+这两个新增方法都通过 this 来调用它模仿的方法，派生 Promise 与内建 Promise 的功能一样，只不过多了`success()`和`failure()`这两个可以调用的方法。
 
-由于静态方法会被继承，因此派生的Promise也拥有`MyPromise.resolve()`、`MyPromise.reject()`、`MyPromise.race()`和`MyPromise.all()` 这 4 个方法，后二者与内建方法完全一致，而前二者却稍有不同。
+由于静态方法会被继承，因此派生的 Promise 也拥有`MyPromise.resolve()`、`MyPromise.reject()`、`MyPromise.race()`和`MyPromise.all()` 这 4 个方法，后二者与内建方法完全一致，而前二者却稍有不同。
 
-由于`MyPromise.resolve()`方法和`MyPromise.reject()`方法通过`Symbol.species`属性来决定返回Promise的类型，故调用这两个方法时无论传入什么值都会返回一个MyPromise的实例。如果将内建Promise作为参数传入其他方法，则这个Promise将被解决或拒绝，然后该方法将会返回一个新的MyPromise，于是就可以给它的成功处理程序及失败处理程序赋值。例如：
+由于`MyPromise.resolve()`方法和`MyPromise.reject()`方法通过`Symbol.species`属性来决定返回 Promise 的类型，故调用这两个方法时无论传入什么值都会返回一个 MyPromise 的实例。如果将内建 Promise 作为参数传入其他方法，则这个 Promise 将被解决或拒绝，然后该方法将会返回一个新的 MyPromise，于是就可以给它的成功处理程序及失败处理程序赋值。例如：
 
 ```js
-let p1 = new Promise(function(resolve, reject) {
-    resolve(42);
+let p1 = new Promise(function (resolve, reject) {
+  resolve(42);
 });
 let p2 = MyPromise.resolve(p1);
-p2.success(function(value) {
-    console.log(value); // 42
+p2.success(function (value) {
+  console.log(value); // 42
 });
 console.log(p2 instanceof MyPromise); // true
 ```
 
-这里的p1是一个内建Promise，被传入`MyPromise.resolve()`方法后得到结果p2，它是MyPromise的一个实例，来自p1的解决值被传入完成处理程序。
+这里的 p1 是一个内建 Promise，被传入`MyPromise.resolve()`方法后得到结果 p2，它是 MyPromise 的一个实例，来自 p1 的解决值被传入完成处理程序。
 
-传入`MyPromise.resolve()`方法或`MyPromise.reject()`方法的MyPromise实例未经解决便直接返回。在其他方面，这两个方法的行为与`Promise.resolve()`和`Promise.reject()`很像。
+传入`MyPromise.resolve()`方法或`MyPromise.reject()`方法的 MyPromise 实例未经解决便直接返回。在其他方面，这两个方法的行为与`Promise.resolve()`和`Promise.reject()`很像。
 
 ## 11.7 基于 Promise 的异步任务执行
 
@@ -3710,7 +3709,7 @@ run(function* () {
 
 这个实现会导致一些问题。首先，在返回值是函数的函数中包裹每一个函数会令人感到困惑。其次，无法区分用作任务执行器回调函数的返回值和一个不是回调函数的返回值。
 
-只要每个异步操作都返回Promise，就可以极大地简化并通用化这个过程。以Promise作为通用接口用于所有异步代码可以简化任务执行器。
+只要每个异步操作都返回 Promise，就可以极大地简化并通用化这个过程。以 Promise 作为通用接口用于所有异步代码可以简化任务执行器。
 
 ```js
 let fs = require("fs");
@@ -3760,34 +3759,34 @@ run(function* () {
 });
 ```
 
-在这个版本的代码中，一个通用的run()函数执行生成器创建了一个迭代器，它调用task.next()方法来启动任务并递归调用step()方法直到迭代器完成
+在这个版本的代码中，一个通用的`run()`函数执行生成器创建了一个迭代器，它调用`task.next()`方法来启动任务并递归调用`step()`方法直到迭代器完成
 
-在step()函数中，如果有更多任务，那么result.done的值为false，此时的result.value应该是一个Promise，调用Promise.resolve()是为了防止函数不返回Promise。(传入Promise.resolve()的Promise直接通过，传入的非Promise会被包裹成一个Promise)接下来，添加完成处理程序提取Promise的值并将其传回迭代器。然后在step()函数调用自身之前结果会被赋值给下一个生成的结果
+在`step()`函数中，如果有更多任务，那么`result.done`的值为 false，此时的`result.value`应该是一个 Promise，调用`Promise.resolve()`是为了防止函数不返回 Promise。（传入`Promise.resolve()`的 Promise 直接通过，传入的非 Promise 会被包裹成一个 Promise）接下来，添加完成处理程序提取 Promise 的值并将其传回迭代器。然后在`step()`函数调用自身之前结果会被赋值给下一个生成的结果
 
-拒绝处理程序将所有拒绝结果存储到一个错误对象中，然后通过task.throw()方法将错误对象传回迭代器，如果在任务中捕获到错误，结果会被赋值给下一个生成结果。最后继续在catch()内部调用step()函数
+拒绝处理程序将所有拒绝结果存储到一个错误对象中，然后通过`task.throw()`方法将错误对象传回迭代器，如果在任务中捕获到错误，结果会被赋值给下一个生成结果。最后继续在`catch()`内部调用`step()`函数
 
-这个run()函数可以运行所有使用yield实现异步代码的生成器，而且不会将Promise或回调函数暴露给开发者。事实上，由于函数调用的返回值总会被转换成一个Promise，因此可以返回一些非Promise的值，也就是说，用yield调用同步或异步方法都可以正常运行，永远不需要检查返回值是否为Promise
+这个`run()`函数可以运行所有使用 yield 实现异步代码的生成器，而且不会将 Promise 或回调函数暴露给开发者。事实上，由于函数调用的返回值总会被转换成一个 Promise，因此可以返回一些非 Promise 的值，也就是说，用 yield 调用同步或异步方法都可以正常运行，永远不需要检查返回值是否为 Promise
 
-唯一需要关注的是像readFile()这样的异步函数，其返回的是一个能被正确识别状态的Promise，所以调用Node.js的内建方法时不能使用回调函数，须将其转换为返回Promise的函数
+唯一需要关注的是像`readFile()`这样的异步函数，其返回的是一个能被正确识别状态的 Promise，所以调用 Node.js 的内建方法时不能使用回调函数，须将其转换为返回 Promise 的函数
 
 > 未来的异步任务执行  
-> JavaScript 正在引入一种用于执行异步任务的更简单的语法，例如，await语法致力于替代基于Promise的示例。其基本思想是用async标记的函数代替生成器，用await代替yield来调用函数
+> JavaScript 正在引入一种用于执行异步任务的更简单的语法，例如，await 语法致力于替代基于 Promise 的示例。其基本思想是用 async 标记的函数代替生成器，用 await 代替 yield 来调用函数
 
 ```js
-(async function() {
-    let contents = await readFile("config.json");
-    doSomethingWith(contents);
-    console.log("Done");
+(async function () {
+  let contents = await readFile("config.json");
+  doSomethingWith(contents);
+  console.log("Done");
 });
 ```
 
-> 在函数前添加关键字async表示该函数以异步模式运行，await关键字表示调用readFile("config.json")的函数应该返回一个Promise，否则，响应应该被包裹在Promise中。如果Promise被拒绝则await应该抛出错误，否则通过Promise来返回值。最后的结果是，可以按照同步方式编写异步代码，唯一的开销是一个基于迭代器的状态机
+> 在函数前添加关键字 async 表示该函数以异步模式运行，await 关键字表示调用`readFile("config.json")`的函数应该返回一个 Promise，否则，响应应该被包裹在 Promise 中。如果 Promise 被拒绝则 await 应该抛出错误，否则通过 Promise 来返回值。最后的结果是，可以按照同步方式编写异步代码，唯一的开销是一个基于迭代器的状态机
 
 ## 11.8 小结
 
 Promise 的设计目标是改进 JavaScript 中的异步变成，它能够让你更好地掌握并组合多个同步操作，比事件系统和回调更使用。Promise 编排的任务会被添加到 JavaScript 引擎任务队列并在未来之星，还有一个任务队列用于跟踪 Promise 的完成处理程序和拒绝处理程序并确保正确执行。
 
-Promise 有3个状态：进行中（pending）、已完成（fulfilled）和已拒绝（rejected）。Promise 的起始状态是进行中，执行成功会变为已完成，失败则变为已拒绝。在后两种情况下都可以添加处理程序，以便当 Promise 被解决（settled）时做出相应操作，通过`then()`方法可以添加完成处理程序或拒绝处理程序，通过`catch()`方法只能添加拒绝处理程序。
+Promise 有 3 个状态：进行中（pending）、已完成（fulfilled）和已拒绝（rejected）。Promise 的起始状态是进行中，执行成功会变为已完成，失败则变为已拒绝。在后两种情况下都可以添加处理程序，以便当 Promise 被解决（settled）时做出相应操作，通过`then()`方法可以添加完成处理程序或拒绝处理程序，通过`catch()`方法只能添加拒绝处理程序。
 
 有多种方法可将 Promise 链接在一起并在它们之间传递信息，每次调用`then()`方法会创建并返回一个新的 Promise，它会随前面 Promise 被解决而解决。这样的链条可用于触发一系列同步事件的相应，也可通过`Promise.race()`方法和`Promise.all()`方法来监控多个 Promise 的进程并作出相应响应。
 
