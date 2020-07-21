@@ -1922,6 +1922,1287 @@ CSS变量拥有作用域，所以可以在 `:root` 定义全局变量。
 
 定位的原理相当简单。你可以相对元素框的常规位置定义元素的具体位置，可以相对父元素或另一个元素定位元素的位置，甚至还可以相对视区（例如浏览器窗口）定位元素的位置。
 
+## 11.1 Basic Concepts
+
+在我们深入研究各种定位之前，最好先看看存在哪些类型以及它们之间的区别。我们还需要定义一些基本的概念，这些概念对于理解定位是如何工作的是非常重要的。
+
+### 11.1.1 Types of Positioning
+
+您可以使用' position '属性从五种不同的定位类型中选择一种，这将影响元素框的生成方式。
+
+<Cards cards="position" />
+
+The values of `position` have the following meanings:
+
+`static`
+
+元素的框是正常生成的。块级别的元素生成一个矩形框，它是文档流的一部分，而内联级别的框会创建一个或多个在其父元素中流动的行框。
+
+`relative`
+
+元素的方框被偏移了一段距离。元素保留了它没有被定位时的形状，元素通常占据的空间也被保留了。
+
+`absolute`
+
+元素框完全从文档流中移除，并相对于其包含块定位，该包含块可以是文档中的另一个元素，也可以是初始的包含块(在下一节中描述)。
+
+元素在正常文档流中可能占据的任何空间都是关闭的，就好像元素不存在一样。定位元素生成块级别的框，而不管它在正常流中生成的框的类型。
+
+`fixed`
+
+元素框的行为就像它被设置为“绝对”，但它的包含块是视口本身。
+
+`sticky`
+
+元素被留在正常的流中，直到触发它的粘性的条件出现，这时它被从正常的流中移除，但是它在正常流中的原始空间被保留下来。然后，它的行为就像绝对定位相对于其包含块。一旦不再满足强制粘性的条件，元素将返回到其原始空间中的正常流。
+
+现在不要过多地担心细节，因为我们稍后将查看每种类型的定位。在此之前，我们需要讨论包含块。
+
+### 11.1.2 The Containing Block
+
+一般来说，包含块就是包含另一个元素的方框。例如，在正常流情况下，根元素(html 中的“html”)是“body”元素的包含块，而“body”元素又是它的所有子元素的包含块，依此类推。当涉及到定位时，包含块完全取决于定位的类型。
+
+对于“position”值为“relative”或“static”的非根元素，其包含的块是由最近的块级、表单元格或内联块起始框的内容边缘构成的。
+
+对于具有“position”值为“absolute”的非根元素，其包含的块被设置为具有“position”值而不是“static”的最近祖先(任何类型)。具体如下:
+
+- 如果祖先是块级的，则包含的块被设置为该元素的填充边;换句话说，被边界包围的区域。
+- 如果祖先是内联级的，则包含块被设置为祖先的内容边缘。在从左到右的语言中，包含块的顶部和左侧是祖先中第一个框的顶部和左侧内容边缘，底部和右侧是最后一个框的底部和右侧内容边缘。在从右到左的语言中，包含块的右边缘对应于第一个框的右内容边缘，而左边缘取自最后一个框。顶部和底部是一样的。
+- 如果没有祖先，那么元素的包含块被定义为初始的包含块。
+
+当涉及到粘贴定位元素时，包含块规则有一个有趣的变体，即一个矩形是与被称为“粘贴约束”的包含块相关的。这个矩形与粘性定位的工作原理有关，稍后将在 557 页的“粘性定位”中详细解释。
+
+要点:定位元素可以定位在其包含块的外部。这与浮动元素可以使用负边距来浮动到其父内容区域之外的方式非常相似。它还建议“包含块”这个术语实际上应该是“定位上下文”，但是因为规范使用了“包含块”，所以我也会这样做(我确实尽量减少混淆)。真的!)
+
+## 11.2 Offset Properties
+
+上一节中描述的四种定位方案—相对、绝对、粘性和固定—使用四种不同的属性来描述定位元素的边相对于其包含块的偏移量。这四个属性被称为“偏移”属性，它们是定位工作的重要组成部分。
+
+<Cards cards="top_right_bottom_left" />
+
+这些属性描述来自包含块的最近一侧的偏移量(因此称为“偏移量”属性)。例如，' top '描述定位元素的顶部边缘距其包含块的顶部的距离。在“顶部”的情况下，正值将定位元素的顶部边缘“向下”移动，而负值将其“向上”移动其包含块的顶部。类似地，left 描述定位元素的左边框距包含块的左边框的距离(对于正值)或(对于负值)。正值将使定位元素的边缘向右移动，负值将使其向左移动。
+
+另一种看待它的方式是，正值导致向内偏移，将边缘移动到包含块的中心，而负值导致向外偏移。
+
+偏移定位元素的边缘意味着在定位元素的过程中移动关于元素的一切—边距、边框、填充和内容。因此，可以为定位的元素设置边距、边框和填充;这些将与“定位”元素一起保存，并将包含在偏移属性定义的区域内。
+
+重要的是要记住，偏移量属性定义了一个来自包含块的类似侧的偏移量(例如，' left '定义了来自包含块的左侧的偏移量)，而不是来自包含块的左上角。这就是为什么，例如，填充一个包含块的右下角的方法是使用这些值:
+
+```css
+top: 50%;
+bottom: 0;
+left: 50%;
+right: 0;
+```
+
+在本例中，定位元素的左外边缘位于包含块的中间。这是从包含块的左边缘开始的偏移量。但是，定位元素的右外边缘与包含块的右边缘没有偏移，因此两者是重合的。对于定位元素的顶部和底部也有类似的推理:外部-顶部边缘位于包含块的一半下方，但是外部-底部边缘没有从底部向上移动。这将导致如图 11-1 所示的结果。
+
+<Figures figure="11-1">Filling the lower-right quarter of the containing block</Figures>
+
+<Tips tips="blue">What’s depicted in Figure 11-1, and in most of the examples in this chapter, is based around absolute positioning. Since absolute positioning is the simplest scheme in which to demonstrate how <code>top</code>, <code>right</code>, <code>bottom</code>, and <code>left</code> work, we’ll stick to that for now.</Tips>
+
+注意定位元素的背景区域。在图 11-1 中，它没有边界，但是如果有，它们将在边界和偏移边缘之间创建空白。这将使定位元素看起来好像没有完全填充包含块的右下角。事实上，它会“填满”这个区域，但这个事实不会马上显现出来。因此，以下两组样式将有大致相同的视觉外观，假设包含的块是' 100em '高的' 100em '宽的:
+
+```css
+#ex1 {
+  top: 50%;
+  bottom: 0;
+  left: 50%;
+  right: 0;
+  margin: 10em;
+}
+#ex2 {
+  top: 60%;
+  bottom: 10%;
+  left: 60%;
+  right: 10%;
+  margin: 0;
+}
+```
+
+同样，这种相似性在本质上只是视觉上的。
+
+通过使用负偏移量，可以将一个元素置于其包含的块之外。例如，以下值将导致图 11-2 所示的结果:
+
+```css
+top: 50%;
+bottom: -2em;
+left: 75%;
+right: -7em;
+```
+
+<Figures figure="11-2">Positioning an element outside its containing block</Figures>
+
+除了长度和百分比值，偏移属性也可以设置为“auto”，这是默认值。“自动”没有单一的行为;它根据所使用的定位类型而变化。稍后我们将探讨“auto”如何工作，因为我们将依次考虑每种定位类型。
+
+## 11.3 Width and Height
+
+在很多情况下，在确定了元素的位置之后，需要声明元素的宽度和高度。此外，您可能希望限制定位元素的高度或宽度，更不用说希望浏览器继续自动计算宽度、高度或两者同时计算的情况。
+
+### 11.3.1 Setting Width and Height
+
+如果你想给你的定位元素一个特定的宽度，那么属性是'宽度'。类似地，' height '将允许您声明定位元素的特定高度。
+
+虽然设置元素的“宽度”和“高度”有时很重要，但在定位元素时并不总是必要的。例如，如果元素的四个边的位置是使用“top”、“right”、“bottom”和“left”来描述的，那么元素的“height”和“width”将隐式地由偏移量决定。假设我们需要一个绝对定位的元素来填充它的左半边块，从上到下。我们可以使用这些值，结果如图 11-3 所示:
+
+```css
+top: 0;
+bottom: 0;
+left: 0;
+right: 50%;
+```
+
+<Figures figure="11-3">Positioning and sizing an element using only the offset properties</Figures>
+
+由于“width”和“height”的默认值都是“auto”，因此图 11-3 中显示的结果与我们使用这些值时的结果完全相同:
+
+```css
+top: 0;
+bottom: 0;
+left: 0;
+right: 50%;
+width: 50%;
+height: 100%;
+```
+
+在这个例子中，“宽度”和“高度”的存在并没有增加元素的布局。
+
+如果我们要为元素添加内边距、边框或空白，那么“height”和“width”的显式值的存在会产生很大的影响:
+
+```css
+top: 0;
+bottom: 0;
+left: 0;
+right: 50%;
+width: 50%;
+height: 100%;
+padding: 2em;
+```
+
+这将为我们提供一个定位元素，它扩展出其包含的块，如图 11-4 所示。
+
+<Figures figure="11-4">Positioning an element partially outside its containing block</Figures>
+
+这是因为(默认情况下)内边距被添加到内容区域，而内容区域的大小由“height”和“width”的值决定。为了得到我们想要的填充，并且元素仍然适合在它的包含块中，我们要么删除' height '和' width '声明，显式地将它们都设置为' auto '，要么将' box-sizing '设置为' border-box '。
+
+### 11.3.2 Limiting Width and Height
+
+如果有必要或需要，可以使用以下属性限制元素的宽度，我将其称为“min-max 属性”。可以使用“最小宽度”和“最小高度”将元素的内容区域定义为具有最小维度。
+
+<Cards cards="min-width_min-height" />
+
+类似地，可以使用属性“max-width”和“max-height”来限制元素的维度。
+
+<Cards cards="max-width_max-height" />
+
+这些属性的名称非常容易理解。一开始不那么明显，但是一旦你想一下就会明白，所有这些属性的值不可能是负的。
+
+下面的样式将迫使定位元素至少' 10em '宽' 20em '高，如图 11-5 所示:
+
+```css
+top: 10%;
+bottom: 20%;
+left: 50%;
+right: 10%;
+min-width: 10em;
+min-height: 20em;
+```
+
+<Figures figure="11-5">Setting a minimum width and height for a positioned element</Figures>
+
+这不是一个非常健壮的解决方案，因为它强制元素至少具有一定的大小，而不管其包含的块的大小。这里有一个更好的例子:
+
+```css
+top: 10%;
+bottom: auto;
+left: 50%;
+right: 10%;
+height: auto;
+min-width: 15em;
+```
+
+这里的情况是，元素的宽度应该是包含块宽度的 40%，但不能小于' 15em '。我们还更改了“底部”和“高度”，以便自动确定它们。这将使元素的高度与显示其内容所需的高度一样高，无论它变得多么窄(当然，绝对不要小于 `15em`!)。
+
+<Tips tips="blue">We’ll look at the role <code>auto</code> plays in the height and width of positioned elements in the upcoming section, “Placement and Sizing of Absolutely Positioned Elements” on page 540.</Tips>
+
+你可以通过使用“max-width”和“max-height”来改变所有这些，避免元素变得太宽或太高。让我们考虑这样一种情况:出于某种原因，我们希望元素的宽度是包含它的块的四分之三，但是当它达到 400 像素时就不再变宽了。合适的款式有:
+
+```css
+left: 0%;
+right: auto;
+width: 75%;
+max-width: 400px;
+```
+
+mini -max 的一大优点是，它可以让你将单元与相对安全的单元混合在一起。在设置基于长度的限制时，可以使用基于百分比的大小，反之亦然。
+
+值得一提的是，这些 min-max 属性在与浮动元素结合使用时非常有用。例如，我们可以允许被浮动元素的宽度相对于它的父元素的宽度(父元素是它的包含块)，同时确保浮动的宽度不低于' 10em '。反过来也有可能:
+
+```css
+p.aside {
+  float: left;
+  width: 40em;
+  max-width: 40%;
+}
+```
+
+这将把浮点数设置为' 40em '宽，除非它将超过包含块的 40%的宽度，在这种情况下，浮点数将被限制为 40%的宽度。
+
+## 11.4 Content Overflow and Clipping
+
+如果元素的内容对于元素的大小来说太多了，那么它就有溢出元素本身的危险。在这种情况下有一些替代方法，CSS 允许您从中进行选择。它还允许您定义一个裁剪区域来确定元素的区域，在这个区域之外，这类事情会成为一个问题。
+
+### 11.4.1 Overflow
+
+假设我们有一个元素，不管出于什么原因，它被固定到一个特定的大小，而内容不合适。您可以使用“overflow”属性控制这种情况。
+
+<Cards cards="overflow" />
+
+“可见”的默认值意味着元素的内容可以在元素的框外可见。通常，这将导致内容运行在它自己的元素框之外，但不会改变该框的形状。下面的标记将得到图 11-6:
+
+```css
+div#sidebar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 25%;
+  height: 7em;
+  background: #bbb;
+  overflow: visible;
+}
+```
+
+如果“overflow”被设置为“scroll”，那么元素的内容就会被剪切——也就是说，隐藏在元素框的边缘，但是有一些方法可以让用户获得额外的内容。在 web 浏览器中，这可能意味着一个滚动条(或一组滚动条)，或另一种访问内容而不改变元素本身形状的方法。图 11-6 描述了一种可能性。
+
+如果使用“滚动”，平移机制(如滚动条)应该总是呈现。引用规范的话，“这避免了滚动条在动态环境中出现或消失的问题。因此，即使元素有足够的空间来显示其所有内容，滚动条仍然可能出现并占用空间(尽管它们可能不占用空间)。此外，在打印页面或以其他方式在打印媒体中显示文档时，可能会将内容显示为“overflow”的值声明为“visible”。
+
+如果将“overflow”设置为“hidden”，则元素的内容会被剪切到元素框的边缘，但是不应该提供滚动界面来让用户可以访问剪切区域之外的内容。在这种情况下，用户将无法访问剪切的内容。
+
+图 11-6 说明了这三个“溢出”值。
+
+<Figures figure="11-6">Three methods for handling overflowing content</Figures>
+
+最后是 `overflow: auto`。这允许用户代理决定使用哪一种行为，尽管鼓励它们在必要时提供滚动机制。这是使用 overflow 的一种潜在有用的方式，因为用户代理可以将其解释为“仅在需要时提供滚动条”。(他们可能不会，但他们肯定可以，而且很可能应该这么做。)
+
+## 11.5 Element Visibility
+
+除了所有的剪切和溢出，您还可以控制整个元素的可见性。
+
+<Cards cards="visibility" />
+
+这个很简单。如果一个元素被设置为 `visibility: visible`，那么它就是可见的。如果一个元素被设置为 `visibility: hidden`，那么它将被设置为‘invisible’(使用规范中的措辞)。在不可见状态下，元素仍然会影响文档的布局，就好像它是“可见的”一样。换句话说，元素仍然在那里—您只是看不到它，就像您声明了“不透明度:0”一样。
+
+注意这个和 `display: none` 之间的区别。在后一种情况下，元素不显示，并且从文档中完全删除，因此它对文档布局没有任何影响。图 11-7 显示了一个文档，其中一个段落根据以下样式和标记被设置为“hidden”:
+
+```css
+em.trans {
+  visibility: hidden;
+  border: 3px solid gray;
+  background: silver;
+  margin: 2em;
+  padding: 1em;
+}
+```
+
+```html
+<p>
+  This is a paragraph which should be visible. Nulla berea consuetudium ohio
+  city, mutationem dolore.
+  <em class="trans">Humanitatis molly shannon ut lorem.</em> Doug dieken dolor
+  possim south euclid.
+</p>
+```
+
+<Figures figure="11-7">Making elements invisible without suppressing their element boxes</Figures>
+
+对于隐藏的元素，例如内容、背景和边界，所有可见的都是不可见的。空格仍然存在，因为元素仍然是文档布局的一部分。我们只是看不见它。
+
+可以将“隐藏”元素的后代元素设置为“可见”。这导致元素出现在它通常出现的地方，尽管祖先是不可见的。为了做到这一点，我们显式地声明了后代元素‘visible’，因为‘visibility’是继承的:
+
+```css
+p.clear {
+  visibility: hidden;
+}
+p.clear em {
+  visibility: visible;
+}
+```
+
+至于‘visbility: collapse’，这个值是在 CSS 表渲染中使用的，我们在这里没有足够的空间来覆盖它。根据规范，如果在非表元素上使用‘collapse’，那么它的含义与‘hidden’相同。
+
+## 11.6 Absolute Positioning
+
+由于前几节中的大多数示例和数字都是绝对定位的示例，所以您已经了解了它是如何工作的。剩下的大部分是调用绝对定位时会发生什么的细节。
+
+### 11.6.1 Containing Blocks and Absolutely Positioned Elements
+
+当元素被绝对定位时，它将完全从文档流中删除。然后，它相对于其包含的块进行定位，并且使用偏移属性(' top '、' left '等)放置其边缘边缘。定位元素不围绕其他元素的内容流动，它们的内容也不围绕定位元素流动。这意味着一个绝对定位的元素可能与其他元素重叠或被它们重叠。(稍后我们将看到如何影响重叠顺序。)
+
+绝对定位元素的包含块是最近的祖先元素，它有一个“position”值，而不是“static”。作者通常会选择一个元素作为绝对定位元素的包含块，并给它一个“相对”的“位置”，没有偏移量，就像这样:
+
+```css
+.contain {
+  position: relative;
+}
+```
+
+考虑图 11-8 中的例子，它演示了以下内容:
+
+```css
+p {
+  margin: 2em;
+}
+p.contain {
+  position: relative;
+} /* establish a containing block*/
+b {
+  position: absolute;
+  top: auto;
+  right: 0;
+  bottom: 0;
+  left: auto;
+  width: 8em;
+  height: 5em;
+  border: 1px solid gray;
+}
+```
+
+```html
+<body>
+  <p>
+    This paragraph does <em>not</em> establish a containing block for any of its
+    descendant elements that are absolutely positioned. Therefore, the
+    absolutely positioned <b>boldface</b> element it contains will be positioned
+    with respect to the initial containing block.
+  </p>
+  <p class="contain">
+    Thanks to <code>position: relative</code>, this paragraph establishes a
+    containing block for any of its descendant elements that are absolutely
+    positioned. Since there is such an element--
+    <em
+      >that is to say,
+      <b>a boldfaced element that is absolutely positioned,</b> placed with
+      respect to its containing block (the paragraph)</em
+    >, it will appear within the element box generated by the paragraph.
+  </p>
+</body>
+```
+
+两个段落中的“b”元素都被绝对定位。不同之处在于每一个所使用的包含块。第一段中的' b '元素相对于初始包含块的位置，因为它的所有祖先元素的'位置'都是' static '。第二段被设置为‘position: relative’，因此它为它的后代建立一个包含块。
+
+<Figures figure="11-8">Using relative positioning to define containing blocks</Figures>
+
+您可能已经注意到，在第二段中，定位元素与该段的一些文本内容重叠。没有办法避免这种情况，除非将“b”元素放置在段落之外(通过对“right”或其他偏移属性使用负值)，或者为段落指定宽度足以容纳定位元素的填充。此外，由于' b '元素具有透明的背景，因此段落的文本将通过定位的元素显示。避免这种情况的惟一方法是为定位元素设置背景，或者将它完全移出段落。
+
+您有时希望确保' body '元素为其所有后代建立一个包含块，而不是允许用户代理选择一个初始的包含块。这就像声明一样简单:
+
+```css
+body {
+  position: relative;
+}
+```
+
+In such a document, you could drop in an absolutely positioned paragraph, as follows, and get a result like that shown in Figure 11-9:
+
+> 在这样的文档中，您可以插入一个完全定位的段落，如下所示，并得到如图 11-9 所示的结果:
+
+```html
+<p
+  style="position: absolute; top: 0; right: 25%; left: 25%; bottom:
+ auto; width: 50%; height: auto; background: silver;"
+>
+  ...
+</p>
+```
+
+段落现在位于文档的最开头，宽度是文档宽度的一半，并覆盖其他内容。
+
+<Figures figure="11-9">Positioning an element whose containing block is the root element</Figures>
+
+需要强调的重要一点是，当一个元素处于绝对位置时，它将为其后代元素建立一个包含块。例如，我们可以绝对地定位一个元素，然后绝对地定位它的一个子元素，如图 11-10 所示，它是使用以下样式和基本标记生成的:
+
+```css
+div {
+  position: relative;
+  width: 100%;
+  height: 10em;
+  border: 1px solid;
+  background: #eee;
+}
+div.a {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 15em;
+  height: 100%;
+  margin-left: auto;
+  background: #ccc;
+}
+div.b {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 10em;
+  height: 50%;
+  margin-top: auto;
+  background: #aaa;
+}
+```
+
+```html
+<div>
+  <div class="a">
+    absolutely positioned element A
+    <div class="b">
+      absolutely positioned element B
+    </div>
+  </div>
+  containing block
+</div>
+```
+
+请记住，如果文档被滚动，绝对定位的元素将与它一起滚动。这适用于所有绝对定位的元素，它们不是固定位置或胶粘位置元素的后代。
+
+发生这种情况是因为，最终，元素的位置与正常流的一部分相关。例如，如果您绝对地定位一个表，并且它的包含块是初始的包含块，那么它将滚动，因为初始的包含块是正常流的一部分，因此它将滚动。
+
+如果您想要定位元素，使它们相对于 viewport 而不是与文档的其他部分一起滚动，请继续阅读。接下来关于固定定位的部分将给出您需要的答案。
+
+<Figures figure="11-10">Absolutely positioned elements establish containing blocks</Figures>
+
+### 11.6.2 Placement and Sizing of Absolutely Positioned Elements
+
+It may seem odd to combine the concepts of placement and sizing, but it’s a necessity with absolutely positioned elements because the specification binds them very closely together. This is not such a strange pairing upon reflection. Consider what happens if an element is positioned using all four offset properties, like so:
+
+> 将放置和大小的概念组合在一起可能看起来很奇怪，但它是绝对定位元素的必要条件，因为规范将它们紧密地绑定在一起。仔细想想，这并不是一个奇怪的组合。考虑一下如果一个元素使用所有四个偏移属性定位会发生什么，就像这样:
+
+```css
+#masthead h1 {
+  position: absolute;
+  top: 1em;
+  left: 1em;
+  right: 25%;
+  bottom: 10px;
+  margin: 0;
+  padding: 0;
+  background: silver;
+}
+```
+
+这里，“h1”元素框的高度和宽度由其外边缘边缘的位置决定，如图 11-11 所示。
+
+<Figures figure="11-11">Determining the height of an element based on the offset properties</Figures>
+
+如果包含块变得更高，那么“h1”也会变得更高;如果包含的块变窄，那么“h1”将变窄。如果我们要在“h1”中添加边距或填充，那么这将对“h1”的计算高度和宽度产生进一步的影响。
+
+但如果我们做了所有这些，然后还试图设置一个显式的高度和宽度呢?
+
+```css
+#masthead h1 {
+  position: absolute;
+  top: 0;
+  left: 1em;
+  right: 10%;
+  bottom: 0;
+  margin: 0;
+  padding: 0;
+  height: 1em;
+  width: 50%;
+  background: silver;
+}
+```
+
+有些东西必须放弃，因为所有这些值不可能都是准确的。事实上，要使所有显示的值都准确，包含块的宽度必须正好是‘h1’的‘font-size’计算值的 2.5 倍。任何其他“宽度”将意味着至少有一个值是错误的，必须被忽略。找出哪一个取决于许多因素，而这些因素的变化取决于元素是否被替换。
+
+就此而言，考虑以下各点:
+
+```css
+#masthead h1 {
+  position: absolute;
+  top: auto;
+  left: auto;
+}
+```
+
+结果会怎样呢?实际上，答案是“not”“将值重置为 0”。我们将在下一节中看到实际的答案。
+
+### 11.6.3 Auto-edges
+
+当绝对定位一个元素，有一个特殊的行为是适用的任何偏移属性，而不是'底部'被设置为'自动'。让我们以 top 为例。考虑以下:
+
+```html
+<p>
+  When we consider the effect of positioning, it quickly becomes clear that
+  authors can do a great deal of damage to layout, just as they can do very
+  interesting things.<span
+    style="position: absolute; top: auto;
+ left: 0;"
+    >[4]</span
+  >
+  This is usually the case with useful technologies: the sword always has at
+  least two edges, both of them sharp.
+</p>
+```
+
+会发生什么?对于' left '，很简单:元素的左边缘应该放在其包含块的左边缘上(这里我们假设它是初始的包含块)。然而，对于《陀螺》来说，更有趣的事情发生了。定位元素的顶部应该与它的顶部(如果根本没有定位的话)所在的位置对齐。换句话说，想象一下，如果‘position’的值是‘static’，那么‘span’应该放在什么地方;这是它的“静态位置”——应该计算它的顶部边缘的位置。css2.1 对静态位置做了如下说明:
+
+术语“静态位置”(元素的)大致指元素在正常流中的位置。更准确地说:“顶级”的静态位置的距离顶部边缘的包含块的顶边边缘一个假想的框,第一个框及功率值指定的元素如果它一直“静态”和其指定的“浮动”已经“没有”和其指定的“清楚”已经“没有”…是负价值如果上述假想框包含块。
+
+因此，我们应该得到如图 11-12 所示的结果。
+
+<Figures figure="11-12">Absolutely positioning an element consistently with its “static” top edge</Figures>
+
+“[4]”位于段落内容之外，因为初始包含块的左边缘位于段落左边缘的左侧。
+
+同样的基本规则也适用于将' left '和' right '设置为' auto '。在这些情况下，定位元素的左(或右)边与未定位元素时放置边缘的位置对齐。所以让我们修改之前的例子，使' top '和' left '都设置为' auto ':
+
+```html
+<p>
+  When we consider the effect of positioning, it quickly becomes clear that
+  authors can do a great deal of damage to layout, just as they can do very
+  interesting things.<span
+    style="position: absolute; top: auto; left:
+ auto;"
+    >[4]</span
+  >
+  This is usually the case with useful technologies: the sword always has at
+  least two edges, both of them sharp.
+</p>
+```
+
+这将得到如图 11-13 所示的结果。
+
+<Figures figure="11-13">Absolutely positioning an element consistently with its “static” position</Figures>
+
+“[4]”现在就停在它没有被定位的地方。注意，由于它的位置，它的正常流空间是关闭的。这将导致定位的元素与正常流内容重叠。
+
+这种自动放置只在某些情况下起作用，通常在定位元素的其他维度上几乎没有约束的情况下。我们前面的例子可以自动放置，因为它对高度或宽度没有限制，对底部和右边缘的位置也没有限制。但假设，由于某种原因，存在这样的约束。考虑:
+
+```html
+<p>
+  When we consider the effect of positioning, it quickly becomes clear that
+  authors can do a great deal of damage to layout, just as they can do very
+  interesting things.<span
+    style="position: absolute; top: auto; left: auto;
+ right: 0; bottom: 0; height: 2em; width: 5em;"
+    >[4]</span
+  >
+  This is usually the case with useful technologies: the sword always has at
+  least two edges, both of them sharp.
+</p>
+```
+
+不可能满足所有这些值。确定发生了什么是下一节的主题。
+
+### 11.6.4 Placing and Sizing Nonreplaced Elements
+
+通常，元素的大小和位置取决于其包含的块。它的各种属性(“width”、“right”、“padding-left”等)的值影响它的布局，但是基础是包含块。
+
+考虑定位元素的宽度和水平位置。它可以表示为这样一个方程:
+
+```
+left + margin-left + border-left-width + padding-left + width +
+padding-right + border-right-width + margin-right + right =
+the width of the containing block
+```
+
+这种计算是相当合理的。它基本上是一个决定正常流中块级元素大小的等式，只是它在混合中添加了“左”和“右”。那么所有这些是如何相互作用的呢?有一系列的规则需要遵守。
+
+首先，如果' left '、' width '和' right '都设置为' auto '，那么就会得到上一节中看到的结果:假设使用从左到右的语言，那么左边缘将被放置在其静态位置。在从右到左的语言中，右边缘位于其静态位置。元素的宽度被设置为“shrink to fit”，这意味着元素的内容区域只有在包含其内容时才会变宽。非静态位置属性(从左到右语言中的' right '，从右到左语言中的' left ')被设置为占用剩余的距离。例如:
+
+```html
+<div style="position: relative; width: 25em; border: 1px dotted;">
+  An absolutely positioned element can have its content
+  <span
+    style="position:
+Absolute Positioning | 543
+ absolute; top: 0; left: 0; right: auto; width: auto; background:
+ silver;"
+    >shrink-wrapped</span
+  >
+  thanks to the way positioning rules work.
+</div>
+```
+
+结果如图 11-14 所示。
+
+<Figures figure="11-14">The “shrink-to-fit” behavior of absolutely positioned elements</Figures>
+
+元素的顶部与包含它的块的顶部相对(在本例中为“div”)，元素的宽度与包含内容所需的宽度相同。元素的右边缘到包含块的右边缘的剩余距离成为“right”的计算值。
+
+现在假设只有左右边距被设置为“auto”，而不是“left”、“width”和“right”，就像下面这个例子:
+
+```html
+<div style="position: relative; width: 25em; border: 1px dotted;">
+  An absolutely positioned element can have its content
+  <span
+    style="position:
+ absolute; top: 0; left: 1em; right: 1em; width: 10em; margin: 0 auto;
+ background: silver;"
+    >shrink-wrapped</span
+  >
+  thanks to the way positioning rules work.
+</div>
+```
+
+这里的情况是，左边和右边的边距都是“auto”，它们被设置为相等。这将有效地居中元素，如图 11-15 所示。
+
+<Figures figure="11-15">Horizontally centering an absolutely positioned element with auto margins</Figures>
+
+这基本上与正常流程中的自动调整中心是一样的。所以，让我们把边距设为“auto”以外的值:
+
+```html
+<div style="position: relative; width: 25em; border: 1px dotted;">
+  An absolutely positioned element can have its content
+  <span
+    style="position:
+ absolute; top: 0; left: 1em; right: 1em; width: 10em; margin-left: 1em;
+ margin-right: 1em; background: silver;"
+    >shrink-wrapped</span
+  >
+  thanks to the way positioning rules work.
+</div>
+```
+
+现在我们有个问题。定位的“span”属性加起来只有“14em”，而包含的块是“25em”宽。我们必须在某个地方弥补 11-em 的赤字。
+
+规则规定，在本例中，用户代理忽略“right”的值(在 left-toright 语言中;否则，它将忽略“左”)并为其求解。换句话说，如果我们声明:
+
+```html
+<span
+  style="position: absolute; top: 0; left: 1em;
+right: 12em; width: 10em; margin-left: 1em; margin-right: 1em;
+right: auto; background: silver;"
+  >shrink-wrapped</span
+>
+```
+
+结果如图 11-16 所示。
+
+<Figures figure="11-16">Ignoring the value for right in an overconstrained situation</Figures>
+
+如果其中一个边距被保留为“auto”，那么它将被更改。假设我们将样式更改为 state:
+
+```html
+<span
+  style="position: absolute; top: 0; left: 1em;
+right: 1em; width: 10em; margin-left: 1em; margin-right: auto;
+background: silver;"
+  >shrink-wrapped</span
+>
+```
+
+可视化结果将与图 11-16 中的结果相同，只是它将通过计算“12em”的右边界来获得，而不是覆盖分配给属性“right”的值。
+
+另一方面，如果我们将左边距设置为‘auto’，那么‘it’将被重置，如图 11-17 所示:
+
+```html
+<span
+  style="position: absolute; top: 0; left: 1em;
+right: 1em; width: 10em; margin-left: auto; margin-right: 1em;
+background: silver;"
+  >shrink-wrapped</span
+>
+```
+
+<Figures figure="11-17">Ignoring the value for margin-right in an overconstrained situation</Figures>
+
+通常，如果只有一个属性被设置为“auto”，那么它将被用来满足本节前面给出的方程。因此，给定以下样式，元素的宽度将扩展到所需的任何大小，而不是“收缩包装”内容:
+
+```html
+<span
+  style="position: absolute; top: 0; left: 1em;
+right: 1em; width: auto; margin-left: 1em; margin-right: 1em;
+background: silver;"
+  >not shrink-wrapped</span
+>
+```
+
+到目前为止，我们只研究了水平轴上的行为，但在垂直轴上也有类似的规律。如果我们把之前的讨论旋转 90 度，我们会得到几乎相同的结果。例如，下面的标记结果如图 11-18 所示:
+
+```html
+<div style="position: relative; width: 30em; height: 10em; border: 1px solid;">
+  <div
+    style="position: absolute; left: 0; width: 30%;
+ background: #CCC; top: 0;"
+  >
+    element A
+  </div>
+  <div
+    style="position: absolute; left: 35%; width: 30%;
+ background: #AAA; top: 0; height: 50%;"
+  >
+    element B
+  </div>
+  <div
+    style="position: absolute; left: 70%; width: 30%;
+ background: #CCC; height: 50%; bottom: 0;"
+  >
+    element C
+  </div>
+</div>
+```
+
+在第一种情况下，元素的高度被压缩到内容。在第二种方法中，设置了未指定的属性(“bottom”)来弥补定位元素的底部与包含它的块的底部之间的距离。在第三种情况中，“top”是未指定的，因此用于弥补差异。
+
+<Figures figure="11-18">Vertical layout behavior for absolutely positioned elements</Figures>
+
+因此，自动页边距会导致垂直居中。根据以下样式，绝对定位的“div”将在其包含的块内垂直居中，如图 11-19 所示:
+
+```html
+<div style="position: relative; width: 10em; height: 10em; border: 1px solid;">
+  <div
+    style="position: absolute; left: 0; width: 100%; background: #CCC;
+ top: 0; height: 5em; bottom: 0; margin: auto 0;"
+  >
+    element D
+  </div>
+</div>
+```
+
+有两个小的变化需要指出。在水平布局中，如果“右”或“左”的值为“auto”，则可以根据静态位置放置它们。在垂直布局中，只有“顶”可以占据静态位置;“底部”，不管出于什么原因，都不能。
+
+此外，如果一个绝对定位元素的大小在垂直方向上被过度约束，“底部”将被忽略。因此，在以下情况下，' bottom '的声明值将被' 5em '的计算值覆盖:
+
+```html
+<div style="position: relative; width: 10em; height: 10em; border: 1px solid;">
+  <div
+    style="position: absolute; left: 0; width: 100%; background: #CCC;
+ top: 0; height: 5em; bottom: 0; margin: 0;"
+  >
+    element D
+  </div>
+</div>
+```
+
+如果属性被过度约束，没有“top”被忽略的规定。
+
+<Figures figure="11-19">Vertically centering an absolutely positioned element with auto-margins</Figures>
+
+### 11.6.5 Placing and Sizing Replaced Elements
+
+被替换元素(例如，图像)的定位规则与未替换元素的定位规则不同。这是因为被替换的元素具有固有的高度和宽度，因此除非作者明确地更改，否则不会更改。因此，在被替换元素的定位中没有“缩小以适应”的概念。
+
+放置和调整大小所替换元素的行为最容易通过一系列规则一个接一个地表达出来。这些状态:
+
+1. 如果将“width”设置为“auto”，则“width”的使用值由元素内容的固有宽度决定。因此，如果一个图像的内部宽度为 50 像素，那么使用的值将被计算为“50px”。如果显式地声明了' width '(即' 100px '或' 50% '之类的内容)，那么宽度就设置为该值。
+2. 如果“left”在从左到右的语言中具有值“auto”，则将“auto”替换为静态位置。在从右到左的语言中，将“right”的“auto”值替换为静态位置。
+3. 如果' left '或' right '仍然是' auto '(换句话说，它在前面的步骤中没有被替换)，则将' margin-left '或' margin-right '上的' auto '替换为' 0 '。
+4. 如果此时，' margin-left '和' margin-right '仍然被定义为' auto '，则将它们设置为相等，从而使其所在块中的元素居中。
+5. 在所有这些之后，如果只剩下一个“auto”值，则将其更改为等于等式的其余部分。
+
+这导致了与绝对定位的不可替换元素相同的基本行为，只要您假定不可替换元素有一个显式的“宽度”。因此，假设图像的固有宽度为 100 像素(见图 11-20)，以下两个元素将具有相同的宽度和位置:
+
+```html
+<div>
+  <img
+    src="frown.gif"
+    alt="a frowny face"
+    style="position: absolute; top: 0; left: 50px; margin: 0;"
+  />
+</div>
+<div
+  style="position: absolute; top: 0; left: 50px;
+ width: 100px; height: 100px; margin: 0;"
+>
+  it's a div!
+</div>
+```
+
+<Figures figure="11-20">Absolutely positioning a replaced element</Figures>
+
+与非替换元素一样，如果值被过度约束，用户代理应该忽略从左到右语言中的“right”和从右到右语言中的“left”的值。因此，在下面的例子中，' right '的声明值被计算值' 50px '覆盖:
+
+```html
+<div style="position: relative; width: 300px;">
+  <img
+    src="frown.gif"
+    alt="a frowny face"
+    style="position: absolute; top: 0;
+ left: 50px; right: 125px; width: 200px; margin: 0;"
+  />
+</div>
+```
+
+类似地，沿垂直轴的布局由一系列规则控制，这些规则表示:
+
+1. 如果' height '设置为' auto '，则' height '的计算值由元素内容的固有高度决定。因此，一个 50 像素高的图像的高度被计算为“50px”。如果显式声明了' height '(即' 100px '或' 50% '之类的内容)，则高度将设置为该值。
+2. 如果“top”的值为“auto”，则将其替换为被替换元素的静态位置。
+3. 如果“bottom”的值为“auto”，则将“margin-top”或“margin-bottom”上的任何“auto”值替换为“0”。
+4. 如果此时，' margin-top '和' margin-bottom '仍然被定义为' auto '，则将它们设置为相等，从而使其所在块中的元素居中。
+5. 在所有这些之后，如果只剩下一个“auto”值，则将其更改为等于等式的其余部分。
+
+与非替换元素一样，如果值被过度约束，那么用户代理应该忽略“bottom”的值。
+
+因此，下面的标记将得到如图 11-21 所示的结果:
+
+```html
+<div
+  style="position: relative; height: 200px; width: 200px; border: 1px solid;"
+>
+  <img
+    src="one.gif"
+    alt="one"
+    width="25"
+    height="25"
+    style="position: absolute; top: 0; left: 0; margin: 0;"
+  />
+  <img
+    src="two.gif"
+    alt="two"
+    width="25"
+    height="25"
+    style="position: absolute; top: 0; left: 60px; margin: 10px 0;
+ bottom: 4377px;"
+  />
+  <img
+    src="three.gif"
+    alt=" three"
+    width="25"
+    height="25"
+    style="position: absolute; left: 0; width: 100px; margin: 10px;
+ bottom: 0;"
+  />
+  <img
+    src="four.gif"
+    alt=" four"
+    width="25"
+    height="25"
+    style="position: absolute; top: 0; height: 100px; right: 0;
+ width: 50px;"
+  />
+  <img
+    src="five.gif"
+    alt="five"
+    width="25"
+    height="25"
+    style="position: absolute; top: 0; left: 0; bottom: 0; right: 0;
+ margin: auto;"
+  />
+</div>
+```
+
+<Figures figure="11-21">Stretching replaced elements through positioning</Figures>
+
+### 11.6.6 Placement on the Z-Axis
+
+随着所有的定位的进行，将不可避免地出现这样一种情况，即两个元素将试图在同一个地方存在，从视觉上来说。它们中的一个必须与另一个重叠——但是如何控制哪一个元素“在上面”呢?
+
+这就是属性“z 索引”的用武之地。
+
+“z-index”可以改变元素相互重叠的方式。它的名字来自于一个坐标系，在这个坐标系中，从左到右是“x 轴”，从上到下是“y 轴”。在这种情况下，第三个轴，也就是从后到前的轴，就像你在显示器表面看到的那样，被称为“z 轴”。因此，使用“z-index”沿这个轴给元素赋值。图 11-22 说明了这个系统。
+
+<Cards cards="z-index" />
+
+<Figures figure="11-22">A conceptual view of z-index stacking</Figures>
+
+在这个坐标系中，具有较高“z-index”值的元素比具有较低“z-index”值的元素更靠近读取器。这将导致高值元素与其他元素重叠，如图 11-23 所示，这是图 11-22 的“正面”视图。这种重叠的优先级称为叠加。
+
+<Figures figure="11-23">How the elements are stacked</Figures>
+
+任何整数都可以用作“z-index”的值，包括负数。为一个元素赋值一个负的“z-index”会使它离读取器更远;也就是说，它将被移到堆栈的较低位置。考虑以下风格，如图 11-24 所示:
+
+```css
+p {
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid;
+}
+p#first {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 40%;
+  height: 10em;
+  z-index: 8;
+}
+p#second {
+  position: absolute;
+  top: -0.75em;
+  left: 15%;
+  width: 60%;
+  height: 5.5em;
+  z-index: 4;
+}
+p#third {
+  position: absolute;
+  top: 23%;
+  left: 25%;
+  width: 30%;
+  height: 10em;
+  z-index: 1;
+}
+p#fourth {
+  position: absolute;
+  top: 10%;
+  left: 10%;
+  width: 80%;
+  height: 10em;
+  z-index: 0;
+}
+```
+
+每个元素都根据其样式进行定位，但是通常的堆叠顺序会被“z-index”值改变。假设段落是按数字顺序排列的，那么一个合理的堆叠顺序应该是，从低到高，“p#first”，“p#second”，“p#third”，“p#fourth”。这将把“p#first”放在其他三个元素后面，而“p#fourth”放在其他元素前面。由于“z 索引”，堆叠顺序在您的控制。
+
+<Figures figure="11-24">Stacked elements can overlap</Figures>
+
+正如前面的示例所演示的，没有必要特别要求' z-index '值是连续的。您可以分配任何大小的任何整数。如果您想确保某个元素始终位于其他元素之前，可以使用“z-index: 100000”这样的规则。在大多数情况下，这将与预期一样工作—尽管如果您曾经将另一个元素的' z-index '声明为' 100001 '(或更高)，它将出现在前面。
+
+一旦您为元素赋值给‘z-index’(而不是‘auto’)，该元素就会建立自己的本地堆栈上下文。这意味着相对于祖先元素，所有元素的后代都有自己的堆叠顺序。这与元素建立新的包含块的方式非常相似。给定以下样式，您将看到类似图 11-25 的内容:
+
+```css
+p {
+  border: 1px solid;
+  background: #ddd;
+  margin: 0;
+}
+#one {
+  position: absolute;
+  top: 1em;
+  left: 0;
+  width: 40%;
+  height: 10em;
+  z-index: 3;
+}
+#two {
+  position: absolute;
+  top: -0.75em;
+  left: 15%;
+  width: 60%;
+  height: 5.5em;
+  z-index: 10;
+}
+#three {
+  position: absolute;
+  top: 10%;
+  left: 30%;
+  width: 30%;
+  height: 10em;
+  z-index: 8;
+}
+p[id] em {
+  position: absolute;
+  top: -1em;
+  left: -1em;
+  width: 10em;
+  height: 5em;
+}
+#one em {
+  z-index: 100;
+  background: hsla(0, 50%, 70%, 0.9);
+}
+#two em {
+  z-index: 10;
+  background: hsla(120, 50%, 70%, 0.9);
+}
+#three em {
+  z-index: -343;
+  background: hsla(240, 50%, 70%, 0.9);
+}
+```
+
+<Figures figure="11-25">Positioned elements establish local stacking contexts</Figures>
+
+注意“em”元素在堆叠顺序中的位置。它们中的每一个都根据其父元素正确地分层。每个“em”都被绘制在它的父元素前面，不管它的“z-index”是否为负，父元素和子元素就像编辑程序中的层一样被分组在一起。(在使用' z-index '堆叠时，该规范避免将孩子绘制在父母后面，因此' p# 3 '中的' em '被绘制在' p# 1 '的顶部，尽管它的' z-index '值是' -343 '。)它的“z-index”值是相对于它的本地堆叠上下文:它的包含块。而包含该块的块有一个“z 索引”，该索引在其本地堆栈上下文中进行操作。
+
+还有一个价值需要考察。CSS 规范对默认值“auto”做了如下说明:
+
+当前堆栈上下文中生成的盒子的堆栈级别为 0。除非 box 是根元素，否则它不会建立新的堆栈上下文。
+
+因此，任何带有' z-index: auto '的元素都可以被视为' z-index: 0 '。
+
+<Tips tips="green"><code>z-index</code> is also honored by flex and grid items, even though they are not positioned using the <code>position</code> property. The rules are essentially the same.</Tips>
+
+## 11.7 Fixed Positioning
+
+正如前一节所暗示的，固定定位和绝对定位一样，只是固定元素的包含块是“viewport”。固定位置的“元素”将完全从文档流中删除，并且没有相对于文档任何部分的位置。
+
+固定定位可以用许多有趣的方式加以利用。首先，可以使用固定的位置创建框架样式的接口。考虑图 11-26，它显示了一个非常常见的布局方案。
+
+<Figures figure="11-26">Emulating frames with fixed positioning</Figures>
+
+这可以使用以下风格:
+
+```css
+div#header {
+  position: fixed;
+  top: 0;
+  bottom: 80%;
+  left: 20%;
+  right: 0;
+  background: gray;
+}
+div#sidebar {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 80%;
+  background: silver;
+}
+```
+
+这将把标题和侧边栏固定在视图的顶部和侧面，无论文档如何滚动，它们都将保持在那里。但是，这里的缺点是文档的其余部分将被固定的元素覆盖。因此，其余的内容可能应该包含在自己的“div”中，并采用类似下面的内容:
+
+```css
+div#main {
+  position: absolute;
+  top: 20%;
+  bottom: 0;
+  left: 20%;
+  right: 0;
+  overflow: scroll;
+  background: white;
+}
+```
+
+甚至可以通过添加适当的边距来在三个定位的' div 之间创建小的空白，如下所示:
+
+```css
+body {
+  background: black;
+  color: silver;
+} /* colors for safety's sake */
+div#header {
+  position: fixed;
+  top: 0;
+  bottom: 80%;
+  left: 20%;
+  right: 0;
+  background: gray;
+  margin-bottom: 2px;
+  color: yellow;
+}
+div#sidebar {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 80%;
+  background: silver;
+  margin-right: 2px;
+  color: maroon;
+}
+div#main {
+  position: absolute;
+  top: 20%;
+  bottom: 0;
+  left: 20%;
+  right: 0;
+  overflow: auto;
+  background: white;
+  color: black;
+}
+```
+
+在这种情况下，可以将平铺图像应用于“body”背景。这幅图将通过页边空白处的空隙显示出来，如果作者认为合适，这些空隙当然可以扩大。
+
+固定定位的另一个用途是在屏幕上放置一个“persistent”元素，比如一个链接列表。我们可以创建一个持久的“页脚”与版权和其他信息如下:
+
+```css
+footer {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  height: auto;
+}
+```
+
+这将把“footer”元素放在 viewport 的底部，不管文档滚动了多少次，它都会留在那里。
+
+<Tips tips="blue">Many of the layout cases for fixed positioning, besides “persistent elements,” are handled as well, if not better, by Grid layout (see Chapter 13 for more).</Tips>
+
+## 11.8 Relative Positioning
+
+最简单的定位方案是“相对定位”。在此方案中，定位元素通过使用偏移属性进行移位。然而，这可能会产生一些有趣的结果。
+
+从表面上看，这似乎很简单。假设我们想要将一个图像向左向上移动。图 11-27 显示了这些样式的结果:
+
+```css
+img {
+  position: relative;
+  top: -20px;
+  left: -20px;
+}
+```
+
+<Figures figure="11-27">A relatively positioned element</Figures>
+
+我们在这里所做的是偏移图像的上边缘 20 像素向上和左边缘 20 像素向左偏移。但是，请注意，如果图像没有被定位的话，它会出现在空白区域。这是因为当一个元素相对定位时，它会从正常位置移动，但它原本占据的空间不会消失。考虑图 11-28 中所示的下列样式的结果:
+
+```css
+em {
+  position: relative;
+  top: 10em;
+  color: red;
+}
+```
+
+<Figures figure="11-28">Another relatively positioned element</Figures>
+
+正如你所看到的，这个段落有一些空白。这就是' em '元素的位置，而' em '元素在新位置的布局正好反映了它所留下的空间。
+
+也可以移动相对定位的元素来重叠其他内容。例如，下面的样式和标记如图 11-29 所示:
+
+```css
+img.slide {
+  position: relative;
+  left: 30px;
+}
+```
+
+```html
+<p>
+  the right. It will therefor
+  <img src="star.gif" alt="A ar!" class="slide" /> overlap content nearby,
+  assuming that it is not the last element in its line box.
+</p>
+```
+
+<Figures figure="11-29">Relatively positioned elements can overlap other content</Figures>
+
+相对定位有一个有趣的问题。当一个相对定位的元素被过度约束时会发生什么?例如:
+
+```css
+strong {
+  position: relative;
+  top: 10px;
+  bottom: 20px;
+}
+```
+
+这里我们的价值观要求两种完全不同的行为。如果我们只考虑' top: 10px '，那么元素应该向下移动 10 个像素，而' bottom: 20px '显然要求元素向上移动 20 个像素。
+
+最初的 CSS2 规范没有说明在这种情况下应该发生什么。CSS2.1 指出，当涉及到过约束相对定位时，一个值被重置为另一个值的负值。因此，“底部”总是等于“顶部”。这意味着前一个例子将被视为:
+
+```css
+strong {
+  position: relative;
+  top: 10px;
+  bottom: -10px;
+}
+```
+
+因此，“强”元素将向下移动 10 个像素。规范还考虑了书写说明。在相对定位中，从左到右的语言中，“右”总是等于“-左”;但在从右到左的语言中，情况正好相反:“left”总是等于“-right”。
+
+<Tips tips="blue">As we saw in previous sections, when we relatively position an element, it immediately establishes a new containing block for any of its children. This containing block corresponds to the place where the element has been newly positioned.</Tips>
+
+## 11.9 Sticky Positioning
+
+CSS 的一个新特性是粘性定位的概念。如果您曾经使用过一个像样的音乐应用在移动设备上,你可能已经注意到在行动:当你滚动按字母顺序排列的艺术家的列表当前字母保持停留在窗口的顶部,直到一个新的字母输入部分,此时新的替换旧信。在打印中显示有点困难，但是图 11-30 通过在滚动中显示三个点尝试了一下。
+
+<Figures figure="11-30">Sticky positioning</Figures>
+
+CSS 通过将一个元素声明为' position: sticky '来实现这种功能，但是(通常)它还有更多的功能。
+
+首先，偏移量(“顶部”、“左侧”等)用于定义一个与包含块相关的“粘贴定位矩形”。以下面为例。它的效果如图 11-31 所示，虚线显示了 stickypositioning 矩形的创建位置:
+
+```css
+#scrollbox {
+  overflow: scroll;
+  width: 15em;
+  height: 18em;
+}
+#scrollbox h2 {
+  position: sticky;
+  top: 2em;
+  bottom: auto;
+  left: auto;
+  right: auto;
+}
+```
+
+<Figures figure="11-31">The sticky-positioning rectangle</Figures>
+
+注意，“h2”实际上位于图 11-31 中的矩形中间。这是它在包含内容的' #scrollbox '元素中的正常内容流中的位置。让它具有粘性的唯一方法是滚动该内容，直到“h2”的顶部与粘性定位矩形的顶部相接触——此时，它将粘在那里。如图 11-32 所示。
+
+<Figures figure="11-32">Sticking to the top of the sticky-positioning rectangle</Figures>
+
+换句话说，“h2”在正常的流中，直到它的粘性边缘接触到矩形的粘性边缘。在这一点上，它粘在那里，就像完全定位，“除了”它留下的空间，否则它会占据正常的流动。
+
+您可能已经注意到“scrollbox”元素没有“position”声明。也没有一个隐藏在后台:它是' overflow: scroll '，为粘贴位置的' h2 '元素创建了一个包含块。这是一种包含块不是由“位置”决定的情况。
+
+如果将滚动反转，使' h2 '的正常流位置移动到比矩形顶部更低的位置，则' h2 '将从矩形中分离出来，并恢复其在正常流中的位置。如图 11-33 所示。
+
+<Figures figure="11-33">Detaching from the top of the sticky-positioning rectangle</Figures>
+
+请注意，在这些例子中，' h2 '粘在'顶部'的原因是'顶部'的值被设置为' auto '以外的' h2 ';也就是说，对于粘贴位置的元素。你可以用任何你想要的偏移量。例如，可以让元素在向下滚动内容时粘附在矩形的底部。如图 11-34 所示:
+
+```css
+#scrollbox {
+  overflow: scroll;
+  position: relative;
+  width: 15em;
+  height: 10em;
+}
+#scrollbox h2 {
+  position: sticky;
+  top: auto;
+  bottom: 0;
+  left: auto;
+  right: auto;
+}
+```
+
+<Figures figure="11-34">Sticking to the bottom of the sticky-positioning rectangle</Figures>
+
+例如，这可能是显示给定段落的脚注或注释的一种方式，同时允许它们随着段落向上滚动。同样的规则也适用于左侧和右侧，这对于横向滚动内容非常有用。
+
+如果你定义了一个以上的偏移属性来代替“auto”，那么所有的偏移属性都将成为粘滞边缘。例如，这组样式将强制“h2”始终出现在滚动框中，无论其内容以何种方式滚动(图 11-35):
+
+```css
+#scrollbox {
+  overflow: scroll;
+  :15em ;
+  height: 10em;
+}
+#scrollbox h2 {
+  position: sticky;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+```
+
+<Figures figure="11-35">Making every side a sticky side</Figures>
+
+您可能想知道:如果在这种情况下，我有多个定位不清的元素，而我滚动过去两个或更多，会发生什么?实际上，它们一个接一个地堆积起来:
+
+```css
+#scrollbox {
+  overflow: scroll;
+  width: 15em;
+  height: 18em;
+}
+#scrollbox h2 {
+  position: sticky;
+  top: 0;
+  width: 40%;
+}
+h2#h01 {
+  margin-right: 60%;
+  background: hsla(0, 100%, 50%, 0.75);
+}
+h2#h02 {
+  margin-left: 60%;
+  background: hsla(120, 100%, 50%, 0.75);
+}
+h2#h03 {
+  margin-left: auto;
+  margin-right: auto;
+  background: hsla(240, 100%, 50%, 0.75);
+}
+```
+
+在图 11-36 这样的静态图像中不太容易看到，但是标题堆积的方式是，它们在源中的时间越晚，就越接近查看器。这是通常的“z-index”行为——这意味着您可以通过指定显式的“z-index”值来决定哪些粘性元素位于其他元素之上。例如，假设我们希望内容中的第一个 sticky 元素位于所有其他元素之上。通过赋予它“z 指数:1000”，或任何其他足够高的数字，它将位于所有其他粘在同一位置的粘元素之上。视觉效果将是其他元素“滑下”最上面的元素。
+
+<Figures figure="11-36">A sticky-header pileup</Figures>
+
+<Tips tips="orange">As of late 2017, the only browsers that didn’t support <code>position: sticky</code> were Microsoft IE and Edge, and Opera Mini. Safari required a <code>-webkit-</code> prefix on the value, so: <code>position: -webkitsticky</code>.</Tips>
+
+## 11.10 Summary
+
+由于定位，它可以移动元素的方式，正常的流动永远无法适应。虽然许多定位技巧很快就会让位于网格布局，但定位仍然有很多用途——从始终停留在视口的侧栏到列表或长文章中的粘性章节标题。结合 z 轴的叠加可能性和各种溢流模式，在定位上还有很多值得喜欢的地方。
+
 # 第 12 章 弹性盒布局
 
 CSS Flexible Box Module Level 1（简称 [Flexbox](https://www.w3.org/TR/css-flexbox-1/)，弹性盒）把以往间距的布局人物变得极为简单，例如很多类型的页面、小组件、应用和图库。
