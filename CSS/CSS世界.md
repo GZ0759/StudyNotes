@@ -952,7 +952,7 @@ HTML 中有两个标签是默认可以产生滚动条的，一个是根元素`<h
 
 知道`overflow: hidden`元素依然可以滚动，还可以帮助我们理解一些现象发生的原因。例如，之前提到过的使用 margin-bottom 负值加 padding-bottom 正值以及父元素 `overflow: hidden` 配合实现的等高布局，在大多数情况下，这种布局使用是没有任何问题的，但是如果使用`dom.scrollIntoView()`或者触发窗体视区范围之外的内部元素的锚点定位行为，布局就会飞掉，没错，布局就像长了翅膀一样飞掉了。
 
-## 6.5 float 的兄弟 position:absolute
+## 6.5 float 的兄弟 position: absolute
 
 当 absolute 和 float 同时存在的时候，float 属性是无任何效果的。因此，没有任何理由 absolute 和 float 同时使用。但是两者都具有很多相似的属性。
 
@@ -1065,7 +1065,7 @@ CSS 世界中有些属性或者特性必须和其他属性一起使用才有效�
 
 - 下策是`display: none`或者`visibility: hidden`隐藏，因为屏幕阅读设备会忽略这里的文字。
 - text-indent 缩进是中策，但文字如果缩进过大，大到屏幕之外，屏幕阅读设备也是不会读取的。
-- `color:transparent`是移动端上策，但却是桌面端中策，因为原生 IE8 浏览器并不支持它`color: transparent`声明，很难用简单的方式阻止文本被框选。
+- `color: transparent`是移动端上策，但却是桌面端中策，因为原生 IE8 浏览器并不支持它`color: transparent`声明，很难用简单的方式阻止文本被框选。
 - clip 剪裁隐藏是上策，既满足视觉上的隐藏，屏幕阅读设备等辅助设备也支持得很好。
 
 clip 裁剪称为“最佳可访问性隐藏”的另外一个原因就是，它具有更强的普遍应用性，任何元素、任何场景都可以无障碍使用。
@@ -1133,7 +1133,7 @@ clip 隐藏仅仅是决定了哪部分是可见的，非可见部分无法响应
 }
 ```
 
-## 6.9 position:relative 才是大哥
+## 6.9 position: relative 才是大哥
 
 虽然说 relative/absolute/fixed 都能对 absolute 的“包裹性”以及“定位”产生限制，但只有 relative 可以让元素依然保持在正常的文档流中。relative 的定位有两大特性：一是相对自身；二是无侵入。使用 relative 定位的元素，其相对的是自身进行偏移。 “无侵入”的意思是，当 relative 进行定位偏移的时候，一般情况下不会影响周围元素的布局。
 
