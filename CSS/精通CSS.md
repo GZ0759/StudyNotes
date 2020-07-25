@@ -657,33 +657,18 @@ Flexbox，也就是 Flexible Box Layout 模块，是 CSS 提供的用于布局�
 - 两个轴向上的对齐与分布；
 - 顺序，与源代码中的顺序无关。
 
-容器属性
-
-- flex-flow
-  - flex-direction 主轴方向`（flex-direction: row|row-reverse|column|column-reverse）`
-  - flex-wrap 换行处理`（flex-wrap: nowrap | wrap | wrap-reverse）`
-- justify-content 主轴对齐`（justify-content: flex-start|flex-end|center|space-between|space-around）`
-- align-items 辅轴对齐`（align-items: stretch|center|flex-start|flex-end|baseline）`
-- align-content 多行对齐`（align-content: stretch|center|flex-start|flex-end|space-between|space-around）`
-
-元素属性
-
-- order 调整顺序
-- flex
-  - flex-grow 放大比例
-  - flex-shrink 缩小比例
-  - flex-basis 原始尺寸
-- align-self 单独对齐方式
-
 ### 6.3.1 浏览器支持与语法
 
-Flexbox 已经得到主流浏览器较新版本的广泛支持。如果要支持 IE10 及更早版本的 Webkit 浏览器，需要在本章标准代码基础上补充提供商前缀属性和一些不同的属性。IE9 及更早版本的 IE 不支持 Flexbox。
+Flexbox 已经得到主流浏览器较新版本的广泛支持。如果要支持 IE10 及更早版本的 Webkit 浏览器，需要在本章标准代码基础上补充提供商前缀属性和一些不同的属性。
+
+IE9 及更早版本的 IE 不支持 Flexbox。
 
 ### 6.3.2 理解 Flex 方向：主轴和辅轴
 
-区域内的盒子可以沿两个方向排列：默认水平排列（成一行），也可以垂直排列（成一列），这个排列方向成为主轴（main axis）。与主轴垂直的方向为辅轴（cross axis），区域内的盒子可以沿辅轴发生位移或伸缩。
 
-通常，Flexbox 布局中最重要的尺寸就是主轴方向的尺寸：水平布局时的宽度或垂直布局时的高度，这个主轴方向的尺寸叫做主尺寸（main size）。
+Flexbox可以针对页面中某一区域，控制其中元素的顺序、大小、分布及对齐。这个区域的盒子可以沿两个方向排列：默认水平排列（成一行）,也可以垂直排列（成一列）。这个排列方向称为主轴（main axis)。
+
+与主轴垂直的方向称为辅轴（cross axis),区域内的盒子可以沿辅轴发生位移或伸缩，如图6-23所示。通常，Flexbox布局中最重要的尺寸就是主轴方向的尺寸：水平布局时的宽度或垂直布局时的高度。我们称主轴方向的这个尺寸为主尺寸（main size)。
 
 所有项集中在左侧，是从左到右书写的语言环境下的默认行为。如果把 flex-direction 改成 row-reverse，那么所有项就会集中到右侧，而且变成从右向左排列。
 
@@ -693,15 +678,27 @@ Flexbox 已经得到主流浏览器较新版本的广泛支持。如果要支持
 
 Flexbox 对子项的排列有多种方式，沿主轴的排列叫排布（justification），沿辅轴的排列则叫对齐（alignment）。 
 
-排布对齐。用于指定排布方式的属性是 justify-content，其默认值是 flex-start，表示按照当前文本方向排布，关键词还有 flex-end、center、space-between、space-around。
+用于指定排布方式的属性是 justify-content，其默认值是 flex-start，表示按照当前文本方向排布（也就向左对齐）。如果改成 flex-end ，所有项就会挤到右侧（变成向右对齐）。关键词还有 center、space-between、space-around。
 
-Flexbox 不允许通过以上这些关键字指定个别项的排布方式。然而，如果指定某一项的外边距值为 auto，而且在容器里哪一侧还有空间，那么该外边距就会扩展占据可用空间。
+Flexbox 不允许通过以上这些关键字指定个别项的排布方式。然而，如果指定某个别项的外边距值为 auto，而且在容器里哪一侧还有空间，那么该外边距就会扩展占据可用空间。具体来说，如果指定某项一侧的外边距值为 auto，而且在容器里那一侧还有空间，那么该外边距就会扩展占据可用空间。利用这一点，可以创造让一项位于一侧，其他项位于另一侧的布局。
 
-辅轴对齐。如果增加 Flex 容器自身或其中一项的高度，会发现子项自动就等高了。实际上，控制辅轴对齐的属性 align-items，其默认值就是 stretch，其它关键字时 flex-start、center 和 flex-end。最后，后可以使用 baseline 关键字，将子项中文本的基线与容器基线对齐，效果与行内块元素的默认行为类似。
+本质上来说，像这样使用自动外边距抵消了其他项的排布效果。因为之后就没有多余空间可分了。尽管如此，对其他项仍然可以使用外边距。
+
+**辅轴对齐**
+
+前面通过 Flexbox 轻松解决了水平布局的基本问题。实际上，Flexbox还支持对另一轴向的控制。如果增加 Flex 容器自身或其中一项的高度，会发现所有子项自动就等高了。实际上，控制辅轴对齐的属性 align-items，其默认值就是 stretch（拉伸）。也就是说，子项默认拉伸，以填满可用空间。其它关键字时 flex-start、center 和 flex-end。这三个关键字都会把子项收缩成原有大小，然后再沿辅轴进行上、中、下对齐。
+
+最后，后可以使用 baseline 关键字，将子项中文本的基线与容器基线对齐，效果与行内块元素的默认行为类似。如果子项大小不一，而希望在辅轴上虽然位置不同，但本身对齐，那么就可以采用这种方法。
+
+**对齐个别项**
 
 除了同时对其所有项，还可以在辅轴上指定个别项的对齐方式。使用的是 align-self 属性。align-self 属性重写了容器的 align-items 属性。
 
-垂直和水平居中。Flexbox 中的垂直对齐。在容器里只有一个元素时，只要将容器设置为 flex，再将需要居中的元素的外边距设置为 auto 就行了，因为 Flexbox 中各项的自动外边距会扩展“填充”相应方向的空间。如果 Flex 容器有多个元素，那么就可以使用对齐属性将它们聚拢到水平和垂直中心上，只需要把排布和对齐都设置为 center。
+**Flexbox中的垂直对齐**
+
+终于，Flexbox可以轻松解决垂直对齐问题了。在容器里只有一个元素时，只要将容器设置为 flex，再将需要居中的元素的外边距设置为 auto 就行了，因为 Flexbox 中各项的自动外边距会扩展“填充”相应方向的空间。
+
+水平并且垂直居中。如果 Flex 容器有多个元素，那么就可以使用对齐属性将它们聚拢到水平和垂直中心上，只需要把排布和对齐都设置为 center。（当然，这也适用于单个元素的情况，只不过`margin: auto`的代码更少。）
 
 ### 6.3.4 可伸缩的尺寸
 
