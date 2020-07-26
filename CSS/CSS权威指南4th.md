@@ -2826,7 +2826,7 @@ z-index 还有一个值需要说明。CSS 规范是这样规定默认值 auto �
 
 因此，z-index:auto 可以视作 z-index:0。
 
-> 尽管弹性布局和棚格布局中的元素不使用 position 属性定位，但是它们也受 z-index 的控制，相关的规则本质上是一样的。
+> 尽管弹性布局和栅格布局中的元素不使用 position 属性定位，但是它们也受 z-index 的控制，相关的规则本质上是一样的。
 
 ## 11.7 固定定位
 
@@ -2925,7 +2925,7 @@ footer {
 
 这个样式把 footer 元素放在视区的底部，不管如何滚动文档，始终显示在那里。
 
-> 除了始终可见的元素之外，其他很多通过固定定位实现的效果都能使用研格布局（译情参见第 13 章）实现，而且有时可能更方便。
+> 除了始终可见的元素之外，其他很多通过固定定位实现的效果都能使用栅格布局（译情参见第 13 章）实现，而且有时可能更方便。
 
 ## 11.8 相对定位
 
@@ -3130,15 +3130,15 @@ CSS Flexible Box Module Level 1（简称 [Flexbox](https://www.w3.org/TR/css-fle
 
 弹性盒依赖父子关系。在元素上生命`display: flex`或`display: inline-flex`便激活弹性盒布局，而这个元素随之成为弹性容器（flex-container），负责在所占的空间内布置子元素，控制子元素的布局。弹性容器的子元素称为弹性元素（flex-item）
 
-注意，div的每个子元素都变成一个弹性元素，而且是以相同方式布局的。不管是段落还是span元素，都变成弹性元素（如果不把段落的外边距去掉，会有一些区别）。
+注意，div 的每个子元素都变成一个弹性元素，而且是以相同方式布局的。不管是段落还是 span 元素，都变成弹性元素（如果不把段落的外边距去掉，会有一些区别）。
 
-上面两个弹性容器之间唯一的区别是，一个使用`display: flex`得到，另一个使用`display: inline-flex`得到。第一个div元素生成的是块级框，弹性元素在其中布局。而第二个div元素生成的是行内块级框，弹性元素在其中布局。
+上面两个弹性容器之间唯一的区别是，一个使用`display: flex`得到，另一个使用`display: inline-flex`得到。第一个 div 元素生成的是块级框，弹性元素在其中布局。而第二个 div 元素生成的是行内块级框，弹性元素在其中布局。
 
-记住，把一个元素设为弹性容器之后，例如图12-1中那两个div元素，只有直接子元素使用弹性盒布局，其他后代元素不受影响，这一点十分重要。然而，你也可以把后代元素也设为弹性容器，实现特别复杂的布局。
+记住，把一个元素设为弹性容器之后，例如图 12-1 中那两个 div 元素，只有直接子元素使用弹性盒布局，其他后代元素不受影响，这一点十分重要。然而，你也可以把后代元素也设为弹性容器，实现特别复杂的布局。
 
 在弹性容器中，各元素在主轴上排列。主轴可以是横向的，也可以是纵向的，因此可以把元素布置为列或行。主轴采用书写模式设置的方向，深入讨论见本章后面“深入理解各种轴”一节。
 
-如图12-1中的第一个div元素所示，如果弹性元素没有占满容器的整个主轴（这里指宽子无素可以全部靠后，这些空自的具体处理方式可由几个属性控制，详情参见后文。子元素可以全部靠左、全部靠右、全部居中，也可以均匀分布，把多出的空间平均分配在子元素之间或四周。
+如图 12-1 中的第一个 div 元素所示，如果弹性元素没有占满容器的整个主轴（这里指宽子无素可以全部靠后，这些空自的具体处理方式可由几个属性控制，详情参见后文。子元素可以全部靠左、全部靠右、全部居中，也可以均匀分布，把多出的空间平均分配在子元素之间或四周。
 
 除了均匀分布空白之外，还可以增加部分弹性元素的尺寸，把多出的空间分给一个，多个或全部弹性元素，如果容器的空间不足以放下所有弹性元素，可以通过相关属性指明缩减弹性元素的尺寸，或者允许换行。
 
@@ -3146,7 +3146,7 @@ CSS Flexible Box Module Level 1（简称 [Flexbox](https://www.w3.org/TR/css-fle
 
 ### 12.1.1 一个简单的例子
 
-在阅读本章的过程中谨记一点：弹性盒的目的是实现一种特定的布局，即一维内容分布。也就是说，弹性盒最适合沿一个方向（或轴）布置内容。虽然可以使用弹性盒实现栅格式的布局（二维布局），但这不是弹性盒的最初目的。如果需要的是二维布局，请阅读第13章。
+在阅读本章的过程中谨记一点：弹性盒的目的是实现一种特定的布局，即一维内容分布。也就是说，弹性盒最适合沿一个方向（或轴）布置内容。虽然可以使用弹性盒实现栅格式的布局（二维布局），但这不是弹性盒的最初目的。如果需要的是二维布局，请阅读第 13 章。
 
 ## 12.2 弹性容器
 
@@ -3154,9 +3154,9 @@ CSS Flexible Box Module Level 1（简称 [Flexbox](https://www.w3.org/TR/css-fle
 
 这些子元素无论是 DOM 元素、文本节点，还是生成的内容，都称为弹性元素。弹性容器中的绝对定位子元素也是弹性元素，不过确定其尺寸和位置时，将其视作弹性容器中唯一的弹性元素。
 
-有时只有一个弹性元素，有时却有很多个。有时我们知道一个节点有多少子元素，有时子元素的数量却不在我们的掌控之中。即便知道元素的数量，可能也不知道容器的宽度。我们需要适应性强的css,即便不知道有多少弹性元素，不知道弹性容器有多宽（比如响应式布局）,也能正确处理布局。这些问题看起来棘手，但是使用弹性盒都能轻易解决，只需使用一些新属性。
+有时只有一个弹性元素，有时却有很多个。有时我们知道一个节点有多少子元素，有时子元素的数量却不在我们的掌控之中。即便知道元素的数量，可能也不知道容器的宽度。我们需要适应性强的 css,即便不知道有多少弹性元素，不知道弹性容器有多宽（比如响应式布局）,也能正确处理布局。这些问题看起来棘手，但是使用弹性盒都能轻易解决，只需使用一些新属性。
 
-### 12.2.1. flex-direction 属性
+### 12.2.1 flex-direction 属性
 
 如果你想要的布局是从上到下、从左至右、从右至左，抑或是从下到上，可以使用 flex-direction 属性控制排布弹性元素的主轴。
 
@@ -3168,21 +3168,21 @@ flex-direction
 继承性否
 动画性否
 
-flex-direction属性指定在弹性容器中如何摆放弹性元素，即定义弹性容器的主轴，弹性元素就沿这个轴排布（详情参见本章后面“深入理解各种轴”一节）。
+flex-direction 属性指定在弹性容器中如何摆放弹性元素，即定义弹性容器的主轴，弹性元素就沿这个轴排布（详情参见本章后面“深入理解各种轴”一节）。
 
-### 12.2.2. 其他书写方向
+### 12.2.2 其他书写方向
 
-如果你的网站使用的是英语等从左至右书写的语言，可能希望弹性元素从左至右、从上到下排布。此时，使用默认值或者设为row即可。然而，如果使用的是阿拉伯语等从右至左书写的语言，可能想从右至左、从上到下排布弹性元素。此时，也是使用默认值或者设为row即可。
+如果你的网站使用的是英语等从左至右书写的语言，可能希望弹性元素从左至右、从上到下排布。此时，使用默认值或者设为 row 即可。然而，如果使用的是阿拉伯语等从右至左书写的语言，可能想从右至左、从上到下排布弹性元素。此时，也是使用默认值或者设为 row 即可。
 
 `flex-direction: row`按照文本方向（即书写模式）布置弹性元素，不管语言是从左至右书写的，还是从右至左书写的。多数网站用的是从左至右书写的语言，不过也有一些网站使用从右至左书写的语言，甚至还有的网站使用从上到下书写的语言。弹性盒定义的是单向布局。修改书写模式后，弹性盒能自动转换弹性方向。
 
-书写模式由writing-mode、direction和text-orientation属性设定，也可以使用HTML的dir属性设置（详情参见第6章）。如果书写模式是从右至左，flex-direction的值为row时，主轴（以及弹性容器中的弹性元素）将从右指向左，如图12-9所示。
+书写模式由 writing-mode、direction 和 text-orientation 属性设定，也可以使用 HTML 的 dir 属性设置（详情参见第 6 章）。如果书写模式是从右至左，flex-direction 的值为 row 时，主轴（以及弹性容器中的弹性元素）将从右指向左，如图 12-9 所示。
 
 世界上还有纵向书写的语言，例如汉语拼音字母、埃及象形文字、平假名、片假名、汉语、韩语、麦罗埃草书和象形文字、蒙古语、欧甘文字、古土耳其语、八思巴语、鼻语及部分日语，这些语言仅在指定纵向书写模式时才纵向排列。否则，这些语言都模向排列，如果指定纵向的书写模式，所有内容都是纵向的，不管是上面列举的某种竖写语言，还是英语。
 
-好的，我们已经讲了弹性方向与书写模式之间的关系。但是目前所举的例子都只有一行或一列弹性元素，如果弹性元素的主维度（row时的宽度之和，column时的高度之和）在弹性容器中放不下将怎样呢？我们可以让放不下的元素溢出，也可以换行。后文还会说明如何缩减弹性元素的尺寸，以便放得下。
+好的，我们已经讲了弹性方向与书写模式之间的关系。但是目前所举的例子都只有一行或一列弹性元素，如果弹性元素的主维度（row 时的宽度之和，column 时的高度之和）在弹性容器中放不下将怎样呢？我们可以让放不下的元素溢出，也可以换行。后文还会说明如何缩减弹性元素的尺寸，以便放得下。
 
-### 12.2.3. 换行
+### 12.2.3 换行
 
 如果弹性元素在弹性容器的主轴上放不下，默认情况下弹性元素不会换行，也不会自动调整尺寸。如果通过 flex 属性来设定允许弹性元素缩减尺寸，那就缩减尺寸。否则，弹性元素将从容器框的边界溢出。
 
@@ -3196,13 +3196,13 @@ flex-wrap
 继承性否
 动画性否
 
-flex-wrap属性的作用是限制弹性容器只能显示一行，或者允许弹性元素在必要时显示多行。允许换行时，wrap和wrap-reverse决定多出的行显示在第一行之前还是之后。默认情况下，不管有多少弹性元素，全部在一行里绘制。这往往不是我们想要的效果。遇到这种情况就要请出flex-wrap属性了。设为wrap或wrap-reverse时，如果弹性元素超出了弹性容器的边界，将换行显示放不下的弹性元素。
+flex-wrap 属性的作用是限制弹性容器只能显示一行，或者允许弹性元素在必要时显示多行。允许换行时，wrap 和 wrap-reverse 决定多出的行显示在第一行之前还是之后。默认情况下，不管有多少弹性元素，全部在一行里绘制。这往往不是我们想要的效果。遇到这种情况就要请出 flex-wrap 属性了。设为 wrap 或 wrap-reverse 时，如果弹性元素超出了弹性容器的边界，将换行显示放不下的弹性元素。
 
-一般情况下，换行时，对row和row-reverse来说垂轴从上指向下方；对column和column-reverse来说，垂轴与语言的横排方向一样。wrap-reverse值的作用与wrap类似，不过额外的行添加在第一行前面，而不是后面。
+一般情况下，换行时，对 row 和 row-reverse 来说垂轴从上指向下方；对 column 和 column-reverse 来说，垂轴与语言的横排方向一样。wrap-reverse 值的作用与 wrap 类似，不过额外的行添加在第一行前面，而不是后面。
 
-设为wrap-reverse时，垂轴的方向相反：对row和row-reverse来说，后续的行在上方绘制：对column和column-reverse来说，后续的行在前一列的左侧绘制。类似地在从右至左书写的语言中，设为row wrap-reverse和row-reverse wrap-reverse时新行也添加到上方，但是设为column wrap-reverse和column-reverse wrap-reverst时，新行添加到右侧，即与语言的书写方向和垂轴的方向相反。
+设为 wrap-reverse 时，垂轴的方向相反：对 row 和 row-reverse 来说，后续的行在上方绘制：对 column 和 column-reverse 来说，后续的行在前一列的左侧绘制。类似地在从右至左书写的语言中，设为 row wrap-reverse 和 row-reverse wrap-reverse 时新行也添加到上方，但是设为 column wrap-reverse 和 column-reverse wrap-reverst 时，新行添加到右侧，即与语言的书写方向和垂轴的方向相反。
 
-### 12.2.4. 定义弹性流
+### 12.2.4 定义弹性流
 
 flex-flow 属性用于定义主轴和垂轴的方向，以及是否允许弹性元素换行。
 
@@ -3224,7 +3224,7 @@ flex-flow: norow;
 flex-flow: row nowrap;
 ```
 
-在从左至右的书写模式下，声明前面给出的任何一个值，或者完全省略flex-flow属性，得到的弹性容器的主轴是横向的，而且不换行，图12-12中的弹性元素在横轴上均匀分布，而且显示在同一行，超过500像素宽的容器后溢出。
+在从左至右的书写模式下，声明前面给出的任何一个值，或者完全省略 flex-flow 属性，得到的弹性容器的主轴是横向的，而且不换行，图 12-12 中的弹性元素在横轴上均匀分布，而且显示在同一行，超过 500 像素宽的容器后溢出。
 
 如果想要的是反向纵排且允许换行的弹性流，使用下述声明中的任何一个都可以：
 
@@ -3252,7 +3252,7 @@ flex-flow: wrap column-reverse;
 
 这些要素的位置取决于弹性方向、换行方式和书写模式。图解每种书写模式有点难，下面仅以从左至右书写的语言为例。各种情况见表 12-1。
 
-### 12.2.5. flex-wrap 续谈
+### 12.2.5 flex-wrap 续谈
 
 默认值 nowrap 禁止换行，因此前文讨论的垂轴方向没有任何意义，毕竟根本不会出现第二行。如果可能出现额外的行（flex-wrap 设为 wrap 或 wrap-reverse 时），那些将沿垂轴方向添加。第一行放在垂轴的起边，额外的行则向垂轴终边排开。
 
@@ -3282,11 +3282,17 @@ justify-content 定义弹性元素在弹性容器主轴方向上的对齐方式�
 
 使用 align-items 属性，可以把所有元素都向垂轴起边或终边靠拢，也可以拉伸元素，同时靠拢起边和终边。此外，还可以把所有弹性元素都居中显示在垂向上。这个属性有五个可选值，包括 flex-start、flex-end、center、baseline 和默认的 stretch,如图 12-29 所示。
 
-### 12.6.1. 起边、缘边和居中对齐
+### 12.6.1 起边、缘边和居中对齐
 
-### 12.6.2. 基线对齐
+起边、终边和剧中对齐所用的值及其效果相对简单，因此放在一起讲。
 
-### 12.6.3. 补充说明
+### 12.6.2 基线对齐
+
+baseline 值有点复杂。设为 baseline 时，一行中的弹性元素向第一条基线对齐。弹性元素行中，基线与垂轴起边那一侧外边距边界之间距离最远的弹性元素，其外边距的外边界与弹性元素行垂轴起边那一侧的边对齐，其他弹性元素的基线则与那个弹性元素的基线对齐。
+
+### 12.6.3 补充说明
+
+如果想要改变某个或某些弹性元素的对齐方式，而不是全部修改，为响应的元素设置 align-self 属性。这个属性的取值与 align-items 一样，参见 12.9 节。
 
 ## 12.7 align-self 属性
 
@@ -3308,13 +3314,13 @@ align-content 的作用与 justify-content 类似，后者在弹性容器的主�
 
 前面几节介绍了如何通过弹性容器的样式整体排布弹性元素。此外，弹性盒布局规范还提供了几个直接应用于弹性元素的属性。利用这些专门针对弹性元素的属性，可以更加细致地控制弹性容器中的单个子元素。
 
-### 12.9.1. 弹性元素是什么
+### 12.9.1 弹性元素是什么
 
 为有子节点的元素声明`display: flex`或`display: inline-flex`即可创建弹性容器。弹性容器的子代称为弹性元素，不管是子元素，还是元素之间非空的文本节点，或是生成的内容。
 
 对弹性容器中的文本子节点来说，如果文本节点不是空的（内容不是空白），将放在一个匿名弹性元素中，其行为与其他同辈弹性元素一样。虽然匿名弹性元素与同辈 DOM 节点一样，将继承在弹性容器上设置的相关弹性属性，但是不能直接使用 CSS 装饰。因此，不能直接在匿名弹性元素上设置针对弹性元素的属性。
 
-### 12.9.2. 弹性元素的特性
+### 12.9.2 弹性元素的特性
 
 弹性元素的外边距不折叠。float 和 clear 属性对弹性元素不起作用，不会把弹性元素移出文档流。其实，应用到弹性元素的 float 和 clear 将被忽略（然而，float 属性对框体的生成仍有影响，因为 display 属性的计算值受它影响）。
 
@@ -3328,13 +3334,14 @@ align-content 的作用与 justify-content 类似，后者在弹性容器的主�
 
 order 属性对弹性容器中绝对定位的子元素的位置没有影响，但是对同辈元素的绘制顺序有影响。
 
-### 12.9.3. 最小宽度
+### 12.9.3 最小宽度
 
 在图 12-40 中可以看到，设为默认值 nowrap 的弹性元素行从弹性容器中溢出了。这是因为对弹性元素来说，未设定 min-width 时，默认为 auto,而不是 0。最初，规范规定，如果弹性元素在唯一的主轴上放不下，其尺寸将缩减。然而，出现弹性元素后，min-width 的规范改了（以前，min-width 的默认值是 0。参见https://drafts.csswg.org/css2/visudet.html#min-max-widths）。
 
 ## 12.10 适用于弹性元素的属性
 
 虽然弹性元素的对齐方式、顺序和弹性（flexibility）在一定程度上受在弹性容器上设置的属性控制，但是有些属性可以应用到单个弹性元素上，以便进行更细致地控制。
+
 简写属性 flex,以及构成它的 flex-grow、flex-shrink 和 flex-basis 属性用于控制弹性元素的弹性。这里所说的弹性是指弹性元素在主轴方向上可以增加或缩减多少尺寸。
 
 ## 12.11 flex 属性
@@ -3357,11 +3364,15 @@ flex 属性有三个值：增长因子，缩减因子和基准。第一个有效
 
 flex 简写属性的`<flex-shrink>`部分指定弹性缩减因子。缩减因子也可以通过 flex-shrink 属性设定。
 
-### 12.13.1. 根据宽度和缩减银子按比例缩小
+### 12.13.1 根据宽度和缩减因子按比例缩小
 
-### 12.13.2. 不同的基准
+上述示例比较简单，因为各弹性元素的宽度一开始是相同的。如果宽度不等呢？如果第一个和最后一个弹性元素的宽度为 250 像素，而中间那个弹性元素的宽度为 500 像素呢？如图 12-48 所示。
 
-### 12.13.3. 响应式弹性布局
+### 12.13.2 不同的基准
+
+如果宽度和弹性基准的值都是 auto，缩减因子为零时，弹性元素中的内容不换行。这与所想的有点出入。其实，缩减因子为任何正数都会导致内容换行。由于缩小的量是与缩减因子成比例的，如果所有弹性元素的缩减因子差不多，内容换行的次数也差不多。
+
+### 12.13.3 响应式弹性布局
 
 利用这种按比例缩小弹性元素尺寸的行为可以实现响应式布局。
 
@@ -3369,15 +3380,17 @@ flex 简写属性的`<flex-shrink>`部分指定弹性缩减因子。缩减因子
 
 我们知道，弹性元素的尺寸受内容及盒模型属性的影响，而且可以通过 flex 属性的三个要素重置。flex 属性中的`<flex-basis>`要素定义弹性元素的初始或默认尺寸，即根据增长因子和缩减因子分配多余或缺少的空间之前，弹性元素的大小。这个要素也可以使用 flex-basis 属性设定。
 
-### 12.14.1. content 关键字
+### 12.14.1 content 关键字
 
-### 12.14.2. 自动确定弹性基准
+### 12.14.2 自动确定弹性基准
 
-### 12.14.3. 默认值
+设为 auto 时，不管是显式声明的还是取默认值，flex-basis 等于元素在主轴方向上的尺寸，就像没把元素变成弹性元素一样。如果 width 或 height 的值是长度，弹性基准就等于那个长度，而如果 width 或 height 也是 auto，那么弹性基准回落为 content。
 
-### 12.14.4. 长度单位
+### 12.14.3 默认值
 
-### 12.14.5. 零基准
+### 12.14.4 长度单位
+
+### 12.14.5 零基准
 
 ## 12.15 flex 简写属性
 
@@ -3392,6 +3405,42 @@ flex 简写属性的`<flex-shrink>`部分指定弹性缩减因子。缩减因子
 3. `flex: none` 这个值还是据 width 或 height 属性确定弹性元素的尺寸，但是元素完全没有弹性，不能缩小也不能增大。
 4. `flex: <number>` 这个值把弹性元素的增长因子设为`<number>`指定的数，同时把缩减因子设为 0,把基准也设为 0。这意味着，width 或 height 属性的值相当于最小尺寸，弹性元素在有多余的空间时将增大。
 
+**initial 值**
+
+initial 是 CSS 中的全局关键字，任何属性都能使用这个关键字表示属性的初始值，即规范定义的默认值。因此，下面两个声明是等效的：
+
+```
+flex: initial;
+flex: 0 1 auto;
+```
+
+**auto 值**
+
+`flex: auto`的效果与`flex: initial`类似，不过弹性元素的弹性变形是双向的：如果容器的空间放不下全部弹性元素，元素将缩小；如果有额外的空间，弹性元素将增大。主轴方向上的任何多余空间都能分给弹性元素。下面两个声明是等效的：
+
+```
+flex: auto;
+fle: 1 1 auto;
+```
+
+**使用 none 禁止弹性变形**
+
+声明了`flex: none`的弹性元素不具有弹性。下面两个 CSS 声明是等效的：
+
+```
+flex: none;
+flex: 0 0 auto;
+```
+
+**数字值**
+
+如果 flex 属性只有一个值，而且是正数，那个值将用作增长因子，而缩减因子默认为 0，基准也默认为 0.下面两个 CSS 声明是等效的：
+
+```
+flex: 3;
+flex: 3 0 3;
+```
+
 ## 12.16 order 属性
 
 默认情况下，弹性元素的显示和排布顺序与在源码中的顺序一致。弹性元素和弹性元素行的顺序可以使用 flex-direction 属性反转，但是有时你可能需要更细致的重排方式。order 属性用于修改单个弹性元素的显示顺序。
@@ -3404,89 +3453,52 @@ order 属性的值指定一个排序组，把目标弹性元素归在其中。�
 
 # 第 13 章 网格布局
 
-For as long as CSS has existed—which is, believe it or not, two decades now—it’s had a layout-shaped hole at its center. We’ve bent other features to the purposes of layout, most notably `float` and `clear`, and generally hacked our way around that hole. Flexbox layout helped to fill it, but flexbox is really meant for only specific use cases, like navigation bars (navbars).
+css出现这些年来（你可能不信，已经20年了）,布局一直是其最为重要的功能。我们已经讨论过其他布局方式，例如float和clear,不过这并不是它们的恰当用法。弹性盒布局填补了一些空白，但只适用于特定的情况，例如导航栏
 
-> 自从 CSS 存在以来——信不信由你，它已经存在了 20 年了——它的中心就有一个布图形状的洞。我们已经将其他的功能调整为布局的目的，最明显的是“浮动”和“清除”，通常我们会绕过这个漏洞。Flexbox 布局有助于填充它，但 Flexbox 实际上只针对特定的用例，比如导航栏(navbar)。
+与之相比，栅格布局是普适的布局系统。由于栅格布局依赖行和列，初一看似乎倒退到表格布局了（在某些方面二者之间的差异并不明显）,但是栅格布局比表格布局强大得多得多，使用栅格设计布局，无需顾虑各部分在源文档中的顺序，如果愿意，不同的部分还可以重叠在一起。有很多灵活的方法能为栅格线定义重复模式，以及把元素依附到栅格线上等。栅格之内可以联套栅格，而且还可以在栅格中使用表格或弹性容器。这只是举些例子，栅格布局的功能还有很多很多。
 
-Grid layout, by contrast, is a generalized layout system. With its emphasis on rows and columns, it might at first feel like a return to table layout—and in certain ways that’s not too far off—but there is far, far more to grid layout than table layout. Grid allows pieces of the design to be laid out independently of their document source order, and even overlap pieces of the layout, if that’s your wish. There are powerfully flexible methods for defining repeating patterns of grid lines, attaching elements to those grid lines, and more. You can nest grids inside grids, or for that matter, attach tables or flexbox containers to a grid. And much, much more.
+总之，栅格布局是我们翘首以盼的布局系统。要学的东西很多，要抛诸脑后的东西可能更多，是时候告别过去20年自作聪明的小技巧和变通方法了。
 
-> 相比之下，网格布局是一个广义的布局系统。它的重点放在行和列上，乍一看可能感觉像是回到了表的布局—在某些方面也不是太遥远—但是网格布局远比表布局重要得多。网格允许设计的各个部分独立于它们的文档源顺序进行布局，如果您愿意，甚至可以重叠布局的各个部分。有非常灵活的方法可以定义网格线的重复模式，将元素附加到这些网格线，等等。您可以在网格中嵌套网格，或者在网格上附加表格或 flexbox 容器。还有更多更多。
+## 13.1 创建栅格容器
 
-In short, grid layout is the layout system we’ve long waited for. There’s a lot to learn, and perhaps even more to unlearn, as we leave behind the clever hacks and workarounds that have gotten us through the past 20 years.
+创建栅格的第一步是定义栅格容器（grid container)。这与定位所用的容纳块和弹性盒布局中的弹性容器的作用很像：栅格容器为其中的内容定义一个栅格格式化上下文（grid formatting context).
 
-> 简而言之，网格布局是我们期待已久的布局系统。我们有很多东西要学，也许还有更多东西要忘记，因为我们抛弃了过去 20 年帮助我们度过难关的聪明的技巧和变通方法。
+从这一点上看，栅格布局从弹性盒布局上沿袭了相当多的概念。例如，栅格容器的子元素是栅格元素（grid item),就像弹性容器的子元素是弹性元素一样。子元素的子元素不是栅格元素，不过栅格元素自身也可以变作栅格容器，因此它的子元素将变成嵌套栅格的栅格元素。栅格之中可以酸套栅格，而且层级不限（栅格布局还有子栅格这个概念，它与嵌套的栅格容器不是一回事，稍后讨论）。
 
-## 13.1 Creating a Grid Container
+栅格有两种：常规栅格和行内栅格。这两种栅格使用display属性的特殊值创建：grid和inline-grid,前者生成块级框，后者生成行内框。二者之间的区别如图13-1所示。
 
-The first step to creating a grid is defining a `grid container`. This is much like a containing block in positioning, or a flex container in flexible-box layout: a grid container is an element that defines a `grid formatting context` for its contents.
+<!-- <Figures figure="13-1">Grids and inline grids</Figures> -->
 
-> 创建网格的第一步是定义一个“网格容器”。这很像一个定位中的包含块，或者一个灵活盒布局中的 flex 容器:网格容器是一个元素，它为其内容定义了一个“网格格式化上下文”。
+这与display属性的block和inline-block值十分相似。多数栅格都是块级的，不过你要知道也有创建行内栅格这一选择。
 
-At this very basic level, grid layout is actually quite reminiscent of flexbox. For example, the child elements of a grid container become `grid items`, just as the child elements of a flex container become flex items. The children of those child elements do `not` become grid elements—although any grid item can itself be made a grid container, and thus have its child elements become grid items to the nested grid. It’s possible to nest grids inside grids, until it’s grids all the way down. (Grid layout also has a separate concept of `subgrids` that is distinct from nesting grid containers, but we’ll get to that later.)
+虽然`display: grid`创建的是块级栅格，但是严谨的规范明确指出，“栅格容器不是块级容器”，意思就是，栅格框在布局中的行为与块级容器很像，但是二者之间仍有诸多区别。
 
-> 在这个非常基础的层次上，网格布局实际上很容易让人联想到 flexbox。例如，网格容器的子元素成为“网格项”，就像伸缩容器的子元素成为伸缩项一样。这些子元素的子元素不会成为网格元素—尽管任何网格项目本身都可以成为网格容器，从而使其子元素成为嵌套网格的网格项目。在网格中嵌套网格是可能的，直到网格一直向下。(网格布局还有一个独立的“子网格”概念，与嵌套网格容器不同，但我们将在稍后讨论这个问题。)
+首先，浮动的元素不会打乱栅格容器，这意味着，栅格不会移到浮动元素的下方，而块极容器会。这一差异如图13-2所示。
 
-There are two kinds of grids: `regular` grids and `inline` grids. These are created with special values for the `display` property: `grid` and `inline-grid`. The first generates a block-level box, and the second an inline-level box. The difference is illustrated in Figure 13-1.
+<!-- <Figures figure="13-2">Floats interact differently with blocks and grids</Figures> -->
 
-> 有两种网格:“规则”网格和“内联”网格。这些是用“显示”属性的特殊值创建的:“网格”和“内联网格”。第一个生成块级别的框，第二个生成内联级别的框。图 13-1 显示了这种差异。
+其次，栅格容器的外边距不与其后代的外边距折叠。而块级框的外边距（默认）与其后代的外边距折叠，这是栅格容器与块级框的又一区别，例如，有序列表的第一个列表项日可能有上外边距，但这个外边距将与列表元素的上外边距折叠。然而，栅格元素的上外边距绝不会与栅格容器的上外边距折叠。这一差异如图13-3所示。
 
-<Figures figure="13-1">Grids and inline grids</Figures>
+<!-- <Figures figure="13-3">Margin collapsing and the lack thereof</Figures> -->
 
-These are very similar to the `block` and `inline-block` values for `display`. Most grids you create are likely to be block-level, though the ability to create inline grids is always there.
+有些CSS属性和功能不能用在栅格容器和栅格元素上，如下：
 
-> 这些非常类似于“显示”的“块”和“内联块”的值。您创建的大多数网格很可能是块级的，尽管总是有创建内联网格的能力。
+- 栅格容器上的所有column属性（例如column-count、columns等）都被忽略。
+- 栅格容器没有`::first-line`和`::first-letter`伪元素，如果使用，将被忽略。
+- 栅格元素（而非栅格容器）上的float和clear属性将被忽略。尽管如此，float属性对栅格容器中子元素的display属性的计算值是有影响的，因为栅格元素的display值在变成栅格元素之前计算。
+- vertical-align属性对想格元素不起作用，不过可能会影响栅格元素中的内容（别担心，对齐栅格元素有其他更强大的方式）。
 
-Although `display: grid` creates a block-level grid, the specification is careful to explicitly state that “grid containers are not block containers.” What this means is that although the grid box participates in layout much as a block container does, there are a number of differences between them.
+最后，如果为栅格容器声明的display值是inline-grid,而目标元素是浮动的或绝对定位的，那么display的计算值将变为grid(取代inline-grid)。
 
-> 尽管“display: grid”创建了一个块级别的网格，但该规范谨慎地明确声明“网格容器不是块级别的容器”。这意味着虽然网格盒参与布局就像一个块容器，但它们之间有许多不同之处。
+定义好栅格容器后，接下来要在容器中设置栅格。讨论具体方式之前，有必要说明几个术语。
 
-First off, floated elements do not intrude into the grid container. What this means in practice is that a grid will not slide under a floated element, as a block container will do. See Figure 13-2 for a demonstration of the difference.
+## 13.2 基本的栅格术语
 
-> 首先，被浮动的元素不会侵入网格容器。这在实践中意味着网格不会像块容器那样在浮动元素下滑动。参见图 13-2，以演示这种差异。
+前面已经讨论过栅格容器和栅格元素，下面为其做个更准确的定义。如前所述，栅格容器是确立栅格格式化上下文的框体，即定义一个栅格区域，其中的元素根据栅格布局（而非块级布局）规则排布。这一点可以与通过`display: table`创建表格格式化上下文类比。表格自身就是一种栅格系统，因此这样类比还是相当合适的，但是不要以为栅格只是另一种形式的表格。栅格比表格强大得多。
 
-<Figures figure="13-2">Floats interact differently with blocks and grids</Figures>
+栅格元素是在栅格格式化上下文中参与栅格布局的东西。这通常是栅格容器的子元素，但也可以是元素内容中的匿名文本（即不在元素中的文本）。来看下述代码，得到的结果如图13-4所示：
 
-Furthermore, the margins of a grid container do not collapse with the margins of its descendants. Again, this is distinct from block boxes, whose margins do (by default) collapse with descendants. For example, the first list item in an ordered list may have a top margin, but this margin will collapse with the list element’s top margin. The top margin of a grid item will `never` collapse with the top margin of its grid container. Figure 13-3 illustrates the difference.
-
-> 此外，网格容器的边缘不会随其后代的边缘一起折叠。同样，这与块盒不同，块盒的页边距(默认情况下)会随着后代而折叠。例如，有序列表中的第一个列表项可能有一个顶部空白，但是这个空白会随着列表元素的顶部空白一起折叠。网格项的顶部边缘将“永不”随其网格容器的顶部边缘一起折叠。图 13-3 说明了其中的区别。
-
-<Figures figure="13-3">Margin collapsing and the lack thereof</Figures>
-
-There are a few CSS properties and features that do not apply to grid containers and grid items; specifically:
-
-> 有一些 CSS 属性和特性并不适用于网格容器和网格项;具体地说:
-
-- All `column` properties (e.g., `column-count`, `columns`, etc.) are ignored when applied to a grid container.
-- The `::first-line` and `::first-letter` pseudo-elements do not apply to grid containers and are ignored.
-- `float` and `clear` are effectively ignored for grid items (though not grid containers). Despite this, the `float` property still helps determine the computed value of the `display` property for children of a grid container, because the `display` value of the grid items is resolved `before` they’re made into grid items.
-- The `vertical-align` property has no effect on grid items, though it may affect the content inside the grid item. (There are other, more powerful ways to align grid items, so don’t worry.)
-
----
-
-> - 当应用到网格容器时，所有' column '属性(例如' column-count '， ' columns '等)将被忽略。
-> - '::第一线'和'::首字母'伪元素不应用于网格容器，并被忽略。
-> - ' float '和' clear '对于网格项来说实际上是被忽略的(虽然不是网格容器)。尽管如此，' float '属性仍然有助于确定网格容器的子元素的' display '属性的计算值，因为网格项的' display '值在'它们被放入网格项之前'被解析'。
-> - '垂直对齐'属性对网格项目没有影响，虽然它可能会影响网格项目内的内容。(还有其他更强大的对齐网格项的方法，所以不要担心。)
-
-Lastly, if a grid container’s declared `display` value is `inline-grid` and the element is either floated or absolutely positioned, the computed value of `display` becomes `grid` (thus dropping `inline-grid`).
-
-> 最后，如果一个网格容器声明的“display”值是“inline-grid”，并且元素要么是浮动的，要么是绝对定位的，那么“display”的计算值就是“grid”(因此去掉了“inline-grid”)。
-
-Once you’ve defined a grid container, the next step is to set up the grid within. Before we explore how that works, though, it’s necessary to cover some terminology.
-
-> 定义了网格容器之后，下一步是在其中设置网格。不过，在探讨它是如何工作的之前，有必要介绍一些术语。
-
-## 13.2 Basic Grid Terminology
-
-We’ve already talked about grid containers and grid items, but let’s define them in a bit more detail. As was said before, a grid container is a box that establishes a gridformatting context; that is, an area in which a grid is created and elements are laid out according the rules of grid layout instead of block layout. You can think of it the way an element set to `display: table` creates a table-formatting context within it. Given the grid-like nature of tables, this comparison is fairly apt, though be sure not to make the assumption that grids are just tables in another form. Grids are far more powerful than tables ever were.
-
-> 我们已经讨论了网格容器和网格项，但是让我们更详细地定义它们。如前所述，网格容器是用于建立网格格式上下文的框;也就是说，创建网格并根据网格布局规则而不是块布局布局元素的区域。您可以将其视为设置为“display: table”的元素在其中创建表格格式上下文。考虑到表的网格性质，这种比较是非常恰当的，但是不要假设网格只是另一种形式的表。网格比表要强大得多。
-
-A `grid item` is a thing that participates in grid layout within a grid-formatting context. This is usually a child element of a grid container, but it can also be the anonymous (that is, not contained within an element) bits of text that are part of an element’s content. Consider the following, which has the result shown in Figure 13-4:
-
-> “网格项”是在网格格式上下文中参与网格布局的内容。这通常是一个网格容器的子元素，但它也可以是匿名的(即不包含在一个元素中)作为元素内容一部分的文本位。考虑下面的情况，其结果如图 13-4 所示:
-
-```cs
+```css
 #warning {display: grid;
  background: #FCC; padding: 0.5em;
  grid-template-rows: 1fr;
@@ -3500,47 +3512,27 @@ A `grid item` is a thing that participates in grid layout within a grid-formatti
 </p>
 ```
 
-<Figures figure="13-4">Grid items</Figures>
+<!-- <Figures figure="13-4">Grid items</Figures> -->
 
-Notice how each element, `and` each bit of text between them, has become a grid item. The image is a grid item, just as much as the elements and text runs—seven grid items in all. Each of these will participate in the grid layout, although the anonymous text runs will be much more difficult (or impossible) to affect with the various grid properties we’ll discuss.
+注意，各元素及元素之间的文本都变成栅格元素了。图像是栅格元素，其他元素和文本块也是栅格元素，一共有 7 个。这些栅格元素都参与栅格布局，然而匿名文本块难以（或无法）使用下文将讨论的栅格属性控制。
 
-> 请注意，每个元素以及它们之间的每个文本位是如何成为一个网格项的。图像是一个网格项，与元素和文本一样多——总共有 7 个网格项。其中的每一个都将参与到网格布局中，尽管匿名文本的运行将更加难以(或不可能)影响我们将讨论的各种网格属性。
+在使用栅格属性的过程中，可能会创建或引用栅格布局的多个核心组件，如图13-5所示。
 
-<Tips tips="blue">If you’re wondering about <code>grid-template-rows</code> and <code>gridtemplate-columns</code>, we’ll tackle them in the next section.</Tips>
+<!-- <Figures figure="13-5">Grid components</Figures> -->
 
-In the course of using those properties, you’ll create or reference several core components of grid layout. These are summarized in Figure 13-5.
+最重要的组件是栅格线。栅格线的位置定义好之后，其他栅格组件也就随之而现了：
 
-> 在使用这些属性的过程中，您将创建或引用网格布局的几个核心组件。这些在图 13-5 中进行了总结。
+- 横格轨道（grid track)指两条相邻的栅格线之间夹住的整个区域，从栅格容器的一边延伸到对边，即栅格列或栅格行。栅格轨道的尺寸由栅格线的位置决定。可以对比表格中的列和行理解。用适用性更广的语言来说，可以称之为块级轴和行内轴轨道，(对西方语言来说）列轨道在块级轴上，行轨道在行内轴上。
+- 栅格单元（grid cell)指四条栅格线限定的区域，内部没有其他栅格线贯穿，类似于单元格。这是横格布局中区域的最小单位。栅格单元不能直接使用CSS栅格属性处理，即没有属性能把一个栅格元素放在指定的栅格单元里（详情参见下一点）。
+- 栅格区域（grid area)指任何四条栅格线限定的矩形区域，由一个或多个栅格单元构成。最小的栅格区域是一个栅格单元，最大的栅格区域是栅格中所有的栅格单元。栅格区域能使用CSS栅格属性直接处理，定义好栅格区域后即可在其中放置栅格元素。
 
-<Figures figure="13-5">Grid components</Figures>
+特别注意，栅格轨道、栅格单元和栅格区域都完全由栅格线建构，不一定非要有相应的栅格元素存在。栅格区域中不一定充满栅格元素，完全可以让部分甚至多数栅格单元空着。此外，栅格元素还可以重叠，方法是定义重叠的栅格区域，或者把栅格线重叠起来。
 
-The most fundamental unit is the `grid line`. By defining the placement of one or more grid lines, you implicitly create the rest of the grid’s components:
+另外要注意的一点是，栅格线的数量不限，想定义多少就可以定义多少。你可以只定义一系列纵向的栅格线，创建一行多列布局。你也可以反过来，创建多个行轨道但不创建列轨道（当然还是会有一个列轨道，从栅格容器的一边延伸到对边）。
 
-> 最基本的单元是“网格线”。通过定义一个或多个网格线的位置，您可以隐式地创建其余的网格组件:
+然而，如果栅格元素无法放入你定义的列或行轨道中，或者你明确指定把栅格元素放在轨道的外部，那么栅格系统将自动添加栅格线和轨道。
 
-- A `grid track` is a continuous run between two adjacent grid lines—in other words, a grid column or a grid row. It goes from one edge of the grid container to the other. The size of a grid track is dependent on the placement of the grid lines that define it. These are analogous to table columns and rows. More generically, these can be referred to as block axis and inline axis tracks, where (in Western languages) column tracks are on the block axis and row tracks are on the inline axis.
-- A `grid cell` is any space bounded by four grid lines, with no grid lines running through it, analogous to a table cell. This is the smallest unit of area in grid layout. Grid cells cannot be directly addressed with CSS grid properties; that is, no property allows you to say a grid item should be associated with a given cell. (But see the next point for more details.)
-- A `grid area` is any rectangular area bounded by four grid lines, and made up of one or more grid cells. An area can be as small as a single cell, or as large as all the cells in the grid. Grid areas are directly addressable by CSS grid properties, which allow you to define the areas and then associate grid items with them.
-
----
-
-> - “网格轨迹”是两个相邻的网格线之间的连续运行，换句话说，一个网格列或一个网格行。它从网格容器的一端延伸到另一端。网格轨迹的大小取决于定义它的网格线的位置。这些类似于表的列和行。更一般地，这些可以称为块轴和内联轴轨道，其中(在西方语言中)列轨道在块轴上，行轨道在内联轴上。
-> - “网格单元”是由四条网格线围绕的空间，没有网格线贯穿其中，类似于表格单元。这是网格布局中最小的面积单位。网格单元不能直接用 CSS 网格属性来处理;也就是说，没有任何属性允许您说网格项应该与给定的单元格关联。(但要了解更多细节，请参见下一点。)
-> - “网格区域”是由四条网格线围成的矩形区域，由一个或多个网格单元组成。一个区域可以小到一个单元格，也可以大到网格中的所有单元格。网格区域可以通过 CSS 网格属性直接寻址，允许您定义区域，然后将网格项与它们关联。
-
-An important thing to note is that these grid tracks, cells, and areas are entirely constructed of grid lines—and more importantly, do not have to correspond to grid items. There is no requirement that all grid areas be filled with an item; it is perfectly possible to have some or even most of a grid’s cells be empty of any content. It’s also possible to have grid items overlap each other, either by defining overlapping grid areas or by using grid-line references that create overlapping situations.
-
-> 需要注意的一件重要事情是，这些网格轨迹、单元格和区域完全是由网格线构成的，而且更重要的是，不必与网格项对应。没有要求所有的网格区域必须填入一个项目;完全有可能使网格的某些甚至大部分单元格空无一物。通过定义重叠的网格区域或使用创建重叠情况的网格线引用，也可以使网格项彼此重叠。
-
-Another thing to keep in mind is that you can define as many or as few grid lines as you wish. You could literally define just a set of vertical grid lines, thus creating a bunch of columns and only one row. Or you could go the other way, creating a bunch of row tracks and no column tracks (though there would be one, stretching from one side of the grid container to the other).
-
-> 另一件需要记住的事情是，您可以定义任意多的网格线，也可以定义任意少的网格线。可以只定义一组垂直网格线，从而创建一组列和一行。或者您也可以采用另一种方式，创建一组行轨迹而不创建列轨迹(尽管会有一个，从网格容器的一端延伸到另一端)。
-
-The flip side to that is if you create a condition where a grid item can’t be placed within the column and row tracks you define, or if you explicitly place a grid item outside those tracks, new grid lines and tracks will be automatically added to the grid to accommodate.
-
-> 另一面是如果你创建一个网格条件项不能放置在您定义的列和行轨道内,或者如果您显式地将一个网格项目以外,新的网格线和跟踪将会自动添加到网格适应。
-
-## 13.3 Placing Grid Lines
+## 13.3 放置栅格线
 
 It turns out that placing grid lines can get fairly complex. That’s not so much because the concept is difficult; there are just so many different ways to get it done, and each uses its own subtly different syntax.
 
@@ -3580,7 +3572,7 @@ As I’ve said, many value patterns can be used to define the grid template. We�
 
 > 如前所述，可以使用许多值模式来定义网格模板。我们将从简单的开始，然后逐步向复杂的方向发展。
 
-### 13.3.1 Fixed-Width Grid Tracks
+### 13.3.1 宽度固定的栅格轨道
 
 Our first step is to create a grid whose grid tracks are a fixed width. We don’t necessarily mean a fixed length like pixels or ems; percentages also count as fixed-width here. In this context, “fixed-width” means the grid lines are placed such that the distance between them does not change due to changes of content within the grid tracks.
 
@@ -3702,7 +3694,7 @@ That works as far as it goes, but is a somewhat fragile solution, since any chan
 
 > 目前为止，这是可行的，但这是一个有点脆弱的解决方案，因为任何改变“报头”或“页脚”的高度也需要调整计算。如果您希望以这种方式伸缩多个列，那么它也会变得更加困难(或者不可能)。实际上，我们很快就会看到，有很多更有效的方法来处理这种情况。
 
-### 13.3.2 Flexible Grid Tracks
+### 13.3.2 弹性栅格轨道
 
 Thus far, all our grid tracks have been `inflexible`—their size determined by a length measure or the grid container’s dimensions, but unaffected by any other considerations. `Flexible` grid tracks, by contrast, can be based on the amount of space in the grid container not consumed by inflexible tracks, or alternatively, can be based on the actual content of the entire track.
 
@@ -3941,7 +3933,7 @@ There’s one more keyword you can use with grid track sizing, which is `auto`. 
 
 <Tips tips="blue">There is a caveat to that last statement: <code>auto</code> values allow grid items to be resized by the <code>align-content</code> and <code>justify-content</code> properties, a topic we’ll discuss in a later section, “Aligning and Grids” on page 721. Since <code>auto</code> values are the only track-sizing values that permit this, there may be very good reasons to use <code>auto</code> after all.</Tips>
 
-### 13.3.3 Fitting Track Contents
+### 13.3.3 根据栅格中附加元素
 
 In addition to the `min-content` and `max-content` keywords, there’s a `fit-content()` function that allows you to more compactly express certain types of sizing patterns. It’s a bit complicated to decipher, but the effort is worth it:
 
@@ -4037,7 +4029,7 @@ You’ve probably been wondering about the repetitive grid template values in pr
 
 > 您可能想知道在前面的示例中重复的网格模板值，以及如果需要超过 3 或 4 个网格轨道会发生什么。你要把每条轨道的宽度单独写出来吗?确实不是，我们将在下一节看到。
 
-### 13.3.4 Repeating Grid Lines
+### 13.3.4 重复栅格线
 
 If you have a situation where you want to set up a bunch of grid tracks of the same size, you probably don’t want to have to type out every single one of them. Fortunately, `repeat()` is here to make sure you don’t have to.
 
@@ -4204,7 +4196,7 @@ If there’s room for five column tracks in the grid container (i.e., it’s mor
 
 <Figures figure="13-25">Auto-fill versus auto-fit</Figures>
 
-### 13.3.5 Grid Areas
+### 13.3.5 栅格区域
 
 Sometimes, you’d rather just draw a picture of your grid—both because it’s fun to do, and because the picture can serve as self-documenting code. It turns out you can more or less do exactly that with the `grid-template-areas` property.
 
@@ -4438,13 +4430,13 @@ So, again, you should probably stick to explicitly naming grid areas and let the
 
 > 因此，再次强调，您可能应该坚持显式地命名网格区域，并允许隐式地创建“开始”和“结束”网格线名称，而不是相反。
 
-## 13.4 Attaching Elements to the Grid
+## 13.4 在栅格中附加元素
 
 Believe it or not, we’ve gotten this far without talking about how grid items are actually attached to a grid, once it’s been defined.
 
 > 信不信由你，我们已经讲了这么多，但还没有讨论网格项是如何被实际附加到一个网格的，一旦它被定义。
 
-### 13.4.1 Using Column and Row Lines
+### 13.4.1 使用列线和行线
 
 There are a couple of ways to go about this, depending on whether you want to refer to grid lines or grid areas. We’ll start with four simple properties that attach an element to grid lines.
 
@@ -4707,7 +4699,7 @@ The final value possibility, `auto`, is kind of interesting. According to the Gr
 
 > 最后一个值，auto，很有趣。根据网格布局规范，如果其中一个网格线开始/结束属性设置为“auto”，表示“自动放置、自动跨度或默认跨度为 1”。“在实践中，这往往意味着被选中的网格线是由‘网格流’控制的，这个概念我们还没有涉及(但很快就会涉及!)对于起始行，“auto”通常意味着将使用下一个可用的列或行行。对于结束行，“auto”通常表示一个单元格。在这两种情况下，“通常”这个词都是有意使用的:就像任何自动机制一样，没有绝对原则。
 
-### 13.4.2 Row and Column Shorthands
+### 13.4.2 行和列的简写属性
 
 There are two shorthand properties that allow you to more compactly attach an element to grid lines.
 
@@ -4837,7 +4829,7 @@ The upshot of all this: it’s generally a bad idea to use the same name for gri
 
 > 所有这些的结果是:对网格区域和网格线使用相同的名称通常是一个坏主意。在某些情况下，您可能不需要这样做，但是最好保持行名和区域名是不同的，这样可以避免出现名称解析冲突。
 
-### 13.4.3 The Implicit Grid
+### 13.4.3 隐式栅格
 
 Up to this point, we’ve concerned ourselves solely with explicitly defined grids: we’ve talked about the row and column tracks we define via properties like `grid-template-columns`, and how to attach grid items to the cells in those tracks.
 
@@ -4981,7 +4973,7 @@ When you get right down to it, the implicit grid is a delightfully baroque fallb
 
 > 当你开始着手时，隐含的网格是一种令人愉快的巴洛克式后退机制。通常，最好的实践是坚持使用显式网格，并确保显式网格涵盖您想要做的所有事情。如果您发现您需要另一行，不要仅仅从网格边缘运行—而是调整您的网格模板的值!
 
-### 13.4.4 Error Handling
+### 13.4.4 错误处理
 
 There are a few cases that need to be covered, as they fall under the general umbrella of “what grids do when things go pear-shaped.”
 
@@ -5036,7 +5028,7 @@ This is not permitted, so the `span footer` in this case is replaced with `span 
 
 > 这是不允许的，所以本例中的 `span footer` 被替换为 `span 1`。
 
-### 13.4.5 Using Areas
+### 13.4.5 使用区域
 
 Attaching by row lines and column lines is great, but what if you could refer to a grid area with a single property? Behold: `grid-area`.
 
@@ -5140,7 +5132,7 @@ grid-area: footer-start / footer-start / footer-end / footer-end;
 
 And that’s how a single grid-area name causes an element to be placed into the corresponding grid area.
 
-### 13.4.6 Grid Item Overlap
+### 13.4.6 栅格元素重叠
 
 One thing we’ve been very careful to do in our grid layouts thus far is to avoid overlap. Rather like positioning, it’s absolutely (get it?) possible to make grid items overlap each other. Let’s take a simple case, illustrated in Figure 13-42:
 
@@ -5187,7 +5179,7 @@ Overlap isn’t restricted to situations involving raw grid numbers. In the foll
 
 I bring this up in part to warn you about the possibility of overlap, and also to serve as a transition to the next topic. It’s a feature that sets grid layout apart from positioning, in that it can sometimes help avoid overlap: the concept of `grid flow`.
 
-## 13.5 Grid Flow
+## 13.5 栅格流
 
 For the most part, we’ve been explicitly placing grid items on the grid. If items aren’t explicitly placed, then they’re automatically placed into the grid. Following the grid flow in effect, an item is placed in the first area that will fit it. The simplest case is just filling a grid track in sequence, one grid item after another, but things can get a lot more complex than that, expecially if there is a mixture of explicitly and automatically placed grid items—the latter must work around the former.
 
@@ -5319,7 +5311,7 @@ In effect, what happens with `dense` grid flow is that for each grid item, the b
 
 Now that we’ve explored grid flow, I have a confession to make: in order to make the last couple of grid items look right, I included some CSS that I didn’t show you. Without it, the items hanging off the edge of the grid would have looked quite a bit different than the other items—much shorter in row-oriented flow, and much narrower in column-oriented flow. We’ll see why, and the CSS I used, in the next section.
 
-## 13.6 Automatic Grid Lines
+## 13.6 自动增加栅格线
 
 So far, we’ve almost entirely seen grid items placed into a grid that was explicitly defined. But in the last section we had situations where grid items ran off the edge of the explicitly defined grid. What happens when a grid item goes off the edge? Rows or columns are added as needed to satisfy the layout directives of the items in question (see “The Implicit Grid” on page 694). So, if an item with a row span of `3` is added after the end of a row-oriented grid, three new rows are added after the explicit grid.
 
@@ -5368,7 +5360,7 @@ So now you know what I used in the `grid-auto-flow` figures in the previous sect
 
 And now you know…the rest of the story.
 
-## 13.7 The grid Shorthand
+## 13.7 grid简写属性
 
 At long last, we’ve come to the shorthand property grid. It might just surprise you, though, because it’s not like other shorthand properties.
 
@@ -5499,11 +5491,11 @@ This is potentially really useful, because you can imagine having a module that 
 
 The problem is that, as of this writing, `subgrid` is an “at-risk” feature of grid layout, and may be dropped entirely. That’s why it rates just this small section, instead of a more comprehensive examination.
 
-## 13.8 Opening Grid Spaces
+## 13.8 释放栅格空间
 
 So far, we’ve seen a lot of grid items jammed right up against one another, with no space between them. There are a number of ways to mitigate this, as we’ll talk about in this section, starting with gutters.
 
-### 13.8.1 Grid Gutters (or Gaps)
+### 13.8.1 栏距
 
 Simply put, a `gutter` is a space between two grid tracks. It’s created as if by expanding the grid line between them to have actual width. It’s much like `border-spacing` in table styling—both because it creates space between grid cells and because you can set only a single spacing value for each axis, via the properties `grid-row-gap` and `gridcolumn-gap`.
 
@@ -5556,7 +5548,7 @@ Not a lot more to say than that, really: supply two non-negative lengths, and yo
 
 <Figures figure="13-57">Defining grid gutters</Figures>
 
-### 13.8.2 Grid Items and the Box Model
+### 13.8.2 栅格元素与盒模型
 
 Now we can create a grid, attach items to the grid, and even create gutters between the grid tracks. But what happens if we style the element that’s attached to the grid with, say, margins? Or if it’s absolutely positioned? How do these things interact with the grid?
 
@@ -5691,7 +5683,7 @@ Note that absolutely positioned grid items do `not` participate in figuring out 
 
 <Tips tips="orange">As of late 2017, browsers did not support any of this absolute positioning behavior. The only way to recreate it was to relatively position the element establishing the grid area, and absolutely position a child element within it. That’s how the absolute-positioning figures in this section were created. The special <code>auto</code> behavior was also not supported.</Tips>
 
-## 13.9 Aligning and Grids
+## 13.9 栅格的对齐方式
 
 If you have any familiarity with flexbox, you’re probably aware of the various alignment properties and their values. Those same properties are also available in grid layout, and have very similar effects.
 
@@ -5710,7 +5702,7 @@ Table 13-1. Justify and align values
 
 As Table 13-1 shows, the various `justify-*` properties change alignment along the inline axis—in English, this will be the horizontal direction. The difference is whether a property applies to a single grid item, all the grid items in a grid, or the entire grid. Similarly, the `align-*` properties affect alignment along the block axis; in English, this is the vertical direction.
 
-### 13.9.1 Aligning and Justifying Individual Items
+### 13.9.1 纵向对齐和横向对齐单个元素
 
 It’s easiest to start with the `*-self` properties, because we can have one grid show various `justify-self` property values, while a second grid shows the effects of those same values when used by `align-self`. (See Figure 13-63.)
 
@@ -5763,7 +5755,7 @@ In a situation where a grid element doesn’t have a baseline, or it’s asked t
 
 <Tips tips="blue">There are two values that were intentionally skipped in this section: <code>flex-start</code> and <code>flex-end</code>. These values are supposed to be used only in flexbox layout, and are defined to be equivalent to <code>start</code> and <code>end</code> in any other layout context, including grid layout.</Tips>
 
-### 13.9.2 Aligning and Justifying All Items
+### 13.9.2 纵向对齐和横向对齐全部元素
 
 Now let’s consider `align-items` and `justify-items`. These properties accept all the same values we saw in the previous section, and have the same effect, except they apply to all grid items in a given grid container, and must be applied to a grid container instead of to individual grid items.
 
@@ -5833,7 +5825,7 @@ As you might expect by now, being able to `justify-content` horizontally means y
 
 `left` and `right` don’t really make sense in a vertical context, so they’re treated as `start`. The others have the effect you’d expect from their names.
 
-## 13.10 Layering and Ordering
+## 13.10 分层和排序
 
 As we saw in a previous section, it’s entirely possible to have grid items overlap each other, whether because negative margins are used to pull a grid item beyond the edges of its grid area, or because the grid areas of two different grid items share grid cells. By default, the grid items will visually overlap in document source order: grid items later in the document source will appear in front of grid items earlier in the document source. Thus we see the following result in what’s depicted in Figure 13-69. (Assume the number in each class name represents the grid item’s source order.)
 
@@ -5899,11 +5891,11 @@ So the only reason to use `order` to rearrange grid item layout is if you need t
 
 This is not to say that `order` is useless and should always be shunned; there may well be times it makes sense. But unless you find yourself nearly forced into using it by specific circumstances, think very hard about whether it’s the best solution.
 
-## 13.11 Summary
+## 13.11 小结
 
-Grid layout is complex and powerful, so don’t be discouraged if you feel overwhelmed. It takes some time to get used to how grid operates, especially since so many of its features are nothing like what we’ve dealt with before. Much of those features’ power comes directly from their novelty—but like any powerful tool, it can be difficult and frustrating to learn to use. I got frustrated and confused as I wrote about grid, going down blind alleys and falling victim to two decades of instincts that had been honed on a layout-less CSS.
+栅格布局复杂而强大，没有吃透也不要灰心。栅格的运作方式要花点时间才能掌握，毕竟有大量特性是我们以前没见过的。多数特性前所未见，这就注定学习的过程是艰辛而曲折的。笔者在撰写与栅格有关的内容时也有过沮丧和迷惘，在过去二十载没有栅格布局的日子里练就的直觉完全失效了。
 
-I hope I was able to steer you past some of those pitfalls, but still, remember the wisdom of Master Yoda: “You must unlearn what you have learned.” When coming to grid layout, there has never been greater need to put aside what you think you know about layout and learn anew. Over time, your patience and persistence will be rewarded.
+希望本章的内容能帮你跨过一些障碍，但是正如尤达大师所说的，“温如而知新。”对栅格布局来说，更应该把以前掌握的知识放一边，从头学起，随着时间地过去，你的耐心和毅力终将得到回报。
 
 第 14 章 CSS 中的表格布局
 第 15 章 列表和生成的内容
@@ -6535,7 +6527,7 @@ animation-fill-mode属性定义动画播放结束后是否应用原来的属性�
 |---|---|
 | 取值 | [ none / forwards / backwards / both ]# |
 | 初始值 | none |
-| 适用于 | 所有元素，以及：before和：:after伪元素 |
+| 适用于 | 所有元素，以及：before和::after伪元素 |
 | 计算值 | 指定的值 |
 | 继承性 | 否 |
 | 动画性 | 否 |
