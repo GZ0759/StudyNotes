@@ -1582,13 +1582,15 @@ text-transform 也是为英文字符设计的，要么全大写`text-transform: 
 
 要想让`::first-letter(:first-letter)`伪元素生效，是需要满足一定条件的。
 
-- 元素的 display 计算值必须是 block、 inline-block、 list-item、 table-cell 或者 table-caption，其他所有 display 计算值都没有用，包括 display:table 和 display:flex 等。
-- 此外，不是所有的字符都能单独作为`::first-letter` 伪元素存在的。常见的标点符号、各类括号和引号 在`::first-letter` 伪元素眼中全部都是“辅助类”字符。正常情况下可以直接作为伪元素的字符就是数字、英文字母、中文、 `\$`、一些运算符，以 及非常容易被忽视的空格等。
+- 元素的 display 计算值必须是 block、 inline-block、 list-item、 table-cell 或者 table-caption，其他所有 display 计算值都没有用，包括 `display:table` 和 `display:flex` 等。
+- 此外，不是所有的字符都能单独作为`::first-letter` 伪元素存在的。常见的标点符号、各类括号和引号在`::first-letter` 伪元素眼中全部都是“辅助类”字符。正常情况下可以直接作为伪元素的字符就是数字、英文字母、中文、 `\$`、一些运算符，以 及非常容易被忽视的空格等。
 - 字符前面不能有图片或者 inline-block/inline-table 之类的元素存在。
-- 一般来讲， ::before 伪元素和普通元素之间没有多少瓜葛，例如:first-child 和:empty 之类的选择器都不受影响。但是::before 伪元素也参 与`::first-letter` 伪元素
-- 如果字符被选作了`::first-letter` 伪元素，并不是像::before 伪元素那样，几乎所 有 CSS 都有效，只是一部分有效。
+- 一般来讲， `::before` 伪元素和普通元素之间没有多少瓜葛，例如:first-child 和:empty 之类的选择器都不受影响。但是`::before` 伪元素也参 与`::first-letter` 伪元素
+- 如果字符被选作了`::first-letter` 伪元素，并不是像`::before` 伪元素那样，几乎所 有 CSS 都有效，只是一部分有效。
 
-支持部分 display 属性值标签嵌套。 `::first-letter` 伪元素获取可以跨标签，也就是不仅能选择匿名内联盒子，还能透过层层标签进行选择，但是也有一些限制，并不是所有标签嵌套都是有用的。 `::first-letter` 伪元素的另外一个重要特性—颜色等权重总是多了一层。
+支持部分 display 属性值标签嵌套。 `::first-letter` 伪元素获取可以跨标签，也就是不仅能选择匿名内联盒子，还能透过层层标签进行选择，但是也有一些限制，并不是所有标签嵌套都是有用的。 
+
+`::first-letter` 伪元素的另外一个重要特性—颜色等权重总是多了一层。
 
 `:first-line` 选择器用于选取指定选择器的首行。利用了`::first-line` 伪元素，于是标签上的颜色实际上是设置给 background-color 的，而按钮真正呈现的颜色已经被`::first-line` 伪元素牢牢设置好了， 就完全不用担心文字颜色和背景色混在一起了。
 
