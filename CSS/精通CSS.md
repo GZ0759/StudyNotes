@@ -493,17 +493,19 @@ HTML 元素可以嵌套，元素盒子当然也可以嵌套。多数盒子都是
 ```css
 /* Added CSS: */
 .clear {
-clear: both;
+  clear: both;
 }
 ```
+
 ```html
 <div class="media-block">
-<img class="media-fig" src="/img/pic.jpg " alt="The pic" />
-<div class="media-body">
-<h3>Title of this</h3>
-<p>Brief description of this</p>
-</div>
-<div class="clear"></div><!-- added extra empty div -->
+  <img class="media-fig" src="/img/pic.jpg " alt="The pic" />
+  <div class="media-body">
+    <h3>Title of this</h3>
+    <p>Brief description of this</p>
+  </div>
+  <div class="clear"></div>
+  <!-- added extra empty div -->
 </div>
 ```
 
@@ -550,13 +552,14 @@ margin-right: 5%;
 overflow: auto;
 }
 ```
+
 ```html
 <div class="media-block">
-<img class="media-fig" src="/img/pic.jpg" alt="The pic" />
-<div class="media-body">
-<h3>Title of this</h3>
-<p>Brief description of this</p>
-</div>
+  <img class="media-fig" src="/img/pic.jpg" alt="The pic" />
+  <div class="media-body">
+    <h3>Title of this</h3>
+    <p>Brief description of this</p>
+  </div>
 </div>
 ```
 
