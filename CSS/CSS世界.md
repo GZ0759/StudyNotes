@@ -56,27 +56,54 @@ CSS 新世界，CSS 3 主要有两个大的改变，布局更为丰富（CSS3 �
 
 # 第 3 章 流、元素与基本尺寸
 
-## 3.1 块级元素
-
 虽然标签种类繁多，但通常把它们分为两类：块级元素和内联元素。
 
-“块级元素”对应的英文是 block-level element，常见的块级元素有`<div>`、`<li>`和`<table>`等，它们都符合块级元素的基本特征，也就是一个水平流上只能单独显示一个元素，多个块级元素则换行显示。
+## 3.1 块级元素
 
-由于“块级元素”具有换行特性，因此理论上它都可以配合 clear 属性来清除浮动带来的影响。实际开发时，我们要么使用 block，要么使用 table，并不会使用 list-item。
+“块级元素”对应的英文是 block-level element，常见的块级元素有`<div>`、`<li>`和`<table>`等。需要注意是，“块级元素”和“display 为 block 的元素”不是一个概念。例如， <li>元
+素默认的 display 值是 list-item， <table>元素默认的 display 值是 table，但是它们
+均是“块级元素”，因为它们都符合块级元素的基本特征，也就是一个水平流上只能单独显示一
+个元素，多个块级元素则换行显示。
+
+由于“块级元素”具有换行特性，因此理论上它都可以配合 clear 属性来清除浮动带来的影响。
 
 ```css
 .clear:after {
-  content: "";
-  display: "block";
-  clear: both;
+content: '';
+display: table; // 也可以是 block，或者是 list-item
+clear: both;
 }
 ```
 
+实际开发时，我们要么使用 block，要么使用 table，并不会使用 list-item。
+
+（1） 1 个字符的比较多，其他都是 5 个字符。
+（2）会出现不需要的项目符号，如图 3-2 箭头所示。这其实并不是什么大问题，再加一行 list-style:none 声明就可以了。
+（3） IE 浏览器不支持伪元素的 display 值为 listitem。这是不使用 display:list-item 清除浮动的主因，兼容性不好。对于 IE 浏览器（包括 IE11），普通元素设置 display:list-item 有效，但是 :before/:after 伪元素就不行。
+
+3.1.1 为什么 list-item 元素会出现项目符号
+
+之所以 list-item 元素会出现项目符号是因为生成了一个附加的盒子，学名“标记盒子”（marker box），专门用来放圆点、数字这些项目符号。 IE 浏览器下伪元素不支持 list-item 或许就是无法创建这个“标记盒子”导致的。
+
+于是，按照display的属性值不同，值为block的元素的盒子实际由外在的“块级盒子”和内在的“块级容器盒子”组成，值为inline-block的元素则由外在的“内联盒子”和内在的“块级容器盒子”组成，值为inline的元素则内外均是“内联盒子”。
+
+现在，大家应该明白为何display属性值是inline-block的元素既能和图文一行显示，又能直接设置width/height了吧！因为有两个盒子，外面的盒子是inline级别，里面的盒子是block级别。实际上，如果遵循这种理解，display:block应该脑补成display:block-block，display:table应该脑补成display:block-table，我们平时的写法实际上是一种简写。
+
+3.1.2 display:inline-table的盒子是怎样组成的
+
+这个问题应该无压力：外面是“内联盒子”，里面是“table盒子”。得到的就是一个可以和文字在一行中显示的表格。
+
+3.1.3 width/height 作用在哪个盒子上
+
+这个问题也是很简单的，因为在解释内外盒子的时候就已经提到过了：是内在盒子，也就是“容器盒子”。
+
 ## 3.2 width/height 作用的具体细节
 
-`display: inline-table` 的盒子是怎样组成的。外面是“内联盒子”，里面是“table 盒子”。得到的就是一个可以和文字在一行中显示的表格。
+因为块级元素的流体特性主要体现在水平方向上，所以我们这里先着重讨论 width。
 
-width/height 作用在哪个盒子上。width 的默认值是 auto，它至少包含了以下 4 种不同的宽度表现。
+3.2.1 深藏不露的 width:auto
+
+我们应该都知道， width 的默认值是 auto。 auto 因为是默认值，所以出镜率不高，但是，它却是个深藏不露的家伙，它至少包含了以下 4 种不同的宽度表现。
 
 - 充分利用可用空间。元素宽度默认是 100% 于父级容器。
 - 收缩与包裹。典型代表就是浮动、绝对定位、inline-block 元素或 table 元素。
