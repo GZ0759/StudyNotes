@@ -26,9 +26,8 @@ CSS 新世界，CSS 3 主要有两个大的改变，布局更为丰富（CSS3 �
 
 长度单位。CSS 中的单位有时间单位（如 s、ms），还有角度单位（如 deg、rad 等），但最常见的自然还是长度单位（如 ps、em 等）。需要注意的是，诸如 2%后面的百分号%不是长度单位。如果继续细分，长度单位又可以分为相对字体长度单位和绝对长度单位。
 
-- 相对长度单位。相对长度单位又分为相对长度单位（em、ex、rem、ch）和相对视区长度单位（vh、vw、vmin、vmax）。
-
-- 绝对长度单位。最常见的就是 px，还有 pt、cm、mm、pc 等。
+  - 相对长度单位。相对长度单位又分为相对长度单位（em、ex、rem、ch）和相对视区长度单位（vh、vw、vmin、vmax）。
+  - 绝对长度单位。最常见的就是 px，还有 pt、cm、mm、pc 等。
 
 功能符。值以函数的形式指定（就是被括号括起来的那种），主要用来表示颜色（rgba 和 hsla）、背景图片地址（url）、元素属性值、计算（calc）和过渡效果等，如 `rgba(0,0,0,.5)`、`url('css-world.png')`、 `attr('href')`和 `scale(-1)`。
 
@@ -68,46 +67,50 @@ CSS 新世界，CSS 3 主要有两个大的改变，布局更为丰富（CSS3 �
 
 ```css
 .clear:after {
-content: '';
-/* 也可以是 block，或者是 list-item */
-display: table;
-clear: both;
+  content: "";
+  /* 也可以是 block，或者是 list-item */
+  display: table;
+  clear: both;
 }
 ```
 
 实际开发时，我们要么使用 block，要么使用 table，并不会使用 list-item。
 
 1. 1 个字符的比较多，其他都是 5 个字符。
-2. 会出现不需要的项目符号，虽然再加一行 `list-style: none` 声明就可以消除了。
-3. IE 浏览器不支持伪元素的 display 值为 list-item。这是不使用 `display: list-item` 清除浮动的主因，兼容性不好。对于 IE 浏览器（包括 IE11），普通元素设置` display: list-item` 有效，但是 `:before` 或 `:after` 伪元素就不行。
+2. 会出现不需要的项目符号（`list-style: none` 声明可解决）。
+3. IE 浏览器不支持伪元素的 display 值为 list-item。这是不使用 `display: list-item` 清除浮动的主因，兼容性不好。
+
+> 对于 IE 浏览器（包括 IE11），普通元素设置`display: list-item` 有效，但是 `:before` 或 `:after` 伪元素就不行。
 
 ### 3.1.1 为什么 list-item 元素会出现项目符号
 
 之所以 list-item 元素会出现项目符号是因为生成了一个附加的盒子，学名“标记盒子”（marker box），专门用来放圆点、数字这些项目符号。 IE 浏览器下伪元素不支持 list-item 或许就是无法创建这个“标记盒子”导致的。
 
-按照display的属性值不同，值为block的元素的盒子实际由外在的“块级盒子”和内在的“块级容器盒子”组成，值为inline-block的元素则由外在的“内联盒子”和内在的“块级容器盒子”组成，值为inline的元素则内外均是“内联盒子”。
+按照 display 的属性值不同，值为 block 的元素的盒子实际由外在的“块级盒子”和内在的“块级容器盒子”组成，值为 inline-block 的元素则由外在的“内联盒子”和内在的“块级容器盒子”组成，值为 inline 的元素则内外均是“内联盒子”。
 
-现在，大家应该明白为何display属性值是inline-block的元素既能和图文一行显示，又能直接设置width/height了吧！因为有两个盒子，外面的盒子是inline级别，里面的盒子是block级别。实际上，如果遵循这种理解，`display: block`应该脑补成`display: block-block`，`display: table`应该脑补成`display: block-table`，我们平时的写法实际上是一种简写。
+现在，大家应该明白为何 display 属性值是 inline-block 的元素既能和图文一行显示，又能直接设置 width/height 了吧！因为有两个盒子，外面的盒子是 inline 级别，里面的盒子是 block 级别。实际上，如果遵循这种理解，`display: block`应该脑补成`display: block-block`，`display: table`应该脑补成`display: block-table`，我们平时的写法实际上是一种简写。
 
-### 3.1.2 display:inline-table的盒子是怎样组成的
+### 3.1.2 display:inline-table 的盒子是怎样组成的
 
-这个问题应该无压力：外面是“内联盒子”，里面是“table盒子”。得到的就是一个可以和文字在一行中显示的表格。
+这个问题应该无压力：外面是“内联盒子”，里面是“table 盒子”。得到的就是一个可以和文字在一行中显示的表格。
 
 ```html
-和文字平起平坐的表格：<div class="inline-table">
-    <p>第1列</p>
-    <p>第2列</p>
+和文字平起平坐的表格：
+<div class="inline-table">
+  <p>第1列</p>
+  <p>第2列</p>
 </div>
 ```
+
 ```css
 .inline-table {
-    display: inline-table;
-    width: 128px;
-    margin-left: 10px;
-    border: 1px solid #cad5eb;
+  display: inline-table;
+  width: 128px;
+  margin-left: 10px;
+  border: 1px solid #cad5eb;
 }
 .inline-table > p {
-    display: table-cell;
+  display: table-cell;
 }
 ```
 
@@ -123,7 +126,7 @@ clear: both;
 
 我们应该都知道， width 的默认值是 auto。 auto 因为是默认值，所以出镜率不高，但是，它却是个深藏不露的家伙，它至少包含了以下 4 种不同的宽度表现。
 
-1. 充分利用可用空间。比方说， `<div>`、 `<p>`这些元素的宽度默认是 100%于父级容器的。这种充分利用可用空间的行为还有个专有名字，叫作 fill-available。
+1. 充分利用可用空间。元素的宽度默认是 100%于父级容器的。这种充分利用可用空间的行为还有个专有名字，叫作 fill-available。
 2. 收缩与包裹。典型代表就是浮动、绝对定位、 inline-block 元素或 table 元素，英文称为 shrink-to-fit，直译为“收缩到合适”，这种现象可以称为“包裹性”。 CSS3 中的 fit-content 指的就是这种宽度表现。
 3. 收缩到最小。这个最容易出现在 table-layout 为 auto 的表格中，当每一列空间都不够的时候，文字能断就断，但中文是随便断的，英文单词不能断。于是，第一列被无情地每个字都断掉，形成一柱擎天。这种行为在规范中被描述为“preferred minimumwidth”或者“minimum content width”。后来还有了一个更加好听的名字 min-content。
 4. 超出容器限制。除非有明确的 width 相关设置，否则上面 3 种情况尺寸都不会主动超过父级容器宽度的，但是存在一些特殊情况。例如，内容很长的连续的英文和数字，或者内联元素被设置了 `white-space: nowrap`。子元素既保持了 inline-block 元素的收缩特性，又同时让内容宽度最大，直接无视父级容器的宽度限制。这种现象后来有了专门的属性值描述，这个属性值叫作 max-content，这个属于 CSS3 新世界内容。
@@ -148,16 +151,16 @@ clear: both;
 
 （1） 正常流宽度。在页面中随便扔一个`<div>`元素，其尺寸表现就会和水流一样铺满容器。这就是 block 容器的流特性。这种特性，所有浏览器的表现都是一致的。
 
-`<a>`元素默认 diplay 是 inline，所以，设置 `display: block` 使其块状化绝对没有问题，但后面的 width:100%就没有任何出现的必要了。
+`<a>`元素默认 diplay 是 inline，所以，设置 `display: block` 使其块状化绝对没有问题，但后面的 `width: 100%`就没有任何出现的必要了。
 
 ```css
 a {
-display: block;
-width: 100%;
+  display: block;
+  width: 100%;
 }
 ```
 
-我很多年前总结过一套“鑫三无准则”，即“无宽度，无图片，无浮动”。为何要“无宽度”？原因很简单，表现为“外部尺寸”的块级元素一旦设置了宽度，流动性就丢失了。
+很多年前总结过一套“鑫三无准则”，即“无宽度，无图片，无浮动”。为何要“无宽度”？原因很简单，表现为“外部尺寸”的块级元素一旦设置了宽度，流动性就丢失了。
 
 所谓流动性，并不是看上去的宽度 100%显示这么简单，而是一种 margin/border/padding 和 content 内容区域自动分配水平空间的机制。
 
@@ -175,7 +178,7 @@ width: 100%;
 }
 ```
 
-（2） 格式化宽度。格式化宽度仅出现在“绝对定位模型”中，也就是出现在 position属性值为 absolute 或 fixed 的元素中。在默认情况下，绝对定位元素的宽度表现是“包裹性”，宽度由内部尺寸决定，但是，有一种情况其宽度是由外部尺寸决定的，是什么情况呢？
+（2） 格式化宽度。格式化宽度仅出现在“绝对定位模型”中，也就是出现在 position 属性值为 absolute 或 fixed 的元素中。在默认情况下，绝对定位元素的宽度表现是“包裹性”，宽度由内部尺寸决定，但是，有一种情况其宽度是由外部尺寸决定的，是什么情况呢？
 
 对于非替换元素（见本书第 4 章），当 left/top 或 top/bottom 对立方位的属性值同时存在的时候，元素的宽度表现为“格式化宽度”，其宽度大小相对于最近的具有定位特性（position 属性值不是 static）的祖先元素计算。
 
@@ -207,11 +210,11 @@ div {
 按钮就是 CSS 世界中极具代表性的 inline-block 元素，可谓展示“包裹性”最好的例子，具体表现为：按钮文字越多宽度越宽（内部尺寸特性），但如果文字足够多，则会在容器的宽度处自动换行（自适应特性）。
 
 ```html
-<button>按钮</button>
-<input type="button" value="按钮">
+<button>按钮</button> <input type="button" value="按钮" />
 ```
 
 按钮会自动换行？没错，你之所以没印象，可能是因为：
+
 - 实际项目中，按钮上的文字个数比较有限，没机会换行；
 - `<button>`标签按钮才会自动换行， `<input>`标签按钮，默认 `white-space: pre`，是不会换行的，需要将 pre 值重置为默认的 normal。
 
@@ -222,6 +225,7 @@ div {
   <p id="conMore" class="content">文字内容-新增文字</p>
 </div>
 ```
+
 ```css
 .box {
   text-align: center;
