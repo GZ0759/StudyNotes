@@ -1411,7 +1411,7 @@ console.log(firstColor); // "red"
 console.log(secondColor); // "green"
 ```
 
-不定元素。在数组中，通过通过“...”语法将数组中的其余元素赋值给一个特定的变量。
+不定元素。在数组中，通过通过`...`语法将数组中的其余元素赋值给一个特定的变量。
 
 ```javascript
 let colors = ["red", "green", "blue"];
@@ -2530,7 +2530,7 @@ console.log(items[0]); // "2"
 
 ```JavaScript
 function createArray(arrayCreator, value) {
-    return arrayCreator(value);
+  return arrayCreator(value);
 }
 
 let items = createArray(Array.of, value);
@@ -2542,19 +2542,19 @@ let items = createArray(Array.of, value);
 
 ```JavaScript
 function makeArray(arrayLike) {
-    var result = [];
+  var result = [];
 
-    for (var i = 0, len = arrayLike.length; i < len; i++) {
-        result.push(arrayLike[i]);
-    }
+  for (var i = 0, len = arrayLike.length; i < len; i++) {
+    result.push(arrayLike[i]);
+  }
 
-    return result;
+  return result;
 }
 
 function doSomething() {
-    var args = makeArray(arguments);
+  var args = makeArray(arguments);
 
-    // use args
+  // use args
 }
 ```
 
@@ -2562,12 +2562,12 @@ function doSomething() {
 
 ```JavaScript
 function makeArray(arrayLike) {
-    return Array.prototype.slice.call(arrayLike);
+  return Array.prototype.slice.call(arrayLike);
 }
 
 function doSomething() {
-    var args = makeArray(arguments);
-    // use args
+  var args = makeArray(arguments);
+  // use args
 }
 ```
 
@@ -2596,15 +2596,15 @@ console.log(numbers);               // 2,3,4
 
 ```JavaScript
 let helper = {
-    diff: 1,
+  diff: 1,
 
-    add(value) {
-        return value + this.diff;
-    }
+  add(value) {
+    return value + this.diff;
+  }
 };
 
 function translate() {
-    return Array.from(arguments, helper.add, helper);
+  return Array.from(arguments, helper.add, helper);
 }
 
 let numbers = translate(1, 2, 3);
@@ -2612,15 +2612,15 @@ let numbers = translate(1, 2, 3);
 console.log(numbers);               // 2,3,4
 ```
 
-用 `Array.from()` 转换可迭代对象。`Array.from()` 方法可以处理类数组对象和可迭代对象，也就是说该方法能够将所有含有 Symbol.iterator 属性的对象转换为数组。
+用 `Array.from()` 转换可迭代对象。`Array.from()` 方法可以处理类数组对象和可迭代对象，也就是说该方法能够将所有含有 `Symbol.iterator` 属性的对象转换为数组。
 
 ```JavaScript
 let numbers = {
-    *[Symbol.iterator]() {
-        yield 1;
-        yield 2;
-        yield 3;
-    }
+  *[Symbol.iterator]() {
+    yield 1;
+    yield 2;
+    yield 3;
+  }
 };
 
 let numbers2 = Array.from(numbers, (value) => value + 1);
@@ -3878,25 +3878,25 @@ export const magicNumber = 7;
 
 // 导出函数
 export function sum(num1, num2) {
-    return num1 + num1;
+  return num1 + num1;
 }
 
 // 导出类
 export class Rectangle {
-    constructor(length, width) {
-        this.length = length;
-        this.width = width;
-    }
+  constructor(length, width) {
+    this.length = length;
+    this.width = width;
+  }
 }
 
 // 该函数是模块私有的
 function subtract(num1, num2) {
-    return num1 - num2;
+  return num1 - num2;
 }
 
 // 定义一个函数...
 function multiply(num1, num2) {
-    return num1 * num2;
+  return num1 * num2;
 }
 
 // ...并在之后导出它
