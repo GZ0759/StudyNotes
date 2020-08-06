@@ -1913,61 +1913,61 @@ CSS变量拥有作用域，所以可以在 `:root` 定义全局变量。
 
 # 第 7 章 基本的视觉格式化
 
-本章是关于 CSS 中可视化渲染的理论部分。为什么有这个必要?答案是，有了像 CSS 中所包含的那样开放和强大的模型，没有一本书能够涵盖所有可能的组合属性和效果的方法。毫无疑问，您将继续探索使用 CSS 的新方法。在研究 CSS 时，您可能会在用户代理中遇到一些看似奇怪的行为。通过对可视化呈现模型如何工作的深入了解，您将能够更好地确定一个行为是否是呈现引擎 CSS 定义的正确(如果未预料到)结果。
+本章全面阐述CSS视觉渲染的理论。为什么要了解这些知识呢？因为CSS是如此开放、如此强大的一个系统，任何书都不可能涵盖属性的所有组合方式及其效果。在实践中，你肯定会发现使用CSS的新方式。而且在探索CSS的过程中，你可能会在某些用户代理中遇到看似奇怪的行为。掌握视觉渲染模型的工作原理之后，你便能判断所遇到的怪异行为（尽管出乎意料）就是CSS渲染引擎定义的正确方式，还是确有异常。
 
 ## 7.1 元素框基础
 
-在其核心，CSS 假设每个元素生成一个或多个矩形框，称为元素框。(规范的未来版本可能允许使用非矩形框，确实有人建议对此进行更改，但目前所有内容都是矩形的。)每个元素框的中心都有一个内容区域。这个内容区域被可选的填充、边框、轮廓和边距包围。这些区域被认为是可选的，因为它们都可以设置为宽度为 0，从而有效地将它们从元素框中移除。图 7-1 显示了一个示例内容区域，以及周围的填充、边框和边距区域。
+不管是什么元素，CSS都假定每个元素都生成一个或多个矩形框，我们称之为元素框（element box)(以后的规范可能会允许元素生成非矩形框，而其实现在就有这方面的提议，不过目前生成的框还都是矩形的）。各元素框的中心是内容区域（conten area),四周有可选的内边距、边框、轮廓和外边距。之所以说这些区域是可选的，是因为它们的宽度都可以设为零，即把它们从元素框上删除。图7-1展示了一个内容区域，四周围绕着内边距、边框和外边距。
 
-每个边距、边框和内边距都可以使用各种特定于边的属性进行设置，如左边框或边框-底部，以及内边距等简写属性。大纲(如果有的话)没有特定于边的属性。内容的背景(例如，颜色或平铺图像)默认应用于填充内。页边距总是透明的，允许任何父元素的背景都是可见的。填充不能有负长度，但是空白可以。稍后我们将探讨负边距的影响。
+外边距、边框和内边距都有分别针对每一边的属性，例如margin-left 或border bottom,也有简写属性，例如padding。而轮廓没有针对各边的属性。默认情况下，容区的背景（例如颜色或平铺的图像）出现在内边距范围内。外边距区域始终是透明的，因此透过它能看到父元素。内边距不能为负值，但是外边距可以。稍后会说明把外边距设为负值的效果。
 
 <!-- <Figures figure="7-1">The content area and its surroundings</Figures> -->
 
-边框是使用已定义的样式生成的，如实体或 inset，它们的颜色是使用 border-color 属性设置的。如果没有设置颜色，则边框采用元素内容的前景色。例如，如果一个段落的文本是白色的，那么该段落周围的任何边框都是白色的，除非作者明确声明了不同的边框颜色。如果边框样式有某种类型的空白，则默认情况下元素的背景可以通过这些空白显示。最后，边框的宽度不能为负。
+边框的线型由样式定义，例如设为solid或inset,边框的颜色由border-color属性设定。如未设定颜色，边框的颜色与元素中内容的前景色相同。比如说，段落中的文本是白色，如果创作人员没有明确声明使用其他颜色，那么段落四周的边框也是白色的。如果边框的线型有间隙，那么默认情况下，从间隙中能看到元素的背景。最后，边框的宽度不能为负数。
 
-一个元件盒的各个部件可以通过一些合适的参数受到影响，如宽度或边界右侧。这些属性中有许多将在本书中使用，尽管它们在这里没有定义。
+元素框各组成部分受很多属性的影响，例如width或border-right。本书将使用其中多数属性，但是不会深入讨论。
 
 ### 7.1.1 重要概念概览
 
-让我们快速回顾一下我们将要讨论的方框的类型，以及接下来的解释中需要用到的一些重要术语:
+下面简要说明一下我们将讨论的不同框体，以及后文将用到的重要术语：
 
-`Normal flow`
+常规流动`Normal flow`
 
-这是西方语言中从左到右、从上到下的文本呈现，是传统 HTML 文档中常见的文本布局。注意，在非西方语言中，流的方向可能会改变。大多数元素都在常规流中，元素离开常规流的惟一方法是浮动、定位或做成一个灵活的盒子或网格布局元素。请记住，本章的讨论只涉及正常流程中的元素。
+即渲染西方语言时从左至右、从上到下的顺序，以及传统的HTML文档采用的文本布局方式。注意，对非西方语言来说，流动方向可能会变。多数元素都采用常规的流动方式，除非元素浮动了、定位了，放入弹性盒或采用棚格布局了。不过本章只讨论常规流动方式下的元素。
 
-`Nonreplaced element`
+非置换元素`Nonreplaced element`
 
-这个元素的内容包含在文档中。例如，段落(p)是不可替换的元素，因为它的文本内容是在元素本身中找到的。
+内容包含在文档中的元素。例如，段落（p)是非置换元素，因为段落中的文本内容在元素自身中。
 
-`Replaced element`
+置换元素`Replaced element`
 
-这是一个元素，用作其他内容的占位符。被替换元素的典型示例是 img 元素，它简单地指向一个图像文件，该文件被插入到文档流中找到 img 元素本身的地方。大多数表单元素也被替换（例如 `<input type="radio">`）
+为其他内容占位的元素。典型的置换元素是img,它指向一个图像文件，那个图像就插在img元素在文档流中的位置上，多数表单元素也是置换元素（例如<input type="radio">).
 
-`Root element`
+根元素`Root element`
 
-这是文档树顶部的元素。在 HTML 文档中，这是元素 HTML。在 XML 文档中，它可以是语言允许的任何内容;例如，RSS 文件的根元素是 RSS。
+位于文档树顶端的元素。在HTML文档中，根元素是html。在XML文档中，根元素可以是语言允许的任何元素，例如，RSS文件的根元素是rss。
 
-`Block box`
+块级框`Block box`
 
-这是一个由段落、标题或 div 等元素生成的框。在正常流中，这些框会在它们的框之前和之后生成“新行”，以便垂直地一个接一个地阻塞正常流堆栈中的框。任何元素都可以通过声明 `display: block` 来生成一个块框。
+段落、标题或div等元素生成的框。在常规流动模式下，块级框在框体前后都“换行，因此块级框是纵向堆叠的。display:block声明能把任何元素生成的框体变级框。
 
-`Inline box`
+行内框`Inline box`
 
-这是一个由诸如 strong 或 span 之类的元素生成的方框。这些框不会在它们自己之前或之后生成“换行符”。任何元素都可以通过声明 `display: inline` 来生成内联框。
+strong或span等元素生成的框体。行内框前后不“换行”。display:inline声明能把任何元素生成的框体变成行内框。
 
-`Inline-block box`
+行内块级框`Inline-block box`
 
-这是一个内部类似于块盒，但在外部充当内联盒的盒子。它的作用与被替换的元素类似，但又不完全相同。想象一下，拿起一个 div，把它插入到一行文本中，就好像它是一个内联图像一样，你就明白了。
+内部特征像块级框，外部特征像行内框。行内块级框的行为与置换元素相似，但不完全相同。比如说把一个div元素像行内图像那样插入一行文本，这样一想你白了。
 
-有几种其他类型的盒子,例如表格单元框,但他们不会为各种各样的理由不覆盖在这本书中最小的就是它们的复杂性要求自己的一本书,和很少有作者会定期与他们搏斗。
+除此之外还有其他框体，例如单元格框，但是基于各种各样的原因（那些框体太过复杂一本书也讲不完，而且没有多少作者能驾驭，只这一点就够了）,本书不做讨论。
 
 ### 7.1.2 容纳块
 
-还有一种类型的 box 需要我们详细地研究，在这种情况下，它有足够的细节值得自己的部分:包含块。
+还有一种框体要深入说明，因为涉及的知识够多，所以单开一节。这种框体是容纳块(containing block).
 
-每个元素的盒相对于其包含块进行布局;以一种非常真实的方式，包含块是一个框的“布局上下文”。CSS 定义了一系列规则来确定一个框的包含块。我们将只讨论那些与本书所涵盖的概念相关的规则，以保持我们的重点。
+每个元素的框体都相对容纳块放置，说得简单点就是，容纳块是元素框体的“布局上下文”。为了确定框体的容纳块，CSS定义了一系列规则。不过我们只会说明与本书内有关的那些规则，以免话题展开太多。
 
-对于正常的西式文本流中的元素，包含的块形成于最近的祖先的内容边缘，它生成一个列表项或块框，其中包括所有与表相关的框(例如，由表单元格生成的框)。考虑以下标记:
+在使用常规流动方式渲染的西文文本中，容纳块由离元素最近的那个生成列表项目或级框（包含所有与表格有关的框体，例如单元格生成的框体）的祖辈元素的边界构成。以下述标记为例：
 
 ```html
 <body>
@@ -1977,21 +1977,21 @@ CSS变量拥有作用域，所以可以在 `:root` 定义全局变量。
 </body>
 ```
 
-在这个非常简单的标记中，p 元素的块框的包含块是 div 元素的块框，因为它是块或列表项最接近的祖先元素框(在本例中，它是块框)。类似地，div 的包含块是主体的框。因此，p 的布局依赖于 div 的布局，而 div 又依赖于 body 元素的布局。
+在这段十分简单的标记中，p元素的块级框的容纳块是div元素的块级框，因为这是祖量元素的框体中离p元素最近的，而且生成的是块级框或列表项目（这里，div元素生或的是块级框）。类似地，div元素的容纳块是body元素的框体，因此，p元素的布局依锁div元素的布局，而div元素的布局又依赖body元素的布局。
 
-在此之上，body 元素的布局依赖于 html 元素的布局，html 元素的框创建了所谓的初始包含块。它的独特之处在于视图——屏幕媒体中的浏览器窗口，或打印媒体中页面的可打印区域——决定了它的维数，而不是根元素内容的大小。这是一个微妙的区别，通常不是很重要，但它确实存在。
+继续下去，body元素的布局依赖html元素的布局。html元素对应的是初始容纳块（initial coataining block),它的独特之处是，其尺寸由视区（屏幕媒体中的浏览器窗口，印刷媒体中的可打印区域）决定，而非根元素中内容的尺寸。初始容纳块与其他容纳块的差异极小，而且通常并不重要，但是你要知道有这么一种容纳块。
 
 ## 7.2 调整元素的显示方式
 
-可以通过设置属性显示的值来影响用户代理的显示方式。现在我们已经仔细研究了可视化格式化，让我们考虑 display 属性，并使用本书前面的概念讨论它的另外两个值。
+为display属性设值可以影响用户代理显示元素的方式。既然我们开始深入讲解视觉格式化了，那就用前文学过的概念多讨论display属性的两个值。
 
 <!-- <Cards cards="display" /> -->
 
-我们将忽略与 ruby 和表相关的值，因为它们对于本章来说太复杂了，我们还将忽略值' list-item '，因为它与块框非常相似。我们已经花了相当多的时间来讨论块和内联框，但是让我们花一点时间来讨论在查看“内联块”之前如何改变元素的显示角色来改变布局。
+我们将忽略旁注（ruby)和表格相关的值，因为对本章的内容来说，它们太过复杂；我们还将忽略list-item这个值，因为它与块级框特别相似。我们将用大量时间讨快级框和行内框，不过在此之前先讨论调整元素显示方式对布局的影响，随后再说明inline-block这个值。
 
 ### 7.2.1 改变显示方式
 
-在设计文档样式时，可以方便地更改元素生成的框的类型。例如，假设我们在一个导航中有一系列的链接，我们想把它们作为一个垂直的边栏:
+装饰文档时，若能改变元素生成的框体类型显然很方便。例如，假设nav元素中有一票列链接，我们想纵向布局，显示为侧边栏：
 
 ```html
 <nav>
@@ -2005,7 +2005,7 @@ CSS变量拥有作用域，所以可以在 `:root` 定义全局变量。
 </nav>
 ```
 
-我们可以把所有的链接放到表格单元格中，或者把每个链接都包装在它自己的导航中，或者我们可以让它们都是块级元素，就像这样:
+为此，可以把链接分别放在单元格中，也可以把每一个链接都放在一个nav元素中，家者直接把各个链接变成块级元素，像下面这样：
 
 ```css
 nav a {
@@ -2013,13 +2013,13 @@ nav a {
 }
 ```
 
-这将使导航导航中的每个元素成为块级元素。如果我们再添加一些样式，就会得到如图 7-2 所示的结果。
+这个规则把nav元素中的每个a元素变成块级元素。如果再添加一些样式，可以得到似图7-2所示的结果。
 
 <!-- <Figures figure="7-2">Changing the display role from inline to block</Figures> -->
 
-当您希望非 css 浏览器将导航链接作为内联元素，而将相同的链接作为块级元素时，更改显示角色非常有用。将链接作为块，您可以像 div 或 p 元素那样对它们进行样式设置，其优点是整个元素框成为链接的一部分。因此，如果用户的鼠标指针停留在元素框中的任何位置，则可以单击链接。
+这样修改元素的显示方式之后，在不支持CSS的浏览器中，导航链接将显示为行内元素，而在支持CSS的浏览器中，导航链接将显示为块级元素。把链接变成块级元素之后，可以像div或p元素那样装饰，整个元素框都变成链接的了。因此，用户把鼠标指针悬停在元素框上的任何位置都能单击链接。
 
-您可能还希望获取元素并使它们内联。假设我们有一个无序的名字列表:
+此外，你可能还想把元素变成行内显示方式。假设有这么一个显示人名的无序列表：
 
 ```html
 <ul id="rollcall">
@@ -2034,7 +2034,7 @@ nav a {
 </ul>
 ```
 
-对于这个标记，假设我们想要将这些名称变成一系列内联名称，它们之间有竖线(以及列表的两端)。这样做的唯一方法是改变它们的显示角色。以下规则的效果如图 7-3 所示:
+现在我们想把这些人名显示为行内元素，而且在人名之间（以及整个列表的前后）加上竖线，为此，只能改变显示方式。下述规则的效果如图7-3所示。
 
 ```css
 #rollcall li {
@@ -2049,9 +2049,11 @@ nav a {
 
 <!-- <Figures figure="7-3">Changing the display role from list-item to inline</Figures> -->
 
-还有很多其他的方法可以让你在设计中充分利用显示器。要有创意，看看你能发明什么!
+你可以根据设计需要灵活使用不同的显示方式，只有想不到，没有做不到。
 
-但是要注意，您正在更改元素的显示角色—而不是更改它们的固有性质。换句话说，使一个段落生成内联框并不会将该段落转换为内联元素。例如，在 HTML 中，一些元素是块，而另一些元素是内联的。(还有一些是“流”元素，但是我们现在忽略了它们。)内联元素可以是块元素的后代，但通常不是。虽然 span 可以放在段落中，但 span 不能包裹在段落中。这将适用于无论您如何样式的元素的问题。考虑以下标记:
+热而，要注意，我们改变的是元素的显示方式，而不是元素的本性。也就是说，把段落生或的框体变成行内框并不会把段落变成行内元素。例如，HTML元素有些是块级元素，有些则是行内元素（其实还有些是“流动”元素，不过暂且不提）。行内元素可以作为块级元素的后代，但是反过来一般不行。比如说，span元素可以放在一个段落中，但是却不能把段落放在span元素中。
+
+不论怎样装饰元素，这一点都成立。以下述标记为例：
 
 ```html
 <span style="display: block;">
@@ -2059,75 +2061,75 @@ nav a {
 </span>
 ```
 
-由于块元素(`p`)嵌套在内联元素(`span`)中，所以标记将不会生效。改变显示角色并不能改变这一点。`display` 之所以有它的名字，是因为它影响元素的显示方式，而不是因为它改变了元素的类型。
+这段标记是不对的，因为块级元素（p)嵌套在行内元素（span)中。虽然改变了显示方式，但这一点是变不了的。display属性的名称就表明，它是影响元素显示方式的，而不能改变元素的种类。
 
-说到这里，让我们来看看不同类型的框的详细信息:块框、内联框、内联块框和列表项框
+了解这些知识之后，下面深入讨论不同的框体：块级框、行内框、行内块级框和列表项目框。
 
 ### 7.2.2 块级框
 
-块盒的行为有时是可预测的，有时是令人惊讶的。例如，沿水平轴和垂直轴放置框的处理可能不同。为了完全理解如何处理块盒，您必须清楚地理解许多边界和区域。它们在图 7-4 中详细显示。
+块级框的行为有时可以预测，有时又让人捉摸不透。例如，框体位置在横轴和纵轴上的处理方式就有所不同。为了充分理解块级框的处理方式，必须知道一些界线和区域，如图7-4所示。
 
-默认情况下，块框的宽度定义为从左内边到右内边的距离，高度定义为从内顶到内底的距离。这两个属性都可以应用于生成块框的元素。
+默认情况下，块级框的宽度（width)等于左内边界到右内边界的距离，高度（height)等于上内边界到下内边界的距离。这两个属性可用于生成块级框的元素。
 
 <!-- <Figures figure="7-4">The complete box model</Figures> -->
 
-也可以使用属性 `box-sizing` 属性改变这些属性的处理方式。
+这些属性的处理方式可以使用box-sizing属性调整。
 
 <!-- <Cards cards="box-sizing" /> -->
 
-此属性用于更改宽度和高度值的实际作用。如果您声明 `width: 400px`，而没有声明 `box-sizing` 值，那么元素的内容框将是 400 像素宽;任何内边距、边框等都将被添加到其中。另一方面，如果您声明 `box-sizing: border-box`，则元素框将从左外边框边缘到右外边框边缘的距离为 400 像素;任何边框或填充将被放置在该距离内，从而缩小内容区域的宽度。如图 7-5 所示。
+这个属性用于改变width和height值的具体意义。如果声明width:400px,而且不为box-sizing设值，那么元素的内容框将为400像素宽，内边距和边框等都在此基础上增加，如果声明box-sizing:border-box,那么元素框从左边框的外边界到右边框的外边界相距400像素：边框或内边距都在这个尺寸之内计算，即内容区的宽度相应减少。这两种情况如图7-5所示。
 
 <!-- <Figures figure="7-5">The effects of box-sizing</Figures> -->
 
-我们在这里讨论 `box-sizing` 属性，因为如前所述，它适用于“接受宽度或高度值的所有元素”。这是最常见的生成块框的元素，尽管它也适用于像图像这样的被替换的内联元素，以及内联块框。
+这里提到box-sizing属性，是因为它作用于“能设定width或height的所有元素”，通常，这是指生成块级框的元素，不过也能用于行内置换元素（如图像）,以及行内块级框。
 
-不同的宽度、高度、填充和边距组合在一起决定了文档的布局方式。在大多数情况下，文档的高度和宽度由浏览器自动决定，并基于可用的显示区域和其他因素。使用 CSS，您可以对元素的大小和显示方式进行更直接的控制。
+这些宽度、高度，以及内边距和外边距在一起，决定着文档的布局方式。多数情况下，文档的高度和宽度由浏览器自动确定，而且是根据可用显示区域确定的，此外还受一些其他因素的影响。通过CSS,可以直接控制元素的尺寸和显示方式。
 
 ### 7.2.3 横向格式化
 
-水平格式通常比您想象的更复杂。部分复杂性与 `box-sizing` 的默认行为有关。使用默认值 `content-box`，指定的宽度值将影响内容区域的 `width`，而不是整个可见元素框的 `width`。考虑下面的例子:
+横向格式化往往比你想的复杂。之所以复杂，部分是由于box-sizing的默认行为，使用默认值content-box时，为width设定的值是内容区的宽度，而不是整个元素柜的可见宽度。以下述标记为例：
 
 ```html
 <p style="width: 200px;">wideness?</p>
 ```
 
-这将使段落的内容宽 200 像素。如果我们给元素一个背景，这将是非常明显的。但是，您指定的任何内边距、边框或边距都将“添加”到宽度值中。假设我们这样做:
+这个段落中的内容为200像素宽。如果有背景，看的就相当清楚了。此时，如果有内边距，边框或外边距的话，将增加到这个宽度之上。假设我们是这样设定的：
 
 ```html
 <p style="width: 200px; padding: 10px; margin: 20px;">wideness?</p>
 ```
 
-可视元素框现在是 220 像素宽，因为我们已经在内容的左右两边添加了 10 个像素的填充。页边距现在将向两边增加 20 个像素，使整个元素框的宽度增加到 260 个像素。如图 7-6 所示。
+那么，元素框的可见区域将是220像素宽，因为我们在内容区的左右各添加了10像素宽的内边距。外边距又在元素的两侧添加20像素，因此这个元素框的总体宽度为260像素。结果如图7-6所示。
 
 <!-- <Figures figure="7-6">Additive padding and margin</Figures> -->
 
-如果我们更改样式以使用边框框进行 box-sizing，那么结果将会不同。在这种情况下，可视框的宽度为 200 像素，内容宽度为 180 像素，边缘距为 40 像素，总体框宽为 240 像素，如图 7-7 所示。
+如果修改样式，把box-sizing设为border-box,那么结果就不同了。此时，元素柜的可见区域为200像素宽，内容区域为180像素宽。因为两侧的外边距共40像素，所以元素框的总体宽度为240像素，如图7-7所示。
 
 <!-- <Figures figure="7-7">Subtracted padding</Figures> -->
 
-在这两种情况下，都有一个规则，该规则表示正常流中块盒的水平组件的总和总是等于包含块的宽度。让我们考虑“div”中的两个段落，它们的空白被设置为“1em”，并且它们的 `box-sizing` 值是默认值。每个段落的内容宽度(`width` 的值)，加上它的左右边距、边框和边距，总和总是 `div` 容区域的宽度。
+在这两种情况下，常规流动方式下块级框各组成部分的横向尺寸始终等于容纳块的宽度。假设一个div元素中有两个段落，div元素的外边距为1em,box-sizing属性使用默认值。那么，每个段洛的内容区觉度（即width的值）,加上左右内边距，边框和外边距，得到的和始终等于div元素内容区的宽度。
 
-假设 div 的宽度是 30em。这使得每个段落的内容宽度、填充、边框和边距的总和为 30 em。在图 7-8 中，段落周围的“空白”空间实际上是它们的边距。如果“div”有任何内边距，就会有更多的空白，但这里不是这样。
+假设div元素的宽度为30em。那么，段落的内容区宽度，加上内边距，边框和外边距之和为30em。图7-8中段落四周的“空白”其实是段落的外边距。如果div元素有内边距，空白区域更大，不过这里没有。
 
 <!-- <Figures figure="7-8">Element boxes are as wide as the width of their containing block</Figures> -->
 
 ### 7.2.4 横向格式化属性
 
-水平格式的七个属性是 `margin-left`, `border-left`, `padding-left`, `width`, `padding-right`, `border-right`, 和 `margin-right`。这些属性与块盒的水平布局有关，如图 7-9 所示。
+横向格式化属性有七个，分别为margin-left、border-left、padding-left、width padding-right、border-right和margin-right。这七个属性影响块级框的横向布局，如图7-9所示。
 
-这七个属性的值必须加起来等于元素所包含的块的宽度，它通常是块元素的父元素的“宽度”的值(因为块级别的元素几乎总是有块级别的父元素)。
+这七个属性的值加在一起要等于元素容纳块的宽度，而这一宽度通常为块级元素的父元素的width值（因为块级元素的父元素几乎都是块级元素）。
 
-在这七个属性中，只有三个可以设置为“auto”:元素内容的宽度和左右边距。其余的属性必须设置为特定的值或默认宽度为 0。图 7-10 显示了框中的哪些部分可以接受 auto 值，哪些不能。
+在这七个属性中，只有三个属性的值能设为auto:元素内容区的宽度、左外边距和右外边距。余下的几个属性，要么设为具体的值，也么使用默认值（零）。图7-10展示了元素框的哪些部分能设为auto,而哪些部分不能。
 
 <!-- <Figures figure="7-9">The seven properties of horizontal formatting</Figures> -->
 
 <!-- <Figures figure="7-10">Horizontal properties that can be set to auto</Figures> -->
 
-“宽度”必须设置为“自动”或某种类型的非负值。当你在水平格式中使用“auto”时，会出现不同的效果。
+width属性的值要么设为auto,要么设为某种类型的非负值。在横向格式化中使用auto,可能得到不同的结果。
 
 ### 7.2.5 使用auto
 
-如果将' width '、' margin-left '或' margin-right '设置为' auto '的值，并为其余两个属性指定特定的值，则将设置为' auto '的属性设置为使元素框的宽度等于父元素宽度所需的长度。换句话说，我们假设 7 个属性的总和必须等于 500 像素，没有设置填充或边框，右边框和宽度设置为“100px”，左边框设置为“auto”。因此，左边距将为 300 像素宽:
+在width,margin-left和margin-right三个属性中，如果把其中一个设为auto,另两个设为具体的值，那么设为auto的那个属性的具体长度要能满足元素框的宽度等于父元素的宽度，假如七个属性的值之和必须等于500像素，右外边距的宽度设为100px,左外边距设为auto,而且没有设定内边距或边框，那么左外边距的宽度将是300像素。div (width: 500px;)
 
 ```css
 div {
@@ -2140,9 +2142,9 @@ p {
 } /* 'auto' left margin evaluates to 300px */
 ```
 
-从某种意义上说，“自动”可以用来弥补其他一切与所需总数之间的差异。但是，如果这三个属性都被设置为' 100px '，而' none '都被设置为' auto '呢?
+从某种意义上说，auto可用于补全总和所缺的尺寸。然而，如果把这三个属性的值都设为100px,没有一个设为auto,情况又如何呢？
 
-如果所有三个属性都被设置为“auto”以外的值，或者，用 CSS 术语来说，当这些格式化属性被“过度约束”时，那么“margin-right”总是被强制设置为“auto”。这意味着如果边距和宽度都设置为“100px”，那么用户代理将把右边的边距重置为“auto”。然后，根据“auto”值“填充”使元素的整体宽度等于其包含块的宽度所需的距离的规则来设置右边框的宽度。图 7-11 显示了以下标记的结果:
+如果把这三个属性都设为auto之外的值，用css术语来说就是过约束了，那么margin-right将被强制设为auto,也就是说，如果左右外边距和宽度都设为100px的话，用户代理会把右外边距重置为auto,此时，右外边距的宽度自动设定，不过要满足元素的总宽度等于容纳块的宽度。下述样式的结果如图7-11所示：
 
 ```css
 div {
@@ -2157,7 +2159,7 @@ p {
 
 <!-- <Figures figure="7-11">Overriding the margin-right setting</Figures> -->
 
-如果两个边距都被显式设置，并且' width '被设置为' auto '，那么' width '将是达到所需的 total 所需的任何值(即父元素的内容宽度)。以下标记的结果如图 7-12 所示:
+如果左右外边距都明确设为auto,那么width的值是满足总宽度（即父元素的内容区宽度）所需的任何值。下述样式的结果如图7-12所示：
 
 ```css
 p {
@@ -2167,7 +2169,7 @@ p {
 }
 ```
 
-图 7-12 所示的情况是最常见的情况，因为它相当于设置空白，而不为“宽度”声明任何内容。以下标记的结果与图 7-12 所示完全相同:
+图7-12所示的情况是最常见的，即设定左右外边距而不设定width。下述样式的结果与图7-12完全一样：
 
 ```css
 p {
@@ -2178,11 +2180,11 @@ p {
 
 <!-- <Figures figure="7-12">Automatic width</Figures> -->
 
-您可能想知道如果将“box-sizing”设置为，比如说，“padding-box”会发生什么。这里的讨论倾向于假设使用了默认的“content-box”，但是这里描述的所有原则都适用，这就是为什么本节只讨论“width”和边距，而没有引入任何填充或边框。无论 box-sizing 值是多少，本节和以下各节中对“width: auto”的处理是相同的。在“box-sizing”定义的框中放置内容的详细信息可能会有所不同，但是对“auto”值的处理是不变的，因为“box-sizing”决定了“width”指的是什么，而不是它与边距之间的关系。
+你可能想知道把box-sizing设为其他值（例如padding-box)会怎样。前面所讲的内容假定用的是content-box,不过换成其他值后依然成立；正是因为这样，本节才只讨论width和两侧的外边距，而没有涉及内边距或边框。不管把box-sizing设为什么值，本节及下一节讨论的width:auto处理方式不变。box-sizing定义的框体包含哪些区域，设为不同的值时有所不同，但是对auto值的处理方式不变，因为box-sizing决定的是width从何处算起，而不是它与外边距的关系。
 
 ### 7.2.6 多个auto
 
-现在让我们看看当三个属性中的两个(“width”、“margin-left”和“margin-right”)被设置为“auto”时会发生什么。如果两个边距都被设置为“auto”，如下面的代码所示，那么它们被设置为相等的长度，从而使元素处于其父元素的中心。如图 7-13 所示。
+下面来看这三个属性（width、margin-left和margin-right)中有两个设为auto的情况。如果两侧的外边距都设为auto,如下述代码所示，那么外边距的长度相等，元素在父元素内居中显示，如图7-13所示
 
 ```css
 div {
@@ -2198,9 +2200,9 @@ p {
 
 <!-- <Figures figure="7-13">Setting an explicit width</Figures> -->
 
-将两个边距设置为相等的长度是将正常流中的块盒中的元素居中的正确方法。(还有其他方法可以找到灵活的框和网格布局，但它们超出了本文的范围。)
+在常规流动方式下，若想让元素在块级框中居中显示，止明的方式走把网侧的外边距设为同样的宽度（弹性盒和概格布局中还有其他方法，不过这不在本节的讨论范围之内）。
 
-另一种调整元素大小的方法是将其中一个边距和“宽度”设置为“auto”。设置为“自动”的空白被减少到零:
+此外，还可以把某一边的外边距和width设为auto。此时，设为auto的那个外边距等于零。
 
 ```css
 div {
@@ -2213,13 +2215,13 @@ p {
 } /* left margin evaluates to 0; width becomes 400px */
 ```
 
-然后将“宽度”设置为使元素填充其包含块所需的值;在前面的示例中，它将是 400 像素，如图 7-14 所示。
+width则被设为填满容纳块所需的值。对上例来说，width的值为400像素，如图7-14所示。
 
 <!-- <Figures figure="7-14">What happens when both the width and right margin are auto</Figures> -->
 
-最后，当所有三个属性都被设置为 `auto` 时会发生什么?答案是:两个边距都设置为 0，“宽度”尽可能宽。此结果与默认情况相同，即未显式声明空白或宽度值。在这种情况下，margin 默认为 0,width 默认为 auto。
+最后，如果这三个属性都设为auto呢？答案是，两侧的外边距被设为零，而width则要多宽有多宽。这跟默认情况是一样的，即两侧的外边距和宽度都不明确声明值；此时，外边距默认为零，而width默认为auto。
 
-注意，由于水平边距不会折叠，所以父元素的填充、边框和边距会影响其子元素。这种影响是间接的，因为一个元素的边距(等等)会导致子元素的偏移。以下标记的结果如图 7-15 所示:
+注意，因为横向外边距不折叠，所以父元素的内边距、边框和外边距可能会影响子代。这影响不太直接，例如元素的外边距（等）可能导致子元素有偏移。下述样式的结果如图7-15所示。
 
 ```css
 div {
@@ -2237,9 +2239,9 @@ p {
 
 ### 7.2.7 负外边距
 
-到目前为止，这一切可能看起来相当简单，您可能想知道为什么我说事情可能很复杂。当然，边距还有另外一面:负面。是的，可以为边距设置负值。设置负的边距会产生一些有趣的效果。
+目前来看，一切都相当简单，但是为何我之前说有些地方是复杂的呢？这是因为外边距还有一种取值，即负值。是的，外边距可以设为负值。设为负值能实现一些有趣的效果。
 
-记住，七个水平属性的总和总是等于父元素的“宽度”。只要所有属性都为 0 或更大，元素的宽度就不可能超过其父元素的内容区域。但是，考虑图 7-16 所示的如下标记:
+还记得吗，七个横向属性之和始终等于父元素的width。只要这几个属性的值都大于或等于零，元素就不可能比父元素的内容区宽。然而，下述样式便出现意外了，如图7-16所示：
 
 ```css
 div {
@@ -2255,15 +2257,15 @@ p.wide {
 
 <!-- <Figures figure="7-16">Wider children through negative margins</Figures> -->
 
-的确，子元素比父元素更宽!这在数学上是正确的:
+你没看错，子元素比父元素宽了！用算式计算，结果是对的：
 
 ```css
 10px + 0 + 0 + 540px + 0 + 0 − 50px = 500px
 ```
 
-“540px”是“width: auto”的值，它是平衡方程中其余值所需的数字。即使它会导致一个子元素突出其父元素，也没有违反规范，因为这七个属性的值加起来就是所需的总和。这是一种语义上的躲避，但它是有效的行为。
+其中，540px对应于width:auto,即满足算式左右两边所需的值。尽管子元素超出了父素，但是这里并没有违背规范，因为七个属性的值加在一起等于总宽度。这是语义上的使俩，但却是正确的行为。
 
-现在，让我们添加一些边界的混合:
+下面，加上边框：
 
 ```css
 div {
@@ -2278,15 +2280,15 @@ p.wide {
 }
 ```
 
-由此产生的变化将减少“宽度”的评估宽度:
+此时，变化发生在width的计算结果上
 
 ```css
 10px + 3px + 0 + 534px + 0 + 3px − 50px = 500px
 ```
 
-如果我们引入了 padding，那么 width 的值会下降更多。
+如果再加上内边距，width的值还会变小。
 
-相反，也有可能使“自动”右边缘值为负值。如果其他属性的值强制右边界为负，以满足元素宽度不超过其包含块的要求，那么就会发生这种情况。考虑:
+反过来，设为auto的右外边距也可能得到负值。比如其他属性设为特定的值时，为了满足元素不能比容纳块宽的要求，右外边距就有可能为负值。以下述样式为例：
 
 ```css
 div {
@@ -2301,15 +2303,15 @@ p.wide {
 }
 ```
 
-The equation will work out like this:
+此时，算式要这样列：
 
 ```css
 10px + 3px + 0 + 600px + 0 + 3px − 116px = 500px
 ```
 
-右边的空白将被赋值为' -116px '。即使我们给它一个不同的显式值，它仍然会被强制设置为' -116px '，因为规则规定当元素的维度被过度约束时，右边框会被重置为使数字正确计算所需的任何值。(除了从右到左的语言，在这种语言中，左边的空白将被取消。)
+右外边距的计算结果为-116px。即便明确声明为其他具体的值，右外边距也会被强制设为-116px,因为规则就是这样制定的：倘若元素的尺寸出现过约束，右外边距要被重置为满足算式所需的任何值（如果是从右至左书写的语言，重置的将是左外边距）。
 
-让我们考虑另一个例子，如图 7-17 所示，其中左边距设置为负数:
+再看一个例子，结果如图7-17所示，这里把左外边距设为负值：
 
 ```css
 div {
@@ -2326,15 +2328,15 @@ p.wide {
 
 <!-- <Figures figure="7-17">Setting a negative left margin</Figures> -->
 
-如果左页边距为负，不仅段落会溢出“div”的边框，而且还会溢出浏览器窗口本身的边缘!
+左外边距为负值时，段落不仅从div元素的边框溢出了，还从浏览器窗口的左边溢出了。
 
-请记住，填充、边框和内容宽度(和高度)不可能是负的。只有边距可以小于零。
+注意，内边距、边框和内容宽度（及高度）不能为负值。只有外边距的值可以小于零。
 
 ### 7.2.8 百分数
 
-当涉及到宽度、填充和边距的百分比值时，应用相同的基本规则。值是否用长度或百分比声明并不重要。
+宽度、内边距和外边距设为百分数时，基本的规则依然适用。其实，这些属性的值设为长度值还是百分数并没什么关系。
 
-百分比非常有用。假设我们想要一个元素的内容是其包含块宽度的三分之二，左右边距各为 5%，左边距为 5%，右边距为 5%。大概是这样的:
+百分数有时很有用，假设我们想把元素的内容区宽度设为容纳块的三分之二，左右内边距各为5%,左外边距为5%,余下的空间都留给右外边距。此时，可以这样声明：
 
 ```html
 <p
@@ -2345,9 +2347,9 @@ p.wide {
 </p>
 ```
 
-右边的边距为包含块宽度的 18%(100% - 67% - 5% - 5% - 5%)。
+这里的右外边距将是容纳块宽度的18%(100%-67%-5%-5%-5%).
 
-然而，混合百分比和长度单位可能比较棘手。考虑下面的例子:
+然而，百分数和长度单位混在一起使用就不那么容易理清了，以下述标记为例：
 
 ```html
 <p
@@ -2358,15 +2360,15 @@ p.wide {
 </p>
 ```
 
-在这种情况下，元素的框可以这样定义:
+此时，元素框可以这样定义：
 
 ```css
 5em + 0 + 2 em + 67% + 2 em + 0 + auto = containing block width
 ```
 
-为了使右边框宽度的值为 0，元素的包含块宽度必须为 27.272727 em(元素的内容区域宽度为 18.272727 em)。任何比这更宽的边和右边的边都是正值。任何较窄的右边界都将是负值。
+为了确保右外边距的计算结果为零，元素的容纳块必须是27.272727cm宽（元素的内容区是18.272727em宽）。假使容纳块比这宽，右外边距的计算结果会变成正值，客纳块比这窄的话，右外边距的计算结果则为负值。
 
-如果我们开始混合长度值统一类型，情况会变得更加复杂，就像这样:
+如果混用不同的长度单位，情况更复杂。例如：
 
 ```html
 <p
@@ -2378,17 +2380,19 @@ p.wide {
 </p>
 ```
 
-And, just to make things more complex, borders cannot accept percentage values, only length values. The bottom line is that it isn’t really possible to create a fully flexible element based solely on percentages unless you’re willing to avoid using borders or use some of the more experimental approaches such as flexible box layout.
+为了避免情况一直复杂下去，边框不接受百分数，只能设为长度值。这样限制的基本原因是，只使用百分数其实无法创建完全弹性的元素，除非不添加边框，或者使用某种实验性的方案，例如弹性盒布局。
 
 ### 7.2.9 置换元素
 
-更复杂的是，边框不能接受百分比值，只能接受长度值。底线是，除非您愿意避免使用边框或使用一些更具实验性的方法，如灵活的框布局，否则完全不可能仅根据百分比创建完全灵活的元素。
+目前，我们所讲的都是常规流动模式下非置换块级框的横向格式化，块级置换元素的处理方式要简单些，前面针对非置换块级框的规则都成立，不过有个例外width为auto时，置换元素的width等于内容自身的宽度。如果图像自身的宽度为20像素，下述示例中的图像将为20像素宽：
 
 ```html
 <img src="smile.svg" style="display: block; width: auto; margin: 0;" />
 ```
 
-如果实际图像的宽度是 100 像素，那么它将被设置为 100 像素宽。可以通过为“width”指定一个特定的值来覆盖这个规则。假设我们对前面的例子进行三次相同的图像显示，每个图像具有不同的宽度值:
+如果图像自身的宽度为100像素，那么它就占100像素宽。
+
+明确为width提供一个值可以覆盖这个规则。比如说，修改前例，同一个图像显示三次。每次设定的宽度都不同：
 
 ```html
 <img src="smile.svg" style="display: block; width: 25px; margin: 0;" />
@@ -2400,57 +2404,55 @@ This is illustrated in Figure 7-18.
 
 如图 7-18 所示。
 
-注意，元素的高度也会增加。当被替换的元素的“宽度”从其固有宽度更改时，将缩放“高度”的值以匹配它，除非将“高度”设置为其自身的显式值。反过来也是正确的:如果' height '被设置，但是' width '被保留为' auto '，那么宽度将根据高度的变化比例调整。
+注意，元素的高度随之增加了。如果置换元素的width与自身宽度不同，height的值会按比例变化，除非明确设定height的值。反过来亦然，如果设定了height,而把widt设为auto,那么宽度会随着高度按比例变化。
 
 <!-- <Figures figure="7-18">Changing replaced element widths</Figures> -->
 
-现在您考虑的是高度，让我们继续正常流块框的垂直格式。
+既然提到高度了，下面就来讨论常规流动模式下块级框的纵向格式化。
 
 ### 7.2.10 纵向格式化
 
-与水平格式一样，块盒的垂直格式也有自己的一组有趣的行为。元素的内容决定了“元素”的默认高度。内容的宽度也影响高度;例如，一个段落越窄，为了包含所有的内联内容，它就必须越高。
+块级框的纵向格式化与横向格式化类似，也有一些有趣的行为。元素的内容决定元素的默认高度。内容的宽度对高度也有影响，例如，段落越窄，为了包含内部的所有内容，高度就越高。
 
-在 CSS 中，可以在任何块级别的元素上设置显式的高度。如果这样做，结果的行为取决于其他几个因素。假设指定的高度大于显示内容所需的高度:
+通过CSS可以为任何块级元素设定具体的高度。这么做得到的结果取决于多个因素。假设指定的高度大于显示内容所需的高度：
 
 ```html
 <p style="height: 10em;"></p>
 ```
 
-在本例中，额外的高度具有类似于额外填充的视觉效果。但是假设高度“小于”显示内容所需的高度:
+此时，多出的高度看起来像是内边距。再假设指定的高度小于显示内容所需的高度：
 
 ```html
 <p style="height: 3.33em;"></p>
 ```
 
-当这种情况发生时，浏览器应该提供一种查看所有内容的方法，而不需要增加元素框的高度。在元素的内容比其框的高度高的情况下，用户代理的实际行为将取决于属性“overflow”的值。图 7-19 显示了两个备选方案。
+那么，浏览器要提供查看全部内容的方式，而且前提是不增加元素框的高度。如果元的内容比框体高，用户代理的具体行为取决于overflow属性。这种情况下的两种显示方式如图7-19所示。
 
-在 CSS1 下，如果一个元素不是被替换的元素(比如一个图像)，用户代理可以忽略除“auto”之外的任何“height”值。在 CSS2 及以后的版本中，“高度”的值不能被忽略，除非在一个特定的情况下涉及到百分比值。我们一会儿会讲到。
+在CSS1中，对置换元素来说（例如图像）,用户代理可以忽略auto之外的任何高度值在CS52及以上版本中，height的值不再允许忽略，唯一的例外是涉及百分数的特殊情况。这一点稍后讨论
 
-与“width”一样，“height”默认定义内容区域的高度，而不是可视元素框的高度。元素框的顶部或底部的任何内边距、边框或边距都将“添加”到高度值中，除非“box-sizing”的值与“content-box”不同。
+与width一样，height默认定义内容区的高度，而不是元素框可见区域的高度。元素框的上下内边距，边框和外边距在高度的基础上增加，除非box-sizing属性的值不是content-box.
 
 <!-- <Figures figure="7-19">Heights that don’t match the element’s content height</Figures> -->
 
 ### 7.2.11 纵向格式化属性
 
-与水平格式一样，垂直格式也有七个相关属性:`margin-top`, `border-top`, `padding-top`, `height`, `padding-bottom`, `border-bottom`, 和 `margin-bottom`。这些属性如图 7-20 所示。
+与横向格式化一样，纵向格式化也涉及七个属性：margin-top.border-top.padding-top.height、padding-bottom.border-bottom和margin-bottom。这些属性作用的区域见图7-20.
 
-这七个属性的值必须等于包含块的块的高度。这通常是块盒的父块的“高度”值(因为块级别的元素几乎总是有块级别的父块元素)。
+这七个属性的值加在一起必须等于块级框的容纳块的高度。通常，这是块级框父元素的height值（因为块级元素的父元素几乎都是块级元素）
 
-这七个属性中只有三个可以设置为“auto”:元素的“height”，以及顶部和底部的边距。顶部和底部的填充和边框必须设置为特定的值，否则它们的默认宽度为 0(假设没有声明“border-style”)。如果已经设置了 border-style，那么边框的厚度将被设置为定义模糊的值“medium”。图 7-21 提供了一个示例，用于记住框中的哪些部分可能具有“auto”值，哪些不具有。
+这七个属性中只有三个可以设为auto:元素的高度和上下外边距。上下内边距和边框必须设为具体的值，否则取默认值零（假设未声明边框式样）。如果设定了边框式(border-style),那么边框的宽度默认为不具体的medium,图7-21展示了元素框的哪些部分可以设为auto,而哪些部分不能。
 
-有趣的是，如果“页边距顶部”或“页边距底部”被设置为“自动”，它们都会自动计算为“0”。不幸的是，“0”的值会妨碍正常流盒在其包含块中的垂直居中。这也意味着如果你将一个元素的顶部和底部的边距设置为“auto”，它们将被有效地重置为“0”并从元素框中移除。
+奇怪的是，在常规流动模式下，如果把块级框的margin-top或margin-bottom设为auto,二者都自动计算为0。如此看来，常规流动模式下的元素无法轻易在容纳块中向居中。这也意味着，如果把元素的上下外边距设为auto,最终会被重置为0,不会体现在元素框上。
 
-对“自动”顶部和底部边缘的处理不同于定位元素，以及灵活的盒子元素。
+定位元素和弹性盒元素对设为auto的上下外边距的处理方式有所不同。
 
 <!-- <Figures figure="7-20">The seven properties of vertical formatting</Figures> -->
 
-`height` must be set to `auto` or to a nonnegative value of some type; it can never be less than zero.
-
-' height '必须设置为' auto '，或设置为某种类型的非负值;它永远不会小于零。
+height属性要么设为auto,要么设为某种类型的非负值，决不能小于零。
 
 ### 7.2.12 百分比高度
 
-您已经看到了如何处理长度值高度，因此让我们花一点时间来讨论百分比。如果将正常流块盒的高度设置为百分比值，则该值将作为包含该块的盒的高度的百分比。给定以下标记，得到的段落将为 3 em 高:
+我们已经知道如何处理值为具体长度的高度，下面花点时间讨论百分数高度。在常规泥动模式下，如果把块级框的高度设为百分数，百分数是相对框体的容纳块的高度而言的。对下述标记来说，段落的高度将是3em:
 
 ```html
 <div style="height: 6em;">
@@ -2458,11 +2460,11 @@ This is illustrated in Figure 7-18.
 </div>
 ```
 
-由于将顶部和底部的边距设置为“auto”将使它们的高度为 0，因此在这种特殊情况下，将元素垂直居中的唯一方法是将它们都设置为“25%”，即使这样，方框也将居中，而不是其中的内容。
+既然把上下外边距设为auto得到的外边距为零，那么针对这个例子，若想纵向居中元素，只能把上下外边距都设为25%。不过，这样只能把框体居中，里面的内容不居中。
 
 <!-- <Figures figure="7-21">Vertical properties that can be set to auto</Figures> -->
 
-但是，如果未显式声明包含块的高度，则将百分比高度重置为“auto”。如果我们改变前面的例子，使' div '的' height '为' auto '，那么段落的高度将与' div '本身一样高:
+然而，如果未明确声明容纳块的高度，那么百分数高度将被重置为auto。在上例中，如果把div的height改为auto,那么段落的高度将与div一样：
 
 ```html
 <div style="height: auto;">
@@ -2470,17 +2472,17 @@ This is illustrated in Figure 7-18.
 </div>
 ```
 
-这两种可能性如图 7-22 所示。(段落边框和“div”边框之间的空间是段落的顶部和底部空白。)
+这两种情况如图7-22所示（段落边框和div边框之间的空白是段落的上下外边距）。
 
 <!-- <Figures figure="7-22">Percentage heights in different circumstances</Figures> -->
 
-在我们继续之前，仔细看看图 7-22 中的第一个例子，half-astall 段落。它可能只有一半高，但不是垂直居中。这是因为包含的“div”是 6 em 高，这意味着半高的段落是 3 em 高。顶部和底部 1 em 的利润率,所以其总体框高度是 5。这意味着实际上是 2 他们之间的空间段的底部可见盒和 div”年代底边界,而不是 1 em。乍一看似乎有点奇怪,但它是有意义的,一旦你的工作细节。
+继续讨论之前，仔细看一下图7.22中的第一个示例，即那个占据一半高度的段落。看起来，那个侵露占帮一半高度，但是并没有以同居中。这是因为容纳块div的高度为6em,占据一半高度的侵落是3em高。但是，段落的上下外边距均为1em,所以整个概体的高度是5em。这意味着，段落可见框体底部到div底边的距离是2em,而不是lem,初看起来，这可能有点奇怪，但是了解细节之后你便会知道这是合理的。
 
 ### 7.2.13 自动调整高度
 
-在最简单的情况下，具有“height: auto”的正常流块框的呈现高度刚好能够将其内联内容(包括文本)的行框括起来。如果一个 autoheight, normal-flow 块框只有块级别的子元素，那么它的默认高度将是最顶层块级别子元素的外边框边缘到最底层块级别子元素的外边框边缘底部的距离。因此，子元素的边距将“突出”于包含它们的元素之外。(下一节将解释这种行为。)
+在常规流动模式下，声明 height:auto的块级框是最简单的，此时，框体的高度恰好能放得下里面的内容，常规流动模式下的块级框如果高度是自动调整的，而且子代都是块级元素，那么默认的高度是从最上边那个块级子代元素的上边框外侧到最下边那个块级子代元素的下边框外侧之间的距离。因此，子元素的外边距“游离”在所属元素的外部（这个行为在下一节说明）。
 
-但是，如果块级元素有顶部或底部填充，或顶部或底部边框，那么它的高度将是其最顶层的子元素的外边缘边缘到其最底端的子元素的外边缘边缘之间的距离:
+然而，如果块级元素有上内边距或下内边距，或者有上边框或下边框，那么其高度是从最上边那个子元素的上外边距的外边界到最下边那个子元素的下外边距的外边界之间的距离。
 
 ```html
 <div
@@ -2497,17 +2499,17 @@ This is illustrated in Figure 7-18.
 </div>
 ```
 
-图 7-23 展示了这两种行为。
+这两种情况如图7-23所示。
 
-如果我们将前一个示例中的边框改为 padding，那么对“div”高度的影响将是相同的:它仍然将段落的边距括在其中。
+如果把前例中的边框改为内边距，div元素的高度不变，外边距依然算在其中。
 
 <!-- <Figures figure="7-23">Auto heights with block-level children</Figures> -->
 
 ### 7.2.14 折叠纵向外边距
 
-垂直格式的另一个重要方面是相邻页边距的“折叠”。崩溃行为只适用于边缘。填充和边框，它们存在的地方，永远不会因为任何东西而崩溃。
+纵向格式化的另一个重要特征是，相邻的纵向外边距会折叠，只有外边更有这种折叠行为。内边距和边框（如果有的话）,绝不与任何区域折登。
 
-无序列表(其中列表项彼此跟随)是空白折叠的一个完美示例。假设包含 5 个项目的列表声明如下:
+通过纵向罗列的无序列表最易说明外边距折叠行为。假设把下述声明应用到一个有五个项目的列表上：
 
 ```css
 li {
@@ -2516,18 +2518,17 @@ li {
 }
 ```
 
-每个列表项都有一个 10 像素的顶部空白和一个 15 像素的底部空白。然而，在呈现列表时，相邻列表项之间的距离为 15 像素，而不是 25 像素。这是因为，沿着纵轴，相邻的边会折叠。换句话说，两个边距中较小的边距被较大的边距所取代。图 7-24 显示了折叠和未折叠的边缘之间的差异。
+每个列表项目都有10像素的上外边距和15像素的下外边距，然而，渲集时，相邻的两个列表项目之间的距离是15像素，而不是25像素。这是因为，相邻的外边距在纵轴上折叠了。换句话说就是，较小的外边距被较大的外边距消去了。图7-24展示了折叠和未折叠外边距之间的差别。
 
-正确实现的用户代理垂直折叠相邻的边距，如图 7-24 中的第一个列表所示，其中每个列表项之间有 15 个像素的空格。第二个列表显示了如果用户代理没有折叠页边距会发生什么，从而在列表项之间产生 25 像素的空格。
+目前实现的用户代理都会折叠相邻的纵向外边距，如图7-24中的第一个列表所示，因此列表项目之间的空白是15像素。第二个列表展示的是用户代理不折叠外边距时的情况，此时列表项目之间的空白是25像素。
 
-如果你不喜欢“折叠”，可以用“重叠”这个词。虽然边缘没有重叠，但你可以用下面的类比来想象发生了什么。
+如果你不喜欢“折叠”这个词，可以换成“重叠”，虽然外边距并不真的会重叠，但是你可以借助下述比拟想象一下这其中到底发生了什么。
 
-假设每个元素(比如一个段落)都是一张写有元素内容的小纸片。每张纸的周围都有一定数量的透明塑料，代表着纸的边缘。第一张纸(假设一张 h1)放在画布上。第二段(一段)放在它的下面，然后向上滑动，直到其中一个塑料的边缘接触到另一个纸的边缘。如果第一张纸的下沿有半英寸的塑料，第二张纸的上沿有三分之一英寸的塑料，那么当它们一起滑动时，第一张纸的塑料就会碰到第二张纸的上沿。现在，这两件作品被放在画布上，与作品相连的塑料也被重叠起来。
+假设每个元素（例如段落）是一小片纸，元素中的内容写在纸上，纸片四周有一些透明复料，表示外边距。先把第一片纸（假如表示h1元素）放在画布上，然后在下面再放一片纸（一个段落）,向上移动，直到其中一片纸的边缘与另一片纸的边缘接触为止。如果第一片纸的下部有半英才塑料，第二片纸的上部有三分之一英寸型料，那么两片纸移到一起时，第一片纸的塑料将碰到第二片纸的上边缘。两片纸平稳放到画布上之后，纸四周的塑料就重叠了。
 
 <!-- <Figures figure="7-24">Collapsed versus uncollapsed margins</Figures> -->
 
-当多个页边距相遇时，例如在列表末尾，也会发生折叠。在前面的例子中，我们假设以下规则适用:
-
+多个外边距同时出现时也会折叠，例如在列表的末尾。假设把下述规则应用到前例上：
 ```css
 ul {
   margin-bottom: 15px;
@@ -2541,11 +2542,11 @@ h1 {
 }
 ```
 
-列表中的最后一项的底部空白为 20 像素，“ul”的底部空白为 15 像素，“h1”的后续顶部空白为 28 像素。因此，一旦边缘折叠起来，“li”的末端和“h1”的开始之间的距离就是 28 像素，如图 7-25 所示。
+列表中最后一个项目的下外边距为20像素，u1元素的下外边距为15像素，而后面的h1元素的上外边距为28像素。因此，折叠外边距之后，最后一个1i元素的底部与h1元素的顶部之间的距离为28像素，如图7-25所示。
 
 <!-- <Figures figure="7-25">Collapsing in detail</Figures> -->
 
-现在，回想一下上一节的例子，在这个例子中，在一个包含块上引入边框或填充会导致它的子元素的边距被包含在其中。我们可以看到这种行为在操作中添加一个边框到' ul '元素在前面的例子:
+你可能还记得前一节的示例，为容纳块添加边框或内边距之后，子元素的外边距便包含其中，现在我们在前述规则的基础上为u1元素添加边框，看一下效果：
 
 ```css
 ul {
@@ -2561,17 +2562,17 @@ h1 {
 }
 ```
 
-通过这个更改，' li '元素的底部空白现在被放置在其父元素(' ul ')中。因此，唯一发生的边缘崩溃是在“ul”和“h1”之间，如图 7-26 所示。
+这样修改之后，11元素的下外边距在父元素（u1)的范围内。此时，只有ul和h1之间的外边距会出现折叠，如图7-26所示。
 
 <!-- <Figures figure="7-26">Collapsing (or not) with borders added to the mix</Figures> -->
 
 ### 7.2.15 负外边距和折叠
 
-负页边距确实会对垂直格式产生影响，并影响页边距的折叠方式。如果设置了负的垂直边距，那么浏览器应该取两个边距的绝对最大值。然后从正保证金中减去负保证金的绝对值。换句话说，负的和正的相加，得到的值就是元素之间的距离。图 7-27 提供了两个具体的例子。
+负外边距对纵向格式化有一定影响，比如会影响外边距的折叠。如果两个相邻的外边距都是负值，浏览器取其中绝对值较大的那个，然后从正外边距中减去它的绝对值。也是说，把负值与正值相加，得到的结果为两个元素之间的距离。图7-27给出了两个具体的例子。
 
 <!-- <Figures figure="7-27">Examples of negative vertical margins</Figures> -->
 
-注意“拉”的负面顶部和底部边缘的影响。这与负水平边距导致元素向父元素外推没什么不同。考虑:
+注意上下外边距为负时出现的“上移”现象。这与横向外边距为负时从父元素中溢出没什么区别。以下述规则和标记为例：
 
 ```css
 p.neg {
@@ -2595,11 +2596,11 @@ p.neg {
 </div>
 ```
 
-正如我们在图 7-28 中所看到的，该段已被其负上边距向上拉。请注意，标记中段落后面的“div”的内容也向上拉了 50 个像素。事实上，段落后面的每一个正常流内容都被向上拉了 50 个像素。
+从图7-28中可以看出，由于上外边距为负，那个段落上移了，注意，div元素中那个民落后面的内容也向上移了50像素。其实，那个段落后面常规流动模式下的每个元会向上移50像素。
 
 <!-- <Figures figure="7-28">The effects of a negative top margin</Figures> -->
 
-现在将下面的标记与图 7-29 中的情况进行比较:
+对比一下下述标记与图7-29中显示的效果：
 
 ```css
 p.neg {
@@ -2624,9 +2625,9 @@ p.neg {
 
 <!-- <Figures figure="7-29">The effects of a negative bottom margin</Figures> -->
 
-在图 7-29 中真正发生的是“div”后面的元素是根据“div”底部的位置放置的。如您所见，“div”的结尾实际上位于其子段落的可视底部之上。' div '后面的下一个元素是' div '底部的适当距离。考虑到我们看到的规则，这是意料之中的。
+出现图7-29中这种情况的原因是，div后面的元素是参照div的底边放置的。可以想见，div的底边其实在内部那个段落视觉上的底边上部，而div后面的元素是从这一位置计算与div底边的距离的。对上述规则来说，这个结果是正确的。
 
-现在让我们考虑一个例子，其中一个列表项、一个无序列表和一个段落的边距都是折叠的。在这种情况下，无序列表和段落被分配了负边距:
+下面再看一个例子，这里列表项目、无序列表和段落的外边距都会折叠。无序列表和段落的外边距均为负值，如下所示：
 
 ```css
 li {
@@ -2640,27 +2641,27 @@ h1 {
 }
 ```
 
-两个负边距中较大的边距(' -18px ')与最大的正边距(' 20px ')相加，得到' 20px -18px = 2px '。因此，在列表项的底部和 h1 的顶部之间只有两个像素，如图 7-30 所示。
+两个负外边距中绝对值较大的那个（-18px)与最大的正外边距（20px)相加，得到20px-18px=2px。因此，列表项目内容区的底边到h1元素内容区的顶边之间只像素，如图7-30所示。
 
-当元素由于负边距而相互重叠时，很难判断哪些元素在顶部。您可能还注意到，本节中的示例都没有使用背景颜色。如果它们这样做了，下面元素的背景颜色可能会覆盖它们的内容。这是预期的行为，因为浏览器通常按从开始到结束的顺序呈现元素，所以文档中稍后出现的正常流元素可能会覆盖前面的元素，假设两者最终会重叠。
+如果负外边距导致元素重叠，很难分请哪个元素在上边。你可能注意到了，本节所举的例子都没有使用背景色。如果这么做了，后续元素的背景色可能会遮盖前面元素的内容。这是可以预见的，因为测览器是从头到尾按顺序演染元素的，在常规浅动模式下，如果文档中位于后面的元素与前面的元素重叠了，理应意盖元素的内容。
 
 <!-- <Figures figure="7-30">Collapsing margins and negative margins, in detail</Figures> -->
 
 ### 7.2.16 列表项目
 
-列表项有自己的一些特殊规则。它们的前面通常有一个标记，比如一个小点或一个数字。此标记实际上并不属于列表项的内容区域，因此类似图 7-31 所示的效果很常见。
+到表项目有些独特的规则。列表项目前通常有个记号，例如小圆点或数字，但这个记号其实不在列表项目的内容区中，如图7-31所示。
 
 <!-- <Figures figure="7-31">The content of list items</Figures> -->
 
-CSS1 很少提到这些标记在文档布局中的位置和效果。CSS2 引入了专门为解决这个问题而设计的属性，比如“标记偏移”。然而，由于缺少实现和思想上的变化，导致这一概念从 CSS2.1 中删除，目前正在努力将这一概念(如果不是具体的语法)重新引入 CSS。因此，标记的位置在很大程度上超出了作者的控制，至少在撰写本文时是这样。
+在文档的布局方便，CSS1没有详细规定记号的位置和效果。鉴于此，CSS2引入了专门解决这个问题的属性，例如marker-offset。然而，由于没有多少浏览器实现，以及想法的变化，CSS2.1又移除了这个属性；不过，已经有了新的想法（可能还没确定具体的句法）。因此，记号的位置远非创作人员能控制的，至少目前是这样。
 
-附加到列表项元素的标记可以位于列表项的内容之外，也可以作为内容开头的内联标记，具体取决于属性 `list-style-position` 的值。如果将标记放在内部，那么列表项将与它的邻居交互，就像块级别的元素一样，如图 7-32 所示。
+记号可以放在列表项目内容区的外部，也可以作为行间内容，放在内容区的开头，这取决于list-style-position属性的值。如果把记号放在内部，列表项目与周围元素之间的关系就跟块级元素一模一样，如图7-32所示。
 
 <!-- <Figures figure="7-32">Markers inside and outside the list</Figures> -->
 
-如果标记位于内容之外，则将其放置在距内容的左内容边缘有一定距离的地方(在从左到右的语言中)。无论列表的样式如何更改，标记都与内容边缘保持相同的距离。有时，标记可能被推到列表元素本身之外，如图 7-32 所示。
+如果把记号放在内容区外部，记号与内容区的左边（假设是由左至右书写的语言）有一定的距离。不管如何调整列表的样式，记号与内容区边界之间的距离始终不变。有时，记号甚至可能超出列表元素本身，如图7-32所示。
 
-请记住，列表项框为它们的祖先框定义了包含块，就像普通块框一样。
+注意，与常规的块级框一样，列表项目框为其后代定义容纳块。
 
 ## 7.3 行内元素
 
@@ -3439,11 +3440,11 @@ li {
 虽然 CSS 格式化模型的某些方面乍一看似乎违反直觉，但随着使用的深入，它们开始变得有意义。在许多情况下，看起来荒谬甚至愚蠢的规则实际上是为了防止奇怪或不受欢迎的文档显示而存在的。块级元素在很多方面都很容易理解，影响它们的布局通常是一项简单的任务。另一方面，内联元素可能更难管理，因为有许多因素在起作用，尤其是元素是被替换还是没有被替换。
 
 
-# 第 8 章 Padding, Borders, Outlines 和 Margins
+# 第 8 章 内边距、边框、轮廓和外边距
 
 在前一章中，我们讨论了元素显示的基础知识。在本章中，我们将研究 CSS 属性和值，您可以使用它们来更改所显示元素的特定外观。这些包括元素周围的填充、边框和边距，以及可能添加的任何轮廓。
 
-## 8.1 Basic Element Boxes
+## 8.1 基本元素框
 
 您可能已经注意到，所有文档元素都会生成一个名为 element box 的矩形框，它描述了一个元素在文档布局中所占的空间量。因此，每个盒子都会影响其他元素盒子的位置和大小。例如，如果文档中的第一个元素框是一英寸高，那么下一个框将在文档顶部以下至少一英寸处开始。如果将第一个元素框更改为 2 英寸高，那么下面的每个元素框将向下移动 1 英寸，而第二个元素框将从文档顶部以下至少 2 英寸处开始。
 
@@ -3484,7 +3485,7 @@ a:link {
 
 <Tips tips="blue">It’s possible to change the meaning of <code>height</code> and <code>width</code> using the property <code>box-sizing</code>. This is not covered in this chapter, but in short, you can use either the content box or the border box as the area of measure. For the purposes of this chapter, we’ll assume the default situation holds: that <code>height</code> and <code>width</code> refer to the height and width of the content area (<code>box-sizing: content-box</code>).</Tips>
 
-## 8.2 Padding
+## 8.2 内边距
 
 Just beyond the content area of an element, we find its `padding`, nestled between the content and any borders. The simplest way to set padding is by using the property `padding`.
 
@@ -3539,7 +3540,7 @@ Figure 8-4 shows you, with a little extra annotation, the results of this declar
 
 <!-- <Figures figure="8-4">Mixed-value padding</Figures> -->
 
-### 8.2.1 Replicating Values
+### 8.2.1 复值
 
 Sometimes, the values you enter can get a little repetitive:
 
@@ -3624,7 +3625,7 @@ p {
 
 <!-- <Figures figure="8-6">Using padding instead of margins</Figures> -->
 
-### 8.2.2 Single-Side Padding
+### 8.2.2 单边内边距
 
 Fortunately, there’s a way to assign a value to the padding on a single side of an element. Four ways, actually. Let’s say you only want to set the left padding of h2 elements to be 3em. Rather than writing out padding: 0 0 0 3em, you can take this approach:
 
@@ -3696,7 +3697,7 @@ h2 {
 
 In general, once you’re trying to set padding for more than one side, it’s easier to use the shorthand padding. From the standpoint of your document’s display, however, it doesn’t really matter which approach you use, so choose whichever is easiest for you.
 
-### 8.2.3 Percentage Values and Padding
+### 8.2.3 内边距的百分数值
 
 It’s possible to set percentage values for the padding of an element. Percentages are computed in relation to the width of the parent element’s content area, so they change if the parent element’s width changes in some way. For example, assume the following, which is illustrated in Figure 8-8:
 
@@ -3763,7 +3764,7 @@ h2 {
 
 Here, although the top and bottom padding will stay constant in any situation, the side padding will change based on the width of the parent element.
 
-### 8.2.4 Padding and Inline Elements
+### 8.2.4 行内元素的内边距
 
 You may or may not have noticed that the discussion so far has been solely about padding set for elements that generate block boxes. When padding is applied to inline nonreplaced elements, things can get a little different.
 
@@ -3833,7 +3834,7 @@ The left padding is applied to the beginning of the element and the right paddin
 
 <Tips tips="blue">The way padding is (or isn’t) applied to the ends of each line box can be altered with the property box-decoration-break. See Chapter 7 for more details.</Tips>
 
-### 8.2.5 Padding and Replaced Elements
+### 8.2.5 置换元素的内边距
 
 This may come as a surprise, but it is possible to apply padding to replaced elements. The most surprising case is that you can apply padding to an image, like this:
 
@@ -3856,7 +3857,7 @@ The same goes for borders and margins, as we’ll soon see.
 
 <Tips tips="orange">As of late 2017, there was still uncertainty over what to do about styling form elements such as <code>input</code>, which are replaced elements. It is not entirely clear where the padding of a checkbox resides, for example. Therefore, as of this writing, some browsers ignore padding (and other forms of styling) for form elements, while others apply the styles as best they can.</Tips>
 
-## 8.3 Borders
+## 8.3 边框
 
 Beyond the padding of an element are its borders. The border of an element is just one or more lines that surround the content and padding of an element. By default, the background of the element will stop at the outer border edge, since the background does not extend into the margins, and the border is just inside the margin.
 
@@ -3876,7 +3877,7 @@ The CSS specification defines the background area of an element to extend to the
 
 <Tips tips="blue">Visible backgrounds can be prevented from extending into the border area by using the property background-clip. See Chapter 9 for details.</Tips>
 
-### 8.3.1 Borders with Style
+### 8.3.1 边框的式样
 
 We’ll start with border styles, which are the most important aspect of a border—not because they control the appearance of the border (although they certainly do that) but because without a style, there wouldn’t be any border at all.
 
@@ -3975,7 +3976,7 @@ h1 {
 
 What’s important to remember is that if you’re going to use the second approach, you have to place the single-side property after the shorthand, as is usually the case with shorthands. This is because border-style: solid is actually a declaration of border-style: solid solid solid solid. If you put border-style-left: none before the border-style declaration, the shorthand’s value will override the single-side value of none.
 
-### 8.3.2 Border Widths
+### 8.3.2 边框宽度
 
 Once you’ve assigned a border a style, the next step is to give it some width, most easily by using the property border-width or one of its cousin properties.
 
@@ -4059,7 +4060,7 @@ h1 {
 
 Since the default value of border-style is none, failure to declare a style is exactly the same as declaring border-style: none. Therefore, if you want a border to appear, you need to declare a border style.
 
-### 8.3.3 Border Colors
+### 8.3.3 边框颜色
 
 Compared to the other aspects of borders, setting the color is pretty easy. CSS uses the single property border-color, which can accept up to four color values at one time.
 
@@ -4147,7 +4148,7 @@ In a sense, transparent lets you use borders as if they were extra padding, with
 
 <!-- <Figures figure="8-27">Using transparent borders</Figures> -->
 
-### 8.3.4 Shorthand Border Properties
+### 8.3.4 简写的边框属性
 
 Unfortunately, shorthand properties such as border-color and border-style aren’t always as helpful as you’d think. For example, you might want to apply a thick, gray, solid border to all h1 elements, but only along the bottom. If you limit yourself to the properties we’ve discussed so far, you’ll have a hard time applying such a border. Here are two examples:
 
@@ -4238,7 +4239,7 @@ h3 {
 
 In such a case, the entire statement will be invalid and a user agent would ignore it altogether.
 
-### 8.3.5 Global Borders
+### 8.3.5 整个边框
 
 Now, we come to the shortest shorthand border property of all: border.
 
@@ -4291,7 +4292,7 @@ h4 {
 
 Here, we’ve failed to assign a border-style in the second rule, which means that the default value of none will be used, and no h4 elements will have any border at all.
 
-### 8.3.6 Borders and Inline Elements
+### 8.3.6 行内元素的边框
 
 Dealing with borders and inline elements should sound pretty familiar, since the rules are largely the same as those that cover padding and inline elements, as we discussed earlier. Still, I’ll briefly touch on the topic again.
 
@@ -4335,7 +4336,7 @@ img {
 
 <!-- <Figures figure="8-35">Borders on inline replaced elements</Figures> -->
 
-### 8.3.7 Rounding Border Corners
+### 8.3.7 圆角边框
 
 It’s possible to soften the harsh corners of element borders by using the property border-radius to define a rounding distance (or two). In this particular case, we’re actually going to start with the shorthand property and then mention the individual properties at the end of the section.
 
@@ -4545,7 +4546,7 @@ The individual corner border radius properties are mostly useful for scripting, 
 
 One thing to keep in mind that, as we’ve seen, corner shaping affects the background and (potentially) the padding and content areas of the element, but not any image borders. Wait a minute, image borders? What are those? Glad you asked!
 
-### 8.3.8 Image Borders
+### 8.3.8 图像边框
 
 The various border styles are nice enough, but are still fairly limited. What if you want to create a really complicated, visually rich border around some of your elements? Back in the day, we’d create complex multirow tables to achieve that sort of effect, but thanks to the image borders added to CSS in the recent past, there’s almost no limit to the kinds of borders you can create.
 
@@ -4891,7 +4892,7 @@ As you can see, there is a lot of power in border images. Be sure to use them wi
 
 <!-- <Figures figure="8-60">The background area, visible through the image border</Figures> -->
 
-## 8.4 Outlines
+## 8.4 轮廓
 
 CSS defines a special sort of element decoration called an outline. In practice, outlines are often drawn just beyond the borders, though (as we’ll see) this is not the whole story. As the specification puts it, outlines differ from borders in three basic ways:
 
@@ -4907,7 +4908,7 @@ Outlines are an all-or-nothing proposition: you can’t style one side of a bord
 
 Let’s start finding out exactly what all that means. First, we’ll run through the various properties, comparing them to their border-related counterparts.
 
-### 8.4.1 Outline Styles
+### 8.4.1 轮廓式样
 
 Much as with border-style, you can set a style for your outlines. In fact, the values will seem very familiar to anyone who’s styled a border before.
 
@@ -4923,7 +4924,7 @@ Beyond those two differences, outlines have all the same styles that borders hav
 
 The less obvious difference is that unlike border-style, outline-style is not a shorthand property. You can’t use it to set a different outline style for each side of the outline, because outlines can’t be styled that way. There is no outline-top-style. This is true for all the rest of the outline properties, with the exception of outline, which we’ll get to in a bit.
 
-### 8.4.2 Outline Width
+### 8.4.2 轮廓宽度
 
 Once you’ve decided on a style for the outline, assuming the style isn’t none, you can define a width for the outline.
 
@@ -4935,7 +4936,7 @@ There’s very little to say about outline width that we didn’t already say ab
 
 As before, the real difference here is that outline-width is not a shorthand property. You can only set one width for the whole outline, and cannot set different widths for different sides. (The reasons for this will soon become clear.)
 
-### 8.4.3 Outline Color
+### 8.4.3 轮廓颜色
 
 Does your outline have a style and a width? Great! Let’s give it some color!
 
@@ -4971,7 +4972,7 @@ It probably comes as little surprise that, like border, this is a convenient way
 
 Thus far, outlines seem very much like borders. So how are they different?
 
-### 8.4.4 How They Are Different
+### 8.4.4 轮廓与边框的区别
 
 The first major difference between borders and outlines is that outlines don’t affect layout at all. In any way. They’re very purely presentational.
 
@@ -5021,7 +5022,7 @@ This is why there are no side-specific outline properties like outline-right-sty
 
 <Tips tips="orange">As of late 2017, not every browser combined the inline fragments into a single contiguous polygon. In those which did not support this behavior, each fragment was still a self-contained rectangle, as in the first example in Figure 8-67.</Tips>
 
-## 8.5 Margins
+## 8.5 外边距
 
 a margin creates extra blank space around an element. Blank space generally refers to an area in which other elements cannot also exist and in which the parent element’s background is visible. Figure 8-68 shows the difference between two paragraphs without any margins and the same two paragraphs with some margins.
 
@@ -5050,7 +5051,7 @@ In practice, however, browsers come with preassigned styles for many elements, a
 
 Finally, it’s possible to set a percentage value for margin. The details of this value type will be discussed in “Percentages and Margins”.
 
-### 8.5.1 Length Values and Margins
+### 8.5.1 外边距的长度值
 
 Any length value can be used in setting the margins of an element. It’s easy enough, for example, to apply a 10-pixel whitespace around paragraph elements. The following rule gives paragraphs a silver background, 10 pixels of padding, and a 10-pixel margin:
 
@@ -5092,7 +5093,7 @@ Figure 8-70 shows you, with a little extra annotation, the results of this decla
 
 <!-- <Figures figure="8-70">Mixed-value margins</Figures> -->
 
-### 8.5.2 Percentages and Margins
+### 8.5.2 外边距的百分数值
 
 It’s possible to set percentage values for the margins of an element. As with padding, percentage margins values are computed in relation to the width of the parent element’s content area, so they can change if the parent element’s width changes in some way. For example, assume the following, which is illustrated in Figure 8-71:
 
@@ -5127,7 +5128,7 @@ Note that the top and bottom margins are consistent with the right and left marg
 
 <Tips tips="blue">As with padding, the treatment of percentage values for top and bottom margins is different for most positioned elements, flex items, and grid items, where they are calculated with respect to the height of their formatting context.</Tips>
 
-### 8.5.3 Single-Side Margin Properties
+### 8.5.3 单边外边距属性
 
 You guessed it: there are properties that let you set the margin on a single side of the box, without affecting the others.
 
@@ -5144,7 +5145,7 @@ h2 {
 }
 ```
 
-### 8.5.4 Margin Collapsing
+### 8.5.4 外边距折叠
 
 An interesting and often overlooked aspect of the top and bottom margins on block boxes is that they collapse. This is the process by which two (or more) margins that interact collapse to the largest of the interacting margins.
 
@@ -5197,7 +5198,7 @@ There they are—pushing away any content that might come before or after the he
 
 <Tips tips="blue">Margin collapsing can be interrupted by factors such as padding and borders on parent elements. For more details, see the discussion in the section “Collapsing Vertical Margins” in Chapter 7 of Basic Visual Formatting (O’Reilly).</Tips>
 
-### 8.5.5 Negative Margins
+### 8.5.5 负外边距
 
 It’s possible to set negative margins for an element. This can cause the element’s box to stick out of its parent or to overlap other elements. Consider these rules, which are illustrated in Figure 8-75:
 
@@ -5250,7 +5251,7 @@ Thanks to the negative bottom margin for the “mond” paragraph, the bottom of
 
 <!-- <Figures figure="8-76">Punching out of a parent</Figures> -->
 
-### 8.5.6 Margins and Inline Elements
+### 8.5.6 行内元素的外边距
 
 Margins can also be applied to inline elements. Let’s say you want to set top and bottom margins on strongly emphasized text:
 
@@ -5317,7 +5318,7 @@ Replaced inline elements represent yet another story: margins set for them do af
 
 <!-- <Figures figure="8-81">Inline replaced elements with differing margin values</Figures> -->
 
-## 8.6 Summary
+## 8.6 小结
 
 The ability to apply margins, borders, and padding to any element is one of the things that sets CSS so far above traditional web markup. In the past, enclosing a heading in a colored, bordered box meant wrapping the heading in a table, which is a really bloated and awful way to create so simple an effect. It is this sort of power that makes CSS so compelling.
 
