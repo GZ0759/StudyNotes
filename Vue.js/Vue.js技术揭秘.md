@@ -2543,6 +2543,7 @@ Vue.prototype._update = function (vnode: VNode, hydrating?: boolean) {
   // updated in a parent's updated hook.
 }
 ```
+
 `_update` 过程中有几个关键的代码，首先 `vm._vnode = vnode` 的逻辑，这个 `vnode` 是通过 `vm._render()` 返回的组件渲染 VNode，`vm._vnode` 和 `vm.$vnode` 的关系就是一种父子关系，用代码表达就是 `vm._vnode.parent === vm.$vnode`。还有一段比较有意思的代码：
 
 ```js
