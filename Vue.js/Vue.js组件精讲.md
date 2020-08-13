@@ -1,9 +1,9 @@
 > Vue.js 组件精讲  
 > Aresn iView 的作者 《Vue.js实战》的作者  
 
-# 1 开篇：Vue.js 的精髓——组件
+# 0 开篇：Vue.js 的精髓——组件
 
-## 组件的分类
+## 0.1 组件的分类
 
 一般来说，Vue.js 组件主要分成三类：
 
@@ -13,7 +13,7 @@
 
 3. 业务组件。它不像第二类独立组件只包含某个功能，而是在业务中被多个页面复用的，它与独立组件的区别是，业务组件只在当前项目中会用到，不具有通用性，而且会包含一些业务，比如数据请求；而独立组件不含业务，在任何项目中都可以使用，功能单一，比如一个具有数据校验功能的输入框。
 
-## 小册的内容
+## 0.2 小册的内容
 
 因为本小册是围绕 Vue.js 组件展开的，所以第二节会讲解 Vue.js 组件的三个 API：`prop`、`event`、`slot`。
 
@@ -29,38 +29,209 @@
 
 - 16 - 19 小节是综合拓展，会着重讲解 Vue.js 容易忽略却很重要的 API，以及对 Vue.js 面试题的详细分析。除此之外，还会总结笔者在两年的 iView 开源经历中的经验，除了技术细节外，还包括开源项目的持续性发展、推广等。
 
-# 2 基础：Vue.js 组件的三个 API：prop、event、slot
+# 1 基础：Vue.js 组件的三个 API：prop、event、slot
 
-## 组件的构成
+## 1.1 组件的构成
 
 一个再复杂的组件，都是由三部分组成的：prop、event、slot，它们构成了 Vue.js 组件的 API。如果开发的是一个通用组件，那一定要事先设计好这三部分，因为组件一旦发布，后面再修改 API 就很困难了，使用者都是希望不断新增功能，修复 bug，而不是经常变更接口。
 
-属性 prop 。`prop` 定义了这个组件有哪些可配置的属性，组件的核心功能也都是它来确定的。写通用组件时，props 最好用**对象**的写法，这样可以针对每个属性设置类型、默认值或自定义校验属性的值，这点在组件开发中很重要。
+### 1.1.1 属性 prop 
 
-插槽 slot 。如果要给按钮组件 `<i-button>` 添加一些文字内容，就要用到组件的第二个 API：插槽 slot，它可以分发组件的内容。
+`prop` 定义了这个组件有哪些可配置的属性，组件的核心功能也都是它来确定的。写通用组件时，props 最好用对象的写法，这样可以针对每个属性设置类型、默认值或自定义校验属性的值，这点在组件开发中很重要，然而很多人却忽视，直接使用 props 的数组用法，这样的组件往往是不严谨的。比如我们封装一个按钮组件 `<i-button>`：
 
-自定义事件 event。现在我们给组件 `<i-button>` 加一个点击事件，目前有两种写法，先看自定义事件 event。通过 `$emit`，就可以触发自定义的事件 `on-click` ，在父级通过 `@on-click` 来监听。这里还有另一种方法，直接在父级声明，但为了区分原生事件和自定义事件，要用到事件修饰符 `.native`。
+```html
+<template>
+  <button :class="'i-button-size' + size" :disabled="disabled"></button>
+</template>
+<script>
+  // 判断参数是否是其中之一
+  function oneOf (value, validList) {
+    for (let i = 0; i < validList.length; i++) {
+      if (value === validList[i]) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  export default {
+    props: {
+      size: {
+        validator (value) {
+          return oneOf(value, ['small', 'large', 'default']);
+        },
+        default: 'default'
+      },
+      disabled: {
+        type: Boolean,
+        default: false
+      }
+    }
+  }
+</script>
+```
+
+使用组件：
+
+```html
+<i-button size="large"></i-button>
+<i-button disabled></i-button>
+```
+
+组件中定义了两个属性：尺寸 size 和 是否禁用 disabled。其中 size 使用 `validator` 进行了值的自定义验证，也就是说，从父级传入的 size，它的值必须是指定的 small、large、default 中的一个，默认值是 default，如果传入这三个以外的值，都会抛出一条警告。
+
+要注意的是，组件里定义的 props，都是单向数据流，也就是只能通过父级修改，组件自己不能修改 props 的值，只能修改定义在 data 里的数据，非要修改，也是通过后面介绍的自定义事件通知父级，由父级来修改。
+
+在使用组件时，也可以传入一些标准的 html 特性，比如 id、class：
+
+```html
+<i-button id="btn1" class="btn-submit"></i-button>
+```
+
+这样的 html 特性，在组件内的 `<button>` 元素上会继承，并不需要在 props 里再定义一遍。这个特性是默认支持的，如果不期望开启，在组件选项里配置 `inheritAttrs: false` 就可以禁用了。
+
+### 1.1.2 插槽 slot
+
+如果要给上面的按钮组件 `<i-button>` 添加一些文字内容，就要用到组件的第二个 API：插槽 slot，它可以分发组件的内容，比如在上面的按钮组件中定义一个插槽：
+
+```html
+<template>
+  <button :class="'i-button-size' + size" :disabled="disabled">
+    <slot></slot>
+  </button>
+</template>
+```
+
+这里的 `<slot>` 节点就是指定的一个插槽的位置，这样在组件内部就可以扩展内容了：
+
+```html
+<i-button>按钮 1</i-button>
+<i-button>
+  <strong>按钮 2</strong>
+</i-button>
+```
+
+当需要多个插槽时，会用到具名 slot，比如上面的组件我们再增加一个 slot，用于设置另一个图标组件：
+
+```html
+<template>
+  <button :class="'i-button-size' + size" :disabled="disabled">
+    <slot name="icon"></slot>
+    <slot></slot>
+  </button>
+</template>
+```
+
+```html
+<i-button>
+  <i-icon slot="icon" type="checkmark"></i-icon>
+  按钮 1
+</i-button>
+```
+
+这样，父级内定义的内容，就会出现在组件对应的 slot 里，没有写名字的，就是默认的 slot。
+
+在组件的 `<slot>` 里也可以写一些默认的内容，这样在父级没有写任何 slot 时，它们就会出现，比如：
+
+```html
+<slot>提交</slot>
+```
+
+### 1.1.3 自定义事件 event
+
+现在我们给组件 `<i-button>` 加一个点击事件，目前有两种写法，我们先看自定义事件 event（部分代码省略）：
+
+```html
+<template>
+  <button @click="handleClick">
+    <slot></slot>
+  </button>
+</template>
+<script>
+  export default {
+    methods: {
+      handleClick (event) {
+        this.$emit('on-click', event);
+      }
+    }
+  }
+</script>
+```
+
+通过 `$emit`，就可以触发自定义的事件 `on-click` ，在父级通过 `@on-click` 来监听：
+
+```html
+<i-button @on-click="handleClick"></i-button>
+```
+
+上面的 click 事件，是在组件内部的 `<button>` 元素上声明的，这里还有另一种方法，直接在父级声明，但为了区分原生事件和自定义事件，要用到事件修饰符 `.native`，所以上面的示例也可以这样写：
 
 ```html
 <i-button @click.native="handleClick"></i-button>
 ```
 
-## 组件的通信
+如果不写 `.native` 修饰符，那上面的 `@click` 就是自定义事件 click，而非原生事件 click，但我们在组件内只触发了 `on-click` 事件，而不是 `click`，所以直接写 `@click` 会监听不到。
+
+## 1.2 组件的通信
 
 一般来说，组件可以有以下几种关系：
+
+![组件关系](https://user-gold-cdn.xitu.io/2018/10/18/166864d066bbcf69?w=790&h=632&f=png&s=36436)
 
 A 和 B、B 和 C、B 和 D 都是父子关系，C 和 D 是兄弟关系，A 和 C 是隔代关系（可能隔多代）。组件间经常会通信，Vue.js 内置的通信手段一般有两种：
 
 - `ref`：给元素或组件注册引用信息；
 - `$parent` / `$children`：访问父 / 子实例。
 
-这两种都是直接得到组件实例，使用后可以直接调用组件的方法或访问数据。
+这两种都是直接得到组件实例，使用后可以直接调用组件的方法或访问数据，比如下面的示例中，用 ref 来访问组件（部分代码省略）：
 
-这两种方法的弊端是，无法在**跨级**或**兄弟**间通信。那这种情况下，就得配置额外的插件或工具了，比如 Vuex 和 Bus 的解决方案，本小册不再做它们的介绍，读者可以自行阅读相关内容。不过，它们都是依赖第三方插件的存在，这在开发独立组件时是不可取的，而在小册的后续章节，会陆续介绍一些黑科技，它们完全不依赖任何三方插件，就可以轻松得到任意的组件实例，或在任意组件间进行通信，且适用于任意场景。
+```js
+// component-a
+export default {
+  data () {
+    return {
+      title: 'Vue.js'
+    }
+  },
+  methods: {
+    sayHello () {
+      window.alert('Hello');
+    }
+  }
+}
+```
 
-# 3 组件的通信 1：provide / inject
+```html
+<template>
+  <component-a ref="comA"></component-a>
+</template>
+<script>
+  export default {
+    mounted () {
+      const comA = this.$refs.comA;
+      console.log(comA.title);  // Vue.js
+      comA.sayHello();  // 弹窗
+    }
+  }
+</script>
+```
 
-## 什么是 provide / inject
+`$parent` 和 `$children` 类似，也是基于当前上下文访问父组件或全部子组件的。
+
+这两种方法的弊端是，无法在跨级或兄弟间通信，比如下面的结构：
+
+```js
+// parent.vue
+<component-a></component-a>
+<component-b></component-b>
+<component-b></component-b>
+```
+
+我们想在 component-a 中，访问到引用它的页面中（这里就是 parent.vue）的两个 component-b 组件，那这种情况下，就得配置额外的插件或工具了，比如 Vuex 和 Bus 的解决方案，本小册不再做它们的介绍，读者可以自行阅读相关内容。不过，它们都是依赖第三方插件的存在，这在开发独立组件时是不可取的，而在小册的后续章节，会陆续介绍一些黑科技，它们完全不依赖任何三方插件，就可以轻松得到任意的组件实例，或在任意组件间进行通信，且适用于任意场景。
+
+# 2 组件的通信 1：provide / inject
+
+## 2.1 什么是 provide / inject
 
 这对选项需要一起使用，以允许一个祖先组件向其所有子孙后代注入一个依赖，不论组件层次有多深，并在起上下游关系成立的时间里始终生效。如果熟悉 React，这与 React 的上下文特性很相似。provide 和 inject 主要为高阶插件/组件库提供用例。并不推荐直接用于应用程序代码中。
 
@@ -82,15 +253,15 @@ export default {
 }
 ```
 
-值得注意的是，provide 和 inject 绑定并**不是可响应**的。然而，如果传入了一个可监听的对象，那么其对象的属性还是可响应的。
+值得注意的是，provide 和 inject 绑定并不是可响应的。然而，如果传入了一个可监听的对象，那么其对象的属性还是可响应的。
 
-## 替代 Vuex
+## 2.2 替代 Vuex
 
-状态管理 Vuex 是一个专为 Vue.js 开发的**状态管理模式**，用于集中式存储管理应用的所有组件的状态，并以相应的规则保证状态以一种可预测的方式发生变化。
+状态管理 Vuex 是一个专为 Vue.js 开发的状态管理模式，用于集中式存储管理应用的所有组件的状态，并以相应的规则保证状态以一种可预测的方式发生变化。
 
 使用 Vuex，最主要的目的是跨组件通信、全局数据维护、多人协同开发。需求比如有：用户的登录信息维护、通知信息维护等全局的状态和数据。
 
-将 app.vue 理解为一个最外层的根组件，用来存储所有需要的全局数据和状态，甚至是计算属性（computed）、方法（methods）等。因为你的项目中所有的组件（包含路由），它的父组件（或根组件）都是 app.vue，所以我们**把整个 app.vue 实例通过 `provide` 对外提供**。
+将 app.vue 理解为一个最外层的根组件，用来存储所有需要的全局数据和状态，甚至是计算属性（computed）、方法（methods）等。因为你的项目中所有的组件（包含路由），它的父组件（或根组件）都是 app.vue，所以我们把整个 app.vue 实例通过 `provide` 对外提供。
 
 ```html
 <!-- app.vue -->
@@ -144,7 +315,7 @@ export default {
 </script>
 ```
 
-## 进阶技巧
+## 3.3 进阶技巧
 
 如果项目足够复杂，或需要多人协同开发时，在 `app.vue` 里会写非常多的代码，多到结构复杂难以维护。这时可以使用 Vue.js 的混合 `mixins`，将不同的逻辑分开到不同的 js 文件里。
 
@@ -186,7 +357,7 @@ export default {
 </script>
 ```
 
-## 独立组件中使用
+## 3.4 独立组件中使用
 
 只要一个组件使用了 `provide` 向下提供数据，那其下所有的子组件都可以通过 `inject` 来注入，不管中间隔了多少代，而且可以注入多个来自不同父级提供的数据。需要注意的是，一旦注入了某个数据，比如上面示例中的 `app`，那这个组件中就不能再声明 `app` 这个数据了，因为它已经被父级占有。
 
@@ -212,20 +383,20 @@ export default {
 }
 ```
 
-# 4 组件的通信 2：派发与广播——自行实现 dispatch 和 broadcast 方法
-# 5 实战 1：具有数据校验功能的表单组件——Form
-# 6 组件的通信 3：找到任意组件实例——findComponents 系列方法
-# 7 实战 2：组合多选框组件——CheckboxGroup & Checkbox
-# 8 Vue 的构造器——extend 与手动挂载——$mount
-# 9 实战 3：动态渲染 .vue 文件的组件—— Display
-# 10 实战 4：全局提示组件——$Alert
-# 11 更灵活的组件：Render 函数与 Functional Render
-# 12 实战 5：可用 Render 自定义列的表格组件——Table
-# 13 实战 6：可用 slot-scope 自定义列的表格组件——Table
-# 14 递归组件与动态组件
-# 15 实战 7：树形控件——Tree
-# 16 拓展：Vue.js 容易忽略的 API 详解
-# 17 拓展：Vue.js 面试、常见问题答疑
-# 18 拓展：如何做好一个开源项目（上篇）
-# 19 拓展：如何做好一个开源项目（下篇）
-# 20 写在最后
+# 3 组件的通信 2：派发与广播——自行实现 dispatch 和 broadcast 方法
+# 4 实战 1：具有数据校验功能的表单组件——Form
+# 5 组件的通信 3：找到任意组件实例——findComponents 系列方法
+# 6 实战 2：组合多选框组件——CheckboxGroup & Checkbox
+# 7 Vue 的构造器——extend 与手动挂载——$mount
+# 8 实战 3：动态渲染 .vue 文件的组件—— Display
+# 9 实战 4：全局提示组件——$Alert
+# 10 更灵活的组件：Render 函数与 Functional Render
+# 11 实战 5：可用 Render 自定义列的表格组件——Table
+# 12 实战 6：可用 slot-scope 自定义列的表格组件——Table
+# 13 递归组件与动态组件
+# 14 实战 7：树形控件——Tree
+# 15 拓展：Vue.js 容易忽略的 API 详解
+# 16 拓展：Vue.js 面试、常见问题答疑
+# 17 拓展：如何做好一个开源项目（上篇）
+# 18 拓展：如何做好一个开源项目（下篇）
+# 19 写在最后
