@@ -994,7 +994,7 @@ line-height 在这个混合元素的“行框盒子”中扮演的角色是决�
 - 多行文本使用一个标签包裹，然后设置 display 为 inline-block。好处在于既重置外部的 line-height 为正常的大小，又能保持内联元素特性，从而可以设置 vertical-align 属性，以及产生非常关键的"行框盒子"，这样就能在`.content`元素前面撑起了一个高度为 120px 的宽度为 0 的内联元素。
 - 因为内联元素默认都是基线对齐的，所以通过对`.content`元素`vertical-align: middle`来调整多行文本的垂直位置，从而实现想要的垂直居中效果。如果是要借助 line-height 实现图片垂直居中效果，也是类似的原理和做法。
 
-深入 line-height 的各类属性值。line-height 的默认值是 normal，还支持数值、百分比值以及长度值。 乍一看，似乎`line-height: 1.5`、`line-height: 150%`和`line-height: 1.5em`这 3 种用法是一模一样的，最终的行高大小都是和 font-size 计算的值，但是实际上，`line-height: 1.5`和另外两个有一点儿不同，那就是继承细节有所差别。如果使用数值（1.5）作为 line-height 的属性值，那么所有的子元素继承的都是这个已计算的数值；但是，如果使用百分比值（150%）或者长度值（1,5em）作为属性值，那么所有的子元素继承未计算前的值。
+深入 line-height 的各类属性值。line-height 的默认值是 normal，还支持数值、百分比值以及长度值。 乍一看，似乎`line-height: 1.5`、`line-height: 150%`和`line-height: 1.5em`这 3 种用法是一模一样的，最终的行高大小都是和 font-size 计算的值，但是实际上，`line-height: 1.5`和另外两个有一点儿不同，那就是继承细节有所差别。如果使用数值（1.5）作为 line-height 的属性值，那么所有的子元素继承的都是这个已计算的数值；但是，如果使用百分比值（150%）或者长度值（1.5em）作为属性值，那么所有的子元素继承未计算前的值。
 
 ```css
 .box {
@@ -1025,6 +1025,28 @@ p {
 内联元素 line-height 的“大值特性”。无论内联元素 line-height 如何设置，最终父级元素的高度都是由数值大的那个 line-height 决定的，称之为“内联元素 line-height 的大值特性”。因为“幽灵空白节点”的干扰会让内联元素的行高增大，而行框盒子的高度是由高度最高的那个“内联盒子”决定的。所以，通过设置子元素`display: inline-block`，创建一个独立的“行框盒子”，这样元素设置的 line-height 才可以生效了,这也是多行文本垂直居中设置的原因。
 
 ## 5.3 line-height 的好朋友 vertical-align
+
+凡是 line-height 起作用的地方 vertical-align 也一定起作用，只是很多时候，vertical-align 默默地在背后起作用，没有感觉到而已。
+
+很多人都有这样一个错误的认知，认为对于单行文本，只要行高设置多少，其占据高度就是多少。比方说，对于下面非常简单的 CSS 和 HTML 代码：
+
+```css
+.box { line-height: 32px; }
+.box > span { font-size: 24px; }
+```
+```html
+<div class="box">
+<span>文字</span>
+</div>
+```
+
+.box 元素的高度是多少？很多人一定认为是 32px：因为没有设置 height 等属性，高度就由 line-height 决定，与 font-size 无关，所以这里明摆着最终高度就是 32px。
+
+但是事实上，高度并不是 32px，而是要大那么几像素（受不同字体影响，增加高度也不一样）， 比方说 36px， 如图 5-17 所示。 图 5-17 截自[此示例页面](http://demo.cssworld.cn/5/3-1.php)。
+这里，之所以最终.box 元素的高度并不等于 line-height，就是因为行高的朋友属性 vertical-align 在背后默默地下了黑手。
+
+vertical-align 知识点比 line-height 要多，我们现在就来一点一点地揭开 vertical-align 属性的层层面纱。
+
 
 抛开 inherit 这类全局属性值不谈，vertical-align 属性值分为以下 4 类：
 
