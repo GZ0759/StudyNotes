@@ -1935,6 +1935,14 @@ CSS变量拥有作用域，所以可以在 `:root` 定义全局变量。
 使用西方语言撰写的书，多数在排版时会缩进一段的第一行，而且段落之间没有空行。以前，一些网站为了让人以为文本有缩进，会在一段的第一个字母前放一个小的透明图像，把文本向后推。CSS为缩进文本提供了一种更好的解决方法：text-indent属性。
 
 <!-- <Cards cards="text-indent" /> -->
+text-indent
+取值<length>|<percentage>
+初始值0
+适用于块级元素
+百分数相对于所在块级元素的宽度
+计算值 百分数如上：长度值得到绝对长度
+继承性是
+动画性是
 
 text-indent属性把元素的第一行文本缩进指定的长度，缩进的长度可以是负值。这个属性通常用于缩进段落的第一行：
 
@@ -2058,6 +2066,15 @@ p {
 text-align比text-indent还基础，它控制元素中各文本行的对齐方式。
 
 <!-- <Cards cards="text-align" /> -->
+text-align
+取值
+start | end | left | right | center | justify | match-parent |start end
+初始值在CSS3中是start;在CSS2.1中，由用户代理指定，有可能根据书写方向而定（例如，英语等西方语言是left)
+适用于块级元素
+计算值指定的值，match-parent除外
+继承性是
+动画性否
+备注CSS2支持使用<length>值，但由于缺少实现，CSS2.1将其删掉了
 
 通过图6-5就能看出目前支持范围最广的三个值的效果。
 
@@ -2108,6 +2125,12 @@ justify对齐方式经常被人忽视，不过它自身也有一些问题。两�
 有时，你可能想使用不同于其他内容的方式对齐元素的最后一行。例如，在两端对齐的文本块中，可能想左对齐最后一行，或者把左对齐换成居中对齐。此时，可以使用text-align-last属性。
 
 <!-- <Cards cards="text-align-last" /> -->
+text-align-last
+取值auto|start|end|left|right|center|justify初始值 auto
+适用于块级元素
+计算值指定的值
+继承性是
+动画性否
 
 与text-align一样，从图6-9中就能看出这些值的作用。
 
@@ -2144,6 +2167,14 @@ p {
 line-height属性指行的基线之间的距离，与字号无关，决定着元素所在方框的高度是增还是减，很多时候，我们都以为通过line-height能增加（或减少）行之间的纵向空间。这其实是一种误解，没有完全理解line-height的工作方式。line-height控制的是行距（leading),是除字体高度之外在文本行上方的额外空间。也就是说，line-height的值与字体高度之差就是行距。
 
 <!-- <Cards cards="line-height" /> -->
+line-height
+取值
+初始值 normal
+适用于所有元素（不过请参考关于置换元素和块级元素的说明）
+百分数相对于元素的字号
+计算值长度和百分数，得到绝对值；否则，是指定的值
+继承性是
+动画性是
 
 对块级元素而言，line-height定义元素中文本行基线之间的最小距离。注意，定义的是最小距离，不是定死的值，基线之间的距离可能比line-height的值大。line-height不影响置换元素的布局，但是依然应用到置换元素上。
 
@@ -2293,6 +2324,15 @@ p {
 <!-- <Tips tips="blue">Because of the property name <code>vertical-align</code>, this section will se the terms “vertical” and “horizontal” to refer to the block and inline directions of the text.</Tips> -->
 
 <!-- <Cards cards="vertical-align" /> -->
+vertical-align
+取值 baseline|sub|super|top|text-top|middle|bottom|text-bottom|<length>|<percentage>
+初始值 baseline
+适用于行内元素和单元格
+百分数相对元素的line-height值
+计算值百分数和长度值，得到绝对长度；否则是指定的值
+继承性否
+动画性
+备注用在单元格上时，只能取baseline,top、middle和bottom
 
 vertical-align的值可以是八个关键字中的一个、百分数或长度值。关键字中有熟悉的，也有不熟悉的：baseline(默认值）、sub、super、bottom、text-bottom、middle、top和text-top.下面说明各关键字应用到行内元素上的效果。
 
