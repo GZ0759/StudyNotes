@@ -1934,15 +1934,15 @@ CSS变量拥有作用域，所以可以在 `:root` 定义全局变量。
 
 使用西方语言撰写的书，多数在排版时会缩进一段的第一行，而且段落之间没有空行。以前，一些网站为了让人以为文本有缩进，会在一段的第一个字母前放一个小的透明图像，把文本向后推。CSS 为缩进文本提供了一种更好的解决方法：text-indent 属性。
 
-| text-indent |                                |
-| ----------- | ------------------------------ |
-| 取值        | \<length\>\|\<percentage\>     |
-| 初始值      | 0                              |
-| 适用于      | 块级元素                       |
-| 百分数      | 相对于所在块级元素的宽度       |
-| 计算值      | 百分数如上：长度值得到绝对长度 |
-| 继承性      | 是                             |
-| 动画性      | 是                             |
+| text-indent    |                                                                             |
+| -------------- | --------------------------------------------------------------------------- |
+| Values         | \<length\> \| \<percentage\>                                                |
+| Initial value  | 0                                                                           |
+| Applies to     | Block-level elements                                                        |
+| Percentages    | Refer to the width of the containing block                                  |
+| Computed value | For percentage values, as specified; for length values, the absolute length |
+| Inherited      | Yes                                                                         |
+| Animatable     | Yes                                                                         |
 
 text-indent 属性把元素的第一行文本缩进指定的长度，缩进的长度可以是负值。这个属性通常用于缩进段落的第一行：
 
@@ -2061,15 +2061,15 @@ p {
 
 text-align 比 text-indent 还基础，它控制元素中各文本行的对齐方式。
 
-| text-align |                                                                                                        |
-| ---------- | ------------------------------------------------------------------------------------------------------ |
-| 取值       | start \| end \| left \| right \| center \| justify \| match\-parent \|start end                        |
-| 初始值     | 在 CSS3 中是 start;在 CSS2.1 中，由用户代理指定，有可能根据书写方向而定（例如，英语等西方语言是 left） |
-| 适用于     | 块级元素                                                                                               |
-| 计算值     | 指定的值，match-parent 除外                                                                            |
-| 继承性     | 是                                                                                                     |
-| 动画性     | 否                                                                                                     |
-| 备注       | CSS2 支持使用\<length\>值，但由于缺少实现，CSS2.1 将其删掉了                                           |
+| text-align |  |
+|---|---|
+| Values | start \| end \| left \| right \| center \| justify \| match-parent \| startend |
+| Initial value | In CSS3, start; in CSS 2.1, this was user agent-specific, likely depending on writing direction \(e.g., left for Western languages like English\) |
+| Applies to | Block-level elements |
+| Computed value | As specified, except in the case of match-parent |
+| Inherited | Yes |
+| Animatable | No |
+| Note | CSS2 included a \<length\> value that was dropped from CSS 2.1 due to a lack of implementation |
 
 通过图 6-5 就能看出目前支持范围最广的三个值的效果。
 
@@ -2115,14 +2115,14 @@ justify 对齐方式经常被人忽视，不过它自身也有一些问题。两
 
 有时，你可能想使用不同于其他内容的方式对齐元素的最后一行。例如，在两端对齐的文本块中，可能想左对齐最后一行，或者把左对齐换成居中对齐。此时，可以使用 text-align-last 属性。
 
-| text-align-last |                                                |
-| --------------- | ---------------------------------------------- |
-| 取值            | auto\|start\|end\|left\|right\|center\|justify |
-| 初始值          | auto                                           |
-| 适用于          | 块级元素                                       |
-| 计算值          | 指定的值                                       |
-| 继承性          | 是                                             |
-| 动画性          | 否                                             |
+| text-align-last |                                                            |
+| --------------- | ---------------------------------------------------------- |
+| Values          | auto \| start \| end \| left \| right \| center \| justify |
+| Initial value   | auto                                                       |
+| Applies to      | Block-level elements                                       |
+| Computed value  | As specified                                               |
+| Inherited       | Yes                                                        |
+| Animatable      | No                                                         |
 
 与 text-align 一样，从图 6-9 中就能看出这些值的作用。
 
@@ -2157,15 +2157,15 @@ p {
 
 line-height 属性指行的基线之间的距离，与字号无关，决定着元素所在方框的高度是增还是减，很多时候，我们都以为通过 line-height 能增加（或减少）行之间的纵向空间。这其实是一种误解，没有完全理解 line-height 的工作方式。line-height 控制的是行距（leading）,是除字体高度之外在文本行上方的额外空间。也就是说，line-height 的值与字体高度之差就是行距。
 
-| line-height |                                                    |
-| ----------- | -------------------------------------------------- |
-| 取值        |                                                    |
-| 初始值      | normal                                             |
-| 适用于      | 所有元素（不过请参考关于置换元素和块级元素的说明） |
-| 百分数      | 相对于元素的字号                                   |
-| 计算值      | 长度和百分数，得到绝对值；否则，是指定的值         |
-| 继承性      | 是                                                 |
-| 动画性      | 是                                                 |
+| line-height    |                                                                               |
+| -------------- | ----------------------------------------------------------------------------- |
+| Values         | \<number\> \| \<length\> \| \<percentage\> \| normal                          |
+| Initial value  | normal                                                                        |
+| Applies to     | All elements (but see text regarding replaced and block-level elements)       |
+| Percentages    | Relative to the font size of the element                                      |
+| Computed value | For length and percentage values, the absolute value; otherwise, as specified |
+| Inherited      | Yes                                                                           |
+| Animatable     | Yes                                                                           |
 
 对块级元素而言，line-height 定义元素中文本行基线之间的最小距离。注意，定义的是最小距离，不是定死的值，基线之间的距离可能比 line-height 的值大。line-height 不影响置换元素的布局，但是依然应用到置换元素上。
 
@@ -2312,16 +2312,16 @@ p {
 
 > 鉴于这个属性的名称是 vertical-align,本节将使用“纵向”和“横向”指代块级方向和行内方向。
 
-| vertical-align ||
-| -------------- ||
-| 取值 | baseline\|sub\|super\|top\|text-top\|middle\|bottom\|text-bottom\|<length>\|<percentage> |
-| 初始值 | baseline |
-| 适用于 | 行内元素和单元格 |
-| 百分数 | 相对元素的 line-height 值 |
-| 计算值 | 百分数和长度值，得到绝对长度；否则是指定的值 |
-| 继承性 | 否 |
-| 动画性 |
-| 备注 | 用在单元格上时，只能取 baseline,top、middle 和 bottom |
+| vertical-align |                                                                                                               |
+| -------------- | ------------------------------------------------------------------------------------------------------------- |
+| Values         | baseline \| sub \| super \| top \| text-top \| middle \| bottom \| textbottom \| \<length\> \| \<percentage\> |
+| Initial value  | baseline                                                                                                      |
+| Applies to     | Inline elements and table cells                                                                               |
+| Percentages    | Refer to the value of line-height for the element                                                             |
+| Computed value | For percentage and length values, the absolute length; otherwise, as specified                                |
+| Inherited      | No                                                                                                            |
+| Animatable     | \<length\>, \<percentage\>                                                                                    |
+| Note           | When applied to table cells, only the values baseline, top, middle, and bottom are recognized                 |
 
 vertical-align 的值可以是八个关键字中的一个、百分数或长度值。关键字中有熟悉的，也有不熟悉的：baseline（默认值）、sub、super、bottom、text-bottom、middle、top 和 text-top.下面说明各关键字应用到行内元素上的效果。
 
