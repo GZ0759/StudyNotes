@@ -947,7 +947,7 @@ MyPromise.prototype.then = function (onFulfilled, onRejected) {
 }
 ```
 
-## then方法异步调用
+### then方法异步调用
 
 如下面的代码：输入顺序是：`1、2、ConardLi`
 
@@ -965,7 +965,7 @@ promise.then((value) => {
 console.log(2);
 ```
 
-虽然`resolve`是同步执行的，我们必须保证`then`是异步调用的，我们用`settimeout`来模拟异步调用（并不能实现微任务和宏任务的执行机制，只是保证异步调用）
+虽然`resolve`是同步执行的，我们必须保证`then`是异步调用的，我们用`setTimeout`来模拟异步调用（并不能实现微任务和宏任务的执行机制，只是保证异步调用）
 
 ```js
 MyPromise.prototype.then = function (onFulfilled, onRejected) {
@@ -1006,7 +1006,7 @@ MyPromise.prototype.then = function (onFulfilled, onRejected) {
 }
 ```
 
-## then方法链式调用
+### then方法链式调用
 
 保证链式调用，即`then`方法中要返回一个新的`promise`，并将`then`方法的返回值进行`resolve`。
 
@@ -1084,7 +1084,6 @@ MyPromise.prototype.catch = function(onRejected) {
 };
 ```
 
-
 ## finally方法
 
 不管是`resolve`还是`reject`都会调用`finally`。
@@ -1102,7 +1101,6 @@ MyPromise.prototype.finally = function(fn) {
 ```
 
 ## Promise.resolve
-
 
 `Promise.resolve`用来生成一个直接处于`FULFILLED`状态的Promise。
 
@@ -1125,7 +1123,6 @@ MyPromise.reject = function(reason) {
   });
 };
 ```
-
 
 ## all方法
 
@@ -1156,7 +1153,6 @@ MyPromise.all = function (promises) {
 ```
 
 ## race方法
-
 
 接受一个`promise`数组，当有一个`promise`状态`resolve`后，执行`resolve`
 
