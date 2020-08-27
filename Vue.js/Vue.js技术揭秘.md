@@ -14628,13 +14628,9 @@ const queue: Array<?NavigationGuard> = [].concat(
 按照顺序如下：
 
 1. 在失活的组件里调用离开守卫。
-
 2. 调用全局的 `beforeEach` 守卫。
-
 3. 在重用的组件里调用 `beforeRouteUpdate` 守卫 
-
 4. 在激活的路由配置里调用 `beforeEnter`。
-
 5. 解析异步路由组件。
 
 接下来我们来分别介绍这 5 步的实现。
@@ -14837,9 +14833,7 @@ runQueue(queue, iterator, () => {
 ```
 
 6. 在被激活的组件里调用 `beforeRouteEnter`。
-
 7. 调用全局的 `beforeResolve` 守卫。
-
 8. 调用全局的 `afterEach` 钩子。
 
 对于第六步有这些相关的逻辑：
