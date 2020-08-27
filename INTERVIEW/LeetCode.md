@@ -68,6 +68,35 @@ var twoSum = function (nums, target) {
 };
 ```
 
+# 003 - 无重复长度的最长子串（longest-substring-without-repeating-characters）
+
+* 难度：中等
+* 涉及知识：哈希表、双指针、字符串、滑动窗口
+* 题目地址：https://leetcode-cn.com/problems/longest-substring-without-repeating-characters/
+* 题目内容：
+
+给定一个字符串，请你找出其中不含有重复字符的 最长子串 的长度。
+
+示例 1:
+
+输入: "abcabcbb"
+输出: 3 
+解释: 因为无重复字符的最长子串是 "abc"，所以其长度为 3。
+
+示例 2:
+
+输入: "bbbbb"
+输出: 1
+解释: 因为无重复字符的最长子串是 "b"，所以其长度为 1。
+
+示例 3:
+
+输入: "pwwkew"
+输出: 3
+解释: 因为无重复字符的最长子串是 "wke"，所以其长度为 3。
+
+请注意，你的答案必须是 子串 的长度，"pwke" 是一个子序列，不是子串。
+
 # 007 - 整数反转（reverse-integer）
 
 * 难度：简单
@@ -1168,5 +1197,76 @@ var maxProfit = function (prices) {
     max += profit
   }
   return max
+};
+```
+
+# 1154 - 一年中的第几天（day-of-the-year）
+
+* 难度：简单
+* 涉及知识：数学
+* 题目地址：https://leetcode-cn.com/problems/day-of-the-year/
+* 题目内容：
+
+给你一个按 YYYY-MM-DD 格式表示日期的字符串 date，
+请你计算并返回该日期是当年的第几天。
+
+通常情况下，我们认为 1 月 1 日是每年的第 1 天，
+1 月 2 日是每年的第 2 天，依此类推。
+每个月的天数与现行公元纪年法（格里高利历）一致。
+
+示例 1：
+
+输入：date = "2019-01-09"
+输出：9
+
+示例 2：
+
+输入：date = "2019-02-10"
+输出：41
+
+示例 3：
+
+输入：date = "2003-03-01"
+输出：60
+
+示例 4：
+
+输入：date = "2004-03-01"
+输出：61
+
+提示：
+
+date.length == 10
+date[4] == date[7] == '-'，其他的 date[i] 都是数字。
+date 表示的范围从 1900 年 1 月 1 日至 2019 年 12 月 31 日。
+
+## 解法 - Date对象
+
+```js
+var dayOfYear = function (date) {
+  let [year, month, day] = date.split('-');
+  let finalDate = new Date(year, month - 1, day),
+    baseDate = new Date(year, 0, 0);
+  let time = finalDate.getTime() - baseDate.getTime();
+  return time / (1000 * 60 * 60 * 24);
+};
+```
+
+##　解法 - 天数累加
+
+```js
+var dayOfYear = function (date) {
+  let dayList = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31],
+    [year, month, day] = date.split('-');
+
+  month = parseInt(month, 10);
+  days = parseInt(day);
+  for (let index = 0; index < month - 1; index++) {
+    days += dayList[index];
+  }
+  if (month > 2 && (year % 400 === 0 || (year % 100 != 0 && year % 4 == 0))) {
+    days++;
+  }
+  return days;
 };
 ```
