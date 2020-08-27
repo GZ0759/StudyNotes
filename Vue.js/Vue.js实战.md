@@ -2451,10 +2451,6 @@ new Vue({
 });
 ```
 
-ES6 语法提示
-
-`=>`是箭头函数，`render:h=>h(App)`等同于`render:function(h){return h(App)}`也等同于`render:h=>{return h(App)}`。但是，箭头函数里面的 this 指向与普通函数是不一样的，箭头函数体内的 this 对象就是定义时所在的对象，而不是使用时所在的对象。
-
 ```JavaScript
 function Timer () {
 	this.id = 1;
@@ -2471,10 +2467,6 @@ function Timer () {
 
 var timer = new Timer();
 ```
-
-ES6 语法提示
-
-`components:{vTitle,vButton}`等同于`component:{vTitle:vTitle,vButton:vButton}`。总结来说就是对象字面量缩写，当对象的 key 和 value 名称一致时，可以缩写成一个。
 
 ## 10.4 用于生产环境
 
@@ -2526,9 +2518,9 @@ MyPlugin.install = function (Vue, options) {
 
 前后端分离的开发模式，后端只提供 API 返回数据，前端通过 Ajax 获取数据后，再用一定的方式渲染到页面里。缺点是首屏渲染需要时间来加载 css 和 js。SPA 就是在前后端分离的基础上，加一层前端路由。
 
-前端路由，即由前端来维护一个路由规则，实现有两种，一是利用 url 的 hash，就是常说的锚点（#），Javascript 通过 hashChange 事件来监听 url 的改变。另一种就是 HTML5 的 History 模式，它使 url 看起来像普通网站那样，以"/"分割，没有`#`，但页面并没有跳转，不过使用这种模式需要服务端支持，服务器在接收到所有的请求后，都指向同一个 html 文件，不然会出现 404。
+前端路由，即由前端来维护一个路由规则，实现有两种，一是利用 url 的 hash，就是常说的锚点`#`，Javascript 通过 hashChange 事件来监听 url 的改变。另一种就是 HTML5 的 History 模式，它使 url 看起来像普通网站那样，以"/"分割，没有`#`，但页面并没有跳转，不过使用这种模式需要服务端支持，服务器在接收到所有的请求后，都指向同一个 html 文件，不然会出现 404。
 
-vue-router 路由不同的页面事实上就是动态加载不同的组件，与使用 is 特性来实现动态组件的方法相似。每个页面对应一个组件，也就是对应一个 .vue 文件。在 main.js 里完成路由的剩下配置，创建一个数组来制定路由匹配列表，每个路由映射一个组件。Routers 里每一项的 path 属性就是指定当前匹配的路径，component 是映射的路由。webpack 会把每一个路由都打包为一个 js 文件，在请求该页面时，采取加载这个页面的 js，也就是异步实现的懒加载（按需加载）。这样做的好处是不需要在打开首页的时候就把所有的页面内容全部加载进来，只有在访问时才加载。如果非要一次性加载，可以写成`component: require('./view./index.vue')`
+vue-router 路由不同的页面事实上就是动态加载不同的组件，与使用 is 特性来实现动态组件的方法相似。每个页面对应一个组件，也就是对应一个 `.vue` 文件。在 main.js 里完成路由的剩下配置，创建一个数组来制定路由匹配列表，每个路由映射一个组件。Routers 里每一项的 path 属性就是指定当前匹配的路径，component 是映射的路由。webpack 会把每一个路由都打包为一个 js 文件，在请求该页面时，采取加载这个页面的 js，也就是异步实现的懒加载（按需加载）。这样做的好处是不需要在打开首页的时候就把所有的页面内容全部加载进来，只有在访问时才加载。如果非要一次性加载，可以写成`component: require('./view./index.vue')`
 
 ```Javascript
 const Routers = [
@@ -2542,11 +2534,7 @@ const Routers = [
 	}
 ```
 
-ES6 语法提示
-
-使用 let 和 const 命令来声明变量，代替了 var。他们的作用域就是块。const 声明后不能再修改，let 则可以修改。
-
-使用了异步路由后，编译出的每个页面的 js 都叫作块，它们命名默认是 0.main.js、1.main.js 等等，可以通过设置里 chunkFilename 字段修改 chunk 命名。
+使用了异步路由后，编译出的每个页面的 js 都叫作块，它们命名默认是 `0.main.js` 和 `1.main.js` 等等，可以通过设置里 chunkFilename 字段修改 chunk 命名。
 
 ```Javascript
 module.exports = {
@@ -2559,7 +2547,7 @@ module.exports = {
 
 ```
 
-有了 chunk 后，在每个页面(.vue)里写的样式也需要配置后才会打包进 main.css，否则仍然会通过 JavaScript 动态创建`<style>`标签的形式写入。
+有了 chunk 后，在每个页面`.vue`里写的样式也需要配置后才会打包进 main.css，否则仍然会通过 JavaScript 动态创建`<style>`标签的形式写入。
 
 ```Javascript
 module.exports = {
@@ -2572,7 +2560,7 @@ module.exports = {
 }
 ```
 
-在 RouterConfig 里，设置 mode 为 history 会开启 HTML5 的 History 路由模式，通过“/”设置路径。如果不配置 mode，就会使用“#”来设置路径。开启 History 路由，在生产环境时服务器端必须进行配置，将所有路由都指向同一个 html，或设置 404 页面为该 html，否则刷新时页面会出现 404。
+在 RouterConfig 里，设置 mode 为 history 会开启 HTML5 的 History 路由模式，通过`/`设置路径。如果不配置 mode，就会使用`#`来设置路径。开启 History 路由，在生产环境时服务器端必须进行配置，将所有路由都指向同一个 html，或设置 404 页面为该 html，否则刷新时页面会出现 404。
 
 路由列表的 path 也可以带参数，路由的一部分是固定的，一部分是动态的，但它们路由到同一个页面，在这个页面里，期望获取这个 id，然后请求相关数据。
 
@@ -2656,10 +2644,6 @@ const store = new Vuex.Store({
 
 在组件内，来自 store 的数据只能读取，不能手动改变，改变 store 中数据的唯一途径就是显式地提交 mutations。mutations 是 Vuex 的第二个选项，用来直接修改 state 里的数据。在组件内，通过`this.$store.commite`方法来执行 mutations。这看起来很像 JavaScript 的观察者模式，组件只负责提交一个事件名，Vuex 对应的 mutations 来完成业务逻辑。mutations 还可以接受第二个参数，可以是数字、字符串或对象等类型。
 
-ES6 语法提示
-
-`increment(state,n=1)`等同于`increment(state,n){n=n||1}`
-
 提交 mutation 的另一种方式时，直接使用包含 type 属性的对象。注意，mutation 里尽量不要异步操作数据。如果异步操作数据已经进行了，组件在 commit 后不能立即改变数据，而且不知道什么时候会改变。
 
 ```JavaScript
@@ -2707,10 +2691,6 @@ const store = new Vuex.Store({
 })
 ```
 
-ES6 语法提示
-
-Promise 是一种异步方案，它有三种状态：Pending（进行中）、Resolve（已完成）、Rejected（已失败）
-
 最后一个选项是 modules，它可以将 store 分割到不同模块，每个 module 拥有自己的 state、getters、mutations、actions，而且可以多层嵌套。module 的 mutation 和 getter 接收的第一个参数 state 是当前模块的状态。在 actions 和 getters 中，还可以接收一个参数 rootState，来访问根节点的状态。
 
 ```JavaScript
@@ -2737,10 +2717,6 @@ const store = new Vuex.Store({
 store.state.a // -> moduleA 的状态
 store.state.b // -> moduleB 的状态
 ```
-
-ES6 语法提示
-
-emit(event,...args) 中的 ...args 是函数参数的结构，使用它可以从当前参数（这里是第二个）到最后的参数都获取到。
 
 ## 11.3 实战：中央事件总线插件 vue-bus
 
