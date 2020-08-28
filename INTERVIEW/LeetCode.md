@@ -1270,3 +1270,25 @@ var dayOfYear = function (date) {
   return days;
 };
 ```
+
+```js
+ let arr = [...s],
+    maxLength = 0;
+  if (arr.length === 1) {
+    maxLength = 1;
+  }
+  for (let i = 0; i < arr.length; i++) {
+    for (let j = i + 1; j < arr.length; j++) {
+      if (arr[i] === arr[j]) {
+        maxLength = Math.max(maxLength, j - i);
+        if (maxLength === 5) console.log(arr.slice(i, j));
+
+        break;
+      } else if (j === arr.length - 1) {
+        maxLength = Math.max(maxLength, j - i + 1);
+        if (maxLength === 5) console.log(arr.slice(i, j));
+      }
+    }
+  }
+  return maxLength;
+  ```

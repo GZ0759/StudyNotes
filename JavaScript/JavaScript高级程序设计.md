@@ -3397,7 +3397,9 @@ alert(person2 instanceof Person); //true
 
 创建自定义的构造函数意味着将来可以将它的实例标识为一种特定的类型；而这正是构造函数模式胜过工厂模式的地方。
 
-**1. 将构造函数当作函数**。构造函数与其他函数的唯一区别，就在于调用它们的方式不同。不过，构造函数毕竟也是函数，不存在定义构造函数的特殊语法。任何函数，只要通过 new 操作符来调用，那它就可以作为构造函数；而任何函数，如果不通过 new 操作符来调用，那它跟普通函数也不会有什么两样。例如，前面例子中定义的`Person()`函数可以通过下列任何一种方式来调用。
+**1. 将构造函数当作函数**
+
+构造函数与其他函数的唯一区别，就在于调用它们的方式不同。不过，构造函数毕竟也是函数，不存在定义构造函数的特殊语法。任何函数，只要通过 new 操作符来调用，那它就可以作为构造函数；而任何函数，如果不通过 new 操作符来调用，那它跟普通函数也不会有什么两样。例如，前面例子中定义的`Person()`函数可以通过下列任何一种方式来调用。
 
 ```js
 // 当作构造函数使用
@@ -3414,7 +3416,9 @@ Person.call(o, "Kristen", 25, "Nurse");
 o.sayName(); //"Kristen"
 ```
 
-**2. 构造函数的问题**。使用构造函数的主要问题，就是每个方法都要在每个实例上重新创建一遍。在前面的例子中， person1 和 person2 都有一个名为`sayName()`的方法，但那两个方法不是同一个 Function 的实例。不要忘了——ECMAScript 中的函数是对象，因此每定义一个函数，也就是实例化了一个对象。从逻辑角度讲，此时的构造函数也可以这样定义。
+**2. 构造函数的问题**
+
+使用构造函数的主要问题，就是每个方法都要在每个实例上重新创建一遍。在前面的例子中， person1 和 person2 都有一个名为`sayName()`的方法，但那两个方法不是同一个 Function 的实例。不要忘了——ECMAScript 中的函数是对象，因此每定义一个函数，也就是实例化了一个对象。从逻辑角度讲，此时的构造函数也可以这样定义。
 
 ```js
 function Person(name, age, job) {
@@ -3481,7 +3485,7 @@ alert(person1.sayName == person2.sayName); //true
 
 图 6-1 展示了 Person 构造函数、 Person 的原型属性以及 Person 现有的两个实例之间的关系。在此，`Person.prototype`指向了原型对象，而 `Person.prototype.constructor` 又指回了 Person。原型对象中除了包含 constructor 属性之外，还包括后来添加的其他属性。 Person 的每个实例——person1 和 person2 都包含一个内部属性，该属性仅仅指向了 `Person.prototype`；换句话说，它们与构造函数没有直接的关系。此外，要格外注意的是，虽然这两个实例都不包含属性和方法，但我们却可以调用`person1.sayName()`。这是通过查找对象属性的过程来实现的。
 
-虽然在所有实现中都无法访问到`[[Prototype]]`，但是可以通过 `isPrototypeOf()` 方法来确定对象之间是否存在这种关系，从本质上讲，如果`[[Prototype]]`指向调用`isPrototypeOf()`方法的对象（Person.prototype），那么这个方法就返回 true。
+虽然在所有实现中都无法访问到`[[Prototype]]`，但是可以通过 `isPrototypeOf()` 方法来确定对象之间是否存在这种关系，从本质上讲，如果`[[Prototype]]`指向调用`isPrototypeOf()`方法的对象`Person.prototype`，那么这个方法就返回 true。
 
 ```js
 alert(Person.prototype.isPrototypeOf(person1)); //true
@@ -3602,7 +3606,7 @@ alert(person1.hasOwnProperty("name")); //false
 alert("name" in person1); //true
 ```
 
-以上代码执行的整个过程中， name 属性要么是直接在对象上访问到的，要么是通过原型访问到的。因此，调用"name" in person1 始终都返回 true，无论该属性存在于实例中还是存在于原型中。同时使用 `hasOwnProperty()`方法和 in 操作符，就可以确定该属性到底是存在于对象中，还是存在于原型中，如下所示。
+以上代码执行的整个过程中， name 属性要么是直接在对象上访问到的，要么是通过原型访问到的。因此，调用 `"name" in person1` 始终都返回 true，无论该属性存在于实例中还是存在于原型中。同时使用 `hasOwnProperty()`方法和 in 操作符，就可以确定该属性到底是存在于对象中，还是存在于原型中，如下所示。
 
 ```js
 function hasPrototypeProperty(object, name) {
@@ -3756,7 +3760,7 @@ friend.sayName(); //error
 
 **5.原生对象的原型**
 
-原型模式的重要性不仅体现在创建自定义类型方面，就连所有原生的引用类型，都是采用这种模式创建的。所有原生引用类型（Object、 Array、 String，等等）都在其构造函数的原型上定义了方法。例如，在 Array.prototype 中可以找到`sort()`方法，而在 String.prototype 中可以找到`substring()`方法，如下所示。
+原型模式的重要性不仅体现在创建自定义类型方面，就连所有原生的引用类型，都是采用这种模式创建的。所有原生引用类型（Object、 Array、 String，等等）都在其构造函数的原型上定义了方法。例如，在 `Array.prototype` 中可以找到`sort()`方法，而在 `String.prototype` 中可以找到`substring()`方法，如下所示。
 
 ```js
 alert(typeof Array.prototype.sort); //"function"

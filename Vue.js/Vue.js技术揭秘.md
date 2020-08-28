@@ -10293,9 +10293,7 @@ function genDirectives (el: ASTElement, state: CodegenState): string | void {
 }
 ```
 
-`genDrirectives` 方法就是遍历 `el.directives`，然后获取每一个指令对应的方法 `
-const gen: DirectiveFunction = state.directives[dir.name]`，这个指令方法实际上是在实例化 `CodegenState` 的时候通过 `option`
-传入的，这个 `option` 就是编译相关的配置，它在不同的平台下配置不同，在 `web` 环境下的定义在 `src/platforms/web/compiler/options.js` 下：
+`genDrirectives` 方法就是遍历 `el.directives`，然后获取每一个指令对应的方法 `const gen: DirectiveFunction = state.directives[dir.name]`，这个指令方法实际上是在实例化 `CodegenState` 的时候通过 `option`传入的，这个 `option` 就是编译相关的配置，它在不同的平台下配置不同，在 `web` 环境下的定义在 `src/platforms/web/compiler/options.js` 下：
 
 ```js
 export const baseOptions: CompilerOptions = {
@@ -10871,8 +10869,7 @@ function processSlot (el) {
   }
 }
 ```
-当解析到标签上有 `slot` 属性的时候，会给对应的 AST
-元素节点添加 `slotTarget` 属性，然后在 `codegen` 阶段，在 `genData` 中会处理 `slotTarget`，相关代码在 `src/compiler/codegen/index.js` 中：
+当解析到标签上有 `slot` 属性的时候，会给对应的 AST 元素节点添加 `slotTarget` 属性，然后在 `codegen` 阶段，在 `genData` 中会处理 `slotTarget`，相关代码在 `src/compiler/codegen/index.js` 中：
 
 ```js
 if (el.slotTarget && !el.slotScope) {
