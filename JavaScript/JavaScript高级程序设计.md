@@ -80,7 +80,7 @@ JavaScript 的这三个组成部分，在当前五个主要浏览器（ IE、 Fi
 
 只要一提到把 JavaScript 放到网页中，就不得不涉及 Web 的核心语言——HTML。在当初开发 JavaScript 的时候， Netscape 要解决的一个重要问题就是如何做到让 JavaScript 既能与 HTML 页面共存，又不影响那些页面在其他浏览器中的呈现效果。经过尝试、纠错和争论，最终的决定就是为 Web 增加统一的脚本支持。而 Web 诞生早期的很多做法也都保留了下来，并被正式纳入 HTML 规范当中。
 
-## 2.1 `<script>`元素　
+## 2.1 \<script\>元素　
 
 向 HTML 页面中插入 JavaScript 的主要方法，就是使用`<script>`元素。HTML 4.01 为`<script>`定义了六个属性。
 
@@ -285,7 +285,7 @@ IE5.5 引入了文档模式的概念，而这个概念是通过使用文档类�
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Frameset//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-frameset.dtd">
 ```
 
-## 2.4 `<noscript>`元素　
+## 2.4 \<noscript\>元素　
 
 早期浏览器都面临一个特殊的问题，即当浏览器不支持 JavaScript 时如何让页面平稳地退化。对这个问题的最终解决方案就是创造一个`<noscript>`元素，用以在不支持 JavaScript 的浏览器中显示替代的内容。这个元素可以包含能够出现在文档`<body>`中的任何 HTML 元素——`<script>`元素除外。包含在`<noscript>`元素中的内容只有在下列情况下才会显示出来：
 
@@ -3941,8 +3941,7 @@ var friend = Person("Nicholas", 29, "Software Engineer");
 friend.sayName(); //"Nicholas"
 ```
 
-这样，变量 friend 中保存的是一个稳妥对象，而除了调用`sayName()`方法外，没有别的方式可以访问其数据成员。即使有其他代码会给这个对象添加方法或数据成员，但也不可能有别的办法访问传入到构造函数中的原始数据。稳妥构造函数模式提供的这种安全性，使得它非常适合在某些安全执行环境——例如， [ADsafe](www.adsafe.org)和 [Caja](http://code.google.com/p/google-caja/)提供的环境——
-下使用。
+这样，变量 friend 中保存的是一个稳妥对象，而除了调用`sayName()`方法外，没有别的方式可以访问其数据成员。即使有其他代码会给这个对象添加方法或数据成员，但也不可能有别的办法访问传入到构造函数中的原始数据。稳妥构造函数模式提供的这种安全性，使得它非常适合在某些安全执行环境——例如， [ADsafe](www.adsafe.org)和 [Caja](http://code.google.com/p/google-caja/)提供的环境下使用。
 
 > 与寄生构造函数模式类似，使用稳妥构造函数模式创建的对象与构造函数之间也没有什么关系，因此 instanceof 操作符对这种对象也没有意义。
 
