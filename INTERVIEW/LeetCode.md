@@ -97,6 +97,48 @@ var twoSum = function (nums, target) {
 
 请注意，你的答案必须是 子串 的长度，"pwke" 是一个子序列，不是子串。
 
+## 解法 - 双指针添加
+
+```js
+var lengthOfLongestSubstring = function (s) {
+  let maxLength = s.length === 1 ? 1 : 0;
+  for (let i = 0; i < s.length; i++) {
+    let arr = [s[i]];
+    for (let j = i + 1; j < s.length; j++) {
+      if (arr.indexOf(s[j]) > -1) {
+        break;
+      }
+      arr.push(s[j]);
+    }
+    maxLength = Math.max(maxLength, arr.length);
+  }
+  return maxLength;
+};
+```
+
+## 解法 - 数据结构Set
+
+```js
+var lengthOfLongestSubstring = function (s) {
+  let maxLength = 0,
+    set = new Set(),
+    mark = 0;
+  for (let i = 0; i < s.length; i++) {
+    if (set.has(s[i])) {
+      maxLength = Math.max(maxLength, set.size);
+      set.clear();
+      i = mark++; // 指针回滚
+    } else {
+      set.add(s[i]);
+      if (i === s.length - 1) {
+        maxLength = Math.max(maxLength, set.size);
+      }
+    }
+  }
+  return maxLength;
+};
+```
+
 # 007 - 整数反转（reverse-integer）
 
 * 难度：简单
@@ -1270,25 +1312,3 @@ var dayOfYear = function (date) {
   return days;
 };
 ```
-
-```js
- let arr = [...s],
-    maxLength = 0;
-  if (arr.length === 1) {
-    maxLength = 1;
-  }
-  for (let i = 0; i < arr.length; i++) {
-    for (let j = i + 1; j < arr.length; j++) {
-      if (arr[i] === arr[j]) {
-        maxLength = Math.max(maxLength, j - i);
-        if (maxLength === 5) console.log(arr.slice(i, j));
-
-        break;
-      } else if (j === arr.length - 1) {
-        maxLength = Math.max(maxLength, j - i + 1);
-        if (maxLength === 5) console.log(arr.slice(i, j));
-      }
-    }
-  }
-  return maxLength;
-  ```
