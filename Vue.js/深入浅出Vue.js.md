@@ -102,7 +102,7 @@ function defineReactive(data, key, val) {
 
 现在我们已经有了很明确的目标，就是要在 getter 中收集依赖，那么要把依赖收集到哪里去呢？
 
-思考一下，首先想到的是每个 key 都有一个数组，用来存储当前 key 的依赖。假设依赖是一个函数，保存在 window.target 上，现在就可以把 defineReactive 函数稍微改造一下：
+思考一下，首先想到的是每个 key 都有一个数组，用来存储当前 key 的依赖。假设依赖是一个函数，保存在 `window.target` 上，现在就可以把 defineReactive 函数稍微改造一下：
 
 ```js
 function defineReactive(data, key, val) {
@@ -194,7 +194,7 @@ function defineReactive(data, key, val) {
 
 ## 2.5 依赖是谁
 
-在上面的代码中，我们收集的依赖是 window.target，那么它到底是什么？我们究竟要收集谁呢？
+在上面的代码中，我们收集的依赖是 `window.target`，那么它到底是什么？我们究竟要收集谁呢？
 
 收集谁，换句话说，就是当属性发生变化后，通知谁。
 
@@ -215,9 +215,9 @@ vm.$watch('a.b.c', function (newVal, oldVal) {
 });
 ```
 
-这段代码表示当 data.a.b.c 属性发生变化时，触发第二个参数中的函数。
+这段代码表示当 `data.a.b.c` 属性发生变化时，触发第二个参数中的函数。
 
-思考一下，怎么实现这个功能呢？好像只要把这个 watcher 实例添加到 data.a.b.c 属性的 Dep 中就行了。然后，当 data.a.b.c 的值发生变化时，通知 Watcher。接着，Watcher 再执行参数中的这个回调函数。
+思考一下，怎么实现这个功能呢？好像只要把这个 watcher 实例添加到 `data.a.b.c` 属性的 Dep 中就行了。然后，当 `data.a.b.c` 的值发生变化时，通知 Watcher。接着，Watcher 再执行参数中的这个回调函数。
 
 ```js
 export default class Watcher {
@@ -242,17 +242,17 @@ export default class Watcher {
 }
 ```
 
-这段代码可以把自己主动添加到 data.a.b.c 的 Dep 中去，是不是很神奇？
+这段代码可以把自己主动添加到 `data.a.b.c` 的 Dep 中去，是不是很神奇？
 
-因为我在 get 方法中先把 window.target 设置成了 this，也就是当前 watcher 实例，然后再读一下 data.a.b.c 的值，这肯定会触发 getter。
+因为我在 get 方法中先把 `window.target` 设置成了 this，也就是当前 watcher 实例，然后再读一下 `data.a.b.c` 的值，这肯定会触发 getter。
 
-触发了 getter，就会触发收集依赖的逻辑。而关于收集依赖，上面已经介绍了，会从 window.target 中读取一个依赖并添加到 Dep 中。
+触发了 getter，就会触发收集依赖的逻辑。而关于收集依赖，上面已经介绍了，会从 `window.target` 中读取一个依赖并添加到 Dep 中。
 
-这就导致，只要先在 window.target 赋一个 this，然后再读一下值，去触发 getter，就可以把 this 主动添加到 keypath 的 Dep 中。有没有很神奇的感觉啊？
+这就导致，只要先在 `window.target` 赋一个 this，然后再读一下值，去触发 getter，就可以把 this 主动添加到 keypath 的 Dep 中。有没有很神奇的感觉啊？
 
-依赖注入到 Dep 中后，每当 data.a.b.c 的值发生变化时，就会让依赖列表中所有的依赖循环触发 update 方法，也就是 Watcher 中的 update 方法。而 update 方法会执行参数中的回调函数，将 value 和 oldValue 传到参数中。
+依赖注入到 Dep 中后，每当 `data.a.b.c` 的值发生变化时，就会让依赖列表中所有的依赖循环触发 update 方法，也就是 Watcher 中的 update 方法。而 update 方法会执行参数中的回调函数，将 value 和 oldValue 传到参数中。
 
-所以，其实不管是用户执行的 vm.\$watch('a.b.c', (value, oldValue) => {})，还是模板中用到的 data，都是通过 Watcher 来通知自己是否需要发生变化。
+所以，其实不管是用户执行的 `vm.$watch('a.b.c', (value, oldValue) => {})`，还是模板中用到的 data，都是通过 Watcher 来通知自己是否需要发生变化。
 
 这里有些小伙伴可能会好奇上面代码中的 parsePath 是怎么读取一个字符串的 keypath 的，下面用一段代码来介绍其实现原理：
 
@@ -338,7 +338,7 @@ function defineReactive(data, key, val) {
 
 然后判断数据的类型，只有 Object 类型的数据才会调用 walk 将每一个属性转换成 getter/setter 的形式来侦测变化。
 
-最后，在 defineReactive 中新增 new Observer(val)来递归子属性，这样我们就可以把 data 中的所有属性（包括子属性）都转换成 getter/setter 的形式来侦测变化。
+最后，在 defineReactive 中新增 `new Observer(val)`来递归子属性，这样我们就可以把 data 中的所有属性（包括子属性）都转换成 getter/setter 的形式来侦测变化。
 
 当 data 中的属性发生变化时，与这个属性对应的依赖就会接收到通知。
 
@@ -390,7 +390,7 @@ var vm = new Vue({
 
 Vue.js 通过 `Object.defineProperty` 来将对象的 key 转换成 getter/setter 的形式来追踪变化，但 getter/setter 只能追踪一个数据是否被修改，无法追踪新增属性和删除属性，所以才会导致上面例子中提到的问题。
 
-但这也是没有办法的事，因为在 ES6 之前，JavaScript 没有提供元编程的能力，无法侦测到一个新属性被添加到了对象中，也无法侦测到一个属性从对象中删除了。为了解决这个问题，Vue.js 提供了两个 API——vm.$set与vm.$delete，第 4 章会详细介绍它们。
+但这也是没有办法的事，因为在 ES6 之前，JavaScript 没有提供元编程的能力，无法侦测到一个新属性被添加到了对象中，也无法侦测到一个属性从对象中删除了。为了解决这个问题，Vue.js 提供了两个 API——`vm.$set`与`vm.$delete`，第 4 章会详细介绍它们。
 
 ## 2.9 总结
 
@@ -404,7 +404,7 @@ Object 可以通过 `Object.defineProperty` 将属性转换成 getter/setter 的
 
 所谓的依赖，其实就是 Watcher。只有 Watcher 触发的 getter 才会收集依赖，哪个 Watcher 触发了 getter，就把哪个 Watcher 收集到 Dep 中。当数据发生变化时，会循环依赖列表，把所有的 Watcher 都通知一遍。
 
-Watcher 的原理是先把自己设置到全局唯一的指定位置（例如 window.target），然后读取数据。因为读取了数据，所以会触发这个数据的 getter。接着，在 getter 中就会从全局唯一的那个位置读取当前正在读取数据的 Watcher，并把这个 Watcher 收集到 Dep 中去。通过这样的方式，Watcher 可以主动去订阅任意一个数据的变化。
+Watcher 的原理是先把自己设置到全局唯一的指定位置（例如 `window.target`），然后读取数据。因为读取了数据，所以会触发这个数据的 getter。接着，在 getter 中就会从全局唯一的那个位置读取当前正在读取数据的 Watcher，并把这个 Watcher 收集到 Dep 中去。通过这样的方式，Watcher 可以主动去订阅任意一个数据的变化。
 
 此外，我们创建了 Observer 类，它的作用是把一个 object 中的所有数据（包括子数据）都转换成响应式的，也就是它会侦测 object 中所有数据（包括子数据）的变化。
 
