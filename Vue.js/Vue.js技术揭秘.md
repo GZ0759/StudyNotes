@@ -4028,6 +4028,7 @@ var app = new Vue({
   }
 })
 ```
+
 当我们去修改 `this.message` 的时候，模板对应的插值也会渲染成新的数据，那么这一切是怎么做到的呢？
 
 在分析前，我们先直观的想一下，如果不用 Vue 的话，我们会通过最简单的方法实现这个需求：监听点击事件，修改数据，手动操作 DOM 重新渲染。这个过程和使用 Vue 的最大区别就是多了一步“手动操作 DOM 重新渲染”。这一步看上去并不多，但它背后又潜在的几个要处理的问题：
@@ -4080,7 +4081,7 @@ export function initState (vm: Component) {
 ```
 `initState` 方法主要是对 `props`、`methods`、`data`、`computed` 和 `wathcer` 等属性做了初始化操作。这里我们重点分析 `props` 和 `data`，对于其它属性的初始化我们之后再详细分析。
 
-- initProps
+**initProps**
 
 ```js
 function initProps (vm: Component, propsOptions: Object) {
@@ -4131,9 +4132,10 @@ function initProps (vm: Component, propsOptions: Object) {
   toggleObserving(true)
 }
 ```
+
 `props` 的初始化主要过程，就是遍历定义的 `props` 配置。遍历的过程主要做两件事情：一个是调用 `defineReactive` 方法把每个 `prop` 对应的值变成响应式，可以通过 `vm._props.xxx` 访问到定义 `props` 中对应的属性。对于 `defineReactive` 方法，我们稍后会介绍；另一个是通过 `proxy` 把 `vm._props.xxx` 的访问代理到 `vm.xxx` 上，我们稍后也会介绍。
 
-- initData
+**initData**
 
 ```js
 function initData (vm: Component) {
@@ -4456,6 +4458,7 @@ export function defineReactive (
   })
 }
 ```
+
 这段代码我们只需要关注 2 个地方，一个是 `const dep = new Dep()` 实例化一个 `Dep` 的实例，另一个是在 `get` 函数中通过 `dep.depend` 做依赖收集，这里还有个对 `childOb` 判断的逻辑，我们之后会介绍它的作用。
 
 ### 4.3.1 Dep
@@ -4720,6 +4723,7 @@ export function pushTarget (_target: Watcher) {
   Dep.target = _target
 }
 ```
+
 实际上就是把 `Dep.target` 赋值为当前的渲染 `watcher` 并压栈（为了恢复用）。接着又执行了：
 
 ```js

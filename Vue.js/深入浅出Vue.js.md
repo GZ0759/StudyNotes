@@ -276,7 +276,7 @@ export function parsePath(path) {
 }
 ```
 
-可以看到，这其实并不复杂。先将 keypath 用 . 分割成数组，然后循环数组一层一层去读数据，最后拿到的 obj 就是 keypath 中想要读的数据。
+可以看到，这其实并不复杂。先将 keypath 用 `.` 分割成数组，然后循环数组一层一层去读数据，最后拿到的 obj 就是 keypath 中想要读的数据。
 
 ## 2.7 递归侦测所有 key
 
@@ -976,11 +976,11 @@ Array 收集依赖的方式和 Object 一样，都是在 getter 中收集。但�
 
 # 第 4 章 变化侦测相关的 API 实现原理
 
-4.1 vm.$watch
+4.1 vm.\$watch
 4.1.1 用法
 4.1.2 watch的内部原理
 4.1.3 deep参数的实现原理
-4.2 vm.$set
+4.2 vm.\$set
 4.2.1 用法
 4.2.2 Array 的处理
 4.2.3 key 已经存在于 target 中
