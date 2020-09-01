@@ -446,7 +446,7 @@ Object 的变化是靠 setter 来追踪的，只要一个数据发生了变化�
 
 可惜的是，在 ES6 之前，JavaScript 并没有提供元编程的能力，也就是没有提供可以拦截原型方法的能力，但是这难不倒聪明的程序员们。我们可以用自定义的方法去覆盖原生的原型方法。
 
-如图 3-1 所示，我们可以用一个拦截器覆盖 Array.prototype。之后，每当使用 Array 原型上的方法操作数组时，其实执行的都是拦截器中提供的方法，比如 push 方法。然后，在拦截器中使用原生 Array 的原型方法去操作数组。
+如图 3-1 所示，我们可以用一个拦截器覆盖 `Array.prototype`。之后，每当使用 Array 原型上的方法操作数组时，其实执行的都是拦截器中提供的方法，比如 push 方法。然后，在拦截器中使用原生 Array 的原型方法去操作数组。
 
 图 3-1 　使用拦截器覆盖原生的原型方法
 
@@ -456,7 +456,7 @@ Object 的变化是靠 setter 来追踪的，只要一个数据发生了变化�
 
 上一节中，我们已经介绍了拦截器的作用，这一节介绍如何实现它。
 
-拦截器其实就是一个和 Array.prototype 一样的 Object，里面包含的属性一模一样，只不过这个 Object 中某些可以改变数组自身内容的方法是我们处理过的。
+拦截器其实就是一个和 `Array.prototype` 一样的 Object，里面包含的属性一模一样，只不过这个 Object 中某些可以改变数组自身内容的方法是我们处理过的。
 
 经过整理，我们发现 Array 原型中可以改变数组自身内容的方法有 7 个，分别是 push、pop、shift、unshift、splice、sort 和 reverse。
 
@@ -481,19 +481,19 @@ export const arrayMethods = Object.create(arrayProto);
 );
 ```
 
-在上面的代码中，我们创建了变量 arrayMethods，它继承自 Array.prototype，具备其所有功能。未来，我们要使用 arrayMethods 去覆盖 Array.prototype。
+在上面的代码中，我们创建了变量 arrayMethods，它继承自 `Array.prototype`，具备其所有功能。未来，我们要使用 arrayMethods 去覆盖 `Array.prototype`。
 
-接下来，在 arrayMethods 上使用 Object.defineProperty 方法将那些可以改变数组自身内容的方法（push、pop、shift、unshift、splice、sort 和 reverse）进行封装。
+接下来，在 arrayMethods 上使用 `Object.defineProperty` 方法将那些可以改变数组自身内容的方法（push、pop、shift、unshift、splice、sort 和 reverse）进行封装。
 
-所以，当使用 push 方法的时候，其实调用的是 arrayMethods.push，而 arrayMethods.push 是函数 mutator，也就是说，实际上执行的是 mutator 函数。
+所以，当使用 push 方法的时候，其实调用的是 `arrayMethods.push`，而 `arrayMethods.push` 是函数 mutator，也就是说，实际上执行的是 mutator 函数。
 
-最后，在 mutator 中执行 original（它是原生 Array.prototype 上的方法，例如 Array.prototype.push）来做它应该做的事，比如 push 的功能。
+最后，在 mutator 中执行 original（它是原生 `Array.prototype` 上的方法，例如 `Array.prototype.push`）来做它应该做的事，比如 push 的功能。
 
 因此，我们就可以在 mutator 函数中做一些其他的事，比如说发送变化通知。
 
 ## 3.3 使用拦截器覆盖 Array 原型
 
-有了拦截器之后，想要让它生效，就需要使用它去覆盖 Array.prototype。但是我们又不能直接覆盖，因为这样会污染全局的 Array，这并不是我们希望看到的结果。我们希望拦截操作只针对那些被侦测了变化的数据生效，也就是说希望拦截器只覆盖那些响应式数组的原型。
+有了拦截器之后，想要让它生效，就需要使用它去覆盖 `Array.prototype`。但是我们又不能直接覆盖，因为这样会污染全局的 Array，这并不是我们希望看到的结果。我们希望拦截操作只针对那些被侦测了变化的数据生效，也就是说希望拦截器只覆盖那些响应式数组的原型。
 
 而将一个数据转换成响应式的，需要通过 Observer，所以我们只需要在 Observer 中使用拦截器覆盖那些即将被转换成响应式 Array 类型数据的原型就好了：
 
@@ -521,7 +521,7 @@ value.__proto__ = arrayMethods;
 
 图 3-2 　使用`__proto__`覆盖原型
 
-`__proto__` 其实是 Object.getPrototypeOf 和 Object.setPrototypeOf 的早期实现，所以使用 ES6 的 Object.setPrototypeOf 来代替`__proto__`完全可以实现同样的效果。只是到目前为止，ES6 在浏览器中的支持度并不理想。
+`__proto__` 其实是 `Object.getPrototypeOf` 和 `Object.setPrototypeOf` 的早期实现，所以使用 ES6 的 `Object.setPrototypeOf` 来代替`__proto__`完全可以实现同样的效果。只是到目前为止，ES6 在浏览器中的支持度并不理想。
 
 ## 3.4 将拦截器方法挂载到数组的属性上
 
@@ -564,11 +564,11 @@ function copyAugment(target, src, keys) {
 }
 ```
 
-在上面的代码中，我们新增了 hasProto 来判断当前浏览器是否支持 **proto**。还新增了 copyAugment 函数，用来将已经加工了拦截操作的原型方法直接添加到 value 的属性中。
+在上面的代码中，我们新增了 hasProto 来判断当前浏览器是否支持 `__proto__`。还新增了 copyAugment 函数，用来将已经加工了拦截操作的原型方法直接添加到 value 的属性中。
 
-此外，还使用 hasProto 判断浏览器是否支持 **proto**：如果支持，则使用 protoAugment 函数来覆盖原型；如果不支持，则调用 copyAugment 函数将拦截器中的方法挂载到 value 上。
+此外，还使用 hasProto 判断浏览器是否支持 `__proto__`：如果支持，则使用 protoAugment 函数来覆盖原型；如果不支持，则调用 copyAugment 函数将拦截器中的方法挂载到 value 上。
 
-如图 3-3 所示，在浏览器不支持 **proto** 的情况下，会在数组上挂载一些方法。当用户使用这些方法时，其实执行的并不是浏览器原生提供的 Array.prototype 上的方法，而是拦截器中提供的方法。
+如图 3-3 所示，在浏览器不支持 `__proto__` 的情况下，会在数组上挂载一些方法。当用户使用这些方法时，其实执行的并不是浏览器原生提供的 `Array.prototype` 上的方法，而是拦截器中提供的方法。
 
 图 3-3 　将拦截器方法挂载到数组属性上
 
@@ -765,15 +765,15 @@ export class Observer {
 }
 ```
 
-在上面的代码中，我们在 Observer 中新增了一段代码，它可以在 value 上新增一个不可枚举的属性 **ob**，这个属性的值就是当前 Observer 的实例。
+在上面的代码中，我们在 Observer 中新增了一段代码，它可以在 value 上新增一个不可枚举的属性 `__ob__`，这个属性的值就是当前 Observer 的实例。
 
-这样我们就可以通过数组数据的 **ob** 属性拿到 Observer 实例，然后就可以拿到 **ob** 上的 dep 啦。
+这样我们就可以通过数组数据的 `__ob__` 属性拿到 Observer 实例，然后就可以拿到 `__ob__` 上的 dep 啦。
 
-当然，**ob** 的作用不仅仅是为了在拦截器中访问 Observer 实例这么简单，还可以用来标记当前 value 是否已经被 Observer 转换成了响应式数据。
+当然，`__ob__` 的作用不仅仅是为了在拦截器中访问 Observer 实例这么简单，还可以用来标记当前 value 是否已经被 Observer 转换成了响应式数据。
 
-也就是说，所有被侦测了变化的数据身上都会有一个 **ob** 属性来表示它们是响应式的。上一节中的 observe 函数就是通过 **ob** 属性来判断：如果 value 是响应式的，则直接返回 **ob**；如果不是响应式的，则使用 new Observer 来将数据转换成响应式数据。
+也就是说，所有被侦测了变化的数据身上都会有一个 `__ob__` 属性来表示它们是响应式的。上一节中的 observe 函数就是通过 `__ob__` 属性来判断：如果 value 是响应式的，则直接返回 `__ob__`；如果不是响应式的，则使用 new Observer 来将数据转换成响应式数据。
 
-当 value 身上被标记了 **ob** 之后，就可以通过 value.**ob** 来访问 Observer 实例。如果是 Array 拦截器，因为拦截器是原型方法，所以可以直接通过 this.**ob** 来访问 Observer 实例。例如：
+当 value 身上被标记了 `__ob__` 之后，就可以通过 value.`__ob__` 来访问 Observer 实例。如果是 Array 拦截器，因为拦截器是原型方法，所以可以直接通过 this.`__ob__` 来访问 Observer 实例。例如：
 
 ```js
 ['push', 'pop', 'shift', 'unshift', 'splice', 'sort', 'reverse'].forEach(
@@ -793,7 +793,7 @@ export class Observer {
 );
 ```
 
-在上面的代码中，我们在 mutator 函数里通过 this.**ob** 来获取 Observer 实例。
+在上面的代码中，我们在 mutator 函数里通过 this.`__ob__` 来获取 Observer 实例。
 
 ## 3.9 向数组的依赖发送通知
 
@@ -814,7 +814,7 @@ export class Observer {
 );
 ```
 
-在上面的代码中，我们调用了 ob.dep.notify()去通知依赖（Watcher）数据发生了改变。
+在上面的代码中，我们调用了 `ob.dep.notify()`去通知依赖（Watcher）数据发生了改变。
 
 ## 3.10 侦测数组中元素的变化
 
@@ -906,9 +906,9 @@ export class Observer {
 
 ### 3.11.2 使用 Observer 侦测新增元素
 
-前面介绍过 Observer 会将自身的实例附加到 value 的 **ob** 属性上。所有被侦测了变化的数据都有一个 **ob** 属性，数组元素也不例外。
+前面介绍过 Observer 会将自身的实例附加到 value 的 `__ob__` 属性上。所有被侦测了变化的数据都有一个 `__ob__` 属性，数组元素也不例外。
 
-因此，我们可以在拦截器中通过 this 访问到 **ob**，然后调用 **ob** 上的 observeArray 方法就可以了：
+因此，我们可以在拦截器中通过 this 访问到 `__ob__`，然后调用 `__ob__` 上的 observeArray 方法就可以了：
 
 ```js
 ['push', 'pop', 'shift', 'unshift', 'splice', 'sort', 'reverse'].forEach(
@@ -936,7 +936,7 @@ export class Observer {
 );
 ```
 
-在上面的代码中，我们从 this.**ob** 上拿到 Observer 实例后，如果有新增元素，则使用 ob.observeArray 来侦测这些新增元素的变化。
+在上面的代码中，我们从 this.`__ob__` 上拿到 Observer 实例后，如果有新增元素，则使用 ob.observeArray 来侦测这些新增元素的变化。
 
 ## 3.12 关于 Array 的问题
 
@@ -962,11 +962,11 @@ this.list.length = 0;
 
 Array 追踪变化的方式和 Object 不一样。因为它是通过方法来改变内容的，所以我们通过创建拦截器去覆盖数组原型的方式来追踪变化。
 
-为了不污染全局 Array.prototype，我们在 Observer 中只针对那些需要侦测变化的数组使用 **proto** 来覆盖原型方法，但 **proto** 在 ES6 之前并不是标准属性，不是所有浏览器都支持它。因此，针对不支持 **proto** 属性的浏览器，我们直接循环拦截器，把拦截器中的方法直接设置到数组身上来拦截 Array.prototype 上的原生方法。
+为了不污染全局 Array.prototype，我们在 Observer 中只针对那些需要侦测变化的数组使用 `__proto__` 来覆盖原型方法，但 `__proto__` 在 ES6 之前并不是标准属性，不是所有浏览器都支持它。因此，针对不支持 `__proto__` 属性的浏览器，我们直接循环拦截器，把拦截器中的方法直接设置到数组身上来拦截 Array.prototype 上的原生方法。
 
 Array 收集依赖的方式和 Object 一样，都是在 getter 中收集。但是由于使用依赖的位置不同，数组要在拦截器中向依赖发消息，所以依赖不能像 Object 那样保存在 defineReactive 中，而是把依赖保存在了 Observer 实例上。
 
-在 Observer 中，我们对每个侦测了变化的数据都标上印记 **ob**，并把 this（Observer 实例）保存在 **ob** 上。这主要有两个作用，一方面是为了标记数据是否被侦测了变化（保证同一个数据只被侦测一次），另一方面可以很方便地通过数据取到 **ob**，从而拿到 Observer 实例上保存的依赖。当拦截到数组发生变化时，向依赖发送通知。
+在 Observer 中，我们对每个侦测了变化的数据都标上印记 `__ob__`，并把 this（Observer 实例）保存在 `__ob__` 上。这主要有两个作用，一方面是为了标记数据是否被侦测了变化（保证同一个数据只被侦测一次），另一方面可以很方便地通过数据取到 `__ob__`，从而拿到 Observer 实例上保存的依赖。当拦截到数组发生变化时，向依赖发送通知。
 
 除了侦测数组自身的变化外，数组中元素发生的变化也要侦测。我们在 Observer 中判断如果当前被侦测的数据是数组，则调用 observeArray 方法将数组中的每一个元素都转换成响应式的并侦测变化。
 
