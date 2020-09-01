@@ -97,7 +97,7 @@ var twoSum = function (nums, target) {
 
 请注意，你的答案必须是 子串 的长度，"pwke" 是一个子序列，不是子串。
 
-## 解法 - 双指针添加
+## 解法 - 双指针
 
 ```js
 var lengthOfLongestSubstring = function (s) {
@@ -137,6 +137,64 @@ var lengthOfLongestSubstring = function (s) {
   }
   return maxLength;
 };
+```
+
+## 解法 - 滑动窗口
+
+```js
+var lengthOfLongestSubstring = function (s) {
+  let map = new Map();
+  let maxLength = 0;
+  // j为最长子串左边下标，i则为右边下标
+  for (let i = 0, j = 0; i < s.length; i++) {
+    if (map.has(s[i])) {
+      j = Math.max(map.get(s[i]), j);
+    }
+    maxLength = Math.max(maxLength, i - j + 1);
+    map.set(s[i], i + 1);
+  }
+  return maxLength;
+};
+```
+
+## 解法 - 字符数组
+
+```js
+var lengthOfLongestSubstring = function (s) {
+  let arr = [],
+    maxLength = 0;
+  for (let i = 0; i < s.length; i++) {
+    let n = arr.indexOf(s[i]);
+    if (n > -1) {
+      arr.splice(0, n + 1);
+    }
+    arr.push(s[i]);
+    maxLength = Math.max(maxLength, arr.length);
+  }
+  return maxLength;
+};
+```
+
+# 005 - 最长回文子串（longest-palindromic-substring）
+
+* 难度：中等
+* 涉及知识：字符串、动态规划
+* 题目地址：https://leetcode-cn.com/problems/longest-palindromic-substring/
+* 题目内容：
+
+```
+给定一个字符串 s，找到 s 中最长的回文子串。你可以假设 s 的最大长度为 1000。
+
+示例 1：
+
+输入: "babad"
+输出: "bab"
+注意: "aba" 也是一个有效答案。
+
+示例 2：
+
+输入: "cbbd"
+输出: "bb"
 ```
 
 # 007 - 整数反转（reverse-integer）
