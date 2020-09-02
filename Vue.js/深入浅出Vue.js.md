@@ -46,11 +46,14 @@ Vue.js 之所以能随意调整粒度，本质上还要归功于变化侦测。�
 
 关于变化侦测，首先要问一个问题，在 JavaScript（简称 JS）中，如何侦测一个对象的变化？
 
-其实这个问题还是比较简单的。学过 JavaScript 的人都知道，有两种方法可以侦测到变化：使用 `Object.defineProperty` 和 ES6 的 Proxy。
+其实这个问题还是比较简单的。学过 JavaScript 的人都知道，有两种方法可以侦测到变化：
+
+1. 使用 `Object.defineProperty`
+2. ES6 的 Proxy
 
 由于 ES6 在浏览器中的支持度并不理想，到目前为止 Vue.js 还是使用 `Object.defineProperty` 来实现的，所以书中也会使用它来介绍变化侦测的原理。
 
-由于使用 `Object.defineProperty` 来侦测变化会有很多缺陷，所以 Vue.js 的作者尤雨溪说日后会使用 Proxy 重写这部分代码。好在本章讲的是原理和思想，所以即便以后用 Proxy 重写了这部分代码，书中介绍的原理也不会变。
+> 由于使用 `Object.defineProperty` 来侦测变化会有很多缺陷，所以 Vue.js 的作者尤雨溪说日后会使用 Proxy 重写这部分代码。好在本章讲的是原理和思想，所以即便以后用 Proxy 重写了这部分代码，书中介绍的原理也不会变。
 
 知道了 `Object.defineProperty` 可以侦测到对象的变化，那么我们可以写出这样的代码：
 
