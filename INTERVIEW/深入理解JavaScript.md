@@ -1,4 +1,4 @@
-> 自己总结的 JavaScript 面试题  
+> 个人总结的 JavaScript 面试题  
 > [参考-awesome-coding-js](https://github.com/ConardLi/awesome-coding-js)   
 > [参考-冴羽博客](https://github.com/mqyqingfeng/Blog/tree/master/articles)   
 > [参考-后盾人](http://houdunren.gitee.io/note/js/1%20%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86.html)  
@@ -169,7 +169,7 @@ for (var i = 1; i <= 5; i++) {
 
 如果数组元素是基本类型，就会拷贝一份，互不影响，而如果是对象或者数组，就会只拷贝对象和数组的引用，这样我们无论在新旧数组进行了修改，两者都会发生变化。我们把这种复制引用的拷贝方法称之为浅拷贝，与之对应的就是深拷贝，深拷贝就是指完全的拷贝一个对象，即使嵌套了对象，两者也相互分离，修改一个对象的属性，也不会影响另一个。
 
-浅拷贝
+## 浅拷贝
 
 1. slice、concat
 2. for/in
@@ -222,12 +222,12 @@ console.log(hd);
 console.log(obj);
 ```
 
-深拷贝
+## 深拷贝
 
 1. JSON序列化和解析
-2. 递归for/of
+2. 递归遍历
 
-那如何深拷贝一个数组呢？这里介绍一个技巧，不仅适用于数组还适用于对象！但是该方法有以下几个问题。
+通过JSON对象的序列化和接续，不仅可以用于数组还可用于对象！但是该方法有以下几个问题。
 - 会忽略 undefined
 - 会忽略 symbol
 - 不能序列化函数
@@ -241,7 +241,7 @@ var new_arr = JSON.parse(JSON.stringify(arr));
 console.log(new_arr);
 ```
 
-在拷贝的时候判断一下属性值的类型，如果是对象，我们递归调用深拷贝函数。
+递归遍历。在拷贝的时候判断一下属性值的类型，如果是对象，我们递归调用深拷贝函数。
 
 ```js
 var deepCopy = function (obj) {
@@ -260,9 +260,66 @@ var deepCopy = function (obj) {
 
 # 函数节流和防抖
 
-节流（`throttle`）:不管事件触发频率多高，只在单位时间内执行一次。有两种方式可以实现节流，使用时间戳和定时器。防抖（`debounce`）：不管事件触发频率多高，一定在事件触发`n`秒后才执行，如果你在一个事件触发的 `n` 秒内又触发了这个事件，就以新的事件的时间为准，`n`秒后才执行，总之，触发完事件 `n` 秒内不再触发事件，`n`秒后再执行。
+防抖和节流是前端开发中经常使用的一种优化手段，它们都被用来控制一段时间内方法执行的次数，可以为我们节省大量不必要的开销。
 
-节流
+## 防抖（debounce）
+
+防抖的功效，它把一组连续的调用变为了一个，最大程度地优化了效率。防抖非常适于只关心结果，不关心过程如何的情况，它能很好地将大量连续事件转为单个我们需要的事件。
+
+应用场景
+
+1. 窗口大小变化，只关心最后结果
+2. 搜索栏，只关心完成结果
+3. 表单验证，延迟后进行验证
+
+实现
+
+为了更好理解，下面提供了最简单的 debounce 实现：返回一个 function，第一次执行这个 function 会启动一个定时器，下一次执行会清除上一次的定时器并重起一个定时器，直到这个 function 不再被调用，定时器成功跑完，执行回调函数
+
+```js
+const debounce = function(func, wait) {
+  let timer;
+  return function() {
+    !!timer && clearTimeout(timer);
+    timer = setTimeout(func, wait);
+  };
+};
+```
+
+```js
+function debounce(event, time) {
+  let timer = null;
+  return function (...args) {
+    clearTimeout(timer);
+    timer = setTimeout(() => {
+      event.apply(this, args);
+    }, time);
+  };
+}
+```
+
+有时候我们需要让函数立即执行一次，再等后面事件触发后等待`n`秒执行，我们给`debounce`函数一个`flag`用于标示是否立即执行。
+
+```js
+function debounce(event, time, flag) {
+  let timer = null;
+  return function (...args) {
+    clearTimeout(timer);
+    if (flag && !timer) {
+      event.apply(this, args);
+    }
+    timer = setTimeout(() => {
+      event.apply(this, args);
+    }, time);
+  };
+}
+```
+
+节流（throttle）:不管事件触发频率多高，只在单位时间内执行一次。有两种方式可以实现节流，使用时间戳和定时器。
+
+防抖（debounce）：不管事件触发频率多高，一定在事件触发`n`秒后才执行，如果你在一个事件触发的 `n` 秒内又触发了这个事件，就以新的事件的时间为准，`n`秒后才执行，总之，触发完事件 `n` 秒内不再触发事件，`n`秒后再执行。
+
+## 节流
 
 1. 时间戳实现
 2. 定时器实现
@@ -319,39 +376,6 @@ function throttle(event, time) {
 ```
 
 
-防抖应用场景  
-- 窗口大小变化，调整样式`window.addEventListener('resize', debounce(handleResize, 200));`
-- 搜索框，输入后 300 毫秒搜索`debounce(fetchSelectData, 300);`
-- 表单验证，输入 1000 毫秒后验证`debounce(validator, 1000);`
-
-```js
-function debounce(event, time) {
-  let timer = null;
-  return function (...args) {
-    clearTimeout(timer);
-    timer = setTimeout(() => {
-      event.apply(this, args);
-    }, time);
-  };
-}
-```
-
-有时候我们需要让函数立即执行一次，再等后面事件触发后等待`n`秒执行，我们给`debounce`函数一个`flag`用于标示是否立即执行。
-
-```js
-function debounce(event, time, flag) {
-  let timer = null;
-  return function (...args) {
-    clearTimeout(timer);
-    if (flag && !timer) {
-      event.apply(this, args);
-    }
-    timer = setTimeout(() => {
-      event.apply(this, args);
-    }, time);
-  };
-}
-```
 
 # 数组去重
 
