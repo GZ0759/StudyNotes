@@ -983,7 +983,7 @@ Array 收集依赖的方式和 Object 一样，都是在 getter 中收集。但�
 
 ## 4.1 vm.\$watch
 
-经常使用 Vue.js 的同学肯定对`vm.$watch` 并不陌生。
+经常使用 Vue.js 的同学肯定对`vm.$watch`并不陌生。
 
 ### 4.1.1 用法
 
@@ -998,23 +998,22 @@ vm.$watch(expOrFn, callback, [options]);
 `vm.$watch`其实是对 Watcher 的一种封装，通过 Watcher 完全可以实现`vm.$watch`的功能，但`vm.$watch`中的参数 deep 和 immediate 是 Watcher 中所没有的。下面我们来看一看`vm.$watch`到底是怎么实现的。
 
 ```js
-Vue.prototype.$watch = function(expOrFn,cb,options){
-    const vm = this;
-    options = options || {}
-    const watcher = new Watcher(expOrFn,cb,options){
-        if(options.immediate){
-            cb.call(vm,watcher.value)
-        }
-        return function unwatchFn(){
-            watcher.teardown()
-        }
-    }
-}
+Vue.prototype.$watch = function (expOrFn, cb, options) {
+  const vm = this;
+  options = options || {};
+  const watcher = new Watcher(vm, expOrFn, cb, options);
+  if (options.immediate) {
+    cb.call(vm, watcher.value);
+  }
+  return function unwatchFn() {
+    watcher.teardown();
+  };
+};
 ```
 
 先执行 new Watcher 来实现`vm.$watch`的基本功能。
 
-expOrFn 是支持函数的，前面未做介绍。需修改 Watcher
+这里有一个细节需要注意，expOrFn 是支持函数的，前面未做介绍。这里需要对 Watcher 进行一个简单的修改。
 
 ```js
 export default class Watcher {
@@ -1034,23 +1033,21 @@ export default class Watcher {
 }
 ```
 
-如果 expOrFn 是函数，则直接将它赋值给 getter；如果不是函数，再使用 parsePath 函数来读取 keypath 中的数据。（keypath 指的是属性路径，例如 `a.b.c.d` 就是一个 keypath，说明从 `vm.a.b.c.d` 中读取数据）。
+上面的代码新增了判断 expOrFn 类型的逻辑。如果 expOrFn 是函数，则直接将它赋值给 getter；如果不是函数，再使用 parsePath 函数来读取 keypath 中的数据。keypath 指的是属性路径，例如 `a.b.c.d` 就是一个 keypath，说明从 `vm.a.b.c.d` 中读取数据。
 
-当 expOrFn 是函数时，它不只可以动态返回数据，其中读取的所有数据也会被 Watcher 观察。
-
-当 expOrFn 是字符串类型的 keypath 时，Watcher 会读取这个 keypath 所指向的数据并观察这个数据的变化。而当 expOrFn 是函数时，Watcher 会同时观察 expOrFn 函数中读取的所有 Vue.js 实例上上的响应式数据。也就是说，如果函数从 Vue.js 实例上读取了两个数据，那么 Watcher 会同时观察这两个数据的变化，当其中任意一个发生变化时，Watcher 都会得到通知。
+当 expOrFn 是函数时，它不只可以动态返回数据，其中读取的所有数据也会被 Watcher 观察。当 expOrFn 是字符串类型的 keypath 时，Watcher 会读取这个 keypath 所指向的数据并观察这个数据的变化。而当 expOrFn 是函数时，Watcher 会同时观察 expOrFn 函数中读取的所有 Vue.js 实例上上的响应式数据。也就是说，如果函数从 Vue.js 实例上读取了两个数据，那么 Watcher 会同时观察这两个数据的变化，当其中任意一个发生变化时，Watcher 都会得到通知。
 
 > 事实上，Vue.js 中计算属性（Computed）的实现原理与 expOrFn 支持函数有很大的关系。
 
 执行 new Watcher 后，代码会判断用户是否使用了 immediate 参数，如果使用了，则立即执行一次 cb。
 
-最后，返回一个函数 unwatchFn。其作用是取消观察数据。当用户执行这个函数时，实例上是执行了`watcher.teardown()`来取消观察数据，其本质是把 watcher 实例从当前正在观察的状态的依赖列表中移除。
+最后，返回一个函数 unwatchFn。其作用是取消观察数据。
 
-Watcher 的 teardown 方法
+当用户执行这个函数时，实例上是执行了`watcher.teardown()`来取消观察数据，其本质是把 watcher 实例从当前正在观察的状态的依赖列表中移除。
 
-1. 首先需要在 Watcher 中记录自己订阅了谁，也就是 watcher 实例被收集进了哪些 Dep 里
-2. 然后当 Watcher 不想继续订阅这些 Dep 时，循环自己记录的订阅列表来通知它们（Dep）将自己从它们（Dep）的依赖列表中移除掉。
-3. 先在 Watcher 中添加 addDep 方法，该方法的作用是在 Watcher 中记录自己都订阅过哪些 Dep。
+实现 Watcher 的 teardown 方法：首先需要在 Watcher 中记录自己订阅了谁，也就是 watcher 实例被收集进了哪些 Dep 里。然后当 Watcher 不想继续订阅这些 Dep 时，循环自己记录的订阅列表来通知它们（Dep）将自己从它们（Dep）的依赖列表中移除掉。
+
+先在 Watcher 中添加 addDep 方法，该方法的作用是在 Watcher 中记录自己都订阅过哪些 Dep。
 
 ```js
 export default class Watcher {
@@ -1081,17 +1078,13 @@ export default class Watcher {
 }
 ```
 
-1）使用 depIds 来判断如果当前 Watcher 已经订阅了该 Dep，则不会重复订阅。
+1. 使用 depIds 来判断如果当前 Watcher 已经订阅了该 Dep，则不会重复订阅。
+2. Watcher 读取 value 时，会触发收集依赖的逻辑。当依赖发生变化时，会通知 Watcher 重新读取最新的数据。如果没有这个判断，就会发现每次数据发生了变化，Watcher 都会读取最新的数据。而读数据就会再次收集依赖，这就会导致 Dep 中依赖有重复。这样当数据发生变化时，会同时通知多个 Watcher。为了避免这个问题，只有第一次触发 getter 的时候才会收集依赖。
+3. 执行 `this.depIds.add` 来记录当前 Watcher 已经订阅了这个 Dep。
+4. 执行 `this.deps.push(dep)`记录自己都订阅了哪些 Dep。
+5. 触发 `dep.addSub(this)`，来将自己订阅到 Dep 中。
 
-2）Watcher 读取 value 时，会触发收集依赖的逻辑。当依赖发生变化时，会通知 Watcher 重新读取最新的数据。如果没有这个判断，就会发现每次数据发生了变化，Watcher 都会读取最新的数据。而读数据就会再次收集依赖，这就会导致 Dep 中依赖有重复。这样当数据发生变化时，会同时通知多个 Watcher。为了避免这个问题，只有第一次触发 getter 的时候才会收集依赖。
-
-3）执行 `this.depIds.add` 来记录当前 Watcher 已经订阅了这个 Dep。
-
-4）执行 `this.deps.push(dep)`记录自己都订阅了哪些 Dep。
-
-5）触发 `dep.addSub(this)`，来将自己订阅到 Dep 中。
-
-（4）Watcher 中新增 addDep 方法后，Dep 中收集依赖的逻辑也需要有所改变。
+在 Watcher 中新增 addDep 方法后，Dep 中收集依赖的逻辑也需要有所改变。
 
 ```js
 //新增
@@ -1115,11 +1108,11 @@ export default class Dep {
 }
 ```
 
-1）此时，Dep 会记录数据发生变化时，需要通知哪些 Watcher，而 Watcher 中也同样记录了自己会被哪些 Dep 通知。（多对多关系）
+此时，Dep 会记录数据发生变化时，需要通知哪些 Watcher，而 Watcher 中也同样记录了自己会被哪些 Dep 通知。（多对多关系）
 
-2）如果 Watcher 中的 expOrFn 参数是一个表达式，那么肯定只收集一个 Dep，并且大部分都是这样。
+如果 Watcher 中的 expOrFn 参数是一个表达式，那么肯定只收集一个 Dep，并且大部分都是这样。
 
-3）但 expOrFn 可以是一个函数，此时如果该函数中使用了多个数据，那么这时 Watcher 就要收集多个 Dep 了
+但 expOrFn 可以是一个函数，此时如果该函数中使用了多个数据，那么这时 Watcher 就要收集多个 Dep 了
 
 ```js
 this.$watch(
@@ -1132,13 +1125,9 @@ this.$watch(
 );
 ```
 
-1、上面这个例子，表达式是一个函数，并且在函数中访问了 name 和 age 两个数据。
+上面这个例子，表达式是一个函数，并且在函数中访问了 name 和 age 两个数据。这种情况下，Watcher 内部会收集两个 Dep---name 的 Dep 和 age 的 Dep。同时这两个 Dep 中也会收集 Watcher。这导致 age 和 name 中任意一个数据发生变化时，Watcher 都会收到通知。
 
-2、这种情况下，Watcher 内部会收集两个 Dep---name 的 Dep 和 age 的 Dep。
-
-3、同时这两个 Dep 中也会收集 Watcher。这导致 age 和 name 中任意一个数据发生变化时，Watcher 都会收到通知。
-
-4、已经在 Watcher 中记录自己订阅了哪些 Dep 之后，就可以在 Watcher 中新增 teardown 方法来通知订阅的 Dep，让它们把自己从依赖列表中移除掉。
+言归正传，当我们已经在 Watcher 中记录自己订阅了哪些 Dep 之后，就可以在 Watcher 中新增 teardown 方法来通知订阅的 Dep，让它们把自己从依赖列表中移除掉。
 
 ```js
 //从所有依赖项的Dep列表中将自己移除
@@ -1148,19 +1137,24 @@ teardown(){
         this.deps[i].removeSub(this);
     }
 }
-export default class Dep{
-    //....
-    removeSub(sub){
-        const index = this.subs.indexOf(sub);
-        if(index>-1){
-            return this.subs.splice(index,1)
-        }
+```
+
+上面做的事情很简单，只是循环订阅列表，然后分别执行它们的 removeSub 方法，来把自己从它们的依赖列表中移除掉。接下来，看看 removeSub 中都发生了什么：
+
+```js
+export default class Dep {
+  //....
+  removeSub(sub) {
+    const index = this.subs.indexOf(sub);
+    if (index > -1) {
+      return this.subs.splice(index, 1);
     }
-    //...
+  }
+  //...
 }
 ```
 
-1）Watcher 从 sub 中删除掉，然后当数据发生变化时，将不再通知这个已经删除的 Watcher，这就是 unwatch 的原理。
+上面的代码把 Watcher 从 sub 中删除掉，然后当数据发生变化时，将不再通知这个已经删除的 Watcher，这就是 unwatch 的原理。
 
 ### 4.1.3 deep 参数的实现原理
 
@@ -1204,82 +1198,76 @@ export default class Watcher {
 }
 ```
 
-1、如果用户使用了 deep 参数，则在 `window.target = undefined` 之前调用 traverse 来处理 deep 的逻辑，这样才能保证子集收集的依赖是当前这个 Watcher。若在其之后，那么其实当前的 Watcher 并不会被收集到子值的依赖列表中，也就无法实现 deep 功能。
+在上面的代码中，如果用户使用了 deep 参数，则在 `window.target = undefined` 之前调用 traverse 来处理 deep 的逻辑，这样才能保证子集收集的依赖是当前这个 Watcher。若在其之后，那么其实当前的 Watcher 并不会被收集到子值的依赖列表中，也就无法实现 deep 功能。
 
-（3）递归 value 的所有子值来触发它们收集依赖的功能。
+接下来，要递归 value 的所有子值来触发它们收集依赖的功能。
 
 ```js
 const seenObjects = new Set();
-export function traverse(val){
-    _traverse(val,seenObjects);
-    seenObjects.clear();
+export function traverse(val) {
+  _traverse(val, seenObjects);
+  seenObjects.clear();
 }
-function _traverse(val,seen){
-    let i,keys;
-    const isA = Array.isArray(val);
-    if(!isA&&!isObejct(val)||Object.isFrozen(val)){
-        return;
+function _traverse(val, seen) {
+  let i, keys;
+  const isA = Array.isArray(val);
+  if ((!isA && !isObejct(val)) || Object.isFrozen(val)) {
+    return;
+  }
+  if (val._ob_) {
+    const depId = val._ob_.dep.id;
+    if (seen.has(depId)) {
+      return;
     }
-    if(val._ob_){
-        const depId = val._ob_.dep.id;
-        if(seen.has(depId)){
-            return
-        }
-        seen.add(depId)
-    }{
-    if(isA){
-        i = val.length;
-        while(i--) _traverse(val[i],seen);
-    }else{
-        keys = Object.keys(val);
-        i = keys.length;
-        while(i--) _traverse(val[keys[i],seen])
-    }
+    seen.add(depId);
+  }
+  if (isA) {
+    i = val.length;
+    while (i--) _traverse(val[i], seen);
+  } else {
+    keys = Object.keys(val);
+    i = keys.length;
+    while (i--) _traverse(val[(keys[i], seen)]);
+  }
 }
 ```
 
-1、先判 val 类型，如果它不是 Array 和 Object，或者已经被冻结，那么直接返回，什么也不干。
-
-2、然后拿到 val 的 dep.id，用这个 id 来保证不会重复收集依赖。
-
-3、如果是数组，则循环数组，将数组中每一项递归调用`_traverse`。
-
-4、如果是 Object 类型的数据，则循环 Object 中所有 key，然后执行一次读取操作，再递归子值
+1. 先判 val 类型，如果它不是 Array 和 Object，或者已经被冻结，那么直接返回，什么也不干。
+2. 然后拿到 val 的 dep.id，用这个 id 来保证不会重复收集依赖。
+3. 如果是数组，则循环数组，将数组中每一项递归调用`_traverse`。
+4. 如果是 Object 类型的数据，则循环 Object 中所有 key，然后执行一次读取操作，再递归子值
 
 ```js
 _traverse(val[(keys[i], seen)]);
 ```
 
-1）其中 `val[keys[i]` 会触发 getter，也就是说会触发收集依赖的操作，这时 `window.target` 还没有被清空，会将当前 Watcher 收集进去。
+其中 `val[keys[i]` 会触发 getter，也就是说会触发收集依赖的操作，这时 `window.target` 还没有被清空，会将当前 Watcher 收集进去。
 
-2）`_traverse` 函数其实是一个递归操作，所以这个 value 的子值也会触发同样的逻辑，这样就可以实现通过 deep 参数来监听所有子值的变化。
+而 `_traverse` 函数其实是一个递归操作，所以这个 value 的子值也会触发同样的逻辑，这样就可以实现通过 deep 参数来监听所有子值的变化。
 
 ## 4.2 vm.\$set
+
+在 Vue.js 中，`vm.$set`也是一个比较常用的 API。
 
 ### 4.2.1 用法
 
 向响应式对象中添加一个 property，并确保这个新 property 同样是响应式的，且触发视图更新。它必须用于向响应式对象上添加新 property，因为 Vue 无法探测普通的新增 property （比如 `this.myObject.newProperty = 'hi'`）
 
 ```js
-Vue.set( target, propertyName/index, value )
+Vue.set(target, propertyName / index, value);
 ```
 
-（5）解决问题
+只有已经存在的属性的变化会被追踪到，新增的属性无法追踪到。因为在 ES6 之前，Javascript 并没有提供元编程的能力，所以根本无法侦测 object 什么时候被添加了一个属性。
 
-1、只有已经存在的属性的变化会被追踪到，新增的属性无法追踪到。因为在 ES6 之前，Javascript 并没有提供元编程的能力，所以根本无法侦测 object 什么时候被添加了一个属性。
+而`vm.$set`就是为了解决这个问题而出现的。使用它，可以为 object 新增属性，然后 Vue.js 就可以将这个新增属性转换成响应式的。
 
-2、而`vm.$set`就是为了解决这个问题而出现的。使用它，可以为 object 新增属性，然后 Vue.js 就可以将这个新增属性转换成响应式的。
-
-3、例
+举个例子：
 
 ```js
 var vm = new Vue({
 	el:'#el',
 	template:'#demo-template',
 	methods:{
-		//直接给obj设置一个属性,当action方法被调用时，会为obj新增一个name属性，而Vue.js并不会得到
-        //任何通知，新增的这个属性也不是响应式的，Vue.js根本不知道这个obj新增了属性，就好像
-        //Vue.js无法知道我们使用array.lenght = 0 清空了数组一样
 		action(){
 			this.obj.name = 'berwin'
 		}
@@ -1290,18 +1278,18 @@ var vm = new Vue({
 })
 ```
 
-4、`vm.$set`就可以解决这个事情。`vm.$set`实现
+直接给 obj 设置一个属性,当 action 方法被调用时，会为 obj 新增一个 name 属性，而 Vue.js 并不会得到任何通知，新增的这个属性也不是响应式的，Vue.js 根本不知道这个 obj 新增了属性，就好像 Vue.js 无法知道我们使用 array.lenght = 0 清空了数组一样。
+
+`vm.$set`就可以解决这个事情。`vm.$set`实现如下：
 
 ```js
 import { set } from '../observer/index';
 Vue.prototype.$set = set;
 ```
 
-1）在 Vue.js 的原型上设置`$set`属性。其实我们使用的所有以`vm.$`开头的方法都是在 Vue.js 的原型上设置的。
+这里在 Vue.js 的原型上设置`$set`属性。其实我们使用的所有以`vm.$`开头的方法都是在 Vue.js 的原型上设置的。`vm.$set`的具体实现其实是在 observer 中抛出的 set 方法。
 
-2）`vm.$set`的具体实现其实是在 observer 中抛出的 set 方法。
-
-5、先创建一个 set 方法
+所以，先创建一个 set 方法
 
 ```js
 export function set(target, key, val) {
@@ -1310,6 +1298,10 @@ export function set(target, key, val) {
 ```
 
 ### 4.2.2 Array 的处理
+
+上面创建了 set 方法并且规定它接收 3 个参数，这 3 个参数与`vm.$set`API 规定的需要传递的参数一致。
+
+接下来，需要对 target 是数组的情况进行处理：
 
 ```js
 export function set(target, key, val) {
@@ -1321,13 +1313,15 @@ export function set(target, key, val) {
 }
 ```
 
-（1)如果 target 是数组并且 key 是一个有效的索引值，就先设置 length 属性。这样如果我们传递的索引值大于当前数组的 length，就需要让 target 的 length 等于索引值。
+在上面的代码中，如果 target 是数组并且 key 是一个有效的索引值，就先设置 length 属性。这样如果我们传递的索引值大于当前数组的 length，就需要让 target 的 length 等于索引值。
 
-（2）通过 splice 方法把 val 设置到 target 中的指定位置（参数中提供的索引值的位置）。当我们使用 splice 方法把 val 设置到 target 中的时候，数组拦截器会侦测到 target 发生了变化，并且会自动帮助我们把这个新增的 val 转换成响应式的。
+接下来，通过 splice 方法把 val 设置到 target 中的指定位置（参数中提供的索引值的位置）。当我们使用 splice 方法把 val 设置到 target 中的时候，数组拦截器会侦测到 target 发生了变化，并且会自动帮助我们把这个新增的 val 转换成响应式的。
 
-（3）最后，返回 val 即可。
+最后，返回 val 即可。
 
 ### 4.2.3 key 已经存在于 target 中
+
+接下来，需要处理参数中的 key 已经存在于 target 中的情况：
 
 ```js
 export function set(target, key, val) {
@@ -1344,9 +1338,11 @@ export function set(target, key, val) {
 }
 ```
 
-（1）由于 key 已经存在于 target 中，所以其实这个 key 已经被侦测了变化。也就是说，这种情况属于修改数据，直接用 key 和 val 改数据就好了。修改数据的动作会被 Vue.js 侦测到，所以数据发生变化后，会自动向依赖发送通知。
+由于 key 已经存在于 target 中，所以其实这个 key 已经被侦测了变化。也就是说，这种情况属于修改数据，直接用 key 和 val 改数据就好了。修改数据的动作会被 Vue.js 侦测到，所以数据发生变化后，会自动向依赖发送通知。
 
 ### 4.2.4 处理新增的属性
+
+终于到了重头戏，现在来处理在 target 上新增的 key：
 
 ```js
 export function set(target,key,val){
@@ -1361,7 +1357,6 @@ export function set(target,key,val){
 	}
 	//新增
 	const ob = target._ob_;
-	//target不能是Vue.js实例或则Vue.js实例的根数据对象
 	if(target._isVue || (ob && ob.vmCount)){
 		process.env.NODE_ENV !== 'production' && warn(
 			'Avoid adding reactive properties to a Vue instance or its root $data' +
@@ -1369,100 +1364,51 @@ export function set(target,key,val){
 		)
 		retun val;
 	}
-	//不是响应式的
 	if(!ob){
 		target[key] = val;
 		return val;
 	}
-	//响应式的将新增属性变为响应式的
 	defineReactive(ob.value,key,val);
-	//触发变化通知
 	ob.dep.notify();
 }
 ```
 
-（1）获取 target 的*ob*属性。
+在上面的代码中，最先做的事情是获取 target 的`__ob__`属性。然后要处理 target 不能是 Vue.js 实例或则 Vue.js 实例的根数据对象的情况。
 
-（2）处理 target 不能是 Vue.js 实例或则 Vue.js 实例的根数据对象的情况。
+实现这个功能并不难，只需要使用 target_isVue 来判断 target 是不是 Vue.js 实例，使用 ob.vmCount 来判断它是不是根数据对象（`this.$data` 就是根数据）
 
-1、使用 target_isVue 来判断 target 是不是 Vue.js 实例。
+接下来，要处理 target 不是响应式的情况。如果 target 身上没有`__ob__`属性，说明它并不是响应式的，并不需要做什么特殊处理，只需要通过 key 和 val 在 target 上设置就行了。
 
-2、使用 ob.vmCount 来判断它是不是根数据对象。（this.\$data 就是根数据）
+如果前面的所有判断条件都不满足，那么说明用户是在响应式数据上新增了一个属性，这种情况下需要追踪这个新增属性的变化，即使用 defineReactive 将新增属性转换成 getter/setter 的形式即可。
 
-（3）处理 target 不是响应式的情况。
-
-如果 target 身上没有*ob*属性，说明它并不是响应式的，并不需要做什么特殊处理，只需要通过 key 和 val 在 target 上设置就行了。
-
-（4）如果前面的所有判断条件都不满足，那么说明用户是在响应式数据上新增了一个属性，这种情况下需要追踪这个新增属性的变化，即使用 defineReactive 将新增属性转换成 getter/setter 的形式即可。
-
-（5）最后，向 target 的依赖发送变化通知，并返回 val。
-
-```js
-function defineReactive(data,key,val){
-	<!-- 修改 -->
-	let childOb = observer(val);
-	let dep = new Dep();
-	Object.defineProperty(data,key,{
-		enumerable:true,
-		get:function(){
-			dep.depend();
-			<!-- 新增 -->
-			if(childOb){
-				childOb.dep.depend()
-			}
-			return val
-		}
-		set:function(newVal){
-			if(val==newVal){
-				return;
-			}
-			val = newVal;
-			dep.notify();//修改
-	})
-}
-<!-- 尝试为value创建一个Observer实例，
-如果创建成功，直接返回新创建的Observer实例。
-如果value已经存在一个Observer实例，则直接返回它 -->
-export function observer(value,asRootData){
-	if(!isObject(value)){
-		return
-	}
-	let ob;
-	if(hasOwn(value,'_ob_')&&value._ob_instanceof Observer){
-		ob = value._ob_
-	}else{
-		ob = new Observer(value);
-	}
-	return ob;
-}
-```
+最后，向 target 的依赖发送变化通知，并返回 val。
 
 ## 4.3 vm.\$delete
 
+`vm.$delete`的作用是删除数据中的某个属性。由于 Vue.js 的变化侦测是使用 Object.defineProperty 实现的，所以如果数据是使用 delete 关键字删除的，那么无法发现数据发生了变化。为了解决这个问题，Vue.js 提供了 `vm.$delete` 方法来删除数据中的某个属性，并且此时 Vue.js 可以侦测到数据发生了变化。
+
 ### 4.3.1 用法
 
-删除对象的 property。如果对象是响应式的，确保删除能触发更新视图。这个方法主要用于避开 Vue 不能检测到 property 被删除的限制，但是你应该很少会使用它。
+主要用于删除对象的 property。如果对象是响应式的，确保删除能触发更新视图。这个方法主要用于避开 Vue 不能检测到 property 被删除的限制，但是你应该很少会使用它。
 
 ```js
-Vue.delete( target, propertyName/index )
+Vue.delete(target, propertyName / index);
 ```
 
 ### 4.3.2 实现原理
 
-（1）vm.\$delete 方法也是为了解决变化侦测的缺陷。在 ES6 之前，Javascript 并没有办法侦测到一个属性在 object 中被删除，所以如果使用 delete 来删除一个数据，Vue.js 根本不知道这个属性被删除了。
+`vm.$delete` 方法也是为了解决变化侦测的缺陷。在 ES6 之前，Javascript 并没有办法侦测到一个属性在 object 中被删除，所以如果使用 delete 来删除一个数据，Vue.js 根本不知道这个属性被删除了。
 
-（2）使用 vm.\$delete 能帮助我们在删除属性后自动向依赖发送消息，通知 Watcher 数据发生了变化。
+使用 `vm.$delete` 能帮助我们在删除属性后自动向依赖发送消息，通知 Watcher 数据发生了变化。
 
-（3）原理：删除属性后向依赖发消息。
+其实`vm.$delete`内部的实现原理就是，在删除属性后向依赖发消息。
 
 ```js
 import { del } from '../observer/index';
 Vue.prototype.$delete = del;
 ```
 
-在 Vue.js 的原型上挂载\$delete 方法。
-
-（4）del 函数
+在 Vue.js 的原型上挂载`$.delete` 方法。而 del 函数的定义如下：
 
 ```js
 export function del(target, key) {
@@ -1472,9 +1418,9 @@ export function del(target, key) {
 }
 ```
 
-先从 target 中将属性 key 删除，然后向依赖发送消息。
+这里先从 target 中将属性 key 删除，然后向依赖发送消息。
 
-（5）处理数组的情况
+接下来，要处理数组的情况
 
 ```js
 export function del(target, key) {
@@ -1489,9 +1435,11 @@ export function del(target, key) {
 }
 ```
 
-因为使用了 splice 方法，数组拦截器会自动向依赖发送通知。
+这里只需要使用 splice 将参数 key 所指定的索引位置的元素删除即可。因为使用了 splice 方法，数组拦截器会自动向依赖发送通知。
 
-（6）与 vm.$set一样，vm.$delete 也不可以在 Vue.js 实例或 Vue.js 实例的跟数据对象上使用。
+与 `vm.$set`一样，`vm.$delete` 也不可以在 Vue.js 实例或 Vue.js 实例的跟数据对象上使用。
+
+因此，需要对这种情况进行判断：
 
 ```js
 export function del(target,key){
@@ -1513,9 +1461,9 @@ export function del(target,key){
 }
 ```
 
-1、如果 target 上有\_isVue 属性（target 是 Vue.js 实例）或则 ob.vmCount 数量大于 1（target 是根数据），则直接返回，终止程序继续执行，并且如果是开发环境，会在控制台中发出警告。
+上面的代码中新增了逻辑判断：如果 target 上有`_isVue` 属性（target 是 Vue.js 实例）或则 ob.vmCount 数量大于 1（target 是根数据），则直接返回，终止程序继续执行，并且如果是开发环境，会在控制台中发出警告。
 
-（6）如果删除的这个 key 不是 target 自身的属性，就什么都不做，直接退出程序执行。
+如果删除的这个 key 不是 target 自身的属性，就什么都不做，直接退出程序执行。
 
 ```js
 export function del(target,key){
@@ -1540,7 +1488,11 @@ export function del(target,key){
 }
 ```
 
-（7）判断 target 是不是一个响应式数据，也就是说要判断 target 身上存不存在*ob*属性。只有响应式数据才需要发送通知，非响应式数据只需要执行删除操作即可。
+如果删除的这个 key 在 target 中根本不存在，那么其实并不需要进行删除操作，也不需要向依赖发送通知。
+
+最后，还要判断 target 是不是一个响应式数据，也就是说要判断 target 身上存不存在`__ob__`属性。只有响应式数据才需要发送通知，非响应式数据只需要执行删除操作即可。
+
+下面这段代码新增了判断条件，如果数据不是响应式的，则使用 return 语句阻止执行发送通知的语句：
 
 ```js
 export function del(target,key){
@@ -1569,7 +1521,7 @@ export function del(target,key){
 }
 ```
 
-如果数据不是响应式的，则使用 return 语句阻止执行发送通知语句。
+在上面的代码中，在删除属性后判断 ob 是否存在，如果不存在，则直接终止程序，继续执行下面发送变化通知的代码。
 
 ## 4.4 总结
 
