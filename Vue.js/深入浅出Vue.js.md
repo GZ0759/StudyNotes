@@ -1046,13 +1046,11 @@ export default class Watcher {
 
 最后，返回一个函数 unwatchFn。其作用是取消观察数据。当用户执行这个函数时，实例上是执行了`watcher.teardown()`来取消观察数据，其本质是把 watcher 实例从当前正在观察的状态的依赖列表中移除。
 
-（3）Watcher 的 teardown 方法
+Watcher 的 teardown 方法
 
-1、首先需要在 Watcher 中记录自己订阅了谁，也就是 watcher 实例被收集进了哪些 Dep 里
-
-2、然后当 Watcher 不想继续订阅这些 Dep 时，循环自己记录的订阅列表来通知它们（Dep）将自己从它们（Dep）的依赖列表中移除掉。
-
-3、先在 Watcher 中添加 addDep 方法，该方法的作用是在 Watcher 中记录自己都订阅过哪些 Dep。
+1. 首先需要在 Watcher 中记录自己订阅了谁，也就是 watcher 实例被收集进了哪些 Dep 里
+2. 然后当 Watcher 不想继续订阅这些 Dep 时，循环自己记录的订阅列表来通知它们（Dep）将自己从它们（Dep）的依赖列表中移除掉。
+3. 先在 Watcher 中添加 addDep 方法，该方法的作用是在 Watcher 中记录自己都订阅过哪些 Dep。
 
 ```js
 export default class Watcher {
@@ -1166,9 +1164,9 @@ export default class Dep{
 
 ### 4.1.3 deep 参数的实现原理
 
-（1）Watcher 想监听某个数据，就会触发某个数据收集依赖的逻辑，将自己收集进去，然后当它发生变化时，就会通知 Watcher。
+Watcher 想监听某个数据，就会触发某个数据收集依赖的逻辑，将自己收集进去，然后当它发生变化时，就会通知 Watcher。
 
-（2）要想实现 deep 的功能，其实就是除了要触发当前这个被监听数据的收集依赖的逻辑之外，还要把当前监听的这个值在内的所有子值都触发一遍收集依赖逻辑。这就可以实现当前这个依赖的所有子数据发生变化时，通知当前 Watcher。
+要想实现 deep 的功能，其实就是除了要触发当前这个被监听数据的收集依赖的逻辑之外，还要把当前监听的这个值在内的所有子值都触发一遍收集依赖逻辑。这就可以实现当前这个依赖的所有子数据发生变化时，通知当前 Watcher。
 
 ```js
 export default class Watcher {
@@ -1303,7 +1301,7 @@ import { set } from '../observer/index';
 Vue.prototype.$set = set;
 ```
 
-1）在 Vue.js 的原型上设置$set属性。其实我们使用的所有以vm.$开头的方法都是在 Vue.js 的原型上设置的。
+1）在 Vue.js 的原型上设置`$set`属性。其实我们使用的所有以`vm.$`开头的方法都是在 Vue.js 的原型上设置的。
 
 2）`vm.$set`的具体实现其实是在 observer 中抛出的 set 方法。
 
