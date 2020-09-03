@@ -979,7 +979,7 @@ Array 收集依赖的方式和 Object 一样，都是在 getter 中收集。但�
 
 # 第 4 章 变化侦测相关的 API 实现原理
 
-本章将介绍几个与变化侦测相关的常用API的内部原理。
+本章将介绍几个与变化侦测相关的常用 API 的内部原理。
 
 ## 4.1 vm.\$watch
 
@@ -987,20 +987,15 @@ Array 收集依赖的方式和 Object 一样，都是在 getter 中收集。但�
 
 ### 4.1.1 用法
 
+观察 Vue 实例上的一个表达式或者一个函数计算结果的变化。回调函数得到的参数为新值和旧值。表达式只接受简单的键路径。对于更复杂的表达式，用一个函数取代。
+
 ```js
-vm.$watch(expOrFn,callback,[options])
+vm.$watch(expOrFn, callback, [options]);
 ```
 
-- 参数：
-  - {string | Function} expOrFn
-  - {Function | Object} callback
-  - {Object} [options]
-  - {boolean} deep
-  - {boolean} immediate
+### 4.1.2 watch 的内部原理
 
-### 4.1.2 watch的内部原理
-
-vm.$watch其实是对Watcher的一种封装，通过Watcher完全可以实现vm.$watch的功能，但vm.$watch中的参数deep和immediate是Watcher中所没有的。下面我们来看一看vm.$watch到底是怎么实现的。
+`vm.$watch`其实是对 Watcher 的一种封装，通过 Watcher 完全可以实现`vm.$watch`的功能，但`vm.$watch`中的参数 deep 和 immediate 是 Watcher 中所没有的。下面我们来看一看`vm.$watch`到底是怎么实现的。
 
 ```js
 Vue.prototype.$watch = function(expOrFn,cb,options){
@@ -1017,132 +1012,135 @@ Vue.prototype.$watch = function(expOrFn,cb,options){
 }
 ```
 
-先执行new Watcher来实现vm.$watch的基本功能。
+先执行 new Watcher 来实现`vm.$watch`的基本功能。
 
-expOrFn是支持函数的，前面未做介绍。需修改Watcher
+expOrFn 是支持函数的，前面未做介绍。需修改 Watcher
 
 ```js
-export default class Watcher{
-    constructor(vm,expOrFn,cb){
-        this.vm = vm;
-        //执行this.getter()就可以读取data.a.b.c的内容
-        if(typeof expOrFn === 'function'){
-            this.getter = expOrFn;
-        }else{
-            this.getter = parsePath(expOrFn);
-        }
-        this.cb = cb;
-        // 保存旧值
-        this.value = this.get();
+export default class Watcher {
+  constructor(vm, expOrFn, cb) {
+    this.vm = vm;
+    //执行this.getter()就可以读取data.a.b.c的内容
+    if (typeof expOrFn === 'function') {
+      this.getter = expOrFn;
+    } else {
+      this.getter = parsePath(expOrFn);
     }
-    \\......
+    this.cb = cb;
+    // 保存旧值
+    this.value = this.get();
+  }
+  // ......
 }
 ```
 
-如果expOrFn是函数，则直接将它赋值给getter；如果不是函数，再使用parsePath函数来读取keypath中的数据。（keypath指的是属性路径，例如a.b.c.d就是一个keypath，说明从vm.a.b.c.d中读取数据）。
+如果 expOrFn 是函数，则直接将它赋值给 getter；如果不是函数，再使用 parsePath 函数来读取 keypath 中的数据。（keypath 指的是属性路径，例如 `a.b.c.d` 就是一个 keypath，说明从 `vm.a.b.c.d` 中读取数据）。
 
-当expOrFn是函数时，它不只可以动态返回数据，其中读取的所有数据也会被Watcher观察。
+当 expOrFn 是函数时，它不只可以动态返回数据，其中读取的所有数据也会被 Watcher 观察。
 
-当expOrFn是字符串类型的keypath时，Watcher会读取这个keypath所指向的数据并观察这个数据的变化。而当expOrFn是函数时，Watcher会同时观察expOrFn函数中读取的所有Vue.js实例上上的响应式数据。也就是说，如果函数从Vue.js实例上读取了两个数据，那么Watcher会同时观察这两个数据的变化，当其中任意一个发生变化时，Watcher都会得到通知。
+当 expOrFn 是字符串类型的 keypath 时，Watcher 会读取这个 keypath 所指向的数据并观察这个数据的变化。而当 expOrFn 是函数时，Watcher 会同时观察 expOrFn 函数中读取的所有 Vue.js 实例上上的响应式数据。也就是说，如果函数从 Vue.js 实例上读取了两个数据，那么 Watcher 会同时观察这两个数据的变化，当其中任意一个发生变化时，Watcher 都会得到通知。
 
-> 事实上，Vue.js中计算属性（Computed）的实现原理与expOrFn支持函数有很大的关系。
+> 事实上，Vue.js 中计算属性（Computed）的实现原理与 expOrFn 支持函数有很大的关系。
 
-执行 new Watcher后，代码会判断用户是否使用了immediate参数，如果使用了，则立即执行一次cb。
+执行 new Watcher 后，代码会判断用户是否使用了 immediate 参数，如果使用了，则立即执行一次 cb。
 
-最后，返回一个函数unwatchFn。其作用是取消观察数据。当用户执行这个函数时，实例上是执行了watcher.teardown()来取消观察数据，其本质是把watcher实例从当前正在观察的状态的依赖列表中移除。
+最后，返回一个函数 unwatchFn。其作用是取消观察数据。当用户执行这个函数时，实例上是执行了`watcher.teardown()`来取消观察数据，其本质是把 watcher 实例从当前正在观察的状态的依赖列表中移除。
 
-（3）Watcher的teardown方法
+（3）Watcher 的 teardown 方法
 
-1、首先需要在Watcher中记录自己订阅了谁，也就是watcher实例被收集进了哪些Dep里
+1、首先需要在 Watcher 中记录自己订阅了谁，也就是 watcher 实例被收集进了哪些 Dep 里
 
-2、然后当Watcher不想继续订阅这些Dep时，循环自己记录的订阅列表来通知它们（Dep）将自己从它们（Dep）的依赖列表中移除掉。
+2、然后当 Watcher 不想继续订阅这些 Dep 时，循环自己记录的订阅列表来通知它们（Dep）将自己从它们（Dep）的依赖列表中移除掉。
 
-3、先在Watcher中添加addDep方法，该方法的作用是在Watcher中记录自己都订阅过哪些Dep。
+3、先在 Watcher 中添加 addDep 方法，该方法的作用是在 Watcher 中记录自己都订阅过哪些 Dep。
 
 ```js
-export default class Watcher{
-    constructor(vm,expOrFn,cb){
-        this.vm = vm;
-        //新增
-        this.deps = [];
-         //新增
-        this.depIds = new Set()
-        if(typeof expOrFn === 'function'){
-            this.getter = expOrFn;
-        }else{
-            this.getter = parsePath(expOrFn);
-        }
-        this.cb = cb;
-        this.value = this.get();
+export default class Watcher {
+  constructor(vm, expOrFn, cb) {
+    this.vm = vm;
+    //新增
+    this.deps = [];
+    //新增
+    this.depIds = new Set();
+    if (typeof expOrFn === 'function') {
+      this.getter = expOrFn;
+    } else {
+      this.getter = parsePath(expOrFn);
     }
-   //......
-    addDep(dep){
-        const id = dep.id;
-        if(!this.depIds.has(id)){
-            this.depIds.add(id);
-            this.deps.push(dep);
-            dep.addSub(this);
-        }
+    this.cb = cb;
+    this.value = this.get();
+  }
+  //......
+  addDep(dep) {
+    const id = dep.id;
+    if (!this.depIds.has(id)) {
+      this.depIds.add(id);
+      this.deps.push(dep);
+      dep.addSub(this);
     }
-    //....
+  }
+  //....
 }
 ```
 
-1）使用depIds来判断如果当前Watcher已经订阅了该Dep，则不会重复订阅。
+1）使用 depIds 来判断如果当前 Watcher 已经订阅了该 Dep，则不会重复订阅。
 
-2）Watcher读取value时，会触发收集依赖的逻辑。当依赖发生变化时，会通知Watcher重新读取最新的数据。如果没有这个判断，就会发现每次数据发生了变化，Watcher都会读取最新的数据。而读数据就会再次收集依赖，这就会导致Dep中依赖有重复。这样当数据发生变化时，会同时通知多个Watcher。为了避免这个问题，只有第一次触发getter的时候才会收集依赖。
+2）Watcher 读取 value 时，会触发收集依赖的逻辑。当依赖发生变化时，会通知 Watcher 重新读取最新的数据。如果没有这个判断，就会发现每次数据发生了变化，Watcher 都会读取最新的数据。而读数据就会再次收集依赖，这就会导致 Dep 中依赖有重复。这样当数据发生变化时，会同时通知多个 Watcher。为了避免这个问题，只有第一次触发 getter 的时候才会收集依赖。
 
-3）执行this.depIds.add来记录当前Watcher已经订阅了这个Dep。
+3）执行 `this.depIds.add` 来记录当前 Watcher 已经订阅了这个 Dep。
 
-4）执行this.deps.push(dep)记录自己都订阅了哪些Dep。
+4）执行 `this.deps.push(dep)`记录自己都订阅了哪些 Dep。
 
-5）触发dep.addSub(this)，来将自己订阅到Dep中。
+5）触发 `dep.addSub(this)`，来将自己订阅到 Dep 中。
 
-（4）Watcher中新增addDep方法后，Dep中收集依赖的逻辑也需要有所改变。
+（4）Watcher 中新增 addDep 方法后，Dep 中收集依赖的逻辑也需要有所改变。
 
 ```js
 //新增
 let uid = 0;
-export default class Dep{
-    constructor(){
-        //新增
-        this.id = uid++;
-        this.subs = [];
+export default class Dep {
+  constructor() {
+    //新增
+    this.id = uid++;
+    this.subs = [];
+  }
+  //....
+  depend() {
+    if (window.target) {
+      //废弃
+      // this.addSub(window.target);
+      //新增
+      window.target.addDep(this);
     }
-    //....
-    depend(){
-        if(window.target){
-            //废弃
-            // this.addSub(window.target);
-            //新增
-            window.target.addDep(this);
-        }
-    }
-    //...
+  }
+  //...
 }
 ```
 
-1）此时，Dep会记录数据发生变化时，需要通知哪些Watcher，而Watcher中也同样记录了自己会被哪些Dep通知。（多对多关系）
+1）此时，Dep 会记录数据发生变化时，需要通知哪些 Watcher，而 Watcher 中也同样记录了自己会被哪些 Dep 通知。（多对多关系）
 
-2）如果Watcher中的expOrFn参数是一个表达式，那么肯定只收集一个Dep，并且大部分都是这样。
+2）如果 Watcher 中的 expOrFn 参数是一个表达式，那么肯定只收集一个 Dep，并且大部分都是这样。
 
-3）但expOrFn可以是一个函数，此时如果该函数中使用了多个数据，那么这时Watcher就要收集多个Dep了
+3）但 expOrFn 可以是一个函数，此时如果该函数中使用了多个数据，那么这时 Watcher 就要收集多个 Dep 了
 
 ```js
-this.$watch(function(){
-    return this.name + this.age
-},function(newValue,oldValue){
-    console.lognewValue,oldValue()
-})
+this.$watch(
+  function () {
+    return this.name + this.age;
+  },
+  function (newValue, oldValue) {
+    console.lognewValue, oldValue();
+  }
+);
 ```
 
-1、上面这个例子，表达式是一个函数，并且在函数中访问了name和age两个数据。
+1、上面这个例子，表达式是一个函数，并且在函数中访问了 name 和 age 两个数据。
 
-2、这种情况下，Watcher内部会收集两个Dep---name的Dep和age的Dep。
+2、这种情况下，Watcher 内部会收集两个 Dep---name 的 Dep 和 age 的 Dep。
 
-3、同时这两个Dep中也会收集Watcher。这导致age和name中任意一个数据发生变化时，Watcher都会收到通知。
+3、同时这两个 Dep 中也会收集 Watcher。这导致 age 和 name 中任意一个数据发生变化时，Watcher 都会收到通知。
 
-4、已经在Watcher中记录自己订阅了哪些Dep之后，就可以在Watcher中新增teardown方法来通知订阅的Dep，让它们把自己从依赖列表中移除掉。
+4、已经在 Watcher 中记录自己订阅了哪些 Dep 之后，就可以在 Watcher 中新增 teardown 方法来通知订阅的 Dep，让它们把自己从依赖列表中移除掉。
 
 ```js
 //从所有依赖项的Dep列表中将自己移除
@@ -1164,52 +1162,53 @@ export default class Dep{
 }
 ```
 
-1）Watcher从sub中删除掉，然后当数据发生变化时，将不再通知这个已经删除的Watcher，这就是unwatch的原理。
+1）Watcher 从 sub 中删除掉，然后当数据发生变化时，将不再通知这个已经删除的 Watcher，这就是 unwatch 的原理。
 
-### 4.1.3 deep参数的实现原理
+### 4.1.3 deep 参数的实现原理
 
-（1）Watcher想监听某个数据，就会触发某个数据收集依赖的逻辑，将自己收集进去，然后当它发生变化时，就会通知Watcher。
+（1）Watcher 想监听某个数据，就会触发某个数据收集依赖的逻辑，将自己收集进去，然后当它发生变化时，就会通知 Watcher。
 
-（2）要想实现deep的功能，其实就是除了要触发当前这个被监听数据的收集依赖的逻辑之外，还要把当前监听的这个值在内的所有子值都触发一遍收集依赖逻辑。这就可以实现当前这个依赖的所有子数据发生变化时，通知当前Watcher。
+（2）要想实现 deep 的功能，其实就是除了要触发当前这个被监听数据的收集依赖的逻辑之外，还要把当前监听的这个值在内的所有子值都触发一遍收集依赖逻辑。这就可以实现当前这个依赖的所有子数据发生变化时，通知当前 Watcher。
 
 ```js
-export default class Watcher{
-    constructor(vm,expOrFn,cb,options){
-        this.vm = vm;
-        //新增
-        if(options){
-            this.deep = !!options.deep;
-        }else{
-            this.deep = false;
-        }
-        this.deps = [];
-        this.depIds = new Set()
-        if(typeof expOrFn === 'function'){
-            this.getter = expOrFn;
-        }else{
-            this.getter = parsePath(expOrFn);
-        }
-        this.cb = cb;
-        this.value = this.get();
+export default class Watcher {
+  constructor(vm, expOrFn, cb, options) {
+    this.vm = vm;
+    //新增
+    if (options) {
+      this.deep = !!options.deep;
+    } else {
+      this.deep = false;
     }
-    get(){
-        // 将this赋值给window.target，用于主动将自己添加到依赖中
-        window.target = this;
-        //触发了getter，触发收集依赖，将this主动添加到keypath的Dep中
-        let value = this.getter.call(this.vm,this.vm);
-        //新增
-        if(this.deep){
-            traverse(value);
-        }
-        window.target = undefined;
-        return value;
+    this.deps = [];
+    this.depIds = new Set();
+    if (typeof expOrFn === 'function') {
+      this.getter = expOrFn;
+    } else {
+      this.getter = parsePath(expOrFn);
     }
-    //.....
+    this.cb = cb;
+    this.value = this.get();
+  }
+  get() {
+    // 将this赋值给window.target，用于主动将自己添加到依赖中
+    window.target = this;
+    //触发了getter，触发收集依赖，将this主动添加到keypath的Dep中
+    let value = this.getter.call(this.vm, this.vm);
+    //新增
+    if (this.deep) {
+      traverse(value);
+    }
+    window.target = undefined;
+    return value;
+  }
+  //.....
 }
 ```
-1、如果用户使用了deep参数，则在window.target = undefined之前调用traverse来处理deep的逻辑，这样才能保证子集收集的依赖是当前这个Watcher。若在其之后，那么其实当前的Watcher并不会被收集到子值的依赖列表中，也就无法实现deep功能。
 
-（3）递归value的所有子值来触发它们收集依赖的功能。
+1、如果用户使用了 deep 参数，则在 `window.target = undefined` 之前调用 traverse 来处理 deep 的逻辑，这样才能保证子集收集的依赖是当前这个 Watcher。若在其之后，那么其实当前的 Watcher 并不会被收集到子值的依赖列表中，也就无法实现 deep 功能。
+
+（3）递归 value 的所有子值来触发它们收集依赖的功能。
 
 ```js
 const seenObjects = new Set();
@@ -1241,54 +1240,50 @@ function _traverse(val,seen){
 }
 ```
 
-1、先判val类型，如果它不是Array和Object，或者已经被冻结，那么直接返回，什么也不干。
+1、先判 val 类型，如果它不是 Array 和 Object，或者已经被冻结，那么直接返回，什么也不干。
 
-2、然后拿到val的dep.id，用这个id来保证不会重复收集依赖。
+2、然后拿到 val 的 dep.id，用这个 id 来保证不会重复收集依赖。
 
-3、如果是数组，则循环数组，将数组中每一项递归调用_traverse。
+3、如果是数组，则循环数组，将数组中每一项递归调用`_traverse`。
 
-4、如果是Object类型的数据，则循环Object中所有key，然后执行一次读取操作，再递归子值
+4、如果是 Object 类型的数据，则循环 Object 中所有 key，然后执行一次读取操作，再递归子值
 
-_traverse(val[keys[i],seen])
-1）其中val[keys[i]会触发getter，也就是说会触发收集依赖的操作，这时window.target还没有被清空，会将当前Watcher收集进去。
+```js
+_traverse(val[(keys[i], seen)]);
+```
 
-2）_traverse函数其实是一个递归操作，所以这个value的子值也会触发同样的逻辑，这样就可以实现通过deep参数来监听所有子值的变化。
+1）其中 `val[keys[i]` 会触发 getter，也就是说会触发收集依赖的操作，这时 `window.target` 还没有被清空，会将当前 Watcher 收集进去。
+
+2）`_traverse` 函数其实是一个递归操作，所以这个 value 的子值也会触发同样的逻辑，这样就可以实现通过 deep 参数来监听所有子值的变化。
 
 ## 4.2 vm.\$set
 
 ### 4.2.1 用法
 
-vm.$set(target,key,value)
-（1）参数
+在 object 上设置一个属性，如果 object 是响应式的，Vue.js 会保证属性被创建后也是响应式的，并且触发视图更新。这个方法主要用来避开 Vue.js 不能侦测属性被添加的限制。
 
-{Object | Array} target
-{string | number} key
-{any} value
-（2）返回值
-
-{ Function } unwatch
-
-（3）用法
-
-在object上设置一个属性，如果object是响应式的，Vue.js会保证属性被创建后也是响应式的，并且触发视图更新。这个方法主要用来避开Vue.js不能侦测属性被添加的限制。
+```js
+vm.$set(target, key, value);
+```
 
 （4）注意
 
-target不能是Vue.js实例或则Vue.js实例的根数据对象。
+target 不能是 Vue.js 实例或则 Vue.js 实例的根数据对象。
 
 （5）解决问题
 
-1、只有已经存在的属性的变化会被追踪到，新增的属性无法追踪到。因为在ES6之前，Javascript并没有提供元编程的能力，所以根本无法侦测object什么时候被添加了一个属性。
+1、只有已经存在的属性的变化会被追踪到，新增的属性无法追踪到。因为在 ES6 之前，Javascript 并没有提供元编程的能力，所以根本无法侦测 object 什么时候被添加了一个属性。
 
-2、而vm.$set就是为了解决这个问题而出现的。使用它，可以为object新增属性，然后Vue.js就可以将这个新增属性转换成响应式的。
+2、而`vm.$set`就是为了解决这个问题而出现的。使用它，可以为 object 新增属性，然后 Vue.js 就可以将这个新增属性转换成响应式的。
 
 3、例
 
+```js
 var vm = new Vue({
 	el:'#el',
 	template:'#demo-template',
 	methods:{
-		//直接给obj设置一个属性,当action方法被调用时，会为obj新增一个name属性，而Vue.js并不会得到        
+		//直接给obj设置一个属性,当action方法被调用时，会为obj新增一个name属性，而Vue.js并不会得到
         //任何通知，新增的这个属性也不是响应式的，Vue.js根本不知道这个obj新增了属性，就好像
         //Vue.js无法知道我们使用array.lenght = 0 清空了数组一样
 		action(){
@@ -1299,51 +1294,67 @@ var vm = new Vue({
 		obj:{}
 	}
 })
-4、vm.$set就可以解决这个事情。vm.$set实现
+```
 
-import {set} from '../observer/index'
+4、`vm.$set`就可以解决这个事情。`vm.$set`实现
+
+```js
+import { set } from '../observer/index';
 Vue.prototype.$set = set;
-1）在Vue.js的原型上设置$set属性。其实我们使用的所有以vm.$开头的方法都是在Vue.js的原型上设置的。
+```
 
-2）vm.$set的具体实现其实是在observer中抛出的set方法。
+1）在 Vue.js 的原型上设置$set属性。其实我们使用的所有以vm.$开头的方法都是在 Vue.js 的原型上设置的。
 
-5、先创建一个set方法
+2）`vm.$set`的具体实现其实是在 observer 中抛出的 set 方法。
 
-export function set(target,key,val){
-	//做点什么
+5、先创建一个 set 方法
+
+```js
+export function set(target, key, val) {
+  //做点什么
 }
+```
 
 ### 4.2.2 Array 的处理
 
-export function set(target,key,val){
-	if(Array.isArray(target)&&isValidArrayIndex(key)){
-		target.length = Math.max(target.length,key)
-		target.splice(key,1,val)
-		return val
-	}
+```js
+export function set(target, key, val) {
+  if (Array.isArray(target) && isValidArrayIndex(key)) {
+    target.length = Math.max(target.length, key);
+    target.splice(key, 1, val);
+    return val;
+  }
 }
-（1)如果target是数组并且key是一个有效的索引值，就先设置length属性。这样如果我们传递的索引值大于当前数组的length，就需要让target的length等于索引值。
+```
 
-（2）通过splice方法把val设置到target中的指定位置（参数中提供的索引值的位置）。当我们使用splice方法把val设置到target中的时候，数组拦截器会侦测到target发生了变化，并且会自动帮助我们把这个新增的val转换成响应式的。
+（1)如果 target 是数组并且 key 是一个有效的索引值，就先设置 length 属性。这样如果我们传递的索引值大于当前数组的 length，就需要让 target 的 length 等于索引值。
 
-（3）最后，返回val即可。
+（2）通过 splice 方法把 val 设置到 target 中的指定位置（参数中提供的索引值的位置）。当我们使用 splice 方法把 val 设置到 target 中的时候，数组拦截器会侦测到 target 发生了变化，并且会自动帮助我们把这个新增的 val 转换成响应式的。
+
+（3）最后，返回 val 即可。
 
 ### 4.2.3 key 已经存在于 target 中
-export function set(target,key,val){
-	if(Array.isArray(target)&&isValidArrayIndex(key)){
-		target.length = Math.max(target.length,key)
-		target.splice(key,1,val)
-		return val
-	}
-	//新增
-	if(key in target && !(key in Object.prototype)){
-		target[key] = val;
-		return val;
-	}
+
+```js
+export function set(target, key, val) {
+  if (Array.isArray(target) && isValidArrayIndex(key)) {
+    target.length = Math.max(target.length, key);
+    target.splice(key, 1, val);
+    return val;
+  }
+  //新增
+  if (key in target && !(key in Object.prototype)) {
+    target[key] = val;
+    return val;
+  }
 }
-（1）由于key已经存在于target中，所以其实这个key已经被侦测了变化。也就是说，这种情况属于修改数据，直接用key和val改数据就好了。修改数据的动作会被Vue.js侦测到，所以数据发生变化后，会自动向依赖发送通知。
+```
+
+（1）由于 key 已经存在于 target 中，所以其实这个 key 已经被侦测了变化。也就是说，这种情况属于修改数据，直接用 key 和 val 改数据就好了。修改数据的动作会被 Vue.js 侦测到，所以数据发生变化后，会自动向依赖发送通知。
 
 ### 4.2.4 处理新增的属性
+
+```js
 export function set(target,key,val){
 	if(Array.isArray(target)&&isValidArrayIndex(key)){
 		target.length = Math.max(target.length,key)
@@ -1374,22 +1385,25 @@ export function set(target,key,val){
 	//触发变化通知
 	ob.dep.notify();
 }
-（1）获取target的_ob_属性。
+```
 
-（2）处理target不能是Vue.js实例或则Vue.js实例的根数据对象的情况。
+（1）获取 target 的*ob*属性。
 
-1、使用target_isVue来判断target是不是Vue.js实例。
+（2）处理 target 不能是 Vue.js 实例或则 Vue.js 实例的根数据对象的情况。
 
-2、使用ob.vmCount来判断它是不是根数据对象。（this.$data就是根数据）
+1、使用 target_isVue 来判断 target 是不是 Vue.js 实例。
 
-（3）处理target不是响应式的情况。
+2、使用 ob.vmCount 来判断它是不是根数据对象。（this.\$data 就是根数据）
 
-如果target身上没有_ob_属性，说明它并不是响应式的，并不需要做什么特殊处理，只需要通过key和val在target上设置就行了。
+（3）处理 target 不是响应式的情况。
 
-（4）如果前面的所有判断条件都不满足，那么说明用户是在响应式数据上新增了一个属性，这种情况下需要追踪这个新增属性的变化，即使用defineReactive将新增属性转换成getter/setter的形式即可。
+如果 target 身上没有*ob*属性，说明它并不是响应式的，并不需要做什么特殊处理，只需要通过 key 和 val 在 target 上设置就行了。
 
-（5）最后，向target的依赖发送变化通知，并返回val。
+（4）如果前面的所有判断条件都不满足，那么说明用户是在响应式数据上新增了一个属性，这种情况下需要追踪这个新增属性的变化，即使用 defineReactive 将新增属性转换成 getter/setter 的形式即可。
 
+（5）最后，向 target 的依赖发送变化通知，并返回 val。
+
+```js
 function defineReactive(data,key,val){
 	<!-- 修改 -->
 	let childOb = observer(val);
@@ -1427,23 +1441,22 @@ export function observer(value,asRootData){
 	}
 	return ob;
 }
+```
 
 ## 4.3 vm.\$delete
 
 一、作用
-（1）vm.$delete的作用是删除数据中个某个属性。
+（1）vm.\$delete 的作用是删除数据中个某个属性。
 
-（2）由于Vue.js的变化侦测是使用Object.defineProperty实现的，所以如果数据使用delete关键字删除的，那么无法发现数据发生了变化。
+（2）由于 Vue.js 的变化侦测是使用 Object.defineProperty 实现的，所以如果数据使用 delete 关键字删除的，那么无法发现数据发生了变化。
 
-（3）为了解决这个问题，Vue.js提供了vm.$delete方法来删除数据种的某个属性，并且此时Vue.js可以侦测到数据发生了变化。
+（3）为了解决这个问题，Vue.js 提供了 vm.\$delete 方法来删除数据种的某个属性，并且此时 Vue.js 可以侦测到数据发生了变化。
 
 ### 4.3.1 用法
-vm.$delete(target,key)
-（1）参数
 
-{Object | Array} target
-{string | number} key/index
-注意：仅在2.2.0+版本中支持Array+index的用法。
+```js
+vm.$delete(target, key);
+```
 
 （2）用法
 
@@ -1451,51 +1464,61 @@ vm.$delete(target,key)
 
 2、如果对象是响应式的，需要确保删除能触发更新视图。
 
-3、这个方法主要用于避开Vue.js不能检测到属性被删除的限制。
+3、这个方法主要用于避开 Vue.js 不能检测到属性被删除的限制。
 
-4、在2.2.0+中，同样支持在数组上工作。
+4、在 2.2.0+中，同样支持在数组上工作。
 
 （3）注意
 
-目标对象不能是Vue.js实例或Vue.js实例的根数据对象。
+目标对象不能是 Vue.js 实例或 Vue.js 实例的根数据对象。
 
 ### 4.3.2 实现原理
 
-（1）vm.$delete方法也是为了解决变化侦测的缺陷。在ES6之前，Javascript并没有办法侦测到一个属性在object中被删除，所以如果使用delete来删除一个数据，Vue.js根本不知道这个属性被删除了。
+（1）vm.\$delete 方法也是为了解决变化侦测的缺陷。在 ES6 之前，Javascript 并没有办法侦测到一个属性在 object 中被删除，所以如果使用 delete 来删除一个数据，Vue.js 根本不知道这个属性被删除了。
 
-（2）使用vm.$delete能帮助我们在删除属性后自动向依赖发送消息，通知Watcher数据发生了变化。
+（2）使用 vm.\$delete 能帮助我们在删除属性后自动向依赖发送消息，通知 Watcher 数据发生了变化。
 
 （3）原理：删除属性后向依赖发消息。
 
-import {del} from '../observer/index'
+```js
+import { del } from '../observer/index';
 Vue.prototype.$delete = del;
-在Vue.js的原型上挂载$delete方法。
+```
 
-（4）del函数
+在 Vue.js 的原型上挂载\$delete 方法。
 
-export function del(target,key){
-	const _ob_ = target._ob_;
-	delete target[key];
-	_ob_.dep.notify();
+（4）del 函数
+
+```js
+export function del(target, key) {
+  const _ob_ = target._ob_;
+  delete target[key];
+  _ob_.dep.notify();
 }
-先从target中将属性key删除，然后向依赖发送消息。
+```
+
+先从 target 中将属性 key 删除，然后向依赖发送消息。
 
 （5）处理数组的情况
 
-export function del(target,key){
-	//新增
-	if(Array.isArray(target)&&isValidArrayIndex(key)){
-		target.splice(key,1)
-		return;
-	}
-	const _ob_ = target._ob_;
-	delete target[key];
-	_ob_.dep.notify();
+```js
+export function del(target, key) {
+  //新增
+  if (Array.isArray(target) && isValidArrayIndex(key)) {
+    target.splice(key, 1);
+    return;
+  }
+  const _ob_ = target._ob_;
+  delete target[key];
+  _ob_.dep.notify();
 }
-因为使用了splice方法，数组拦截器会自动向依赖发送通知。
+```
 
-（6）与 vm.$set一样，vm.$delete也不可以在Vue.js实例或Vue.js实例的跟数据对象上使用。
+因为使用了 splice 方法，数组拦截器会自动向依赖发送通知。
 
+（6）与 vm.$set一样，vm.$delete 也不可以在 Vue.js 实例或 Vue.js 实例的跟数据对象上使用。
+
+```js
 export function del(target,key){
 	if(Array.isArray(target)&&isValidArrayIndex(key)){
 		target.splice(key,1)
@@ -1513,10 +1536,13 @@ export function del(target,key){
 	delete target[key];
 	_ob_.dep.notify();
 }
-1、如果target上有_isVue属性（target是Vue.js实例）或则ob.vmCount数量大于1（target是根数据），则直接返回，终止程序继续执行，并且如果是开发环境，会在控制台中发出警告。
+```
 
-（6）如果删除的这个key不是target自身的属性，就什么都不做，直接退出程序执行。
+1、如果 target 上有\_isVue 属性（target 是 Vue.js 实例）或则 ob.vmCount 数量大于 1（target 是根数据），则直接返回，终止程序继续执行，并且如果是开发环境，会在控制台中发出警告。
 
+（6）如果删除的这个 key 不是 target 自身的属性，就什么都不做，直接退出程序执行。
+
+```js
 export function del(target,key){
 	if(Array.isArray(target)&&isValidArrayIndex(key)){
 		target.splice(key,1)
@@ -1537,8 +1563,11 @@ export function del(target,key){
 	delete target[key];
 	_ob_.dep.notify();
 }
-（7）判断target是不是一个响应式数据，也就是说要判断target身上存不存在_ob_属性。只有响应式数据才需要发送通知，非响应式数据只需要执行删除操作即可。
+```
 
+（7）判断 target 是不是一个响应式数据，也就是说要判断 target 身上存不存在*ob*属性。只有响应式数据才需要发送通知，非响应式数据只需要执行删除操作即可。
+
+```js
 export function del(target,key){
 	if(Array.isArray(target)&&isValidArrayIndex(key)){
 		target.splice(key,1)
@@ -1563,14 +1592,17 @@ export function del(target,key){
 	}
 	_ob_.dep.notify();
 }
-如果数据不是响应式的，则使用return语句阻止执行发送通知语句。
+```
+
+如果数据不是响应式的，则使用 return 语句阻止执行发送通知语句。
+
 ## 4.4 总结
 
 本章中，我们详细介绍了变化侦测相关 API 的内部实现原理。
 
-我们先介绍了`vm.$watch`的内部实现及其相关参数的实现原理，包括 deep、immediate和unwatch。
+我们先介绍了`vm.$watch`的内部实现及其相关参数的实现原理，包括 deep、immediate 和 unwatch。
 
-随后介绍了`vm.$set`的内部实现。这里介绍了几种情况，分别为 Array 的处理逻辑，key已经存在的处理逻辑，以及最红要的新增属性的处理逻辑。
+随后介绍了`vm.$set`的内部实现。这里介绍了几种情况，分别为 Array 的处理逻辑，key 已经存在的处理逻辑，以及最红要的新增属性的处理逻辑。
 
 最后，介绍了`vm.$delete`的内部实现原理。
 
@@ -1594,216 +1626,304 @@ Vue.js2.0 引入了虚拟 DOM,比 Vue.js1.0 的初始渲染速度提升了 2-4 �
 
 ## 5.1 什么是虚拟 DOM
 
-我们现在使用的三大主流框架Vue.js、Angular和React都是声明式操作DOM。我们通过描述状态和DOM之间的映射关系是怎样的，就可以将状态渲染成试图。关于状态到视图的转化过程，框架会帮我们做，不需要我们自己去操作DOM。
-状态可以是JavaScript中的任意类型。Object、Array、String、Number、Boolean等都可以作为状态，这些状态可能最终会以段落、表单、链接或按钮等元素呈现在用户界面上。
-本质上，我们将状态作为输入，并生成DOM输出在页面上显示出来，这个过程叫做渲染
+我们现在使用的三大主流框架 Vue.js、Angular 和 React 都是声明式操作 DOM。我们通过描述状态和 DOM 之间的映射关系是怎样的，就可以将状态渲染成视图。关于状态到视图的转化过程，框架会帮我们做，不需要我们自己去操作 DOM。
 
-然而通常在程序运行时，状态会不断发生改变（状态改变的原因有很多，可能是用户点击了某个按钮，可能是某个ajax请求，这些行为都是异步的）每当状态发生变化时，都需要重新渲染。如何确定状态中发生了什么变化以及需要在哪里更新DOM？
-在这种情况下，最简单粗暴的方式是，不需要关心状态发生了什么变化，不需要关心哪里更新DOM，我们只要把所有DOM删除了，然后使用状态重新生成一份DOM，并将其输出到界面上。
-但是访问DOM是非常昂贵的，按照上面的方式，会造成相当多的性能浪费。状态变化通常只是有限的几个节点需要重新渲染，所有我们不仅需要找出哪里需要更新，还需要尽可能少的访问DOM。
+状态可以是 JavaScript 中的任意类型。Object、Array、String、Number、Boolean 等都可以作为状态，这些状态可能最终会以段落、表单、链接或按钮等元素呈现在用户界面上。
 
-如上图所示，当某个状态发生变化时，只更新与这个状态相关联的DOM节点。
-这个问题有很多种解决方案，目前，各大主流框架都有自己一套解决方案，在Angular中就是脏检查的流程，React中使用虚拟DOM，vuejs1.0通过细粒度的绑定。因此，虚拟DOM本质上只是众多解决方案中的一种，可以用但并不一定必须用。
-虚拟DOM的解决方式是通过状态生成一个虚拟节点树，然后使用虚拟节点树进行渲染。在渲染之前，会使用新生成的虚拟节点数和上一次生成的虚拟节点树进行对比，只渲染不同的部分。
-虚拟节点数其实是由组件树建立起来的整个虚拟节点（Virtual Node，也简写为Vnode）树。
+本质上，我们将状态作为输入，并生成 DOM 输出在页面上显示出来，这个过程叫做渲染。
+
+然而通常在程序运行时，状态会不断发生改变（状态改变的原因有很多，可能是用户点击了某个按钮，可能是某个 ajax 请求，这些行为都是异步的）每当状态发生变化时，都需要重新渲染。如何确定状态中发生了什么变化以及需要在哪里更新 DOM？
+
+在这种情况下，最简单粗暴的方式是，不需要关心状态发生了什么变化，不需要关心哪里更新 DOM，我们只要把所有 DOM 删除了，然后使用状态重新生成一份 DOM，并将其输出到界面上。
+
+但是访问 DOM 是非常昂贵的，按照上面的方式，会造成相当多的性能浪费。状态变化通常只是有限的几个节点需要重新渲染，所有我们不仅需要找出哪里需要更新，还需要尽可能少的访问 DOM。
+
+如上图所示，当某个状态发生变化时，只更新与这个状态相关联的 DOM 节点。
+
+这个问题有很多种解决方案，目前，各大主流框架都有自己一套解决方案，在 Angular 中就是脏检查的流程，React 中使用虚拟 DOM，vuejs1.0 通过细粒度的绑定。因此，虚拟 DOM 本质上只是众多解决方案中的一种，可以用但并不一定必须用。
+
+虚拟 DOM 的解决方式是通过状态生成一个虚拟节点树，然后使用虚拟节点树进行渲染。在渲染之前，会使用新生成的虚拟节点数和上一次生成的虚拟节点树进行对比，只渲染不同的部分。
+
+虚拟节点数其实是由组件树建立起来的整个虚拟节点（Virtual Node，也简写为 Vnode）树。
+
 ## 5.2 为什么要引入虚拟 DOM
 
-事实上，Angular和React的变化侦测有一个共同点，那就是他们都不知道哪些状态变了。因此，就需要进行比较暴力的对比，React是通过虚拟DOM的比对，Angular是使用脏检查的流程。
-Vue.js的变化侦测不一样，它在一定程度上知道具体哪些状态发生了变化，这样就可以通过更细粒度的绑定来更新视图。也就是说，在Vue.js中，当状态发生变化时，它在一定程度上知道哪些节点使用了这个状态，从而对这些节点进行更新操作，不需要对比。事实上，在vue.js 1.0中就是这样实现的。
-但是这样做也有一定的代价，因为粒度太细，每一个绑定都会有一个对应得watcher来观察状态的变化，这样就会有一定的内存开销和追踪依赖的开销。当状态被越多的节点使用时，开销就越大。大型项目来说，这个开销是非常大。
-因此，Vue.js 2.0中选择了中等粒度的解决方案，那就是引入了虚拟DOM。组件级别是一个watcher实例，就是说即便一个组件内有10个节点使用了某个状态，但其实也只有一个watcher在观察这个状态的变化。所以这个状态发生变化时，只能通知到组件，然后组件内部通过虚拟DOM去进行比对和渲染。
+事实上，Angular 和 React 的变化侦测有一个共同点，那就是他们都不知道哪些状态变了。因此，就需要进行比较暴力的对比，React 是通过虚拟 DOM 的比对，Angular 是使用脏检查的流程。
+
+Vue.js 的变化侦测不一样，它在一定程度上知道具体哪些状态发生了变化，这样就可以通过更细粒度的绑定来更新视图。也就是说，在 Vue.js 中，当状态发生变化时，它在一定程度上知道哪些节点使用了这个状态，从而对这些节点进行更新操作，不需要对比。事实上，在 vue.js 1.0 中就是这样实现的。
+
+但是这样做也有一定的代价，因为粒度太细，每一个绑定都会有一个对应得 watcher 来观察状态的变化，这样就会有一定的内存开销和追踪依赖的开销。当状态被越多的节点使用时，开销就越大。大型项目来说，这个开销是非常大。
+
+因此，Vue.js 2.0 中选择了中等粒度的解决方案，那就是引入了虚拟 DOM。组件级别是一个 watcher 实例，就是说即便一个组件内有 10 个节点使用了某个状态，但其实也只有一个 watcher 在观察这个状态的变化。所以这个状态发生变化时，只能通知到组件，然后组件内部通过虚拟 DOM 去进行比对和渲染。
 
 ## 5.3 Vue.js 中的虚拟 DOM
 
-在vue.js中，我们使用模板来描述状态和DOM之间的映射关系。Vue.js通过编译将模板转化为渲染函数render，执行渲染函数就可以得到一个虚拟节点树，使用这个虚拟节点树就可以渲染页面。
+在 vue.js 中，我们使用模板来描述状态和 DOM 之间的映射关系。Vue.js 通过编译将模板转化为渲染函数 render，执行渲染函数就可以得到一个虚拟节点树，使用这个虚拟节点树就可以渲染页面。
 
-虚拟DOM的终极目标是将虚拟节点(vnode)渲染到视图上。但是如果直接使用虚拟节点覆盖旧节点的话，会造成很多不必要的DOM操作。
-例如一个ul标签下有很多li标签，其中只有一个li变化，这种情况下如果直接用新的ul替换旧的ul，其实除了那个发生了变化的li节点之外，其他节点都不需要重新渲染。
-由于DOM操作比较慢，所以这些DOM操作在性能上会有一定的浪费。避免这些不必要的DOM操作会提升很大的性能。
-为了避免不必要的DOM操作，虚拟DOM在虚拟节点映射到视图的过程中，将虚拟节点和上一次渲染视图所使用的的旧虚拟节点（oldVnode）进行对比。找出真正需要更新的节点来进行DOM操作，可以避免不必要改动的DOM。
-图中给出了虚拟DOM的整体运行流程，先将vnode和oldVnode做对比，然后在更新视图
+虚拟 DOM 的终极目标是将虚拟节点(vnode)渲染到视图上。但是如果直接使用虚拟节点覆盖旧节点的话，会造成很多不必要的 DOM 操作。
 
-可以看出虚拟DOM在Vue.js中所做的事情并没有那么复杂，他主要做了两件事
-提供与真实DOM节点所对应得虚拟节点vnode
-将虚拟节点vnode和旧虚拟节点oldvnode进行对比，然后更新视图。
-vnode是JavaScript中一个很普通的对象，这个对象的属性上保存了生成DOM节点所需要的一些数据。
-对比两个虚拟节点是虚拟DOM中最核心的算法（即patch），他可以判断出哪些节点发生了变化，从而只对发生了变化的节点进行操作。
+例如一个 ul 标签下有很多 li 标签，其中只有一个 li 变化，这种情况下如果直接用新的 ul 替换旧的 ul，其实除了那个发生了变化的 li 节点之外，其他节点都不需要重新渲染。
+
+由于 DOM 操作比较慢，所以这些 DOM 操作在性能上会有一定的浪费。避免这些不必要的 DOM 操作会提升很大的性能。
+
+为了避免不必要的 DOM 操作，虚拟 DOM 在虚拟节点映射到视图的过程中，将虚拟节点和上一次渲染视图所使用的的旧虚拟节点（oldVnode）进行对比。找出真正需要更新的节点来进行 DOM 操作，可以避免不必要改动的 DOM。
+
+图中给出了虚拟 DOM 的整体运行流程，先将 vnode 和 oldVnode 做对比，然后在更新视图
+
+可以看出虚拟 DOM 在 Vue.js 中所做的事情并没有那么复杂，他主要做了两件事
+
+- 提供与真实 DOM 节点所对应得虚拟节点 vnode
+- 将虚拟节点 vnode 和旧虚拟节点 oldvnode 进行对比，然后更新视图。
+
+vnode 是 JavaScript 中一个很普通的对象，这个对象的属性上保存了生成 DOM 节点所需要的一些数据。
+
+对比两个虚拟节点是虚拟 DOM 中最核心的算法（即 patch），他可以判断出哪些节点发生了变化，从而只对发生了变化的节点进行操作。
 
 ## 5.4 总结
 
-虚拟DOM是讲状态映射成试图的众多解决方案之一，它的运作原理是使用状态生成虚拟节点，然后使用虚拟节点渲染成视图。
-之所以需要先使用状态生成虚拟节点，是因为如果直接用状态生成真实的DOM，会有一定程度上的性能浪费。而先创建虚拟节点再渲染视图，就可以将虚拟节点缓存，然后使用新创建的虚拟节点和上一次缓存的虚拟节点进行对比，然后根据对比结果更新需要更新的DOM节点，避免不必要的DOM操作。
-由于Vue.js的变化侦测粒度更细，所以挡状态发生变化时，vue.js知道的信息更多，一定程度上知道哪些位置使用了窗台。因此，vue.js可以通过细粒度的绑定来更新视图，vue.js 1.0 就是这样实现的。
-但是这么做也有一定的代价。因为粒度太细，就会有很多的watcher同时观察这些状态，会有一定的内存开销和依赖追踪依赖的开销，所以vue.js 2.0 采取了中等粒度的解决方案。状态侦测不再是某个具体节点，而是某个组件，组件内部通过虚拟DOM来渲染视图，这样可以大大的缩减依赖数量和watcher数量。
-Vue.js中通过模板来描述状态和视图之间的映射关系，所以会将模板编译成渲染函数render,然后执行渲染函数生成虚拟节点vnode，最后使用虚拟节点更新视图。
-虚拟DOM在vue.js中所做的事是将虚拟节点vnode和旧虚拟节点oldVnode进行对比，根据对比结果来进行DOM操作来更新视图。
+虚拟 DOM 是讲状态映射成视图的众多解决方案之一，它的运作原理是使用状态生成虚拟节点，然后使用虚拟节点渲染成视图。
+
+之所以需要先使用状态生成虚拟节点，是因为如果直接用状态生成真实的 DOM，会有一定程度上的性能浪费。而先创建虚拟节点再渲染视图，就可以将虚拟节点缓存，然后使用新创建的虚拟节点和上一次缓存的虚拟节点进行对比，然后根据对比结果更新需要更新的 DOM 节点，避免不必要的 DOM 操作。
+
+由于 Vue.js 的变化侦测粒度更细，所以挡状态发生变化时，vue.js 知道的信息更多，一定程度上知道哪些位置使用了窗台。因此，vue.js 可以通过细粒度的绑定来更新视图，vue.js 1.0 就是这样实现的。
+
+但是这么做也有一定的代价。因为粒度太细，就会有很多的 watcher 同时观察这些状态，会有一定的内存开销和依赖追踪依赖的开销，所以 vue.js 2.0 采取了中等粒度的解决方案。状态侦测不再是某个具体节点，而是某个组件，组件内部通过虚拟 DOM 来渲染视图，这样可以大大的缩减依赖数量和 watcher 数量。
+
+Vue.js 中通过模板来描述状态和视图之间的映射关系，所以会将模板编译成渲染函数 render,然后执行渲染函数生成虚拟节点 vnode，最后使用虚拟节点更新视图。
+
+虚拟 DOM 在 vue.js 中所做的事是将虚拟节点 vnode 和旧虚拟节点 oldVnode 进行对比，根据对比结果来进行 DOM 操作来更新视图。
 
 # 第 6 章 VNode
 
 ## 6.1 什么是 VNode
 
-在vue.js中存在一个VNode类，使用它可以实例化不同类型的vnode实例，而不同类型的vnode实例各自表示不同类型的DOM元素。
-例如，DOM元素有元素节点，文本节点，注释节点等，vnode实例也会对应着有元素节点和文本节点和注释节点。
-VNode类代码如下：
+在 vue.js 中存在一个 VNode 类，使用它可以实例化不同类型的 vnode 实例，而不同类型的 vnode 实例各自表示不同类型的 DOM 元素。
 
+例如，DOM 元素有元素节点，文本节点，注释节点等，vnode 实例也会对应着有元素节点和文本节点和注释节点。
 
-    export default class VNode {
-        constructor(tag, data, children, text, elm, context, componentOptions, asyncFactory) {
-            this.tag = tag
-            this.data = data
-            this.children = children
-            this.text = text
-            this.elm = elm
-            this.ns = undefined
-            this.context = context
-            this.functionalContext = undefined
-            this.functionalOptions = undefined
-            this.functionalScopeId = undefined
-            this.key = data && data.key
-            this.componentOptions = componentOptions
-            this.componentInstance = undefined
-            this.parent = undefined
-            this.raw = false
-            this.isStatic = false
-            this.isRootInsert = true
-            this.isComment = false
-            this.isCloned = false
-            this.isOnce = false
-            this.asyncFactory = asyncFactory
-            this.asyncMeta = undefined
-            this.isAsyncPlaceholder = false
-        }
-        get child() {
-            return this.componentInstance
-        }
-    }
+VNode 类代码如下：
 
-从上面的代码可以看出，vnode只是一个名字，本质上来说就是一个普通的JavaScript对象，是从VNode类实例化的对象。我们用这个JavaScript对象来描述一个真实DOM元素的话，那么该DOM元素上的所有属性在VNode这个对象上都存在对应得属性。
-简单来说，vnode可以理解成节点描述对象，他描述了应该怎样去创建真实的DOM节点。
-例如，tag表示一个元素节点的名称，text表示一个文本节点的文本，children表示子节点等。vnode表示一个真实的DOM元素，所有真实的DOM节点都是用vnode创建并插入到页面中。
+```js
+export default class VNode {
+  constructor(
+    tag,
+    data,
+    children,
+    text,
+    elm,
+    context,
+    componentOptions,
+    asyncFactory
+  ) {
+    this.tag = tag;
+    this.data = data;
+    this.children = children;
+    this.text = text;
+    this.elm = elm;
+    this.ns = undefined;
+    this.context = context;
+    this.functionalContext = undefined;
+    this.functionalOptions = undefined;
+    this.functionalScopeId = undefined;
+    this.key = data && data.key;
+    this.componentOptions = componentOptions;
+    this.componentInstance = undefined;
+    this.parent = undefined;
+    this.raw = false;
+    this.isStatic = false;
+    this.isRootInsert = true;
+    this.isComment = false;
+    this.isCloned = false;
+    this.isOnce = false;
+    this.asyncFactory = asyncFactory;
+    this.asyncMeta = undefined;
+    this.isAsyncPlaceholder = false;
+  }
+  get child() {
+    return this.componentInstance;
+  }
+}
+```
 
+从上面的代码可以看出，vnode 只是一个名字，本质上来说就是一个普通的 JavaScript 对象，是从 VNode 类实例化的对象。我们用这个 JavaScript 对象来描述一个真实 DOM 元素的话，那么该 DOM 元素上的所有属性在 VNode 这个对象上都存在对应得属性。
 
-VNode创建DOM并插入到视图.PNG
+简单来说，vnode 可以理解成节点描述对象，他描述了应该怎样去创建真实的 DOM 节点。
 
-图中展示了使用vnode创建真实的DOM并渲染到视图的过程。可以得知，vnode和视图是一一对应的。我们可以把vnode理解成JavaScript对象版本的DOM元素。
-渲染视图的过程是先创建vnode，然后在使用vnode去生成真实的DOM元素，最后插入到页面渲染视图。
+例如，tag 表示一个元素节点的名称，text 表示一个文本节点的文本，children 表示子节点等。vnode 表示一个真实的 DOM 元素，所有真实的 DOM 节点都是用 vnode 创建并插入到页面中。
+
+图中展示了使用 vnode 创建真实的 DOM 并渲染到视图的过程。可以得知，vnode 和视图是一一对应的。我们可以把 vnode 理解成 JavaScript 对象版本的 DOM 元素。
+
+渲染视图的过程是先创建 vnode，然后在使用 vnode 去生成真实的 DOM 元素，最后插入到页面渲染视图。
 
 ## 6.2 VNode 的作用
-由于每次渲染视图时都是先创建vnode，然后使用它创建的真实DOM插入到页面中，所以可以将上一次渲染视图时先所创建的vnode先缓存起来，之后每当需要重新渲染视图时，将新创建的vnode和上一次缓存的vnode对比，查看他们之间有哪些不一样的地方，找出不一样的地方并基于此去修改真实的DOM。
-Vue.js目前对状态的侦测策略采用了中等粒度。当状态发生变化时，只通知到组件级别，然后组件内使用虚拟DOM来渲染视图。
+
+由于每次渲染视图时都是先创建 vnode，然后使用它创建的真实 DOM 插入到页面中，所以可以将上一次渲染视图时先所创建的 vnode 先缓存起来，之后每当需要重新渲染视图时，将新创建的 vnode 和上一次缓存的 vnode 对比，查看他们之间有哪些不一样的地方，找出不一样的地方并基于此去修改真实的 DOM。
+
+Vue.js 目前对状态的侦测策略采用了中等粒度。当状态发生变化时，只通知到组件级别，然后组件内使用虚拟 DOM 来渲染视图。
+
 如图下所示，当某个状态发生变化时，只通知使用了这个状态的组件。也就是说，只要组件使用的众多状态中有一个发生了变化，那么整个组件就要重新渲染。
 
-
-变化侦测只通知到组件级别.PNG
-如果组件只有一个节点发生了变化，那么重新渲染整个组件的所有节点，很明显会造成很大的性能浪费。因此，对vnode惊醒缓存，并将上一次的缓存和当前创建的vnode对比，只更新有差异的节点就变得很重要。这也是vnode最重要的一个作用。
+如果组件只有一个节点发生了变化，那么重新渲染整个组件的所有节点，很明显会造成很大的性能浪费。因此，对 vnode 惊醒缓存，并将上一次的缓存和当前创建的 vnode 对比，只更新有差异的节点就变得很重要。这也是 vnode 最重要的一个作用。
 
 ## 6.3 VNode 的类型
-vnode有很多不同的类型，有以下几种：
 
-注释节点
-文本节点
-元素节点
-组件节点
-函数式节点
-克隆节点
-前面介绍了vnode是一个JavaScript对象，不同类型的vnode之间其实属性不同，准确说是有效属性不同。因为当使用VNode类创建一个vnode时，通过参数为实例设置属性时，无效的属性会默认设置为undefined或者false。对于 vnode身上的无效属性，直接忽略就好。
+vnode 有很多不同的类型，有以下几种：
+
+- 注释节点
+- 文本节点
+- 元素节点
+- 组件节点
+- 函数式节点
+- 克隆节点
+
+前面介绍了 vnode 是一个 JavaScript 对象，不同类型的 vnode 之间其实属性不同，准确说是有效属性不同。因为当使用 VNode 类创建一个 vnode 时，通过参数为实例设置属性时，无效的属性会默认设置为 undefined 或者 false。对于 vnode 身上的无效属性，直接忽略就好。
+
 ### 6.3.1 注释节点
+
 由于创建注释节点的过程非常简单，所以直接通过代码来介绍它有哪些属性：
 
-    export const createEmptyVNode = text => {
-        const node = new VNode()
-        node.text = text;
-        node.isComment = true;
-        return node
-    }
-一个注释节点只有两个有效属性 text 和 isComment。其余属性全是默认undefined或者false。
-例如一个真实的注释节点，所对应的vnode是下面的样子：
+```js
+export const createEmptyVNode = (text) => {
+  const node = new VNode();
+  node.text = text;
+  node.isComment = true;
+  return node;
+};
+```
 
+一个注释节点只有两个有效属性 text 和 isComment。其余属性全是默认 undefined 或者 false。
+
+例如一个真实的注释节点，所对应的 vnode 是下面的样子：
+
+```js
 // <!-- 注释节点 -->
 {
     text: "注释节点",
     isComment: true
 }
+```
+
 ### 6.3.2 文本节点
+
 文本节点的创建过程也非常简单，代码如下：
 
-    export function createTextVNode(val) {
-        return new VNode(undefined, undefined, undefined, String(val))
-    }
-当文本类型的vnode被创建时，它只有一个text属性：
-
-{
-    text: "文本节点"
+```js
+export function createTextVNode(val) {
+  return new VNode(undefined, undefined, undefined, String(val));
 }
+```
+
+当文本类型的 vnode 被创建时，它只有一个 text 属性：
+
+```js
+{
+  text: '文本节点';
+}
+```
+
 ### 6.3.3 克隆节点
+
 克隆节点是将现有节点的属性赋值到新节点中，让新创建的节点和被克隆的节点的属性保持一致，从而实现克隆效果。它的作用是优化静态节点和插槽节点（slot node）。
-以静态节点为例，当组件内某个状态发生变化后，当前组件会通过虚拟DOM重新渲染视图，静态节点因为它的内容不会改变，所以除了首次渲染需要执行渲染函数获取vnode之外，后续更新不需要执行渲染函数重新生成vnode。因此，这是就会使用创建克隆节点的方法将vnode克隆一份，使用克隆节点进行渲染。这样就不需要执行渲染函数生成新的静态节点的vnode，从而提升一定的性能。
+
+以静态节点为例，当组件内某个状态发生变化后，当前组件会通过虚拟 DOM 重新渲染视图，静态节点因为它的内容不会改变，所以除了首次渲染需要执行渲染函数获取 vnode 之外，后续更新不需要执行渲染函数重新生成 vnode。因此，这是就会使用创建克隆节点的方法将 vnode 克隆一份，使用克隆节点进行渲染。这样就不需要执行渲染函数生成新的静态节点的 vnode，从而提升一定的性能。
+
 创建克隆节点的代码如下：
 
+```js
 export function cloneVNode(vnode, deep) {
-        const cloned = new VNode(vnode.tag, vnode.data, vnode.children, vnode.text, vnode.elm, vnode.context, vnode.componentOptions, vnode.asyncFactory)
-        cloned.ns = vnode.ns
-        cloned.isStatic = vnode.isStatic
-        cloned.key = vnode.key
-        cloned.isComment = vnode.isComment
-        cloned.isCloned = true
-        if (deep && vnode.children) {
-            cloned.children = cloneVNodes(vnode.children)
-        }
-        return cloned
-    }
+  const cloned = new VNode(
+    vnode.tag,
+    vnode.data,
+    vnode.children,
+    vnode.text,
+    vnode.elm,
+    vnode.context,
+    vnode.componentOptions,
+    vnode.asyncFactory
+  );
+  cloned.ns = vnode.ns;
+  cloned.isStatic = vnode.isStatic;
+  cloned.key = vnode.key;
+  cloned.isComment = vnode.isComment;
+  cloned.isCloned = true;
+  if (deep && vnode.children) {
+    cloned.children = cloneVNodes(vnode.children);
+  }
+  return cloned;
+}
+```
+
 克隆现有节点，只需要将现有节点的属性全部赋值到新节点中。
-克隆节点和被克隆节点位移的区别是isCloned属性，克隆节点为true，被克隆的原始节点为false。
+
+克隆节点和被克隆节点位移的区别是 isCloned 属性，克隆节点为 true，被克隆的原始节点为 false。
 
 ### 6.3.4 元素节点
-元素节点通常会存在以下4中有效属性。
 
-tag：tag就是一个节点的名称，例如 p、ul、li和div等。
-data：改属性包含了一些节点上的数据，比如attrs、class和style等。
-children：当前节点的子节点列表。
-context：它是当前组件的Vue.js实例
-一个真实的元素节点，对应得vnode是下面这样：
+元素节点通常会存在以下 4 中有效属性。
 
+1. tag：tag 就是一个节点的名称，例如 p、ul、li 和 div 等。
+2. data：改属性包含了一些节点上的数据，比如 attrs、class 和 style 等。
+3. children：当前节点的子节点列表。
+4. context：它是当前组件的 Vue.js 实例
+
+一个真实的元素节点，对应得 vnode 是下面这样：
+
+```js
     // <p><span>Hello</span><span>World</span></p>
     {
         children: [VNode, VNode],
         context: {...},
         data: {...},
         tag: "p",
-        ...
+        // ...
     }
+```
+
 ### 6.3.5 组件节点
+
 组件节点和元素节点类似，有以下两个独有的属性。
 
-componentOptions：组件节点的选项参数，其中包含了propsData、tag和children等信息
-componentInstance：组件的实例，也就是Vue.js的实例。事实上，在Vue.js中，每个组件都有一个Vue.js实例。
-一个组件节点，对应得vnode是下面这样：
-    // <child></child>
-    {
-        componentInstance: {...},
-        componentOptions: {...},
-        context: {...},
-        data: {...},
-        tag: "vue-component-1-child",
-        ...    
-    }
-### 6.3.6 函数式组件
-函数式节点和组件节点类似，他有两个独有的属性functionalContext和functionalOptions。
-通常，一个函数式节点的vnode是下面这样：
+componentOptions：组件节点的选项参数，其中包含了 propsData、tag 和 children 等信息
 
-     {
-        functionalContext: {...},
-        functionalOptions: {...},
-        context: {...},
-        data: {...},
-        tag: "div"
-        }
+componentInstance：组件的实例，也就是 Vue.js 的实例。事实上，在 Vue.js 中，每个组件都有一个 Vue.js 实例。
+
+一个组件节点，对应得 vnode 是下面这样：
+
+```js
+// <child></child>
+{
+  componentInstance: {...},
+  componentOptions: {...},
+  context: {...},
+  data: {...},
+  tag: "vue-component-1-child",
+  ...
+}
+```
+
+### 6.3.6 函数式组件
+
+函数式节点和组件节点类似，他有两个独有的属性 functionalContext 和 functionalOptions。
+
+通常，一个函数式节点的 vnode 是下面这样：
+
+```js
+{
+  functionalContext: {...},
+  functionalOptions: {...},
+  context: {...},
+  data: {...},
+  tag: "div"
+}
+```
 
 ## 6.4 总结
 
-VNode是一个类，可以生产不同类型的vnode实例，不同类型的实例表示不同类型的真实DOM。
-由于Vue.js对组件采用了虚拟DOM来更新视图，当属性发生变化时，整个组件都要进行重新渲染的操作，但组件内并不是所有的DOM节点都需要更新，所以将vnode缓存并将当前新生成的vnode和缓存的vnode作对比，只对需要更新的部分进行DOM操作可以提升很多的性能。
-vnode有很多类型，它们本质上都是Vnode实例化出的对象，其唯一区别是属性不同。
+VNode 是一个类，可以生产不同类型的 vnode 实例，不同类型的实例表示不同类型的真实 DOM。
+
+由于 Vue.js 对组件采用了虚拟 DOM 来更新视图，当属性发生变化时，整个组件都要进行重新渲染的操作，但组件内并不是所有的 DOM 节点都需要更新，所以将 vnode 缓存并将当前新生成的 vnode 和缓存的 vnode 作对比，只对需要更新的部分进行 DOM 操作可以提升很多的性能。
+
+vnode 有很多类型，它们本质上都是 Vnode 实例化出的对象，其唯一区别是属性不同。
 
 # 第 7 章 patch
 
