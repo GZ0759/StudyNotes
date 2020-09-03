@@ -1258,15 +1258,11 @@ _traverse(val[(keys[i], seen)]);
 
 ### 4.2.1 用法
 
-在 object 上设置一个属性，如果 object 是响应式的，Vue.js 会保证属性被创建后也是响应式的，并且触发视图更新。这个方法主要用来避开 Vue.js 不能侦测属性被添加的限制。
+向响应式对象中添加一个 property，并确保这个新 property 同样是响应式的，且触发视图更新。它必须用于向响应式对象上添加新 property，因为 Vue 无法探测普通的新增 property （比如 `this.myObject.newProperty = 'hi'`）
 
 ```js
-vm.$set(target, key, value);
+Vue.set( target, propertyName/index, value )
 ```
-
-（4）注意
-
-target 不能是 Vue.js 实例或则 Vue.js 实例的根数据对象。
 
 （5）解决问题
 
@@ -1443,32 +1439,13 @@ export function observer(value,asRootData){
 
 ## 4.3 vm.\$delete
 
-一、作用
-（1）vm.\$delete 的作用是删除数据中个某个属性。
-
-（2）由于 Vue.js 的变化侦测是使用 Object.defineProperty 实现的，所以如果数据使用 delete 关键字删除的，那么无法发现数据发生了变化。
-
-（3）为了解决这个问题，Vue.js 提供了 vm.\$delete 方法来删除数据种的某个属性，并且此时 Vue.js 可以侦测到数据发生了变化。
-
 ### 4.3.1 用法
 
+删除对象的 property。如果对象是响应式的，确保删除能触发更新视图。这个方法主要用于避开 Vue 不能检测到 property 被删除的限制，但是你应该很少会使用它。
+
 ```js
-vm.$delete(target, key);
+Vue.delete( target, propertyName/index )
 ```
-
-（2）用法
-
-1、删除对象的属性。
-
-2、如果对象是响应式的，需要确保删除能触发更新视图。
-
-3、这个方法主要用于避开 Vue.js 不能检测到属性被删除的限制。
-
-4、在 2.2.0+中，同样支持在数组上工作。
-
-（3）注意
-
-目标对象不能是 Vue.js 实例或 Vue.js 实例的根数据对象。
 
 ### 4.3.2 实现原理
 
