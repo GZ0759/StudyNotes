@@ -4,7 +4,7 @@
 > [参考-后盾人](http://houdunren.gitee.io/note/js/1%20%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86.html)  
 > [参考-木易杨](https://github.com/yygmind/blog)  
 
-# 闭包
+# 函数闭包
 
 函数和对其周围状态（lexical environment，词法环境）的引用捆绑在一起构成闭包（closure）。也就是说，闭包可以让你从内部函数访问外部函数作用域。在 JavaScript 中，每当函数被创建，就会在函数生成时生成闭包。
 
@@ -266,7 +266,7 @@ var deepCopy = function (obj) {
 
 防抖的功效，它把一组连续的调用变为了一个，最大程度地优化了效率。防抖非常适于只关心结果，不关心过程如何的情况，它能很好地将大量连续事件转为单个我们需要的事件。
 
-不管事件触发频率多高，一定在事件触发 n 秒后才执行，如果你在一个事件触发的 n 秒内又触发了这个事件，就以新的事件的时间为准，n 秒后才执行，总之，触发完事件 n 秒内不再触发事件，n秒后再执行。
+不管事件触发频率多高，一定在事件触发 n 秒后才执行，如果你在一个事件触发的 n 秒内又触发了这个事件，就以新的事件的时间为准，n 秒后才执行，总之，触发完事件 n 秒内不再触发事件，n 秒后再执行。
 
 应用场景
 
@@ -277,9 +277,9 @@ var deepCopy = function (obj) {
 为了更好理解，下面提供了最简单的 debounce 实现：返回一个 function，第一次执行这个 function 会启动一个定时器，下一次执行会清除上一次的定时器并重起一个定时器，直到这个 function 不再被调用，定时器成功跑完，执行回调函数。
 
 ```js
-const debounce = function(func, wait) {
+const debounce = function (func, wait) {
   let timer;
-  return function() {
+  return function () {
     !!timer && clearTimeout(timer);
     timer = setTimeout(func, wait);
   };
@@ -315,11 +315,11 @@ function debounce(event, time, flag) {
 function throttle(event, time) {
   let pre = 0;
   return function (...args) {
-  if (Date.now() - pre > time) {
-    pre = Date.now();
-    event.apply(this, args);
-  }
-  }
+    if (Date.now() - pre > time) {
+      pre = Date.now();
+      event.apply(this, args);
+    }
+  };
 }
 ```
 
@@ -372,67 +372,48 @@ rAF 支持 ie10 及以上浏览器，不过因为是浏览器自带的 api，我
 
 # 数组去重
 
-- 双层循环
-- 开辟存储对象
-- ES5方法filter和indexOf
-- ES5方法sort排序去重
-- ES6数据结构Set 
-- ES6数据结构Map 
-
-最原始的方法的双层循环
+1. 最原始的方法的使用双重循环，其中第二重遍历可以使用 indexOf 方法或 includes 方法简化。
 
 ```js
 function unique(array) {
-  var res = [];
-  for (var i = 0, arrayLen = array.length; i < arrayLen; i++) {
-    // 第二层遍历
-    for (var j = 0, resLen = res.length; j < resLen; j++ ) {
+  let res = [];
+  for (let i = 0; i < array.length; i++) {
+    for (let j = 0; j < res.length; j++) {
       if (array[i] === res[j]) {
-          break;
+        break;
       }
     }
-    if (j === resLen) {
-      res.push(array[i])
+    if (j === res.length) {
+      res.push(array[i]);
     }
-    // 用indexOf/includes方法简化内层的循环
-    // var current = array[i];
-    // if (res.indexOf(current) === -1) {
-    //   res.push(current)
-    // }
   }
   return res;
 }
 ```
 
-开辟一个外部存储空间用于标示元素是否出现过。
+2. 通过 `filter()` 方法创建一个符合测试的新数组。
 
 ```js
-const unique = (array)=> {
-  var container = {};
-  return array.filter((item, index) => {
-    return container.hasOwnProperty(item) ? false : (container[item] = true)
+const unique = (arr) =>
+  arr.filter((item, index) => {
+    return arr.indexOf(item) === index;
   });
-}
+
+// 如果是重复数字则删除
+const filterNonUnique = (arr) =>
+  arr.filter((i) => {
+    return arr.indexOf(i) === arr.lastIndexOf(i);
+  });
 ```
 
-ES5方法filter和indexOf
-
-```js
-const unique = arr => arr.filter((e,i) => arr.indexOf(e) === i);
-// 不同于上面的去重，这里是只要数字出现了重复次，就将其移除掉。
-// const filterNonUnique = arr => arr.filter(i => 
-//   arr.indexOf(i) === arr.lastIndexOf(i)
-// )
-```
-
-ES5方法sort排序去重
+3. 通过 `sort()` 方法进行排序，然后判断是否有重复。
 
 ```js
 const unique = (array) => {
   array.sort((a, b) => a - b);
   let pre = 0;
   const result = [];
-  // 如果是第一个元素或者相邻的元素不相同
+  // 第一个元素或者相邻的元素不相同
   for (let i = 0; i < array.length; i++) {
     if (!i || array[i] != array[pre]) {
       result.push(array[i]);
@@ -440,23 +421,23 @@ const unique = (array) => {
     pre = i;
   }
   return result;
-}
+};
 ```
 
-ES6 提供了新的数据结构 Set。它类似于数组，但是成员的值都是唯一的，没有重复的值。Set本身是一个构造函数，用来生成 Set 数据结构。Array.from方法可以将 Set 结构转为数组。
+4. 使用 ES6 提供了新的数据结构 Set。
 
 ```js
-const unique = arr => Array.from(new Set(arr));
+const unique = (arr) => Array.from(new Set(arr));
 // 或者
-// const unique = arr => [...new Set(arr)];
+const unique = (arr) => [...new Set(arr)];
 ```
 
-ES6 提供了 Map 数据结构。它类似于对象，也是键值对的集合，但是“键”的范围不限于字符串，各种类型的值（包括对象）都可以当作键。
+5. 使用 ES6 提供了 Map 数据结构。
 
 ```js
-function unique (arr) {
-  const seen = new Map()
-  return arr.filter((a) => !seen.has(a) && seen.set(a, 1))
+function unique(arr) {
+  const seen = new Map();
+  return arr.filter((a) => !seen.has(a) && seen.set(a, 1));
 }
 ```
 
