@@ -983,8 +983,6 @@ Array 收集依赖的方式和 Object 一样，都是在 getter 中收集。但�
 
 ## 4.1 vm.\$watch
 
-经常使用 Vue.js 的同学肯定对`vm.$watch`并不陌生。
-
 ### 4.1.1 用法
 
 观察 Vue 实例上的一个表达式或者一个函数计算结果的变化。回调函数得到的参数为新值和旧值。表达式只接受简单的键路径。对于更复杂的表达式，用一个函数取代。
@@ -1011,7 +1009,7 @@ Vue.prototype.$watch = function (expOrFn, cb, options) {
 };
 ```
 
-先执行 new Watcher 来实现`vm.$watch`的基本功能。
+先执行 `new Watcher` 来实现`vm.$watch`的基本功能。
 
 这里有一个细节需要注意，expOrFn 是支持函数的，前面未做介绍。这里需要对 Watcher 进行一个简单的修改。
 
@@ -1019,7 +1017,7 @@ Vue.prototype.$watch = function (expOrFn, cb, options) {
 export default class Watcher {
   constructor(vm, expOrFn, cb) {
     this.vm = vm;
-    //执行this.getter()就可以读取data.a.b.c的内容
+    // 执行this.getter()就可以读取data.a.b.c的内容
     if (typeof expOrFn === 'function') {
       this.getter = expOrFn;
     } else {
@@ -1039,7 +1037,7 @@ export default class Watcher {
 
 > 事实上，Vue.js 中计算属性（Computed）的实现原理与 expOrFn 支持函数有很大的关系。
 
-执行 new Watcher 后，代码会判断用户是否使用了 immediate 参数，如果使用了，则立即执行一次 cb。
+执行 `new Watcher` 后，代码会判断用户是否使用了 immediate 参数，如果使用了，则立即执行一次 cb。
 
 最后，返回一个函数 unwatchFn。其作用是取消观察数据。
 
@@ -1053,9 +1051,9 @@ export default class Watcher {
 export default class Watcher {
   constructor(vm, expOrFn, cb) {
     this.vm = vm;
-    //新增
+    // 新增
     this.deps = [];
-    //新增
+    // 新增
     this.depIds = new Set();
     if (typeof expOrFn === 'function') {
       this.getter = expOrFn;
@@ -1065,7 +1063,7 @@ export default class Watcher {
     this.cb = cb;
     this.value = this.get();
   }
-  //......
+  // ......
   addDep(dep) {
     const id = dep.id;
     if (!this.depIds.has(id)) {
@@ -1074,7 +1072,7 @@ export default class Watcher {
       dep.addSub(this);
     }
   }
-  //....
+  // ....
 }
 ```
 
@@ -1087,24 +1085,24 @@ export default class Watcher {
 在 Watcher 中新增 addDep 方法后，Dep 中收集依赖的逻辑也需要有所改变。
 
 ```js
-//新增
+// 新增
 let uid = 0;
 export default class Dep {
   constructor() {
-    //新增
+    // 新增
     this.id = uid++;
     this.subs = [];
   }
-  //....
+  // ....
   depend() {
     if (window.target) {
-      //废弃
+      // 废弃
       // this.addSub(window.target);
-      //新增
+      // 新增
       window.target.addDep(this);
     }
   }
-  //...
+  // ...
 }
 ```
 
@@ -1130,12 +1128,14 @@ this.$watch(
 言归正传，当我们已经在 Watcher 中记录自己订阅了哪些 Dep 之后，就可以在 Watcher 中新增 teardown 方法来通知订阅的 Dep，让它们把自己从依赖列表中移除掉。
 
 ```js
-//从所有依赖项的Dep列表中将自己移除
-teardown(){
-    let i = this.deps.length;
-    while(1--){
-        this.deps[i].removeSub(this);
-    }
+{
+  // 从所有依赖项的Dep列表中将自己移除
+  teardown(){
+      let i = this.deps.length;
+      while(1--){
+          this.deps[i].removeSub(this);
+      }
+  }
 }
 ```
 
@@ -1143,14 +1143,14 @@ teardown(){
 
 ```js
 export default class Dep {
-  //....
+  // ....
   removeSub(sub) {
     const index = this.subs.indexOf(sub);
     if (index > -1) {
       return this.subs.splice(index, 1);
     }
   }
-  //...
+  // ...
 }
 ```
 
@@ -1166,7 +1166,7 @@ Watcher 想监听某个数据，就会触发某个数据收集依赖的逻辑，
 export default class Watcher {
   constructor(vm, expOrFn, cb, options) {
     this.vm = vm;
-    //新增
+    // 新增
     if (options) {
       this.deep = !!options.deep;
     } else {
@@ -1185,16 +1185,16 @@ export default class Watcher {
   get() {
     // 将this赋值给window.target，用于主动将自己添加到依赖中
     window.target = this;
-    //触发了getter，触发收集依赖，将this主动添加到keypath的Dep中
+    // 触发了getter，触发收集依赖，将this主动添加到keypath的Dep中
     let value = this.getter.call(this.vm, this.vm);
-    //新增
+    // 新增
     if (this.deep) {
       traverse(value);
     }
     window.target = undefined;
     return value;
   }
-  //.....
+  // .....
 }
 ```
 
@@ -1233,7 +1233,7 @@ function _traverse(val, seen) {
 ```
 
 1. 先判 val 类型，如果它不是 Array 和 Object，或者已经被冻结，那么直接返回，什么也不干。
-2. 然后拿到 val 的 dep.id，用这个 id 来保证不会重复收集依赖。
+2. 然后拿到 val 的 `dep.id`，用这个 id 来保证不会重复收集依赖。
 3. 如果是数组，则循环数组，将数组中每一项递归调用`_traverse`。
 4. 如果是 Object 类型的数据，则循环 Object 中所有 key，然后执行一次读取操作，再递归子值
 
@@ -1247,11 +1247,9 @@ _traverse(val[(keys[i], seen)]);
 
 ## 4.2 vm.\$set
 
-在 Vue.js 中，`vm.$set`也是一个比较常用的 API。
-
 ### 4.2.1 用法
 
-向响应式对象中添加一个 property，并确保这个新 property 同样是响应式的，且触发视图更新。它必须用于向响应式对象上添加新 property，因为 Vue 无法探测普通的新增 property （比如 `this.myObject.newProperty = 'hi'`）
+向响应式对象中添加一个 property，并确保这个新 property 同样是响应式的，且触发视图更新。它必须用于向响应式对象上添加新 property，因为 Vue 无法探测普通的新增 property。
 
 ```js
 Vue.set(target, propertyName / index, value);
@@ -1278,7 +1276,7 @@ var vm = new Vue({
 })
 ```
 
-直接给 obj 设置一个属性,当 action 方法被调用时，会为 obj 新增一个 name 属性，而 Vue.js 并不会得到任何通知，新增的这个属性也不是响应式的，Vue.js 根本不知道这个 obj 新增了属性，就好像 Vue.js 无法知道我们使用 array.lenght = 0 清空了数组一样。
+直接给 obj 设置一个属性，当 action 方法被调用时，会为 obj 新增一个 name 属性，而 Vue.js 并不会得到任何通知，新增的这个属性也不是响应式的，Vue.js 根本不知道这个 obj 新增了属性，就好像 Vue.js 无法知道我们使用 `array.lenght = 0` 清空了数组一样。
 
 `vm.$set`就可以解决这个事情。`vm.$set`实现如下：
 
@@ -1299,7 +1297,7 @@ export function set(target, key, val) {
 
 ### 4.2.2 Array 的处理
 
-上面创建了 set 方法并且规定它接收 3 个参数，这 3 个参数与`vm.$set`API 规定的需要传递的参数一致。
+上面创建了 set 方法并且规定它接收 3 个参数，这 3 个参数与 `vm.$set` API 规定的需要传递的参数一致。
 
 接下来，需要对 target 是数组的情况进行处理：
 
@@ -1330,7 +1328,7 @@ export function set(target, key, val) {
     target.splice(key, 1, val);
     return val;
   }
-  //新增
+  // 新增
   if (key in target && !(key in Object.prototype)) {
     target[key] = val;
     return val;
@@ -1345,37 +1343,38 @@ export function set(target, key, val) {
 终于到了重头戏，现在来处理在 target 上新增的 key：
 
 ```js
-export function set(target,key,val){
-	if(Array.isArray(target)&&isValidArrayIndex(key)){
-		target.length = Math.max(target.length,key)
-		target.splice(key,1,val)
-		return val
-	}
-	if(key in target && !(key in Object.prototype)){
-		target[key] = val;
-		return val;
-	}
-	//新增
-	const ob = target._ob_;
-	if(target._isVue || (ob && ob.vmCount)){
-		process.env.NODE_ENV !== 'production' && warn(
-			'Avoid adding reactive properties to a Vue instance or its root $data' +
-			'at runtime - declare it upfront in the data option'
-		)
-		retun val;
-	}
-	if(!ob){
-		target[key] = val;
-		return val;
-	}
-	defineReactive(ob.value,key,val);
-	ob.dep.notify();
+export function set(target, key, val) {
+  if (Array.isArray(target) && isValidArrayIndex(key)) {
+    target.length = Math.max(target.length, key);
+    target.splice(key, 1, val);
+    return val;
+  }
+  if (key in target && !(key in Object.prototype)) {
+    target[key] = val;
+    return val;
+  }
+  // 新增
+  const ob = target._ob_;
+  if (target._isVue || (ob && ob.vmCount)) {
+    process.env.NODE_ENV !== 'production' &&
+      warn(
+        'Avoid adding reactive properties to a Vue instance or its root $data' +
+          'at runtime - declare it upfront in the data option'
+      );
+    return val;
+  }
+  if (!ob) {
+    target[key] = val;
+    return val;
+  }
+  defineReactive(ob.value, key, val);
+  ob.dep.notify();
 }
 ```
 
 在上面的代码中，最先做的事情是获取 target 的`__ob__`属性。然后要处理 target 不能是 Vue.js 实例或则 Vue.js 实例的根数据对象的情况。
 
-实现这个功能并不难，只需要使用 target_isVue 来判断 target 是不是 Vue.js 实例，使用 ob.vmCount 来判断它是不是根数据对象（`this.$data` 就是根数据）
+实现这个功能并不难，只需要使用 `target_isVue` 来判断 target 是不是 Vue.js 实例，使用 ob.vmCount 来判断它是不是根数据对象（`this.$data` 就是根数据）。
 
 接下来，要处理 target 不是响应式的情况。如果 target 身上没有`__ob__`属性，说明它并不是响应式的，并不需要做什么特殊处理，只需要通过 key 和 val 在 target 上设置就行了。
 
@@ -1384,8 +1383,6 @@ export function set(target,key,val){
 最后，向 target 的依赖发送变化通知，并返回 val。
 
 ## 4.3 vm.\$delete
-
-`vm.$delete`的作用是删除数据中的某个属性。由于 Vue.js 的变化侦测是使用 Object.defineProperty 实现的，所以如果数据是使用 delete 关键字删除的，那么无法发现数据发生了变化。为了解决这个问题，Vue.js 提供了 `vm.$delete` 方法来删除数据中的某个属性，并且此时 Vue.js 可以侦测到数据发生了变化。
 
 ### 4.3.1 用法
 
@@ -1442,49 +1439,51 @@ export function del(target, key) {
 因此，需要对这种情况进行判断：
 
 ```js
-export function del(target,key){
-	if(Array.isArray(target)&&isValidArrayIndex(key)){
-		target.splice(key,1)
-		return;
-	}
-	const _ob_ = target._ob_;
-	//新增
-	if(target._isVue || (ob && ob.vmCount)){
-		process.env.NODE_ENV !== 'production' && warn(
-			'Avoid deleting properties on a Vue instance or its root $data' +
-			'- just set it to null'
-		)
-		retun val;
-	}
-	delete target[key];
-	_ob_.dep.notify();
+export function del(target, key) {
+  if (Array.isArray(target) && isValidArrayIndex(key)) {
+    target.splice(key, 1);
+    return;
+  }
+  const _ob_ = target._ob_;
+  //新增
+  if (target._isVue || (ob && ob.vmCount)) {
+    process.env.NODE_ENV !== 'production' &&
+      warn(
+        'Avoid deleting properties on a Vue instance or its root $data' +
+          '- just set it to null'
+      );
+    return val;
+  }
+  delete target[key];
+  _ob_.dep.notify();
 }
 ```
 
-上面的代码中新增了逻辑判断：如果 target 上有`_isVue` 属性（target 是 Vue.js 实例）或则 ob.vmCount 数量大于 1（target 是根数据），则直接返回，终止程序继续执行，并且如果是开发环境，会在控制台中发出警告。
+上面的代码中新增了逻辑判断：如果 target 上有 `_isVue` 属性（target 是 Vue.js 实例）或则 ob.vmCount 数量大于 1（target 是根数据），则直接返回，终止程序继续执行，并且如果是开发环境，会在控制台中发出警告。
 
 如果删除的这个 key 不是 target 自身的属性，就什么都不做，直接退出程序执行。
 
 ```js
-export function del(target,key){
-	if(Array.isArray(target)&&isValidArrayIndex(key)){
-		target.splice(key,1)
-		return;
-	}
-	const _ob_ = target._ob_;
-	if(target._isVue || (ob && ob.vmCount)){
-		process.env.NODE_ENV !== 'production' && warn(
-			'Avoid deleting properties on a Vue instance or its root $data' +
-			'- just set it to null'
-		)
-		retun val;
-	}
-	//如果key不是target自身的属性,则终止程序继续执行
-	if(!hasOwn(target,key)){
-		return;
-	}
-	delete target[key];
-	_ob_.dep.notify();
+export function del(target, key) {
+  if (Array.isArray(target) && isValidArrayIndex(key)) {
+    target.splice(key, 1);
+    return;
+  }
+  const _ob_ = target._ob_;
+  if (target._isVue || (ob && ob.vmCount)) {
+    process.env.NODE_ENV !== 'production' &&
+      warn(
+        'Avoid deleting properties on a Vue instance or its root $data' +
+          '- just set it to null'
+      );
+    return val;
+  }
+  // 如果key不是target自身的属性,则终止程序继续执行
+  if (!hasOwn(target, key)) {
+    return;
+  }
+  delete target[key];
+  _ob_.dep.notify();
 }
 ```
 
@@ -1495,29 +1494,30 @@ export function del(target,key){
 下面这段代码新增了判断条件，如果数据不是响应式的，则使用 return 语句阻止执行发送通知的语句：
 
 ```js
-export function del(target,key){
-	if(Array.isArray(target)&&isValidArrayIndex(key)){
-		target.splice(key,1)
-		return;
-	}
-	const _ob_ = target._ob_;
-	if(target._isVue || (ob && ob.vmCount)){
-		process.env.NODE_ENV !== 'production' && warn(
-			'Avoid deleting properties on a Vue instance or its root $data' +
-			'- just set it to null'
-		)
-		retun val;
-	}
-	//如果key不是target自身的属性,则终止程序继续执行
-	if(!hasOwn(target,key)){
-		return;
-	}
-	delete target[key];
-	//如果ob不存在,则直接终止程序
-	if(!_ob_){
-		return;
-	}
-	_ob_.dep.notify();
+export function del(target, key) {
+  if (Array.isArray(target) && isValidArrayIndex(key)) {
+    target.splice(key, 1);
+    return;
+  }
+  const _ob_ = target._ob_;
+  if (target._isVue || (ob && ob.vmCount)) {
+    process.env.NODE_ENV !== 'production' &&
+      warn(
+        'Avoid deleting properties on a Vue instance or its root $data' +
+          '- just set it to null'
+      );
+    return val;
+  }
+  //如果key不是target自身的属性,则终止程序继续执行
+  if (!hasOwn(target, key)) {
+    return;
+  }
+  delete target[key];
+  //如果ob不存在,则直接终止程序
+  if (!_ob_) {
+    return;
+  }
+  _ob_.dep.notify();
 }
 ```
 
