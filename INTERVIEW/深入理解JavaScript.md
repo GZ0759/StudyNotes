@@ -266,15 +266,15 @@ var deepCopy = function (obj) {
 
 防抖的功效，它把一组连续的调用变为了一个，最大程度地优化了效率。防抖非常适于只关心结果，不关心过程如何的情况，它能很好地将大量连续事件转为单个我们需要的事件。
 
+不管事件触发频率多高，一定在事件触发 n 秒后才执行，如果你在一个事件触发的 n 秒内又触发了这个事件，就以新的事件的时间为准，n 秒后才执行，总之，触发完事件 n 秒内不再触发事件，n秒后再执行。
+
 应用场景
 
 1. 窗口大小变化，只关心最后结果
 2. 搜索栏，只关心完成结果
 3. 表单验证，延迟后进行验证
 
-实现
-
-为了更好理解，下面提供了最简单的 debounce 实现：返回一个 function，第一次执行这个 function 会启动一个定时器，下一次执行会清除上一次的定时器并重起一个定时器，直到这个 function 不再被调用，定时器成功跑完，执行回调函数
+为了更好理解，下面提供了最简单的 debounce 实现：返回一个 function，第一次执行这个 function 会启动一个定时器，下一次执行会清除上一次的定时器并重起一个定时器，直到这个 function 不再被调用，定时器成功跑完，执行回调函数。
 
 ```js
 const debounce = function(func, wait) {
@@ -286,19 +286,7 @@ const debounce = function(func, wait) {
 };
 ```
 
-```js
-function debounce(event, time) {
-  let timer = null;
-  return function (...args) {
-    clearTimeout(timer);
-    timer = setTimeout(() => {
-      event.apply(this, args);
-    }, time);
-  };
-}
-```
-
-有时候我们需要让函数立即执行一次，再等后面事件触发后等待`n`秒执行，我们给`debounce`函数一个`flag`用于标示是否立即执行。
+有时候我们需要让函数立即执行一次，再等后面事件触发后等待 n 秒执行，我们给`debounce`函数一个`flag`用于标示是否立即执行。同时保留上下文和参数。
 
 ```js
 function debounce(event, time, flag) {
@@ -315,17 +303,13 @@ function debounce(event, time, flag) {
 }
 ```
 
-节流（throttle）:不管事件触发频率多高，只在单位时间内执行一次。有两种方式可以实现节流，使用时间戳和定时器。
+## 节流（throttle）
 
-防抖（debounce）：不管事件触发频率多高，一定在事件触发`n`秒后才执行，如果你在一个事件触发的 `n` 秒内又触发了这个事件，就以新的事件的时间为准，`n`秒后才执行，总之，触发完事件 `n` 秒内不再触发事件，`n`秒后再执行。
+节流让指定函数在规定的时间里执行次数不会超过一次，也就是说，在连续高频执行中，动作会被定期执行。节流的主要目的是将原本操作的频率降低。
 
-## 节流
+不管事件触发频率多高，只在单位时间内执行一次。有两种方式可以实现节流，使用时间戳和定时器。
 
-1. 时间戳实现
-2. 定时器实现
-3. 时间戳/定时器结合
-
-时间戳实现。第一次事件肯定触发，最后一次不会触发
+1. 时间戳实现。第一次事件肯定触发，最后一次不会触发。
 
 ```js
 function throttle(event, time) {
@@ -336,9 +320,10 @@ function throttle(event, time) {
     event.apply(this, args);
   }
   }
+}
 ```
 
-定时器实现。第一次事件不会触发，最后一次一定触发
+2. 定时器实现。第一次事件不会触发，最后一次一定触发。
 
 ```js
 function throttle(event, time) {
@@ -354,7 +339,7 @@ function throttle(event, time) {
 }
 ```
 
-定时器和时间戳的结合版，也相当于节流和防抖的结合版，第一次和最后一次都会触发
+3. 定时器和时间戳的结合版，也相当于节流和防抖的结合版，第一次和最后一次都会触发。
 
 ```js
 function throttle(event, time) {
@@ -362,11 +347,13 @@ function throttle(event, time) {
   let timer = null;
   return function (...args) {
     if (Date.now() - pre > time) {
+      // 时间戳 首次执行
       clearTimeout(timer);
       timer = null;
       pre = Date.now();
       event.apply(this, args);
     } else if (!timer) {
+      // 定时器 最后一次执行
       timer = setTimeout(() => {
         event.apply(this, args);
       }, time);
@@ -375,7 +362,13 @@ function throttle(event, time) {
 }
 ```
 
+## requestAnimationFrame（rAF）
 
+rAF 在一定程度上和 `throttle(func, 16)` 的作用相似，但它是浏览器自带的 api，所以，它比 throttle 函数执行得更加平滑。调用 `window.requestAnimationFrame()`，浏览器会在下次刷新的时候执行指定回调函数。通常，屏幕的刷新频率是 60hz，所以，这个函数也就是大约 16.7ms 执行一次。如果你想让你的动画更加平滑，用 rAF 就再好不过了，因为它是跟着屏幕的刷新频率来的。
+
+rAF 的写法与 debounce 和 throttle 不同，如果你想用它绘制动画，需要不停地在回调函数里调用自身，具体写法可以参考[MDN](https://developer.mozilla.org/zh-CN/docs/Web/API/Window/requestAnimationFrame)。
+
+rAF 支持 ie10 及以上浏览器，不过因为是浏览器自带的 api，我们也就无法在 node 中使用它了。
 
 # 数组去重
 
