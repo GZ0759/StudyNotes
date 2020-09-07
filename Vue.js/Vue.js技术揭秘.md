@@ -13281,7 +13281,7 @@ beforeMount () {
 
 分析了 Vue-Router 的实现原理，从路由注册开始，分析了路由对象、matcher，并深入分析了整个路径切换的实现过程和细节。
 
-## Vue-Router
+## 7.1 Vue-Router
 
 路由的概念相信大部分同学并不陌生，它的作用就是根据不同的路径映射到不同的视图。我们在用 Vue 开发过实际项目的时候都会用到 Vue-Router 这个官方插件来帮我们解决路由的问题。Vue-Router 的能力十分强大，它支持 `hash`、`history`、`abstract` 3 种路由方式，提供了 `<router-link>` 和 `<router-view>` 2 种组件，还提供了简单的路由配置和一系列好用的 API。
 
@@ -13347,7 +13347,7 @@ const app = new Vue({
 
 这是一个非常简单的例子，接下来我们先从 `Vue.use(VueRouter)` 说起。
 
-## 路由注册
+## 7.2 路由注册
 
 Vue 从它的设计上就是一个渐进式 JavaScript 框架，它本身的核心是解决视图渲染的问题，其它的能力就通过插件的方式来解决。Vue-Router 就是官方维护的路由插件，在介绍它的注册实现之前，我们先来分析一下 Vue 通用的插件注册原理。
 
@@ -13463,7 +13463,7 @@ export function initMixin (Vue: GlobalAPI) {
 
 那么到此为止，我们分析了 Vue-Router 的安装过程，Vue 编写插件的时候通常要提供静态的 `install` 方法，我们通过 `Vue.use(plugin)` 时候，就是在执行 `install` 方法。`Vue-Router` 的 `install` 方法会给每一个组件注入 `beforeCreate` 和 `destoryed` 钩子函数，在 `beforeCreate` 做一些私有属性定义和路由初始化工作，下一节我们就来分析一下 `VueRouter` 对象的实现和它的初始化工作。
  
-## VueRouter 对象
+## 7.3 VueRouter 对象
 
 VueRouter 的实现是一个类，我们先对它做一个简单地分析，它的定义在 `src/index.js` 中：
 
@@ -13789,7 +13789,7 @@ match (
 
 通过这一节的分析，我们大致对 `VueRouter` 类有了大致了解，知道了它的一些属性和方法，同时了解到在组件的初始化阶段，执行到 `beforeCreate` 钩子函数的时候会执行 `router.init` 方法，然后又会执行 `history.transitionTo` 方法做路由过渡，进而引出了 `matcher` 的概念，接下来我们先研究一下 `matcher` 的相关实现。
 
-## matcher
+## 7.4 matcher
 
 `matcher` 相关的实现都在 `src/create-matcher.js` 中，我们先来看一下 `matcher` 的数据结构：
 
@@ -14385,7 +14385,7 @@ function formatMatch (record: ?RouteRecord): Array<RouteRecord> {
 
 那么到此，`matcher` 相关的主流程的分析就结束了，我们了解了 `Location`、`Route`、`RouteRecord` 等概念。并通过 `matcher` 的 `match` 方法，我们会找到匹配的路径 `Route`，这个对 `Route` 的切换，组件的渲染都有非常重要的指导意义。下一节我们会回到 `transitionTo` 方法，看一看路径的切换都做了哪些事情。
 
-## 路径切换
+## 7.5 路径切换
 
 `history.transitionTo` 是 Vue-Router 中非常重要的方法，当我们切换路由线路的时候，就会执行到该方法，前一节我们分析了 `matcher` 的相关实现，知道它是如何找到匹配的新线路，那么匹配到新线路后又做了哪些事情，接下来我们来完整分析一下 `transitionTo` 的实现，它的定义在 `src/history/base.js` 中：
 
@@ -15518,7 +15518,7 @@ replace (location: RawLocation, onComplete?: Function, onAbort?: Function) {
 
 分析了 Vuex 的实现原理，深入分析了它的初始化过程，常用 API 以及插件部分的实现。
 
-## Vuex
+## 8.1 Vuex
 
 Vuex 是一个专为 Vue.js 应用程序开发的状态管理模式。它采用集中式存储管理应用的所有组件的状态，并以相应的规则保证状态以一种可预测的方式发生变化。
 
@@ -15549,9 +15549,9 @@ new Vue({
 
 这个状态自管理应用包含以下几个部分：
 
-- state，驱动应用的数据源；
-- view，以声明方式将 state 映射到视图；
-- actions，响应在 view 上的用户输入导致的状态变化。
+1. state，驱动应用的数据源；
+2. view，以声明方式将 state 映射到视图；
+3. actions，响应在 view 上的用户输入导致的状态变化。
 
 以下是一个表示“单向数据流”理念的极简示意：
 
@@ -15573,15 +15573,13 @@ Vuex 应用的核心就是 store（仓库）。“store”基本上就是一个�
 Vuex 和单纯的全局对象有以下两点不同：
 
 - Vuex 的状态存储是响应式的。当 Vue 组件从 store 中读取状态的时候，若 store 中的状态发生变化，那么相应的组件也会相应地得到高效更新。
-
 - 你不能直接改变 store 中的状态。改变 store 中的状态的唯一途径就是显式地提交 (commit) mutation。这样使得我们可以方便地跟踪每一个状态的变化，从而让我们能够实现一些工具帮助我们更好地了解我们的应用。
-
 
 另外，通过定义和隔离状态管理中的各种概念并强制遵守一定的规则，我们的代码将会变得更结构化且易维护。
 
 <img :src="$withBase('/assets/vuex1.png')">
 
-## Vuex 初始化
+## 8.2 Vuex 初始化
 
 这一节我们主要来分析 Vuex 的初始化过程，它包括安装、Store 实例化过程 2 个方面。
 
@@ -15839,8 +15837,7 @@ export default class ModuleCollection {
 }
 ```
 
-`ModuleCollection` 实例化的过程就是执行了 `register` 方法，
-`register` 接收 3 个参数，其中 `path` 表示路径，因为我们整体目标是要构建一颗模块树，`path` 是在构建树的过程中维护的路径；`rawModule` 表示定义模块的原始配置；`runtime` 表示是否是一个运行时创建的模块。
+`ModuleCollection` 实例化的过程就是执行了 `register` 方法，`register` 接收 3 个参数，其中 `path` 表示路径，因为我们整体目标是要构建一颗模块树，`path` 是在构建树的过程中维护的路径；`rawModule` 表示定义模块的原始配置；`runtime` 表示是否是一个运行时创建的模块。
 
 `register` 方法首先通过 `const newModule = new Module(rawModule, runtime)` 创建了一个 `Module` 的实例，`Module` 是用来描述单个模块的类，它的定义在 `src/module/module.js` 中：
 
@@ -16444,7 +16441,7 @@ _withCommit (fn) {
 
 这一节我们已经建立好 `store`，接下来就是对外提供了一些 API 方便我们对这个 `store` 做数据存取的操作，下一节我们就来从源码角度来分析 `Vuex` 提供的一系列 API。
 
-## API
+## 8.3 API
 
 上一节我们对 Vuex 的初始化过程有了深入的分析，在我们构造好这个 `store` 后，需要提供一些 API 对这个 `store` 做存取的操作，那么这一节我们就从源码的角度对这些 API 做分析。
  
@@ -16548,8 +16545,7 @@ function resetStoreVM (store, state, hot) {
 }
 ```
 
-在 `installModule` 的过程中，为建立了每个模块的上下文环境，
-因此当我们访问 `store.getters.xxx` 的时候，实际上就是执行了 `rawGetter(local.state,...)`，`rawGetter` 就是我们定义的 `getter` 方法，这也就是为什么我们的 `getter` 函数支持这四个参数，并且除了全局的 `state` 和 `getter` 外，我们还可以访问到当前 `module` 下的 `state` 和 `getter`。
+在 `installModule` 的过程中，为建立了每个模块的上下文环境，因此当我们访问 `store.getters.xxx` 的时候，实际上就是执行了 `rawGetter(local.state,...)`，`rawGetter` 就是我们定义的 `getter` 方法，这也就是为什么我们的 `getter` 函数支持这四个参数，并且除了全局的 `state` 和 `getter` 外，我们还可以访问到当前 `module` 下的 `state` 和 `getter`。
 
 ### 数据存储
 
@@ -16721,7 +16717,6 @@ dispatch (_type, _payload) {
 这里传入的 `_type` 就是 `action` 的 `type`，我们可以从 `store._actions` 找到对应的函数数组，遍历它们执行获取到每个 `handler` 然后执行，实际上就是执行了 `wrappedActionHandler(payload)`，接着会执行我们定义的 `action` 函数，并传入一个对象，包含了当前模块下的 `dispatch`、`commit`、`getters`、`state`，以及全局的 `rootState` 和 `rootGetters`，所以我们定义的 `action` 函数能拿到当前模块下的 `commit` 方法。
 
 因此 `action` 比我们自己写一个函数执行异步操作然后提交 `muataion` 的好处是在于它可以在参数中获取到当前模块的一些方法和状态，Vuex 帮我们做好了这些。
-
 
 ### 语法糖
 
@@ -17079,7 +17074,7 @@ function resetStore (store, hot) {
 
 那么至此，Vuex 提供的一些常用 API 我们就分析完了，包括数据的存取、语法糖、模块的动态更新等。要理解 Vuex 提供这些 API 都是方便我们在对 `store` 做各种操作来完成各种能力，尤其是 `mapXXX` 的设计，让我们在使用 API 的时候更加方便，这也是我们今后在设计一些 JavaScript 库的时候，从 API 设计角度中应该学习的方向。
 
-## 插件
+## 8.4 插件
 
 Vuex 除了提供的存取能力，还提供了一种插件能力，让我们可以监控 `store` 的变化过程来做一些事情。
 

@@ -171,28 +171,20 @@ for (var i = 1; i <= 5; i++) {
 
 ## 浅拷贝
 
-1. slice、concat
-2. for/in
-3. Object.assign
-4. 展开语法 Spread syntax
-
-如果是数组，我们可以利用数组的一些方法比如：slice、concat 返回一个新数组的特性来实现拷贝。
+1. 利用数组本身的 slice 或 concat 方法
 
 ```js
-var arr = ["old", 1, true, null, undefined];
+var arr = ['old', 1, true, null, undefined];
 var new_arr = arr.concat();
 // 或者
-// var new_arr = arr.slice();
-new_arr[0] = "new";
-console.log(arr); // ["old", 1, true, null, undefined]
-console.log(new_arr); // ["new", 1, true, null, undefined]
+var new_arr = arr.slice();
 ```
 
-使用 for/in 执行对象拷贝。遍历对象，然后把属性和属性值都放在一个新的对象中。
+2. 使用 for...in 遍历对象进行拷贝
 
 ```js
 var shallowCopy = function (obj) {
-  if (typeof obj !== "object") return;
+  if (typeof obj !== 'object') return;
   var newObj = obj instanceof Array ? [] : {};
   for (var key in obj) {
     if (obj.hasOwnProperty(key)) {
@@ -203,31 +195,32 @@ var shallowCopy = function (obj) {
 };
 ```
 
-Object.assign 函数可简单的实现浅拷贝，它是将两个对象的属性叠加后面对象属性会覆盖前面对象同名属性。
+3. 利用 ES6 的 `Object.assign` 函数进行拷贝或覆盖
 
 ```js
-let user = { name: "后盾人" };
+let user = { name: '后盾人' };
 let hd = Object.assign({}, user);
-hd.name = "hdcms";
-console.log(user.name); //后盾人
 ```
 
-使用展示语法也可以实现浅拷贝。
+4. 利用 ES6 的展开语法
 
 ```js
-let obj = { name: "后盾人" };
+let obj = { name: '后盾人' };
 let hd = { ...obj };
-hd.name = "hdcms";
-console.log(hd);
-console.log(obj);
 ```
 
 ## 深拷贝
 
-1. JSON序列化和解析
-2. 递归遍历
+1. JSON 序列化和解析，可用于数组和对象
 
-通过JSON对象的序列化和接续，不仅可以用于数组还可用于对象！但是该方法有以下几个问题。
+```js
+var arr = ['old', 1, true, ['old1', 'old2'], { old: 1 }];
+var new_arr = JSON.parse(JSON.stringify(arr));
+console.log(new_arr);
+```
+
+但是该方法有以下几个问题。
+
 - 会忽略 undefined
 - 会忽略 symbol
 - 不能序列化函数
@@ -235,17 +228,11 @@ console.log(obj);
 - 不能正确处理`new Date()`
 - 不能处理正则
 
-```js
-var arr = ["old", 1, true, ["old1", "old2"], { old: 1 }];
-var new_arr = JSON.parse(JSON.stringify(arr));
-console.log(new_arr);
-```
-
-递归遍历。在拷贝的时候判断一下属性值的类型，如果是对象，我们递归调用深拷贝函数。
+2. 递归遍历。拷贝时判断类型，如果是对象则递归调用
 
 ```js
 var deepCopy = function (obj) {
-  if (typeof obj !== "object") return obj;
+  if (typeof obj !== 'object') return obj;
   var newObj = obj instanceof Array ? [] : {};
   for (const [k, v] of Object.entries(obj)) {
     newObj[k] = deepCopy(v);
@@ -256,7 +243,240 @@ var deepCopy = function (obj) {
 
 尽管使用深拷贝会完全的克隆一个新对象，不会产生副作用，但是深拷贝因为使用递归，性能会不如浅拷贝，在开发中，还是要根据实际情况进行选择。
 
-我们知道 JSON 无法深拷贝循环引用，遇到这种情况会抛出异常。解决方案很简单，其实就是循环检测，我们设置一个数组或者哈希表存储已拷贝过的对象，当检测到当前对象已存在于哈希表中时，取出该值并返回即可。也可以使用了 ES6 中的 WeakMap 来处理。
+## 循环引用
+
+我们知道 JSON 无法深拷贝循环引用，遇到这种情况会抛出异常。
+
+```js
+let a = {};
+a.circleRef = a;
+
+JSON.parse(JSON.stringify(a));
+// TypeError: Converting circular structure to JSON
+```
+
+1. 使用哈希表
+
+解决方案很简单，其实就是循环检测，我们设置一个数组或者哈希表存储已拷贝过的对象，当检测到当前对象已存在于哈希表中时，取出该值并返回即可。也可以使用了 ES6 中的 WeakMap 来处理。
+
+```js
+function cloneDeep3(source, hash = new WeakMap()) {
+  if (!isObject(source)) return source;
+  if (hash.has(source)) return hash.get(source); // 新增代码，查哈希表
+
+  var target = Array.isArray(source) ? [] : {};
+  hash.set(source, target); // 新增代码，哈希表设值
+
+  for (var key in source) {
+    if (Object.prototype.hasOwnProperty.call(source, key)) {
+      if (isObject(source[key])) {
+        target[key] = cloneDeep3(source[key], hash); // 新增代码，传入哈希表
+      } else {
+        target[key] = source[key];
+      }
+    }
+  }
+  return target;
+}
+
+function isObject(obj) {
+  return typeof obj === 'object' && obj != null;
+}
+```
+
+2. 使用数组
+
+这里使用了 ES6 中的 WeakMap 来处理，那在 ES5 下应该如何处理呢？也很简单，使用数组来处理就好啦，代码如下。
+
+```js
+// 木易杨
+function cloneDeep3(source, uniqueList) {
+  if (!isObject(source)) return source;
+  if (!uniqueList) uniqueList = []; // 初始化数组
+
+  var target = Array.isArray(source) ? [] : {};
+
+  // 数据已经存在，返回保存的数据
+  var uniqueData = find(uniqueList, source);
+  if (uniqueData) {
+    return uniqueData.target;
+  }
+
+  // 数据不存在，保存源数据，以及对应的引用
+  uniqueList.push({
+    source: source,
+    target: target,
+  });
+
+  for (var key in source) {
+    if (Object.prototype.hasOwnProperty.call(source, key)) {
+      if (isObject(source[key])) {
+        target[key] = cloneDeep3(source[key], uniqueList); // 新增代码，传入数组
+      } else {
+        target[key] = source[key];
+      }
+    }
+  }
+  return target;
+}
+
+// 新增方法，用于查找
+function find(arr, item) {
+  for (var i = 0; i < arr.length; i++) {
+    if (arr[i].source === item) {
+      return arr[i];
+    }
+  }
+  return null;
+}
+```
+
+4. 拷贝 Symbol
+
+这个时候可能要搞事情了，那我们能不能拷贝 Symol 类型呢？
+
+当然可以，不过 Symbol 在 ES6 下才有，我们需要一些方法来检测出 Symble 类型。
+
+- Object.getOwnPropertySymbols(...)
+- Reflect.ownKeys(...)
+
+对于方法一可以查找一个给定对象的符号属性时返回一个 ?symbol 类型的数组。注意，每个初始化的对象都是没有自己的 symbol 属性的，因此这个数组可能为空，除非你已经在对象上设置了 symbol 属性。（来自 MDN）
+
+```js
+var obj = {};
+var a = Symbol('a'); // 创建新的symbol类型
+var b = Symbol.for('b'); // 从全局的symbol注册?表设置和取得symbol
+
+obj[a] = 'localSymbol';
+obj[b] = 'globalSymbol';
+
+var objectSymbols = Object.getOwnPropertySymbols(obj);
+
+console.log(objectSymbols.length); // 2
+console.log(objectSymbols); // [Symbol(a), Symbol(b)]
+console.log(objectSymbols[0]); // Symbol(a)
+```
+
+对于方法二返回一个由目标对象自身的属性键组成的数组。它的返回值等同于 Object.getOwnPropertyNames(target).concat(Object.getOwnPropertySymbols(target))。(来自 MDN)
+
+```js
+Reflect.ownKeys({ z: 3, y: 2, x: 1 }); // [ "z", "y", "x" ]
+Reflect.ownKeys([]); // ["length"]
+
+var sym = Symbol.for('comet');
+var sym2 = Symbol.for('meteor');
+var obj = {
+  [sym]: 0,
+  str: 0,
+  773: 0,
+  0: 0,
+  [sym2]: 0,
+  '-1': 0,
+  8: 0,
+  'second str': 0,
+};
+Reflect.ownKeys(obj);
+// [ "0", "8", "773", "str", "-1", "second str", Symbol(comet), Symbol(meteor) ]
+// 注意顺序
+// Indexes in numeric order,
+// strings in insertion order,
+// symbols in insertion order
+```
+
+方法一
+思路就是先查找有没有 Symbol 属性，如果查找到则先遍历处理 Symbol 情况，然后再处理正常情况，多出来的逻辑就是下面的新增代码。
+
+```js
+// 木易杨
+function cloneDeep4(source, hash = new WeakMap()) {
+  if (!isObject(source)) return source;
+  if (hash.has(source)) return hash.get(source);
+
+  let target = Array.isArray(source) ? [] : {};
+  hash.set(source, target);
+
+  // ============= 新增代码
+  let symKeys = Object.getOwnPropertySymbols(source); // 查找
+  if (symKeys.length) {
+    // 查找成功
+    symKeys.forEach((symKey) => {
+      if (isObject(source[symKey])) {
+        target[symKey] = cloneDeep4(source[symKey], hash);
+      } else {
+        target[symKey] = source[symKey];
+      }
+    });
+  }
+  // =============
+
+  for (let key in source) {
+    if (Object.prototype.hasOwnProperty.call(source, key)) {
+      if (isObject(source[key])) {
+        target[key] = cloneDeep4(source[key], hash);
+      } else {
+        target[key] = source[key];
+      }
+    }
+  }
+  return target;
+}
+```
+
+5. 破解递归爆栈
+
+上面四步使用的都是递归方法，但是有一个问题在于会爆栈，错误提示如下。
+
+```js
+// RangeError: Maximum call stack size exceeded
+```
+
+那应该如何解决呢？其实我们使用循环就可以了，代码如下。
+
+```js
+function cloneDeep5(x) {
+  const root = {};
+
+  // 栈
+  const loopList = [
+    {
+      parent: root,
+      key: undefined,
+      data: x,
+    },
+  ];
+
+  while (loopList.length) {
+    // 广度优先
+    const node = loopList.pop();
+    const parent = node.parent;
+    const key = node.key;
+    const data = node.data;
+
+    // 初始化赋值目标，key为undefined则拷贝到父元素，否则拷贝到子元素
+    let res = parent;
+    if (typeof key !== 'undefined') {
+      res = parent[key] = {};
+    }
+
+    for (let k in data) {
+      if (data.hasOwnProperty(k)) {
+        if (typeof data[k] === 'object') {
+          // 下一次循环
+          loopList.push({
+            parent: res,
+            key: k,
+            data: data[k],
+          });
+        } else {
+          res[k] = data[k];
+        }
+      }
+    }
+  }
+
+  return root;
+}
+```
 
 # 函数节流和防抖
 
