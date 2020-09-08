@@ -663,13 +663,7 @@ function unique(arr) {
 
 # 数组扁平化
 
-- 循环递归的基本实现
-- 使用reduce简化循环
-- ES6扩展运算符循环
-- 字符串toString方法
-- 字符串JSON过滤
-
-基本实现。循环数组元素，如果还是一个数组，就递归调用该方法。
+1. 循环递归的基本实现
 
 ```js
 const flat = (array) => {
@@ -685,7 +679,7 @@ const flat = (array) => {
 }
 ```
 
-使用reduce简化
+2. 使用`reduce()`简化递归遍历
 
 ```js
 function flatten(array) {
@@ -698,7 +692,7 @@ function flatten(array) {
 }
 ```
 
-ES6 增加了扩展运算符，用于取出参数对象的所有可遍历属性，拷贝到当前对象之中。
+3. 数组 `some()` 方法和 ES6 扩展运算符
 
 ```js
 function flatten(arr) {
@@ -709,7 +703,9 @@ function flatten(arr) {
 }
 ```
 
-如果数组的元素都是数字或都是字符串，那么我们可以考虑使用 toString 方法，因为：调用 toString 方法，返回了一个逗号分隔的扁平的字符串。然而这种方法使用的场景却非常有限，如果数组是 [1, '1', 2, '2'] 的话，这种方法就会产生错误的结果。
+4. 字符串`toString()`方法
+
+如果数组的元素都是数字或都是字符串，那么我们可以考虑使用 toString 方法，因为：调用 toString 方法，返回了一个逗号分隔的扁平的字符串。然而这种方法使用的场景却非常有限，如果数组是 `[1, '1', 2, '2']` 的话，这种方法就会产生错误的结果。
 
 ```js
 function flatten(arr) {
@@ -717,7 +713,9 @@ function flatten(arr) {
 }
 ```
 
-字符串过滤。将输入数组转换为字符串并删除所有括号（[]）并将输出解析为数组。
+5. 字符串过滤
+
+将输入数组转换为字符串并删除所有括号`[]`并将输出解析为数组。
 
 ```js
 const flatten = arr => {
@@ -727,14 +725,19 @@ const flatten = arr => {
 }
 ```
 
+6. ES6的 `Array.prototype.flat()` 方法
+
+`flat()`默认只会“拉平”一层，如果想要“拉平”多层的嵌套数组，可以将`flat()`方法的参数写成一个整数，表示想要拉平的层数，默认为1。如果不管有多少层嵌套，都要转成一维数组，可以用`Infinity`关键字作为参数。
+
+```js
+function flatten(arr) {
+  return arr.flat(Infinity)
+}
+```
+
 # 数组最值
 
-- 直接循环求最值
-- 使用reduce简化
-- Math.max接收合适参数
-- 数组排序方法sort
-
-最最原始的方法，莫过于循环遍历一遍：
+1. 直接循环
 
 ```js
 var result = arr[0];
@@ -743,13 +746,13 @@ for (var i = 1; i < arr.length; i++) {
 }
 ```
 
-既然是通过遍历数组求出一个最终值，那么我们就可以使用 reduce 方法。
+2. 使用 `reduce()` 方法简化循环
 
 ```js
 array.reduce((c, n) => Math.max(c, n))
 ```
 
-`Math.max`参数原本是一组数字，只需要让他可以接收数组即可。
+3. 调用原生方法 `Math.max()`。
 
 ```js
 const array = [3,2,1,4,5];
@@ -758,7 +761,7 @@ Math.max.apply(null, array);
 // Math.max(...array);
 ```
 
-如果我们先对数组进行一次排序，那么最大值就是最后一个值：
+4. 使用 `sort()` 方法排序
 
 ```js
 arr.sort(function (a, b) {
@@ -774,6 +777,7 @@ arr[arr.length - 1]
 判断当前函数传入的参数是否大于或等于`fn`需要参数的数量，如果是，直接执行`fn`。如果传入参数数量不够，返回一个闭包，暂存传入的参数，并重新返回`currying`函数。
 
 实际应用
+
 - 延迟计算：部分求和、bind 函数
 - 动态创建函数：添加监听 addEvent、惰性函数
 - 参数复用
