@@ -776,20 +776,63 @@ arr[arr.length - 1]
 
 判断当前函数传入的参数是否大于或等于`fn`需要参数的数量，如果是，直接执行`fn`。如果传入参数数量不够，返回一个闭包，暂存传入的参数，并重新返回`currying`函数。
 
-实际应用
+## 实际应用
 
-- 延迟计算：部分求和、bind 函数
-- 动态创建函数：添加监听 addEvent、惰性函数
-- 参数复用
+1. 参数复用，需要输入多个参数，最终只需输入一个。
+2. 延迟运行，例如部分求和，而 bind 函数的模拟实现和柯理化函数的实现，其核心代码都是一致的。
+3. 提前确定，例如只计算一次的函数或者惰性函数。
 
 ```js
-function currying(fn, length) {
-  length = length || fn.length; 	
-  return function (...args) {			
-    return args.length >= length	
-    	? fn.apply(this, args)			
-      : currying(fn.bind(this, ...args), length - args.length) 
+// 添加监听 addEvent 函数
+const addEvent = (function () {
+  // 闭包和立即调用函数表达式（IIFE）
+  if (window.addEventListener) {
+    return function (type, el, fn, capture) {
+      el.addEventListener(type, fn, capture);
+    };
+  } else if (window.attachEvent) {
+    return function (type, el, fn) {
+      el.attachEvent('on' + type, fn);
+    };
   }
+})();
+```
+
+```js
+// 惰性函数
+function addEvent(type, el, fn, capture = false) {
+  // 重写函数
+  if (window.addEventListener) {
+    addEvent = function (type, el, fn, capture) {
+      el.addEventListener(type, fn, capture);
+    };
+  } else if (window.attachEvent) {
+    addEvent = function (type, el, fn) {
+      el.attachEvent('on' + type, fn);
+    };
+  }
+  // 执行函数，有循环爆栈风险
+  addEvent(type, el, fn, capture);
+}
+```
+
+## 实现方法
+
+```js
+function progressCurrying(fn, args) {
+  var _this = this;
+  var len = fn.length;
+  var args = args || [];
+  return function () {
+    var _args = Array.prototype.slice.call(arguments);
+    Array.prototype.push.apply(args, _args);
+
+    if (_args.length < len) {
+      return progressCurrying.call(_this, fn, _args);
+    }
+
+    return fn.apply(this, _args);
+  };
 }
 ```
 
@@ -804,7 +847,7 @@ function currying(fn, ...args) {
   }
 }
 ```
-
+`
 # 模拟实现call
 
 `call()` 方法使用一个指定的 this 值和单独给出的一个或多个参数来调用一个函数。
