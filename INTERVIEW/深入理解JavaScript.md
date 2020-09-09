@@ -232,7 +232,9 @@ console.log(new_arr);
 
 ```js
 var deepCopy = function (obj) {
-  if (typeof obj !== 'object') return obj;
+  if (typeof obj !== 'object') return obj;  
+  if (target === null) return null;
+
   var newObj = obj instanceof Array ? [] : {};
   for (const [k, v] of Object.entries(obj)) {
     newObj[k] = deepCopy(v);
@@ -818,6 +820,20 @@ function addEvent(type, el, fn, capture = false) {
 
 ## 实现方法
 
+1. 使用 ES6 极简写法，更加简洁也更加易懂。
+
+```js
+function currying(fn, ...args) {
+  if (args.length >= fn.length) {
+    return fn(...args);
+  } else {
+    return (...args2) => currying(fn, ...args, ...args2);
+  }
+}
+```
+
+2. 使用兼容语法。
+
 ```js
 function progressCurrying(fn, args) {
   var _this = this;
@@ -836,18 +852,6 @@ function progressCurrying(fn, args) {
 }
 ```
 
-ES6 极简写法，更加简洁也更加易懂。
-
-```js
-function currying(fn, ...args) {
-  if (args.length >= fn.length) {
-    return fn(...args);
-  } else {
-    return (...args2) => currying(fn, ...args, ...args2);
-  }
-}
-```
-`
 # 模拟实现call
 
 `call()` 方法使用一个指定的 this 值和单独给出的一个或多个参数来调用一个函数。
