@@ -852,46 +852,47 @@ function progressCurrying(fn, args) {
 }
 ```
 
-# 模拟实现call
+# 模拟实现 call
 
 `call()` 方法使用一个指定的 this 值和单独给出的一个或多个参数来调用一个函数。
 
-- 允许为不同的对象分配和调用属于一个对象的函数/方法。
-- 提供新的 this 值给当前调用的函数/方法。可以使用 call 来实现继承。
+主要描述：
+
+1. 调用者提供的 this 值和参数调用该函数，若该方法没有返回值，则返回 undefined
+1. 允许为不同的对象分配和调用属于一个对象的函数/方法
+2. 提供新的 this 值给当前调用的函数/方法。可以使用 call 来实现继承
 
 处理步骤：
-1. 判断当前`this`是否为函数，防止` Function.prototype.myCall()` 直接调用
-2. `context` 为可选参数，如果不传的话默认上下文为 `window`
-3. 为`context` 创建一个 `Symbol`（保证不会重名）属性，将当前函数赋值给这个属性
+
+1. 判断当前 this 是否为函数，防止 `Function.prototype.myCall()` 直接调用
+2. context 为可选参数，如果不传的话默认上下文为 window
+3. 为 context 创建一个 Symbol（保证不会重名）属性，将当前函数赋值给这个属性
 4. 处理参数，传入第一个参数后的其余参数
-4. 调用函数后即删除该`Symbol`属性
+5. 调用函数后即删除该 Symbol 属性
 
 ```js
 Function.prototype.myCall = function (context, ...args) {
   if (this === Function.prototype) {
     return undefined;
   }
-
   context = Object(context) || window;
-
   const fn = Symbol();
   context[fn] = this;
 
   const result = context[fn](...args);
-
   delete context[fn];
   return result;
-}
+};
 ```
 
 call 是 ES3 的方法，展开运算符是 ES6 的功能。所以用 eval 方法拼成一个函数。这里 args 会自动调用 `Array.toString()` 这个方法。
 
 ```js
 var args = [];
-  for(var i = 1, len = arguments.length; i < len; i++) {
-      args.push('arguments[' + i + ']');
-  }
-  var result = eval('context.fn(' + args +')');
+for (var i = 1, len = arguments.length; i < len; i++) {
+  args.push('arguments[' + i + ']');
+}
+var result = eval('context.fn(' + args + ')');
 ```
 
 # 模拟实现apply
