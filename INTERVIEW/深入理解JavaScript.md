@@ -896,10 +896,10 @@ var result = eval('context.fn(' + args + ')');
 
 # 模拟实现apply
 
-`apply`实现类似`call`，参数为数组
+`apply`实现类似`call`，该方法调用一个具有给定 this 值的函数，以及以一个数组（或类数组对象）的形式提供的参数。
 
 ```js
-Function.prototype.myApply = function (context = window, args) {
+Function.prototype.myApply = function (context, args) {
   if (this === Function.prototype) {
     return undefined; 
   }
@@ -919,9 +919,10 @@ Function.prototype.myApply = function (context = window, args) {
 
 # 模拟实现bind
 
-bind() 方法会创建一个新函数，当这个新函数被调用时，它的 this 值是传递给 bind() 的第一个参数，传入bind方法的第二个以及以后的参数加上绑定函数运行时本身的参数按照顺序作为原函数的参数来调用原函数。bind返回的绑定函数也能使用 new 操作符创建对象：这种行为就像把原函数当成构造器，提供的 this 值被忽略，同时调用时的参数被提供给模拟函数。
+`bind()` 方法创建一个新的函数，在 `bind()` 被调用时，这个新函数的 this 被指定为 `bind()` 的第一个参数，而其余参数将作为新函数的参数，供调用时使用。绑定函数也可以使用 new 运算符构造，它会表现为目标函数已经被构建完毕了似的。提供的 this 值会被忽略，但前置参数仍会提供给模拟函数。
 
-处理步骤：
+实现步骤：
+
 1. 处理参数，返回一个闭包
 2. 判断是否为构造函数调用，如果是则使用`new`调用当前函数
 3. 如果不是，使用`apply`，将`context`和处理好的参数传入
@@ -937,7 +938,7 @@ Function.prototype.myBind = function (context, ...args1) {
     if (this instanceof F) {
       return new _this(...args1, ...args2)
     }
-    return _this.apply(context, args1.concat(args2))
+    return _this.apply(context, [...args1, ...args2])
   }
 }
 ```
@@ -946,28 +947,30 @@ Function.prototype.myBind = function (context, ...args1) {
 
 ```js
 Function.prototype.bind2 = function (context) {
+  if (typeof this !== 'function') {
+    throw new Error(
+      'Function.prototype.bind - what is trying to be bound is not callable'
+    );
+  }
+  var self = this;
+  var args = Array.prototype.slice.call(arguments, 1);
 
-    if (typeof this !== "function") {
-      throw new Error("Function.prototype.bind - what is trying to be bound is not callable");
-    }
+  // 用一个空对象作为中介
+  // 把 fBound.prototype 赋值为空对象的实例
+  // 原型式继承
+  var fNOP = function () {};
+  var fBound = function () {
+    var bindArgs = Array.prototype.slice.call(arguments);
+    return self.apply(
+      this instanceof fNOP ? this : context,
+      args.concat(bindArgs)
+    );
+  };
 
-    var self = this;
-    var args = Array.prototype.slice.call(arguments, 1);
-
-    // 用一个空对象作为中介
-    // 把 fBound.prototype 赋值为空对象的实例
-    // 原型式继承
-    var fNOP = function () {};
-
-    var fBound = function () {
-        var bindArgs = Array.prototype.slice.call(arguments);
-        return self.apply(this instanceof fNOP ? this : context, args.concat(bindArgs));
-    }
-
-    fNOP.prototype = this.prototype;
-    fBound.prototype = new fNOP();
-    return fBound;
-}
+  fNOP.prototype = this.prototype;
+  fBound.prototype = new fNOP();
+  return fBound;
+};
 ```
 
 # 模拟实现instanceof
