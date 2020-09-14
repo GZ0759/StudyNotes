@@ -213,7 +213,7 @@ HTML 4.01 为`<script>`标签定义了 defer 属性。这个属性的用途是�
 
 IE4、 Firefox 3.5、 Safari 5 和 Chrome 是最早支持 defer 属性的浏览器。其他浏览器会忽略这个属性，像平常一样处理脚本。为此，把延迟脚本放在页面底部仍然是最佳选择。
 
-> 在 XHTML 文档中，要把 defer 属性设置为 defer="defer"。
+> 在 XHTML 文档中，要把 defer 属性设置为 `defer="defer"`。
 
 ### 2.1.3 异步脚本
 
@@ -237,7 +237,7 @@ HTML5 为`<script>`元素定义了 async 属性。这个属性与 defer 属性�
 
 异步脚本一定会在页面的 load 事件前执行，但可能会在 DOMContentLoaded 事件触发之前或之后执行。支持异步脚本的浏览器有 Firefox 3.6、 Safari 5 和 Chrome。
 
-> 在 XHTML 文档中，要把 async 属性设置为 async="async"。
+> 在 XHTML 文档中，要把 async 属性设置为 `async="async"`。
 
 ## 2.2 嵌入代码与外部文件　
 
@@ -5064,7 +5064,7 @@ var newValue = window.oldValue;
 
 如果页面中包含框架，则每个框架都拥有自己的 window 对象，并且保存在 frames 集合中。在 frames 集合中，可以通过数值索引（从 0 开始，从左至右，从上到下）或者框架名称来访问相应的 window 对象。每个 window 对象都有一个 name 属性，其中包含框架的名称。
 
-```html
+```xml
 <html>
   <head>
     <title>Frameset Example</title>

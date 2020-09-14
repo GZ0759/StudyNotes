@@ -488,15 +488,13 @@ function cloneDeep5(x) {
 
 防抖的功效，它把一组连续的调用变为了一个，最大程度地优化了效率。防抖非常适于只关心结果，不关心过程如何的情况，它能很好地将大量连续事件转为单个我们需要的事件。
 
-不管事件触发频率多高，一定在事件触发 n 秒后才执行，如果你在一个事件触发的 n 秒内又触发了这个事件，就以新的事件的时间为准，n 秒后才执行，总之，触发完事件 n 秒内不再触发事件，n 秒后再执行。
-
 应用场景
 
 1. 窗口大小变化，只关心最后结果
 2. 搜索栏，只关心完成结果
 3. 表单验证，延迟后进行验证
 
-为了更好理解，下面提供了最简单的 debounce 实现：返回一个 function，第一次执行这个 function 会启动一个定时器，下一次执行会清除上一次的定时器并重起一个定时器，直到这个 function 不再被调用，定时器成功跑完，执行回调函数。
+为了更好理解，下面提供了最简单的 debounce 实现：
 
 ```js
 const debounce = function (func, wait) {
@@ -508,32 +506,33 @@ const debounce = function (func, wait) {
 };
 ```
 
-有时候我们需要让函数立即执行一次，再等后面事件触发后等待 n 秒执行，我们给`debounce`函数一个`flag`用于标示是否立即执行。同时保留上下文和参数。
+给`debounce`函数一个`flag`用于标示是否立即执行。同时保留上下文和参数。
 
 ```js
-function debounce(event, time, flag) {
-  let timer = null;
+function debounce(func, wait, flag = false) {
+  let timer;
   return function (...args) {
-    clearTimeout(timer);
+    !!timer && clearTimeout(timer);
     if (flag && !timer) {
-      event.apply(this, args);
+      func.apply(this, args);
     }
     timer = setTimeout(() => {
-      event.apply(this, args);
-    }, time);
+      func.apply(this, args);
+    }, wait);
   };
 }
 ```
+
+> 不管事件触发频率多高，一定在事件触发 n 秒后才执行，如果你在一个事件触发的 n 秒内又触发了这个事件，就以新的事件的时间为准，n 秒后才执行，总之，触发完事件 n 秒内不再触发事件，n 秒后再执行。
 
 ## 节流（throttle）
 
 节流让指定函数在规定的时间里执行次数不会超过一次，也就是说，在连续高频执行中，动作会被定期执行。节流的主要目的是将原本操作的频率降低。
 
-不管事件触发频率多高，只在单位时间内执行一次。有两种方式可以实现节流，使用时间戳和定时器。
-
-1. 时间戳实现。第一次事件肯定触发，最后一次不会触发。
+1. 时间戳实现。
 
 ```js
+// 时间段开始触发
 function throttle(event, time) {
   let pre = 0;
   return function (...args) {
@@ -545,9 +544,10 @@ function throttle(event, time) {
 }
 ```
 
-2. 定时器实现。第一次事件不会触发，最后一次一定触发。
+2. 定时器实现。
 
 ```js
+// 时间段结束触发
 function throttle(event, time) {
   let timer = null;
   return function (...args) {
@@ -561,24 +561,29 @@ function throttle(event, time) {
 }
 ```
 
-3. 定时器和时间戳的结合版，也相当于节流和防抖的结合版，第一次和最后一次都会触发。
+> 不管事件触发频率多高，只在单位时间内执行一次。
+
+## 结合版本
+
+现在考虑一种情况，如果用户的操作非常频繁，不等设置的延迟时间结束就进行下次操作，会频繁的清除计时器并重新生成，所以函数 fn 一直都没办法执行，导致用户操作迟迟得不到响应。有一种思想是将节流和防抖合二为一，变成加强版的节流函数，关键点在于「wait 时间内，可以重新生成定时器，但只要 wait 的时间到了，必须给用户一个响应」。这种合体思路恰好可以解决上面提出的问题。
 
 ```js
-function throttle(event, time) {
-  let pre = 0;
-  let timer = null;
+function throttle(fn, wait) {
+  let previous = 0,
+    timer = null;
   return function (...args) {
-    if (Date.now() - pre > time) {
-      // 时间戳 首次执行
-      clearTimeout(timer);
-      timer = null;
-      pre = Date.now();
-      event.apply(this, args);
-    } else if (!timer) {
-      // 定时器 最后一次执行
+    let now = +new Date();
+    if (now - previous < wait) {
+      // 没到时间重新生成定时器
+      if (timer) clearTimeout(timer);
       timer = setTimeout(() => {
-        event.apply(this, args);
-      }, time);
+        previous = now;
+        fn.apply(this, args);
+      }, wait);
+    } else {
+      // 时间到必须触发
+      previous = now;
+      fn.apply(this, args);
     }
   };
 }
@@ -856,13 +861,7 @@ function progressCurrying(fn, args) {
 
 `call()` 方法使用一个指定的 this 值和单独给出的一个或多个参数来调用一个函数。
 
-主要描述：
-
-1. 调用者提供的 this 值和参数调用该函数，若该方法没有返回值，则返回 undefined
-1. 允许为不同的对象分配和调用属于一个对象的函数/方法
-2. 提供新的 this 值给当前调用的函数/方法。可以使用 call 来实现继承
-
-处理步骤：
+实现步骤：
 
 1. 判断当前 this 是否为函数，防止 `Function.prototype.myCall()` 直接调用
 2. context 为可选参数，如果不传的话默认上下文为 window
