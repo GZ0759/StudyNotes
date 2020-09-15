@@ -1013,6 +1013,15 @@ new 运算符创建一个用户定义的对象类型的实例或具有构造函�
 4. 如果该函数没有返回对象，则返回 this。
 
 ```js
+function create(Con, ...args) {
+  let obj = {}
+  Object.setPrototypeOf(obj, Con.prototype)
+  let result = Con.apply(obj, args)
+  return result instanceof Object ? result : obj
+}
+```
+
+```js
 function create() {
 	// 1、获得构造函数，同时删除 arguments 中第一个参数
   Con = [].shift.call(arguments);
@@ -1023,15 +1032,6 @@ function create() {
 	// 4、优先返回构造函数返回的对象
 	return ret instanceof Object ? ret : obj;
 };
-```
-
-```js
-function create(Con, ...args) {
-  let obj = {}
-  Object.setPrototypeOf(obj, Con.prototype)
-  let result = Con.apply(obj, args)
-  return result instanceof Object ? result : obj
-}
 ```
 
 # 模拟实现Promise
