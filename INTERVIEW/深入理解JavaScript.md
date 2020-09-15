@@ -947,30 +947,22 @@ Function.prototype.myBind = function (context, ...args1) {
 
 ```js
 Function.prototype.bind2 = function (context) {
-  if (typeof this !== 'function') {
-    throw new Error(
-      'Function.prototype.bind - what is trying to be bound is not callable'
-    );
+  if (typeof this !== "function") {
+    throw new Error("Function.prototype.bind - what is trying to be bound is not callable");
   }
   var self = this;
   var args = Array.prototype.slice.call(arguments, 1);
 
-  // 用一个空对象作为中介
-  // 把 fBound.prototype 赋值为空对象的实例
-  // 原型式继承
   var fNOP = function () {};
   var fBound = function () {
     var bindArgs = Array.prototype.slice.call(arguments);
-    return self.apply(
-      this instanceof fNOP ? this : context,
-      args.concat(bindArgs)
-    );
-  };
+    return self.apply(this instanceof fNOP ? this : context, args.concat(bindArgs));
+  }
 
   fNOP.prototype = this.prototype;
   fBound.prototype = new fNOP();
   return fBound;
-};
+}
 ```
 
 # 模拟实现instanceof
@@ -1015,10 +1007,10 @@ function myInstanceof(target, origin) {
 
 new 运算符创建一个用户定义的对象类型的实例或具有构造函数的内置对象的实例。new 关键字会进行如下的操作：
 
-- 创建一个空的简单JavaScript对象（即{}）；
-- 链接该对象（即设置该对象的构造函数）到另一个对象 ；
-- 将步骤1新创建的对象作为this的上下文 ；
-- 如果该函数没有返回对象，则返回this。
+1. 创建一个空的简单 JavaScript 对象；
+2. 链接该对象（设置该对象的 constructor）到另一个对象；
+3. 将步骤 1 新创建的对象作为 this 的上下文；
+4. 如果该函数没有返回对象，则返回 this。
 
 ```js
 function create() {
