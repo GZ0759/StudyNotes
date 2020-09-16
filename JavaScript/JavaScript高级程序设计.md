@@ -3148,7 +3148,7 @@ var person = {
 };
 ```
 
-这里创建了一个名为 name 的属性，为它指定的值是"Nicholas"。也就是说， `[[Value]]`特性将被设置为"Nicholas"，而对这个值的任何修改都将反映在这个位置。
+这里创建了一个名为 name 的属性，为它指定的值是"Nicholas"。也就是说，`[[Value]]`特性将被设置为"Nicholas"，而对这个值的任何修改都将反映在这个位置。
 
 要修改属性默认的特性，必须使用 ECMAScript 5 的 `Object.defineProperty()` 方法，该方法接收三个参数：属性所在的对象、属性的名字和一个描述符对象。其中，描述符（descriptor）对象的属性必须是： configurable、 enumerable、 writable 和 value。设置其中的一或多个值，可以修改对应的特性值。
 
@@ -3196,9 +3196,9 @@ Object.defineProperty(person, "name", {
 
 也就是说，可以多次调用 `Object.defineProperty()` 方法修改同一个属性，但在把 `[[configurable]]` 特性设置为 false 之后就会有限制了。
 
-在调用 `Object.defineProperty()`方法时，如果不指定， `[[configurable]]`、 `[[enumerable]]` 和`[[writable]]` 特性的默认值都是 false。多数情况下，可能都没有必要利用 `Object.defineProperty()`方法提供的这些高级功能。不过，理解这些概念对理解 JavaScript 对象却非常有用。
+在调用 `Object.defineProperty()`方法时，如果不指定，`[[configurable]]`、`[[enumerable]]` 和 `[[writable]]` 特性的默认值都是 false。多数情况下，可能都没有必要利用 `Object.defineProperty()`方法提供的这些高级功能。不过，理解这些概念对理解 JavaScript 对象却非常有用。
 
-> IE8 是第一个实现 `Object.defineProperty()`方法的浏览器版本。然而，这个版本的实现存在诸多限制：只能在 DOM 对象上使用这个方法，而且只能创建访问器属性。由于实现不彻底，建议读者不要在 IE8 中使用 `Object.defineProperty()`方法。
+> IE8 是第一个实现 `Object.defineProperty()` 方法的浏览器版本。然而，这个版本的实现存在诸多限制：只能在 DOM 对象上使用这个方法，而且只能创建访问器属性。由于实现不彻底，建议读者不要在 IE8 中使用 `Object.defineProperty()` 方法。
 
 **2.访问器属性**
 
@@ -3291,7 +3291,7 @@ Object.defineProperties(book, {
 
 ### 6.1.3 读取属性的特性
 
-使用 ECMAScript 5 的 `Object.getOwnPropertyDescriptor()`方法，可以取得给定属性的描述符。这个方法接收两个参数：属性所在的对象和要读取其描述符的属性名称。返回值是一个对象，如果是访问器属性，这个对象的属性有 configurable、 enumerable、 get 和 set；如果是数据属性，这个对象的属性有 configurable、 enumerable、 writable 和 value。
+使用 ECMAScript 5 的 `Object.getOwnPropertyDescriptor()` 方法，可以取得给定属性的描述符。这个方法接收两个参数：属性所在的对象和要读取其描述符的属性名称。返回值是一个对象，如果是访问器属性，这个对象的属性有 configurable、 enumerable、 get 和 set；如果是数据属性，这个对象的属性有 configurable、 enumerable、 writable 和 value。
 
 ```js
 var book = {};

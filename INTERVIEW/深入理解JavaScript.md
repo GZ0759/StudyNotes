@@ -970,6 +970,7 @@ Function.prototype.bind2 = function (context) {
 instanceof 运算符用于检测构造函数的 prototype 属性是否出现在某个实例对象的原型链上。
 
 原型与原型链（prototype chain）关系
+
 - 函数的`prototype`属性指向了一个对象，这个对象正是调用该构造函数而创建的实例的原型
 - 每一个JavaScript对象（除了 null ）都具有的一个属性，叫`__proto__`，这个属性会指向该对象的原型
 - 每个原型都有一个`constructor`属性指向关联的构造函数，实例也可以继承该属性
