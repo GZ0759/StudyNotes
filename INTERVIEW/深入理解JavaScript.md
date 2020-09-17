@@ -1404,5 +1404,4 @@ MyPromise.race = function (promises) {
 
   window.$jsonp = jsonp;
 })(window, document);
-
 ```
