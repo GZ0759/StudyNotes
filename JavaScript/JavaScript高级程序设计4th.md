@@ -42,7 +42,6 @@
 
 图 1-1
 
-
 ### 1.2.1 ECMAScript
 
 ECMAScript，即ECMA-262定义的语言，并不局限于Web浏览器。事实上，这门语言没有输入和输出之类的方法。ECMA-262将这门语言作为一个基准来定义，以便在它之上再构建更稳健的脚本语言。Web浏览器只是ECMAScript实现可能存在的一种宿主环境（host      environment）。宿主环境提供ECMAScript的基准实现和与环境自身交互必需的扩展。扩展（比如DOM）使用ECMAScript核心类型和语法，提供特定于环境的额外功能。其他宿主环境还有服务器端JavaScript平台Node.js和即将被淘汰的Adobe Flash。
@@ -58,6 +57,7 @@ ECMAScript，即ECMA-262定义的语言，并不局限于Web浏览器。事实�
 ECMAScript只是对实现这个规范描述的所有方面的一门语言的称呼。JavaScript实现了ECMAScript，而Adobe ActionScript同样也实现了 ECMAScript。
 
 1.  ECMAScript版本 
+
 ECMAScript不同的版本以“edition”表示（也就是描述特定实现的 ECMA-262的版本）。ECMA-262最近的版本是第10版，发布于2019年6月。ECMA-262的第1版本质上跟网景的JavaScript 1.1相同，只不过删除了所有浏览器特定的代码，外加少量细微的修 改。ECMA-262要求支持Unicode标准（以支持多语言），而且对象要与平台无关（Netscape JavaScript 1.1的对象不是这样，比如它的 Date 对象就依赖平台）。这也是JavaScript 1.1和JavaScript1.2不符合ECMA-262第1版要求的原因。
 
 ECMA-262第2版只是做了一些编校工作，主要是为了更新之后严格符合ISO/IEC-16262的要求，并没有增减或改变任何特性。 ECMAScript实现通常不使用第2版来衡量符合性（conformance）。
@@ -110,18 +110,18 @@ JScript的再次更新出现在IE4中的JScript 3.0（2.0版是在Microsoft Inte
 ### 1.2.2 DOM
 
 文档对象模型（DOM，Document Object Model）是一个应用编程接口（API），用于在HTML中使用扩展的XML。DOM将整个页面抽象为一组分层节点。HTML或XML页面的每个组成部分都是一种节 点，包含不同的数据。比如下面的HTML页面：
-
+```js
 \<html> \<head> \<title>Sample Page\</title> \</head>
 
 \<body> \<p> Hello World\!\</p> \</body> \</html>
-
+```
 这些代码通过DOM可以表示为一组分层节点，如图1-2所示。图 1-2
 
 DOM通过创建表示文档的树，让开发者可以随心所欲地控制网页的内容和结构。使用DOM API，可以轻松地删除、添加、替换、修改节点。
 
 1.  为什么DOM是必需的
 
-在IE4和Netscape Navigator 4支持不同形式的动态 HTML（DHTML）的情况下，开发者首先可以做到不刷新页面而修改页面外观和内容。这代表了Web技术的一个巨大进步，但也暴露了很大的问题。由于网景和微软采用不同思路开发       DHTML，开发者写一个HTML页面就可以在任何浏览器中运行的好日子就此终结。
+在IE4和Netscape Navigator 4支持不同形式的动态 HTML（DHTML）的情况下，开发者首先可以做到不刷新页面而修改页面外观和内容。这代表了Web技术的一个巨大进步，但也暴露了很大的问题。由于网景和微软采用不同思路开发DHTML，开发者写一个HTML页面就可以在任何浏览器中运行的好日子就此终结。
 
 为了保持Web跨平台的本性，必须要做点什么。人们担心如果无法控制网景和微软各行其是，那么Web就会发生分裂，导致人们面向浏览器开发网页。就在这时，万维网联盟（W3C，World Wide Web Consortium）开始了制定DOM标准的进程。
 
@@ -150,28 +150,21 @@ DOM Level 3进一步扩展了DOM，增加了以统一的方式加载和保存文
 
 除了DOM Core和DOM HTML接口，有些其他语言也发布了自己的DOM标准。下面列出的语言是基于XML的，每一种都增加了该语言独有的DOM方法和接口：
 
-可伸缩矢量图（SVG，Scalable Vector Graphics）
+- 可伸缩矢量图（SVG，Scalable Vector Graphics）
+- 数学标记语言（MathML，Mathematical Markup Language）
+- 同步多媒体集成语言（SMIL，Synchronized Multimedia Integration Language）
 
-数学标记语言（MathML，Mathematical Markup Language）同步多媒体集成语言（SMIL，Synchronized Multimedia Integration Language）
-
-此外，还有一些语言开发了自己的DOM实现，比如Mozilla的
-
-XML用户界面语言（XUL，XML User Interface Language）。不过，只有前面列表中的语言是W3C推荐标准。
+此外，还有一些语言开发了自己的DOM实现，比如Mozilla的XML用户界面语言（XUL，XML User Interface Language）。不过，只有前面列表中的语言是W3C推荐标准。
 
 4. Web浏览器对DOM的支持情况 
 
 DOM标准在Web浏览器实现它之前就已经作为标准发布了。IE在第5版中尝试支持DOM，但直到5.5版才开始真正支持，该版本实现了DOM Level 1的大部分。IE在第6版和第7版中都没有实现新特性，第8版中修复了一些问题。
 
-网景在Netscape 6（Mozilla 0.6.0）之前都不支持DOM。Netscape 7之后，Mozilla把开发资源转移到开发Firefox浏览器上。Firefox 3+支持全部的Level 1、几乎全部的Level 2，以及Level 3的某些部分。（Mozilla开发团队的目标是打造百分之百兼容标准的浏览
-
-器，他们的工作也得到了应有的回报。）
+网景在Netscape 6（Mozilla 0.6.0）之前都不支持DOM。Netscape 7之后，Mozilla把开发资源转移到开发Firefox浏览器上。Firefox 3+支持全部的Level 1、几乎全部的Level 2，以及Level 3的某些部分。（Mozilla开发团队的目标是打造百分之百兼容标准的浏览器，他们的工作也得到了应有的回报。）
 
 支持DOM是浏览器厂商的重中之重，每个版本发布都会改进支持度。下表展示了主流浏览器支持DOM的情况。
 
-
 注意 上表中兼容性的状态会随时间而变化，其中的内容仅反映本书写作时的状态。
-
-
 
 ### 1.2.3 BOM
 
@@ -183,33 +176,25 @@ HTML5改变了这个局面，这个版本的HTML以正式规范的形式涵盖�
 
 弹出新浏览器窗口的能力；
 
-移动、缩放和关闭浏览器窗口的能力； navigator 对象，提供关于浏览器的详尽信息； location 对象，提供浏览器加载页面的详尽信息； screen 对象，提供关于用户屏幕分辨率的详尽信息； performance 对象，提供浏览器内存占用、导航行为和时间统计的详尽信息；
+- 移动、缩放和关闭浏览器窗口的能力； 
+- navigator 对象，提供关于浏览器的详尽信息； 
+- location 对象，提供浏览器加载页面的详尽信息； 
+- screen 对象，提供关于用户屏幕分辨率的详尽信息； 
+- performance 对象，提供浏览器内存占用、导航行为和时间统计的详尽信息；
 
 对cookie的支持；
 
-其他自定义对象，如 XMLHttpRequest 和IE的
-
-ActiveXObject 。
+其他自定义对象，如 XMLHttpRequest 和IE的ActiveXObject 。
 
 因为在很长时间内都没有标准，所以每个浏览器实现的都是自己的BOM。有一些所谓的事实标准，比如对于 window 对象和 navigator 对象，每个浏览器都会给它们定义自己的属性和方法。现在有了HTML5，BOM的实现细节应该会日趋一致。关于BOM，本书会在第12章再专门详细介绍。
 
 ## 1.3 JavaScript版本
 
-作为网景的继承者，Mozilla是唯一仍在延续最初JavaScript版本编号的浏览器厂商。当初网景在将其源代码开源时（项目名为Mozilla
-
-Project），JavaScript在其浏览器中最后的版本是1.3。（前面提到过， 1.4版是专门为服务器实现的。）因为Mozilla Foundation在持续开发 JavaScript，为它增加新特性、关键字和语法，所以JavaScript的版本号也在不断递增。下表展示了Netscape/Mozilla浏览器发布的历代
-
-JavaScript版本。
-
-
+作为网景的继承者，Mozilla是唯一仍在延续最初JavaScript版本编号的浏览器厂商。当初网景在将其源代码开源时（项目名为Mozilla Project），JavaScript在其浏览器中最后的版本是1.3。（前面提到过， 1.4版是专门为服务器实现的。）因为Mozilla Foundation在持续开发 JavaScript，为它增加新特性、关键字和语法，所以JavaScript的版本号也在不断递增。下表展示了Netscape/Mozilla浏览器发布的历代JavaScript版本。
 
 这种版本编号方式是根据Firefox 4要发布JavaScript 2.0决定的，在此之前版本号的每次递增，反映的是JavaScript实现逐渐接近2.0建议。虽然这是最初的计划，但JavaScript的发展让这个计划变得不可能。 JavaScript 2.0作为一个目标已经不存在了，而这种版本号编排方式在 Firefox 4发布后就终止了。
 
-
-
-注意 Netscape/Mozilla仍然沿用这种版本方案。而IE的JScript有不同的版本号规则。这些JScript版本与上表提到的JavaScript版本并不对应。此外，多数浏览器对JavaScript的支持，指的是实现
-
-ECMAScript和DOM的程度。
+注意 Netscape/Mozilla仍然沿用这种版本方案。而IE的JScript有不同的版本号规则。这些JScript版本与上表提到的JavaScript版本并不对应。此外，多数浏览器对JavaScript的支持，指的是实现ECMAScript和DOM的程度。
 
 ## 1.4 小结
 
@@ -219,15 +204,7 @@ ECMAScript：由ECMA-262定义并提供核心功能。
 
 文档对象模型（DOM）：提供与网页内容交互的方法和接口。浏览器对象模型（BOM）：提供与浏览器交互的方法和接口。
 
-JavaScript的这三个部分得到了五大Web浏览器（IE、Firefox、
-
-Chrome、Safari和Opera）不同程度的支持。所有浏览器基本上对 ES5（ECMAScript 5）提供了完善的支持，而对ES6（ECMAScript 6）和ES7（ECMAScript 7）的支持度也在不断提升。这些浏览器对DOM
-
-的支持各不相同，但对Level 3的支持日益趋于规范。HTML5中收录的
-
-BOM会因浏览器而异，不过开发者仍然可以假定存在很大一部分公共特性。
-
-  
+JavaScript的这三个部分得到了五大Web浏览器（IE、Firefox、Chrome、Safari和Opera）不同程度的支持。所有浏览器基本上对 ES5（ECMAScript 5）提供了完善的支持，而对ES6（ECMAScript 6）和ES7（ECMAScript 7）的支持度也在不断提升。这些浏览器对DOM的支持各不相同，但对Level 3的支持日益趋于规范。HTML5中收录的BOM会因浏览器而异，不过开发者仍然可以假定存在很大一部分公共特性。
 
 # 第 2 章 HTML 中的 JavaScript
 
