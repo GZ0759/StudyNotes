@@ -113,9 +113,9 @@ JScript 的再次更新出现在 IE4 中的 JScript 3.0（2.0 版是在 Microsof
 文档对象模型（DOM，Document Object Model）是一个应用编程接口（API），用于在 HTML 中使用扩展的 XML。DOM 将整个页面抽象为一组分层节点。HTML 或 XML 页面的每个组成部分都是一种节 点，包含不同的数据。比如下面的 HTML 页面：
 
 ```js
-\<html> \<head> \<title>Sample Page\</title> \</head>
+\<html> `<head>` \<title>Sample Page\</title> \</head>
 
-\<body> \<p> Hello World\!\</p> \</body> \</html>
+`<body>` \<p> Hello World\!\</p> `</body>` `</html>`
 ```
 
 这些代码通过 DOM 可以表示为一组分层节点，如图 1-2 所示。
@@ -215,309 +215,275 @@ JavaScript 的这三个部分得到了五大 Web 浏览器（IE、Firefox、Chro
 
 本章内容
 
-- 使用 \<script> 元素
+- 使用 `<script>` 元素
 - 行内脚本与外部脚本的比较
-- 文档模式对JavaScript有什么影响
-- 确保JavaScript不可用时的用户体验
+- 文档模式对 JavaScript 有什么影响
+- 确保 JavaScript 不可用时的用户体验
 
-将JavaScript引入网页，首先要解决它与网页的主导语言HTML的关系问题。在JavaScript早期，网景公司的工作人员希望在将JavaScript引入HTML页面的同时，不会导致页面在其他浏览器中渲染出问题。通过反复试错和讨论，他们最终做出了一些决定，并达成了向网页中引入通用脚本能力的共识。当初他们的很多工作得到了保留，并且最终形成了HTML规范。
+将 JavaScript 引入网页，首先要解决它与网页的主导语言 HTML 的关系问题。在 JavaScript 早期，网景公司的工作人员希望在将 JavaScript 引入 HTML 页面的同时，不会导致页面在其他浏览器中渲染出问题。通过反复试错和讨论，他们最终做出了一些决定，并达成了向网页中引入通用脚本能力的共识。当初他们的很多工作得到了保留，并且最终形成了 HTML 规范。
 
-## 2.1 \<script> 元素
+## 2.1 `<script>` 元素
 
-将JavaScript插入HTML的主要方法是使用 \<script> 元素。这个元素是由网景公司创造出来，并最早在Netscape Navigator 2中实现的。后来，这个元素被正式加入到HTML规范。 \<script> 元素有下列8个属性。
+将 JavaScript 插入 HTML 的主要方法是使用 `<script>` 元素。这个元素是由网景公司创造出来，并最早在 Netscape Navigator 2 中实现的。后来，这个元素被正式加入到 HTML 规范。 `<script>` 元素有下列 8 个属性。
 
+- async ：可选。表示应该立即开始下载脚本，但不能阻止其他页面动作，比如下载资源或等待其他脚本加载。只对外部脚本文件有效。
+- charset ：可选。使用 src 属性指定的代码字符集。这个属性很少使用，因为大多数浏览器不在乎它的值。
+- crossorigin ：可选。配置相关请求的 CORS（跨源资源共 享）设置。默认不使用 CORS。 crossorigin="anonymous" 配置文件请求不必设置凭据标志。 crossorigin="use-credentials" 设置凭据标志，意味着出站请求会包含凭据。
+- defer ：可选。表示在文档解析和显示完成后再执行脚本是没有问题的。只对外部脚本文件有效。在 IE7 及更早的版本中，对行内脚本也可以指定这个属性。
+- integrity ：可选。允许比对接收到的资源和指定的加密签名以验证子资源完整性（SRI，Subresource Intergrity）。如果接收到的资源的签名与这个属性指定的签名不匹配，则页面会报错，脚本不会执行。这个属性可以用于确保内容分发网络（CDN， Content Delivery Network）不会提供恶意内容。
+- language ：废弃。最初用于表示代码块中的脚本语言（如 "JavaScript" 、 "JavaScript 1.2" 或 "VBScript" ）。大多数浏览器都会忽略这个属性，不应该再使用它。
+- src ：可选。表示包含要执行的代码的外部文件。
+- type ：可选。代替 language ，表示代码块中脚本语言的内容类型（也称 MIME 类型）。按照惯例，这个值始终都是 "text/javascript" ， 尽管 "text/javascript" 和 "text/ecmascript" 都已经废弃了。JavaScript 文件的 MIME 类型通常是 "application/x- javascript" ，不过给 type 属性这个值有可能导致脚本被忽略。在非 IE 的浏览器中有效的其他值还有 "application/javascript" 和 "application/ecmas cript" 。如果这个值是 module ，则代码会被当成 ES6 模块，而且只有这时候代码中才能出现 import 和 export 关键字。
 
+使用 `<script>` 的方式有两种：通过它直接在网页中嵌入 JavaScript 代码，以及通过它在网页中包含外部 JavaScript 文件。
 
-async ：可选。表示应该立即开始下载脚本，但不能阻止其他页面动作，比如下载资源或等待其他脚本加载。只对外部脚本文件有效。
+要嵌入行内 JavaScript 代码，直接把代码放在 `<script>` 元素中就行：
 
-charset ：可选。使用 src 属性指定的代码字符集。这个属性很少使用，因为大多数浏览器不在乎它的值。 crossorigin ：可选。配置相关请求的CORS（跨源资源共 享）设置。默认不使用CORS。 crossorigin="anonymous" 配置文件请求不必设置凭据标
-
-志。 crossorigin="use-credentials" 设置凭据标志，意味着出站请求会包含凭据。
-
-defer ：可选。表示在文档解析和显示完成后再执行脚本是没有问题的。只对外部脚本文件有效。在IE7及更早的版本中，对行内脚本也可以指定这个属性。
-
-integrity ：可选。允许比对接收到的资源和指定的加密签名以验证子资源完整性（SRI，Subresource Intergrity）。如果接收到的资源的签名与这个属性指定的签名不匹配，则页面会报错，脚本不会执行。这个属性可以用于确保内容分发网络（CDN， Content Delivery Network）不会提供恶意内容。
-
-language ：废弃。最初用于表示代码块中的脚本语言
-
-（如 "JavaScript" 、 "JavaScript 1.2" 或 "VBScript" ）。大多数浏览器都会忽略这个属性，不应该再使用它。
-
-src ：可选。表示包含要执行的代码的外部文件。
-
-type ：可选。代替 language ，表示代码块中脚本语言的内容类型（也称MIME类型）。按照惯例，这个值始终都
-
-是 "text/javascript" ， 尽
-
-管 "text/javascript" 和 "text/ecmascript" 都已经废
-
-弃了。JavaScript文件的MIME类型通常是 "application/x- javascript" ，不过给type属性这个值有可能导致脚本被忽略。在非IE的浏览器中有效的其他值还
-
-有 "application/javascript" 和 "application/ecmas cript" 。如果这个值是 module ，则代码会被当成ES6模块，而且只有这时候代码中才能出现 import 和 export 关键字。
-
-使用 \<script> 的方式有两种：通过它直接在网页中嵌入
-
-JavaScript代码，以及通过它在网页中包含外部JavaScript文件。
-
-要嵌入行内JavaScript代码，直接把代码放在 \<script> 元素中就行：
-
-
-
-\<script>
+```js
+`<script>`
 
 function sayHi\(\) \{ console.log\("Hi\!"\);
 
 \}
 
-\</script>
+`</script>`
+```
 
-包含在 \<script> 内的代码会被从上到下解释。在上面的例子中，被解释的是一个函数定义，并且该函数会被保存在解释器环境中。在 \<script> 元素中的代码被计算完成之前，页面的其余内容不会被加载，也不会被显示。
+包含在 `<script>` 内的代码会被从上到下解释。在上面的例子中，被解释的是一个函数定义，并且该函数会被保存在解释器环境中。在 `<script>` 元素中的代码被计算完成之前，页面的其余内容不会被加载，也不会被显示。
 
-在使用行内JavaScript代码时，要注意代码中不能出现字符串
+在使用行内 JavaScript 代码时，要注意代码中不能出现字符串`</script>` 。比如，下面的代码会导致浏览器报错：
 
-\</script> 。比如，下面的代码会导致浏览器报错：
+```js
+`<script>`
 
-
-
-\<script>
-
-function sayScript\(\) \{ console.log\("\</script>"\);
+function sayScript\(\) \{ console.log\("`</script>`"\);
 
 \}
 
-\</script>
+`</script>`
+```
 
-浏览器解析行内脚本的方式决定了它在看到字符串 \</script>时，会将其当成结束的 \</script> 标签。想避免这个问题，只需要转义字符“\\”1即可：
+浏览器解析行内脚本的方式决定了它在看到字符串 `</script>`时，会将其当成结束的 `</script>` 标签。想避免这个问题，只需要转义字符“\\”1 即可：
 
-1此处的转义字符指在JavaScript中使用反斜杠“ \\ ”来向文本字符串添加特殊字符。——编者注
+> 此处的转义字符指在 JavaScript 中使用反斜杠“ \\ ”来向文本字符串添加特殊字符。——编者注
 
-
-
-\<script>
+```js
+`<script>`
 
 function sayScript\(\) \{ console.log\("\<\\/script>"\);
 
 \}
 
-\</script>
+`</script>`
+```
 
 这样修改之后，代码就可以被浏览器完全解释，不会导致任何错误。
 
-要包含外部文件中的JavaScript，就必须使用 src 属性。这个属性的值是一个URL，指向包含JavaScript代码的文件，比如：
+要包含外部文件中的 JavaScript，就必须使用 src 属性。这个属性的值是一个 URL，指向包含 JavaScript 代码的文件，比如：
 
+```js
+\<script src\="example.js"\>`</script>`
+```
 
+这个例子在页面中加载了一个名为 example.js 的外部文件。文件本身只需包含要放在 `<script>` 的起始及结束标签中间的 JavaScript 代码。与解释行内 JavaScript 一样，在解释外部 JavaScript 文件时，页面也会阻塞。（阻塞时间也包含下载文件的时间。）在 XHTML 文档中，可以忽略结束标签，比如：
 
-\<script src\="example.js"\>\</script>
-
-这个例子在页面中加载了一个名为example.js的外部文件。文件本身只需包含要放在 \<script> 的起始及结束标签中间的JavaScript代码。与解释行内JavaScript一样，在解释外部JavaScript文件时，页面也会阻塞。（阻塞时间也包含下载文件的时间。）在XHTML文档中，可以忽略结束标签，比如：
-
-
-
+```js
 \<script src\="example.js"/>
+```
 
-以上语法不能在HTML文件中使用，因为它是无效的HTML，有些浏览器不能正常处理，比如IE。
+以上语法不能在 HTML 文件中使用，因为它是无效的 HTML，有些浏览器不能正常处理，比如 IE。
 
+注意 按照惯例，外部 JavaScript 文件的扩展名是.js。这不是必需的，因为浏览器不会检查所包含 JavaScript 文件的扩展名。这就为使用服务器端脚本语言动态生成 JavaScript 代码，或者在浏览器中将 JavaScript 扩展语言（如 TypeScript，或 React 的 JSX）转译为 JavaScript 提供了可能性。不过要注意，服务器经常会根据文件扩展来确定响应的正确 MIME 类型。如果不打算使用.js 扩展名，一定要确保服务器能返回正确的 MIME 类型。
 
+另外，使用了 src 属性的 `<script>` 元素不应该再在`<script>` 和 `</script>` 标签中再包含其他 JavaScript 代码。如果两者都提供的话，则浏览器只会下载并执行脚本文件，从而忽略行内代码。
 
-注意 按照惯例，外部JavaScript文件的扩展名是.js。这不是必需的，因为浏览器不会检查所包含JavaScript文件的扩展名。这就为使用服务器端脚本语言动态生成JavaScript代码，或者在浏览器中将JavaScript扩展语言（如TypeScript，或React的JSX）转译为JavaScript提供了可能性。不过要注意，服务器经常会根据文件扩展来确定响应的正确MIME类型。如果不打算使用.js扩展名，一定要确保服务器能返回正确的MIME类型。
+`<script>` 元素的一个最为强大、同时也备受争议的特性是，它可以包含来自外部域的 JavaScript 文件。跟 `<img>` 元素很像，`<script>` 元素的 src 属性可以是一个完整的 URL，而且这个 URL 指向的资源可以跟包含它的 HTML 页面不在同一个域中，比如这个例子：
 
-另外，使用了 src 属性的 \<script> 元素不应该再在
-
-\<script> 和 \</script> 标签中再包含其他JavaScript代码。如果两者都提供的话，则浏览器只会下载并执行脚本文件，从而忽略行内代码。
-
-\<script> 元素的一个最为强大、同时也备受争议的特性是，它可以包含来自外部域的JavaScript文件。跟 \<img> 元素很像，
-
-\<script> 元素的 src 属性可以是一个完整的URL，而且这个URL指向的资源可以跟包含它的HTML页面不在同一个域中，比如这个例子：
-
-
-
+```js
 \<script src[\=](http://www.somewhere.com/afile.js)"http://www.somewhere.com/afile.js"\>
 
-\</script>
+`</script>`
+```
 
 浏览器在解析这个资源时，会向 src 属性指定的路径发送一个
 
-GET 请求，以取得相应资源，假定是一个JavaScript文件。这个初始的请求不受浏览器同源策略限制，但返回并被执行的JavaScript则受限制。当然，这个请求仍然受父页面HTTP/HTTPS协议的限制。
+GET 请求，以取得相应资源，假定是一个 JavaScript 文件。这个初始的请求不受浏览器同源策略限制，但返回并被执行的 JavaScript 则受限制。当然，这个请求仍然受父页面 HTTP/HTTPS 协议的限制。
 
-来自外部域的代码会被当成加载它的页面的一部分来加载和解 释。这个能力可以让我们通过不同的域分发JavaScript。不过，引用了放在别人服务器上的JavaScript文件时要格外小心，因为恶意的程序员随时可能替换这个文件。在包含外部域的JavaScript文件时，要确保该域是自己所有的，或者该域是一个可信的来源。 \<script> 标签的 integrity 属性是防范这种问题的一个武器，但这个属性也不是所有浏览器都支持。
+来自外部域的代码会被当成加载它的页面的一部分来加载和解 释。这个能力可以让我们通过不同的域分发 JavaScript。不过，引用了放在别人服务器上的 JavaScript 文件时要格外小心，因为恶意的程序员随时可能替换这个文件。在包含外部域的 JavaScript 文件时，要确保该域是自己所有的，或者该域是一个可信的来源。 `<script>` 标签的 integrity 属性是防范这种问题的一个武器，但这个属性也不是所有浏览器都支持。
 
-不管包含的是什么代码，浏览器都会按照 \<script> 在页面中出现的顺序依次解释它们，前提是它们没有使用 defer 和 async  属性。第二个 \<script> 元素的代码必须在第一个 \<script> 元素的代码解释完毕才能开始解释，第三个则必须等第二个解释完，以此类推。
+不管包含的是什么代码，浏览器都会按照 `<script>` 在页面中出现的顺序依次解释它们，前提是它们没有使用 defer 和 async 属性。第二个 `<script>` 元素的代码必须在第一个 `<script>` 元素的代码解释完毕才能开始解释，第三个则必须等第二个解释完，以此类推。
 
 1.  标签占位符
 
-过去，所有 \<script> 元素都被放在页面的 \<head> 标签内，如下面的例子所示：
+过去，所有 `<script>` 元素都被放在页面的 `<head>` 标签内，如下面的例子所示：
 
-
-
+```js
 \<\!DOCTYPE html>
 
 \<html>
 
-\<head>
+`<head>`
 
 \<title>Example HTML Page\</title>
 
-\<script src\="example1.js"\>\</script>
+\<script src\="example1.js"\>`</script>`
 
-\<script src\="example2.js"\>\</script>
+\<script src\="example2.js"\>`</script>`
 
 \</head>
 
-\<body>
+`<body>`
 
 \<\!-- 这里是页面内容 \-->
 
-\</body>
+`</body>`
 
-\</html>
+`</html>`
+```
 
-这种做法的主要目的是把外部的CSS和JavaScript文件都集中放到一起。不过，把所有JavaScript文件都放在 \<head> 里，也就意味着必须把所有JavaScript代码都下载、解析和解释完成后，才能开始渲染页面（页面在浏览器解析到 \<body> 的起始标签时开始渲染）。对于需要很多JavaScript的页面，这会导致页面渲染的明显延迟，在此期间浏览器窗口完全空白。为解决这个问题，现代Web应用程序通常将所有JavaScript引用放在 \<body> 元素中的页面内容后面，如下面的例子所示：
+这种做法的主要目的是把外部的 CSS 和 JavaScript 文件都集中放到一起。不过，把所有 JavaScript 文件都放在 `<head>` 里，也就意味着必须把所有 JavaScript 代码都下载、解析和解释完成后，才能开始渲染页面（页面在浏览器解析到 `<body>` 的起始标签时开始渲染）。对于需要很多 JavaScript 的页面，这会导致页面渲染的明显延迟，在此期间浏览器窗口完全空白。为解决这个问题，现代 Web 应用程序通常将所有 JavaScript 引用放在 `<body>` 元素中的页面内容后面，如下面的例子所示：
 
-
-
+```js
 \<\!DOCTYPE html>
 
 \<html>
 
-\<head>
+`<head>`
 
 \<title>Example HTML Page\</title>
 
 \</head>
 
-\<body>
+`<body>`
 
 \<\!-- 这里是页面内容 \-->
 
-\<script src\="example1.js"\>\</script>
+\<script src\="example1.js"\>`</script>`
 
-\<script src\="example2.js"\>\</script>
+\<script src\="example2.js"\>`</script>`
 
-\</body>
+`</body>`
 
-\</html>
+`</html>`
+```
 
-这样一来，页面会在处理JavaScript代码之前完全渲染页面。用户会感觉页面加载更快了，因为浏览器显示空白页面的时间短了。
+这样一来，页面会在处理 JavaScript 代码之前完全渲染页面。用户会感觉页面加载更快了，因为浏览器显示空白页面的时间短了。
 
 2.  推迟执行脚本
 
-HTML 4.01为 \<script> 元素定义了一个叫 defer 的属性。这个属性表示脚本在执行的时候不会改变页面的结构。因此，这个脚本
+HTML 4.01 为 `<script>` 元素定义了一个叫 defer 的属性。这个属性表示脚本在执行的时候不会改变页面的结构。因此，这个脚本完全可以在整个页面解析完之后再运行。在 `<script>` 元素上设置 defer 属性，会告诉浏览器应该立即开始下载，但执行应该推迟：
 
-完全可以在整个页面解析完之后再运行。在 \<script> 元素上设置
+```html
+\<\!DOCTYPE html> \
+<html>
+  `<head>
+    ` \
+    <title>Example HTML Page\</title>
 
-defer 属性，会告诉浏览器应该立即开始下载，但执行应该推迟：
+    \
+    <script defer src\="example1.js" \>
+      `
+    </script>
+    ` \
+    <script defer src\="example2.js" \>
+      `
+    </script>
+    ` \
+  </head>
 
+  `
+  <body>
+    ` \<\!-- 这里是页面内容 \--> `
+  </body>
+  ` `
+</html>
+`
+```
 
-
-\<\!DOCTYPE html>
-
-\<html>
-
-\<head>
-
-\<title>Example HTML Page\</title>
-
-\<script defer src\="example1.js"\>\</script>
-
-\<script defer src\="example2.js"\>\</script>
-
-\</head>
-
-\<body>
-
-\<\!-- 这里是页面内容 \-->
-
-\</body>
-
-\</html>
-
-虽然这个例子中的 \<script> 元素包含在页面的 \<head> 中，但它们会在浏览器解析到结束的 \</html> 标签后才会执行。HTML5规范要求脚本应该按照它们出现的顺序执行，因此第一个推迟的脚本会在第二个推迟的脚本之前执行，而且两者都会在 DOMContentLoaded 事件之前执行（关于事件，请参考第17章）。不过在实际当中，推迟执行的脚本不一定总会按顺序执行或者在
+虽然这个例子中的 `<script>` 元素包含在页面的 `<head>` 中，但它们会在浏览器解析到结束的 `</html>` 标签后才会执行。HTML5 规范要求脚本应该按照它们出现的顺序执行，因此第一个推迟的脚本会在第二个推迟的脚本之前执行，而且两者都会在 DOMContentLoaded 事件之前执行（关于事件，请参考第 17 章）。不过在实际当中，推迟执行的脚本不一定总会按顺序执行或者在
 
 DOMContentLoaded 事件之前执行，因此最好只包含一个这样的脚本。
 
-如前所述， defer 属性只对外部脚本文件才有效。这是HTML5中明确规定的，因此支持HTML5的浏览器会忽略行内脚本的 defer属性。IE4\~7展示出的都是旧的行为，IE8及更高版本则支持HTML5定义的行为。
+如前所述， defer 属性只对外部脚本文件才有效。这是 HTML5 中明确规定的，因此支持 HTML5 的浏览器会忽略行内脚本的 defer 属性。IE4\~7 展示出的都是旧的行为，IE8 及更高版本则支持 HTML5 定义的行为。
 
-对 defer 属性的支持是从IE4、Firefox 3.5、Safari 5和Chrome 7开始的。其他所有浏览器则会忽略这个属性，按照通常的做法来处理脚本。考虑到这一点，还是把要推迟执行的脚本放在页面底部比较 好。
+对 defer 属性的支持是从 IE4、Firefox 3.5、Safari 5 和 Chrome 7 开始的。其他所有浏览器则会忽略这个属性，按照通常的做法来处理脚本。考虑到这一点，还是把要推迟执行的脚本放在页面底部比较 好。
 
-
-
-注意 对于XHTML文档，指定 defer 属性时应该写成
-
-defer="defer" 。
+注意 对于 XHTML 文档，指定 defer 属性时应该写成 defer="defer" 。
 
 3.  异步执行脚本
 
-HTML5为 \<script> 元素定义了 async 属性。从改变脚本处理方式上看， async 属性与 defer 类似。当然，它们两者也都只适用于外部脚本，都会告诉浏览器立即开始下载。不过，与 defer不同的是，标记为 async 的脚本并不保证能按照它们出现的次序执行，比如：
+HTML5 为 `<script>` 元素定义了 async 属性。从改变脚本处理方式上看， async 属性与 defer 类似。当然，它们两者也都只适用于外部脚本，都会告诉浏览器立即开始下载。不过，与 defer 不同的是，标记为 async 的脚本并不保证能按照它们出现的次序执行，比如：
 
+```html
+\<\!DOCTYPE html> \
+<html>
+  `<head>
+    ` \
+    <title>Example HTML Page\</title>
 
+    \
+    <script async src\="example1.js" \>
+      `
+    </script>
+    ` \
+    <script async src\="example2.js" \>
+      `
+    </script>
+    ` \
+  </head>
 
-\<\!DOCTYPE html>
+  `
+  <body>
+    ` \<\!-- 这里是页面内容 \--> `
+  </body>
+  ` `
+</html>
+`
+```
 
-\<html>
+在这个例子中，第二个脚本可能先于第一个脚本执行。因此，重点在于它们之间没有依赖关系。给脚本添加 async 属性的目的是告诉浏览器，不必等脚本下载和执行完后再加载页面，同样也不必等到该异步脚本下载和执行后再加载其他脚本。正因为如此，异步脚本不应该在加载期间修改 DOM。
 
-\<head>
+异步脚本保证会在页面的 load 事件前执行，但可能会在 DOMContentLoaded （参见第 17 章）之前或之后。Firefox 3.6、 Safari 5 和 Chrome 7 支持异步脚本。使用 async 也会告诉页面你不会使用 document.write ，不过好的 Web 开发实践根本就不推荐使用这个方法。
 
-\<title>Example HTML Page\</title>
-
-\<script async src\="example1.js"\>\</script>
-
-\<script async src\="example2.js"\>\</script>
-
-\</head>
-
-\<body>
-
-\<\!-- 这里是页面内容 \-->
-
-\</body>
-
-\</html>
-
-在这个例子中，第二个脚本可能先于第一个脚本执行。因此，重点在于它们之间没有依赖关系。给脚本添加 async 属性的目的是告诉浏览器，不必等脚本下载和执行完后再加载页面，同样也不必等到该异步脚本下载和执行后再加载其他脚本。正因为如此，异步脚本不应该在加载期间修改DOM。
-
-异步脚本保证会在页面的 load 事件前执行，但可能会在 DOMContentLoaded （参见第17章）之前或之后。Firefox 3.6、 Safari 5和Chrome 7支持异步脚本。使用 async 也会告诉页面你不会使用 document.write ，不过好的Web开发实践根本就不推荐使用这个方法。
-
-
-
-注意 对于XHTML文档，指定 async 属性时应该写成
-
-async="async" 。
+注意 对于 XHTML 文档，指定 async 属性时应该写成 async="async" 。
 
 4.  动态加载脚本
 
-除了 \<script> 标签，还有其他方式可以加载脚本。因为 JavaScript可以使用DOM API，所以通过向DOM中动态添加 script元素同样可以加载指定的脚本。只要创建一个 script 元素并将其添加到DOM即可。
+除了 `<script>` 标签，还有其他方式可以加载脚本。因为 JavaScript 可以使用 DOM API，所以通过向 DOM 中动态添加 script 元素同样可以加载指定的脚本。只要创建一个 script 元素并将其添加到 DOM 即可。
 
-
-
+```js
 let script \= document.createElement\('script'\); script.src \= 'gibberish.js'; document.head.appendChild\(script\);
+```
 
-当然，在把 HTMLElement 元素添加到DOM且执行到这段代码之前不会发送请求。默认情况下，以这种方式创建的 \<script> 元素是以异步方式加载的，相当于添加了 async 属性。不过这样做可能会有问题，因为所有浏览器都支持 createElement\(\) 方法，但
+当然，在把 HTMLElement 元素添加到 DOM 且执行到这段代码之前不会发送请求。默认情况下，以这种方式创建的 `<script>` 元素是以异步方式加载的，相当于添加了 async 属性。不过这样做可能会有问题，因为所有浏览器都支持 createElement\(\) 方法，但
 
 不是所有浏览器都支持 async 属性。因此，如果要统一动态脚本的加载行为，可以明确将其设置为同步加载：
 
-
+```js
 
 let script \= document.createElement\('script'\); script.src \= 'gibberish.js';
 
 script.async \= false; document.head.appendChild\(script\);
+```
 
 以这种方式获取的资源对浏览器预加载器是不可见的。这会严重影响它们在资源获取队列中的优先级。根据应用程序的工作方式以及怎么使用，这种方式可能会严重影响性能。要想让预加载器知道这些动态请求文件的存在，可以在文档头部显式声明它们：
 
-
+```js
 
 \<link rel\="preload" href\="gibberish.js"\>
+```
 
-5.  XHTML中的变化
+5.  XHTML 中的变化
 
 可扩展超文本标记语言（XHTML，Extensible HyperText Markup
 
-Language）是将HTML作为XML的应用重新包装的结果。与HTML不同，在XHTML中使用JavaScript必须指定 type 属性且值为 text/javascript ，HTML中则可以没有这个属性。XHTML虽然已经退出历史舞台，但实践中偶尔可能也会遇到遗留代码，为此本节稍作介绍。
+Language）是将 HTML 作为 XML 的应用重新包装的结果。与 HTML 不同，在 XHTML 中使用 JavaScript 必须指定 type 属性且值为 text/javascript ，HTML 中则可以没有这个属性。XHTML 虽然已经退出历史舞台，但实践中偶尔可能也会遇到遗留代码，为此本节稍作介绍。
 
-在XHTML中编写代码的规则比HTML中严格，这会影响使用
+在 XHTML 中编写代码的规则比 HTML 中严格，这会影响使用
 
-\<script> 元素嵌入JavaScript代码。下面的代码块虽然在HTML中有效，但在XHML中是无效的。
+`<script>` 元素嵌入 JavaScript 代码。下面的代码块虽然在 HTML 中有效，但在 XHML 中是无效的。
 
-
-
+```js
 \<script type\="text/javascript"\> function compare\(a, b\) \{
 
 if \(a \< b\) \{
@@ -536,14 +502,14 @@ console.log\("A is equal to B"\);
 
 \}
 
-\</script>
+`</script>`
+```
 
-在HTML中，解析 \<script> 元素会应用特殊规则。XHTML中则没有这些规则。这意味着 a \< b 语句中的小于号（ \< ）会被解释成一个标签的开始，并且由于作为标签开始的小于号后面不能有空 格，这会导致语法错误。
+在 HTML 中，解析 `<script>` 元素会应用特殊规则。XHTML 中则没有这些规则。这意味着 a \< b 语句中的小于号（ \< ）会被解释成一个标签的开始，并且由于作为标签开始的小于号后面不能有空 格，这会导致语法错误。
 
-避免XHTML中这种语法错误的方法有两种。第一种是把所有小于号（ \< ）都替换成对应的HTML实体形式（ \&lt; ）。结果代码就是这样的：
+避免 XHTML 中这种语法错误的方法有两种。第一种是把所有小于号（ \< ）都替换成对应的 HTML 实体形式（ \&lt; ）。结果代码就是这样的：
 
-
-
+```js
 \<script type\="text/javascript"\> function compare\(a, b\) \{
 
 if \(a \&lt; b\) \{
@@ -562,14 +528,14 @@ console.log\("A is equal to B"\);
 
 \}
 
-\</script>
+`</script>`
+```
 
-这样代码就可以在XHTML页面中运行了。不过，缺点是会影响阅读。好在还有另一种方法。
+这样代码就可以在 XHTML 页面中运行了。不过，缺点是会影响阅读。好在还有另一种方法。
 
-第二种方法是把所有代码都包含到一个CDATA块中。在 XHTML（及XML）中，CDATA块表示文档中可以包含任意文本的区块，其内容不作为标签来解析，因此可以在其中包含任意字符，包括小于号，并且不会引发语法错误。使用CDATA的格式如下：
+第二种方法是把所有代码都包含到一个 CDATA 块中。在 XHTML（及 XML）中，CDATA 块表示文档中可以包含任意文本的区块，其内容不作为标签来解析，因此可以在其中包含任意字符，包括小于号，并且不会引发语法错误。使用 CDATA 的格式如下：
 
-
-
+```js
 \<script type\="text/javascript"\>\<\!\[CDATA\[ function compare\(a, b\) \{
 
 if \(a \< b\) \{
@@ -588,14 +554,14 @@ console.log\("A is equal to B"\);
 
 \}
 
-\]\]>\</script>
+\]\]>`</script>`
+```
 
-在兼容XHTML的浏览器中，这样能解决问题。但在不支持
+在兼容 XHTML 的浏览器中，这样能解决问题。但在不支持
 
-CDATA块的非XHTML兼容浏览器中则不行。为此，CDATA标记必须使用JavaScript注释来抵消：
+CDATA 块的非 XHTML 兼容浏览器中则不行。为此，CDATA 标记必须使用 JavaScript 注释来抵消：
 
-
-
+```js
 \<script type\="text/javascript"\>
 
 //\<\!\[CDATA\[
@@ -620,114 +586,92 @@ console.log\("A is equal to B"\);
 
 //\]\]>
 
-\</script>
+`</script>`
+```
 
-这种格式适用于所有现代浏览器。虽然有点黑科技的味道，但它可以通过XHTML验证，而且对XHTML之前的浏览器也能优雅地降级。
+这种格式适用于所有现代浏览器。虽然有点黑科技的味道，但它可以通过 XHTML 验证，而且对 XHTML 之前的浏览器也能优雅地降级。
 
-
-
-注意 XHTML模式会在页面的MIME类型被指定
-
-为 "application/xhtml+xml" 时触发。并不是所有浏览器都支持以这种方式送达的XHTML。
+注意 XHTML 模式会在页面的 MIME 类型被指定为 "application/xhtml+xml" 时触发。并不是所有浏览器都支持以这种方式送达的 XHTML。
 
 6.  废弃的语法
 
-自1995年Netscape 2发布以来，所有浏览器都将JavaScript作为默认的编程语言。 type 属性使用一个MIME类型字符串来标识
+自 1995 年 Netscape 2 发布以来，所有浏览器都将 JavaScript 作为默认的编程语言。 type 属性使用一个 MIME 类型字符串来标识`<script>` 的内容，但 MIME 类型并没有跨浏览器标准化。即使浏览器默认使用 JavaScript，在某些情况下某个无效或无法识别的 MIME 类型也可能导致浏览器跳过（不执行）相关代码。因此，除非你使用 XHML 或 `<script>` 标签要求或包含非 JavaScript 代码，最佳做法是不指定 type 属性。
 
-\<script> 的内容，但MIME类型并没有跨浏览器标准化。即使浏览器默认使用JavaScript，在某些情况下某个无效或无法识别的MIME类型也可能导致浏览器跳过（不执行）相关代码。因此，除非你使用
+在最初采用 script 元素时，它标志着开始走向与传统 HTML 解析不同的流程。对这个元素需要应用特殊的解析规则，而这在不支持 JavaScript 的浏览器（特别是 Mosaic）中会导致问题。不支持的浏览器会把 `<script>` 元素的内容输出到页面上，从而破坏页面的外观。
 
-XHML或 \<script> 标签要求或包含非JavaScript代码，最佳做法是不指定 type 属性。
+Netscape 联合 Mosaic 拿出了一个解决方案，对不支持 JavaScript 的浏览器隐藏嵌入的 JavaScript 代码。最终方案是把脚本代码包含在一个 HTML 注释中，像这样：
 
-在最初采用 script 元素时，它标志着开始走向与传统HTML解析不同的流程。对这个元素需要应用特殊的解析规则，而这在不支持
-
-JavaScript的浏览器（特别是Mosaic）中会导致问题。不支持的浏览器会把 \<script> 元素的内容输出到页面上，从而破坏页面的外观。
-
-Netscape联合Mosaic拿出了一个解决方案，对不支持JavaScript的浏览器隐藏嵌入的JavaScript代码。最终方案是把脚本代码包含在一个
-
-HTML注释中，像这样：
-
-
-
-\<script>\<\!-- function sayHi\(\)\{
+```js
+`<script>`\<\!-- function sayHi\(\)\{
 
 console.log\("Hi\!"\);
 
 \}
 
-//-->\</script>
+//-->`</script>`
+```
 
-使用这种格式，Mosaic等浏览器就可以忽略 \<script> 标签中的内容，而支持JavaScript的浏览器则必须识别这种模式，将其中的内容作为JavaScript来解析。
+使用这种格式，Mosaic 等浏览器就可以忽略 `<script>` 标签中的内容，而支持 JavaScript 的浏览器则必须识别这种模式，将其中的内容作为 JavaScript 来解析。
 
-虽然这种格式仍然可以被所有浏览器识别和解析，但已经不再必要，而且不应该再使用了。在XHTML模式下，这种格式也会导致脚本被忽略，因为代码处于有效的XML注释当中。
+虽然这种格式仍然可以被所有浏览器识别和解析，但已经不再必要，而且不应该再使用了。在 XHTML 模式下，这种格式也会导致脚本被忽略，因为代码处于有效的 XML 注释当中。
 
 ## 2.2 行内代码与外部文件
 
-虽然可以直接在HTML文件中嵌入JavaScript代码，但通常认为最佳实践是尽可能将JavaScript代码放在外部文件中。不过这个最佳实践并不是明确的强制性规则。推荐使用外部文件的理由如下。
+虽然可以直接在 HTML 文件中嵌入 JavaScript 代码，但通常认为最佳实践是尽可能将 JavaScript 代码放在外部文件中。不过这个最佳实践并不是明确的强制性规则。推荐使用外部文件的理由如下。
 
-可维护性。JavaScript代码如果分散到很多HTML页面，会导致维护困难。而用一个目录保存所有JavaScript文件，则更容易维护，
+可维护性。JavaScript 代码如果分散到很多 HTML 页面，会导致维护困难。而用一个目录保存所有 JavaScript 文件，则更容易维护，这样开发者就可以独立于使用它们的 HTML 页面来编辑代码。
 
-这样开发者就可以独立于使用它们的HTML页面来编辑代码。
+缓存。浏览器会根据特定的设置缓存所有外部链接的 JavaScript 文件，这意味着如果两个页面都用到同一个文件，则该文件只需下载一次。这最终意味着页面加载更快。
 
-缓存。浏览器会根据特定的设置缓存所有外部链接的JavaScript文件，这意味着如果两个页面都用到同一个文件，则该文件只需下载一次。这最终意味着页面加载更快。
+适应未来。通过把 JavaScript 放到外部文件中，就不必考虑用 XHTML 或前面提到的注释黑科技。包含外部 JavaScript 文件的语法在 HTML 和 XHTML 中是一样的。
 
-适应未来。通过把JavaScript放到外部文件中，就不必考虑用
-
-XHTML或前面提到的注释黑科技。包含外部JavaScript文件的语法在HTML和XHTML中是一样的。
-
-
-
-在配置浏览器请求外部文件时，要重点考虑的一点是它们会占用多少带宽。在SPDY/HTTP2中，预请求的消耗已显著降低，以轻量、独立JavaScript组件形式向客户端送达脚本更具优势。
+在配置浏览器请求外部文件时，要重点考虑的一点是它们会占用多少带宽。在 SPDY/HTTP2 中，预请求的消耗已显著降低，以轻量、独立 JavaScript 组件形式向客户端送达脚本更具优势。
 
 比如，第一个页面包含如下脚本：
 
+```js
+\<script src\="mainA.js"\>`</script>`
 
+\<script src\="component1.js"\>`</script>`
 
-\<script src\="mainA.js"\>\</script>
+\<script src\="component2.js"\>`</script>`
 
-\<script src\="component1.js"\>\</script>
-
-\<script src\="component2.js"\>\</script>
-
-\<script src\="component3.js"\>\</script>
+\<script src\="component3.js"\>`</script>`
 
 ...
+```
 
 后续页面可能包含如下脚本：
 
+```js
+\<script src\="mainB.js"\>`</script>`
 
+\<script src\="component3.js"\>`</script>`
 
-\<script src\="mainB.js"\>\</script>
+\<script src\="component4.js"\>`</script>`
 
-\<script src\="component3.js"\>\</script>
-
-\<script src\="component4.js"\>\</script>
-
-\<script src\="component5.js"\>\</script>
+\<script src\="component5.js"\>`</script>`
 
 ...
+```
 
-在初次请求时，如果浏览器支持SPDY/HTTP2，就可以从同一个地方取得一批文件，并将它们逐个放到浏览器缓存中。从浏览器角度看，通过SPDY/HTTP2获取所有这些独立的资源与获取一个大 JavaScript文件的延迟差不多。
+在初次请求时，如果浏览器支持 SPDY/HTTP2，就可以从同一个地方取得一批文件，并将它们逐个放到浏览器缓存中。从浏览器角度看，通过 SPDY/HTTP2 获取所有这些独立的资源与获取一个大 JavaScript 文件的延迟差不多。
 
 在第二个页面请求时，由于你已经把应用程序切割成了轻量可缓存的文件，第二个页面也依赖的某些组件此时已经存在于浏览器缓存中了。
 
-当然，这里假设浏览器支持SPDY/HTTP2，只有比较新的浏览器才满足。如果你还想支持那些比较老的浏览器，可能还是用一个大文件更合适。
+当然，这里假设浏览器支持 SPDY/HTTP2，只有比较新的浏览器才满足。如果你还想支持那些比较老的浏览器，可能还是用一个大文件更合适。
 
 ## 2.3 文档模式
 
-IE5.5发明了文档模式的概念，即可以使用 doctype 切换文档模式。最初的文档模式有两种：混杂模式（quirks mode）和标准模式
+IE5.5 发明了文档模式的概念，即可以使用 doctype 切换文档模式。最初的文档模式有两种：混杂模式（quirks mode）和标准模式（standards mode）。前者让 IE 像 IE5 一样（支持一些非标准的特性），后者让 IE 具有兼容标准的行为。虽然这两种模式的主要区别只体现在通过 CSS 渲染的内容方面，但对 JavaScript 也有一些关联影响，或称为副作用。本书会经常提到这些副作用。
 
-（standards mode）。前者让IE像IE5一样（支持一些非标准的特
-
-性），后者让IE具有兼容标准的行为。虽然这两种模式的主要区别只体现在通过CSS渲染的内容方面，但对JavaScript也有一些关联影响，或称为副作用。本书会经常提到这些副作用。
-
-IE初次支持文档模式切换以后，其他浏览器也跟着实现了。随着浏览器的普遍实现，又出现了第三种文档模式：准标准模式（almost standards mode）。这种模式下的浏览器支持很多标准的特性，但是没有标准规定得那么严格。主要区别在于如何对待图片元素周围的空白
-
-（在表格中使用图片时最明显）。
+IE 初次支持文档模式切换以后，其他浏览器也跟着实现了。随着浏览器的普遍实现，又出现了第三种文档模式：准标准模式（almost standards mode）。这种模式下的浏览器支持很多标准的特性，但是没有标准规定得那么严格。主要区别在于如何对待图片元素周围的空白（在表格中使用图片时最明显）。
 
 混杂模式在所有浏览器中都以省略文档开头的 doctype 声明作为开关。这种约定并不合理，因为混杂模式在不同浏览器中的差异非常大，不使用黑科技基本上就没有浏览器一致性可言。
 
 标准模式通过下列几种文档类型声明开启：
 
+```js
 \<\!-- HTML 4.01 Strict \-->
 
 \<\!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
@@ -745,11 +689,11 @@ IE初次支持文档模式切换以后，其他浏览器也跟着实现了。随
 \<\!-- HTML5 \-->
 
 \<\!DOCTYPE html>
+```
 
 准标准模式通过过渡性文档类型（ Transitional ）和框架集文档类型（ Frameset ）来触发：
 
-
-
+```js
 \<\!-- HTML 4.01 Transitional \-->
 
 \<\!DOCTYPE HTML PUBLIC
@@ -779,72 +723,73 @@ IE初次支持文档模式切换以后，其他浏览器也跟着实现了。随
 \<\!DOCTYPE html PUBLIC
 
 ["-//W3C//DTD XHTML 1.0 Frameset//EN"](http://www.w3.org/TR/xhtml1/DTD/xhtml1-) "http://www.w3.org/TR/xhtml1/DTD/xhtml1- frameset.dtd">
+```
 
 准标准模式与标准模式非常接近，很少需要区分。人们在说到“标准模式”时，可能指其中任何一个。而对文档模式的检测（本书后面会讨论）也不会区分它们。本书后面所说的标准模式，指的就是除混杂模式以外的模式。
 
-## 2.4 \<noscript> 元素
+## 2.4 `<noscript>` 元素
 
-针对早期浏览器不支持JavaScript的问题，需要一个页面优雅降级的处理方案。最终， \<noscript> 元素出现，被用于给不支持 JavaScript的浏览器提供替代内容。虽然如今的浏览器已经100\%支持 JavaScript，但对于禁用JavaScript的浏览器来说，这个元素仍然有它的用处。
+针对早期浏览器不支持 JavaScript 的问题，需要一个页面优雅降级的处理方案。最终， `<noscript>` 元素出现，被用于给不支持 JavaScript 的浏览器提供替代内容。虽然如今的浏览器已经 100\%支持 JavaScript，但对于禁用 JavaScript 的浏览器来说，这个元素仍然有它的用处。
 
-\<noscript> 元素可以包含任何可以出现在 \<body> 中的 HTML元素， \<script> 除外。在下列两种情况下，浏览器将显示包含在 \<noscript> 中的内容：
+`<noscript>` 元素可以包含任何可以出现在 `<body>` 中的 HTML 元素， `<script>` 除外。在下列两种情况下，浏览器将显示包含在 `<noscript>` 中的内容：
 
 浏览器不支持脚本；
 
 浏览器对脚本的支持被关闭。
 
-任何一个条件被满足，包含在 \<noscript> 中的内容就会被渲染。否则，浏览器不会渲染 \<noscript> 中的内容。
+任何一个条件被满足，包含在 `<noscript>` 中的内容就会被渲染。否则，浏览器不会渲染 `<noscript>` 中的内容。
 
 下面是一个例子：
 
-
-
+```js
 \<\!DOCTYPE html>
 
 \<html>
 
-\<head>
+`<head>`
 
 \<title>Example HTML Page\</title>
 
 \<script ""defer\="defer" src\="example1.js"\>
 
-\</script>
+`</script>`
 
 \<script ""defer\="defer" src\="example2.js"\>
 
-\</script>
+`</script>`
 
 \</head>
 
-\<body>
+`<body>`
 
-\<noscript>
+`<noscript>`
 
 \<p>This page requires a JavaScript-enabled browser.\</p>
 
 \</noscript>
 
-\</body>
+`</body>`
 
-\</html>
+`</html>`
+```
 
 这个例子是在脚本不可用时让浏览器显示一段话。如果浏览器支持脚本，则用户永远不会看到它。
 
 ## 2.5 小结
 
-JavaScript是通过 \<script> 元素插入到HTML页面中的。这个元素可用于把JavaScript代码嵌入到HTML页面中，跟其他标记混合在一起，也可用于引入保存在外部文件中的JavaScript。本章的重点可以总结如下。
+JavaScript 是通过 `<script>` 元素插入到 HTML 页面中的。这个元素可用于把 JavaScript 代码嵌入到 HTML 页面中，跟其他标记混合在一起，也可用于引入保存在外部文件中的 JavaScript。本章的重点可以总结如下。
 
-要包含外部JavaScript文件，必须将 src 属性设置为要包含文件的URL。文件可以跟网页在同一台服务器上，也可以位于完全不同的域。
+要包含外部 JavaScript 文件，必须将 src 属性设置为要包含文件的 URL。文件可以跟网页在同一台服务器上，也可以位于完全不同的域。
 
-所有 \<script> 元素会依照它们在网页中出现的次序被解释。在不使用 defer 和 async 属性的情况下，包含在 \<script>元素中的代码必须严格按次序解释。
+所有 `<script>` 元素会依照它们在网页中出现的次序被解释。在不使用 defer 和 async 属性的情况下，包含在 `<script>`元素中的代码必须严格按次序解释。
 
-对不推迟执行的脚本，浏览器必须解释完位于 \<script> 元素中的代码，然后才能继续渲染页面的剩余部分。为此，通常应该把 \<script> 元素放到页面末尾，介于主内容之后及\</body> 标签之前。
+对不推迟执行的脚本，浏览器必须解释完位于 `<script>` 元素中的代码，然后才能继续渲染页面的剩余部分。为此，通常应该把 `<script>` 元素放到页面末尾，介于主内容之后及`</body>` 标签之前。
 
 可以使用 defer 属性把脚本推迟到文档渲染完毕后再执行。推迟的脚本总是按照它们被列出的次序执行。
 
 可以使用 async 属性表示脚本不需要等待其他脚本，同时也不阻塞文档渲染，即异步加载。异步脚本不能保证按照它们在页面中出现的次序执行。
 
-通过使用 \<noscript> 元素，可以指定在浏览器不支持脚本时显示的内容。如果浏览器支持并启用脚本，则 \<noscript> 元素中的任何内容都不会被渲染。
+通过使用 `<noscript>` 元素，可以指定在浏览器不支持脚本时显示的内容。如果浏览器支持并启用脚本，则 `<noscript>` 元素中的任何内容都不会被渲染。
 
 # 第 3 章 语言基础
 本章内容
@@ -1233,15 +1178,15 @@ console.log\(window.age\); // undefined
 
 在使用 var 声明变量时，由于声明会被提升，JavaScript引擎会自动将多余的声明在作用域顶部合并为一个声明。因为 let 的作用域是块，所以不可能检查前面是否已经使用 let 声明过同名变量，同时也就不可能在没有声明的情况下声明它。
 
-\<script>
+`<script>`
 
 var name \= 'Nicholas'; let age \= 26;
 
-\</script>
+`</script>`
 
 
 
-\<script>
+`<script>`
 
 // 假设脚本不确定页面中是否已经声明了同名变量
 
@@ -1261,21 +1206,21 @@ let age \= 36;
 
 // 如果age之前声明过，这里会报错
 
-\</script>
+`</script>`
 
 使用 try / catch 语句或 typeof 操作符也不能解决，因为条件块中 let 声明的作用域仅限于该块。
 
 
 
-\<script>
+`<script>`
 
 let name \= 'Nicholas'; let age \= 36;
 
-\</script>
+`</script>`
 
 
 
-\<script>
+`<script>`
 
 // 假设脚本不确定页面中是否已经声明了同名变量
 
@@ -1311,7 +1256,7 @@ catch\(error\) \{ let age;
 
 age \= 26;
 
-\</script>
+`</script>`
 
 为此，对于 let 这个新的ES6声明关键字，不能依赖条件声明模式。
 
@@ -23276,7 +23221,7 @@ double\(3, successCallback, failureCallback\);
 
   
 
-       \<script>
+       `<script>`
 
        class CancelToken \{ constructor\(cancelFn\) \{
 
@@ -23330,7 +23275,7 @@ double\(3, successCallback, failureCallback\);
 
        startButton.addEventListener\("click", \(\) => cancellableDelayedResolve\(1000\)\);
 
-       \</script>
+       `</script>`
 
        每次单击“Start”按钮都会开始计时，并实例化一个新的
 
@@ -23876,7 +23821,7 @@ p.then\(\(\) => setTimeout\(console.log, 0, 'completed'\)\);
 
        await 关键字必须在异步函数中使用，不能在顶级上下文如
 
-       \<script> 标签或模块中使用。不过，定义并立即调用异步函数是没问题的。下面两段代码实际是相同的：
+       `<script>` 标签或模块中使用。不过，定义并立即调用异步函数是没问题的。下面两段代码实际是相同的：
 
        async function foo\(\) \{ console.log\(await Promise.resolve\(3\)\);
 
@@ -25313,27 +25258,27 @@ window.find\(\);
 
       \<html>
 
-      \<head>
+      `<head>`
 
       \<title>You won't be able to get back here\</title>
 
       \</head>
 
-      \<body>
+      `<body>`
 
       \<p>Enjoy this page for a second, because you won't be coming back here.
 
       \</p>
 
-      \<script>
+      `<script>`
 
       setTimeout\(\(\) => location.replace[\(](http://www.wrox.com/)"http://www.wrox.com/"\), 1000\);
 
-      \</script>
+      `</script>`
 
-      \</body>
+      `</body>`
 
-      \</html>
+      `</html>`
 
       [浏览器加载这个页面1](http://www.wrox.com/)秒之后会重定向到www.wrox.com。此时，“后退”按钮是禁用状态，即不能返回这个示例页面，除非手动输入完整的URL。
 
@@ -26928,19 +26873,19 @@ JavaScript对象具有不同的行为和功能。
 
      \<html>
 
-     \<head>
+     `<head>`
 
      \<title>Sample Page\</title>
 
      \</head>
 
-     \<body>
+     `<body>`
 
      \<p>Hello World\!\</p>
 
-     \</body>
+     `</body>`
 
-     \</html>
+     `</html>`
 
      如果表示为层级结构，则如图14-1所示。图 14-1
 
@@ -26996,7 +26941,7 @@ JavaScript对象具有不同的行为和功能。
 
       2.  节点关系
 
-       文档中的所有节点都与其他节点有关系。这些关系可以形容为家族关系，相当于把文档树比作家谱。在HTML中， \<body> 元素是 \<html> 元素的子元素，而 \<html> 元素则是 \<body> 元素的父元素。 \<head> 元素是 \<body> 元素的同胞元素，因为它们有共同的父元素 \<html> 。
+       文档中的所有节点都与其他节点有关系。这些关系可以形容为家族关系，相当于把文档树比作家谱。在HTML中， `<body>` 元素是 \<html> 元素的子元素，而 \<html> 元素则是 `<body>` 元素的父元素。 `<head>` 元素是 `<body>` 元素的同胞元素，因为它们有共同的父元素 \<html> 。
 
        每个节点都有一个 childNodes 属性，其中包含一个 NodeList 的实例。 NodeList 是一个类数组对象，用于存储可以按位置存取的有序节点。注意， NodeList 并不是 Array 的实例，但可以使用中括号访问它的值，而且它也有 length 属性。 NodeList 对象独特的地方在于，它其实是一个对DOM结构的查询，因此DOM结构的变化会自动地在 NodeList 中反映出来。我们通常说
 
@@ -27208,13 +27153,13 @@ JavaScript对象具有不同的行为和功能。
 
        \<html>
 
-       \<body>
+       `<body>`
 
   
 
-       \</body>
+       `</body>`
 
-       \</html>
+       `</html>`
 
        浏览器解析完这个页面之后，文档只有一个子节点，即 \<html> 元素。这个元素既可以通过
 
@@ -27232,11 +27177,11 @@ JavaScript对象具有不同的行为和功能。
 
        \<html> 元素。
 
-       作为 HTMLDocument 的实例， document 对象还有一个 body 属性，直接指向 \<body> 元素。因为这个元素是开发者使用最多的元素，所以JavaScript代码中经常可以看到 document.body ，比如：
+       作为 HTMLDocument 的实例， document 对象还有一个 body 属性，直接指向 `<body>` 元素。因为这个元素是开发者使用最多的元素，所以JavaScript代码中经常可以看到 document.body ，比如：
 
   
 
-       let body \= document.body; // 取得对\<body>的引用
+       let body \= document.body; // 取得对`<body>`的引用
 
        所有主流浏览器都支持 document.documentElement 和 document.body 。
 
@@ -27254,13 +27199,13 @@ JavaScript对象具有不同的行为和功能。
 
        \<html>
 
-       \<body>
+       `<body>`
 
   
 
-       \</body>
+       `</body>`
 
-       \</html>
+       `</html>`
 
        \<\!-- 第二条注释 \-->
 
@@ -27364,7 +27309,7 @@ JavaScript对象具有不同的行为和功能。
 
        如果页面中存在多个具有相同ID的元素，则 getElementById\(\) 返回在文档中出现的第一个元素。
 
-       getElementsByTagName\(\) 是另一个常用来获取元素引用的方法。这个方法接收一个参数，即要获取元素的标签名，返回包含零个或多个元素的 NodeList 。在HTML文档中，这个方法返回一个 HTMLCollection 对象。考虑到二者都是“实时”列表， HTMLCollection 与 NodeList 是很相似的。例如，下面的代码会取得页面中所有的 \<img> 元素并返回包含它们的 HTMLCollection ：
+       getElementsByTagName\(\) 是另一个常用来获取元素引用的方法。这个方法接收一个参数，即要获取元素的标签名，返回包含零个或多个元素的 NodeList 。在HTML文档中，这个方法返回一个 HTMLCollection 对象。考虑到二者都是“实时”列表， HTMLCollection 与 NodeList 是很相似的。例如，下面的代码会取得页面中所有的 `<img>` 元素并返回包含它们的 HTMLCollection ：
 
   
 
@@ -27376,13 +27321,13 @@ JavaScript对象具有不同的行为和功能。
 
        alert\(images.length\); // 图片数量 alert\(images\[0\].src\); // 第一张图片的src属性 alert\(images.item\(0\).src\); // 同上
 
-       HTMLCollection 对象还有一个额外的方法 namedItem\(\) ，可通过标签的 name 属性取得某一项的引用。例如，假设页面中包含如下的 \<img> 元素：
+       HTMLCollection 对象还有一个额外的方法 namedItem\(\) ，可通过标签的 name 属性取得某一项的引用。例如，假设页面中包含如下的 `<img>` 元素：
 
   
 
        \<img src\="myimage.gif" name\="myImage"\>
 
-       那么也可以像这样从 images 中取得对这个 \<img> 元素的引用：
+       那么也可以像这样从 images 中取得对这个 `<img>` 元素的引用：
 
   
 
@@ -27404,7 +27349,7 @@ JavaScript对象具有不同的行为和功能。
 
        let allElements \= document.getElementsByTagName\("\*"\);
 
-       这行代码可以返回包含页面中所有元素的 HTMLCollection 对象，顺序就是它们在页面中出现的顺序。因此第一项是 \<html> 元素，第二项是 \<head> 元素，以此类推。
+       这行代码可以返回包含页面中所有元素的 HTMLCollection 对象，顺序就是它们在页面中出现的顺序。因此第一项是 \<html> 元素，第二项是 `<head>` 元素，以此类推。
 
        注意 对于 document.getElementsByTagName\(\) 方法，虽然规范要求区分标签的大小写， 但为了最大限度兼容原有HTML页面，实际上是不区分大小写的。如果是在XML页面（如XHTML）中使用，那么 document.getElementsByTagName\(\) 就是区分大小写的。
 
@@ -27470,7 +27415,7 @@ JavaScript对象具有不同的行为和功能。
 
        document.getElementsByTagName \("form"\) 返回的结果相同）。
 
-       document.images 包含文档中所有 \<img> 元素（与
+       document.images 包含文档中所有 `<img>` 元素（与
 
        document.getElementsByTagName \("img"\) 返回的结果相同）。
 
@@ -27503,13 +27448,13 @@ JavaScript对象具有不同的行为和功能。
 
        \<html>
 
-       \<head>
+       `<head>`
 
        \<title>document.write\(\) Example\</title>
 
        \</head>
 
-       \<body>
+       `<body>`
 
        \<p>The current date and time is:
 
@@ -27517,31 +27462,31 @@ JavaScript对象具有不同的行为和功能。
 
        document.write\("\<strong>" \+ \(new Date\(\)\).toString\(\) + "\</strong>"\);
 
-       \</script>
+       `</script>`
 
        \</p>
 
-       \</body>
+       `</body>`
 
-       \</html>
+       `</html>`
 
        这个例子会在页面加载过程中输出当前日期和时间。日期放在了 \<strong> 元素中，如同它们之前就包含在HTML页面中一样。这意味着会创建一个DOM元素，以后也可以访问。通过 write\(\) 和
 
        writeln\(\) 输出的任何HTML都会以这种方式来处理。
 
-       write\(\) 和 writeln\(\) 方法经常用于动态包含外部资源，如JavaScript文件。在包含JavaScript文件时，记住不能像下面的例子中这样直接包含字符串 "\</script>" ，因为这个字符串会被解释为脚本块的结尾，导致后面的代码不能执行：
+       write\(\) 和 writeln\(\) 方法经常用于动态包含外部资源，如JavaScript文件。在包含JavaScript文件时，记住不能像下面的例子中这样直接包含字符串 "`</script>`" ，因为这个字符串会被解释为脚本块的结尾，导致后面的代码不能执行：
 
   
 
        \<html>
 
-       \<head>
+       `<head>`
 
        \<title>document.write\(\) Example\</title>
 
        \</head>
 
-       \<body>
+       `<body>`
 
        \<script type\="text/javascript"\>
 
@@ -27549,27 +27494,27 @@ JavaScript对象具有不同的行为和功能。
 
        +
 
-       "\</script>"\);
+       "`</script>`"\);
 
-       \</script>
+       `</script>`
 
-       \</body>
+       `</body>`
 
-       \</html>
+       `</html>`
 
-       虽然这样写看起来没错，但输出之后的 "\</script>" 会匹配最外层的 \<script> 标签，导致页面中显示出 "\); 。为避免出现这个问题，需要对前面的例子稍加修改：
+       虽然这样写看起来没错，但输出之后的 "`</script>`" 会匹配最外层的 `<script>` 标签，导致页面中显示出 "\); 。为避免出现这个问题，需要对前面的例子稍加修改：
 
   
 
        \<html>
 
-       \<head>
+       `<head>`
 
        \<title>document.write\(\) Example\</title>
 
        \</head>
 
-       \<body>
+       `<body>`
 
        \<script type\="text/javascript"\>
 
@@ -27579,13 +27524,13 @@ JavaScript对象具有不同的行为和功能。
 
        "\<\\/script>"\);
 
-       \</script>
+       `</script>`
 
-       \</body>
+       `</body>`
 
-       \</html>
+       `</html>`
 
-       这里的字符串 "\<\\/script>" 不会再匹配最外层的 \<script> 标签，因此不会在页面中输出额外内容。
+       这里的字符串 "\<\\/script>" 不会再匹配最外层的 `<script>` 标签，因此不会在页面中输出额外内容。
 
        前面的例子展示了在页面渲染期间通过 document.write\(\) 向文档中输出内容。如果是在页面加载完之后再调用 document.write\(\) ，则输出的内容会重写整个页面，如下面的例子所示：
 
@@ -27593,13 +27538,13 @@ JavaScript对象具有不同的行为和功能。
 
        \<html>
 
-       \<head>
+       `<head>`
 
        \<title>document.write\(\) Example\</title>
 
        \</head>
 
-       \<body>
+       `<body>`
 
        \<p>This is some content that you won't get to see because it will be overwritten.\</p>
 
@@ -27609,11 +27554,11 @@ JavaScript对象具有不同的行为和功能。
 
        \};
 
-       \</script>
+       `</script>`
 
-       \</body>
+       `</body>`
 
-       \</html>
+       `</html>`
 
        这个例子使用了 window.onload 事件处理程序，将调用 document.write\(\) 的函数推迟到页面加载完毕后执行。执行之后，字符串 "Hello world\!" 会重写整个页面内容。 open\(\) 和 close\(\) 方法分别用于打开和关闭网页输出流。在调用 write\(\) 和 writeln\(\)
 
@@ -27882,7 +27827,7 @@ JavaScript对象具有不同的行为和功能。
 
        在新元素上设置这些属性只会附加信息。因为这个元素还没有添加到文档树，所以不会影响浏览器显示。要把元素添加到文档树，可以使用 appendChild\(\) 、 insertBefore\(\) 或
 
-       replaceChild\(\) 。比如，以下代码会把刚才创建的元素添加到文档的 \<body> 元素中：
+       replaceChild\(\) 。比如，以下代码会把刚才创建的元素添加到文档的 `<body>` 元素中：
 
   
 
@@ -28144,7 +28089,7 @@ JavaScript对象具有不同的行为和功能。
 
       let comment \= document.createComment\("A comment"\);
 
-      显然，注释节点很少通过JavaScrpit创建和访问，因为注释几乎不涉及算法逻辑。此外，浏览器不承认结束的 \</html> 标签之后的注释。如果要访问注释节点，则必须确定它们是 \<html> 元素的后代。
+      显然，注释节点很少通过JavaScrpit创建和访问，因为注释几乎不涉及算法逻辑。此外，浏览器不承认结束的 `</html>` 标签之后的注释。如果要访问注释节点，则必须确定它们是 \<html> 元素的后代。
 
      6.  CDATASection 类型
 
@@ -28320,13 +28265,13 @@ removeAttribute\(\) 和 setAttribute\(\) 方法操作属性，而不是直接操
 
      1.  动态脚本
 
-      \<script> 元素用于向网页中插入JavaScript代码，可以是 src 属性包含的外部文件，也可以是作为该元素内容的源代码。动态脚本就是在页面初始加载时不存在，之后又通过DOM包含的脚本。与对应的HTML元素一样，有两种方式通过 \<script> 动态为网页添加脚本：引入外部文件和直接插入源代码。
+      `<script>` 元素用于向网页中插入JavaScript代码，可以是 src 属性包含的外部文件，也可以是作为该元素内容的源代码。动态脚本就是在页面初始加载时不存在，之后又通过DOM包含的脚本。与对应的HTML元素一样，有两种方式通过 `<script>` 动态为网页添加脚本：引入外部文件和直接插入源代码。
 
-      动态加载外部文件很容易实现，比如下面的 \<script> 元素：
+      动态加载外部文件很容易实现，比如下面的 `<script>` 元素：
 
   
 
-      \<script src\="foo.js"\>\</script>
+      \<script src\="foo.js"\>`</script>`
 
       可以像这样通过DOM编程创建这个节点：
 
@@ -28334,7 +28279,7 @@ removeAttribute\(\) 和 setAttribute\(\) 方法操作属性，而不是直接操
 
       let script \= document.createElement\("script"\); script.src \= "foo.js"; document.body.appendChild\(script\);
 
-      这里的DOM代码实际上完全照搬了它要表示的HTML代码。注意，在上面最后一行把 \<script> 元素添加到页面之前，是不会开始下载外部文件的。当然也可以把它添加到 \<head> 元素，同样可以实现
+      这里的DOM代码实际上完全照搬了它要表示的HTML代码。注意，在上面最后一行把 `<script>` 元素添加到页面之前，是不会开始下载外部文件的。当然也可以把它添加到 `<head>` 元素，同样可以实现
 
       动态脚本加载。这个过程可以抽象为一个函数，比如：
 
@@ -28358,13 +28303,13 @@ removeAttribute\(\) 和 setAttribute\(\) 方法操作属性，而不是直接操
 
   
 
-      \<script>
+      `<script>`
 
       function sayHi\(\) \{ alert\("hi"\);
 
       \}
 
-      \</script>
+      `</script>`
 
       使用DOM，可以实现以下逻辑：
 
@@ -28374,9 +28319,9 @@ removeAttribute\(\) 和 setAttribute\(\) 方法操作属性，而不是直接操
 
       \{alert\('hi'\);\}"\)\); document.body.appendChild\(script\);
 
-      以上代码可以在 Firefox 、 Safari 、 Chrome 和 Opera 中运行。不过在旧版本的IE中可能会导致问题。这是因为IE对 \<script> 元素做了特殊处理，不允许常规DOM访问其子节点。但
+      以上代码可以在 Firefox 、 Safari 、 Chrome 和 Opera 中运行。不过在旧版本的IE中可能会导致问题。这是因为IE对 `<script>` 元素做了特殊处理，不允许常规DOM访问其子节点。但
 
-      \<script> 元素上有一个 text 属性，可以用来添加JavaScript代码，如下所示：
+      `<script>` 元素上有一个 text 属性，可以用来添加JavaScript代码，如下所示：
 
   
 
@@ -28426,9 +28371,9 @@ removeAttribute\(\) 和 setAttribute\(\) 方法操作属性，而不是直接操
 
       以这种方式加载的代码会在全局作用域中执行，并在调用返回后立即生效。基本上，这就相当于在全局作用域中把源代码传给 eval\(\) 方法。
 
-      注意，通过 innerHTML 属性创建的 \<script> 元素永远不会执行。浏览器会尽责地创建
+      注意，通过 innerHTML 属性创建的 `<script>` 元素永远不会执行。浏览器会尽责地创建
 
-      \<script> 元素，以及其中的脚本文本，但解析器会给这个 \<script> 元素打上永不执行的标签。只要是使用 innerHTML 创建的 \<script> 元素，以后也没有办法强制其执行。
+      `<script>` 元素，以及其中的脚本文本，但解析器会给这个 `<script>` 元素打上永不执行的标签。只要是使用 innerHTML 创建的 `<script>` 元素，以后也没有办法强制其执行。
 
      2.  动态样式
 
@@ -28452,7 +28397,7 @@ removeAttribute\(\) 和 setAttribute\(\) 方法操作属性，而不是直接操
 
       let head \= document.getElementsByTagName\("head"\)\[0\]; head.appendChild\(link\);
 
-      以上代码在所有主流浏览器中都能正常运行。注意应该把 \<link> 元素添加到 \<head> 元素而不是 \<body> 元素，这样才能保证所有浏览器都能正常运行。这个过程可以抽象为以下通用函数：
+      以上代码在所有主流浏览器中都能正常运行。注意应该把 \<link> 元素添加到 `<head>` 元素而不是 `<body>` 元素，这样才能保证所有浏览器都能正常运行。这个过程可以抽象为以下通用函数：
 
   
 
@@ -28474,7 +28419,7 @@ removeAttribute\(\) 和 setAttribute\(\) 方法操作属性，而不是直接操
 
       通过外部文件加载样式是一个异步过程。因此，样式的加载和正执行的JavaScript代码并没有先后顺序。一般来说，也没有必要知道样式什么时候加载完成。
 
-      另一种定义样式的方式是使用 \<script> 元素包含嵌入的CSS规则，例如：
+      另一种定义样式的方式是使用 `<script>` 元素包含嵌入的CSS规则，例如：
 
   
 
@@ -28494,9 +28439,9 @@ removeAttribute\(\) 和 setAttribute\(\) 方法操作属性，而不是直接操
 
       style.appendChild\(document.createTextNode\("body\{background-color:red\}"\)\); let head \= document.getElementsByTagName\("head"\)\[0\]; head.appendChild\(style\);
 
-      以上代码在Firefox、Safari、Chrome和Opera中都可以运行，但IE除外。IE对 \<style> 节点会施加限制，不允许访问其子节点，这一点与它对 \<script> 元素施加的限制一样。事实上，IE在执行到给
+      以上代码在Firefox、Safari、Chrome和Opera中都可以运行，但IE除外。IE对 \<style> 节点会施加限制，不允许访问其子节点，这一点与它对 `<script>` 元素施加的限制一样。事实上，IE在执行到给
 
-      \<style> 添加子节点的代码时，会抛出与给 \<script> 添加子节点时同样的错误。对于IE，解决方案是访问元素的 styleSheet 属性，这个属性又有一个 cssText 属性，然后给这个属性添加CSS代码：
+      \<style> 添加子节点的代码时，会抛出与给 `<script>` 添加子节点时同样的错误。对于IE，解决方案是访问元素的 styleSheet 属性，这个属性又有一个 cssText 属性，然后给这个属性添加CSS代码：
 
       let style \= document.createElement\("style"\); style.type \= "text/css";
 
@@ -28776,21 +28721,21 @@ for \(let i \= divs.length \- 1; i \>= 0; \--i\) \{ let div \= document.createEl
 
        新创建的 MutationObserver 实例不会关联DOM的任何部分。要把这个 observer 与DOM关联起来，需要使用 observe\(\) 方法。这个方法接收两个必需的参数：要观察其变化的DOM节点，以及一个 MutationObserverInit 对象。
 
-       MutationObserverInit 对象用于控制观察哪些方面的变化，是一个键/值对形式配置选项的字典。例如，下面的代码会创建一个观察者（ observer ）并配置它观察 \<body> 元素上的属性变化：
+       MutationObserverInit 对象用于控制观察哪些方面的变化，是一个键/值对形式配置选项的字典。例如，下面的代码会创建一个观察者（ observer ）并配置它观察 `<body>` 元素上的属性变化：
 
   
 
-       let observer \= new MutationObserver\(\(\) => console.log\('\<body> attributes changed'\)\);
+       let observer \= new MutationObserver\(\(\) => console.log\('`<body>` attributes changed'\)\);
 
   
 
        observer.observe\(document.body, \{ attributes: true \}\);
 
-       执行以上代码后， \<body> 元素上任何属性发生变化都会被这个 MutationObserver 实例发现，然后就会异步执行注册的回调函数。 \<body> 元素后代的修改或其他非属性修改都不会触发回调进入任务队列。可以通过以下代码来验证：
+       执行以上代码后， `<body>` 元素上任何属性发生变化都会被这个 MutationObserver 实例发现，然后就会异步执行注册的回调函数。 `<body>` 元素后代的修改或其他非属性修改都不会触发回调进入任务队列。可以通过以下代码来验证：
 
   
 
-       let observer \= new MutationObserver\(\(\) => console.log\('\<body> attributes changed'\)\);
+       let observer \= new MutationObserver\(\(\) => console.log\('`<body>` attributes changed'\)\);
 
   
 
@@ -28804,7 +28749,7 @@ for \(let i \= divs.length \- 1; i \>= 0; \--i\) \{ let div \= document.createEl
 
        // Changed body class
 
-       // \<body> attributes changed
+       // `<body>` attributes changed
 
        注意，回调中的 console.log\(\) 是后执行的。这表明回调并非与实际的DOM变化同步执行。
 
@@ -28927,7 +28872,7 @@ for \(let i \= divs.length \- 1; i \>= 0; \--i\) \{ let div \= document.createEl
 
   
 
-       let observer \= new MutationObserver\(\(\) => console.log\('\<body> attributes changed'\)\);
+       let observer \= new MutationObserver\(\(\) => console.log\('`<body>` attributes changed'\)\);
 
   
 
@@ -28943,7 +28888,7 @@ for \(let i \= divs.length \- 1; i \>= 0; \--i\) \{ let div \= document.createEl
 
   
 
-       let observer \= new MutationObserver\(\(\) => console.log\('\<body> attributes changed'\)\);
+       let observer \= new MutationObserver\(\(\) => console.log\('`<body>` attributes changed'\)\);
 
   
 
@@ -28955,7 +28900,7 @@ for \(let i \= divs.length \- 1; i \>= 0; \--i\) \{ let div \= document.createEl
 
   
 
-       // \<body> attributes changed
+       // `<body>` attributes changed
 
       4.  复 用 MutationObserver
 
@@ -29031,11 +28976,11 @@ for \(let i \= divs.length \- 1; i \>= 0; \--i\) \{ let div \= document.createEl
 
        调用 disconnect\(\) 并不会结束 MutationObserver 的生命。还可以重新使用这个观察者，再将它关联到新的目标节点。下面的示例在两个连续的异步块中先断开然后又恢复了观察者与
 
-       \<body> 元素的关联：
+       `<body>` 元素的关联：
 
   
 
-       let observer \= new MutationObserver\(\(\) => console.log\('\<body> attributes
+       let observer \= new MutationObserver\(\(\) => console.log\('`<body>` attributes
 
        changed'\)\);
 
@@ -29077,9 +29022,9 @@ for \(let i \= divs.length \- 1; i \>= 0; \--i\) \{ let div \= document.createEl
 
   
 
-       // \<body> attributes changed
+       // `<body>` attributes changed
 
-       // \<body> attributes changed
+       // `<body>` attributes changed
 
      2.  MutationObserverInit 与观察范围
 
@@ -29436,13 +29381,13 @@ for \(let i \= divs.length \- 1; i \>= 0; \--i\) \{ let div \= document.createEl
 
   
 
-       // 观察\<body>元素及其子树
+       // 观察`<body>`元素及其子树
 
        observer.observe\(document.body, \{ attributes: true, subtree: true \}\);
 
   
 
-       // 修改\<body>元素的子树
+       // 修改`<body>`元素的子树
 
        document.body.firstChild.setAttribute\('foo', 'bar'\);
 
@@ -29598,7 +29543,7 @@ Element 节点表示文档中所有HTML或XML元素，可以用来操作它们�
 
   
 
-DOM编程在多数情况下没什么问题，在涉及 \<script> 和 \<style> 元素时会有一点兼容性问题。因为这些元素分别包含脚本和样式信息，所以浏览器会将它们与其他元素区别对待。
+DOM编程在多数情况下没什么问题，在涉及 `<script>` 和 \<style> 元素时会有一点兼容性问题。因为这些元素分别包含脚本和样式信息，所以浏览器会将它们与其他元素区别对待。
 
 要理解DOM，最关键的一点是知道影响其性能的问题所在。DOM操作在JavaScript代码中是代价比较高的， NodeList 对象尤其需要注意。 NodeList 对象是“实时更新”的，这意味着每次访问它都会执行一次新的查询。考虑到这些问题，实践中要尽量减少DOM操作的数量。
 
@@ -29642,7 +29587,7 @@ MutationObserver 是为代替性能不好的 MutationEvent 而问世的。使用
 
   
 
-      // 取得\<body>元素
+      // 取得`<body>`元素
 
       let body \= document.querySelector\("body"\);
 
@@ -30078,9 +30023,9 @@ Safari和Opera完全支持，IE9\~11及一些移动浏览器支持带前缀的�
 
       3.  head 属性
 
-       作为对 document.body （指向文档的 \<body> 元素）的补充，HTML5增加了 document.head 属性，指向文档的
+       作为对 document.body （指向文档的 `<body>` 元素）的补充，HTML5增加了 document.head 属性，指向文档的
 
-       \<head> 元素。可以像下面这样直接取得 \<head> 元素：
+       `<head>` 元素。可以像下面这样直接取得 `<head>` 元素：
 
   
 
@@ -30212,9 +30157,9 @@ Safari和Opera完全支持，IE9\~11及一些移动浏览器支持带前缀的�
 
       2.  旧IE中的 innerHTML
 
-       在所有现代浏览器中，通过 innerHTML 插入的 \<script> 标签是不会执行的。而在IE8及之前的版本中，只要这样插入的
+       在所有现代浏览器中，通过 innerHTML 插入的 `<script>` 标签是不会执行的。而在IE8及之前的版本中，只要这样插入的
 
-       \<script> 元素指定了 defer 属性，且 \<script> 之前是“受控元素”（scoped element），那就是可以执行的。 \<script> 元素与 \<style> 或注释一样，都是“非受控元素”（NoScope
+       `<script>` 元素指定了 defer 属性，且 `<script>` 之前是“受控元素”（scoped element），那就是可以执行的。 `<script>` 元素与 \<style> 或注释一样，都是“非受控元素”（NoScope
 
        element），也就是在页面上看不到它们。IE会把 innerHTML 中从非受控元素开始的内容都删掉，也就是说下面的例子是行不通的：
 
@@ -30224,7 +30169,7 @@ Safari和Opera完全支持，IE9\~11及一些移动浏览器支持带前缀的�
 
        div.innerHTML \= "\<script defer>console.log\('hi'\);\<\\/script>";
 
-       在这个例子中， innerHTML 字符串以一个非受控元素开始，因此整个字符串都会被清空。为了达到目的，必须在 \<script>前面加上一个受控元素，例如文本节点或没有结束标签的元素
+       在这个例子中， innerHTML 字符串以一个非受控元素开始，因此整个字符串都会被清空。为了达到目的，必须在 `<script>`前面加上一个受控元素，例如文本节点或没有结束标签的元素
 
        （如 \<input> ）。因此，下面的代码就是可行的：
 
@@ -30234,7 +30179,7 @@ Safari和Opera完全支持，IE9\~11及一些移动浏览器支持带前缀的�
 
        \<script defer>console. log\('hi'\);\<\\/script>";
 
-       第一行会在 \<script> 元素前面插入一个文本节点。为了不影响页面排版，可能稍后需要删掉这个文本节点。第二行与之类似，使用了包含空格的 \<div> 元素。空 \<div> 是不行的，必须包含一点内容，以强制创建一个文本节点。同样，这个
+       第一行会在 `<script>` 元素前面插入一个文本节点。为了不影响页面排版，可能稍后需要删掉这个文本节点。第二行与之类似，使用了包含空格的 \<div> 元素。空 \<div> 是不行的，必须包含一点内容，以强制创建一个文本节点。同样，这个
 
        \<div> 元素可能也需要事后删除，以免影响页面外观。第三行使用了一个隐藏的 \<input> 字段来达成同样的目的。因为这个字段不影响页面布局，所以应该是最理想的方案。
 
@@ -30382,7 +30327,7 @@ Safari和Opera完全支持，IE9\~11及一些移动浏览器支持带前缀的�
 
       6.  跨站点脚本
 
-       尽管 innerHTML 不会执行自己创建的 \<script> 标签，但仍然向恶意用户暴露了很大的攻击面，因为通过它可以毫不费力地创建元素并执行 onclick 之类的属性。
+       尽管 innerHTML 不会执行自己创建的 `<script>` 标签，但仍然向恶意用户暴露了很大的攻击面，因为通过它可以毫不费力地创建元素并执行 onclick 之类的属性。
 
        如果页面中要使用用户提供的信息，则不建议使用
 
@@ -30474,7 +30419,7 @@ document.forms\[0\].scrollIntoView\(\{behavior: 'smooth', block: 'start'\}\);
 
       console.log\(document.documentElement.contains\(do cument.body\)\); // true
 
-      这个例子测试 \<html> 元素中是否包含 \<body> 元素，在格式正确的HTML中会返回 true 。
+      这个例子测试 \<html> 元素中是否包含 `<body>` 元素，在格式正确的HTML中会返回 true 。
 
       另外，使用DOM Level 3的 compareDocumentPosition\(\) 方法也可以确定节点间的关系。这个方法会返回表示两个节点关系的位掩码。下表给出了这些位掩码的说明。
       要模仿 contains\(\) 方法，就需要用到掩码16（0x10）。
@@ -30660,19 +30605,19 @@ DOM1（DOM Level 1）主要定义了HTML和XML文档的底层结构。DOM2（DOM
 
       \<html xmlns[\=](http://www.w3.org/1999/xhtml)"http://www.w3.org/1999/xhtml"\>
 
-      \<head>
+      `<head>`
 
       \<title>Example XHTML page\</title>
 
       \</head>
 
-      \<body>
+      `<body>`
 
       Hello world\!
 
-      \</body>
+      `</body>`
 
-      \</html>
+      `</html>`
 
       对这个例子来说，所有元素都默认属于XHTML命名空间。可以使用 xmlns 给命名空间创建一个前缀，格式为“ xmlns: 前缀 ”，如下面的例子所示：
 
@@ -30716,13 +30661,13 @@ DOM1（DOM Level 1）主要定义了HTML和XML文档的底层结构。DOM2（DOM
 
       \<html xmlns[\=](http://www.w3.org/1999/xhtml)"http://www.w3.org/1999/xhtml"\>
 
-      \<head>
+      `<head>`
 
       \<title>Example XHTML page\</title>
 
       \</head>
 
-      \<body>
+      `<body>`
 
       \<svg xmlns[\=](http://www.w3.org/2000/svg)"http://www.w3.org/2000/svg" version\="1.1"
 
@@ -30732,9 +30677,9 @@ DOM1（DOM Level 1）主要定义了HTML和XML文档的底层结构。DOM2（DOM
 
       \</svg>
 
-      \</body>
+      `</body>`
 
-      \</html>
+      `</html>`
 
       在这个例子中，通过给 \<svg> 元素设置自己的命名空间，将其标识为当前文档的外来元素。这样一来， \<svg> 元素及其属性，包括它的所有后代都会被认为属
 
@@ -30754,13 +30699,13 @@ DOM1（DOM Level 1）主要定义了HTML和XML文档的底层结构。DOM2（DOM
 
        \<html xmlns[\=](http://www.w3.org/1999/xhtml)"http://www.w3.org/1999/xhtml"\>
 
-       \<head>
+       `<head>`
 
        \<title>Example XHTML page\</title>
 
        \</head>
 
-       \<body>
+       `<body>`
 
        \<s:svg xmlns:s[\=](http://www.w3.org/2000/svg)"http://www.w3.org/2000/svg" version\="1.1"
 
@@ -30770,9 +30715,9 @@ DOM1（DOM Level 1）主要定义了HTML和XML文档的底层结构。DOM2（DOM
 
        \</s:svg>
 
-       \</body>
+       `</body>`
 
-       \</html>
+       `</html>`
 
        其中的 \<html> 元素的 localName 和 tagName 都是 "html" ， namespaceURL
 
@@ -31006,7 +30951,7 @@ DOM1（DOM Level 1）主要定义了HTML和XML文档的底层结构。DOM2（DOM
 
        档。这个文档只有一个文档元素 \<html> ，其他一切都需要另行添加。
 
-       DOM2 HTML模块也为 document.implamentation 对象添加了 createHTMLDocument\(\) 方法。使用这个方法可以创建一个完整的HTML文档，包含 \<html> 、 \<head> 、 \<title>  和 \<body> 元素。这个方法只接收一个参数，即新创建文档的标题（放到 \<title> 元素中），返回一个新的HTML文档。比
+       DOM2 HTML模块也为 document.implamentation 对象添加了 createHTMLDocument\(\) 方法。使用这个方法可以创建一个完整的HTML文档，包含 \<html> 、 `<head>` 、 \<title>  和 `<body>` 元素。这个方法只接收一个参数，即新创建文档的标题（放到 \<title> 元素中），返回一个新的HTML文档。比
 
        如：
 
@@ -31273,7 +31218,7 @@ contentDocument 和 contentWindow 属性。
 
        \<html>
 
-       \<head>
+       `<head>`
 
        \<title>Computed Styles Example\</title>
 
@@ -31291,13 +31236,13 @@ contentDocument 和 contentWindow 属性。
 
        \</head>
 
-       \<body>
+       `<body>`
 
        \<div id\="myDiv" style\="background-color: red; border: 1px solid black"\>\</div>
 
-       \</body>
+       `</body>`
 
-       \</html>
+       `</html>`
 
        这里的 \<div> 元素从文档样式表（ \<style> 元素）和自己的
 
@@ -31585,7 +31530,7 @@ contentDocument 和 contentWindow 属性。
 
        这两个函数使用 offsetParent 在DOM树中逐级上溯，将每一级的偏移属性相加，最终得到元素的实际偏移量。对于使用CSS布局的简单页面，这两个函数是很精确的。而对于使用表格和内嵌窗格的页面布局，它们返回的值会因浏览器不同而有所差异，因为浏览器实现这些元素的方式不同。一般来说，包含在
 
-       \<div> 元素中所有元素都以 \<body> 为其 offsetParent ，因此 getElementleft\(\) 和 getElementTop\(\) 返回的值 与 offsetLeft 和 offsetTop 返回的值相同。
+       \<div> 元素中所有元素都以 `<body>` 为其 offsetParent ，因此 getElementleft\(\) 和 getElementTop\(\) 返回的值 与 offsetLeft 和 offsetTop 返回的值相同。
 
   
 
@@ -31603,7 +31548,7 @@ contentDocument 和 contentWindow 属性。
 
        clientHeight 。这两个属性表示视口（ \<html> 或
 
-       \<body> 元素）的尺寸。
+       `<body>` 元素）的尺寸。
 
   
 
@@ -31673,29 +31618,29 @@ Element.getBoundingClientRect\(\) 英文版页面。——译者注
 
      \<html>
 
-     \<head>
+     `<head>`
 
      \<title>Example\</title>
 
      \</head>
 
-     \<body>
+     `<body>`
 
      \<p>\<b>Hello\</b> world\!\</p>
 
-     \</body>
+     `</body>`
 
-     \</html>
+     `</html>`
 
      这段代码构成的DOM树如图16-5所示。图 16-5
 
      其中的任何节点都可以成为遍历的根节点。比如，假设以
 
-     \<body> 元素作为遍历的根节点，那么接下来是 \<p> 元素、 \<b>
+     `<body>` 元素作为遍历的根节点，那么接下来是 \<p> 元素、 \<b>
 
-     元素和两个文本节点（都是 \<body> 元素的后代）。但这个遍历不会
+     元素和两个文本节点（都是 `<body>` 元素的后代）。但这个遍历不会
 
-     到达 \<html> 元素、 \<head> 元素，或者其他不属于 \<body> 元素子树的元素。而以 document 为根节点的遍历，则可以访问到文档中的所有节点。图16-6展示了以 document 为根节点的深度优先遍历。
+     到达 \<html> 元素、 `<head>` 元素，或者其他不属于 `<body>` 元素子树的元素。而以 document 为根节点的遍历，则可以访问到文档中的所有节点。图16-6展示了以 document 为根节点的深度优先遍历。
 
      图 16-6
 
@@ -32061,13 +32006,13 @@ walker.currentNode \= document.body; // 修
 
       \<html>
 
-      \<body>
+      `<body>`
 
       \<p id\="p1"\>\<b>Hello\</b> world\!\</p>
 
-      \</body>
+      `</body>`
 
-      \</html>
+      `</html>`
 
       以下JavaScript代码可以访问并创建相应的范围：
 
@@ -32269,7 +32214,7 @@ walker.currentNode \= document.body; // 修
 
       let fragment \= range.extractContents\(\); p1.parentNode.appendChild\(fragment\);
 
-      这个例子提取了范围的文档片段，然后把它添加到文档 \<body>元素的最后。（别忘了，在把文档片段传给 appendChild\(\) 时，只会添加片段的子树，不包含片段自身。）结果就会得到如下 HTML：
+      这个例子提取了范围的文档片段，然后把它添加到文档 `<body>`元素的最后。（别忘了，在把文档片段传给 appendChild\(\) 时，只会添加片段的子树，不包含片段自身。）结果就会得到如下 HTML：
 
   
 
@@ -32544,25 +32489,25 @@ JavaScript与HTML的交互是通过事件实现的，事件代表文档或浏览
 
       \<html>
 
-      \<head>
+      `<head>`
 
       \<title>Event Bubbling Example\</title>
 
       \</head>
 
-      \<body>
+      `<body>`
 
       \<div id\="myDiv"\>Click Me\</div>
 
-      \</body>
+      `</body>`
 
-      \</html>
+      `</html>`
 
       在点击页面中的 \<div> 元素后， click 事件会以如下顺序发生：
 
       1.  \<div>
 
-      2.  \<body>
+      2.  `<body>`
 
       3.  \<html>
 
@@ -32574,7 +32519,7 @@ JavaScript与HTML的交互是通过事件实现的，事件代表文档或浏览
 
        所有现代浏览器都支持事件冒泡，只是在实现方式上会有一些变化。IE5.5及早期版本会跳过
 
-       \<html> 元素（从 \<body> 直接到 document ）。现代浏览器中的事件会一直冒泡到 window 对象。
+       \<html> 元素（从 `<body>` 直接到 document ）。现代浏览器中的事件会一直冒泡到 window 对象。
 
      2.  事件捕获
 
@@ -32584,7 +32529,7 @@ JavaScript与HTML的交互是通过事件实现的，事件代表文档或浏览
 
       2.  \<html>
 
-      3.  \<body>
+      3.  `<body>`
 
       4.  \<div>
 
@@ -32604,7 +32549,7 @@ DOM2 Events规范规定事件流分为3个阶段：事件捕获、到达目标�
 
 在DOM事件流中，实际的目标（ \<div> 元素）在捕获阶段不会接收到事件。这是因为捕获阶段从
 
-document 到 \<html> 再到 \<body> 就结束了。下一阶段，即会在 \<div> 元素上触发事件的“到达目标”阶段，通常在事件处理时被认为是冒泡阶段的一部分（稍后讨论）。然后，冒泡阶段开始，事件反向传播至文档。
+document 到 \<html> 再到 `<body>` 就结束了。下一阶段，即会在 \<div> 元素上触发事件的“到达目标”阶段，通常在事件处理时被认为是冒泡阶段的一部分（稍后讨论）。然后，冒泡阶段开始，事件反向传播至文档。
 
 大多数支持DOM事件流的浏览器实现了一个小小的拓展。虽然DOM2 Events规范明确捕获阶段不命中事件目标，但现代浏览器都会在捕获阶段在事件目标上触发事件。最终结果是在事件目标上有两个机会来处理事件。
 
@@ -32636,19 +32581,19 @@ document 到 \<html> 再到 \<body> 就结束了。下一阶段，即会在 \<di
 
   
 
-      \<script>
+      `<script>`
 
       function showMessage\(\) \{ console.log\("Hello world\!"\);
 
       \}
 
-      \</script>
+      `</script>`
 
       \<input type\="button" value\="Click Me" onclick\="showMessage\(\)"/>
 
       在这个例子中，单击按钮会调用 showMessage\(\) 函数。 showMessage\(\) 函数是在单独的
 
-      \<script> 元素中定义的，而且也可以在外部文件中定义。作为事件处理程序执行的代码可以访问全局作用域中的一切。
+      `<script>` 元素中定义的，而且也可以在外部文件中定义。作为事件处理程序执行的代码可以访问全局作用域中的一切。
 
       以这种方式指定的事件处理程序有一些特殊的地方。首先，会创建一个函数来封装属性的值。这个函数有一个特殊的局部变量 event ，其中保存的就是 event 对象（本章后面会讨论）：
 
@@ -33449,7 +33394,7 @@ EventUtil.removeHandler\(btn, "click", handler\);
 
       DOMActivate ：元素被用户通过鼠标或键盘操作激活时触发（比 click 或 keydown 更通用）。这个事件在DOM3 Events中已经废弃。因为浏览器实现之间存在差异，所以不要使用它。 load ：在 window 上当页面加载完成后触发，在窗套（ \<frameset> ）上当所有窗格
 
-      （ \<frame> ）都加载完成后触发，在 \<img> 元素上当图片加载完成后触发，在 \<object> 元素上当相应对象加载完成后触发。
+      （ \<frame> ）都加载完成后触发，在 `<img>` 元素上当图片加载完成后触发，在 \<object> 元素上当相应对象加载完成后触发。
 
       unload ：在 window 上当页面完全卸载后触发，在窗套上当所有窗格都卸载完成后触发，在
 
@@ -33457,13 +33402,13 @@ EventUtil.removeHandler\(btn, "click", handler\);
 
       abort ：在 \<object> 元素上当相应对象加载完成前被用户提前终止下载时触发。
 
-      error ：在 window 上当JavaScript报错时触发，在 \<img> 元素上当无法加载指定图片时触发，在 \<object> 元素上当无法加载相应对象时触发，在窗套上当一个或多个窗格无法完成加载时触发。
+      error ：在 window 上当JavaScript报错时触发，在 `<img>` 元素上当无法加载指定图片时触发，在 \<object> 元素上当无法加载相应对象时触发，在窗套上当一个或多个窗格无法完成加载时触发。
 
       select ：在文本框（ \<input> 或 textarea ）上当用户选择了一个或多个字符时触发。
 
       resize ：在 window 或窗格上当窗口或窗格被缩放时触发。
 
-      scroll ：当用户滚动包含滚动条的元素时在元素上触发。 \<body> 元素包含已加载页面的滚动条。
+      scroll ：当用户滚动包含滚动条的元素时在元素上触发。 `<body>` 元素包含已加载页面的滚动条。
 
   
 
@@ -33485,7 +33430,7 @@ EventUtil.removeHandler\(btn, "click", handler\);
 
        这是使用 addEventListener\(\) 方法来指定事件处理程序。与其他事件一样，事件处理程序会接收到一个 event 对象。这个 event 对象并没有提供关于这种类型事件的额外信息，虽然在DOM合规的浏览器中， event.target 会被设置为 document ，但在IE8之前的版本中，不会设置这个对象的 srcElement 属性。
 
-       第二种指定 load 事件处理程序的方式是向 \<body> 元素添加 onload 属性，如下所示：
+       第二种指定 load 事件处理程序的方式是向 `<body>` 元素添加 onload 属性，如下所示：
 
   
 
@@ -33493,7 +33438,7 @@ EventUtil.removeHandler\(btn, "click", handler\);
 
        \<html>
 
-       \<head>
+       `<head>`
 
        \<title>Load Event Example\</title>
 
@@ -33503,17 +33448,17 @@ EventUtil.removeHandler\(btn, "click", handler\);
 
   
 
-       \</body>
+       `</body>`
 
-       \</html>
+       `</html>`
 
-       一般来说，任何在 window 上发生的事件，都可以通过给 \<body> 元素上对应的属性赋值来指定，这是因为HTML中没有 window 元素。这实际上是为了保证向后兼容的一个策略，但在所有浏览器中都能得到很好的支持。实际开发中要尽量使用JavaScript方式。
+       一般来说，任何在 window 上发生的事件，都可以通过给 `<body>` 元素上对应的属性赋值来指定，这是因为HTML中没有 window 元素。这实际上是为了保证向后兼容的一个策略，但在所有浏览器中都能得到很好的支持。实际开发中要尽量使用JavaScript方式。
 
        注意 根据DOM2 Events， load 事件应该在 document 而非 window 上触发。可是为了向后兼容，所有浏览器都在 window 上实现了 load 事件。
 
        图片上也会触发 load 事件，包括DOM中的图片和非DOM中的图片。可以在HTML中直接给
 
-       \<img> 元素的 onload 属性指定事件处理程序，比如：
+       `<img>` 元素的 onload 属性指定事件处理程序，比如：
 
   
 
@@ -33529,11 +33474,11 @@ EventUtil.removeHandler\(btn, "click", handler\);
 
        \}\);
 
-       这里使用JavaScript为图片指定了 load 事件处理程序。处理程序会接收到 event 对象，虽然这个对象上没有多少有用的信息。这个事件的目标是 \<img> 元素，因此可以直接从
+       这里使用JavaScript为图片指定了 load 事件处理程序。处理程序会接收到 event 对象，虽然这个对象上没有多少有用的信息。这个事件的目标是 `<img>` 元素，因此可以直接从
 
        event.target.src 属性中取得图片地址并打印出来。
 
-       在通过JavaScript创建新 \<img> 元素时，也可以给这个元素指定一个在加载完成后执行的事件处理程序。在这里，关键是要在赋值 src 属性前指定事件处理程序，如下所示：
+       在通过JavaScript创建新 `<img>` 元素时，也可以给这个元素指定一个在加载完成后执行的事件处理程序。在这里，关键是要在赋值 src 属性前指定事件处理程序，如下所示：
 
   
 
@@ -33549,11 +33494,11 @@ EventUtil.removeHandler\(btn, "click", handler\);
 
        \}\);
 
-       这个例子首先为 window 指定了一个 load 事件处理程序。因为示例涉及向DOM中添加新元素，所以必须确保页面已经加载完成。如果在页面加载完成之前操作 document.body ，则会导致错误。然后，代码创建了一个新的 \<img> 元素，并为这个元素设置了 load 事件处理程序。最后，才把这个元素添加到文档中并指定了其 src 属性。注意，加载图片并不一定要把 \<img> 元素添加到文
+       这个例子首先为 window 指定了一个 load 事件处理程序。因为示例涉及向DOM中添加新元素，所以必须确保页面已经加载完成。如果在页面加载完成之前操作 document.body ，则会导致错误。然后，代码创建了一个新的 `<img>` 元素，并为这个元素设置了 load 事件处理程序。最后，才把这个元素添加到文档中并指定了其 src 属性。注意，加载图片并不一定要把 `<img>` 元素添加到文
 
        档，只要给它设置了 src 属性就会立即开始下载。
 
-       同样的技术也适用于DOM0的 Image 对象。在DOM出现之前，客户端都使用 Image 对象预先加载图片。可以像使用前面（通过 createElement\(\) 方法创建）的 \<img> 元素一样使用 Image 对象，只是不能把后者添加到DOM树。下面的例子使用新 Image 对象实现了图片预加载：
+       同样的技术也适用于DOM0的 Image 对象。在DOM出现之前，客户端都使用 Image 对象预先加载图片。可以像使用前面（通过 createElement\(\) 方法创建）的 `<img>` 元素一样使用 Image 对象，只是不能把后者添加到DOM树。下面的例子使用新 Image 对象实现了图片预加载：
 
   
 
@@ -33569,13 +33514,13 @@ EventUtil.removeHandler\(btn, "click", handler\);
 
        这里调用 Image 构造函数创建了一个新图片，并给它设置了事件处理程序。有些浏览器会把
 
-       Image 对象实现为 \<img> 元素，但并非所有浏览器都如此。所以最好把它们看成是两个东西。
+       Image 对象实现为 `<img>` 元素，但并非所有浏览器都如此。所以最好把它们看成是两个东西。
 
-       注意 在IE8及早期版本中，如果图片没有添加到DOM文档中，则 load 事件发生时不会生成event 对象。对未被添加到文档中的 \<img> 元素以及 Image 对象来说都是这样。IE9修复了这个问题。
+       注意 在IE8及早期版本中，如果图片没有添加到DOM文档中，则 load 事件发生时不会生成event 对象。对未被添加到文档中的 `<img>` 元素以及 Image 对象来说都是这样。IE9修复了这个问题。
 
-       还有一些元素也以非标准的方式支持 load 事件。 \<script> 元素会在JavaScript文件加载完成后触发 load 事件，从而可以动态检测。与图片不同，要下载JavaScript文件必须同时指定 src 属性并把 \<script> 元素添加到文档中。因此指定事件处理程序和指定 src 属性的顺序在这里并不重
+       还有一些元素也以非标准的方式支持 load 事件。 `<script>` 元素会在JavaScript文件加载完成后触发 load 事件，从而可以动态检测。与图片不同，要下载JavaScript文件必须同时指定 src 属性并把 `<script>` 元素添加到文档中。因此指定事件处理程序和指定 src 属性的顺序在这里并不重
 
-       要。下面的代码展示了如何给动态创建的 \<script> 元素指定事件处理程序：
+       要。下面的代码展示了如何给动态创建的 `<script>` 元素指定事件处理程序：
 
        window.addEventListener\("load", \(\) => \{
 
@@ -33589,9 +33534,9 @@ EventUtil.removeHandler\(btn, "click", handler\);
 
        \}\);
 
-       这里 event 对象的 target 属性在大多数浏览器中是 \<script> 节点。IE8及更早版本不支持
+       这里 event 对象的 target 属性在大多数浏览器中是 `<script>` 节点。IE8及更早版本不支持
 
-       \<script> 元素触发 load 事件。
+       `<script>` 元素触发 load 事件。
 
        IE和Opera支持 \<link> 元素触发 load 事件，因而支持动态检测样式表是否加载完成。下面的代码展示了如何设置这样的事件处理程序：
 
@@ -33611,7 +33556,7 @@ EventUtil.removeHandler\(btn, "click", handler\);
 
        \}\);
 
-       与 \<script> 节点一样，在指定 href 属性并把 \<link> 节点添加到文档之前不会下载样式表。
+       与 `<script>` 节点一样，在指定 href 属性并把 \<link> 节点添加到文档之前不会下载样式表。
 
       2.  unload 事件
 
@@ -33625,7 +33570,7 @@ EventUtil.removeHandler\(btn, "click", handler\);
 
        这个事件生成的 event 对象在DOM合规的浏览器中只有 target 属性（值为 document ）。IE8及更早版本在这个事件上不提供 srcElement 属性。
 
-       第二种方式与 load 事件类似，就是给 \<body> 元素添加 onunload 属性：
+       第二种方式与 load 事件类似，就是给 `<body>` 元素添加 onunload 属性：
 
   
 
@@ -33633,7 +33578,7 @@ EventUtil.removeHandler\(btn, "click", handler\);
 
        \<html>
 
-       \<head>
+       `<head>`
 
        \<title>Unload Event Example\</title>
 
@@ -33643,17 +33588,17 @@ EventUtil.removeHandler\(btn, "click", handler\);
 
   
 
-       \</body>
+       `</body>`
 
-       \</html>
+       `</html>`
 
        无论使用何种方式，都要注意事件处理程序中的代码。因为 unload 事件是在页面卸载完成后触发的，所以不能使用页面加载后才有的对象。此时要访问DOM或修改页面外观都会导致错误。
 
-       注意 根据DOM2 Events， unload 事件应该在 \<body> 而非 window 上触发。可是为了向后兼容，所有浏览器都在 window 上实现了 unload 事件。
+       注意 根据DOM2 Events， unload 事件应该在 `<body>` 而非 window 上触发。可是为了向后兼容，所有浏览器都在 window 上实现了 unload 事件。
 
       3.  resize 事件
 
-       当浏览器窗口被缩放到新高度或宽度时，会触发 resize 事件。这个事件在 window 上触发，因此可以通过JavaScript在 window 上或者为 \<body> 元素添加 onresize 属性来指定事件处理程序。优先使用JavaScript方式：
+       当浏览器窗口被缩放到新高度或宽度时，会触发 resize 事件。这个事件在 window 上触发，因此可以通过JavaScript在 window 上或者为 `<body>` 元素添加 onresize 属性来指定事件处理程序。优先使用JavaScript方式：
 
   
 
@@ -33671,7 +33616,7 @@ EventUtil.removeHandler\(btn, "click", handler\);
 
       4.  scroll 事件
 
-       虽然 scroll 事件发生在 window 上，但实际上反映的是页面中相应元素的变化。在混杂模式下，可以通过 \<body> 元素检测 scrollLeft 和 scrollTop 属性的变化。而在标准模式下，这些变化在除早期版的Safari之外的所有浏览器中都发生在 \<html> 元素上（早期版的Safari在 \<body> 上跟踪滚动位置）。下面的代码演示了如何处理这些差异：
+       虽然 scroll 事件发生在 window 上，但实际上反映的是页面中相应元素的变化。在混杂模式下，可以通过 `<body>` 元素检测 scrollLeft 和 scrollTop 属性的变化。而在标准模式下，这些变化在除早期版的Safari之外的所有浏览器中都发生在 \<html> 元素上（早期版的Safari在 `<body>` 上跟踪滚动位置）。下面的代码演示了如何处理这些差异：
 
   
 
@@ -33943,25 +33888,25 @@ EventUtil.removeHandler\(btn, "click", handler\);
 
        \<html>
 
-       \<head>
+       `<head>`
 
        \<title>Related Elements Example\</title>
 
        \</head>
 
-       \<body>
+       `<body>`
 
        \<div id\="myDiv"
 
        style\="background-color:red;height:100px;width:100px;"\>\</div>
 
-       \</body>
+       `</body>`
 
-       \</html>
+       `</html>`
 
        这个页面中只包含一个 \<div> 元素。如果光标开始在 \<div> 元素上，然后从它上面移出，则
 
-       \<div> 元素上会触发 mouseout 事件，相关元素为 \<body> 元素。与此同时， \<body> 元素上会触发 mouseover 事件，相关元素是 \<div> 元素。
+       \<div> 元素上会触发 mouseout 事件，相关元素为 `<body>` 元素。与此同时， `<body>` 元素上会触发 mouseover 事件，相关元素是 \<div> 元素。
 
        DOM通过 event 对象的 relatedTarget 属性提供了相关元素的信息。这个属性只有在
 
@@ -34388,13 +34333,13 @@ EventUtil.removeHandler\(btn, "click", handler\);
 
        \<html>
 
-       \<head>
+       `<head>`
 
        \<title>ContextMenu Event Example\</title>
 
        \</head>
 
-       \<body>
+       `<body>`
 
        \<div id\="myDiv"\>Right click or Ctrl+click me to get a custom context menu.
 
@@ -34412,9 +34357,9 @@ EventUtil.removeHandler\(btn, "click", handler\);
 
        \</ul>
 
-       \</body>
+       `</body>`
 
-       \</html>
+       `</html>`
 
        这个例子中的 \<div> 元素有一个上下文菜单 \<ul> 。作为上下文菜单， \<ul> 元素初始时是隐藏的。以下是实现上下文菜单功能的JavaScript代码：
 
@@ -34688,7 +34633,7 @@ EventUtil.removeHandler\(btn, "click", handler\);
 
        所有iOS设备都支持 orientationchange 事件和 window.orientation 属性。
 
-       注意 因为 orientationchange 事件被认为是 window 事件，所以也可以通过给 \<body> 元素添加 onorientationchange 属性来指定事件处理程序。
+       注意 因为 orientationchange 事件被认为是 window 事件，所以也可以通过给 `<body>` 元素添加 onorientationchange 属性来指定事件处理程序。
 
       2.  deviceorientation 事件
 
@@ -35564,7 +35509,7 @@ document.getElementById\("myDiv"\).innerHTML \= "Processing...";
 
 \};
 
-\</script>
+`</script>`
 
 这里的按钮在 \<div> 元素中。单击按钮，会将自己删除并替换为一条消息，以阻止双击发生。这是很多网站上常见的做法。问题在于，按钮被删除之后仍然关联着一个事件处理程序。在 \<div> 元素上设置 innerHTML 会完全删除按钮，但事件处理程序仍然挂在按钮上面。某些浏览器，特别是IE8及更早版本，在这时候就会有问题了。很有可能元素的引用和事件处理程序的引用都会残留在内存中。如果知道某个元素会被删除，那么最好在删除它之前手工删除它的事件处理程序，比如：
 
@@ -35590,7 +35535,7 @@ document.getElementById\("myDiv"\).innerHTML \= "Processing...";
 
 \};
 
-\</script>
+`</script>`
 
 在这个重写后的例子中，设置 \<div> 元素的 innerHTML 属性之前，按钮的事件处理程序先被删除了。这样就可以确保内存被回收，按钮也可以安全地从DOM中删掉。
 
