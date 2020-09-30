@@ -25468,6 +25468,7 @@ Hello world!
 
 这里为 XHTML 命名空间定义了一个前缀 xhtml ，同时所有 XHTML 元素都必须加上这个前缀。为避免混淆，属性也可以加上命名空间前缀，比如：
 
+```
 <xhtml:html xmlns:xhtml[=](http://www.w3.org/1999/xhtml)"http://www.w3.org/1999/xhtml"\>
 
 <xhtml:head>
@@ -25481,9 +25482,11 @@ Hello world!
 </xhtml:body>
 
 </xhtml:html>
+```
 
 这里的 class 属性被加上了 xhtml 前缀。如果文档中只使用一种 XML 语言，那么命名空间前缀其实是多余的，只有一个文档混合使用多种 XML 语言时才有必要。比如下面这个文档就使用了 XHTML 和 SVG 两种语言：
 
+```
 <html xmlns[=](http://www.w3.org/1999/xhtml)"http://www.w3.org/1999/xhtml"\>
 
 `<head>`
@@ -25505,6 +25508,7 @@ viewBox="0 0 100 100" style="width:100\%; height:100\%"\>
 `</body>`
 
 `</html>`
+```
 
 在这个例子中，通过给 <svg> 元素设置自己的命名空间，将其标识为当前文档的外来元素。这样一来， <svg> 元素及其属性，包括它的所有后代都会被认为属
 
@@ -25522,6 +25526,7 @@ prefix ，命名空间前缀，如果未指定则为 null 。
 
 \+ ":" \+ localName 。比如下面这个例子：
 
+```
 <html xmlns[=](http://www.w3.org/1999/xhtml)"http://www.w3.org/1999/xhtml"\>
 
 `<head>`
@@ -25543,6 +25548,7 @@ viewBox="0 0 100 100" style="width:100\%; height:100\%"\>
 `</body>`
 
 `</html>`
+```
 
 其中的 <html> 元素的 localName 和 tagName 都是 "html" ， namespaceURL
 
@@ -25586,6 +25592,7 @@ getElementsByTagNameNS(namespaceURI, tagName) ，返回指定命名空间 namesp
 
 使用这些方法都需要传入相应的命名空间 URI（不是命名空间前缀），如下面的例子所示：
 
+```
 // 创建一个新 SVG 元素
 
 let svg = document.createElementNS[(](http://www.w3.org/2)"http://www.w3.org/2 000/svg", "svg");
@@ -25597,6 +25604,7 @@ let att = document.createAttributeNS("http://www.somewh ere.com", "random");
 // 获取所有 XHTML 元素
 
 let elems = document.getElementsByTagNameNS("http://www.w 3.org/1999/xhtml", "\*");
+```
 
 这些命名空间特定的方法只在文档中包含两个或两个以上命名空间时才有用。
 
@@ -25654,9 +25662,11 @@ setNamedItemNS(node) ，为元素设置（添加）包含命名空间信息的�
 
 DocumentType 新增了 3 个属性： publicId 、 systemId 和 internalSubset 。 publicId 、 systemId 属性表示文档类型声明中有效但无法使用 DOM1 API 访问的数据。比如下面这个 HTML 文档类型声明：
 
+```
 <!DOCTYPE HTML PUBLIC "-// W3C// DTD HTML 4.01// EN"
 
 ["http://www.w3.org/TR/html4/strict.dtd">](http://www.w3.org/TR/html4/strict.dtd)
+```
 
 其 publicId 是 "-// W3C// DTD HTML 4.01// EN" ， 而 systemId
 
@@ -25670,11 +25680,13 @@ console.log(document.doctype.publicId); console.log(document.doctype.systemId);
 
 internalSubset 用于访问文档类型声明中可能包含的额外定义，如下面的例子所示：
 
+```
 <!DOCTYPE html PUBLIC "-// W3C// DTD XHTML
 
 [1.0 Strict// EN"](http://www.w3.org/TR/xhtml1/DTD/xhtml1-) "http://www.w3.org/TR/xhtml1/DTD/xhtml1- strict.dtd"
 
 \[<!ELEMENT name (#PCDATA)>\] >
+```
 
 对于以上声明， document.doctype.internalSubset 会返回 "<!ELEMENT name (#PCDATA)>" 。HTML 文档中几乎不会涉及文档类型的内部子集，XML 文档中稍微常用一些。
 
@@ -25730,6 +25742,7 @@ let doc = document.implementation.createDocument("", "root", null);
 
 这个空文档没有命名空间和文档类型，只指定了 <root> 作为文档元素。要创建一个 XHTML 文档，可以使用以下代码：
 
+```
 let doctype = document.implementation.createDocumentType("h tml",
 
 "-// W3C// DTD XHTML 1.0 Strict//
@@ -25743,6 +25756,7 @@ let doc = document.implementation.createDocument("http:
 //www.w3.org/1999/xhtml",
 
 "html", doctype);
+```
 
 这里使用了适当的命名空间和文档类型创建一个新 XHTML 文
 
@@ -25752,6 +25766,7 @@ DOM2 HTML 模块也为 document.implamentation 对象添加了 createHTMLDocumen
 
 如：
 
+```
 let htmldoc = document.implementation.createHTMLDocument("N ew Doc");
 
 console.log(htmldoc.title); // "New Doc"
@@ -25761,6 +25776,7 @@ console.log(typeof htmldoc.body); // "object"
 createHTMLDocument() 方法创建的对象是
 
 HTMLDocument 类型的实例，因此包括该类型所有相关的方法和属性，包括 title 和 body 属性。
+```
 
 3.  Node 的变化
 
@@ -25770,11 +25786,13 @@ isEqualNode() 。这两个方法都接收一个节点参数，如果这个节点
 
 attributes 和 childNodes 也相等（即同样的位置包含相等的值）。来看一个例子：
 
+```
 let div1 = document.createElement("div"); div1.setAttribute("class", "box");
 
 let div2 = document.createElement("div"); div2.setAttribute("class", "box");
 
 console.log(div1.isSameNode(div1)); // true console.log(div1.isEqualNode(div2)); // true console.log(div1.isSameNode(div2)); // false
+```
 
 这里创建了包含相同属性的两个 <div> 元素。这两个元素相等，但不相同。
 
@@ -26453,6 +26471,7 @@ null 。
 
 以下面的 HTML 片段为例：
 
+```
 <div id="div1"\>
 
 <p><b>Hello</b> world!</p>
@@ -26468,6 +26487,7 @@ null 。
 </ul>
 
 </div>
+```
 
 假设想要遍历 <div> 元素内部的所有元素，那么可以使用如下代码：
 
@@ -26795,7 +26815,9 @@ commonAncestorContainer 是 <p> 元素，即包含这两个节点的第一个祖
 
 <b> 标签，于是会在后台动态补上这个标签，同时还需要补上封闭 "He" 的结束标签 </b> ，结果会把 DOM 修改为这样：
 
+```
 <p><b>He</b><b>llo</b> world!</p>
+```
 
 而且， " world!" 文本节点会被拆分成两个文本节点，一个包含 " wo" ，另一个包含 "rld!" 。最终的 DOM 树，以及范围对应的文档片段如图 16-9 所示。
 
@@ -26817,7 +26839,9 @@ range.setEnd(worldNode, 3); range.deleteContents();
 
 执行上面的代码之后，页面中的 HTML 会变成这样：
 
+```
 <p><b>He</b>rld!</p>\]
+```
 
 因为前面介绍的范围选择过程通过修改底层 DOM 结构保证了结构完好，所以即使删除范围之后，剩下的 DOM 结构照样是完好的。
 
@@ -26837,11 +26861,13 @@ let fragment = range.extractContents(); p1.parentNode.appendChild(fragment);
 
 这个例子提取了范围的文档片段，然后把它添加到文档 `<body>`元素的最后。（别忘了，在把文档片段传给 appendChild() 时，只会添加片段的子树，不包含片段自身。）结果就会得到如下 HTML：
 
+```
 <p><b>He</b>rld!</p>
 
 <b>llo</b> wo
 
 \[P595 代码三\]
+```
 
 如果不想把范围从文档中移除，也可以使用
 
