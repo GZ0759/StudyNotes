@@ -22832,7 +22832,7 @@ childNodes 属性包含元素所有的子节点，这些子节点可能是其他
 
 </ul>
 
-在解析以上代码时，`<ul>`元素会包含 7 个子元素，其中 3 个是 <li> 元素，还有 4 个 Text 节点（表示 <li> 元素周围的空格）。如果把元素之间的空格删掉，变成下面这样，则所有浏览器都会返回同样数量的子节点：
+在解析以上代码时，`<ul>`元素会包含 7 个子元素，其中 3 个是`<li>`元素，还有 4 个 Text 节点（表示`<li>`元素周围的空格）。如果把元素之间的空格删掉，变成下面这样，则所有浏览器都会返回同样数量的子节点：
 
 <ul id="myList"\><li>Item 1</li><li>Item 2</li><li>Item 3</li></ul>
 
@@ -22848,11 +22848,11 @@ for (let i = 0, len = element.childNodes.length; i < len; ++i) { if (element.chi
 
 以上代码会遍历某个元素的子节点，并且只在 nodeType 等于 1（即 Element 节点）时执行某个操作。
 
-要取得某个元素的子节点和其他后代节点，可以使用元素的 getElementsByTagName() 方法。在元素上调用这个方法与在文档上调用是一样的，只不过搜索范围限制在当前元素之内，即只会返回当前元素的后代。对于本节前面`<ul>`的例子，可以像下面这样取得其所有的 <li> 元素：
+要取得某个元素的子节点和其他后代节点，可以使用元素的 getElementsByTagName() 方法。在元素上调用这个方法与在文档上调用是一样的，只不过搜索范围限制在当前元素之内，即只会返回当前元素的后代。对于本节前面`<ul>`的例子，可以像下面这样取得其所有的`<li>`元素：
 
 let ul = document.getElementById("myList"); let items = ul.getElementsByTagName("li");
 
-这里例子中的`<ul>`元素只有一级子节点，如果它包含更多层级，则所有层级中的 <li> 元素都会返回。
+这里例子中的`<ul>`元素只有一级子节点，如果它包含更多层级，则所有层级中的`<li>`元素都会返回。
 
 4.  Text 类型
 
@@ -23102,11 +23102,9 @@ let li = document.createElement("li"); li.appendChild(document.createTextNode(\`
 
 ul.appendChild(fragment);
 
-这个例子先创建了一个文档片段，然后取得了`<ul>`元素的引用。接着通过 for 循环创建了 3 个列表项，每一项都包含表明自己身份的文本。为此先创建 <li> 元素，再创建文本节点并添加到该元素。然后通过 appendChild() 把 <li> 元素添加到文档片段。循环结束后，通过把文档片段传给
+这个例子先创建了一个文档片段，然后取得了`<ul>`元素的引用。接着通过 for 循环创建了 3 个列表项，每一项都包含表明自己身份的文本。为此先创建`<li>`元素，再创建文本节点并添加到该元素。然后通过 appendChild() 把`<li>`元素添加到文档片段。循环结束后，通过把文档片段传给
 
-appendChild() 将所有列表项添加到了`<ul>`元素。此时，文档片段的子节点全部被转移到了 <ul>
-
-元素。
+appendChild() 将所有列表项添加到了`<ul>`元素。此时，文档片段的子节点全部被转移到了 `<ul>` 元素。
 
 9.  Attr 类型
 
@@ -26519,7 +26517,7 @@ DIV P
 
 B UL LI LI LI
 
-如果只想遍历 <li> 元素，可以传入一个过滤器，比如：
+如果只想遍历`<li>`元素，可以传入一个过滤器，比如：
 
 let div = document.getElementById("div1"); let filter = function(node) {
 
@@ -26541,7 +26539,7 @@ node = iterator.nextNode();
 
 }
 
-在这个例子中，遍历只会输出 <li> 元素的标签。
+在这个例子中，遍历只会输出`<li>`元素的标签。
 
 nextNode() 和 previousNode() 方法共同维护
 
@@ -26599,7 +26597,7 @@ NodeFilter.FILTER_SKIP 表示跳过节点，访问子树中的下一个节点，
 
 NodeFilter.FILTER_SKIP ），则会导致遍历立即返回，不会访问任何节点。这是因为第一个返回的元素是 <div> ，其中标签名不是 "li" ，因此过滤函数返回 NodeFilter.FILTER_REJECT ，表示要跳过整个子树。因为 <div> 本身就是遍历的根节点，所以遍历会就此结束。
 
-当然， TreeWalker 真正的威力是可以在 DOM 结构中四处游走。如果不使用过滤器，单纯使用 TreeWalker 的漫游能力同样可以在 DOM 树中访问 <li> 元素，比如：
+当然， TreeWalker 真正的威力是可以在 DOM 结构中四处游走。如果不使用过滤器，单纯使用 TreeWalker 的漫游能力同样可以在 DOM 树中访问`<li>`元素，比如：
 
 ```js
 let div = document.getElementById("div1"); let walker = document.createTreeWalker(div, NodeFilter.SHOW_ELEMENT, null, false);
@@ -26615,11 +26613,11 @@ while (node !== null) { console.log(node.tagName); node = walker.nextSibling();
 }
 ```
 
-因为我们知道 <li> 元素在文档结构中的位置，所以可以直接定位过去。先使用 firstChild() 前往 <p> 元素，再通过
+因为我们知道`<li>`元素在文档结构中的位置，所以可以直接定位过去。先使用 firstChild() 前往 <p> 元素，再通过
 
-nextSibling() 前往`<ul>`元素，然后使用 firstChild() 到达第一个 <li> 元素。注意，此时的 TreeWalker 只返回元素（这是因为传给 createTreeWalker() 的第二个参数）。最后就可以
+nextSibling() 前往`<ul>`元素，然后使用 firstChild() 到达第一个`<li>`元素。注意，此时的 TreeWalker 只返回元素（这是因为传给 createTreeWalker() 的第二个参数）。最后就可以
 
-使用 nextSibling() 访问每个 <li> 元素，直到再也没有元素，此时方法返回 null 。
+使用 nextSibling() 访问每个`<li>`元素，直到再也没有元素，此时方法返回 null 。
 
 TreeWalker 类型也有一个名为 currentNode 的属性，表示遍历过程中上一次返回的节点（无论使用的是哪个遍历方法）。可以通过修改这个属性来影响接下来遍历的起点，如下面的例子所示：
 
