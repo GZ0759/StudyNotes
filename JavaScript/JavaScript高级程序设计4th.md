@@ -4222,7 +4222,8 @@ ECMAScript 变量可以包含两种不同类型的数据：原始值和引用值
 原始值和引用值的定义方式很类似，都是创建一个变量，然后给它赋一个值。不过，在变量保存了这个值之后，可以对这个值做什 么，则大有不同。对于引用值而言，可以随时添加、修改和删除其属性和方法。比如，看下面的例子：
 
 ```js
-let person = new Object(); person.name = "Nicholas";
+let person = new Object();
+person.name = 'Nicholas';
 
 console.log(person.name); // "Nicholas"
 ```
@@ -4269,7 +4270,7 @@ let obj1 = new Object(); let obj2 = obj1; obj1.name = "Nicholas";
 console.log(obj2.name); // "Nicholas"
 ```
 
-在这个例子中，变量 obj1 保存了一个新对象的实例。然后，这个值被复制到 obj2 ，此时两个变量都指向了同一个对象。在给obj1 创建属性 name 并赋值后，通过 obj2 也可以访问这个属
+在这个例子中，变量 obj1 保存了一个新对象的实例。然后，这个值被复制到 obj2 ，此时两个变量都指向了同一个对象。在给 obj1 创建属性 name 并赋值后，通过 obj2 也可以访问这个属
 性，因为它们都指向同一个对象。图 4-2 展示了变量与堆内存中对象之间的关系。
 
 图 4-2
@@ -4278,7 +4279,7 @@ console.log(obj2.name); // "Nicholas"
 
 ECMAScript 中所有函数的参数都是按值传递的。这意味着函数外的值会被复制到函数内部的参数中，就像从一个变量复制到另一个变量一样。如果是原始值，那么就跟原始值变量的复制一样，如果是引用值，那么就跟引用值变量的复制一样。对很多开发者来说，这一块可能会不好理解，毕竟变量有按值和按引用访问，而传参则只有按值传递。
 
-在按值传递参数时，值会被复制到一个局部变量（即一个命名参数，或者用 ECMAScript 的话说，就是 arguments 对象中的一个槽位）。在按引用传递参数时，值在内存中的位置会被保存在一个局部变量，这意味着对本地变量的修改会反映到函数外部。（这在ECMAScript 中是不可能的。）来看下面这个例子：
+在按值传递参数时，值会被复制到一个局部变量（即一个命名参数，或者用 ECMAScript 的话说，就是 arguments 对象中的一个槽位）。在按引用传递参数时，值在内存中的位置会被保存在一个局部变量，这意味着对本地变量的修改会反映到函数外部。（这在 ECMAScript 中是不可能的。）来看下面这个例子：
 
 ```
 function addTen(num) { num += 10;
@@ -4316,7 +4317,7 @@ function setName(obj) { obj.name = "Nicholas"; obj = new Object(); obj.name = "G
 let person = new Object(); setName(person); console.log(person.name); // "Nicholas"
 ```
 
-这个例子前后唯一的变化就是 setName() 中多了两行代码， 将 obj 重新定义为一个有着不同 name 的新对象。当 person 传 入 setName() 时，其 name 属性被设置为 "Nicholas" 。然后变量 obj 被设置为一个新对象且 name 属性被设置为 "Greg" 。如 果 person 是按引用传递的，那么 person 应该自动将指针改为指向 name 为 "Greg" 的对象。可是，当我们再次访问person.name 时，它的值是 "Nicholas" ，这表明函数中参数的值改变之后，原始的引用仍然没变。当 obj 在函数内部被重写时，它变成了一个指向本地对象的指针。而那个本地对象在函数执行结束时就被销毁了。
+这个例子前后唯一的变化就是 setName() 中多了两行代码， 将 obj 重新定义为一个有着不同 name 的新对象。当 person 传 入 setName() 时，其 name 属性被设置为 "Nicholas" 。然后变量 obj 被设置为一个新对象且 name 属性被设置为 "Greg" 。如 果 person 是按引用传递的，那么 person 应该自动将指针改为指向 name 为 "Greg" 的对象。可是，当我们再次访问 person.name 时，它的值是 "Nicholas" ，这表明函数中参数的值改变之后，原始的引用仍然没变。当 obj 在函数内部被重写时，它变成了一个指向本地对象的指针。而那个本地对象在函数执行结束时就被销毁了。
 
 注意 ECMAScript 中函数的参数就是局部变量。
 
@@ -4357,13 +4358,13 @@ pattern 是 RegExp 吗？
 
 typeof 操作符在用于检测函数时也会返回 "function" 。当在 Safari（直到 Safari 5）和 Chrome（直到 Chrome 7）中用于检测正则表达式时，由于实现细节的原因，
 
-typeof 也会返回 "function" 。ECMA-262 规定，任何实现内部 \[\[Call\]\] 方法的对象都应该在 typeof 检测时返回 "function" 。因为上述浏览器中的正则表达式实现了这个方法，所以 typeof 对正则表达式也返回 "function" 。在 IE 和Firefox 中， typeof 对正则表达式返回 "object" 。
+typeof 也会返回 "function" 。ECMA-262 规定，任何实现内部 \[\[Call\]\] 方法的对象都应该在 typeof 检测时返回 "function" 。因为上述浏览器中的正则表达式实现了这个方法，所以 typeof 对正则表达式也返回 "function" 。在 IE 和 Firefox 中， typeof 对正则表达式返回 "object" 。
 
 2.  执行上下文与作用域
 
 执行上下文（以下简称“上下文”）的概念在 JavaScript 中是颇为重要的。变量或函数的上下文决定了它们可以访问哪些数据，以及它们的行为。每个上下文都有一个关联的变量对象（variable object），而这个上下文中定义的所有变量和函数都存在于这个对象上。虽然无法通过代码访问变量对象，但后台处理数据会用到它。
 
-全局上下文是最外层的上下文。根据 ECMAScript 实现的宿主环境，表示全局上下文的对象可能不一样。在浏览器中，全局上下文就是我们常说的 window 对象（第 12 章会详细介绍），因此所有通过var 定义的全局变量和函数都会成为 window 对象的属性和方法。使用 let 和 const 的顶级声明不会定义在全局上下文中，但在作用域链解析上效果是一样的。上下文在其所有代码都执行完毕后会被销毁，包括定义在它上面的所有变量和函数（全局上下文在应用程序退出前才会被销毁，比如关闭网页或退出浏览器）。
+全局上下文是最外层的上下文。根据 ECMAScript 实现的宿主环境，表示全局上下文的对象可能不一样。在浏览器中，全局上下文就是我们常说的 window 对象（第 12 章会详细介绍），因此所有通过 var 定义的全局变量和函数都会成为 window 对象的属性和方法。使用 let 和 const 的顶级声明不会定义在全局上下文中，但在作用域链解析上效果是一样的。上下文在其所有代码都执行完毕后会被销毁，包括定义在它上面的所有变量和函数（全局上下文在应用程序退出前才会被销毁，比如关闭网页或退出浏览器）。
 
 每个函数调用都有自己的上下文。当代码执行流进入函数时，函数的上下文被推到一个上下文栈上。在函数执行完之后，上下文栈会弹出该函数上下文，将控制权返还给之前的执行上下文。ECMAScript 程序的执行流就是通过这个上下文栈进行控制的。
 
@@ -4425,7 +4426,7 @@ swapColors();
 changeColor();
 ```
 
-以上代码涉及 3 个上下文：全局上下文、 changeColor() 的局部上下文和 swapColors() 的局部上下文。全局上下文中有一个变量 color 和一个函数 chageColor() 。 changeColor() 的局部上下文中有一个变量 anotherColor 和一个函数swapColors() ，但在这里可以访问全局上下文中的变量color 。 swapColors() 的局部上下文中有一个变量tempColor ，只能在这个上下文中访问到。全局上下文和changeColor() 的局部上下文都无法访问到 tempColor 。而在swapColors() 中则可以访问另外两个上下文中的变量，因为它们都是父上下文。图 4-3 展示了前面这个例子的作用域链。
+以上代码涉及 3 个上下文：全局上下文、 changeColor() 的局部上下文和 swapColors() 的局部上下文。全局上下文中有一个变量 color 和一个函数 chageColor() 。 changeColor() 的局部上下文中有一个变量 anotherColor 和一个函数 swapColors() ，但在这里可以访问全局上下文中的变量 color 。 swapColors() 的局部上下文中有一个变量 tempColor ，只能在这个上下文中访问到。全局上下文和 changeColor() 的局部上下文都无法访问到 tempColor 。而在 swapColors() 中则可以访问另外两个上下文中的变量，因为它们都是父上下文。图 4-3 展示了前面这个例子的作用域链。
 
 图 4-3
 
@@ -4443,7 +4444,7 @@ try / catch 语句的 catch 块
 
 with 语句
 
-这两种情况下，都会在作用域链前端添加一个变量对象。对with 语句来说，会向作用域链前端添加指定的对象；对 catch 语句而言，则会创建一个新的变量对象，这个变量对象会包含要抛出的错误对象的声明。看下面的例子：
+这两种情况下，都会在作用域链前端添加一个变量对象。对 with 语句来说，会向作用域链前端添加指定的对象；对 catch 语句而言，则会创建一个新的变量对象，这个变量对象会包含要抛出的错误对象的声明。看下面的例子：
 
 ```
 function buildUrl() { let qs = "\?debug=true";
@@ -4459,17 +4460,17 @@ return url;
 }
 ```
 
-这里， with 语句将 location 对象作为上下文，因此location 会被添加到作用域链前端。 buildUrl() 函数中定义了一个变量 qs 。当 with 语句中的代码引用变量 href 时，实际上引用的是 location.href ，也就是自己变量对象的属性。在引用qs 时，引用的则是定义在 buildUrl() 中的那个变量，它定义在函数上下文的变量对象上。而在 with 语句中使用 var 声明的变量url 会成为函数上下文的一部分，可以作为函数的值被返回；但像这里使用 let 声明的变量 url ，因为被限制在块级作用域（稍后介绍），所以在 with 块之外没有定义。
+这里， with 语句将 location 对象作为上下文，因此 location 会被添加到作用域链前端。 buildUrl() 函数中定义了一个变量 qs 。当 with 语句中的代码引用变量 href 时，实际上引用的是 location.href ，也就是自己变量对象的属性。在引用 qs 时，引用的则是定义在 buildUrl() 中的那个变量，它定义在函数上下文的变量对象上。而在 with 语句中使用 var 声明的变量 url 会成为函数上下文的一部分，可以作为函数的值被返回；但像这里使用 let 声明的变量 url ，因为被限制在块级作用域（稍后介绍），所以在 with 块之外没有定义。
 
 注意 IE 的实现在 IE8 之前是有偏差的，即它们会将 catch 语句中捕获的错误添加到执行上下文的变量对象上，而不是 catch 语句的变量对象上，导致在 catch 块外部都可以访问到错误。IE9 纠正了这个问题。
 
 2.  变 声 明
 
-ES6 之后，JavaScript 的变量声明经历了翻天覆地的变化。直到 ECMAScript 5.1， var 都是声明变量的唯一关键字。ES6 不仅增加了let 和 const 两个关键字，而且还让这两个关键字压倒性地超越var 成为首选。
+ES6 之后，JavaScript 的变量声明经历了翻天覆地的变化。直到 ECMAScript 5.1， var 都是声明变量的唯一关键字。ES6 不仅增加了 let 和 const 两个关键字，而且还让这两个关键字压倒性地超越 var 成为首选。
 
 1.  使用 var 的函数作用域声明
 
-在使用 var 声明变量时，变量会被自动添加到最接近的上下文。在函数中，最接近的上下文就是函数的局部上下文。在with 语句中，最接近的上下文也是函数上下文。如果变量未经声明就被初始化了，那么它就会自动被添加到全局上下文，如下面的例子所示：
+在使用 var 声明变量时，变量会被自动添加到最接近的上下文。在函数中，最接近的上下文就是函数的局部上下文。在 with 语句中，最接近的上下文也是函数上下文。如果变量未经声明就被初始化了，那么它就会自动被添加到全局上下文，如下面的例子所示：
 
 ```
 function add(num1, num2) { var sum = num1 \+ num2; return sum;
@@ -4491,7 +4492,7 @@ let result = add(10, 20); // 30
 console.log(sum); // 30
 ```
 
-这一次，变量 sum 被用加法操作的结果初始化时并没有使用var 声明。在调用 add() 之后， sum 被添加到了全局上下文，在函数退出之后依然存在，从而在后面可以访问到。
+这一次，变量 sum 被用加法操作的结果初始化时并没有使用 var 声明。在调用 add() 之后， sum 被添加到了全局上下文，在函数退出之后依然存在，从而在后面可以访问到。
 
 注意 未经声明而初始化变量是 JavaScript 编程中一个非常常见的错误，会导致很多问题。为此，读者在初始化变量之前一定要先声明变量。在严格模式下，未经声明就初始化变量会报 错。
 
@@ -4573,7 +4574,8 @@ let d;
 console.log(d); // ReferenceError: d 没有定义
 ```
 
-let 与 var 的另一个不同之处是在同一作用域内不能声明两次。重复的 var 声明会被忽略，而重复的 let 声明会抛出SyntaxError 。
+let 与 var 的另一个不同之处是在同一作用域内不能声明两次。重复的 var 声明会被忽略，而重复的 let 声明会抛出 SyntaxError 。
+
 ```
 var a; var a;
 
@@ -4684,7 +4686,7 @@ function getColor() { return color;
 console.log(getColor()); // 'blue'
 ```
 
-在这个例子中，调用函数 getColor() 时会引用变量color 。为确定 color 的值会进行两步搜索。第一步，搜索 getColor() 的变量对象，查找名为 color 的标识符。结果没找到，于是继续搜索下一个变量对象（来自全局上下文），然后就找到了名为 color 的标识符。因为全局变量对象上有color 的定义，所以搜索结束。
+在这个例子中，调用函数 getColor() 时会引用变量 color 。为确定 color 的值会进行两步搜索。第一步，搜索 getColor() 的变量对象，查找名为 color 的标识符。结果没找到，于是继续搜索下一个变量对象（来自全局上下文），然后就找到了名为 color 的标识符。因为全局变量对象上有 color 的定义，所以搜索结束。
 
 对这个搜索过程而言，引用局部变量会让搜索自动停止，而不继续搜索下一级变量对象。也就是说，如果局部上下文中有一个同名的标识符，那就不能在该上下文中引用父上下文中的同名标识符，如下面的例子所示：
 
@@ -4716,7 +4718,7 @@ let color = 'green'; return color;
 console.log(getColor()); // 'green'
 ```
 
-在这个修改后的例子中， getColor() 内部声明了一个名为color 的局部变量。在调用这个函数时，变量会被声明。在执行到函数返回语句时，代码引用了变量 color 。于是开始在局部上下文中搜索这个标识符，结果找到了值为 'green' 的变量color 。因为变量已找到，搜索随即停止，所以就使用这个局部变量。这意味着函数会返回 'green' 。在局部变量 color 声明之后的任何代码都无法访问全局变量 color ，除非使用完全限定的写法 window.color 。
+在这个修改后的例子中， getColor() 内部声明了一个名为 color 的局部变量。在调用这个函数时，变量会被声明。在执行到函数返回语句时，代码引用了变量 color 。于是开始在局部上下文中搜索这个标识符，结果找到了值为 'green' 的变量 color 。因为变量已找到，搜索随即停止，所以就使用这个局部变量。这意味着函数会返回 'green' 。在局部变量 color 声明之后的任何代码都无法访问全局变量 color ，除非使用完全限定的写法 window.color 。
 
 注意 标识符查找并非没有代价。访问局部变量比访问全局变量要快，因为不用切换作用域。不过，JavaScript 引擎在优化标识符查找上做了很多工作，将来这个差异可能就微不足道了。
 
@@ -4734,13 +4736,13 @@ JavaScript 最常用的垃圾回收策略是标记清理（mark-and- sweep）。
 
 垃圾回收程序运行的时候，会标记内存中存储的所有变量（记 住，标记方法有很多种）。然后，它会将所有在上下文中的变量，以及被在上下文中的变量引用的变量的标记去掉。在此之后再被加上标记的变量就是待删除的了，原因是任何在上下文中的变量都访问不到它们了。随后垃圾回收程序做一次内存清理，销毁带标记的所有值并收回它们的内存。
 
-到了 2008 年，IE、Firefox、Opera、Chrome 和 Safari 都在自己的JavaScript 实现中采用标记清理（或其变体），只是在运行垃圾回收的频率上有所差异。
+到了 2008 年，IE、Firefox、Opera、Chrome 和 Safari 都在自己的 JavaScript 实现中采用标记清理（或其变体），只是在运行垃圾回收的频率上有所差异。
 
 2.  引用计数
 
 另一种没那么常用的垃圾回收策略是引用计数（reference counting）。其思路是对每个值都记录它被引用的次数。声明变量并给它赋一个引用值时，这个值的引用数为 1。如果同一个值又被赋给另一个变量，那么引用数加 1。类似地，如果保存对该值引用的变量被其他值给覆盖了，那么引用数减 1。当一个值的引用数为 0 时，就说明没办法再访问到这个值了，因此可以安全地收回其内存了。垃圾回收程序下次运行的时候就会释放引用数为 0 的值的内存。
 
-引用计数最早由 Netscape Navigator 3.0 采用，但很快就遇到了严重的问题：循环引用。所谓循环引用，就是对象 A 有一个指针指向对象B，而对象 B 也引用了对象 A。比如：
+引用计数最早由 Netscape Navigator 3.0 采用，但很快就遇到了严重的问题：循环引用。所谓循环引用，就是对象 A 有一个指针指向对象 B，而对象 B 也引用了对象 A。比如：
 
 ```
 function problem() {
@@ -4756,7 +4758,7 @@ objectA.someOtherObject = objectB; objectB.anotherObject = objectA;
 
 在 IE8 及更早版本的 IE 中，并非所有对象都是原生 JavaScript 对 象。BOM 和 DOM 中的对象是 C++实现的组件对象模型（COM， Component Object Model）对象，而 COM 对象使用引用计数实现垃圾回收。因此，即使这些版本 IE 的 JavaScript 引擎使用标记清理，
 
-JavaScript 存取的 COM 对象依旧使用引用计数。换句话说，只要涉及COM 对象，就无法避开循环引用问题。下面这个简单的例子展示了涉及 COM 对象的循环引用问题：
+JavaScript 存取的 COM 对象依旧使用引用计数。换句话说，只要涉及 COM 对象，就无法避开循环引用问题。下面这个简单的例子展示了涉及 COM 对象的循环引用问题：
 
 ```
 let element = document.getElementById("some_element"); let myObject = new Object();
@@ -4788,7 +4790,7 @@ myObject.element = null; element.someObject = null;
 
 IE7 发布后，JavaScript 引擎的垃圾回收程序被调优为动态改变分配变量、字面量或数组槽位等会触发垃圾回收的阈值。IE7 的起始阈值都与 IE6 的相同。如果垃圾回收程序回收的内存不到已分配的 15\%，这些变量、字面量或数组槽位的阈值就会翻倍。如果有一次回收的内存达到已分配的 85\%，则阈值重置为默认值。这么一个简单的修改，极大地提升了重度依赖 JavaScript 的网页在浏览器中的性能。
 
-警告 在某些浏览器中是有可能（但不推荐）主动触发垃圾回收的。在 IE 中， window.CollectGarbage() 方法会立即触发垃圾回收。在 Opera 7 及更高版本中，调用window.opera.collect() 也会启动垃圾回收程序。
+警告 在某些浏览器中是有可能（但不推荐）主动触发垃圾回收的。在 IE 中， window.CollectGarbage() 方法会立即触发垃圾回收。在 Opera 7 及更高版本中，调用 window.opera.collect() 也会启动垃圾回收程序。
 
 4.  内存管理
 
@@ -4810,7 +4812,7 @@ let globalPerson = createPerson("Nicholas");
 globalPerson = null;
 ```
 
-在上面的代码中，变量 globalPerson 保存着createPerson() 函数调用返回的值。在 createPerson() 内部， localPerson 创建了一个对象并给它添加了一个 name 属性。然后， localPerson 作为函数值被返回，并被赋值给globalPerson 。 localPerson 在 createPerson() 执行完成超出上下文后会自动被解除引用，不需要显式处理。但globalPerson 是一个全局变量，应该在不再需要时手动解除其引用，最后一行就是这么做的。
+在上面的代码中，变量 globalPerson 保存着 createPerson() 函数调用返回的值。在 createPerson() 内部， localPerson 创建了一个对象并给它添加了一个 name 属性。然后， localPerson 作为函数值被返回，并被赋值给 globalPerson 。 localPerson 在 createPerson() 执行完成超出上下文后会自动被解除引用，不需要显式处理。但 globalPerson 是一个全局变量，应该在不再需要时手动解除其引用，最后一行就是这么做的。
 
 不过要注意，解除对一个值的引用并不会自动导致相关内存被回收。解除引用的关键在于确保相关的值已经不在上下文里了，因此它在下次垃圾回收时会被回收。
 
@@ -4820,7 +4822,7 @@ ES6 增加这两个关键字不仅有助于改善代码风格，而且同样有�
 
 2.  隐藏类和删除操作
 
-根据 JavaScript 所在的运行环境，有时候需要根据浏览器使用的JavaScript 引擎来采取不同的性能优化策略。截至 2017 年，Chrome是最流行的浏览器，使用 V8 JavaScript 引擎。V8 在将解释后的
+根据 JavaScript 所在的运行环境，有时候需要根据浏览器使用的 JavaScript 引擎来采取不同的性能优化策略。截至 2017 年，Chrome 是最流行的浏览器，使用 V8 JavaScript 引擎。V8 在将解释后的
 JavaScript 代码编译为实际的机器码时会利用“隐藏类”。如果你的代码非常注重性能，那么这一点可能对你很重要。
 
 运行期间，V8 会将创建的对象与隐藏类关联起来，以跟踪它们的属性特征。能够共享相同隐藏类的对象性能会更好，V8 会针对这种情况进行优化，但不一定总能够做到。比如下面的代码：
@@ -4903,7 +4905,7 @@ function setName() { name = 'Jake';
 }
 ```
 
-此时，解释器会把变量 name 当作 window 的属性来创建（相当于 window.name = 'Jake' ）。可想而知，在 window 对象上创建的属性，只要 window 本身不被清理就不会消失。这个问题很容易解决，只要在变量声明前头加上 var 、 let 或const 关键字即可，这样变量就会在函数执行完毕后离开作用域。
+此时，解释器会把变量 name 当作 window 的属性来创建（相当于 window.name = 'Jake' ）。可想而知，在 window 对象上创建的属性，只要 window 本身不被清理就不会消失。这个问题很容易解决，只要在变量声明前头加上 var 、 let 或 const 关键字即可，这样变量就会在函数执行完毕后离开作用域。
 
 定时器也可能会悄悄地导致内存泄漏。下面的代码中，定时器的回调通过闭包引用了外部变量：
 
@@ -5021,7 +5023,7 @@ JavaScript 是使用垃圾回收的编程语言，开发者不需要操心内存
 
 引用计数是另一种垃圾回收策略，需要记录值被引用了多少次。
 
-JavaScript 引擎不再使用这种算法，但某些旧版本的 IE 仍然会受这种算法的影响，原因是 JavaScript 会访问非原生 JavaScript 对象（如DOM 元素）。
+JavaScript 引擎不再使用这种算法，但某些旧版本的 IE 仍然会受这种算法的影响，原因是 JavaScript 会访问非原生 JavaScript 对象（如 DOM 元素）。
 
 引用计数在代码中存在循环引用时会出现问题。
 
@@ -5045,13 +5047,13 @@ JavaScript 引擎不再使用这种算法，但某些旧版本的 IE 仍然会�
 let now = new Date();
 ```
 
-这行代码创建了引用类型 Date 的一个新实例，并将它保存在变量now 中。 Date() 在这里就是构造函数，它负责创建一个只有默认属性和方法的简单对象。ECMAScript 提供了很多像 Date 这样的原生引用类型，帮助开发者实现常见的任务。
+这行代码创建了引用类型 Date 的一个新实例，并将它保存在变量 now 中。 Date() 在这里就是构造函数，它负责创建一个只有默认属性和方法的简单对象。ECMAScript 提供了很多像 Date 这样的原生引用类型，帮助开发者实现常见的任务。
 
 注意 函数也是一种引用类型，但有关函数的内容太多了，一章放不下，所以本书专门用第 10 章来介绍函数。
 
 1.  ### Date
 
-ECMAScript 的 Date 类型参考了 Java 早期版本中的java.util.Date 。为此， Date 类型将日期保存为自协调世界时（UTC，Universal Time Coordinated）时间 1970 年 1 月 1 日午夜（零时）至今所经过的毫秒数。使用这种存储格式， Date 类型可以精确表示 1970 年 1 月1 日之前及之后 285 616 年的日期。
+ECMAScript 的 Date 类型参考了 Java 早期版本中的 java.util.Date 。为此， Date 类型将日期保存为自协调世界时（UTC，Universal Time Coordinated）时间 1970 年 1 月 1 日午夜（零时）至今所经过的毫秒数。使用这种存储格式， Date 类型可以精确表示 1970 年 1 月 1 日之前及之后 285 616 年的日期。
 
 要创建日期对象，就使用 new 操作符来调用 Date 构造函数：
 
@@ -5061,7 +5063,7 @@ let now = new Date();
 
 在不给 Date 构造函数传参数的情况下，创建的对象将保存当前日期和时间。要基于其他日期和时间创建日期对象，必须传入其毫秒表示（UNIX 纪元 1970 年 1 月 1 日午夜之后的毫秒数）。ECMAScript 为此提供了两个辅助方法： Date.parse() 和 Date.UTC() 。
 
-Date.parse() 方法接收一个表示日期的字符串参数，尝试将这个字符串转换为表示该日期的毫秒数。ECMA-262 第 5 版定义了Date.parse() 应该支持的日期格式，填充了第 3 版遗留的空白。所有实现都必须支持下列日期格式：
+Date.parse() 方法接收一个表示日期的字符串参数，尝试将这个字符串转换为表示该日期的毫秒数。ECMA-262 第 5 版定义了 Date.parse() 应该支持的日期格式，填充了第 3 版遗留的空白。所有实现都必须支持下列日期格式：
 
 “月/日/年”，如 "5/23/2019" ；
 
@@ -6172,6 +6174,7 @@ let text = "cat, bat, sat, fat"; let pattern = /.at/;
 
 let matches = text.match(pattern);
 ```
+
 match() 方法返回的数组与 RegExp 对象的 exec() 方法返回的数组是一样的：第一个元素是与整个模式匹配的字符串，其余元素则是与表达式中的捕获组匹配的字符串（如果有的话）。
 
 另一个查找模式的字符串方法是 search() 。这个方法唯一的参数与
@@ -23087,7 +23090,7 @@ let fragment = document.createDocumentFragment();
 片段的内容添加到文档。在把文档片段作为参数传给这些方法时，这个文档片段的所有子节点会被添加到文档中相应的位置。文档片段本身永远不会被添加到文档树。以下面的 HTML 为例：
 
 ```html
-<ul id="myList"\></ul>
+<ul id="myList" \></ul>
 ```
 
 假设想给这个`<ul>`元素添加 3 个列表项。如果分 3 次给这个元素添加列表项，浏览器就要重新渲染 3 次页面，以反映新添加的内容。为避免多次渲染，下面的代码示例使用文档片段创建了所有列表项，然后一次性将它们添加到了`<ul>`元素：
@@ -23246,15 +23249,11 @@ CSS 样式在 HTML 页面中可以通过两个元素加载。`<link>`元素用�
 
 来看下面这个典型的`<link>`元素：
 
-
-
 ```
 <link rel="stylesheet" type="text/css" href="styles.css"\>
 ```
 
-这个元素很容易使用DOM编程创建出来：
-
-
+这个元素很容易使用 DOM 编程创建出来：
 
 ```
 let link = document.createElement("link"); link.rel = "stylesheet";
@@ -23265,8 +23264,6 @@ let head = document.getElementsByTagName("head")\[0\]; head.appendChild(link);
 ```
 
 以上代码在所有主流浏览器中都能正常运行。注意应该把`<link>`元素添加到 `<head>` 元素而不是 `<body>` 元素，这样才能保证所有浏览器都能正常运行。这个过程可以抽象为以下通用函数：
-
-
 
 ```
 function loadStyles(url){
@@ -23282,17 +23279,13 @@ let head = document.getElementsByTagName("head")\[0\]; head.appendChild(link);
 
 然后就可以这样调用这个 loadStyles() 函数了：
 
-
-
 ```
 loadStyles("styles.css");
 ```
 
-通过外部文件加载样式是一个异步过程。因此，样式的加载和正执行的JavaScript代码并没有先后顺序。一般来说，也没有必要知道样式什么时候加载完成。
+通过外部文件加载样式是一个异步过程。因此，样式的加载和正执行的 JavaScript 代码并没有先后顺序。一般来说，也没有必要知道样式什么时候加载完成。
 
-另一种定义样式的方式是使用 `<script>` 元素包含嵌入的CSS规则，例如：
-
-
+另一种定义样式的方式是使用 `<script>` 元素包含嵌入的 CSS 规则，例如：
 
 ```
 <style type="text/css"\> body {
@@ -23314,7 +23307,7 @@ style.appendChild(document.createTextNode("body{background-color:red}")); let he
 
 以上代码在 Firefox、Safari、Chrome 和 Opera 中都可以运行，但 IE 除外。IE 对 `<style>`节点会施加限制，不允许访问其子节点，这一点与它对 `<script>` 元素施加的限制一样。事实上，IE 在执行到给
 
-`<style>`添加子节点的代码时，会抛出与给 `<script>` 添加子节点时同样的错误。对于IE，解决方案是访问元素的 styleSheet 属性，这个属性又有一个 cssText 属性，然后给这个属性添加CSS代码：
+`<style>`添加子节点的代码时，会抛出与给 `<script>` 添加子节点时同样的错误。对于 IE，解决方案是访问元素的 styleSheet 属性，这个属性又有一个 cssText 属性，然后给这个属性添加 CSS 代码：
 
 ```
 let style = document.createElement("style"); style.type = "text/css";
@@ -23332,9 +23325,7 @@ style.styleSheet.cssText = "body{background-color:red}";
 let head = document.getElementsByTagName("head")\[0\]; head.appendChild(style);
 ```
 
-与动态添加脚本源代码类似，这里也使用了 try...catch 语句捕获IE抛出的错误，然后再以IE特有的方式来设置样式。这是最终的通用函数：
-
-
+与动态添加脚本源代码类似，这里也使用了 try...catch 语句捕获 IE 抛出的错误，然后再以 IE 特有的方式来设置样式。这是最终的通用函数：
 
 ```
 function loadStyleString(css){
@@ -23354,11 +23345,7 @@ let head = document.getElementsByTagName("head")\[0\]; head.appendChild(style);
 }
 ```
 
-
-
 可以这样调用这个函数：
-
-
 
 ```
 loadStyleString("body{background-color:red}");
@@ -23366,14 +23353,13 @@ loadStyleString("body{background-color:red}");
 
 这样添加的样式会立即生效，因此所有变化会立即反映出来。
 
-注意 对于IE，要小心使用 styleSheet.cssText 。如果重用同一个 `<style>`元素并设置该属性超过一次，则可能导致浏览器崩溃。同样，将 cssText 设置为空字符串也可能导致浏览器崩溃。
+注意 对于 IE，要小心使用 styleSheet.cssText 。如果重用同一个 `<style>`元素并设置该属性超过一次，则可能导致浏览器崩溃。同样，将 cssText 设置为空字符串也可能导致浏览器崩溃。
 
 3.  操作表格
 
-表格是HTML中最复杂的结构之一。通过DOM编程创建 <table> 元素，通常要涉及大量标签，包括表行、表元、表题，等等。因此，通过DOM编程创建和修改表格时可能要写很多代码。假设要通过
+表格是 HTML 中最复杂的结构之一。通过 DOM 编程创建 <table> 元素，通常要涉及大量标签，包括表行、表元、表题，等等。因此，通过 DOM 编程创建和修改表格时可能要写很多代码。假设要通过
 
-DOM来创建以下HTML表格：
-
+DOM 来创建以下 HTML 表格：
 
 ```
 <table border="1" width="100\%"\>
@@ -23401,9 +23387,7 @@ DOM来创建以下HTML表格：
 </table>
 ```
 
-下面就是以DOM编程方式重建这个表格的代码：
-
-
+下面就是以 DOM 编程方式重建这个表格的代码：
 
 ```
 // 创建表格
@@ -23439,13 +23423,11 @@ let cell2\_2= document.createElement("td"); cell2\_2.appendChild(document.create
 document.body.appendChild(table);
 ```
 
-以上代码相当烦琐，也不好理解。为了方便创建表格，HTML DOM给 <table> 、 <tbody> 和
+以上代码相当烦琐，也不好理解。为了方便创建表格，HTML DOM 给 <table> 、 <tbody> 和
 
 <tr> 元素添加了一些属性和方法。
 
 <table> 元素添加了以下属性和方法：
-
-
 
 caption ，指向 <caption> 元素的指针（如果存在）； tBodies ，包含 <tbody> 元素的 HTMLCollection ； tFoot ，指向 <tfoot> 元素（如果存在）；
 
@@ -23457,11 +23439,7 @@ createTHead() ，创建 <thead> 元素，放到表格中，返回引用； creat
 
 deleteTFoot() ，删除 <tfoot> 元素； deleteCaption() ，删除 <caption> 元素； deleteRow(_pos_) ，删除给定位置的行； insertRow(_pos_) ，在行集合中给定位置插入一行。
 
-
-
 <tbody> 元素添加了以下属性和方法：
-
-
 
 rows ，包含 <tbody> 元素中所有行的 HTMLCollection ；
 
@@ -23469,11 +23447,7 @@ deleteRow(_pos_) ，删除给定位置的行；
 
 insertRow(_pos_) ，在行集合中给定位置插入一行，返回该行的引用。
 
-
-
 <tr> 元素添加了以下属性和方法：
-
-
 
 cells ，包含 <tr> 元素所有表元的 HTMLCollection ；
 
@@ -23481,11 +23455,7 @@ deleteCell(_pos_) ，删除给定位置的表元；
 
 insertCell(_pos_) ，在表元集合给定位置插入一个表元，返回该表元的引用。
 
-
-
 这些属性和方法极大地减少了创建表格所需的代码量。例如，使用这些方法重写前面的代码之后是这样的（加粗代码表示更新的部分）：
-
-
 
 ```
 // 创建表格
@@ -23519,9 +23489,9 @@ tbody.rows\[1\].cells\[0\].appendChild(document.createTextNode("Cell 1,2")); tbo
 document.body.appendChild(table);
 ```
 
-这里创建 <table> 和 <tbody> 元素的代码没有变。变化的是创建两行的部分，这次使用了HTML
+这里创建 <table> 和 <tbody> 元素的代码没有变。变化的是创建两行的部分，这次使用了 HTML
 
-DOM表格的属性和方法。创建第一行时，在 <tbody> 元素上调用了 insertRow() 方法。传入参数
+DOM 表格的属性和方法。创建第一行时，在 <tbody> 元素上调用了 insertRow() 方法。传入参数
 
 0 ，表示把这一行放在什么位置。然后，使用 tbody.rows\[0\] 来引用这一行，因为这一行刚刚创建并被添加到了 <tbody> 的位置 0 。
 
@@ -23531,9 +23501,7 @@ DOM表格的属性和方法。创建第一行时，在 <tbody> 元素上调用�
 
 4.  使用 NodeList
 
-理解 NodeList 对象和相关的 NamedNodeMap 、 HTMLCollection ，是理解DOM编程的关键。这3个集合类型都是“实时的”，意味着文档结构的变化会实时地在它们身上反映出来，因此它们的值始终代表最新的状态。实际上， NodeList 就是基于DOM文档的实时查询。例如，下面的代码会导致无穷循环：
-
-
+理解 NodeList 对象和相关的 NamedNodeMap 、 HTMLCollection ，是理解 DOM 编程的关键。这 3 个集合类型都是“实时的”，意味着文档结构的变化会实时地在它们身上反映出来，因此它们的值始终代表最新的状态。实际上， NodeList 就是基于 DOM 文档的实时查询。例如，下面的代码会导致无穷循环：
 
 ```
 let divs = document.getElementsByTagName("div");
@@ -23551,9 +23519,7 @@ let div = document.createElement("div"); document.body.appendChild(div);
 
 次创建的集合，所以就会在每次访问时更新集合。这样就会出现前面使用循环的例子中所演示的问题。每次循环开始，都会求值 i < divs.length 。这意味着要执行获取所有 <div> 元素的查询。因为循环体中会创建并向文档添加一个新 <div> 元素，所以每次循环 divs.length 的值也会递增。因为两个值都会递增，所以 i 将永远不会等于 divs.length 。
 
-使用ES6迭代器并不会解决这个问题，因为迭代的是一个永远增长的实时集合。以下代码仍然会导致无穷循环：
-
-
+使用 ES6 迭代器并不会解决这个问题，因为迭代的是一个永远增长的实时集合。以下代码仍然会导致无穷循环：
 
 ```
 for (let div of document.getElementsByTagName("div")){ let newDiv = document.createElement("div"); document.body.appendChild(newDiv);
@@ -23563,11 +23529,7 @@ for (let div of document.getElementsByTagName("div")){ let newDiv = document.cre
 
 任何时候要迭代 NodeList ，最好再初始化一个变量保存当时查询时的长度，然后用循环变量与这个变量进行比较，如下所示：
 
-
-
 let divs = document.getElementsByTagName("div");
-
-
 
 for (let i = 0, len = divs.length; i < len; ++i) { let div = document.createElement("div"); document.body.appendChild(div);
 
@@ -23576,8 +23538,6 @@ for (let i = 0, len = divs.length; i < len; ++i) { let div = document.createElem
 在这个例子中，又初始化了一个保存集合长度的变量 len 。因为 len 保存着循环开始时集合的长度，而这个值不会随集合增大动态增长，所以就可以避免前面例子中出现的无穷循环。本章还会使用这种技术来演示迭代 NodeList 对象的首选方式。
 
 另外，如果不想再初始化一个变量，也可以像下面这样反向迭代集合：
-
-
 
 ```
 let divs = document.getElementsByTagName("div");
@@ -23593,7 +23553,7 @@ for (let i = divs.length \- 1; i \>= 0; --i) { let div = document.createElement(
 
 1.  MutationObserver 接口
 
-不久前添加到DOM规范中的 MutationObserver 接口，可以在DOM被修改时异步执行回调。使用 MutationObserver 可以观察整个文档、DOM树的一部分，或某个元素。此外还可以观察元素属性、子节点、文本，或者前三者任意组合的变化。
+不久前添加到 DOM 规范中的 MutationObserver 接口，可以在 DOM 被修改时异步执行回调。使用 MutationObserver 可以观察整个文档、DOM 树的一部分，或某个元素。此外还可以观察元素属性、子节点、文本，或者前三者任意组合的变化。
 
 注意 新引进 MutationObserver 接口是为了取代废弃的 MutationEvent 。
 
@@ -23603,49 +23563,35 @@ MutationObserver 的实例要通过调用 MutationObserver 构造函数并传入
 
 建：
 
-
-
 let observer = new MutationObserver(() => console.log('DOM was mutated!'));
 
 1.  observe() 方法
 
-新创建的 MutationObserver 实例不会关联DOM的任何部分。要把这个 observer 与DOM关联起来，需要使用 observe() 方法。这个方法接收两个必需的参数：要观察其变化的DOM节点，以及一个 MutationObserverInit 对象。
+新创建的 MutationObserver 实例不会关联 DOM 的任何部分。要把这个 observer 与 DOM 关联起来，需要使用 observe() 方法。这个方法接收两个必需的参数：要观察其变化的 DOM 节点，以及一个 MutationObserverInit 对象。
 
 MutationObserverInit 对象用于控制观察哪些方面的变化，是一个键/值对形式配置选项的字典。例如，下面的代码会创建一个观察者（ observer ）并配置它观察 `<body>` 元素上的属性变化：
 
-
-
 let observer = new MutationObserver(() => console.log('`<body>` attributes changed'));
-
-
 
 observer.observe(document.body, { attributes: true });
 
 执行以上代码后， `<body>` 元素上任何属性发生变化都会被这个 MutationObserver 实例发现，然后就会异步执行注册的回调函数。 `<body>` 元素后代的修改或其他非属性修改都不会触发回调进入任务队列。可以通过以下代码来验证：
 
-
-
 let observer = new MutationObserver(() => console.log('`<body>` attributes changed'));
-
-
 
 observer.observe(document.body, { attributes: true });
 
-
-
 document.body.className = 'foo'; console.log('Changed body class');
-
-
 
 // Changed body class
 
 // `<body>` attributes changed
 
-注意，回调中的 console.log() 是后执行的。这表明回调并非与实际的DOM变化同步执行。
+注意，回调中的 console.log() 是后执行的。这表明回调并非与实际的 DOM 变化同步执行。
 
 2.  回调与 MutationRecord
 
-每个回调都会收到一个 MutationRecord 实例的数组。 MutationRecord 实例包含的信息包括发生了什么变化，以及DOM的哪一部分受到了影响。因为回调执行之前可能同时发生多个满足观察条件的事件，所以每次执行回调都会传入一个包含按顺序入队的 MutationRecord 实例的数组。下面展示了反映一个属性变化的 MutationRecord 实例的数组：
+每个回调都会收到一个 MutationRecord 实例的数组。 MutationRecord 实例包含的信息包括发生了什么变化，以及 DOM 的哪一部分受到了影响。因为回调执行之前可能同时发生多个满足观察条件的事件，所以每次执行回调都会传入一个包含按顺序入队的 MutationRecord 实例的数组。下面展示了反映一个属性变化的 MutationRecord 实例的数组：
 
 ```
 let observer = new MutationObserver(
@@ -23683,8 +23629,6 @@ document.body.setAttribute('foo', 'bar');
 
 下面是一次涉及命名空间的类似变化：
 
-
-
 ```
 let observer = new MutationObserver(
 
@@ -23719,15 +23663,11 @@ let observer = new MutationObserver(
 
 连续修改会生成多个 MutationRecord 实例，下次回调执行时就会收到包含所有这些实例的数组，顺序为变化事件发生的顺序：
 
-
-
 let observer = new MutationObserver(
 
 (mutationRecords) => console.log(mutationRecords)); observer.observe(document.body, { attributes: true });
 
 document.body.className = 'foo'; document.body.className = 'bar'; document.body.className = 'baz';
-
-
 
 // \[MutationRecord, MutationRecord, MutationRecord\]
 
@@ -23741,37 +23681,25 @@ let observer = new MutationObserver(
 
 (mutationRecords, mutationObserver) => console.log(mutationRecords, mutationObserver));
 
-
-
 observer.observe(document.body, { attributes: true }); document.body.className = 'foo';
 
 // \[MutationRecord\], MutationObserver
 
 3.  disconnect() 方法
 
-默认情况下，只要被观察的元素不被垃圾回收， MutationObserver 的回调就会响应DOM变化事件，从而被执行。要提前终止执行回调，可以调用 disconnect() 方法。下面的例子演示了同步调用 disconnec\() 之后，不仅会停止此后变化事件的回调，也会抛弃已经加入任务队列要异步执行的回调：
-
-
+默认情况下，只要被观察的元素不被垃圾回收， MutationObserver 的回调就会响应 DOM 变化事件，从而被执行。要提前终止执行回调，可以调用 disconnect() 方法。下面的例子演示了同步调用 disconnec\() 之后，不仅会停止此后变化事件的回调，也会抛弃已经加入任务队列要异步执行的回调：
 
 let observer = new MutationObserver(() => console.log('`<body>` attributes changed'));
-
-
 
 observer.observe(document.body, { attributes: true }); document.body.className = 'foo'; observer.disconnect();
 
 document.body.className = 'bar';
 
-
-
 //（没有日志输出）
 
 要想让已经加入任务队列的回调执行，可以使用 setTimeout() 让已经入列的回调执行完毕再调用 disconnect() ：
 
-
-
 let observer = new MutationObserver(() => console.log('`<body>` attributes changed'));
-
-
 
 observer.observe(document.body, { attributes: true }); document.body.className = 'foo';
 
@@ -23779,15 +23707,11 @@ setTimeout(() => { observer.disconnect(); document.body.className = 'bar';
 
 }, 0);
 
-
-
 // `<body>` attributes changed
 
 4.  复 用 MutationObserver
 
 多次调用 observe() 方法，可以复用一个 MutationObserver 对象观察多个不同的目标节点。此时， MutationRecord 的 target 属性可以标识发生变化事件的目标节点。下面的示例演示了这个过程：
-
-
 
 let observer = new MutationObserver(
 
@@ -23796,8 +23720,6 @@ let observer = new MutationObserver(
 =>
 
 x.target)));
-
-
 
 // 向页面主体添加两个子节点
 
@@ -23813,13 +23735,9 @@ observer.observe(childA, { attributes: true }); observer.observe(childB, { attri
 
 childA.setAttribute('foo', 'bar'); childB.setAttribute('foo', 'bar');
 
-
-
 // \[<div>, <span>\]
 
 disconnect() 方法是一个“一刀切”的方案，调用它会停止观察所有目标：
-
-
 
 let observer = new MutationObserver(
 
@@ -23828,8 +23746,6 @@ let observer = new MutationObserver(
 =>
 
 x.target)));
-
-
 
 // 向页面主体添加两个子节点
 
@@ -23841,11 +23757,7 @@ document.body.appendChild(childA); document.body.appendChild(childB);
 
 observer.observe(childA, { attributes: true }); observer.observe(childB, { attributes: true });
 
-
-
 observer.disconnect();
-
-
 
 // 修改两个子节点的属性
 
@@ -23859,23 +23771,15 @@ childA.setAttribute('foo', 'bar'); childB.setAttribute('foo', 'bar');
 
 `<body>` 元素的关联：
 
-
-
 let observer = new MutationObserver(() => console.log('`<body>` attributes
 
 changed'));
 
-
-
 observer.observe(document.body, { attributes: true });
-
-
 
 // 这行代码会触发变化事件
 
 document.body.setAttribute('foo', 'bar');
-
-
 
 setTimeout(() => { observer.disconnect();
 
@@ -23885,23 +23789,17 @@ document.body.setAttribute('bar', 'baz');
 
 }, 0);
 
-
-
 setTimeout(() => {
 
 // Reattach
 
 observer.observe(document.body, { attributes: true });
 
-
-
 // 这行代码会触发变化事件
 
 document.body.setAttribute('baz', 'qux');
 
 }, 0);
-
-
 
 // `<body>` attributes changed
 
@@ -23913,7 +23811,6 @@ MutationObserverInit 对象用于控制对目标节点的观察范围。粗略�
 
 下表列出了 MutationObserverInit 对象的属性。
 
-
 注意 在调用 observe() 时， MutationObserverInit 对象中的 attribute 、
 
 characterData 和 childList 属性必须至少有一项为 true （无论是直接设置这几个属性，还是通过设置 attributeOldValue 等属性间接导致它们的值转换为 true ）。否则会抛出错误，因为没有任何变化事件可能触发回调。
@@ -23924,43 +23821,29 @@ MutationObserver 可以观察节点属性的添加、移除和修改。要为属
 
 MutationObserverInit 对象中将 attributes 属性设置为 true ，如下所示：
 
-
-
 let observer = new MutationObserver(
 
 (mutationRecords) => console.log(mutationRecords));
 
-
-
 observer.observe(document.body, { attributes: true });
-
-
 
 // 添加属性
 
 document.body.setAttribute('foo', 'bar');
 
-
-
 // 修改属性
 
 document.body.setAttribute('foo', 'baz');
 
-
-
 // 移除属性
 
 document.body.removeAttribute('foo');
-
-
 
 // 以上变化都被记录下来了
 
 // \[MutationRecord, MutationRecord, MutationRecord\]
 
 把 attributes 设置为 true 的默认行为是观察所有属性，但不会在 MutationRecord 对象中记录原来的属性值。如果想观察某个或某几个属性，可以使用 attributeFilter 属性来设置白名单，即一个属性名字符串数组：
-
-
 
 let observer = new MutationObserver(
 
@@ -23970,37 +23853,25 @@ let observer = new MutationObserver(
 
 document.body.setAttribute('foo', 'bar');
 
-
-
 // 添加被排除的属性
 
 document.body.setAttribute('baz', 'qux');
 
-
-
-// 只有foo属性的变化被记录了
+// 只有 foo 属性的变化被记录了
 
 // \[MutationRecord\]
 
 如果想在变化记录中保存属性原来的值，可以将 attributeOldValue 属性设置为 true ：
 
-
-
 let observer = new MutationObserver(
 
 (mutationRecords) => console.log(mutationRecords.map((x) => x.oldValue)));
 
-
-
 observer.observe(document.body, { attributeOldValue: true });
-
-
 
 document.body.setAttribute('foo', 'bar'); document.body.setAttribute('foo', 'baz');
 
 document.body.setAttribute('foo', 'qux');
-
-
 
 // 每次变化都保留了上一次的值
 
@@ -24008,15 +23879,11 @@ document.body.setAttribute('foo', 'qux');
 
 2.  观察字符数据
 
-MutationObserver 可以观察文本节点（如 Text 、 Comment 或 ProcessingInstruction节点）中字符的添加、删除和修改。要为字符数据注册回调，需要在 MutationObserverInit 对象中将 characterData 属性设置为 true ，如下所示：
-
-
+MutationObserver 可以观察文本节点（如 Text 、 Comment 或 ProcessingInstruction 节点）中字符的添加、删除和修改。要为字符数据注册回调，需要在 MutationObserverInit 对象中将 characterData 属性设置为 true ，如下所示：
 
 let observer = new MutationObserver(
 
 (mutationRecords) => console.log(mutationRecords));
-
-
 
 // 创建要观察的文本节点
 
@@ -24026,19 +23893,13 @@ document.body.innerText = 'foo'; observer.observe(document.body.firstChild, { ch
 
 document.body.innerText = 'foo';
 
-
-
 // 赋值为新字符串
 
 document.body.innerText = 'bar';
 
-
-
 // 通过节点设置函数赋值
 
 document.body.firstChild.textContent = 'baz';
-
-
 
 // 以上变化都被记录下来了
 
@@ -24046,19 +23907,13 @@ document.body.firstChild.textContent = 'baz';
 
 将 characterData 属性设置为 true 的默认行为不会在 MutationRecord 对象中记录原来的字符数据。如果想在变化记录中保存原来的字符数据，可以将 characterDataOldValue 属性设置为 true ：
 
-
-
 let observer = new MutationObserver(
 
 (mutationRecords) => console.log(mutationRecords.map((x) => x.oldValue)));
 
 document.body.innerText = 'foo';
 
-
-
 observer.observe(document.body.firstChild, { characterDataOldValue: true });
-
-
 
 document.body.innerText = 'foo';
 
@@ -24074,13 +23929,9 @@ MutationObserver 可以观察目标节点子节点的添加和移除。要观察
 
 MutationObserverInit 对象中将 childList 属性设置为 true 。下面的例子演示了添加子节点：
 
-
-
 // 清空主体
 
 document.body.innerHTML = '';
-
-
 
 let observer = new MutationObserver(
 
@@ -24114,13 +23965,9 @@ let observer = new MutationObserver(
 
 下面的例子演示了移除子节点：
 
-
-
 // 清空主体
 
 document.body.innerHTML = '';
-
-
 
 let observer = new MutationObserver(
 
@@ -24156,29 +24003,19 @@ observer.observe(document.body, { childList: true }); document.body.appendChild(
 
 对子节点重新排序（尽管调用一个方法即可实现）会报告两次变化事件，因为从技术上会涉及先移除和再添加：
 
-
-
 // 清空主体
 
 document.body.innerHTML = '';
-
-
 
 let observer = new MutationObserver(
 
 (mutationRecords) => console.log(mutationRecords));
 
-
-
 // 创建两个初始子节点
 
 document.body.appendChild(document.createElement('div')); document.body.appendChild(document.createElement('span'));
 
-
-
 observer.observe(document.body, { childList: true });
-
-
 
 // 交换子节点顺序
 
@@ -24242,37 +24079,25 @@ subtree 属性设置为 true 。
 
 下面的代码展示了观察元素及其后代节点属性的变化：
 
-
-
 // 清空主体
 
 document.body.innerHTML = '';
-
-
 
 let observer = new MutationObserver(
 
 (mutationRecords) => console.log(mutationRecords));
 
-
-
 // 创建一个后代
 
 document.body.appendChild(document.createElement('div'));
-
-
 
 // 观察`<body>`元素及其子树
 
 observer.observe(document.body, { attributes: true, subtree: true });
 
-
-
 // 修改`<body>`元素的子树
 
 document.body.firstChild.setAttribute('foo', 'bar');
-
-
 
 // 记录了子树变化的事件
 
@@ -24306,19 +24131,13 @@ document.body.firstChild.setAttribute('foo', 'bar');
 
 下面的代码演示了这种情况：
 
-
-
 // 清空主体
 
 document.body.innerHTML = '';
 
-
-
 let observer = new MutationObserver(
 
 (mutationRecords) => console.log(mutationRecords));
-
-
 
 let subtreeRoot = document.createElement('div'), subtreeLeaf = document.createElement('span');
 
@@ -24330,8 +24149,6 @@ document.body.appendChild(subtreeRoot); subtreeRoot.appendChild(subtreeLeaf);
 
 observer.observe(subtreeRoot, { attributes: true, subtree: true });
 
-
-
 // 把节点转移到其他子树
 
 document.body.insertBefore(subtreeLeaf, subtreeRoot); subtreeLeaf.setAttribute('foo', 'bar');
@@ -24342,18 +24159,17 @@ document.body.insertBefore(subtreeLeaf, subtreeRoot); subtreeLeaf.setAttribute('
 
 3.  异步回调与记录队列
 
-MutationObserver 接口是出于性能考虑而设计的，其核心是异步回调与记录队列模型。为了在大量变化事件发生时不影响性能，每次变化的信息（由观察者实例决定）会保存在 MutationRecord实例中，然后添加到记录队列。这个队列对每个 MutationObserver 实例都是唯一的，是所有DOM变化事件的有序列表。
+MutationObserver 接口是出于性能考虑而设计的，其核心是异步回调与记录队列模型。为了在大量变化事件发生时不影响性能，每次变化的信息（由观察者实例决定）会保存在 MutationRecord 实例中，然后添加到记录队列。这个队列对每个 MutationObserver 实例都是唯一的，是所有 DOM 变化事件的有序列表。
 
 1.  记录队列
 
-每次 MutationRecord 被添加到 MutationObserver 的记录队列时，仅当之前没有已排期的微任务回调时（队列中微任务长度为0），才会将观察者注册的回调（在初始化 MutationObserver时传入）作为微任务调度到任务队列上。这样可以保证记录队列的内容不会被回调处理两次。
+每次 MutationRecord 被添加到 MutationObserver 的记录队列时，仅当之前没有已排期的微任务回调时（队列中微任务长度为 0），才会将观察者注册的回调（在初始化 MutationObserver 时传入）作为微任务调度到任务队列上。这样可以保证记录队列的内容不会被回调处理两次。
 
 不过在回调的微任务异步执行期间，有可能又会发生更多变化事件。因此被调用的回调会接收到一个 MutationRecord 实例的数组，顺序为它们进入记录队列的顺序。回调要负责处理这个数组的每一个实例，因为函数退出之后这些实现就不存在了。回调执行后，这些 MutationRecord 就用不着了，因此记录队列会被清空，其内容会被丢弃。
 
 2.  takeRecords() 方法
 
 调用 MutationObserver 实例的 takeRecords() 方法可以清空记录队列，取出并返回其中的所有 MutationRecord 实例。看这个例子：
-
 
 ```
 let observer = new MutationObserver(
@@ -24377,7 +24193,7 @@ console.log(observer.takeRecords()); console.log(observer.takeRecords());
 
 4.  性能、内存与垃圾回收
 
-DOM Level 2规范中描述的 MutationEvent 定义了一组会在各种DOM变化时触发的事件。由于浏览器事件的实现机制，这个接口出现了严重的性能问题。因此，DOM Level 3规定废弃了这些事件。
+DOM Level 2 规范中描述的 MutationEvent 定义了一组会在各种 DOM 变化时触发的事件。由于浏览器事件的实现机制，这个接口出现了严重的性能问题。因此，DOM Level 3 规定废弃了这些事件。
 
 MutationObserver 接口就是为替代这些事件而设计的更实用、性能更好的方案。
 
@@ -24391,11 +24207,11 @@ MutationObserver 而实现的记录队列，可以保证即使变化事件被爆
 
 MutationObserver 实例与目标节点之间的引用关系是非对称的。 MutationObserver 拥有对要观察的目标节点的弱引用。因为是弱引用，所以不会妨碍垃圾回收程序回收目标节点。
 
-然而，目标节点却拥有对 MutationObserver 的强引用。如果目标节点从DOM中被移除，随后被垃圾回收，则关联的 MutationObserver 也会被垃圾回收。
+然而，目标节点却拥有对 MutationObserver 的强引用。如果目标节点从 DOM 中被移除，随后被垃圾回收，则关联的 MutationObserver 也会被垃圾回收。
 
 2.  MutationRecord 的引用
 
-记录队列中的每个 MutationRecord 实例至少包含对已有DOM节点的一个引用。如果变化是
+记录队列中的每个 MutationRecord 实例至少包含对已有 DOM 节点的一个引用。如果变化是
 
 childList 类型，则会包含多个节点的引用。记录队列和回调处理的默认行为是耗尽这个队列，处理每个 MutationRecord ，然后让它们超出作用域并被垃圾回收。
 
@@ -24407,78 +24223,68 @@ MutationRecord 。
 
 [144 小 结
 
-文档对象模型（DOM，Document Object Model）是语言中立的HTML和XML文档的API。DOM Level
+文档对象模型（DOM，Document Object Model）是语言中立的 HTML 和 XML 文档的 API。DOM Level
 
-1将HTML和XML文档定义为一个节点的多层级结构，并暴露出JavaScript接口以操作文档的底层结构和外观。
+1 将 HTML 和 XML 文档定义为一个节点的多层级结构，并暴露出 JavaScript 接口以操作文档的底层结构和外观。
 
-DOM由一系列节点类型构成，主要包括以下几种。
-
-
+DOM 由一系列节点类型构成，主要包括以下几种。
 
 Node 是基准节点类型，是文档一个部分的抽象表示，所有其他类型都继承 Node 。
 
-Document 类型表示整个文档，对应树形结构的根节点。在JavaScript中， document 对象是
+Document 类型表示整个文档，对应树形结构的根节点。在 JavaScript 中， document 对象是
 
 Document 的实例，拥有查询和获取节点的很多方法。
 
-Element 节点表示文档中所有HTML或XML元素，可以用来操作它们的内容和属性。其他节点类型分别表示文本内容、注释、文档类型、CDATA区块和文档片段。
+Element 节点表示文档中所有 HTML 或 XML 元素，可以用来操作它们的内容和属性。其他节点类型分别表示文本内容、注释、文档类型、CDATA 区块和文档片段。
 
+DOM 编程在多数情况下没什么问题，在涉及 `<script>` 和 `<style>`元素时会有一点兼容性问题。因为这些元素分别包含脚本和样式信息，所以浏览器会将它们与其他元素区别对待。
 
+要理解 DOM，最关键的一点是知道影响其性能的问题所在。DOM 操作在 JavaScript 代码中是代价比较高的， NodeList 对象尤其需要注意。 NodeList 对象是“实时更新”的，这意味着每次访问它都会执行一次新的查询。考虑到这些问题，实践中要尽量减少 DOM 操作的数量。
 
-DOM编程在多数情况下没什么问题，在涉及 `<script>` 和 `<style>`元素时会有一点兼容性问题。因为这些元素分别包含脚本和样式信息，所以浏览器会将它们与其他元素区别对待。
-
-要理解DOM，最关键的一点是知道影响其性能的问题所在。DOM操作在JavaScript代码中是代价比较高的， NodeList 对象尤其需要注意。 NodeList 对象是“实时更新”的，这意味着每次访问它都会执行一次新的查询。考虑到这些问题，实践中要尽量减少DOM操作的数量。
-
-MutationObserver 是为代替性能不好的 MutationEvent 而问世的。使用它可以有效精准地监控DOM变化，而且API也相对简单。
+MutationObserver 是为代替性能不好的 MutationEvent 而问世的。使用它可以有效精准地监控 DOM 变化，而且 API 也相对简单。
 
 # 第 15 章 DOM 扩展
 
 本章内容
 
-理解Selectors API
-使用HTML5 DOM扩展
+理解 Selectors API
+使用 HTML5 DOM 扩展
 
-尽管DOM API已经相当不错，但仍然不断有标准或专有的扩展出现，以支持更多功能。2008年以前，大部分浏览器对DOM的扩展是专有的。此后，W3C开始着手将这些已成为事实标准的专有扩展编制成正式规范。
+尽管 DOM API 已经相当不错，但仍然不断有标准或专有的扩展出现，以支持更多功能。2008 年以前，大部分浏览器对 DOM 的扩展是专有的。此后，W3C 开始着手将这些已成为事实标准的专有扩展编制成正式规范。
 
-基于以上背景，诞生了描述DOM扩展的两个标准：Selectors API与HTML5。这两个标准体现了社区需求和标准化某些手段及API的愿景。另外还有较小的Element Traversal规范，增加了一些DOM属性。专有扩展虽然还有，但这两个规范（特别是HTML5）已经涵盖其中大部分。本章也会讨论专有扩展。
+基于以上背景，诞生了描述 DOM 扩展的两个标准：Selectors API 与 HTML5。这两个标准体现了社区需求和标准化某些手段及 API 的愿景。另外还有较小的 Element Traversal 规范，增加了一些 DOM 属性。专有扩展虽然还有，但这两个规范（特别是 HTML5）已经涵盖其中大部分。本章也会讨论专有扩展。
 
 本章所有内容已经得到市场占有率名列前茅的所有主流浏览器支持，除非特别说明。
 
 1. SelectorsAPI
 
-JavaScript库中最流行的一种能力就是根据CSS选择符的模式匹配
+JavaScript 库中最流行的一种能力就是根据 CSS 选择符的模式匹配
 
-DOM元素。比如，jQuery就完全以CSS选择符查询DOM获取元素引用，而不是使用 getElementById() 和
+DOM 元素。比如，jQuery 就完全以 CSS 选择符查询 DOM 获取元素引用，而不是使用 getElementById() 和
 
 getElementsByTagName() 。
 
-Selectors API（参见W3C网站上的Selectors API Level 1）是W3C
+Selectors API（参见 W3C 网站上的 Selectors API Level 1）是 W3C
 
-推荐标准，规定了浏览器原生支持的CSS查询API。支持这一特性的所
+推荐标准，规定了浏览器原生支持的 CSS 查询 API。支持这一特性的所
 
-有JavaScript库都会实现一个基本的CSS解析器，然后使用已有的DOM方法搜索文档并匹配目标节点。虽然库开发者在不断改进其性能，但 JavaScript代码能做到的毕竟有限。通过浏览器原生支持这个API，解析和遍历DOM树可以通过底层编译语言实现，性能也有了数量级的提升。
+有 JavaScript 库都会实现一个基本的 CSS 解析器，然后使用已有的 DOM 方法搜索文档并匹配目标节点。虽然库开发者在不断改进其性能，但 JavaScript 代码能做到的毕竟有限。通过浏览器原生支持这个 API，解析和遍历 DOM 树可以通过底层编译语言实现，性能也有了数量级的提升。
 
-Selectors API Level 1的核心是两个方法： querySelector()和 querySelectorAll() 。在兼容浏览器中， Document 类型和 Element 类型的实例上都会暴露这两个方法。
+Selectors API Level 1 的核心是两个方法： querySelector()和 querySelectorAll() 。在兼容浏览器中， Document 类型和 Element 类型的实例上都会暴露这两个方法。
 
-Selectors API Level 2规范在 Element 类型上新增了更多方法，比如 matches() 、 find() 和 findAll() 。不过，目前还没有浏览器实现或宣称实现 find() 和 findAll() 。
+Selectors API Level 2 规范在 Element 类型上新增了更多方法，比如 matches() 、 find() 和 findAll() 。不过，目前还没有浏览器实现或宣称实现 find() 和 findAll() 。
 
 1.  querySelector()
 
-querySelector() 方法接收CSS选择符参数，返回匹配该模式的第一个后代元素，如果没有匹配项则返回 null 。下面是一些例子：
-
-
+querySelector() 方法接收 CSS 选择符参数，返回匹配该模式的第一个后代元素，如果没有匹配项则返回 null 。下面是一些例子：
 
 // 取得`<body>`元素
 
 let body = document.querySelector("body");
 
-
-
-// 取得ID为"myDiv"的元素
+// 取得 ID 为"myDiv"的元素
 
 let myDiv = document.querySelector("#myDiv");
-
-
 
 // 取得类名为"selected"的第一个元素
 
@@ -24490,7 +24296,7 @@ let img = document.body.querySelector("img.button");
 
 在 Document 上使用 querySelector() 方法时，会从文档元素开始搜索；在 Element 上使用 querySelector() 方法时，则只会从当前元素的后代中查询。
 
-用于查询模式的CSS选择符可繁可简，依需求而定。如果选择符有语法错误或碰到不支持的选择符，则 querySelector() 方法会抛出错误。
+用于查询模式的 CSS 选择符可繁可简，依需求而定。如果选择符有语法错误或碰到不支持的选择符，则 querySelector() 方法会抛出错误。
 
 2.  querySelectorAll()
 
@@ -24500,12 +24306,11 @@ querySelectorAll() 方法跟 querySelector() 一样，也接收一个用于查�
 
 再强调一次， querySelectorAll() 返回的 NodeList 实例一个属性和方法都不缺，但它是一个静态的“快照”，而非“实时”的查询。这样的底层实现避免了使用 NodeList 对象可能造成的性能问题。
 
-以有效CSS选择符调用 querySelectorAll() 都会返回 NodeList ，无论匹配多少个元素都可以。如果没有匹配项，则返回空的 NodeList 实例。
+以有效 CSS 选择符调用 querySelectorAll() 都会返回 NodeList ，无论匹配多少个元素都可以。如果没有匹配项，则返回空的 NodeList 实例。
 
 与 querySelector() 一样， querySelectorAll() 也可以在 Document 、 DocumentFragment 和 Element 类型上使用。下面是几个例子：
 
-
-
+```js
 // 取得ID为"myDiv"的<div>元素中的所有<em>元素
 
 let ems = document.getElementById("myDiv").querySelectorAl
@@ -24555,8 +24360,7 @@ for (let i = 0; i < strongElements.length; ++i)
 strongElements \[i\].className = "important";
 
 }
-
-
+```
 
 与 querySelector() 方法一样，如果选择符有语法错误或碰到不支持的选择符，则 querySelectorAll() 方法会抛出错误。
 
@@ -24564,9 +24368,7 @@ strongElements \[i\].className = "important";
 
 matches() 方法（在规范草案中称为
 
-matchesSelector() ）接收一个CSS选择符参数，如果元素匹配则该选择符返回 true ，否则返回 false 。例如：
-
-
+matchesSelector() ）接收一个 CSS 选择符参数，如果元素匹配则该选择符返回 true ，否则返回 false 。例如：
 
 if (document.body.matches ("body.page1")){
 
@@ -24580,13 +24382,13 @@ querySelector() 或 querySelectorAll() 方法返回。
 
 所有主流浏览器都支持 matches() 。Edge、Chrome、Firefox、
 
-Safari和Opera完全支持，IE9\~11及一些移动浏览器支持带前缀的方法。
+Safari 和 Opera 完全支持，IE9\~11 及一些移动浏览器支持带前缀的方法。
 
 1.  元素遍历
 
-IE9之前的版本不会把元素间的空格当成空白节点，而其他浏览器则会。这样就导致了 childNodes 和 firstChild 等属性上的差异。为了弥补这个差异，同时不影响DOM规范，W3C通过新的 Element Traversal规范定义了一组新属性。
+IE9 之前的版本不会把元素间的空格当成空白节点，而其他浏览器则会。这样就导致了 childNodes 和 firstChild 等属性上的差异。为了弥补这个差异，同时不影响 DOM 规范，W3C 通过新的 Element Traversal 规范定义了一组新属性。
 
-Element Traversal API为DOM元素添加了5个属性：
+Element Traversal API 为 DOM 元素添加了 5 个属性：
 
 childElementCount ，返回子元素数量（不包含文本节点和注释）；
 
@@ -24598,23 +24400,17 @@ lastElementChild ，指向最后一个 Element 类型的子元素
 
 （ Element 版 lastChild ）； previousElementSibling ，指向前一个 Element 类型的同胞元素（ Element 版 previousSibling ）； nextElementSibling ，指向后一个 Element 类型的同胞元素（ Element 版 nextSibling ）。
 
+在支持的浏览器中，所有 DOM 元素都会有这些属性，为遍历
 
-
-在支持的浏览器中，所有DOM元素都会有这些属性，为遍历
-
-DOM元素提供便利。这样开发者就不用担心空白文本节点的问题了。
+DOM 元素提供便利。这样开发者就不用担心空白文本节点的问题了。
 
 举个例子，过去要以跨浏览器方式遍历特定元素的所有子元素，代码大致是这样写的：
-
-
 
 let parentElement = document.getElementById('parent');
 
 let currentChildNode = parentElement.firstChild;
 
-
-
-// 没有子元素，firstChild返回null，跳过循环
+// 没有子元素，firstChild 返回 null，跳过循环
 
 while (currentChildNode) {
 
@@ -24636,13 +24432,11 @@ currentChildNode = currentChildNode.nextSibling;
 
 }
 
-使用Element Traversal属性之后，以上代码可以简化如下：
-
-
+使用 Element Traversal 属性之后，以上代码可以简化如下：
 
 let parentElement = document.getElementById('parent'); let currentChildElement = parentElement.firstElementChild;
 
-// 没有子元素，firstElementChild返回null，跳过循环
+// 没有子元素，firstElementChild 返回 null，跳过循环
 
 while (currentChildElement) {
 
@@ -24658,37 +24452,33 @@ currentChildElement = currentChildElement.nextElementSibling;
 
 }
 
-IE9及以上版本，以及所有现代浏览器都支持Element Traversal属性。
+IE9 及以上版本，以及所有现代浏览器都支持 Element Traversal 属性。
 
 2. HTML5
 
-HTML5代表着与以前的HTML截然不同的方向。在所有以前的
+HTML5 代表着与以前的 HTML 截然不同的方向。在所有以前的
 
-HTML规范中，从未出现过描述JavaScript接口的情形，HTML就是一个纯标记语言。JavaScript绑定的事，一概交给DOM规范去定义。
+HTML 规范中，从未出现过描述 JavaScript 接口的情形，HTML 就是一个纯标记语言。JavaScript 绑定的事，一概交给 DOM 规范去定义。
 
-然而，HTML5规范却包含了与标记相关的大量JavaScript API定义。其中有的API与DOM重合，定义了浏览器应该提供的DOM扩展。
+然而，HTML5 规范却包含了与标记相关的大量 JavaScript API 定义。其中有的 API 与 DOM 重合，定义了浏览器应该提供的 DOM 扩展。
 
+注意 因为 HTML5 覆盖的范围极其广泛，所以本节主要讨论其影响所有 DOM 节点的部分。HTML5 的其他部分将在本书后面的相关章节中再讨论。
 
+1.  CSS 类扩展
 
-注意 因为HTML5覆盖的范围极其广泛，所以本节主要讨论其影响所有DOM节点的部分。HTML5的其他部分将在本书后面的相关章节中再讨论。
+自 HTML4 被广泛采用以来，Web 开发中一个主要的变化是
 
-1.  CSS类扩展
+class 属性用得越来越多，其用处是为元素添加样式以及语义信 息。自然地，JavaScript 与 CSS 类的交互就增多了，包括动态修改类 名，以及根据给定的一个或一组类名查询元素，等等。为了适应开发
 
-自HTML4被广泛采用以来，Web开发中一个主要的变化是
+者和他们对 class 属性的认可，HTML5 增加了一些特性以方便使用
 
-class 属性用得越来越多，其用处是为元素添加样式以及语义信 息。自然地，JavaScript与CSS类的交互就增多了，包括动态修改类 名，以及根据给定的一个或一组类名查询元素，等等。为了适应开发
+CSS 类。
 
-者和他们对 class 属性的认可，HTML5增加了一些特性以方便使用
-
-CSS类。
-
-1.  getElementsByClassName() getElementsByClassName() 是HTML5新增的最受欢迎的一个方法，暴露在 document 对象和所有HTML元素上。 这个方法脱胎于基于原有DOM特性实现该功能的JavaScript库，提供了性能高好的原生实现。
+1.  getElementsByClassName() getElementsByClassName() 是 HTML5 新增的最受欢迎的一个方法，暴露在 document 对象和所有 HTML 元素上。 这个方法脱胎于基于原有 DOM 特性实现该功能的 JavaScript 库，提供了性能高好的原生实现。
 
 getElementsByClassName() 方法接收一个参数，即包含一个或多个类名的字符串，返回类名中包含相应类的元素的
 
 NodeList 。如果提供了多个类名，则顺序无关紧要。下面是几个示例：
-
-
 
 // 取得所有类名中包含"username"和"current"元素
 
@@ -24696,7 +24486,7 @@ NodeList 。如果提供了多个类名，则顺序无关紧要。下面是几�
 
 let allCurrentUsernames = document.getElementsByClassName("username current");
 
-// 取得ID为"myDiv"的元素子树中所有包含"selected"类
+// 取得 ID 为"myDiv"的元素子树中所有包含"selected"类
 
 的元素
 
@@ -24706,47 +24496,37 @@ let selected = document.getElementById("myDiv").getElementsB yClassName("selecte
 
 getElementsByClassName() 则返回该元素后代中匹配的元素。
 
-如果要给包含特定类（而不是特定ID或标签）的元素添加事件处理程序，使用这个方法会很方便。不过要记住，因为返回值是 NodeList ，所以使用这个方法会遇到跟使用
+如果要给包含特定类（而不是特定 ID 或标签）的元素添加事件处理程序，使用这个方法会很方便。不过要记住，因为返回值是 NodeList ，所以使用这个方法会遇到跟使用
 
 getElementsByTagName() 和其他返回 NodeList 对象的
 
-DOM方法同样的问题。
+DOM 方法同样的问题。
 
-IE9及以上版本，以及所有现代浏览器都支持
+IE9 及以上版本，以及所有现代浏览器都支持
 
 getElementsByClassName() 方法。
 
 2.  classList 属性
 
-要操作类名，可以通过 className 属性实现添加、删除和替 换。但 className 是一个字符串，所以每次操作之后都需要重新设置这个值才能生效，即使只改动了部分字符串也一样。以下面的HTML代码为例：
-
-
+要操作类名，可以通过 className 属性实现添加、删除和替 换。但 className 是一个字符串，所以每次操作之后都需要重新设置这个值才能生效，即使只改动了部分字符串也一样。以下面的 HTML 代码为例：
 
 <div class="bd user disabled"\>...</div>
 
-这个 <div> 元素有3个类名。要想删除其中一个，就得先把
+这个 <div> 元素有 3 个类名。要想删除其中一个，就得先把
 
 className 拆开，删除不想要的那个，再把包含剩余类的字符串设置回去。比如：
-
-
 
 // 要删除"user"类
 
 let targetClass = "user";
 
-
-
 // 把类名拆成数组
 
 let classNames = div.className.split(/\\s+/);
 
-
-
 // 找到要删除类名的索引
 
 let idx = classNames.indexOf(targetClass);
-
-
 
 // 如果有则删除
 
@@ -24754,19 +24534,17 @@ if (idx \> \-1) { classNames.splice(i,1);
 
 }
 
-
-
 // 重新设置类名
 
 div.className = classNames.join(" ");
 
 这就是从 <div> 元素的类名中删除 "user" 类要写的代码。替换类名和检测类名也要涉及同样的算法。添加类名只涉及字符串拼接，但必须先检查一下以确保不会重复添加相同的类名。很多
 
-JavaScript库为这些操作实现了便利方法。
+JavaScript 库为这些操作实现了便利方法。
 
-HTML5通过给所有元素增加 classList 属性为这些操作提供了更简单也更安全的实现方式。 classList 是一个新的集合类
+HTML5 通过给所有元素增加 classList 属性为这些操作提供了更简单也更安全的实现方式。 classList 是一个新的集合类
 
-型 DOMTokenList 的实例。与其他DOM集合类型一样，
+型 DOMTokenList 的实例。与其他 DOM 集合类型一样，
 
 DOMTokenList 也有 length 属性表示自己包含多少项，也可以通过 item() 或中括号取得个别的元素。此外，
 
@@ -24774,7 +24552,7 @@ DOMTokenList 还增加了以下方法。
 
 add(value) ，向类名列表中添加指定的字符串值
 
-value 。如果这个值已经存在，则什么也不做。 contains(value) ，返回布尔值，表示给定的 value是否存在。
+value 。如果这个值已经存在，则什么也不做。 contains(value) ，返回布尔值，表示给定的 value 是否存在。
 
 remove(value) ，从类名列表中删除指定的字符串值
 
@@ -24786,31 +24564,21 @@ value ，则删除；如果不存在，则添加。
 
 这样一来，前面的例子中那么多行代码就可以简化成下面的一行：
 
-
-
 div.classList.remove("user");
 
 这行代码可以在不影响其他类名的情况下完成删除。其他方法同样极大地简化了操作类名的复杂性，如下面的例子所示：
-
-
 
 // 删除"disabled"类
 
 div.classList.remove("disabled");
 
-
-
 // 添加"current"类
 
 div.classList.add("current");
 
-
-
 // 切换"user"类
 
 div.classList.toggle("user");
-
-
 
 // 检测类名
 
@@ -24822,19 +24590,17 @@ if (div.classList.contains("bd") \&\&
 
 )
 
-
-
 // 迭代类名
 
 for (let class of div.classList){ doStuff(class);
 
 }
 
-添加了 classList 属性之后，除非是完全删除或完全重写元素的 class 属性，否则 className 属性就用不到了。IE10及以上版本（部分）和其他主流浏览器（完全）实现了 classList属性。
+添加了 classList 属性之后，除非是完全删除或完全重写元素的 class 属性，否则 className 属性就用不到了。IE10 及以上版本（部分）和其他主流浏览器（完全）实现了 classList 属性。
 
 2.  焦点管理
 
-HTML5增加了辅助DOM焦点管理的功能。首先是 document.activeElement ，始终包含当前拥有焦点的DOM元素。页面加载时，可以通过用户输入（按Tab键或代码中使用
+HTML5 增加了辅助 DOM 焦点管理的功能。首先是 document.activeElement ，始终包含当前拥有焦点的 DOM 元素。页面加载时，可以通过用户输入（按 Tab 键或代码中使用
 
 focus() 方法）让某个元素自动获得焦点。例如：
 
@@ -24848,33 +24614,29 @@ document.activeElement 的值为 null 。
 
 其次是 document.hasFocus() 方法，该方法返回布尔值，表示文档是否拥有焦点：
 
-
-
 let button = document.getElementById("myButton"); button.focus(); console.log(document.hasFocus()); // true
 
 确定文档是否获得了焦点，就可以帮助确定用户是否在操作页面。
 
-第一个方法可以用来查询文档，确定哪个元素拥有焦点，第二个方法可以查询文档是否获得了焦点，而这对于保证Web应用程序的无障碍使用是非常重要的。无障碍Web应用程序的一个重要方面就是焦点管理，而能够确定哪个元素当前拥有焦点（相比于之前的猜测）是一个很大的进步。
+第一个方法可以用来查询文档，确定哪个元素拥有焦点，第二个方法可以查询文档是否获得了焦点，而这对于保证 Web 应用程序的无障碍使用是非常重要的。无障碍 Web 应用程序的一个重要方面就是焦点管理，而能够确定哪个元素当前拥有焦点（相比于之前的猜测）是一个很大的进步。
 
 3.  HTMLDocument 扩展
 
-HTML5扩展了 HTMLDocument 类型，增加了更多功能。与其他
+HTML5 扩展了 HTMLDocument 类型，增加了更多功能。与其他
 
-HTML5定义的DOM扩展一样，这些变化同样基于所有浏览器事实上
+HTML5 定义的 DOM 扩展一样，这些变化同样基于所有浏览器事实上
 
 都已经支持的专有扩展。为此，即使这些扩展的标准化相对较晚，很多浏览器也早就实现了相应的功能。
 
 1.  readyState 属性
 
-readyState 是IE4最早添加到 document 对象上的属性，后来其他浏览器也都依葫芦画瓢地支持这个属性。最终，HTML5将这个属性写进了标准。 document.readyState 属性有两个可能的值：
+readyState 是 IE4 最早添加到 document 对象上的属性，后来其他浏览器也都依葫芦画瓢地支持这个属性。最终，HTML5 将这个属性写进了标准。 document.readyState 属性有两个可能的值：
 
 loading ，表示文档正在加载；
 
 complete ，表示文档加载完成。
 
 实际开发中，最好是把 document.readState 当成一个指示器，以判断文档是否加载完毕。在这个属性得到广泛支持以前，通常要依赖 onload 事件处理程序设置一个标记，表示文档加载完了。这个属性的基本用法如下：
-
-
 
 if (document.readyState == "complete"){
 
@@ -24884,13 +24646,11 @@ if (document.readyState == "complete"){
 
 2.  compatMode 属性
 
-自从IE6提供了以标准或混杂模式渲染页面的能力之后，检测页面渲染模式成为一个必要的需求。IE为 document 添加了
+自从 IE6 提供了以标准或混杂模式渲染页面的能力之后，检测页面渲染模式成为一个必要的需求。IE 为 document 添加了
 
 compatMode 属性，这个属性唯一的任务是指示浏览器当前处于什么渲染模式。如下面的例子所示，标准模式下
 
 document.compatMode 的值是 "CSS1Compat" ，而在混杂模式下， document.compatMode 的值是 "BackCompat" ：
-
-
 
 if (document.compatMode == "CSS1Compat"){ console.log("Standards mode");
 
@@ -24900,25 +24660,21 @@ console.log("Quirks mode");
 
 }
 
-HTML5最终也把 compatMode 属性的实现标准化了。
+HTML5 最终也把 compatMode 属性的实现标准化了。
 
 3.  head 属性
 
-作为对 document.body （指向文档的 `<body>` 元素）的补充，HTML5增加了 document.head 属性，指向文档的
+作为对 document.body （指向文档的 `<body>` 元素）的补充，HTML5 增加了 document.head 属性，指向文档的
 
 `<head>` 元素。可以像下面这样直接取得 `<head>` 元素：
-
-
 
 let head = document.head;
 
 4.  字符集属性
 
-HTML5增加了几个与文档字符集有关的新属性。其中，
+HTML5 增加了几个与文档字符集有关的新属性。其中，
 
 characterSet 属性表示文档实际使用的字符集，也可以用来指定新字符集。这个属性的默认值是 "UTF-16" ，但可以通过 <meta>元素或响应头，以及新增的 characterSeet 属性来修改。下面是一个例子：
-
-
 
 console.log(document.characterSet); // "UTF-16"
 
@@ -24926,7 +24682,7 @@ document.characterSet = "UTF-8";
 
 5.  自定义数据属性
 
-HTML5允许给元素指定非标准的属性，但要使用前缀 data- 以便告诉浏览器，这些属性既不包含与渲染有关的信息，也不包含元素的语义信息。除了前缀，自定义属性对命名是没有限制的， data-后面跟什么都可以。下面是一个例子：
+HTML5 允许给元素指定非标准的属性，但要使用前缀 data- 以便告诉浏览器，这些属性既不包含与渲染有关的信息，也不包含元素的语义信息。除了前缀，自定义属性对命名是没有限制的， data-后面跟什么都可以。下面是一个例子：
 
 <div id="myDiv" data-appId="12345" data- myname="Nicholas"\></div>
 
@@ -24934,15 +24690,9 @@ HTML5允许给元素指定非标准的属性，但要使用前缀 data- 以便�
 
 myname 、 data-myName 可以通过 myname 访问，但要注意 data-my-name 、 data-My-Name 要通过 myName 来访问）。下面是一个使用自定义数据属性的例子：
 
-
-
 // 本例中使用的方法仅用于示范
 
-
-
 let div = document.getElementById("myDiv");
-
-
 
 // 取得自定义数据属性的值
 
@@ -24964,13 +24714,11 @@ console.log('Hello, \${div.dataset.myname}');
 
 6.  入标记
 
-DOM虽然已经为操纵节点提供了很多API，但向文档中一次性插入大量HTML时还是比较麻烦。相比先创建一堆节点，再把它们以正确的顺序连接起来，直接插入一个HTML字符串要简单（快速）得 多。HTML5已经通过以下DOM扩展将这种能力标准化了。
+DOM 虽然已经为操纵节点提供了很多 API，但向文档中一次性插入大量 HTML 时还是比较麻烦。相比先创建一堆节点，再把它们以正确的顺序连接起来，直接插入一个 HTML 字符串要简单（快速）得 多。HTML5 已经通过以下 DOM 扩展将这种能力标准化了。
 
 1.  innerHTML 属性
 
-在读取 innerHTML 属性时，会返回元素所有后代的HTML字符串，包括元素、注释和文本节点。而在写入 innerHTML 时，则会根据提供的字符串值以新的DOM子树替代元素中原来包含的所有节点。比如下面的HTML代码：
-
-
+在读取 innerHTML 属性时，会返回元素所有后代的 HTML 字符串，包括元素、注释和文本节点。而在写入 innerHTML 时，则会根据提供的字符串值以新的 DOM 子树替代元素中原来包含的所有节点。比如下面的 HTML 代码：
 
 <div id="content"\>
 
@@ -25002,23 +24750,19 @@ DOM虽然已经为操纵节点提供了很多API，但向文档中一次性插�
 
 </ul>
 
-实际返回的文本内容会因浏览器而不同。IE和Opera会把所有元素标签转换为大写，而Safari、Chrome和Firefox则会按照文档源代码的格式返回，包含空格和缩进。因此不要指望不同浏览器的
+实际返回的文本内容会因浏览器而不同。IE 和 Opera 会把所有元素标签转换为大写，而 Safari、Chrome 和 Firefox 则会按照文档源代码的格式返回，包含空格和缩进。因此不要指望不同浏览器的
 
 innerHTML 会返回完全一样的值。
 
-在写入模式下，赋给 innerHTML 属性的值会被解析为DOM子树，并替代元素之前的所有节点。因为所赋的值默认为HTML，所以其中的所有标签都会以浏览器处理HTML的方式转换为元素
+在写入模式下，赋给 innerHTML 属性的值会被解析为 DOM 子树，并替代元素之前的所有节点。因为所赋的值默认为 HTML，所以其中的所有标签都会以浏览器处理 HTML 的方式转换为元素
 
-（同样，转换结果也会因浏览器不同而不同）。如果赋值中不包含任何HTML标签，则直接生成一个文本节点，如下所示：
-
-
+（同样，转换结果也会因浏览器不同而不同）。如果赋值中不包含任何 HTML 标签，则直接生成一个文本节点，如下所示：
 
 div.innerHTML = "Hello world!";
 
 因为浏览器会解析设置的值，所以给 innerHTML 设置包含
 
-HTML的字符串时，结果会大不一样。来看下面的例子：
-
-
+HTML 的字符串时，结果会大不一样。来看下面的例子：
 
 div.innerHTML = "Hello \& welcome,
 
@@ -25032,19 +24776,15 @@ div.innerHTML = "Hello \& welcome,
 
 设置完 innerHTML ，马上就可以像访问其他节点一样访问这些新节点。
 
+注意 设置 innerHTML 会导致浏览器将 HTML 字符串解析为相应的 DOM 树。这意味着设置 innerHTML 属性后马上再读出来会得到不同的字符串。这是因为返回的字符串是将原始字符串对应的 DOM 子树序列化之后的结果。
 
+2.  旧 IE 中的 innerHTML
 
-注意 设置 innerHTML 会导致浏览器将HTML字符串解析为相应的DOM树。这意味着设置 innerHTML 属性后马上再读出来会得到不同的字符串。这是因为返回的字符串是将原始字符串对应的DOM子树序列化之后的结果。
-
-2.  旧IE中的 innerHTML
-
-在所有现代浏览器中，通过 innerHTML 插入的 `<script>` 标签是不会执行的。而在IE8及之前的版本中，只要这样插入的
+在所有现代浏览器中，通过 innerHTML 插入的 `<script>` 标签是不会执行的。而在 IE8 及之前的版本中，只要这样插入的
 
 `<script>` 元素指定了 defer 属性，且 `<script>` 之前是“受控元素”（scoped element），那就是可以执行的。 `<script>` 元素与 `<style>`或注释一样，都是“非受控元素”（NoScope
 
-element），也就是在页面上看不到它们。IE会把 innerHTML 中从非受控元素开始的内容都删掉，也就是说下面的例子是行不通的：
-
-
+element），也就是在页面上看不到它们。IE 会把 innerHTML 中从非受控元素开始的内容都删掉，也就是说下面的例子是行不通的：
 
 // 行不通
 
@@ -26600,7 +26340,13 @@ NodeFilter.FILTER_SKIP ），则会导致遍历立即返回，不会访问任何
 当然， TreeWalker 真正的威力是可以在 DOM 结构中四处游走。如果不使用过滤器，单纯使用 TreeWalker 的漫游能力同样可以在 DOM 树中访问`<li>`元素，比如：
 
 ```js
-let div = document.getElementById("div1"); let walker = document.createTreeWalker(div, NodeFilter.SHOW_ELEMENT, null, false);
+let div = document.getElementById('div1');
+let walker = document.createTreeWalker(
+  div,
+  NodeFilter.SHOW_ELEMENT,
+  null,
+  false
+);
 
 walker.firstChild(); // 前 往 <p>
 
@@ -26608,8 +26354,9 @@ walker.nextSibling(); // 前 往 <ul>
 
 let node = walker.firstChild(); // 前往第一个<li>
 
-while (node !== null) { console.log(node.tagName); node = walker.nextSibling();
-
+while (node !== null) {
+  console.log(node.tagName);
+  node = walker.nextSibling();
 }
 ```
 
@@ -27054,6 +26801,7 @@ TreeWalker 除了支持同样的行为，还支持在 DOM 结构的所有方向�
 通过范围的选区可以在保持文档结构完好的同时从文档中移除内容，也可复制文档中相应的部分。
 
 # 第 17 章 事件
+
 # 第 18 章 动画与 Canvas 图形
 
 # 第 19 章 表单脚本
