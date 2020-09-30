@@ -115,7 +115,7 @@ JScript 的再次更新出现在 IE4 中的 JScript 3.0（2.0 版是在 Microsof
 ```js
 <html> `<head>` <title>Sample Page</title> </head>
 
-`<body>` <p> Hello World!</p> `</body>` `</html>`
+`<body>``<p>`Hello World!</p> `</body>` `</html>`
 ```
 
 这些代码通过 DOM 可以表示为一组分层节点，如图 1-2 所示。
@@ -22011,7 +22011,7 @@ JavaScript 对象具有不同的行为和功能。
 
 如果表示为层级结构，则如图 14-1 所示。图 14-1
 
-其中， document 节点表示每个文档的根节点。在这里，根节点的唯一子节点是 <html> 元素，我们称之为文档元素（ documentElement ）。文档元素是文档最外层的元素，所有其他元素都存在于这个元素之内。每个文档只能有一个文档元素。在 HTML 页面中，文档元素始终是 <html> 元素。在 XML 文档中，则没有这样预定义的元素，任何元素都可能成为文档元素。
+其中， document 节点表示每个文档的根节点。在这里，根节点的唯一子节点是`<html>`元素，我们称之为文档元素（ documentElement ）。文档元素是文档最外层的元素，所有其他元素都存在于这个元素之内。每个文档只能有一个文档元素。在 HTML 页面中，文档元素始终是`<html>`元素。在 XML 文档中，则没有这样预定义的元素，任何元素都可能成为文档元素。
 
 HTML 中的每段标记都可以表示为这个树形结构中的一个节点。元素节点表示 HTML 元素，属性节点表示属性，文档类型节点表示文档类型，注释节点表示注释。DOM 中总共有 12 种节点类型，这些类型都
 
@@ -22059,7 +22059,7 @@ value = someNode.nodeName; // 会显示元素的标签名
 
 2.  节点关系
 
-文档中的所有节点都与其他节点有关系。这些关系可以形容为家族关系，相当于把文档树比作家谱。在 HTML 中， `<body>` 元素是 <html> 元素的子元素，而 <html> 元素则是 `<body>` 元素的父元素。 `<head>` 元素是 `<body>` 元素的同胞元素，因为它们有共同的父元素 <html> 。
+文档中的所有节点都与其他节点有关系。这些关系可以形容为家族关系，相当于把文档树比作家谱。在 HTML 中， `<body>` 元素是`<html>`元素的子元素，而`<html>`元素则是 `<body>` 元素的父元素。 `<head>` 元素是 `<body>` 元素的同胞元素，因为它们有共同的父元素`<html>`。
 
 每个节点都有一个 childNodes 属性，其中包含一个 NodeList 的实例。 NodeList 是一个类数组对象，用于存储可以按位置存取的有序节点。注意， NodeList 并不是 Array 的实例，但可以使用中括号访问它的值，而且它也有 length 属性。 NodeList 对象独特的地方在于，它其实是一个对 DOM 结构的查询，因此 DOM 结构的变化会自动地在 NodeList 中反映出来。我们通常说
 
@@ -22233,9 +22233,9 @@ Document 类型可以表示 HTML 页面或其他 XML 文档，但最常用的还
 
 ProcessingInstruction 或 Comment ，但也提供了两个访问子节点的快捷方式。第一个是
 
-documentElement 属性，始终指向 HTML 页面中的 <html> 元素。虽然
+documentElement 属性，始终指向 HTML 页面中的`<html>`元素。虽然
 
-document.childNodes 中始终有 <html> 元素，但使用 documentElement 属性可以更快更直接地访问该元素。假如有以下简单的页面：
+document.childNodes 中始终有`<html>`元素，但使用 documentElement 属性可以更快更直接地访问该元素。假如有以下简单的页面：
 
 ```
 <html>
@@ -22247,11 +22247,11 @@ document.childNodes 中始终有 <html> 元素，但使用 documentElement 属�
 `</html>`
 ```
 
-浏览器解析完这个页面之后，文档只有一个子节点，即 <html> 元素。这个元素既可以通过
+浏览器解析完这个页面之后，文档只有一个子节点，即`<html>`元素。这个元素既可以通过
 
 documentElement 属性获取，也可以通过 childNodes 列表访问，如下所示：
 
-let html = document.documentElement; // 取 得 对 <html> 的 引 用
+let html = document.documentElement; // 取 得 对`<html>`的 引 用
 
 alert(html === document.childNodes\[0\]); // true
 
@@ -22271,7 +22271,7 @@ Document 类型另一种可能的子节点是 DocumentType 。 <!doctype> 标签
 
 let doctype = document.doctype; // 取得对<!doctype>的引用
 
-另外，严格来讲出现在 <html> 元素外面的注释也是文档的子节点，它们的类型是 Comment 。不过，由于浏览器实现不同，这些注释不一定能被识别，或者表现可能不一致。比如以下 HTML 页面：
+另外，严格来讲出现在`<html>`元素外面的注释也是文档的子节点，它们的类型是 Comment 。不过，由于浏览器实现不同，这些注释不一定能被识别，或者表现可能不一致。比如以下 HTML 页面：
 
 ```
 <!-- 第一条注释 -->
@@ -22287,11 +22287,11 @@ let doctype = document.doctype; // 取得对<!doctype>的引用
 <!-- 第二条注释 -->
 ```
 
-这个页面看起来有 3 个子节点：注释、 <html> 元素、注释。逻辑上讲， document.childNodes 应该包含 3 项，对应代码中的每个节点。但实际上，浏览器有可能以不同方式对待 <html> 元素外部的注释，比如忽略一个或两个注释。
+这个页面看起来有 3 个子节点：注释、`<html>`元素、注释。逻辑上讲， document.childNodes 应该包含 3 项，对应代码中的每个节点。但实际上，浏览器有可能以不同方式对待`<html>`元素外部的注释，比如忽略一个或两个注释。
 
 一般来说， appendChild() 、 removeChild() 和 replaceChild() 方法不会用在
 
-document 对象上。这是因为文档类型（如果存在）是只读的，而且只能有一个 Element 类型的子节点（即 <html> ，已经存在了）。1
+document 对象上。这是因为文档类型（如果存在）是只读的，而且只能有一个 Element 类型的子节点（即`<html>`，已经存在了）。1
 
 2.  文档信息
 
@@ -22395,7 +22395,7 @@ let myImage = images\["myImage"\];
 
 let allElements = document.getElementsByTagName("\*");
 
-这行代码可以返回包含页面中所有元素的 HTMLCollection 对象，顺序就是它们在页面中出现的顺序。因此第一项是 <html> 元素，第二项是 `<head>` 元素，以此类推。
+这行代码可以返回包含页面中所有元素的 HTMLCollection 对象，顺序就是它们在页面中出现的顺序。因此第一项是`<html>`元素，第二项是 `<head>` 元素，以此类推。
 
 注意 对于 document.getElementsByTagName() 方法，虽然规范要求区分标签的大小写， 但为了最大限度兼容原有 HTML 页面，实际上是不区分大小写的。如果是在 XML 页面（如 XHTML）中使用，那么 document.getElementsByTagName() 就是区分大小写的。
 
@@ -23011,7 +23011,7 @@ let div = document.getElementById("myDiv"); let comment = div.firstChild; alert(
 
 let comment = document.createComment("A comment");
 
-显然，注释节点很少通过 JavaScrpit 创建和访问，因为注释几乎不涉及算法逻辑。此外，浏览器不承认结束的 `</html>` 标签之后的注释。如果要访问注释节点，则必须确定它们是 <html> 元素的后代。
+显然，注释节点很少通过 JavaScrpit 创建和访问，因为注释几乎不涉及算法逻辑。此外，浏览器不承认结束的 `</html>` 标签之后的注释。如果要访问注释节点，则必须确定它们是`<html>`元素的后代。
 
 6.  CDATASection 类型
 
@@ -23357,7 +23357,7 @@ loadStyleString("body{background-color:red}");
 
 3.  操作表格
 
-表格是 HTML 中最复杂的结构之一。通过 DOM 编程创建 <table> 元素，通常要涉及大量标签，包括表行、表元、表题，等等。因此，通过 DOM 编程创建和修改表格时可能要写很多代码。假设要通过
+表格是 HTML 中最复杂的结构之一。通过 DOM 编程创建`<table>`元素，通常要涉及大量标签，包括表行、表元、表题，等等。因此，通过 DOM 编程创建和修改表格时可能要写很多代码。假设要通过
 
 DOM 来创建以下 HTML 表格：
 
@@ -23423,7 +23423,7 @@ let cell2\_2= document.createElement("td"); cell2\_2.appendChild(document.create
 document.body.appendChild(table);
 ```
 
-以上代码相当烦琐，也不好理解。为了方便创建表格，HTML DOM 给 <table> 、 <tbody> 和
+以上代码相当烦琐，也不好理解。为了方便创建表格，HTML DOM 给`<table>`、 <tbody> 和
 
 <tr> 元素添加了一些属性和方法。
 
@@ -23489,7 +23489,7 @@ tbody.rows\[1\].cells\[0\].appendChild(document.createTextNode("Cell 1,2")); tbo
 document.body.appendChild(table);
 ```
 
-这里创建 <table> 和 <tbody> 元素的代码没有变。变化的是创建两行的部分，这次使用了 HTML
+这里创建`<table>`和 <tbody> 元素的代码没有变。变化的是创建两行的部分，这次使用了 HTML
 
 DOM 表格的属性和方法。创建第一行时，在 <tbody> 元素上调用了 insertRow() 方法。传入参数
 
@@ -24852,7 +24852,7 @@ div.outerHTML = "<p>This is a paragraph.
 
 let p = document.createElement("p"); p.appendChild(document.createTextNode("This is a paragraph.")); div.parentNode.replaceChild(p, div);
 
-新的 <p> 元素会取代 DOM 树中原来的 <div> 元素。
+新的`<p>`元素会取代 DOM 树中原来的 <div> 元素。
 
 4.  insertAdjacentHTML() 与 insertAdjacentText()
 
@@ -24940,7 +24940,7 @@ innerHTML 。与使用 innerHTML 获得的方便相比，防止 XSS 攻击更让
 
 1 假设当前元素是 <p>Hello world!</p> ，
 
-则 "beforebegin" 和 "afterbegin" 中的 "begin" 指开始标签 <p> ；而 "afterend" 和 "beforeend" 中的 "end" 指结束标签 </p> 。——译者注
+则 "beforebegin" 和 "afterbegin" 中的 "begin" 指开始标签`<p>`；而 "afterend" 和 "beforeend" 中的 "end" 指结束标签 </p> 。——译者注
 
 7.  scrollIntoView()
 
@@ -25012,7 +25012,7 @@ true ，否则返回 false 。下面看一个例子：
 
 console.log(document.documentElement.contains(do cument.body)); // true
 
-这个例子测试 <html> 元素中是否包含 `<body>` 元素，在格式正确的 HTML 中会返回 true 。
+这个例子测试`<html>`元素中是否包含 `<body>` 元素，在格式正确的 HTML 中会返回 true 。
 
 另外，使用 DOM Level 3 的 compareDocumentPosition() 方法也可以确定节点间的关系。这个方法会返回表示两个节点关系的位掩码。下表给出了这些位掩码的说明。
 要模仿 contains() 方法，就需要用到掩码 16（0x10）。
@@ -25168,7 +25168,7 @@ XHTML 中才支持，HTML 并不支持。因此，本节的示例使用 XHTML。
 
 命名空间是使用 xmlns 指定的。XHTML 的命名空间
 
-[是](http://www.w3.org/1999/xhtml) ["http://www.w3.org/1999/xhtml"](http://www.w3.org/1999/xhtml) ，应该包含在任何格式规范的 XHTML 页面的 <html> 元素中，如下所示：
+[是](http://www.w3.org/1999/xhtml) ["http://www.w3.org/1999/xhtml"](http://www.w3.org/1999/xhtml) ，应该包含在任何格式规范的 XHTML 页面的`<html>`元素中，如下所示：
 
 ```
 <html xmlns[=](http://www.w3.org/1999/xhtml)"http://www.w3.org/1999/xhtml"\>
@@ -25290,7 +25290,7 @@ viewBox="0 0 100 100" style="width:100\%; height:100\%"\>
 `</html>`
 ```
 
-其中的 <html> 元素的 localName 和 tagName 都是 "html" ， namespaceURL
+其中的`<html>`元素的 localName 和 tagName 都是 "html" ， namespaceURL
 
 [是](http://www.w3.org/1999/xhtml) "http://www.w3.org/1999/xhtml" ， 而 prefix 是
 
@@ -25500,9 +25500,9 @@ let doc = document.implementation.createDocument("http:
 
 这里使用了适当的命名空间和文档类型创建一个新 XHTML 文
 
-档。这个文档只有一个文档元素 <html> ，其他一切都需要另行添加。
+档。这个文档只有一个文档元素`<html>`，其他一切都需要另行添加。
 
-DOM2 HTML 模块也为 document.implamentation 对象添加了 createHTMLDocument() 方法。使用这个方法可以创建一个完整的 HTML 文档，包含 <html> 、 `<head>` 、 <title> 和 `<body>` 元素。这个方法只接收一个参数，即新创建文档的标题（放到 <title> 元素中），返回一个新的 HTML 文档。比
+DOM2 HTML 模块也为 document.implamentation 对象添加了 createHTMLDocument() 方法。使用这个方法可以创建一个完整的 HTML 文档，包含`<html>`、 `<head>` 、 <title> 和 `<body>` 元素。这个方法只接收一个参数，即新创建文档的标题（放到 <title> 元素中），返回一个新的 HTML 文档。比
 
 如：
 
@@ -25983,10 +25983,11 @@ offsetTop ，元素上边框外侧距离包含元素上边框内侧的像素数�
 
 offsetWidth ，元素在水平方向上占用的像素尺寸，包括它的宽度、垂直滚动条宽度（如果可见）和左、右边框的宽度。
 
-其中， offsetLeft 和 offsetTop 是相对于包含元素的，包含元素保存在 offsetParent 属性中。 offsetParent 不一定是 parentNode 。比如， <td> 元素的 offsetParent 是作为其祖先的 <table> 元素，因为 <table> 是节点层级中第一个提供尺寸的元素。图 16-1 展示了这些属性代表的不同尺寸。图 16-1
+其中， offsetLeft 和 offsetTop 是相对于包含元素的，包含元素保存在 offsetParent 属性中。 offsetParent 不一定是 parentNode 。比如，`<td>`元素的 offsetParent 是作为其祖先的`<table>`元素，因为`<table>`是节点层级中第一个提供尺寸的元素。图 16-1 展示了这些属性代表的不同尺寸。图 16-1
 
 要确定一个元素在页面中的偏移量，可以把它的 offsetLeft 和 offsetTop 属性分别与 offsetParent 的相同属性相加，一直加到根元素。下面是一个例子：
 
+```js
 function getElementLeft(element) { let actualLeft = element.offsetLeft; let current = element.offsetParent;
 
 while (current !== null) { actualLeft += current.offsetLeft; current = current.offsetParent;
@@ -26006,10 +26007,11 @@ while (current !== null) { actualTop += current.offsetTop; current = current.off
 return actualTop;
 
 }
+```
 
 这两个函数使用 offsetParent 在 DOM 树中逐级上溯，将每一级的偏移属性相加，最终得到元素的实际偏移量。对于使用 CSS 布局的简单页面，这两个函数是很精确的。而对于使用表格和内嵌窗格的页面布局，它们返回的值会因浏览器不同而有所差异，因为浏览器实现这些元素的方式不同。一般来说，包含在
 
-<div> 元素中所有元素都以 `<body>` 为其 offsetParent ，因此 getElementleft() 和 getElementTop() 返回的值 与 offsetLeft 和 offsetTop 返回的值相同。
+`<div>` 元素中所有元素都以 `<body>` 为其 offsetParent ，因此 getElementleft() 和 getElementTop() 返回的值 与 offsetLeft 和 offsetTop 返回的值相同。
 
 注意 所有这些偏移尺寸属性都是只读的，每次访问都会重新计算。因此，应该尽量减少查询它们的次数。比如把查询的值保存在局量中，就可以避免影响性能。
 
@@ -26023,15 +26025,13 @@ return actualTop;
 
 document.documentElement 的 clientWidth 和
 
-clientHeight 。这两个属性表示视口（ <html> 或
-
-`<body>` 元素）的尺寸。
+clientHeight 。这两个属性表示视口（`<html>`或`<body>` 元素）的尺寸。
 
 注意 与偏移尺寸一样，客户端尺寸也是只读的，而且每次访问都会重新计算。
 
 3.  滚动尺寸
 
-最后一组尺寸是滚动尺寸（scroll dimensions），提供了元素内容滚动距离的信息。有些元素，比如 <html> 无须任何代码就可以自动滚动，而其他元素则需要使用 CSS 的 overflow 属性令其滚动。滚动尺寸相关的属性有如下 4 个。
+最后一组尺寸是滚动尺寸（scroll dimensions），提供了元素内容滚动距离的信息。有些元素，比如`<html>`无须任何代码就可以自动滚动，而其他元素则需要使用 CSS 的 overflow 属性令其滚动。滚动尺寸相关的属性有如下 4 个。
 
 scrollHeight ，没有滚动条出现时，元素内容的总高度。
 
@@ -26043,7 +26043,7 @@ scrollWidth ，没有滚动条出现时，元素内容的总宽度。
 
 图 16-3 展示了这些属性的含义。图 16-3
 
-scrollWidth 和 scrollHeight 可以用来确定给定元素内容的实际尺寸。例如， <html> 元素是浏览器中滚动视口的元素。因此， document.documentElement.scrollHeight 就是整个页面垂直方向的总高度。
+scrollWidth 和 scrollHeight 可以用来确定给定元素内容的实际尺寸。例如，`<html>`元素是浏览器中滚动视口的元素。因此， document.documentElement.scrollHeight 就是整个页面垂直方向的总高度。
 
 scrollWidth 和 scrollHeight 与 clientWidth 和
 
@@ -26107,11 +26107,11 @@ DOM2 Traversal and Range 模块定义了两个类型用于辅助顺序遍历 DOM
 
 其中的任何节点都可以成为遍历的根节点。比如，假设以
 
-`<body>` 元素作为遍历的根节点，那么接下来是 <p> 元素、 <b>
+`<body>` 元素作为遍历的根节点，那么接下来是`<p>`元素、 <b>
 
 元素和两个文本节点（都是 `<body>` 元素的后代）。但这个遍历不会
 
-到达 <html> 元素、 `<head>` 元素，或者其他不属于 `<body>` 元素子树的元素。而以 document 为根节点的遍历，则可以访问到文档中的所有节点。图 16-6 展示了以 document 为根节点的深度优先遍历。
+到达`<html>`元素、 `<head>` 元素，或者其他不属于 `<body>` 元素子树的元素。而以 document 为根节点的遍历，则可以访问到文档中的所有节点。图 16-6 展示了以 document 为根节点的深度优先遍历。
 
 图 16-6
 
@@ -26155,7 +26155,7 @@ createNodeIterator() 方法的 filter 参数可以用来指定自定义 NodeFilt
 
 NodeFilter 对象只有一个方法 acceptNode() ，如果给定节点应该访问就返回 NodeFilter.FILTER_ACCEPT ，否则返回
 
-NodeFilter.FILTER_SKIP 。因为 NodeFilter 是一个抽象类型，所以不可能创建它的实例。只要创建一个包含 acceptNode()的对象，然后把它传给 createNodeIterator() 就可以了。以下代码定义了只接收 <p> 元素的节点过滤器对象：
+NodeFilter.FILTER_SKIP 。因为 NodeFilter 是一个抽象类型，所以不可能创建它的实例。只要创建一个包含 acceptNode()的对象，然后把它传给 createNodeIterator() 就可以了。以下代码定义了只接收`<p>`元素的节点过滤器对象：
 
 let filter = { acceptNode(node) {
 
@@ -26360,7 +26360,7 @@ while (node !== null) {
 }
 ```
 
-因为我们知道`<li>`元素在文档结构中的位置，所以可以直接定位过去。先使用 firstChild() 前往 <p> 元素，再通过
+因为我们知道`<li>`元素在文档结构中的位置，所以可以直接定位过去。先使用 firstChild() 前往`<p>`元素，再通过
 
 nextSibling() 前往`<ul>`元素，然后使用 firstChild() 到达第一个`<li>`元素。注意，此时的 TreeWalker 只返回元素（这是因为传给 createTreeWalker() 的第二个参数）。最后就可以
 
@@ -26456,7 +26456,7 @@ endOffset 等于 startOffset 加 1 （因为只选择了一个节点）。
 
 在调用 selectNodeContents() 时， startContainer 、
 
-endContainer 和 commonAncestor Container 属性就是传入的节点，在这个例子中是 <p> 元素。 startOffset 属性始终为
+endContainer 和 commonAncestor Container 属性就是传入的节点，在这个例子中是`<p>`元素。 startOffset 属性始终为
 
 0 ，因为范围从传入节点的第一个子节点开始，而 endOffset 等于传入节点的子节点数量（ node.child Nodes.length ），在这个例子中等于 2 。
 
@@ -26528,11 +26528,11 @@ setStart() 和 setEnd() 真正的威力还是选择节点中的某个部分。
 
 let p1 = document.getElementById("p1"), helloNode = p1.firstChild.firstChild, worldNode = p1.lastChild
 
-文本 "Hello" 其实是 <p> 的孙子节点，因为它是 <b> 的子节点。为此可以使用 p1.firstChild 取得 <b> ，而使用
+文本 "Hello" 其实是`<p>`的孙子节点，因为它是 <b> 的子节点。为此可以使用 p1.firstChild 取得 <b> ，而使用
 
 p1.firstChild.firstChild 取得 "Hello" 这个文本节点。文
 
-本节点 " world!" 是 <p> 的第二个（也是最后一个）子节点，因此可以使用 p1.lastChild 来取得它。然后，再创建范围，指定其边界，如下所示：
+本节点 " world!" 是`<p>`的第二个（也是最后一个）子节点，因此可以使用 p1.lastChild 来取得它。然后，再创建范围，指定其边界，如下所示：
 
 let range = document.createRange(); range.setStart(helloNode, 2);
 
@@ -26550,7 +26550,7 @@ setStart() 传入 helloNode 和偏移量 2 （ "e" 后面的位
 
 startOffset 和 endOffset 实际上表示每个节点中文本字符的位置，而不是子节点的位置（传入元素节点时的情形）。而
 
-commonAncestorContainer 是 <p> 元素，即包含这两个节点的第一个祖先节点。
+commonAncestorContainer 是`<p>`元素，即包含这两个节点的第一个祖先节点。
 
 当然，只选择文档中的某个部分并不是特别有用，除非可以对选中部分执行操作。
 
