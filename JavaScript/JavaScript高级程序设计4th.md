@@ -4209,9 +4209,7 @@ ECMAScript 中的函数与其他语言中的函数不一样。
 
 ECMAScript 变量可以包含两种不同类型的数据：原始值和引用值。原始值（primitive value）就是最简单的数据，引用值（reference value）则是由多个值构成的对象。
 
-在把一个值赋给变量时，JavaScript 引擎必须确定这个值是原始值还是引用值。上一章讨论了 6 种原始值： Undefined 、 Null 、
-
-Boolean 、 Number 、 String 和 Symbol 。保存原始值的变量是按值（by value）访问的，因为我们操作的就是存储在变量中的实际值。
+在把一个值赋给变量时，JavaScript 引擎必须确定这个值是原始值还是引用值。上一章讨论了 6 种原始值： Undefined 、 Null 、Boolean 、 Number 、 String 和 Symbol 。保存原始值的变量是按值（by value）访问的，因为我们操作的就是存储在变量中的实际值。
 
 引用值是保存在内存中的对象。与其他语言不同，JavaScript 不允许直接访问内存位置，因此也就不能直接操作对象所在的内存空间。
 
@@ -4223,29 +4221,37 @@ Boolean 、 Number 、 String 和 Symbol 。保存原始值的变量是按值（
 
 原始值和引用值的定义方式很类似，都是创建一个变量，然后给它赋一个值。不过，在变量保存了这个值之后，可以对这个值做什 么，则大有不同。对于引用值而言，可以随时添加、修改和删除其属性和方法。比如，看下面的例子：
 
+```js
 let person = new Object(); person.name = "Nicholas";
 
 console.log(person.name); // "Nicholas"
+```
 
 这里，首先创建了一个对象，并把它保存在变量 person 中。然后，给这个对象添加了一个名为 name 的属性，并给这个属性赋值了一个字符串 "Nicholas" 。在此之后，就可以访问这个新属性，直到对象被销毁或属性被显式地删除。
 
 原始值不能有属性，尽管尝试给原始值添加属性不会报错。比如：
 
+```
 let name = "Nicholas"; name.age = 27;
 
 console.log(name.age); // undefined
+```
 
 在此，代码想给字符串 name 定义一个 age 属性并给该属性赋值 27。紧接着在下一行，属性不见了。记住，只有引用值可以动态添加后面可以使用的属性。
 
 注意，原始类型的初始化可以只使用原始字面量形式。如果使用的是 new 关键字，则 JavaScript 会创建一个 Object 类型的实例，但其行为类似原始值。下面来看看这两种初始化方式的差异：
 
+```
 console.log(name1.age); // undefined console.log(name2.age); // 26 console.log(typeof name1); // string console.log(typeof name2); // object
+```
 
 2.  复制值
 
 除了存储方式不同，原始值和引用值在通过变量复制时也有所不同。在通过变量把一个原始值赋值到另一个变量时，原始值会被复制到新变量的位置。请看下面的例子：
 
+```
 let num1 = 5; let num2 = num1;
+```
 
 这里， num1 包含数值 5。当把 num2 初始化为 num1 时，
 
@@ -4257,14 +4263,13 @@ num2 也会得到数值 5。这个值跟存储在 num1 中的 5 是完全独立�
 
 在把引用值从一个变量赋给另一个变量时，存储在变量中的值也会被复制到新变量所在的位置。区别在于，这里复制的值实际上是一个指针，它指向存储在堆内存中的对象。操作完成后，两个变量实际上指向同一个对象，因此一个对象上面的变化会在另一个对象上反映出来，如下面的例子所示：
 
+```
 let obj1 = new Object(); let obj2 = obj1; obj1.name = "Nicholas";
 
 console.log(obj2.name); // "Nicholas"
+```
 
-在这个例子中，变量 obj1 保存了一个新对象的实例。然后，这个值被复制到 obj2 ，此时两个变量都指向了同一个对象。在给
-
-obj1 创建属性 name 并赋值后，通过 obj2 也可以访问这个属
-
+在这个例子中，变量 obj1 保存了一个新对象的实例。然后，这个值被复制到 obj2 ，此时两个变量都指向了同一个对象。在给obj1 创建属性 name 并赋值后，通过 obj2 也可以访问这个属
 性，因为它们都指向同一个对象。图 4-2 展示了变量与堆内存中对象之间的关系。
 
 图 4-2
@@ -4273,12 +4278,9 @@ obj1 创建属性 name 并赋值后，通过 obj2 也可以访问这个属
 
 ECMAScript 中所有函数的参数都是按值传递的。这意味着函数外的值会被复制到函数内部的参数中，就像从一个变量复制到另一个变量一样。如果是原始值，那么就跟原始值变量的复制一样，如果是引用值，那么就跟引用值变量的复制一样。对很多开发者来说，这一块可能会不好理解，毕竟变量有按值和按引用访问，而传参则只有按值传递。
 
-在按值传递参数时，值会被复制到一个局部变量（即一个命名参数，或者用 ECMAScript 的话说，就是 arguments 对象中的一个槽
+在按值传递参数时，值会被复制到一个局部变量（即一个命名参数，或者用 ECMAScript 的话说，就是 arguments 对象中的一个槽位）。在按引用传递参数时，值在内存中的位置会被保存在一个局部变量，这意味着对本地变量的修改会反映到函数外部。（这在ECMAScript 中是不可能的。）来看下面这个例子：
 
-位）。在按引用传递参数时，值在内存中的位置会被保存在一个局部变量，这意味着对本地变量的修改会反映到函数外部。（这在
-
-ECMAScript 中是不可能的。）来看下面这个例子：
-
+```
 function addTen(num) { num += 10;
 
 return num;
@@ -4288,11 +4290,13 @@ return num;
 let count = 20;
 
 let result = addTen(count); console.log(count); // 20，没有变化 console.log(result); // 30
+```
 
 这里，函数 addTen() 有一个参数 num ，它其实是一个局部变量。在调用时，变量 count 作为参数传入。 count 的值是 20，这个值被复制到参数 num 以便在 addTen() 内部使用。在函数内部，参数 num 的值被加上了 10，但这不会影响函数外部的原始变量
 
 count 。参数 num 和变量 count 互不干扰，它们只不过碰巧保存了一样的值。如果 num 是按引用传递的，那么 count 的值也会被修改为 30。这个事实在使用数值这样的原始值时是非常明显的。但是，如果变量中传递的是对象，就没那么清楚了。比如，再看这个例子：
 
+```
 function setName(obj) { obj.name = "Nicholas";
 
 }
@@ -4300,44 +4304,50 @@ function setName(obj) { obj.name = "Nicholas";
 let person = new Object();
 
 setName(person); console.log(person.name); // "Nicholas"
+```
 
 这一次，我们创建了一个对象并把它保存在变量 person 中。然后，这个对象被传给 setName() 方法，并被复制到参数 obj 中。在函数内部， obj 和 person 都指向同一个对象。结果就是，即使对象是按值传进函数的， obj 也会通过引用访问对象。当函数内部给 obj 设置了 name 属性时，函数外部的对象也会反映这个变化，因为 obj 指向的对象保存在全局作用域的堆内存上。很多开发者错误地认为，当在局部作用域中修改对象而变化反映到全局时，就意味着参数是按引用传递的。为证明对象是按值传递的，我们再来看看下面这个修改后的例子：
 
+```
 function setName(obj) { obj.name = "Nicholas"; obj = new Object(); obj.name = "Greg";
 
 }
 
 let person = new Object(); setName(person); console.log(person.name); // "Nicholas"
+```
 
-这个例子前后唯一的变化就是 setName() 中多了两行代码， 将 obj 重新定义为一个有着不同 name 的新对象。当 person 传 入 setName() 时，其 name 属性被设置为 "Nicholas" 。然后变量 obj 被设置为一个新对象且 name 属性被设置为 "Greg" 。如 果 person 是按引用传递的，那么 person 应该自动将指针改为指向 name 为 "Greg" 的对象。可是，当我们再次访问
-
-person.name 时，它的值是 "Nicholas" ，这表明函数中参数的值改变之后，原始的引用仍然没变。当 obj 在函数内部被重写时，它变成了一个指向本地对象的指针。而那个本地对象在函数执行结束时就被销毁了。
+这个例子前后唯一的变化就是 setName() 中多了两行代码， 将 obj 重新定义为一个有着不同 name 的新对象。当 person 传 入 setName() 时，其 name 属性被设置为 "Nicholas" 。然后变量 obj 被设置为一个新对象且 name 属性被设置为 "Greg" 。如 果 person 是按引用传递的，那么 person 应该自动将指针改为指向 name 为 "Greg" 的对象。可是，当我们再次访问person.name 时，它的值是 "Nicholas" ，这表明函数中参数的值改变之后，原始的引用仍然没变。当 obj 在函数内部被重写时，它变成了一个指向本地对象的指针。而那个本地对象在函数执行结束时就被销毁了。
 
 注意 ECMAScript 中函数的参数就是局部变量。
 
 4.  确定类型
 
 前一章提到的 typeof 操作符最适合用来判断一个变量是否为原始类型。更确切地说，它是判断一个变量是否为字符串、数值、布尔值或 undefined 的最好方式。如果值是对象或 null ，那么
-
 typeof 返回 "object" ，如下面的例子所示：
 
-typeof 虽然对原始值很有用，但它对引用值的用处不大。我们通常不关心一个值是不是对象，而是想知道它是什么类型的对象。为
+typeof 虽然对原始值很有用，但它对引用值的用处不大。我们通常不关心一个值是不是对象，而是想知道它是什么类型的对象。为了解决这个问题，ECMAScript 提供了 instanceof 操作符，语法如下：
 
-了解决这个问题，ECMAScript 提供了 instanceof 操作符，语法如下：
-
+```
 result = variable instanceof constructor
+```
 
 如果变量是给定引用类型（由其原型链决定，将在第 8 章详细介绍）的实例，则 instanceof 操作符返回 true 。来看下面的例子：
 
+```
 console.log(person instanceof Object); // 变 量
+```
 
 persion 是 Object 吗？
 
+```
 console.log(colors instanceof Array); // 变 量
+```
 
 colors 是 Array 吗？
 
+```
 console.log(pattern instanceof RegExp); // 变 量
+```
 
 pattern 是 RegExp 吗？
 
@@ -4345,29 +4355,19 @@ pattern 是 RegExp 吗？
 
 注意
 
-typeof 操作符在用于检测函数时也会返
+typeof 操作符在用于检测函数时也会返回 "function" 。当在 Safari（直到 Safari 5）和 Chrome（直到 Chrome 7）中用于检测正则表达式时，由于实现细节的原因，
 
-回 "function" 。当在 Safari（直到 Safari 5）和 Chrome（直到 Chrome 7）中用于检测正则表达式时，由于实现细节的原因，
-
-typeof 也会返回 "function" 。ECMA-262 规定，任何实现内部 \[\[Call\]\] 方法的对象都应该在 typeof 检测时返
-
-回 "function" 。因为上述浏览器中的正则表达式实现了这个方法，所以 typeof 对正则表达式也返回 "function" 。在 IE 和
-
-Firefox 中， typeof 对正则表达式返回 "object" 。
+typeof 也会返回 "function" 。ECMA-262 规定，任何实现内部 \[\[Call\]\] 方法的对象都应该在 typeof 检测时返回 "function" 。因为上述浏览器中的正则表达式实现了这个方法，所以 typeof 对正则表达式也返回 "function" 。在 IE 和Firefox 中， typeof 对正则表达式返回 "object" 。
 
 2.  执行上下文与作用域
 
 执行上下文（以下简称“上下文”）的概念在 JavaScript 中是颇为重要的。变量或函数的上下文决定了它们可以访问哪些数据，以及它们的行为。每个上下文都有一个关联的变量对象（variable object），而这个上下文中定义的所有变量和函数都存在于这个对象上。虽然无法通过代码访问变量对象，但后台处理数据会用到它。
 
-全局上下文是最外层的上下文。根据 ECMAScript 实现的宿主环境，表示全局上下文的对象可能不一样。在浏览器中，全局上下文就是我们常说的 window 对象（第 12 章会详细介绍），因此所有通过
-
-var 定义的全局变量和函数都会成为 window 对象的属性和方法。使用 let 和 const 的顶级声明不会定义在全局上下文中，但在作用域链解析上效果是一样的。上下文在其所有代码都执行完毕后会被销毁，包括定义在它上面的所有变量和函数（全局上下文在应用程序退出前才会被销毁，比如关闭网页或退出浏览器）。
+全局上下文是最外层的上下文。根据 ECMAScript 实现的宿主环境，表示全局上下文的对象可能不一样。在浏览器中，全局上下文就是我们常说的 window 对象（第 12 章会详细介绍），因此所有通过var 定义的全局变量和函数都会成为 window 对象的属性和方法。使用 let 和 const 的顶级声明不会定义在全局上下文中，但在作用域链解析上效果是一样的。上下文在其所有代码都执行完毕后会被销毁，包括定义在它上面的所有变量和函数（全局上下文在应用程序退出前才会被销毁，比如关闭网页或退出浏览器）。
 
 每个函数调用都有自己的上下文。当代码执行流进入函数时，函数的上下文被推到一个上下文栈上。在函数执行完之后，上下文栈会弹出该函数上下文，将控制权返还给之前的执行上下文。ECMAScript 程序的执行流就是通过这个上下文栈进行控制的。
 
-上下文中的代码在执行的时候，会创建变量对象的一个作用域链
-
-（scope chain）。这个作用域链决定了各级上下文中的代码在访问变量和函数时的顺序。代码正在执行的上下文的变量对象始终位于作用域链的最前端。如果上下文是函数，则其活动对象（activation object）用作变量对象。活动对象最初只有一个定义变量：
+上下文中的代码在执行的时候，会创建变量对象的一个作用域链（scope chain）。这个作用域链决定了各级上下文中的代码在访问变量和函数时的顺序。代码正在执行的上下文的变量对象始终位于作用域链的最前端。如果上下文是函数，则其活动对象（activation object）用作变量对象。活动对象最初只有一个定义变量：
 
 arguments 。（全局上下文中没有这个变量。）作用域链中的下一个变量对象来自包含上下文，再下一个对象来自再下一个包含上下 文。以此类推直至全局上下文；全局上下文的变量对象始终是作用域链的最后一个变量对象。
 
@@ -4375,6 +4375,7 @@ arguments 。（全局上下文中没有这个变量。）作用域链中的下�
 
 看一看下面这个例子：
 
+```
 var color = "blue";
 
 function changeColor() { if (color === "blue") {
@@ -4390,11 +4391,13 @@ color = "blue";
 }
 
 changeColor();
+```
 
 对这个例子而言，函数 changeColor() 的作用域链包含两个对象：一个是它自己的变量对象（就是定义 arguments 对象的那个），另一个是全局上下文的变量对象。这个函数内部之所以能够访问变量 color ，就是因为可以在作用域链中找到它。
 
 此外，局部作用域中定义的变量可用于在局部上下文中替换全局变量。看一看下面这个例子：
 
+```
 var color = "blue";
 
 function changeColor() { let anotherColor = "red";
@@ -4420,18 +4423,9 @@ swapColors();
 // 这里只能访问 color
 
 changeColor();
+```
 
-以上代码涉及 3 个上下文：全局上下文、 changeColor() 的局部上下文和 swapColors() 的局部上下文。全局上下文中有一个变量 color 和一个函数 chageColor() 。 changeColor() 的局部上下文中有一个变量 anotherColor 和一个函数
-
-swapColors() ，但在这里可以访问全局上下文中的变量
-
-color 。 swapColors() 的局部上下文中有一个变量
-
-tempColor ，只能在这个上下文中访问到。全局上下文和
-
-changeColor() 的局部上下文都无法访问到 tempColor 。而在
-
-swapColors() 中则可以访问另外两个上下文中的变量，因为它们都是父上下文。图 4-3 展示了前面这个例子的作用域链。
+以上代码涉及 3 个上下文：全局上下文、 changeColor() 的局部上下文和 swapColors() 的局部上下文。全局上下文中有一个变量 color 和一个函数 chageColor() 。 changeColor() 的局部上下文中有一个变量 anotherColor 和一个函数swapColors() ，但在这里可以访问全局上下文中的变量color 。 swapColors() 的局部上下文中有一个变量tempColor ，只能在这个上下文中访问到。全局上下文和changeColor() 的局部上下文都无法访问到 tempColor 。而在swapColors() 中则可以访问另外两个上下文中的变量，因为它们都是父上下文。图 4-3 展示了前面这个例子的作用域链。
 
 图 4-3
 
@@ -4449,12 +4443,9 @@ try / catch 语句的 catch 块
 
 with 语句
 
-这两种情况下，都会在作用域链前端添加一个变量对象。对
+这两种情况下，都会在作用域链前端添加一个变量对象。对with 语句来说，会向作用域链前端添加指定的对象；对 catch 语句而言，则会创建一个新的变量对象，这个变量对象会包含要抛出的错误对象的声明。看下面的例子：
 
-with 语句来说，会向作用域链前端添加指定的对象；对 catch 语
-
-句而言，则会创建一个新的变量对象，这个变量对象会包含要抛出的错误对象的声明。看下面的例子：
-
+```
 function buildUrl() { let qs = "\?debug=true";
 
 with(location){
@@ -4466,39 +4457,31 @@ let url = href \+ qs;
 return url;
 
 }
+```
 
-这里， with 语句将 location 对象作为上下文，因此
-
-location 会被添加到作用域链前端。 buildUrl() 函数中定义了一个变量 qs 。当 with 语句中的代码引用变量 href 时，实际上引用的是 location.href ，也就是自己变量对象的属性。在引用
-
-qs 时，引用的则是定义在 buildUrl() 中的那个变量，它定义在函数上下文的变量对象上。而在 with 语句中使用 var 声明的变量
-
-url 会成为函数上下文的一部分，可以作为函数的值被返回；但像这里使用 let 声明的变量 url ，因为被限制在块级作用域（稍后介绍），所以在 with 块之外没有定义。
+这里， with 语句将 location 对象作为上下文，因此location 会被添加到作用域链前端。 buildUrl() 函数中定义了一个变量 qs 。当 with 语句中的代码引用变量 href 时，实际上引用的是 location.href ，也就是自己变量对象的属性。在引用qs 时，引用的则是定义在 buildUrl() 中的那个变量，它定义在函数上下文的变量对象上。而在 with 语句中使用 var 声明的变量url 会成为函数上下文的一部分，可以作为函数的值被返回；但像这里使用 let 声明的变量 url ，因为被限制在块级作用域（稍后介绍），所以在 with 块之外没有定义。
 
 注意 IE 的实现在 IE8 之前是有偏差的，即它们会将 catch 语句中捕获的错误添加到执行上下文的变量对象上，而不是 catch 语句的变量对象上，导致在 catch 块外部都可以访问到错误。IE9 纠正了这个问题。
 
 2.  变 声 明
 
-ES6 之后，JavaScript 的变量声明经历了翻天覆地的变化。直到 ECMAScript 5.1， var 都是声明变量的唯一关键字。ES6 不仅增加了
-
-let 和 const 两个关键字，而且还让这两个关键字压倒性地超越
-
-var 成为首选。
+ES6 之后，JavaScript 的变量声明经历了翻天覆地的变化。直到 ECMAScript 5.1， var 都是声明变量的唯一关键字。ES6 不仅增加了let 和 const 两个关键字，而且还让这两个关键字压倒性地超越var 成为首选。
 
 1.  使用 var 的函数作用域声明
 
-在使用 var 声明变量时，变量会被自动添加到最接近的上下文。在函数中，最接近的上下文就是函数的局部上下文。在
+在使用 var 声明变量时，变量会被自动添加到最接近的上下文。在函数中，最接近的上下文就是函数的局部上下文。在with 语句中，最接近的上下文也是函数上下文。如果变量未经声明就被初始化了，那么它就会自动被添加到全局上下文，如下面的例子所示：
 
-with 语句中，最接近的上下文也是函数上下文。如果变量未经声明就被初始化了，那么它就会自动被添加到全局上下文，如下面的例子所示：
-
+```
 function add(num1, num2) { var sum = num1 \+ num2; return sum;
 
 }
 
 let result = add(10, 20); // 30 console.log(sum); // 报 错 ：sum 在 这 里 不 是 有 效 变 量
+```
 
 这里，函数 add() 定义了一个局部变量 sum ，保存加法操作的结果。这个值作为函数的值被返回，但变量 sum 在函数外部是访问不到的。如果省略上面例子中的关键字 var ，那么 sum 在 add() 被调用之后就变成可以访问的了，如下所示：
 
+```
 function add(num1, num2) { sum = num1 \+ num2; return sum;
 
 }
@@ -4506,15 +4489,15 @@ function add(num1, num2) { sum = num1 \+ num2; return sum;
 let result = add(10, 20); // 30
 
 console.log(sum); // 30
+```
 
-这一次，变量 sum 被用加法操作的结果初始化时并没有使用
-
-var 声明。在调用 add() 之后， sum 被添加到了全局上下文，在函数退出之后依然存在，从而在后面可以访问到。
+这一次，变量 sum 被用加法操作的结果初始化时并没有使用var 声明。在调用 add() 之后， sum 被添加到了全局上下文，在函数退出之后依然存在，从而在后面可以访问到。
 
 注意 未经声明而初始化变量是 JavaScript 编程中一个非常常见的错误，会导致很多问题。为此，读者在初始化变量之前一定要先声明变量。在严格模式下，未经声明就初始化变量会报 错。
 
 var 声明会被拿到函数或全局作用域的顶部，位于作用域中所有代码之前。这个现象叫作“提升”（hoisting）。提升让同一作用域中的代码不必考虑变量是否已经声明就可以直接使用。可是在实践中，提升也会导致合法却奇怪的现象，即在变量声明之前使用变量。下面的例子展示了在全局作用域中两段等价的代码：
 
+```
 var name = "Jake";
 
 // 等价于：
@@ -4532,9 +4515,11 @@ function fn1() { var name = 'Jake';
 function fn2() { var name; name = 'Jake';
 
 }
+```
 
 通过在声明之前打印变量，可以验证变量会被提升。声明的提升意味着会输出 undefined 而不是 Reference Error ：
 
+```
 console.log(name); // undefined
 
 var name = 'Jake';
@@ -4546,13 +4531,13 @@ console.log(name); // undefined
 var name = 'Jake';
 
 }
+```
 
 2.  使用 let 的块级作用域声明
 
-ES6 新增的 let 关键字跟 var 很相似，但它的作用域是块级
+ES6 新增的 let 关键字跟 var 很相似，但它的作用域是块级的，这也是 JavaScript 中的新概念。块级作用域由最近的一对包含花括号 {} 界定。换句话说， if 块、 while 块、 function 块，甚至连单独的块也是 let 声明变量的作用域。
 
-的，这也是 JavaScript 中的新概念。块级作用域由最近的一对包含花括号 {} 界定。换句话说， if 块、 while 块、 function 块，甚至连单独的块也是 let 声明变量的作用域。
-
+```
 if (true) { let a;
 
 }
@@ -4586,11 +4571,10 @@ let d;
 }
 
 console.log(d); // ReferenceError: d 没有定义
+```
 
-let 与 var 的另一个不同之处是在同一作用域内不能声明两次。重复的 var 声明会被忽略，而重复的 let 声明会抛出
-
-SyntaxError 。
-
+let 与 var 的另一个不同之处是在同一作用域内不能声明两次。重复的 var 声明会被忽略，而重复的 let 声明会抛出SyntaxError 。
+```
 var a; var a;
 
 // 不会报错
@@ -4602,12 +4586,15 @@ let b; let b;
 }
 
 // SyntaxError: 标识符 b 已经声明过了
+```
 
 let 的行为非常适合在循环中声明迭代变量。使用 var 声明的迭代变量会泄漏到循环外部，这种情况应该避免。来看下面两个例子：
 
+```
 for (var i = 0; i < 10; ++i) {} console.log(i); // 10
 
 for (let j = 0; j < 10; ++j) {} console.log(j); // ReferenceError: j 没有定义
+```
 
 严格来讲， let 在 JavaScript 运行时中也会被提升，但由于“暂时性死区”（temporal dead zone）的缘故，实际上不能在声明之前使用 let 变量。因此，从写 JavaScript 代码的角度说， let 的提升跟 var 是不一样的。
 
@@ -4615,6 +4602,7 @@ for (let j = 0; j < 10; ++j) {} console.log(j); // ReferenceError: j 没有定�
 
 除了 let ，ES6 同时还增加了 const 关键字。使用 const 声明的变量必须同时初始化为某个值。一经声明，在其生命周期的任何时候都不能再重新赋予新值。
 
+```
 const a; // SyntaxError: 常量声明时没有初始化
 
 const b = 3;
@@ -4622,9 +4610,11 @@ const b = 3;
 console.log(b); // 3
 
 b = 4; // TypeError: 给常量赋值
+```
 
 const 除了要遵循以上规则，其他方面与 let 声明是一样的：
 
+```
 if (true) { const a = 0;
 
 }
@@ -4650,9 +4640,11 @@ const d = 3;
 }
 
 console.log(d); // ReferenceError: d 没有定义
+```
 
 const 声明只应用到顶级原语或者对象。换句话说，赋值为对象的 const 变量不能再被重新赋值为其他引用值，但对象的键则不受限制。
 
+```
 const o1 = {};
 
 o1 = {}; // TypeError: 给常量赋值
@@ -4660,12 +4652,15 @@ o1 = {}; // TypeError: 给常量赋值
 const o2 = {}; o2.name = 'Jake';
 
 console.log(o2.name); // 'Jake'
+```
 
 如果想让整个对象都不能修改，可以使用
 
 Object.freeze() ，这样再给属性赋值时虽然不会报错，但会静默失败：
 
+```
 const o3 = Object.freeze({}); o3.name = 'Jake'; console.log(o3.name); // undefined
+```
 
 由于 const 声明暗示变量的值是单一类型且不可修改，
 
@@ -4675,12 +4670,11 @@ JavaScript 运行时编译器可以将其所有实例都替换成实际的值，
 
 4.  标识符查找
 
-当在特定上下文中为读取或写入而引用一个标识符时，必须通过搜索确定这个标识符表示什么。搜索开始于作用域链前端，以给定的名称搜索对应的标识符。如果在局部上下文中找到该标识 符，则搜索停止，变量确定；如果没有找到变量名，则继续沿作
-
-用域链搜索。（注意，作用域链中的对象也有一个原型链，因此搜索可能涉及每个对象的原型链。）这个过程一直持续到搜索至全局上下文的变量对象。如果仍然没有找到标识符，则说明其未声明。
+当在特定上下文中为读取或写入而引用一个标识符时，必须通过搜索确定这个标识符表示什么。搜索开始于作用域链前端，以给定的名称搜索对应的标识符。如果在局部上下文中找到该标识 符，则搜索停止，变量确定；如果没有找到变量名，则继续沿作用域链搜索。（注意，作用域链中的对象也有一个原型链，因此搜索可能涉及每个对象的原型链。）这个过程一直持续到搜索至全局上下文的变量对象。如果仍然没有找到标识符，则说明其未声明。
 
 为更好地说明标识符查找，我们来看一个例子：
 
+```
 var color = 'blue';
 
 function getColor() { return color;
@@ -4688,15 +4682,13 @@ function getColor() { return color;
 }
 
 console.log(getColor()); // 'blue'
+```
 
-在这个例子中，调用函数 getColor() 时会引用变量
-
-color 。为确定 color 的值会进行两步搜索。第一步，搜索 getColor() 的变量对象，查找名为 color 的标识符。结果没找到，于是继续搜索下一个变量对象（来自全局上下文），然后就找到了名为 color 的标识符。因为全局变量对象上有
-
-color 的定义，所以搜索结束。
+在这个例子中，调用函数 getColor() 时会引用变量color 。为确定 color 的值会进行两步搜索。第一步，搜索 getColor() 的变量对象，查找名为 color 的标识符。结果没找到，于是继续搜索下一个变量对象（来自全局上下文），然后就找到了名为 color 的标识符。因为全局变量对象上有color 的定义，所以搜索结束。
 
 对这个搜索过程而言，引用局部变量会让搜索自动停止，而不继续搜索下一级变量对象。也就是说，如果局部上下文中有一个同名的标识符，那就不能在该上下文中引用父上下文中的同名标识符，如下面的例子所示：
 
+```
 var color = 'blue'; function getColor() {
 
 let color = 'red'; return color;
@@ -4704,9 +4696,11 @@ let color = 'red'; return color;
 }
 
 console.log(getColor()); // 'red'
+```
 
 使用块级作用域声明并不会改变搜索流程，但可以给词法层级添加额外的层次：
 
+```
 var color = 'blue';
 
 function getColor() { let color = 'red';
@@ -4720,12 +4714,9 @@ let color = 'green'; return color;
 }
 
 console.log(getColor()); // 'green'
+```
 
-在这个修改后的例子中， getColor() 内部声明了一个名为
-
-color 的局部变量。在调用这个函数时，变量会被声明。在执行到函数返回语句时，代码引用了变量 color 。于是开始在局部上下文中搜索这个标识符，结果找到了值为 'green' 的变量
-
-color 。因为变量已找到，搜索随即停止，所以就使用这个局部变量。这意味着函数会返回 'green' 。在局部变量 color 声明之后的任何代码都无法访问全局变量 color ，除非使用完全限定的写法 window.color 。
+在这个修改后的例子中， getColor() 内部声明了一个名为color 的局部变量。在调用这个函数时，变量会被声明。在执行到函数返回语句时，代码引用了变量 color 。于是开始在局部上下文中搜索这个标识符，结果找到了值为 'green' 的变量color 。因为变量已找到，搜索随即停止，所以就使用这个局部变量。这意味着函数会返回 'green' 。在局部变量 color 声明之后的任何代码都无法访问全局变量 color ，除非使用完全限定的写法 window.color 。
 
 注意 标识符查找并非没有代价。访问局部变量比访问全局变量要快，因为不用切换作用域。不过，JavaScript 引擎在优化标识符查找上做了很多工作，将来这个差异可能就微不足道了。
 
@@ -4737,26 +4728,21 @@ JavaScript 是使用垃圾回收的语言，也就是说执行环境负责在代
 
 1.  标记清理
 
-JavaScript 最常用的垃圾回收策略是标记清理（mark-and- sweep）。当变量进入上下文，比如在函数内部声明一个变量时，这个
-
-变量会被加上存在于上下文中的标记。而不在上下文中的变量，逻辑上讲，永远不应该释放它们的内存，因为只要上下文中的代码在运 行，就有可能用到它们。当变量离开上下文时，也会被加上离开上下文的标记。
+JavaScript 最常用的垃圾回收策略是标记清理（mark-and- sweep）。当变量进入上下文，比如在函数内部声明一个变量时，这个变量会被加上存在于上下文中的标记。而不在上下文中的变量，逻辑上讲，永远不应该释放它们的内存，因为只要上下文中的代码在运 行，就有可能用到它们。当变量离开上下文时，也会被加上离开上下文的标记。
 
 给变量加标记的方式有很多种。比如，当变量进入上下文时，反转某一位；或者可以维护“在上下文中”和“不在上下文中”两个变量列表，可以把变量从一个列表转移到另一个列表。标记过程的实现并不重要，关键是策略。
 
 垃圾回收程序运行的时候，会标记内存中存储的所有变量（记 住，标记方法有很多种）。然后，它会将所有在上下文中的变量，以及被在上下文中的变量引用的变量的标记去掉。在此之后再被加上标记的变量就是待删除的了，原因是任何在上下文中的变量都访问不到它们了。随后垃圾回收程序做一次内存清理，销毁带标记的所有值并收回它们的内存。
 
-到了 2008 年，IE、Firefox、Opera、Chrome 和 Safari 都在自己的
-
-JavaScript 实现中采用标记清理（或其变体），只是在运行垃圾回收的频率上有所差异。
+到了 2008 年，IE、Firefox、Opera、Chrome 和 Safari 都在自己的JavaScript 实现中采用标记清理（或其变体），只是在运行垃圾回收的频率上有所差异。
 
 2.  引用计数
 
 另一种没那么常用的垃圾回收策略是引用计数（reference counting）。其思路是对每个值都记录它被引用的次数。声明变量并给它赋一个引用值时，这个值的引用数为 1。如果同一个值又被赋给另一个变量，那么引用数加 1。类似地，如果保存对该值引用的变量被其他值给覆盖了，那么引用数减 1。当一个值的引用数为 0 时，就说明没办法再访问到这个值了，因此可以安全地收回其内存了。垃圾回收程序下次运行的时候就会释放引用数为 0 的值的内存。
 
-引用计数最早由 Netscape Navigator 3.0 采用，但很快就遇到了严重的问题：循环引用。所谓循环引用，就是对象 A 有一个指针指向对象
+引用计数最早由 Netscape Navigator 3.0 采用，但很快就遇到了严重的问题：循环引用。所谓循环引用，就是对象 A 有一个指针指向对象B，而对象 B 也引用了对象 A。比如：
 
-B，而对象 B 也引用了对象 A。比如：
-
+```
 function problem() {
 
 let objectA = new Object(); let objectB = new Object();
@@ -4764,26 +4750,27 @@ let objectA = new Object(); let objectB = new Object();
 objectA.someOtherObject = objectB; objectB.anotherObject = objectA;
 
 }
+```
 
-在这个例子中， objectA 和 objectB 通过各自的属性相互引用，意味着它们的引用数都是 2。在标记清理策略下，这不是问题，因为在函数结束后，这两个对象都不在作用域中。而在引用计数策略
-
-下， objectA 和 objectB 在函数结束后还会存在，因为它们的引用数永远不会变成 0。如果函数被多次调用，则会导致大量内存永远不会被释放。为此，Netscape 在 4.0 版放弃了引用计数，转而采用标记清理。事实上，引用计数策略的问题还不止于此。
+在这个例子中， objectA 和 objectB 通过各自的属性相互引用，意味着它们的引用数都是 2。在标记清理策略下，这不是问题，因为在函数结束后，这两个对象都不在作用域中。而在引用计数策略下， objectA 和 objectB 在函数结束后还会存在，因为它们的引用数永远不会变成 0。如果函数被多次调用，则会导致大量内存永远不会被释放。为此，Netscape 在 4.0 版放弃了引用计数，转而采用标记清理。事实上，引用计数策略的问题还不止于此。
 
 在 IE8 及更早版本的 IE 中，并非所有对象都是原生 JavaScript 对 象。BOM 和 DOM 中的对象是 C++实现的组件对象模型（COM， Component Object Model）对象，而 COM 对象使用引用计数实现垃圾回收。因此，即使这些版本 IE 的 JavaScript 引擎使用标记清理，
 
-JavaScript 存取的 COM 对象依旧使用引用计数。换句话说，只要涉及
+JavaScript 存取的 COM 对象依旧使用引用计数。换句话说，只要涉及COM 对象，就无法避开循环引用问题。下面这个简单的例子展示了涉及 COM 对象的循环引用问题：
 
-COM 对象，就无法避开循环引用问题。下面这个简单的例子展示了涉及 COM 对象的循环引用问题：
-
+```
 let element = document.getElementById("some_element"); let myObject = new Object();
 
 myObject.element = element; element.someObject = myObject;
+```
 
 这个例子在一个 DOM 对象（ element ）和一个原生 JavaScript 对象（ myObject ）之间制造了循环引用。 myObject 变量有一个名为 element 的属性指向 DOM 对象 element ，而 element 对象有一个 someObject 属性指回 myObject 对象。由于存在循环引用，因此 DOM 元素的内存永远不会被回收，即使它已经被从页面上删除了也是如此。
 
 为避免类似的循环引用问题，应该在确保不使用的情况下切断原生 JavaScript 对象与 DOM 元素之间的连接。比如，通过以下代码可以清除前面的例子中建立的循环引用：
 
+```
 myObject.element = null; element.someObject = null;
+```
 
 把变量设置为 null 实际上会切断变量与其之前引用值之间的关系。当下次垃圾回收程序运行时，这些值就会被删除，内存也会被回收。
 
@@ -4801,11 +4788,7 @@ myObject.element = null; element.someObject = null;
 
 IE7 发布后，JavaScript 引擎的垃圾回收程序被调优为动态改变分配变量、字面量或数组槽位等会触发垃圾回收的阈值。IE7 的起始阈值都与 IE6 的相同。如果垃圾回收程序回收的内存不到已分配的 15\%，这些变量、字面量或数组槽位的阈值就会翻倍。如果有一次回收的内存达到已分配的 85\%，则阈值重置为默认值。这么一个简单的修改，极大地提升了重度依赖 JavaScript 的网页在浏览器中的性能。
 
-警告 在某些浏览器中是有可能（但不推荐）主动触发垃圾回收的。在 IE 中， window.CollectGarbage() 方法会立即触发垃
-
-圾回收。在 Opera 7 及更高版本中，调用
-
-window.opera.collect() 也会启动垃圾回收程序。
+警告 在某些浏览器中是有可能（但不推荐）主动触发垃圾回收的。在 IE 中， window.CollectGarbage() 方法会立即触发垃圾回收。在 Opera 7 及更高版本中，调用window.opera.collect() 也会启动垃圾回收程序。
 
 4.  内存管理
 
@@ -4813,6 +4796,7 @@ window.opera.collect() 也会启动垃圾回收程序。
 
 将内存占用量保持在一个较小的值可以让页面性能更好。优化内存占用的最佳手段就是保证在执行代码时只保存必要的数据。如果数据不再必要，那么把它设置为 null ，从而释放其引用。这也可以叫作解除引用。这个建议最适合全局变量和全局对象的属性。局部变量在超出作用域后会被自动解除引用，如下面的例子所示：
 
+```
 function createPerson(name){
 
 let localPerson = new Object(); localPerson.name = name; return localPerson;
@@ -4824,14 +4808,9 @@ let globalPerson = createPerson("Nicholas");
 // 解除 globalPerson 对值的引用
 
 globalPerson = null;
+```
 
-在上面的代码中，变量 globalPerson 保存着
-
-createPerson() 函数调用返回的值。在 createPerson() 内部， localPerson 创建了一个对象并给它添加了一个 name 属性。然后， localPerson 作为函数值被返回，并被赋值给
-
-globalPerson 。 localPerson 在 createPerson() 执行完成超出上下文后会自动被解除引用，不需要显式处理。但
-
-globalPerson 是一个全局变量，应该在不再需要时手动解除其引用，最后一行就是这么做的。
+在上面的代码中，变量 globalPerson 保存着createPerson() 函数调用返回的值。在 createPerson() 内部， localPerson 创建了一个对象并给它添加了一个 name 属性。然后， localPerson 作为函数值被返回，并被赋值给globalPerson 。 localPerson 在 createPerson() 执行完成超出上下文后会自动被解除引用，不需要显式处理。但globalPerson 是一个全局变量，应该在不再需要时手动解除其引用，最后一行就是这么做的。
 
 不过要注意，解除对一个值的引用并不会自动导致相关内存被回收。解除引用的关键在于确保相关的值已经不在上下文里了，因此它在下次垃圾回收时会被回收。
 
@@ -4841,16 +4820,12 @@ ES6 增加这两个关键字不仅有助于改善代码风格，而且同样有�
 
 2.  隐藏类和删除操作
 
-根据 JavaScript 所在的运行环境，有时候需要根据浏览器使用的
-
-JavaScript 引擎来采取不同的性能优化策略。截至 2017 年，Chrome
-
-是最流行的浏览器，使用 V8 JavaScript 引擎。V8 在将解释后的
-
+根据 JavaScript 所在的运行环境，有时候需要根据浏览器使用的JavaScript 引擎来采取不同的性能优化策略。截至 2017 年，Chrome是最流行的浏览器，使用 V8 JavaScript 引擎。V8 在将解释后的
 JavaScript 代码编译为实际的机器码时会利用“隐藏类”。如果你的代码非常注重性能，那么这一点可能对你很重要。
 
 运行期间，V8 会将创建的对象与隐藏类关联起来，以跟踪它们的属性特征。能够共享相同隐藏类的对象性能会更好，V8 会针对这种情况进行优化，但不一定总能够做到。比如下面的代码：
 
+```
 function Article() {
 
 this.title = 'Inauguration Ceremony Features Kazoo Band';
@@ -4858,15 +4833,19 @@ this.title = 'Inauguration Ceremony Features Kazoo Band';
 }
 
 let a1 = new Article(); let a2 = new Article();
+```
 
 V8 会在后台配置，让这两个类实例共享相同的隐藏类，因为这两个实例共享同一个构造函数和原型。假设之后又添加了下面这行代码：
 
+```
 a2.author = 'Jake';
+```
 
 此时两个 Article 实例就会对应两个不同的隐藏类。根据这种操作的频率和隐藏类的大小，这有可能对性能产生明显影响。
 
 当然，解决方案就是避免 JavaScript 的“先创建再补充”（ready-fire- aim）式的动态属性赋值，并在构造函数中一次性声明所有属性，如下所示：
 
+```
 function Article(opt_author) { this.title = 'Inauguration Ceremony
 
 Features Kazoo Band'; this.author = opt_author;
@@ -4876,11 +4855,11 @@ Features Kazoo Band'; this.author = opt_author;
 let a1 = new Article();
 
 let a2 = new Article('Jake');
+```
 
-这样，两个实例基本上就一样了（不考虑 hasOwnProperty 的返回值），因此可以共享一个隐藏类，从而带来潜在的性能提
+这样，两个实例基本上就一样了（不考虑 hasOwnProperty 的返回值），因此可以共享一个隐藏类，从而带来潜在的性能提升。不过要记住，使用 delete 关键字会导致生成相同的隐藏类片段。看一下这个例子：
 
-升。不过要记住，使用 delete 关键字会导致生成相同的隐藏类片段。看一下这个例子：
-
+```
 function Article() {
 
 this.title = 'Inauguration Ceremony Features Kazoo Band';
@@ -4892,9 +4871,11 @@ this.author = 'Jake';
 let a1 = new Article(); let a2 = new Article();
 
 delete a1.author;
+```
 
 在代码结束后，即使两个实例使用了同一个构造函数，它们也不再共享一个隐藏类。动态删除属性与动态添加属性导致的后果一样。最佳实践是把不想要的属性设置为 null 。这样可以保持隐藏类不变和继续共享，同时也能达到删除引用值供垃圾回收程序回收的效果。比如：
 
+```
 function Article() {
 
 this.title = 'Inauguration Ceremony Features Kazoo Band';
@@ -4908,6 +4889,7 @@ let a1 = new Article();
 let a2 = new Article();
 
 a1.author = null;
+```
 
 3.  内存泄漏
 
@@ -4915,24 +4897,27 @@ a1.author = null;
 
 意外声明全局变量是最常见但也最容易修复的内存泄漏问题。下面的代码没有使用任何关键字声明变量：
 
+```
 function setName() { name = 'Jake';
 
 }
+```
 
-此时，解释器会把变量 name 当作 window 的属性来创建（相当于 window.name = 'Jake' ）。可想而知，在 window 对象上创建的属性，只要 window 本身不被清理就不会消失。这个问题很容易解决，只要在变量声明前头加上 var 、 let 或
-
-const 关键字即可，这样变量就会在函数执行完毕后离开作用域。
+此时，解释器会把变量 name 当作 window 的属性来创建（相当于 window.name = 'Jake' ）。可想而知，在 window 对象上创建的属性，只要 window 本身不被清理就不会消失。这个问题很容易解决，只要在变量声明前头加上 var 、 let 或const 关键字即可，这样变量就会在函数执行完毕后离开作用域。
 
 定时器也可能会悄悄地导致内存泄漏。下面的代码中，定时器的回调通过闭包引用了外部变量：
 
+```
 let name = 'Jake'; setInterval(() => {
 
 console.log(name);
 
 }, 100);
+```
 
 只要定时器一直运行，回调函数中引用的 name 就会一直占用内存。垃圾回收程序当然知道这一点，因而就不会清理外部变量。使用 JavaScript 闭包很容易在不知不觉间造成内存泄漏。请看下面的例子：
 
+```
 let outer = function() { let name = 'Jake'; return function() {
 
 return name;
@@ -4940,6 +4925,7 @@ return name;
 };
 
 };
+```
 
 这会导致分配给 name 的内存被泄漏。以上代码创建了一个内部闭包，只要 outer 函数存在就不能清理 name ，因为闭包一直在引用着它。假如 name 的内容很大（不止是一个小字符串），那可能就是个大问题了。
 
@@ -4951,26 +4937,31 @@ return name;
 
 那么浏览器就会采用更激进的方式调度垃圾回收程序运行，这样当然会影响性能。看一看下面的例子，这是一个计算二维矢量加法的函数：
 
+```
 function addVector(a, b) {
 
 let resultant = new Vector(); resultant.x = a.x \+ b.x; resultant.y = a.y \+ b.y; return resultant;
 
 }
+```
 
 调用这个函数时，会在堆上创建一个新对象，然后修改它，最后再把它返回给调用者。如果这个矢量对象的生命周期很短，那么它会很快失去所有对它的引用，成为可以被回收的值。假如这个矢量加法函数频繁被调用，那么垃圾回收调度程序会发现这里对象更替的速度很快，从而会更频繁地安排垃圾回收。
 
 该问题的解决方案是不要动态创建矢量对象，比如可以修改上面的函数，让它使用一个已有的矢量对象：
 
+```
 function addVector(a, b, resultant) { resultant.x = a.x \+ b.x; resultant.y = a.y \+ b.y;
 
 return resultant;
 
 }
+```
 
 当然，这需要在其他地方实例化矢量参数 resultant ，但这个函数的行为没有变。那么在哪里创建矢量可以不让垃圾回收调度程序盯上呢？
 
 一个策略是使用对象池。在初始化的某一时刻，可以创建一个对象池，用来管理一组可回收的对象。应用程序可以向这个对象池请求一个对象、设置其属性、使用它，然后在操作完成后再把它还给对象池。由于没发生对象初始化，垃圾回收探测就不会发现有对象更替，因此垃圾回收程序就不会那么频繁地运行。下面是一个对象池的伪实现：
 
+```
 // vectorPool 是已有的对象池
 
 addVector(v1, v2, v3); console.log(\[v3.x, v3.y\]); // \[7, \-1\]
@@ -4984,10 +4975,13 @@ vectorPool.free(v1); vectorPool.free(v2); vectorPool.free(v3);
 v1 = null;
 
 v2 = null; v3 = null;
+```
 
 如果对象池只按需分配矢量（在对象不存在时创建新的，在对象存在时则复用存在的），那么这个实现本质上是一种贪婪算法，有单调增长但为静态的内存。这个对象池必须使用某种结构维护所有对象，数组是比较好的选择。不过，使用数组来实现，必须留意不要招致额外的垃圾回收。比如下面这个例子：
 
+```
 let vectorList = new Array(100); let vector = new Vector(); vectorList.push(vector);
+```
 
 由于 JavaScript 数组的大小是动态可变的，引擎会删除大小为 100 的数组，再创建一个新的大小为 200 的数组。垃圾回收程序会看到这个删除操作，说不定因此很快就会跑来收一次垃圾。要避免这种动态分配操作，可以在初始化时就创建一个大小够用的数组，从而避免上述先删除再创建的操作。不过，必须事先想好这个数组有多大。
 
@@ -4995,9 +4989,7 @@ let vectorList = new Array(100); let vector = new Vector(); vectorList.push(vect
 
 4.  小结
 
-JavaScript 变量可以保存两种类型的值：原始值和引用值。原始值可能是以下 6 种原始数据类型之一： Undefined 、 Null 、
-
-Boolean 、 Number 、 String 和 Symbol 。原始值和引用值有以下特点。
+JavaScript 变量可以保存两种类型的值：原始值和引用值。原始值可能是以下 6 种原始数据类型之一： Undefined 、 Null 、Boolean 、 Number 、 String 和 Symbol 。原始值和引用值有以下特点。
 
 原始值大小固定，因此保存在栈内存上。
 
@@ -5029,9 +5021,7 @@ JavaScript 是使用垃圾回收的编程语言，开发者不需要操心内存
 
 引用计数是另一种垃圾回收策略，需要记录值被引用了多少次。
 
-JavaScript 引擎不再使用这种算法，但某些旧版本的 IE 仍然会受这种算法的影响，原因是 JavaScript 会访问非原生 JavaScript 对象（如
-
-DOM 元素）。
+JavaScript 引擎不再使用这种算法，但某些旧版本的 IE 仍然会受这种算法的影响，原因是 JavaScript 会访问非原生 JavaScript 对象（如DOM 元素）。
 
 引用计数在代码中存在循环引用时会出现问题。
 
