@@ -26107,7 +26107,7 @@ DOM2 Traversal and Range 模块定义了两个类型用于辅助顺序遍历 DOM
 
 其中的任何节点都可以成为遍历的根节点。比如，假设以
 
-`<body>` 元素作为遍历的根节点，那么接下来是`<p>`元素、 <b>
+`<body>` 元素作为遍历的根节点，那么接下来是`<p>`元素、`<b>`
 
 元素和两个文本节点（都是 `<body>` 元素的后代）。但这个遍历不会
 
@@ -26440,7 +26440,7 @@ range1.selectNode(p1); range2.selectNodeContents(p1);
 
 例子中的这两个范围包含文档的不同部分。 range1 包含 <p>
 
-元素及其所有后代，而 range2 包含 <b> 元素、文本节点 "Hello" 和文本节点 " world!" ，如图 16-7 所示。
+元素及其所有后代，而 range2 包含`<b>`元素、文本节点 "Hello" 和文本节点 " world!" ，如图 16-7 所示。
 
 图 16-7
 
@@ -26528,7 +26528,7 @@ setStart() 和 setEnd() 真正的威力还是选择节点中的某个部分。
 
 let p1 = document.getElementById("p1"), helloNode = p1.firstChild.firstChild, worldNode = p1.lastChild
 
-文本 "Hello" 其实是`<p>`的孙子节点，因为它是 <b> 的子节点。为此可以使用 p1.firstChild 取得 <b> ，而使用
+文本 "Hello" 其实是`<p>`的孙子节点，因为它是`<b>`的子节点。为此可以使用 p1.firstChild 取得`<b>`，而使用
 
 p1.firstChild.firstChild 取得 "Hello" 这个文本节点。文
 
