@@ -22186,7 +22186,7 @@ appendChild() 、 insertBefore() 或 replaceChild() 方法把孤儿节点添加�
 </ul>
 ```
 
-如果 myList 保存着对这个 <ul> 元素的引用，则下列代码展示了使用 cloneNode() 方法的两种方式：
+如果 myList 保存着对这个`<ul>`元素的引用，则下列代码展示了使用 cloneNode() 方法的两种方式：
 
 let deepList = myList.cloneNode(true); alert(deepList.childNodes.length); // 3（IE9 之前的版本）或 7（其他浏览器）
 
@@ -22832,11 +22832,11 @@ childNodes 属性包含元素所有的子节点，这些子节点可能是其他
 
 </ul>
 
-在解析以上代码时， <ul> 元素会包含 7 个子元素，其中 3 个是 <li> 元素，还有 4 个 Text 节点（表示 <li> 元素周围的空格）。如果把元素之间的空格删掉，变成下面这样，则所有浏览器都会返回同样数量的子节点：
+在解析以上代码时，`<ul>`元素会包含 7 个子元素，其中 3 个是 <li> 元素，还有 4 个 Text 节点（表示 <li> 元素周围的空格）。如果把元素之间的空格删掉，变成下面这样，则所有浏览器都会返回同样数量的子节点：
 
 <ul id="myList"\><li>Item 1</li><li>Item 2</li><li>Item 3</li></ul>
 
-所有浏览器解析上面的代码后， <ul> 元素都会包含 3 个子节点。考虑到这种情况，通常在执行某个操作之后需要先检测一下节点的 nodeType ，如下所示：
+所有浏览器解析上面的代码后，`<ul>`元素都会包含 3 个子节点。考虑到这种情况，通常在执行某个操作之后需要先检测一下节点的 nodeType ，如下所示：
 
 for (let i = 0, len = element.childNodes.length; i < len; ++i) { if (element.childNodes\[i\].nodeType == 1) {
 
@@ -22848,11 +22848,11 @@ for (let i = 0, len = element.childNodes.length; i < len; ++i) { if (element.chi
 
 以上代码会遍历某个元素的子节点，并且只在 nodeType 等于 1（即 Element 节点）时执行某个操作。
 
-要取得某个元素的子节点和其他后代节点，可以使用元素的 getElementsByTagName() 方法。在元素上调用这个方法与在文档上调用是一样的，只不过搜索范围限制在当前元素之内，即只会返回当前元素的后代。对于本节前面 <ul> 的例子，可以像下面这样取得其所有的 <li> 元素：
+要取得某个元素的子节点和其他后代节点，可以使用元素的 getElementsByTagName() 方法。在元素上调用这个方法与在文档上调用是一样的，只不过搜索范围限制在当前元素之内，即只会返回当前元素的后代。对于本节前面`<ul>`的例子，可以像下面这样取得其所有的 <li> 元素：
 
 let ul = document.getElementById("myList"); let items = ul.getElementsByTagName("li");
 
-这里例子中的 <ul> 元素只有一级子节点，如果它包含更多层级，则所有层级中的 <li> 元素都会返回。
+这里例子中的`<ul>`元素只有一级子节点，如果它包含更多层级，则所有层级中的 <li> 元素都会返回。
 
 4.  Text 类型
 
@@ -23086,9 +23086,11 @@ let fragment = document.createDocumentFragment();
 
 片段的内容添加到文档。在把文档片段作为参数传给这些方法时，这个文档片段的所有子节点会被添加到文档中相应的位置。文档片段本身永远不会被添加到文档树。以下面的 HTML 为例：
 
+```html
 <ul id="myList"\></ul>
+```
 
-假设想给这个 <ul> 元素添加 3 个列表项。如果分 3 次给这个元素添加列表项，浏览器就要重新渲染 3 次页面，以反映新添加的内容。为避免多次渲染，下面的代码示例使用文档片段创建了所有列表项，然后一次性将它们添加到了 <ul> 元素：
+假设想给这个`<ul>`元素添加 3 个列表项。如果分 3 次给这个元素添加列表项，浏览器就要重新渲染 3 次页面，以反映新添加的内容。为避免多次渲染，下面的代码示例使用文档片段创建了所有列表项，然后一次性将它们添加到了`<ul>`元素：
 
 let fragment = document.createDocumentFragment(); let ul = document.getElementById("myList");
 
@@ -23100,9 +23102,9 @@ let li = document.createElement("li"); li.appendChild(document.createTextNode(\`
 
 ul.appendChild(fragment);
 
-这个例子先创建了一个文档片段，然后取得了 <ul> 元素的引用。接着通过 for 循环创建了 3 个列表项，每一项都包含表明自己身份的文本。为此先创建 <li> 元素，再创建文本节点并添加到该元素。然后通过 appendChild() 把 <li> 元素添加到文档片段。循环结束后，通过把文档片段传给
+这个例子先创建了一个文档片段，然后取得了`<ul>`元素的引用。接着通过 for 循环创建了 3 个列表项，每一项都包含表明自己身份的文本。为此先创建 <li> 元素，再创建文本节点并添加到该元素。然后通过 appendChild() 把 <li> 元素添加到文档片段。循环结束后，通过把文档片段传给
 
-appendChild() 将所有列表项添加到了 <ul> 元素。此时，文档片段的子节点全部被转移到了 <ul>
+appendChild() 将所有列表项添加到了`<ul>`元素。此时，文档片段的子节点全部被转移到了 <ul>
 
 元素。
 
@@ -26599,6 +26601,7 @@ NodeFilter.FILTER_SKIP ），则会导致遍历立即返回，不会访问任何
 
 当然， TreeWalker 真正的威力是可以在 DOM 结构中四处游走。如果不使用过滤器，单纯使用 TreeWalker 的漫游能力同样可以在 DOM 树中访问 <li> 元素，比如：
 
+```js
 let div = document.getElementById("div1"); let walker = document.createTreeWalker(div, NodeFilter.SHOW_ELEMENT, null, false);
 
 walker.firstChild(); // 前 往 <p>
@@ -26610,10 +26613,11 @@ let node = walker.firstChild(); // 前往第一个<li>
 while (node !== null) { console.log(node.tagName); node = walker.nextSibling();
 
 }
+```
 
 因为我们知道 <li> 元素在文档结构中的位置，所以可以直接定位过去。先使用 firstChild() 前往 <p> 元素，再通过
 
-nextSibling() 前往 <ul> 元素，然后使用 firstChild() 到达第一个 <li> 元素。注意，此时的 TreeWalker 只返回元素（这是因为传给 createTreeWalker() 的第二个参数）。最后就可以
+nextSibling() 前往`<ul>`元素，然后使用 firstChild() 到达第一个 <li> 元素。注意，此时的 TreeWalker 只返回元素（这是因为传给 createTreeWalker() 的第二个参数）。最后就可以
 
 使用 nextSibling() 访问每个 <li> 元素，直到再也没有元素，此时方法返回 null 。
 
