@@ -10682,7 +10682,7 @@ next() 方法来消费，也可以通过原生消费者，比如 for-of 循环�
 
 ECMA-262 将对象定义为一组属性的无序集合。严格来说，这意味着对象就是一组没有特定顺序的值。对象的每个属性或方法都由一个名称来标识，这个名称映射到一个值。正因为如此（以及其他还未讨论的原因），可以把 ECMAScript 的对象想象成一张散列表，其中的内容就是一组名/值对，值可以是数据或者函数。
 
-1.  理解对象
+## 8.1 理解对象
 
 创建自定义对象的通常方式是创建 Object 的一个新实例，然后再给它添加属性和方法，如下例所示：
 
@@ -10690,22 +10690,18 @@ ECMA-262 将对象定义为一组属性的无序集合。严格来说，这意�
 let person = new Object();
 person.name = 'Nicholas';
 person.age = 29;
-
 person.job = 'Software Engineer';
 person.sayName = function () {
   console.log(this.name);
 };
 ```
 
-这个例子创建了一个名为 person 的对象，而且有三个属性（ name 、 age 和 job ）和一个方法（ sayName() ）。
-
-sayName() 方法会显示 this.name 的值，这个属性会解析为 person.name 。早期 JavaScript 开发者频繁使用这种方式创建新对象。几年后，对象字面量变成了更流行的方式。前面的例子如果使用对象字面量则可以这样写：
+这个例子创建了一个名为 person 的对象，而且有三个属性（ name 、 age 和 job ）和一个方法（ sayName() ）。sayName() 方法会显示 this.name 的值，这个属性会解析为 person.name 。早期 JavaScript 开发者频繁使用这种方式创建新对象。几年后，对象字面量变成了更流行的方式。前面的例子如果使用对象字面量则可以这样写：
 
 ```js
 let person = {
   name: 'Nicholas',
   age: 29,
-
   job: 'Software Engineer',
   sayName() {
     console.log(this.name);
@@ -10715,21 +10711,20 @@ let person = {
 
 这个例子中的 person 对象跟前面例子中的 person 对象是等价的，它们的属性和方法都一样。这些属性都有自己的特征，而这些特征决定了它们在 JavaScript 中的行为。
 
-1.  属性的类型
+### 8.1.1 属性的类型
 
 ECMA-262 使用一些内部特性来描述属性的特征。这些特性是由为 JavaScript 实现引擎的规范定义的。因此，开发者不能在 JavaScript 中直接访问这些特性。为了将某个特性标识为内部特性，规范会用两个中括号把特性的名称括起来，比如 `[[Enumerable]]` 。
 
 属性分两种：数据属性和访问器属性。
 
-1.  数据属性
+1. 数据属性
 
 数据属性包含一个保存数据值的位置。值会从这个位置读取，也会写入到这个位置。数据属性有 4 个特性描述它们的行为。
 
-`[[Configurable]]` ：表示属性是否可以通过 delete 删除并重新定义，是否可以修改它的特性，以及是否可以把它改为访问器属性。默认情况下，所有直接定义在对象上的属性的这个特性都是 true ，如前面的例子所示。 `[[Enumberable]]` ：表示属性是否可以通过 for-in 循环返回。默认情况下，所有直接定义在对象上的属性的这个特性都是 true ，如前面的例子所示。
-
-`[[Writable]]` ：表示属性的值是否可以被修改。默认情况下，所有直接定义在对象上的属性的这个特性都是 true ，如前面的例子所示。
-
-`[[Value]]` ：包含属性实际的值。这就是前面提到的那个读取和写入属性值的位置。这个特性的默认值为 undefined 。
+1. `[[Configurable]]` ：表示属性是否可以通过 delete 删除并重新定义，是否可以修改它的特性，以及是否可以把它改为访问器属性。默认情况下，所有直接定义在对象上的属性的这个特性都是 true ，如前面的例子所示。
+2. `[[Enumberable]]` ：表示属性是否可以通过 for-in 循环返回。默认情况下，所有直接定义在对象上的属性的这个特性都是 true ，如前面的例子所示。
+3. `[[Writable]]` ：表示属性的值是否可以被修改。默认情况下，所有直接定义在对象上的属性的这个特性都是 true ，如前面的例子所示。
+4. `[[Value]]` ：包含属性实际的值。这就是前面提到的那个读取和写入属性值的位置。这个特性的默认值为 undefined 。
 
 在像前面例子中那样将属性显式添加到对象之后，`[[Configurable]]` 、 `[[Enumerable]]` 和`[[Writable]]` 都会被设置为 true ，而 `[[Value]]` 特性会被设置为指定的值。比如：
 
@@ -10739,7 +10734,7 @@ let person = { name: 'Nicholas' };
 
 这里，我们创建了一个名为 name 的属性，并给它赋予了一个值 "Nicholas" 。这意味着 `[[Value]]` 特性会被设置为 "Nicholas" ，之后对这个值的任何修改都会保存这个位置。
 
-要修改属性的默认特性，就必须使用 Object.defineProperty() 方法。这个方法接收 3 个参数：要给其添加属性的对象、属性的名称和一个描述符对象。最后一个参数，即描述符对象上的属性可以包含： configurable 、enumerable 、 writable 和 value ，跟相关特性的名称一一对应。根据要修改的特性，可以设置其中一个或多个值。比 如：
+要修改属性的默认特性，就必须使用 Object.defineProperty() 方法。这个方法接收 3 个参数：要给其添加属性的对象、属性的名称和一个描述符对象。最后一个参数，即描述符对象上的属性可以包含： configurable 、enumerable 、 writable 和 value ，跟相关特性的名称一一对应。根据要修改的特性，可以设置其中一个或多个值。比如：
 
 ```js
 let person = {};
@@ -10748,7 +10743,9 @@ Object.defineProperty(person, 'name', {
   value: 'Nicholas',
 });
 
-console.log(person.name); // "Nicholas" person.name = "Greg"; console.log(person.name); // "Nicholas"
+console.log(person.name); // "Nicholas"
+person.name = 'Greg';
+console.log(person.name); // "Nicholas"
 ```
 
 这个例子创建了一个名为 name 的属性并给它赋予了一个只读的值 "Nicholas" 。这个属性的值就不能再修改了，在非严格模式下尝试给这个属性重新赋值会被忽略。在严格模式下，尝试修改只读属性的值会抛出错误。
@@ -10761,9 +10758,7 @@ Object.defineProperty(person, 'name', {
   configurable: false,
   value: 'Nicholas',
 });
-
 console.log(person.name); // "Nicholas"
-
 delete person.name;
 console.log(person.name); // "Nicholas"
 ```
@@ -10778,10 +10773,8 @@ Object.defineProperty(person, 'name', {
 });
 
 // 抛出错误
-
 Object.defineProperty(person, 'name', {
   configurable: true,
-
   value: 'Nicholas',
 });
 ```
@@ -10790,7 +10783,7 @@ Object.defineProperty(person, 'name', {
 
 在调用 Object.defineProperty() 时，configurable 、 enumerable 和 writable 的值如果不指定，则都默认为 false 。多数情况下，可能都不需要 Object.defineProperty() 提供的这些强大的设置，但要理解 JavaScript 对象，就要理解这些概念。
 
-2.  访问器属性
+2. 访问器属性
 
 访问器属性不包含数据值。相反，它们包含一个获取（getter）函数和一个设置（setter）函数，不过这两个函数不是必需的。在读取访问器属性时，会调用获取函数，这个函数的责任就是返回一个有效的值。在写入访问器属性时，会调用设置函数并传入新值，这个函数必须决定对数据做出什么修改。访问器属性有 4 个特性描述它们的行为。
 
@@ -10802,13 +10795,9 @@ Object.defineProperty(person, 'name', {
 访问器属性是不能直接定义的，必须使用 Object.defineProperty() 。下面是一个例子：
 
 ```js
-// 定义一个对象，包含伪私有成员 year_和公共成员
-
-edition;
-
+// 定义一个对象，包含伪私有成员 year_和公共成员 edition;
 let book = {
   year_: 2017,
-
   edition: 1,
 };
 
@@ -10820,14 +10809,12 @@ Object.defineProperty(book, 'year', {
   set(newValue) {
     if (newValue > 2017) {
       this.year_ = newValue;
-
       this.edition += newValue - 2017;
     }
   },
 });
 
 book.year = 2018;
-
 console.log(book.edition); // 2
 ```
 
@@ -10837,9 +10824,9 @@ console.log(book.edition); // 2
 
 在不支持 Object.defineProperty() 的浏览器中没有办法修改 `[[Configurable]]` 或 `[[Enumerable]]` 。
 
-> 注意 在 ECMAScript 5 以前，开发者会使用两个非标准的访问创建访问器属性： defineGetter () 和 defineSetter () 。这两个方法最早是 Firefox 引入的，后来 Safari、Chrome 和 Opera 也实现了。
+> 注意 在 ECMAScript 5 以前，开发者会使用两个非标准的访问创建访问器属性： `__defineGetter__()` 和 `__defineSetter__()` 。这两个方法最早是 Firefox 引入的，后来 Safari、Chrome 和 Opera 也实现了。
 
-2.  定义多个属性
+### 8.1.2 定义多个属性
 
 在一个对象上同时定义多个属性的可能性是非常大的。为此，ECMAScript 提供了 Object.defineProperties() 方法。这个方法可以通过多个描述符一次性定义多个属性。它接收两个参数：要为之添加或修改属性的对象和另一个描述符对象，其属性与要添加或修改的属性一一对应。比如：
 
@@ -10847,9 +10834,7 @@ console.log(book.edition); // 2
 let book = {};
 Object.defineProperties(book, {
   year_: { value: 2017 },
-
   edition: { value: 1 },
-
   year: {
     get() {
       return this.year_;
@@ -10858,7 +10843,6 @@ Object.defineProperties(book, {
     set(newValue) {
       if (newValue > 2017) {
         this.year_ = newValue;
-
         this.edition += newValue - 2017;
       }
     },
@@ -10866,9 +10850,9 @@ Object.defineProperties(book, {
 });
 ```
 
-这段代码在 book 对象上定义了两个数据属性 `year_` 和 edition ，还有一个访问器属性 year 。最终的对象跟上一节示例中的一样。唯一的区别是所有属性都是同时定义的。
+这段代码在 book 对象上定义了两个数据属性 `year_` 和 edition ，还有一个访问器属性 year 。最终的对象跟上一节示例中的一样。唯一的区别是所有属性都是同时定义的。并且数据属性的 configurable、 enumerable 和 writable 特性值都是 false。
 
-3.  读取属性的特性
+### 8.1.3 读取属性的特性
 
 使用 Object.getOwnPropertyDescriptor() 方法可以取得指定属性的属性描述符。这个方法接收两个参数：属性所在的对象和要取得其描述符的属性名。返回值是一个对象，对于访问器属性包含 configurable 、 enumerable 、 get 和 set 属性，对于数据属性包含 configurable 、 enumberable 、 writable 和 value 属性。比如：
 
@@ -10878,9 +10862,7 @@ Object.defineProperties(book, {
   year_: {
     value: 2017,
   },
-
   edition: { value: 1 },
-
   year: {
     get: function () {
       return this.year_;
@@ -10896,33 +10878,29 @@ Object.defineProperties(book, {
 });
 
 let descriptor = Object.getOwnPropertyDescriptor(book, 'year_');
-console.log(descriptor.value); // 2017 console.log(descriptor.configurable); // false console.lo(typeof descriptor.get); // "undefined"
+console.log(descriptor.value); // 2017
+console.log(descriptor.configurable); // false
+console.log(typeof descriptor.get); // "undefined"
 
 let descriptor = Object.getOwnPropertyDescriptor(book, 'year');
 console.log(descriptor.value); // undefined
-
-console.log(descriptor.enumerable); // false console.log(typeof descriptor.get); // "function"
+console.log(descriptor.enumerable); // false
+console.log(typeof descriptor.get); // "function"
 ```
 
-对于数据属性 year\_ ， value 等于原来的值， configurable 是 false ， get 是 undefined 。对于访问器属性 year ， value 是 undefined ， enumerable 是 false ， get 是一个指向获取函数的指针。
+对于数据属性 `year_` ， value 等于原来的值， configurable 是 false ， get 是 undefined 。对于访问器属性 year ， value 是 undefined ， enumerable 是 false ， get 是一个指向获取函数的指针。
 
 ECMAScript 2017 新增了 Object.getOwnPropertyDescriptors() 静态方法。这个方法实际上会在每个自有属性上调用 Object.defineProperties()并在一个新对象中返回它们。对于前面的例子，使用这个静态方法会返回如下对象：
 
 ```js
 let book = {}; Object.defineProperties(book, {
-
 year_: { value: 2017
-
 },
-
 edition: { value: 1
-
 },
-
 year: {
 
 get: function() { return this.year_;
-
 },
 
 set: function(newValue){ if (newValue > 2017) {
@@ -10966,7 +10944,7 @@ console.log(Object.getOwnPropertyDescriptors(boo k));
 // },
 ```
 
-4.  合并对象
+### 8.1.4 合并对象
 
 JavaScript 开发者经常觉得“合并”（merge）两个对象很有用。更具体地说，就是把源对象所有的本地属性一起复制到目标对象上。有时候这种操作也被称为“混入”（mixin），因为目标对象通过混入源对象的属性得到了增强。
 
@@ -10976,30 +10954,25 @@ ECMAScript 6 专门为合并对象提供了 Object.assign() 方 法。这个方�
 let dest, src, result;
 
 /**
-
-* 简单复制
-
-*/
+ * 简单复制
+ */
 
 dest = {};
-
 src = { id: 'src' };
 
 result = Object.assign(dest, src);
 
 // Object.assign 修改目标对象
-
 // 也会返回修改后的目标对象
 
-console.log(dest === result); // true console.log(dest !== src); // true console.log(result); // { id: src }
-
+console.log(dest === result); // true
+console.log(dest !== src); // true
+console.log(result); // { id: src }
 console.log(dest); // { id: src }
 
 /**
-
-* 多个源对象
-
-*/
+ * 多个源对象
+ */
 
 dest = {};
 
@@ -11008,10 +10981,8 @@ result = Object.assign(dest, { a: 'foo' }, { b: 'bar' });
 console.log(result); // { a: foo, b: bar }
 
 /**
-
-* 获取函数与设置函数
-
-*/
+ * 获取函数与设置函数
+ */
 
 dest = {
   set a(val) {
@@ -11029,11 +11000,8 @@ src = {
 Object.assign(dest, src);
 
 // 调用 src 的获取方法
-
 // 调用 dest 的设置方法并传入参数"foo"
-
 // 因为这里的设置函数不执行赋值操作
-
 // 所以实际上并没有把值转移过来
 
 console.log(dest); // { set a(val) {...} }
@@ -11045,10 +11013,8 @@ Object.assign() 实际上对每个源对象执行的是浅复制。如果多个�
 let dest, src, result;
 
 /**
-
-* 覆盖属性
-
-*/
+ * 覆盖属性
+ */
 
 dest = { id: 'dest' };
 
@@ -11073,19 +11039,14 @@ dest = {
 Object.assign(dest, { id: 'first' }, { id: 'second' }, { id: 'third' });
 
 // first
-
 // second
-
 // third
 
 /**
-
-* 对象引用
-
-*/
+ * 对象引用
+ */
 
 dest = {};
-
 src = { a: {} };
 
 Object.assign(dest, src);
@@ -11093,22 +11054,17 @@ Object.assign(dest, src);
 // 浅复制意味着只会复制对象的引用
 
 console.log(dest); // { a :{} }
-
 console.log(dest.a === src.a); // true
 ```
 
-如果赋值期间出错，则操作会中止并退出，同时抛出错误。
-
-Object.assign() 没有“回滚”之前赋值的概念，因此它是一个尽力而为、可能只会完成部分复制的方法。
+如果赋值期间出错，则操作会中止并退出，同时抛出错误。Object.assign() 没有“回滚”之前赋值的概念，因此它是一个尽力而为、可能只会完成部分复制的方法。
 
 ```js
 let dest, src, result;
 
 /**
-
-* 错误处理
-
-*/
+ * 错误处理
+ */
 
 dest = {};
 src = {
@@ -11116,7 +11072,6 @@ src = {
 
   get b() {
     // Object.assign()在调用这个获取函数时会抛出错误
-
     throw new Error();
   },
 
@@ -11128,27 +11083,44 @@ try {
 } catch (e) {}
 
 // Object.assign()没办法回滚已经完成的修改
-
 // 因此在抛出错误之前，目标对象上已经完成的修改会继续存在：
 
 console.log(dest); // { a: foo }
 ```
 
-5.  对象标识及相等判定
+### 8.1.5 对象标识及相等判定
 
 在 ECMAScript 6 之前，有些特殊情况即使是 === 操作符也无能为力：
 
 ```js
+// 这些是===符合预期的情况
+console.log(true === 1); // false
+console.log({} === {}); // false
+console.log('2' === 2); // false
 // 这些情况在不同 JavaScript 引擎中表现不同，但仍被认为相等
-
+console.log(+0 === -0); // true
+console.log(+0 === 0); // true
+console.log(-0 === 0); // true
 // 要确定 NaN 的相等性，必须使用极为讨厌的 isNaN()
-
 console.log(NaN === NaN); // false
-
 console.log(isNaN(NaN)); // true
 ```
 
-为改善这类情况，ECMAScript 6 规范新增了 Object.is() ，这个方法与 === 很像，但同时也考虑到了上述边界情形。这个方法必须接收两个参数：要检查超过两个值，递归地利用相等性传递即可：
+为改善这类情况，ECMAScript 6 规范新增了 Object.is() ，这个方法与 === 很像，但同时也考虑到了上述边界情形。这个方法必须接收两个参数：
+
+```js
+console.log(Object.is(true, 1)); // false
+console.log(Object.is({}, {})); // false
+console.log(Object.is('2', 2)); // false
+// 正确的 0、 -0、 +0 相等/不等判定
+console.log(Object.is(+0, -0)); // false
+console.log(Object.is(+0, 0)); // true
+console.log(Object.is(-0, 0)); // false
+// 正确的 NaN 相等判定
+console.log(Object.is(NaN, NaN)); // true
+```
+
+要检查超过两个值，递归地利用相等性传递即可：
 
 ```js
 function recursivelyCheckEqual(x, ...rest) {
@@ -11158,7 +11130,7 @@ function recursivelyCheckEqual(x, ...rest) {
 }
 ```
 
-6.  增强的对象语法
+### 8.1.6 增强的对象语法
 
 ECMAScript 6 为定义和操作对象新增了很多极其有用的语法糖特性。这些特性都没有改变现有引擎的行为，但极大地提升了处理对象的方便程度。
 
@@ -11166,7 +11138,7 @@ ECMAScript 6 为定义和操作对象新增了很多极其有用的语法糖特�
 
 > 注意 相比于以往的替代方案，本节介绍的增强对象语法可以说是一骑绝尘。因此本章及本书会默认使用这些新语法特性。
 
-1.  属性值简写
+1. 属性值简写
 
 在给对象添加变量的时候，开发者经常会发现属性名和变量名是一样的。例如：
 
@@ -11218,7 +11190,7 @@ var person = makePerson('Matt');
 console.log(person.name); // Matt
 ```
 
-2.  可计算属性
+2. 可计算属性
 
 在引入可计算属性之前，如果想使用变量的值作为属性，那么必须先声明对象，然后使用中括号语法来添加属性。换句话说，不能在对象字面量中直接动态命名属性。比如：
 
@@ -11230,7 +11202,6 @@ const jobKey = 'job';
 let person = {};
 person[nameKey] = 'Matt';
 person[ageKey] = 27;
-
 person[jobKey] = 'Software engineer';
 
 console.log(person); // { name: 'Matt', age: 27, job: 'Software engineer' }
@@ -11277,7 +11248,7 @@ console.log(person); // { name_0: 'Matt', age_1: 27, job_2: 'Software engineer' 
 
 > 注意 可计算属性表达式中抛出任何错误都会中断对象创建。如果计算属性的表达式有副作用，那就要小心了，因为如果表达式抛出错误，那么之前完成的计算是不能回滚的。
 
-3.  简写方法名
+3. 简写方法名
 
 在给对象定义方法时，通常都要写一个方法名、冒号，然后再引用一个匿名函数表达式，如下所示：
 
@@ -11310,15 +11281,12 @@ person.sayName('Matt'); // My name is Matt
 ```js
 let person = {
   name_: '',
-
   get name() {
     return this.name_;
   },
-
   set name(name) {
     this.name_ = name;
   },
-
   sayName() {
     console.log('My name is ${this.name_}');
   },
@@ -11344,7 +11312,7 @@ person.sayName('Matt'); // My name is Matt
 
 > 注意 简写方法名对于本章后面介绍的 ECMAScript 6 的类更有用。
 
-7.  对象解构
+### 8.1.7 对象解构
 
 ECMAScript 6 新增了对象解构语法，可以在一条语句中使用嵌套数据实现一个或多个赋值操作。简单地说，对象解构就是使用与对象匹配的结构来实现对象属性赋值。
 
@@ -11352,14 +11320,12 @@ ECMAScript 6 新增了对象解构语法，可以在一条语句中使用嵌套�
 
 ```js
 // 不使用对象解构
-
 let person = { name: 'Matt', age: 27 };
 
 let personName = person.name,
   personAge = person.age;
 
 console.log(personName); // Matt
-
 console.log(personAge); // 27
 ```
 
@@ -11367,13 +11333,11 @@ console.log(personAge); // 27
 
 ```js
 // 使用对象解构
-
 let person = { name: 'Matt', age: 27 };
 
 let { name: personName, age: personAge } = person;
 
 console.log(personName); // Matt
-
 console.log(personAge); // 27
 ```
 
@@ -11384,7 +11348,6 @@ let person = { name: 'Matt', age: 27 };
 
 let { name, age } = person;
 console.log(name); // Matt
-
 console.log(age); // 27
 ```
 
@@ -11396,7 +11359,6 @@ let person = { name: 'Matt', age: 27 };
 let { name, job } = person;
 
 console.log(name); // Matt
-
 console.log(job); // undefined
 ```
 
@@ -11407,13 +11369,10 @@ let person = { name: 'Matt', age: 27 };
 
 let { name, job = 'Software engineer' } = person;
 console.log(name); // Matt
-
 console.log(job); // Software engineer
 ```
 
-解构在内部使用函数 ToObject() （不能在运行时环境中直接访问）把源数据结构转换为对象。这意味着在对象解构的上下文中，原始值会被当成对象。这也意味着（根据 ToObject() 的定义），
-
-null 和 undefined 不能被解构，否则会抛出错误。
+解构在内部使用函数 ToObject() （不能在运行时环境中直接访问）把源数据结构转换为对象。这意味着在对象解构的上下文中，原始值会被当成对象。这也意味着（根据 ToObject() 的定义），null 和 undefined 不能被解构，否则会抛出错误。
 
 ```js
 let { _ } = undefined; // TypeError
@@ -11430,7 +11389,7 @@ let person = { name: 'Matt', age: 27 };
 console.log(personName, personAge); // Matt, 27
 ```
 
-1.  嵌套解构
+1. 嵌套解构
 
 解构对于引用嵌套的属性或赋值目标没有限制。为此，可以通过解构来复制对象属性：
 
@@ -11438,7 +11397,6 @@ console.log(personName, personAge); // Matt, 27
 let person = {
   name: 'Matt',
   age: 27,
-
   job: {
     title: 'Software engineer',
   },
@@ -11449,17 +11407,14 @@ let personCopy = {};
 ({ name: personCopy.name, age: personCopy.age, job: personCopy.job } = person);
 
 // 因为一个对象的引用被赋值给 personCopy，所以修改
-
 // person.job 对象的属性也会影响 personCopy
 
 person.job.title = 'Hacker';
 
 console.log(person);
-
 // { name: 'Matt', age: 27, job: { title: 'Hacker' } }
 
 console.log(personCopy);
-
 // { name: 'Matt', age: 27, job: { title: 'Hacker' } }
 ```
 
@@ -11469,14 +11424,12 @@ console.log(personCopy);
 let person = {
   name: 'Matt',
   age: 27,
-
   job: {
     title: 'Software engineer',
   },
 };
 
 // 声明 title 变量并将 person.job.title 的值赋给它
-
 let {
   job: { title },
 } = person;
@@ -11496,23 +11449,19 @@ let person = {
 let personCopy = {};
 
 // foo 在源对象上是 undefined
-
 ({
   foo: { bar: personCopy.bar },
 } = person);
-
 // TypeError: Cannot destructure property 'bar' of 'undefined' or 'null'.
 
 // job 在目标对象上是 undefined
-
 ({
   job: { title: personCopy.job.title },
 } = person);
-
 // TypeError: Cannot set property 'title' of undefined
 ```
 
-2.  部分解构
+2. 部分解构
 
 需要注意的是，涉及多个属性的解构赋值是一个输出无关的顺序化操作。如果一个解构表达式涉及多个赋值，开始的赋值成功而后面的赋值出错，则整个解构赋值只会完成一部分：
 
@@ -11522,7 +11471,6 @@ let person = { name: 'Matt', age: 27 };
 let personName, personBar, personAge;
 try {
   // person.foo 是 undefined，因此会抛出错误
-
   ({
     name: personName,
     foo: { bar: personBar },
@@ -11531,11 +11479,10 @@ try {
 } catch (e) {}
 
 console.log(personName, personBar, personAge);
-
 // Matt, undefined, undefined
 ```
 
-3.  参数上下文匹配
+3. 参数上下文匹配
 
 在函数参数列表中也可以进行解构赋值。对参数的解构赋值不会影响 arguments 对象，但可以在函数签名中声明在函数体内使用局部变量：
 
@@ -11544,7 +11491,6 @@ let person = { name: 'Matt', age: 27 };
 
 function printPerson(foo, { name, age }, bar) {
   console.log(arguments);
-
   console.log(name, age);
 }
 
@@ -11554,23 +11500,19 @@ function printPerson2(foo, { name: personName, age: personAge }, bar) {
 }
 
 printPerson('1st', person, '2nd');
-
 // ['1st', { name: 'Matt', age: 27 }, '2nd']
-
 // 'Matt', 27
 
 printPerson2('1st', person, '2nd');
-
 // ['1st', { name: 'Matt', age: 27 }, '2nd']
-
 // 'Matt', 27
 ```
 
-1.  创建对象
+## 8.2 创建对象
 
 虽然使用 Object 构造函数或对象字面量可以方便地创建对象，但这些方式也有明显不足：创建具有同样接口的多个对象需要重复编写很多代码。
 
-1.  概述
+### 8.2.1 概述
 
 综观 ECMAScript 规范的历次发布，每个版本的特性似乎都出人意料。ECMAScript 5.1 并没有正式支持面向对象的结构，比如类或继承。但是，正如接下来几节会介绍的，巧妙地运用原型式继承可以成功地模拟同样的行为。
 
@@ -11578,7 +11520,7 @@ ECMAScript 6 开始正式支持类和继承。ES6 的类旨在完全涵盖之前
 
 > 注意 不要误会：采用面向对象编程模式的 JavaScript 代码还是应该使用 ECMAScript 6 的类。但不管怎么说，理解 ES6 类出现之前的惯例总是有益无害的。特别是 ES6 的类定义本身就相当于对原有结构的封装。因此，在介绍 ES6 的类之前，本书会循序渐进地介绍被类取代的那些底层概念。
 
-2.  工厂模式
+### 8.2.2 工厂模式
 
 工厂模式是一种众所周知的设计模式，广泛应用于软件工程领 域，用于抽象创建特定对象的过程。（本书后面还会讨论其他设计模式及其在 JavaScript 中的实现。）下面的例子展示了一种按照特定接口创建对象的方式：
 
@@ -11604,7 +11546,7 @@ let person2 = createPerson('Greg', 27, 'Doctor');
 
 这里，函数 createPerson() 接收 3 个参数，根据这几个参数构建了一个包含 Person 信息的对象。可以用不同的参数多次调用这个函数，每次都会返回包含 3 个属性和 1 个方法的对象。这种工厂模式虽然可以解决创建多个类似对象的问题，但没有解决对象标识问题（即新创建的对象是什么类型）。
 
-3.  构造函数模式
+### 8.2.3 构造函数模式
 
 前面几章提到过，ECMAScript 中的构造函数是用于创建特定类型对象的。像 Object 和 Array 这样的原生构造函数，运行时可以直接在执行环境中使用。当然也可以自定义构造函数，以函数的形式为自己的对象类型定义属性和方法。
 
@@ -11643,11 +11585,11 @@ person2.sayName(); // Greg
 
 要创建 Person 的实例，应使用 new 操作符。以这种方式调用构造函数会执行如下操作。
 
-1.  在内存中创建一个新对象。
-2.  这个新对象内部的 `[[Prototype]]` 特性被赋值为构造函数的 prototype 属性。
-3.  构造函数内部的 this 被赋值为这个新对象（即 this 指向新对象）。
-4.  执行构造函数内部的代码（给新对象添加属性）。
-5.  如果构造函数返回非空对象，则返回该对象；否则，返回刚创建的新对象。
+1. 在内存中创建一个新对象。
+2. 这个新对象内部的 `[[Prototype]]` 特性被赋值为构造函数的 prototype 属性。
+3. 构造函数内部的 this 被赋值为这个新对象（即 this 指向新对象）。
+4. 执行构造函数内部的代码（给新对象添加属性）。
+5. 如果构造函数返回非空对象，则返回该对象；否则，返回刚创建的新对象。
 
 上一个例子的最后， person1 和 person2 分别保存着
 
@@ -11712,7 +11654,7 @@ let person1 = new Person();
 let person2 = new Person();
 ```
 
-1.  构造函数也是函数
+1. 构造函数也是函数
 
 构造函数与普通函数唯一的区别就是调用方式不同。除此之外，构造函数也是函数。并没有把某个函数定义为构造函数的特殊语法。任何函数只要使用 new 操作符调用就是构造函数，而不使用 new 操作符调用的函数就是普通函数。比如，前面的例子中定义的 Person() 可以像下面这样调用：
 
@@ -11740,7 +11682,7 @@ Person.call(o, "Kristen", 25, "Nurse"); o.sayName(); // "Kristen"
 
 window 对象上就有了一个 sayName() 方法，调用它会返回 "Greg" 。最后展示的调用方式是通过 call() （或 apply() ）调用函数，同时将特定对象指定为作用域。这里的调用将对象 o 指定为 Person() 内部的 this 值，因此执行完函数代码后，所有属性和 sayName() 方法都会添加到对象 o 上面。
 
-2.  构造函数的问题
+2. 构造函数的问题
 
 构造函数虽然有用，但也不是没有问题。构造函数的主要问题在于，其定义的方法会在每个实例上都创建一遍。因此对前面的例子而言， person1 和 person2 都有名为 sayName() 的方法，但这两个方法不是同一个 Function 实例。我们知道，
 
@@ -11790,7 +11732,7 @@ person2.sayName(); // Greg
 
 在这里， sayName() 被定义在了构造函数外部。在构造函数内部， sayName 属性等于全局 sayName() 函数。因为这一次 sayName 属性中包含的只是一个指向外部函数的指针，所以 person1 和 person2 共享了定义在全局作用域上的 sayName() 函数。这样虽然解决了相同逻辑的函数重复定义的问题，但全局作用域也因此被搞乱了，因为那个函数实际上只能在一个对象上调用。如果这个对象需要多个方法，那么就要在全局作用域中定义多个函数。这会导致自定义类型引用的代码不能很好地聚集一起。这个新问题可以通过原型模式来解决。
 
-4.  原型模式
+### 8.2.4 原型模式
 
 每个函数都会创建一个 prototype 属性，这个属性是一个对象，包含应该由特定引用类型的实例共享的属性和方法。实际上，这个对象就是通过调用构造函数创建的对象的原型。使用原型对象的好处是，在它上面定义的属性和方法可以被对象实例共享。原来在构造函数中直接赋给对象实例的值，可以直接赋值给它们的原型，如下所示：
 
@@ -11832,7 +11774,7 @@ console.log(person1.sayName == person2.sayName);
 
 这里，所有属性和 sayName() 方法都直接添加到了 Person 的 prototype 属性上，构造函数体中什么也没有。但这样定义之后，调用构造函数创建的新对象仍然拥有相应的属性和方法。与构造函数模式不同，使用这种原型模式定义的属性和方法是由所有实例共享的。因此 person1 和 person2 访问的都是相同的属性和相同的 sayName() 函数。要理解这个过程，就必须理解 ECMAScript 中原型的本质。
 
-1.  理解原型
+1. 理解原型
 
 无论何时，只要创建一个函数，就会按照特定的规则为这个函数创建一个 prototype 属性（指向原型对象）。默认情况下，所有原型对象自动获得一个名为 constructor 的属性，指回与之关联的构造函数。对前面的例子而言，
 
@@ -12038,7 +11980,7 @@ console.log(person.numLegs);
 // 2 console.log(Object.getPrototypeOf(person) === biped); // true
 ```
 
-2.  原型层级
+2. 原型层级
 
 在通过对象访问属性时，会按照这个属性的名称开始搜索。搜索开始于对象实例本身。如果在这个实例上发现了给定的名称，则返回该名称对应的值。如果没有找到这个属性，则搜索会沿着指针进入原型对象，然后在原型对象上找到属性后，再返回对应的值。因此，在调用 person1.sayName() 时，会发生两步搜 索。首先，JavaScript 引擎会问：“ person1 实例有 sayName 属性吗？”答案是没有。然后，继续搜索并问：“ person1 的原
 
@@ -12145,7 +12087,7 @@ console.log(person1.hasOwnProperty('name'));
 
 Object.getOwnPropertyDescriptor() 方法只对实例属性有效。要取得原型属性的描述符，就必须直接在原型对象上调用 Object.getOwnPropertyDescriptor() 。
 
-3.  原型和 in 操作符
+3. 原型和 in 操作符
 
 有两种方式使用 in 操作符：单独使用和在 for-in 循环中使用。在单独使用时， in 操作符会在可以通过对象访问指定属性时返回 true ，无论该属性是在实例上还是在原型上。来看下面的例子：
 
@@ -12292,7 +12234,7 @@ console.log(Object.getOwnPropertySymbols(o));
 // [Symbol(k1), Symbol(k2)]
 ```
 
-4.  属性枚举顺序
+4. 属性枚举顺序
 
 for-in 循环、 Object.keys() 、
 
@@ -12342,7 +12284,7 @@ console.log(Object.getOwnPropertySymbols(o));
 // [Symbol(k1), Symbol(k2)]
 ```
 
-5.  对象迭代
+### 8.2.5 对象迭代
 
 在 JavaScript 有史以来的大部分时间内，迭代对象属性都是一个难题。ECMAScript 2017 新增了两个静态方法，用于将对象内容转换为序列化的——更重要的是可迭代的——格式。这两个静态方法
 
@@ -12397,7 +12339,7 @@ console.log(Object.entries(o));
 // []
 ```
 
-1.  其他原型语法
+1. 其他原型语法
 
 有读者可能注意到了，在前面的例子中，每次定义一个属性或方法都会把 Person.prototype 重写一遍。为了减少代码冗余，也为了从视觉上更好地封装原型功能，直接通过一个包含所有属性和方法的对象字面量来重写原型成为了一种常见的做法，如下面的例子所示：
 
@@ -12493,7 +12435,7 @@ Object.defineProperty(Person.prototype, 'constructor', {
 });
 ```
 
-2.  原型的动态性
+2. 原型的动态性
 
 因为从原型上搜索值的过程是动态的，所以即使实例在修改原型之前已经存在，任何时候对原型对象所做的修改也会在实例上反映出来。下面是一个例子：
 
@@ -12537,7 +12479,7 @@ friend.sayName(); // 错 误
 
 重写构造函数上的原型之后再创建的实例才会引用新的原型。而在此之前创建的实例仍然会引用最初的原型。
 
-3.  原生对象原型
+3. 原生对象原型
 
 原型模式之所以重要，不仅体现在自定义类型上，而且还因为它也是实现所有原生引用类型的模式。所有原生引用类型的构造函数（包括 Object 、 Array 、 String 等）都在原型上定义了实例方法。比如，数组实例的 sort() 方法就是
 
@@ -12576,7 +12518,7 @@ startsWith() 方法。
 
 > 注意 尽管可以这么做，但并不推荐在产品环境中修改原生对象原型。这样做很可能造成误会，而且可能引发命名冲突（比如一个名称在某个浏览器实现中不存在，在另一个实现中却存在）。另外还有可能意外重写原生的方法。推荐的做法是创建一个自定义的类，继承原生类型。
 
-4.  原型的问题
+4. 原型的问题
 
 原型模式也不是没有问题。首先，它弱化了向构造函数传递初始化参数的能力，会导致所有实例默认都取得相同的属性值。虽然
 
@@ -12608,11 +12550,11 @@ console.log(person1.friends); // "Shelby,Court,Van" console.log(person2.friends)
 
 这里， Person.prototype 有一个名为 friends 的属性，它包含一个字符串数组。然后这里创建了两个 Person 的实例。 person1.friends 通过 push 方法向数组中添加了一个字符串。由于这个 friends 属性存在于 Person.prototype 而 非 person1 上，新加的这个字符串也会在（指向同一个数组的） person2.friends 上反映出来。如果这是有意在多个实例间共享数组，那没什么问题。但一般来说，不同的实例应该有属于自己的属性副本。这就是实际开发中通常不单独使用原型模式的原因。
 
-1.  继承
+## 8.3 继承
 
 继承是面向对象编程中讨论最多的话题。很多面向对象语言都支持两种继承：接口继承和实现继承。前者只继承方法签名，后者继承实际的方法。接口继承在 ECMAScript 中是不可能的，因为函数没有签名。实现继承是 ECMAScript 唯一支持的继承方式，而这主要是通过原型链实现的。
 
-1.  原型链
+### 8.3.1 原型链
 
 ECMA-262 把原型链定义为 ECMAScript 的主要继承方式。其基本思想就是通过原型继承多个引用类型的属性和方法。重温一下构造函数、原型和实例的关系：每个构造函数都有一个原型对象，原型有一个属性指回构造函数，而实例有一个内部指针指向原型。如果原型是另一个类型的实例呢？那就意味着这个原型本身有一个内部指针指向另一个原型，相应地另一个原型也有一个指针指向另一个构造函数。
 
@@ -12685,7 +12627,7 @@ instance.getSuperValue() 经过了 3 步搜索： instance 、
 
 SubType.prototype 和 SuperType.prototype ，最后一步才找到这个方法。对属性和方法的搜索会一直持续到原型链的末端。
 
-1.  默认原型
+1. 默认原型
 
 实际上，原型链中还有一环。默认情况下，所有引用类型都继承自 Object ，这也是通过原型链实现的。任何函数的默认原型都是一个 Object 的实例，这意味着这个实例有一个内部指针指 向 Object.prototype 。这也是为什么自定义类型能够继承包括 toString() 、 valueOf() 在内的所有默认方法的原因。因此前面的例子还有额外一层继承关系。图 8-5 展示了完整的原型链。
 
@@ -12695,7 +12637,7 @@ SubType 继承 SuperType ，而 SuperType 继承
 
 Object 。在调用 instance.toString() 时，实际上调用的是保存在 Object.prototype 上的方法。
 
-2.  原型与继承关系
+2. 原型与继承关系
 
 原型与实例的关系可以通过两种方式来确定。第一种方式是使用
 
@@ -12725,7 +12667,7 @@ SubType 的实例，因为 instance 的原型链中包含这些构造函数的�
 console.log(Object.prototype.isPrototypeOf(in stance)); // true console.log(SuperType.prototype.isPrototypeOf (instance)); // true console.log(SubType.prototype.isPrototypeOf(i nstance)); // true
 ```
 
-3.  关于方法
+3. 关于方法
 
 子类有时候需要覆盖父类的方法，或者增加父类没有的方法。为此，这些方法必须在原型赋值之后再添加到原型上。来看下面的例子：
 
@@ -12809,7 +12751,7 @@ console.log(instance.getSuperValue()); // 出错！
 
 了。 SubType 和 SuperType 之间也没有关系了。
 
-4.  原型链的问题
+4. 原型链的问题
 
 原型链虽然是实现继承的强大工具，但它也有问题。主要问题出现在原型中包含引用值的时候。前面在谈到原型的问题时也提到过，原型中包含的引用值会在所有实例间共享，这也是为什么属性通常会在构造函数中定义而不会定义在原型上的原因。在使用原型实现继承时，原型实际上变成了另一个类型的实例。这意味着原先的实例属性摇身一变成为了原型属性。下面的例子揭示了这个问题：
 
@@ -12846,7 +12788,7 @@ instance2.colors 上就可以看出来。
 
 原型链的第二个问题是，子类型在实例化时不能给父类型的构造函数传参。事实上，我们无法在不影响所有对象实例的情况下把参数传进父类的构造函数。再加上之前提到的原型中包含引用值的问题，就导致原型链基本不会被单独使用。
 
-2.  盗用构造函数
+### 8.3.2 盗用构造函数
 
 为了解决原型包含引用值导致的继承问题，一种叫作“盗用构造函数”（constructor stealing）的技术在开发社区流行起来（这种技术有时也称作“对象伪装”或“经典继承”）。基本思路很简单：在子类构造函数中调用父类构造函数。因为毕竟函数就是在特定上下文中执行代码的简单对象，所以可以使用 apply() 和 call() 方法以新创建的对象为上下文执行构造函数。来看下面的例子：
 
@@ -12877,7 +12819,7 @@ SubType 的实例创建的新对象的上下文中执行了。这相当于新的
 
 SubType 对象上运行了 SuperType() 函数中的所有初始化代码。结果就是每个实例都会有自己的 colors 属性。
 
-1.  传递参数
+1. 传递参数
 
 相比于使用原型链，盗用构造函数的一个优点就是可以在子类构造函数中向父类构造函数传参。来看下面的例子：
 
@@ -12904,11 +12846,11 @@ console.log(instance.name); // "Nicholas"; console.log(instance.age); // 29
 
 SuperType 构造函数时传入这个参数，实际上会在 SubType 的实例上定义 name 属性。为确保 SuperType 构造函数不会覆盖 SubType 定义的属性，可以在调用父类构造函数之后再给子类实例添加额外的属性。
 
-2.  盗用构造函数的问题
+2. 盗用构造函数的问题
 
 盗用构造函数的主要缺点，也是使用构造函数模式自定义类型的问题：必须在构造函数中定义方法，因此函数不能重用。此外，子类也不能访问父类原型上定义的方法，因此所有类型只能使用构造函数模式。由于存在这些问题，盗用构造函数基本上也不能单独使用。
 
-3.  组合继承
+### 8.3.3 组合继承
 
 组合继承（有时候也叫伪经典继承）综合了原型链和盗用构造函数，将两者的优点集中了起来。基本的思路是使用原型链继承原型上的属性和方法，而通过盗用构造函数继承实例属性。这样既可以把方法定义在原型上以实现重用，又可以让每个实例都有自己的属性。来看下面的例子：
 
@@ -12966,7 +12908,7 @@ colors ，同时还共享相同的方法。
 
 组合继承弥补了原型链和盗用构造函数的不足，是 JavaScript 中使用最多的继承模式。而且组合继承也保留了 instanceof 操作符和 isPrototypeOf() 方法识别合成对象的能力。
 
-4.  原型式继承
+### 8.3.4 原型式继承
 
 2006 年，Douglas Crockford 写了一篇文章：《JavaScript 中的原型式继承》（“Prototypal Inheritance in JavaScript”）。这篇文章介绍了一种不涉及严格意义上构造函数的继承方法。他的出发点是即使不自定义类型也可以通过原型实现对象之间的信息共享。文章最终给出了一个函数：
 
@@ -13046,7 +12988,7 @@ console.log(anotherPerson.name); // "Greg"
 
 原型式继承非常适合不需要单独创建构造函数，但仍然需要在对象间共享信息的场合。但要记住，属性中包含的引用值始终会在相关对象间共享，跟使用原型模式是一样的。
 
-5.  寄生式继承
+### 8.3.5 寄生式继承
 
 与原型式继承比较接近的一种继承方式是寄生式继承（parasitic inheritance），也是 Crockford 首倡的一种模式。寄生式继承背后的思路类似于寄生构造函数和工厂模式：创建一个实现继承的函数，以某种方式增强对象，然后返回这个对象。基本的寄生继承模式如下：
 
@@ -13085,7 +13027,7 @@ anotherPerson.sayHi(); // "hi"
 
 > 注意 通过寄生式继承给对象添加函数会导致函数难以重用，与构造函数模式类似。
 
-6.  寄生式组合继承
+### 8.3.6 寄生式组合继承
 
 组合继承其实也存在效率问题。最主要的效率问题就是父类构造函数始终会被调用两次：一次在是创建子类原型时调用，另一次是在子类构造函数中调用。本质上，子类原型最终是要包含超类对象的所有实例属性，子类构造函数只要在执行时重写自己的原型就行了。再来看一看这个组合继承的例子：
 
@@ -13176,13 +13118,13 @@ SubType.prototype.sayAge = function () {
 
 SubType.prototype 上不必要也用不到的属性，因此可以说这个例子的效率更高。而且，原型键仍然保持不变，因此 instanceof 操作符和 isPrototypeOf() 方法正常有效。寄生式组合继承可以算是引用类型继承的最佳模式。
 
-1.  类
+## 8.4 类
 
 前几节深入讲解了如何只使用 ECMAScript 5 的特性来模拟类似于类（class-like）的行为。不难看出，各种策略都有自己的问题，也有相应的妥协。正因为如此，实现继承的代码也显得非常冗长和混乱。
 
 为解决这些问题，ECMAScript 6 新引入的 class 关键字具有正式定义类的能力。类（class）是 ECMAScript 中新的基础性语法糖结构，因此刚开始接触时可能会不太习惯。虽然 ECMAScript 6 类表面上看起来可以支持正式的面向对象编程，但实际上它背后使用的仍然是原型和构造函数的概念。
 
-1.  类定义
+### 8.4.1 类定义
 
 与函数类型相似，定义类也有两种主要方式：类声明和类表达式。这两种方式都使用 class 关键字加大括号：
 
@@ -13271,19 +13213,19 @@ p.identify(); // PersonName PersonName
 console.log(Person.name); // PersonName console.log(PersonName); // ReferenceError: PersonName is not defined
 ```
 
-2.  类构造函数
+### 8.4.2 类构造函数
 
 constructor 关键字用于在类定义块内部创建类的构造函数。方法名 constructor 会告诉解释器在使用 new 操作符创建类的新实例时，应该调用这个函数。构造函数的定义不是必需的，不定义构造函数相当于将构造函数定义为空函数。
 
-1.  实例化
+1. 实例化
 
 使用 new 操作符实例化 Person 的操作等于使用 new 调用其构造函数。唯一可感知的不同之处就是，JavaScript 解释器知道使用 new 和类意味着应该使用 constructor 函数进行实例化。使用 new 调用类的构造函数会执行如下操作。
 
-1.  在内存中创建一个新对象。
-2.  这个新对象内部的 `[[Prototype]]` 指针被赋值为构造函数的 prototype 属性。
-3.  构造函数内部的 this 被赋值为这个新对象（即 this 指向新对象）。
-4.  执行构造函数内部的代码（给新对象添加属性）。
-5.  如果构造函数返回非空对象，则返回该对象；否则，返回刚创建的新对象。
+1. 在内存中创建一个新对象。
+2. 这个新对象内部的 `[[Prototype]]` 指针被赋值为构造函数的 prototype 属性。
+3. 构造函数内部的 this 被赋值为这个新对象（即 this 指向新对象）。
+4. 执行构造函数内部的代码（给新对象添加属性）。
+5. 如果构造函数返回非空对象，则返回该对象；否则，返回刚创建的新对象。
 
 来看下面的例子：
 
@@ -13372,7 +13314,7 @@ p1.constructor();
 let p2 = new p1.constructor();
 ```
 
-2.  把类当成特殊函数
+2. 把类当成特殊函数
 
 ECMAScript 中没有正式的类这个类型。从各方面来看， ECMAScript 类就是一种特殊函数。声明一个类之后，通过
 
@@ -13488,11 +13430,11 @@ let p = new (class Foo {
 console.log(p); // Foo {}
 ```
 
-3.  实例、原型和类成员
+### 8.4.3 实例、原型和类成员
 
 类的语法可以非常方便地定义应该存在于实例上的成员、应该存在于原型上的成员，以及应该存在于类本身的成员。
 
-1.  实例成员
+1. 实例成员
 
 每次通过 new 调用类标识符时，都会执行类构造函数。在这个函数内部，可以为新创建的实例（ this ）添加“自有”属性。至于添加什么样的属性，则没有限制。另外，在构造函数执行完毕后，仍然可以给实例继续添加新成员。
 
@@ -13540,7 +13482,7 @@ p1.sayName(); // Jake
 p2.sayName(); // J-Dog
 ```
 
-2.  原型方法与访问器
+2. 原型方法与访问器
 
 为了在实例间共享方法，类定义语法把在类块中定义的方法作为原型方法。
 
@@ -13616,7 +13558,7 @@ p.name = 'Jake';
 console.log(p.name); // Jake
 ```
 
-3.  静态类方法
+3. 静态类方法
 
 可以在类上定义静态方法。这些方法通常用于执行不特定于实例的操作，也不要求存在类的实例。与原型成员类似，每个类上只能有一个静态成员。
 
@@ -13670,7 +13612,7 @@ class Person {
 console.log(Person.create()); // Person { age_: ... }
 ```
 
-4.  非函数原型和类成员
+4. 非函数原型和类成员
 
 虽然类定义并不显式支持在原型或类上添加成员数据，但在类定义外部，可以手动添加：
 
@@ -13698,7 +13640,7 @@ let p = new Person(); p.sayName(); // My name is Jake
 
 > 注意 类定义中之所以没有显式支持添加数据成员，是因为在共享目标（原型和类）上添加可变（可修改）数据成员是一种反模式。一般来说，对象实例应该独自拥有通过 this 引用的数据。
 
-5.  迭代器与生成器方法
+5. 迭代器与生成器方法
 
 类定义语法支持在原型和类本身上定义生成器方法：
 
@@ -13788,11 +13730,11 @@ for (let [idx, nickname] of p) {
 // J-Dog
 ```
 
-4.  继承
+### 8.4.4 继承
 
 本章前面花了大量篇幅讨论如何使用 ES5 的机制实现继承。 ECMAScript 6 新增特性中最出色的一个就是原生支持了类继承机制。虽然类继承使用的是新语法，但背后依旧使用的是原型链。
 
-1.  继承基础
+1. 继承基础
 
 ES6 类支持单继承。使用 extends 关键字，就可以继承任何拥有 [[Construct]] 和原型的对象。很大程度上，这意味着不仅可以继承一个类，也可以继承普通的构造函数（保持向后兼容）：
 
@@ -13847,7 +13789,7 @@ class Vehicle {}
 
 extends 关键字也可以在类表达式中使用，因此 `let Bar = class extends Foo {}` 是有效的语法。
 
-2.  构造函数、 HomeObject 和 super()
+2. 构造函数、 HomeObject 和 super()
 
 派生类的方法可以通过 super 关键字引用它们的原型。这个关键字只能在派生类中使用，而且仅限于类构造函数、实例方法和静态方法内部。在类构造函数中使用 super 可以调用父类构造函数。
 
@@ -14013,7 +13955,7 @@ class Van extends Vehicle { constructor() {
 return {};
 ```
 
-3.  抽象基类
+3. 抽象基类
 
 有时候可能需要定义这样一个类，它可供其他类继承，但本身不会被实例化。虽然 ECMAScript 没有专门支持这种类的语法 ，但通过 new.target 也很容易实现。 new.target 保存通过 new 关键字调用的类或函数。通过在实例化时检测 new.target 是不是抽象基类，可以阻止对抽象基类的实例化：
 
@@ -14075,7 +14017,7 @@ new Bus(); // success!
 new Van(); // Error: Inheriting class must define foo()
 ```
 
-4.  继承内置类型
+4. 继承内置类型
 
 ES6 类为继承内置引用类型提供了顺畅的机制，开发者可以方便地扩展内置类型：
 
@@ -14147,7 +14089,7 @@ console.log(a2); // [1, 3, 5] console.log(a1 instanceof SuperArray); // true
 console.log(a2 instanceof SuperArray); // false
 ```
 
-5.  类混入
+5. 类混入
 
 把不同类的行为集中到一个类是一种常见的 JavaScript 模式。虽然
 
@@ -14255,28 +14197,23 @@ let b = new Bus();
 
 > 注意 很多 JavaScript 框架（特别是 React）已经抛弃混入模式，转向了复合模式（把方法提取到独立的类和辅助对象中， 然后把它们组合起来，但不使用继承）。这反映了那个众所周知的软件设计原则：“复合胜过继承（composition over inheritance）。”这个设计原则被很多人遵循，在代码设计中能 提供极大的灵活性。
 
-2.  小结
+## 8.5 小结
 
 对象在代码执行过程中的任何时候都可以被创建和增强，具有极大的动态性，并不是严格定义的实体。下面的模式适用于创建对象。
 
-工厂模式就是一个简单的函数，这个函数可以创建对象，为它添加属性和方法，然后返回这个对象。这个模式在构造函数模式出现后就很少用了。
-
-使用构造函数模式可以自定义引用类型，可以使用 new 关键字像创建内置类型实例一样创建自定义类型的实例。不过，构造函数模式也有不足，主要是其成员无法重用，包括函数。考虑到函数本身是松散的、弱类型的，没有理由让函数不能在多个对象实例间共享。
-
-原型模式解决了成员共享的问题，只要是添加到构造函数 prototype 上的属性和方法就可以共享。而组合构造函数和原型模式通过构造函数定义实例属性，通过原型定义共享的属性和方法。
+- 工厂模式就是一个简单的函数，这个函数可以创建对象，为它添加属性和方法，然后返回这个对象。这个模式在构造函数模式出现后就很少用了。
+- 使用构造函数模式可以自定义引用类型，可以使用 new 关键字像创建内置类型实例一样创建自定义类型的实例。不过，构造函数模式也有不足，主要是其成员无法重用，包括函数。考虑到函数本身是松散的、弱类型的，没有理由让函数不能在多个对象实例间共享。
+- 原型模式解决了成员共享的问题，只要是添加到构造函数 prototype 上的属性和方法就可以共享。而组合构造函数和原型模式通过构造函数定义实例属性，通过原型定义共享的属性和方法。
 
 JavaScript 的继承主要通过原型链来实现。原型链涉及把构造函数的原型赋值为另一个类型的实例。这样一来，子类就可以访问父类的所有属性和方法，就像基于类的继承那样。原型链的问题是所有继承的属性和方法都会在对象实例间共享，无法做到实例私有。盗用构造函数模式通过在子类构造函数中调用父类构造函数，可以避免这个问题。这样可以让每个实例继承的属性都是私有的，但要求类型只能通过构造函数模式来定义（因为子类不能访问父类原型上的方法）。目前最流行的继承模式是组合继承，即通过原型链继承共享的属性和方法，通过盗用构造函数继承实例属性。
 
 除上述模式之外，还有以下几种继承模式。
 
-原型式继承可以无须明确定义构造函数而实现继承，本质上是对给定对象执行浅复制。这种操作的结果之后还可以再进一步增 强。
-
-与原型式继承紧密相关的是寄生式继承，即先基于一个对象创建一个新对象，然后再增强这个新对象，最后返回新对象。这个模式也被用在组合继承中，用于避免重复调用父类构造函数导致的浪费。
-
-寄生组合继承被认为是实现基于类型继承的最有效方式。
+- 原型式继承可以无须明确定义构造函数而实现继承，本质上是对给定对象执行浅复制。这种操作的结果之后还可以再进一步增 强。
+- 与原型式继承紧密相关的是寄生式继承，即先基于一个对象创建一个新对象，然后再增强这个新对象，最后返回新对象。这个模式也被用在组合继承中，用于避免重复调用父类构造函数导致的浪费。
+- 寄生组合继承被认为是实现基于类型继承的最有效方式。
 
 ECMAScript 6 新增的类很大程度上是基于既有原型机制的语法糖。类的语法让开发者可以优雅地定义向后兼容的类，既可以继承内置类型，也可以继承自定义类型。类有效地跨越了对象实例、对象原型和对象类之间的鸿沟。
-
 # 第 9 章 代理与反射
 
 本章内容
