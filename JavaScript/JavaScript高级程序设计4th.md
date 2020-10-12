@@ -1011,13 +1011,11 @@ let 与 var 的另一个重要的区别，就是 let 声明的变量不会在作
 
 ```js
 // name 会被提升
-
 console.log(name); // undefined
 
 var name = 'Matt';
 
 // age 不会被提升
-
 console.log(age); // ReferenceError：age 没有定义
 
 let age = 26;
@@ -1051,16 +1049,12 @@ console.log(window.age); // undefined
 </script>
 
 <script>
-  // 假设脚本不确定页面中是否已经声明了同名变量
-
-  // 那它可以假设还没有声明过
-
+  // 假设脚本不确定页面中是否已经声明了同名变量``
+  // 那它可以假设还没有声明过``
   var name = 'Matt';
 
-  // 这里没问题，因为可以被作为一个提升声明来处理
-
-  // 不需要检查之前是否声明过同名变量
-
+  // 这里没问题，因为可以被作为一个提升声明来处理``
+  // 不需要检查之前是否声明过同名变量``
   let age = 36;
 
   // 如果 age 之前声明过，这里会报错
@@ -1074,37 +1068,22 @@ console.log(window.age); // undefined
   let name = 'Nicholas';
   let age = 36;
 </script>
-
 <script>
-
   // 假设脚本不确定页面中是否已经声明了同名变量
-
   // 那它可以假设还没有声明过
-
-  if (typeof name === 'undefined') { let name;
-
+  if (typeof name === 'undefined') {
+    let name;
   }
-
   // name 被限制在 if {} 块的作用域内
-
   // 因此这个赋值形同全局赋值
-
   name = 'Matt';
-
-  try (age) {
-
-  // 如果 age 没有声明过，则会报错
-
+  try {
+    console.log(age); // 如果 age 没有声明过，则会报错
+  } catch (error) {
+    let age;
   }
-
-  catch(error) { let age;
-
-  }
-
   // age 被限制在 catch {}块的作用域内
-
   // 因此这个赋值形同全局赋值
-
   age = 26;
 </script>
 ```
@@ -1171,13 +1150,10 @@ const age = 26;
 age = 36; // TypeError: 给常量赋值
 
 // const 也不允许重复声明
-
 const name = 'Matt';
-
 const name = 'Nicholas'; // SyntaxError
 
 // const 声明的作用域也是块
-
 const name = 'Matt';
 if (true) {
   const name = 'Nicholas';
@@ -1207,19 +1183,16 @@ let i = 0;
 for (const j = 7; i < 5; ++i) {
   console.log(j);
 }
-
 // 7, 7, 7, 7, 7
 
 for (const key in { a: 1, b: 2 }) {
   console.log(key);
 }
-
 // a, b
 
 for (const value of [1, 2, 3, 4, 5]) {
   console.log(value);
 }
-
 // 1, 2, 3, 4, 5
 ```
 
@@ -1319,9 +1292,7 @@ console.log(typeof age); // "undefined"
 
 无论是声明还是未声明， typeof 返回的都是字符串 "undefined" 。逻辑上讲这是对的，因为虽然严格来讲这两个变量存在根本性差异，但它对任何一个变量都不可能执行什么真正的操作。
 
-> 注意 即使未初始化的变量会被自动赋予 undefined 值，但我们仍然建议在声明变量的同时进行初始化。这样，当 typeof 返
-
-回 "undefined" 时，你就会知道那是因为给定的变量尚未声明，而不是声明了但未初始化。
+> 注意 即使未初始化的变量会被自动赋予 undefined 值，但我们仍然建议在声明变量的同时进行初始化。这样，当 typeof 返回 "undefined" 时，你就会知道那是因为给定的变量尚未声明，而不是声明了但未初始化。
 
 undefined 是一个假值。因此，如果需要，可以用更简洁的方式检测它。不过要记住，也有很多其他可能的值同样是假值。所以一定要明确自己想检测的就是 undefined 这个字面值，而不仅仅是假值。
 
@@ -1452,7 +1423,6 @@ let octalNum3 = 08; // 无效的八进制值，当成 8 处理
 
 ```js
 let hexNum1 = 0xa; // 十 六 进 制 10
-
 let hexNum2 = 0x1f; // 十六进制 31
 ```
 
@@ -1572,9 +1542,7 @@ Number() 函数基于如下规则执行转换。
 
 从不同数据类型到数值的转换有时候会比较复杂，看一看 Number() 的转换规则就知道了。下面是几个具体的例子：
 
-可以看到，字符串 "Hello world" 转换之后是 NaN ，因为它找不到对应的数值。空字符串转换后是 0。字符串 000011 转换
-
-后是 11 ，因为前面的零被忽略了。最后， true 转换为 1。
+可以看到，字符串 "Hello world" 转换之后是 NaN ，因为它找不到对应的数值。空字符串转换后是 0。字符串 000011 转换后是 11 ，因为前面的零被忽略了。最后， true 转换为 1。
 
 > 注意 本章后面会讨论到的一元加操作符与 Number() 函数遵循相同的转换规则。
 
@@ -1787,15 +1755,13 @@ let value = 5;
 let exponent = 'second';
 
 // 以前，字符串插值是这样实现的：
-
 let interpolatedString =
   value + ' to the ' + exponent + ' power is ' + value * value;
 
 // 现在，可以用模板字面量这样实现：
-
-let interpolatedTemplateLiteral = `${value} to the ${exponent} power is
-
-${value * value}`;
+let interpolatedTemplateLiteral = `${value} to the ${exponent} power is ${
+  value * value
+}`;
 
 console.log(interpolatedString); // 5 to the second power is 25
 
@@ -1805,24 +1771,24 @@ console.log(interpolatedTemplateLiteral); // 5 to the second power is 25
 所有插入的值都会使用 toString() 强制转型为字符串，而且任何 JavaScript 表达式都可以用于插值。嵌套的模板字符串无须转义：
 
 ```js
-console.log(`Hello, \${ `World` }!`); // Hello, World!
+console.log(`Hello, ${`World`}!`); // Hello, World!
 ```
 
 将表达式转换为字符串时会调用 toString() ：
 
 ```js
 let foo = { toString: () => 'World' };
-console.log(`Hello, \${ foo }!`); // Hello, World!
+console.log(`Hello, ${foo}!`); // Hello, World!
 ```
 
 在插值表达式中可以调用函数和方法：
 
 ```js
 function capitalize(word) {
-  return `\${ word[0].toUpperCase() }\${ word.slice(1) }`;
+  return `${word[0].toUpperCase()}${word.slice(1)}`;
 }
 
-console.log(`\${ capitalize('hello') }, \${ capitalize('world') }!`); // Hello, World!
+console.log(`${capitalize('hello')}, ${capitalize('world')}!`); // Hello, World!
 ```
 
 此外，模板也可以插入自己之前的值：
@@ -1871,42 +1837,35 @@ console.log(taggedResult); // "foobar"
 ```js
 let a = 6;
 let b = 9;
-
 function simpleTag(strings, ...expressions) {
   console.log(strings);
-
   for (const expression of expressions) {
     console.log(expression);
   }
-
   return 'foobar';
 }
-
-let taggedResult = simpleTag`\${ a } + \${ b }
-
-= \${ a + b }`;
-
+let taggedResult = simpleTag`${a} + ${b} = ${a + b}`;
+// ["", " + ", " = ", ""]
+// 6
+// 9
+// 15
 console.log(taggedResult); // "foobar"
 ```
 
 对于有 n 个插值的模板字面量，传给标签函数的表达式参数的个数始终是 n，而传给标签函数的第一个参数所包含的字符串个数则始终是 n+1。因此，如果你想把这些字符串和对表达式求值的结果拼接起来作为默认返回的字符串，可以这样做：
 
 ```js
-let a = 6; let b = 9;
-
-function zipTag(strings, ...expressions) { return strings[0] +
-
-expressions.map((e, i) =>
-
-`\${e}\${strings[i + 1]}`)
-
-.join('');
-
+let a = 6;
+let b = 9;
+function zipTag(strings, ...expressions) {
+  return (
+    strings[0] + expressions.map((e, i) => `${e}${strings[i + 1]}`).join('')
+  );
 }
-
-let untaggedResult = `\${ a } + \${ b } = \${ a + b }`;
-
-let taggedResult = zipTag`\${ a } + \${ b } =
+let untaggedResult = `${a} + ${b} = ${a + b}`;
+let taggedResult = zipTag`${a} + ${b} = ${a + b}`;
+console.log(untaggedResult); // "6 + 9 = 15"
+console.log(taggedResult); // "6 + 9 = 15"
 ```
 
 7. 原始字符串
@@ -1916,11 +1875,11 @@ let taggedResult = zipTag`\${ a } + \${ b } =
 ```js
 // Unicode 示例
 
-// \\u00A9 是版权符号
+// \u00A9 是版权符号
 
-console.log(`\\u00A9`); // ©
+console.log(`\u00A9`); // ©
 
-console.log(String.raw`\\u00A9`); // \\u00A9
+console.log(String.raw`\u00A9`); // \u00A9
 
 // 换行符示例
 
@@ -1949,7 +1908,7 @@ console.log(String.raw`first line second line`);
 // second line
 ```
 
-另外，也可以通过标签函数的第一个参数，即字符串数组的 .raw 属性取得每个字符串的原始内容：
+另外，也可以通过标签函数的第一个参数，即字符串数组的 `.raw` 属性取得每个字符串的原始内容：
 
 ```js
 function printRaw(strings) {
@@ -1964,7 +1923,7 @@ function printRaw(strings) {
   }
 }
 
-printRaw`\\u00A9\${ 'and' }\\n`;
+printRaw`\u00A9${'and'}\\n`;
 
 // Actual characters:
 
@@ -1974,7 +1933,7 @@ printRaw`\\u00A9\${ 'and' }\\n`;
 
 // Escaped characters:
 
-// \\u00A9
+// \u00A9
 
 // \\n
 ```
@@ -2020,9 +1979,7 @@ let fooSymbol = Symbol('foo');
 console.log(fooSymbol); // Symbol(foo);
 ```
 
-最重要的是， Symbol() 函数不能用作构造函数，与 new 关键字一起使用。这样做是为了避免创建符号包装对象，像使用
-
-Boolean 、 String 或 Number 那样，它们都支持构造函数且可用于初始化包含原始值的包装对象：
+最重要的是， Symbol() 函数不能用作构造函数，与 new 关键字一起使用。这样做是为了避免创建符号包装对象，像使用 Boolean 、 String 或 Number 那样，它们都支持构造函数且可用于初始化包含原始值的包装对象：
 
 ```js
 let myBoolean = new Boolean();
@@ -2058,11 +2015,9 @@ Symbol.for() 对每个字符串键都执行幂等操作。第一次使用某个�
 let fooGlobalSymbol = Symbol.for('foo');
 
 // 创建新符号
-
 let otherFooGlobalSymbol = Symbol.for('foo');
 
 // 重用已有符号
-
 console.log(fooGlobalSymbol === otherFooGlobalSymbol); // true
 ```
 
@@ -2076,9 +2031,7 @@ let globalSymbol = Symbol.for('foo');
 console.log(localSymbol === globalSymbol); // false
 ```
 
-全局注册表中的符号必须使用字符串键来创建，因此作为参数传给 Symbol.for() 的任何值都会被转换为字符串。此外，注册
-
-表中使用的键同时也会被用作符号描述。
+全局注册表中的符号必须使用字符串键来创建，因此作为参数传给 Symbol.for() 的任何值都会被转换为字符串。此外，注册表中使用的键同时也会被用作符号描述。
 
 ```js
 let emptyGlobalSymbol = Symbol.for();
@@ -2107,13 +2060,7 @@ Symbol.keyFor(123); // TypeError: 123 is not a symbol
 
 3. 使用符号作为属性
 
-凡是可以使用字符串或数值作为属性的地方，都可以使用符号。这就包括了对象字面量属性和
-
-```js
-Object.defineProperty() / Object.definedPropert;
-```
-
-ies() 定义的属性。对象字面量只能在计算属性语法中使用符号作为属性。
+凡是可以使用字符串或数值作为属性的地方，都可以使用符号。这就包括了对象字面量属性和`Object.defineProperty()`/`Object.defineProperties()`定义的属性。对象字面量只能在计算属性语法中使用符号作为属性。
 
 ```js
 let o = {
@@ -2145,38 +2092,31 @@ console.log(o);
 // Symbol(baz): baz val, Symbol(qux): qux val}
 ```
 
-类似于 Object.getOwnPropertyNames() 返回对象实例的常规属性数组， Object.getOwnPropertySymbols() 返回对象实例的符号属性数组。这两个方法的返回值彼此互斥。
+类似于 `Object.getOwnPropertyNames()` 返回对象实例的常规属性数组， `Object.getOwnPropertySymbols()` 返回对象实例的符号属性数组。这两个方法的返回值彼此互斥。
 
-Object.getOwnPropertyDescriptors() 会返回同时包含常规和符号属性描述符的对象。 Reflect.ownKeys() 会返回两种类型的键：
+`Object.getOwnPropertyDescriptors()` 会返回同时包含常规和符号属性描述符的对象。 `Reflect.ownKeys()` 会返回两种类型的键：
 
 ```js
-let s1 = Symbol('foo'), s2 = Symbol('bar');
-
+let s1 = Symbol('foo'),
+  s2 = Symbol('bar'),
+  s3 = Symbol('baz'),
+  s4 = Symbol('qux');
 let o = {
-
-[s1]: 'foo val',
-
-[s2]: 'bar val', baz: 'baz val', qux: 'qux val'
-
+  [s1]: 'foo val',
 };
-
-console.log(Object.getOwnPropertySymbols(o));
-
-// [Symbol(foo), Symbol(bar)]
-
-console.log(Object.getOwnPropertyNames(o));
-
-// ["baz", "qux"]
-
-console.log(Object.getOwnPropertyDescriptors( o));
-
-// {baz: {...}, qux: {...}, Symbol(foo):
-
-{...}, Symbol(bar): {...}}
-
-console.log(Reflect.ownKeys(o));
-
-// ["baz", "qux", Symbol(foo), Symbol(bar)]
+// 这样也可以： o[s1] = 'foo val';
+console.log(o);
+// {Symbol(foo): foo val}
+Object.defineProperty(o, s2, { value: 'bar val' });
+console.log(o);
+// {Symbol(foo): foo val, Symbol(bar): bar val}
+Object.defineProperties(o, {
+  [s3]: { value: 'baz val' },
+  [s4]: { value: 'qux val' },
+});
+console.log(o);
+// {Symbol(foo): foo val, Symbol(bar): bar val,
+// Symbol(baz): baz val, Symbol(qux): qux val}
 ```
 
 因为符号属性是对内存中符号的一个引用，所以直接创建并用作属性的符号不会丢失。但是，如果没有显式地保存对这些属性的引用，那么必须遍历对象的所有符号属性才能找到相应的属性 键：
@@ -2257,17 +2197,11 @@ asyncCount();
 
 注意
 
-Symbol.asyncIterator 是 ES2018 规范定义的，因
-
-此只有版本非常新的浏览器支持它。关于异步迭代和 for-
-
-await-of 循环的细节，参见附录 A。
+Symbol.asyncIterator 是 ES2018 规范定义的，因此只有版本非常新的浏览器支持它。关于异步迭代和 for-await-of 循环的细节，参见附录 A。
 
 6. Symbol.hasInstance
 
-根据 ECMAScript 规范，这个符号作为一个属性表示“一个方法，该方法决定一个构造器对象是否认可一个对象是它的实例。由
-
-instanceof 操作符使用”。 instanceof 操作符可以用来确定一个对象实例的原型链上是否有原型。 instanceof 的典型使用场景如下：
+根据 ECMAScript 规范，这个符号作为一个属性表示“一个方法，该方法决定一个构造器对象是否认可一个对象是它的实例。由 instanceof 操作符使用”。 instanceof 操作符可以用来确定一个对象实例的原型链上是否有原型。 instanceof 的典型使用场景如下：
 
 ```js
 function Foo() {}
@@ -2690,11 +2624,11 @@ let o = new Object();
 
 这个语法类似 Java，但 ECMAScript 只要求在给构造函数提供参数时使用括号。如果没有参数，如上面的例子所示，那么完全可以省略括号（不推荐）：
 
-```js
-let o = new Object(); // 合法，但不推荐
+```
+let o = new Object; // 合法，但不推荐
 ```
 
-Object 的实例本身并不是很有用，但理解与它相关的概念非常重要。类似 Java 中的 java.lang.Object ，ECMAScript 中的 Object 也是派生其他对象的基类。 Object 类型的所有属性和方法在派生的对象上同样存在。
+Object 的实例本身并不是很有用，但理解与它相关的概念非常重要。类似 Java 中的 `java.lang.Object` ，ECMAScript 中的 Object 也是派生其他对象的基类。 Object 类型的所有属性和方法在派生的对象上同样存在。
 
 每个 Object 实例都有如下属性和方法。
 
@@ -3311,9 +3245,7 @@ let result2 = 5 + '5'; // 一个数值和一个字符串
 console.log(result2); // "55"
 ```
 
-以上代码展示了加法操作符的两种运算模式。正常情况下， 5 + 5 等于 10（数值），如前两行代码所示。但是，如果将一个操作
-
-数改为字符串，比如 "5" ，则相加的结果就变成了 "55" （原始字符串值），因为第一个操作数也会被转换为字符串。
+以上代码展示了加法操作符的两种运算模式。正常情况下， 5 + 5 等于 10（数值），如前两行代码所示。但是，如果将一个操作数改为字符串，比如 "5" ，则相加的结果就变成了 "55" （原始字符串值），因为第一个操作数也会被转换为字符串。
 
 ECMAScript 中最常犯的一个错误，就是忽略加法操作中涉及的数据类型。比如下面这个例子：
 
@@ -3326,9 +3258,7 @@ let message = 'The sum of 5 and 10 is ' + num1 + num2;
 console.log(message); // "The sum of 5 and 10 is 510"
 ```
 
-这里，变量 message 中保存的是一个字符串，是执行两次加法操作之后的结果。有人可能会认为最终得到的字符串是 "The sum of 5 and 10 is 15" 。可是，实际上得到的是 "The
-
-sum of 5 and 10 is 510" 。这是因为每次加法运算都是独立完成的。第一次加法的操作数是一个字符串和一个数值（5），结果还是一个字符串。第二次加法仍然是用一个字符串去加一个数值（10），同样也会得到一个字符串。如果想真正执行数学计算，然后把结果追加到字符串末尾，只要使用一对括号即可：
+这里，变量 message 中保存的是一个字符串，是执行两次加法操作之后的结果。有人可能会认为最终得到的字符串是 "The sum of 5 and 10 is 15" 。可是，实际上得到的是 "The sum of 5 and 10 is 510" 。这是因为每次加法运算都是独立完成的。第一次加法的操作数是一个字符串和一个数值（5），结果还是一个字符串。第二次加法仍然是用一个字符串去加一个数值（10），同样也会得到一个字符串。如果想真正执行数学计算，然后把结果追加到字符串末尾，只要使用一对括号即可：
 
 ```js
 let num1 = 5;
@@ -3349,9 +3279,7 @@ console.log(message); // "The sum of 5 and 10 is 15"
 let result = 2 - 1;
 ```
 
-与加法操作符一样，减法操作符也有一组规则用于处理
-
-ECMAScript 中不同类型之间的转换。
+与加法操作符一样，减法操作符也有一组规则用于处理 ECMAScript 中不同类型之间的转换。
 
 如果两个操作数都是数值，则执行数学减法运算并返回结果。
 
@@ -3359,9 +3287,7 @@ ECMAScript 中不同类型之间的转换。
 
 如果是 Infinity 减 Infinity ，则返回 NaN 。 如果是 -Infinity 减 -Infinity ，则返回 NaN 。
 
-如果是 Infinity 减 -Infinity ，则返回 Infinity 。如果是 -Infinity 减 Infinity ，则返回 -
-
-Infinity 。
+如果是 Infinity 减 -Infinity ，则返回 Infinity 。如果是 -Infinity 减 Infinity ，则返回 -Infinity 。
 
 如果是 +0 减 +0 ，则返回 +0 。
 
@@ -3390,7 +3316,7 @@ let result6 = 5 - null; // null 被转换为 0，所以结果是 5
 关系操作符执行比较两个值的操作，包括小于（ `<` ）、大于（ `>` ）、小于等于（ `<=` ）和大于等于（ `>=` ），用法跟数学课上学的一样。这几个操作符都返回布尔值，如下所示：
 
 ```js
-let result1 = 5 \> 3; // true
+let result1 = 5 > 3; // true
 
 let result2 = 5 < 3; // false
 ```
@@ -3407,9 +3333,7 @@ let result2 = 5 < 3; // false
 
 如果有任一操作数是布尔值，则将其转换为数值再执行比较。
 
-在使用关系操作符比较两个字符串时，会发生一个有趣的现象。很多人认为小于意味着“字母顺序靠前”，而大于意味着“字母顺序靠 后”，实际上不是这么回事。对字符串而言，关系操作符会比较字符串中对应字符的编码，而这些编码是数值。比较完之后，会返回布尔
-
-值。问题的关键在于，大写字母的编码都小于小写字母的编码，因此以下这种情况就会发生：
+在使用关系操作符比较两个字符串时，会发生一个有趣的现象。很多人认为小于意味着“字母顺序靠前”，而大于意味着“字母顺序靠 后”，实际上不是这么回事。对字符串而言，关系操作符会比较字符串中对应字符的编码，而这些编码是数值。比较完之后，会返回布尔值。问题的关键在于，大写字母的编码都小于小写字母的编码，因此以下这种情况就会发生：
 
 ```js
 let result = 'Brick' < 'alphabet'; // true
@@ -3450,7 +3374,7 @@ NaN 。这里有一个规则，即任何关系操作符在涉及比较 NaN 时�
 ```js
 let result1 = NaN < 3; // false
 
-let result2 = NaN \>= 3; // false
+let result2 = NaN >= 3; // false
 ```
 
 在大多数比较的场景中，如果一个值不小于另一个值，那就一定大于或等于它。但在比较 NaN 时，无论是小于还是大于等于，比较
@@ -3463,9 +3387,7 @@ let result2 = NaN \>= 3; // false
 
 1. 等于和不等于
 
-ECMAScript 中的等于操作符用两个等于号（ == ）表示，如果操作数相等，则会返回 true 。不等于操作符用叹号和等于号
-
-（ != ）表示，如果两个操作数不相等，则会返回 true 。这两个操作符都会先进行类型转换（通常称为强制类型转换）再确定操作数是否相等。
+ECMAScript 中的等于操作符用两个等于号（ == ）表示，如果操作数相等，则会返回 true 。不等于操作符用叹号和等于号（ != ）表示，如果两个操作数不相等，则会返回 true 。这两个操作符都会先进行类型转换（通常称为强制类型转换）再确定操作数是否相等。
 
 在转换操作数的类型时，相等和不相等操作符遵循如下规则。 如果任一操作数是布尔值，则将其转换为数值再比较是否相等。 false 转换为 0， true 转换为 1。
 
@@ -3481,9 +3403,7 @@ null 和 undefined 不能转换为其他类型的值再进行比较。
 
 如果有任一操作数是 NaN ，则相等操作符返回 false ，不相等操作符返回 true 。记住：即使两个操作数都是
 
-NaN ，相等操作符也返回 false ，因为按照规则， NaN
-
-不等于 NaN 。
+NaN ，相等操作符也返回 false ，因为按照规则， NaN 不等于 NaN 。
 
 如果两个操作数都是对象，则比较它们是不是同一个对象。如果两个操作数都指向同一个对象，则相等操作符返回
 
@@ -3513,11 +3433,7 @@ let result1 = '55' != 55; // false，转换后相等
 let result2 = '55' !== 55; // true，不相等，因为数据类型不同
 ```
 
-这一次，第一个比较使用不相等操作符，它会把字符串 "55" 转
-
-换为数值 55 ，跟第二个操作数相等。既然转换后两个值相等，那就返回 false 。第二个比较使用不全等操作符。这时候可以这么问：“字符串 55 和数值 55 有区别吗？”答案
-
-是“有”（ true ）。
+这一次，第一个比较使用不相等操作符，它会把字符串 "55" 转换为数值 55 ，跟第二个操作数相等。既然转换后两个值相等，那就返回 false 。第二个比较使用不全等操作符。这时候可以这么问：“字符串 55 和数值 55 有区别吗？”答案是“有”（ true ）。
 
 另外，虽然 null == undefined 是 true （因为这两个值类似），但 null === undefined 是 false ，因为它们不是相同的数据类型。
 
@@ -3542,12 +3458,10 @@ boolean_expression 的值决定将哪个值赋给变量 variable 。如果 boole
 false_value 。比如：
 
 ```js
-let max = (num1 \> num2) ? num1 : num2;
+let max = num1 > num2 ? num1 : num2;
 ```
 
-在这个例子中， max 将被赋予一个最大值。这个表达式的意思是，如果 num1 大于 num2 （条件表达式为 true ），则将 num1 赋给 max 。否则，如果 num1 小于 num2 （条件表达式为
-
-false ），则将 num2 赋给 max 。
+在这个例子中， max 将被赋予一个最大值。这个表达式的意思是，如果 num1 大于 num2 （条件表达式为 true ），则将 num1 赋给 max 。否则，如果 num1 小于 num2 （条件表达式为 false ），则将 num2 赋给 max 。
 
 10. 赋值操作符
 
@@ -3573,29 +3487,27 @@ num += 10;
 
 每个数学操作符以及其他一些操作符都有对应的复合赋值操作符：
 
-乘后赋值（ \*= ） 除后赋值（ /= ） 取模后赋值（ \%= ）加后赋值（ += ） 减后赋值（ -= ）
+乘后赋值（ \*= ） 除后赋值（ /= ） 取模后赋值（ %= ）加后赋值（ += ） 减后赋值（ -= ）
 
-左移后赋值（ <<= ）右移后赋值（ \>>= ）
+左移后赋值（ <<= ）右移后赋值（ >>= ）
 
-无符号右移后赋值（ \>>>= ）
+无符号右移后赋值（ >>>= ）
 
 这些操作符仅仅是简写语法，使用它们不会提升性能。
 
 11. 逗号操作符
 
-逗号操作符可以用来在一条语句中执行多个操作，如下所示：
+逗号操作符可以用来在一条语句中执行多个操作，如下所示：```jset num1 = 1,
+num2 = 2,
+num3 = 3;
 
-```js
-let num1 = 1,
-  num2 = 2,
-  num3 = 3;
-```
+````
 
 在一条语句中同时声明多个变量是逗号操作符最常用的场景。不过，也可以使用逗号操作符来辅助赋值。在赋值时使用逗号操作符分隔值，最终会返回表达式中最后一个值：
 
 ```js
 let num = (5, 1, 4, 8, 0); // num 的值为 0
-```
+````
 
 在这个例子中， num 将被赋值为 0，因为 0 是表达式中最后一项。逗号操作符的这种使用场景并不多见，但这种行为的确存在。
 
@@ -3616,14 +3528,10 @@ if (condition) statement1 else statement2
 （即包含在一对花括号中的多行代码）。来看下面的例子：
 
 ```js
-if (i \> 25)
-
-console.log("Greater than 25."); // 只有一行代码的语句
-
+if (i > 25) console.log('Greater than 25.');
+// 只有一行代码的语句
 else {
-
-console.log("Less than or equal to 25."); // 一个语句块
-
+  console.log('Less than or equal to 25.'); // 一个语句块
 }
 ```
 
@@ -3638,16 +3546,12 @@ if (condition1) statement1 else if (condition2) statement2 else statement3
 下面是一个例子：
 
 ```js
-if (i \> 25) {
-
-console.log("Greater than 25.");
-
-} else if (i < 0) { console.log("Less than 0.");
-
+if (i > 25) {
+  console.log('Greater than 25.');
+} else if (i < 0) {
+  console.log('Less than 0.');
 } else {
-
-console.log("Between 0 and 25, inclusive.");
-
+  console.log('Between 0 and 25, inclusive.');
 }
 ```
 
@@ -3829,64 +3733,50 @@ break 和 continue 语句为执行循环代码提供了更严格的控制手段�
 ```js
 let num = 0;
 
-for (let i = 1; i < 10; i++) { if (i \% 5 == 0) {
+for (let i = 1; i < 10; i++) {
+  if (i % 5 == 0) {
+    break;
+  }
 
-break;
-
-}
-
-num++;
-
+  num++;
 }
 
 console.log(num); // 4
 ```
 
-在上面的代码中， for 循环会将变量 i 由 1 递增到 10。而在循环体内，有一个 if 语句用于检查 i 能否被 5 整除（使用取模操作
-
-符）。如果是，则执行 break 语句，退出循环。变量 num 的初始值为 0，表示循环在退出前执行了多少次。当 break 语句执行后，下一
+在上面的代码中， for 循环会将变量 i 由 1 递增到 10。而在循环体内，有一个 if 语句用于检查 i 能否被 5 整除（使用取模操作符）。如果是，则执行 break 语句，退出循环。变量 num 的初始值为 0，表示循环在前执行了多少次。当 break 语句执行后，下一
 
 行执行的代码是 console.log(num) ，显示 4。之所以循环执行了 4 次，是因为当 i 等于 5 时， break 语句会导致循环退出，该次循环不会执行递增 num 的代码。如果将 break 换成 continue ，则会出现不同的效果：
 
 ```js
 let num = 0;
 
-for (let i = 1; i < 10; i++) { if (i \% 5 == 0) {
+for (let i = 1; i < 10; i++) {
+  if (i % 5 == 0) {
+    continue;
+  }
 
-continue;
-
-}
-
-num++;
-
+  num++;
 }
 
 console.log(num); // 8
 ```
 
-这一次， console.log 显示 8，即循环被完整执行了 8 次。当
-
-i 等于 5 时，循环会在递增 num 之前退出，但会执行下一次迭代，此时 i 是 6。然后，循环会一直执行到自然结束，即 i 等于 10。最终
-
-num 的值是 8 而不是 9，是因为 continue 语句导致它少递增了一次。
+这一次， console.log 显示 8，即循环被完整执行了 8 次。当 i 等于 5 时，循环会在递增 num 之前退出，但会执行下一次迭代，此时 i 是 6。然后，循环会一直执行到自然结束，即 i 等于 10。最终 num 的值是 8 而不是 9，是因为 continue 语句导致它少递增了一次。
 
 break 和 continue 都可以与标签语句一起使用，返回代码中特定的位置。这通常是在嵌套循环中，如下面的例子所示：
 
 ```js
 let num = 0;
 
-outermost:
+outermost: for (let i = 0; i < 10; i++) {
+  for (let j = 0; j < 10; j++) {
+    if (i == 5 && j == 5) {
+      break outermost;
+    }
 
-for (let i = 0; i < 10; i++) { for (let j = 0; j < 10; j++) {
-
-if (i == 5 \&\& j == 5) { break outermost;
-
-}
-
-num++;
-
-}
-
+    num++;
+  }
 }
 
 console.log(num); // 55
@@ -3895,16 +3785,15 @@ console.log(num); // 55
 在这个例子中， outermost 标签标识的是第一个 for 语句。正常情况下，每个循环执行 10 次，意味着 num++ 语句会执行 100 次，而循环结束时 console.log 的结果应该是 100。但是， break 语句带来了一个变数，即要退出到的标签。添加标签不仅让 break 退出（使用变量 j 的）内部循环，也会退出（使用变量 i ）的外部循环。当执行到 i 和 j 都等于 5 时，循环停止执行，此时 num 的值是 55。 continue 语句也可以使用标签，如下面的例子所示：
 
 ```js
-continue outermost;
-
+let num = 0;
+outermost: for (let i = 0; i < 10; i++) {
+  for (let j = 0; j < 10; j++) {
+    if (i == 5 && j == 5) {
+      continue outermost;
+    }
+    num++;
+  }
 }
-
-num++;
-
-}
-
-}
-
 console.log(num); // 95
 ```
 
@@ -3929,9 +3818,7 @@ let hostName = location.hostname;
 let url = location.href;
 ```
 
-上面代码中的每一行都用到了 location 对象。如果使用
-
-with 语句，就可以少写一些代码：
+上面代码中的每一行都用到了 location 对象。如果使用 with 语句，就可以少写一些代码：
 
 ```js
 with (location) {
@@ -3942,9 +3829,7 @@ with (location) {
 }
 ```
 
-这里， with 语句用于连接 location 对象。这意味着在这个语句内部，每个变量首先会被认为是一个局部变量。如果没有找到该局部变量，则会搜索 location 对象，看它是否有一个同名的属
-
-性。如果有，则该变量会被求值为 location 对象的属性。
+这里， with 语句用于连接 location 对象。这意味着在这个语句内部，每个变量首先会被认为是一个局部变量。如果没有找到该局部变量，则会搜索 location 对象，看它是否有一个同名的属性。如果有，则该变量会被求值为 location 对象的属性。
 
 严格模式不允许使用 with 语句，否则会抛出错误。
 
@@ -4051,18 +3936,22 @@ switch ('hello world') {
 这个例子在 switch 语句中使用了字符串。第一个条件实际上使用的是表达式，求值为两个字符串拼接后的结果。因为拼接后的结果等于 switch 的参数，所以 console.log 会输出 "Greeting was found." 。能够在条件判断中使用表达式，就可以在判断中加入更多逻辑：
 
 ```js
-let num = 25; switch (true) {
+let num = 25;
+switch (true) {
+  case num < 0:
+    console.log('Less than 0.');
+    break;
 
-case num < 0: console.log("Less than 0."); break;
+  case num >= 0 && num <= 10:
+    console.log('Between 0 and 10.');
+    break;
 
-case num \>= 0 \&\& num <= 10: console.log("Between 0 and 10."); break;
+  case num > 10 && num <= 20:
+    console.log('Between 10 and 20.');
+    break;
 
-case num \> 10 \&\& num <= 20: console.log("Between 10 and 20."); break;
-
-default:
-
-console.log("More than 20.");
-
+  default:
+    console.log('More than 20.');
 }
 ```
 
@@ -4072,23 +3961,19 @@ console.log("More than 20.");
 
 switch 语句在比较每个条件的值时会使用全等操作符，
 
-因此不会强制转换数据类型（比如，字符串 "10" 不等于数值
-
-10）。
+因此不会强制转换数据类型（比如，字符串 "10" 不等于数值 10）。
 
 ## 3.7 函数
 
-函数对任何语言来说都是核心组件，因为它们可以封装语句，然后在任何地方、任何时间执行。ECMAScript 中的函数使用
-
-function 关键字声明，后跟一组参数，然后是函数体。
+函数对任何语言来说都是核心组件，因为它们可以封装语句，然后在任何地方、任何时间执行。ECMAScript 中的函数使用 function 关键字声明，后跟一组参数，然后是函数体。
 
 > 注意 第 10 章会更详细地介绍函数。
 
 以下是函数的基本语法：
 
 ```js
-function functionName(arg0, arg1,...,argN) { statements
-
+function functionName(arg0, arg1, ...argN) {
+  statements;
 }
 ```
 
@@ -4134,9 +4019,7 @@ function sum(num1, num2) {
 }
 ```
 
-在这个例子中， console.log 不会执行，因为它在 return
-
-语句后面。
+在这个例子中， console.log 不会执行，因为它在 return 语句后面。
 
 一个函数里也可以有多个 return 语句，像这样：
 
@@ -4152,9 +4035,7 @@ function diff(num1, num2) {
 
 这个 diff() 函数用于计算两个数值的差。如果第一个数值小于第二个，则用第二个减第一个；否则，就用第一个减第二个。代码中每个分支都有自己的 return 语句，返回正确的差值。
 
-return 语句也可以不带返回值。这时候，函数会立即停止执行并返回 undefined 。这种用法最常用于提前终止函数执行，并不是
-
-为了返回值。比如在下面的例子中， console.log 不会执行：
+return 语句也可以不带返回值。这时候，函数会立即停止执行并返回 undefined 。这种用法最常用于提前终止函数执行，并不是为了返回值。比如在下面的例子中， console.log 不会执行：
 
 ```js
 function sayHi(name, message) {
