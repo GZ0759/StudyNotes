@@ -24644,8 +24644,9 @@ DOM 扩展的数量总体还不大，但随着 Web 技术的发展一定会越�
 
 本章内容
 
-DOM2 到 DOM3 的变化操作样式的 DOM API
-DOM 遍历与范围
+- DOM2 到 DOM3 的变化
+- 操作样式的 DOM API
+- DOM 遍历与范围
 
 DOM1（DOM Level 1）主要定义了 HTML 和 XML 文档的底层结构。DOM2（DOM Level 2）和 DOM3（DOM Level 3）在这些结构之上加入更多交互能力，提供了更高级的 XML 特性。实际上，DOM2 和 DOM3 是按照模块化的思路来制定标准的，每个模块之间有一定关 联，但分别针对某个 DOM 子集。这些模式如下所示。
 
@@ -25478,23 +25479,18 @@ sheet.deleteRule(0); // 使用 DOM 方法
 
 与添加规则一样，删除规则并不是 Web 开发中常见的做法。考虑到可能影响 CSS 层叠的效果，删除规则时要慎重。
 
-3.  元素尺寸
+### 16.2.3 元素尺寸
 
-本节介绍的属性和方法并不是 DOM2 Style 规范中定义的，但与
+本节介绍的属性和方法并不是 DOM2 Style 规范中定义的，但与 HTML 元素的样式有关。DOM 一直缺乏页面中元素实际尺寸的规定。 IE 率先增加了一些属性，向开发者暴露元素的尺寸信息。这些属性现在已经得到所有主流浏览器支持。
 
-HTML 元素的样式有关。DOM 一直缺乏页面中元素实际尺寸的规定。 IE 率先增加了一些属性，向开发者暴露元素的尺寸信息。这些属性现在已经得到所有主流浏览器支持。
-
-1.  偏移尺寸
+1. 偏移尺寸
 
 第一组属性涉及偏移尺寸（offset dimensions），包含元素在屏幕上占用的所有视觉空间。元素在页面上的视觉空间由其高度和宽度决定，包括所有内边距、滚动条和边框（但不包含外边距）。以下 4 个属性用于取得元素的偏移尺寸。
 
-offsetHeight ，元素在垂直方向上占用的像素尺寸，包括它的高度、水平滚动条高度（如果可见）和上、下边框的高度。
-
-offsetLeft ，元素左边框外侧距离包含元素左边框内侧的像素数。
-
-offsetTop ，元素上边框外侧距离包含元素上边框内侧的像素数。
-
-offsetWidth ，元素在水平方向上占用的像素尺寸，包括它的宽度、垂直滚动条宽度（如果可见）和左、右边框的宽度。
+- offsetHeight ，元素在垂直方向上占用的像素尺寸，包括它的高度、水平滚动条高度（如果可见）和上、下边框的高度。
+- offsetLeft ，元素左边框外侧距离包含元素左边框内侧的像素数。
+- offsetTop ，元素上边框外侧距离包含元素上边框内侧的像素数。
+- offsetWidth ，元素在水平方向上占用的像素尺寸，包括它的宽度、垂直滚动条宽度（如果可见）和左、右边框的宽度。
 
 其中， offsetLeft 和 offsetTop 是相对于包含元素的，包含元素保存在 offsetParent 属性中。 offsetParent 不一定是 parentNode 。比如，`<td>`元素的 offsetParent 是作为其祖先的`<table>`元素，因为`<table>`是节点层级中第一个提供尺寸的元素。图 16-1 展示了这些属性代表的不同尺寸。图 16-1
 
@@ -25526,75 +25522,56 @@ function getElementTop(element) {
 }
 ```
 
-这两个函数使用 offsetParent 在 DOM 树中逐级上溯，将每一级的偏移属性相加，最终得到元素的实际偏移量。对于使用 CSS 布局的简单页面，这两个函数是很精确的。而对于使用表格和内嵌窗格的页面布局，它们返回的值会因浏览器不同而有所差异，因为浏览器实现这些元素的方式不同。一般来说，包含在
-
-`<div>` 元素中所有元素都以 `<body>` 为其 offsetParent ，因此 getElementleft() 和 getElementTop() 返回的值 与 offsetLeft 和 offsetTop 返回的值相同。
+这两个函数使用 offsetParent 在 DOM 树中逐级上溯，将每一级的偏移属性相加，最终得到元素的实际偏移量。对于使用 CSS 布局的简单页面，这两个函数是很精确的。而对于使用表格和内嵌窗格的页面布局，它们返回的值会因浏览器不同而有所差异，因为浏览器实现这些元素的方式不同。一般来说，包含在`<div>` 元素中所有元素都以 `<body>` 为其 offsetParent ，因此 getElementleft() 和 getElementTop() 返回的值 与 offsetLeft 和 offsetTop 返回的值相同。
 
 > 注意 所有这些偏移尺寸属性都是只读的，每次访问都会重新计算。因此，应该尽量减少查询它们的次数。比如把查询的值保存在局量中，就可以避免影响性能。
 
-2.  客户端尺寸
+2. 客户端尺寸
 
 元素的客户端尺寸（client dimensions）包含元素内容及其内边距所占用的空间。客户端尺寸只有两个相关属性： clientWidth 和 clientHeight 。其中， clientWidth 是内容区宽度加左、右内边距宽度， clientHeight 是内容区高度加上、下内边距高度。图 16-2 形象地展示了这两个属性。
 
 图 16-2
 
-客户端尺寸实际上就是元素内部的空间，因此不包含滚动条占用的空间。这两个属性最常用于确定浏览器视口尺寸，即检测
-
-document.documentElement 的 clientWidth 和
-
-clientHeight 。这两个属性表示视口（`<html>`或`<body>` 元素）的尺寸。
+客户端尺寸实际上就是元素内部的空间，因此不包含滚动条占用的空间。这两个属性最常用于确定浏览器视口尺寸，即检测 document.documentElement 的 clientWidth 和 clientHeight 。这两个属性表示视口（`<html>`或`<body>` 元素）的尺寸。
 
 > 注意 与偏移尺寸一样，客户端尺寸也是只读的，而且每次访问都会重新计算。
 
-3.  滚动尺寸
+3. 滚动尺寸
 
 最后一组尺寸是滚动尺寸（scroll dimensions），提供了元素内容滚动距离的信息。有些元素，比如`<html>`无须任何代码就可以自动滚动，而其他元素则需要使用 CSS 的 overflow 属性令其滚动。滚动尺寸相关的属性有如下 4 个。
 
-scrollHeight ，没有滚动条出现时，元素内容的总高度。
-
-scrollLeft ，内容区左侧隐藏的像素数，设置这个属性可以改变元素的滚动位置。
-
-scrollTop ，内容区顶部隐藏的像素数，设置这个属性可以改变元素的滚动位置。
-
-scrollWidth ，没有滚动条出现时，元素内容的总宽度。
+- scrollHeight ，没有滚动条出现时，元素内容的总高度。
+- scrollLeft ，内容区左侧隐藏的像素数，设置这个属性可以改变元素的滚动位置。
+- scrollTop ，内容区顶部隐藏的像素数，设置这个属性可以改变元素的滚动位置。
+- scrollWidth ，没有滚动条出现时，元素内容的总宽度。
 
 图 16-3 展示了这些属性的含义。图 16-3
 
 scrollWidth 和 scrollHeight 可以用来确定给定元素内容的实际尺寸。例如，`<html>`元素是浏览器中滚动视口的元素。因此， document.documentElement.scrollHeight 就是整个页面垂直方向的总高度。
 
-scrollWidth 和 scrollHeight 与 clientWidth 和
+scrollWidth 和 scrollHeight 与 clientWidth 和 clientHeight 之间的关系在不需要滚动的文档上是分不清的。如果文档尺寸超过视口尺寸，则在所有主流浏览器中这两对属性都不相等， crollWidth 和 scollHeight 等于文档内容的宽度，而 clientWidth 和 clientHeight 等于视口的大小。
 
-clientHeight 之间的关系在不需要滚动的文档上是分不清 的。如果文档尺寸超过视口尺寸，则在所有主流浏览器中这两对属性都不相等， scrollWidth 和 scollHeight 等于文档内
+scrollLeft 和 scrollTop 属性可以用于确定当前元素滚动的位置，或者用于设置它们的滚动位置。元素在未滚动时，这两个属性都等于 0 。如果元素在垂直方向上滚动，则 scrollTop 会大于 0 ，表示元素顶部不可见区域的高度。如果元素在水平方向上滚动，则 scrollLeft 会大于 0 ，表示元素左侧不可见区域的宽度。因为这两个属性也是可写的，所以把它们都设置为 0 就可以重置元素的滚动位置。下面这个函数检测元素是不是位于顶部，如果不是则把它滚动回顶部：
 
-容的宽度，而 clientWidth 和 clientHeight 等于视口的大小。
-
-scrollLeft 和 scrollTop 属性可以用于确定当前元素滚动的位置，或者用于设置它们的滚动位置。元素在未滚动时，这两个属性都等于 0 。如果元素在垂直方向上滚动，则
-
-scrollTop 会大于 0 ，表示元素顶部不可见区域的高度。如果元素在水平方向上滚动，则 scrollLeft 会大于 0 ，表示元素左侧不可见区域的宽度。因为这两个属性也是可写的，所以把它们都设置为 0 就可以重置元素的滚动位置。下面这个函数检测元素是不是位于顶部，如果不是则把它滚动回顶部：
-
-function scrollToTop(element) { if (element.scrollTop != 0) {
-
-element.scrollTop = 0;
-
+```js
+function scrollToTop(element) {
+  if (element.scrollTop != 0) {
+    element.scrollTop = 0;
+  }
 }
-
-}
+```
 
 这个函数使用 scrollTop 获取并设置值。
 
-4.  确定元素尺寸
+4. 确定元素尺寸
 
-浏览器在每个元素上都暴露了 getBoundingClientRect()方法，返回一个 DOMRect 对象，包含 6 个属性： left 、 top 、 right 、 bottom 、 height 和 width 。这些属性
-
-给出了元素在页面中相对于视口的位置。图 16-42 展示了这些属性的含义。
+浏览器在每个元素上都暴露了 getBoundingClientRect()方法，返回一个 DOMRect 对象，包含 6 个属性： left 、 top 、 right 、 bottom 、 height 和 width 。这些属性给出了元素在页面中相对于视口的位置。图 16-42 展示了这些属性的含义。
 
 图 16-4
 
-2 这张插图为译者补充，图片来源为 MDN 文档的
+> 这张插图为译者补充，图片来源为 MDN 文档的 Element.getBoundingClientRect() 英文版页面。——译者注
 
-Element.getBoundingClientRect() 英文版页面。——译者注
-
-1.  遍历
+## 16.3 遍历
 
 DOM2 Traversal and Range 模块定义了两个类型用于辅助顺序遍历 DOM 结构。这两个类型—— NodeIterator 和 TreeWalker ——从某个起点开始执行对 DOM 结构的优先遍历。
 
