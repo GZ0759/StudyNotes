@@ -12002,21 +12002,17 @@ Object.entries() 返回键/值对的数组。
 下面的示例展示了这两个方法：
 
 ```js
-const o = { foo: 'bar', baz: 1, qux: {}
-
-};
+const o = { foo: 'bar', baz: 1, qux: {} };
 
 console.log(Object.values(o)); // ["bar", 1, {}]
 
-
-console.log(Object.entries((o))); // [["foo", "bar"], ["baz", 1], ["qux", {}]]
-
+console.log(Object.entries(o)); // [["foo", "bar"], ["baz", 1], ["qux", {}]]
+```
 
 注意，非字符串属性会被转换为字符串输出。另外，这两个方法执行对象的浅复制：
 
-const o = { qux: {}
-
-};
+```js
+const o = { qux: {} };
 
 console.log(Object.values(o)[0] === o.qux);
 
