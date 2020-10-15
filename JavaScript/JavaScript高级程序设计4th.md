@@ -21778,7 +21778,7 @@ alert(html === document.firstChild); // true
 
 let body = document.body; // 取得对`<body>`的引用
 
-所有主流浏览器都支持 document.documentElement 和 document.body 。
+所有主流浏览器都支持 `document.documentElement` 和 document.body 。
 
 Document 类型另一种可能的子节点是 DocumentType 。 <!doctype> 标签是文档中独立的部分，其信息可以通过 doctype 属性（在浏览器中是 document.doctype ）来访问，比如：
 
@@ -25532,7 +25532,7 @@ function getElementTop(element) {
 
 图 16-2
 
-客户端尺寸实际上就是元素内部的空间，因此不包含滚动条占用的空间。这两个属性最常用于确定浏览器视口尺寸，即检测 document.documentElement 的 clientWidth 和 clientHeight 。这两个属性表示视口（`<html>`或`<body>` 元素）的尺寸。
+客户端尺寸实际上就是元素内部的空间，因此不包含滚动条占用的空间。这两个属性最常用于确定浏览器视口尺寸，即检测 `document.documentElement` 的 clientWidth 和 clientHeight 。这两个属性表示视口（`<html>`或`<body>` 元素）的尺寸。
 
 > 注意 与偏移尺寸一样，客户端尺寸也是只读的，而且每次访问都会重新计算。
 
@@ -25547,7 +25547,7 @@ function getElementTop(element) {
 
 图 16-3 展示了这些属性的含义。图 16-3
 
-scrollWidth 和 scrollHeight 可以用来确定给定元素内容的实际尺寸。例如，`<html>`元素是浏览器中滚动视口的元素。因此， document.documentElement.scrollHeight 就是整个页面垂直方向的总高度。
+scrollWidth 和 scrollHeight 可以用来确定给定元素内容的实际尺寸。例如，`<html>`元素是浏览器中滚动视口的元素。因此， `document.documentElement.scrollHeight` 就是整个页面垂直方向的总高度。
 
 scrollWidth 和 scrollHeight 与 clientWidth 和 clientHeight 之间的关系在不需要滚动的文档上是分不清的。如果文档尺寸超过视口尺寸，则在所有主流浏览器中这两对属性都不相等， crollWidth 和 scollHeight 等于文档内容的宽度，而 clientWidth 和 clientHeight 等于视口的大小。
 
@@ -25565,11 +25565,11 @@ function scrollToTop(element) {
 
 4. 确定元素尺寸
 
-浏览器在每个元素上都暴露了 getBoundingClientRect()方法，返回一个 DOMRect 对象，包含 6 个属性： left 、 top 、 right 、 bottom 、 height 和 width 。这些属性给出了元素在页面中相对于视口的位置。图 16-42 展示了这些属性的含义。
+浏览器在每个元素上都暴露了 `getBoundingClientRect()`方法，返回一个 DOMRect 对象，包含 6 个属性： left 、 top 、 right 、 bottom 、 height 和 width 。这些属性给出了元素在页面中相对于视口的位置。图 16-42 展示了这些属性的含义。
 
 图 16-4
 
-> 这张插图为译者补充，图片来源为 MDN 文档的 Element.getBoundingClientRect() 英文版页面。——译者注
+> 这张插图为译者补充，图片来源为 MDN 文档的 `Element.getBoundingClientRect()` 英文版页面。——译者注
 
 ## 16.3 遍历
 

@@ -1,8 +1,8 @@
 > 个人总结的 JavaScript 面试题  
-> [参考-awesome-coding-js](https://github.com/ConardLi/awesome-coding-js)   
-> [参考-冴羽博客](https://github.com/mqyqingfeng/Blog/tree/master/articles)   
+> [参考-awesome-coding-js](https://github.com/ConardLi/awesome-coding-js)  
+> [参考-冴羽博客](https://github.com/mqyqingfeng/Blog/tree/master/articles)  
 > [参考-后盾人](http://houdunren.gitee.io/note/js/1%20%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86.html)  
-> [参考-木易杨](https://github.com/yygmind/blog)  
+> [参考-木易杨](https://github.com/yygmind/blog)
 
 # 函数闭包
 
@@ -76,9 +76,9 @@ function setupHelp() {
 // 打印页面元素序号
 var nodeList = document.getElementsByTagName('li');
 for (var i = 0; i < nodeList.length; i++) {
-    nodeList[i].addEventListener("click", function() {
-        window.alert(i);
-    });
+  nodeList[i].addEventListener('click', function () {
+    window.alert(i);
+  });
 }
 
 // 定时器回调
@@ -232,7 +232,7 @@ console.log(new_arr);
 
 ```js
 var deepCopy = function (obj) {
-  if (typeof obj !== 'object') return obj;  
+  if (typeof obj !== 'object') return obj;
   if (target === null) return null;
 
   var newObj = obj instanceof Array ? [] : {};
@@ -683,7 +683,7 @@ const flat = (array) => {
     }
   }
   return result;
-}
+};
 ```
 
 2. 使用`reduce()`简化递归遍历
@@ -692,10 +692,11 @@ const flat = (array) => {
 function flatten(array) {
   return array.reduce(
     (target, current) =>
-      Array.isArray(current) ?
-        target.concat(flatten(current)) :
-        target.concat(current)
-    , [])
+      Array.isArray(current)
+        ? target.concat(flatten(current))
+        : target.concat(current),
+    []
+  );
 }
 ```
 
@@ -703,7 +704,7 @@ function flatten(array) {
 
 ```js
 function flatten(arr) {
-  while (arr.some(item => Array.isArray(item))) {
+  while (arr.some((item) => Array.isArray(item))) {
     arr = [].concat(...arr);
   }
   return arr;
@@ -716,7 +717,10 @@ function flatten(arr) {
 
 ```js
 function flatten(arr) {
-  return arr.toString().split(',').map(() => +item)
+  return arr
+    .toString()
+    .split(',')
+    .map(() => +item);
 }
 ```
 
@@ -725,20 +729,20 @@ function flatten(arr) {
 将输入数组转换为字符串并删除所有括号`[]`并将输出解析为数组。
 
 ```js
-const flatten = arr => {
+const flatten = (arr) => {
   let re = /\[|\]/g;
   let str = JSON.stringify(arr).replace(re, '');
   return JSON.parse(`[${str}]`);
-}
+};
 ```
 
-6. ES6的 `Array.prototype.flat()` 方法
+6. ES6 的 `Array.prototype.flat()` 方法
 
-`flat()`默认只会“拉平”一层，如果想要“拉平”多层的嵌套数组，可以将`flat()`方法的参数写成一个整数，表示想要拉平的层数，默认为1。如果不管有多少层嵌套，都要转成一维数组，可以用`Infinity`关键字作为参数。
+`flat()`默认只会“拉平”一层，如果想要“拉平”多层的嵌套数组，可以将`flat()`方法的参数写成一个整数，表示想要拉平的层数，默认为 1。如果不管有多少层嵌套，都要转成一维数组，可以用`Infinity`关键字作为参数。
 
 ```js
 function flatten(arr) {
-  return arr.flat(Infinity)
+  return arr.flat(Infinity);
 }
 ```
 
@@ -749,20 +753,20 @@ function flatten(arr) {
 ```js
 var result = arr[0];
 for (var i = 1; i < arr.length; i++) {
-    result =  Math.max(result, arr[i]);
+  result = Math.max(result, arr[i]);
 }
 ```
 
 2. 使用 `reduce()` 方法简化循环
 
 ```js
-array.reduce((c, n) => Math.max(c, n))
+array.reduce((c, n) => Math.max(c, n));
 ```
 
 3. 调用原生方法 `Math.max()`。
 
 ```js
-const array = [3,2,1,4,5];
+const array = [3, 2, 1, 4, 5];
 Math.max.apply(null, array);
 // 或者
 // Math.max(...array);
@@ -774,7 +778,7 @@ Math.max.apply(null, array);
 arr.sort(function (a, b) {
   return a - b;
 });
-arr[arr.length - 1]
+arr[arr.length - 1];
 ```
 
 # 函数柯里化
@@ -894,14 +898,14 @@ for (var i = 1, len = arguments.length; i < len; i++) {
 var result = eval('context.fn(' + args + ')');
 ```
 
-# 模拟实现apply
+# 模拟实现 apply
 
 `apply`实现类似`call`，该方法调用一个具有给定 this 值的函数，以及以一个数组（或类数组对象）的形式提供的参数。
 
 ```js
 Function.prototype.myApply = function (context, args) {
   if (this === Function.prototype) {
-    return undefined; 
+    return undefined;
   }
   context = Object(context) || window;
   const fn = Symbol();
@@ -914,10 +918,10 @@ Function.prototype.myApply = function (context, args) {
   }
   delete context[fn];
   return result;
-}
+};
 ```
 
-# 模拟实现bind
+# 模拟实现 bind
 
 `bind()` 方法创建一个新的函数，在 `bind()` 被调用时，这个新函数的 this 被指定为 `bind()` 的第一个参数，而其余参数将作为新函数的参数，供调用时使用。绑定函数也可以使用 new 运算符构造，它会表现为目标函数已经被构建完毕了似的。提供的 this 值会被忽略，但前置参数仍会提供给模拟函数。
 
@@ -930,25 +934,27 @@ Function.prototype.myApply = function (context, args) {
 ```js
 Function.prototype.myBind = function (context, ...args1) {
   if (this === Function.prototype) {
-    throw new TypeError('Error')
+    throw new TypeError('Error');
   }
-  const _this = this
+  const _this = this;
   return function F(...args2) {
     // 判断是否用于构造函数
     if (this instanceof F) {
-      return new _this(...args1, ...args2)
+      return new _this(...args1, ...args2);
     }
-    return _this.apply(context, [...args1, ...args2])
-  }
-}
+    return _this.apply(context, [...args1, ...args2]);
+  };
+};
 ```
 
-兼容到ES5版本。
+兼容到 ES5 版本。
 
 ```js
 Function.prototype.bind2 = function (context) {
-  if (typeof this !== "function") {
-    throw new Error("Function.prototype.bind - what is trying to be bound is not callable");
+  if (typeof this !== 'function') {
+    throw new Error(
+      'Function.prototype.bind - what is trying to be bound is not callable'
+    );
   }
   var self = this;
   var args = Array.prototype.slice.call(arguments, 1);
@@ -956,35 +962,38 @@ Function.prototype.bind2 = function (context) {
   var fNOP = function () {};
   var fBound = function () {
     var bindArgs = Array.prototype.slice.call(arguments);
-    return self.apply(this instanceof fNOP ? this : context, args.concat(bindArgs));
-  }
+    return self.apply(
+      this instanceof fNOP ? this : context,
+      args.concat(bindArgs)
+    );
+  };
 
   fNOP.prototype = this.prototype;
   fBound.prototype = new fNOP();
   return fBound;
-}
+};
 ```
 
-# 模拟实现instanceof
+# 模拟实现 instanceof
 
 instanceof 运算符用于检测构造函数的 prototype 属性是否出现在某个实例对象的原型链上。
 
 原型与原型链（prototype chain）关系
 
 - 函数的`prototype`属性指向了一个对象，这个对象正是调用该构造函数而创建的实例的原型
-- 每一个JavaScript对象（除了 null ）都具有的一个属性，叫`__proto__`，这个属性会指向该对象的原型
+- 每一个 JavaScript 对象（除了 null ）都具有的一个属性，叫`__proto__`，这个属性会指向该对象的原型
 - 每个原型都有一个`constructor`属性指向关联的构造函数，实例也可以继承该属性
 
 ```js
 function Car(make, model, year) {
-  this.make = make; 
+  this.make = make;
   this.model = model;
   this.year = year;
 }
 const auto = new Car('Honda', 'Accord', 1998);
 
-console.log(auto instanceof Car);  // true
-console.log(auto instanceof Object);  // true
+console.log(auto instanceof Car); // true
+console.log(auto instanceof Object); // true
 ```
 
 实现
@@ -996,7 +1005,7 @@ function myInstanceof(target, origin) {
     if (origin.prototype === proto) {
       return true;
     } else {
-      return myInstanceof(proto, origin)
+      return myInstanceof(proto, origin);
     }
   } else {
     return false;
@@ -1004,7 +1013,7 @@ function myInstanceof(target, origin) {
 }
 ```
 
-# 模拟实现new
+# 模拟实现 new
 
 new 运算符创建一个用户定义的对象类型的实例或具有构造函数的内置对象的实例。new 关键字会进行如下的操作：
 
@@ -1015,27 +1024,27 @@ new 运算符创建一个用户定义的对象类型的实例或具有构造函�
 
 ```js
 function create(Con, ...args) {
-  let obj = {}
-  Object.setPrototypeOf(obj, Con.prototype)
-  let result = Con.apply(obj, args)
-  return result instanceof Object ? result : obj
+  let obj = {};
+  Object.setPrototypeOf(obj, Con.prototype);
+  let result = Con.apply(obj, args);
+  return result instanceof Object ? result : obj;
 }
 ```
 
 ```js
 function create() {
-	// 1、获得构造函数，同时删除 arguments 中第一个参数
+  // 1、获得构造函数，同时删除 arguments 中第一个参数
   Con = [].shift.call(arguments);
-	// 2、创建一个空的对象并链接到原型，obj 可以访问构造函数原型中的属性
+  // 2、创建一个空的对象并链接到原型，obj 可以访问构造函数原型中的属性
   var obj = Object.create(Con.prototype);
-	// 3、绑定 this 实现继承，obj 可以访问到构造函数中的属性
+  // 3、绑定 this 实现继承，obj 可以访问到构造函数中的属性
   var ret = Con.apply(obj, arguments);
-	// 4、优先返回构造函数返回的对象
-	return ret instanceof Object ? ret : obj;
-};
+  // 4、优先返回构造函数返回的对象
+  return ret instanceof Object ? ret : obj;
+}
 ```
 
-# 模拟实现Promise
+# 模拟实现 Promise
 
 ## 基础版本
 
@@ -1061,14 +1070,14 @@ function MyPromise(executor) {
       this.state = FULFILLED;
       this.value = value;
     }
-  }
+  };
 
   const reject = (reason) => {
     if (this.state === PENDING) {
       this.state = REJECTED;
       this.reason = reason;
     }
-  }
+  };
 
   try {
     executor(resolve, reject);
@@ -1078,7 +1087,7 @@ function MyPromise(executor) {
 }
 ```
 
-## then方法
+## then 方法
 
 - `then`方法接受两个参数`onFulfilled、onRejected`，它们分别在状态由`PENDING`改变为`FULFILLED、REJECTED`后调用
 - 一个`promise`可绑定多个`then`方法
@@ -1098,21 +1107,21 @@ function MyPromise(executor) {
     if (this.state === PENDING) {
       this.state = FULFILLED;
       this.value = value;
-      this.onFulfilledCallbacks.forEach(fun => {
+      this.onFulfilledCallbacks.forEach((fun) => {
         fun();
       });
     }
-  }
+  };
 
   const reject = (reason) => {
     if (this.state === PENDING) {
       this.state = REJECTED;
       this.reason = reason;
-      this.onRejectedCallbacks.forEach(fun => {
+      this.onRejectedCallbacks.forEach((fun) => {
         fun();
       });
     }
-  }
+  };
 
   try {
     executor(resolve, reject);
@@ -1132,16 +1141,16 @@ MyPromise.prototype.then = function (onFulfilled, onRejected) {
     case PENDING:
       this.onFulfilledCallbacks.push(() => {
         onFulfilled(this.value);
-      })
+      });
       this.onRejectedCallbacks.push(() => {
         onRejected(this.reason);
-      })
+      });
       break;
   }
-}
+};
 ```
 
-### then方法异步调用
+### then 方法异步调用
 
 如下面的代码：输入顺序是：`1、2、ConardLi`
 
@@ -1166,12 +1175,12 @@ MyPromise.prototype.then = function (onFulfilled, onRejected) {
   if (typeof onFulfilled != 'function') {
     onFulfilled = function (value) {
       return value;
-    }
+    };
   }
   if (typeof onRejected != 'function') {
     onRejected = function (reason) {
       throw reason;
-    }
+    };
   }
   switch (this.state) {
     case FULFILLED:
@@ -1189,18 +1198,18 @@ MyPromise.prototype.then = function (onFulfilled, onRejected) {
         setTimeout(() => {
           onFulfilled(this.value);
         }, 0);
-      })
+      });
       this.onRejectedCallbacks.push(() => {
         setTimeout(() => {
           onRejected(this.reason);
         }, 0);
-      })
+      });
       break;
   }
-}
+};
 ```
 
-### then方法链式调用
+### then 方法链式调用
 
 保证链式调用，即`then`方法中要返回一个新的`promise`，并将`then`方法的返回值进行`resolve`。
 
@@ -1211,12 +1220,12 @@ MyPromise.prototype.then = function (onFulfilled, onRejected) {
   if (typeof onFulfilled != 'function') {
     onFulfilled = function (value) {
       return value;
-    }
+    };
   }
   if (typeof onRejected != 'function') {
     onRejected = function (reason) {
       throw reason;
-    }
+    };
   }
   const promise2 = new MyPromise((resolve, reject) => {
     switch (this.state) {
@@ -1250,7 +1259,7 @@ MyPromise.prototype.then = function (onFulfilled, onRejected) {
               reject(reason);
             }
           }, 0);
-        })
+        });
         this.onRejectedCallbacks.push(() => {
           setTimeout(() => {
             try {
@@ -1260,46 +1269,49 @@ MyPromise.prototype.then = function (onFulfilled, onRejected) {
               reject(reason);
             }
           }, 0);
-        })
+        });
         break;
     }
-  })
+  });
   return promise2;
-}
+};
 ```
 
-## catch方法
+## catch 方法
 
 若上面没有定义`reject`方法，所有的异常会走向`catch`方法：
 
 ```js
-MyPromise.prototype.catch = function(onRejected) {
+MyPromise.prototype.catch = function (onRejected) {
   return this.then(null, onRejected);
 };
 ```
 
-## finally方法
+## finally 方法
 
 不管是`resolve`还是`reject`都会调用`finally`。
 
 ```js
-MyPromise.prototype.finally = function(fn) {
-  return this.then(value => {
+MyPromise.prototype.finally = function (fn) {
+  return this.then(
+    (value) => {
       fn();
       return value;
-  }, reason => {
+    },
+    (reason) => {
       fn();
       throw reason;
-  });
+    }
+  );
 };
 ```
 
 ## Promise.resolve
 
-`Promise.resolve`用来生成一个直接处于`FULFILLED`状态的Promise。
+`Promise.resolve`用来生成一个直接处于`FULFILLED`状态的 Promise。
 
 ```js
-MyPromise.reject = function(value) {
+MyPromise.reject = function (value) {
   return new MyPromise((resolve, reject) => {
     resolve(value);
   });
@@ -1308,17 +1320,17 @@ MyPromise.reject = function(value) {
 
 ## Promise.reject
 
-`Promise.reject`用来生成一个直接处于`REJECTED`状态的Promise。
+`Promise.reject`用来生成一个直接处于`REJECTED`状态的 Promise。
 
 ```js
-MyPromise.reject = function(reason) {
+MyPromise.reject = function (reason) {
   return new MyPromise((resolve, reject) => {
     reject(reason);
   });
 };
 ```
 
-## all方法
+## all 方法
 
 接受一个`promise`数组，当所有`promise`状态`resolve`后，执行`resolve`
 
@@ -1331,22 +1343,25 @@ MyPromise.all = function (promises) {
       let result = [];
       let index = 0;
       for (let i = 0; i < promises.length; i++) {
-        promises[i].then(data => {
-          result[i] = data;
-          if (++index === promises.length) {
-            resolve(result);
+        promises[i].then(
+          (data) => {
+            result[i] = data;
+            if (++index === promises.length) {
+              resolve(result);
+            }
+          },
+          (err) => {
+            reject(err);
+            return;
           }
-        }, err => {
-          reject(err);
-          return;
-        });
+        );
       }
     }
   });
-}
+};
 ```
 
-## race方法
+## race 方法
 
 接受一个`promise`数组，当有一个`promise`状态`resolve`后，执行`resolve`
 
@@ -1358,24 +1373,26 @@ MyPromise.race = function (promises) {
     } else {
       let index = 0;
       for (let i = 0; i < promises.length; i++) {
-        promises[i].then(data => {
-          resolve(data);
-        }, err => {
-          reject(err);
-          return;
-        });
+        promises[i].then(
+          (data) => {
+            resolve(data);
+          },
+          (err) => {
+            reject(err);
+            return;
+          }
+        );
       }
     }
   });
-}
+};
 ```
 
+# 手动实现 JSONP
 
-# 手动实现JSONP
-
-1. 将传入的data数据转化为url字符串形式
-2. 处理url中的回调函数
-3. 创建一个script标签并插入到页面中 
+1. 将传入的 data 数据转化为 url 字符串形式
+2. 处理 url 中的回调函数
+3. 创建一个 script 标签并插入到页面中
 4. 挂载回调函数
 
 ```js
@@ -1404,4 +1421,116 @@ MyPromise.race = function (promises) {
 
   window.$jsonp = jsonp;
 })(window, document);
+```
+
+# DOM 元素尺寸
+
+## 基本知识
+
+1. 偏移尺寸（offset dimensions）
+
+- offsetHeight ，元素在垂直方向上占用的像素尺寸，包括它的高度、水平滚动条高度（如果可见）和上、下边框的高度。
+- offsetLeft ，元素左边框外侧距离包含元素左边框内侧的像素数。
+- offsetTop ，元素上边框外侧距离包含元素上边框内侧的像素数。
+- offsetWidth ，元素在水平方向上占用的像素尺寸，包括它的宽度、垂直滚动条宽度（如果可见）和左、右边框的宽度。
+
+2. 客户端尺寸（client dimensions）
+
+包含元素内容及其内边距所占用的空间。客户端尺寸只有两个相关属性： clientWidth 和 clientHeight 。其中， clientWidth 是内容区宽度加左、右内边距宽度， clientHeight 是内容区高度加上、下内边距高度。
+
+Element.clientLeft
+
+表示一个元素的左边框的宽度，以像素表示。如果元素的文本方向是从右向左（RTL, right-to-left），并且由于内容溢出导致左边出现了一个垂直滚动条，则该属性包括滚动条的宽度。clientLeft 不包括左外边距和左内边距。clientLeft 是只读的。
+
+Element.clientTop
+
+一个元素顶部边框的宽度（以像素表示）。不包括顶部外边距或内边距。clientTop 是只读的。
+
+3. 滚动尺寸（scroll dimensions）
+
+- scrollHeight ，没有滚动条出现时，元素内容的总高度。
+- scrollLeft ，内容区左侧隐藏的像素数，设置这个属性可以改变元素的滚动位置。
+- scrollTop ，内容区顶部隐藏的像素数，设置这个属性可以改变元素的滚动位置。
+- scrollWidth ，没有滚动条出现时，元素内容的总宽度。
+
+4. 确定元素尺寸
+
+浏览器在每个元素上都暴露了 `getBoundingClientRect()`方法，返回一个 DOMRect 对象，包含 6 个属性： left 、 top 、 right 、 bottom 、 height 和 width 。这些属性给出了元素在页面中相对于视口的位置。
+
+## 常用实例
+
+根据 tab 滚动至相应相应位置
+
+```
+i = tab;
+scrollTo(0, eles[i].offsetTop)
+```
+
+根据滚动位置响应相应 tab
+
+```
+eles[i].offsetTop < scrollTop < eles[i+1].offsetTop
+tab = i;
+```
+
+滚动到底部
+
+```
+scrollHeight - scrollTop = clientHeight
+```
+
+元素在文档坐标中的位置
+
+```
+x = box.getBoundingClientRect().left + document.documentElement.scrollLeft
+y = box.getBoundingClientRect().top + document.documentElement.scrollTop
+```
+
+元素在文档坐标中的位置（兼容性较强）
+
+```
+while(e != null) {
+ x += e.offsetLeft;
+ y += e.offsetTop;
+ e = e.offsetParent;
+}
+```
+
+元素在文档坐标中的位置（存在滚动和溢出内容）
+
+```
+let e1 = e2 = e;
+while(e1 != null) {
+ x += e1.offsetLeft;
+ y += e1.offsetTop;
+ e1 = e1.offsetParent;
+}
+
+e2 = e2.parentNode;
+while(e2 != null && e2.nodeType == 1) {
+ x -= e2.scrollLeft;
+ y -= e2.scrollTop;
+ e2 = e2.offsetParent;
+}
+```
+
+页面没有滚动条
+
+```
+scrollWidth === clientWidth；
+scrollHeight === clientHeight；
+```
+
+页面存在滚动条
+
+```
+scrollWidth > clientWidth；
+scrollHeight > clientHeight；
+```
+
+确定浏览器视口尺寸
+
+```
+document.documentElement.clientWidth
+document.documentElement.clientHeight
 ```
