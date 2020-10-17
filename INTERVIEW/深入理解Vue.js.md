@@ -46,7 +46,7 @@ complileNode(uNode, data);
 oNode.parentNode.replaceChild(uNode, oNode);
 ```
 
-## 类封装/数据渲染优化
+### 类封装/数据渲染优化
 
 ```js
 function JGVue(options) {
