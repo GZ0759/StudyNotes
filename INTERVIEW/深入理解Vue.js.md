@@ -46,45 +46,7 @@ complileNode(uNode, data);
 oNode.parentNode.replaceChild(uNode, oNode);
 ```
 
-### 类封装/数据渲染优化
-
-```js
-function JGVue(options) {
-  this._data = options.data;
-  this._el = options.el;
-  this._templateDOM = document.querySelector(this._el);
-  this._parent = this._templateDOM.parentNode;
-
-  this.render();
-}
-
-JGVue.prototype.render = function () {
-  this.compiler();
-};
-
-JGVue.prototype.compiler = function () {
-  let realHTMLDOM = this._templateDOM.cloneNode(true);
-  compiler(realHTMLDOM, this._data);
-  this.update(realHTMLDOM);
-};
-
-JGVue.prototype.update = function (real) {
-  this._parent.replaceChild(real, document.querySelector('#root'));
-};
-
-// 字符串路径来访问对象的成员
-function getValueByPath(obj, path) {
-  let paths = path.split('.');
-  let res = obj;
-  let prop;
-  while ((prop = paths.shift())) {
-    res = res[prop];
-  }
-  return res;
-}
-```
-
-## 虚拟节点
+### 虚拟节点
 
 ```js
 class VNode {
@@ -101,7 +63,7 @@ class VNode {
   }
 }
 
-//   转换成虚拟节点
+// 转换成虚拟节点
 function getVNode(node) {
   let { nodeType, nodeName, nodeValue, attributes, childNodes } = node;
   let _vnode = null;
@@ -150,4 +112,95 @@ function parseVNode(vnode) {
 }
 
 let dom2 = parseVNode(vroot);
+```
+
+### 渲染和挂载函数
+
+```js
+/** 虚拟 DOM 构造函数 */
+class VNode {}
+/** 由 HTML DOM -> VNode: 将这个函数当做 compiler 函数 */
+function getVNode(node) {}
+/** 将虚拟 DOM 转换成真正的 DOM */
+function parseVNode(vnode) {}
+/** 根据路径 访问对象成员 */
+function getValueByPath(obj, path) {}
+
+/** 将 带有 坑的 Vnode 与数据 data 结合, 得到 填充数据的 VNode: 模拟 AST -> VNode */
+function combine(vnode, data) {
+  let _type = vnode.type;
+  let _data = vnode.data;
+  let _value = vnode.value;
+  let _tag = vnode.tag;
+  let _children = vnode.children;
+
+  let _vnode = null;
+
+  if (_type === 3) {
+    // 文本节点
+    _value = _value.replace(rkuohao, function (_, g) {
+      return getValueByPath(data, g.trim());
+    });
+
+    _vnode = new VNode(_tag, _data, _value, _type);
+  } else if (_type === 1) {
+    // 元素节点
+    _vnode = new VNode(_tag, _data, _value, _type);
+    _children.forEach((_subvnode) =>
+      _vnode.appendChild(combine(_subvnode, data))
+    );
+  }
+
+  return _vnode;
+}
+
+function JGVue(options) {
+  this._data = options.data;
+  let elm = document.querySelector(options.el); // vue 是字符串, 这里是 DOM
+  this._template = elm;
+  this._parent = elm.parentNode;
+
+  this.mount(); // 挂载
+}
+
+JGVue.prototype.mount = function () {
+  // 需要提供一个 render 方法: 生成 虚拟 DOM
+  this.render = this.createRenderFn(); // 带有缓存 ( Vue 本身是可以带有 render 成员 )
+
+  this.mountComponent();
+};
+
+JGVue.prototype.mountComponent = function () {
+  // 执行 mountComponent() 函数
+  let mount = () => {
+    // 这里是一个函数, 函数的 this 默认是全局对象 "函数调用模式"
+    this.update(this.render());
+  };
+  mount.call(this); // 本质应该交给 watcher 来调用, 但是还没有讲到这里
+
+  // this.update( this.render() ); // 使用发布订阅模式. 渲染和计算的行为应该交给 watcher 来完成
+};
+
+// 这里是生成 render 函数, 目的是缓存 抽象语法树 ( 我们使用 虚拟 DOM 来模拟 )
+JGVue.prototype.createRenderFn = function () {
+  let ast = getVNode(this._template);
+  // Vue: 将 AST + data => VNode
+  // 我们: 带有坑的 VNode + data => 含有数据的 VNode
+  return function render() {
+    // 将 带有 坑的 VNode 转换为 待数据的 VNode
+    let _tmp = combine(ast, this._data);
+    return _tmp;
+  };
+};
+
+// 将虚拟 DOM 渲染到页面中: diff 算法就在里
+JGVue.prototype.update = function (vnode) {
+  // 简化, 直接生成 HTML DOM replaceChild 到页面中
+  // 父元素.replaceChild( 新元素, 旧元素 )
+  let realDOM = parseVNode(vnode);
+
+  // 这个算法是不负责任的:
+  // 每次会将页面中的 DOM 全部替换
+  this._parent.replaceChild(realDOM, document.querySelector('#root'));
+};
 ```
