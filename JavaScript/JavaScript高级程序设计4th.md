@@ -1162,7 +1162,7 @@ if (true) {
 console.log(name); // Matt
 ```
 
-const 声明的限制只适用于它指向的变量的引用。换句话说，如果 const 变量引用的是一个对象，那么修改这个对象内部的属性并不违反 const 的限制。
+const 声明的限制只适用于它指向的变量的引用。换句话说，如果 const 变量引用的是一���对象，那么修改这个对象内部的属性并不违反 const 的限制。
 
 ```js
 const person = {};
@@ -2195,9 +2195,7 @@ async function asyncCount() {
 asyncCount();
 ```
 
-注意
-
-Symbol.asyncIterator 是 ES2018 规范定义的，因此只有版本非常新的浏览器支持它。关于异步迭代和 for-await-of 循环的细节，参见附录 A。
+> 注意 Symbol.asyncIterator 是 ES2018 规范定义的，因此只有版本非常新的浏览器支持它。关于异步迭代和 for-await-of 循环的细节，参见附录 A。
 
 6. Symbol.hasInstance
 
@@ -3957,9 +3955,7 @@ switch (true) {
 
 上面的代码首先在外部定义了变量 num ，而传给 switch 语句的参数之所以是 true ，就是因为每个条件的表达式都会返回布尔 值。条件的表达式分别被求值，直到有表达式返回 true ；否则，就会一直跳到 default 语句（这个例子正是如此）。
 
-注意
-
-switch 语句在比较每个条件的值时会使用全等操作符，
+> 注意 switch 语句在比较每个条件的值时会使用全等操作符，
 
 因此不会强制转换数据类型（比如，字符串 "10" 不等于数值 10）。
 
@@ -4236,9 +4232,7 @@ pattern 是 RegExp 吗？
 
 按照定义，所有引用值都是 Object 的实例，因此通过 instanceof 操作符检测任何引用值和 Object 构造函数都会返 回 true 。类似地，如果用 instanceof 检测原始值，则始终会返回 false ，因为原始值不是对象。
 
-注意
-
-typeof 操作符在用于检测函数时也会返回 "function" 。当在 Safari（直到 Safari 5）和 Chrome（直到 Chrome 7）中用于检测正则表达式时，由于实现细节的原因，
+> 注意 typeof 操作符在用于检测函数时也会返回 "function" 。当在 Safari（直到 Safari 5）和 Chrome（直到 Chrome 7）中用于检测正则表达式时，由于实现细节的原因，
 
 typeof 也会返回 "function" 。ECMA-262 规定，任何实现内部 \[\[Call\]\] 方法的对象都应该在 typeof 检测时返回 "function" 。因为上述浏览器中的正则表达式实现了这个方法，所以 typeof 对正则表达式也返回 "function" 。在 IE 和 Firefox 中， typeof 对正则表达式返回 "object" 。
 
@@ -5484,7 +5478,7 @@ Number 是对应数值的引用类型。要创建一个 Number 对象，就使�
 
 let numberObject = new Number(10);
 
-与 Boolean 类型一样， Number 类型重写了 valueOf() 、 toLocaleString() 和 toString() 方法。 valueOf() 方法返回 Number 对象表示的原始数值，另外两个方法返回数值字符串。 toStrin\() 方法可选地接收一个表示基数的参数，并返回相应基数形式的数值字符串，如下所示：
+与 Boolean 类型一样， Number ���型重写了 valueOf() 、 toLocaleString() 和 toString() 方法。 valueOf() 方法返回 Number 对象表示的原始数值，另外两个方法返回数值字符串。 toStrin\() 方法可选地接收一个表示基数的参数，并返回相应基数形式的数值字符串，如下所示：
 
 ```
 let num = 10; console.log(num.toString()); // "10"
@@ -12391,7 +12385,7 @@ function SubType() {
 }
 
 let instance = new SubType();
-console.log(instance.name); // "Nicholas"; 
+console.log(instance.name); // "Nicholas";
 console.log(instance.age); // 29
 ```
 
@@ -12674,14 +12668,15 @@ console.log(ClassDeclaration); // class ClassDeclaration {}
   class ClassDeclaration {}
 }
 
-console.log(FunctionDeclaration); // FunctionDeclaration() {} console.log(ClassDeclaration); // ReferenceError: ClassDeclaration is not defined
+console.log(FunctionDeclaration); // FunctionDeclaration() {}
+console.log(ClassDeclaration); // ReferenceError: ClassDeclaration is not defined
 ```
 
-类的构成
+**类的构成**
 
 类可以包含构造函数方法、实例方法、获取函数、设置函数和静态类方法，但这些都不是必需的。空的类定义照样有效。默认情况 下，类定义中的代码都在严格模式下执行。
 
-与函数构造函数一样，多数编程风格都建议类名的首字母要大 写，以区别于通过它创建的实例（比如，通过 class Foo {} 创建实例 foo ）：
+与函数构造函数一样，多数编程风格都建议类名的首字母要大 写，以区别于通过它创建的实例（比如，通过 `class Foo {}` 创建实例 foo ）：
 
 ```js
 // 空类定义，有效
@@ -12726,7 +12721,9 @@ constructor 关键字用于在类定义块内部创建类的构造函数。方�
 
 1. 实例化
 
-使用 new 操作符实例化 Person 的操作等于使用 new 调用其构造函数。唯一可感知的不同之处就是，JavaScript 解释器知道使用 new 和类意味着应该使用 constructor 函数进行实例化。使用 new 调用类的构造函数会执行如下操作。
+使用 new 操作符实例化 Person 的操作等于使用 new 调用其构造函数。唯一可感知的不同之处就是，JavaScript 解释器知道使用 new 和类意味着应该使用 constructor 函数进行实例化。
+
+使用 new 调用类的构造函数会执行如下操作。
 
 1. 在内存中创建一个新对象。
 2. 这个新对象内部的 `[[Prototype]]` 指针被赋值为构造函数的 prototype 属性。
@@ -12751,6 +12748,10 @@ class Vegetable {
   }
 }
 
+let a = new Animal();
+
+let p = new Person(); // person ctor
+
 let v = new Vegetable();
 console.log(v.color); // orange
 ```
@@ -12764,6 +12765,15 @@ class Person {
     this.name = name || null;
   }
 }
+
+let p1 = new Person(); // 0
+console.log(p1.name); // null
+
+let p2 = new Person(); // 0
+console.log(p2.name); // null
+
+let p3 = new Person('Jake'); // 1
+console.log(p3.name); // Jake
 ```
 
 默认情况下，类构造函数会在执行之后返回 this 对象。构造函数返回的对象会被用作实例化的对象，如果没有什么引用新创建的 this 对象，那么这个对象会被销毁。不过，如果返回的不 是 this 对象，而是其他对象，那么这个对象不会通过 instanceof 操作符检测出跟类有关联，因为这个对象的原型指针并没有被修改。
@@ -12772,7 +12782,6 @@ class Person {
 class Person {
   constructor(override) {
     this.foo = 'foo';
-
     if (override) {
       return {
         bar: 'bar',
@@ -12783,6 +12792,12 @@ class Person {
 
 let p1 = new Person(),
   p2 = new Person(true);
+
+console.log(p1); // Person{ foo: 'foo' }
+console.log(p1 instanceof Person); // true
+
+console.log(p2); // { bar: 'bar' }
+console.log(p2 instanceof Person); // false
 ```
 
 类构造函数与构造函数的主要区别是，调用类构造函数必须使用 new 操作符。而普通构造函数如果不使用 new 调用，那么就会以全局的 this （通常是 window ）作为内部对象。调用类构造函数时如果忘了使用 new 则会抛出错误：
@@ -12792,11 +12807,9 @@ function Person() {}
 class Animal {}
 
 // 把 window 作为 this 来构建实例
-
 let p = Person();
 
 let a = Animal();
-
 // TypeError: class constructor Animal cannot be invoked without 'new'
 ```
 
@@ -12806,15 +12819,12 @@ let a = Animal();
 class Person {}
 
 // 使用类创建一个新实例
-
 let p1 = new Person();
 
 p1.constructor();
-
 // TypeError: Class constructor Person cannot be invoked without 'new'
 
 // 使用对类构造函数的引用创建一个新实例
-
 let p2 = new p1.constructor();
 ```
 
@@ -12825,11 +12835,7 @@ ECMAScript 中没有正式的类这个类型。从各方面来看， ECMAScript 
 ```js
 class Person {}
 
-console.log(Person); // class Person
-
-{
-}
-
+console.log(Person); // class Person{}
 console.log(typeof Person); // function
 ```
 
@@ -12838,10 +12844,7 @@ console.log(typeof Person); // function
 ```js
 class Person {}
 
-console.log(Person.prototype);
-
-// { constructor: f() }
-
+console.log(Person.prototype); // { constructor: f() }
 console.log(Person === Person.prototype.constructor); // true
 ```
 
@@ -12857,34 +12860,21 @@ console.log(p instanceof Person); // true
 
 由此可知，可以使用 instanceof 操作符检查一个对象与类构造函数，以确定这个对象是不是类的实例。只不过此时的类构造函数要使用类标签符，比如，在前面的例子中要检查 p 和 Person 。
 
-如前所述，类本身具有与普通构造函数一样的行为。在类的上下文中，类本身在使用 new 调用时就会被当成构造函数。重点在于，类中定义的 constructor 方法不会被当成构造函数，在对它使用 instanceof 操作符时会返回 false 。但是，如果在创建实例时直接将类构造函数当成普通构造函数来使用，那么
-
-instanceof 操作符的返回值会反转：
+如前所述，类本身具有与普通构造函数一样的行为。在类的上下文中，类本身在使用 new 调用时就会被当成构造函数。重点在于，类中定义的 constructor 方法不会被当成构造函数，在对它使用 instanceof 操作符时会返回 false 。但是，如果在创建实例时直接将类构造函数当成普通构造函数来使用，那么 instanceof 操作符的返回值会反转：
 
 ```js
 class Person {}
 
 let p1 = new Person();
-console.log(p1.constructor === Person);
 
-// true
-
-console.log(p1 instanceof Person);
-
-// true
-
+console.log(p1.constructor === Person); // true
+console.log(p1 instanceof Person); // true
 console.log(p1 instanceof Person.constructor); // false
 
 let p2 = new Person.constructor();
 
-console.log(p2.constructor === Person);
-
-// false
-
-console.log(p2 instanceof Person);
-
-// false
-
+console.log(p2.constructor === Person); // false
+console.log(p2 instanceof Person); // false
 console.log(p2 instanceof Person.constructor); // true
 ```
 
@@ -12892,12 +12882,10 @@ console.log(p2 instanceof Person.constructor); // true
 
 ```js
 // 类可以像函数一样在任何地方定义，比如在数组中
-
 let classList = [
   class {
     constructor(id) {
       this.id_ = id;
-
       console.log('instance ${this.id_}');
     }
   },
@@ -12907,16 +12895,13 @@ function createInstance(classDefinition, id) {
   return new classDefinition(id);
 }
 
-let foo = createInstance(classList[0], 3141);
-
-// instance 3141
+let foo = createInstance(classList[0], 3141); // instance 3141
 ```
 
 与立即调用函数表达式相似，类也可以立即实例化：
 
 ```js
 // 因为是一个类表达式，所以类名是可选的
-
 let p = new (class Foo {
   constructor(x) {
     console.log(x);
@@ -12940,9 +12925,7 @@ console.log(p); // Foo {}
 class Person {
   constructor() {
     // 这个例子先使用对象包装类型定义一个字符串
-
     // 为的是在下面测试两个对象的相等性
-
     this.name = new String('Jack');
 
     this.sayName = () => console.log(this.name);
@@ -12958,23 +12941,14 @@ p1.sayName(); // Jack
 
 p2.sayName(); // Jack
 
-console.log(p1.name === p2.name);
-
-// false
-
-console.log(p1.sayName === p2.sayName);
-
-// false
-
-console.log(p1.nicknames === p2.nicknames);
-
-// false
+console.log(p1.name === p2.name); // false
+console.log(p1.sayName === p2.sayName); // false
+console.log(p1.nicknames === p2.nicknames); // false
 
 p1.name = p1.nicknames[0];
 p2.name = p2.nicknames[1];
 
 p1.sayName(); // Jake
-
 p2.sayName(); // J-Dog
 ```
 
@@ -12986,12 +12960,10 @@ p2.sayName(); // J-Dog
 class Person {
   constructor() {
     // 添加到 this 的所有内容都会存在于不同的实例上
-
     this.locate = () => console.log('instance');
   }
 
   // 在类块中定义的所有内容都会定义在类的原型上
-
   locate() {
     console.log('prototype');
   }
@@ -13000,7 +12972,6 @@ class Person {
 let p = new Person();
 
 p.locate(); // instance
-
 Person.prototype.locate(); // prototype
 ```
 
@@ -13010,7 +12981,6 @@ Person.prototype.locate(); // prototype
 class Person {
   name: 'Jake';
 }
-
 // Uncaught SyntaxError: Unexpected token
 ```
 
@@ -13033,6 +13003,10 @@ class Person {
 }
 
 let p = new Person();
+
+p.stringKey(); // invoked stringKey
+p[symbolKey](); // invoked symbolKey
+p.computedKey(); // invoked computedKey
 ```
 
 类定义也支持获取和设置访问器。语法与行为跟普通对象一样：
@@ -13050,7 +13024,6 @@ class Person {
 
 let p = new Person();
 p.name = 'Jake';
-
 console.log(p.name); // Jake
 ```
 
@@ -13064,18 +13037,15 @@ console.log(p.name); // Jake
 class Person {
   constructor() {
     // 添加到 this 的所有内容都会存在于不同的实例上
-
     this.locate = () => console.log('instance', this);
   }
 
   // 定义在类的原型对象上
-
   locate() {
     console.log('prototype', this);
   }
 
   // 定义在类本身上
-
   static locate() {
     console.log('class', this);
   }
@@ -13083,7 +13053,9 @@ class Person {
 
 let p = new Person();
 
-p.locate(); // instance,
+p.locate(); // instance, Person {}
+Person.prototype.locate(); // prototype, {constructor: ... }
+Person.locate(); // class, class Person {}
 ```
 
 静态类方法非常适合作为实例工厂：
@@ -13100,7 +13072,6 @@ class Person {
 
   static create() {
     // 使用随机年龄创建并返回一个 Person 实例
-
     return new Person(Math.floor(Math.random() * 100));
   }
 }
@@ -13120,11 +13091,9 @@ class Person {
 }
 
 // 在类上定义数据成员
-
 Person.greeting = 'My name is';
 
 // 在原型上定义数据成员
-
 Person.prototype.name = 'Jake';
 
 let p = new Person();
@@ -13140,34 +13109,29 @@ p.sayName(); // My name is Jake
 ```js
 class Person {
   // 在原型上定义生成器方法
-
   *createNicknameIterator() {
     yield 'Jack';
-
     yield 'Jake';
     yield 'J-Dog';
   }
 
   // 在类上定义生成器方法
-
   static *createJobIterator() {
     yield 'Butcher';
-
     yield 'Baker';
-
     yield 'Candlestick maker';
   }
 }
 
 let jobIter = Person.createJobIterator();
 console.log(jobIter.next().value); // Butcher
-
-console.log(jobIter.next().value); // Baker console.log(jobIter.next().value); // Candlestick maker
+console.log(jobIter.next().value); // Baker
+console.log(jobIter.next().value); // Candlestick maker
 
 let p = new Person();
 let nicknameIter = p.createNicknameIterator();
-console.log(nicknameIter.next().value); // Jack console.log(nicknameIter.next().value); // Jake
-
+console.log(nicknameIter.next().value); // Jack
+console.log(nicknameIter.next().value); // Jake
 console.log(nicknameIter.next().value); // J-Dog
 ```
 
@@ -13185,15 +13149,11 @@ class Person {
 }
 
 let p = new Person();
-
 for (let [idx, nickname] of p) {
   console.log(nickname);
 }
-
 // Jack
-
 // Jake
-
 // J-Dog
 ```
 
@@ -13211,15 +13171,11 @@ class Person {
 }
 
 let p = new Person();
-
 for (let [idx, nickname] of p) {
   console.log(nickname);
 }
-
 // Jack
-
 // Jake
-
 // J-Dog
 ```
 
@@ -13235,29 +13191,23 @@ ES6 类支持单继承。使用 extends 关键字，就可以继承任何拥有 
 class Vehicle {}
 
 // 继承类
-
 class Bus extends Vehicle {}
 
 let b = new Bus();
-
 console.log(b instanceof Bus); // true
-
 console.log(b instanceof Vehicle); // true
 
 function Person() {}
 
 // 继承普通构造函数
-
 class Engineer extends Person {}
 
 let e = new Engineer();
-
 console.log(e instanceof Engineer); // true
-
 console.log(e instanceof Person); // true
 ```
 
-类和原型上定义的方法都会带到派生类。 this 的值会反映调用相应方法的实例或者类：
+派生类和原型上定义的方法都会带到派生类。 this 的值会反映调用相应方法的实例或者类：
 
 ```js
 class Vehicle {
@@ -13275,42 +13225,32 @@ class Bus extends Vehicle {}
 let v = new Vehicle();
 let b = new Bus();
 
-class Vehicle {}
+b.identifyPrototype('bus'); // bus, Bus {}
+v.identifyPrototype('vehicle'); // vehicle, Vehicle {}
+Bus.identifyClass('bus'); // bus, class Bus {}
+Vehicle.identifyClass('vehicle'); // vehicle, class Vehicle {}
 ```
 
-注意
-
-extends 关键字也可以在类表达式中使用，因此 `let Bar = class extends Foo {}` 是有效的语法。
+> 注意 extends 关键字也可以在类表达式中使用，因此 `let Bar = class extends Foo {}` 是有效的语法。
 
 2. 构造函数、 HomeObject 和 super()
 
 派生类的方法可以通过 super 关键字引用它们的原型。这个关键字只能在派生类中使用，而且仅限于类构造函数、实例方法和静态方法内部。在类构造函数中使用 super 可以调用父类构造函数。
 
 ```js
-class Vehicle { constructor() {
-
-this.hasEngine = true;
-
+class Vehicle {
+  constructor() {
+    this.hasEngine = true;
+  }
 }
-
+class Bus extends Vehicle {
+  constructor() {
+    // 不要在调用 super()之前引用 this，否则会抛出 ReferenceError
+    super(); // 相当于 super.constructor()
+    console.log(this instanceof Vehicle); // true
+    console.log(this); // Bus { hasEngine: true }
+  }
 }
-
-class Bus extends Vehicle { constructor() {
-
-// 不要在调用 super()之前引用 this，否则会抛出 ReferenceError
-
-super(); // 相当于 super.constructor()
-
-console.log(this instanceof Vehicle); // true
-
-console.log(this); //
-
-Bus { hasEngine: true }
-
-}
-
-}
-
 new Bus();
 ```
 
@@ -13336,19 +13276,18 @@ Bus.identify(); // vehicle
 
 在使用 super 时要注意几个问题。
 
-super 只能在派生类构造函数和静态方法中使用。
+- super 只能在派生类构造函数和静态方法中使用。
 
 ```js
 class Vehicle {
   constructor() {
     super();
-
     // SyntaxError: 'super' keyword unexpected
   }
 }
 ```
 
-不能单独引用 super 关键字，要么用它调用构造函数，要么用它引用静态方法。
+- 不能单独引用 super 关键字，要么用它调用构造函数，要么用它引用静态方法。
 
 ```js
 class Vehicle {}
@@ -13356,13 +13295,12 @@ class Vehicle {}
 class Bus extends Vehicle {
   constructor() {
     console.log(super);
-
     // SyntaxError: 'super' keyword unexpected here
   }
 }
 ```
 
-调用 super() 会调用父类构造函数，并将返回的实例赋值给 this 。
+- 调用 super() 会调用父类构造函数，并将返回的实例赋值给 this 。
 
 ```js
 class Vehicle {}
@@ -13378,7 +13316,7 @@ class Bus extends Vehicle {
 new Bus(); // true
 ```
 
-super() 的行为如同调用构造函数，如果需要给父类构造函数传参，则需要手动传入。
+- super() 的行为如同调用构造函数，如果需要给父类构造函数传参，则需要手动传入。
 
 ```js
 class Vehicle {
@@ -13396,7 +13334,7 @@ class Bus extends Vehicle {
 console.log(new Bus('1337H4X')); // Bus { licensePlate: '1337H4X' }
 ```
 
-如果没有定义类构造函数，在实例化派生类时会调用 super() ，而且会传入所有传给派生类的参数。
+- 如果没有定义类构造函数，在实例化派生类时会调用 super() ，而且会传入所有传给派生类的参数。
 
 ```js
 class Vehicle {
@@ -13410,7 +13348,7 @@ class Bus extends Vehicle {}
 console.log(new Bus('1337H4X')); // Bus { licensePlate: '1337H4X' }
 ```
 
-在类构造函数中，不能在调用 super() 之前引用 this 。
+- 在类构造函数中，不能在调用 super() 之前引用 this 。
 
 ```js
 class Vehicle {}
@@ -13422,28 +13360,28 @@ class Bus extends Vehicle {
 }
 
 new Bus();
-
 // ReferenceError: Must call super constructor in derived class
-
 // before accessing 'this' or returning from derived constructor
 ```
 
-如果在派生类中显式定义了构造函数，则要么必须在其中调用 super() ，要么必须在其中返回一个对象。
+- 如果在派生类中显式定义了构造函数，则要么必须在其中调用 super() ，要么必须在其中返回一个对象。
 
 ```js
 class Vehicle {}
-
-class Car extends Vehicle {} class Bus extends Vehicle {
-
-constructor() { super();
-
+class Car extends Vehicle {}
+class Bus extends Vehicle {
+  constructor() {
+    super();
+  }
 }
-
+class Van extends Vehicle {
+  constructor() {
+    return {};
+  }
 }
-
-class Van extends Vehicle { constructor() {
-
-return {};
+console.log(new Car()); // Car {}
+console.log(new Bus()); // Bus {}
+console.log(new Van()); // {}
 ```
 
 3. 抽象基类
@@ -13452,11 +13390,9 @@ return {};
 
 ```js
 // 抽象基类
-
 class Vehicle {
   constructor() {
     console.log(new.target);
-
     if (new.target === Vehicle) {
       throw new Error('Vehicle cannot be directly instantiated');
     }
@@ -13464,13 +13400,10 @@ class Vehicle {
 }
 
 // 派生类
-
 class Bus extends Vehicle {}
 
 new Bus(); // class Bus {}
-
 new Vehicle(); // class Vehicle {}
-
 // Error: Vehicle cannot be directly instantiated
 ```
 
@@ -13478,7 +13411,6 @@ new Vehicle(); // class Vehicle {}
 
 ```js
 // 抽象基类
-
 class Vehicle {
   constructor() {
     if (new.target === Vehicle) {
@@ -13494,17 +13426,14 @@ class Vehicle {
 }
 
 // 派生类
-
 class Bus extends Vehicle {
   foo() {}
 }
 
 // 派生类
-
 class Van extends Vehicle {}
 
 new Bus(); // success!
-
 new Van(); // Error: Inheriting class must define foo()
 ```
 
@@ -13522,7 +13451,9 @@ class SuperArray extends Array {
     }
   }
 }
+
 let a = new SuperArray(1, 2, 3, 4, 5);
+
 console.log(a instanceof Array); // true
 console.log(a instanceof SuperArray); // true
 console.log(a); // [1, 2, 3, 4, 5]
@@ -13539,9 +13470,8 @@ let a1 = new SuperArray(1, 2, 3, 4, 5);
 let a2 = a1.filter((x) => !!(x % 2));
 
 console.log(a1); // [1, 2, 3, 4, 5]
-
-console.log(a2); // [1, 3, 5] console.log(a1 instanceof SuperArray); // true
-
+console.log(a2); // [1, 3, 5]
+console.log(a1 instanceof SuperArray); // true
 console.log(a2 instanceof SuperArray); // true
 ```
 
@@ -13558,9 +13488,8 @@ let a1 = new SuperArray(1, 2, 3, 4, 5);
 let a2 = a1.filter((x) => !!(x % 2));
 
 console.log(a1); // [1, 2, 3, 4, 5]
-
-console.log(a2); // [1, 3, 5] console.log(a1 instanceof SuperArray); // true
-
+console.log(a2); // [1, 3, 5]
+console.log(a1 instanceof SuperArray); // true
 console.log(a2 instanceof SuperArray); // false
 ```
 
@@ -13568,9 +13497,7 @@ console.log(a2 instanceof SuperArray); // false
 
 把不同类的行为集中到一个类是一种常见的 JavaScript 模式。虽然 ES6 没有显式支持多类继承，但通过现有特性可以轻松地模拟这种行为。
 
-注意
-
-Object.assign() 方法是为了混入对象行为而设计的。只有在需要混入类的行为时才有必要自己实现混入表达式。如果只是需要混入多个对象的属性，那么使用 Object.assign() 就可以了。
+> 注意 Object.assign() 方法是为了混入对象行为而设计的。只有在需要混入类的行为时才有必要自己实现混入表达式。如果只是需要混入多个对象的属性，那么使用 Object.assign() 就可以了。
 
 在下面的代码片段中， extends 关键字后面是一个 JavaScript 表达式。任何可以解析为一个类或一个构造函数的表达式都是有效的。这个表达式会在求值类定义时被求值：
 
@@ -13583,7 +13510,6 @@ function getParentClass() {
 }
 
 class Bus extends getParentClass() {}
-
 // 可求值的表达式
 ```
 
@@ -13618,6 +13544,9 @@ let BazMixin = (Superclass) =>
 class Bus extends FooMixin(BarMixin(BazMixin(Vehicle))) {}
 
 let b = new Bus();
+b.foo(); // foo
+b.bar(); // bar
+b.baz(); // baz
 ```
 
 通过写一个辅助函数，可以把嵌套调用展开：
@@ -13641,13 +13570,16 @@ let BazMixin = (Superclass) =>
       console.log('baz');
     }
   };
+
 function mix(BaseClass, ...Mixins) {
   return Mixins.reduce(
     (accumulator, current) => current(accumulator),
     BaseClass
   );
 }
+
 class Bus extends mix(Vehicle, FooMixin, BarMixin, BazMixin) {}
+
 let b = new Bus();
 b.foo(); // foo
 b.bar(); // bar
@@ -16453,9 +16385,7 @@ console.log(object.getIdentityFunc()()); // 'My Object'
 
 object ，所以调用 object.getIdentityFunc()() 就会返回 "My Object" 。
 
-注意
-
-this 和 arguments 都是不能直接在内部函数中访问
+> 注意 this 和 arguments 都是不能直接在内部函数中访问
 
 的。如果想访问包含作用域中的 arguments 对象，则同样需要将
 
@@ -16645,7 +16575,7 @@ console.log(i);
 
 2.  私有变量
 
-严格来讲，JavaScript 没有私有成员的概念，所有对象属性都公有的。不过，倒是有私有变量的概念。任何定义在函数或块中的变量，都可以认为是私有的，因为在这个函数或块的外部无法访问其中的变量。私有变量包括函数参数、局部变量，以及函数内部定义的其他函数。来看下面的例子：
+严格来讲，JavaScript 没有私有成员的概念，所有对象属性都公有的。不过，倒是有私有变量的概念。任何定义在函数或块中的变量，都可以认为是私有的，因为在这个函数或块的外部无法访问其中的变���。私有变量包括函数参数、局部变量，以及函数内部定义的其他函数。来看下面的例子：
 
 function add(num1, num2) { let sum = num1 \+ num2; return sum;
 
