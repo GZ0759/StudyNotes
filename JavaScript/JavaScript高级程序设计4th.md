@@ -12188,9 +12188,7 @@ console.log(person1.friends === person2.friends); // true
 
 ### 8.3.1 原型链
 
-ECMA-262 把原型链定义为 ECMAScript 的主要继承方式。其基本思想就是通过原型继承多个引用类型的属性和方法。重温一下构造函数、原型和实例的关系：每个构造函数都有一个原型对象，原型有一个属性指回构造函数，而实例有一个内部指针指向原型。如果原型是另一个类型的实例呢？那就意味着这个原型本身有一个内部指针指向另一个原型，相应地另一个原型也有一个指针指向另一个构造函数。
-
-这样就在实例和原型之间构造了一条原型链。这就是原型链的基本构想。
+ECMA-262 把原型链定义为 ECMAScript 的主要继承方式。其基本思想就是通过原型继承多个引用类型的属性和方法。重温一下构造函数、原型和实例的关系：每个构造函数都有一个原型对象，原型有一个属性指回构造函数，而实例有一个内部指针指向原型。如果原型是另一个类型的实例呢？那就意味着这个原型本身有一个内部指针指向另一个原型，相应地另一个原型也有一个指针指向另一个构造函数。这样就在实例和原型之间构造了一条原型链。这就是原型链的基本构想。
 
 实现原型链涉及如下代码模式：
 
@@ -12222,9 +12220,7 @@ console.log(instance.getSuperValue()); // true
 
 图 8-4
 
-这个例子中实现继承的关键，是 SubType 没有使用默认原型，而是将其替换成了一个新的对象。这个新的对象恰好是 SuperType 的实例。这样一来， SubType 的实例不仅能从 SuperType 的实例中继承属性和方法，而且还与 SuperType 的原型挂上了钩。于是 instance （通过内部的 `[[Prototype]]` ）指向 SubType.prototype ，而 SubType.prototype （作为 SuperType 的实例又通过内部的 `[[Prototype]]` ）指向 SuperType.prototype 。注意， getSuperValue() 方法还在 SuperType.prototype 对象上，而 property 属性则在 SubType.prototype 上。这是因为 getSuperValue() 是一个原型方法，而 property 是一个实例属性。
-
-SubType.prototype 现在是 SuperType 的一个实例，因此 property 才会存储在它上面。还要注意，由于 SubType.prototype 的 constructor 属性被重写为指向 SuperType ，所以 instance.constructor 也指向 SuperType 。
+这个例子中实现继承的关键，是 SubType 没有使用默认原型，而是将其替换成了一个新的对象。这个新的对象恰好是 SuperType 的实例。这样一来， SubType 的实例不仅能从 SuperType 的实例中继承属性和方法，而且还与 SuperType 的原型挂上了钩。于是 instance （通过内部的 `[[Prototype]]` ）指向 SubType.prototype ，而 SubType.prototype （作为 SuperType 的实例又通过内部的 `[[Prototype]]` ）指向 SuperType.prototype 。注意， getSuperValue() 方法还在 SuperType.prototype 对象上，而 property 属性则在 SubType.prototype 上。这是因为 getSuperValue() 是一个原型方法，而 property 是一个实例属性。SubType.prototype 现在是 SuperType 的一个实例，因此 property 才会存储在它上面。还要注意，由于 SubType.prototype 的 constructor 属性被重写为指向 SuperType ，所以 instance.constructor 也指向 SuperType 。
 
 原型链扩展了前面描述的原型搜索机制。我们知道，在读取实例上的属性时，首先会在实例上搜索这个属性。如果没找到，则会继承搜索实例的原型。在通过原型链实现继承之后，搜索就可以继承向上，搜索原型的原型。对前面的例子而言，调用 instance.getSuperValue() 经过了 3 步搜索： instance 、SubType.prototype 和 SuperType.prototype ，最后一步才找到这个方法。对属性和方法的搜索会一直持续到原型链的末端。
 
@@ -12241,17 +12237,9 @@ SubType 继承 SuperType ，而 SuperType 继承 Object 。在调用 instance.to
 原型与实例的关系可以通过两种方式来确定。第一种方式是使用 instanceof 操作符，如果一个实例的原型链中出现过相应的构造函数，则 instanceof 返回 true 。如下例所示：
 
 ```js
-console.log(instance instanceof Object);
-
-// true
-
-console.log(instance instanceof SuperType);
-
-// true
-
-console.log(instance instanceof SubType);
-
-// true
+console.log(instance instanceof Object); // true
+console.log(instance instanceof SuperType); // true
+console.log(instance instanceof SubType); // true
 ```
 
 从技术上讲， instance 是 Object 、 SuperType 和 SubType 的实例，因为 instance 的原型链中包含这些构造函数的原型。结果就是 instanceof 对所有这些构造函数都返回 true 。
@@ -12259,9 +12247,9 @@ console.log(instance instanceof SubType);
 确定这种关系的第二种方式是使用 `isPrototypeOf()` 方法。原型链中的每个原型都可以调用这个方法，如下例所示，只要原型链中包含这个原型，这个方法就返回 true ：
 
 ```js
-console.log(Object.prototype.isPrototypeOf(in stance)); // true
-console.log(SuperType.prototype.isPrototypeOf (instance)); // true
-console.log(SubType.prototype.isPrototypeOf(i nstance)); // true
+console.log(Object.prototype.isPrototypeOf(instance)); // true
+console.log(SuperType.prototype.isPrototypeOf(instance)); // true
+console.log(SubType.prototype.isPrototypeOf(instance)); // true
 ```
 
 3. 关于方法
@@ -12403,7 +12391,8 @@ function SubType() {
 }
 
 let instance = new SubType();
-console.log(instance.name); // "Nicholas"; console.log(instance.age); // 29
+console.log(instance.name); // "Nicholas"; 
+console.log(instance.age); // 29
 ```
 
 在这个例子中， SuperType 构造函数接收一个参数 name ，然后将它赋值给一个属性。在 SubType 构造函数中调用 SuperType 构造函数时传入这个参数，实际上会在 SubType 的实例上定义 name 属性。为确保 SuperType 构造函数不会覆盖 SubType 定义的属性，可以在调用父类构造函数之后再给子类实例添加额外的属性。
@@ -12453,9 +12442,7 @@ instance2.sayName(); // "Greg";
 instance2.sayAge(); // 27
 ```
 
-在这个例子中， SuperType 构造函数定义了两个属性， name 和 colors ，而它的原型上也定义了一个方法叫 sayName() 。
-
-SubType 构造函数调用了 SuperType 构造函数，传入了 name 参数，然后又定义了自己的属性 age 。此外， SubType.prototype 也被赋值为 SuperType 的实例。原型赋值之后，又在这个原型上添加了新方法 sayAge() 。这样，就可以创建两个 SubType 实例，让这两个实例都有自己的属性，包括 colors ，同时还共享相同的方法。
+在这个例子中， SuperType 构造函数定义了两个属性， name 和 colors ，而它的原型上也定义了一个方法叫 sayName() 。SubType 构造函数调用了 SuperType 构造函数，传入了 name 参数，然后又定义了自己的属性 age 。此外， SubType.prototype 也被赋值为 SuperType 的实例。原型赋值之后，又在这个原型上添加了新方法 sayAge() 。这样，就可以创建两个 SubType 实例，让这两个实例都有自己的属性，包括 colors ，同时还共享相同的方法。
 
 组合继承弥补了原型链和盗用构造函数的不足，是 JavaScript 中使用最多的继承模式。而且组合继承也保留了 instanceof 操作符和 `isPrototypeOf()` 方法识别合成对象的能力。
 
@@ -12547,9 +12534,7 @@ function createAnother(original) {
 }
 ```
 
-在这段代码中， createAnother() 函数接收一个参数，就是新对象的基准对象。这个对象 original 会被传给 object() 函数，然后将返回的新对象赋值给 clone 。接着给 clone 对象添加一个新方法 sayHi() 。最后返回这个对象。可以像下面这样使用
-
-createAnother() 函数：
+在这段代码中， createAnother() 函数接收一个参数，就是新对象的基准对象。这个对象 original 会被传给 object() 函数，然后将返回的新对象赋值给 clone 。接着给 clone 对象添加一个新方法 sayHi() 。最后返回这个对象。可以像下面这样使用 createAnother() 函数：
 
 ```js
 let person = {
@@ -12605,28 +12590,22 @@ SubType.prototype.sayAge = function () {
 
 ```js
 function inheritPrototype(subType, superType) {
+  // 创建对象
   let prototype = object(superType.prototype);
 
-  // 创建对象
-
+  // 增强对象
   prototype.constructor = subType;
 
-  // 增强对象
-
-  subType.prototype = prototype;
-
   // 赋值对象
+  subType.prototype = prototype;
 }
 ```
 
-这个 inheritPrototype() 函数实现了寄生式组合继承的核心逻辑。这个函数接收两个参数：子类构造函数和父类构造函数。在这个函数内部，第一步是创建父类原型的一个副本。然后，给返回的
-
-prototype 对象设置 constructor 属性，解决由于重写原型导致默认 constructor 丢失的问题。最后将新创建的对象赋值给子类型的原型。如下例所示，调用 inheritPrototype() 就可以实现前面例子中的子类型原型赋值：
+这个 inheritPrototype() 函数实现了寄生式组合继承的核心逻辑。这个函数接收两个参数：子类构造函数和父类构造函数。在这个函数内部，第一步是创建父类原型的一个副本。然后，给返回的 prototype 对象设置 constructor 属性，解决由于重写原型导致默认 constructor 丢失的问题。最后将新创建的对象赋值给子类型的原型。如下例所示，调用 inheritPrototype() 就可以实现前面例子中的子类型原型赋值：
 
 ```js
 function SuperType(name) {
   this.name = name;
-
   this.colors = ['red', 'blue', 'green'];
 }
 
@@ -12647,9 +12626,7 @@ SubType.prototype.sayAge = function () {
 };
 ```
 
-这里只调用了一次 SuperType 构造函数，避免了
-
-SubType.prototype 上不必要也用不到的属性，因此可以说这个例子的效率更高。而且，原型键仍然保持不变，因此 instanceof 操作符和 `isPrototypeOf()` 方法正常有效。寄生式组合继承可以算是引用类型继承的最佳模式。
+这里只调用了一次 SuperType 构造函数，避免了 SubType.prototype 上不必要也用不到的属性，因此可以说这个例子的效率更高。而且，原型键仍然保持不变，因此 instanceof 操作符和 `isPrototypeOf()` 方法正常有效。寄生式组合继承可以算是引用类型继承的最佳模式。
 
 ## 8.4 类
 
