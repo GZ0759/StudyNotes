@@ -1162,7 +1162,7 @@ if (true) {
 console.log(name); // Matt
 ```
 
-const 声明的限制只适用于它指向的变量的引用。换句话说，如果 const 变量引用的是一���对象，那么修改这个对象内部的属性并不违反 const 的限制。
+const 声明的限制只适用于它指向的变量的引用。换句话说，如果 const 变量引用的是一个对象，那么修改这个对象内部的属性并不违反 const 的限制。
 
 ```js
 const person = {};
@@ -5478,7 +5478,7 @@ Number 是对应数值的引用类型。要创建一个 Number 对象，就使�
 
 let numberObject = new Number(10);
 
-与 Boolean 类型一样， Number ���型重写了 valueOf() 、 toLocaleString() 和 toString() 方法。 valueOf() 方法返回 Number 对象表示的原始数值，另外两个方法返回数值字符串。 toStrin\() 方法可选地接收一个表示基数的参数，并返回相应基数形式的数值字符串，如下所示：
+与 Boolean 类型一样， Number 类型重写了 valueOf() 、 toLocaleString() 和 toString() 方法。 valueOf() 方法返回 Number 对象表示的原始数值，另外两个方法返回数值字符串。 toStrin\() 方法可选地接收一个表示基数的参数，并返回相应基数形式的数值字符串，如下所示：
 
 ```
 let num = 10; console.log(num.toString()); // "10"
@@ -16575,7 +16575,7 @@ console.log(i);
 
 2.  私有变量
 
-严格来讲，JavaScript 没有私有成员的概念，所有对象属性都公有的。不过，倒是有私有变量的概念。任何定义在函数或块中的变量，都可以认为是私有的，因为在这个函数或块的外部无法访问其中的变���。私有变量包括函数参数、局部变量，以及函数内部定义的其他函数。来看下面的例子：
+严格来讲，JavaScript 没有私有成员的概念，所有对象属性都公有的。不过，倒是有私有变量的概念。任何定义在函数或块中的变量，都可以认为是私有的，因为在这个函数或块的外部无法访问其中的变量。私有变量包括函数参数、局部变量，以及函数内部定义的其他函数。来看下面的例子：
 
 function add(num1, num2) { let sum = num1 \+ num2; return sum;
 
