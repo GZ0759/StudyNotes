@@ -14933,7 +14933,7 @@ function sum(num1, num2) {
 }
 ```
 
-这里，代码定义了一个变量 sum 并将其初始化为一个函数。> 注意 function 关键字后面没有名称，因为不需要。这个函数可以通过变量 sum 来引用。注意函数定义最后没有加分号。
+注意函数定义最后没有加分号。
 
 另一种定义函数的语法是函数表达式。函数表达式与函数声明几乎是等价的：
 
@@ -14943,7 +14943,11 @@ let sum = function (num1, num2) {
 };
 ```
 
-注意这里的函数末尾是有分号的，与任何变量初始化语句一样。还有一种定义函数的方式与函数表达式很像，叫作“箭头函数”（arrow function），如下所示：
+这里，代码定义了一个变量 sum 并将其初始化为一个函数。注意 function 关键字后面没有名称，因为不需要。这个函数可以通过变量 sum 来引用。
+
+注意这里的函数末尾是有分号的，与任何变量初始化语句一样。
+
+还有一种定义函数的方式与函数表达式很像，叫作“箭头函数”（arrow function），如下所示：
 
 ```js
 let sum = (num1, num2) => {
@@ -14954,18 +14958,16 @@ let sum = (num1, num2) => {
 最后一种定义函数的方式是使用 Function 构造函数。这个构造函数接收任意多个字符串参数，最后一个参数始终会被当成函数体，而之前的参数都是新函数的参数。来看下面的例子：
 
 ```js
-let sum = new Function('num1', 'num2', 'return num1 + num2'); // 不 推 荐
+let sum = new Function('num1', 'num2', 'return num1 + num2'); // 不推荐
 ```
 
-我们不推荐使用这种语法来定义函数，因为这段代码会被解释两次：第一次是将它当作常规 ECMAScript 代码，第二次是解释传给构造函数的字符串。这显然会影响性能。不过，把函数想象为对象，把函数名想象为指针是很重要的。而上面这种语法很好地诠释了这些概
-
-念。
+我们不推荐使用这种语法来定义函数，因为这段代码会被解释两次：第一次是将它当作常规 ECMAScript 代码，第二次是解释传给构造函数的字符串。这显然会影响性能。不过，把函数想象为对象，把函数名想象为指针是很重要的。而上面这种语法很好地诠释了这些概念。
 
 > 注意 这几种实例化函数对象的方式之间存在微妙但重要的差别， 本章后面会讨论。无论如何，通过其中任何一种方式都可以创建函数。
 
 ## 10.1 箭头函数
 
-ECMAScript 6 新增了使用胖箭头（ => ）语法定义函数表达式的能力。很大程度上，箭头函数实例化的函数对象与正式的函数表达式创建的函数对象行为是相同的。任何可以使用函数表达式的地方，都可以使用箭头函数：
+ECMAScript 6 新增了使用胖箭头 `=>` 语法定义函数表达式的能力。很大程度上，箭头函数实例化的函数对象与正式的函数表达式创建的函数对象行为是相同的。任何可以使用函数表达式的地方，都可以使用箭头函数：
 
 ```js
 let arrowSum = (a, b) => {
@@ -14977,7 +14979,6 @@ let functionExpressionSum = function (a, b) {
 };
 
 console.log(arrowSum(5, 8)); // 13
-
 console.log(functionExpressionSum(5, 8)); // 13
 ```
 
@@ -14996,28 +14997,23 @@ console.log(
   ints.map((i) => {
     return i + 1;
   })
-);
-
-// [2, 3, 4]
+); // [2, 3, 4]
 ```
 
 如果只有一个参数，那也可以不用括号。只有没有参数，或者多个参数的情况下，才需要使用括号：
 
 ```js
 // 以下两种写法都有效
-
-let double = (x) => { return 2 * x; }; let triple = x => { return 3 * x; };
+let double = (x) => { return 2 * x; };
+let triple = x => { return 3 * x; };
 
 // 没有参数需要括号
-
 let getRandom = () => { return Math.random(); };
 
 // 多个参数需要括号
-
 let sum = (a, b) => { return a + b; };
 
 // 无效的写法：
-
 let multiply = a, b => { return a * b; };
 ```
 
@@ -15025,17 +15021,16 @@ let multiply = a, b => { return a * b; };
 
 ```js
 // 以下两种写法都有效，而且返回相应的值
-
-let double = (x) => { return 2 * x; }; let triple = (x) => 3 * x;
+let double = (x) => { return 2 * x; };
+let triple = (x) => 3 * x;
 
 // 可以赋值
-
 let value = {};
-
-let setName = (x) => x.name = "Matt"; setName(value); console.log(value.name); // "Matt"
+let setName = (x) => x.name = "Matt";
+setName(value);
+console.log(value.name); // "Matt"
 
 // 无效的写法：
-
 let multiply = (a, b) => return a * b;
 ```
 
@@ -15046,22 +15041,32 @@ let multiply = (a, b) => return a * b;
 因为函数名就是指向函数的指针，所以它们跟其他包含对象指针的变量具有相同的行为。这意味着一个函数可以有多个名称，如下所示：
 
 ```js
-function sum(num1, num2) { return num1 + num2;
+function sum(num1, num2) {
+  return num1 + num2;
+}
+
+console.log(sum(10, 10)); // 20
+
+let anotherSum = sum;
+console.log(anotherSum(10, 10)); // 20
+
+sum = null;
+console.log(anotherSum(10, 10)); // 20
 ```
 
-以上代码定义了一个名为 sum() 的函数，用于求两个数之和。然后又声明了一个变量 anotherSum ，并将它的值设置为等于
-
-sum 。注意，使用不带括号的函数名会访问函数指针，而不会执行
-
-函数。此时， anotherSum 和 sum 都指向同一个函数。调用
-
-anotherSum() 也可以返回结果。把 sum 设置为 null 之后，就切断了它与函数之间的关联。而 anotherSum() 还是可以照常调用，没有问题。
+以上代码定义了一个名为 sum() 的函数，用于求两个数之和。然后又声明了一个变量 anotherSum ，并将它的值设置为等于 sum 。注意，使用不带括号的函数名会访问函数指针，而不会执行函数。此时， anotherSum 和 sum 都指向同一个函数。调用 anotherSum() 也可以返回结果。把 sum 设置为 null 之后，就切断了它与函数之间的关联。而 anotherSum() 还是可以照常调用，没有问题。
 
 ECMAScript 6 的所有函数对象都会暴露一个只读的 name 属性，其中包含关于函数的信息。多数情况下，这个属性中保存的就是一个函数标识符，或者说是一个字符串化的变量名。即使函数没有名称，也会如实显示成空字符串。如果它是使用 Function 构造函数创建的，则会标识成 "anonymous" ：
 
 ```js
-console.log((() => {}).name); //（ 空 字 符 串 ）
+function foo() {}
+let bar = function () {};
+let baz = () => {};
 
+console.log(foo.name); // foo
+console.log(bar.name); // bar
+console.log(baz.name); // baz
+console.log((() => {}).name); //（空字符串）
 console.log(new Function().name); // anonymous
 ```
 
@@ -15084,20 +15089,17 @@ let dog = {
 };
 
 let propertyDescriptor = Object.getOwnPropertyDescriptor(dog, 'age');
-console.log(propertyDescriptor.get.name); // get age console.log(propertyDescriptor.set.name); // set age
+console.log(propertyDescriptor.get.name); // get age
+console.log(propertyDescriptor.set.name); // set age
 ```
 
 ## 10.3 理解参数
 
 ECMAScript 函数的参数跟大多数其他语言不同。ECMAScript 函数既不关心传入的参数个数，也不关心这些参数的数据类型。定义函数时要接收两个参数，并不意味着调用时就传两个参数。你可以传一个、三个，甚至一个也不传，解释器都不会报错。
 
-之所以会这样，主要是因为 ECMAScript 函数的参数在内部表现为一个数组。函数被调用时总会接收一个数组，但函数并不关心这个数组中包含什么。如果数组中什么也没有，那没问题；如果数组的元素超出了要求，那也没问题。事实上，在使用 function 关键字定义
+之所以会这样，主要是因为 ECMAScript 函数的参数在内部表现为一个数组。函数被调用时总会接收一个数组，但函数并不关心这个数组中包含什么。如果数组中什么也没有，那没问题；如果数组的元素超出了要求，那也没问题。事实上，在使用 function 关键字定义（非箭头）函数时，可以在函数内部访问 arguments 对象，从中取得传进来的每个参数值。
 
-（非箭头）函数时，可以在函数内部访问 arguments 对象，从中取得传进来的每个参数值。
-
-arguments 对象是一个类数组对象（但不是 Array 的实例），因此可以使用中括号语法访问其中的元素（第一个参数是
-
-arguments[0] ，第二个参数是 arguments[1] ）。而要确定传进来多少个参数，可以访问 arguments.length 属性。
+arguments 对象是一个类数组对象（但不是 Array 的实例），因此可以使用中括号语法访问其中的元素（第一个参数是 arguments[0] ，第二个参数是 arguments[1] ）。而要确定传进来多少个参数，可以访问 arguments.length 属性。
 
 在下面的例子中， sayHi() 函数的第一个参数叫 name ：
 
@@ -15115,9 +15117,7 @@ function sayHi() {
 }
 ```
 
-在重写后的代码中，没有命名参数。 name 和 message 参数都不见了，但函数照样可以调用。这就表明，ECMAScript 函数的参数只是为了方便才写出来的，并不是必须写出来的。与其他语言不同，在
-
-ECMAScript 中的命名参数不会创建让之后的调用必须匹配的函数签名。这是因为根本不存在验证命名参数的机制。
+在重写后的代码中，没有命名参数。 name 和 message 参数都不见了，但函数照样可以调用。这就表明，ECMAScript 函数的参数只是为了方便才写出来的，并不是必须写出来的。与其他语言不同，在 ECMAScript 中的命名参数不会创建让之后的调用必须匹配的函数签名。这是因为根本不存在验证命名参数的机制。
 
 也可以通过 arguments 对象的 length 属性检查传入的参数个数。下面的例子展示了在每调用一个函数时，都会打印出传入的参数个数：
 
@@ -15139,7 +15139,6 @@ function doAdd() {
 }
 
 doAdd(10); // 20
-
 doAdd(30, 20); // 50
 ```
 
@@ -15147,40 +15146,34 @@ doAdd(30, 20); // 50
 
 还有一个必须理解的重要方面，那就是 arguments 对象可以跟命名参数一起使用，比如：
 
-````js
-function doAdd(num1, num2) { if (arguments.length === 1) {
-
-console.log(num1 + 10);
-
-} else if (arguments.length === 2) { console.log(arguments[0] + num2);
-
+```js
+function doAdd(num1, num2) {
+  if (arguments.length === 1) {
+    console.log(num1 + 10);
+  } else if (arguments.length === 2) {
+    console.log(arguments[0] + num2);
+  }
 }
+```
 
-}
-
-在这个 doAdd() 函数中，共同使用了两个命名参数和
-
-arguments 对象。命名参数保存着与 num1 arugments[0] 一样的值，因此使用谁都无所谓。（同样， num2 也保存着跟
-
-arguments[1] 一样的值。）
+在这个 doAdd() 函数中，共同使用了两个命名参数和 arguments 对象。命名参数保存着与 num1 arugments[0] 一样的值，因此使用谁都无所谓。（同样， num2 也保存着跟 arguments[1] 一样的值。）
 
 arguments 对象的另一个有意思的地方就是，它的值始终会与对应的命名参数同步。来看下面的例子：
 
 ```js
-function doAdd(num1, num2) { arguments[1] = 10; console.log(arguments[0] + num2);
-
+function doAdd(num1, num2) {
+  arguments[1] = 10;
+  console.log(arguments[0] + num2);
 }
-````
+```
 
 这个 doAdd() 函数把第二个参数的值重写为 10。因为 arguments 对象的值会自动同步到对应的命名参数，所以修改 arguments[1] 也会修改 num2 的值，因此两者的值都是 10。但这并不意味着它们都访问同一个内存地址，它们在内存中还是分开的，只不过会保持同步而已。但是，这种同步是单向的：修改命名参数的值，不会影响 arguments 对象中相应的值。另外还要记住一点：如果只传了一个参数，然后把 arguments[1] 设置为某个值，那么这个值并不会反映到第二个命名参数。这是因为 arguments 对象的长度是根据传入的参数个数，而非定义函数时给出的命名参数个数确定的。
 
 对于命名参数而言，如果调用函数时没有传这个参数，那么它的值就是 undefined 。这就类似于定义了变量而没有初始化。比如，如果只给 doAdd() 传了一个参数，那么 num2 的值就是 undefined 。
 
-严格模式下， arguments 会有一些变化。首先，像前面那样给 arguments[1] 赋值不会再影响 num2 的值。就算把
+严格模式下， arguments 会有一些变化。首先，像前面那样给 arguments[1] 赋值不会再影响 num2 的值。就算把 arguments[1] 设置为 10， num2 的值仍然还是传入的值。其次，在函数中尝试重写 arguments 对象会导致语法错误。（代码也不会执行。）
 
-arguments[1] 设置为 10， num2 的值仍然还是传入的值。其次，在函数中尝试重写 arguments 对象会导致语法错误。（代码也不会执行。）
-
-箭头函数中的参数
+**箭头函数中的参数**
 
 如果函数是使用箭头语法定义的，那么传给函数的参数将不能使用 arguments 关键字访问，而只能通过定义的命名参数访问。
 
@@ -15264,7 +15257,6 @@ function makeKing(name) {
 }
 
 console.log(makeKing()); // 'King Henry VIII'
-
 console.log(makeKing('Louis')); // 'King Louis VIII'
 ```
 
@@ -15276,7 +15268,6 @@ function makeKing(name = 'Henry') {
 }
 
 console.log(makeKing('Louis')); // 'King Louis VIII'
-
 console.log(makeKing()); // 'King Henry VIII'
 ```
 
@@ -15287,7 +15278,9 @@ function makeKing(name = 'Henry', numerals = 'VIII') {
   return `King ${name} ${numerals}`;
 }
 
-console.log(makeKing()); // 'King Henry VIII' console.log(makeKing('Louis')); // 'King Louis VIII' console.log(makeKing(undefined, 'VI')); // 'King Henry VI'
+console.log(makeKing()); // 'King Henry VIII'
+console.log(makeKing('Louis')); // 'King Louis VIII'
+console.log(makeKing(undefined, 'VI')); // 'King Henry VI'
 ```
 
 在使用默认参数时， arguments 对象的值不反映参数的默认 值，只反映传给函数的参数。当然，跟 ES5 严格模式一样，修改命名参数也不会影响 arguments 对象，它始终以调用函数时传入的值为准：
@@ -15295,12 +15288,10 @@ console.log(makeKing()); // 'King Henry VIII' console.log(makeKing('Louis')); //
 ```js
 function makeKing(name = 'Henry') {
   name = 'Louis';
-
   return `King ${arguments[0]}`;
 }
 
 console.log(makeKing()); // 'King undefined'
-
 console.log(makeKing('Louis')); // 'King Louis'
 ```
 
@@ -15308,18 +15299,21 @@ console.log(makeKing('Louis')); // 'King Louis'
 
 ```js
 let romanNumerals = ['I', 'II', 'III', 'IV', 'V', 'VI'];
-
 let ordinality = 0;
 
 function getNumerals() {
   // 每次调用后递增
-
   return romanNumerals[ordinality++];
 }
 
 function makeKing(name = 'Henry', numerals = getNumerals()) {
   return `King ${name} ${numerals}`;
 }
+
+console.log(makeKing()); // 'King Henry I'
+console.log(makeKing('Louis', 'XVI')); // 'King Louis XVI'
+console.log(makeKing()); // 'King Henry II'
+console.log(makeKing()); // 'King Henry III'
 ```
 
 函数的默认参数只有在函数被调用时才会求值，不会在函数定义时求值。而且，计算默认值的函数只有在调用函数但未传相应参数时才会被调用。
@@ -15327,14 +15321,12 @@ function makeKing(name = 'Henry', numerals = getNumerals()) {
 箭头函数同样也可以这样使用默认参数，只不过在只有一个参数时，就必须使用括号而不能省略了：
 
 ```js
-let makeKing = (name = 'Henry') => `King
-
-${name}`;
+let makeKing = (name = 'Henry') => `King${name}`;
 
 console.log(makeKing()); // King Henry
 ```
 
-默认参数作用域与暂时性死区
+**默认参数作用域与暂时性死区**
 
 因为在求值默认参数时可以定义对象，也可以动态调用函数，所以函数参数肯定是在某个作用域中求值的。
 
@@ -15372,8 +15364,7 @@ console.log(makeKing()); // King Henry Henry
 参数初始化顺序遵循“暂时性死区”规则，即前面定义的参数不能引用后面定义的。像这样就会抛出错误：
 
 ```js
-// 报 错
-
+// 调用时不传第一个参数会报错
 function makeKing(name = numerals, numerals = 'VIII') {
   return `King ${name} ${numerals}`;
 }
@@ -15382,11 +15373,9 @@ function makeKing(name = numerals, numerals = 'VIII') {
 参数也存在于自己的作用域中，它们不能引用函数体的作用域：
 
 ```js
-// 报 错
-
+// 调用时不传第二个参数会报错
 function makeKing(name = 'Henry', numerals = defaultNumeral) {
   let defaultNumeral = 'VIII';
-
   return `King ${name} ${numerals}`;
 }
 ```
@@ -15395,7 +15384,7 @@ function makeKing(name = 'Henry', numerals = defaultNumeral) {
 
 ECMAScript 6 新增了扩展操作符，使用它可以非常简洁地操作和组合集合数据。扩展操作符最有用的场景就是函数定义中的参数列 表，在这里它可以充分利用这门语言的弱类型及参数长度可变的特 点。扩展操作符既可以用于调用函数时传参，也可以用于定义函数参数。
 
-1.  扩展参数
+### 10.6.1 扩展参数
 
 在给函数传参时，有时候可能不需要传一个数组，而是要分别传入数组的元素。
 
@@ -15406,20 +15395,14 @@ let values = [1, 2, 3, 4];
 
 function getSum() {
   let sum = 0;
-
   for (let i = 0; i < arguments.length; ++i) {
     sum += arguments[i];
   }
-
   return sum;
 }
 ```
 
-这个函数希望将所有加数逐个传进来，然后通过迭代
-
-arguments 对象来实现累加。如果不使用扩展操作符，想把定义在
-
-这个函数这面的数组拆分，那么就得求助于 apply() 方法：
+这个函数希望将所有加数逐个传进来，然后通过迭代 arguments 对象来实现累加。如果不使用扩展操作符，想把定义在这个函数这面的数组拆分，那么就得求助于 apply() 方法：
 
 ```js
 console.log(getSum.apply(null, values)); // 10
@@ -15437,42 +15420,54 @@ console.log(getSum(...values)); // 10
 
 ```js
 console.log(getSum(-1, ...values)); // 9
-
 console.log(getSum(...values, 5)); //15
-
 console.log(getSum(-1, ...values, 5)); // 14
-
 console.log(getSum(...values, ...[5, 6, 7])); //28
 ```
 
 对函数中的 arguments 对象而言，它并不知道扩展操作符的存在，而是按照调用函数时传入的参数接收每一个值：
 
 ```js
-let values = [1,2,3,4]
+let values = [1, 2, 3, 4];
 
-function countArguments() { console.log(arguments.length);
+function countArguments() {
+  console.log(arguments.length);
+}
+
+countArguments(-1, ...values); // 5
+countArguments(...values, 5); // 5
+countArguments(-1, ...values, 5); // 6
+countArguments(...values, ...[5, 6, 7]); // 7
+```
 
 arguments 对象只是消费扩展操作符的一种方式。在普通函数和箭头函数中，也可以将扩展操作符用于命名参数，当然同时也可以使用默认参数：
 
-function getProduct(a, b, c = 1) { return a * b * c;
-
+```js
+function getProduct(a, b, c = 1) {
+  return a * b * c;
 }
 
-console.log(getSum(...[0,1,2])); // 3
+let getSum = (a, b, c = 0) => {
+  return a + b + c;
+};
 
-console.log(getSum(...[0,1,2,3])); // 3
+console.log(getProduct(...[1, 2])); // 2
+console.log(getProduct(...[1, 2, 3])); // 6
+console.log(getProduct(...[1, 2, 3, 4])); // 6
+
+console.log(getSum(...[0, 1])); // 1
+console.log(getSum(...[0, 1, 2])); // 3
+console.log(getSum(...[0, 1, 2, 3])); // 3
 ```
 
-2.  收集参数
+### 10.6.2 收集参数
 
 在构思函数定义时，可以使用扩展操作符把不同长度的独立参数组合为一个数组。这有点类似 arguments 对象的构造机制，只不过收集参数的结果会得到一个 Array 实例。
 
 ```js
 function getSum(...values) {
   // 顺序累加 values 中的所有值
-
   // 初始值的总和为 0
-
   return values.reduce((x, y) => x + y, 0);
 }
 
@@ -15483,13 +15478,11 @@ console.log(getSum(1, 2, 3)); // 6
 
 ```js
 // 不可以
-
 function getProduct(...values, lastValue) {}
 
 // 可 以
-
-function ignoreFirst(firstValue, ...values) { console.log(values);
-
+function ignoreFirst(firstValue, ...values) {
+  console.log(values);
 }
 ```
 
@@ -15506,20 +15499,21 @@ console.log(getSum(1, 2, 3)); // 6
 另外，使用收集参数并不影响 arguments 对象，它仍然反映调用时传给函数的参数：
 
 ```js
-function getSum(...values) {}
+function getSum(...values) {
+  console.log(arguments.length); // 3
+  console.log(arguments); // [1, 2, 3]
+  console.log(values); // [1, 2, 3]
+}
 
 console.log(getSum(1, 2, 3));
 ```
 
 ## 10.9 函数声明与函数表达式
 
-本章到现在一直没有把函数声明和函数表达式区分得很清楚。事实上，JavaScript 引擎在加载数据时对它们是区别对待的。JavaScript 引
-
-擎在任何代码执行之前，会先读取函数声明，并在执行上下文中生成函数定义。而函数表达式必须等到代码执行到它那一行，才会在执行上下文中生成函数定义。来看下面的例子：
+本章到现在一直没有把函数声明和函数表达式区分得很清楚。事实上，JavaScript 引擎在加载数据时对它们是区别对待的。JavaScript 引擎在任何代码执行之前，会先读取函数声明，并在执行上下文中生成函数定义。而函数表达式必须等到代码执行到它那一行，才会在执行上下文中生成函数定义。来看下面的例子：
 
 ```js
 // 没问题
-
 console.log(sum(10, 10));
 function sum(num1, num2) {
   return num1 + num2;
@@ -15530,9 +15524,7 @@ function sum(num1, num2) {
 
 ```js
 // 会出错
-
 console.log(sum(10, 10));
-
 let sum = function (num1, num2) {
   return num1 + num2;
 };
@@ -15542,7 +15534,6 @@ let sum = function (num1, num2) {
 
 ```js
 console.log(sum(10, 10));
-
 var sum = function (num1, num2) {
   return num1 + num2;
 };
@@ -15583,9 +15574,7 @@ console.log(result2); // "Hello, Nicholas"
 
 callSomeFunction() 函数是通用的，第一个参数传入的是什么函数都可以，而且它始终返回调用作为第一个参数传入的函数的结果。要注意的是，如果是访问函数而不是调用函数，那就必须不带括号，所以传给 callSomeFunction() 的必须是 add10 和 getGreeting ，而不能是它们的执行结果。
 
-从一个函数中返回另一个函数也是可以的，而且非常有用。例 如，假设有一个包含对象的数组，而我们想按照任意对象属性对数组
-
-进行排序。为此，可以定义一个 sort() 方法需要的比较函数，它接收两个参数，即要比较的值。但这个比较函数还需要想办法确定根据哪个属性来排序。这个问题可以通过定义一个根据属性名来创建比较函数的函数来解决。比如：
+从一个函数中返回另一个函数也是可以的，而且非常有用。例 如，假设有一个包含对象的数组，而我们想按照任意对象属性对数组进行排序。为此，可以定义一个 sort() 方法需要的比较函数，它接收两个参数，即要比较的值。但这个比较函数还需要想办法确定根据哪个属性来排序。这个问题可以通过定义一个根据属性名来创建比较函数的函数来解决。比如：
 
 ```js
 function createComparisonFunction(propertyName) {
@@ -15604,14 +15593,11 @@ function createComparisonFunction(propertyName) {
 }
 ```
 
-这个函数的语法乍一看比较复杂，但实际上就是在一个函数中返回另一个函数，注意那个 return 操作符。内部函数可以访问
-
-propertyName 参数，并通过中括号语法取得要比较的对象的相应属性值。取得属性值以后，再按照 sort() 方法的需要返回比较值就行了。这个函数可以像下面这样使用：
+这个函数的语法乍一看比较复杂，但实际上就是在一个函数中返回另一个函数，注意那个 return 操作符。内部函数可以访问 propertyName 参数，并通过中括号语法取得要比较的对象的相应属性值。取得属性值以后，再按照 sort() 方法的需要返回比较值就行了。这个函数可以像下面这样使用：
 
 ```js
 let data = [
   { name: 'Zachary', age: 28 },
-
   { name: 'Nicholas', age: 29 },
 ];
 
@@ -15622,17 +15608,13 @@ data.sort(createComparisonFunction('age'));
 console.log(data[0].name); // Zachary
 ```
 
-在上面的代码中，数组 data 中包含两个结构相同的对象。每个对象都有一个 name 属性和一个 age 属性。默认情况下， sort()方法要对这两个对象执行 toString() ，然后再决定它们的顺序，但这样得不到有意义的结果。而通过调用
-
-createComparisonFunction("name") 来创建一个比较函数，就可以根据每个对象 name 属性的值来排序，结果 name 属性值为 "Nicholas" 、 age 属性值为 29 的对象会排在前面。而调用
-
-createComparisonFunction("age") 则会创建一个根据每个对象 age 属性的值来排序的比较函数，结果 name 属性值为 "Zachary" 、 age 属性值为 28 的对象会排在前面。
+在上面的代码中，数组 data 中包含两个结构相同的对象。每个对象都有一个 name 属性和一个 age 属性。默认情况下， sort()方法要对这两个对象执行 toString() ，然后再决定它们的顺序，但这样得不到有意义的结果。而通过调用 createComparisonFunction("name") 来创建一个比较函数，就可以根据每个对象 name 属性的值来排序，结果 name 属性值为 "Nicholas" 、 age 属性值为 29 的对象会排在前面。而调用 createComparisonFunction("age") 则会创建一个根据每个对象 age 属性的值来排序的比较函数，结果 name 属性值为 "Zachary" 、 age 属性值为 28 的对象会排在前面。
 
 ## 10.9 函数内部
 
 在 ECMAScript 5 中，函数内部存在两个特殊的对象： arguments 和 this 。ECMAScript 6 又新增了 new.target 属性。
 
-1.  arguments
+### 10.9.1 arguments
 
 arguments 对象前面讨论过多次了，它是一个类数组对象，包含调用函数时传入的所有参数。这个对象只有以 function 关键字定义函数（相对于使用箭头语法创建函数）时才会有。虽然主要用于包含函数参数，但 arguments 对象其实还有一个 callee 属性，是一个指向 arguments 对象所在函数的指针。来看下面这个经典的阶乘函数：
 
@@ -15646,9 +15628,7 @@ function factorial(num) {
 }
 ```
 
-阶乘函数一般定义成递归调用的，就像上面这个例子一样。只要给函数一个名称，而且这个名称不会变，这样定义就没有问题。但 是，这个函数要正确执行就必须保证函数名是 factorial ，从而导
-
-致了紧密耦合。使用 arguments.callee 就可以让函数逻辑与函数名解耦：
+阶乘函数一般定义成递归调用的，就像上面这个例子一样。只要给函数一个名称，而且这个名称不会变，这样定义就没有问题。但 是，这个函数要正确执行就必须保证函数名是 factorial ，从而导致了紧密耦合。使用 arguments.callee 就可以让函数逻辑与函数名解耦：
 
 ```js
 function factorial(num) {
@@ -15670,19 +15650,12 @@ factorial = function () {
 };
 
 console.log(trueFactorial(5)); // 120
-
 console.log(factorial(5)); // 0
 ```
 
-这里， trueFactorial 变量被赋值为 factorial ，实际上把同一个函数的指针又保存到了另一个位置。然后， factorial 函数又被重写为一个返回 0 的函数。如果像 factorial() 最初的版本那样不使用 arguments.callee ，那么像上面这样调用
+这里， trueFactorial 变量被赋值为 factorial ，实际上把同一个函数的指针又保存到了另一个位置。然后， factorial 函数又被重写为一个返回 0 的函数。如果像 factorial() 最初的版本那样不使用 arguments.callee ，那么像上面这样调用 trueFactorial() 就会返回 0 。不过，通过将函数与名称解耦， trueFactorial() 就可以正确计算阶乘，而 factorial()则只能返回 0。
 
-trueFactorial() 就会返回 0 。不过，通过将函数与名称解
-
-耦， trueFactorial() 就可以正确计算阶乘，而 factorial()
-
-则只能返回 0。
-
-2.  this
+### 10.9.2 this
 
 另一个特殊的对象是 this ，它在标准函数和箭头函数中有不同的行为。
 
@@ -15704,13 +15677,7 @@ o.sayColor = sayColor;
 o.sayColor(); // 'blue'
 ```
 
-定义在全局上下文中的函数 sayColor() 引用了 this 对象。这个 this 到底引用哪个对象必须到函数被调用时才能确定。因此这个值在代码执行的过程中可能会变。如果在全局上下文中调用 sayColor() ，这结果会输出 "red" ，因为 this 指向
-
-window ，而 this.color 相当于 window.color 。而在把
-
-sayColor() 赋值给 o 之后再调用 o.sayColor() ， this 会指向 o ，即 this.color 相当于 o.color ，所以会显
-
-示 "blue" 。
+定义在全局上下文中的函数 sayColor() 引用了 this 对象。这个 this 到底引用哪个对象必须到函数被调用时才能确定。因此这个值在代码执行的过程中可能会变。如果在全局上下文中调用 sayColor() ，这结果会输出 "red" ，因为 this 指向 window ，而 this.color 相当于 window.color 。而在把 sayColor() 赋值给 o 之后再调用 o.sayColor() ， this 会指向 o ，即 this.color 相当于 o.color ，所以会显示 "blue" 。
 
 在箭头函数中， this 引用的是定义箭头函数的上下文。下面的例子演示了这一点。在对 sayColor() 的两次调用中， this 引用的都是 window 对象，因为这个箭头函数是在 window 上下文中定义的：
 
@@ -15732,24 +15699,19 @@ o.sayColor(); // 'red'
 ```js
 function King() {
   this.royaltyName = 'Henry';
-
   // this 引用 King 的实例
-
   setTimeout(() => console.log(this.royaltyName), 1000);
 }
 
 function Queen() {
   this.royaltyName = 'Elizabeth';
-
   // this 引用 window 对象
-
   setTimeout(function () {
     console.log(this.royaltyName);
   }, 1000);
 }
 
 new King(); // Henry
-
 new Queen(); // undefined
 ```
 
@@ -15757,7 +15719,7 @@ new Queen(); // undefined
 
 sayColor() 函数和 o.sayColor() 是同一个函数，只不过执行的上下文不同。
 
-3.  caller
+### 10.9.3 caller
 
 ECMAScript 5 也会给函数对象上添加一个属性： caller 。虽然 ECMAScript 3 中并没有定义，但所有浏览器除了早期版本的 Opera 都支持这个属性。这个属性引用的是调用当前函数的函数，或者如果是在全局作用域中调用的则为 null 。比如：
 
@@ -15773,13 +15735,7 @@ function inner() {
 outer();
 ```
 
-以上代码会显示 outer() 函数的源代码。这是因为
-
-ourter() 调用了 inner() ， inner.caller 指向
-
-outer() 。如果要降低耦合度，则可以通过
-
-arguments.callee.caller 来引用同样的值：
+以上代码会显示 outer() 函数的源代码。这是因为 ourter() 调用了 inner() ， inner.caller 指向 outer() 。如果要降低耦合度，则可以通过 arguments.callee.caller 来引用同样的值：
 
 ```js
 function outer() {
@@ -15793,28 +15749,24 @@ function inner() {
 outer();
 ```
 
-在严格模式下访问 arguments.callee 会报错。ECMAScript 5 也定义了 arguments.caller ，但在严格模式下访问它会报错，在非严格模式下则始终是 undefined 。这是为了分清
-
-arguments.caller 和函数的 caller 而故意为之的。而作为对这门语言的安全防护，这些改动也让第三方代码无法检测同一上下文中运行的其他代码。
+在严格模式下访问 arguments.callee 会报错。ECMAScript 5 也定义了 arguments.caller ，但在严格模式下访问它会报错，在非严格模式下则始终是 undefined 。这是为了分清 arguments.caller 和函数的 caller 而故意为之的。而作为对这门语言的安全防护，这些改动也让第三方代码无法检测同一上下文中运行的其他代码。
 
 严格模式下还有一个限制，就是不能给函数的 caller 属性赋值，否则会导致错误。
 
-4.  new.target
+### 10.9.4 new.target
 
-ECMAScript 中的函数始终可以作为构造函数实例化一个新对象，也可以作为普通函数被调用。ECMAScript 6 新增了检测函数是否使用
-
-new 关键字调用的 new.target 属性。如果函数是正常调用的，则 new.target 的值是 undefined ；如果是使用 new 关键字调用的，则 new.target 将引用被调用的构造函数。
+ECMAScript 中的函数始终可以作为构造函数实例化一个新对象，也可以作为普通函数被调用。CMAScript 6 新增了检测函数是否使用 new 关键字调用的 new.target 属性。如果函数是正常调用的，则 new.target 的值是 undefined ；如果是使用 new 关键字调用的，则 new.target 将引用被调用的构造函数。
 
 ```js
 function King() {
   if (!new.target) {
     throw 'King must be instantiated using "new"';
   }
-
   console.log('King instantiated using "new"');
 }
 
-new King(); // King instantiated using "new" King(); // Error: King must be instantiated using "new"
+new King(); // King instantiated using "new"
+King(); // Error: King must be instantiated using "new"
 ```
 
 ## 10.13 函数属性与方法
