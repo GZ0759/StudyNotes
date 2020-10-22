@@ -2476,7 +2476,7 @@ console.log('foobar'.search(new StringSearcher('foo'))); // 0 console.log('barfo
 
 12. Symbol.species
 
-根据 ECMAScript 规范，这个符号作为一个属性表示“一个函数值，该函数作为创建派生对象的构造函数”。这个属性在内置类型中最常用，用于对内置类型实例方法的返回值暴露实例化派生对象的方法。用 Symbol.species 定义静态的获取器（getter）方法，可以覆盖新创建实例的原型定义：
+根据 ECMAScript 规范，这个符号作为一个属性表示“一个函数值，该函数作为创建派生对象的构造函数”。这个属性在内置类型中最常用，用于对内置类型实例方法的返回值暴露实例化派生对象的方法。用` Symbol.species` 定义静态的获取器（getter）方法，可以覆盖新创建实例的原型定义：
 
 ```js
 class Bar extends Array {}
@@ -12214,9 +12214,9 @@ console.log(instance.getSuperValue()); // true
 
 图 8-4
 
-这个例子中实现继承的关键，是 SubType 没有使用默认原型，而是将其替换成了一个新的对象。这个新的对象恰好是 SuperType 的实例。这样一来， SubType 的实例不仅能从 SuperType 的实例中继承属性和方法，而且还与 SuperType 的原型挂上了钩。于是 instance （通过内部的 `[[Prototype]]` ）指向 SubType.prototype ，而 SubType.prototype （作为 SuperType 的实例又通过内部的 `[[Prototype]]` ）指向 SuperType.prototype 。注意， `getSuperValue()` 方法还在 SuperType.prototype 对象上，而 property 属性则在 SubType.prototype 上。这是因为 `getSuperValue()` 是一个原型方法，而 property 是一个实例属性。SubType.prototype 现在是 SuperType 的一个实例，因此 property 才会存储在它上面。还要注意，由于 SubType.prototype 的 constructor 属性被重写为指向 SuperType ，所以 instance.constructor 也指向 SuperType 。
+这个例子中实现继承的关键，是 SubType 没有使用默认原型，而是将其替换成了一个新的对象。这个新的对象恰好是 SuperType 的实例。这样一来， SubType 的实例不仅能从 SuperType 的实例中继承属性和方法，而且还与 SuperType 的原型挂上了钩。于是 instance （通过内部的 `[[Prototype]]` ）指向 `SubType.prototype` ，而 `SubType.prototype` （作为 SuperType 的实例又通过内部的 `[[Prototype]]` ）指向 `SuperType.prototype` 。注意， `getSuperValue()` 方法还在 `SuperType.prototype` 对象上，而 property 属性则在 `SubType.prototype` 上。这是因为 `getSuperValue()` 是一个原型方法，而 property 是一个实例属性。`SubType.prototype` 现在是 SuperType 的一个实例，因此 property 才会存储在它上面。还要注意，由于 `SubType.prototype` 的 constructor 属性被重写为指向 SuperType ，所以 instance.constructor 也指向 SuperType 。
 
-原型链扩展了前面描述的原型搜索机制。我们知道，在读取实例上的属性时，首先会在实例上搜索这个属性。如果没找到，则会继承搜索实例的原型。在通过原型链实现继承之后，搜索就可以继承向上，搜索原型的原型。对前面的例子而言，调用 `instance.getSuperValue()` 经过了 3 步搜索： instance 、SubType.prototype 和 SuperType.prototype ，最后一步才找到这个方法。对属性和方法的搜索会一直持续到原型链的末端。
+原型链扩展了前面描述的原型搜索机制。我们知道，在读取实例上的属性时，首先会在实例上搜索这个属性。如果没找到，则会继承搜索实例的原型。在通过原型链实现继承之后，搜索就可以继承向上，搜索原型的原型。对前面的例子而言，调用 `instance.getSuperValue()` 经过了 3 步搜索： instance 、`SubType.prototype` 和 `SuperType.prototype` ，最后一步才找到这个方法。对属性和方法的搜索会一直持续到原型链的末端。
 
 1. 默认原型
 
@@ -13386,7 +13386,7 @@ console.log(new Van()); // {}
 
 3. 抽象基类
 
-有时候可能需要定义这样一个类，它可供其他类继承，但本身不会被实例化。虽然 ECMAScript 没有专门支持这种类的语法 ，但通过 new.target 也很容易实现。 new.target 保存通过 new 关键字调用的类或函数。通过在实例化时检测 new.target 是不是抽象基类，可以阻止对抽象基类的实例化：
+有时候可能需要定义这样一个类，它可供其他类继承，但本身不会被实例化。虽然 ECMAScript 没有专门支持这种类的语法 ，但通过 `new.target` 也很容易实现。 `new.target` 保存通过 new 关键字调用的类或函数。通过在实例化时检测 `new.target` 是不是抽象基类，可以阻止对抽象基类的实例化：
 
 ```js
 // 抽象基类
@@ -13475,7 +13475,7 @@ console.log(a1 instanceof SuperArray); // true
 console.log(a2 instanceof SuperArray); // true
 ```
 
-如果想覆盖这个默认行为，则可以覆盖 Symbol.species 访问器，这个访问器决定在创建返回的实例时使用的类：
+如果想覆盖这个默认行为，则可以覆盖 `Symbol.species` 访问器，这个访问器决定在创建返回的实例时使用的类：
 
 ```js
 class SuperArray extends Array {
@@ -15034,7 +15034,7 @@ console.log(value.name); // "Matt"
 let multiply = (a, b) => return a * b;
 ```
 
-箭头函数虽然语法简洁，但也有很多场合不适用。箭头函数不能使用 arguments 、 super 和 new.target ，也不能用作构造函数。此外，箭头函数也没有 prototype 属性。
+箭头函数虽然语法简洁，但也有很多场合不适用。箭头函数不能使用 arguments 、 super 和 `new.target` ，也不能用作构造函数。此外，箭头函数也没有 prototype 属性。
 
 ## 10.2 函数名
 
@@ -15099,7 +15099,7 @@ ECMAScript 函数的参数跟大多数其他语言不同。ECMAScript 函数既�
 
 之所以会这样，主要是因为 ECMAScript 函数的参数在内部表现为一个数组。函数被调用时总会接收一个数组，但函数并不关心这个数组中包含什么。如果数组中什么也没有，那没问题；如果数组的元素超出了要求，那也没问题。事实上，在使用 function 关键字定义（非箭头）函数时，可以在函数内部访问 arguments 对象，从中取得传进来的每个参数值。
 
-arguments 对象是一个类数组对象（但不是 Array 的实例），因此可以使用中括号语法访问其中的元素（第一个参数是 arguments[0] ，第二个参数是 arguments[1] ）。而要确定传进来多少个参数，可以访问 arguments.length 属性。
+arguments 对象是一个类数组对象（但不是 Array 的实例），因此可以使用中括号语法访问其中的元素（第一个参数是 `arguments[0]` ，第二个参数是 `arguments[1]` ）。而要确定传进来多少个参数，可以访问 arguments.length 属性。
 
 在下面的例子中， sayHi() 函数的第一个参数叫 name ：
 
@@ -15109,7 +15109,7 @@ function sayHi(name, message) {
 }
 ```
 
-可以通过 arguments[0] 取得相同的参数值。因此，把函数重写成不声明参数也可以：
+可以通过 `arguments[0]` 取得相同的参数值。因此，把函数重写成不声明参数也可以：
 
 ```js
 function sayHi() {
@@ -15260,7 +15260,7 @@ console.log(makeKing()); // 'King Henry VIII'
 console.log(makeKing('Louis')); // 'King Louis VIII'
 ```
 
-ECMAScript 6 之后就不用这么麻烦了，因为它支持显式定义默认参数了。下面就是与前面代码等价的 ES6 写法，只要在函数定义中的参数后面用 = 就可以为参数赋一个默认值：
+ECMAScript 6 之后就不用这么麻烦了，因为它支持显式定义默认参数了。下面就是与前面代码等价的 ES6 写法，只要在函数定义中的参数后面用 `=` 就可以为参数赋一个默认值：
 
 ```js
 function makeKing(name = 'Henry') {
@@ -15283,7 +15283,7 @@ console.log(makeKing('Louis')); // 'King Louis VIII'
 console.log(makeKing(undefined, 'VI')); // 'King Henry VI'
 ```
 
-在使用默认参数时， arguments 对象的值不反映参数的默认 值，只反映传给函数的参数。当然，跟 ES5 严格模式一样，修改命名参数也不会影响 arguments 对象，它始终以调用函数时传入的值为准：
+在使用默认参数时， arguments 对象的值不反映参数的默认值，只反映传给函数的参数。当然，跟 ES5 严格模式一样，修改命名参数也不会影响 arguments 对象，它始终以调用函数时传入的值为准：
 
 ```js
 function makeKing(name = 'Henry') {
@@ -15416,7 +15416,7 @@ console.log(getSum.apply(null, values)); // 10
 console.log(getSum(...values)); // 10
 ```
 
-因为数组的长度已知，所以在使用扩展操作符传参的时候，并不妨碍在其前面或后面再传其他的值，包括使用扩展操作符传其他参 数：
+因为数组的长度已知，所以在使用扩展操作符传参的时候，并不妨碍在其前面或后面再传其他的值，包括使用扩展操作符传其他参数：
 
 ```js
 console.log(getSum(-1, ...values)); // 9
@@ -15508,7 +15508,7 @@ function getSum(...values) {
 console.log(getSum(1, 2, 3));
 ```
 
-## 10.9 函数声明与函数表达式
+## 10.7 函数声明与函数表达式
 
 本章到现在一直没有把函数声明和函数表达式区分得很清楚。事实上，JavaScript 引擎在加载数据时对它们是区别对待的。JavaScript 引擎在任何代码执行之前，会先读取函数声明，并在执行上下文中生成函数定义。而函数表达式必须等到代码执行到它那一行，才会在执行上下文中生成函数定义。来看下面的例子：
 
@@ -15541,9 +15541,9 @@ var sum = function (num1, num2) {
 
 除了函数什么时候真正有定义这个区别之外，这两种语法是等价的。
 
-> 注意 在使用函数表达式初始化变量时，也可以给函数一个名称， 比如 let sum = function sum() {} 。这一点在 10.11 节讨论函数表达式时会再讨论。
+> 注意 在使用函数表达式初始化变量时，也可以给函数一个名称， 比如 `let sum = function sum() {}` 。这一点在 10.11 节讨论函数表达式时会再讨论。
 
-## 10.9 函数作为值
+## 10.8 函数作为值
 
 因为函数名在 ECMAScript 中就是变量，所以函数可以用在任何可以使用变量的地方。这意味着不仅可以把函数作为参数传给另一个函数，而且还可以在一个函数中返回另一个函数。来看下面的例子：
 
@@ -15612,7 +15612,7 @@ console.log(data[0].name); // Zachary
 
 ## 10.9 函数内部
 
-在 ECMAScript 5 中，函数内部存在两个特殊的对象： arguments 和 this 。ECMAScript 6 又新增了 new.target 属性。
+在 ECMAScript 5 中，函数内部存在两个特殊的对象： arguments 和 this 。ECMAScript 6 又新增了 `new.target` 属性。
 
 ### 10.9.1 arguments
 
@@ -15677,9 +15677,9 @@ o.sayColor = sayColor;
 o.sayColor(); // 'blue'
 ```
 
-定义在全局上下文中的函数 sayColor() 引用了 this 对象。这个 this 到底引用哪个对象必须到函数被调用时才能确定。因此这个值在代码执行的过程中可能会变。如果在全局上下文中调用 sayColor() ，这结果会输出 "red" ，因为 this 指向 window ，而 this.color 相当于 window.color 。而在把 sayColor() 赋值给 o 之后再调用 o.sayColor() ， this 会指向 o ，即 this.color 相当于 o.color ，所以会显示 "blue" 。
+定义在全局上下文中的函数 `sayColor()` 引用了 this 对象。这个 this 到底引用哪个对象必须到函数被调用时才能确定。因此这个值在代码执行的过程中可能会变。如果在全局上下文中调用 `sayColor()` ，这结果会输出 "red" ，因为 this 指向 window ，而 `this.color` 相当于 `window.color` 。而在把 `sayColor()` 赋值给 o 之后再调用 `o.sayColor()` ， this 会指向 o ，即 `this.color` 相当于 `o.color` ，所以会显示 "blue" 。
 
-在箭头函数中， this 引用的是定义箭头函数的上下文。下面的例子演示了这一点。在对 sayColor() 的两次调用中， this 引用的都是 window 对象，因为这个箭头函数是在 window 上下文中定义的：
+在箭头函数中， this 引用的是定义箭头函数的上下文。下面的例子演示了这一点。在对 `sayColor()` 的两次调用中， this 引用的都是 window 对象，因为这个箭头函数是在 window 上下文中定义的：
 
 ```js
 window.color = 'red';
@@ -15715,9 +15715,7 @@ new King(); // Henry
 new Queen(); // undefined
 ```
 
-> 注意 函数名只是保存指针的变量。因此全局定义的
-
-sayColor() 函数和 o.sayColor() 是同一个函数，只不过执行的上下文不同。
+> 注意 函数名只是保存指针的变量。因此全局定义的 sayColor() 函数和 o.sayColor() 是同一个函数，只不过执行的上下文不同。
 
 ### 10.9.3 caller
 
@@ -15755,7 +15753,7 @@ outer();
 
 ### 10.9.4 new.target
 
-ECMAScript 中的函数始终可以作为构造函数实例化一个新对象，也可以作为普通函数被调用。CMAScript 6 新增了检测函数是否使用 new 关键字调用的 new.target 属性。如果函数是正常调用的，则 new.target 的值是 undefined ；如果是使用 new 关键字调用的，则 new.target 将引用被调用的构造函数。
+ECMAScript 中的函数始终可以作为构造函数实例化一个新对象，也可以作为普通函数被调用。CMAScript 6 新增了检测函数是否使用 new 关键字调用的 `new.target` 属性。如果函数是正常调用的，则 `new.target` 的值是 undefined ；如果是使用 new 关键字调用的，则 `new.target` 将引用被调用的构造函数。
 
 ```js
 function King() {
