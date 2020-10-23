@@ -15628,7 +15628,7 @@ function factorial(num) {
 }
 ```
 
-阶乘函数一般定义成递归调用的，就像上面这个例子一样。只要给函数一个名称，而且这个名称不会变，这样定义就没有问题。但 是，这个函数要正确执行就必须保证函数名是 factorial ，从而导致了紧密耦合。使用 arguments.callee 就可以让函数逻辑与函数名解耦：
+阶乘函数一般定义成递归调用的，就像上面这个例子一样。只要给函数一个名称，而且这个名称不会变，这样定义就没有问题。但是，这个函数要正确执行就必须保证函数名是 factorial ，从而导致了紧密耦合。使用 `arguments.callee` 就可以让函数逻辑与函数名解耦：
 
 ```js
 function factorial(num) {
@@ -15640,7 +15640,7 @@ function factorial(num) {
 }
 ```
 
-这个重写之后的 factorial() 函数已经用 arguments.callee 代替了之前硬编码的 factorial 。这意味着无论函数叫什么名称，都可以引用正确的函数。考虑下面的情况：
+这个重写之后的 `factorial()` 函数已经用 `arguments.callee` 代替了之前硬编码的 factorial 。这意味着无论函数叫什么名称，都可以引用正确的函数。考虑下面的情况：
 
 ```js
 let trueFactorial = factorial;
@@ -15653,13 +15653,13 @@ console.log(trueFactorial(5)); // 120
 console.log(factorial(5)); // 0
 ```
 
-这里， trueFactorial 变量被赋值为 factorial ，实际上把同一个函数的指针又保存到了另一个位置。然后， factorial 函数又被重写为一个返回 0 的函数。如果像 factorial() 最初的版本那样不使用 arguments.callee ，那么像上面这样调用 trueFactorial() 就会返回 0 。不过，通过将函数与名称解耦， trueFactorial() 就可以正确计算阶乘，而 factorial()则只能返回 0。
+这里， trueFactorial 变量被赋值为 factorial ，实际上把同一个函数的指针又保存到了另一个位置。然后， factorial 函数又被重写为一个返回 0 的函数。如果像 `factorial()` 最初的版本那样不使用` arguments.calle`e ，那么像上面这样调用 `trueFactorial()` 就会返回 0 。不过，通过将函数与名称解耦， `trueFactorial()` 就可以正确计算阶乘，而 `factorial()`则只能返回 0。
 
 ### 10.9.2 this
 
 另一个特殊的对象是 this ，它在标准函数和箭头函数中有不同的行为。
 
-在标准函数中， this 引用的是把函数当成方法调用的上下文对象，这时候通常称其为 this 值（在网页的全局上下文中调用函数 时， this 指向 windows ）。来看下面的例子：
+在标准函数中， this 引用的是把函数当成方法调用的上下文对象，这时候通常称其为 this 值（在网页的全局上下文中调用函数时， this 指向 windows ）。来看下面的例子：
 
 ```js
 window.color = 'red';
@@ -15715,7 +15715,7 @@ new King(); // Henry
 new Queen(); // undefined
 ```
 
-> 注意 函数名只是保存指针的变量。因此全局定义的 sayColor() 函数和 o.sayColor() 是同一个函数，只不过执行的上下文不同。
+> 注意 函数名只是保存指针的变量。因此全局定义的 `sayColor()` 函数和 `o.sayColor()` 是同一个函数，只不过执行的上下文不同。
 
 ### 10.9.3 caller
 
@@ -15747,13 +15747,13 @@ function inner() {
 outer();
 ```
 
-在严格模式下访问 arguments.callee 会报错。ECMAScript 5 也定义了 arguments.caller ，但在严格模式下访问它会报错，在非严格模式下则始终是 undefined 。这是为了分清 arguments.caller 和函数的 caller 而故意为之的。而作为对这门语言的安全防护，这些改动也让第三方代码无法检测同一上下文中运行的其他代码。
+在严格模式下访问 `arguments.callee` 会报错。ECMAScript 5 也定义了 arguments.caller ，但在严格模式下访问它会报错，在非严格模式下则始终是 undefined 。这是为了分清 arguments.caller 和函数的 caller 而故意为之的。而作为对这门语言的安全防护，这些改动也让第三方代码无法检测同一上下文中运行的其他代码。
 
 严格模式下还有一个限制，就是不能给函数的 caller 属性赋值，否则会导致错误。
 
 ### 10.9.4 new.target
 
-ECMAScript 中的函数始终可以作为构造函数实例化一个新对象，也可以作为普通函数被调用。CMAScript 6 新增了检测函数是否使用 new 关键字调用的 `new.target` 属性。如果函数是正常调用的，则 `new.target` 的值是 undefined ；如果是使用 new 关键字调用的，则 `new.target` 将引用被调用的构造函数。
+ECMAScript 中的函数始终可以作为构造函数实例化一个新对象，也可以作为普通函数被调用。ECMAScript 6 新增了检测函数是否使用 new 关键字调用的 `new.target` 属性。如果函数是正常调用的，则 `new.target` 的值是 undefined ；如果是使用 new 关键字调用的，则 `new.target` 将引用被调用的构造函数。
 
 ```js
 function King() {
@@ -15874,7 +15874,7 @@ objectSayColor(); // blue
 
 对函数而言，继承的方法 toLocaleString() 和 toString() 始终返回函数的代码。返回代码的具体格式因浏览器而异。有的返回源代码，包含注释，而有的只返回代码的内部形式，会删除注释，甚至代码可能被解释器修改过。由于这些差异，因此不能在重要功能中依赖这些方法返回的值，而只应在调试中使用它们。继承的方法 valueOf() 返回函数本身。
 
-## 10.13 函数表达式
+## 10.11 函数表达式
 
 函数表达式虽然更强大，但也更容易让人迷惑。我们知道，定义函数有两种方式：函数声明和函数表达式。函数声明是这样的：
 
@@ -15934,7 +15934,6 @@ if (condition) {
 
 ```js
 // 没问题
-
 let sayHi;
 if (condition) {
   sayHi = function () {
@@ -15970,7 +15969,7 @@ function createComparisonFunction(propertyName) {
 
 这里的 createComparisonFunction() 函数返回一个匿名函数，这个匿名函数要么被赋值给一个变量，要么可以直接调用。但在 createComparisonFunction() 内部，那个函数是匿名的。任何时候，只要函数被当作值来使用，它就是一个函数表达式。本章后面会介绍，这并不是使用函数表达式的唯一方式。
 
-## 10.13 递归
+## 10.12 递归
 
 递归函数通常的形式是一个函数通过名称调用自己，如下面的例子所示：
 
@@ -15992,9 +15991,9 @@ factorial = null;
 console.log(anotherFactorial(4)); // 报 错
 ```
 
-这里把 factorial() 函数保存在了另一个变量 anotherFactorial 中，然后将 factorial 设置为 null ，于是只保留了一个对原始函数的引用。而在调用 anotherFactorial() 时，要递归调用 factorial() ，但因为它已经不是函数了，所以会出错。在写递归函数时使用 arguments.callee 可以避免这个问题。
+这里把 `factorial()` 函数保存在了另一个变量 anotherFactorial 中，然后将 factorial 设置为 null ，于是只保留了一个对原始函数的引用。而在调用 anotherFactorial() 时，要递归调用 `factorial()` ，但因为它已经不是函数了，所以会出错。在写递归函数时使用 `arguments.callee` 可以避免这个问题。
 
-arguments.callee 就是一个指向正在执行的函数的指针，因此可以在函数内部递归调用，如下所示：
+`arguments.callee` 就是一个指向正在执行的函数的指针，因此可以在函数内部递归调用，如下所示：
 
 ```js
 function factorial(num) {
@@ -16006,9 +16005,9 @@ function factorial(num) {
 }
 ```
 
-像这里加粗的这一行一样，把函数名称替换成 arguments.callee ，可以确保无论通过什么变量调用这个函数都不会出问题。因此在编写递归函数时， arguments.callee 是引用当前函数的首选。
+像这里加粗的这一行一样，把函数名称替换成 `arguments.callee` ，可以确保无论通过什么变量调用这个函数都不会出问题。因此在编写递归函数时， `arguments.callee` 是引用当前函数的首选。
 
-不过，在严格模式下运行的代码是不能访问 arguments.callee 的，因为访问会出错。此时，可以使用命名函数表达式（named function expression）达到目的。比如：
+不过，在严格模式下运行的代码是不能访问 `arguments.callee` 的，因为访问会出错。此时，可以使用命名函数表达式（named function expression）达到目的。比如：
 
 ```js
 const factorial = function f(num) {
@@ -16055,7 +16054,7 @@ function outerFunction() {
 
 > 注意 现在还没有办法测试尾调用优化是否起作用。不过，因为这是 ES6 规范所规定的，兼容的浏览器实现都能保证在代码满足条件的情况下应用这个优化。
 
-## 10.14 尾调用优化的条件
+### 10.13.1 尾调用优化的条件
 
 尾调用优化的条件就是确定外部栈帧真的没有必要存在了。涉及的条件如下：
 
@@ -16126,7 +16125,7 @@ function outerFunction(condition) {
 
 > 注意 之所以要求严格模式，主要因为在非严格模式下函数调用中允许使用 f.arguments 和 f.caller ，而它们都会引用外部函数的栈帧。显然，这意味着不能应用优化了。因此尾调用优化要求必须在严格模式下有效，以防止引用这些属性。
 
-## 10.14 尾调用优化的代码
+### 10.13.2 尾调用优化的代码
 
 可以通过把简单的递归函数转换为待优化的代码来加深对尾调用优化的理解。下面是一个通过递归计算斐波纳契数列的函数：
 
@@ -16160,13 +16159,11 @@ fib(1000);
 'use strict';
 
 // 基础框架
-
 function fib(n) {
   return fibImpl(0, 1, n);
 }
 
 // 执行递归
-
 function fibImpl(a, b, n) {
   if (n === 0) {
     return a;
@@ -16251,7 +16248,7 @@ compareNames = null;
 
 这里，创建的比较函数被保存在变量 compareNames 中。把 compareNames 设置为等于 null 会解除对函数的引用，从而让垃圾回收程序可以将内存释放掉。作用域链也会被销毁，其他作用域（除全局作用域之外）也可以销毁。图 10-2 展示了调用 compareNames() 之后作用域链之间的关系。
 
-> 注意 因为闭包会保留它们包含函数的作用域，所以比其他函数更占用内存。过度使用闭包可能导致内存过度占用，因此建议仅在十分必要时使用。V8 等优化的 JavaScript 引擎会努力回收被闭包困住 的内存，不过我们还是建议在使用闭包时要谨慎。
+> 注意 因为闭包会保留它们包含函数的作用域，所以比其他函数更占用内存。过度使用闭包可能导致内存过度占用，因此建议仅在十分必要时使用。V8 等优化的 JavaScript 引擎会努力回收被闭包困住的内存，不过我们还是建议在使用闭包时要谨慎。
 
 ### 10.14.1 this 对象
 
@@ -16318,7 +16315,7 @@ object.getIdentity(); // 'My Object'
 
 第一行调用 object.getIdentity() 是正常调用，会返回 "My Object" ，因为 this.identity 就是 object.identity 。第二行在调用时把 object.getIdentity 放在了括号里。虽然加了括号之后看起来是对一个函数的引用，但 this 值并没有变。这是因为按照规范， object.getIdentity 和 (object.getIdentity) 是相等的。第三行执行了一次赋值，然后再调用赋值后的结果。因为赋值表达式的值是函数本身， this 值不再与任何对象绑定，所以返回的是 "The Window" 。
 
-一般情况下，不大可能像第二行和第三行这样调用对象上的方 法。但通过这个例子，我们可以知道，即使语法稍有不同，也可能影响 this 的值。
+一般情况下，不大可能像第二行和第三行这样调用对象上的方法。但通过这个例子，我们可以知道，即使语法稍有不同，也可能影响 this 的值。
 
 ### 10.14.2 内存泄漏
 
@@ -16388,7 +16385,6 @@ console.log(i); // 抛出错误
 for (let i = 0; i < count; i++) {
   console.log(i);
 }
-
 console.log(i); // 抛出错误
 ```
 
