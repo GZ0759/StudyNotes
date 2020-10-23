@@ -204,3 +204,47 @@ JGVue.prototype.update = function (vnode) {
   this._parent.replaceChild(realDOM, document.querySelector('#root'));
 };
 ```
+
+## 响应式原理
+
+### 对象响应式化
+
+```js
+function defineReactive(target, key, value, enumerable) {
+  if (typeof value === 'object' && value != null && !Array.isArray(value)) {
+    // 引用类型
+    reactify(value);
+  }
+
+  Object.defineProperty(target, key, {
+    configurable: true,
+    enumerable: !!enumerable,
+    get() {
+      console.log(`读取 ${key} 属性`);
+      return value;
+    },
+    set(newVal) {
+      console.log(`设置 ${key} 属性为: ${newVal}`);
+      value = newVal;
+    },
+  });
+}
+// 响应式化
+function reactify(o) {
+  let keys = Object.keys(o);
+
+  for (let i = 0; i < keys.length; i++) {
+    let key = keys[i];
+    let value = o[key];
+    if (Array.isArray(value)) {
+      // 数组
+      for (let j = 0; j < value.length; j++) {
+        reactify(value[j]);
+      }
+    } else {
+      // 对象或值类型
+      defineReactive(o, key, value, true);
+    }
+  }
+}
+```
