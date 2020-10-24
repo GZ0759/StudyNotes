@@ -4857,9 +4857,9 @@ JavaScript 是使用垃圾回收的编程语言，开发者不需要操心内存
 
 本章内容
 
-理解对象
-基本 JavaScript 数据类型
-原始值与原始值包装类型
+- 理解对象
+- 基本 JavaScript 数据类型
+- 原始值与原始值包装类型
 
 引用值（或者对象）是某个特定引用类型的实例。在 ECMAScript 中，引用类型是把数据和功能组织到一起的结构，经常被人错误地称作“类”。虽然从技术上讲 JavaScript 是一门面向对象语言，但 ECMAScript 缺少传统的面向对象编程语言所具备的某些基本结构，包括类和接口。引用类型有时候也被称为对象定义，因为它们描述了自己的对象应有的属性和方法。
 
@@ -4867,7 +4867,7 @@ JavaScript 是使用垃圾回收的编程语言，开发者不需要操心内存
 
 对象被认为是某个特定引用类型的实例。新对象通过使用 new 操作符后跟一个构造函数（constructor）来创建。构造函数就是用来创建新对象的函数，比如下面这行代码：
 
-```
+```js
 let now = new Date();
 ```
 
@@ -4875,13 +4875,13 @@ let now = new Date();
 
 > 注意 函数也是一种引用类型，但有关函数的内容太多了，一章放不下，所以本书专门用第 10 章来介绍函数。
 
-1.  ### Date
+## 5.1 Date
 
 ECMAScript 的 Date 类型参考了 Java 早期版本中的 java.util.Date 。为此， Date 类型将日期保存为自协调世界时（UTC，Universal Time Coordinated）时间 1970 年 1 月 1 日午夜（零时）至今所经过的毫秒数。使用这种存储格式， Date 类型可以精确表示 1970 年 1 月 1 日之前及之后 285 616 年的日期。
 
 要创建日期对象，就使用 new 操作符来调用 Date 构造函数：
 
-```
+```js
 let now = new Date();
 ```
 
@@ -4889,28 +4889,21 @@ let now = new Date();
 
 Date.parse() 方法接收一个表示日期的字符串参数，尝试将这个字符串转换为表示该日期的毫秒数。ECMA-262 第 5 版定义了 Date.parse() 应该支持的日期格式，填充了第 3 版遗留的空白。所有实现都必须支持下列日期格式：
 
-“月/日/年”，如 "5/23/2019" ；
-
-“月名 日, 年”，如 "May 23, 2019" ；
-
-“周几 月名 日 年 时:分:秒 时区”，如 "Tue May 23 2019 00:00:00 GMT-0700" ；
-
-ISO 8601 扩展格式“YYYY-MM-DDTHH:mm:ss.sssZ”，如 2019-05-
-
-23T00:00:00 （只适用于兼容 ES5 的实现）。
+- “月/日/年”，如 "5/23/2019" ；
+- “月名 日, 年”，如 "May 23, 2019" ；
+- “周几 月名 日 年 时:分:秒 时区”，如 "Tue May 23 2019 00:00:00 GMT-0700" ；
+- ISO 8601 扩展格式“YYYY-MM-DDTHH:mm:ss.sssZ”，如 2019-05-23T00:00:00 （只适用于兼容 ES5 的实现）。
 
 比如，要创建一个表示“2019 年 5 月 23 日”的日期对象，可以使用以下代码：
 
-```
-let someDate = new Date(Date.parse("May 23, 2019"));
+```js
+let someDate = new Date(Date.parse('May 23, 2019'));
 ```
 
-如果传给 Date.parse() 的字符串并不表示日期，则该方法会返回
+如果传给 Date.parse() 的字符串并不表示日期，则该方法会返回 NaN 。如果直接把表示日期的字符串传给 Date 构造函数，那么 Date 会在后台调用 Date.parse() 。换句话说，下面这行代码跟前面那行代码是等价的：
 
-NaN 。如果直接把表示日期的字符串传给 Date 构造函数，那么 Date 会在后台调用 Date.parse() 。换句话说，下面这行代码跟前面那行代码是等价的：
-
-```
-let someDate = new Date("May 23, 2019");
+```js
+let someDate = new Date('May 23, 2019');
 ```
 
 这两行代码得到的日期对象相同。
@@ -4925,27 +4918,31 @@ Date.parse() 不同的信息来生成这个值。传给 Date.UTC() 的参数是�
 
 Date.UTC() 的两个例子：
 
-```
+```js
 // GMT 时间 2000 年 1 月 1 日零点
 
 let y2k = new Date(Date.UTC(2000, 0));
 
 // GMT 时间 2005 年 5 月 5 日下午 5 点 55 分 55 秒
 
-let allFives = new Date(Date.UTC(2005, 4, 5, 17, 55,
+let allFives = new Date(
+  Date.UTC(
+    2005,
+    4,
+    5,
+    17,
+    55,
 
-55));
+    55
+  )
+);
 ```
 
-这个例子创建了两个日期 。第一个日期是 2000 年 1 月 1 日零点
-
-（GMT）， 2000 代表年， 0 代表月（1 月）。因为没有其他参数（日取
-
-1 ，其他取 0 ），所以结果就是该月第 1 天零点。第二个日期表示 2005 年 5 月 5 日下午 5 点 55 分 55 秒（GMT）。虽然日期里面涉及的都是 5，但月数必须用 4 ，因为月数是零起点的。小时也必须是 17，因为这里采用的是 24 小时制，即取值范围是 0\~23。其他参数就都很直观了。
+这个例子创建了两个日期 。第一个日期是 2000 年 1 月 1 日零点（GMT）， 2000 代表年， 0 代表月（1 月）。因为没有其他参数（日取 1 ，其他取 0 ），所以结果就是该月第 1 天零点。第二个日期表示 2005 年 5 月 5 日下午 5 点 55 分 55 秒（GMT）。虽然日期里面涉及的都是 5，但月数必须用 4 ，因为月数是零起点的。小时也必须是 17，因为这里采用的是 24 小时制，即取值范围是 0\~23。其他参数就都很直观了。
 
 与 Date.parse() 一样， Date.UTC() 也会被 Date 构造函数隐式调用，但有一个区别：这种情况下创建的是本地日期，不是 GMT 日期。不过 Date 构造函数跟 Date.UTC() 接收的参数是一样的。因此，如果第一个参数是数值，则构造函数假设它是日期中的年，第二个参数就是月，以此类推。前面的例子也可以这样来写：
 
-```
+```js
 // 本地时间 2000 年 1 月 1 日零点
 
 let y2k = new Date(2000, 0);
@@ -4961,7 +4958,7 @@ let allFives = new Date(2005, 4, 5, 17, 55, 55);
 
 ECMAScript 还提供了 Date.now() 方法，返回表示方法执行时日期和时间的毫秒数。这个方法可以方便地用在代码分析中：
 
-```
+```js
 // 起始时间
 
 let start = Date.now();
@@ -4972,22 +4969,23 @@ doSomething();
 
 // 结束时间
 
-let stop = Date.now(), result = stop \- start;
+let stop = Date.now(),
+  result = stop - start;
 ```
 
-1.  继承的方法
+### 5.1.1 继承的方法
 
 与其他类型一样， Date 类型重写了 toLocaleString() 、
 
-toString() 和 valueOf() 方法。但与其他类型不同，重写后这些方法的返回值不一样。 Date 类型的 toLocaleString() 方法返回与浏览器运行的本地环境一致的日期和时间。这通常意味着格式中包含针对时间的 AM（上午）或 PM（下午），但不包含时区信息（具体格式可能因浏览器而不同）。 toString() 方法通常返回带时区信息的日期和时间，而时间也是以 24 小时制（0\~23）表示的。下面给出了 toLocaleString() 和
+toString() 和 valueOf() 方法。但与其他类型不同，重写后这些方法的返回值不一样。 Date 类型的 toLocaleString() 方法返回与浏览器运行的本地环境一致的日期和时间。这通常意味着格式中包含针对时间的 AM（上午）或 PM（下午），但不包含时区信息（具体格式可能因浏览器而不同）。 toString() 方法通常返回带时区信息的日期和时间，而时间也是以 24 小时制（0~23）表示的。下面给出了 toLocaleString() 和
 
 toString() 返回的 2019 年 2 月 1 日零点的示例（地区为 "en-US" 的
 
 PST，即 Pacific Standard Time，太平洋标准时间）：
 
-toLocaleString() \- 2/1/2019 12:00:00 AM
+toLocaleString() - 2/1/2019 12:00:00 AM
 
-toString() \- Thu Feb 1 2019 00:00:00 GMT\-0800
+toString() - Thu Feb 1 2019 00:00:00 GMT-0800
 
 (Pacific Standard Time)
 
@@ -4995,19 +4993,19 @@ toString() \- Thu Feb 1 2019 00:00:00 GMT\-0800
 
 Date 类型的 valueOf() 方法根本就不返回字符串，这个方法被重写后返回的是日期的毫秒表示。因此，操作符（如小于号和大于号）可以直接使用它返回的值。比如下面的例子：
 
-```
+```js
 let date1 = new Date(2019, 0, 1); // 2019 年 1 月 1 日
 
 let date2 = new Date(2019, 1, 1); // 2019 年 2 月 1 日
 
 console.log(date1 < date2); // true
 
-console.log(date1 \> date2); // false
+console.log(date1 > date2); // false
 ```
 
 日期 2019 年 1 月 1 日在 2019 年 2 月 1 日之前，所以说前者小于后者没问题。因为 2019 年 1 月 1 日的毫秒表示小于 2019 年 2 月 1 日的毫秒表示，所以用小于号比较这两个日期时会返回 true 。这也是确保日期先后的一个简单方式。
 
-2.  期格式化方法
+### 5.1.2 期格式化方法
 
 Date 类型有几个专门用于格式化日期的方法，它们都会返回字符
 
@@ -5025,11 +5023,11 @@ toLocaleTimeString() 显 示 日 期 中 的 时 、 分 、 秒 （ 格 式 特
 
 注 意 还 有 一 个 方 法 叫 toGMTString() ， 这 个 方 法 跟 toUTCString() 是一样的，目的是为了向后兼容。不过，规范建议新代码使用 toUTCString() 。
 
-3.  期/时间组件方法
+### 5.1.3 期/时间组件方法
 
 Date 类型剩下的方法（见下表）直接涉及取得或设置日期值的特定部分。注意表中“UTC 日期”，指的是没有时区偏移（将日期转换为 GMT）时的日期。
 
-1.  ### RegExp
+## 5.2 RegExp
 
 ECMAScript 通过 RegExp 类型支持正则表达式。正则表达式使用类似
 
@@ -5049,20 +5047,20 @@ y ：粘附模式，表示只查找从 lastIndex 开始及之后的字符串。
 
 u ：Unicode 模式，启用 Unicode 匹配。
 
-s ： dotAll 模式，表示元字符 . 匹配任何字符（包括 \\n 或
+s ： dotAll 模式，表示元字符 . 匹配任何字符（包括 n 或
 
-\\r ）。
+r ）。
 
 使用不同模式和标记可以创建出各种正则表达式，比如：
 
-```
+```js
 // 匹配字符串中的所有"at"
 
 let pattern1 = /at/g;
 
 // 匹配第一个"bat"或"cat"，忽略大小写
 
-let pattern2 = /\[bc\]at/i;
+let pattern2 = /[bc]at/i;
 
 // 匹配所有以"at"结尾的三字符组合，忽略大小写
 
@@ -5071,20 +5069,20 @@ let pattern3 = /.at/gi;
 
 与其他语言中的正则表达式类似，所有元字符在模式中也必须转义，包括：
 
-```
-( \[ { \\ \^ \$ | ) \] } \? \* + .
+```js
+( [ {  ^ $ | ) ] } ? * + .
 ```
 
 元字符在正则表达式中都有一种或多种特殊功能，所以要匹配上面这些字符本身，就必须使用反斜杠来转义。下面是几个例子：
 
-```
+```js
 // 匹配第一个"bat"或"cat"，忽略大小写
 
-let pattern1 = /\[bc\]at/i;
+let pattern1 = /[bc]at/i;
 
-// 匹配第一个"\[bc\]at"，忽略大小写
+// 匹配第一个"[bc]at"，忽略大小写
 
-let pattern2 = /\\\[bc\\\]at/i;
+let pattern2 = /[bc]at/i;
 
 // 匹配所有以"at"结尾的三字符组合，忽略大小写
 
@@ -5092,35 +5090,38 @@ let pattern3 = /.at/gi;
 
 // 匹配所有".at"，忽略大小写
 
-let pattern4 = /\\.at/gi;
+let pattern4 = /.at/gi;
 ```
 
-这里的 pattern1 匹配 "bat" 或 "cat" ，不区分大小写。要直接匹配 "\[bc\]at" ，左右中括号都必须像 pattern2 中那样使用反斜杠转义。在 pattern3 中，点号表示 "at" 前面的任意字符都可以匹配。如果想匹配 ".at" ，那么要像 pattern4 中那样对点号进行转义。
+这里的 pattern1 匹配 "bat" 或 "cat" ，不区分大小写。要直接匹配 "[bc]at" ，左右中括号都必须像 pattern2 中那样使用反斜杠转义。在 pattern3 中，点号表示 "at" 前面的任意字符都可以匹配。如果想匹配 ".at" ，那么要像 pattern4 中那样对点号进行转义。
 
 前面例子中的正则表达式都是使用字面量形式定义的。正则表达式也可以使用 RegExp 构造函数来创建，它接收两个参数：模式字符串和（可选的）标记字符串。任何使用字面量定义的正则表达式也可以通过构造函数来创建，比如：
 
-```
+```js
 // 匹配第一个"bat"或"cat"，忽略大小写
 
-let pattern1 = /\[bc\]at/i;
+let pattern1 = /[bc]at/i;
 
 // 跟 pattern1 一样，只不过是用构造函数创建的
 
-let pattern2 = new RegExp("\[bc\]at", "i");
+let pattern2 = new RegExp('[bc]at', 'i');
 ```
 
-这里的 pattern1 和 pattern2 是等效的正则表达式。注意， RegExp 构造函数的两个参数都是字符串。因为 RegExp 的模式参数是字符串，所以在某些情况下需要二次转义。所有元字符都必须二次转义，包括转义字符序列，如 \\n （ \\ 转义后的字符串是 \\\\ ，在正则表达式字符串中则要写成 \\\\\\\\ ）。下表展示了几个正则表达式的字面量形式，以及使用 RegExp 构造函数创建时对应的模式字符串。
+这里的 pattern1 和 pattern2 是等效的正则表达式。注意， RegExp 构造函数的两个参数都是字符串。因为 RegExp 的模式参数是字符串，所以在某些情况下需要二次转义。所有元字符都必须二次转义，包括转义字符序列，如 n （ 转义后的字符串是 ，在正则表达式字符串中则要写成 ）。下表展示了几个正则表达式的字面量形式，以及使用 RegExp 构造函数创建时对应的模式字符串。
 此外，使用 RegExp 也可以基于已有的正则表达式实例，并可选择性地修改它们的标记：
 
+```js
+const re1 = /cat/g;
+console.log(re1); // "/cat/g"
+
+const re2 = new RegExp(re1);
+console.log(re2); // "/cat/g"
+
+const re3 = new RegExp(re1, 'i');
+console.log(re3); // "/cat/i"
 ```
-const re1 = /cat/g; console.log(re1); // "/cat/g"
 
-const re2 = new RegExp(re1); console.log(re2); // "/cat/g"
-
-const re3 = new RegExp(re1, "i"); console.log(re3); // "/cat/i"
-```
-
-1.  RegExp 实例属性
+### 5.2.1 RegExp 实例属性
 
 每个 RegExp 实例都有下列属性，提供有关模式的各方面信息。
 
@@ -5138,24 +5139,25 @@ flags ：正则表达式的标记字符串。始终以字面量而非传入构�
 
 通过这些属性可以全面了解正则表达式的信息，不过实际开发中用得并不多，因为模式声明中包含这些信息。下面是一个例子：
 
-let pattern2 = new RegExp("\\\\\[bc\\\\\]at", "i");
+let pattern2 = new RegExp("[bc]at", "i");
 
 注意，虽然第一个模式是通过字面量创建的，第二个模式是通过
 
 RegExp 构造函数创建的，但两个模式的 source 和 flags 属性是相同的。 source 和 flags 属性返回的是规范化之后可以在字面量中使用的形式。
 
-2.  RegExp 实例方法
+### 5.2.2 RegExp 实例方法
 
 RegExp 实例的主要方法是 exec() ，主要用于配合捕获组使用。这个方法只接收一个参数，即要应用模式的字符串。如果找到了匹配项，则返回包含第一个匹配信息的数组；如果没找到匹配项，则返回 null 。返回的数组虽然是 Array 的实例，但包含两个额外的属性： index 和
 
 input 。 index 是字符串中匹配模式的起始位置， input 是要查找的字符串。这个数组的第一个元素是匹配整个模式的字符串，其他元素是与表达式中的捕获组匹配的字符串。如果模式中没有捕获组，则数组只包含一个元素。来看下面的例子：
 
-```
-let text = "mom and dad and baby";
+```js
+let text = 'mom and dad and baby';
 
-let pattern = /mom( and dad( and baby)\?)\?/gi;
+let pattern = /mom( and dad( and baby)?)?/gi;
 
-let matches = pattern.exec(text); console.log(matches.index); // 0 console.log(matches.input); // "mom and dad and baby"
+let matches = pattern.exec(text);
+console.log(matches.index); // 0 console.log(matches.input); // "mom and dad and baby"
 ```
 
 在这个例子中，模式包含两个捕获组：最内部的匹配项 " and baby" ，以及外部的匹配项 " and dad" 或 " and dad and
@@ -5164,26 +5166,33 @@ baby" 。调用 exec() 后找到了一个匹配项。因为整个字符串匹配
 
 如果模式设置了全局标记，则每次调用 exec() 方法会返回一个匹配的信息。如果没有设置全局标记，则无论对同一个字符串调用多少次 exec() ，也只会返回第一个匹配的信息。
 
-```
-let text = "cat, bat, sat, fat"; let pattern = /.at/;
+```js
+let text = 'cat, bat, sat, fat';
+let pattern = /.at/;
 
-let matches = pattern.exec(text); console.log(matches.index); // 0 console.log(matches\[0\]); // cat console.log(pattern.lastIndex); // 0
+let matches = pattern.exec(text);
+console.log(matches.index); // 0 console.log(matches[0]); // cat console.log(pattern.lastIndex); // 0
 
-matches = pattern.exec(text); console.log(matches.index); // 0 console.log(matches\[0\]); // cat console.log(pattern.lastIndex); // 0
+matches = pattern.exec(text);
+console.log(matches.index); // 0 console.log(matches[0]); // cat console.log(pattern.lastIndex); // 0
 ```
 
 上面例子中的模式没有设置全局标记，因此调用 exec() 只返回第一个匹配项（ "cat" ）。 lastIndex 在非全局模式下始终不变。
 
 如果在这个模式上设置了 g 标记，则每次调用 exec() 都会在字符串中向前搜索下一个匹配项，如下面的例子所示：
 
-```
-let text = "cat, bat, sat, fat"; let pattern = /.at/g;
+```js
+let text = 'cat, bat, sat, fat';
+let pattern = /.at/g;
 
-let matches = pattern.exec(text); console.log(matches.index); // 0 console.log(matches\[0\]); // cat console.log(pattern.lastIndex); // 3
+let matches = pattern.exec(text);
+console.log(matches.index); // 0 console.log(matches[0]); // cat console.log(pattern.lastIndex); // 3
 
-matches = pattern.exec(text); console.log(matches.index); // 5 console.log(matches\[0\]); // bat console.log(pattern.lastIndex); // 8
+matches = pattern.exec(text);
+console.log(matches.index); // 5 console.log(matches[0]); // bat console.log(pattern.lastIndex); // 8
 
-matches = pattern.exec(text); console.log(matches.index); // 10 console.log(matches\[0\]); // sat console.log(pattern.lastIndex); // 13
+matches = pattern.exec(text);
+console.log(matches.index); // 10 console.log(matches[0]); // sat console.log(pattern.lastIndex); // 13
 ```
 
 这次模式设置了全局标记，因此每次调用 exec() 都会返回字符串中的下一个匹配项，直到搜索到字符串末尾。注意模式的 lastIndex 属性每次都会变化。在全局匹配模式下，每次调用 exec() 都会更新 lastIndex 值，以反映上次匹配的最后一个字符的索引。
@@ -5192,8 +5201,9 @@ matches = pattern.exec(text); console.log(matches.index); // 10 console.log(matc
 
 lastIndex 的位置上寻找匹配项。粘附标记覆盖全局标记。
 
-```
-let text = "cat, bat, sat, fat"; let pattern = /.at/y;
+```js
+let text = 'cat, bat, sat, fat';
+let pattern = /.at/y;
 
 let matches = pattern.exec(text);
 
@@ -5201,23 +5211,23 @@ let matches = pattern.exec(text);
 
 // exec()没找到匹配项，于是将 lastIndex 设置为 0
 
-matches = pattern.exec(text); console.log(matches); // null console.log(pattern.lastIndex); // 0
+matches = pattern.exec(text);
+console.log(matches); // null console.log(pattern.lastIndex); // 0
 
 // 向前设置 lastIndex 可以让粘附的模式通过 exec()找到下一个匹配项：
-pattern.lastIndex = 5; matches = pattern.exec(text);
+pattern.lastIndex = 5;
+matches = pattern.exec(text);
 ```
 
-正则表达式的另一个方法是 test() ，接收一个字符串参数。如果输入的文本与模式匹配，则参数返回 true ，否则返回 false 。这个方法适用于只想测试模式是否匹配，而不需要实际匹配内容的情况。 tes\() 经常用在 if 语句中：
+正则表达式的另一个方法是 test() ，接收一个字符串参数。如果输入的文本与模式匹配，则参数返回 true ，否则返回 false 。这个方法适用于只想测试模式是否匹配，而不需要实际匹配内容的情况。 tes() 经常用在 if 语句中：
 
-```
-let text = "000-00-0000";
+```js
+let text = '000-00-0000';
 
-let pattern = /\\d{3}-\\d{2}-\\d{4}/;
+let pattern = /d{3}-d{2}-d{4}/;
 
 if (pattern.test(text)) {
-
-console.log("The pattern was matched.");
-
+  console.log('The pattern was matched.');
 }
 ```
 
@@ -5227,7 +5237,10 @@ console.log("The pattern was matched.");
 
 toString() 都返回正则表达式的字面量表示。比如：
 
-let pattern = new RegExp("\\\\\[bc\\\\\]at", "gi"); console.log(pattern.toString()); // /\\ \[bc\\\]at/gi console.log(pattern.toLocaleString()); // /\\ \[bc\\\]at/gi
+```js
+let pattern = new RegExp('[bc]at', 'gi');
+console.log(pattern.toString()); // / [bc\]at/gi console.log(pattern.toLocaleString()); // /\\ \[bc\\\]at/gi
+```
 
 这里的模式是通过 RegExp 构造函数创建的，但
 
@@ -5235,19 +5248,19 @@ toLocaleString() 和 toString() 返回的都是其字面量的形式。
 
 > 注意 正则表达式的 valueOf() 方法返回正则表达式本身。
 
-3.  RegExp 构造函数属性
+### 5.2.3 RegExp 构造函数属性
 
 RegExp 构造函数本身也有几个属性。（在其他语言中，这种属性被称为静态属性。）这些属性适用于作用域中的所有正则表达式，而且会根据最后执行的正则表达式操作而变化。这些属性还有一个特点，就是可以通过两种不同的方式访问它们。换句话说，每个属性都有一个全名和一个简写。下表列出了 RegExp 构造函数的属性。
 通过这些属性可以提取出与 exec() 和 test() 执行的操作相关的信息。来看下面的例子：
 
-```
-let text = "this has been a short summer"; let pattern = /(.)hort/g;
+```js
+let text = 'this has been a short summer';
+let pattern = /(.)hort/g;
 
 if (pattern.test(text)) {
-console.log(RegExp.input); // this has been a short summer
+  console.log(RegExp.input); // this has been a short summer
 
-a
-
+  a;
 }
 ```
 
@@ -5267,15 +5280,17 @@ lastParen 属性包含捕获组的上一次匹配，即 "s" 。
 
 符：
 
+```js
 let text = "this has been a short summer"; let pattern = /(.)hort/g;
 
 /\*
+```
 
 - 注意：Opera 不支持简写属性名
 
 - IE 不支持多行匹配
 
-```
+```js
 \*/
 
 if (pattern.test(text)) {
@@ -5286,13 +5301,14 @@ console.log(RegExp.\$\_); // this has been a short summer
 
 RegExp 还有其他几个构造函数属性，可以存储最多 9 个捕获组的匹配项。这些属性通过 RegExp.\$1\~RegExp.\$9 来访问，分别包含第 1\~9 个捕获组的匹配项。在调用 exec() 或 test() 时，这些属性就会被填充，然后就可以像下面这样使用它们：
 
-```
-let text = "this has been a short summer"; let pattern = /(..)or(.)/g;
+```js
+let text = 'this has been a short summer';
+let pattern = /(..)or(.)/g;
 
-if (pattern.test(text)) { console.log(RegExp.\$1); // sh
+if (pattern.test(text)) {
+  console.log(RegExp.\$1); // sh
 
-console.log(RegExp.\$2); // t
-
+  console.log(RegExp.\$2); // t
 }
 ```
 
@@ -5300,7 +5316,7 @@ console.log(RegExp.\$2); // t
 
 > 注意 RegExp 构造函数的所有属性都没有任何 Web 标准出处，因此不要在生产环境中使用它们。
 
-4.  模式局限
+### 5.2.4 模式局限
 
 虽然 ECMAScript 对正则表达式的支持有了长足的进步，但仍然缺少 Perl 语言中的一些高级特性。下列特性目前还没有得到 ECMAScript 的支持（想要了解更多信息，可以参考 Regular-Expressions.info 网站）：
 
@@ -5314,7 +5330,7 @@ x （忽略空格）匹配模式条件式匹配
 
 虽然还有这些局限，但 ECMAScript 的正则表达式已经非常强大，可以用于大多数模式匹配任务。
 
-1.  原始值包装类型
+## 5.3 原始值包装类型
 
 为了方便操作原始值，ECMAScript 提供了 3 种特殊的引用类型：
 
@@ -5322,7 +5338,10 @@ Boolean 、 Number 和 String 。这些类型具有本章介绍的其他引用�
 
 始值的方法或属性时，后台都会创建一个相应原始包装类型的对象，从而暴露出操作原始值的各种方法。来看下面的例子：
 
-let s1 = "some text"; let s2 = s1.substring(2);
+```js
+let s1 = 'some text';
+let s2 = s1.substring(2);
+```
 
 在这里， s1 是一个包含字符串的变量，它是一个原始值。第二行紧接着在 s1 上调用了 substring() 方法，并把结果保存在 s2 中。我们知道，原始值本身不是对象，因此逻辑上不应该有方法。而实际上这个例子又确实按照预期运行了。这是因为后台进行了很多处理，从而实现了上述操 作。具体来说，当第二行访问 s1 时，是以读模式访问的，也就是要从内存中读取变量保存的值。在以读模式访问字符串值的任何时候，后台都会执行以下 3 步：
 
@@ -5334,9 +5353,12 @@ let s1 = "some text"; let s2 = s1.substring(2);
 
 可以把这 3 步想象成执行了如下 3 行 ECMAScript 代码：
 
-let s1 = new String("some text"); let s2 = s1.substring(2);
+```js
+let s1 = new String('some text');
+let s2 = s1.substring(2);
 
 s1 = null;
+```
 
 这种行为可以让原始值拥有对象的行为。对布尔值和数值而言，以上 3 步也会在后台发生，只不过使用的是 Boolean 和 Number 包装类型而 已。
 
@@ -5344,8 +5366,9 @@ s1 = null;
 
 new 实例化引用类型后，得到的实例会在离开作用域时被销毁，而自动创建的原始值包装对象则只存在于访问它的那行代码执行期间。这意味着不能在运行时给原始值添加属性和方法。比如下面的例子：
 
-```
-let s1 = "some text"; s1.color = "red";
+```js
+let s1 = 'some text';
+s1.color = 'red';
 
 console.log(s1.color); // undefined
 ```
@@ -5360,16 +5383,17 @@ true 。
 
 另外， Object 构造函数作为一个工厂方法，能够根据传入值的类型返回相应原始值包装类型的实例。比如：
 
-```
-let obj = new Object("some text"); console.log(obj instanceof String); // true
+```js
+let obj = new Object('some text');
+console.log(obj instanceof String); // true
 ```
 
 如果传给 Object 的是字符串，则会创建一个 String 的实例。如果是数值，则会创建 Number 的实例。布尔值则会得到 Boolean 的实例。注意，使用 new 调用原始值包装类型的构造函数，与调用同名的转型
 
 函数并不一样。例如：
 
-```
-let value = "25";
+```js
+let value = '25';
 
 let number = Number(value); // 转 型 函 数
 
@@ -5380,11 +5404,11 @@ console.log(typeof number); // "number" let obj = new Number(value); // 构 造 
 
 虽然不推荐显式创建原始值包装类型的实例，但它们对于操作原始值的功能是很重要的。每个原始值包装类型都有相应的一套方法来方便数据操 作。
 
-1.  Boolean
+### 5.3.1 Boolean
 
 Boolean 是对应布尔值的引用类型。要创建一个 Boolean 对象，就使用 Boolean 构造函数并传入 true 或 false ，如下例所示：
 
-```
+```js
 let booleanObject = new Boolean(true);
 ```
 
@@ -5396,9 +5420,11 @@ Boolean 的实例会重写 valueOf() 方法，返回一个原始值 true
 
 Boolean 对象时，比如：
 
+```js
 let falseObject = new Boolean(false); let result = falseObject \&\& true; console.log(result); // true
 
 let falseValue = false; result = falseValue \&\& true; console.log(result); // false
+```
 
 在这段代码中，我们创建一个值为 false 的 Boolean 对象。然后，在一个布尔表达式中通过 \&\& 操作将这个对象与一个原始值 true 组合起来。在布尔算术中， false \&\& true 等于 false 。可是，这个表达式是对 falseObject 对象而不是对它表示的值（ false ）求值。前面刚刚说过，所有对象在布尔表达式中都会自动转换为 true ，因此
 
@@ -5408,7 +5434,7 @@ falseObject 在这个表达式里实际上表示一个 true 值。那么 true \&
 
 回 "object" 。同样， Boolean 对象是 Boolean 类型的实例，在使用 instaceof 操作符时返回 true ，但对原始值则返回 false ，如下所示：
 
-```
+```js
 console.log(typeof falseObject); // object
 
 console.log(typeof falseValue); // boolean
@@ -5420,16 +5446,19 @@ console.log(falseValue instanceof Boolean); // false
 
 理解原始布尔值和 Boolean 对象之间的区别非常重要，强烈建议永远不要使用后者。
 
-2.  Number
+### 5.3.2 Number
 
 Number 是对应数值的引用类型。要创建一个 Number 对象，就使用 Number 构造函数并传入一个数值，如下例所示：
 
+```js
 let numberObject = new Number(10);
+```
 
 与 Boolean 类型一样， Number 类型重写了 valueOf() 、 toLocaleString() 和 toString() 方法。 valueOf() 方法返回 Number 对象表示的原始数值，另外两个方法返回数值字符串。 toStrin\() 方法可选地接收一个表示基数的参数，并返回相应基数形式的数值字符串，如下所示：
 
-```
-let num = 10; console.log(num.toString()); // "10"
+```js
+let num = 10;
+console.log(num.toString()); // "10"
 
 console.log(num.toString(2)); // "1010"
 
@@ -5444,11 +5473,17 @@ console.log(num.toString(16)); // "a"
 
 toFixed() 方法返回包含指定小数点位数的数值字符串，如：
 
-let num = 10; console.log(num.toFixed(2)); // "10.00"
+```js
+let num = 10;
+console.log(num.toFixed(2)); // "10.00"
+```
 
 这里的 toFixed() 方法接收了参数 2 ，表示返回的数值字符串要包含两位小数。结果返回值为 "10.00" ，小数位填充了 0。如果数值本身的小数位超过了参数指定的位数，则四舍五入到最接近的小数位：
 
-let num = 10.005; console.log(num.toFixed(2)); // "10.01"
+```js
+let num = 10.005;
+console.log(num.toFixed(2)); // "10.01"
+```
 
 toFixed() 自动舍入的特点可以用于处理货币。不过要注意的是，多个浮点数值的数学计算不一定得到精确的结果。比如， 0.1 + 0.2 =
 
@@ -5460,8 +5495,9 @@ toFixed() 自动舍入的特点可以用于处理货币。不过要注意的是�
 
 toExponential() 也接收一个参数，表示结果中小数的位数。来看下面的例子：
 
-```
-let num = 10; console.log(num.toExponential(1)); // "1.0e+1"
+```js
+let num = 10;
+console.log(num.toExponential(1)); // "1.0e+1"
 ```
 
 这段代码的输出为 "1.0e+1" 。一般来说，这么小的数不用表示为科学记数法形式。如果想得到数值最适当的形式，那么可以使用 toPrecision() 。
@@ -5480,8 +5516,9 @@ toExponential() 。为了以正确的小数位精确表示数值，这 3 个方�
 
 与 Boolean 对象类似， Number 对象也为数值提供了重要能力。但是，考虑到两者存在同样的潜在问题，因此并不建议直接实例化 Number 对象。在处理原始数值和引用数值时， typeof 和 instacnceof 操作符会返回不同的结果，如下所示：
 
-```
-let numberObject = new Number(10); let numberValue = 10;
+```js
+let numberObject = new Number(10);
+let numberValue = 10;
 
 console.log(typeof numberObject); // "object"
 
@@ -5508,7 +5545,7 @@ IEEE 754 数值格式有一个特殊的数值范围，在这个范围内二进�
 
 ）。对超出这个范围的数值，即使尝试保存为整数，IEEE 754 编码格式也意味着二进制值可能会表示一个完全不同的数值。为了鉴别整数是否在这个范围内，可以使用 Number.isSafeInteger() 方法：
 
-```
+```js
 console.log(Number.isSafeInteger(-1 \* (2 \*\* 53)));
 
 // false
@@ -5526,20 +5563,21 @@ console.log(Number.isSafeInteger((2 \*\* 53) \- 1));
 // true
 ```
 
-3.  String
+### 5.3.3 String
 
 String 是对应字符串的引用类型。要创建一个 String 对象，使用 String 构造函数并传入一个数值，如下例所示：
 
-```
-let stringObject = new String("hello world");
+```js
+let stringObject = new String('hello world');
 ```
 
 String 对象的方法可以在所有字符串原始值上调用。3 个继承的方法 valueOf() 、 toLcaleString() 和 toString() 都返回对象的原始字符串值。
 
 每个 String 对象都有一个 length 属性，表示字符串中字符的数量。来看下面的例子：
 
-```
-let stringValue = "hello world"; console.log(stringValue.length); // "11"
+```js
+let stringValue = 'hello world';
+console.log(stringValue.length); // "11"
 ```
 
 这个例子输出了字符串 "hello world" 中包含的字符数量： 11 。注意，即使字符串中包含双字节字符（而不是单字节的 ASCII 字符），也仍然会按单字符来计数。
@@ -5550,16 +5588,16 @@ String 类型提供了很多方法来解析和操作字符串。
 
 JavaScript 字符串由 16 位码元（code unit）组成。对多数字符来说，每 16 位码元对应一个字符。换句话说，字符串的 length 属性表示字符串包含多少 16 位码元：
 
-```
-let message = "abcde";
+```js
+let message = 'abcde';
 
 console.log(message.length); // 5
 ```
 
 此外， charAt() 方法返回给定索引位置的字符，由传给方法的整数参数指定。具体来说，这个方法查找指定索引位置的 16 位码元，并返回该码元对应的字符：
 
-```
-let message = "abcde";
+```js
+let message = 'abcde';
 
 console.log(message.charAt(2)); // "c"
 ```
@@ -5576,8 +5614,8 @@ Excuses!)”。
 
 使用 charCodeAt() 方法可以查看指定码元的字符编码。这个方法返回指定索引位置的码元值，索引以整数指定。比如：
 
-```
-let message = "abcde";
+```js
+let message = 'abcde';
 
 // Unicode "Latin small letter C"的编码是 U+0063
 
@@ -5586,14 +5624,23 @@ console.log(message.charCodeAt(2)); // 99
 // 十进制 99 等于十六进制 63
 
 console.log(99 === 0x63); // true
+```
 
 fromCharCode() 方法用于根据给定的 UTF-16 码元创建字符串中的字符。这个方法可以接受任意多个数值，并返回将所有数值对应的字符拼接起来的字符串：
 
+```js
 console.log(String.fromCharCode(0x61, 0x62, 0x63, 0x64, 0x65)); // "abcde"
 
-console.log(String.fromCharCode(97, 98, 99, 100,
+console.log(
+  String.fromCharCode(
+    97,
+    98,
+    99,
+    100,
 
-101)); // "abcde"
+    101
+  )
+); // "abcde"
 ```
 
 对于 U+0000\~U+FFFF 范围内的字符， length 、 charAt() 、 charCodeAt() 和 fromCharCode() 返回的结果都跟预期是一样 的。这是因为在这个范围内，每个字符都是用 16 位表示的，而这几个方
@@ -5604,7 +5651,7 @@ console.log(String.fromCharCode(97, 98, 99, 100,
 
 在涉及增补平面的字符时，前面讨论的字符串方法就会出问题。比如，下面的例子中使用了一个笑脸表情符号，也就是一个使用代理对编码的字符：
 
-```
+```js
 // "smiling face with smiling eyes" 表情符号的编码是
 
 U+1F60A
@@ -5636,7 +5683,7 @@ console.log(String.fromCharCode(97, 98, 55357,
 
 注意，如果传入的码元索引并非代理对的开头，就会返回错误的码点。这种错误只有检测单个字符的时候才会出现，可以通过从左到右按正确的码元数遍历字符串来规避。迭代字符串可以智能地识别代理对的码 点：
 
-```
+```js
 console.log(\[..."ab☺de"\]); // \["a", "b", "☺", "d", "e"\]
 ```
 
@@ -5646,30 +5693,45 @@ fromCharCode() 也有一个对应的 fromCodePoint() 。这个方法
 
 接收任意数量的码点，返回对应字符拼接起来的字符串：
 
-```
-console.log(String.fromCharCode(97, 98, 55357,
+```js
+console.log(
+  String.fromCharCode(
+    97,
+    98,
+    55357,
 
-56842, 100, 101)); // ab☺de
+    56842,
+    100,
+    101
+  )
+); // ab☺de
 
-console.log(String.fromCodePoint(97, 98, 128522,
+console.log(
+  String.fromCodePoint(
+    97,
+    98,
+    128522,
 
-100, 101)); // ab☺de
+    100,
+    101
+  )
+); // ab☺de
 ```
 
 2.  normalize() 方法
 
 某些 Unicode 字符可以有多种编码方式。有的字符既可以通过一个 BMP 字符表示，也可以通过一个代理对表示。比如：
 
-```
+```js
 // U+00C5：上面带圆圈的大写拉丁字母 A
 
-console.log(String.fromCharCode(0x00C5));
+console.log(String.fromCharCode(0x00c5));
 
 // Å
 
 // U+212B：长度单位“埃”
 
-console.log(String.fromCharCode(0x212B));
+console.log(String.fromCharCode(0x212b));
 
 // Å
 
@@ -5677,14 +5739,14 @@ console.log(String.fromCharCode(0x212B));
 
 // U+030A：上面加个圆圈
 
-console.log(String.fromCharCode(0x0041, 0x030A));
+console.log(String.fromCharCode(0x0041, 0x030a));
 
 // Å
 ```
 
 比较操作符不在乎字符看起来是什么样的，因此这 3 个字符互不相等。
 
-```
+```js
 console.log(a1, a2, a3); // Å, Å, Å
 ```
 
@@ -5698,7 +5760,7 @@ console.log(a1, a2, a3); // Å, Å, Å
 
 通过比较字符串与其调用 normalize() 的返回值，就可以知道该字符串是否已经规范化了：
 
-```
+```js
 // U+212B 是未规范化的
 
 // U+0041/U+030A 是对 0+212B 进行 NFD/NFKD 规范化之后的结果
@@ -5711,10 +5773,10 @@ console.log(a1.normalize("NFD") === a2.normalize("NFD")); // true console.log(a2
 
 本节介绍几个操作字符串值的方法。首先是 concat() ，用于将一个或多个字符串拼接成一个新字符串。来看下面的例子：
 
-```
-let stringValue = "hello ";
+```js
+let stringValue = 'hello ';
 
-let result = stringValue.concat("world");
+let result = stringValue.concat('world');
 
 console.log(result); // "hello world"
 
@@ -5725,10 +5787,10 @@ console.log(stringValue); // "hello"
 
 concat() 方法可以接收任意多个参数，因此可以一次性拼接多个字符串，如下所示：
 
-```
-let stringValue = "hello ";
+```js
+let stringValue = 'hello ';
 
-let result = stringValue.concat("world", "!");
+let result = stringValue.concat('world', '!');
 
 console.log(result); // "hello world!"
 
@@ -5759,18 +5821,19 @@ substr() 和 substring() 也不会修改调用它们的字符串，而只会返�
 
 而 substr() 方法将第一个负参数值当成字符串长度加上该值，将第二个负参数值转换为 0。 substring() 方法会将所有负参数值都转换为 0。看下面的例子：
 
-```
-let stringValue = "hello world"; console.log(stringValue.slice(-3)); // "rld"
+```js
+let stringValue = 'hello world';
+console.log(stringValue.slice(-3)); // "rld"
 
 console.log(stringValue.substring(-3)); // "hello world"
 
 console.log(stringValue.substr(-3)); // "rld"
 
-console.log(stringValue.slice(3, \-4)); // "lo w"
+console.log(stringValue.slice(3, \ - 4)); // "lo w"
 
-console.log(stringValue.substring(3, \-4)); // "hel"
+console.log(stringValue.substring(3, \ - 4)); // "hel"
 
-console.log(stringValue.substr(3, \-4)); // "" (empty string)
+console.log(stringValue.substr(3, \ - 4)); // "" (empty string)
 ```
 
 这个例子明确演示了 3 个方法的差异。在给 slice() 和 substr() 传入负参数时，它们的返回结果相同。这是因为 \-3 会被转换为 8 （长度加上负参数），实际上调用的是 slice(8) 和 substr(8) 。而
@@ -5793,22 +5856,26 @@ indexOf() 方法从字符串开头开始查找子字符串，而
 
 lastIndexOf() 方法从字符串末尾开始查找子字符串。来看下面的例子：
 
-let stringValue = "hello world"; console.log(stringValue.indexOf("o")); // 4
+```js
+let stringValue = 'hello world';
+console.log(stringValue.indexOf('o')); // 4
 
-console.log(stringValue.lastIndexOf("o")); // 7
+console.log(stringValue.lastIndexOf('o')); // 7
+```
 
 这里，字符串中第一个 "o" 的位置是 4，即 "hello" 中的 "o" 。最后一个 "o" 的位置是 7，即 "world" 中的 "o" 。如果字符串中只有一个 "o" ，则 indexOf() 和 lastIndexOf() 返回同一个位置。这两个方法都可以接收可选的第二个参数，表示开始搜索的位置。这意味着， indexOf() 会从这个参数指定的位置开始向字符串末尾搜
 
 索，忽略该位置之前的字符； lastIndexOf() 则会从这个参数指定的位置开始向字符串开头搜索，忽略该位置之后直到字符串末尾的字符。下面看一个例子：
 
-```
-let stringValue = "hello world"; console.log(stringValue.indexOf("o", 6)); //
+```js
+let stringValue = 'hello world';
+console.log(stringValue.indexOf('o', 6)); //
 
-7
+7;
 
-console.log(stringValue.lastIndexOf("o", 6)); //
+console.log(stringValue.lastIndexOf('o', 6)); //
 
-4
+4;
 ```
 
 在传入第二个参数 6 以后，结果跟前面的例子恰好相反。这一次，
@@ -5817,7 +5884,7 @@ indexOf() 返回 7 ，因为它从位置 6（字符 "w" ）开始向后搜索字
 
 lastIndexOf() ，就可以在字符串中找到所有的目标子字符串，如下所示：
 
-```
+```js
 let stringValue = "Lorem ipsum dolor sit amet, consectetur adipisicing elit";
 
 let positions = new Array();
@@ -5843,36 +5910,37 @@ endsWith() 检查开始于索引 (string.length \- substring.length) 的匹配�
 
 startsWith() 和 includes() 方法接收可选的第二个参数，表示开始搜索的位置。如果传入第二个参数，则意味着这两个方法会从指定位置向着字符串末尾搜索，忽略该位置之前的所有字符。下面是一个例子：
 
-```
-let message = "foobarbaz";
+```js
+let message = 'foobarbaz';
 
-console.log(message.startsWith("foo")); // true
+console.log(message.startsWith('foo')); // true
 
-console.log(message.startsWith("foo", 1)); // false
+console.log(message.startsWith('foo', 1)); // false
 
-console.log(message.includes("bar")); // true
+console.log(message.includes('bar')); // true
 
-console.log(message.includes("bar", 4)); // false
+console.log(message.includes('bar', 4)); // false
 ```
 
 endsWith() 方法接收可选的第二个参数，表示应该当作字符串末尾的位置。如果不提供这个参数，那么默认就是字符串长度。如果提供这个参数，那么就好像字符串只有那么多字符一样：
 
-```
-let message = "foobarbaz";
+```js
+let message = 'foobarbaz';
 
-console.log(message.endsWith("bar")); // false
+console.log(message.endsWith('bar')); // false
 
-console.log(message.endsWith("bar", 6)); // true
+console.log(message.endsWith('bar', 6)); // true
 ```
 
 6.  trim() 方法
 
 ECMAScript 在所有字符串上都提供了 trim() 方法。这个方法会创建字符串的一个副本，删除前、后所有空格符，再返回结果。比如：
 
-```
-let stringValue = " hello world ";
+```js
+let stringValue = ' hello world ';
 
-let trimmedStringValue = stringValue.trim(); console.log(stringValue); // " hello world "
+let trimmedStringValue = stringValue.trim();
+console.log(stringValue); // " hello world "
 
 console.log(trimmedStringValue); // "hello world"
 ```
@@ -5885,8 +5953,9 @@ console.log(trimmedStringValue); // "hello world"
 
 ECMAScript 在所有字符串上都提供了 repeat() 方法。这个方法接收一个整数参数，表示要将字符串复制多少次，然后返回拼接所有副本后的结果。
 
-```
-let stringValue = "na "; console.log(stringValue.repeat(16) + "batman");
+```js
+let stringValue = 'na ';
+console.log(stringValue.repeat(16) + 'batman');
 
 // na na na na na na na na na na na na na na na na batman
 ```
@@ -5897,26 +5966,26 @@ padStart() 和 padEnd() 方法会复制字符串，如果小于指定长
 
 度，则在相应一边填充字符，直至满足长度条件。这两个方法的第一个参数是长度，第二个参数是可选的填充字符串，默认为空格（U+0020）。
 
-```
-let stringValue = "foo";
+```js
+let stringValue = 'foo';
 
 console.log(stringValue.padStart(6)); // " foo"
 
-console.log(stringValue.padStart(9, ".")); // "......foo"
+console.log(stringValue.padStart(9, '.')); // "......foo"
 
 console.log(stringValue.padEnd(6)); // "foo "
 
-console.log(stringValue.padEnd(9, ".")); // "foo......"
+console.log(stringValue.padEnd(9, '.')); // "foo......"
 ```
 
 可选的第二个参数并不限于一个字符。如果提供了多个字符的字符串，则会将其拼接并截断以匹配指定长度。此外，如果长度小于或等于字符串长度，则会返回原始字符串。
 
-```
-let stringValue = "foo";
+```js
+let stringValue = 'foo';
 
-console.log(stringValue.padStart(8, "bar")); // "barbafoo" console.log(stringValue.padStart(2)); // "foo"
+console.log(stringValue.padStart(8, 'bar')); // "barbafoo" console.log(stringValue.padStart(2)); // "foo"
 
-console.log(stringValue.padEnd(8, "bar")); // "foobarba"
+console.log(stringValue.padEnd(8, 'bar')); // "foobarba"
 
 console.log(stringValue.padEnd(2)); // "foo"
 ```
@@ -5925,10 +5994,10 @@ console.log(stringValue.padEnd(2)); // "foo"
 
 字符串的原型上暴露了一个 \@\@iterator 方法，表示可以迭代字符串的每个字符。可以像下面这样手动使用迭代器：
 
-```
-let message = "abc";
+```js
+let message = 'abc';
 
-let stringIterator = message\[Symbol.iterator\]();
+let stringIterator = messagemessage\[Symbol.iteratoriterator\]();
 ```
 
 在 for-of 循环中可以通过这个迭代器按序访问每个字符：
@@ -5951,7 +6020,7 @@ for (const c of "abcde") { console.log(c);
 
 有了这个迭代器之后，字符串就可以通过解构操作符来解构了。比如，可以更方便地把字符串分割为字符数组：
 
-```
+```js
 let message = "abcde";
 
 console.log(\[...message\]); // \["a", "b", "c", "d", "e"\]
@@ -5973,8 +6042,9 @@ toLocaleUpperCase() 方法旨在基于特定地区实现。在很多地
 
 区，地区特定的方法与通用的方法是一样的。但在少数语言中（如土耳其语），Unicode 大小写转换需应用特殊规则，要使用地区特定的方法才能实现正确转换。下面是几个例子：
 
-```
-let stringValue = "hello world"; console.log(stringValue.toLocaleUpperCase()); // "HELLO WORLD"
+```js
+let stringValue = 'hello world';
+console.log(stringValue.toLocaleUpperCase()); // "HELLO WORLD"
 
 console.log(stringValue.toUpperCase()); // "HELLO WORLD"
 
@@ -5991,8 +6061,9 @@ toLocaleUpperCase() 都返回 HELLO WORLD 。通常，如果不知道代码涉�
 
 String 类型专门为在字符串中实现模式匹配设计了几个方法。第一个就是 match() 方法，这个方法本质上跟 RegExp 对象的 exec()方法相同。 match() 方法接收一个参数，可以是一个正则表达式字符串，也可以是一个 RegExp 对象。来看下面的例子：
 
-```
-let text = "cat, bat, sat, fat"; let pattern = /.at/;
+```js
+let text = 'cat, bat, sat, fat';
+let pattern = /.at/;
 
 // 等价于 pattern.exec(text)
 
@@ -6013,12 +6084,14 @@ let text = "cat, bat, sat, fat"; let pos = text.search(/at/); console.log(pos); 
 
 为简化子字符串替换操作，ECMAScript 提供了 replace() 方法。这个方法接收两个参数，第一个参数可以是一个 RegExp 对象或一个字符串（这个字符串不会转换为正则表达式），第二个参数可以是一个字符串或一个函数。如果第一个参数是字符串，那么只会替换第一个子字符串。要想替换所有子字符串，第一个参数必须为正则表达式并且带全局标记，如下面的例子所示：
 
-```
-let text = "cat, bat, sat, fat";
+```js
+let text = 'cat, bat, sat, fat';
 
-let result = text.replace("at", "ond"); console.log(result); // "cond, bat, sat, fat"
+let result = text.replace('at', 'ond');
+console.log(result); // "cond, bat, sat, fat"
 
-result = text.replace(/at/g, "ond"); console.log(result); // "cond, bond, sond, fond"
+result = text.replace(/at/g, 'ond');
+console.log(result); // "cond, bond, sond, fond"
 ```
 
 在这个例子中，字符串 "at" 先传给 replace() 函数，而替换文本是 "ond" 。结果是 "cat" 被修改为 "cond" ，而字符串的剩余部分保持不变。通过将第一个参数改为带全局标记的正则表达式，字符串中的所有 "at" 都被替换成了 "ond" 。
@@ -6026,17 +6099,18 @@ result = text.replace(/at/g, "ond"); console.log(result); // "cond, bond, sond, 
 第二个参数是字符串的情况下，有几个特殊的字符序列，可以用来插入正则表达式操作的值。ECMA-262 中规定了下表中的值。
 使用这些特殊的序列，可以在替换文本中使用之前匹配的内容，如下面的例子所示：
 
-```
-let text = "cat, bat, sat, fat";
+```js
+let text = 'cat, bat, sat, fat';
 
-result = text.replace(/(.at)/g, "word (\$1)"); console.log(result); // word (cat), word (bat), word (sat), word (fat)
+result = text.replace(/(.at)/g, 'word ($1)');
+console.log(result); // word (cat), word (bat), word (sat), word (fat)
 ```
 
 这里，每个以 "at" 结尾的词都会被替换成 "word" 后跟一对小括号，其中包含捕获组匹配的内容 \$1 。
 
 replace() 的第二个参数可以是一个函数。在只有一个匹配项时，这个函数会收到 3 个参数：与整个模式匹配的字符串、匹配项在字符串中的开始位置，以及整个字符串。在有多个捕获组的情况下，每个匹配捕获组的字符串也会作为参数传给这个函数，但最后两个参数还是与整个模式匹配的开始位置和原始字符串。这个函数应该返回一个字符串，表示应该把匹配项替换成什么。使用函数作为第二个参数可以更细致地控制替换过程，如下所示：
 
-```
+```js
 function htmlEscape(text) {
 
 return text.replace(/\[<>"\&\]/g, function(match, pos, originalText) {
@@ -6070,10 +6144,11 @@ console.log(htmlEscape("<p class=\\"greeting\\">Hello world!</p>"));
 
 最后一个与模式匹配相关的字符串方法是 split() 。这个方法会根据传入的分隔符将字符串拆分成数组。作为分隔符的参数可以是字符串，也可以是 RegExp 对象。（字符串分隔符不会被这个方法当成正则表达式。）还可以传入第二个参数，即数组大小，确保返回的数组不会超过指定大小。来看下面的例子：
 
-```
-let colorText = "red,blue,green,yellow"; let colors1 = colorText.split(","); // \["red", "blue", "green", "yellow"\]
+```js
+let colorText = 'red,blue,green,yellow';
+let colors1 = colorText.split(','); // \["red", "blue", "green", "yellow"\]
 
-let colors2 = colorText.split(",", 2); // \["red", "blue"\]
+let colors2 = colorText.split(',', 2); // \["red", "blue"\]
 
 let colors3 = colorText.split(/\[\^,\]+/); // \["", ",", ",", ",", ""\]
 ```
@@ -6096,16 +6171,17 @@ split(",") 会得到包含这些颜色名的数组，基于逗号进行拆分。
 
 下面是一个例子：
 
-```
-let stringValue = "yellow"; console.log(stringValue.localeCompare("brick"));
+```js
+let stringValue = 'yellow';
+console.log(stringValue.localeCompare('brick'));
 
 // 1
 
-console.log(stringValue.localeCompare("yellow"));
+console.log(stringValue.localeCompare('yellow'));
 
 // 0
 
-console.log(stringValue.localeCompare("zoo"));
+console.log(stringValue.localeCompare('zoo'));
 
 // \-1
 ```
@@ -6118,7 +6194,7 @@ console.log(stringValue.localeCompare("zoo"));
 
 0 。最后， "zoo" 在 "yellow" 后面，因此 localeCompare()返回 \-1 。强调一下，因为返回的具体值可能因具体实现而异，所以最好像下面的示例中一样使用 localeCompare() ：
 
-```
+```js
 function determineOrder(value) {
 
 let result = stringValue.localeCompare(value); if (result < 0) {
@@ -6135,11 +6211,11 @@ localeCompare() 的独特之处在于，实现所在的地区（国家和语 言
 
 早期的浏览器开发商认为使用 JavaScript 动态生成 HTML 标签是一个需求。因此，早期浏览器扩展了规范，增加了辅助生成 HTML 标签的方 法。下表总结了这些 HTML 方法。不过，这些方法基本上已经没有人使用了，因为结果通常不是语义化的标记。
 
-2.  单例内置对象
+## 5.4 单例内置对象
 
 ECMA-262 对内置对象的定义是“任何由 ECMAScript 实现提供、与宿主环境无关，并在 ECMAScript 程序开始执行时就存在的对象”。这就意味着，开发者不用显式地实例化内置对象，因为它们已经实例化好了。前面我们已经接触了大部分内置对象，包括 Object 、 Array 和 String 。本节介绍 ECMA-262 定义的另外两个单例内置对象： Global 和 Math 。
 
-1.  Global
+### 5.4.1 Global
 
 Global 对象是 ECMAScript 中最特别的对象，因为代码不会显式地访问它。ECMA-262 规定 Global 对象为一种兜底对象，它所针对的是不属于任何对象的属性和方法。事实上，不存在全局变量或全局函数这种东西。在全局作用域中定义的变量和函数都会变成 Global 对象的属性 。本书前面介绍的函数，包括 isNaN() 、 isFinite() 、 parseInt() 和 parseFloat() ，实际上都是 Global 对象的方法。除了这些，
 
@@ -6195,11 +6271,15 @@ decodeURI() 和 decodeURIComponent() 取 代 了 escape() 和 unescape() 方法�
 
 最后一个方法可能是整个 ECMAScript 语言中最强大的了，它就是 eval() 。这个方法就是一个完整的 ECMAScript 解释器，它接收一个参数，即一个要执行的 ECMAScript（JavaScript）字符串。来看一个例子：
 
+```js
 eval("console.log('hi')");
+```
 
 上面这行代码的功能与下一行等价：
 
-console.log("hi");
+```js
+console.log('hi');
+```
 
 当解释器发现 eval() 调用时，会将参数解释为实际的 ECMAScript 语句，然后将其插入到该位置。通过 eval() 执行的代码属于该调用所在上下文，被执行的代码与该上下文拥有相同的作用域链。这意味着定义在包含上下文中的变量可以在 eval() 调用内部被引用，比如下面这个例子：
 
@@ -6217,10 +6297,10 @@ eval("let msg = 'hello world';"); console.log(msg); // Reference Error: msg is n
 
 在严格模式下，在 eval() 内部创建的变量和函数无法被外部访问。换句话说，最后两个例子会报错。同样，在严格模式下，赋值给 eval 也会导致错误：
 
-```
-"use strict";
+```js
+'use strict';
 
-eval = "hi"; // 导 致 错 误
+eval = 'hi'; // 导 致 错 误
 ```
 
 > 注意 解释代码字符串的能力是非常强大的，但也非常危险。在使用 eval() 的时候必须极为慎重，特别是在解释用户输入的内容
@@ -6235,11 +6315,11 @@ Function ，也都是 Global 对象的属性。下表列出了所有这些属性
 
 虽然 ECMA-262 没有规定直接访问 Global 对象的方式，但浏览器将 window 对象实现为 Global 对象的代理。因此，所有全局作用域中声明的变量和函数都变成了 window 的属性。来看下面的例子：
 
-```
-var color = "red";
+```js
+var color = 'red';
 
-function sayColor() { console.log(window.color);
-
+function sayColor() {
+  console.log(window.color);
 }
 
 window.sayColor(); // "red"
@@ -6259,15 +6339,15 @@ Global 对象那么简单。关于 window 对象的更多介绍，请参考第
 
 另一种获取 Global 对象的方式是使用如下的代码：
 
-```
-let global = function() { return this;
-
-}();
+```js
+let global = (function () {
+  return this;
+})();
 ```
 
 这段代码创建一个立即调用的函数表达式，返回了 this 的值。如前所述，当一个函数在没有明确（通过成为某个对象的方法，或者通过 call() / apply() ）指定 this 值的情况下执行时， this 值等于 Global 对象。因此，调用一个简单返回 this 的函数是在任何执行上下文中获取 Global 对象的通用方式。
 
-2.  Math
+### 5.4.2 Math
 
 ECMAScript 提供了 Math 对象作为保存数学公式、信息和计算的地方。 Math 对象提供了一些辅助计算的属性和方法。
 
@@ -6284,7 +6364,7 @@ Math 对象也提供了很多辅助执行简单或复杂数学计算的方法。
 
 min() 和 max() 方法用于确定一组数值中的最小值和最大值。这两个方法都接收任意多个参数，如下面的例子所示：
 
-```
+```js
 let max = Math.max(3, 54, 32, 16);
 
 console.log(max); // 54
@@ -6304,7 +6384,7 @@ let values = \[1, 2, 3, 4, 5, 6, 7, 8\]; let max = Math.max(...values);
 
 接下来是用于把小数值舍入为整数的 4 个方法： Math.ceil() 、
 
-```
+```js
 Math.floor() 、 Math.round() 和 Math.fround() 。这几个方法处理舍入的方式如下所述。
 
 Math.ceil() 方法始终向上舍入为最接近的整数。
@@ -6336,7 +6416,9 @@ let num = Math.floor(Math.random() \* 10 \+ 1);
 
 2\~10 范围内的值，则代码就要写成这样：
 
+```js
 let num = Math.floor(Math.random() \* 9 \+ 2);
+```
 
 2\~10 只有 9 个数，所以可选总数（ total_number_of_choices ）是 9，而最小可能的值（ first_possible_value ）是 2。很多时候，通过函数来算出可选总数和最小可能的值可能更方便，比如：
 
@@ -6352,11 +6434,13 @@ console.log(num); // 2\~10 范围内的值，其中包含 2 和 10
 
 这里的函数 selectFrom() 接收两个参数：应该返回的最小值和最大值。通过将这两个值相减再加 1 得到可选总数，然后再套用上面的公式。于是，调用 selectFrom(2,10) 就可以从 2\~10（包含）范围内选择一个值了。使用这个函数，从一个数组中随机选择一个元素就很容易，比如：
 
+```js
 let colors = \["red", "green", "blue", "yellow",
 
 "black", "purple", "brown"\];
 
 let color = colors\[selectFrom(0, colors.length\- 1)\];
+```
 
 在这个例子中，传给 selecFrom() 的第二个参数是数组长度减 1，即数组最大的索引值。
 
@@ -6370,7 +6454,7 @@ Math 对象还有很多涉及各种简单或高阶数运算的方法。讨论每
 
 即便这些方法都是由 ECMA-262 定义的，对正弦、余弦、正切等计算的实现仍然取决于浏览器，因为计算这些值的方式有很多种。结果，这些方法的精度可能因实现而异。
 
-## 小 结
+## 5.5 小 结
 
 JavaScript 中的对象称为引用值，几种内置的引用类型可用于创建特定类型的对象。
 
@@ -6404,7 +6488,7 @@ Global 对象的属性。 Math 对象包含辅助完成复杂计算的属性和�
 数组与定型数组
 Map 、 WeakMap 、 Set 以及 WeakSet 类型
 
-1.  Object
+## 6.1 Object
 
 到目前为止，大多数引用值的示例使用的是 Object 类型。
 
@@ -6514,11 +6598,11 @@ person\["first name"\] = "Nicholas";
 
 > 注意 第 8 章将更全面、深入地介绍 Object 类型。
 
-2.  Array
+## 6.2 Array
 
 除了 Object ， Array 应该就是 ECMAScript 中最常用的类型了。 ECMAScript 数组跟其他编程语言的数组有很大区别。跟其他语言中的数组一样，ECMAScript 数组也是一组有序的数据，但跟其他语言不同的是，数组中每个槽位可以存储任意类型的数据。这意味着可以创建一个数组，它的第一个元素是字符串，第二个元素是数值，第三个是对象。ECMAScript 数组也是动态大小的，会随着数据添加而自动增长。
 
-1.  创建数组
+### 6.2.1 创建数组
 
 有几种基本的方式可以创建数组。一种是使用 Array 构造函数，比如：
 
@@ -6668,7 +6752,7 @@ console.log(Array.of(1, 2, 3, 4)); // \[1, 2, 3, 4\]
 console.log(Array.of(undefined)); // \[undefined\]
 ```
 
-2.  数组空位
+### 6.2.2 数组空位
 
 使用数组字面量初始化数组时，可以使用一串逗号来创建空位
 
@@ -6750,7 +6834,7 @@ console.log(options.join('-')); // "1----5"
 
 > 注意 由于行为不一致和存在性能隐患，因此实践中要避免使用数组空位。如果确实需要空位，则可以显式地用 undefined 值代替。
 
-3.  数组索引
+### 6.2.3 数组索引
 
 要取得或设置数组的值，需要使用中括号并提供相应值的数字索引，如下所示：
 
@@ -6834,7 +6918,7 @@ alert(colors.length); // 100
 
 > 注意 数组最多可以包含 4 294 967 295 个元素，这对于大多数编程任务应该足够了。如果尝试添加更多项，则会导致抛出错误。以这个最大值作为初始值创建数组，可能导致脚本运行时间过长的错误。
 
-4.  检测数组
+### 6.2.4 检测数组
 
 一个经典的 ECMAScript 问题是判断一个对象是不是数组。在只有一个网页（因而只有一个全局作用域）的情况下，使用 instanceof 操作符就足矣：
 
@@ -6858,7 +6942,7 @@ if (Array.isArray(value)){
 }
 ```
 
-5.  迭代器方法
+### 6.2.5 迭代器方法
 
 在 ES6 中， Array 的原型上暴露了 3 个用于检索数组内容的方法：
 
@@ -6906,7 +6990,7 @@ alert(element);
 
 > 注意 虽然这些方法是 ES6 规范定义的，但在 2017 年底的时候仍有浏览器没有实现它们。
 
-6.  复制和填充方法
+### 6.2.6 复制和填充方法
 
 ES6 新增了两个方法：批量复制方法 fill() ，以及填充数组方法
 
@@ -7046,7 +7130,7 @@ reset()
 ints.copyWithin(1, 12, 15);
 ```
 
-7.  转换方法
+### 6.2.7 转换方法
 
 前面提到过，所有对象都有 toLocaleString() 、 toString()
 
@@ -7125,7 +7209,7 @@ toString() 方法相同的结果。传入逗号，结果就是逗号分隔的字
 
 toLocaleString() 、 toString() 和 valueOf() 返回的结果中会以空字符串表示。
 
-8.  栈方法
+### 6.2.8 栈方法
 
 ECMAScript 给数组提供几个方法，让它看起来像是另外一种数据结 构。数组对象可以像栈一样，也就是一种限制插入和删除项的数据结构。栈是一种后进先出（LIFO，Last-In-First-Out）的结构，也就是最近添加的项先被删除。数据项的插入（称为推入，push）和删除（称为弹出，pop）只在栈的一个地方发生，即栈顶。ECMAScript 数组提供了 push() 和
 
@@ -7173,7 +7257,7 @@ alert(item); // black
 
 这里先初始化了包含两个字符串的数组，然后通过 push() 添加了第三个值，第四个值是通过直接在位置 3 上赋值添加的。调用 pop() 时，返回了字符串 "black" ，也就是最后添加到数组的字符串。
 
-9.  队列方法
+### 6.2.9 队列方法
 
 就像栈是以 LIFO 形式限制访问的数据结构一样，队列以先进先出
 
@@ -7223,7 +7307,7 @@ alert(colors.length); // 2
 \["black","red","green"\] 。调用 pop() 时，删除最后一项 "green" 并返回它。
 ```
 
-10. 排序方法
+### 6.2.10 排序方法
 
 数组有两个方法可以用来对元素重新排序： reverse() 和
 
@@ -7315,7 +7399,7 @@ function compare(value1, value2){ return value2 \- value1;
 
 比较函数就是要返回小于 0、0 和大于 0 的数值，因此减法操作完全可以满足要求。
 
-11. 操作方法
+### 6.2.11 操作方法
 
 对于数组中的元素，我们有很多操作方法。比如， concat() 方法可以在现有数组全部元素基础上创建一个新数组。它首先会创建一个当前数组的副本，然后再把它的参数添加到副本末尾，最后返回这个新构建的数组。如果传入一个或多个数组，则 concat() 会把这些数组的每一项都添加到结果数组。如果参数不是数组，则直接把它们添加到结果数组末尾。来看下面的例子：
 
@@ -7439,7 +7523,7 @@ splice() 时，只删除了第一项， colors 中还
 
 含 "green" 、 "red" 、 "purple" 、 "orange" 和 "blue" 。
 
-12. 搜索和位置方法
+### 6.2.12 搜索和位置方法
 
 ECMAScript 提供两类搜索数组的方法：按严格相等搜索和按断言函数搜索。
 
@@ -7512,7 +7596,7 @@ return element === 4;
 // \[2, 4, 6\]
 ```
 
-13. 迭代方法
+### 6.2.13 迭代方法
 
 ECMAScript 为数组定义了 5 个迭代方法。每个方法接收两个参数：以每一项为参数运行的函数，以及可选的作为函数运行上下文的作用域对象
 
@@ -7590,7 +7674,7 @@ numbers.forEach((item, index, array) => {
 
 数组的这些迭代方法通过执行不同操作方便了对数组的处理。
 
-14. 归并方法
+### 6.2.14 归并方法
 
 ECMAScript 为数组提供了两个归并方法： reduce() 和
 
@@ -7634,7 +7718,7 @@ alert(sum); // 15
 
 究竟是使用 reduce() 还是 reduceRight() ，只取决于遍历数组元素的方向。除此之外，这两个方法没什么区别。
 
-1.  定型数组
+## 6.3 定型数组
 
 定型数组（typed array）是 ECMAScript 新增的结构，目的是提升向原生库传输数据的效率。实际上，JavaScript 并没有“TypedArray”类型，它所指的其实是一种特殊的包含数值类型的数组。为理解如何使用定型数组，有必要先了解一下它的用途。
 
@@ -8266,7 +8350,7 @@ console.log(clampedInts); // \[0, 0, 255, 255\]
 
 按照 JavaScript 之父 Brendan Eich 的说法：“ Uint8ClampedArray 完全是 HTML5 canvas 元素的历史留存。除非真的做跟 canvas 相关的开发，否则不要使用它。”
 
-1.  Map
+## 6.4 Map
 
 ECMAScript 6 以前，在 JavaScript 中实现“键/值”式存储可以使用
 
@@ -8559,7 +8643,7 @@ Object 当成数组使用的情况下（比如使用连续整数作为属性）�
 
 delete() 操作都比插入和查找更快。如果代码涉及大量删除操作，那么毫无疑问应该选择 Map 。
 
-1.  WeakMap
+## 6.5 WeakMap
 
 ECMAScript 6 新增的“弱映射”（ WeakMap ）是一种新的集合类型，为这门语言带来了增强的键/值对存储机制。 WeakMap 是 Map 的“兄
 
@@ -8825,7 +8909,7 @@ const loginButton = document.querySelector('#login');
 wm.set(loginButton, {disabled: true});
 ```
 
-1.  Set
+## 6.6 Set
 
 ECMAScript 6 新增的 Set 是一种新集合类型，为这门语言带来集合数据结构。 Set 在很多方面都像是加强的 Map ，这是因为它们的大多数
 
@@ -9160,7 +9244,7 @@ return powerSet;
 }
 ```
 
-1.  WeakSet
+## 6.7 WeakSet
 
 ECMAScript 6 新增的“弱集合”（ WeakSet ）是一种新的集合类型，为这门语言带来了集合数据结构。 WeakSet 是 Set 的“兄弟”类型，其
 
@@ -9303,7 +9387,7 @@ disabledElements.add(loginButton);
 
 象）。
 
-1.  迭代与扩展操作
+## 6.8 迭代与扩展操作
 
 ECMAScript 6 新增的迭代器和扩展操作符对集合引用类型特别有用。这些新特性让集合类型之间相互操作、复制和修改变得异常方便。
 
@@ -9384,7 +9468,7 @@ let set = new Set(typedArr2); console.log(set); // Set {1, 2, 3}
 let arr2 = \[...set\]; console.log(arr2); // \[1, 2, 3\]
 ```
 
-2.  小结
+## 6.9 小结
 
 JavaScript 中的对象是引用值，可以通过几种内置引用类型创建特定类型的对象。
 
