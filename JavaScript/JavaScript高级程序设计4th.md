@@ -1407,7 +1407,7 @@ ECMAScript 中最有意思的数据类型或许就是 Number 了。Number 类型
 let intNum = 55; // 整 数
 ```
 
-整数也可以用八进制（以 8 为基数）或十六进制（以 16 为基数）字面量表示。对于八进制字面量，第一个数字必须是零（0），然后是相应的八进制数字（数值 0\~7）。如果字面量中包含的数字超出了应有的范围，就会忽略前缀的零，后面的数字序列会被当成十进制数，如下所示：
+整数也可以用八进制（以 8 为基数）或十六进制（以 16 为基数）字面量表示。对于八进制字面量，第一个数字必须是零（0），然后是相应的八进制数字（数值 0~7）。如果字面量中包含的数字超出了应有的范围，就会忽略前缀的零，后面的数字序列会被当成十进制数，如下所示：
 
 ```js
 let octalNum1 = 070; // 八进制的 56
@@ -1419,7 +1419,7 @@ let octalNum3 = 08; // 无效的八进制值，当成 8 处理
 
 1ECMAScript 2015 或 ES6 中的八进制值通过前缀 0o 来表示；严格模式下，前缀 0 会被视为语法错误，如果要表示八进制值，应该使用前缀 0o 。——译者注
 
-要创建十六进制字面量，必须让真正的数值前缀 0x （区分大小写），然后是十六进制数字（0\~9 以及 A\~F）。十六进制数字中的字母大小写均可。下面是几个例子：
+要创建十六进制字面量，必须让真正的数值前缀 0x （区分大小写），然后是十六进制数字（0~9 以及 A~F）。十六进制数字中的字母大小写均可。下面是几个例子：
 
 ```js
 let hexNum1 = 0xa; // 十 六 进 制 10
@@ -1617,7 +1617,7 @@ let firstName = 'Nicholas"; // 语法错误：开头和结尾的引号必须是�
 这些字符字面量可以出现在字符串中的任意位置，且可以作为单个字符被解释：
 
 ```js
-let text = 'This is the letter sigma: \u03a3.';
+let text = 'This is the letter sigma: u03a3.';
 ```
 
 在这个例子中，即使包含 6 个字符长的转义序列，变量 text 仍然是 28 个字符长。因为转义序列表示一个字符，所以只算一个字符。
@@ -1687,7 +1687,7 @@ let value4;
 ECMAScript 6 新增了使用模板字面量定义字符串的能力。与使用单引号或双引号不同，模板字面量保留换行字符，可以跨行定义字符串：
 
 ```js
-let myMultiLineString = 'first line\nsecond line';
+let myMultiLineString = 'first linensecond line';
 
 let myMultiLineTemplateLiteral = `first line second line`;
 
@@ -1875,21 +1875,21 @@ console.log(taggedResult); // "6 + 9 = 15"
 ```js
 // Unicode 示例
 
-// \u00A9 是版权符号
+// u00A9 是版权符号
 
-console.log(`\u00A9`); // ©
+console.log(`u00A9`); // ©
 
-console.log(String.raw`\u00A9`); // \u00A9
+console.log(String.raw`u00A9`); // u00A9
 
 // 换行符示例
 
-console.log(`first line\\nsecond line`);
+console.log(`first linensecond line`);
 
 // first line
 
 // second line
 
-console.log(String.raw`first line\\nsecond line`); // "first line\\nsecond line"
+console.log(String.raw`first linensecond line`); // "first linensecond line"
 
 // 对实际的换行符来说是不行的
 
@@ -1923,7 +1923,7 @@ function printRaw(strings) {
   }
 }
 
-printRaw`\u00A9${'and'}\\n`;
+printRaw`u00A9${'and'}n`;
 
 // Actual characters:
 
@@ -1933,9 +1933,9 @@ printRaw`\u00A9${'and'}\\n`;
 
 // Escaped characters:
 
-// \u00A9
+// u00A9
 
-// \\n
+// n
 ```
 
 ### 3.4.7 Symbol 类型
@@ -2149,7 +2149,7 @@ ECMAScript 6 也引入了一批常用内置符号（well-known symbol），用�
 
 这些内置符号也没有什么特别之处，它们就是全局函数 Symbol 的普通字符串属性，指向一个符号的实例。所有内置符号属性都是不可写、不可枚举、不可配置的。
 
-> 注意 在提到 ECMAScript 规范时，经常会引用符号在规范中的名称，前缀为 \@\@ 。比如， \@\@iterator 指的就是 Symbol.iterator 。
+> 注意 在提到 ECMAScript 规范时，经常会引用符号在规范中的名称，前缀为 @@ 。比如， @@iterator 指的就是 Symbol.iterator 。
 
 5. Symbol.asyncIterator
 
@@ -2459,7 +2459,7 @@ console.log('barfoo'.search(FooSearcher)); // 3
 
 console.log('barbaz'.search(FooSearcher)); //
 
-\ - 1;
+-1;
 
 class StringSearcher {
   constructor(str) {
@@ -2471,7 +2471,7 @@ class StringSearcher {
   }
 }
 
-console.log('foobar'.search(new StringSearcher('foo'))); // 0 console.log('barfoo'.search(new StringSearcher('foo'))); // 3 console.log('barbaz'.search(new StringSearcher('qux\))); // -1
+console.log('foobar'.search(new StringSearcher('foo'))); // 0 console.log('barfoo'.search(new StringSearcher('foo'))); // 3 console.log('barbaz'.search(new StringSearcher('qux))); // -1
 ```
 
 12. Symbol.species
@@ -3521,9 +3521,7 @@ if 语句是使用最频繁的语句之一，语法如下：
 if (condition) statement1 else statement2
 ```
 
-这里的条件（ condition ）可以是任何表达式，并且求值结果不一定是布尔值。ECMAScript 会自动调用 Boolean() 函数将这个表达式的值转换为布尔值。如果条件求值为 true ，则执行语句 statement1 ；如果条件求值为 false ，则执行语句 statement2 。这里的语句可能是一行代码，也可能是一个代码块
-
-（即包含在一对花括号中的多行代码）。来看下面的例子：
+这里的条件（ condition ）可以是任何表达式，并且求值结果不一定是布尔值。ECMAScript 会自动调用 Boolean() 函数将这个表达式的值转换为布尔值。如果条件求值为 true ，则执行语句 statement1 ；如果条件求值为 false ，则执行语句 statement2 。这里的语句可能是一行代码，也可能是一个代码块（即包含在一对花括号中的多行代码）。来看下面的例子：
 
 ```js
 if (i > 25) console.log('Greater than 25.');
@@ -3555,9 +3553,7 @@ if (i > 25) {
 
 2. do-while 语句
 
-do-while 语句是一种后测试循环语句，即循环体中的代码执行后才会对退出条件进行求值。换句话说，循环体内的代码至少执行
-
-一次。 do-while 的语法如下：
+do-while 语句是一种后测试循环语句，即循环体中的代码执行后才会对退出条件进行求值。换句话说，循环体内的代码至少执行一次。 do-while 的语法如下：
 
 ```js
 do {
@@ -3595,9 +3591,7 @@ while (i < 10) {
 }
 ```
 
-在这个例子中，变量 i 从 0 开始，每次循环递增 2。只要 i 小于
-
-10，循环就会继续。
+在这个例子中，变量 i 从 0 开始，每次循环递增 2。只要 i 小于 10，循环就会继续。
 
 4. for 语句
 
@@ -3611,7 +3605,6 @@ for (initialization; expression; post - loop - expression) statement;
 
 ```js
 let count = 10;
-
 for (let i = 0; i < count; i++) {
   console.log(i);
 }
@@ -3622,7 +3615,6 @@ for (let i = 0; i < count; i++) {
 ```js
 let count = 10;
 let i = 0;
-
 while (i < count) {
   console.log(i);
   i++;
@@ -3638,19 +3630,15 @@ while (i < count) {
 ```js
 for (;;) {
   // 无穷循环
-
   doSomething();
 }
 ```
 
-如果只包含条件表达式，那么 for 循环实际上就变成了 while
-
-循环：
+如果只包含条件表达式，那么 for 循环实际上就变成了 while 循环：
 
 ```js
 let count = 10;
 let i = 0;
-
 for (; i < count; ) {
   console.log(i);
 
@@ -3687,12 +3675,14 @@ ECMAScript 中对象的属性是无序的，因此 for-in 语句不能保证返�
 for-of 语句是一种严格的迭代语句，用于遍历可迭代对象的元素，语法如下：
 
 ```js
-for (property of expression) statement
+for (property of expression) statement;
+```
 
 下面是示例：
 
-for (const el of [2,4,6,8]) { document.write(el);
-
+```js
+for (const el of [2, 4, 6, 8]) {
+  document.write(el);
 }
 ```
 
@@ -3708,7 +3698,7 @@ for-of 循环会按照可迭代对象的 next() 方法产生值的顺序迭代�
 
 标签语句用于给语句加标签，语法如下：
 
-```js
+```
 label: statement;
 ```
 
@@ -3720,9 +3710,7 @@ start: for (let i = 0; i < count; i++) {
 }
 ```
 
-在这个例子中， start 是一个标签，可以在后面通过 break
-
-或 continue 语句引用。标签语句的典型应用场景是嵌套循环。
+在这个例子中， start 是一个标签，可以在后面通过 break 或 continue 语句引用。标签语句的典型应用场景是嵌套循环。
 
 8. break 和 continue 语句
 
@@ -3735,16 +3723,13 @@ for (let i = 1; i < 10; i++) {
   if (i % 5 == 0) {
     break;
   }
-
   num++;
 }
 
 console.log(num); // 4
 ```
 
-在上面的代码中， for 循环会将变量 i 由 1 递增到 10。而在循环体内，有一个 if 语句用于检查 i 能否被 5 整除（使用取模操作符）。如果是，则执行 break 语句，退出循环。变量 num 的初始值为 0，表示循环在前执行了多少次。当 break 语句执行后，下一
-
-行执行的代码是 console.log(num) ，显示 4。之所以循环执行了 4 次，是因为当 i 等于 5 时， break 语句会导致循环退出，该次循环不会执行递增 num 的代码。如果将 break 换成 continue ，则会出现不同的效果：
+在上面的代码中， for 循环会将变量 i 由 1 递增到 10。而在循环体内，有一个 if 语句用于检查 i 能否被 5 整除（使用取模操作符）。如果是，则执行 break 语句，退出循环。变量 num 的初始值为 0，表示循环在前执行了多少次。当 break 语句执行后，下一行执行的代码是 console.log(num) ，显示 4。之所以循环执行了 4 次，是因为当 i 等于 5 时， break 语句会导致循环退出，该次循环不会执行递增 num 的代码。如果将 break 换成 continue ，则会出现不同的效果：
 
 ```js
 let num = 0;
@@ -3753,7 +3738,6 @@ for (let i = 1; i < 10; i++) {
   if (i % 5 == 0) {
     continue;
   }
-
   num++;
 }
 
@@ -3772,7 +3756,6 @@ outermost: for (let i = 0; i < 10; i++) {
     if (i == 5 && j == 5) {
       break outermost;
     }
-
     num++;
   }
 }
@@ -3812,7 +3795,6 @@ with (expression) statement;
 ```js
 let qs = location.search.substring(1);
 let hostName = location.hostname;
-
 let url = location.href;
 ```
 
@@ -3821,7 +3803,6 @@ let url = location.href;
 ```js
 with (location) {
   let qs = search.substring(1);
-
   let hostName = hostname;
   let url = href;
 }
@@ -3831,33 +3812,32 @@ with (location) {
 
 严格模式不允许使用 with 语句，否则会抛出错误。
 
-警告 由于 with 语句影响性能且难于调试其中的代码，通常不推荐在产品代码中使用 with 语句。
+> 警告 由于 with 语句影响性能且难于调试其中的代码，通常不推荐在产品代码中使用 with 语句。
 
 10. switch 语句
 
 switch 语句是与 if 语句紧密相关的一种流控制语句，从其他语言借鉴而来。ECMAScript 中 switch 语句跟 C 语言中 switch 语句的语法非常相似，如下所示：
 
 ```js
-switch (expression) { case value1:
-
-statement break;
-
-case value2: statement break;
-
-case value3: statement break;
-
-case value4: statement break;
-
-default: statement
-
+switch (expression) {
+  case value1:
+    statement;
+    break;
+  case value2:
+    statement;
+    break;
+  case value3:
+    statement;
+    break;
+  case value4:
+    statement;
+    break;
+  default:
+    statement;
 }
 ```
 
-这里的每个 case （条件/分支）相当于：“如果表达式等于后面的值，则执行下面的语句。” break 关键字会导致代码执行跳出
-
-switch 语句。如果没有 break ，则代码会继续匹配下一个条
-
-件。 default 关键字用于在任何条件都没有满足时指定默认执行的语句（相当于 else 语句）。
+这里的每个 case （条件/分支）相当于：“如果表达式等于后面的值，则执行下面的语句。” break 关键字会导致代码执行跳出 switch 语句。如果没有 break ，则代码会继续匹配下一个条件。 default 关键字用于在任何条件都没有满足时指定默认执行的语句（相当于 else 语句）。
 
 有了 switch 语句，开发者就用不着写类似这样的代码了：
 
@@ -3879,16 +3859,13 @@ if (i == 25) {
 switch (i) {
   case 25:
     console.log('25');
-
     break;
   case 35:
     console.log('35');
     break;
-
   case 45:
     console.log('45');
     break;
-
   default:
     console.log('Other');
 }
@@ -3899,16 +3876,13 @@ switch (i) {
 ```js
 switch (i) {
   case 25:
-    /\*跳过\*/;
-
+  /*跳过*/
   case 35:
     console.log('25 or 35');
     break;
-
   case 45:
     console.log('45');
     break;
-
   default:
     console.log('Other');
 }
@@ -3921,11 +3895,9 @@ switch ('hello world') {
   case 'hello' + ' world':
     console.log('Greeting was found.');
     break;
-
   case 'goodbye':
     console.log('Closing was found.');
     break;
-
   default:
     console.log('Unexpected message was found.');
 }
@@ -3939,15 +3911,12 @@ switch (true) {
   case num < 0:
     console.log('Less than 0.');
     break;
-
   case num >= 0 && num <= 10:
     console.log('Between 0 and 10.');
     break;
-
   case num > 10 && num <= 20:
     console.log('Between 10 and 20.');
     break;
-
   default:
     console.log('More than 20.');
 }
@@ -3955,9 +3924,7 @@ switch (true) {
 
 上面的代码首先在外部定义了变量 num ，而传给 switch 语句的参数之所以是 true ，就是因为每个条件的表达式都会返回布尔 值。条件的表达式分别被求值，直到有表达式返回 true ；否则，就会一直跳到 default 语句（这个例子正是如此）。
 
-> 注意 switch 语句在比较每个条件的值时会使用全等操作符，
-
-因此不会强制转换数据类型（比如，字符串 "10" 不等于数值 10）。
+> 注意 switch 语句在比较每个条件的值时会使用全等操作符，因此不会强制转换数据类型（比如，字符串 "10" 不等于数值 10）。
 
 ## 3.7 函数
 
@@ -3997,9 +3964,7 @@ function sum(num1, num2) {
 }
 ```
 
-函数 sum() 会将两个值相加并返回结果。注意，除了 return 语句之外没有任何特殊声明表明该函数有返回值。然后就可以这样调
-
-用它：
+函数 sum() 会将两个值相加并返回结果。注意，除了 return 语句之外没有任何特殊声明表明该函数有返回值。然后就可以这样调用它：
 
 ```js
 const result = sum(5, 10);
@@ -4010,7 +3975,6 @@ const result = sum(5, 10);
 ```js
 function sum(num1, num2) {
   return num1 + num2;
-
   console.log('Hello world'); // 不会执行
 }
 ```
@@ -4036,9 +4000,7 @@ return 语句也可以不带返回值。这时候，函数会立即停止执行�
 ```js
 function sayHi(name, message) {
   return;
-
   console.log('Hello ' + name + ', ' + message);
-
   // 不会执行
 }
 ```
@@ -4047,7 +4009,9 @@ function sayHi(name, message) {
 
 严格模式对函数也有一些限制：
 
-函数不能以 eval 或 arguments 作为名称；函数的参数不能叫 eval 或 arguments ； 两个函数的参数不能叫同一个名称。
+- 函数不能以 eval 或 arguments 作为名称；
+- 函数的参数不能叫 eval 或 arguments ；
+- 两个函数的参数不能叫同一个名称。
 
 如果违反上述规则，则会导致语法错误，代码也不会执行。
 
@@ -4055,23 +4019,17 @@ function sayHi(name, message) {
 
 JavaScript 的核心语言特性在 ECMA-262 中以伪语言 ECMAScript 的形式来定义。ECMAScript 包含所有基本语法、操作符、数据类型和对象，能完成基本的计算任务，但没有提供获得输入和产生输出的机制。理解 ECMAScript 及其复杂的细节是完全理解浏览器中 JavaScript 的关键。下面总结一下 ECMAScript 中的基本元素。
 
-ECMAScript 中的基本数据类型包括 Undefined 、 Null 、Boolean 、 Number 、 String 和 Symbol 。
-
-与其他语言不同，ECMAScript 不区分整数和浮点值，只有 Number 一种数值数据类型。
-
-Object 是一种复杂数据类型，它是这门语言中所有对象的基类。
-
-严格模式为这门语言中某些容易出错的部分施加了限制。
-
-ECMAScript 提供了 C 语言和类 C 语言中常见的很多基本操作符，包括数学操作符、布尔操作符、关系操作符、相等操作符和赋值操作符等。
-
-这门语言中的流控制语句大多是从其他语言中借鉴而来的，比如 if 语句、 for 语句和 switch 语句等。
+- ECMAScript 中的基本数据类型包括 Undefined 、 Null 、Boolean 、 Number 、 String 和 Symbol 。
+- 与其他语言不同，ECMAScript 不区分整数和浮点值，只有 Number 一种数值数据类型。
+- Object 是一种复杂数据类型，它是这门语言中所有对象的基类。
+- 严格模式为这门语言中某些容易出错的部分施加了限制。
+- ECMAScript 提供了 C 语言和类 C 语言中常见的很多基本操作符，包括数学操作符、布尔操作符、关系操作符、相等操作符和赋值操作符等。
+- 这门语言中的流控制语句大多是从其他语言中借鉴而来的，比如 if 语句、 for 语句和 switch 语句等。
 
 ECMAScript 中的函数与其他语言中的函数不一样。
 
-不需要指定函数的返回值，因为任何函数可以在任何时候返回任何值。
-
-不指定返回值的函数实际上会返回特殊值 undefined 。
+- 不需要指定函数的返回值，因为任何函数可以在任何时候返回任何值。
+- 不指定返回值的函数实际上会返回特殊值 undefined 。
 
 # 第 4 章 变量、作用域与内存
 
@@ -4083,26 +4041,23 @@ ECMAScript 中的函数与其他语言中的函数不一样。
 
 相比于其他语言，JavaScript 中的变量可谓独树一帜。正如 ECMA- 262 所规定的，JavaScript 变量是松散类型的，而且变量不过就是特定时间点一个特定值的名称而已。由于没有规则定义变量必须包含什么数据类型，变量的值和数据类型在脚本生命期内可以改变。这样的变量很有意思，很强大，当然也有不少问题。本章会剖析错综复杂的变量。
 
-1.  原始值与引用值
+## 4.1 原始值与引用值
 
 ECMAScript 变量可以包含两种不同类型的数据：原始值和引用值。原始值（primitive value）就是最简单的数据，引用值（reference value）则是由多个值构成的对象。
 
 在把一个值赋给变量时，JavaScript 引擎必须确定这个值是原始值还是引用值。上一章讨论了 6 种原始值： Undefined 、 Null 、Boolean 、 Number 、 String 和 Symbol 。保存原始值的变量是按值（by value）访问的，因为我们操作的就是存储在变量中的实际值。
 
-引用值是保存在内存中的对象。与其他语言不同，JavaScript 不允许直接访问内存位置，因此也就不能直接操作对象所在的内存空间。
-
-在操作对象时，实际上操作的是对该对象的引用（reference）而非实际的对象本身。为此，保存引用值的变量是按引用（by reference）访问的。
+引用值是保存在内存中的对象。与其他语言不同，JavaScript 不允许直接访问内存位置，因此也就不能直接操作对象所在的内存空间。在操作对象时，实际上操作的是对该对象的引用（reference）而非实际的对象本身。为此，保存引用值的变量是按引用（by reference）访问的。
 
 > 注意 在很多语言中，字符串是使用对象表示的，因此被认为是引用类型。ECMAScript 打破了这个惯例。
 
-1.  动态属性
+### 4.1.1 动态属性
 
 原始值和引用值的定义方式很类似，都是创建一个变量，然后给它赋一个值。不过，在变量保存了这个值之后，可以对这个值做什 么，则大有不同。对于引用值而言，可以随时添加、修改和删除其属性和方法。比如，看下面的例子：
 
 ```js
 let person = new Object();
 person.name = 'Nicholas';
-
 console.log(person.name); // "Nicholas"
 ```
 
@@ -4110,8 +4065,9 @@ console.log(person.name); // "Nicholas"
 
 原始值不能有属性，尽管尝试给原始值添加属性不会报错。比如：
 
-```
-let name = "Nicholas"; name.age = 27;
+```js
+let name = 'Nicholas';
+name.age = 27;
 
 console.log(name.age); // undefined
 ```
@@ -4120,21 +4076,23 @@ console.log(name.age); // undefined
 
 注意，原始类型的初始化可以只使用原始字面量形式。如果使用的是 new 关键字，则 JavaScript 会创建一个 Object 类型的实例，但其行为类似原始值。下面来看看这两种初始化方式的差异：
 
-```
-console.log(name1.age); // undefined console.log(name2.age); // 26 console.log(typeof name1); // string console.log(typeof name2); // object
+```js
+console.log(name1.age); // undefined
+console.log(name2.age); // 26
+console.log(typeof name1); // string
+console.log(typeof name2); // object
 ```
 
-2.  复制值
+### 4.1.2 复制值
 
 除了存储方式不同，原始值和引用值在通过变量复制时也有所不同。在通过变量把一个原始值赋值到另一个变量时，原始值会被复制到新变量的位置。请看下面的例子：
 
-```
-let num1 = 5; let num2 = num1;
+```js
+let num1 = 5;
+let num2 = num1;
 ```
 
-这里， num1 包含数值 5。当把 num2 初始化为 num1 时，
-
-num2 也会得到数值 5。这个值跟存储在 num1 中的 5 是完全独立的，因为它是那个值的副本。
+这里， num1 包含数值 5。当把 num2 初始化为 num1 时，num2 也会得到数值 5。这个值跟存储在 num1 中的 5 是完全独立的，因为它是那个值的副本。
 
 这两个变量可以独立使用，互不干扰。这个过程如图 4-1 所示。
 
@@ -4142,8 +4100,10 @@ num2 也会得到数值 5。这个值跟存储在 num1 中的 5 是完全独立�
 
 在把引用值从一个变量赋给另一个变量时，存储在变量中的值也会被复制到新变量所在的位置。区别在于，这里复制的值实际上是一个指针，它指向存储在堆内存中的对象。操作完成后，两个变量实际上指向同一个对象，因此一个对象上面的变化会在另一个对象上反映出来，如下面的例子所示：
 
-```
-let obj1 = new Object(); let obj2 = obj1; obj1.name = "Nicholas";
+```js
+let obj1 = new Object();
+let obj2 = obj1;
+obj1.name = 'Nicholas';
 
 console.log(obj2.name); // "Nicholas"
 ```
@@ -4153,90 +4113,96 @@ console.log(obj2.name); // "Nicholas"
 
 图 4-2
 
-3.  传递参数
+### 4.1.3 传递参数
 
 ECMAScript 中所有函数的参数都是按值传递的。这意味着函数外的值会被复制到函数内部的参数中，就像从一个变量复制到另一个变量一样。如果是原始值，那么就跟原始值变量的复制一样，如果是引用值，那么就跟引用值变量的复制一样。对很多开发者来说，这一块可能会不好理解，毕竟变量有按值和按引用访问，而传参则只有按值传递。
 
 在按值传递参数时，值会被复制到一个局部变量（即一个命名参数，或者用 ECMAScript 的话说，就是 arguments 对象中的一个槽位）。在按引用传递参数时，值在内存中的位置会被保存在一个局部变量，这意味着对本地变量的修改会反映到函数外部。（这在 ECMAScript 中是不可能的。）来看下面这个例子：
 
-```
-function addTen(num) { num += 10;
+```js
+function addTen(num) {
+  num += 10;
 
-return num;
-
+  return num;
 }
 
 let count = 20;
 
-let result = addTen(count); console.log(count); // 20，没有变化 console.log(result); // 30
+let result = addTen(count);
+console.log(count); // 20，没有变化
+console.log(result); // 30
 ```
 
-这里，函数 addTen() 有一个参数 num ，它其实是一个局部变量。在调用时，变量 count 作为参数传入。 count 的值是 20，这个值被复制到参数 num 以便在 addTen() 内部使用。在函数内部，参数 num 的值被加上了 10，但这不会影响函数外部的原始变量
+这里，函数 addTen() 有一个参数 num ，它其实是一个局部变量。在调用时，变量 count 作为参数传入。 count 的值是 20，这个值被复制到参数 num 以便在 addTen() 内部使用。在函数内部，参数 num 的值被加上了 10，但这不会影响函数外部的原始变量 count 。参数 num 和变量 count 互不干扰，它们只不过碰巧保存了一样的值。如果 num 是按引用传递的，那么 count 的值也会被修改为 30。这个事实在使用数值这样的原始值时是非常明显的。但是，如果变量中传递的是对象，就没那么清楚了。比如，再看这个例子：
 
-count 。参数 num 和变量 count 互不干扰，它们只不过碰巧保存了一样的值。如果 num 是按引用传递的，那么 count 的值也会被修改为 30。这个事实在使用数值这样的原始值时是非常明显的。但是，如果变量中传递的是对象，就没那么清楚了。比如，再看这个例子：
-
-```
-function setName(obj) { obj.name = "Nicholas";
-
+```js
+function setName(obj) {
+  obj.name = 'Nicholas';
 }
 
 let person = new Object();
 
-setName(person); console.log(person.name); // "Nicholas"
+setName(person);
+console.log(person.name); // "Nicholas"
 ```
 
 这一次，我们创建了一个对象并把它保存在变量 person 中。然后，这个对象被传给 setName() 方法，并被复制到参数 obj 中。在函数内部， obj 和 person 都指向同一个对象。结果就是，即使对象是按值传进函数的， obj 也会通过引用访问对象。当函数内部给 obj 设置了 name 属性时，函数外部的对象也会反映这个变化，因为 obj 指向的对象保存在全局作用域的堆内存上。很多开发者错误地认为，当在局部作用域中修改对象而变化反映到全局时，就意味着参数是按引用传递的。为证明对象是按值传递的，我们再来看看下面这个修改后的例子：
 
-```
-function setName(obj) { obj.name = "Nicholas"; obj = new Object(); obj.name = "Greg";
-
+```js
+function setName(obj) {
+  obj.name = 'Nicholas';
+  obj = new Object();
+  obj.name = 'Greg';
 }
 
-let person = new Object(); setName(person); console.log(person.name); // "Nicholas"
+let person = new Object();
+setName(person);
+console.log(person.name); // "Nicholas"
 ```
 
 这个例子前后唯一的变化就是 setName() 中多了两行代码， 将 obj 重新定义为一个有着不同 name 的新对象。当 person 传 入 setName() 时，其 name 属性被设置为 "Nicholas" 。然后变量 obj 被设置为一个新对象且 name 属性被设置为 "Greg" 。如 果 person 是按引用传递的，那么 person 应该自动将指针改为指向 name 为 "Greg" 的对象。可是，当我们再次访问 person.name 时，它的值是 "Nicholas" ，这表明函数中参数的值改变之后，原始的引用仍然没变。当 obj 在函数内部被重写时，它变成了一个指向本地对象的指针。而那个本地对象在函数执行结束时就被销毁了。
 
 > 注意 ECMAScript 中函数的参数就是局部变量。
 
-4.  确定类型
+### 4.1.4 确定类型
 
 前一章提到的 typeof 操作符最适合用来判断一个变量是否为原始类型。更确切地说，它是判断一个变量是否为字符串、数值、布尔值或 undefined 的最好方式。如果值是对象或 null ，那么
 typeof 返回 "object" ，如下面的例子所示：
 
+```js
+let s = 'Nicholas';
+let b = true;
+let i = 22;
+let u;
+let n = null;
+let o = new Object();
+console.log(typeof s); // string
+console.log(typeof i); // number
+console.log(typeof b); // boolean
+console.log(typeof u); // undefined
+console.log(typeof n); // object
+console.log(typeof o); // object
+```
+
 typeof 虽然对原始值很有用，但它对引用值的用处不大。我们通常不关心一个值是不是对象，而是想知道它是什么类型的对象。为了解决这个问题，ECMAScript 提供了 instanceof 操作符，语法如下：
 
-```
-result = variable instanceof constructor
+```js
+result = variable instanceof constructor;
 ```
 
 如果变量是给定引用类型（由其原型链决定，将在第 8 章详细介绍）的实例，则 instanceof 操作符返回 true 。来看下面的例子：
 
+```js
+console.log(person instanceof Object); // 变量 persion 是 Object 吗？
+console.log(colors instanceof Array); // 变量 colors 是 Array 吗？
+console.log(pattern instanceof RegExp); // 变量 pattern 是 RegExp 吗？
 ```
-console.log(person instanceof Object); // 变 量
-```
-
-persion 是 Object 吗？
-
-```
-console.log(colors instanceof Array); // 变 量
-```
-
-colors 是 Array 吗？
-
-```
-console.log(pattern instanceof RegExp); // 变 量
-```
-
-pattern 是 RegExp 吗？
 
 按照定义，所有引用值都是 Object 的实例，因此通过 instanceof 操作符检测任何引用值和 Object 构造函数都会返 回 true 。类似地，如果用 instanceof 检测原始值，则始终会返回 false ，因为原始值不是对象。
 
-> 注意 typeof 操作符在用于检测函数时也会返回 "function" 。当在 Safari（直到 Safari 5）和 Chrome（直到 Chrome 7）中用于检测正则表达式时，由于实现细节的原因，
+> 注意 typeof 操作符在用于检测函数时也会返回 "function" 。当在 Safari（直到 Safari 5）和 Chrome（直到 Chrome 7）中用于检测正则表达式时，由于实现细节的原因，typeof 也会返回 "function" 。ECMA-262 规定，任何实现内部 [[Call]] 方法的对象都应该在 typeof 检测时返回 "function" 。因为上述浏览器中的正则表达式实现了这个方法，所以 typeof 对正则表达式也返回 "function" 。在 IE 和 Firefox 中， typeof 对正则表达式返回 "object" 。
 
-typeof 也会返回 "function" 。ECMA-262 规定，任何实现内部 \[\[Call\]\] 方法的对象都应该在 typeof 检测时返回 "function" 。因为上述浏览器中的正则表达式实现了这个方法，所以 typeof 对正则表达式也返回 "function" 。在 IE 和 Firefox 中， typeof 对正则表达式返回 "object" 。
-
-2.  执行上下文与作用域
+## 4.2 执行上下文与作用域
 
 执行上下文（以下简称“上下文”）的概念在 JavaScript 中是颇为重要的。变量或函数的上下文决定了它们可以访问哪些数据，以及它们的行为。每个上下文都有一个关联的变量对象（variable object），而这个上下文中定义的所有变量和函数都存在于这个对象上。虽然无法通过代码访问变量对象，但后台处理数据会用到它。
 
@@ -4244,27 +4210,21 @@ typeof 也会返回 "function" 。ECMA-262 规定，任何实现内部 \[\[Call\
 
 每个函数调用都有自己的上下文。当代码执行流进入函数时，函数的上下文被推到一个上下文栈上。在函数执行完之后，上下文栈会弹出该函数上下文，将控制权返还给之前的执行上下文。ECMAScript 程序的执行流就是通过这个上下文栈进行控制的。
 
-上下文中的代码在执行的时候，会创建变量对象的一个作用域链（scope chain）。这个作用域链决定了各级上下文中的代码在访问变量和函数时的顺序。代码正在执行的上下文的变量对象始终位于作用域链的最前端。如果上下文是函数，则其活动对象（activation object）用作变量对象。活动对象最初只有一个定义变量：
-
-arguments 。（全局上下文中没有这个变量。）作用域链中的下一个变量对象来自包含上下文，再下一个对象来自再下一个包含上下 文。以此类推直至全局上下文；全局上下文的变量对象始终是作用域链的最后一个变量对象。
+上下文中的代码在执行的时候，会创建变量对象的一个作用域链（scope chain）。这个作用域链决定了各级上下文中的代码在访问变量和函数时的顺序。代码正在执行的上下文的变量对象始终位于作用域链的最前端。如果上下文是函数，则其活动对象（activation object）用作变量对象。活动对象最初只有一个定义变量：arguments 。（全局上下文中没有这个变量。）作用域链中的下一个变量对象来自包含上下文，再下一个对象来自再下一个包含上下 文。以此类推直至全局上下文；全局上下文的变量对象始终是作用域链的最后一个变量对象。
 
 代码执行时的标识符解析是通过沿作用域链逐级搜索标识符名称完成的。搜索过程始终从作用域链的最前端开始，然后逐级往后，直到找到标识符。（如果没有找到标识符，那么通常会报错。）
 
 看一看下面这个例子：
 
-```
-var color = "blue";
+```js
+var color = 'blue';
 
-function changeColor() { if (color === "blue") {
-
-color = "red";
-
-} else {
-
-color = "blue";
-
-}
-
+function changeColor() {
+  if (color === 'blue') {
+    color = 'red';
+  } else {
+    color = 'blue';
+  }
 }
 
 changeColor();
@@ -4274,27 +4234,26 @@ changeColor();
 
 此外，局部作用域中定义的变量可用于在局部上下文中替换全局变量。看一看下面这个例子：
 
-```
-var color = "blue";
+```js
+var color = 'blue';
 
-function changeColor() { let anotherColor = "red";
+function changeColor() {
+  let anotherColor = 'red';
 
-function swapColors() {
+  function swapColors() {
+    let tempColor = anotherColor;
+    anotherColor = color;
 
-let tempColor = anotherColor; anotherColor = color;
+    color = tempColor;
 
-color = tempColor;
+    // 这里可以访问 color、anotherColor 和 tempColor
+  }
 
-// 这里可以访问 color、anotherColor 和 tempColor
+  // 这里可以访问 color 和 anotherColor，但访问不到
 
-}
+  tempColor;
 
-// 这里可以访问 color 和 anotherColor，但访问不到
-
-tempColor
-
-swapColors();
-
+  swapColors();
 }
 
 // 这里只能访问 color
@@ -4306,33 +4265,28 @@ changeColor();
 
 图 4-3
 
-图 4-3 中的矩形表示不同的上下文。内部上下文可以通过作用域链访问外部上下文中的一切，但外部上下文无法访问内部上下文中的任何东西。上下文之间的连接是线性的、有序的。每个上下文都可以到上一级上下文中去搜索变量和函数，但任何上下文都不能到下一级上下文中去搜索。 swapColors() 局部上下文的作用域链中有 3 个对象： swapColors() 的变量对象、 changeColor() 的变量对象和全局变量对象。 swapColors() 的局部上下文首先从自己的变量对象开始搜索变量和函数，搜不到就去搜索上一级变量对象。
-
-changeColor() 上下文的作用域链中只有 2 个对象：它自己的变量对象和全局变量对象。因此，它不能访问 swapColors() 的上下 文。
+图 4-3 中的矩形表示不同的上下文。内部上下文可以通过作用域链访问外部上下文中的一切，但外部上下文无法访问内部上下文中的任何东西。上下文之间的连接是线性的、有序的。每个上下文都可以到上一级上下文中去搜索变量和函数，但任何上下文都不能到下一级上下文中去搜索。 swapColors() 局部上下文的作用域链中有 3 个对象： swapColors() 的变量对象、 changeColor() 的变量对象和全局变量对象。 swapColors() 的局部上下文首先从自己的变量对象开始搜索变量和函数，搜不到就去搜索上一级变量对象。changeColor() 上下文的作用域链中只有 2 个对象：它自己的变量对象和全局变量对象。因此，它不能访问 swapColors() 的上下 文。
 
 > 注意 函数参数被认为是当前上下文中的变量，因此也跟上下文中的其他变量遵循相同的访问规则。
 
-1.  作用域链增强
+### 4.2.1 作用域链增强
 
 虽然执行上下文主要有全局上下文和函数上下文两种（ eval()调用内部存在第三种上下文），但有其他方式来增强作用域链。某些语句会导致在作用域链前端临时添加一个上下文，这个上下文在代码执行后会被删除。通常在两种情况下会出现这个现象，即代码执行到下面任意一种情况时：
 
-try / catch 语句的 catch 块
-
-with 语句
+- try / catch 语句的 catch 块
+- with 语句
 
 这两种情况下，都会在作用域链前端添加一个变量对象。对 with 语句来说，会向作用域链前端添加指定的对象；对 catch 语句而言，则会创建一个新的变量对象，这个变量对象会包含要抛出的错误对象的声明。看下面的例子：
 
-```
-function buildUrl() { let qs = "\?debug=true";
+```js
+function buildUrl() {
+  let qs = '?debug=true';
 
-with(location){
+  with (location) {
+    let url = href + qs;
+  }
 
-let url = href \+ qs;
-
-}
-
-return url;
-
+  return url;
 }
 ```
 
@@ -4340,7 +4294,7 @@ return url;
 
 > 注意 IE 的实现在 IE8 之前是有偏差的，即它们会将 catch 语句中捕获的错误添加到执行上下文的变量对象上，而不是 catch 语句的变量对象上，导致在 catch 块外部都可以访问到错误。IE9 纠正了这个问题。
 
-2.  变 声 明
+### 4.2.2 变量声明
 
 ES6 之后，JavaScript 的变量声明经历了翻天覆地的变化。直到 ECMAScript 5.1， var 都是声明变量的唯一关键字。ES6 不仅增加了 let 和 const 两个关键字，而且还让这两个关键字压倒性地超越 var 成为首选。
 
@@ -4348,19 +4302,22 @@ ES6 之后，JavaScript 的变量声明经历了翻天覆地的变化。直到 E
 
 在使用 var 声明变量时，变量会被自动添加到最接近的上下文。在函数中，最接近的上下文就是函数的局部上下文。在 with 语句中，最接近的上下文也是函数上下文。如果变量未经声明就被初始化了，那么它就会自动被添加到全局上下文，如下面的例子所示：
 
-```
-function add(num1, num2) { var sum = num1 \+ num2; return sum;
-
+```js
+function add(num1, num2) {
+  var sum = num1 + num2;
+  return sum;
 }
 
-let result = add(10, 20); // 30 console.log(sum); // 报 错 ：sum 在 这 里 不 是 有 效 变 量
+let result = add(10, 20); // 30
+console.log(sum); // 报 错 ：sum 在 这 里 不 是 有 效 变 量
 ```
 
 这里，函数 add() 定义了一个局部变量 sum ，保存加法操作的结果。这个值作为函数的值被返回，但变量 sum 在函数外部是访问不到的。如果省略上面例子中的关键字 var ，那么 sum 在 add() 被调用之后就变成可以访问的了，如下所示：
 
-```
-function add(num1, num2) { sum = num1 \+ num2; return sum;
-
+```js
+function add(num1, num2) {
+  sum = num1 + num2;
+  return sum;
 }
 
 let result = add(10, 20); // 30
@@ -4374,29 +4331,31 @@ console.log(sum); // 30
 
 var 声明会被拿到函数或全局作用域的顶部，位于作用域中所有代码之前。这个现象叫作“提升”（hoisting）。提升让同一作用域中的代码不必考虑变量是否已经声明就可以直接使用。可是在实践中，提升也会导致合法却奇怪的现象，即在变量声明之前使用变量。下面的例子展示了在全局作用域中两段等价的代码：
 
-```
-var name = "Jake";
+```js
+var name = 'Jake';
 
 // 等价于：
-
-name = 'Jake'; var name;
+name = 'Jake';
+var name;
+```
 
 下面是两个等价的函数：
 
-function fn1() { var name = 'Jake';
-
+```js
+function fn1() {
+  var name = 'Jake';
 }
 
 // 等价于：
-
-function fn2() { var name; name = 'Jake';
-
+function fn2() {
+  var name;
+  name = 'Jake';
 }
 ```
 
 通过在声明之前打印变量，可以验证变量会被提升。声明的提升意味着会输出 undefined 而不是 Reference Error ：
 
-```
+```js
 console.log(name); // undefined
 
 var name = 'Jake';
@@ -4414,21 +4373,21 @@ var name = 'Jake';
 
 ES6 新增的 let 关键字跟 var 很相似，但它的作用域是块级的，这也是 JavaScript 中的新概念。块级作用域由最近的一对包含花括号 {} 界定。换句话说， if 块、 while 块、 function 块，甚至连单独的块也是 let 声明变量的作用域。
 
-```
-if (true) { let a;
-
+```js
+if (true) {
+  let a;
 }
 
 console.log(a); // ReferenceError: a 没有定义
 
-while (true) { let b;
-
+while (true) {
+  let b;
 }
 
 console.log(b); // ReferenceError: b 没有定义
 
-function foo() { let c;
-
+function foo() {
+  let c;
 }
 
 console.log(c); // ReferenceError: c 没有定义
@@ -4442,9 +4401,7 @@ console.log(c); // ReferenceError: c 没有定义
 // JavaScript 解释器会根据其中内容识别出它来
 
 {
-
-let d;
-
+  let d;
 }
 
 console.log(d); // ReferenceError: d 没有定义
@@ -4452,15 +4409,15 @@ console.log(d); // ReferenceError: d 没有定义
 
 let 与 var 的另一个不同之处是在同一作用域内不能声明两次。重复的 var 声明会被忽略，而重复的 let 声明会抛出 SyntaxError 。
 
-```
-var a; var a;
+```js
+var a;
+var a;
 
 // 不会报错
 
 {
-
-let b; let b;
-
+  let b;
+  let b;
 }
 
 // SyntaxError: 标识符 b 已经声明过了
@@ -4468,10 +4425,12 @@ let b; let b;
 
 let 的行为非常适合在循环中声明迭代变量。使用 var 声明的迭代变量会泄漏到循环外部，这种情况应该避免。来看下面两个例子：
 
-```
-for (var i = 0; i < 10; ++i) {} console.log(i); // 10
+```js
+for (var i = 0; i < 10; ++i) {}
+console.log(i); // 10
 
-for (let j = 0; j < 10; ++j) {} console.log(j); // ReferenceError: j 没有定义
+for (let j = 0; j < 10; ++j) {}
+console.log(j); // ReferenceError: j 没有定义
 ```
 
 严格来讲， let 在 JavaScript 运行时中也会被提升，但由于“暂时性死区”（temporal dead zone）的缘故，实际上不能在声明之前使用 let 变量。因此，从写 JavaScript 代码的角度说， let 的提升跟 var 是不一样的。
@@ -4480,7 +4439,7 @@ for (let j = 0; j < 10; ++j) {} console.log(j); // ReferenceError: j 没有定�
 
 除了 let ，ES6 同时还增加了 const 关键字。使用 const 声明的变量必须同时初始化为某个值。一经声明，在其生命周期的任何时候都不能再重新赋予新值。
 
-```
+```js
 const a; // SyntaxError: 常量声明时没有初始化
 
 const b = 3;
@@ -4492,29 +4451,27 @@ b = 4; // TypeError: 给常量赋值
 
 const 除了要遵循以上规则，其他方面与 let 声明是一样的：
 
-```
-if (true) { const a = 0;
-
+```js
+if (true) {
+  const a = 0;
 }
 
 console.log(a); // ReferenceError: a 没有定义
 
-while (true) { const b = 1;
-
+while (true) {
+  const b = 1;
 }
 
 console.log(b); // ReferenceError: b 没有定义
 
-function foo() { const c = 2;
-
+function foo() {
+  const c = 2;
 }
 
 console.log(c); // ReferenceError: c 没有定义
 
 {
-
-const d = 3;
-
+  const d = 3;
 }
 
 console.log(d); // ReferenceError: d 没有定义
@@ -4522,27 +4479,26 @@ console.log(d); // ReferenceError: d 没有定义
 
 const 声明只应用到顶级原语或者对象。换句话说，赋值为对象的 const 变量不能再被重新赋值为其他引用值，但对象的键则不受限制。
 
-```
+```js
 const o1 = {};
 
 o1 = {}; // TypeError: 给常量赋值
 
-const o2 = {}; o2.name = 'Jake';
+const o2 = {};
+o2.name = 'Jake';
 
 console.log(o2.name); // 'Jake'
 ```
 
-如果想让整个对象都不能修改，可以使用
+如果想让整个对象都不能修改，可以使用 Object.freeze() ，这样再给属性赋值时虽然不会报错，但会静默失败：
 
-Object.freeze() ，这样再给属性赋值时虽然不会报错，但会静默失败：
-
+```js
+const o3 = Object.freeze({});
+o3.name = 'Jake';
+console.log(o3.name); // undefined
 ```
-const o3 = Object.freeze({}); o3.name = 'Jake'; console.log(o3.name); // undefined
-```
 
-由于 const 声明暗示变量的值是单一类型且不可修改，
-
-JavaScript 运行时编译器可以将其所有实例都替换成实际的值，而不会通过查询表进行变量查找。谷歌的 V8 引擎就执行这种优化。
+由于 const 声明暗示变量的值是单一类型且不可修改，JavaScript 运行时编译器可以将其所有实例都替换成实际的值，而不会通过查询表进行变量查找。谷歌的 V8 引擎就执行这种优化。
 
 > 注意 开发实践表明，如果开发流程并不会因此而受很大影响，就应该尽可能地多使用 const 声明，除非确实需要一个将来会重新赋值的变量。这样可以从根本上保证提前发现重新赋值导致的 bug。
 
@@ -4552,11 +4508,11 @@ JavaScript 运行时编译器可以将其所有实例都替换成实际的值，
 
 为更好地说明标识符查找，我们来看一个例子：
 
-```
+```js
 var color = 'blue';
 
-function getColor() { return color;
-
+function getColor() {
+  return color;
 }
 
 console.log(getColor()); // 'blue'
@@ -4566,11 +4522,11 @@ console.log(getColor()); // 'blue'
 
 对这个搜索过程而言，引用局部变量会让搜索自动停止，而不继续搜索下一级变量对象。也就是说，如果局部上下文中有一个同名的标识符，那就不能在该上下文中引用父上下文中的同名标识符，如下面的例子所示：
 
-```
-var color = 'blue'; function getColor() {
-
-let color = 'red'; return color;
-
+```js
+var color = 'blue';
+function getColor() {
+  let color = 'red';
+  return color;
 }
 
 console.log(getColor()); // 'red'
@@ -4578,17 +4534,16 @@ console.log(getColor()); // 'red'
 
 使用块级作用域声明并不会改变搜索流程，但可以给词法层级添加额外的层次：
 
-```
+```js
 var color = 'blue';
 
-function getColor() { let color = 'red';
+function getColor() {
+  let color = 'red';
 
-{
-
-let color = 'green'; return color;
-
-}
-
+  {
+    let color = 'green';
+    return color;
+  }
 }
 
 console.log(getColor()); // 'green'
@@ -4598,13 +4553,13 @@ console.log(getColor()); // 'green'
 
 > 注意 标识符查找并非没有代价。访问局部变量比访问全局变量要快，因为不用切换作用域。不过，JavaScript 引擎在优化标识符查找上做了很多工作，将来这个差异可能就微不足道了。
 
-3.  垃圾回收
+## 4.3 垃圾回收
 
 JavaScript 是使用垃圾回收的语言，也就是说执行环境负责在代码执行时管理内存。在 C 和 C++等语言中，跟踪内存使用对开发者来说是个很大的负担，也是很多问题的来源。JavaScript 为开发者卸下了这个负担，通过自动内存管理实现内存分配和闲置资源回收。基本思路很简单：确定哪个变量不会再使用，然后释放它占用的内存。这个过程是周期性的，即垃圾回收程序每隔一定时间（或者说在代码执行过程中某个预定的收集时间）就会自动运行。垃圾回收过程是一个近似且不完美的方案，因为某块内存是否还有用，属于“不可判定的”问题，意味着靠算法是解决不了的。
 
 我们以函数中局部变量的正常生命周期为例。函数中的局部变量会在函数执行时存在。此时，栈（或堆）内存会分配空间以保存相应的值。函数在内部使用了变量，然后退出。此时，就不再需要那个局部变量了，它占用的内存可以释放，供后面使用。这种情况下显然不再需要局部变量了，但并不是所有时候都会这么明显。垃圾回收程序必须跟踪记录哪个变量还会使用，以及哪个变量不会再使用，以便回收内存。如何标记未使用的变量也许有不同的实现方式。不过，在浏览器的发展史上，用到过两种主要的标记策略：标记清理和引用计 数。
 
-1.  标记清理
+### 4.3.1 标记清理
 
 JavaScript 最常用的垃圾回收策略是标记清理（mark-and- sweep）。当变量进入上下文，比如在函数内部声明一个变量时，这个变量会被加上存在于上下文中的标记。而不在上下文中的变量，逻辑上讲，永远不应该释放它们的内存，因为只要上下文中的代码在运 行，就有可能用到它们。当变量离开上下文时，也会被加上离开上下文的标记。
 
@@ -4614,19 +4569,19 @@ JavaScript 最常用的垃圾回收策略是标记清理（mark-and- sweep）。
 
 到了 2008 年，IE、Firefox、Opera、Chrome 和 Safari 都在自己的 JavaScript 实现中采用标记清理（或其变体），只是在运行垃圾回收的频率上有所差异。
 
-2.  引用计数
+### 4.3.2 引用计数
 
 另一种没那么常用的垃圾回收策略是引用计数（reference counting）。其思路是对每个值都记录它被引用的次数。声明变量并给它赋一个引用值时，这个值的引用数为 1。如果同一个值又被赋给另一个变量，那么引用数加 1。类似地，如果保存对该值引用的变量被其他值给覆盖了，那么引用数减 1。当一个值的引用数为 0 时，就说明没办法再访问到这个值了，因此可以安全地收回其内存了。垃圾回收程序下次运行的时候就会释放引用数为 0 的值的内存。
 
 引用计数最早由 Netscape Navigator 3.0 采用，但很快就遇到了严重的问题：循环引用。所谓循环引用，就是对象 A 有一个指针指向对象 B，而对象 B 也引用了对象 A。比如：
 
-```
+```js
 function problem() {
+  let objectA = new Object();
+  let objectB = new Object();
 
-let objectA = new Object(); let objectB = new Object();
-
-objectA.someOtherObject = objectB; objectB.anotherObject = objectA;
-
+  objectA.someOtherObject = objectB;
+  objectB.anotherObject = objectA;
 }
 ```
 
@@ -4636,18 +4591,21 @@ objectA.someOtherObject = objectB; objectB.anotherObject = objectA;
 
 JavaScript 存取的 COM 对象依旧使用引用计数。换句话说，只要涉及 COM 对象，就无法避开循环引用问题。下面这个简单的例子展示了涉及 COM 对象的循环引用问题：
 
-```
-let element = document.getElementById("some_element"); let myObject = new Object();
+```js
+let element = document.getElementById('some_element');
+let myObject = new Object();
 
-myObject.element = element; element.someObject = myObject;
+myObject.element = element;
+element.someObject = myObject;
 ```
 
 这个例子在一个 DOM 对象（ element ）和一个原生 JavaScript 对象（ myObject ）之间制造了循环引用。 myObject 变量有一个名为 element 的属性指向 DOM 对象 element ，而 element 对象有一个 someObject 属性指回 myObject 对象。由于存在循环引用，因此 DOM 元素的内存永远不会被回收，即使它已经被从页面上删除了也是如此。
 
 为避免类似的循环引用问题，应该在确保不使用的情况下切断原生 JavaScript 对象与 DOM 元素之间的连接。比如，通过以下代码可以清除前面的例子中建立的循环引用：
 
-```
-myObject.element = null; element.someObject = null;
+```js
+myObject.element = null;
+element.someObject = null;
 ```
 
 把变量设置为 null 实际上会切断变量与其之前引用值之间的关系。当下次垃圾回收程序运行时，这些值就会被删除，内存也会被回收。
@@ -4656,7 +4614,7 @@ myObject.element = null; element.someObject = null;
 
 > 注意 还有其他一些可能导致循环引用的情形，本书后面会介绍到。
 
-3.  性能
+### 4.3.3 性能
 
 垃圾回收程序会周期性运行，如果内存中分配了很多变量，则可能造成性能损失，因此垃圾回收的时间调度很重要。尤其是在内存有限的移动设备上，垃圾回收有可能会明显拖慢渲染的速度和帧速率。开发者不知道什么时候运行时会收集垃圾，因此最好的办法是在写代码时就要做到：无论什么时候开始收集垃圾，都能让它尽快结束工 作。
 
@@ -4664,24 +4622,24 @@ myObject.element = null; element.someObject = null;
 
 由于调度垃圾回收程序方面的问题会导致性能下降，IE 曾饱受诟病。它的策略是根据分配数，比如分配了 256 个变量、4096 个对象/数组字面量和数组槽位（slot），或者 64KB 字符串。只要满足其中某个条件，垃圾回收程序就会运行。这样实现的问题在于，分配那么多变量的脚本，很可能在其整个生命周期内始终需要那么多变量，结果就会导致垃圾回收程序过于频繁地运行。由于对性能的严重影响，IE7 最终更新了垃圾回收程序。
 
-IE7 发布后，JavaScript 引擎的垃圾回收程序被调优为动态改变分配变量、字面量或数组槽位等会触发垃圾回收的阈值。IE7 的起始阈值都与 IE6 的相同。如果垃圾回收程序回收的内存不到已分配的 15\%，这些变量、字面量或数组槽位的阈值就会翻倍。如果有一次回收的内存达到已分配的 85\%，则阈值重置为默认值。这么一个简单的修改，极大地提升了重度依赖 JavaScript 的网页在浏览器中的性能。
+IE7 发布后，JavaScript 引擎的垃圾回收程序被调优为动态改变分配变量、字面量或数组槽位等会触发垃圾回收的阈值。IE7 的起始阈值都与 IE6 的相同。如果垃圾回收程序回收的内存不到已分配的 15%，这些变量、字面量或数组槽位的阈值就会翻倍。如果有一次回收的内存达到已分配的 85%，则阈值重置为默认值。这么一个简单的修改，极大地提升了重度依赖 JavaScript 的网页在浏览器中的性能。
 
-警告 在某些浏览器中是有可能（但不推荐）主动触发垃圾回收的。在 IE 中， window.CollectGarbage() 方法会立即触发垃圾回收。在 Opera 7 及更高版本中，调用 window.opera.collect() 也会启动垃圾回收程序。
+> 警告 在某些浏览器中是有可能（但不推荐）主动触发垃圾回收的。在 IE 中， window.CollectGarbage() 方法会立即触发垃圾回收。在 Opera 7 及更高版本中，调用 window.opera.collect() 也会启动垃圾回收程序。
 
-4.  内存管理
+### 4.3.4 内存管理
 
 在使用垃圾回收的编程环境中，开发者通常无须关心内存管理。不过，JavaScript 运行在一个内存管理与垃圾回收都很特殊的环境。分配给浏览器的内存通常比分配给桌面软件的要少很多，分配给移动浏览器的就更少了。这更多出于安全考虑而不是别的，就是为了避免运行大量 JavaScript 的网页耗尽系统内存而导致操作系统崩溃。这个内存限制不仅影响变量分配，也影响调用栈以及能够同时在一个线程中执行的语句数量。
 
 将内存占用量保持在一个较小的值可以让页面性能更好。优化内存占用的最佳手段就是保证在执行代码时只保存必要的数据。如果数据不再必要，那么把它设置为 null ，从而释放其引用。这也可以叫作解除引用。这个建议最适合全局变量和全局对象的属性。局部变量在超出作用域后会被自动解除引用，如下面的例子所示：
 
-```
-function createPerson(name){
-
-let localPerson = new Object(); localPerson.name = name; return localPerson;
-
+```js
+function createPerson(name) {
+  let localPerson = new Object();
+  localPerson.name = name;
+  return localPerson;
 }
 
-let globalPerson = createPerson("Nicholas");
+let globalPerson = createPerson('Nicholas');
 
 // 解除 globalPerson 对值的引用
 
@@ -4703,19 +4661,18 @@ JavaScript 代码编译为实际的机器码时会利用“隐藏类”。如果
 
 运行期间，V8 会将创建的对象与隐藏类关联起来，以跟踪它们的属性特征。能够共享相同隐藏类的对象性能会更好，V8 会针对这种情况进行优化，但不一定总能够做到。比如下面的代码：
 
-```
+```js
 function Article() {
-
-this.title = 'Inauguration Ceremony Features Kazoo Band';
-
+  this.title = 'Inauguration Ceremony Features Kazoo Band';
 }
 
-let a1 = new Article(); let a2 = new Article();
+let a1 = new Article();
+let a2 = new Article();
 ```
 
 V8 会在后台配置，让这两个类实例共享相同的隐藏类，因为这两个实例共享同一个构造函数和原型。假设之后又添加了下面这行代码：
 
-```
+```js
 a2.author = 'Jake';
 ```
 
@@ -4723,7 +4680,7 @@ a2.author = 'Jake';
 
 当然，解决方案就是避免 JavaScript 的“先创建再补充”（ready-fire- aim）式的动态属性赋值，并在构造函数中一次性声明所有属性，如下所示：
 
-```
+```js
 function Article(opt_author) { this.title = 'Inauguration Ceremony
 
 Features Kazoo Band'; this.author = opt_author;
@@ -4737,29 +4694,26 @@ let a2 = new Article('Jake');
 
 这样，两个实例基本上就一样了（不考虑 hasOwnProperty 的返回值），因此可以共享一个隐藏类，从而带来潜在的性能提升。不过要记住，使用 delete 关键字会导致生成相同的隐藏类片段。看一下这个例子：
 
-```
+```js
 function Article() {
+  this.title = 'Inauguration Ceremony Features Kazoo Band';
 
-this.title = 'Inauguration Ceremony Features Kazoo Band';
-
-this.author = 'Jake';
-
+  this.author = 'Jake';
 }
 
-let a1 = new Article(); let a2 = new Article();
+let a1 = new Article();
+let a2 = new Article();
 
 delete a1.author;
 ```
 
 在代码结束后，即使两个实例使用了同一个构造函数，它们也不再共享一个隐藏类。动态删除属性与动态添加属性导致的后果一样。最佳实践是把不想要的属性设置为 null 。这样可以保持隐藏类不变和继续共享，同时也能达到删除引用值供垃圾回收程序回收的效果。比如：
 
-```
+```js
 function Article() {
+  this.title = 'Inauguration Ceremony Features Kazoo Band';
 
-this.title = 'Inauguration Ceremony Features Kazoo Band';
-
-this.author = 'Jake';
-
+  this.author = 'Jake';
 }
 
 let a1 = new Article();
@@ -4775,9 +4729,9 @@ a1.author = null;
 
 意外声明全局变量是最常见但也最容易修复的内存泄漏问题。下面的代码没有使用任何关键字声明变量：
 
-```
-function setName() { name = 'Jake';
-
+```js
+function setName() {
+  name = 'Jake';
 }
 ```
 
@@ -4785,23 +4739,23 @@ function setName() { name = 'Jake';
 
 定时器也可能会悄悄地导致内存泄漏。下面的代码中，定时器的回调通过闭包引用了外部变量：
 
-```
-let name = 'Jake'; setInterval(() => {
-
-console.log(name);
-
+```js
+let name = 'Jake';
+setInterval(() => {
+  console.log(name);
 }, 100);
 ```
 
-只要定时器一直运行，回调函数中引用的 name 就会一直占用内存。垃圾回收程序当然知道这一点，因而就不会清理外部变量。使用 JavaScript 闭包很容易在不知不觉间造成内存泄漏。请看下面的例子：
+只要定时器一直运行，回调函数中引用的 name 就会一直占用内存。垃圾回收程序当然知道这一点，因而就不会清理外部变量。
 
-```
-let outer = function() { let name = 'Jake'; return function() {
+使用 JavaScript 闭包很容易在不知不觉间造成内存泄漏。请看下面的例子：
 
-return name;
-
-};
-
+```js
+let outer = function () {
+  let name = 'Jake';
+  return function () {
+    return name;
+  };
 };
 ```
 
@@ -4815,11 +4769,12 @@ return name;
 
 那么浏览器就会采用更激进的方式调度垃圾回收程序运行，这样当然会影响性能。看一看下面的例子，这是一个计算二维矢量加法的函数：
 
-```
+```js
 function addVector(a, b) {
-
-let resultant = new Vector(); resultant.x = a.x \+ b.x; resultant.y = a.y \+ b.y; return resultant;
-
+  let resultant = new Vector();
+  resultant.x = a.x + b.x;
+  resultant.y = a.y + b.y;
+  return resultant;
 }
 ```
 
@@ -4827,11 +4782,11 @@ let resultant = new Vector(); resultant.x = a.x \+ b.x; resultant.y = a.y \+ b.y
 
 该问题的解决方案是不要动态创建矢量对象，比如可以修改上面的函数，让它使用一个已有的矢量对象：
 
-```
-function addVector(a, b, resultant) { resultant.x = a.x \+ b.x; resultant.y = a.y \+ b.y;
-
-return resultant;
-
+```js
+function addVector(a, b, resultant) {
+  resultant.x = a.x + b.x;
+  resultant.y = a.y + b.y;
+  return resultant;
 }
 ```
 
@@ -4839,12 +4794,15 @@ return resultant;
 
 一个策略是使用对象池。在初始化的某一时刻，可以创建一个对象池，用来管理一组可回收的对象。应用程序可以向这个对象池请求一个对象、设置其属性、使用它，然后在操作完成后再把它还给对象池。由于没发生对象初始化，垃圾回收探测就不会发现有对象更替，因此垃圾回收程序就不会那么频繁地运行。下面是一个对象池的伪实现：
 
-```
+```js
 // vectorPool 是已有的对象池
 
-addVector(v1, v2, v3); console.log(\[v3.x, v3.y\]); // \[7, \-1\]
+addVector(v1, v2, v3);
+console.log([v3.x, v3.y]); // [7, -1]
 
-vectorPool.free(v1); vectorPool.free(v2); vectorPool.free(v3);
+vectorPool.free(v1);
+vectorPool.free(v2);
+vectorPool.free(v3);
 
 // 如果对象有属性引用了其他对象
 
@@ -4852,58 +4810,48 @@ vectorPool.free(v1); vectorPool.free(v2); vectorPool.free(v3);
 
 v1 = null;
 
-v2 = null; v3 = null;
+v2 = null;
+v3 = null;
 ```
 
 如果对象池只按需分配矢量（在对象不存在时创建新的，在对象存在时则复用存在的），那么这个实现本质上是一种贪婪算法，有单调增长但为静态的内存。这个对象池必须使用某种结构维护所有对象，数组是比较好的选择。不过，使用数组来实现，必须留意不要招致额外的垃圾回收。比如下面这个例子：
 
-```
-let vectorList = new Array(100); let vector = new Vector(); vectorList.push(vector);
+```js
+let vectorList = new Array(100);
+let vector = new Vector();
+vectorList.push(vector);
 ```
 
 由于 JavaScript 数组的大小是动态可变的，引擎会删除大小为 100 的数组，再创建一个新的大小为 200 的数组。垃圾回收程序会看到这个删除操作，说不定因此很快就会跑来收一次垃圾。要避免这种动态分配操作，可以在初始化时就创建一个大小够用的数组，从而避免上述先删除再创建的操作。不过，必须事先想好这个数组有多大。
 
 > 注意 静态分配是优化的一种极端形式。如果你的应用程序被垃圾回收严重地拖了后腿，可以利用它提升性能。但这种情况并不多见。大多数情况下，这都属于过早优化，因此不用考 虑。
 
-4.  小结
+## 4.4 小结
 
 JavaScript 变量可以保存两种类型的值：原始值和引用值。原始值可能是以下 6 种原始数据类型之一： Undefined 、 Null 、Boolean 、 Number 、 String 和 Symbol 。原始值和引用值有以下特点。
 
-原始值大小固定，因此保存在栈内存上。
-
-从一个变量到另一个变量复制原始值会创建该值的第二个副本。引用值是对象，存储在堆内存上。
-
-包含引用值的变量实际上只包含指向相应对象的一个指针，而不是对象本身。
-
-从一个变量到另一个变量复制引用值只会复制指针，因此结果是两个变量都指向同一个对象。
-
-typeof 操作符可以确定值的原始类型，而 instanceof 操作符用于确保值的引用类型。
+- 原始值大小固定，因此保存在栈内存上。
+- 从一个变量到另一个变量复制原始值会创建该值的第二个副本。引用值是对象，存储在堆内存上。
+- 包含引用值的变量实际上只包含指向相应对象的一个指针，而不是对象本身。
+- 从一个变量到另一个变量复制引用值只会复制指针，因此结果是两个变量都指向同一个对象。
+- typeof 操作符可以确定值的原始类型，而 instanceof 操作符用于确保值的引用类型。
 
 任何变量（不管包含的是原始值还是引用值）都存在于某个执行上下文中（也称为作用域）。这个上下文（作用域）决定了变量的生命周期，以及它们可以访问代码的哪些部分。执行上下文可以总结如下。
 
-执行上下文分全局上下文、函数上下文和块级上下文。
-
-代码执行流每进入一个新上下文，都会创建一个作用域链，用于搜索变量和函数。
-
-函数或块的局部上下文不仅可以访问自己作用域内的变量，而且也可以访问任何包含上下文乃至全局上下文中的变量。
-
-全局上下文只能访问全局上下文中的变量和函数，不能直接访问局部上下文中的任何数据。
-
-变量的执行上下文用于确定什么时候释放内存。
+- 执行上下文分全局上下文、函数上下文和块级上下文。
+- 代码执行流每进入一个新上下文，都会创建一个作用域链，用于搜索变量和函数。
+- 函数或块的局部上下文不仅可以访问自己作用域内的变量，而且也可以访问任何包含上下文乃至全局上下文中的变量。
+- 全局上下文只能访问全局上下文中的变量和函数，不能直接访问局部上下文中的任何数据。
+- 变量的执行上下文用于确定什么时候释放内存。
 
 JavaScript 是使用垃圾回收的编程语言，开发者不需要操心内存分配和回收。JavaScript 的垃圾回收程序可以总结如下。
 
-离开作用域的值会被自动标记为可回收，然后在垃圾回收期间被删除。
-
-主流的垃圾回收算法是标记清理，即先给当前不使用的值加上标记，再回来回收它们的内存。
-
-引用计数是另一种垃圾回收策略，需要记录值被引用了多少次。
-
-JavaScript 引擎不再使用这种算法，但某些旧版本的 IE 仍然会受这种算法的影响，原因是 JavaScript 会访问非原生 JavaScript 对象（如 DOM 元素）。
-
-引用计数在代码中存在循环引用时会出现问题。
-
-解除变量的引用不仅可以消除循环引用，而且对垃圾回收也有帮助。为促进内存回收，全局对象、全局对象的属性和循环引用都应该在不需要时解除引用。
+- 离开作用域的值会被自动标记为可回收，然后在垃圾回收期间被删除。
+- 主流的垃圾回收算法是标记清理，即先给当前不使用的值加上标记，再回来回收它们的内存。
+- 引用计数是另一种垃圾回收策略，需要记录值被引用了多少次。
+- JavaScript 引擎不再使用这种算法，但某些旧版本的 IE 仍然会受这种算法的影响，原因是 JavaScript 会访问非原生 JavaScript 对象（如 DOM 元素）。
+- 引用计数在代码中存在循环引用时会出现问题。
+- 解除变量的引用不仅可以消除循环引用，而且对垃圾回收也有帮助。为促进内存回收，全局对象、全局对象的属性和循环引用都应该在不需要时解除引用。
 
 # 第 5 章 基本引用类型
 
@@ -6464,15 +6412,19 @@ Object 是 ECMAScript 中最常用的类型之一。虽然 Object 的实例没�
 
 显式地创建 Object 的实例有两种方式。第一种是使用 new 操作符和 Object 构造函数，如下所示：
 
+```
 let person = new Object(); person.name = "Nicholas"; person.age = 29;
+```
 
 另一种方式是使用对象字面量（object literal）表示法。对象字面量是对象定义的简写形式，目的是为了简化包含大量属性的对象的创建。比
 
 如，下面的代码定义了与前面示例相同的 person 对象，但使用的是对象字面量表示法：
 
+```
 let person = { name: "Nicholas", age: 29
 
 };
+```
 
 在这个例子中，左大括号（ { ）表示对象字面量开始，因为它出现在一个表达式上下文（expression context）中。在 ECMAScript 中，表达式上下文指的是期待返回值的上下文。赋值操作符表示后面要期待一个值，因此左大括号表示一个表达式的开始。同样是左大括号，如果出现在语句上下文（statement context）中，比如 if 语句的条件后面，则表示一个语句块的开始。
 
@@ -6482,19 +6434,23 @@ let person = { name: "Nicholas", age: 29
 
 在对象字面量表示法中，属性名可以是字符串或数值，比如：
 
+```
 let person = { "name": "Nicholas", "age": 29,
 
 5: true
 
 };
+```
 
 这个例子会得到一个带有属性 name 、 age 和 5 的对象。注意，数值属性会自动转换为字符串。
 
 当然也可以用对象字面量表示法来定义一个只有默认属性和方法的对象，只要使用一对大括号，中间留空就行了：
 
+```
 let person = {}; // 与 new Object()相同
 
 person.name = "Nicholas"; person.age = 29;
+```
 
 这个例子跟本节开始的第一个例子是等效的，虽然看起来有点怪。对象字面量表示法通常只在为了让属性一目了然时才使用。
 
@@ -6504,6 +6460,7 @@ Object 构造函数。
 
 虽然使用哪种方式创建 Object 实例都可以，但实际上开发者更倾向于使用对象字面量表示法。这是因为对象字面量代码更少，看起来也更有封装所有相关数据的感觉。事实上，对象字面量已经成为给函数传递大量可选参数的主要方式，比如：
 
+```
 function displayInfo(args) { let output = "";
 
 if (typeof args.name == "string"){ output += "Name: " \+ args.name \+ "\\n";
@@ -6525,6 +6482,7 @@ displayInfo({ name: "Nicholas", age: 29
 displayInfo({ name: "Greg"
 
 });
+```
 
 这里，函数 displayInfo() 接收一个名为 args 的参数。这个参数可能有属性 name 或 age ，也可能两个属性都有或者都没有。函数内部会使用 typeof 操作符测试每个属性是否存在，然后根据属性有无构造并显示一条消息。然后，这个函数被调用了两次，每次都通过一个对象字面量传入了不同的数据。两种情况下，函数都正常运行。
 
@@ -6532,17 +6490,23 @@ displayInfo({ name: "Greg"
 
 虽然属性一般是通过点语法来存取的，这也是面向对象语言的惯例，但也可以使用中括号来存取属性。在使用中括号时，要在括号内使用属性名的字符串形式，比如：
 
+```
 console.log(person\["name"\]); // "Nicholas"
 
 console.log(person.name); // "Nicholas"
+```
 
 从功能上讲，这两种存取属性的方式没有区别。使用中括号的主要优势就是可以通过变量访问属性，就像下面这个例子中一样：
 
+```
 let propertyName = "name"; console.log(person\[propertyName\]); // "Nicholas"
+```
 
 另外，如果属性名中包含可能会导致语法错误的字符，或者包含关键字/保留字时，也可以使用中括号语法。比如：
 
+```
 person\["first name"\] = "Nicholas";
+```
 
 因为 "first name" 中包含一个空格，所以不能使用点语法来访 问。不过，属性名中是可以包含非字母数字字符的，这时候只要用中括号语法存取它们就行了。
 
@@ -6558,33 +6522,47 @@ person\["first name"\] = "Nicholas";
 
 有几种基本的方式可以创建数组。一种是使用 Array 构造函数，比如：
 
+```
 let colors = new Array();
+```
 
 如果知道数组中元素的数量，那么可以给构造函数传入一个数值，然后 length 属性就会被自动创建并设置为这个值。比如，下面的代码会创建一个初始 length 为 20 的数组：
+
+```
+
+```
 
 let colors = new Array(20);
 
 也可以给 Array 构造函数传入要保存的元素。比如，下面的代码会创建一个包含 3 个字符串值的数组：
 
+```
 let colors = new Array("red", "blue", "green");
+```
 
 创建数组时可以给构造函数传一个值。这时候就有点问题了，因为如果这个值是数值，则会创建一个长度为指定数值的数组；而如果这个值是其他类型的，则会创建一个只包含该特定值的数组。下面看一个例子：
 
+```
 let colors = new Array(3); // 创建一个包含 3 个元素的数组
 
 let names = new Array("Greg"); // 创建一个只包含一个元素，即字符串"Greg"的数组
+```
 
 在使用 Array 构造函数时，也可以省略 new 操作符。结果是一样的，比如：
 
+```
 let colors = Array(3); // 创建一个包含 3 个元素的数组 let names = Array("Greg"); // 创建一个只包含一个元素，即字符串"Greg"的数组
+```
 
 另一种创建数组的方式是使用数组字面量（array literal）表示法。数组字面量是在中括号中包含以逗号分隔的元素列表，如下面的例子所示：
 
+```
 let colors = \["red", "blue", "green"\]; // 创建一个包含 3 个元素的数组
 
 let names = \[\]; // 创 建 一 个 空 数 组
 
 let values = \[1,2,\]; // 创 建 一 个 包 含 2 个 元 素 的 数 组
+```
 
 在这个例子中，第一行创建一个包含 3 个字符串的数组。第二行用一对空中括号创建了一个空数组。第三行展示了在数组最后一个值后面加逗号的效果： values 是一个包含两个值（1 和 2）的数组。
 
@@ -6600,6 +6578,7 @@ of() 用于将一组参数转换为数组实例。
 
 Array.from() 的第一个参数是一个类数组对象，即任何可迭代的结构，或者有一个 length 属性和可索引元素的结构。这种方式可用于很多场合：
 
+```
 // 字符串会被拆分为单字符数组
 
 console.log(Array.from("Matt")); // \["M", "a", "t", "t"\]
@@ -6667,22 +6646,27 @@ length: 4
 console.log(Array.from(arrayLikeObject)); // \[1, 2,
 
 3, 4\]
+```
 
 Array.from() 还接收第二个可选的映射函数参数。这个函数可以直接增强新数组的值，而无须像调用 Array.from().map() 那样先创建一个中间数组。还可以接收第三个可选参数，用于指定映射函数中
 
 this 的值。但这个重写的 this 值在箭头函数中不适用。
 
+```
 x\*\*this.exponent}, {exponent: 2});
 
 console.log(a2); // \[1, 4, 9, 16\]
 
 console.log(a3); // \[1, 4, 9, 16\]
+```
 
 Array.of() 可以把一组参数转换为数组。这个方法用于替代在 ES6 之前常用的 Array.prototype.slice.call(arguments) ，一种异常笨拙的将 arguments 对象转换为数组的写法：
 
+```
 console.log(Array.of(1, 2, 3, 4)); // \[1, 2, 3, 4\]
 
 console.log(Array.of(undefined)); // \[undefined\]
+```
 
 2.  数组空位
 
@@ -6692,14 +6676,17 @@ console.log(Array.of(undefined)); // \[undefined\]
 
 可以像下面这样创建一个空位数组：
 
+```
 const options = \[,,,,,\]; // 创建包含 5 个元素的数组
 
 console.log(options.length); // 5
 
 console.log(options); // \[,,,,,\]
+```
 
 ES6 新增的方法和迭代器与早期 ECMAScript 版本中存在的方法行为不同。ES6 新增方法普遍将这些空位当成存在的元素，只不过值为 undefined ：
 
+```
 const options = \[1,,,,5\];
 
 for (const option of options) { console.log(option === undefined);
@@ -6745,9 +6732,11 @@ alert(value);
 // undefined
 
 // 5
+```
 
 ES6 之前的方法则会忽略这个空位，但具体的行为也会因方法而异：
 
+```
 const options = \[1,,,,5\];
 
 // map()会跳过空位置
@@ -6757,6 +6746,7 @@ console.log(options.map(() => 6)); // \[6, undefined, undefined, undefined, 6\]
 // join()视空位置为空字符串
 
 console.log(options.join('-')); // "1----5"
+```
 
 > 注意 由于行为不一致和存在性能隐患，因此实践中要避免使用数组空位。如果确实需要空位，则可以显式地用 undefined 值代替。
 
@@ -6764,6 +6754,7 @@ console.log(options.join('-')); // "1----5"
 
 要取得或设置数组的值，需要使用中括号并提供相应值的数字索引，如下所示：
 
+```
 let colors = \["red", "blue", "green"\]; // 定义一个字符串数组
 
 alert(colors\[0\]); // 显 示 第 一 项
@@ -6771,6 +6762,7 @@ alert(colors\[0\]); // 显 示 第 一 项
 colors\[2\] = "black"; // 修 改 第 三 项
 
 colors\[3\] = "brown"; // 添 加 第 四 项
+```
 
 在中括号中提供的索引表示要访问的值。如果索引小于数组包含的元素数，则返回存储在相应位置的元素，就像示例中 colors\[0\] 显
 
@@ -6778,6 +6770,7 @@ colors\[3\] = "brown"; // 添 加 第 四 项
 
 数组中元素的数量保存在 length 属性中，这个属性始终返回 0 或大于 0 的值，如下例所示：
 
+```
 let colors = \["red", "blue", "green"\]; // 创建一个包含 3 个字符串的数组
 
 let names = \[\]; // 创 建 一 个 空 数 组
@@ -6785,16 +6778,21 @@ let names = \[\]; // 创 建 一 个 空 数 组
 alert(colors.length); // 3
 
 alert(names.length); // 0
+```
 
 数组 length 属性的独特之处在于，它不是只读的。通过修改
 
 length 属性，可以从数组末尾删除或添加元素。来看下面的例子：
 
+```
 let colors = \["red", "blue", "green"\]; // 创建一个包含
+```
 
 3 个字符串的数组
 
+```
 colors.length = 2; alert(colors\[2\]); // undefined
+```
 
 这里，数组 colors 一开始有 3 个值。将 length 设置为 2，就删除了最后一个（位置 2 的）值，因此 colors\[2\] 就没有值了。如果将
 
@@ -6802,31 +6800,35 @@ length 设置为大于数组元素数的值，则新添加的元素都将以
 
 undefined 填充，如下例所示：
 
+```
 let colors = \["red", "blue", "green"\]; // 创建一个包含 3 个字符串的数组
 
 colors.length = 4; alert(colors\[3\]); // undefined
+```
 
 这里将数组 colors 的 length 设置为 4，虽然数组只包含 3 个元素。位置 3 在数组中不存在，因此访问其值会返回特殊值 undefined 。
 
 使用 length 属性可以方便地向数组末尾添加元素，如下例所示：
 
+```
 let colors = \["red", "blue", "green"\]; // 创建一个包含 3 个字符串的数组
 
 colors\[colors.length\] = "black"; // 添 加 一 种 颜 色 （ 位 置 3）
 
 colors\[colors.length\] = "brown"; // 再 添 加 一 种 颜 色 （ 位 置 4）
+```
 
 数组中最后一个元素的索引始终是 length \- 1 ，因此下一个新增槽位的索引就是 length 。每次在数组最后一个元素后面新增一项，数组的 length 属性都会自动更新，以反映变化。这意味着第二行的
 
 colors\[colors.length\] 会在位置 3 添加一个新元素，下一行则会在位置 4 添加一个新元素。新的长度会在新增元素被添加到当前数组外部的位置上时自动更新。换句话说，就是 length 属性会更新为位置加上 1，如下例所示：
 
+```
 let colors = \["red", "blue", "green"\]; // 创建一个包含 3 个字符串的数组
 
-colors\[99\] = "black"; // 添 加 一 种 颜
-
-色（位置 99）
+colors\[99\] = "black"; // 添 加 一 种 颜色（位置 99）
 
 alert(colors.length); // 100
+```
 
 这里， colors 数组有一个值被插入到位置 99，结果新 length 就变成了 100（99 + 1）。这中间的所有元素，即位置 3\~98，实际上并不存在，因此在访问时会返回 undefined 。
 
@@ -6836,21 +6838,25 @@ alert(colors.length); // 100
 
 一个经典的 ECMAScript 问题是判断一个对象是不是数组。在只有一个网页（因而只有一个全局作用域）的情况下，使用 instanceof 操作符就足矣：
 
+```
 if (value instanceof Array){
 
 // 操作数组
 
 }
+```
 
 使用 instanceof 的问题是假定只有一个全局执行上下文。如果网页里有多个框架，则可能涉及两个不同的全局执行上下文，因此就会有两个不同版本的 Array 构造函数。如果要把数组从一个框架传给另一个框架，则这个数组的构造函数将有别于在第二个框架内本地创建的数组。
 
 为解决这个问题，ECMAScript 提供了 Array.isArray() 方法。这个方法的目的就是确定一个值是否为数组，而不用管它是在哪个全局执行上下文中创建的。来看下面的例子：
 
+```
 if (Array.isArray(value)){
 
 // 操作数组
 
 }
+```
 
 5.  迭代器方法
 
@@ -6858,6 +6864,7 @@ if (Array.isArray(value)){
 
 keys() 、 values() 和 entries() 。 keys() 返回数组索引的迭代器， values() 返回数组元素的迭代器，而 entries() 返回索引/值对的迭代器：
 
+```
 const a = \["foo", "bar", "baz", "qux"\];
 
 // 因为这些方法都返回迭代器，所以可以将它们的内容
@@ -6867,9 +6874,11 @@ const a = \["foo", "bar", "baz", "qux"\];
 const aKeys = Array.from(a.keys()); const aValues = Array.from(a.values());
 
 const aEntries = Array.from(a.entries());
+```
 
 使用 ES6 的解构可以非常容易地在循环中拆分键/值对：
 
+```
 const a = \["foo", "bar", "baz", "qux"\];
 
 for (const \[idx, element\] of a.entries()) \[ alert(idx);
@@ -6893,6 +6902,7 @@ alert(element);
 // 3
 
 // qux
+```
 
 > 注意 虽然这些方法是 ES6 规范定义的，但在 2017 年底的时候仍有浏览器没有实现它们。
 
@@ -6904,6 +6914,7 @@ copyWithin() 。这两个方法的函数签名类似，都需要指定既有数�
 
 使用 fill() 方法可以向一个已有的数组中插入全部或部分相同的值。开始索引用于指定开始填充的位置，它是可选的。如果不提供结束索引，则一直填充到数组末尾。负值索引从数组末尾开始计算。也可以将负索引想象成数组长度加上它得到的一个正索引：
 
+```
 const zeroes = \[0, 0, 0, 0, 0\];
 
 // 用 5 填充整个数组
@@ -6921,8 +6932,11 @@ zeroes.fill(6, 3);
 // 用 7 填充索引大于等于 1 且小于 3 的元素
 
 zeroes.fill(7, 1, 3);
+```
+
 fill() 静默忽略超出数组边界、零长度及方向相反的索引范围：
 
+```
 const zeroes = \[0, 0, 0, 0, 0\];
 
 // 索引过低，忽略
@@ -6948,9 +6962,11 @@ console.log(zeroes); // \[0, 0, 0, 0, 0\]
 zeroes.fill(4, 3, 10)
 
 console.log(zeroes); // \[0, 0, 0, 4, 4\]
+```
 
 与 fill() 不同， copyWithin() 会按照指定范围浅复制数组中的部分内容，然后将它们插入到指定索引开始的位置。开始索引和结束索引则与 fill() 使用同样的计算方法：
 
+```
 let ints,
 
 reset = () => ints = \[0, 1, 2, 3, 4, 5, 6, 7, 8,
@@ -7028,6 +7044,7 @@ reset()
 // 索引过高，忽略
 
 ints.copyWithin(1, 12, 15);
+```
 
 7.  转换方法
 
@@ -7037,7 +7054,9 @@ ints.copyWithin(1, 12, 15);
 
 toString() 返回由数组中每个值的等效字符串拼接而成的一个逗号分隔的字符串。也就是说，对数组的每个值都会调用其 toString() 方 法，以得到最终的字符串。来看下面的例子：
 
+```
 let colors = \["red", "blue", "green"\]; // 创建一个包含
+```
 
 3 个字符串的数组
 首先是被显式调用的 toString() 和 valueOf() 方法，它们分别返回了数组的字符串表示，即将所有字符串组合起来，以逗号分隔。最后一行代码直接用 alert() 显示数组，因为 alert() 期待字符串，所以会在后台调用数组的 toString() 方法，从而得到跟前面一样的结果。
@@ -7048,6 +7067,7 @@ valueOf() 相同的结果，但也不一定。在调用数组的
 
 toLocaleString() 方法时，会得到一个逗号分隔的数组值的字符串。它与另外两个方法唯一的区别是，为了得到最终的字符串，会调用数组每个值的 toLocaleString() 方法，而不是 toString() 方法。看下面的例子：
 
+```
 let person1 = { toLocaleString() {
 
 return "Nikolaos";
@@ -7081,6 +7101,7 @@ alert(people); // Nicholas,Greg
 alert(people.toString()); // Nicholas,Greg
 
 alert(people.toLocaleString()); // Nikolaos,Grigorios
+```
 
 这里定义了两个对象 person1 和 person2 ，它们都定义了
 
@@ -7112,6 +7133,7 @@ pop() 方法，以实现类似栈的行为。
 
 push() 方法接收任意数量的参数，并将它们添加到数组末尾，返回数组的最新长度。 pop() 方法则用于删除数组的最后一项，同时减少数组的 length 值，返回被删除的项。来看下面的例子：
 
+```
 let colors = new Array(); // 创 建 一 个 数 组
 
 let count = colors.push("red", "green"); // 推入两项
@@ -7127,6 +7149,7 @@ let item = colors.pop(); // 取 得 最 后 一 项
 alert(item); // black
 
 alert(colors.length); // 2
+```
 
 这里创建了一个当作栈来使用的数组（注意不需要任何额外的代码，
 
@@ -7138,6 +7161,7 @@ push() 和 pop() 都是数组的默认方法）。首先，使用 push() 方法�
 
 栈方法可以与数组的其他任何方法一起使用，如下例所示：
 
+```
 let colors = \["red", "blue"\]; colors.push("brown"); // 再 添 加 一 项 colors\[3\] = "black"; // 添 加 一 项
 
 alert(colors.length); // 4
@@ -7145,6 +7169,7 @@ alert(colors.length); // 4
 let item = colors.pop(); // 取 得 最 后 一 项
 
 alert(item); // black
+```
 
 这里先初始化了包含两个字符串的数组，然后通过 push() 添加了第三个值，第四个值是通过直接在位置 3 上赋值添加的。调用 pop() 时，返回了字符串 "black" ，也就是最后添加到数组的字符串。
 
@@ -7156,6 +7181,7 @@ alert(item); // black
 
 shift() 和 push() ，可以把数组当成队列来使用：
 
+```
 let colors = new Array(); // 创 建 一 个 数 组
 
 let count = colors.push("red", "green"); // 推入两项
@@ -7171,6 +7197,7 @@ let item = colors.shift(); // 取得第一项
 alert(item); // red
 
 alert(colors.length); // 2
+```
 
 这个例子创建了一个数组并用 push() 方法推入三个值。加粗的那行代码使用 shift() 方法取得了数组的第一项，即 "red" 。删除这一项之后， "green" 成为第一个元素， "black" 成为第二个元素，数组此时就包含两项。
 
@@ -7178,6 +7205,7 @@ ECMAScript 也为数组提供了 unshift() 方法。顾名思义，
 
 unshift() 就是执行跟 shift() 相反的操作：在数组开头添加任意多个值，然后返回新的数组长度。通过使用 unshift() 和 pop() ，可以在相反方向上模拟队列，即在数组开头添加新数据，在数组末尾取得数 据，如下例所示：
 
+```
 count = colors.unshift("black"); // 再推入一项
 
 alert(count); // 3
@@ -7187,10 +7215,13 @@ let item = colors.pop(); // 取得最后一项
 alert(item); // green
 
 alert(colors.length); // 2
+```
 
 这里，先创建一个数组，再通过 unshift() 填充数组。首先，给数组添加 "red" 和 "green" ，再添加 "black" ，得到
 
+```
 \["black","red","green"\] 。调用 pop() 时，删除最后一项 "green" 并返回它。
+```
 
 10. 排序方法
 
@@ -7198,7 +7229,9 @@ alert(colors.length); // 2
 
 sort() 。顾名思义， reverse() 方法就是将数组元素反向排列。比如：
 
+```
 let values = \[1, 2, 3, 4, 5\]; values.reverse(); alert(values); // 5,4,3,2,1
+```
 
 这里，数组 values 的初始状态为 \[1,2,3,4,5\] 。通过调用
 
@@ -7206,9 +7239,11 @@ reverse() 反向排序，得到了 \[5,4,3,2,1\] 。这个方法很直观，但�
 
 默认情况下， sort() 会按照升序重新排列数组元素，即最小的值在前面，最大的值在后面。为此， sort() 会在每一项上调用 String()转型函数，然后比较字符串来决定顺序。即使数组的元素都是数值，也会先把数组转换为字符串再比较、排序。比如：
 
+```
 let values = \[0, 1, 5, 10, 15\]; values.sort();
 
 alert(values); // 0,1,10,15,5
+```
 
 一开始数组中数值的顺序是正确的，但调用 sort() 会按照这些数值的字符串形式重新排序。因此，即使 5 小于 10，但字符串 "10" 在字符
 
@@ -7216,6 +7251,7 @@ alert(values); // 0,1,10,15,5
 
 比较函数接收两个参数，如果第一个参数应该排在第二个参数前面，就返回负值；如果两个参数相等，就返回 0；如果第一个参数应该排在第二个参数后面，就返回正值。下面是使用简单比较函数的一个例子：
 
+```
 function compare(value1, value2) { if (value1 < value2) {
 
 return \-1;
@@ -7227,15 +7263,19 @@ return \-1;
 }
 
 }
+```
 
 这个比较函数可以适用于大多数数据类型，可以把它当作参数传给
 
 sort() 方法，如下所示：
 
+```
 let values = \[0, 1, 5, 10, 15\]; values.sort(compare); alert(values); // 0,1,5,10,15
+```
 
 在给 sort() 方法传入比较函数后，数组中的数值在排序后保持了正确的顺序。当然，比较函数也可以产生降序效果，只要把返回值交换一下即可：
 
+```
 function compare(value1, value2) { if (value1 < value2) {
 
 return 1;
@@ -7249,12 +7289,15 @@ return 1;
 }
 
 let values = \[0, 1, 5, 10, 15\]; values.sort(compare); alert(values); // 15,10,5,1,0
+```
 
 此外，这个比较函数还可简写为一个箭头函数：
 
+```
 let values = \[0, 1, 5, 10, 15\];
 
 values.sort((a, b) => a < b \? 1 : a \> b \? \-1 : 0); alert(values); // 15,10,5,1,0
+```
 
 在这个修改版函数中，如果第一个值应该排在第二个值后面则返回 1，如果第一个值应该排在第二个值前面则返回-1。交换这两个返回值之后，较大的值就会排在前头，数组就会按照降序排序。当然，如果只是想反转数组的顺序， reverse() 更简单也更快。
 
@@ -7264,9 +7307,11 @@ values.sort((a, b) => a < b \? 1 : a \> b \? \-1 : 0); alert(values); // 15,10,5
 
 （如 Date 对象），这个比较函数还可以写得更简单，因为这时可以直接用第二个值减去第一个值：
 
+```
 function compare(value1, value2){ return value2 \- value1;
 
 }
+```
 
 比较函数就是要返回小于 0、0 和大于 0 的数值，因此减法操作完全可以满足要求。
 
@@ -7274,6 +7319,7 @@ function compare(value1, value2){ return value2 \- value1;
 
 对于数组中的元素，我们有很多操作方法。比如， concat() 方法可以在现有数组全部元素基础上创建一个新数组。它首先会创建一个当前数组的副本，然后再把它的参数添加到副本末尾，最后返回这个新构建的数组。如果传入一个或多个数组，则 concat() 会把这些数组的每一项都添加到结果数组。如果参数不是数组，则直接把它们添加到结果数组末尾。来看下面的例子：
 
+```
 let colors = \["red", "green", "blue"\];
 
 let colors2 = colors.concat("yellow", \["black", "brown"\]);
@@ -7291,11 +7337,13 @@ concat() 方法，传入字符串 "yellow" 和一个包
 \["red", "green", "blue", "yellow", "black",
 
 "brown"\] 。原始数组 colors 保持不变。
+```
 
 打平数组参数的行为可以重写，方法是在参数数组上指定一个特殊的符号： Symbol.isConcatSpreadable 。这个符号能够阻止
 
 concat() 打平参数数组。相反，把这个值设置为 true 可以强制打平类数组对象：
 
+```
 let colors = \["red", "green", "blue"\]; let newColors = \["black", "brown"\]; let moreNewColors = {
 
 \[Symbol.isConcatSpreadable\]: true, length: 2,
@@ -7323,9 +7371,11 @@ console.log(colors2); // \["red", "green", "blue",
 "yellow", \["black", "brown"\]\]
 
 console.log(colors3); // \["red", "green", "blue", "pink", "cyan"\]
+```
 
 接下来，方法 slice() 用于创建一个包含原有数组中一个或多个元素的新数组。 slice() 方法可以接收一个或两个参数：返回元素的开始索引和结束索引。如果只有一个参数，则 slice() 会返回该索引到数组末尾的所有元素。如果有两个参数，则 slice() 返回从开始索引到结束索引对应的所有元素，其中不包含结束索引对应的元素。记住，这个操作不影响原始数组。来看下面的例子：
 
+```
 let colors = \["red", "green", "blue", "yellow", "purple"\];
 
 let colors2 = colors.slice(1); let colors3 = colors.slice(1, 4);
@@ -7333,6 +7383,7 @@ let colors2 = colors.slice(1); let colors3 = colors.slice(1, 4);
 alert(colors2); // green,blue,yellow,purple
 
 alert(colors3); // green,blue,yellow
+```
 
 这里， colors 数组一开始有 5 个元素。调用 slice() 传入 1 会得到包含 4 个元素的新数组。其中不包括 "red" ，这是因为拆分操作要从位置
 
@@ -7356,6 +7407,7 @@ slice(-2,-1) ，就相当于调用 slice(3,4) 。如果结束位置小于开始�
 
 splice() 方法始终返回这样一个数组，它包含从数组中被删除的元素（如果没有删除元素，则返回空数组）。以下示例展示了上述 3 种使用方式。
 
+```
 let colors = \["red", "green", "blue"\];
 
 let removed = colors.splice(0,1); // 删除第一项
@@ -7375,6 +7427,7 @@ alert(colors);
 alert(removed);
 
 // 空数组
+```
 
 这个例子中， colors 数组一开始包含 3 个元素。第一次调用
 
@@ -7414,6 +7467,7 @@ find() 和 findIndex() 方法使用了断言函数。这两个方法都从数组
 
 findIndex() 返回第一个匹配元素的索引。这两个方法也都接收第二个可选的参数，用于指定断言函数内部 this 的值。
 
+```
 const people = \[
 
 {
@@ -7439,9 +7493,11 @@ alert(people.findIndex((element, index, array)
 => element.age < 28));
 
 // 0
+```
 
 找到匹配项后，这两个方法都不再继续搜索。
 
+```
 const evens = \[2, 4, 6\];
 
 // 找到匹配后，永远不会检查数组的最后一个元素
@@ -7454,6 +7510,7 @@ return element === 4;
 // 1
 
 // \[2, 4, 6\]
+```
 
 13. 迭代方法
 
@@ -7479,6 +7536,7 @@ some() 来说，只要有一项让传入的函数返回 true ，它就会返回
 
 true 。下面是一个例子：
 
+```
 let numbers = \[1, 2, 3, 4, 5, 4, 3, 2, 1\];
 
 let everyResult = numbers.every((item, index, array)
@@ -7488,6 +7546,7 @@ let everyResult = numbers.every((item, index, array)
 let someResult = numbers.some((item, index, array)
 
 => item \> 2); alert(someResult); // true
+```
 
 以上代码调用了 every() 和 some() ，传入的函数都是在给定项大于 2 时返回 true 。 every() 返回 false 是因为并不是每一项都能达到要求。而 some() 返回 true 是因为至少有一项满足条件。
 
@@ -7495,26 +7554,31 @@ let someResult = numbers.some((item, index, array)
 
 2 的数组，可以使用如下代码：
 
+```
 let numbers = \[1, 2, 3, 4, 5, 4, 3, 2, 1\];
 
 let filterResult = numbers.filter((item, index, array) => item \> 2);
 
 alert(filterResult); // 3,4,5,4,3
+```
 
 这里，调用 filter() 返回的数组包含 3 、 4 、 5 、 4 、 3 ，因为只有对这些项传入的函数才返回 true 。这个方法非常适合从数组中筛选满足给定条件的元素。
 
 接下来 map() 方法也会返回一个数组。这个数组的每一项都是对原始数组中同样位置的元素运行传入函数而返回的结果。例如，可以将一个数组中的每一项都乘以 2，并返回包含所有结果的数组，如下所示：
 
+```
 let numbers = \[1, 2, 3, 4, 5, 4, 3, 2, 1\];
 
 let mapResult = numbers.map((item, index, array) => item \* 2);
 
 alert(mapResult); // 2,4,6,8,10,8,6,4,2
+```
 
 以上代码返回了一个数组，包含原始数组中每个值乘以 2 的结果。这个方法非常适合创建一个与原始数组元素一一对应的新数组。
 
 最后，再来看一看 forEach() 方法。这个方法只会对每一项运行传入的函数，没有返回值。本质上， forEach() 方法相当于使用 for 循环遍历数组。比如：
 
+```
 let numbers = \[1, 2, 3, 4, 5, 4, 3, 2, 1\];
 
 numbers.forEach((item, index, array) => {
@@ -7522,6 +7586,7 @@ numbers.forEach((item, index, array) => {
 // 执行某些操作
 
 });
+```
 
 数组的这些迭代方法通过执行不同操作方便了对数组的处理。
 
@@ -7537,11 +7602,13 @@ reduceRight() 。这两个方法都会迭代数组的所有项，并在此基础
 
 可以使用 reduce() 函数执行累加数组中所有数值的操作，比如：
 
+```
 let values = \[1, 2, 3, 4, 5\];
 
 let sum = values.reduce((prev, cur, index, array) => prev \+ cur);
 
 alert(sum); // 15
+```
 
 第一次执行归并函数时， prev 是 1， cur 是 2。第二次执行时，
 
@@ -7551,6 +7618,7 @@ reduceRight() 方法与之类似，只是方向相反。来看下面的例
 
 子：
 
+```
 let values = \[1, 2, 3, 4, 5\];
 
 let sum = values.reduceRight(function(prev, cur, index, array){
@@ -7560,6 +7628,7 @@ return prev \+ cur;
 });
 
 alert(sum); // 15
+```
 
 在这里，第一次调用归并函数时 prev 是 5，而 cur 是 4。当然，最终结果相同，因为归并操作都是简单的加法。
 
@@ -7603,15 +7672,19 @@ Float32Array 实际上是一种“视图”，可以允许 JavaScript 运行时�
 
 ArrayBuffer() 是一个普通的 JavaScript 构造函数，可用于在内存中分配特定数量的字节空间。
 
+```
 const buf = new ArrayBuffer(16); // 在内存中分配 16 字节
 
 alert(buf.byteLength); // 16
+```
 
 ArrayBuffer 一经创建就不能再调整大小。不过，可以使用
 
 slice() 复制其全部或部分到一个新实例中：
 
+```
 const buf1 = new ArrayBuffer(16); const buf2 = buf1.slice(4, 12); alert(buf2.byteLength); // 8
+```
 
 ArrayBuffer 某种程度上类似于 C++的 malloc() ，但也有几个明显的区别。
 
@@ -7635,6 +7708,7 @@ malloc() 调用成功不会初始化实际的地址。声明 ArrayBuffer
 
 必须在对已有的 ArrayBuffer 读取或写入时才能创建 DataView 实例。这个实例可以使用全部或部分 ArrayBuffer ，且维护着对该缓冲实例的引用，以及视图在缓冲中开始的位置。
 
+```
 const buf = new ArrayBuffer(16);
 
 // DataView 默认使用整个 ArrayBuffer
@@ -7660,6 +7734,8 @@ alert(firstHalfDataView.buffer === buf); // true
 // byteLength 未指定，默认为剩余缓冲
 
 const secondHalfDataView = new DataView(buf, 8);
+```
+
 要通过 DataView 读取缓冲，还需要几个组件。
 
 - 首先是要读或写的字节偏移量。可以看成 DataView 中的某种“地址”。
@@ -7756,6 +7832,7 @@ double \-1.7e+308\~+1.7e+308
 
 DataView 为上表中的每种类型都暴露了 get 和 set 方法，这些方法使用 byteOffset （字节偏移量）定位要读取或写入值的位 置。类型是可以互换使用的，如下例所示：
 
+```
 // 在内存中分配两个字节并声明一个 DataView
 
 const buf = new ArrayBuffer(2); const view = new DataView(buf);
@@ -7789,6 +7866,7 @@ view.setUint8(1, 0xFF);
 // 如果把它当成二补数的有符号整数，则应该是\-1
 
 alert(view.getInt16(0)); // \-1
+```
 
 2.  字节序
 
@@ -7796,6 +7874,7 @@ alert(view.getInt16(0)); // \-1
 
 JavaScript 运行时所在系统的原生字节序决定了如何读取或写入字节，但 DataView 并不遵守这个约定。对一段内存而言， DataView 是一个中立接口，它会遵循你指定的字节序。 DataView 的所有 API 方法都以大端字节序作为默认值，但接收一个可选的布尔值参数，设置为 true 即可启用小端字节序。
 
+```
 // 在内存中分配两个字节并声明一个 DataView
 
 const buf = new ArrayBuffer(2); const view = new DataView(buf);
@@ -7851,11 +7930,13 @@ view.setUint16(0, 0x0002, true);
 alert(view.getUint8(0)); // 2
 
 alert(view.getUint8(1)); // 0
+```
 
 3.  边界情形
 
 DataView 完成读、写操作的前提是必须有充足的缓冲区，否则就会抛出 RangeError ：
 
+```
 const buf = new ArrayBuffer(6); const view = new DataView(buf);
 
 // 尝试读取部分超出缓冲范围的值
@@ -7881,9 +7962,11 @@ view.getInt32(-1);
 view.setInt32(4, 123);
 
 // RangeError
+```
 
 DataView 在写入缓冲里会尽最大努力把一个值转换为适当的类型，后备为 0。如果无法转换，则抛出错误：
 
+```
 const buf = new ArrayBuffer(1); const view = new DataView(buf);
 
 view.setInt8(0, 1.5);
@@ -7901,6 +7984,7 @@ alert(view.getInt8(0)); // 0
 view.setInt8(0, Symbol());
 
 // TypeError
+```
 
 4.  定型数组
 
@@ -7914,6 +7998,7 @@ ElementType 且遵循系统原生的字节序。相应地，定型数组提供�
 
 <ElementType>.from() 和 <ElementType>.of() 也可以创建定型数组：
 
+```
 // 创建一个 12 字节的缓冲
 
 const buf = new ArrayBuffer(12);
@@ -7969,6 +8054,7 @@ const floats = Float32Array.of(3.14, 2.718, 1.618);
 alert(floats.length); // 3
 
 alert(floats.buffer.byteLength); // 12 alert(floats\[2\]); // 1.6180000305175781
+```
 
 定型数组的构造函数和实例都有一个 BYTES_PER_ELEMENT 属性，返回该类型数组中每个元素的大小：
 
@@ -7976,6 +8062,7 @@ alert(floats.buffer.byteLength); // 12 alert(floats\[2\]); // 1.6180000305175781
 
 从很多方面看，定型数组与普通数组都很相似。定型数组支持如下操作符、方法和属性：
 
+```
 \[\]
 
 copyWithin() entries() every() fill() filter() find()
@@ -7987,32 +8074,39 @@ keys() lastIndexOf() length
 map() reduce() reduceRight() reverse() slice() some()
 
 sort() toLocaleString() toString() values()
+```
 
 其中，返回新数组的方法也会返回包含同样元素类型（element type）
 
 的新定型数组：
 
+```
 const ints = new Int16Array(\[1, 2, 3\]); const doubleints = ints.map(x => 2\*x);
 
 alert(doubleints instanceof Int16Array); // true
+```
 
 定型数组有一个 Symbol.iterator 符号属性，因此可以通过
 
 for..of 循环和扩展操作符来操作：
 
+```
 const ints = new Int16Array(\[1, 2, 3\]); for (const int of ints) {
 
 alert(int);
 
 alert(Math.max(...ints)); // 3
+```
 
 2.  合并、复制和修改定型数组
 
 定型数组同样使用数组缓冲来存储数据，而数组缓冲无法调整大小。因此，下列方法不适用于定型数组：
 
+```
 concat() pop()
 
 push() shift() splice() unshift()
+```
 
 不过，定型数组也提供了两个新方法，可以快速向外或向内复制数
 
@@ -8020,6 +8114,7 @@ push() shift() splice() unshift()
 
 set() 从提供的数组或定型数组中把值复制到当前定型数组中指定的索引位置：
 
+```
 // 创建长度为 8 的 int16 数组
 
 const container = new Int16Array(8);
@@ -8045,9 +8140,11 @@ console.log(container); // \[1,2,3,4,5,6,7,8\]
 container.set(\[5,6,7,8\], 7);
 
 // RangeError
+```
 
 subarray() 执行与 set() 相反的操作，它会基于从原始定型数组中复制的值返回一个新定型数组。复制值时的开始索引和结束索引是可选的：
 
+```
 const source = Int16Array.of(2, 4, 6, 8);
 
 // 把整个数组复制为一个同类型的新数组
@@ -8061,9 +8158,11 @@ const halfCopy = source.subarray(2); console.log(halfCopy); // \[6, 8\]
 // 从索引 1 开始复制到索引 3
 
 const partialCopy = source.subarray(1, 3); console.log(partialCopy); // \[4, 6\]
+```
 
 定型数组没有原生的拼接能力，但使用定型数组 API 提供的很多工具可以手动构建：
 
+```
 // 第一个参数是应该返回的数组类型
 
 // 其余参数是应该拼接在一起的定型数组
@@ -8107,11 +8206,13 @@ console.log(concatArray); // \[1, 2, 3, 4, 5, 6,
 console.log(concatArray instanceof Int32Array);
 
 // true
+```
 
 3.  下溢和上溢
 
 定型数组中值的下溢和上溢不会影响到其他索引，但仍然需要考虑数组的元素应该是什么类型。定型数组对于可以存储的每个索引只接受一个相关位，而不考虑它们对实际数值的影响。以下代码演示了如何处理下溢和上溢：
 
+```
 // 长度为 2 的有符号整数数组
 
 // 每个索引保存一个二补数形式的有符号整数
@@ -8153,12 +8254,15 @@ console.log(ints); // \[0, \-128\]
 ints\[1\] = 255; // 0xFF
 
 console.log(ints); // \[0, \-1\]
+```
 
 除了 8 种元素类型，还有一种“夹板”数组类型： Uint8ClampedArray ，不允许任何方向溢出。超出最大值 255 的值会被向下舍入为 255，而小于最小值 0 的值会被向上舍入为 0。
 
+```
 const clampedInts = new Uint8ClampedArray(\[-1, 0, 255, 256\]);
 
 console.log(clampedInts); // \[0, 0, 255, 255\]
+```
 
 按照 JavaScript 之父 Brendan Eich 的说法：“ Uint8ClampedArray 完全是 HTML5 canvas 元素的历史留存。除非真的做跟 canvas 相关的开发，否则不要使用它。”
 
@@ -8176,10 +8280,13 @@ Object 类型实现，但二者之间还是存在一些细微的差异。具体�
 
 使用 new 关键字和 Map 构造函数可以创建一个空映射：
 
+```
 const m = new Map();
+```
 
 如果想在创建的同时初始化实例，可以给 Map 构造函数传入一个可迭代对象，需要包含键/值对数组。可迭代对象中的每个键/值对都会按照迭代顺序插入到新映射实例中：
 
+```
 // 使用嵌套数组初始化映射
 
 const m1 = new Map(\[ \["key1", "val1"\],
@@ -8204,19 +8311,23 @@ alert(m2.size); // 3
 // 映射期待的键/值对，无论是否提供
 
 const m3 = new Map(\[\[\]\]); alert(m3.has(undefined)); // true alert(m3.get(undefined)); // undefined
+```
 
 初始化之后，可以使用 set() 方法再添加键/值对。另外，可以使用
 
 get() 和 has() 进行查询，可以通过 size 属性获取映射中的键/值对的数量，还可以使用 delete() 和 clear() 删除值。
 
+```
 m.set("firstName", "Matt")
 
 .set("lastName", "Frisbie");
 
 m.clear(); // 清除这个映射实例中的所有键/值对
+```
 
 set() 方法返回映射实例，因此可以把多个操作连缀起来，包括初始化声明：
 
+```
 const m = new Map().set("key1", "val1");
 
 m.set("key2", "val2")
@@ -8224,11 +8335,13 @@ m.set("key2", "val2")
 .set("key3", "val3");
 
 alert(m.size); // 3
+```
 
 与 Object 只能使用数值、字符串或符号作为键不同， Map 可以使用任何 JavaScript 数据类型作为键。 Map 内部使用 SameValueZero 比较操作
 
 （ECMAScript 规范内部定义，语言中不能使用），基本上相当于使用严格对象相等的标准来检查键的匹配性。与 Object 类似，映射的值是没有限制的。
 
+```
 const m = new Map();
 
 m.set(functionKey, "functionValue"); m.set(symbolKey, "symbolValue"); m.set(objectKey, "objectValue");
@@ -8242,9 +8355,11 @@ alert(m.get(objectKey)); // objectValue
 // SameValueZero 比较意味着独立实例不冲突
 
 alert(m.get(function() {})); // undefined
+```
 
 与严格相等一样，在映射中用作键和值的对象及其他“集合”类型，在自己的内容或属性被修改时仍然保持不变：
 
+```
 const m = new Map();
 
 m.set(objKey, objVal); m.set(arrKey, arrVal);
@@ -8276,6 +8391,7 @@ m.set(pz, "bar");
 alert(m.get(b)); // foo
 
 alert(m.get(nz)); // bar
+```
 
 > 注意 SameValueZero 是 ECMAScript 规范新增的相等性比较算法。关于
 
@@ -8291,6 +8407,7 @@ ECMAScript 的相等性比较，可以参考 MDN 文档中的文章“Equality C
 
 Symbol.iterator 属性，它引用 entries() ）取得这个迭代器：
 
+```
 const m = new Map(\[ \["key1", "val1"\],
 
 \["key2", "val2"\],
@@ -8320,9 +8437,11 @@ for (let pair of m\[Symbol.iterator\]()) { alert(pair);
 // \[key2,val2\]
 
 // \[key3,val3\]
+```
 
 因为 entries() 是默认迭代器，所以可以直接对映射实例使用扩展操作，把映射转换为数组：
 
+```
 const m = new Map(\[ \["key1", "val1"\],
 
 \["key2", "val2"\],
@@ -8332,11 +8451,13 @@ const m = new Map(\[ \["key1", "val1"\],
 \]);
 
 console.log(\[...m\]); // \[\[key1,val1\],\[key2,val2\], \[key3,val3\]\]
+```
 
 如果不使用迭代器，而是使用回调方式，则可以调用映射的
 
 forEach() 方法并传入回调，依次迭代每个键/值对。传入的回调接收可选的第二个参数，这个参数用于重写回调内部 this 的值：
 
+```
 const m = new Map(\[ \["key1", "val1"\],
 
 \["key2", "val2"\],
@@ -8346,8 +8467,11 @@ const m = new Map(\[ \["key1", "val1"\],
 \]);
 
 m.forEach((val, key) => alert(\`\${key} \-> \${val}\`));
+```
+
 keys() 和 values() 分别返回以插入顺序生成键和值的迭代器：
 
+```
 const m = new Map(\[ \["key1", "val1"\],
 
 \["key2", "val2"\],
@@ -8377,9 +8501,11 @@ alert(key);
 // value2
 
 // value3
+```
 
 键和值在迭代器遍历时是可以修改的，但映射内部的引用则无法修 改。当然，这并不妨碍修改作为键或值的对象内部的属性，因为这样并不影响它们在映射实例中的身份：
 
+```
 const m1 = new Map(\[ \["key1", "val1"\]
 
 \]);
@@ -8403,6 +8529,7 @@ const keyObj = {id: 1}; const m = new Map(\[
 // 修改了作为键的对象的属性，但对象在映射内部仍然引用相同的值
 
 for (let key of m.keys()) { key.id = "newKey";
+```
 
 3.  选择 Object 还是 Map
 
@@ -8442,12 +8569,15 @@ ECMAScript 6 新增的“弱映射”（ WeakMap ）是一种新的集合类型�
 
 可以使用 new 关键字实例化一个空的 WeakMap ：
 
+```
 const wm = new WeakMap();
+```
 
 弱映射中的键只能是 Object 或者继承自 Object 的类型，尝试使用非对象设置键会抛出 TypeError 。值的类型没有限制。
 
 如果想在初始化时填充弱映射，则构造函数可以接收一个可迭代对象，其中需要包含键/值对数组。可迭代对象中的每个键/值都会按照迭代顺序插入新实例中：
 
+```
 // 使用嵌套数组初始化弱映射
 
 const wm1 = new WeakMap(\[ \[key1, "val1"\],
@@ -8487,11 +8617,13 @@ stringKey, "val1"
 \]);
 
 alert(wm3.get(stringKey)); // "val1"
+```
 
 初始化之后可以使用 set() 再添加键/值对，可以使用 get() 和
 
 has() 查询，还可以使用 delete() 删除：
 
+```
 const wm = new WeakMap();
 
 const key1 = {id: 1}, key2 = {id: 2};
@@ -8513,14 +8645,17 @@ wm.delete(key1); // 只删除这一个键/值对
 alert(wm.has(key1)); // false
 
 alert(wm.has(key2)); // true
+```
 
 set() 方法返回弱映射实例，因此可以把多个操作连缀起来，包括初始化声明：
 
+```
 const wm = new WeakMap().set(key1, "val1"); wm.set(key2, "val2")
 
 .set(key3, "val3");
 
 alert(wm.get(key1)); // val1 alert(wm.get(key2)); // val2 alert(wm.get(key3)); // val3
+```
 
 2.  弱键
 
@@ -8528,14 +8663,17 @@ WeakMap 中“weak”表示弱映射的键是“弱弱地拿着”的。意思�
 
 来看下面的例子：
 
+```
 const wm = new WeakMap();
 
 wm.set({}, "val");
+```
 
 set() 方法初始化了一个新对象并将它用作一个字符串的键。因为没有指向这个对象的其他引用，所以当这行代码执行完成后，这个对象键就会被当作垃圾回收。然后，这个键/值对就从弱映射中消失了，使其成为一个空映射。在这个例子中，因为值也没有被引用，所以这对键/值被破坏以后，值本身也会成为垃圾回收的目标。
 
 再看一个稍微不同的例子：
 
+```
 const wm = new WeakMap();
 
 const container = { key: {}
@@ -8547,6 +8685,7 @@ wm.set(container.key, "val");
 function removeReference() { container.key = null;
 
 }
+```
 
 这一次， container 对象维护着一个对弱映射键的引用，因此这个对象键不会成为垃圾回收的目标。不过，如果调用了 removeReference() ，就会摧毁键对象的最后一个引用，垃圾回收程序就可以把这个键/值对清理掉。
 
@@ -8568,6 +8707,7 @@ WeakMap 实例与现有 JavaScript 对象有着很大不同，可能一时不容
 
 下面是一个示例实现：
 
+```
 const wm = new WeakMap();
 
 class User { constructor(id) {
@@ -8607,9 +8747,11 @@ alert(user.getId()); // 456
 // 并不是真正私有的
 
 alert(wm.get(user)\[user.idProperty\]); // 456
+```
 
 慧眼独具的读者会发现，对于上面的实现，外部代码只需要拿到对象实例的引用和弱映射，就可以取得“私有”变量了。为了避免这种访 问，可以用一个闭包把 WeakMap 包装起来，这样就可以把弱映射与外界完全隔离开了：
 
+```
 const User = (() => {
 
 const wm = new WeakMap();
@@ -8651,6 +8793,7 @@ return User;
 })();
 
 const user = new User(123); alert(user.getId()); // 123 user.setId(456); alert(user.getId()); // 456
+```
 
 这样，拿不到弱映射中的健，也就无法取得弱映射中对应的值。虽然这防止了前面提到的访问，但整个代码也完全陷入了 ES6 之前的闭包私有变量模式。
 
@@ -8658,6 +8801,7 @@ const user = new User(123); alert(user.getId()); // 123 user.setId(456); alert(u
 
 因为 WeakMap 实例不会妨碍垃圾回收，所以非常适合保存关联元数据。来看下面这个例子，其中使用了常规的 Map ：
 
+```
 const m = new Map();
 
 const loginButton = document.querySelector('#login');
@@ -8665,11 +8809,13 @@ const loginButton = document.querySelector('#login');
 // 给这个节点关联一些元数据
 
 m.set(loginButton, {disabled: true});
+```
 
 假设在上面的代码执行后，页面被 JavaScript 改变了，原来的登录按钮从 DOM 树中被删掉了。但由于映射中还保存着按钮的引用，所以对应的 DOM 节点仍然会逗留在内存中，除非明确将其从映射中删除或者等到映射本身被销毁。
 
 如果这里使用的是弱映射，如以下代码所示，那么当节点从 DOM 树中被删除后，垃圾回收程序就可以立即释放其内存（假设没有其他地方引用这个对象）：
 
+```
 const wm = new WeakMap();
 
 const loginButton = document.querySelector('#login');
@@ -8677,6 +8823,7 @@ const loginButton = document.querySelector('#login');
 // 给这个节点关联一些元数据
 
 wm.set(loginButton, {disabled: true});
+```
 
 1.  Set
 
@@ -8688,10 +8835,13 @@ API 和行为都是共有的。
 
 使用 new 关键字和 Set 构造函数可以创建一个空集合：
 
+```
 const m = new Set();
+```
 
 如果想在创建的同时初始化实例，则可以给 Set 构造函数传入一个可迭代对象，其中需要包含插入到新集合实例中的元素：
 
+```
 // 使用数组初始化集合
 
 const s1 = new Set(\["val1", "val2", "val3"\]); alert(s1.size); // 3
@@ -8707,19 +8857,25 @@ yield "val1"; yield "val2"; yield "val3";
 });
 
 alert(s2.size); // 3
+```
 
 初始化之后，可以使用 add() 增加值，使用 has() 查询，通过
 
 size 取得元素数量，以及使用 delete() 和 clear() 删除元素：
 
+```
 alert(s.has("Matt")); // false alert(s.has("Frisbie")); // true alert(s.size); // 1
+```
 
 s.clear(); // 销毁集合实例中的所有值
 
+```
 alert(s.has("Matt")); // false alert(s.has("Frisbie")); // false alert(s.size); // 0
+```
 
 add() 返回集合的实例，所以可以将多个添加操作连缀起来，包括初始化：
 
+```
 const s = new Set().add("val1");
 
 s.add("val2")
@@ -8727,17 +8883,21 @@ s.add("val2")
 .add("val3");
 
 alert(s.size); // 3
+```
 
 与 Map 类似， Set 可以包含任何 JavaScript 数据类型作为值。集合也使用 SameValueZero 操作（ECMAScript 内部定义，无法在语言中使用），基本上相当于使用严格对象相等的标准来检查值的匹配性。
 
+```
 const s = new Set();
 
 // SameValueZero 检查意味着独立的实例不会冲突
 
 alert(s.has(function() {})); // false
+```
 
 与严格相等一样，用作值的对象和其他“集合”类型在自己的内容或属性被修改时也不会改变：
 
+```
 const s = new Set();
 
 const objVal = {},
@@ -8751,9 +8911,11 @@ objVal.bar = "bar"; arrVal.push("bar");
 alert(s.has(objVal)); // true
 
 alert(s.has(arrVal)); // true
+```
 
 add() 和 delete() 操作是幂等的。 delete() 返回一个布尔值，表示集合中是否存在要删除的值：
 
+```
 const s = new Set();
 
 s.add('foo'); alert(s.size); // 1 s.add('foo'); alert(s.size); // 1
@@ -8765,15 +8927,15 @@ alert(s.delete('foo')); // true
 // 集合里没有这个值
 
 alert(s.delete('foo')); // false
+```
 
 2.  顺序与迭代
 
 Set 会维护值插入时的顺序，因此支持按顺序迭代。
 
-集合实例可以提供一个迭代器（ Iterator ），能以插入顺序生成集合内容。可以通过 values() 方法及其别名方法 keys() （或者
+集合实例可以提供一个迭代器（ Iterator ），能以插入顺序生成集合内容。可以通过 values() 方法及其别名方法 keys() （或者 Symbol.iterator 属性，它引用 values() ）取得这个迭代器：
 
-Symbol.iterator 属性，它引用 values() ）取得这个迭代器：
-
+```
 const s = new Set(\["val1", "val2", "val3"\]);
 
 alert(s.values === s\[Symbol.iterator\]); // true
@@ -8799,31 +8961,41 @@ for (let value of s\[Symbol.iterator\]()) { alert(value);
 // val2
 
 // val3
+```
 
 因为 values() 是默认迭代器，所以可以直接对集合实例使用扩展操作，把集合转换为数组：
 
+```
 const s = new Set(\["val1", "val2", "val3"\]);
 
 console.log(\[...s\]); // \["val1", "val2", "val3"\]
+```
 
 集合的 entries() 方法返回一个迭代器，可以按照插入顺序产生包含两个元素的数组，这两个元素是集合中每个值的重复出现：
 
+```
 const s = new Set(\["val1", "val2", "val3"\]);
 
 for (let pair of s.entries()) { console.log(pair);
 
 }
+```
+
 如果不使用迭代器，而是使用回调方式，则可以调用集合的
 
 forEach() 方法并传入回调，依次迭代每个键/值对。传入的回调接收可选的第二个参数，这个参数用于重写回调内部 this 的值：
 
+```
 const s = new Set(\["val1", "val2", "val3"\]);
 
 s.forEach((val, dupVal) => alert(\`\${val} \->
 
 \${dupVal}\`));
+```
+
 修改集合中值的属性不会影响其作为集合值的身份：
 
+```
 const s1 = new Set(\["val1"\]);
 
 // 字符串原始值作为值不会被修改
@@ -8842,6 +9014,7 @@ const s2 = new Set(\[valObj\]);
 
 // 修改值对象的属性，但对象仍然存在于集合中
 for (let value of s2.values()) { value.id = "newVal";
+```
 
 3.  定义正式集合操作
 
@@ -8855,6 +9028,7 @@ Set 保留插入顺序，所有方法返回的集合必须保证顺序。
 
 不要修改已有的集合实例。 union(a, b) 或 a.union(b) 应该返回包含结果的新集合实例。
 
+```
 class XSet extends Set { union(...sets) {
 
 return XSet.union(this, ...sets)
@@ -8984,6 +9158,7 @@ return powerSet;
 }
 
 }
+```
 
 1.  WeakSet
 
@@ -8995,12 +9170,15 @@ API 也是 Set 的子集。 WeakSet 中的“weak”（弱），描述的是 Jav
 
 可以使用 new 关键字实例化一个空的 WeakSet ：
 
+```
 const ws = new WeakSet();
+```
 
 弱集合中的值只能是 Object 或者继承自 Object 的类型，尝试使用非对象设置值会抛出 TypeError 。
 
 如果想在初始化时填充弱集合，则构造函数可以接收一个可迭代对 象，其中需要包含有效的值。可迭代对象中的每个值都会按照迭代顺序插入到新实例中：
 
+```
 // 使用数组初始化弱集合
 
 const ws1 = new WeakSet(\[val1, val2, val3\]);
@@ -9022,9 +9200,11 @@ typeof ws2;
 // 原始值可以先包装成对象再用作值
 
 const stringVal = new String("val1"); const ws3 = new WeakSet(\[stringVal\]); alert(ws3.has(stringVal)); // true
+```
 
 初始化之后可以使用 add() 再添加新值，可以使用 has() 查询，还可以使用 delete() 删除：
 
+```
 const ws = new WeakSet();
 
 const val1 = {id: 1}, val2 = {id: 2};
@@ -9035,8 +9215,11 @@ ws.add(val1)
 
 .add(val2);
 
+```
+
 add() 方法返回弱集合实例，因此可以把多个操作连缀起来，包括初始化声明：
 
+```
 const ws = new WeakSet().add(val1); ws.add(val2)
 
 .add(val3); alert(ws.has(val1)); // true
@@ -9044,6 +9227,7 @@ const ws = new WeakSet().add(val1); ws.add(val2)
 alert(ws.has(val2)); // true
 
 alert(ws.has(val3)); // true
+```
 
 2.  弱值
 
@@ -9051,14 +9235,17 @@ WeakSet 中“weak”表示弱集合的值是“弱弱地拿着”的。意思�
 
 来看下面的例子：
 
+```
 const ws = new WeakSet();
 
 ws.add({});
+```
 
 add() 方法初始化了一个新对象，并将它用作一个值。因为没有指向这个对象的其他引用，所以当这行代码执行完成后，这个对象值就会被当作垃圾回收。然后，这个值就从弱集合中消失了，使其成为一个空集 合。
 
 再看一个稍微不同的例子：
 
+```
 const ws = new WeakSet();
 
 const container = { val: {}
@@ -9070,6 +9257,7 @@ ws.add(container.val); function removeReference() {
 container.val = null;
 
 }
+```
 
 这一次， container 对象维护着一个对弱集合值的引用，因此这个对象值不会成为垃圾回收的目标。不过，如果调用了 removeReference() ，就会摧毁值对象的最后一个引用，垃圾回收程序就可以把这个值清理掉。
 
@@ -9085,6 +9273,7 @@ WeakSet 之所以限制只能用对象作为值，是为了保证只有通过值
 
 来看下面的例子，这里使用了一个普通 Set ：
 
+```
 const disabledElements = new Set();
 
 const loginButton = document.querySelector('#login');
@@ -9092,6 +9281,7 @@ const loginButton = document.querySelector('#login');
 // 通过加入对应集合，给这个节点打上“禁用”标签
 
 disabledElements.add(loginButton);
+```
 
 这样，通过查询元素在不在 disabledElements 中，就可以知道它是不是被禁用了。不过，假如元素从 DOM 树中被删除了，它的引用却仍然
 
@@ -9099,6 +9289,7 @@ disabledElements.add(loginButton);
 
 为了让垃圾回收程序回收元素的内存，可以在这里使用 WeakSet ：
 
+```
 const disabledElements = new WeakSet();
 
 const loginButton = document.querySelector('#login');
@@ -9106,6 +9297,7 @@ const loginButton = document.querySelector('#login');
 // 通过加入对应集合，给这个节点打上“禁用”标签
 
 disabledElements.add(loginButton);
+```
 
 这样，只要 WeakSet 中任何元素从 DOM 树中被删除，垃圾回收程序就可以忽略其存在，而立即释放其内存（假设没有其他地方引用这个对
 
@@ -9129,6 +9321,7 @@ Map Set
 
 of 循环：
 
+```
 let iterableThings = \[ Array.of(1, 2),
 
 typedArr = Int16Array.of(3, 4), new Map(\[\[5, 6\], \[7, 8\]\]),
@@ -9140,9 +9333,11 @@ new Set(\[9, 10\])
 for (const iterableThing of iterableThings) { for (const x of iterableThing) {
 
 console.log(x);
+```
 
 这也意味着所有这些类型都兼容扩展操作符。扩展操作符在对可迭代对象执行浅复制时特别有用，只需简单的语法就可以复制整个对象：
 
+```
 let arr1 = \[1, 2, 3\];
 
 let arr2 = \[...arr1\];
@@ -9152,23 +9347,29 @@ console.log(arr1); // \[1, 2, 3\]
 console.log(arr2); // \[1, 2, 3\]
 
 console.log(arr1 === arr2); // false
+```
 
 对于期待可迭代对象的构造函数，只要传入一个可迭代对象就可以实现复制：
 
+```
 let map1 = new Map(\[\[1, 2\], \[3, 4\]\]); let map2 = new Map(map1);
+```
 
 浅复制意味着只会复制对象引用：
 
+```
 let arr1 = \[{}\];
 
 let arr2 = \[...arr1\];
 
 arr1\[0\].foo = 'bar'; console.log(arr2\[0\]); // { foo: 'bar' }
+```
 
 上面的这些类型都支持多种构建方法，比如 Array.of() 和
 
 Array.from() 静态方法。在与扩展操作符一起使用时，可以非常方便地实现互操作：
 
+```
 let arr1 = \[1, 2, 3\];
 
 // 把数组复制到定型数组
@@ -9181,6 +9382,7 @@ let set = new Set(typedArr2); console.log(set); // Set {1, 2, 3}
 // 把集合复制回数组
 
 let arr2 = \[...set\]; console.log(arr2); // \[1, 2, 3\]
+```
 
 2.  小结
 
