@@ -24602,7 +24602,7 @@ DOM Mutation Observers：定义基于 DOM 变化触发回调的接口。这个�
 
 > 注意 比较老旧的浏览器（如 IE8）对本章内容支持有限。如果你的项目要兼容这些低版本浏览器，在使用本章介绍的 API 之前先确认浏览器的支持情况。推荐参考 Can I Use 网站。
 
-DOM 的演进
+## 16.1 DOM 的演进
 
 DOM2 和 DOM3 Core 模块的目标是扩展 DOM API，满足 XML 的所有需求并提供更好的错误处理和特性检测。很大程度上，这意味着支持 XML 命名空间的概念。DOM2 Core 没有新增任何类型，仅仅在 DOM1 Core 基础上增加了一些方法和属性。DOM3 Core 则除了增强原有类型，也新增了一些新类型。
 
@@ -24610,7 +24610,7 @@ DOM2 和 DOM3 Core 模块的目标是扩展 DOM API，满足 XML 的所有需求
 
 > 注意 本章只讨论浏览器实现的 DOM API，不会提及未被浏览器实现的。
 
-1.  XML 命名空间
+### 16.1.1 XML 命名空间
 
 XML 命名空间可以实现在一个格式规范的文档中混用不同的 XML
 
@@ -24622,28 +24622,26 @@ XHTML 中才支持，HTML 并不支持。因此，本节的示例使用 XHTML。
 
 [是](http://www.w3.org/1999/xhtml) ["http://www.w3.org/1999/xhtml"](http://www.w3.org/1999/xhtml) ，应该包含在任何格式规范的 XHTML 页面的`<html>`元素中，如下所示：
 
-```
-<html xmlns[=](http://www.w3.org/1999/xhtml)"http://www.w3.org/1999/xhtml"\>
+```html
+<html xmlns[=](http://www.w3.org/1999/xhtml)"http://www.w3.org/1999/xhtml">
 
-`<head>`
-
+<head>
 <title>Example XHTML page</title>
 
 </head>
-
-`<body>`
+<body>
 
 Hello world!
 
-`</body>`
+</body>
 
-`</html>`
+</html>
 ```
 
 对这个例子来说，所有元素都默认属于 XHTML 命名空间。可以使用 xmlns 给命名空间创建一个前缀，格式为“ xmlns: 前缀 ”，如下面的例子所示：
 
-```
-<xhtml:html xmlns:xhtml[=](http://www.w3.org/1999/xhtml)"http://www.w3.org/1999/xhtml"\>
+```xml
+<xhtml:html xmlns:xhtml[=](http://www.w3.org/1999/xhtml)"http://www.w3.org/1999/xhtml">
 
 <xhtml:head>
 
@@ -24660,8 +24658,8 @@ Hello world!
 
 这里为 XHTML 命名空间定义了一个前缀 xhtml ，同时所有 XHTML 元素都必须加上这个前缀。为避免混淆，属性也可以加上命名空间前缀，比如：
 
-```
-<xhtml:html xmlns:xhtml[=](http://www.w3.org/1999/xhtml)"http://www.w3.org/1999/xhtml"\>
+```xml
+<xhtml:html xmlns:xhtml[=](http://www.w3.org/1999/xhtml)"http://www.w3.org/1999/xhtml">
 
 <xhtml:head>
 
@@ -24669,7 +24667,7 @@ Hello world!
 
 </xhtml:head>
 
-<xhtml:body xhtml:class="home"\> Hello world!
+<xhtml:body xhtml:class="home"> Hello world!
 
 </xhtml:body>
 
@@ -24678,28 +24676,26 @@ Hello world!
 
 这里的 class 属性被加上了 xhtml 前缀。如果文档中只使用一种 XML 语言，那么命名空间前缀其实是多余的，只有一个文档混合使用多种 XML 语言时才有必要。比如下面这个文档就使用了 XHTML 和 SVG 两种语言：
 
-```
-<html xmlns[=](http://www.w3.org/1999/xhtml)"http://www.w3.org/1999/xhtml"\>
+```xml
+<html xmlns[=](http://www.w3.org/1999/xhtml)"http://www.w3.org/1999/xhtml">
 
-`<head>`
-
+<head>
 <title>Example XHTML page</title>
 
 </head>
-
-`<body>`
+<body>
 
 <svg xmlns[=](http://www.w3.org/2000/svg)"http://www.w3.org/2000/svg" version="1.1"
 
-viewBox="0 0 100 100" style="width:100\%; height:100\%"\>
+viewBox="0 0 100 100" style="width:100%; height:100%">
 
 <rect x="0" y="0" width="100" height="100" style="fill:red" />
 
 </svg>
 
-`</body>`
+</body>
 
-`</html>`
+</html>
 ```
 
 在这个例子中，通过给 <svg> 元素设置自己的命名空间，将其标识为当前文档的外来元素。这样一来， <svg> 元素及其属性，包括它的所有后代都会被认为属
@@ -24716,52 +24712,39 @@ prefix ，命名空间前缀，如果未指定则为 null 。
 
 在节点使用命名空间前缀的情况下， nodeName 等于 prefix
 
-\+ ":" \+ localName 。比如下面这个例子：
+- ":" + localName 。比如下面这个例子：
 
-```
-<html xmlns[=](http://www.w3.org/1999/xhtml)"http://www.w3.org/1999/xhtml"\>
+```xml
+<html xmlns[=](http://www.w3.org/1999/xhtml)"http://www.w3.org/1999/xhtml">
 
-`<head>`
-
+<head>
 <title>Example XHTML page</title>
 
 </head>
-
-`<body>`
+<body>
 
 <s:svg xmlns:s[=](http://www.w3.org/2000/svg)"http://www.w3.org/2000/svg" version="1.1"
 
-viewBox="0 0 100 100" style="width:100\%; height:100\%"\>
+viewBox="0 0 100 100" style="width:100%; height:100%">
 
 <s:rect x="0" y="0" width="100" height="100" style="fill:red" />
 
 </s:svg>
 
-`</body>`
+</body>
 
-`</html>`
+</html>
 ```
 
-其中的`<html>`元素的 localName 和 tagName 都是 "html" ， namespaceURL
-
-[是](http://www.w3.org/1999/xhtml) "http://www.w3.org/1999/xhtml" ， 而 prefix 是
-
-null 。对于 <s:svg> 元素， localName 是 "svg" ，
-
-tagName 是 "s:svg" ， namespaceURI
-
-[是](http://www.w3.org/2000/svg) ["https://www.w3.org/2000/svg"](http://www.w3.org/2000/svg) ， 而 prefix
-
-是 "s" 。
+其中的`<html>`元素的 localName 和 tagName 都是 "html" ， namespaceURL[是](http://www.w3.org/1999/xhtml) "http://www.w3.org/1999/xhtml" ， 而 prefix 是 null 。对于 <s:svg> 元素， localName 是 "svg" ，tagName 是 "s:svg" ， namespaceURI[是](http://www.w3.org/2000/svg) ["https://www.w3.org/2000/svg"](http://www.w3.org/2000/svg) ， 而 prefix 是 "s" 。
 
 DOM3 进一步增加了如下与命名空间相关的方法： isDefaultNamespace(namespaceURI) ，返回布尔值，表示 namespaceURI 是否为节点的默认命名空间； lookupNamespaceURI(prefix) ，返回给定 prefix 的命名空间 URI；
 
-lookupPrefix(namespaceURI) ，返回给定
-
-namespaceURI 的前缀。
+lookupPrefix(namespaceURI) ，返回给定 namespaceURI 的前缀。
 
 对前面的例子，可以执行以下代码：
 
+```js
 console.log(document.body.isDefaultNamespace[(](http://www.w3.org/1999/) ["http://www.w3.org/1999/](http://www.w3.org/1999/)
 
 xhtml")); // true
@@ -24769,6 +24752,7 @@ xhtml")); // true
 // 假设 svg 包含对<s:svg>元素的引用
 
 console.log(svg.lookupPrefix[(](http://www.w3.o/)"http://www.w3.o rg/2000/svg")); // "s" console.log(svg.lookupNamespaceURI("s")); [// "http://www.w3.org/2000/svg"](http://www.w3.org/2000/svg)
+```
 
 这些方法主要用于通过元素查询前面和命名空间 URI，以确定元素与文档的关系。
 
@@ -24784,7 +24768,7 @@ getElementsByTagNameNS(namespaceURI, tagName) ，返回指定命名空间 namesp
 
 使用这些方法都需要传入相应的命名空间 URI（不是命名空间前缀），如下面的例子所示：
 
-```
+```js
 // 创建一个新 SVG 元素
 
 let svg = document.createElementNS[(](http://www.w3.org/2)"http://www.w3.org/2 000/svg", "svg");
@@ -24795,7 +24779,7 @@ let att = document.createAttributeNS("http://www.somewh ere.com", "random");
 
 // 获取所有 XHTML 元素
 
-let elems = document.getElementsByTagNameNS("http://www.w 3.org/1999/xhtml", "\*");
+let elems = document.getElementsByTagNameNS("http://www.w 3.org/1999/xhtml", "*");
 ```
 
 这些命名空间特定的方法只在文档中包含两个或两个以上命名空间时才有用。
@@ -24810,9 +24794,7 @@ getAttributeNodeNS(namespaceURI,
 
 localName) ，取得指定命名空间 namespaceURI 中名
 
-为 localName 的属性节点； getElementsByTagNameNS(namespaceURI, tagName) ，取得指定命名空间 namespaceURI 中标签名
-
-为 tagName 的元素的 NodeList ；
+为 localName 的属性节点； getElementsByTagNameNS(namespaceURI, tagName) ，取得指定命名空间 namespaceURI 中标签名为 tagName 的元素的 NodeList ；
 
 hasAttributeNS(namespaceURI, localName) ，返回布尔值，表示元素中是否有命名空间 namespaceURI 下名为 localName 的属性（注意，DOM2 Core 也添加不带命名空间的 hasAttribute() 方法）；
 
@@ -24830,23 +24812,17 @@ setAttributeNodeNS() 之外都只是多了一个命名空间参数。
 
 4.  NamedNodeMap 的变化
 
-NamedNodeMap 也增加了以下处理命名空间的方法。因为
-
-NamedNodeMap 主要表示属性，所以这些方法大都适用于属性：
+NamedNodeMap 也增加了以下处理命名空间的方法。因为 NamedNodeMap 主要表示属性，所以这些方法大都适用于属性：
 
 getNamedItemNS(namespaceURI, localName) ，取得指定命名空间 namespaceURI 中名为 localName 的 项；
 
-removeNamedItemNS(namespaceURI,
-
-localName) ，删除指定命名空间 namespaceURI 中名
-
-为 localName 的项；
+removeNamedItemNS(namespaceURI,localName) ，删除指定命名空间 namespaceURI 中名为 localName 的项；
 
 setNamedItemNS(node) ，为元素设置（添加）包含命名空间信息的节点。
 
 这些方法很少使用，因为通常都是使用元素来访问属性。
 
-2.  其他变化
+### 16.1.2 其他变化
 
 除命名空间相关的变化，DOM2 Core 还对 DOM 的其他部分做了一些更新。这些变化与 XML 命名空间无关，主要关注 DOM API 的完整性与可靠性。
 
@@ -24854,10 +24830,9 @@ setNamedItemNS(node) ，为元素设置（添加）包含命名空间信息的�
 
 DocumentType 新增了 3 个属性： publicId 、 systemId 和 internalSubset 。 publicId 、 systemId 属性表示文档类型声明中有效但无法使用 DOM1 API 访问的数据。比如下面这个 HTML 文档类型声明：
 
-```
-<!DOCTYPE HTML PUBLIC "-// W3C// DTD HTML 4.01// EN"
-
-["http://www.w3.org/TR/html4/strict.dtd">](http://www.w3.org/TR/html4/strict.dtd)
+```html
+<!DOCTYPE html PUBLIC "-// W3C// DTD HTML 4.01// EN" ["http://www.w3.org/TR/html4/strict.dtd">
+](http://www.w3.org/TR/html4/strict.dtd)
 ```
 
 其 publicId 是 "-// W3C// DTD HTML 4.01// EN" ， 而 systemId
@@ -24872,33 +24847,24 @@ console.log(document.doctype.publicId); console.log(document.doctype.systemId);
 
 internalSubset 用于访问文档类型声明中可能包含的额外定义，如下面的例子所示：
 
-```
-<!DOCTYPE html PUBLIC "-// W3C// DTD XHTML
-
-[1.0 Strict// EN"](http://www.w3.org/TR/xhtml1/DTD/xhtml1-) "http://www.w3.org/TR/xhtml1/DTD/xhtml1- strict.dtd"
-
-\[<!ELEMENT name (#PCDATA)>\] >
+```html
+<!DOCTYPE html PUBLIC "-// W3C// DTD XHTML [1.0 Strict// EN"](http://www.w3.org/TR/xhtml1/DTD/xhtml1-) "http://www.w3.org/TR/xhtml1/DTD/xhtml1- strict.dtd" [<!ELEMENT name (#PCDATA)>
+] >
 ```
 
 对于以上声明， document.doctype.internalSubset 会返回 "<!ELEMENT name (#PCDATA)>" 。HTML 文档中几乎不会涉及文档类型的内部子集，XML 文档中稍微常用一些。
 
 2.  Document 的变化
 
-Document 类型的更新中唯一跟命名空间无关的方法是
-
-importNode() 。这个方法的目的是从其他文档获取一个节点并导入到新文档，以便将其插入新文档。每个节点都有一个
-
-ownerDocument 属性，表示所属文档。如果调用
-
-appendChild() 方法时传入节点的 ownerDocument 不是指向当前文档，则会发生错误。而调用 importNode() 导入其他文档的节点会返回一个新节点，这个新节点的
-
-ownerDocument 属性是正确的。
+Document 类型的更新中唯一跟命名空间无关的方法是 importNode() 。这个方法的目的是从其他文档获取一个节点并导入到新文档，以便将其插入新文档。每个节点都有一个 ownerDocument 属性，表示所属文档。如果调用 appendChild() 方法时传入节点的 ownerDocument 不是指向当前文档，则会发生错误。而调用 importNode() 导入其他文档的节点会返回一个新节点，这个新节点的 ownerDocument 属性是正确的。
 
 importNode() 方法跟 cloneNode() 方法类似，同样接收两个参数：要复制的节点和表示是否同时复制子树的布尔值，返回结果是适合在当前文档中使用的新节点。下面看一个例子：
 
+```js
 let newNode = document.importNode(oldNode, true); // 导入节点及所有后代
 
 document.body.appendChild(newNode);
+```
 
 这个方法在 HTML 中使用得并不多，在 XML 文档中的使用会更多一些（第 22 章会深入讨论）。
 
@@ -24906,11 +24872,11 @@ DOM2 View 给 Document 类型增加了新属性 defaultView ，是一个指向�
 
 Opera 也支持这个属性。因此要确定拥有文档的窗口，可以使用以下代码：
 
+```js
 let parentWindow = document.defaultView || document.parentWindow;
+```
 
-除了上面这一个方法和一个属性，DOM2 Core 还针对
-
-document.implementation 对象增加了两个新方法：
+除了上面这一个方法和一个属性，DOM2 Core 还针对 document.implementation 对象增加了两个新方法：
 
 createDocumentType() 和 createDocument() 。前者用于创建 DocumentType 类型的新节点，接收 3 个参数：文档类型名称、 publicId 和 systemId 。比如，以下代码可以创建一个新的 HTML 4.01 严格型文档：
 
@@ -24920,21 +24886,15 @@ let doctype = document.implementation.createDocumentType("h tml",
 
 "http://www.w3.org/TR/html4/strict.dtd");
 
-已有文档的文档类型不可更改，因此
+已有文档的文档类型不可更改，因此 createDocumentType() 只在创建新文档时才会用到，而创建新文档要使用 createDocument() 方法。
 
-createDocumentType() 只在创建新文档时才会用到，而创
-
-建新文档要使用 createDocument() 方法。
-
-createDocument() 接收 3 个参数：文档元素的
-
-namespaceURI 、文档元素的标签名和文档类型。比如，下列代码可以创建一个空的 XML 文档：
+createDocument() 接收 3 个参数：文档元素的 namespaceURI 、文档元素的标签名和文档类型。比如，下列代码可以创建一个空的 XML 文档：
 
 let doc = document.implementation.createDocument("", "root", null);
 
 这个空文档没有命名空间和文档类型，只指定了 <root> 作为文档元素。要创建一个 XHTML 文档，可以使用以下代码：
 
-```
+```js
 let doctype = document.implementation.createDocumentType("h tml",
 
 "-// W3C// DTD XHTML 1.0 Strict//
@@ -24950,15 +24910,13 @@ let doc = document.implementation.createDocument("http:
 "html", doctype);
 ```
 
-这里使用了适当的命名空间和文档类型创建一个新 XHTML 文
-
-档。这个文档只有一个文档元素`<html>`，其他一切都需要另行添加。
+这里使用了适当的命名空间和文档类型创建一个新 XHTML 文档。这个文档只有一个文档元素`<html>`，其他一切都需要另行添加。
 
 DOM2 HTML 模块也为 document.implamentation 对象添加了 createHTMLDocument() 方法。使用这个方法可以创建一个完整的 HTML 文档，包含`<html>`、 `<head>` 、 <title> 和 `<body>` 元素。这个方法只接收一个参数，即新创建文档的标题（放到 <title> 元素中），返回一个新的 HTML 文档。比
 
 如：
 
-```
+```js
 let htmldoc = document.implementation.createHTMLDocument("N ew Doc");
 
 console.log(htmldoc.title); // "New Doc"
@@ -24972,31 +24930,35 @@ HTMLDocument 类型的实例，因此包括该类型所有相关的方法和属�
 
 3.  Node 的变化
 
-DOM3 新增了两个用于比较节点的方法： isSameNode() 和
-
-isEqualNode() 。这两个方法都接收一个节点参数，如果这个节点与参考节点相同或相等，则返回 true 。节点相同，意味着引用同一个对象；节点相等，意味着节点类型相同，拥有相等的属性（ nodeName 、 nodeValue 等），而且
+DOM3 新增了两个用于比较节点的方法： isSameNode() 和 isEqualNode() 。这两个方法都接收一个节点参数，如果这个节点与参考节点相同或相等，则返回 true 。节点相同，意味着引用同一个对象；节点相等，意味着节点类型相同，拥有相等的属性（ nodeName 、 nodeValue 等），而且
 
 attributes 和 childNodes 也相等（即同样的位置包含相等的值）。来看一个例子：
 
-```
-let div1 = document.createElement("div"); div1.setAttribute("class", "box");
+```js
+let div1 = document.createElement('div');
+div1.setAttribute('class', 'box');
 
-let div2 = document.createElement("div"); div2.setAttribute("class", "box");
+let div2 = document.createElement('div');
+div2.setAttribute('class', 'box');
 
 console.log(div1.isSameNode(div1)); // true console.log(div1.isEqualNode(div2)); // true console.log(div1.isSameNode(div2)); // false
 ```
 
-这里创建了包含相同属性的两个 <div> 元素。这两个元素相等，但不相同。
+这里创建了包含相同属性的两个 `<div>` 元素。这两个元素相等，但不相同。
 
 DOM3 也增加了给 DOM 节点附加额外数据的方法。
 
 setUserData() 方法接收 3 个参数：键、值、处理函数，用于给节点追加数据。可以像下面这样把数据添加到一个节点：
 
-document.body.setUserData("name", "Nicholas", function() {});
+```js
+document.body.setUserData('name', 'Nicholas', function () {});
+```
 
 然后，可以通过相同的键再取得这个信息，比如：
 
-let value = document.body.getUserData("name");
+```js
+let value = document.body.getUserData('name');
+```
 
 setUserData() 的处理函数会在包含数据的节点被复制、删除、重命名或导入其他文档的时候执行，可以在这时候决定如何处理用户数据。处理函数接收 5 个参数：表示操作类型的数值
 
@@ -25004,25 +24966,35 @@ setUserData() 的处理函数会在包含数据的节点被复制、删除、重
 
 名）、数据的键、数据的值、源节点和目标节点。删除节点时，源节点为 null ；除复制外，目标节点都为 null 。
 
-let div = document.createElement("div"); div.setUserData("name", "Nicholas", function(operation, key, value, src, dest) {
-
-if (operation == 1) { dest.setUserData(key, value, function()
-
-{}); }
-
+```js
+let div = document.createElement('div');
+div.setUserData('name', 'Nicholas', function (
+  operation,
+  key,
+  value,
+  src,
+  dest
+) {
+  if (operation == 1) {
+    dest.setUserData(key, value, function () {});
+  }
 });
 
-let newDiv = div.cloneNode(true); console.log(newDiv.getUserData("name")); // "Nicholas"
+let newDiv = div.cloneNode(true);
+console.log(newDiv.getUserData('name')); // "Nicholas"
+```
 
-这里先创建了一个 <div> 元素，然后给它添加了一些数据，包含用户的名字。在使用 cloneNode() 复制这个元素时，就会调用处理函数，从而将同样的数据再附加给复制得到的目标节点。然后，在副本节点上调用 getUserData() 能够取得附加到源节点上的数据。
+这里先创建了一个 `<div>` 元素，然后给它添加了一些数据，包含用户的名字。在使用 cloneNode() 复制这个元素时，就会调用处理函数，从而将同样的数据再附加给复制得到的目标节点。然后，在副本节点上调用 getUserData() 能够取得附加到源节点上的数据。
 
 4.  内嵌窗格的变化
 
 DOM2 HTML 给 HTMLIFrameElement （即 <iframe> ，内嵌窗格）类型新增了一个属性，叫 contentDocument 。这个属性包含代表子内嵌窗格中内容的 document 对象的指针。下面的例子展示了如何使用这个属性：
 
-let iframe = document.getElementById("myIframe");
+```js
+let iframe = document.getElementById('myIframe');
 
 let iframeDoc = iframe.contentDocument;
+```
 
 contentDocument 属性是 Document 的实例，拥有所有文档属性和方法，因此可以像使用其他 HTML 文档一样使用它。还有一个属性 contentWindow ，返回相应窗格的 window 对象，这个对象上有一个 document 属性。所有现代浏览器都支持
 
@@ -25030,13 +25002,13 @@ contentDocument 和 contentWindow 属性。
 
 > 注意 跨源访问子内嵌窗格的 document 对象会受到安全限制。如果内嵌窗格中加载了不同域名（或子域名）的页面，或者该页面使用了不同协议，则访问其 document 对象会抛出错误。
 
-1.  样式
+## 16.2 样式
 
 HTML 中的样式有 3 种定义方式：外部样式表（通过`<link>`元素）、文档样式表（使用 `<style>`元素）和元素特定样式（使用
 
 style 属性）。DOM2 Style 为这 3 种应用样式的机制都提供了 API。
 
-1.  存取元素样式
+### 16.2.1 存取元素样式
 
 任何支持 style 属性的 HTML 元素在 JavaScript 中都会有一个对应的 style 属性。这个 style 属性是 CSSStyleDeclaration 类型的实例，其中包含通过 HTML style 属性为元素设置的所有样式信息，但不包含通过层叠机制从文档样式和外部样式中继承来的样式。HTML style 属性中的 CSS 属性在 JavaScript style 对象中都有对应的属性。因为 CSS 属性名使用连字符表示法（用连字符分隔两个单词，如 background-image ），所以在 JavaScript 中这些属性必须转换为驼峰大小写形式（如 backgroundImage ）。下表给出了几个常用的 CSS 属性与 style 对象中等价属性的对比。
 大多数属性名会这样直接转换过来。但有一个 CSS 属性名不能直接转换，它就是 float 。因为 float 是 JavaScript 的保留字，所以不能用作属性名。DOM2 Style 规定它在 style 对象中对应的属性应该是 cssFloat 。
@@ -25045,19 +25017,22 @@ style 属性）。DOM2 Style 为这 3 种应用样式的机制都提供了 API�
 
 JavaScript 来设置样式。来看下面的例子：
 
-let myDiv = document.getElementById("myDiv");
+```js
+let myDiv = document.getElementById('myDiv');
 
 // 设置背景颜色
 
-myDiv.style.backgroundColor = "red";
+myDiv.style.backgroundColor = 'red';
 
 // 修改大小
 
-myDiv.style.width = "100px"; myDiv.style.height = "200px";
+myDiv.style.width = '100px';
+myDiv.style.height = '200px';
 
 // 设置边框
 
-myDiv.style.border = "1px solid black";
+myDiv.style.border = '1px solid black';
+```
 
 像这样修改样式时，元素的外观会自动更新。
 
@@ -25065,15 +25040,19 @@ myDiv.style.border = "1px solid black";
 
 通过 style 属性设置的值也可以通过 style 对象获取。比如下面的 HTML：
 
-<div id="myDiv" style="background-color: blue; width: 10px; height: 25px"\></div>
+```js
+<div id="myDiv" style="background-color: blue; width: 10px; height: 25px"></div>
+```
 
 这个元素 style 属性的值可以像这样通过代码获取：
 
+```js
 console.log(myDiv.style.backgroundColor); // "blue"
 
 console.log(myDiv.style.width); // "10px"
 
 console.log(myDiv.style.height); // "25px"
+```
 
 如果元素上没有 style 属性，则 style 对象包含所有可能的
 
@@ -25095,9 +25074,7 @@ getPropertyPriority(propertyName) ，如果 CSS 属性 propertyName 使用了 !i
 
 回 "important" ，否则返回空字符串。
 
-getPropertyValue(propertyName) ，返回属性
-
-propertyName 的字符串值。
+getPropertyValue(propertyName) ，返回属性 propertyName 的字符串值。
 
 item(index) ，返回索引为 index 的 CSS 属性名。 removeProperty(propertyName) ，从样式中删除 CSS 属性 propertyName 。
 
@@ -25109,19 +25086,22 @@ cssText 返回 style 属性 CSS 代码在浏览器内部的表示。在写模式
 
 cssText 的使用：
 
-myDiv.style.cssText = "width: 25px; height: 100px; background-color: green"; console.log(myDiv.style.cssText);
+```js
+myDiv.style.cssText = 'width: 25px; height: 100px; background-color: green';
+console.log(myDiv.style.cssText);
+```
 
 设置 cssText 是一次性修改元素多个样式最快捷的方式，因为所有变化会同时生效。
 
 length 属性是跟 item() 方法一起配套迭代 CSS 属性用的。此时， style 对象实际上变成了一个集合，也可以用中括号代替 item() 取得相应位置的 CSS 属性名，如下所示：
 
+```js
 for (let i = 0, len = myDiv.style.length; i < len; i++) {
+  console.log(myDiv.style[i]); // 或 者 用
 
-console.log(myDiv.style\[i\]); // 或 者 用
-
-myDiv.style.item(i)
-
+  myDiv.style.item(i);
 }
+```
 
 使用中括号或者 item() 都可以取得相应位置的 CSS 属性名
 
@@ -25131,17 +25111,18 @@ myDiv.style.item(i)
 
 getPropertyValue() 以取得属性的值，如下面的例子所示：
 
+```js
 let prop, value, i, len;
 
 for (i = 0, len = myDiv.style.length; i < len; i++) {
+  prop = myDiv.style[i]; // 或 者 用
 
-prop = myDiv.style\[i\]; // 或 者 用
+  myDiv.style.item(i);
 
-myDiv.style.item(i)
-
-value = myDiv.style.getPropertyValue(prop); console.log('prop: \${value}');
-
+  value = myDiv.style.getPropertyValue(prop);
+  console.log('prop: ${value}');
 }
+```
 
 getPropertyValue() 方法返回 CSS 属性值的字符串表示。如果需要更多信息，则可以通过 getPropertyCSSValue() 获
 
@@ -25151,21 +25132,23 @@ cssValueType 。前者的值与 getPropertyValue() 方法返回的值一样；�
 
 表继承的值， 1 代表原始值， 2 代表列表， 3 代表自定义值）。1 下面的代码演示了如何输出 CSS 属性值和值类型：
 
+```js
 let prop, value, i, len;
 
 for (i = 0, len = myDiv.style.length; i < len; i++) {
+  prop = myDiv.style[i]; // alternately, myDiv.style.item(i)
 
-prop = myDiv.style\[i\]; // alternately, myDiv.style.item(i)
+  value = myDiv.style.getPropertyCSSValue(prop);
 
-value = myDiv.style.getPropertyCSSValue(prop);
-
-console.log('prop: \${value.cssText} (\${value.cssValueType})');
-
+  console.log('prop: ${value.cssText} (${value.cssValueType})');
 }
+```
 
 removeProperty() 方法用于从元素样式中删除指定的 CSS 属性。使用这个方法删除属性意味着会应用该属性的默认（从其他样式表层叠继承的）样式。例如，可以像下面这样删除 style 属性中设置的 border 样式：
 
-myDiv.style.removeProperty("border");
+```js
+myDiv.style.removeProperty('border');
+```
 
 在不确定给定 CSS 属性的默认值是什么的时候，可以使用这个方法。只要从 style 属性中删除，就可以使用默认值。
 
@@ -25181,45 +25164,40 @@ getComputedStyle() 方法返回一个
 
 CSSStyleDeclaration 对象（与 style 属性的类型一样），包含元素的计算样式。假设有如下 HTML 页面：
 
-```
+```html
 <!DOCTYPE html>
 
 <html>
+  <head>
+    <title>Computed Styles Example</title>
 
-`<head>`
+    <style type="text/css">
+      #myDiv {
+        background-color: blue;
+        width: 100px;
 
-<title>Computed Styles Example</title>
-
-<style type="text/css"\>
-
-#myDiv {
-
-background-color: blue; width: 100px;
-
-height: 200px;
-
-}
-
-</style>
-
-</head>
-
-`<body>`
-
-<div id="myDiv" style="background-color: red; border: 1px solid black"\></div>
-
-`</body>`
-
-`</html>`
+        height: 200px;
+      }
+    </style>
+  </head>
+  <body>
+    <div
+      id="myDiv"
+      style="background-color: red; border: 1px solid black"
+    ></div>
+  </body>
+</html>
 ```
 
-这里的 <div> 元素从文档样式表（ `<style>`元素）和自己的
+这里的 `<div>` 元素从文档样式表（ `<style>`元素）和自己的
 
 style 属性获取了样式。此时，这个元素的 style 对象中包含 backgroundColor 和 border 属性，但不包含（通过样式
 
 表规则应用的） width 和 height 属性。下面的代码从这个元素获取了计算样式：
 
-let myDiv = document.getElementById("myDiv"); let computedStyle = document.defaultView.getComputedStyle(myDiv, null);
+```js
+let myDiv = document.getElementById('myDiv');
+let computedStyle = document.defaultView.getComputedStyle(myDiv, null);
 
 console.log(computedStyle.backgroundColor);
 
@@ -25236,28 +25214,17 @@ console.log(computedStyle.height);
 console.log(computedStyle.border);
 
 // "1px solid black"（在某些浏览器中）
+```
 
-在取得这个元素的计算样式时，得到的背景颜色是 "red" ，宽度为 "100px" ，高度为 "200px" 。背景颜色不是 "blue" ，因为元素样式覆盖了它。 border 属性不一定返回样式表中实际的 border 规则（某些浏览器会）。这种不一致性是因浏览器解释简写样式的方式造成的，比如 border 实际上会设置一组别的属性。在设置 border 时，实际上设置的是 4 条边的线条宽度、颜色和样式（ border-left-width 、 border-top-
+在取得这个元素的计算样式时，得到的背景颜色是 "red" ，宽度为 "100px" ，高度为 "200px" 。背景颜色不是 "blue" ，因为元素样式覆盖了它。 border 属性不一定返回样式表中实际的 border 规则（某些浏览器会）。这种不一致性是因浏览器解释简写样式的方式造成的，比如 border 实际上会设置一组别的属性。在设置 border 时，实际上设置的是 4 条边的线条宽度、颜色和样式（ border-left-width 、 border-top-color 、 border-bottom-style 等）。因此，即使 computedStyle.border 在所有浏览器中都不会返回值，computedStyle.borderLeftWidth 也一定会返回值。
 
-color 、 border-bottom-style 等）。因此，即使
+> 注意 浏览器虽然会返回样式值，但返回值的格式不一定相同。比如，Firefox 和 Safari 会把所有颜色值转换为 RGB 格式（如红色会变成 rgb(255,0,0) ），而 Opera 把所有颜色转换为十六进制表示法（如红色会变成 #ff0000 ）。因此在使用 getComputedStyle() 时一定要多测试几个浏览器。
 
-computedStyle.border 在所有浏览器中都不会返回值，
+关于计算样式要记住一点，在所有浏览器中计算样式都是只读的，不能修改 getComputedStyle() 方法返回的对象。而且，计算样式还包含浏览器内部样式表中的信息。因此有默认值的 CSS 属性会出现在计算样式里。例如， visibility 属性在所有浏览器中都有默认值，但这个值因实现而不同。有些浏览器会把 visibility 的默认值设置为 "visible" ，而另一些将其设置为 "inherit" 。不能假设 CSS 属性的默认值在所有浏览器中都一样。如果需要元素具有特定的默认值，那么一定要在样式表中手动指定。
 
-computedStyle.borderLeftWidth 也一定会返回值。
+1 不过， getPropertyCSSValue() 方法已经被废弃，虽然可能有浏览器还支持，但随时有可能被删除。建议开发中使用 getPropertyValue() 。——译者注
 
-> 注意 浏览器虽然会返回样式值，但返回值的格式不一定相同。比如，Firefox 和 Safari 会把所有颜色值转换为 RGB 格式
-
-（如红色会变成 rgb(255,0,0) ），而 Opera 把所有颜色转换为十六进制表示法（如红色会变成 #ff0000 ）。因此在使用 getComputedStyle() 时一定要多测试几个浏览器。
-
-关于计算样式要记住一点，在所有浏览器中计算样式都是只读的，不能修改 getComputedStyle() 方法返回的对象。而
-
-且，计算样式还包含浏览器内部样式表中的信息。因此有默认值的 CSS 属性会出现在计算样式里。例如， visibility 属性在所有浏览器中都有默认值，但这个值因实现而不同。有些浏览器会把 visibility 的默认值设置为 "visible" ，而另一些将其设置为 "inherit" 。不能假设 CSS 属性的默认值在所有浏览器中都一样。如果需要元素具有特定的默认值，那么一定要在样式表中手动指定。
-
-1 不过， getPropertyCSSValue() 方法已经被废弃，虽然可能有浏览器还支持，但随时有可能被删除。建议开发中使用
-
-getPropertyValue() 。——译者注
-
-2.  操作样式表
+### 16.2.2 操作样式表
 
 CSSStyleSheet 类型表示 CSS 样式表，包括使用`<link>`元素和通过 `<style>`元素定义的样式表。注意，这两个元素本身分别是 HTMLLinkElement 和 HTMLStyleElement 。
 
@@ -25267,9 +25234,7 @@ CSSStyleSheet 类型继承 StyleSheet ，后者可用作非 CSS 样式表的基�
 
 disabled ，布尔值，表示样式表是否被禁用了（这个属性是可读写的，因此将它设置为 true 会禁用样式表）。
 
-href ，如果是使用`<link>`包含的样式表，则返回样式表的
-
-URL，否则返回 null 。
+href ，如果是使用`<link>`包含的样式表，则返回样式表的 URL，否则返回 null 。
 
 media ，样式表支持的媒体类型集合，这个集合有一个
 
@@ -25277,9 +25242,9 @@ length 属性和一个 item() 方法，跟所有 DOM 集合一样。同样跟所
 
 ownerNode ，指向拥有当前样式表的节点，在 HTML 中要么是
 
-<link> 元素要么是 `<style>`元素（在XML中可以是处理指令）。如果当前样式表是通过 \@import 被包含在另一个样式表中，则这个属性值为 null 。
+<link> 元素要么是 `<style>`元素（在XML中可以是处理指令）。如果当前样式表是通过 @import 被包含在另一个样式表中，则这个属性值为 null 。
 
-parentStyleSheet ，如果当前样式表是通过 \@import 被包含在另一个样式表中，则这个属性指向导入它的样式表。
+parentStyleSheet ，如果当前样式表是通过 @import 被包含在另一个样式表中，则这个属性指向导入它的样式表。
 
 title ， ownerNode 的 title 属性。
 
@@ -25289,7 +25254,7 @@ type ，字符串，表示样式表的类型。对 CSS 样式表来说，就是 
 
 cssRules ，当前样式表包含的样式规则的集合。
 
-ownerRule ，如果样式表是使用 \@import 导入的，则指向导入规则；否则为 null 。
+ownerRule ，如果样式表是使用 @import 导入的，则指向导入规则；否则为 null 。
 
 deleteRule(index) ，在指定位置删除 cssRules 中的规则。
 
@@ -25297,11 +25262,13 @@ insertRule(rule, index) ，在指定位置向 cssRules 中插入规则。
 
 document.styleSheets 表示文档中可用的样式表集合。这个集合的 length 属性保存着文档中样式表的数量，而每个样式表都可以使用中括号或 item() 方法获取。来看这个例子：
 
-let sheet = null; for (let i = 0, len =
-
-document.styleSheets.length; i < len; i++) { sheet = document.styleSheets\[i\]; console.log(sheet.href);
-
+```js
+let sheet = null;
+for (let i = 0, len = document.styleSheets.length; i < len; i++) {
+  sheet = document.styleSheets[i];
+  console.log(sheet.href);
 }
+```
 
 以上代码输出了文档中每个样式表的 href 属性（ `<style>`元素没有这个属性）。
 
@@ -25317,11 +25284,11 @@ CSSStyleSheet 对象。DOM 在这两个元素上暴露了 sheet 属性，其中�
 
 1.  CSS 规则
 
-CSSRule 类型表示样式表中的一条规则。这个类型也是一个通用基类，很多类型都继承它，但其中最常用的是表示样式信息的 CSSStyleRule （其他 CSS 规则还有 \@import 、 \@font-
+CSSRule 类型表示样式表中的一条规则。这个类型也是一个通用基类，很多类型都继承它，但其中最常用的是表示样式信息的 CSSStyleRule （其他 CSS 规则还有 @import 、 @font-
 
-face 、 \@page 和 \@charset 等，不过这些规则很少需要使用脚本来操作）。以下是 CSSStyleRule 对象上可用的属性。
+face 、 @page 和 @charset 等，不过这些规则很少需要使用脚本来操作）。以下是 CSSStyleRule 对象上可用的属性。
 
-cssText ，返回整条规则的文本。这里的文本可能与样式表中实际的文本不一样，因为浏览器内部处理样式表的方式也不一样。Safari 始终会把所有字母都转换为小写。 parentRule ，如果这条规则被其他规则（如 \@media ）包含，则指向包含规则，否则就是 null 。 parentStyleSheet ，包含当前规则的样式表。 selectorText ，返回规则的选择符文本。这里的文本可能与样式表中实际的文本不一样，因为浏览器内部处理样式表的方式也不一样。这个属性在 Firefox、Safari、Chrome 和 IE 中是只读的，在 Opera 中是可以修改的。
+cssText ，返回整条规则的文本。这里的文本可能与样式表中实际的文本不一样，因为浏览器内部处理样式表的方式也不一样。Safari 始终会把所有字母都转换为小写。 parentRule ，如果这条规则被其他规则（如 @media ）包含，则指向包含规则，否则就是 null 。 parentStyleSheet ，包含当前规则的样式表。 selectorText ，返回规则的选择符文本。这里的文本可能与样式表中实际的文本不一样，因为浏览器内部处理样式表的方式也不一样。这个属性在 Firefox、Safari、Chrome 和 IE 中是只读的，在 Opera 中是可以修改的。
 
 style ，返回 CSSStyleDeclaration 对象，可以设置
 
@@ -25339,23 +25306,25 @@ style 。 cssText 属性与 style.cssText 类似，不过并不完全一样。�
 
 或修改规则的样式。比如下面这个 CSS 规则：
 
+```css
 div.box {
+  background-color: blue;
+  width: 100px;
 
-background\-color: blue; width: 100px;
-
-height: 200px;
-
+  height: 200px;
 }
+```
 
 假设这条规则位于页面中的第一个样式表中，而且是该样式表中唯一一条 CSS 规则，则下列代码可以获取它的所有信息：
 
-let sheet = document.styleSheets\[0\];
+```js
+let sheet = document.styleSheets[0];
 
 let rules = sheet.cssRules || sheet.rules;
 
 // 取得规则集合
 
-let rule = rules\[0\];
+let rule = rules[0];
 
 // 取得第一条规则
 
@@ -25378,30 +25347,33 @@ console.log(rule.style.width);
 console.log(rule.style.height);
 
 // "200px"
+```
 
-使用这些接口，可以像确定元素 style 对象中包含的样式一 样，确定一条样式规则的样式信息。与元素的场景一样，也可以
+使用这些接口，可以像确定元素 style 对象中包含的样式一 样，确定一条样式规则的样式信息。与元素的场景一样，也可以修改规则中的样式，如下所示：
 
-修改规则中的样式，如下所示：
-
-let sheet = document.styleSheets\[0\];
+```js
+let sheet = document.styleSheets[0];
 
 let rules = sheet.cssRules || sheet.rules;
 
 // 取得规则集合
 
-let rule = rules\[0\];
+let rule = rules[0];
 
 // 取得第一条规则
 
-rule.style.backgroundColor = "red"
+rule.style.backgroundColor = 'red';
+```
 
-注意，这样修改规则会影响到页面上所有应用了该规则的元素。如果页面上有两个 <div> 元素有 "box" 类，则这两个元素都会受到这个修改的影响。
+注意，这样修改规则会影响到页面上所有应用了该规则的元素。如果页面上有两个 `<div>` 元素有 "box" 类，则这两个元素都会受到这个修改的影响。
 
 2.  创建规
 
 DOM 规定，可以使用 insertRule() 方法向样式表中添加新规则。这个方法接收两个参数：规则的文本和表示插入位置的索引值。下面是一个例子：
 
-sheet.insertRule("body { background-color: silver }", 0); // 使用 DOM 方法
+```js
+sheet.insertRule('body { background-color: silver }', 0); // 使用 DOM 方法
+```
 
 这个例子插入了一条改变文档背景颜色的规则。这条规则是作为样式表的第一条规则（位置 0）插入的，顺序对规则层叠是很重要的。
 
@@ -25413,7 +25385,9 @@ sheet.insertRule("body { background-color: silver }", 0); // 使用 DOM 方法
 
 则，可以这样做：
 
+```
 sheet.deleteRule(0); // 使用 DOM 方法
+```
 
 与添加规则一样，删除规则并不是 Web 开发中常见的做法。考虑到可能影响 CSS 层叠的效果，删除规则时要慎重。
 
@@ -25515,24 +25489,17 @@ DOM2 Traversal and Range 模块定义了两个类型用于辅助顺序遍历 DOM
 
 如前所述，DOM 遍历是对 DOM 结构的深度优先遍历，至少允许朝两个方向移动（取决于类型）。遍历以给定节点为根，不能在 DOM 中向上超越这个根节点。来看下面的 HTML：
 
-```
+```html
 <!DOCTYPE html>
 
 <html>
-
-`<head>`
-
-<title>Example</title>
-
-</head>
-
-`<body>`
-
-<p><b>Hello</b> world!</p>
-
-`</body>`
-
-`</html>`
+  <head>
+    <title>Example</title>
+  </head>
+  <body>
+    <p><b>Hello</b> world!</p>
+  </body>
+</html>
 ```
 
 这段代码构成的 DOM 树如图 16-5 所示。图 16-5
@@ -25551,7 +25518,7 @@ DOM2 Traversal and Range 模块定义了两个类型用于辅助顺序遍历 DOM
 
 document ，最后一个节点是包含 " world!" 的文本节点。到达文档末尾最后那个文本节点后，遍历会在 DOM 树中反向回溯。此时，第一个访问的节点就是包含 " world!" 的文本节点，而最后一个 是 document 节点本身。 NodeIterator 和 TreeWalker 都以这种方式进行遍历。
 
-1.  NodeIterator
+### 16.3.1 NodeIterator
 
 NodeIterator 类型是两个类型中比较简单的，可以通过
 
@@ -25589,97 +25556,99 @@ NodeFilter 对象只有一个方法 acceptNode() ，如果给定节点应该访�
 
 NodeFilter.FILTER_SKIP 。因为 NodeFilter 是一个抽象类型，所以不可能创建它的实例。只要创建一个包含 acceptNode()的对象，然后把它传给 createNodeIterator() 就可以了。以下代码定义了只接收`<p>`元素的节点过滤器对象：
 
-let filter = { acceptNode(node) {
-
-return node.tagName.toLowerCase() == "p" \?
-
-NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_SKIP;
-
-}
-
+```js
+let filter = {
+  acceptNode(node) {
+    return node.tagName.toLowerCase() == 'p'
+      ? NodeFilter.FILTER_ACCEPT
+      : NodeFilter.FILTER_SKIP;
+  },
 };
 
-let iterator = document.createNodeIterator(root, NodeFilter.SHOW_ELEMENT,
+let iterator = document.createNodeIterator(
+  root,
+  NodeFilter.SHOW_ELEMENT,
 
-filter, false);
+  filter,
+  false
+);
+```
 
 filter 参数还可以是一个函数，与 acceptNode() 的形式一样，如下面的例子所示：
 
-let filter = function(node) {
-
-return node.tagName.toLowerCase() == "p" \?
-
-NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_SKIP;
-
+```js
+let filter = function (node) {
+  return node.tagName.toLowerCase() == 'p'
+    ? NodeFilter.FILTER_ACCEPT
+    : NodeFilter.FILTER_SKIP;
 };
 
-let iterator = document.createNodeIterator(root, NodeFilter.SHOW_ELEMENT,
+let iterator = document.createNodeIterator(
+  root,
+  NodeFilter.SHOW_ELEMENT,
 
-filter, false);
+  filter,
+  false
+);
+```
 
-通常，JavaScript 会使用这种形式，因为更简单也更像普通
-
-JavaScript 代码。如果不需要指定过滤器，则可以给这个参数传入
-
-null 。
+通常，JavaScript 会使用这种形式，因为更简单也更像普通 JavaScript 代码。如果不需要指定过滤器，则可以给这个参数传入 null 。
 
 要创建一个简单的遍历所有节点的 NodeIterator ，可以使用以下代码：
 
+```js
 let iterator = document.createNodeIterator(document, NodeFilter.SHOW_ALL,
 
 false);
 
 null,
+```
 
-NodeIterator 的两个主要方法是 nextNode() 和
+NodeIterator 的两个主要方法是 nextNode() 和 previousNode() 。 nextNode() 方法在 DOM 子树中以深度优先方式进前一步，而 previousNode() 则是在遍历中后退一步。创 建 NodeIterator 对象的时候，会有一个内部指针指向根节点，因此第一次调用 nextNode() 返回的是根节点。当遍历到达 DOM 树最
 
-previousNode() 。 nextNode() 方法在 DOM 子树中以深度优先方式进前一步，而 previousNode() 则是在遍历中后退一步。创 建 NodeIterator 对象的时候，会有一个内部指针指向根节点，因此第一次调用 nextNode() 返回的是根节点。当遍历到达 DOM 树最
-
-后一个节点时， nextNode() 返回 null 。 previousNode() 方法也是类似的。当遍历到达 DOM 树最后一个节点时，调用
-
-previousNode() 返回遍历的根节点后，再次调用也会返回
+后一个节点时， nextNode() 返回 null 。 previousNode() 方法也是类似的。当遍历到达 DOM 树最后一个节点时，调用 previousNode() 返回遍历的根节点后，再次调用也会返回
 
 null 。
 
 以下面的 HTML 片段为例：
 
-```
-<div id="div1"\>
+```html
+<div id="div1">
+  <p><b>Hello</b> world!</p>
 
-<p><b>Hello</b> world!</p>
+  <ul>
+    <li>List item 1</li>
 
-<ul>
+    <li>List item 2</li>
 
-<li>List item 1</li>
-
-<li>List item 2</li>
-
-<li>List item 3</li>
-
-</ul>
-
+    <li>List item 3</li>
+  </ul>
 </div>
 ```
 
-假设想要遍历 <div> 元素内部的所有元素，那么可以使用如下代码：
+假设想要遍历 `<div>` 元素内部的所有元素，那么可以使用如下代码：
 
-let div = document.getElementById("div1");
+```js
+let div = document.getElementById('div1');
 
-let iterator = document.createNodeIterator(div, NodeFilter.SHOW_ELEMENT,
+let iterator = document.createNodeIterator(
+  div,
+  NodeFilter.SHOW_ELEMENT,
 
-null,
+  null,
 
-false);
+  false
+);
 
-let node = iterator.nextNode(); while (node !== null) {
+let node = iterator.nextNode();
+while (node !== null) {
+  console.log(node.tagName); // 输 出 标 签 名
 
-console.log(node.tagName); // 输 出 标 签 名
-
-node = iterator.nextNode();
-
+  node = iterator.nextNode();
 }
+```
 
-这个例子中第一次调用 nextNode() 返回 <div> 元素。因为
+这个例子中第一次调用 nextNode() 返回 `<div>` 元素。因为
 
 nextNode() 在遍历到达 DOM 子树末尾时返回 null ，所以这里通过 while 循环检测每次调用 nextNode() 的返回值是不是
 
@@ -25691,33 +25660,35 @@ B UL LI LI LI
 
 如果只想遍历`<li>`元素，可以传入一个过滤器，比如：
 
-let div = document.getElementById("div1"); let filter = function(node) {
-
-return node.tagName.toLowerCase() == "li" \?
-
-NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_SKIP;
-
+```js
+let div = document.getElementById('div1');
+let filter = function (node) {
+  return node.tagName.toLowerCase() == 'li'
+    ? NodeFilter.FILTER_ACCEPT
+    : NodeFilter.FILTER_SKIP;
 };
 
-let iterator = document.createNodeIterator(div, NodeFilter.SHOW_ELEMENT,
+let iterator = document.createNodeIterator(
+  div,
+  NodeFilter.SHOW_ELEMENT,
 
-filter, false);
+  filter,
+  false
+);
 
-let node = iterator.nextNode(); while (node !== null) {
+let node = iterator.nextNode();
+while (node !== null) {
+  console.log(node.tagName); // 输 出 标 签 名
 
-console.log(node.tagName); // 输 出 标 签 名
-
-node = iterator.nextNode();
-
+  node = iterator.nextNode();
 }
+```
 
 在这个例子中，遍历只会输出`<li>`元素的标签。
 
-nextNode() 和 previousNode() 方法共同维护
+nextNode() 和 previousNode() 方法共同维护 NodeIterator 对 DOM 结构的内部指针，因此修改 DOM 结构也会体现在遍历中。
 
-NodeIterator 对 DOM 结构的内部指针，因此修改 DOM 结构也会体现在遍历中。
-
-2.  TreeWalker
+### 16.3.2 TreeWalker
 
 TreeWalker 是 NodeIterator 的高级版。除了包含同样的
 
@@ -25731,27 +25702,30 @@ document.createTreeWalker() 方法来创建，这个方法接收与
 
 document.createNodeIterator() 同样的参数：作为遍历起点的根节点、要查看的节点类型、节点过滤器和一个表示是否扩展实体引用的布尔值。因为两者很类似，所以 TreeWalker 通常可以取代 NodeIterator ，比如：
 
-let div = document.getElementById("div1"); let filter = function(node) {
-
-return node.tagName.toLowerCase() == "li" \?
-
-NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_SKIP;
-
+```js
+let div = document.getElementById('div1');
+let filter = function (node) {
+  return node.tagName.toLowerCase() == 'li'
+    ? NodeFilter.FILTER_ACCEPT
+    : NodeFilter.FILTER_SKIP;
 };
 
-let walker = document.createTreeWalker(div, NodeFilter.SHOW_ELEMENT,
+let walker = document.createTreeWalker(
+  div,
+  NodeFilter.SHOW_ELEMENT,
 
-filter,
+  filter,
 
-false);
+  false
+);
 
-let node = iterator.nextNode(); while (node !== null) {
+let node = iterator.nextNode();
+while (node !== null) {
+  console.log(node.tagName); // 输 出 标 签 名
 
-console.log(node.tagName); // 输 出 标 签 名
-
-node = iterator.nextNode();
-
+  node = iterator.nextNode();
 }
+```
 
 不同的是，节点过滤器（ filter ）除了可以返回
 
@@ -25767,7 +25741,7 @@ NodeFilter.FILTER_SKIP 和 NodeFilter.FILTER_REJECT
 
 NodeFilter.FILTER_SKIP 表示跳过节点，访问子树中的下一个节点，而 NodeFilter.FILTER_REJECT 则表示跳过该节点以及该节点的整个子树。例如，如果把前面示例中的过滤器函数改为返回 NodeFilter.FILTER_REJECT （而不是
 
-NodeFilter.FILTER_SKIP ），则会导致遍历立即返回，不会访问任何节点。这是因为第一个返回的元素是 <div> ，其中标签名不是 "li" ，因此过滤函数返回 NodeFilter.FILTER_REJECT ，表示要跳过整个子树。因为 <div> 本身就是遍历的根节点，所以遍历会就此结束。
+NodeFilter.FILTER_SKIP ），则会导致遍历立即返回，不会访问任何节点。这是因为第一个返回的元素是 `<div>` ，其中标签名不是 "li" ，因此过滤函数返回 NodeFilter.FILTER_REJECT ，表示要跳过整个子树。因为 `<div>` 本身就是遍历的根节点，所以遍历会就此结束。
 
 当然， TreeWalker 真正的威力是可以在 DOM 结构中四处游走。如果不使用过滤器，单纯使用 TreeWalker 的漫游能力同样可以在 DOM 树中访问`<li>`元素，比如：
 
@@ -25808,15 +25782,17 @@ walker.currentNode = document.body; // 修
 
 相比于 NodeIterator ， TreeWalker 类型为遍历 DOM 提供了更大的灵活性。
 
-1.  范围
+## 16.4 范围
 
 为了支持对页面更细致的控制，DOM2 Traversal and Range 模块定义了范围接口。范围可用于在文档中选择内容，而不用考虑节点之间的界限。（选择在后台发生，用户是看不到的。）范围在常规 DOM 操作的粒度不够时可以发挥作用。
 
-1.  DOM 范围
+### 16.3.1 DOM 范围
 
 DOM2 在 Document 类型上定义了一个 createRange() 方法，暴露在 document 对象上。使用这个方法可以创建一个 DOM 范围对象，如下所示：
 
+```js
 let range = document.createRange();
+```
 
 与节点类似，这个新创建的范围对象是与创建它的文档关联的，不能在其他文档中使用。然后可以使用这个范围在后台选择文档特定的部分。创建范围并指定它的位置之后，可以对范围的内容执行一些操作，从而实现对底层 DOM 树更精细的控制。
 
@@ -25838,11 +25814,9 @@ startContainer 和 endContainer 为后代的最深的节点。
 
 这些属性会在范围被放到文档中特定位置时获得相应的值。
 
-2.  简单选择
+### 16.3.2 简单选择
 
-通过范围选择文档中某个部分最简单的方式，就是使用
-
-selectNode() 或 selectNodeContents() 方法。这两个方法都接收一个节点作为参数，并将该节点的信息添加到调用它的范围。
+通过范围选择文档中某个部分最简单的方式，就是使用 selectNode() 或 selectNodeContents() 方法。这两个方法都接收一个节点作为参数，并将该节点的信息添加到调用它的范围。
 
 selectNode() 方法选择整个节点，包括其后代节点，而
 
@@ -25850,25 +25824,26 @@ selectNodeContents() 只选择节点的后代。假设有如下
 
 HTML：
 
-```
+```html
 <!DOCTYPE html>
 
 <html>
-
-`<body>`
-
-<p id="p1"\><b>Hello</b> world!</p>
-
-`</body>`
-
-`</html>`
+  <body>
+    <p id="p1"><b>Hello</b> world!</p>
+  </body>
+</html>
 ```
 
 以下 JavaScript 代码可以访问并创建相应的范围：
 
-let range1 = document.createRange(), range2 = document.createRange(), p1 = document.getElementById("p1");
+```js
+let range1 = document.createRange(),
+  range2 = document.createRange(),
+  p1 = document.getElementById('p1');
 
-range1.selectNode(p1); range2.selectNodeContents(p1);
+range1.selectNode(p1);
+range2.selectNodeContents(p1);
+```
 
 例子中的这两个范围包含文档的不同部分。 range1 包含 <p>
 
@@ -25916,7 +25891,7 @@ childNodes 集合中的索引加 1 。
 
 调用这些方法时，所有属性都会自动重新赋值。不过，为了实现复杂的选区，也可以直接修改这些属性的值。
 
-3.  复杂选择
+### 16.3.3 复杂选择
 
 要创建复杂的范围，需要使用 setStart() 和 setEnd() 方法。这两个方法都接收两个参数：参照节点和偏移量。对
 
@@ -25926,27 +25901,29 @@ setStart() 来说，参照节点会成为 startContainer ，而偏移量会赋�
 
 selectNodeContents() 的行为。比如：
 
-let range1 = document.createRange(), range2 = document.createRange(), p1 = document.getElementById("p1"), p1Index = \-1,
+```js
+let range1 = document.createRange(),
+  range2 = document.createRange(),
+  p1 = document.getElementById('p1'),
+  p1Index = -1,
+  i,
+  len;
 
-i, len;
-
-for (i = 0, len =
-
-p1.parentNode.childNodes.length; i < len; i++) { if (p1.parentNode.childNodes\[i\] === p1) {
-
-p1Index = i; break;
-
+for (i = 0, len = p1.parentNode.childNodes.length; i < len; i++) {
+  if (p1.parentNode.childNodes[i] === p1) {
+    p1Index = i;
+    break;
+  }
 }
 
-}
-
-range1.setStart(p1.parentNode, p1Index); range1.setEnd(p1.parentNode, p1Index \+ 1); range2.setStart(p1, 0);
+range1.setStart(p1.parentNode, p1Index);
+range1.setEnd(p1.parentNode, p1Index + 1);
+range2.setStart(p1, 0);
 
 range2.setEnd(p1, p1.childNodes.length);
+```
 
-注意，要选择节点（使用 range1 ），必须先确定给定节点
-
-（ p1 ）在其父节点 childNodes 集合中的索引。而要选择节点的内容（使用 range2 ），则不需要这样计算，因为可以直接给
+注意，要选择节点（使用 range1 ），必须先确定给定节点（ p1 ）在其父节点 childNodes 集合中的索引。而要选择节点的内容（使用 range2 ），则不需要这样计算，因为可以直接给
 
 setStart() 和 setEnd() 传默认值。虽然可以模拟
 
@@ -25986,7 +25963,7 @@ commonAncestorContainer 是`<p>`元素，即包含这两个节点的第一个祖
 
 当然，只选择文档中的某个部分并不是特别有用，除非可以对选中部分执行操作。
 
-4.  操作范围
+### 16.3.4 操作范围
 
 创建范围之后，浏览器会在内部创建一个文档片段节点，用于包含范围选区中的节点。为操作范围的内容，选区中的内容必须格式完好。在前面的例子中，因为范围的起点和终点都在文本节点内部，并
 
@@ -25996,8 +25973,11 @@ commonAncestorContainer 是`<p>`元素，即包含这两个节点的第一个祖
 
 <b> 标签，于是会在后台动态补上这个标签，同时还需要补上封闭 "He" 的结束标签 </b> ，结果会把 DOM 修改为这样：
 
-```
-<p><b>He</b><b>llo</b> world!</p>
+```js
+<p>
+  <b>He</b>
+  <b>llo</b> world!
+</p>
 ```
 
 而且， " world!" 文本节点会被拆分成两个文本节点，一个包含 " wo" ，另一个包含 "rld!" 。最终的 DOM 树，以及范围对应的文档片段如图 16-9 所示。
@@ -26010,18 +25990,22 @@ commonAncestorContainer 是`<p>`元素，即包含这两个节点的第一个祖
 
 第一个方法最容易理解和使用： deleteContents() 。顾名思义，这个方法会从文档中删除范围包含的节点。下面是一个例子：
 
-let p1 = document.getElementById("p1"), helloNode = p1.firstChild.firstChild, worldNode = p1.lastChild,
-
-range = document.createRange();
+```js
+let p1 = document.getElementById('p1'),
+  helloNode = p1.firstChild.firstChild,
+  worldNode = p1.lastChild,
+  range = document.createRange();
 
 range.setStart(helloNode, 2);
 
-range.setEnd(worldNode, 3); range.deleteContents();
+range.setEnd(worldNode, 3);
+range.deleteContents();
+```
 
 执行上面的代码之后，页面中的 HTML 会变成这样：
 
-```
-<p><b>He</b>rld!</p>\]
+```js
+<p><b>He</b>rld!</p>]
 ```
 
 因为前面介绍的范围选择过程通过修改底层 DOM 结构保证了结构完好，所以即使删除范围之后，剩下的 DOM 结构照样是完好的。
@@ -26030,71 +26014,90 @@ range.setEnd(worldNode, 3); range.deleteContents();
 
 extractContents() 方法返回范围对应的文档片段。这样，就可以把范围选中的内容插入文档中其他地方。来看一个例子：
 
-let p1 = document.getElementById("p1"), helloNode = p1.firstChild.firstChild, worldNode = p1.lastChild,
-
-range = document.createRange();
+```js
+let p1 = document.getElementById('p1'),
+  helloNode = p1.firstChild.firstChild,
+  worldNode = p1.lastChild,
+  range = document.createRange();
 
 range.setStart(helloNode, 2);
 
 range.setEnd(worldNode, 3);
 
-let fragment = range.extractContents(); p1.parentNode.appendChild(fragment);
+let fragment = range.extractContents();
+p1.parentNode.appendChild(fragment);
+```
 
 这个例子提取了范围的文档片段，然后把它添加到文档 `<body>`元素的最后。（别忘了，在把文档片段传给 appendChild() 时，只会添加片段的子树，不包含片段自身。）结果就会得到如下 HTML：
 
-```
+```html
 <p><b>He</b>rld!</p>
 
-<b>llo</b> wo
-
-\[P595 代码三\]
+<b>llo</b> wo [P595 代码三]
 ```
 
 如果不想把范围从文档中移除，也可以使用
 
 cloneContents() 创建一个副本，然后把这个副本插入到文档其他地方。比如：
 
-let p1 = document.getElementById("p1"), helloNode = p1.firstChild.firstChild, worldNode = p1.lastChild,
-
-range = document.createRange();
+```js
+let p1 = document.getElementById('p1'),
+  helloNode = p1.firstChild.firstChild,
+  worldNode = p1.lastChild,
+  range = document.createRange();
 
 range.setStart(helloNode, 2);
 
 range.setEnd(worldNode, 3);
 
-let fragment = range.cloneContents(); p1.parentNode.appendChild(fragment);
+let fragment = range.cloneContents();
+p1.parentNode.appendChild(fragment);
+```
 
 这个方法跟 extractContents() 很相似，因为它们都返回文档片段。主要区别是 cloneContents() 返回的文档片段包含范围中节点的副本，而非实际的节点。执行上面操作之后，HTML 页面会变成这样：
 
+```
 <p><b>Hello</b> world!</p>
 
 <b>llo</b> wo
+```
 
 此时关键是要知道，为保持结构完好而拆分节点的操作，只有在调用前述方法时才会发生。在 DOM 被修改之前，原始 HTML 会一直保持不变。
 
-5.  范围插入
+### 16.3.5 范围插入
 
 上一节介绍了移除和复制范围的内容，本节来看一看怎么向范围中插入内容。使用 insertNode() 方法可以在范围选区的开始位置插入一个节点。例如，假设我们想在前面例子中的 HTML 中插入如下 HTML：
 
-<span style="color: red"\>Inserted text</span>
+```html
+<span style="color: red">Inserted text</span>
+```
 
 可以使用下列代码：
 
-let p1 = document.getElementById("p1"), helloNode = p1.firstChild.firstChild, worldNode = p1.lastChild,
-
-range = document.createRange();
+```js
+let p1 = document.getElementById('p1'),
+  helloNode = p1.firstChild.firstChild,
+  worldNode = p1.lastChild,
+  range = document.createRange();
 
 range.setStart(helloNode, 2);
 
 range.setEnd(worldNode, 3);
 
-let span = document.createElement("span"); span.style.color = "red"; span.appendChild(document.createTextNode("Insert ed text"));
+let span = document.createElement('span');
+span.style.color = 'red';
+span.appendChild(document.createTextNode('Insert ed text'));
 
 range.insertNode(span);
+```
 
 运行上面的代码会得到如下 HTML 代码：
 
-<p id="p1"\><b>He<span style="color: red"\>Inserted text</span>llo</b> world</p>
+```html
+<p id="p1">
+  <b>He<span style="color: red">Inserted text</span>llo</b> world
+</p>
+```
 
 注意， <span> 正好插入到 "Hello" 中的 "llo" 之前，也就是范围选区的前面。同时，也要注意原始的 HTML 并没有添加或删除`<b>`元素，因为这里并没有使用之前提到的方法。使用这个技术可以插入有用的信息，比如在外部链接旁边插入一个小图标。
 
@@ -26108,25 +26111,34 @@ range.insertNode(span);
 
 这种功能适合在网页中高亮显示某些关键词，比如：
 
-let p1 = document.getElementById("p1"), helloNode = p1.firstChild.firstChild, worldNode = p1.lastChild,
-
-range = document.createRange();
+```js
+let p1 = document.getElementById('p1'),
+  helloNode = p1.firstChild.firstChild,
+  worldNode = p1.lastChild,
+  range = document.createRange();
 
 range.selectNode(helloNode);
 
-let span = document.createElement("span"); span.style.backgroundColor = "yellow"; range.surroundContents(span);
+let span = document.createElement('span');
+span.style.backgroundColor = 'yellow';
+range.surroundContents(span);
+```
 
 执行以上代码会以黄色背景高亮显示范围选择的文本。得到的
 
 HTML 如下所示：
 
-<p><b><span style="background- color:yellow"\>Hello</span></b> world!</p>
+```html
+<p>
+  <b><span style="background- color:yellow">Hello</span></b> world!
+</p>
+```
 
 为了插入 <span> 元素，范围中必须包含完整的 DOM 结构。如果范围中包含部分选择的非文节点，这个操作会失败并报错。另外，如果给定的节点是 Document 、 DocumentType 或
 
 DocumentFragment 类型，也会导致抛出错误。
 
-6.  范 围 叠
+### 16.4.6 范 围 叠
 
 如果范围并没有选择文档的任何部分，则称为折叠
 
@@ -26138,23 +26150,34 @@ DocumentFragment 类型，也会导致抛出错误。
 
 false 表示折叠到终点。要确定范围是否已经被折叠，可以检测范围的 collapsed 属性：
 
+```js
 range.collapse(true); // 折 叠 到 起 点
 
 console.log(range.collapsed); // 输 出 true
+```
 
 测试范围是否被折叠，能够帮助确定范围中的两个节点是否相邻。例如有以下 HTML 代码：
 
-<p id="p1"\>Paragraph 1</p><p id="p2"\>Paragraph 2</p>
+```html
+<p id="p1">Paragraph 1</p>
+<p id="p2">Paragraph 2</p>
+```
 
 如果事先并不知道标记的结构（比如自动生成的标记），则可以像下面这样创建一个范围：
 
-let p1 = document.getElementById("p1"), p2 = document.getElementById("p2"), range = document.createRange();
+```js
+let p1 = document.getElementById('p1'),
+  p2 = document.getElementById('p2'),
+  range = document.createRange();
 
-range.setStartAfter(p1); range.setStartBefore(p2); console.log(range.collapsed); // true
+range.setStartAfter(p1);
+range.setStartBefore(p2);
+console.log(range.collapsed); // true
+```
 
 在这种情况下，创建的范围是折叠的，因为 p1 后面和 p2 前面没有任何内容。
 
-7.  范围比较
+### 16.4.7 范围比较
 
 如果有多个范围，则可以使用 compareBoundaryPoints()方法确定范围之间是否存在公共的边界（起点或终点）。这个方法接收两个参数：要比较的范围和一个常量值，表示比较的方式。这个常量参数包括：
 
@@ -26162,17 +26185,19 @@ Range.START_TO_START （0），比较两个范围的起点； Range.START_TO_END
 
 Range.END_TO_END （2），比较两个范围的终点； Range.END_TO_START （3），比较第一个范围的终点和第二个范围的起点。
 
-compareBoundaryPoints() 方法在第一个范围的边界点位于第二个范围的边界点之前时返回 \-1 ，在两个范围的边界点相等时
+compareBoundaryPoints() 方法在第一个范围的边界点位于第二个范围的边界点之前时返回 -1 ，在两个范围的边界点相等时
 
 返回 0 ，在第一个范围的边界点位于第二个范围的边界点之后时返
 
 回 1 。来看下面的例子：
 
+```js
 let range1 = document.createRange(); let range2 = document.createRange(); let p1 = document.getElementById("p1");
 
 range1.selectNodeContents(p1); range2.selectNodeContents(p1); range2.setEndBefore(p1.lastChild);
 
 console.log(range1.compareBoundaryPoints(Range.S TART_TO_START, range2)); // 0 console.log(range1.compareBoundaryPoints(Range.E ND_TO_END, range2)); // 1
+```
 
 在这段代码中，两个范围的起点是相等的，因为它们都是
 
@@ -26184,51 +26209,44 @@ range2 的终点之后（见图 16-11），结果这个方法返回了 1 。
 
 图 16-11
 
-8.  复制范围
+### 16.4.8 复制范围
 
 调用范围的 cloneRange() 方法可以复制范围。这个方法会创建调用它的范围的副本：
 
+```js
 let newRange = range.cloneRange();
+```
 
 新范围包含与原始范围一样的属性，修改其边界点不会影响原始范围。
 
-9.  清理
+### 16.4.9 清理
 
 在使用完范围之后，最好调用 detach() 方法把范围从创建它的文档中剥离。调用 detach() 之后，就可以放心解除对范围的引用，以便垃圾回收程序释放它所占用的内存。下面是一个例子：
 
+```js
 range.detach(); // 从文档中剥离范围
 
 range = null; // 解 除 引 用
+```
 
 这两步是最合理的结束使用范围的方式。剥离之后的范围就不能再使用了。
 
-## 小 结
+## 16.5 小 结
 
-DOM2 规范定义了一些模块，用来丰富 DOM1 的功能。DOM2
-
-Core 在一些类型上增加了与 XML 命名空间有关的新方法。这些变化只有在使用 XML 或 XHTML 文档时才会用到，在 HTML 文档中则没有用处。DOM2 增加的与 XML 命名空间无关的方法涉及以编程方式创建
-
-Document 和 DocumentType 类型的新实例。
+DOM2 规范定义了一些模块，用来丰富 DOM1 的功能。DOM2 Core 在一些类型上增加了与 XML 命名空间有关的新方法。这些变化只有在使用 XML 或 XHTML 文档时才会用到，在 HTML 文档中则没有用处。DOM2 增加的与 XML 命名空间无关的方法涉及以编程方式创建 Document 和 DocumentType 类型的新实例。
 
 DOM2 Style 模块定义了如何操作元素的样式信息。
 
-每个元素都有一个关联的 style 对象，可用于确定和修改元素特定的样式。
-
-要确定元素的计算样式，包括应用到元素身上的所有 CSS 规则，可以使用 getComputedStyle() 方法。
-
-通过 document.styleSheets 集合可以访问文档上所有的样式表。
+- 每个元素都有一个关联的 style 对象，可用于确定和修改元素特定的样式。
+- 要确定元素的计算样式，包括应用到元素身上的所有 CSS 规则，可以使用 getComputedStyle() 方法。
+- 通过 document.styleSheets 集合可以访问文档上所有的样式表。
 
 DOM2 Traversal and Range 模块定义了与 DOM 结构交互的不同方式。
 
-NodeIterator 和 TreeWalker 可以对 DOM 树执行深度优先的遍历。
-
-NodeIterator 接口很简单，每次只能向前和向后移动一步。
-
-TreeWalker 除了支持同样的行为，还支持在 DOM 结构的所有方向移动，包括父节点、同胞节点和子节点。
-
-范围是选择 DOM 结构中特定部分并进行操作的一种方式。
-
-通过范围的选区可以在保持文档结构完好的同时从文档中移除内容，也可复制文档中相应的部分。
+- NodeIterator 和 TreeWalker 可以对 DOM 树执行深度优先的遍历。
+- NodeIterator 接口很简单，每次只能向前和向后移动一步。TreeWalker 除了支持同样的行为，还支持在 DOM 结构的所有方向移动，包括父节点、同胞节点和子节点。
+- 范围是选择 DOM 结构中特定部分并进行操作的一种方式。
+- 通过范围的选区可以在保持文档结构完好的同时从文档中移除内容，也可复制文档中相应的部分。
 
 # 第 17 章 事件
 
