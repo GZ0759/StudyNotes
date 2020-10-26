@@ -750,9 +750,7 @@ ECMAScript 5 增加了严格模式（strict mode）的概念。严格模式是�
 ```js
 function doSomething() {
   'use strict';
-
   // 函数体
-
 }
 ```
 
@@ -774,7 +772,6 @@ let diff = a - b; // 加分号有效，推荐
 ```js
 if (test) {
   test = false;
-
   console.log(test);
 }
 ```
@@ -858,7 +855,6 @@ var message = 'hi';
 
 ```js
 var message = 'hi';
-
 message = 100; // 合法，但不推荐
 ```
 
@@ -983,7 +979,6 @@ var name = 'Nicholas';
 console.log(name); // 'Nicholas'
 if (true) {
   var name = 'Matt';
-
   console.log(name); // 'Matt'
 }
 
@@ -1338,7 +1333,7 @@ undefined 值是由 null 值派生而来的，因此 ECMA-262 将它们定义为
 console.log(null == undefined); // true
 ```
 
-用等于操作符（ == ）比较 null 和 undefined 始终返回 true 。但要注意，这个操作符会为了比较而转换它的操作数（本章后面将详细介绍）。
+用等于操作符 `==` 比较 null 和 undefined 始终返回 true 。但要注意，这个操作符会为了比较而转换它的操作数（本章后面将详细介绍）。
 
 即使 null 和 undefined 有关系，它们的用途也是完全不一样的。如前所述，永远不必显式地将变量值设置为 undefined 。但 null 不是这样的。任何时候，只要变量要保存对象，而当时又没有那个对象可保存，就要用 null 来填充该变量。这样就可以保持 null 是空对象指针的语义，并进一步将其与 undefined 区分开来。
 
@@ -1964,9 +1959,8 @@ let fooSymbol = Symbol('foo');
 
 let otherFooSymbol = Symbol('foo');
 
-console.log(genericSymbol == otherGenericSymbol); // false console.log(fooSymbol == otherFooSymbol);
-
-// false
+console.log(genericSymbol == otherGenericSymbol); // false
+console.log(fooSymbol == otherFooSymbol); // false
 ```
 
 符号没有字面量语法，这也是它们发挥作用的关键。按照规范，你只要创建 Symbol() 实例并将其用作对象的新属性，就可以保证它不会覆盖已有的对象属性，无论是符号属性还是字符串属性。
@@ -2042,12 +2036,10 @@ console.log(emptyGlobalSymbol); // Symbol(undefined)
 
 ```js
 // 创建全局符号
-
 let s = Symbol.for('foo');
 console.log(Symbol.keyFor(s)); // foo
 
 // 创建普通符号
-
 let s2 = Symbol('bar');
 console.log(Symbol.keyFor(s2)); // undefined
 ```
@@ -2262,7 +2254,8 @@ let array = ['bar']; console.log(array[Symbol.isConcatSpreadable])
 
 console.log(initial.concat(array));
 
-// ['foo', 'bar'] array[Symbol.isConcatSpreadable] = false; console.log(initial.concat(array));
+// ['foo', 'bar']
+array[Symbol.isConcatSpreadable] = false; console.log(initial.concat(array));
 
 // ['foo', Array(1)]
 
@@ -2270,13 +2263,17 @@ let arrayLikeObject = { length: 1, 0: 'baz'
 
 };
 
-console.log(arrayLikeObject[Symbol.isConcatSp readable]); // undefined console.log(initial.concat(arrayLikeObject));
+console.log(arrayLikeObject[Symbol.isConcatSp readable]); // undefined
+console.log(initial.concat(arrayLikeObject));
 
-// ['foo', {...}] arrayLikeObject[Symbol.isConcatSpreadable] = true; console.log(initial.concat(arrayLikeObject));
+// ['foo', {...}]
+arrayLikeObject[Symbol.isConcatSpreadable] = true;
+console.log(initial.concat(arrayLikeObject));
 
 // ['foo', 'baz']
 
-let otherObject = new Set().add('qux'); console.log(otherObject[Symbol.isConcatSpread able]); // undefined console.log(initial.concat(otherObject));
+let otherObject = new Set().add('qux'); console.log(otherObject[Symbol.isConcatSpread able]); // undefined
+console.log(initial.concat(otherObject));
 
 // ['foo', Set(1)]
 
@@ -2354,32 +2351,26 @@ Symbol.match 函数接收一个参数，就是调用 match() 方法的字符串�
 
 ```js
 class FooMatcher {
-
-static [Symbol.match](target) { return target.includes('foo');
-
+  static [Symbol.match](target) {
+    return target.includes('foo');
+  }
 }
 
+console.log('foobar'.match(FooMatcher)); //true
+console.log('barbaz'.match(FooMatcher)); // false
+
+class StringMatcher {
+  constructor(str) {
+    this.str = str;
+  }
+
+  [Symbol.match](target) {
+    return target.includes(this.str);
+  }
 }
 
-console.log('foobar'.match(FooMatcher)); //
-
-true console.log('barbaz'.match(FooMatcher)); // false
-
-class StringMatcher { constructor(str) {
-
-this.str = str;
-
-}
-
-[Symbol.match](target) {
-
-return target.includes(this.str);
-
-}
-
-}
-
-console.log('foobar'.match(new StringMatcher('foo'))); // true console.log('barbaz'.match(new StringMatcher('qux'))); // false
+console.log('foobar'.match(new StringMatcher('foo'))); // true
+console.log('barbaz'.match(new StringMatcher('qux'))); // false
 ```
 
 10. Symbol.replace
@@ -2457,9 +2448,7 @@ console.log('foobar'.search(FooSearcher)); // 0
 
 console.log('barfoo'.search(FooSearcher)); // 3
 
-console.log('barbaz'.search(FooSearcher)); //
-
--1;
+console.log('barbaz'.search(FooSearcher)); //-1;
 
 class StringSearcher {
   constructor(str) {
@@ -2573,7 +2562,8 @@ console.log(s); //
 
 Set(0) {}
 
-console.log(s.toString()); // [object Set] console.log(s[Symbol.toStringTag]); // Set
+console.log(s.toString()); // [object Set]
+console.log(s[Symbol.toStringTag]); // Set
 
 class Foo {}
 
@@ -2583,7 +2573,8 @@ console.log(foo); // Foo
 
 {}
 
-console.log(foo.toString()); // [object Object] console.log(foo[Symbol.toStringTag]); // undefined
+console.log(foo.toString()); // [object Object]
+console.log(foo[Symbol.toStringTag]); // undefined
 
 class Bar { constructor() {
 
@@ -2656,7 +2647,6 @@ ECMA-262 描述了一组可用于操作数据值的操作符，包括数学操�
 
 ```js
 let age = 29;
-
 ++age;
 ```
 
@@ -2671,7 +2661,6 @@ age = age + 1;
 
 ```js
 let age = 29;
-
 --age;
 ```
 
@@ -3211,15 +3200,13 @@ let result = 1 + 2;
 
 如果两个操作数都是数值，加法操作符执行加法运算并根据如下规则返回结果：
 
-如果有任一操作数是 NaN ，则返回 NaN ；
-
-如果是 Infinity 加 Infinity ，则返回 Infinity ；如果是 -Infinity 加 -Infinity ，则返回 -Infinity ；
-
-如果是 Infinity 加 -Infinity ，则返回 NaN ；如果是 +0 加 +0 ，则返回 +0 ；
-
-如果是 -0 加 +0 ，则返回 +0 ；
-
-如果是 -0 加 -0 ，则返回 -0 。
+- 如果有任一操作数是 NaN ，则返回 NaN ；
+- 如果是 Infinity 加 Infinity ，则返回 Infinity ；
+- 如果是 -Infinity 加 -Infinity ，则返回 -Infinity ；
+- 如果是 Infinity 加 -Infinity ，则返回 NaN ；
+- 如果是 +0 加 +0 ，则返回 +0 ；
+- 如果是 -0 加 +0 ，则返回 +0 ；
+- 如果是 -0 加 -0 ，则返回 -0 。
 
 不过，如果有一个操作数是字符串，则要应用如下规则：
 
@@ -3399,9 +3386,7 @@ null 和 undefined 相等。
 
 null 和 undefined 不能转换为其他类型的值再进行比较。
 
-如果有任一操作数是 NaN ，则相等操作符返回 false ，不相等操作符返回 true 。记住：即使两个操作数都是
-
-NaN ，相等操作符也返回 false ，因为按照规则， NaN 不等于 NaN 。
+如果有任一操作数是 NaN ，则相等操作符返回 false ，不相等操作符返回 true 。记住：即使两个操作数都是 NaN ，相等操作符也返回 false ，因为按照规则， NaN 不等于 NaN 。
 
 如果两个操作数都是对象，则比较它们是不是同一个对象。如果两个操作数都指向同一个对象，则相等操作符返回
 
@@ -3417,11 +3402,7 @@ let result1 = '55' == 55; // true，转换后相等
 let result2 = '55' === 55; // false，不相等，因为数据类型不同
 ```
 
-在这个例子中，第一个比较使用相等操作符，比较的是字符
-
-串 "55" 和数值 55 。如前所述，因为字符串 "55" 会被转换为数值 55，然后再与数值 55 进行比较，所以返回 true 。第二个比较使用全等操作符，因为没有转换，字符串和数值当然不能相
-
-等，所以返回 false 。
+在这个例子中，第一个比较使用相等操作符，比较的是字符串 "55" 和数值 55 。如前所述，因为字符串 "55" 会被转换为数值 55，然后再与数值 55 进行比较，所以返回 true 。第二个比较使用全等操作符，因为没有转换，字符串和数值当然不能相等，所以返回 false 。
 
 不全等操作符用一个叹号和两个等于号（ !== ）表示，只有两个操作数在不转换的前提下不相等才返回 true 。比如：
 
@@ -3441,9 +3422,7 @@ let result2 = '55' !== 55; // true，不相等，因为数据类型不同
 
 9. 条件操作符
 
-条件操作符是 ECMAScript 中用途最为广泛的操作符之一，语法跟
-
-Java 中一样：
+条件操作符是 ECMAScript 中用途最为广泛的操作符之一，语法跟 Java 中一样：
 
 ```js
 variable = boolean_expression ? true_value : false_value;
@@ -3495,17 +3474,19 @@ num += 10;
 
 11. 逗号操作符
 
-逗号操作符可以用来在一条语句中执行多个操作，如下所示：```jset num1 = 1,
-num2 = 2,
-num3 = 3;
+逗号操作符可以用来在一条语句中执行多个操作，如下所示：
 
-````
+```js
+let num1 = 1,
+  num2 = 2,
+  num3 = 3;
+```
 
 在一条语句中同时声明多个变量是逗号操作符最常用的场景。不过，也可以使用逗号操作符来辅助赋值。在赋值时使用逗号操作符分隔值，最终会返回表达式中最后一个值：
 
 ```js
 let num = (5, 1, 4, 8, 0); // num 的值为 0
-````
+```
 
 在这个例子中， num 将被赋值为 0，因为 0 是表达式中最后一项。逗号操作符的这种使用场景并不多见，但这种行为的确存在。
 
