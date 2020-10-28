@@ -839,7 +839,7 @@ ECMAScript 变量是松散类型的，意思是变量可以用于保存任何类
 
 ### 3.3.1 var 关键字
 
-要定义变量，可以使用 var 操作符（> 注意 var 是一个关键字），后跟变量名（即标识符，如前所述）：
+要定义变量，可以使用 var 操作符（注意 var 是一个关键字），后跟变量名（即标识符，如前所述）：
 
 ```js
 var message;
@@ -851,7 +851,7 @@ var message;
 var message = 'hi';
 ```
 
-这里， message 被定义为一个保存字符串值 hi 的变量。像这样初始化变量不会将它标识为字符串类型，只是一个简单的赋值而 已。随后，不仅可以改变保存的值，也可以改变值的类型：
+这里， message 被定义为一个保存字符串值 hi 的变量。像这样初始化变量不会将它标识为字符串类型，只是一个简单的赋值而已。随后，不仅可以改变保存的值，也可以改变值的类型：
 
 ```js
 var message = 'hi';
@@ -870,7 +870,6 @@ function test() {
 }
 
 test();
-
 console.log(message); // 出错！
 ```
 
@@ -1115,21 +1114,18 @@ console.log(i); // ReferenceError: i 没有定义
 for (var i = 0; i < 5; ++i) {
   setTimeout(() => console.log(i), 0);
 }
-
 // 你可能以为会输出 0、1、2、3、4
-
 // 实际上会输出 5、5、5、5、5
 ```
 
 之所以会这样，是因为在退出循环时，迭代变量保存的是导致循环退出的值：5。在之后执行超时逻辑时，所有的 i 都是同一个变量，因而输出的都是同一个最终值。
 
-而在使用 let 声明迭代变量时，JavaScript 引擎在后台会为每个迭代循环声明一个新的迭代变量。每个 setTimeout 引用的都是不同的变量实例，所以 console.log 输出的是我们期望的值，也就是循环执行过程中每个迭代变量的值。
+而在使用 let 声明迭代变量时，JavaScript 引擎在后台会为每个迭代循环声明一个新的迭代变量。每个 setTimeout 引用的都是不同的变量实例，所以 `console.log` 输出的是我们期望的值，也就是循环执行过程中每个迭代变量的值。
 
 ```js
 for (let i = 0; i < 5; ++i) {
   setTimeout(() => console.log(i), 0);
 }
-
 // 会输出 0、1、2、3、4
 ```
 
@@ -1230,7 +1226,7 @@ console.log(typeof 95); // "number"
 
 在这个例子中，我们把一个变量（ message ）和一个数值字面量传给了 typeof 操作符。注意，因为 typeof 是一个操作符而不是函数，所以不需要参数（但可以使用参数）。
 
-注意 typeof 在某些情况下返回的结果可能会让人费解，但技术上讲还是正确的。比如，调用 typeof null 返回的是 "object" 。这是因为特殊值 null 被认为是一个对空对象的引用。
+注意 typeof 在某些情况下返回的结果可能会让人费解，但技术上讲还是正确的。比如，调用 `typeof null` 返回的是 "object" 。这是因为特殊值 null 被认为是一个对空对象的引用。
 
 > 注意 严格来讲，函数在 ECMAScript 中被认为是对象，并不代表一种数据类型。可是，函数也有自己特殊的属性。为此，就有必要通过 typeof 操作符来区分函数和其他对象。
 
@@ -1240,7 +1236,6 @@ Undefined 类型只有一个值，就是特殊值 undefined 。当使用 var 或
 
 ```js
 let message;
-
 console.log(message == undefined); // true
 ```
 
@@ -1261,27 +1256,23 @@ console.log(message == undefined); // true
 let message; // 这个变量被声明了，只是值为undefined
 
 // 确保没有声明过这个变量
-
 // let age
 
 console.log(message); // "undefined"
-
 console.log(age); // 报 错
 ```
 
-在上面的例子中，第一个 console.log 会指出变量 message 的值，即 "undefined" 。而第二个 console.log 要输出一个未声明的变量 age 的值，因此会导致报错。对未声明的变量，只能执行一个有用的操作，就是对它调用 typeof 。（对未声明的变量调 用 delete 也不会报错，但这个操作没什么用，实际上在严格模式下会抛出错误。）
+在上面的例子中，第一个 `console.log` 会指出变量 message 的值，即 "undefined" 。而第二个 `console.log` 要输出一个未声明的变量 age 的值，因此会导致报错。对未声明的变量，只能执行一个有用的操作，就是对它调用 typeof 。（对未声明的变量调 用 delete 也不会报错，但这个操作没什么用，实际上在严格模式下会抛出错误。）
 
 在对未初始化的变量调用 typeof 时，返回的结果是 "undefined" ，但对未声明的变量调用它时，返回的结果还是 "undefined" ，这就有点让人看不懂了。比如下面的例子：
 
 ```js
 let message; // 这个变量被声明了，只是值为 undefined
 
-// make sure this variable isn't declared
-
+// 确保没有声明过这个变量
 // let age
 
 console.log(typeof message); // "undefined"
-
 console.log(typeof age); // "undefined"
 ```
 
@@ -1315,7 +1306,6 @@ Null 类型同样只有一个值，即特殊值 null 。逻辑上讲，null 值�
 
 ```js
 let car = null;
-
 console.log(typeof car); // "object"
 ```
 
@@ -1390,7 +1380,7 @@ if (message) {
 }
 ```
 
-在这个例子中， console.log 会输出字符串 "Value is true" ，因为字符串 message 会被自动转换为等价的布尔值 true 。由于存在这种自动转换，理解流控制语句中使用的是什么变量就非常重要。错误地使用对象而不是布尔值会明显改变应用程序的执行流。
+在这个例子中， `console.log` 会输出字符串 "Value is true" ，因为字符串 message 会被自动转换为等价的布尔值 true 。由于存在这种自动转换，理解流控制语句中使用的是什么变量就非常重要。错误地使用对象而不是布尔值会明显改变应用程序的执行流。
 
 ### 3.4.5 Number 类型
 
@@ -3060,7 +3050,7 @@ let result = found && someUndeclaredVariable; // 不会出错
 console.log(result); // 会 执 行
 ```
 
-这里， console.log 会成功执行。即使变量 someUndeclaredVariable 没有定义，由于第一个操作数是 false ，逻辑与操作符也不会对它求值，因为此时对 && 右边的操作数求值是没有意义的。在使用逻辑与操作符时，一定别忘了它的这个短路的特性。
+这里， `console.log` 会成功执行。即使变量 someUndeclaredVariable 没有定义，由于第一个操作数是 false ，逻辑与操作符也不会对它求值，因为此时对 && 右边的操作数求值是没有意义的。在使用逻辑与操作符时，一定别忘了它的这个短路的特性。
 
 3. 逻辑或
 
@@ -3725,7 +3715,7 @@ for (let i = 1; i < 10; i++) {
 console.log(num); // 8
 ```
 
-这一次， console.log 显示 8，即循环被完整执行了 8 次。当 i 等于 5 时，循环会在递增 num 之前退出，但会执行下一次迭代，此时 i 是 6。然后，循环会一直执行到自然结束，即 i 等于 10。最终 num 的值是 8 而不是 9，是因为 continue 语句导致它少递增了一次。
+这一次， `console.log` 显示 8，即循环被完整执行了 8 次。当 i 等于 5 时，循环会在递增 num 之前退出，但会执行下一次迭代，此时 i 是 6。然后，循环会一直执行到自然结束，即 i 等于 10。最终 num 的值是 8 而不是 9，是因为 continue 语句导致它少递增了一次。
 
 break 和 continue 都可以与标签语句一起使用，返回代码中特定的位置。这通常是在嵌套循环中，如下面的例子所示：
 
@@ -3744,7 +3734,7 @@ outermost: for (let i = 0; i < 10; i++) {
 console.log(num); // 55
 ```
 
-在这个例子中， outermost 标签标识的是第一个 for 语句。正常情况下，每个循环执行 10 次，意味着 num++ 语句会执行 100 次，而循环结束时 console.log 的结果应该是 100。但是， break 语句带来了一个变数，即要退出到的标签。添加标签不仅让 break 退出（使用变量 j 的）内部循环，也会退出（使用变量 i ）的外部循环。当执行到 i 和 j 都等于 5 时，循环停止执行，此时 num 的值是 55。 continue 语句也可以使用标签，如下面的例子所示：
+在这个例子中， outermost 标签标识的是第一个 for 语句。正常情况下，每个循环执行 10 次，意味着 num++ 语句会执行 100 次，而循环结束时 `console.log` 的结果应该是 100。但是， break 语句带来了一个变数，即要退出到的标签。添加标签不仅让 break 退出（使用变量 j 的）内部循环，也会退出（使用变量 i ）的外部循环。当执行到 i 和 j 都等于 5 时，循环停止执行，此时 num 的值是 55。 continue 语句也可以使用标签，如下面的例子所示：
 
 ```js
 let num = 0;
@@ -3884,7 +3874,7 @@ switch ('hello world') {
 }
 ```
 
-这个例子在 switch 语句中使用了字符串。第一个条件实际上使用的是表达式，求值为两个字符串拼接后的结果。因为拼接后的结果等于 switch 的参数，所以 console.log 会输出 "Greeting was found." 。能够在条件判断中使用表达式，就可以在判断中加入更多逻辑：
+这个例子在 switch 语句中使用了字符串。第一个条件实际上使用的是表达式，求值为两个字符串拼接后的结果。因为拼接后的结果等于 switch 的参数，所以 `console.log` 会输出 "Greeting was found." 。能够在条件判断中使用表达式，就可以在判断中加入更多逻辑：
 
 ```js
 let num = 25;
@@ -3935,7 +3925,7 @@ function sayHi(name, message) {
 sayHi('Nicholas', 'how are you today?');
 ```
 
-调用这个函数的输出结果是 "Hello Nicholas, how are you today?" 。参数 name 和 message 在函数内部作为字符串被拼接在了一起，最终通过 console.log 输出到控制台。
+调用这个函数的输出结果是 "Hello Nicholas, how are you today?" 。参数 name 和 message 在函数内部作为字符串被拼接在了一起，最终通过 `console.log` 输出到控制台。
 
 ECMAScript 中的函数不需要指定是否返回值。任何函数在任何时间都可以使用 return 语句来返回函数的值，用法是后跟要返回的值。比如：
 
@@ -3960,7 +3950,7 @@ function sum(num1, num2) {
 }
 ```
 
-在这个例子中， console.log 不会执行，因为它在 return 语句后面。
+在这个例子中， `console.log` 不会执行，因为它在 return 语句后面。
 
 一个函数里也可以有多个 return 语句，像这样：
 
@@ -3976,7 +3966,7 @@ function diff(num1, num2) {
 
 这个 diff() 函数用于计算两个数值的差。如果第一个数值小于第二个，则用第二个减第一个；否则，就用第一个减第二个。代码中每个分支都有自己的 return 语句，返回正确的差值。
 
-return 语句也可以不带返回值。这时候，函数会立即停止执行并返回 undefined 。这种用法最常用于提前终止函数执行，并不是为了返回值。比如在下面的例子中， console.log 不会执行：
+return 语句也可以不带返回值。这时候，函数会立即停止执行并返回 undefined 。这种用法最常用于提前终止函数执行，并不是为了返回值。比如在下面的例子中， `console.log` 不会执行：
 
 ```js
 function sayHi(name, message) {
@@ -17291,7 +17281,7 @@ setTimeout(console.log, 0, 'promise initialized');
 
 let p = new Promise((resolve, reject) => setTimeout(resolve, 1000));
 
-// 在 console.log 打印期约实例的时候，还不会执行超时回调（即 resolve()）
+// 在 `console.log` 打印期约实例的时候，还不会执行超时回调（即 resolve()）
 
 setTimeout(console.log, 0, p); // Promise
 
@@ -19933,7 +19923,7 @@ setTimeout(incrementNumber, 500);
 
 息。这些对话框与浏览器中显示的网页无关，而且也不包含 HTML。它们的外观由操作系统或者浏览器决定，无法使用 CSS 设置。此外，这些对话框都是同步的模态对话框，即在它们显示的时候，代码会停止执行，在它们消失以后，代码才会恢复执行。
 
-alert() 方法在本书示例中经常用到。它接收一个要显示给用户的字符串。与 console.log 可以接收任意数量的参数且能一次性打印这些参数不同， alert() 只接收一个参数。调用 alert() 时，传入的字符串会显示在一个系统对话框中。对话框只有一个“OK”（确定）按钮。如果传给 alert() 的参数不是一个原始字符串，则会调用这个值的 toString() 方法将其转换为字符串。
+alert() 方法在本书示例中经常用到。它接收一个要显示给用户的字符串。与 `console.log` 可以接收任意数量的参数且能一次性打印这些参数不同， alert() 只接收一个参数。调用 alert() 时，传入的字符串会显示在一个系统对话框中。对话框只有一个“OK”（确定）按钮。如果传给 alert() 的参数不是一个原始字符串，则会调用这个值的 toString() 方法将其转换为字符串。
 
 警告框（alert）通常用于向用户显示一些他们无法控制的消息，比如报错。用户唯一的选择就是在看到警告框之后把它关闭。图 12-1 展示了一个警告框。
 
