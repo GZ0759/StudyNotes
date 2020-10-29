@@ -1361,15 +1361,14 @@ let lost = false;
 
 注意，布尔值字面量 true 和 false 是区分大小写的，因此 True 和 False （及其他大小混写形式）是有效的标识符，但不是布尔值。
 
-虽然布尔值只有两个，但所有其他 ECMAScript 类型的值都有相应布尔值的等价形式。要将一个其他类型的值转换为布尔值，可以调用特定的 Boolean() 转型函数：
+虽然布尔值只有两个，但所有其他 ECMAScript 类型的值都有相应布尔值的等价形式。要将一个其他类型的值转换为布尔值，可以调用特定的 `Boolean()` 转型函数：
 
 ```js
 let message = 'Hello world!';
-
 let messageAsBoolean = Boolean(message);
 ```
 
-在这个例子中，字符串 message 会被转换为布尔值并保存在变量 messageAsBoolean 中。 Boolean() 转型函数可以在任意类型的数据上调用，而且始终返回一个布尔值。什么值能转换为 true 或 false 的规则取决于数据类型和实际的值。下表总结了不同类型与布尔值之间的转换规则。
+在这个例子中，字符串 message 会被转换为布尔值并保存在变量 messageAsBoolean 中。 `Boolean()` 转型函数可以在任意类型的数据上调用，而且始终返回一个布尔值。什么值能转换为 true 或 false 的规则取决于数据类型和实际的值。下表总结了不同类型与布尔值之间的转换规则。
 
 理解以上转换非常重要，因为像 if 等流控制语句会自动执行其他类型值到布尔值的转换，例如：
 
@@ -1407,7 +1406,7 @@ let octalNum3 = 08; // 无效的八进制值，当成 8 处理
 要创建十六进制字面量，必须让真正的数值前缀 0x （区分大小写），然后是十六进制数字（0~9 以及 A~F）。十六进制数字中的字母大小写均可。下面是几个例子：
 
 ```js
-let hexNum1 = 0xa; // 十 六 进 制 10
+let hexNum1 = 0xa; // 十六进制 10
 let hexNum2 = 0x1f; // 十六进制 31
 ```
 
@@ -1454,9 +1453,9 @@ if (a + b == 0.3) {
 
 2. 值的范围
 
-由于内存的限制，ECMAScript 并不支持表示这个世界上的所有数值。ECMAScript 可以表示的最小数值保存在 Number.MIN_VALUE 中，这个值在多数浏览器中是 5e-324；可以表示的最大数值保存在 Number.MAX_VALUE 中，这个值在多数浏览器中是 1.797 693 134 862 315 7e+308。如果某个计算得到的数值结果超出了 JavaScript 可以表示的范围，那么这个数值会被自动转换为一个特殊的 Infinity （无穷）值。任何无法表示的负数以 -Infinity （负无穷大）表示，任何无法表示的正数以 Infinity （正无穷大）表示。
+由于内存的限制，ECMAScript 并不支持表示这个世界上的所有数值。ECMAScript 可以表示的最小数值保存在 `Number.MIN_VALUE` 中，这个值在多数浏览器中是 5e-324；可以表示的最大数值保存在 `Number.MAX_VALUE` 中，这个值在多数浏览器中是 1.797 693 134 862 315 7e+308。如果某个计算得到的数值结果超出了 JavaScript 可以表示的范围，那么这个数值会被自动转换为一个特殊的 `Infinity` （无穷）值。任何无法表示的负数以 `-Infinity` （负无穷大）表示，任何无法表示的正数以 `Infinity` （正无穷大）表示。
 
-如果计算返回正 Infinity 或负 Infinity ，则该值将不能再进一步用于任何计算。这是因为 Infinity 没有可用于计算的数值表示形式。要确定一个值是不是有限大（即介于 JavaScript 能表示的最小值和最大值之间），可以使用 isFinite() 函数，如下所示：
+如果计算返回正 `Infinity` 或负 `Infinity` ，则该值将不能再进一步用于任何计算。这是因为 `Infinity` 没有可用于计算的数值表示形式。要确定一个值是不是有限大（即介于 JavaScript 能表示的最小值和最大值之间），可以使用 isFinite() 函数，如下所示：
 
 ```js
 let result = Number.MAX_VALUE + Number.MAX_VALUE;
@@ -1465,7 +1464,7 @@ console.log(isFinite(result)); // false
 
 虽然超出有限数值范围的计算并不多见，但总归还是有可能的。因此在计算非常大或非常小的数值时，有必要监测一下计算结果是否超出范围。
 
-> 注 意 使 用 Number.NEGATIVE_INFINITY 和 Number.POSITIVE_INFINITY 也可以获取正、负 Infinity 。没错，这两个属性包含的值分别就是 -Infinity 和 Infinity 。
+> 注 意 使 用 Number.NEGATIVE_INFINITY 和 Number.POSITIVE_INFINITY 也可以获取正、负 `Infinity` 。没错，这两个属性包含的值分别就是 `-Infinity` 和 `Infinity` 。
 
 3. NaN
 
@@ -1476,11 +1475,10 @@ console.log(0 / 0); // NaN
 console.log(-0 / +0); // NaN
 ```
 
-如果分子是非 0 值，分母是有符号 0 或无符号 0，则会返回 Infinity 或 -Infinity ：
+如果分子是非 0 值，分母是有符号 0 或无符号 0，则会返回 `Infinity` 或 `-Infinity` ：
 
 ```js
 console.log(5 / 0); // Infinity
-
 console.log(5 / -0); // -Infinity
 ```
 
@@ -1518,7 +1516,7 @@ Number() 函数基于如下规则执行转换。
 - null ，返回 0。
 - undefined ，返回 NaN 。
 - 字符串，应用以下规则。
-  - 如果字符串包含数值字符，包括数值字符前面带加、减号的情况，则转换为一个十进制数值。因此，Number("1") 返回 1， Number("123") 返回 123，Number("011") 返回 11（忽略前面的零）。
+  - 如果字符串包含数值字符，包括数值字符前面带加、减号的情况，则转换为一个十进制数值。因此，`Number("1")` 返回 1， `Number("123")` 返回 123，`Number("011")` 返回 11（忽略前面的零）。
   - 如果字符串包含有效的浮点值格式如 "1.1" ，则会转换为相应的浮点值（同样，忽略前面的零）。
   - 如果字符串包含有效的十六进制格式如 "0xf" ，则会转换为与该十六进制值对应的十进制整数值。
   - 如果是空字符串（不包含字符），则返回 0。
@@ -1547,7 +1545,6 @@ let num = parseInt('0xAF', 16); // 175
 
 ```js
 let num1 = parseInt('AF', 16); // 175
-
 let num2 = parseInt('AF'); // NaN
 ```
 
@@ -1585,7 +1582,6 @@ String （字符串）数据类型表示零或多个 16 位 Unicode 字符序列
 ```js
 let firstName = 'John';
 let lastName = 'Jacob';
-
 let lastName = `Jingleheimerschmidt`;
 ```
 
@@ -1665,7 +1661,7 @@ let value4;
 
 这里展示了将 4 个值转换为字符串的情况：一个数值、一个布尔值、一个 null 和一个 undefined 。数值和布尔值的转换结果与调用 toString() 相同。因为 null 和 undefined 没有 toString() 方法，所以 String() 方法就直接返回了这两个值的字面量文本。
 
-> 注意 用加号操作符给一个值加上一个空字符串 "" 也可以将其转换为字符串（加号操作符本章后面会介绍）。
+> 注意 用加号操作符给一个值加上一个空字符串 `""` 也可以将其转换为字符串（加号操作符本章后面会介绍）。
 
 4. 模板字面量
 
@@ -1674,12 +1670,13 @@ ECMAScript 6 新增了使用模板字面量定义字符串的能力。与使用�
 ```js
 let myMultiLineString = 'first linensecond line';
 
-let myMultiLineTemplateLiteral = `first line second line`;
+let myMultiLineTemplateLiteral = `
+first line 
+second line`;
 
 console.log(myMultiLineString);
 
 // first line
-
 // second line"
 
 console.log(myMultiLineTemplateLiteral);
@@ -1706,25 +1703,20 @@ let pageHTML = `
 
 ```js
 // 这个模板字面量在换行符之后有 25 个空格符
-
 let myTemplateLiteral = `first line
 second line`;
 console.log(myTemplateLiteral.length); // 47
 
 // 这个模板字面量以一个换行符开头
-
 let secondTemplateLiteral = `
 first line
 second line`;
 console.log(secondTemplateLiteral[0] === 'n'); // true
 
 // 这个模板字面量没有意料之外的字符
-
 let thirdTemplateLiteral = `first line second line`;
 console.log(thirdTemplateLiteral[0]);
-
 // first line
-
 // second line
 ```
 
@@ -2847,7 +2839,7 @@ console.log(num.toString(2)); // "-10010"
 
 > 注意 默认情况下，ECMAScript 中的所有整数都表示为有符号数。不过，确实存在无符号整数。对无符号整数来说，第 32 位不表示符号，因为只有正值。无符号整数比有符号整数的范围更大，因为符号位被用来表示数值了。
 
-在对 ECMAScript 中的数值应用位操作符时，后台会发生转换：64 位数值会转换为 32 位数值，然后执行位操作，最后再把结果从 32 位转换为 64 位存储起来。整个过程就像处理 32 位数值一样，这让二进制操作变得与其他语言中类似。但这个转换也导致了一个奇特的副作用，即特殊值 NaN 和 Infinity 在位操作中都会被当成 0 处理。
+在对 ECMAScript 中的数值应用位操作符时，后台会发生转换：64 位数值会转换为 32 位数值，然后执行位操作，最后再把结果从 32 位转换为 64 位存储起来。整个过程就像处理 32 位数值一样，这让二进制操作变得与其他语言中类似。但这个转换也导致了一个奇特的副作用，即特殊值 NaN 和 `Infinity` 在位操作中都会被当成 0 处理。
 
 如果将位操作符应用到非数值，那么首先会使用 Number() 函数将该值转换为数值（这个过程是自动的），然后再应用位操作。最终结果是数值。
 
@@ -3006,13 +2998,13 @@ let newValue = oldValue >>> 5; // 等 于 十 进 制 134217726
 - 如果操作数是对象，则返回 false 。
 - 如果操作数是空字符串，则返回 true 。
 - 如果操作数是非空字符串，则返回 false 。如果操作数是数值 0，则返回 true 。
-- 如果操作数是非 0 数值（包括 Infinity ），则返回 false 。
+- 如果操作数是非 0 数值（包括 `Infinity` ），则返回 false 。
 - 如果操作数是 null ，则返回 true 。如果操作数是 NaN ，则返回 true 。
 - 如果操作数是 undefined ，则返回 true 。
 
 以下示例验证了上述行为：
 
-逻辑非操作符也可以用于把任意值转换为布尔值。同时使用两个叹号（ !! ），相当于调用了转型函数 Boolean() 。无论操作数是什么类型，第一个叹号总会返回布尔值。第二个叹号对该布尔值取反，从而给出变量真正对应的布尔值。结果与对同一个值使用 Boolean() 函数是一样的：
+逻辑非操作符也可以用于把任意值转换为布尔值。同时使用两个叹号（ !! ），相当于调用了转型函数 `Boolean()` 。无论操作数是什么类型，第一个叹号总会返回布尔值。第二个叹号对该布尔值取反，从而给出变量真正对应的布尔值。结果与对同一个值使用 `Boolean()` 函数是一样的：
 
 2. 逻辑与
 
@@ -3111,10 +3103,10 @@ let result = 34 * 56;
 不过，乘法操作符在处理特殊值时也有一些特殊的行为。
 
 - 如果操作数都是数值，则执行常规的乘法运算，即两个正值相乘是正值，两个负值相乘也是正值，正负符号不同的值相乘得到负值。
-- 如果 ECMAScript 不能表示乘积，则返回 Infinity 或 -Infinity 。
-- 如果有任一操作数是 NaN ，则返回 NaN 。如果是 Infinity 乘以 0，则返回 NaN 。
-- 如果是 Infinity 乘以非 0 的有限数值，则根据第二个操作数的符号返回 Infinity 或 -Infinity 。
-- 如果是 Infinity 乘以 Infinity ，则返回 Infinity 。
+- 如果 ECMAScript 不能表示乘积，则返回 `Infinity` 或 `-Infinity` 。
+- 如果有任一操作数是 NaN ，则返回 NaN 。如果是 `Infinity` 乘以 0，则返回 NaN 。
+- 如果是 `Infinity` 乘以非 0 的有限数值，则根据第二个操作数的符号返回 `Infinity` 或 `-Infinity` 。
+- 如果是 `Infinity` 乘以 `Infinity` ，则返回 `Infinity` 。
 - 如果有不是数值的操作数，则先在后台用 Number() 将其转换为数值，然后再应用上述规则。
 
 2. 除法操作符
@@ -3127,11 +3119,11 @@ let result = 66 / 11;
 
 跟乘法操作符一样，除法操作符针对特殊值也有一些特殊的行为。
 
-- 如果操作数都是数值，则执行常规的除法运算，即两个正值相除是正值，两个负值相除也是正值，符号不同的值相除得到负值。如果 ECMAScript 不能表示商，则返回 Infinity 或 -Infinity 。
+- 如果操作数都是数值，则执行常规的除法运算，即两个正值相除是正值，两个负值相除也是正值，符号不同的值相除得到负值。如果 ECMAScript 不能表示商，则返回 `Infinity` 或 `-Infinity` 。
 - 如果有任一操作数是 NaN ，则返回 NaN 。
-- 如果是 Infinity 除以 Infinity ，则返回 NaN 。如果是 0 除以 0，则返回 NaN 。
-- 如果是非 0 的有限值除以 0，则根据第一个操作数的符号返回 Infinity 或 -Infinity 。
-- 如果是 Infinity 除以任何数值，则根据第二个操作数的符号返回 Infinity 或 -Infinity 。
+- 如果是 `Infinity` 除以 `Infinity` ，则返回 NaN 。如果是 0 除以 0，则返回 NaN 。
+- 如果是非 0 的有限值除以 0，则根据第一个操作数的符号返回 `Infinity` 或 `-Infinity` 。
+- 如果是 `Infinity` 除以任何数值，则根据第二个操作数的符号返回 `Infinity` 或 `-Infinity` 。
 - 如果有不是数值的操作数，则先在后台用 Number() 函数将其转换为数值，然后再应用上述规则。
 
 3. 取模操作符
@@ -3145,7 +3137,7 @@ let result = 26 % 5; // 等于 1
 与其他乘性操作符一样，取模操作符对特殊值也有一些特殊的行为。
 
 - 如果操作数是数值，则执行常规除法运算，返回余数。如果被除数是无限值，除数是有限值，则返回 NaN 。如果被除数是有限值，除数是 0，则返回 NaN 。
-- 如果是 Infinity 除以 Infinity ，则返回 NaN 。如果被除数是有限值，除数是无限值，则返回被除数。如果被除数是 0，除数不是 0，则返回 0。
+- 如果是 `Infinity` 除以 `Infinity` ，则返回 NaN 。如果被除数是有限值，除数是无限值，则返回被除数。如果被除数是 0，除数不是 0，则返回 0。
 - 如果有不是数值的操作数，则先在后台用 Number() 函数将其转换为数值，然后再应用上述规则。
 
 ### 3.5.5 指数操作符
@@ -3191,9 +3183,9 @@ let result = 1 + 2;
 如果两个操作数都是数值，加法操作符执行加法运算并根据如下规则返回结果：
 
 - 如果有任一操作数是 NaN ，则返回 NaN ；
-- 如果是 Infinity 加 Infinity ，则返回 Infinity ；
-- 如果是 -Infinity 加 -Infinity ，则返回 -Infinity ；
-- 如果是 Infinity 加 -Infinity ，则返回 NaN ；
+- 如果是 `Infinity` 加 `Infinity` ，则返回 `Infinity` ；
+- 如果是 `-Infinity` 加 `-Infinity` ，则返回 `-Infinity` ；
+- 如果是 `Infinity` 加 `-Infinity` ，则返回 NaN ；
 - 如果是 +0 加 +0 ，则返回 +0 ；
 - 如果是 -0 加 +0 ，则返回 +0 ；
 - 如果是 -0 加 -0 ，则返回 -0 。
@@ -3260,9 +3252,9 @@ let result = 2 - 1;
 
 如果有任一操作数是 NaN ，则返回 NaN 。
 
-如果是 Infinity 减 Infinity ，则返回 NaN 。 如果是 -Infinity 减 -Infinity ，则返回 NaN 。
+如果是 `Infinity` 减 `Infinity` ，则返回 NaN 。 如果是 `-Infinity` 减 `-Infinity` ，则返回 NaN 。
 
-如果是 Infinity 减 -Infinity ，则返回 Infinity 。如果是 -Infinity 减 Infinity ，则返回 -Infinity 。
+如果是 `Infinity` 减 `-Infinity` ，则返回 `Infinity` 。如果是 `-Infinity` 减 `Infinity` ，则返回 `-Infinity` 。
 
 如果是 +0 减 +0 ，则返回 +0 。
 
@@ -3492,7 +3484,7 @@ if 语句是使用最频繁的语句之一，语法如下：
 if (condition) statement1 else statement2
 ```
 
-这里的条件（ condition ）可以是任何表达式，并且求值结果不一定是布尔值。ECMAScript 会自动调用 Boolean() 函数将这个表达式的值转换为布尔值。如果条件求值为 true ，则执行语句 statement1 ；如果条件求值为 false ，则执行语句 statement2 。这里的语句可能是一行代码，也可能是一个代码块（即包含在一对花括号中的多行代码）。来看下面的例子：
+这里的条件（ condition ）可以是任何表达式，并且求值结果不一定是布尔值。ECMAScript 会自动调用 `Boolean()` 函数将这个表达式的值转换为布尔值。如果条件求值为 true ，则执行语句 statement1 ；如果条件求值为 false ，则执行语句 statement2 。这里的语句可能是一行代码，也可能是一个代码块（即包含在一对花括号中的多行代码）。来看下面的例子：
 
 ```js
 if (i > 25) console.log('Greater than 25.');
@@ -6280,7 +6272,7 @@ eval = 'hi'; // 导 致 错 误
 
 3.  Global 对象属性
 
-Global 对象有很多属性，其中一些前面已经提到过了。像 undefined 、 NaN 和 Infinity 等特殊值都是 Global 对象的属性。此外，所有原生引用类型构造函数，比如 Object 和
+Global 对象有很多属性，其中一些前面已经提到过了。像 undefined 、 NaN 和 `Infinity` 等特殊值都是 Global 对象的属性。此外，所有原生引用类型构造函数，比如 Object 和
 
 Function ，也都是 Global 对象的属性。下表列出了所有这些属性。 4. window 对象
 
@@ -21270,7 +21262,7 @@ GPS 会更耗时、耗电，因此在使用 enableHighAccuracy
 
 timeout ：毫秒，表示在以 TIMEOUT 状态调用错误回调函数之前等待的最长时间。默认值是 0xFFFFFFFF（）。0 表示完全跳过系统调用而立即以 TIMEOUT 调用错误回调函 数。
 
-maximumAge ：毫秒，表示返回坐标的最长有效期，默认值为 0。因为查询设备位置会消耗资源，所以系统通常会缓存坐标并在下次返回缓存的值（遵从位置缓存失效策略）。系统会计算缓存期，如果 Geolocation API 请求的配置要求比缓存的结果更新，则系统会重新查询并返回值。0 表示强制系统忽略缓存的值，每次都重新查询。而 Infinity 会阻止系统重新查询，只会返回缓存的值。JavaScript 可以通过检查 Position 对象的 timestamp 属性值是否重复来判断返 回的是不是缓存值。
+maximumAge ：毫秒，表示返回坐标的最长有效期，默认值为 0。因为查询设备位置会消耗资源，所以系统通常会缓存坐标并在下次返回缓存的值（遵从位置缓存失效策略）。系统会计算缓存期，如果 Geolocation API 请求的配置要求比缓存的结果更新，则系统会重新查询并返回值。0 表示强制系统忽略缓存的值，每次都重新查询。而 `Infinity` 会阻止系统重新查询，只会返回缓存的值。JavaScript 可以通过检查 Position 对象的 timestamp 属性值是否重复来判断返 回的是不是缓存值。
 
 2.  Connection State 和 NetwrkInformation API
 
@@ -21354,7 +21346,7 @@ BatteryManager 包含 4 个只读属性，提供了设备电池的相关信息�
 
 charging ：布尔值，表示设备当前是否正接入电源充电。如果设备没有电池，则返回 true 。 chargingTime ：整数，表示预计离电池充满还有多少秒。如果电池已充满或设备没有电池，则返回 0。
 
-dischargingTime ：整数，表示预计离电量耗尽还有多少秒。如果设备没有电池，则返回 Infinity 。
+dischargingTime ：整数，表示预计离电量耗尽还有多少秒。如果设备没有电池，则返回 `Infinity` 。
 
 level ：浮点数，表示电量百分比。电量完全耗尽返回
 
