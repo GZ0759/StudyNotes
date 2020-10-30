@@ -2040,29 +2040,20 @@ Symbol.keyFor(123); // TypeError: 123 is not a symbol
 let o = {
   [s1]: 'foo val',
 };
-
 // 这样也可以：o[s1] = 'foo val';
-
 console.log(o);
-
 // {Symbol(foo): foo val}
 
 Object.defineProperty(o, s2, { value: 'bar val' });
-
 console.log(o);
-
 // {Symbol(foo): foo val, Symbol(bar): bar val}
 
 Object.defineProperties(o, {
   [s3]: { value: 'baz val' },
-
   [s4]: { value: 'qux val' },
 });
-
 console.log(o);
-
 // {Symbol(foo): foo val, Symbol(bar): bar val,
-
 // Symbol(baz): baz val, Symbol(qux): qux val}
 ```
 
@@ -2098,12 +2089,10 @@ console.log(o);
 ```js
 let o = {
   [Symbol('foo')]: 'foo val',
-
   [Symbol('bar')]: 'bar val',
 };
 
 console.log(o);
-
 // {Symbol(foo): "foo val", Symbol(bar): "bar val"}
 
 let barSymbol = Object.getOwnPropertySymbols(o).find((symbol) =>
@@ -2111,7 +2100,6 @@ let barSymbol = Object.getOwnPropertySymbols(o).find((symbol) =>
 );
 
 console.log(barSymbol);
-
 // Symbol(bar)
 ```
 
@@ -2138,7 +2126,6 @@ class Foo {
 
 let f = new Foo();
 console.log(f[Symbol.asyncIterator]());
-
 // AsyncGenerator {<suspended>}
 ```
 
@@ -2229,41 +2216,21 @@ console.log(b instanceof Baz); // false
 
 ```js
 let initial = ['foo'];
-
-let array = ['bar']; console.log(array[Symbol.isConcatSpreadable])
-
-; // undefined
-
-console.log(initial.concat(array));
-
-// ['foo', 'bar']
-array[Symbol.isConcatSpreadable] = false; console.log(initial.concat(array));
-
-// ['foo', Array(1)]
-
-let arrayLikeObject = { length: 1, 0: 'baz'
-
-};
-
-console.log(arrayLikeObject[Symbol.isConcatSp readable]); // undefined
-console.log(initial.concat(arrayLikeObject));
-
-// ['foo', {...}]
+let array = ['bar'];
+console.log(array[Symbol.isConcatSpreadable]); // undefined
+console.log(initial.concat(array)); // ['foo', 'bar']
+array[Symbol.isConcatSpreadable] = false;
+console.log(initial.concat(array)); // ['foo', Array(1)]
+let arrayLikeObject = { length: 1, 0: 'baz' };
+console.log(arrayLikeObject[Symbol.isConcatSpreadable]); // undefined
+console.log(initial.concat(arrayLikeObject)); // ['foo', {...}]
 arrayLikeObject[Symbol.isConcatSpreadable] = true;
-console.log(initial.concat(arrayLikeObject));
-
-// ['foo', 'baz']
-
-let otherObject = new Set().add('qux'); console.log(otherObject[Symbol.isConcatSpread able]); // undefined
-console.log(initial.concat(otherObject));
-
-// ['foo', Set(1)]
-
-otherObject[Symbol.isConcatSpreadable] =
-
-true; console.log(initial.concat(otherObject));
-
-// ['foo']
+console.log(initial.concat(arrayLikeObject)); // ['foo', 'baz']
+let otherObject = new Set().add('qux');
+console.log(otherObject[Symbol.isConcatSpreadable]); // undefined
+console.log(initial.concat(otherObject)); // ['foo', Set(1)]
+otherObject[Symbol.isConcatSpreadable] = true;
+console.log(initial.concat(otherObject)); // ['foo']
 ```
 
 8. Symbol.iterator
@@ -2319,11 +2286,9 @@ count();
 
 ```js
 console.log(RegExp.prototype[Symbol.match]);
-
 // f [Symbol.match]() { [native code] }
 
 console.log('foobar'.match(/bar/));
-
 // ["bar", index: 3, input: "foobar", groups: undefined]
 ```
 
@@ -2464,11 +2429,9 @@ class Baz extends Array {
 
 ```js
 console.log(RegExp.prototype[Symbol.split]);
-
 // f [Symbol.split]() { [native code] }
 
 console.log('foobarbaz'.split(/bar/));
-
 // ['foo', 'baz']
 ```
 
@@ -2481,9 +2444,7 @@ class FooSplitter {
   }
 }
 
-console.log('barfoobaz'.split(FooSplitter));
-
-// ["bar", "baz"]
+console.log('barfoobaz'.split(FooSplitter)); // ["bar", "baz"]
 
 class StringSplitter {
   constructor(str) {
@@ -2540,9 +2501,7 @@ console.log(3 + bar); // "3default bar" console.log(3 - bar); // 0 console.log(S
 ```js
 let s = new Set();
 
-console.log(s); //
-
-Set(0) {}
+console.log(s); //Set(0) {}
 
 console.log(s.toString()); // [object Set]
 console.log(s[Symbol.toStringTag]); // Set
@@ -2551,9 +2510,7 @@ class Foo {}
 
 let foo = new Foo();
 
-console.log(foo); // Foo
-
-{}
+console.log(foo); // Foo{}
 
 console.log(foo.toString()); // [object Object]
 console.log(foo[Symbol.toStringTag]); // undefined
@@ -2683,7 +2640,6 @@ age++;
 
 ```js
 console.log(num3); // 22
-
 console.log(num4); // 21
 ```
 
@@ -2749,9 +2705,7 @@ s2 = +s2; // 值变成数值 1.1
 s3 = +s3; // 值变成 NaN
 
 b = +b; // 值 变 成 数 值 0
-
 f = +f; // 不 变 ， 还 是 1.1
-
 o = +o; // 值 变 成 数 值 -1
 ```
 
@@ -2783,9 +2737,7 @@ s2 = -s2; // 值变成数值-1.1
 s3 = -s3; // 值变成 NaN
 
 b = -b; // 值 变 成 数 值 0
-
 f = -f; // 变 成 -1.1
-
 o = -o; // 值 变 成 数 值 1
 ```
 
@@ -2993,7 +2945,7 @@ let newValue = oldValue >>> 5; // 等 于 十 进 制 134217726
 
 1. 逻辑非
 
-逻辑非操作符由一个叹号（ ! ）表示，可应用给 ECMAScript 中的任何值。这个操作符始终返回布尔值，无论应用到的是什么数据类型。逻辑非操作符首先将操作数转换为布尔值，然后再对其取反。换句话说，逻辑非操作符会遵循如下规则。
+逻辑非操作符由一个叹号（ `!` ）表示，可应用给 ECMAScript 中的任何值。这个操作符始终返回布尔值，无论应用到的是什么数据类型。逻辑非操作符首先将操作数转换为布尔值，然后再对其取反。换句话说，逻辑非操作符会遵循如下规则。
 
 - 如果操作数是对象，则返回 false 。
 - 如果操作数是空字符串，则返回 true 。
@@ -3004,11 +2956,11 @@ let newValue = oldValue >>> 5; // 等 于 十 进 制 134217726
 
 以下示例验证了上述行为：
 
-逻辑非操作符也可以用于把任意值转换为布尔值。同时使用两个叹号（ !! ），相当于调用了转型函数 `Boolean()` 。无论操作数是什么类型，第一个叹号总会返回布尔值。第二个叹号对该布尔值取反，从而给出变量真正对应的布尔值。结果与对同一个值使用 `Boolean()` 函数是一样的：
+逻辑非操作符也可以用于把任意值转换为布尔值。同时使用两个叹号（ `!!` ），相当于调用了转型函数 `Boolean()` 。无论操作数是什么类型，第一个叹号总会返回布尔值。第二个叹号对该布尔值取反，从而给出变量真正对应的布尔值。结果与对同一个值使用 `Boolean()` 函数是一样的：
 
 2. 逻辑与
 
-逻辑与操作符由两个和号（ && ）表示，应用到两个值，如下所示：
+逻辑与操作符由两个和号（ `&&` ）表示，应用到两个值，如下所示：
 
 ```js
 let result = true && false;
@@ -3204,11 +3156,9 @@ toString() 方法以获取字符串，然后再应用前面的关于字符串的
 
 ```js
 let result1 = 5 + 5; // 两 个 数 值
-
 console.log(result1); // 10
 
 let result2 = 5 + '5'; // 一个数值和一个字符串
-
 console.log(result2); // "55"
 ```
 
@@ -3264,11 +3214,7 @@ let result = 2 - 1;
 
 如果有任一操作数是字符串、布尔值、 null 或 undefined ，则先在后台使用 Number() 将其转换为数值，然后再根据前面的规则执行数学运算。如果转换结果是 NaN ，则减法计算的结果是 NaN 。
 
-如果有任一操作数是对象，则调用其 valueOf() 方法取得表示它的数值。如果该值是 NaN ，则减法计算的结果是
-
-NaN 。如果对象没有 valueOf() 方法，则调用其
-
-toString() 方法，然后再将得到的字符串转换为数值。
+如果有任一操作数是对象，则调用其 valueOf() 方法取得表示它的数值。如果该值是 NaN ，则减法计算的结果是 NaN 。如果对象没有 valueOf() 方法，则调用其 toString() 方法，然后再将得到的字符串转换为数值。
 
 以下示例演示了上面的规则：
 
@@ -3334,9 +3280,7 @@ let result = '23' < 3; // false
 let result = 'a' < 3; // 因为"a"会转换为 NaN，所以结果是 false
 ```
 
-因为字符 "a" 不能转换成任何有意义的数值，所以只能转换为
-
-NaN 。这里有一个规则，即任何关系操作符在涉及比较 NaN 时都返回 false 。这样一来，下面的例子有趣了：
+因为字符 "a" 不能转换成任何有意义的数值，所以只能转换为 NaN 。这里有一个规则，即任何关系操作符在涉及比较 NaN 时都返回 false 。这样一来，下面的例子有趣了：
 
 ```js
 let result1 = NaN < 3; // false
@@ -3344,9 +3288,7 @@ let result1 = NaN < 3; // false
 let result2 = NaN >= 3; // false
 ```
 
-在大多数比较的场景中，如果一个值不小于另一个值，那就一定大于或等于它。但在比较 NaN 时，无论是小于还是大于等于，比较
-
-的结果都会返回 false 。
+在大多数比较的场景中，如果一个值不小于另一个值，那就一定大于或等于它。但在比较 NaN 时，无论是小于还是大于等于，比较的结果都会返回 false 。
 
 8. 相等操作符
 
@@ -3354,7 +3296,7 @@ let result2 = NaN >= 3; // false
 
 1. 等于和不等于
 
-ECMAScript 中的等于操作符用两个等于号（ == ）表示，如果操作数相等，则会返回 true 。不等于操作符用叹号和等于号（ != ）表示，如果两个操作数不相等，则会返回 true 。这两个操作符都会先进行类型转换（通常称为强制类型转换）再确定操作数是否相等。
+ECMAScript 中的等于操作符用两个等于号（ `==` ）表示，如果操作数相等，则会返回 true 。不等于操作符用叹号和等于号（ `!=` ）表示，如果两个操作数不相等，则会返回 true 。这两个操作符都会先进行类型转换（通常称为强制类型转换）再确定操作数是否相等。
 
 在转换操作数的类型时，相等和不相等操作符遵循如下规则。 如果任一操作数是布尔值，则将其转换为数值再比较是否相等。 false 转换为 0， true 转换为 1。
 
@@ -3370,9 +3312,7 @@ null 和 undefined 不能转换为其他类型的值再进行比较。
 
 如果有任一操作数是 NaN ，则相等操作符返回 false ，不相等操作符返回 true 。记住：即使两个操作数都是 NaN ，相等操作符也返回 false ，因为按照规则， NaN 不等于 NaN 。
 
-如果两个操作数都是对象，则比较它们是不是同一个对象。如果两个操作数都指向同一个对象，则相等操作符返回
-
-true 。否则，两者不相等。
+如果两个操作数都是对象，则比较它们是不是同一个对象。如果两个操作数都指向同一个对象，则相等操作符返回 true 。否则，两者不相等。
 
 下表总结了一些特殊情况及比较的结果。 2. 全等和不全等
 
@@ -3386,7 +3326,7 @@ let result2 = '55' === 55; // false，不相等，因为数据类型不同
 
 在这个例子中，第一个比较使用相等操作符，比较的是字符串 "55" 和数值 55 。如前所述，因为字符串 "55" 会被转换为数值 55，然后再与数值 55 进行比较，所以返回 true 。第二个比较使用全等操作符，因为没有转换，字符串和数值当然不能相等，所以返回 false 。
 
-不全等操作符用一个叹号和两个等于号（ !== ）表示，只有两个操作数在不转换的前提下不相等才返回 true 。比如：
+不全等操作符用一个叹号和两个等于号（ `!==` ）表示，只有两个操作数在不转换的前提下不相等才返回 true 。比如：
 
 ```js
 let result1 = '55' != 55; // false，转换后相等
@@ -3424,13 +3364,13 @@ let max = num1 > num2 ? num1 : num2;
 
 10. 赋值操作符
 
-简单赋值用等于号（ = ）表示，将右手边的值赋给左手边的变量，如下所示：
+简单赋值用等于号（ `=` ）表示，将右手边的值赋给左手边的变量，如下所示：
 
 ```js
 let num = 10;
 ```
 
-复合赋值使用乘性、加性或位操作符后跟等于号（ = ）表示。这些赋值操作符是类似如下常见赋值操作的简写形式：
+复合赋值使用乘性、加性或位操作符后跟等于号（ `=` ）表示。这些赋值操作符是类似如下常见赋值操作的简写形式：
 
 ```js
 let num = 10;
@@ -3446,11 +3386,11 @@ num += 10;
 
 每个数学操作符以及其他一些操作符都有对应的复合赋值操作符：
 
-乘后赋值（ \*= ） 除后赋值（ /= ） 取模后赋值（ %= ）加后赋值（ += ） 减后赋值（ -= ）
+乘后赋值（ `*=` ） 除后赋值（ `/=` ） 取模后赋值（ `%=` ）加后赋值（ `+=` ） 减后赋值（ `-=` ）
 
-左移后赋值（ <<= ）右移后赋值（ >>= ）
+左移后赋值（ `<<=` ）右移后赋值（ `>>=` ）
 
-无符号右移后赋值（ >>>= ）
+无符号右移后赋值（ `>>>=` ）
 
 这些操作符仅仅是简写语法，使用它们不会提升性能。
 
@@ -3604,7 +3544,6 @@ let count = 10;
 let i = 0;
 for (; i < count; ) {
   console.log(i);
-
   i++;
 }
 ```
