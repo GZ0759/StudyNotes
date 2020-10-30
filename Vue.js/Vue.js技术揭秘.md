@@ -39,6 +39,8 @@ function split(str) {
 }
 
 split(11)
+
+// Found 1 error
 ```
 
 Flow 检查上述代码后会报错，因为函数 `split` 期待的参数是字符串，而我们输入了数字。
@@ -57,6 +59,8 @@ function add(x, y){
 }
 
 add('Hello', 11)
+
+// No errors!
 ```
 
 Flow 检查上述代码时检查不出任何错误，因为从语法层面考虑， `+` 既可以用在字符串上，也可以用在数字上，我们并没有明确指出 `add()` 的参数必须为数字。
@@ -73,6 +77,8 @@ function add(x: number, y: number): number {
 }
 
 add('Hello', 11)
+
+// Found 1 error
 ```
 
 现在 Flow 就能检查出错误，因为函数参数的期待类型为数字，而我们提供了字符串。
@@ -87,6 +93,8 @@ add('Hello', 11)
 var arr: Array<number> = [1, 2, 3]
 
 arr.push('Hello')
+
+// Found 1 error
 ```
 
 数组类型注释的格式是 `Array<T>`，`T` 表示数组中每项的数据类型。在上述代码中，arr 是每项均为数字的数组。如果我们给这个数组添加了一个字符串，Flow 能检查出错误。
@@ -117,6 +125,7 @@ var obj: { a: string, b: number, c: Array<string>, d: Bar } = {
   d: new Bar('hello', 3)
 }
 
+// No errors!
 ```
 
 类的类型注释格式如上，可以对类自身的属性做类型检查，也可以对构造函数的参数做类型检查。这里需要注意的是，属性 `y` 的类型中间用 `|` 做间隔，表示 `y` 的类型即可以是字符串也可以是数字。
@@ -131,6 +140,8 @@ var obj: { a: string, b: number, c: Array<string>, d: Bar } = {
 /*@flow*/
 
 var foo: ?string = null
+
+// No errors!
 ```
 
 此时，`foo` 可以为字符串，也可以为 `null`。
@@ -166,7 +177,7 @@ flow
 
 Vue.js 的源码都在 src 目录下，其目录结构如下。
 
-```
+```shell
 src
 ├── compiler        # 编译相关 
 ├── core            # 核心代码 
