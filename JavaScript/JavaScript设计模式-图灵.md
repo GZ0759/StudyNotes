@@ -2335,107 +2335,124 @@ module.facade( {run: true, val:10} );
 
 当使用这个模式的时候，尝试了解任何有关性能上面的消耗，要知道它们是否值得以抽象的级别被提供出来调用。
 
-## 9.10 工厂模式
+## 9.10 Factory（工厂）模式
 
-Factory（工厂）模式是另一种创建型模式，涉及创建对象的概念。其分类不同于其他模式的地方在于它不显式地要求使用一个构造函数。而 Factory 可以提供一个通用的接口来创建对象，我们可以指定我们所希望创建的工厂对象的类型。
+Factory 模式是另一种创建型模式，涉及创建对象的概念。其分类不同于其他模式的地方在于它不显式地要求使用一个构造函数。而 Factory 可以提供一个通用的接口来创建对象，我们可以指定我们所希望创建的工厂对象的类型。
 
-假设有一个UI工厂，我们要创建一个UI组件的类型。不需要直接使用new运算符或者通过另一个创建型构造函数创建这个组件，而是要求Factory对象创建一个新的组件。我们通知Factory需要什么类型的对象（如“按钮”、“面板”），它会进行实例化，然后将它返回给我们使用。
+假设有一个 UI 工厂，我们要创建一个 UI 组件的类型。不需要直接使用 new 运算符或者通过另一个创建型构造函数创建这个组件，而是要求 Factory 对象创建一个新的组件。我们通知 Factory 需要什么类型的对象（如“按钮”、“面板”），它会进行实例化，然后将它返回给我们使用。
 
 如果对象创建过程相对比较复杂，这种方法特别有用，例如，如果它强烈依赖于动态因素或应用程序配置的话。
 
-可以在ExtJS等UI库中找到此模式的示例，其中创建对象或组件的方法也有可能被归入子类了。
+可以在 ExtJS 等 UI 库中找到此模式的示例，其中创建对象或组件的方法也有可能被归入子类了。
 
-下面这个示例构建在之前的代码片段之上，使用Constructor模式逻辑来定义汽车。它展示了如何使用Factory模式来实现vehicle工厂：
+下面这个示例构建在之前的代码片段之上，使用 Constructor 模式逻辑来定义汽车。它展示了如何使用 Factory 模式来实现 vehicle 工厂：
 
 ```js
-function Car( options ) {
+// Types.js –本例构造函数的存放文件
+
+// 定义Car构造函数
+function Car(options) {
+  // 默认值
   this.doors = options.doors || 4;
-  this.state = options.state || "brand new";
-  this.color = options.color || "silver";
+  this.state = options.state || 'brand new';
+  this.color = options.color || 'silver';
 }
 
-function Truck( options){
-  this.state = options.state || "used";
-  this.wheelSize = options.wheelSize || "large";
-  this.color = options.color || "blue";
+// 定义Truck构造函数
+function Truck(options) {
+  this.state = options.state || 'used';
+  this.wheelSize = options.wheelSize || 'large';
+  this.color = options.color || 'blue';
 }
 
-// 定义vehicle工厂
+// FactoryExample.js
+
+// 定义vehicle工厂的大体代码
 function VehicleFactory() {}
 
-// 定义该工厂的原型和试用工具，默认的vehicleClass是Car
+// 定义该工厂factory的原型和试用工具
+
+// 默认的vehicleClass是Car
 VehicleFactory.prototype.vehicleClass = Car;
 
 // 创建新Vehicle实例的工厂方法
-VehicleFactory.prototype.createVehicle = function ( options ) {
-  if( options.vehicleType === "car" ){
+VehicleFactory.prototype.createVehicle = function (options) {
+  if (options.vehicleType === 'car') {
     this.vehicleClass = Car;
-  }else{
+  } else {
     this.vehicleClass = Truck;
   }
-  return new this.vehicleClass( options );
+  return new this.vehicleClass(options);
 };
 
 // 创建生成汽车的工厂实例
 var carFactory = new VehicleFactory();
-var car = carFactory.createVehicle( {
-  vehicleType: "car",
-  color: "yellow",
-  doors: 6 } );
+var car = carFactory.createVehicle({
+  vehicleType: 'car',
+  color: 'yellow',
+  doors: 6,
+});
+
+// 测试汽车是由vehicleClass的原型prototype里的Car创建的
 
 // 输出: true
-console.log( car instanceof Car );
+console.log(car instanceof Car);
 
-// 输出: Car {doors: 6, state: "brand new", color: "yellow"}
-console.log( car );
+// 输出: Car对象，color: "yellow", doors: 6,state:"brand new"
+console.log(car);
 ```
 
-方法1: 修改 VehicleFactory 实例使用 Truck 类
+在方法 1 中，我们修改了 VehicleFactory 实例来使用 Truck 类：
 
 ```js
-var movingTruck = carFactory.createVehicle( {
-  vehicleType: "truck",
-  state: "like new",
-  color: "red",
-  wheelSize: "small" } );
+var movingTruck = carFactory.createVehicle({
+  vehicleType: 'truck',
+  state: 'like new',
+  color: 'red',
+  wheelSize: 'small',
+});
+
+// 测试卡车是由vehicleClass的原型prototype里的Truck创建的
 
 // 输出: true
-console.log( movingTruck instanceof Truck );
+console.log(movingTruck instanceof Truck);
 
-// 输出: Truck {state: "like new", wheelSize: "small", color: "red"}
-console.log( movingTruck );
+// 输出: Truck对象，color ："red", state："like new" ，wheelSize："small"
+console.log(movingTruck);
 ```
 
-方法2: 做 VehicleFactory 的子类用于创建一个工厂类生产 Trucks
+在方法 2 中，我们把 VehicleFactory 归入子类来创建一个构建 Truck 的工厂类：
 
 ```js
-function TruckFactory () {}
+function TruckFactory() {}
 TruckFactory.prototype = new VehicleFactory();
 TruckFactory.prototype.vehicleClass = Truck;
 
 var truckFactory = new TruckFactory();
-var myBigTruck = truckFactory.createVehicle( {
-  state: "omg..so bad.",
-  color: "pink",
-  wheelSize: "so big" } );
+var myBigTruck = truckFactory.createVehicle({
+  state: 'omg..so bad.',
+  color: 'pink',
+  wheelSize: 'so big',
+});
 
+// 确认myBigTruck是由原型Truck创建的
 // 输出: true
-console.log( myBigTruck instanceof Truck );
+console.log(myBigTruck instanceof Truck);
 
-// 输出: Truck {state: "omg..so bad.", wheelSize: "so big", color: "pink"}
-console.log( myBigTruck );
+// 输出：Truck对象，color: pink", wheelSize: "so big", state: "omg. so bad"
+console.log(myBigTruck);
 ```
 
 ### 9.10.1 何时使用工厂模式
 
-Factory模式应用于如下场景时是特别有用的：
+Factory 模式应用于如下场景时是特别有用的：
 
 - 当对象或组件设置涉及高复杂性时
 - 当需要根据所在的不同环境轻松生成对象的不同实例时
 - 当处理很多共享相同属性的小型对象或组件时
-- 在编写只需要满足一个API契约（亦称鸭子类型）的其他对象的实例对象时。对于解耦是很有用的。
+- 在编写只需要满足一个 API 契约（亦称鸭子类型）的其他对象的实例对象时。对于解耦是很有用的。
 
-### 9.10.2 何时不要去使用工厂模式
+### 9.10.2 何时不应使用 Factory 模式
 
 如果应用错误，这种模式会为应用程序带来大量不必要的复杂性。除非为创建对象提供一个接口是我们正在编写的库或框架的设计目标，否则我建议坚持使用显式构造函数，以避免不必要的开销。
 
@@ -2447,7 +2464,7 @@ Factory模式应用于如下场景时是特别有用的：
 
 应当使用抽象工厂模式的情况是：一个系统必须独立于它所创建的对象的生成方式，或它需要与多种对象类型一起工作。
 
-既简单又容易理解的示例是车辆工厂，它定义了获取或注册车辆类型的方法。抽象工厂可以命名为AbstractVehicleFactory。抽象工厂将允许对像car或truck这样的车辆类型进行定义，具体工厂只需要实现履行车辆契约的类（如Vehicle.prototype.drive和Vehicle.prototype.breakDown）。
+既简单又容易理解的示例是车辆工厂，它定义了获取或注册车辆类型的方法。抽象工厂可以命名为 AbstractVehicleFactory。抽象工厂将允许对像 car 或 truck 这样的车辆类型进行定义，具体工厂只需要实现履行车辆契约的类（如 Vehicle.prototype.drive 和 Vehicle.prototype.breakDown）。
 
 ```js
 var AbstractVehicleFactory = (function () {
@@ -2468,13 +2485,17 @@ var AbstractVehicleFactory = (function () {
     }
   };
 })();
+
 // 用法:
+
 AbstractVehicleFactory.registerVehicle( "car", Car );
 AbstractVehicleFactory.registerVehicle( "truck", Truck );
+
 // 基于抽象车辆类型实例化一个新car对象
 var car = AbstractVehicleFactory.getVehicle( "car" , {
   color: "lime green",
   state: "like new" } );
+
 // 同理实例化一个新truck对象
 var truck = AbstractVehicleFactory.getVehicle( "truck" , {
   wheelSize: "medium",
