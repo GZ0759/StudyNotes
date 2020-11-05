@@ -5316,6 +5316,7 @@ export function nextTick (cb?: Function, ctx?: Object) {
   }
 }
 ```
+
 `next-tick.js` 申明了 `microTimerFunc` 和 `macroTimerFunc` 2 个变量，它们分别对应的是 micro task 的函数和 macro task 的函数。对于 macro task 的实现，优先检测是否支持原生 `setImmediate`，这是一个高版本 IE 和 Edge 才支持的特性，不支持的话再去检测是否支持原生的 `MessageChannel`，如果也不支持的话就会降级为 `setTimeout 0`；而对于 micro task 的实现，则检测浏览器是否原生支持 Promise，不支持的话直接指向 macro task 的实现。
 
 `next-tick.js` 对外暴露了 2 个函数，先来看 `nextTick`，这就是我们在上一节执行 `nextTick(flushSchedulerQueue)` 所用到的函数。它的逻辑也很简单，把传入的回调函数 `cb` 压入 `callbacks` 数组，最后一次性地根据 `useMacroTask` 条件执行 `macroTimerFunc` 或者是 `microTimerFunc`，而它们都会在下一个 tick 执行 `flushCallbacks`，`flushCallbacks` 的逻辑非常简单，对 `callbacks` 遍历，然后执行相应的回调函数。
@@ -5323,6 +5324,7 @@ export function nextTick (cb?: Function, ctx?: Object) {
 这里使用 `callbacks` 而不是直接在 `nextTick` 中执行回调函数的原因是保证在同一个 tick 内多次执行 `nextTick`，不会开启多个异步任务，而把这些异步任务都压成一个同步任务，在下一个 tick 执行完毕。
 
 `nextTick` 函数最后还有一段逻辑：
+
 ```js
  if (!cb && typeof Promise !== 'undefined') {
   return new Promise(resolve => {
@@ -5330,10 +5332,13 @@ export function nextTick (cb?: Function, ctx?: Object) {
   })
 }
 ```
+
 这是当 `nextTick` 不传 `cb` 参数的时候，提供一个 Promise 化的调用，比如：
+
 ```js
 nextTick().then(() => {})
 ```
+
 当 `_resolve` 函数执行，就会跳到 `then` 的逻辑中。
 
 `next-tick.js` 还对外暴露了 `withMacroTask` 函数，它是对函数做一层包装，确保函数执行过程中对数据任意的修改，触发变化执行 `nextTick` 的时候强制走 `macroTimerFunc`。比如对于一些 DOM 交互事件，如 `v-on` 绑定的事件回调函数的处理，会强制走 macro task。

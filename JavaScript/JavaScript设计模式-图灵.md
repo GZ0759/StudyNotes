@@ -2464,7 +2464,7 @@ Factory 模式应用于如下场景时是特别有用的：
 
 应当使用抽象工厂模式的情况是：一个系统必须独立于它所创建的对象的生成方式，或它需要与多种对象类型一起工作。
 
-既简单又容易理解的示例是车辆工厂，它定义了获取或注册车辆类型的方法。抽象工厂可以命名为 AbstractVehicleFactory。抽象工厂将允许对像 car 或 truck 这样的车辆类型进行定义，具体工厂只需要实现履行车辆契约的类（如 Vehicle.prototype.drive 和 Vehicle.prototype.breakDown）。
+既简单又容易理解的示例是车辆工厂，它定义了获取或注册车辆类型的方法。抽象工厂可以命名为 AbstractVehicleFactory。抽象工厂将允许对像 car 或 truck 这样的车辆类型进行定义，具体工厂只需要实现履行车辆契约的类（如 `Vehicle.prototype.drive` 和 `Vehicle.prototype.breakDown`）。
 
 ```js
 var AbstractVehicleFactory = (function () {
@@ -2473,7 +2473,7 @@ var AbstractVehicleFactory = (function () {
   return {
     getVehicle: function ( type, customizations ) {
         var Vehicle = types[type];
-        return (Vehicle) ? return new Vehicle(customizations) : null;
+        return (Vehicle ? new Vehicle(customizations) : null);
     },
     registerVehicle: function ( type, Vehicle ) {
         var proto = Vehicle.prototype;
