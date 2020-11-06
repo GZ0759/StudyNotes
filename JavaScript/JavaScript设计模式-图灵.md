@@ -217,134 +217,182 @@ console.log( myCar.getInfo() );
 
 # 第9章 JavaScript设计模式
 
-## 9.1 构造器模式
+在本章中，我们将探索一些经典与现代设计模式的JavaScript实现。
 
-在经典面向对象编程语言中，Constructor（构造器）是一种在内存已分配给该对象的情况下，用来初始化新创建对象的特殊方法。在JavaScript中，几乎所有的东西都是对象，我们通常最感兴趣的是 object 构造器。
+开发人员通常想知道他们是否应该在工作中使用一种“理想”的模式或模式集。这个问题没有明确的唯一答案，我们研究的每个脚本和 Web 应用程序可能都有它自己的个性化需求，我们需要思考模式的哪些方面能够为实现提供实际价值。
 
-Object 构造器用于创建特定类型的对象，准备好对象以备使用，同时接收构造器可以使用的参数，以在第一次创建对象时，设置成员属性和方法的值。
+例如，一些项目可能会受益于观察者模式提供的解耦好处（这可以减少应用程序的某些部分对彼此的依赖度），而有些项目可能只是因为太小，而根本无需考虑解耦。
+
+也就是说，一旦我们牢牢掌握了设计模式和与它们最为相配的具体问题，那么将它们集成到我们的应用程序架构中就会变得更加容易。
+
+在本节中将要探索的模式包括：
+
+- Constructor（构造器）模式；
+- Module（模块）模式；
+- Revealing Module（揭示模块）模式；
+- Singleton（单例）模式；
+- Observer（观察者）模式；
+- Mediator（中介者）模式；
+- Prototype（原型）模式；
+- Command（命令）模式；
+- Facade（外观）模式；
+- Factory（工厂）模式；
+- Mixin（混入）模式；
+- Decorator（装饰者）模式；
+- Flyweight（享元）模式。
+
+## 9.1 Constructor（构造器）模式
+
+在经典面向对象编程语言中，Constructor 是一种在内存已分配给该对象的情况下，用于初始化新创建对象的特殊方法。在 JavaScript 中，几乎所有东西都是对象，我们通常最感兴趣的是 object 构造器。
+
+Object 构造器用于创建特定类型的对象——准备好对象以备使用，同时接收构造器可以使用的参数，以在第一次创建对象时，设置成员属性和方法的值（见图 9-1）。
 
 ### 9.1.1 对象创建
 
-下面是我们创建对象的三种基本方式。最后一个例子中"Object"构造器创建了一个针对特殊值的对象包装，只不过这里没有传值给它，所以它将会返回一个空对象。
+在 JavaScript 中，创建新对象的两种常用方法如下所示：
 
 ```js
+//下面每种方式都将创建一个新的空对象
+
 var newObject = {};
-// or
-var newObject = Object.create( null );
-// or
+
+// Object构造器的简洁记法
 var newObject = new Object();
 ```
 
-有四种方式可以将一个键值对赋给一个对象:   
-ECMAScript 3 兼容形式。包括点语法（Dot syntax）和中括号语法（Square bracket syntax）。
+在 Object 构造器为特定的值创建对象封装，或者没有传递值时，它将创建一个空对象并返回它。
+
+有四种方法可以将键值赋值给一个对象：
 
 ```js
-// 点语法
-newObject.someKey = "Hello World";
+// ECMAScript 3兼容方式
+
+// 1. “点”语法
+
+// 设置属性
+newObject.someKey = 'Hello World';
+// 获取属性
 var key = newObject.someKey;
 
-// 中括号语法
-newObject["someKey"] = "Hello World";
-var key = newObject["someKey"];
-```
+// 2. 中括号语法
 
-只适用 ECMAScript 5 的方式。包括`Object.defineProperty`和 `Object.defineProperties`。
+// 设置属性
+newObject['someKey'] = 'Hello World';
+// 获取属性
+var key = newObject['someKey'];
 
-```js
-// Object.defineProperty
-Object.defineProperty( newObject, "someKey", {
-    value: "for more control of the property's behavior",
+// 只适用ECMAScript 5 的方式
+
+// 3. Object.defineProperty
+
+// 设置属性
+Object.defineProperty(newObject, 'someKey', {
+  value: "for more control of the property's behavior",
+  writable: true,
+  enumerable: true,
+  configurable: true,
+});
+
+// 如果上面的看着麻烦，可以使用下面的简便方式
+var defineProp = function (obj, key, value) {
+  config.value = value;
+  Object.defineProperty(obj, key, config);
+};
+// 使用上述方式，先创建一个空的person对象
+var person = Object.create(null);
+// 然后设置各个属性
+defineProp(person, 'car', 'Delorean');
+defineProp(person, 'dateOfBirth', '1981');
+defineProp(person, 'hasBeard', false);
+
+//4.Object.defineProperties
+
+// 设置属性
+Object.defineProperties(newObject, {
+  "someKey": {
+    value: 'Hello World',
     writable: true,
-    enumerable: true,
-    configurable: true
-});
-// {someKey: "for more control of the property's behavior"}
-
-// Object.defineProperties
-Object.defineProperties( newObject, {
-  "someKey": { 
-    value: "Hello World", 
-    writable: true 
   },
-  "anotherKey": { 
-    value: "Foo bar", 
-    writable: false 
-  } 
+  "anotherKey": {
+    value: 'Foo bar',
+    writable: false,
+  },
 });
-// {someKey: "Hello World", anotherKey: "Foo bar"}
+// 可以用1和2中获取属性的方式获取3和4方式中的属性
 ```
 
-在这本书的后面一点，这些方法会被用于继承，如下：
+正如我们将在本书稍后看到的，这些方法甚至可以用于继承，如下所示：
 
 ```js
-// 创建一个继承与Person的赛车司机
-var driver = Object.create( person );
+// 用法
 
-// 设置司机的属性
-defineProp(driver, "topSpeed", "100mph");
+// 创建赛车司机driver对象，继承于person对象
+var driver = Object.create(person);
 
-// 获取继承的属性 (1981)
-console.log( driver.dateOfBirth );
+// 为driver设置一些属性
+defineProp(driver, 'topSpeed', '100mph');
 
-// 获取我们设置的属性 (100mph)
-console.log( driver.topSpeed );
+// 获取继承的属性
+console.log(driver.dateOfBirth);
+
+// 获取我们设置的100mph的属性
+console.log(driver.topSpeed);
 ```
 
-### 9.1.2 基本构造器
+### 9.1.2 基本 Constructor（构造器）
 
-正如我们先前所看到的，Javascript不支持类的概念，但它确实支持与对象一起用的 constructor（构造器）函数。使用new关键字来调用该函数，使 Javascript 像使用构造器一样实例化一个新对象，并且对象成员由该函数定义。
+正如我们在前面所看到的，JavaScript 不支持类的概念，但它确实支持与对象一起用的特殊 constructor（构造器）函数。通过在构造器前面加 new 关键字，告诉 JavaScript 像使用构造器一样实例化一个新对象，并且对象成员由该函数定义。
 
-在构造器中，关键字 this 引用新创建的对象。一个基本的构造器看起来是这个样子:
+在构造器内，关键字 this 引用新创建的对象。回顾对象创建，基本的构造器看起来可能是这样的：
 
 ```js
-function Car( model, year, miles ) {
-
+function Car(model, year, miles) {
   this.model = model;
   this.year = year;
   this.miles = miles;
-
   this.toString = function () {
-    return this.model + " has done " + this.miles + " miles";
+    return this.model + ' has done ' + this.miles + ' miles';
   };
 }
+// 用法
+// 可以创建car的新实例
+var civic = new Car('Honda Civic', 2009, 20000);
+var mondeo = new Car('Ford Mondeo', 2010, 5000);
 
-// 实例化
-var civic = new Car( "Honda Civic", 2009, 20000 );
-var mondeo = new Car( "Ford Mondeo", 2010, 5000 );
-
-console.log( civic.toString() );
-// Honda Civic has done 20000 miles
-console.log( mondeo.toString() );
-// VM169:18 Ford Mondeo has done 5000 miles
+// 打开浏览器控制台，查看这些对象上调用的toString()方法的输出
+console.log(civic.toString());
+console.log(mondeo.toString());
 ```
 
-上面这是个简单版本的构造器模式，但它还是有些问题。一个是难以继承，另一个是每个 Car 构造函数创建的对象中，`toString()`之类的函数都被重新定义。这不是非常好，理想的情况是所有 Car 类型的对象都应该引用同一个函数。 值得庆幸的是，因为有很多 ES3 和 ES5 兼容替代方法能够用于创建对象，所以很容易解决这个限制问题。
+上面是一个简单的构造器模式版本，但它确实有一些问题。其中一个问题是，它使继承变得困难，另一个问题是，`toString()`这样的函数是为每个使用 Car 构造器创建的新对象而分别重新定义的。这不是最理想的，因为这种函数应该在所有的 Car 类型实例之间共享。
 
-### 9.1.3 使用“原型”的构造器
+值得庆幸的是，因为有很多 ES3 和 ES5 兼容替代方法能够用于创建对象，所以很容易解决这个限制问题。
 
-在Javascript中函数有一个prototype的属性。调用JavaScript 构造器创建一个对象后，新对象就会具有构造器原型的所有属性。通过这种方式，就可以创建多个访问相同prototype的Car对象了。
+### 9.1.3 带原型的 Constructor（构造器）
+
+JavaScript 中有一个名为 prototype 的属性。调用 JavaScript 构造器创建一个对象后，新对象就会具有构造器原型的所有属性。通过这种方式，可以创建多个 Car 对象，并访问相同的原型。因此我们可以扩展原始示例，如下所示：
 
 ```js
-function Car( model, year, miles ) {
-
+function Car(model, year, miles) {
   this.model = model;
   this.year = year;
   this.miles = miles;
-
 }
 
+// 注意这里我们使用Object.prototype.newMethod而不是Object.prototype是为了避免重新定义prototype对象
 Car.prototype.toString = function () {
-  return this.model + " has done " + this.miles + " miles";
+  return this.model + ' has done ' + this.miles + ' miles';
 };
+//用法：
 
-var civic = new Car( "Honda Civic", 2009, 20000 );
-var mondeo = new Car( "Ford Mondeo", 2010, 5000 );
+var civic = new Car('Honda Civic', 2009, 20000);
+var mondeo = new Car('Ford Mondeo', 2010, 5000);
 
-console.log( civic.toString() );
-console.log( mondeo.toString() );
+console.log(civic.toString());
+console.log(mondeo.toString());
 ```
 
-通过上面代码，单个`toString()`实例被所有的Car对象所共享了。
+现在 `toString()` 的单一实例就能够在所有 Car 对象之间共享。
 
 ## 9.2 模块模式
 
