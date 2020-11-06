@@ -4742,6 +4742,7 @@ value = this.getter.call(vm, vm)
 ```
 
 `this.getter` 对应就是 `updateComponent` 函数，这实际上就是在执行：
+
 ```js
 vm._update(vm._render(), hydrating)
 ```
@@ -4774,11 +4775,13 @@ if (this.deep) {
   traverse(value)
 }
 ```
+
 这个是要递归去访问 `value`，触发它所有子项的 `getter`，这个之后会详细讲。接下来执行：
 
 ```js
 popTarget()
 ```
+
 `popTarget` 的定义在 `src/core/observer/dep.js` 中：
 
 ```js
@@ -5559,6 +5562,7 @@ methodsToPatch.forEach(function (method) {
   })
 })
 ```
+
 可以看到，`arrayMethods` 首先继承了 `Array`，然后对数组中所有能改变数组自身的方法，如 `push、pop` 等这些方法进行重写。重写后的方法会先执行它们本身原有的逻辑，并对能增加数组长度的 3 个方法 `push、unshift、splice` 方法做了判断，获取到插入的值，然后把新添加的值变成一个响应式对象，并且再调用 ` ob.dep.notify()` 手动触发依赖通知，这就很好地解释了之前的示例中调用 `vm.items.splice(newLength)` 方法可以检测到变化。
 
 ### 4.6.3 总结
