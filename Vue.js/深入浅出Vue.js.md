@@ -786,7 +786,7 @@ export class Observer {
 
 也就是说，所有被侦测了变化的数据身上都会有一个 `__ob__` 属性来表示它们是响应式的。上一节中的 observe 函数就是通过 `__ob__` 属性来判断：如果 value 是响应式的，则直接返回 `__ob__`；如果不是响应式的，则使用 `new Observer` 来将数据转换成响应式数据。
 
-当 value 身上被标记了 `__ob__` 之后，就可以通过 value.`__ob__` 来访问 Observer 实例。如果是 Array 拦截器，因为拦截器是原型方法，所以可以直接通过 `this.__ob__` 来访问 Observer 实例。例如：
+当 value 身上被标记了 `__ob__` 之后，就可以通过 `value.__ob__` 来访问 Observer 实例。如果是 Array 拦截器，因为拦截器是原型方法，所以可以直接通过 `this.__ob__` 来访问 Observer 实例。例如：
 
 ```js
 ['push', 'pop', 'shift', 'unshift', 'splice', 'sort', 'reverse'].forEach(
@@ -827,7 +827,7 @@ export class Observer {
 );
 ```
 
-在上面的代码中，我们调用了 `ob.dep.notify()`去通知依赖（Watcher）数据发生了改变。
+在上面的代码中，我们调用了 `ob.dep.notify()` 去通知依赖（Watcher）数据发生了改变。
 
 ## 3.10 侦测数组中元素的变化
 
@@ -874,7 +874,7 @@ export class Observer {
 
 在上面的代码中，我们在 Observer 中新增了对 Array 类型数据的处理逻辑。
 
-这里新增了 observeArray 方法，其作用是循环 Array 中的每一项，执行 observe 函数来侦测变化。前面介绍过 observe 函数，其实就是将数组中的每个元素都执行一遍 new Observer，这很明显是一个递归的过程。
+这里新增了 observeArray 方法，其作用是循环 Array 中的每一项，执行 observe 函数来侦测变化。前面介绍过 observe 函数，其实就是将数组中的每个元素都执行一遍 `new Observer`，这很明显是一个递归的过程。
 
 现在只要将一个数据丢进去，Observer 就会把这个数据的所有子数据转换成响应式的。接下来，我们介绍如何侦测数组中新增元素的变化。
 
@@ -1011,7 +1011,7 @@ vm.$watch(expOrFn, callback, [options]);
 
 ### 4.1.2 watch 的内部原理
 
-`vm.$watch`其实是对 Watcher 的一种封装，通过 Watcher 完全可以实现`vm.$watch`的功能，但`vm.$watch`中的参数 deep 和 immediate 是 Watcher 中所没有的。下面我们来看一看`vm.$watch`到底是怎么实现的。
+`vm.$watch` 其实是对 Watcher 的一种封装，通过 Watcher 完全可以实现 `vm.$watch` 的功能，但 `vm.$watch` 中的参数 deep 和 immediate 是 Watcher 中所没有的。下面我们来看一看 `vm.$watch` 到底是怎么实现的。
 
 ```js
 Vue.prototype.$watch = function (expOrFn, cb, options) {
@@ -1027,7 +1027,7 @@ Vue.prototype.$watch = function (expOrFn, cb, options) {
 };
 ```
 
-可以看到，代码不多，逻辑也不算复杂。先执行 `new Watcher` 来实现`vm.$watch`的基本功能。
+可以看到，代码不多，逻辑也不算复杂。先执行 `new Watcher` 来实现 `vm.$watch` 的基本功能。
 
 这里有一个细节需要注意，expOrFn 是支持函数的，前面未做介绍。这里需要对 Watcher 进行一个简单的修改。
 
@@ -1549,7 +1549,7 @@ export function del(target, key) {
 
 本章中，我们详细介绍了变化侦测相关 API 的内部实现原理。
 
-我们先介绍了`vm.$watch`的内部实现及其相关参数的实现原理，包括 deep、immediate 和 unwatch。
+我们先介绍了 `vm.$watch` 的内部实现及其相关参数的实现原理，包括 deep、immediate 和 unwatch。
 
 随后介绍了`vm.$set`的内部实现。这里介绍了几种情况，分别为 Array 的处理逻辑，key 已经存在的处理逻辑，以及最红要的新增属性的处理逻辑。
 
