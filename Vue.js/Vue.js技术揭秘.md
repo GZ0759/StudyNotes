@@ -4090,6 +4090,7 @@ export function initState (vm: Component) {
   }
 }
 ```
+
 `initState` 方法主要是对 `props`、`methods`、`data`、`computed` 和 `wathcer` 等属性做了初始化操作。这里我们重点分析 `props` 和 `data`，对于其它属性的初始化我们之后再详细分析。
 
 **initProps**
@@ -5623,7 +5624,7 @@ function initComputed (vm: Component, computed: Object) {
 
 函数首先创建 `vm._computedWatchers` 为一个空对象，接着对 `computed` 对象做遍历，拿到计算属性的每一个 `userDef`，然后尝试获取这个 `userDef` 对应的 `getter` 函数，拿不到则在开发环境下报警告。接下来为每一个 `getter` 创建一个 `watcher`，这个 `watcher` 和渲染 `watcher` 有一点很大的不同，它是一个 `computed watcher`，因为 `const computedWatcherOptions = { computed: true }`。`computed watcher` 和普通 `watcher` 的差别我稍后会介绍。最后对判断如果 `key` 不是 `vm` 的属性，则调用 `defineComputed(vm, key, userDef)`，否则判断计算属性对于的 `key` 是否已经被 `data` 或者 `prop` 所占用，如果是的话则在开发环境报相应的警告。
  
- 那么接下来需要重点关注 `defineComputed` 的实现：
+那么接下来需要重点关注 `defineComputed` 的实现：
  
 ```js
 export function defineComputed (
@@ -5743,6 +5744,7 @@ evaluate () {
   return this.value
 }
 ```
+
 `evaluate` 的逻辑非常简单，判断 `this.dirty`，如果为 `true` 则通过 `this.get()` 求值，然后把 `this.dirty` 设置为 false。在求值过程中，会执行 `value = this.getter.call(vm, vm)`，这实际上就是执行了计算属性定义的 `getter` 函数，在我们这个例子就是执行了 `return this.firstName + ' ' + this.lastName`。
 
 这里需要特别注意的是，由于 `this.firstName` 和 `this.lastName` 都是响应式对象，这里会触发它们的 getter，根据我们之前的分析，它们会把自身持有的 `dep` 添加到当前正在计算的 `watcher` 中，这个时候 `Dep.target` 就是这个 `computed watcher`。
@@ -5863,6 +5865,7 @@ function createWatcher (
   return vm.$watch(expOrFn, handler, options)
 }
 ```
+
 这里的逻辑也很简单，首先对 `hanlder` 的类型做判断，拿到它最终的回调函数，最后调用 `vm.$watch(keyOrFn, handler, options)` 函数，`$watch` 是 Vue 原型上的方法，它是在执行 `stateMixin` 的时候定义的：
 
 ```js
@@ -5906,6 +5909,7 @@ if (options) {
   this.deep = this.user = this.computed = this.sync = false
 }
 ```
+
 所以 `watcher` 总共有 4 种类型，我们来一一分析它们，看看不同的类型执行的逻辑有哪些差别。
 
 #### deep watcher
@@ -5929,6 +5933,7 @@ var vm = new Vue({
 })
 vm.a.b = 2
 ```
+
 这个时候是不会 log 任何数据的，因为我们是 watch 了 `a` 对象，只触发了 `a` 的 getter，并没有触发 `a.b` 的 getter，所以并没有订阅它的变化，导致我们对 `vm.a.b = 2` 赋值的时候，虽然触发了 setter，但没有可通知的对象，所以也并不会触发 watch 的回调函数了。
 
 而我们只需要对代码做稍稍修改，就可以观测到这个变化了
@@ -5955,6 +5960,7 @@ get() {
   }
 }
 ```
+
 在对 watch 的表达式或者函数求值后，会调用 `traverse` 函数，它的定义在 `src/core/observer/traverse.js` 中：
 
 ```js
@@ -6177,6 +6183,7 @@ return function patch (oldVnode, vnode, hydrating, removeOnly) {
   return vnode.elm
 }
 ```
+
 这里执行 `patch` 的逻辑和首次渲染是不一样的，因为 `oldVnode` 不为空，并且它和 `vnode` 都是 VNode 类型，接下来会通过 `sameVNode(oldVnode, vnode)` 判断它们是否是相同的 VNode 来决定走不同的更新逻辑：
 
 ```js
@@ -6257,6 +6264,7 @@ if (isDef(vnode.parent)) {
   }
 }
 ```
+
 我们只关注主要逻辑即可，找到当前 `vnode` 的父的占位符节点，先执行各个 `module` 的 `destroy` 的钩子函数，如果当前占位符是一个可挂载的节点，则执行 `module` 的 `create` 钩子函数。对于这些钩子函数的作用，在之后的章节会详细介绍。
 
 - 删除旧节点
@@ -6416,6 +6424,7 @@ function patchVnode (oldVnode, vnode, insertedVnodeQueue, removeOnly) {
   }
 }
 ```
+
 `patchVnode` 的作用就是把新的 `vnode` `patch` 到旧的 `vnode` 上，这里我们只关注关键的核心逻辑，我把它拆成四步骤：
 
 - 执行 `prepatch` 钩子函数
@@ -6557,12 +6566,9 @@ if (isUndef(vnode.text)) {
 如果 `vnode` 是个文本节点且新旧文本不相同，则直接替换文本内容。如果不是文本节点，则判断它们的子节点，并分了几种情况处理：
 
 1. `oldCh` 与 `ch` 都存在且不相同时，使用 `updateChildren` 函数来更新子节点，这个后面重点讲。
-
-2.如果只有 `ch` 存在，表示旧节点不需要了。如果旧的节点是文本节点则先将节点的文本清除，然后通过 `addVnodes` 将 `ch` 批量插入到新节点 `elm` 下。
-                    
-3.如果只有 `oldCh` 存在，表示更新的是空节点，则需要将旧的节点通过 `removeVnodes` 全部清除。
-          
-4.当只有旧节点是文本节点的时候，则清除其节点文本内容。
+2. 如果只有 `ch` 存在，表示旧节点不需要了。如果旧的节点是文本节点则先将节点的文本清除，然后通过 `addVnodes` 将 `ch` 批量插入到新节点 `elm` 下。                    
+3. 如果只有 `oldCh` 存在，表示更新的是空节点，则需要将旧的节点通过 `removeVnodes` 全部清除。       
+4. 当只有旧节点是文本节点的时候，则清除其节点文本内容。
 
 - 执行 `postpatch` 钩子函数
 
@@ -6571,6 +6577,7 @@ if (isDef(data)) {
   if (isDef(i = data.hook) && isDef(i = i.postpatch)) i(oldVnode, vnode)
 }
 ```
+
 再执行完 `patch` 过程后，会执行 `postpatch` 钩子函数，它是组件自定义的钩子函数，有则执行。
 
 那么在整个 `pathVnode` 过程中，最复杂的就是 `updateChildren` 方法了，下面我们来单独介绍它。
