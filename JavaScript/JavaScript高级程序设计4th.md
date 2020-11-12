@@ -19596,7 +19596,7 @@ fooPromiseExecutor() 已经返回，所以它不在错误信息 中。但 foo() 
 
 BOM 是在缺乏规范的背景下发展起来的，因此既充满乐趣又问题多多。毕竟，浏览器开发商都按照自己的意愿来为它添砖加瓦。最终，浏览器实现之间共通的部分成为了事实标准，为 Web 开发提供了浏览器间互操作的基础。HTML5 规范中有一部分涵盖了 BOM 的主要内容，因为 W3C 希望将 JavaScript 在浏览器中最基础的部分标准化。
 
-1.  window 对象
+## 12.1 window 对象
 
 BOM 的核心是 window 对象，表示浏览器的实例。 window 对象在浏览器中有两重身份，一个是 ECMAScript 中的 Global 对象，另一个就是浏览器窗口的 JavaScript 接口。这意味着网页中定义的所有对象、变量和函数都以 window 作为其 Global 对象，都可以访问其上定义的 parseInt() 等全局方 法。
 
@@ -19610,6 +19610,7 @@ window 对象属性的形式暴露出来。这些 API 将在全书各章中介�
 
 因为 window 对象被复用为 ECMAScript 的 Global 对象，所以通过 var 声明的所有全局变量和函数都会变成 window 对象的属性和方法。比如：
 
+```js
 var age = 29;
 
 var sayAge = () => alert(this.age);
@@ -19619,15 +19620,15 @@ alert(window.age); // 29
 sayAge(); // 29
 
 window.sayAge(); // 29
+```
 
 这里，变量 age 和函数 sayAge() 被定义在全局作用域中，它们自动成为了 window 对象的成员。因此，变量 age 可以通过 window.age 来访问，而函数 sayAge() 也可以通过
 
-window.sayAge() 来访问。因为 sayAge() 存在于全局作用域， this.age 映射到
-
-window.age ，所以就可以显示正确的结果了。
+window.sayAge() 来访问。因为 sayAge() 存在于全局作用域， this.age 映射到 window.age ，所以就可以显示正确的结果了。
 
 如果在这里使用 let 或 const 替代 var ，则不会把变量添加给全局对象：
 
+```js
 let age = 29;
 
 const sayAge = () => alert(this.age);
@@ -19637,9 +19638,11 @@ alert(window.age); // undefined
 sayAge(); // undefined
 
 window.sayAge(); // TypeError: window.sayAge is not a function
+```
 
 另外，访问未声明的变量会抛出错误，但是可以在 window 对象上查询是否存在可能未声明的变量。比如：
 
+```js
 // 这会导致抛出错误，因为 oldValue 没有声明
 
 var newValue = oldValue;
@@ -19649,6 +19652,7 @@ var newValue = oldValue;
 // newValue 会被设置为 undefined
 
 var newValue = window.oldValue;
+```
 
 记住，JavaScript 中有很多对象都暴露在全局作用域中，比如 location 和 navigator （本章后面都会讨论），因而它们也是 window 对象的属性。
 
@@ -19660,23 +19664,20 @@ window 如果不是通过 window.open() 打开的，那么其 name 属性就不�
 
 还有一个 self 对象，它是终极 window 属性，始终会指向 window 。实际上， self 和
 
-window 就是同一个对象。之所以还要暴露 self ，就是为了和 top 、 parent 保持一致。这些属性都是 window 对象的属性，因此访问 window.parent 、 window.top 和
-
-window.self 都可以。这意味着可以把访问多个窗口的 window 对象串联起来，比如
+window 就是同一个对象。之所以还要暴露 self ，就是为了和 top 、 parent 保持一致。这些属性都是 window 对象的属性，因此访问 window.parent 、 window.top 和 window.self 都可以。这意味着可以把访问多个窗口的 window 对象串联起来，比如
 
 window.parent.parent 。
 
 3.  窗口位置与像素比
 
-window 对象的位置可以通过不同的属性和方法来确定。现代浏览器提供了 screenLeft 和
-
-screenTop 属性，用于表示窗口相对于屏幕左侧和顶部的位置 ，返回值的单位是 CSS 像素。
+window 对象的位置可以通过不同的属性和方法来确定。现代浏览器提供了 screenLeft 和 screenTop 属性，用于表示窗口相对于屏幕左侧和顶部的位置 ，返回值的单位是 CSS 像素。
 
 可以使用 moveTo() 和 moveBy() 方法移动窗口。这两个方法都接收两个参数，其中 moveTo()接收要移动到的新位置的绝对坐标和；而 moveBy() 则接收相对当前位置在两个方向上移动的像素数。比如：
 
+```js
 // 把窗口移动到左上角
 
-window.moveTo(0,0);
+window.moveTo(0, 0);
 
 // 把窗口向下移动 100 像素
 
@@ -19689,6 +19690,7 @@ window.moveTo(200, 300);
 // 把窗口向左移动 50 像素
 
 window.moveBy(-50, 0);
+```
 
 依浏览器而定，以上方法可能会被部分或全部禁用。像素比
 
@@ -19710,52 +19712,38 @@ innerWidth 、 innerHeight 、 outerWidth 和 outerHeight 。 outerWidth 和
 
 outerHeight 返回浏览器窗口自身的大小（不管是在最外层 window 上使用，还是在窗格 <frame>中使用）。 innerWidth 和 innerHeight 返回浏览器窗口中页面视口的大小（不包含浏览器边框和工具栏）。
 
-document.documentElement.clientWidth 和
+document.documentElement.clientWidth 和 document.documentElement.clientHeight 返回页面视口的宽度和高度。 浏览器窗口自身的精确尺寸不好确定，但可以确定页面视口的大小，如下所示：
 
-document.documentElement.clientHeight 返回页面视口的宽度和高度。 浏览器窗口自身的精确尺寸不好确定，但可以确定页面视口的大小，如下所示：
+```js
+let pageWidth = window.innerWidth,
+  pageHeight = window.innerHeight;
 
-let pageWidth = window.innerWidth, pageHeight = window.innerHeight;
-
-if (typeof pageWidth != "number") {
-
-if (document.compatMode == "CSS1Compat"){
-
-pageWidth = document.documentElement.clientWidth; pageHeight = document.documentElement.clientHeight;
-
-} else {
-
-pageWidth = document.body.clientWidth; pageHeight = document.body.clientHeight;
-
+if (typeof pageWidth != 'number') {
+  if (document.compatMode == 'CSS1Compat') {
+    pageWidth = document.documentElement.clientWidth;
+    pageHeight = document.documentElement.clientHeight;
+  } else {
+    pageWidth = document.body.clientWidth;
+    pageHeight = document.body.clientHeight;
+  }
 }
+```
 
-}
+这里，先将 pageWidth 和 pageHeight 的值分别设置为 window.innerWidth 和 window.innerHeight 。然后，检查 pageWidth 是不是一个数值，如果不是则通过 document.compatMode 来检查页面是否处于标准模式。如果是，则使用 document.documentElement.clientWidth 和 document.documentElement.clientHeight ；否则，就使用 document.body.clientWidth 和 document.body.clientHeight 。
 
-这里，先将 pageWidth 和 pageHeight 的值分别设置为 window.innerWidth 和
+在移动设备上， window.innerWidth 和 window.innerHeight 返回视口的大小，也就是屏幕上页面可视区域的大小。Mobile Internet Explorer 支持这些属性，但在 document.documentElement.clientWidth 和 document.documentElement.clientHeight 中提供了相同的信息。在放大或缩小页面时，这些值也会相应变化。
 
-window.innerHeight 。然后，检查 pageWidth 是不是一个数值，如果不是则通过
-
-document.compatMode 来检查页面是否处于标准模式。如果是，则使用 document.documentElement.clientWidth 和 document.documentElement.clientHeight ；否则，就使用 document.body.clientWidth 和 document.body.clientHeight 。
-
-在移动设备上， window.innerWidth 和 window.innerHeight 返回视口的大小，也就是屏幕上页面可视区域的大小。Mobile Internet Explorer 支持这些属性，但在
-
-document.documentElement.clientWidth 和
-
-document.documentElement.clientHeight 中提供了相同的信息。在放大或缩小页面时，这些值也会相应变化。
-
-在其他移动浏览器中， document.documentElement.clientWidth 和
-
-document.documentElement.clientHeight 返回的布局视口的大小，即渲染页面的实际大小。布局视口是相对于可见视口的概念，可见视口只能显示整个页面的一小部分。Mobile Internet Explorer 把布局视口的信息保存在 document.body.clientWidth 和 document.body.clientHeight 中。在放大或缩小页面时，这些值也会相应变化。
+在其他移动浏览器中， document.documentElement.clientWidth 和 document.documentElement.clientHeight 返回的布局视口的大小，即渲染页面的实际大小。布局视口是相对于可见视口的概念，可见视口只能显示整个页面的一小部分。Mobile Internet Explorer 把布局视口的信息保存在 document.body.clientWidth 和 document.body.clientHeight 中。在放大或缩小页面时，这些值也会相应变化。
 
 因为桌面浏览器的差异，所以需要先确定用户是不是在使用移动设备，然后再决定使用哪个属性。
 
-> 注意 手机视口的概念比较复杂，有各种各样的问题。如果读者在做移动开发，推荐阅读 Peter-Paul
-
-Koch 发表在 QuirksMode 网站上的文章“A Tale of Two Viewports— Part Two”。
+> 注意 手机视口的概念比较复杂，有各种各样的问题。如果读者在做移动开发，推荐阅读 Peter-PaulKoch 发表在 QuirksMode 网站上的文章“A Tale of Two Viewports— Part Two”。
 
 可以使用 resizeTo() 和 resizeBy() 方法调整窗口大小。这两个方法都接收两个参数，
 
 resizeTo() 接收新的宽度和高度值，而 resizeBy() 接收宽度和高度各要缩放多少。下面看个例子：
 
+```js
 // 缩放到 100×100
 
 window.resizeTo(100, 100);
@@ -19767,6 +19755,7 @@ window.resizeBy(100, 50);
 // 缩放到 300×300
 
 window.resizeTo(300, 300);
+```
 
 与移动窗口的方法一样，缩放窗口的方法可能会被浏览器禁用，而且在某些浏览器中默认是禁用的。同样，缩放窗口的方法只能应用到最上层的 window 对象。
 
@@ -19778,6 +19767,7 @@ window.pageXoffset / window.scrollX 和 window.pageYoffset / window.scrollY 。
 
 可以使用 scroll() 、 scrollTo() 和 scrollBy() 方法滚动页面。这 3 个方法都接收表示相对视口距离的和坐标，这两个参数在前两个方法中表示要滚动到的坐标，在最后一个方法中表示滚动的距离。
 
+```js
 // 相对于当前视口向下滚动 100 像素
 
 window.scrollBy(0, 100);
@@ -19793,24 +19783,29 @@ window.scrollTo(0, 0);
 // 滚动到距离屏幕左边及顶边各 100 像素的位置
 
 window.scrollTo(100, 100);
+```
 
 这几个方法也都接收一个 ScrollToOptions 字典，除了提供偏移值，还可以通过 behavior 属性告诉浏览器是否平滑滚动。
 
+```js
 // 正常滚动
 
-window.scrollTo({ left: 100,
+window.scrollTo({
+  left: 100,
 
-top: 100, behavior: 'auto'
-
+  top: 100,
+  behavior: 'auto',
 });
 
 // 平滑滚动
 
-window.scrollTo({ left: 100,
+window.scrollTo({
+  left: 100,
 
-top: 100, behavior: 'smooth'
-
+  top: 100,
+  behavior: 'smooth',
 });
+```
 
 6.  导航与打开新窗口
 
@@ -19818,9 +19813,11 @@ window.open() 方法可以用于导航到指定 URL，也可以用于打开新�
 
 如果 window.open() 的第二个参数是一个已经存在的窗口或窗格（frame）的名字，则会在对应的窗口或窗格中打开 URL。下面是一个例子：
 
+```js
 // 与[<a](http://www.wrox.com/) href="http://www.wrox.com" target="topFrame"/>相同
 
 window.open[(](http://www.wrox.com/)"http://www.wrox.com/", "topFrame");
+```
 
 执行这行代码的结果就如同用户点击了一个 href [属性为](http://www.wrox.com/) "http://www.wrox.com" ， target 属性为 "topFrame" 的链接。如果有一个窗口名叫 "topFrame" ，则这个窗口就会打开这个 URL；否则就会打开一个新窗口并将其命名为 "topFrame" 。第二个参数也可以是一个特殊的窗口名，比如
 
@@ -19841,6 +19838,7 @@ window.open[(](http://www.wrox.com/)"http://www.wrox.com/",
 
 window.open() 方法返回一个对新建窗口的引用。这个对象与普通 window 对象没有区别，只是为控制新窗口提供了方便。例如，某些浏览器默认不允许缩放或移动主窗口，但可能允许缩放或移动通过 window.open() 创建的窗口。跟使用任何 window 对象一样，可以使用这个对象操纵新打开的窗口。
 
+```js
 let wroxWin = window.open[(](http://www.wrox.com/)"http://www.wrox.com/", "wroxWindow",
 
 "height=400,width=400,top=10,left=10,resizable=yes");
@@ -19852,32 +19850,42 @@ wroxWin.resizeTo(500, 500);
 // 移 动
 
 wroxWin.moveTo(100, 100);
+```
 
 还可以使用 close() 方法像这样关闭新打开的窗口：
 
+```js
 wroxWin.close();
+```
 
 这个方法只能用于 window.open() 创建的弹出窗口。虽然不可能不经用户确认就关闭主窗口，但弹出窗口可以调用 top.close() 来关闭自己。关闭窗口以后，窗口的引用虽然还在，但只能用于检查其 closed 属性了：
 
-wroxWin.close(); alert(wroxWin.closed); // true
+```js
+wroxWin.close();
+alert(wroxWin.closed); // true
+```
 
 新创建窗口的 window 对象有一个属性 opener ，指向打开它的窗口。这个属性只在弹出窗口的最上层 window 对象（ top ）有定义，是指向调用 window.open() 打开它的窗口或窗格的指针。例如：
 
+```js
 let wroxWin = window.open[(](http://www.wrox.com/)"http://www.wrox.com/", "wroxWindow",
 
 "height=400,width=400,top=10,left=10,resizable=yes");
 
 alert(wroxWin.opener === window); // true
+```
 
 虽然新建窗口中有指向打开它的窗口的指针，但反之则不然。窗口不会跟踪记录自己打开的新窗口，因此开发者需要自己记录。
 
 在某些浏览器中，每个标签页会运行在独立的进程中。如果一个标签页打开了另一个，而 window 对象需要跟另一个标签页通信，那么标签便不能运行在独立的进程中。在这些浏览器中，可以将新打开的标签页的 opener 属性设置为 null ，表示新打开的标签页可以运行在独立的进程中。比如：
 
+```js
 let wroxWin = window.open[(](http://www.wrox.com/)"http://www.wrox.com/", "wroxWindow",
 
 "height=400,width=400,top=10,left=10,resizable=yes");
 
 wroxWin.opener = null;
+```
 
 把 opener 设置为 null 表示新打开的标签页不需要与打开它的标签页通信，因此可以在独立进程中运行。这个连接一旦切断，就无法恢复了。
 
@@ -19897,14 +19905,17 @@ IE 的早期版本实现针对弹窗的多重安全限制，包括不允许创�
 
 所有现代浏览器都内置了屏蔽弹窗的程序，因此大多数意料之外的弹窗都会被屏蔽。在浏览器屏蔽弹窗时，可能会发生一些事。如果浏览器内置的弹窗屏蔽程序阻止了弹窗，那么 window.open() 很可能会返回 null 。此时，只要检查这个方法的返回值就可以知道弹窗是否被屏蔽了，比如：
 
+```js
 let wroxWin = window.open[(](http://www.wrox.com/)"http://www.wrox.com", "\_blank"); if (wroxWin == null){
 
 alert("The popup was blocked!");
 
 }
+```
 
 在浏览器扩展或其他程序屏蔽弹窗时， window.open() 通常会抛出错误。因此要准确检测弹窗是否被屏蔽，除了检测 window.open() 的返回值，还要把它用 try / catch 包装起来，像这样：
 
+```js
 let blocked = false;
 
 try {
@@ -19926,6 +19937,7 @@ if (blocked){
 alert("The popup was blocked!");
 
 }
+```
 
 无论弹窗是用什么方法屏蔽的，以上代码都可以准确判断调用 window.open() 的弹窗是否被屏蔽了。
 
@@ -19937,21 +19949,25 @@ JavaScript 在浏览器中是单线程执行的，但允许使用定时器指定
 
 setTimeout() 方法通常接收两个参数：要执行的代码和在执行回调函数前等待的时间（毫秒）。第一个参数可以是包含 JavaScript 代码的字符串（类似于传给 eval() 的字符串）或者一个函数，比如：
 
+```js
 // 在 1 秒后显示警告框
 
-setTimeout(() => alert("Hello world!"), 1000);
+setTimeout(() => alert('Hello world!'), 1000);
+```
 
 第二个参数是要等待的毫秒数，而不是要执行代码的确切时间。JavaScript 是单线程的，所以每次只能执行一段代码。为了调度不同代码的执行，JavaScript 维护了一个任务队列。其中的任务会按照添加到队列的先后顺序执行。 setTimeout() 的第二个参数只是告诉 JavaScript 引擎在指定的毫秒数过后把任务添加到这个队列。如果队列是空的，则会立即执行该代码。如果队列不是空的，则代码必须等待前面的任务执行完才能执行。
 
 调用 setTimeout() 时，会返回一个表示该超时排期的数值 ID。这个超时 ID 是被排期执行代码的唯一标识符，可用于取消该任务。要取消等待中的排期任务，可以调用 clearTimeout() 方法并传入超时 ID，如下面的例子所示：
 
+```js
 // 设置超时任务
 
-let timeoutId = setTimeout(() => alert("Hello world!"), 1000);
+let timeoutId = setTimeout(() => alert('Hello world!'), 1000);
 
 // 取消超时任务
 
 clearTimeout(timeoutId);
+```
 
 只要是在指定时间到达之前调用 clearTimeout() ，就可以取消超时任务。在任务执行后再调用
 
@@ -19965,7 +19981,9 @@ setTimeout() 提供了一个箭头函数，那么 this 会保留为定义它时�
 
 setInterval() 与 setTimeout() 的使用方法类似，只不过指定的任务会每隔指定时间就执行一次，直到取消循环定时或者页面卸载。 setInterval() 同样可以接收两个参数：要执行的代码（字符串或函数），以及把下一次执行定时代码的任务添加到队列要等待的时间（毫秒）。下面是一个例子：
 
-setInterval(() => alert("Hello world!"), 10000);
+```js
+setInterval(() => alert('Hello world!'), 10000);
+```
 
 > 注意 这里的关键点是，第二个参数，也就是间隔时间，指的是向队列添加新任务之前等待的时间。比如，调用 setInterval() 的时间为 01:00:00，间隔时间为 3000 毫秒。这意味着 01:00:03 时，浏览器会把任务添加到执行队列。浏览器不关心这个任务什么时候执行或者执行要花多长时间。因此，到了 01:00:06，它会再向队列中添加一个任务。由此可看出，执行时间短、非阻塞的回调函数比较适合
 
@@ -19973,39 +19991,45 @@ setInterval() 。
 
 setInterval() 方法也会返回一个循环定时 ID，可以用于在未来某个时间点上取消循环定时。要取消循环定时，可以调用 clearInterval() 并传入定时 ID。相对于 setTimeout() 而言，取消定时的能力对 setInterval() 更加重要。毕竟，如果一直不管它，那么定时任务会一直执行到页面卸载。下面是一个常见的例子：
 
-let num = 0, intervalId = null; let max = 10;
+```js
+let num = 0,
+  intervalId = null;
+let max = 10;
 
-let incrementNumber = function() { num++;
+let incrementNumber = function () {
+  num++;
 
-// 如果达到最大值，则取消所有未执行的任务
+  // 如果达到最大值，则取消所有未执行的任务
 
-if (num == max) { clearInterval(intervalId); alert("Done");
-
-}
-
-}
+  if (num == max) {
+    clearInterval(intervalId);
+    alert('Done');
+  }
+};
 
 intervalId = setInterval(incrementNumber, 500);
+```
 
 在这个例子中，变量 num 会每半秒递增一次，直至达到最大限制值。此时循环定时会被取消。这个模式也可以使用 setTimeout() 来实现，比如：
 
-let num = 0; let max = 10;
+```js
+let num = 0;
+let max = 10;
 
-let incrementNumber = function() { num++;
+let incrementNumber = function () {
+  num++;
 
-// 如果还没有达到最大值，再设置一个超时任务
+  // 如果还没有达到最大值，再设置一个超时任务
 
-if (num < max) { setTimeout(incrementNumber, 500);
-
-} else {
-
-alert("Done");
-
-}
-
-}
+  if (num < max) {
+    setTimeout(incrementNumber, 500);
+  } else {
+    alert('Done');
+  }
+};
 
 setTimeout(incrementNumber, 500);
+```
 
 注意在使用 setTimeout() 时，不一定要记录超时 ID，因为它会在条件满足时自动停止，否则会自动设置另一个超时任务。这个模式是设置循环任务的推荐做法。 setIntervale() 在实践中很少会在生产环境下使用，因为一个任务结束和下一个任务开始之间的时间间隔是无法保证的，有些循环定时任务可能会因此而被跳过。而像前面这个例子中一样使用 setTimeout() 则能确保不会出现这种情况。一般来说，最好不要使用 setInterval() 。
 
@@ -20027,13 +20051,13 @@ alert() 方法在本书示例中经常用到。它接收一个要显示给用户
 
 要知道用户单击了 OK 按钮还是 Cancel 按钮，可以判断 confirm() 方法的返回值： true 表示单击了 OK 按钮， false 表示单击了 Cancel 按钮或者通过单击某一角上的 X 图标关闭了确认框。确认框的典型用法如下所示：
 
-if (confirm("Are you sure\?")) { alert("I'm so glad you're sure!");
-
+```js
+if (confirm('Are you sure?')) {
+  alert("I'm so glad you're sure!");
 } else {
-
-alert("I'm sorry to hear you're not sure.");
-
+  alert("I'm sorry to hear you're not sure.");
 }
+```
 
 在这个例子中，第一行代码向用户显示了确认框，也就是 if 语句的条件。如果用户单击了 OK 按钮，则会弹出警告框显示 "I'm so glad you're sure!" 。如果单击了 Cancel，则会显示 "I'm sorry to hear you're not sure." 。确认框通常用于让用户确认执行某个操作，比如删除邮件等。因为这种对话框会完全打断正在浏览网页的用户，所以应该在必要时再使用。
 
@@ -20043,11 +20067,13 @@ alert("I'm sorry to hear you're not sure.");
 
 如果用户单击了 OK 按钮，则 prompt() 会返回文本框中的值。如果用户单击了 Cancel 按钮，或者对话框被关闭，则 prompt() 会返回 null 。下面是一个例子：
 
+```js
 let result = prompt("What is your name\? ", ""); if (result !== null) {
 
 alert("Welcome, " \+ result);
 
 }
+```
 
 这些系统对话框可以向用户显示消息、确认操作和获取输入。由于不需要 HTML 和 CSS，所以系统对话框是 Web 应用程序最简单快捷的沟通手段。
 
@@ -20057,6 +20083,7 @@ alert("Welcome, " \+ result);
 
 JavaScript 还可以显示另外两种对话框： find() 和 print() 。这两种对话框都是异步显示的，即控制权会立即返回给脚本。用户在浏览器菜单上选择“查找”（find）和“打印”（print）时显示的就是这两种对话框。通过在 window 对象上调用 find() 和 print() 可以显示它们，比如：
 
+```js
 // 显示打印对话框
 
 window.print();
@@ -20064,10 +20091,11 @@ window.print();
 // 显示查找对话框
 
 window.find();
+```
 
 这两个方法不会返回任何有关用户在对话框中执行了什么操作的信息，因此很难加以利用。此外，因为这两种对话框是异步的，所以浏览器的对话框计数器不会涉及它们，而且用户选择禁用对话框对它们也没有影响。
 
-1.  location 对象
+## 12.2 location 对象
 
 location 是最有用的 BOM 对象之一，提供了当前窗口中加载文档的信息，以及通常的导航功能。这个对象独特的地方在于，它既是 window 的属性，也是 document 的属性。也就是说，
 
@@ -20080,6 +20108,7 @@ location 的多数信息都可以通过上面的属性获取。但是 URL 中的
 
 location.search 返回了从问号开始直到 URL 末尾的所有内容，但没有办法逐个访问每个查询参数。下面的函数解析了查询字符串，并返回一个以每个查询参数为属性的对象：
 
+```js
 let getQueryStringArgs = function() {
 
 // 取得没有开头问号的查询字符串
@@ -20105,16 +20134,19 @@ args\[name\] = value;
 return args;
 
 }
+```
 
 这个函数首先删除了查询字符串开头的问号，当然前提是 location.search 必须有内容。解析后的参数将被保存到 args 对象，这个对象以字面量形式创建。接着，先把查询字符串按照 \& 分割成数 组，每个元素的形式为 name=value 。 for 循环迭代这个数组，将每一个元素按照 = 分割成数组，这个数组第一项是参数名，第二项是参数值。参数名和参数值在使用 decodeURIComponent() 解码后
 
 （这是因为查询字符串通常是被编码后的格式）分别保存在 name 和 value 变量中。最后， name 作为属性而 value 作为该属性的值被添加到 args 对象。这个函数可以像下面这样使用：
 
+```js
 // 假设查询字符串为\?q=javascript\&num=10
 
 let args = getQueryStringArgs(); alert(args\["q"\]); // "javascript"
 
 alert(args\["num"\]); // "10"
+```
 
 现在，查询字符串中的每个参数都是返回对象的一个属性，这样使用起来就方便了。
 
@@ -20126,45 +20158,54 @@ URLSearchParams 构造函数传入一个查询字符串，就可以创建一个�
 
 get() 、 set() 和 delete() 等方法，可以对查询字符串执行相应操作。下面来看一个例子：
 
-let qs = "\?q=javascript\&num=10";
+```js
+let qs = '?q=javascript&num=10';
 
-let searchParams = new URLSearchParams(qs); alert(searchParams.toString()); // " q=javascript\&num=10"
+let searchParams = new URLSearchParams(qs);
+alert(searchParams.toString()); // " q=javascript\&num=10"
 
-searchParams.has("num"); // true
+searchParams.has('num'); // true
 
-searchParams.get("num"); // 10
+searchParams.get('num'); // 10
 
-searchParams.set("page", "3");
+searchParams.set('page', '3');
 
 alert(searchParams.toString()); // " q=javascript\&num=10\&page=3"
 
-searchParams.delete("q"); alert(searchParams.toString()); // " num=10\&page=3"
+searchParams.delete('q');
+alert(searchParams.toString()); // " num=10\&page=3"
+```
 
 大多数支持 URLSearchParams 的浏览器也支持将 URLSearchParams 的实例用作可迭代对象：
 
-let qs = "\?q=javascript\&num=10";
+```js
+let qs = '?q=javascript&num=10';
 
-let searchParams = new URLSearchParams(qs); for (let param of searchParams) {
-
-console.log(param);
-
+let searchParams = new URLSearchParams(qs);
+for (let param of searchParams) {
+  console.log(param);
 }
 
 // \["q", "javascript"\]
 
 // \["num", "10"\]
+```
 
 2.  操作地址
 
 可以通过修改 location 对象修改浏览器的地址。首先，最常见的是使用 assign() 方法并传入一个 URL，如下所示：
 
+```js
 location.assign[(](http://www.wrox.com/)"http://www.wrox.com");
+```
 
 这行代码会立即启动导航到新 URL 的操作，同时在浏览器历史记录中增加一条记录。如果给
 
 location.href 或 window.location 设置一个 URL，也会以同一个 URL 值调用 assign() 方法。比如，下面两行代码都会执行与显式调用 assign() 一样的操作：
 
+```js
 window.location [=](http://www.wrox.com/) "http://www.wrox.com"; location.href = ["](http://www.wrox.com/)http://www.wrox.com";
+```
 
 在这 3 种修改浏览器地址的方法中，设置 location.href 是最常见的。
 
@@ -20172,6 +20213,7 @@ window.location [=](http://www.wrox.com/) "http://www.wrox.com"; location.href =
 
 hostname 、 pathname 和 port 属性被设置为新值之后都会修改当前 URL，如下面的例子所示：
 
+```js
 // 假设当前 URL[为](http://www.wrox.com/WileyCDA/)<http://www.wrox.com/WileyCDA/>
 
 // 把 URL[修改为](http://www.wrox.com/WileyCDA/#section1)<http://www.wrox.com/WileyCDA/#section1>
@@ -20193,6 +20235,7 @@ location.pathname = "mydir";
 // 把 URL 修改为http://www.somewhere.com:8080/WileyCDA/
 
 Location.port = 8080;
+```
 
 除了 hash 之外，只要修改 location 的一个属性，就会导致页面重新加载新 URL。
 
@@ -20200,43 +20243,38 @@ Location.port = 8080;
 
 在以前面提到的方式修改 URL 之后，浏览器历史记录中就会增加相应的记录。当用户单击“后退”按钮时，就会导航到前一个页面。如果不希望增加历史记录，可以使用 replace() 方法。这个方法接收一个 URL 参数，但重新加载后不会增加历史记录。调用 replace() 之后，用户不能回到前一页。比如下面的例子：
 
+```html
 <!DOCTYPE html>
 
 <html>
+  <head>
+    <title>You won't be able to get back here</title>
+  </head>
 
-`<head>`
+  <body>
+    <p>Enjoy this page for a second, because you won't be coming back here.</p>
 
-<title>You won't be able to get back here</title>
+    <script>
 
-</head>
-
-`<body>`
-
-<p>Enjoy this page for a second, because you won't be coming back here.
-
-</p>
-
-`<script>`
-
-setTimeout(() => location.replace[(](http://www.wrox.com/)"http://www.wrox.com/"), 1000);
-
-</script>
-
-`</body>`
-
-`</html>`
+      setTimeout(() => location.replace[(](http://www.wrox.com/)"http://www.wrox.com/"), 1000);
+    </script>
+  </body>
+</html>
+```
 
 [浏览器加载这个页面 1](http://www.wrox.com/)秒之后会重定向到www.wrox.com。此时，“后退”按钮是禁用状态，即不能返回这个示例页面，除非手动输入完整的URL。
 
 最后一个修改地址的方法是 reload() ，它能重新加载当前显示的页面。调用 reload() 而不传参数，页面会以最有效的方式重新加载。也就是说，如果页面自上次请求以来没有修改过，浏览器可能会从缓存中加载页面。如果想强制从服务器重新加载，可以像下面这样给 reload() 传个 true ：
 
+```js
 location.reload(); // 重新加载，可能是从缓存加载
 
 location.reload(true); // 重新加载，从服务器加载
+```
 
 脚本中位于 reload() 调用之后的代码可能执行也可能不执行，这取决于网络延迟和系统资源等因素。为此，最好把 reload() 作为最后一行代码。
 
-2.  navigator 对象
+## 12.3 navigator 对象
 
 navigator 是由 Netscape Navigator 2 最早引入浏览器的，现在已经成为客户端标识浏览器的标准。只要浏览器启用 JavaScript， navigator 对象就一定存在。但是与其他 BOM 对象一样，每个浏览器都支持自己的属性。
 
@@ -20263,29 +20301,29 @@ length ：由当前插件处理的 MIME 类型数量。
 
 通常， name 属性包含识别插件所需的必要信息，尽管不是特别准确。检测插件就是遍历浏览器中可用的插件，并逐个比较插件的名称，如下所示：
 
+```js
 // 插件检测，IE10 及更低版本无效
 
-let hasPlugin = function(name) { name = name.toLowerCase();
+let hasPlugin = function (name) {
+  name = name.toLowerCase();
 
-for (let plugin of window.navigator.plugins){
+  for (let plugin of window.navigator.plugins) {
+    if (plugin.name.toLowerCase().indexOf(name) > \ - 1) {
+      return true;
+    }
+  }
 
-if (plugin.name.toLowerCase().indexOf(name) > \-1){ return true;
-
-}
-
-}
-
-return false;
-
-}
+  return false;
+};
 
 // 检测 Flash
 
-alert(hasPlugin("Flash"));
+alert(hasPlugin('Flash'));
 
 // 检测 QuickTime
 
-alert(hasPlugin("QuickTime"));
+alert(hasPlugin('QuickTime'));
+```
 
 这个 hasPlugin() 方法接收一个参数，即待检测插件的名称。第一步是把插件名称转换为小写形式，以便于比较。然后，遍历 plugins 数组，通过 indexOf() 方法检测每个 name 属性，看传入的名称是不是存在于某个数组中。比较的字符串全部小写，可以避免大小写问题。传入的参数应该尽可能独一无二，以避免混淆。像 "Flash" 、 "QuickTime" 这样的字符串就可以避免混淆。这个方法可以在
 
@@ -20301,29 +20339,28 @@ IE11 的 window.navigator 对象开始支持 plugins 和 mimeTypes 属性。这�
 
 IE10 及更低版本中检测插件的问题比较多，因为这些浏览器不支持 Netscape 式的插件。在这些 IE 中检测插件要使用专有的 ActiveXObject ，并尝试实例化特定的插件。IE 中的插件是实现为 COM 对象的，由唯一的字符串标识。因此，要检测某个插件就必须知道其 COM 标识符。例如，Flash 的标识符
 
-是 "ShockwaveFlash.ShockwaveFlash" 。知道了这个信息后，就可以像这样检测 IE 中是否安装了
+是 "ShockwaveFlash.ShockwaveFlash" 。知道了这个信息后，就可以像这样检测 IE 中是否安装了 Flash：
 
-Flash：
-
+```js
 // 在旧版本 IE 中检测插件
 
-function hasIEPlugin(name) { try {
-
-new ActiveXObject(name); return true;
-
-} catch (ex) { return false;
-
-}
-
+function hasIEPlugin(name) {
+  try {
+    new ActiveXObject(name);
+    return true;
+  } catch (ex) {
+    return false;
+  }
 }
 
 // 检测 Flash
 
-alert(hasIEPlugin("ShockwaveFlash.ShockwaveFlash"));
+alert(hasIEPlugin('ShockwaveFlash.ShockwaveFlash'));
 
 // 检测 QuickTime
 
-alert(hasIEPlugin("QuickTime.QuickTime"));
+alert(hasIEPlugin('QuickTime.QuickTime'));
+```
 
 在这个例子中， hasIEPlugin() 函数接收一个 DOM 标识符参数。为检测插件，这个函数会使用传入的标识符创建一个新 ActiveXObject 实例。相应代码封装在一个 try / catch 语句中，因此如果创建的插件不存在则会抛出错误。如果创建成功则返回 true ，如果失败则在 catch 块中返回
 
@@ -20331,32 +20368,27 @@ false 。上面的例子还演示了如何检测 Flash 和 QuickTime 插件。
 
 因为检测插件涉及两种方式，所以一般要针对特定插件写一个函数，而不是使用通常的检测函数。比如下面的例子：
 
+```js
 // 在所有浏览器中检测 Flash
 
 function hasFlash() {
+  var result = hasPlugin('Flash');
+  if (!result) {
+    result = hasIEPlugin('ShockwaveFlash.ShockwaveFlash');
+  }
 
-var result = hasPlugin("Flash"); if (!result){
-
-result = hasIEPlugin("ShockwaveFlash.ShockwaveFlash");
-
-}
-
-return result;
-
+  return result;
 }
 
 // 在所有浏览器中检测 QuickTime
 
 function hasQuickTime() {
+  var result = hasPlugin('QuickTime');
+  if (!result) {
+    result = hasIEPlugin('QuickTime.QuickTime');
+  }
 
-var result = hasPlugin("QuickTime"); if (!result){
-
-result = hasIEPlugin("QuickTime.QuickTime");
-
-}
-
-return result;
-
+  return result;
 }
 
 // 检测 Flash
@@ -20366,6 +20398,7 @@ alert(hasFlash());
 // 检测 QuickTime
 
 alert(hasQuickTime());
+```
 
 以上代码定义了两个函数 hasFlash() 和 hasQuickTime() 。每个函数都先尝试使用非 IE 插件检测方式，如果返回 false （对 IE 可能会），则再使用 IE 插件检测方式。如果 IE 插件检测方式再返回 false ，整个检测方法也返回 false 。只要有一种方式返回 true ，检测方法就会返回 true 。
 
@@ -20373,23 +20406,23 @@ alert(hasQuickTime());
 
 2.  注册处理程序
 
-现代浏览器支持 navigator 上的（在 HTML5 中定义的） registerProtocolHandler() 方
-
-法。这个方法可以把一个网站注册为处理某种特定类型信息应用程序。随着在线 RSS 阅读器和电子邮件客户端的流行，可以借助这个方法将 Web 应用程序注册为像桌面软件一样的默认应用程序。
+现代浏览器支持 navigator 上的（在 HTML5 中定义的） registerProtocolHandler() 方法。这个方法可以把一个网站注册为处理某种特定类型信息应用程序。随着在线 RSS 阅读器和电子邮件客户端的流行，可以借助这个方法将 Web 应用程序注册为像桌面软件一样的默认应用程序。
 
 要使用 registerProtocolHandler() 方法，必须传入 3 个参数：要处理的协议
 
 （如 "mailto" 或 "ftp" ）、处理该协议的 URL，以及应用名称。比如，要把一个 Web 应用程序注册为默认邮件客户端，可以这样做：
 
+```js
 navigator.registerProtocolHandler("mailto"[,](http://www.somemailclient.com/?cmd=%25s) "http://www.somemailclient.com\?cmd=\%s", "Some Mail Client");
+```
 
 这个例子为 "mailto" 协议注册了一个处理程序，这样邮件地址就可以通过指定的 Web 应用程序打开。注意，第二个参数是负责处理请求的 URL， \%s 表示原始的请求。
 
-1.  screen 对象
+## 12.4 screen 对象
 
 window 的另一个属性 screen 对象，是为数不多的几个在编程中很少用的 JavaScript 对象。这个对象中保存的纯粹是客户端能力信息，也就是浏览器窗口外面的客户端显示器的信息，比如像素宽度和像素高度。每个浏览器都会在 screen 对象上暴露不同的属性。下表总结了这些属性。
 
-2.  history 对象
+## 12.5 history 对象
 
 history 对象表示当前窗口首次使用以来用户的导航历史记录。因为 history 是 window 的属性，所以每个 window 都有自己的 history 对象。出于安全考虑，这个对象不会暴露用户访问过的 URL，但可以通过它在不知道实际 URL 的情况下前进和后退。
 
@@ -20397,6 +20430,7 @@ history 对象表示当前窗口首次使用以来用户的导航历史记录。
 
 go() 方法可以在用户历史记录中沿任何方向导航，可以前进也可以后退。这个方法只接收一个参数，这个参数可以是一个整数，表示前进或后退多少步。负值表示在历史记录中后退（类似点击浏览器的“后退”按钮），而正值表示在历史记录中前进（类似点击浏览器的“前进”按钮）。下面来看几个例子：
 
+```js
 // 后退一页
 
 history.go(-1);
@@ -20408,19 +20442,23 @@ history.go(1);
 // 前进两页
 
 history.go(2);
+```
 
 go() 方法的参数也可以是一个字符串，这种情况下浏览器会导航到历史中包含该字符串的第一个位置。最接近的位置可能涉及后退，也可能涉及前进。如果历史记录中没有匹配的项，则这个方法什么也不做，如下所示：
 
+```js
 // 导航到最近的 wrox.com 页面
 
-history.go("wrox.com");
+history.go('wrox.com');
 
 // 导航到最近的 nczonline.net 页面
 
-history.go("nczonline.net");
+history.go('nczonline.net');
+```
 
 go() 有两个简写方法： back() 和 forward() 。顾名思义，这两个方法模拟了浏览器的后退按钮和前进按钮：
 
+```js
 // 后退一页
 
 history.back();
@@ -20438,6 +20476,7 @@ if (history.length == 1){
 // 这是用户窗口中的第一个页面
 
 }
+```
 
 history 对象通常被用于创建“后退”和“前进”按钮，以及确定页面是不是用户历史记录中的第一条记录。
 
@@ -20447,43 +20486,43 @@ history 对象通常被用于创建“后退”和“前进”按钮，以及确
 
 现代 Web 应用程序开发中最难的环节之一就是历史记录管理。用户每次点击都会触发页面刷新的时代早已过去，“后退”和“前进”按钮对用户来说就代表“帮我切换一个状态”的历史也就随之结束了。为解决这个问题，首先出现的是 hashchange 事件（第 17 章介绍事件时会讨论）。HTML5 也为 history 对象增加了方便的状态管理特性。
 
-hashchange 会在页面 URL 的散列变化时被触发，开发者可以在此时执行某些操作。而状态管理
+hashchange 会在页面 URL 的散列变化时被触发，开发者可以在此时执行某些操作。而状态管理 API 则可以让开发者改变浏览器 URL 而不会加载新页面。为此，可以使用 history.pushState() 方法。这个方法接收 3 个参数：一个 state 对象、一个新状态的标题和一个（可选的）相对 URL。例如：
 
-API 则可以让开发者改变浏览器 URL 而不会加载新页面。为此，可以使用 history.pushState() 方法。这个方法接收 3 个参数：一个 state 对象、一个新状态的标题和一个（可选的）相对 URL。例如：
+```js
+let stateObject = { foo: 'bar' };
 
-let stateObject = {foo:"bar"};
-
-history.pushState(stateObject, "My title", "baz.html");
+history.pushState(stateObject, 'My title', 'baz.html');
+```
 
 pushState() 方法执行后，状态信息就会被推到历史记录中，浏览器地址栏也会改变以反映新的相对 URL。除了这些变化之外，即使 location.href 返回的是地址栏中的内容，浏览器页不会向服务器发送请求。第二个参数并未被当前实现所使用，因此既可以传一个空字符串也可以传一个短标题。第一个参数应该包含正确初始化页面状态所必需的信息。为防止滥用，这个状态的对象大小是有限制的，通常在 500KB ～ 1MB 以内。
 
 因为 pushState() 会创建新的历史记录，所以也会相应地启用“后退”按钮。此时单击“后退”按 钮，就会触发 window 对象上的 popstate 事件。 popstate 事件的事件对象有一个 state 属性，其中包含通过 pushState() 第一个参数传入的 state 对象：
 
-window.addEventListener("popstate", (event) => { let state = event.state;
+```js
+window.addEventListener('popstate', (event) => {
+  let state = event.state;
 
-if (state) { // 第一个页面加载时状态是 null
+  if (state) {
+    // 第一个页面加载时状态是 null
 
-processState(state);
-
-}
-
+    processState(state);
+  }
 });
+```
 
-基于这个状态，应该把页面重置为状态对象所表示的状态（因为浏览器不会自动为你做这些）。记住，页面初次加载时没有状态。因此点击“后退”按钮直到返回最初页面时， event.state 会为
+基于这个状态，应该把页面重置为状态对象所表示的状态（因为浏览器不会自动为你做这些）。记住，页面初次加载时没有状态。因此点击“后退”按钮直到返回最初页面时， event.state 会为 null 。
 
-null 。
+可以通过 history.state 获取当前的状态对象，也可以使用 replaceState() 并传入与 pushState() 同样的前两个参数来更新状态。更新状态不会创建新历史记录，只会覆盖当前状态：
 
-可以通过 history.state 获取当前的状态对象，也可以使用 replaceState() 并传入与
-
-pushState() 同样的前两个参数来更新状态。更新状态不会创建新历史记录，只会覆盖当前状态：
-
-history.replaceState({newFoo: "newBar"}, "New title");
+```js
+history.replaceState({ newFoo: 'newBar' }, 'New title');
+```
 
 传给 pushState() 和 replaceState() 的 state 对象应该只包含可以被序列化的信息。因此，DOM 元素之类并不适合放到状态对象里保存。
 
 > 注意 使用 HTML5 状态管理时，要确保通过 pushState() 创建的每个“假”URL 背后都对应着服务器上一个真实的物理 URL。否则，单击“刷新”按钮会导致 404 错误。所有单页应用程序（SPA，Single Page Application）框架都必须通过服务器或客户端的某些配置解决这个问题。
 
-[126 小 结
+## 12.6 小 结
 
 浏览器对象模型（BOM，Browser Object Model）是以 window 对象为基础的，这个对象代表了浏览器窗口和页面可见的区域。 window 对象也被复用为 ECMAScript 的 Global 对象，因此所有全局变量和函数都是它的属性，而且所有原生类型的构造函数和普通函数也都从一开始就存在于这个对象之上。本章讨论了 BOM 的以下内容。
 
@@ -20493,9 +20532,7 @@ history.replaceState({newFoo: "newBar"}, "New title");
 
 使用 replace() 方法可以替换浏览器历史记录中当前显示的页面，并导航到新 URL。
 
-navigator 对象提供关于浏览器的信息。提供的信息类型取决于浏览器，不过有些属性如
-
-userAgent 是所有浏览器都支持的。
+navigator 对象提供关于浏览器的信息。提供的信息类型取决于浏览器，不过有些属性如 userAgent 是所有浏览器都支持的。
 
 BOM 中的另外两个对象也提供了一些功能。 screen 对象中保存着客户端显示器的信息。这些信息通常用于评估浏览网站的设备信息。 history 对象提供了操纵浏览器历史记录的能力，开发者可以确定历史记录中包含多少个条目，并以编程方式实现在历史记录中导航，而且也可以修改历史记录。
 
