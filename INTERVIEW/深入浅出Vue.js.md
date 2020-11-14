@@ -1,5 +1,6 @@
-[从源码解读 - Vue常考面试题](https://mp.weixin.qq.com/s/5YR2pgxgB5K-_B6QpN0uSw)
-[30 道 Vue 面试题，内含详细讲解（涵盖入门到精通，自测 Vue 掌握程度）](https://juejin.im/post/6844903918753808398)
+[从源码解读 - Vue 常考面试题](https://mp.weixin.qq.com/s/5YR2pgxgB5K-_B6QpN0uSw)  
+[30 道 Vue 面试题，内含详细讲解（涵盖入门到精通，自测 Vue 掌握程度）](https://juejin.im/post/6844903918753808398)  
+[「面试题」20+Vue 面试题整理](https://juejin.im/post/6844904084374290446)
 
 # Vue
 
@@ -24,39 +25,34 @@ SPA（ single-page application ）仅在 Web ⻚⾯初始化时加载相应的 H
 
 ### Vue 初始化
 
-new Vue() 发生了什么？
+`new Vue()` 发生了什么？
 
-结论：new Vue()是创建 Vue 实例，它内部执行了根实例的初始化过程。
+每个 Vue 应用都是通过用 Vue 函数创建一个新的 Vue 实例开始的：虽然没有完全遵循 MVVM 模型，但是 Vue 的设计也受到了它的启发。因此在文档中经常会使用 vm （ViewModel 的缩写） 这个变量名表示 Vue 实例。当创建一个 Vue 实例时，你可以传入一个选项对象，使用这些选项来创建想要的行为。
 
-具体包括以下操作：
+- 数据与方法
+  - 将 data 对象中的所有的 property 加入到 Vue 的响应式系统中
+  - 暴露了一些有用的实例 property 与方法。它们都有前缀 `$`，以便与用户定义的 property 区分开来
+- 实例生命周期钩子
+
+`new Vue()`是创建 Vue 实例，它内部执行了根实例的初始化过程。创建了根实例并准备好数据和方法，未来执行挂载时，此过程还会递归的应用于它的子组件上，最终形成一个有紧密关系的组件实例树。具体包括以下操作：
 
 - 选项合并
-- $children，$refs，$slots，$createElement 等实例属性的方法初始化
+- 实例的方法初始化
 - 自定义事件处理
 - 数据响应式处理
-- 生命周期钩子调用 （beforecreate created）
+- 生命周期钩子调用
 - 可能的挂载
-
-总结：new Vue()创建了根实例并准备好数据和方法，未来执行挂载时，此过程还会递归的应用于它的子组件上，最终形成一个有紧密关系的组件实例树。
 
 源码地址：src/core/instance/init.js
 
 ### Vue.use 是干什么的？原理是什么？
 
-vue.use 是用来使用插件的，我们可以在插件中扩展全局组件、指令、原型方法等。
+vue.use 是用来使用插件的，我们可以在插件中扩展全局组件、指令、原型方法等。如果插件是一个对象，必须提供 install 方法。如果插件是一个函数，它会被作为 install 方法。install 方法调用时，会将 Vue 作为参数传入。该方法需要在调用 `new Vue()` 之前被调用。当 install 方法被同一个插件多次调用，插件将只会被安装一次。
 
-过程
-
-1. 检查插件是否注册，若已注册，则直接跳出；
-2. 处理入参，将第一个参数之后的参数归集，并在首部塞入 this 上下文；
-3. 执行注册方法，调用定义好的 install 方法，传入处理的参数，若没有 install 方法并且插件本身为 function 则直接进行注册；
-
-应用
-
-1. 插件不能重复的加载。install 方法的第一个参数是 vue 的构造函数，其他参数是 Vue.set 中除了第一个参数的其他参数； 代码：`args.unshift(this)`
-2. 调用插件的 install 方法 代码：`typeof plugin.install === 'function'`
-3. 插件本身是一个函数，直接让函数执行。 代码：`plugin.apply(null, args)`
-4. 缓存插件。 代码：`installedPlugins.push(plugin)`
+1. 首先判断这个插件是否被注册过，不允许重复注册
+2. 将传入的参数整理成数组，将 Vue 对象替换成第一个参数
+3. 调用插件的 install 方法或者插件本身
+4. 将插件添加到已添加的插件数组中，缓存插件。
 
 源码地址：src/core/global-api/use.js
 
@@ -66,8 +62,7 @@ vue.use 是用来使用插件的，我们可以在插件中扩展全局组件、
 
 根据数据类型来做不同处理，数组和对象类型当值变化时如何劫持。
 
-1. 对象内部通过 defineReactive 方法，使用 Object.defineProperty() 监听数据属性的 get 来进行数据依赖收集，再通过 set 来完成数据更新的派发；
-
+1. 对象内部通过 defineReactive 方法，使用 `Object.defineProperty()` 监听数据属性的 get 来进行数据依赖收集，再通过 set 来完成数据更新的派发；
 2. 数组则通过重写数组方法来实现的。扩展它的 7 个变更⽅法，通过监听这些方法可以做到依赖收集和派发更新；( push/pop/shift/unshift/splice/reverse/sort )
 
 这里在回答时可以带出一些相关知识点 （比如多层对象是通过递归来实现劫持，顺带提出 vue3 中是使用 proxy 来实现响应式数据）
