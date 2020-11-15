@@ -23,6 +23,31 @@ SPA（ single-page application ）仅在 Web ⻚⾯初始化时加载相应的 H
   2. 前进后退路由管理：由于单页应用在一个页面中显示所有的内容，所以不能使用浏览器的前进后退功能，所有的页面切换需要自己建立堆栈管理；
   3. SEO 难度较大：由于所有的内容都在一个页面中动态替换显示，所以在 SEO 上其有着天然的弱势。
 
+### MVVM 模式
+
+什么是 MVVM？
+
+Model–View–ViewModel （MVVM） 是一个软件架构设计模式，由微软 WPF 和 Silverlight 的架构师 Ken Cooper 和 Ted Peters 开发，是一种简化用户界面的事件驱动编程方式。由 John Gossman（同样也是 WPF 和 Silverlight 的架构师）于 2005 年在他的博客上发表。
+
+MVVM 源自于经典的 Model–View–Controller（MVC）模式 ，MVVM 的出现促进了前端开发与后端业务逻辑的分离，极大地提高了前端开发效率，MVVM 的核心是 ViewModel 层，它就像是一个中转站（value converter），负责转换 Model 中的数据对象来让数据变得更容易管理和使用，该层向上与视图层进行双向数据绑定，向下与 Model 层通过接口请求进行数据交互，起呈上启下作用。如下图所示：
+
+1. View 是视图层，也就是用户界面。前端主要由 HTML 和 CSS 来构建 。
+2. Model 是指数据模型，泛指后端进行的各种业务逻辑处理和数据操控，对于前端来说就是后端提供的 api 接口。
+3. ViewModel 是由前端开发人员组织生成和维护的视图数据层。
+
+在 ViewModel 层，前端开发者对从后端获取的 Model 数据进行转换处理，做二次封装，以生成符合 View 层使用预期的视图数据模型。需要注意的是 ViewModel 所封装出来的数据模型包括视图的状态和行为两部分，而 Model 层的数据模型是只包含状态的，比如页面的这一块展示什么，而页面加载进来时发生什么，点击这一块发生什么，这一块滚动时发生什么这些都属于视图行为（交互），视图状态和行为都封装在了 ViewModel 里。这样的封装使得 ViewModel 可以完整地去描述 View 层。
+
+MVVM 框架实现了双向绑定，这样 ViewModel 的内容会实时展现在 View 层，前端开发者再也不必低效又麻烦地通过操纵 DOM 去更新视图，MVVM 框架已经把最脏最累的一块做好了，我们开发者只需要处理和维护 ViewModel，更新数据视图就会自动得到相应更新。这样 View 层展现的不是 Model 层的数据，而是 ViewModel 的数据，由 ViewModel 负责与 Model 层交互，这就完全解耦了 View 层和 Model 层，这个解耦是至关重要的，它是前后端分离方案实施的重要一环。
+
+### 数据双向绑定
+
+Vue 数据双向绑定主要是指：数据变化更新视图，视图变化更新数据。主要通过一下四个步骤来实现。
+
+1. 实现一个监听器 Observer：对数据对象进行遍历，包括子属性对象的属性，利用 `Object.defineProperty()` 监听属性。
+2. 实现一个解析器 Compile：解析 Vue 模板指令，将模板中的变量都替换成数据，然后初始化渲染页面视图，并将每个指令对应的节点绑定更新函数，添加监听数据的订阅者，一旦数据有变动，收到通知，调用更新函数进行数据更新。
+3. 实现一个订阅者 Watcher：Watcher 订阅者是 Observer 和 Compile 之间通信的桥梁 ，主要的任务是订阅 Observer 中的属性值变化的消息，当收到属性值变化的消息时，触发解析器 Compile 中对应的更新函数。
+4. 实现一个订阅器 Dep：订阅器采用 发布-订阅 设计模式，用来收集订阅者 Watcher，对监听器 Observer 和 订阅者 Watcher 进行统一管理。
+
 ### Vue 初始化
 
 `new Vue()` 发生了什么？
@@ -71,7 +96,7 @@ Vue 最独特的特性之一，就是其非侵入性的响应式系统。数据�
 这里可以引出性能优化相关的内容：
 
 1. 对象层级过深，性能就会差。
-2. 不需要响应数据的内容不要放在 data 中。
+2. 不需要响应数据的内容不要放在 dat a 中。
 3. `object.freeze()` 可以冻结数据。
 
 源码地址：src/core/observer/index.js 158
@@ -168,7 +193,7 @@ Proxy 的优势如下:
 4. 返回的是一个新对象，我们可以只操作新的对象达到目的，而 `Object.defineProperty` 只能遍历对象属性直接修改
 5. 作为新标准将受到浏览器厂商重点持续的性能优化，也就是传说中的新标准的性能红利
 
-`Object.defineProperty` 的优势是兼容性好，支持 IE9，而 Proxy 的存在浏览器兼容性问题，而且无法用 polyfill 磨平，因此 Vue 的作者才声明需要等到下个大版本( 3.0 )才能用 Proxy 重写。
+`Object.defineProperty` 的优势是兼容性好，支持 IE9，而 Proxy 的存在浏览器兼容性问题，而且无法用 polyfill 磨平，因此 Vue 的作者才声明需要等到下个大版本才能用 Proxy 重写。
 
 ### Vue3.x 响应式数据原理
 
@@ -323,13 +348,15 @@ mounted(){
 
 ## 组件通信
 
-### 组件的函数类型 data
+### 组件的数据 data 选项
 
 Vue 中的组件的 data 为什么是一个函数？而 new Vue 实例里，data 可以直接是一个对象？
 
 每次使用组件时都会对组件进行实例化操作，并且调用 data 函数返回一个对象作为组件的数据源。这样可以保证多个组件间数据互不影响。
 
-如果 data 是对象的话，对象属于引用类型，会影响到所有的实例。所以为了保证组件不同的实例之间 data 不冲突，data 必须是一个函数。而 new Vue 的实例，是不会被复用的，因此不存在引用对象的问题。
+如果 data 是对象的话，对象属于引用类型，会影响到所有的实例。
+
+所以为了保证组件不同的实例之间 data 不冲突，data 必须是一个函数。而 new Vue 的实例，是不会被复用的，因此不存在引用对象的问题。
 
 源码地址：src/core/util/options 121
 
@@ -352,36 +379,41 @@ Vue 中的组件的 data 为什么是一个函数？而 new Vue 实例里，data
 
 Vue 组件间通信有哪几种方式？
 
-Vue 组件间通信只要指以下 3 类通信：父子组件通信、隔代组件通信、兄弟组件通信，下面我们分别介绍每种通信方式且会说明此种方法可适用于哪类组件间通信。
+Vue 组件间通信只要指以下 3 类通信：父子组件通信、隔代组件通信、兄弟组件通信
 
-1. props / \$emit 适用 父子组件通信
+1. `props` 和 `$emit` 适用 父子组件通信
+2. `ref` 与 `$parent`/`$children` 适用 父子组件通信
 
-这种方法是 Vue 组件的基础，相信大部分同学耳闻能详，所以此处就不举例展开介绍。
+- `ref`：指向 DOM 元素或组件实例
+- `$parent`或`$children`：访问父或子实例
 
-2. ref 与 $parent / $children 适用 父子组件通信
-
-- ref：如果在普通的 DOM 元素上使用，引用指向的就是 DOM 元素；如果用在子组件上，引用就指向组件实例
-- $parent / $children：访问父 / 子实例
-
-3. EventBus （$emit / $on） 适用于 父子、隔代、兄弟组件通信
+3. EventBus （`$emit`/`$on`） 适用于 父子、隔代、兄弟组件通信
 
 这种方法通过一个空的 Vue 实例作为中央事件总线（事件中心），用它来触发事件和监听事件，从而实现任何组件间的通信，包括父子、隔代、兄弟组件。
 
-4. $attrs/$listeners 适用于 隔代组件通信
+4. `$attrs`/`$listeners` 适用于 隔代组件通信
 
-- $attrs：包含了父作用域中不被 prop 所识别 (且获取) 的特性绑定 ( class 和 style 除外 )。当一个组件没有声明任何 prop 时，这里会包含所有父作用域的绑定 ( class 和 style 除外 )，并且可以通过 v-bind="$attrs" 传入内部组件。通常配合 inheritAttrs 选项一起使用。
-- $listeners：包含了父作用域中的 (不含 .native 修饰器的) v-on 事件监听器。它可以通过 v-on="$listeners" 传入内部组件
+`$attrs`：包含了父作用域中不被 prop 所识别且获取的特性绑定，class 和 style 除外。当一个组件没有声明任何 prop 时，这里会包含所有父作用域的绑定，并且可以通过 `v-bind="$attrs"` 传入内部组件。通常配合 inheritAttrs 选项一起使用。
 
-5. provide / inject 适用于 隔代组件通信
+`$listeners`：包含了父作用域中的 v-on 事件监听器，不含 native 修饰器的。它可以通过 `v-on="$listeners"` 传入内部组件。
 
-祖先组件中通过 provider 来提供变量，然后在子孙组件中通过 inject 来注入变量。provide / inject API 主要解决了跨级组件间的通信问题，不过它的使用场景，主要是子组件获取上级组件的状态，跨级组件间建立了一种主动提供与依赖注入的关系。
+5. `provide`/`inject` 适用于 隔代组件通信
 
-6. Vuex 适用于 父子、隔代、兄弟组件通信
+祖先组件中通过 provider 来提供变量，然后在子孙组件中通过 inject 来注入变量。provide/inject API 主要解决了跨级组件间的通信问题，不过它的使用场景，主要是子组件获取上级组件的状态，跨级组件间建立了一种主动提供与依赖注入的关系。
 
-Vuex 是一个专为 Vue.js 应用程序开发的状态管理模式。每一个 Vuex 应用的核心就是 store（仓库）。“store” 基本上就是一个容器，它包含着你的应用中大部分的状态 ( state )。
+6. `Vuex` 适用于 父子、隔代、兄弟组件通信
 
-- Vuex 的状态存储是响应式的。当 Vue 组件从 store 中读取状态的时候，若 store 中的状态发生变化，那么相应的组件也会相应地得到高效更新。
-- 改变 store 中的状态的唯一途径就是显式地提交 (commit) mutation。这样使得我们可以方便地跟踪每一个状态的变化。
+Vuex 是一个专为 Vue.js 应用程序开发的状态管理模式。每一个 Vuex 应用的核心就是 store（仓库）。“store” 基本上就是一个容器，它包含着你的应用中大部分的状态（state）。
+
+Vuex 的状态存储是响应式的。当 Vue 组件从 store 中读取状态的时候，若 store 中的状态发生变化，那么相应的组件也会相应地得到高效更新。改变 store 中的状态的唯一途径就是显式地提交 mutation。这样使得我们可以方便地跟踪每一个状态的变化。
+
+主要包括以下几个模块
+
+- State：定义了应用状态的数据结构，可以在这里设置默认的初始状态。
+- Getter：允许组件从 Store 中获取数据，mapGetters 辅助函数仅仅是将 store 中的 getter 映射到局部计算属性。
+- Mutation：是唯一更改 store 中状态的方法，且必须是同步函数。
+- Action：用于提交 mutation，而不是直接变更状态，可以包含任意异步操作。
+- Module：允许将单一的 Store 拆分为多个 store 且同时保存在单一的状态树中。
 
 ### 组件中的 name 选项
 
@@ -405,9 +437,24 @@ Vue.extend = function () {
 
 keep-alive 平时在哪里使用？原理是什么？
 
-keep-alive 主要是组件缓存，采用的是 LRU 算法。最近最久未使用法。
-常用的两个属性 include/exclude，允许组件有条件的进行缓存。
-两个生命周期 activated/deactivated，用来得知当前组件是否处于活跃状态。
+keep-alive 是 Vue 内置的一个组件，他能够将不活动的组件实例保存在内存中，而不是直接将其销毁，这是一个抽象组件。因此，可以使被包含的组件保留状态，避免重新渲染，其有以下特性
+
+- 一般结合路由和动态组件一起使用，用于缓存组件；
+- 提供 include 和 exclude 属性，两者都支持字符串或正则表达式， include 表示只有名称匹配的组件会被缓存，exclude 表示任何名称匹配的组件都不会被缓存 ，其中 exclude 的优先级比 include 高；
+- 提供 max 属性最多可以缓存多少组件实例。一旦这个数字达到了，在新实例被创建之前，已缓存组件中最久没有被访问的实例会被销毁掉。
+- 对应两个钩子函数 activated 和 deactivated ，当组件被激活时，触发钩子函数 activated，当组件被移除时，触发钩子函数 deactivated。
+
+LRU 缓存算法
+
+LRU（Least recently used）算法根据数据的历史访问记录来进行淘汰数据，其核心思想是“如果数据最近被访问过，那么将来被访问的几率也更高”。
+
+1. 最常见的实现是使用一个链表保存缓存数据，详细算法实现如下：
+
+- 新数据插入到链表头部；
+- 每当缓存命中（即缓存数据被访问），则将数据移到链表头部；
+- 当链表满的时候，将链表尾部的数据丢弃。
+
+2. 还可以使用 es6 中的 map 来实现：map 中插入数据有顺序的。
 
 ```js
 abstract: true, // 抽象组件
@@ -471,28 +518,35 @@ vue-router 路由模式有几种？
 
 vue-router 有 3 种路由模式：hash、history、abstract。
 
-1. hash 模式：hash + hashChange
+1. hash: 使用 URL hash 值来作路由。支持所有浏览器，包括不支持 HTML5 History Api 的浏览器；
+2. history : 依赖 HTML5 History API 和服务器配置。
+3. abstract : 支持所有 JavaScript 运行环境，如 Node.js 服务器端。如果发现没有浏览器的 API，路由会自动强制进入这个模式。
 
-特点：hash 虽然在 URL 中，但不被包括在 HTTP 请求中；用来指导浏览器动作，对服务端安全无用，hash 不会重加载页面。通过监听 hash（#）的变化来执行 js 代码 从而实现 页面的改变。
+**hash 模式的实现原理**
 
-核心代码：
+早期的前端路由的实现就是基于 location.hash 来实现的。其实现原理很简单，location.hash 的值就是 URL 中 `#` 后面的内容。比如下面这个`https://www.word.com#search`网站，它的 location.hash 的值为 '#search'：
 
-```js
-window.addEventListener(‘hashchange‘,function(){
-    self.urlChange()
-})
-```
+hash 路由模式的实现主要是基于下面几个特性：
+
+- URL 中 hash 值只是客户端的一种状态，也就是说当向服务器端发出请求时，hash 部分不会被发送；
+- hash 值的改变，都会在浏览器的访问历史中增加一个记录。因此我们能通过浏览器的回退、前进按钮控制 hash 的切换；
+- 可以通过  a  标签，并设置  href  属性，当用户点击这个标签后，URL  的 hash 值会发生改变；或者使用  JavaScript 来对  loaction.hash  进行赋值，改变 URL 的 hash 值；
+- 可以使用 hashchange 事件来监听 hash 值的变化，从而对页面进行跳转（渲染）。
+
+**history 模式的实现原理**
+
+HTML5 提供了 History API 来实现 URL 的变化。其中做最主要的 API 有以下两个：`history.pushState()` 和 `history.repalceState()`。这两个 API 可以在不进行刷新的情况下，操作浏览器的历史纪录。唯一不同的是，前者是新增一个历史记录，后者是直接替换当前的历史记录。
+
+history 路由模式的实现主要基于存在下面几个特性：
+
+- pushState 和 repalceState 两个 API 来操作实现 URL 的变化 ；
+- 可以使用 popstate 事件来监听 url 的变化，从而对页面进行跳转（渲染）；
+- pushState 方法 或 replaceState 方法 不会触发 popstate 事件，这时我们需要手动触发页面跳转（渲染）。
 
 2. history 模式：historyApi + popState
 
 HTML5 推出的 history API，由 pushState()记录操作历史，监听 popstate 事件来监听到状态变更；
 因为 只要刷新 这个 url（www.ff.ff/jjkj/fdfd/fdf/fd）就会请求服务器，然而服务器上根本没有这个资源，所以就会报404，解决方案就 配置一下服务器端。
-
-说明：
-
-1. hash: 使用 URL hash 值来作路由。支持所有浏览器，包括不支持 HTML5 History Api 的浏览器；
-2. history : 依赖 HTML5 History API 和服务器配置。具体可以查看 HTML5 History 模式；
-3. abstract : 支持所有 JavaScript 运行环境，如 Node.js 服务器端。如果发现没有浏览器的 API，路由会自动强制进入这个模式.
 
 ## 属性作用与对比
 
@@ -530,11 +584,24 @@ VirtualDOM 映射到真实 DOM 要经历 VNode 的 create、diff、patch 等阶�
 
 源码地址：src/core/vdom/vnode: 3
 
+### 虚拟 DOM 实现原理
+
+虚拟 DOM 的实现原理主要包括以下 3 部分：
+
+1. 用 JavaScript 对象模拟真实 DOM 树，对真实 DOM 进行抽象；
+1. diff 算法 — 比较两棵虚拟 DOM 树的差异；
+1. pach 算法 — 将两个虚拟 DOM 对象的差异应用到真正的 DOM 树。
+
 ### Vue 中 key 的作用
 
 Vue 中 key 的作用和工作原理，说说你对它的理解
 
+key 的特殊 attribute 主要用在 Vue 虚拟 DOM 算法，在新旧 nodes 对比时辨识 VNodes。如果不使用 key，Vue 会使用一种最大限度减少动态元素并且尽可能的尝试就地修改/复用相同类型元素的算法。而使用 key 时，它会基于 key 的变化重新排列元素顺序，并且会移除 key 不存在的元素。最常见的用例是用于 for 遍历。
+
 key 的作用主要是为了高效的更新虚拟 DOM，其原理是 vue 在 patch 过程中通过 key 可以精准判断两个节点是否是同一个，从而避免频繁更新不同元素，使得整个 patch 过程更加高效，减少 DOM 操作量，提高性能。
+
+- 更准确
+- 更快速
 
 补充回答：
 
@@ -599,11 +666,11 @@ watch 是监听数据的变化。更多的是观察的作用，类似于某些�
 3. 在 patch 前将指令的钩子提取到 cbs 中，在 patch 过程中调用对应的钩子。
 4. 当执行指令对应钩子函数时，调用对应指令定义的方法
 
-## v-modal 原理
+### v-modal 原理
 
 V-model 的原理是什么？
 
-v-model 本质就是一个语法糖，可以看成是 value + input 方法的语法糖。可以通过 model 属性的 prop 和 event 属性来进行自定义。原生的 v-model，会根据标签的不同生成不同的事件和属性。
+在项目中主要使用 v-model 指令在表单 input、textarea、select 等元素上创建双向数据绑定，我们知道 v-model 本质上不过是语法糖，v-model 在内部为不同的输入元素使用不同的属性并抛出不同的事件：
 
 v-model 在内部为不同的输入元素使用不同的属性并抛出不同的事件：
 
@@ -611,39 +678,61 @@ v-model 在内部为不同的输入元素使用不同的属性并抛出不同的
 2. checkbox 和 radio 使用 checked 属性和 change 事件；
 3. select 字段将 value 作为 prop 并将 change 作为事件。
 
-## 常考-性能优化
+如果在自定义组件中，v-model 默认会利用名为 value 的 prop 和名为 input 的事件。
+
+## 服务端渲染
+
+### Vue SSR
+
+使用过 Vue SSR 吗？说说 SSR？
+
+Vue.js 是构建客户端应用程序的框架。默认情况下，可以在浏览器中输出 Vue 组件，进行生成 DOM 和操作 DOM。然而，也可以将同一个组件渲染为服务端的 HTML 字符串，将它们直接发送到浏览器，最后将这些静态标记"激活"为客户端上完全可交互的应用程序。
+
+服务端渲染 SSR 的优缺点如下：
+
+服务端渲染的优点：
+
+- 更好的 SEO： 因为 SPA 页面的内容是通过 Ajax 获取，而搜索引擎爬取工具并不会等待 Ajax 异步完成后再抓取页面内容，所以在 SPA 中是抓取不到页面通过 Ajax 获取到的内容；而 SSR 是直接由服务端返回已经渲染好的页面（数据已经包含在页面中），所以搜索引擎爬取工具可以抓取渲染好的页面；
+- 更快的内容到达时间（首屏加载更快）： SPA 会等待所有 Vue 编译后的 js 文件都下载完成后，才开始进行页面的渲染，文件下载等需要一定的时间等，所以首屏渲染需要一定的时间；SSR 直接由服务端渲染好页面直接返回显示，无需等待下载 js 文件及再去渲染等，所以 SSR 有更快的内容到达时间；
+
+服务端渲染的缺点：
+
+- 更多的开发条件限制： 例如服务端渲染只支持 beforCreate 和 created 两个钩子函数，这会导致一些外部扩展库需要特殊处理，才能在服务端渲染应用程序中运行；并且与可以部署在任何静态文件服务器上的完全静态单页面应用程序 SPA 不同，服务端渲染应用程序，需要处于 Node.js server 运行环境；
+- 更多的服务器负载：在 Node.js 中渲染完整的应用程序，显然会比仅仅提供静态文件的 server 更加大量占用 CPU 资源（CPU-intensive - CPU 密集），因此如果你预料在高流量环境（ high traffic）下使用，请准备相应的服务器负载，并明智地采用缓存策略。
+
+## 性能优化
 
 你都做过哪些 Vue 的性能优化？（ 统计后的结果 ）
 
 ### 编码阶段
 
-尽量减少 data 中的数据，data 中的数据都会增加 getter 和 setter，会收集对应的 watcher；
-如果需要使用 v-for 给每项元素绑定事件时使用事件代理；
-SPA 页面采用 keep-alive 缓存组件；
-在更多的情况下，使用 v-if 替代 v-show；
-key 保证唯一；
-使用路由懒加载、异步组件；
-防抖、节流；
-第三方模块按需导入；
-长列表滚动到可视区域动态加载；
-图片懒加载；
+1. v-if/v-show 和 computed/watch 区分各自使用场景
+2. 减少 data 选项中不必要的数据
+3. v-for 遍历添加 key，准确使用 v-if，适当添加事件代理
+4. SPA 页面采用 keep-alive 缓存组件；
+5. 长列表/无限列表性能优化
+6. 事件的销毁
+7. 路由懒加载/异步组件
+8. 防抖、节流；
+9. 第三方插件按需引入
+10. 图片懒加载；
+11. 骨架屏
 
-### 用户体验：
+### Webpack 层面
 
-骨架屏；
-PWA；
-还可以使用缓存(客户端缓存、服务端缓存)优化、服务端开启 gzip 压缩等。
+1. Webpack 对图片/代码进行压缩
+2. 减少 ES6 转为 ES5 的冗余代码
+3. 提取公共代码
+4. 模板预编译
+5. 提取组件的 CSS
+6. 优化 SourceMap
+7. 构建结果输出分析
+8. Vue 项目的编译优化
 
-### SEO 优化
+### Web 技术的优化
 
-预渲染；
-服务端渲染 SSR；
-
-### 打包优化
-
-压缩代码；
-Tree Shaking/Scope Hoisting；
-使用 cdn 加载第三方模块；
-多线程打包 happypack；
-splitChunks 抽离公共文件；
-sourceMap 优化；
+1. 开启 gzip 压缩
+2. 浏览器缓存
+3. CDN 的使用
+4. 使用 Chrome Performance 查找性能瓶颈
+5. 服务端渲染/预渲染；
