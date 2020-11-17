@@ -7644,10 +7644,11 @@ const { compile, compileToFunctions } = createCompiler(baseOptions)
 
 export { compile, compileToFunctions }
 ```
+
 可以看到 `compileToFunctions` 方法实际上是 `createCompiler` 方法的返回值，该方法接收一个编译配置参数，接下来我们来看一下 `createCompiler` 方法的定义，在 `src/compiler/index.js` 中：
 
 ```js
-// `createCompilerCreator` allows creating compilers that use alternative
+// createCompilerCreator allows creating compilers that use alternative
 // parser/optimizer/codegen, e.g the SSR optimizing compiler.
 // Here we just export a default compiler using the default parts.
 export const createCompiler = createCompilerCreator(function baseCompile (
