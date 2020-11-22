@@ -5564,7 +5564,7 @@ methodsToPatch.forEach(function (method) {
 })
 ```
 
-可以看到，`arrayMethods` 首先继承了 `Array`，然后对数组中所有能改变数组自身的方法，如 `push、pop` 等这些方法进行重写。重写后的方法会先执行它们本身原有的逻辑，并对能增加数组长度的 3 个方法 `push、unshift、splice` 方法做了判断，获取到插入的值，然后把新添加的值变成一个响应式对象，并且再调用 ` ob.dep.notify()` 手动触发依赖通知，这就很好地解释了之前的示例中调用 `vm.items.splice(newLength)` 方法可以检测到变化。
+可以看到，`arrayMethods` 首先继承了 `Array`，然后对数组中所有能改变数组自身的方法，如 `push、pop` 等这些方法进行重写。重写后的方法会先执行它们本身原有的逻辑，并对能增加数组长度的 3 个方法 `push、unshift、splice` 方法做了判断，获取到插入的值，然后把新添加的值变成一个响应式对象，并且再调用 `ob.dep.notify()` 手动触发依赖通知，这就很好地解释了之前的示例中调用 `vm.items.splice(newLength)` 方法可以检测到变化。
 
 ### 4.6.3 总结
 
@@ -5576,7 +5576,13 @@ Vue 的组件对象支持了计算属性 `computed` 和侦听属性 `watch` 2 �
 
 ### 4.7.1 computed
 
-计算属性的初始化是发生在 Vue 实例初始化阶段的 `initState` 函数中，执行了 `if (opts.computed) initComputed(vm, opts.computed)`，`initComputed` 的定义在 `src/core/instance/state.js` 中：
+计算属性的初始化是发生在 Vue 实例初始化阶段的 `initState` 函数中，执行了 
+
+```js
+if (opts.computed) initComputed(vm, opts.computed)
+```
+
+`initComputed` 的定义在 `src/core/instance/state.js` 中：
 
 ```js
 const computedWatcherOptions = { computed: true }

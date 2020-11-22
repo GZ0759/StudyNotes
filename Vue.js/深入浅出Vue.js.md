@@ -13,7 +13,7 @@ Vue.js，通常被称为 Vue，是一款友好的、多用途且高性能的 Jav
 
 到 2015 年 10 月 26 日这天，Vue.js 终于迎来了 1.0.0 版本的发布。
 
-2016年 10 月 1 日，也是 Vue.js 2.0 发布的日子。
+2016 年 10 月 1 日，也是 Vue.js 2.0 发布的日子。
 
 # 第一篇 变化侦测
 
@@ -255,13 +255,7 @@ export default class Watcher {
 }
 ```
 
-这段代码可以把自己主动添加到 `data.a.b.c` 的 Dep 中去，是不是很神奇？
-
-因为我在 get 方法中先把 `window.target` 设置成了 this，也就是当前 watcher 实例，然后再读一下 `data.a.b.c` 的值，这肯定会触发 getter。
-
-触发了 getter，就会触发收集依赖的逻辑。而关于收集依赖，上面已经介绍了，会从 `window.target` 中读取一个依赖并添加到 Dep 中。
-
-这就导致，只要先在 `window.target` 赋一个 this，然后再读一下值，去触发 getter，就可以把 this 主动添加到 keypath 的 Dep 中。有没有很神奇的感觉啊？
+这段代码可以把自己主动添加到 `data.a.b.c` 的 Dep 中去。因为在 get 方法中先把 `window.target` 设置成了 this，也就是当前 watcher 实例，然后再读一下 `data.a.b.c` 的值，这肯定会触发 getter。触发了 getter，就会触发收集依赖的逻辑。而关于收集依赖，上面已经介绍了，会从 `window.target` 中读取一个依赖并添加到 Dep 中。这就导致，只要先在 `window.target` 赋一个 this，然后再读一下值，去触发 getter，就可以把 this 主动添加到 keypath 的 Dep 中。有没有很神奇的感觉啊？
 
 依赖注入到 Dep 中后，每当 `data.a.b.c` 的值发生变化时，就会让依赖列表中所有的依赖循环触发 update 方法，也就是 Watcher 中的 update 方法。而 update 方法会执行参数中的回调函数，将 value 和 oldValue 传到参数中。
 
@@ -530,7 +524,7 @@ export class Observer {
 value.__proto__ = arrayMethods;
 ```
 
-它的作用是将拦截器（加工后具备拦截功能的 arrayMethods）赋值给`value.__proto__`，通过`__proto__`可以很巧妙地实现覆盖 value 原型的功能，如图 3-2 所示。
+它的作用是将拦截器（加工后具备拦截功能的 arrayMethods）赋值给 `value.__proto__`，通过 `__proto__` 可以很巧妙地实现覆盖 value 原型的功能，如图 3-2 所示。
 
 图 3-2 　使用`__proto__`覆盖原型
 
@@ -1003,11 +997,9 @@ vm.$watch(expOrFn, callback, [options]);
 
 > 注意：在变更 （不是替换） 对象或数组时，旧值将与新值相同，因为它们的引用指向同一个对象/数组。Vue 不会保留变更之前值的副本。
 
-`vm.$watch` 返回一个取消观察函数，用来停止触发回调：
-
-为了发现对象内部值的变化，可以在选项参数中指定 `deep: true`。注意监听数组的变更不需要这么做。
-
-在选项参数中指定 `immediate: true` 将立即以表达式的当前值触发回调：
+1. `vm.$watch` 返回一个取消观察函数，用来停止触发回调：
+2. 为了发现对象内部值的变化，可以在选项参数中指定 `deep: true`。注意监听数组的变更不需要这么做。
+3. 在选项参数中指定 `immediate: true` 将立即以表达式的当前值触发回调：
 
 ### 4.1.2 watch 的内部原理
 
@@ -1094,11 +1086,13 @@ export default class Watcher {
 }
 ```
 
-1. 使用 depIds 来判断如果当前 Watcher 已经订阅了该 Dep，则不会重复订阅。
-2. Watcher 读取 value 时，会触发收集依赖的逻辑。当依赖发生变化时，会通知 Watcher 重新读取最新的数据。如果没有这个判断，就会发现每次数据发生了变化，Watcher 都会读取最新的数据。而读数据就会再次收集依赖，这就会导致 Dep 中依赖有重复。这样当数据发生变化时，会同时通知多个 Watcher。为了避免这个问题，只有第一次触发 getter 的时候才会收集依赖。
-3. 执行 `this.depIds.add` 来记录当前 Watcher 已经订阅了这个 Dep。
-4. 执行 `this.deps.push(dep)`记录自己都订阅了哪些 Dep。
-5. 触发 `dep.addSub(this)`，来将自己订阅到 Dep 中。
+在上述代码中，我们使用 dapIds 来判断如果当前 Watcher 已经订阅了该 Dep，则不会重复订阅。因为 Watcher 每次读取 value 时，都会触发收集依赖的逻辑。当依赖发生变化时，会通知 Watcher 重新读取最新的数据。如果没有这个判断，就会发现每次数据发生了变化，Watcher 都会读取最新的数据。而读数据就会再次收集依赖，这就会导致 Dep 中依赖有重复。这样当数据发生变化时，会同时通知多个 Watcher。为了避免这个问题，只有第一次触发 getter 的时候才会收集依赖。
+
+接着，执行 `this.depIds.add` 来记录当前 Watcher 已经订阅了这个 Dep。
+
+然后执行 `this.deps.push(dep)`记录自己都订阅了哪些 Dep。
+
+最后，触发 `dep.addSub(this)`，来将自己订阅到 Dep 中。
 
 在 Watcher 中新增 addDep 方法后，Dep 中收集依赖的逻辑也需要有所改变。
 
@@ -1124,11 +1118,9 @@ export default class Dep {
 }
 ```
 
-此时，Dep 会记录数据发生变化时，需要通知哪些 Watcher，而 Watcher 中也同样记录了自己会被哪些 Dep 通知。（多对多关系）
+此时，Dep 会记录数据发生变化时，需要通知哪些 Watcher，而 Watcher 中也同样记录了自己会被哪些 Dep 通知。它们其实是多对多的关系。
 
-如果 Watcher 中的 expOrFn 参数是一个表达式，那么肯定只收集一个 Dep，并且大部分都是这样。
-
-但 expOrFn 可以是一个函数，此时如果该函数中使用了多个数据，那么这时 Watcher 就要收集多个 Dep 了
+如果 Watcher 中的 expOrFn 参数是一个表达式，那么肯定只收集一个 Dep，并且大部分都是这样。但 expOrFn 可以是一个函数，此时如果该函数中使用了多个数据，那么这时 Watcher 就要收集多个 Dep 了
 
 ```js
 this.$watch(
@@ -1136,7 +1128,7 @@ this.$watch(
     return this.name + this.age;
   },
   function (newValue, oldValue) {
-    console.lognewValue, oldValue();
+    console.log(newValue, oldValue);
   }
 );
 ```
@@ -1150,7 +1142,7 @@ this.$watch(
   // 从所有依赖项的Dep列表中将自己移除
   teardown(){
     let i = this.deps.length;
-    while(1--){
+    while(i--){
       this.deps[i].removeSub(this);
     }
   }
@@ -1250,10 +1242,9 @@ function _traverse(val, seen) {
 }
 ```
 
-1. 先判 val 类型，如果它不是 Array 和 Object，或者已经被冻结，那么直接返回，什么也不干。
-2. 然后拿到 val 的 `dep.id`，用这个 id 来保证不会重复收集依赖。
-3. 如果是数组，则循环数组，将数组中每一项递归调用`_traverse`。
-4. 如果是 Object 类型的数据，则循环 Object 中所有 key，然后执行一次读取操作，再递归子值
+这里，先要先判 val 类型，如果它不是 Array 和 Object，或者已经被冻结，那么直接返回，什么也不干。
+
+然后拿到 val 的 `dep.id`，用这个 id 来保证不会重复收集依赖。如果是数组，则循环数组，将数组中每一项递归调用`_traverse`。如果是 Object 类型的数据，则循环 Object 中所有 key，然后执行一次读取操作，再递归子值
 
 ```js
 _traverse(val[(keys[i], seen)]);
@@ -1390,11 +1381,11 @@ export function set(target, key, val) {
 }
 ```
 
-在上面的代码中，最先做的事情是获取 target 的`__ob__`属性。然后要处理 target 不能是 Vue.js 实例或则 Vue.js 实例的根数据对象的情况。
+在上面的代码中，最先做的事情是获取 target 的 `__ob__` 属性。然后要处理 target 不能是 Vue.js 实例或 Vue.js 实例的根数据对象的情况。
 
 实现这个功能并不难，只需要使用 `target._isVue` 来判断 target 是不是 Vue.js 实例，使用 `ob.vmCount` 来判断它是不是根数据对象（`this.$data` 就是根数据）。
 
-接下来，要处理 target 不是响应式的情况。如果 target 身上没有`__ob__`属性，说明它并不是响应式的，并不需要做什么特殊处理，只需要通过 key 和 val 在 target 上设置就行了。
+接下来，要处理 target 不是响应式的情况。如果 target 身上没有 `__ob__` 属性，说明它并不是响应式的，并不需要做什么特殊处理，只需要通过 key 和 val 在 target 上设置就行了。
 
 如果前面的所有判断条件都不满足，那么说明用户是在响应式数据上新增了一个属性，这种情况下需要追踪这个新增属性的变化，即使用 defineReactive 将新增属性转换成 getter/setter 的形式即可。
 
@@ -1425,7 +1416,7 @@ import { del } from '../observer/index';
 Vue.prototype.$delete = del;
 ```
 
-在 Vue.js 的原型上挂载`$.delete` 方法。而 del 函数的定义如下：
+在 Vue.js 的原型上挂载 `$.delete` 方法。而 del 函数的定义如下：
 
 ```js
 export function del(target, key) {
@@ -1479,7 +1470,7 @@ export function del(target, key) {
 }
 ```
 
-上面的代码中新增了逻辑判断：如果 target 上有 `_isVue` 属性（target 是 Vue.js 实例）或则 ob.vmCount 数量大于 1（target 是根数据），则直接返回，终止程序继续执行，并且如果是开发环境，会在控制台中发出警告。
+上面的代码中新增了逻辑判断：如果 target 上有 `_isVue` 属性（target 是 Vue.js 实例）或则 `ob.vmCount` 数量大于 1（target 是根数据），则直接返回，终止程序继续执行，并且如果是开发环境，会在控制台中发出警告。
 
 如果删除的这个 key 不是 target 自身的属性，就什么都不做，直接退出程序执行。
 
@@ -1509,7 +1500,7 @@ export function del(target, key) {
 
 如果删除的这个 key 在 target 中根本不存在，那么其实并不需要进行删除操作，也不需要向依赖发送通知。
 
-最后，还要判断 target 是不是一个响应式数据，也就是说要判断 target 身上存不存在`__ob__`属性。只有响应式数据才需要发送通知，非响应式数据只需要执行删除操作即可。
+最后，还要判断 target 是不是一个响应式数据，也就是说要判断 target 身上存不存在 `__ob__` 属性。只有响应式数据才需要发送通知，非响应式数据只需要执行删除操作即可。
 
 下面这段代码新增了判断条件，如果数据不是响应式的，则使用 return 语句阻止执行发送通知的语句：
 
@@ -1534,7 +1525,7 @@ export function del(target, key) {
     return;
   }
   delete target[key];
-  
+
   //如果ob不存在,则直接终止程序
   if (!_ob_) {
     return;
@@ -1557,7 +1548,7 @@ export function del(target, key) {
 
 # 第二篇 虚拟 DOM
 
-Vue.js2.0 引入了虚拟 DOM,比 Vue.js1.0 的初始渲染速度提升了 2-4 倍，并大大降低了内存消耗。
+Vue.js2.0 引入了虚拟 DOM，比 Vue.js1.0 的初始渲染速度提升了 2-4 倍，并大大降低了内存消耗。
 
 虚拟 DOM 也是 React 核心技术之一。它到底有着怎样的魔力，使前端界各大主流框架都纷份使用？
 
@@ -1573,7 +1564,11 @@ Vue.js2.0 引入了虚拟 DOM,比 Vue.js1.0 的初始渲染速度提升了 2-4 �
 
 # 第 5 章 虚拟 DOM 简介
 
+到今天为止，虚拟 DOM 其实已不再是一个新东西，我行信很多人已经或多或少都听过它。
+
 ## 5.1 什么是虚拟 DOM
+
+虚拟 DOM 是随着时代发展而诞生的产物。在 Web 早起，页面的交互效果比现在简单得多，没有很复杂的状态需要管理，也不太需要频繁地操作 DOM，使用 jQuery 来开发就可以满足我们的需求。随着时代的发展，页面上的功能越来越多，我们需要实现的需求也越来越复杂，程序中需要维护的状态也越来越多，DOM 操作也越来越频繁。
 
 我们现在使用的三大主流框架 Vue.js、Angular 和 React 都是声明式操作 DOM。我们通过描述状态和 DOM 之间的映射关系是怎样的，就可以将状态渲染成视图。关于状态到视图的转化过程，框架会帮我们做，不需要我们自己去操作 DOM。
 
@@ -1593,7 +1588,7 @@ Vue.js2.0 引入了虚拟 DOM,比 Vue.js1.0 的初始渲染速度提升了 2-4 �
 
 虚拟 DOM 的解决方式是通过状态生成一个虚拟节点树，然后使用虚拟节点树进行渲染。在渲染之前，会使用新生成的虚拟节点数和上一次生成的虚拟节点树进行对比，只渲染不同的部分。
 
-虚拟节点数其实是由组件树建立起来的整个虚拟节点（Virtual Node，也简写为 Vnode）树。
+虚拟节点数其实是由组件树建立起来的整个虚拟节点（Virtual Node，也简写为 vnode）树。
 
 ## 5.2 为什么要引入虚拟 DOM
 
@@ -2303,8 +2298,11 @@ while (oldstartIdx <= oldEndIdx && newstartIdx <= newEndIdx) {
 这三部分内容在模板编译中分别抽象出三个模块实现各自的功能：解析器、优化器和代码生成器。
 
 ### 8.2.1 解析器
+
 ### 8.2.2 优化器
+
 ### 8.2.3 代码生成器
+
 ## 8.3 总结
 
 # 第 9 章 解析器
