@@ -1054,12 +1054,10 @@ function create() {
 
 ## 基础版本
 
-- 设定三个状态 `PENDING、FULFILLED、REJECTED` ，只能由`PENDING`改变为`FULFILLED、REJECTED`，并且只能改变一次
-- `MyPromise`接收一个函数`executor`，`executor`有两个参数`resolve`方法和`reject`方法
-- `resolve`将`PENDING`改变为`FULFILLED`
-- `reject`将`PENDING`改变为`FULFILLED`
-- `promise`变为`FULFILLED`状态后具有一个唯一的`value`
-- `promise`变为`REJECTED`状态后具有一个唯一的`reason`
+- 设定三个状态 PENDING、FULFILLED、REJECTED ，只能由 PENDING 改变为 FULFILLED、REJECTED ，并且只能改变一次
+- MyPromise 接收一个函数 executor ， executor 有两个参数 resolve 方法和 reject 方法
+  1. resolve 将 PENDING 改变为 FULFILLED ，改变状态后具有一个唯一的 value
+  2. reject 将 PENDING 改变为 FULFILLED ，改变状态后具有一个唯一的 reason
 
 ```js
 const PENDING = 'pending';
@@ -1095,11 +1093,11 @@ function MyPromise(executor) {
 
 ## then 方法
 
-- `then`方法接受两个参数`onFulfilled、onRejected`，它们分别在状态由`PENDING`改变为`FULFILLED、REJECTED`后调用
-- 一个`promise`可绑定多个`then`方法
-- `then`方法可以同步调用也可以异步调用
-- 同步调用：状态已经改变，直接调用`onFulfilled`方法
-- 异步调用：状态还是`PENDING`，将`onFulfilled、onRejected`分别加入两个函数数组`onFulfilledCallbacks、onRejectedCallbacks`，当异步调用`resolve`和`reject`时，将两个数组中绑定的事件循环执行。
+- then 方法接受两个参数 onFulfilled、onRejected ，它们分别在状态由 PENDING 改变为 FULFILLED、REJECTED 后调用
+- 一个 promise 可绑定多个 then 方法
+- then 方法可以同步调用也可以异步调用
+  1. 同步调用：状态已经改变，直接调用 onFulfilled 方法
+  2. 异步调用：状态还是 PENDING ，将 onFulfilled、onRejected 分别加入两个函数数组 onFulfilledCallbacks、onRejectedCallbacks ，当异步调用 resolve 和 reject 时，将两个数组中绑定的事件循环执行。
 
 ```js
 function MyPromise(executor) {
