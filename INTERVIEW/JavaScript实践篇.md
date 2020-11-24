@@ -1052,7 +1052,7 @@ function create() {
 
 # 模拟实现 Promise
 
-## 基础版本
+## Promise 基本实现
 
 - 设定三个状态 PENDING、FULFILLED、REJECTED ，只能由 PENDING 改变为 FULFILLED、REJECTED ，并且只能改变一次
 - MyPromise 接收一个函数 executor ， executor 有两个参数 resolve 方法和 reject 方法
@@ -1156,7 +1156,7 @@ MyPromise.prototype.then = function (onFulfilled, onRejected) {
 
 ### then 方法异步调用
 
-如下面的代码：输入顺序是：`1、2、ConardLi`
+如下面的代码：输入顺序是：1、2、ConardLi
 
 ```js
 console.log(1);
@@ -1172,7 +1172,7 @@ promise.then((value) => {
 console.log(2);
 ```
 
-虽然`resolve`是同步执行的，我们必须保证`then`是异步调用的，我们用`setTimeout`来模拟异步调用（并不能实现微任务和宏任务的执行机制，只是保证异步调用）
+虽然 resolve 是同步执行的，我们必须保证 then 是异步调用的，我们用 setTimeout 来模拟异步调用（并不能实现微任务和宏任务的执行机制，只是保证异步调用）
 
 ```js
 MyPromise.prototype.then = function (onFulfilled, onRejected) {
@@ -1215,9 +1215,9 @@ MyPromise.prototype.then = function (onFulfilled, onRejected) {
 
 ### then 方法链式调用
 
-保证链式调用，即`then`方法中要返回一个新的`promise`，并将`then`方法的返回值进行`resolve`。
+保证链式调用，即 then 方法中要返回一个新的 promise ，并将 then 方法的返回值进行 resolve 。
 
-> 注意：这种实现并不能保证`then`方法中返回一个新的`promise`，只能保证链式调用。
+> 注意：这种实现并不能保证 then 方法中返回一个新的 promise ，只能保证链式调用。
 
 ```js
 MyPromise.prototype.then = function (onFulfilled, onRejected) {
@@ -1283,7 +1283,7 @@ MyPromise.prototype.then = function (onFulfilled, onRejected) {
 
 ## catch 方法
 
-若上面没有定义`reject`方法，所有的异常会走向`catch`方法：
+若上面没有定义 reject 方法，所有的异常会走向 catch 方法：
 
 ```js
 MyPromise.prototype.catch = function (onRejected) {
@@ -1293,7 +1293,7 @@ MyPromise.prototype.catch = function (onRejected) {
 
 ## finally 方法
 
-不管是`resolve`还是`reject`都会调用`finally`。
+不管是 resolve 还是 reject 都会调用 finally 。
 
 ```js
 MyPromise.prototype.finally = function (fn) {
@@ -1312,7 +1312,7 @@ MyPromise.prototype.finally = function (fn) {
 
 ## Promise.resolve
 
-`Promise.resolve`用来生成一个直接处于`FULFILLED`状态的 Promise。
+Promise.resolve 用来生成一个直接处于 FULFILLED 状态的 Promise。
 
 ```js
 MyPromise.reject = function (value) {
@@ -1324,7 +1324,7 @@ MyPromise.reject = function (value) {
 
 ## Promise.reject
 
-`Promise.reject`用来生成一个直接处于`REJECTED`状态的 Promise。
+Promise.reject 用来生成一个直接处于 REJECTED 状态的 Promise。
 
 ```js
 MyPromise.reject = function (reason) {
@@ -1336,7 +1336,7 @@ MyPromise.reject = function (reason) {
 
 ## all 方法
 
-接受一个`promise`数组，当所有`promise`状态`resolve`后，执行`resolve`
+接受一个 promise 数组，当所有 promise 状态 resolve 后，执行 resolve 。
 
 ```js
 MyPromise.all = function (promises) {
@@ -1367,7 +1367,7 @@ MyPromise.all = function (promises) {
 
 ## race 方法
 
-接受一个`promise`数组，当有一个`promise`状态`resolve`后，执行`resolve`
+接受一个 promise 数组，当有一个 promise 状态 resolve 后，执行 resolve 。
 
 ```js
 MyPromise.race = function (promises) {
