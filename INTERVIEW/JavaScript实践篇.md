@@ -237,15 +237,15 @@ console.log(new_arr);
 2. 递归遍历。拷贝时判断类型，如果是对象则递归调用
 
 ```js
-var deepCopy = function (obj) {
-  if (typeof obj !== 'object') return obj;
+var deepCopy = function (target) {
+  if (typeof target !== 'object') return target;
   if (target === null) return null;
 
-  var newObj = obj instanceof Array ? [] : {};
-  for (const [k, v] of Object.entries(obj)) {
-    newObj[k] = deepCopy(v);
+  var obj = target instanceof Array ? [] : {};
+  for (const [k, v] of Object.entries(target)) {
+    obj[k] = deepCopy(v);
   }
-  return newObj;
+  return obj;
 };
 ```
 
