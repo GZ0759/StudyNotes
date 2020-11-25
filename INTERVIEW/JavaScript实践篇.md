@@ -1094,10 +1094,11 @@ function MyPromise(executor) {
 ## 原型方法 then
 
 - then 方法接受两个回调函数 onFulfilled/onRejected 作为参数 ，它们分别在状态由 PENDING 改变为 FULFILLED/REJECTED 后被调用
-- 一个 promise 可绑定多个 then 方法，将 onFulfilled、onRejected 分别加入两个函数数组 onFulfilledCallbacks、onRejectedCallbacks
-- then 方法可以同步调用也可以异步调用
+- 一个 promise 可绑定多个 then 方法，可将 onFulfilled/onRejected 分别加入两个函数数组 onFulfilledCallbacks/onRejectedCallbacks
+- then 方法可以同步调用也可以异步调用，也可以进行链式调用。
   1. 同步调用：状态已经改变，直接调用 onFulfilled 方法
-  2. 异步调用：状态还是 PENDING ，当异步调用 resolve 和 reject 时，将两个数组中绑定的事件循环执行。
+  2. 异步调用：状态还是 PENDING ，加入函数数组，当异步调用 resolve/reject 时，将两个数组中绑定的事件循环执行
+  3. 链式调用：返回一个 Promise 对象
 
 ```js
 function MyPromise(executor) {
@@ -1156,23 +1157,7 @@ MyPromise.prototype.then = function (onFulfilled, onRejected) {
 
 ### then 方法异步调用
 
-如下面的代码：输入顺序是：1、2、ConardLi
-
-```js
-console.log(1);
-
-let promise = new Promise((resolve, reject) => {
-  resolve('ConardLi');
-});
-
-promise.then((value) => {
-  console.log(value);
-});
-
-console.log(2);
-```
-
-虽然 resolve 是同步执行的，我们必须保证 then 是异步调用的，我们用 setTimeout 来模拟异步调用（并不能实现微任务和宏任务的执行机制，只是保证异步调用）
+虽然 resolve 是同步执行的，我们必须保证 then 是异步调用的，我们用 setTimeout 来模拟异步调用（并不能实现微任务和宏任务的执行机制，只是保证异步调用）。
 
 ```js
 MyPromise.prototype.then = function (onFulfilled, onRejected) {
@@ -1215,9 +1200,7 @@ MyPromise.prototype.then = function (onFulfilled, onRejected) {
 
 ### then 方法链式调用
 
-保证链式调用，即 then 方法中要返回一个新的 promise ，并将 then 方法的返回值进行 resolve 。
-
-> 注意：这种实现并不能保证 then 方法中返回一个新的 promise ，只能保证链式调用。
+then 可以采用链式写法，即 then 方法中要返回一个新的 promise ，并将 then 方法的返回值进行 resolve 。注意：这种实现并不能保证 then 方法中返回一个新的 promise ，只能保证链式调用。
 
 ```js
 MyPromise.prototype.then = function (onFulfilled, onRejected) {
