@@ -1293,7 +1293,7 @@ MyPromise.prototype.finally = function (fn) {
 };
 ```
 
-## Promise.resolve
+## 静态方法 Promise.resolve
 
 Promise.resolve 用来生成一个直接处于 FULFILLED 状态的 Promise。
 
@@ -1305,7 +1305,7 @@ MyPromise.reject = function (value) {
 };
 ```
 
-## Promise.reject
+## 静态方法 Promise.reject
 
 Promise.reject 用来生成一个直接处于 REJECTED 状态的 Promise。
 
@@ -1317,7 +1317,7 @@ MyPromise.reject = function (reason) {
 };
 ```
 
-## all 方法
+## 静态方法 Promise.all
 
 接受一个 promise 数组，当所有 promise 状态 resolve 后，执行 resolve 。
 
@@ -1348,7 +1348,7 @@ MyPromise.all = function (promises) {
 };
 ```
 
-## race 方法
+## 静态方法 Promise.race
 
 接受一个 promise 数组，当有一个 promise 状态 resolve 后，执行 resolve 。
 
@@ -1374,6 +1374,33 @@ MyPromise.race = function (promises) {
   });
 };
 ```
+
+## 不足之处
+
+1. 如果 excutor 的 resolve 方法接受的参数是一个 Promise 对象会怎么样？
+
+[研究：当 resolve 函数参数里是另外一个 Promise 实例](https://segmentfault.com/a/1190000023409765)
+
+一个 Promise 实例 的 resolve 函数的参数除了正常的值以外，还可能是另一个 Promise 实例，后者的状态决定了前者的状态。应该是新添加的 Promise A+规范。
+
+2. Promise.then 返回的是一个 Promise 实例
+
+[从零开始手写Promise](https://zhuanlan.zhihu.com/p/144058361)
+
+Promise 解决过程 The Promise Resolution Procedure
+
+Promise 解决过程是一个抽象的操作，其需输入一个 promise 和一个值，我们表示为 `[[Resolve]](promise, x)`，如果 x 有 then 方法且看上去像一个 Promise ，解决程序即尝试使 promise 接受 x 的状态；否则其用 x 的值来执行 promise 。
+
+[MDN Promise.prototype.then](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Promise/then)
+
+当一个 Promise 完成（fulfilled）或者失败（rejected）时，返回函数将被异步调用（由当前的线程循环来调度完成）。具体的返回值依据以下规则返回。如果 then 中的回调函数：
+
+- 返回了一个值，那么 then 返回的 Promise 将会成为接受状态，并且将返回的值作为接受状态的回调函数的参数值。
+- 没有返回任何值，那么 then 返回的 Promise 将会成为接受状态，并且该接受状态的回调函数的参数值为 undefined。
+- 抛出一个错误，那么 then 返回的 Promise 将会成为拒绝状态，并且将抛出的错误作为拒绝状态的回调函数的参数值。
+- 返回一个已经是接受状态的 Promise，那么 then 返回的 Promise 也会成为接受状态，并且将那个 Promise 的接受状态的回调函数的参数值作为该被返回的 Promise 的接受状态回调函数的参数值。
+- 返回一个已经是拒绝状态的 Promise，那么 then 返回的 Promise 也会成为拒绝状态，并且将那个 Promise 的拒绝状态的回调函数的参数值作为该被返回的 Promise 的拒绝状态回调函数的参数值。
+- 返回一个未定状态（pending）的 Promise，那么 then 返回 Promise 的状态也是未定的，并且它的终态与那个 Promise 的终态相同；同时，它变为终态时调用的回调函数参数与那个 Promise 变为终态时的回调函数的参数是相同的。
 
 # 手动实现 JSONP
 
