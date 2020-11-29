@@ -3860,18 +3860,33 @@ HTML 解析器的内部原理是一小段一小段地截取模板字符串，每
 
 # 第 13 章 实例方法与全局 API 的实现原理
 
-13.1 数据相关的实例方法
-13.2 事件相关的实例方法
+上一章介绍了Vue.js内部的整体结构，知道了它会向构造函数添加一些属性和方法。本章中，我们将详细介绍它的实例方法和全局API的实现原理。
+
+## 13.1 数据相关的实例方法
+
+与数据相关的实例方法有 3 个，分别是 `vm.$watch`、`vm.$set` 和 `vm.$delete`，他们是在 stateMIxin 中挂载到 Vue 的原型上的，代码如下
+
+## 13.2 事件相关的实例方法
+
+与事件相关的实例方法有 4 个，分别是 `vm.$on`、`vm.$once`、`vm.$off`和`vm.$emit`。这 4 个方法是在 eventsMixin 中挂载到 Vue 构造函数的 prototype 属性中的，其代码如下
+
 13.2.1 vm.$on
 13.2.2 vm.$off
 13.2.3 vm.$once
 13.2.4 vm.$emit
-13.3 生命周期相关的实例方法
+
+## 13.3 生命周期相关的实例方法
+
+与生命周期相关的实例方法有 4 个，分别是 `vm.$mount`、`vm.$forceUpdate`、`vm.$nextTick`和`vm.$destroy`。其中有两个方法是从 lifecycleMixin 中挂载到 Vue 构造函数的 prototype 属性上，分别是 `vm.$forceUpdate` 和 `vm.$destroy`。lifecycleMixin 的代码如下
+
 13.3.1 vm.$forceUpdate
 13.3.2 vm.$destroy
 13.3.3 vm.$nextTick
 13.3.4 vm.$mount
-13.4 全局 API 的实现原理
+
+## 13.4 全局 API 的实现原理
+
+现在我们已经了解了 Vue.js 实例方法的内部原理，接下来将介绍全局 API 的内部原理。
 13.4.1 Vue.extend
 13.4.2 Vue.nextTick
 13.4.3 Vue.set
@@ -3883,7 +3898,14 @@ HTML 解析器的内部原理是一小段一小段地截取模板字符串，每
 13.4.9 Vue.mixin
 13.4.10 Vue.compile
 13.4.11 Vue.version
-13.5 总结
+
+## 13.5 总结
+
+本章中，我们详细介绍了 Vue.js 的实例方法和全局 AP1 的实现原理。它们的区别在于：实例方法是 vue.prototype 上的方法，而全局 API 是 Vue.js 上的方法。
+
+实例方法又分为数据、事件和生命周期这三个类型。
+
+在介绍实例方法以及全局 API 的实现原理的同时，我们还介绍了扩展知识，例如在介绍`vm.$nextTick`时我们介绍了 JavaScript 事件循环机制，一级微任务和宏任务之间的区别等。
 
 # 第 14 章 生命周期
 
