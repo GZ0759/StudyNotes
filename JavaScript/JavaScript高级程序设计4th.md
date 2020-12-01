@@ -1965,7 +1965,7 @@ let mySymbol = new Symbol(); // TypeError:
 Symbol is not a constructor
 ```
 
-如果你确实想使用符号包装对象，可以借用 Object() 函数：
+如果你确实想使用符号包装对象，可以借用 `Object()` 函数：
 
 ```js
 let mySymbol = Symbol();
@@ -2560,7 +2560,7 @@ Object 的实例本身并不是很有用，但理解与它相关的概念非常�
 
 每个 Object 实例都有如下属性和方法。
 
-- constructor ：用于创建当前对象的函数。在前面的例子中，这个属性的值就是 Object() 函数。
+- constructor ：用于创建当前对象的函数。在前面的例子中，这个属性的值就是 `Object()` 函数。
 - hasOwnProperty(propertyName) ：用于判断当前对象实 例（不是原型）上是否存在给定的属性。要检查的属性名必须是字符串（如 o.hasOwnProperty("name") ）。
 - isPrototypeof(object) ：用于判断当前对象是否为另一个对象的原型。（第 5 章将详细介绍原型。）
 - propertyIsEnumerable(propertyName) ：用于判断给定的属性是否可以使用（本章稍后讨论的） for-in 语句枚举。 与 `hasOwnProperty()` 一样，属性名必须是字符串。
@@ -12671,7 +12671,7 @@ function object(o) {
 }
 ```
 
-这个 object() 函数会创建一个临时构造函数，将传入的对象赋值给这个构造函数的原型，然后返回这个临时类型的一个实例。本质上， object() 是对传入的对象执行了一次浅复制。来看下面的例子：
+这个 `object()` 函数会创建一个临时构造函数，将传入的对象赋值给这个构造函数的原型，然后返回这个临时类型的一个实例。本质上， `object()` 是对传入的对象执行了一次浅复制。来看下面的例子：
 
 ```js
 let person = {
@@ -12690,9 +12690,9 @@ yetAnotherPerson.friends.push('Barbie');
 console.log(person.friends); // "Shelby,Court,Van,Rob,Barbie"
 ```
 
-Crockford 推荐的原型式继承适用于这种情况：你有一个对象，想在它的基础上再创建一个新对象。你需要把这个对象先传给 object() ，然后再对返回的对象进行适当修改。在这个例子中，person 对象定义了另一个对象也应该共享的信息，把它传给 object() 之后会返回一个新对象。这个新对象的原型是 person ，意味着它的原型上既有原始值属性又有引用值属性。这也意味着 person.friends 不仅是 person 的属性，也会跟 anotherPerson 和 yetAnotherPerson 共享。这里实际上克隆了两个 person 。
+Crockford 推荐的原型式继承适用于这种情况：你有一个对象，想在它的基础上再创建一个新对象。你需要把这个对象先传给 `object()` ，然后再对返回的对象进行适当修改。在这个例子中，person 对象定义了另一个对象也应该共享的信息，把它传给 `object()` 之后会返回一个新对象。这个新对象的原型是 person ，意味着它的原型上既有原始值属性又有引用值属性。这也意味着 person.friends 不仅是 person 的属性，也会跟 anotherPerson 和 yetAnotherPerson 共享。这里实际上克隆了两个 person 。
 
-ECMAScript 5 通过增加 Object.create() 方法将原型式继承的概念规范化了。这个方法接收两个参数：作为新对象原型的对象，以及给新对象定义额外属性的对象（第二个可选）。在只有一个参数时， Object.create() 与这里的 object() 方法效果相同：
+ECMAScript 5 通过增加 Object.create() 方法将原型式继承的概念规范化了。这个方法接收两个参数：作为新对象原型的对象，以及给新对象定义额外属性的对象（第二个可选）。在只有一个参数时， Object.create() 与这里的 `object()` 方法效果相同：
 
 ```js
 let person = {
@@ -12747,7 +12747,7 @@ function createAnother(original) {
 }
 ```
 
-在这段代码中， createAnother() 函数接收一个参数，就是新对象的基准对象。这个对象 original 会被传给 object() 函数，然后将返回的新对象赋值给 clone 。接着给 clone 对象添加一个新方法 sayHi() 。最后返回这个对象。可以像下面这样使用 createAnother() 函数：
+在这段代码中， createAnother() 函数接收一个参数，就是新对象的基准对象。这个对象 original 会被传给 `object()` 函数，然后将返回的新对象赋值给 clone 。接着给 clone 对象添加一个新方法 sayHi() 。最后返回这个对象。可以像下面这样使用 createAnother() 函数：
 
 ```js
 let person = {
@@ -12761,7 +12761,7 @@ anotherPerson.sayHi(); // "hi"
 
 这个例子基于 person 对象返回了一个新对象。新返回的 anotherPerson 对象具有 person 的所有属性和方法，还有一个新方法叫 sayHi() 。
 
-寄生式继承同样适合主要关注对象，而不在乎类型和构造函数的场景。 object() 函数不是寄生式继承所必需的，任何返回新对象的函数都可以在这里使用。
+寄生式继承同样适合主要关注对象，而不在乎类型和构造函数的场景。 `object()` 函数不是寄生式继承所必需的，任何返回新对象的函数都可以在这里使用。
 
 > 注意 通过寄生式继承给对象添加函数会导致函数难以重用，与构造函数模式类似。
 
