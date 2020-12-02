@@ -1031,15 +1031,15 @@ JavaScript 有一个基于事件循环的并发模型，事件循环负责执行
 
 #### 运行时概念
 
-**栈 Stack**
+栈 Stack
 
 函数调用形成了一个由若干帧 Frame 组成的栈。当调用函数时，第一个帧被创建并压入栈中，该帧包含了函数的参数和局部变量。函数内部调用另外一个函数时，第二个帧被创建并被压入栈中，放在第一个帧之上，该帧也包含这个函数的参数和局部变量。而当第二个函数执行完毕并返回时，第二个帧就被弹出栈（只剩下第一个函数的调用帧）。当第一个函数也执行完毕然后返回时，第一个帧也被弹出，栈就被清空了。
 
-**堆 Heap**
+堆 Heap
 
 对象被分配在堆中，堆是一个用来表示一大块（通常是非结构化的）内存区域的计算机术语。
 
-**队列 Queue**
+队列 Queue
 
 一个 JavaScript 运行时包含了一个待处理消息的消息队列。每一个消息都关联着一个用以处理这个消息的回调函数。
 
@@ -1059,23 +1059,23 @@ while (queue.waitForMessage()) {
 
 `queue.waitForMessage()` 会同步地等待消息到达（如果当前没有任何消息等待被处理）。
 
-**执行至完成**
+执行至完成
 
 每一个消息完整地执行后，其它消息才会被执行。这为程序的分析提供了一些优秀的特性，包括：当一个函数执行时，它不会被抢占，只有在它运行完毕之后才会去运行任何其他的代码，才能修改这个函数操作的数据。这个模型的一个缺点在于当一个消息需要太长时间才能处理完毕时，Web 应用程序就无法处理与用户的交互，例如点击或滚动。
 
-**添加消息**
+添加消息
 
 在浏览器里，每当一个事件发生并且有一个事件监听器绑定在该事件上时，一个消息就会被添加进消息队列。如果没有事件监听器，这个事件将会丢失。所以当一个带有点击事件处理器的元素被点击时，就会像其他事件一样产生一个类似的消息。函数 setTimeout 接受两个参数：待加入队列的消息和一个时间值（可选，默认为 0）。这个时间值代表了消息被实际加入到队列的最小延迟时间。
 
-**零延迟**
+零延迟
 
 零延迟并不意味着回调会立即执行。以 0 为第二参数调用 setTimeout 并不表示在 0 毫秒后就立即调用回调函数。其等待的时间取决于队列里待处理的消息数量。基本上，setTimeout 需要等待当前队列中所有的消息都处理完毕之后才能执行，即使已经超出了由第二参数所指定的时间。
 
-**多个运行时互相通信**
+多个运行时互相通信
 
 一个 web worker 或者一个跨域的 iframe 都有自己的栈、堆和消息队列。两个不同的运行时只能通过 postMessage 方法进行通信。如果另一个运行时侦听 message 事件，则此方法会向该运行时添加消息。
 
-**永不阻塞**
+永不阻塞
 
 JavaScript 的事件循环模型与许多其他语言不同的一个非常有趣的特性是，它永不阻塞。 处理 I/O 通常通过事件和回调来执行，所以当一个应用正等待一个 IndexedDB 查询返回或者一个 XHR 请求返回时，它仍然可以处理其它事情，比如用户输入。由于历史原因有一些例外，如 alert 或者同步 XHR，但应该尽量避免使用它们。
 
@@ -1108,7 +1108,7 @@ JavaScript 语言的一大特点就是单线程，这与它的用途有关。作
 
 #### Event Loop
 
-主线程从"任务队列"中读取事件，这个过程是循环不断的，所以整个的这种运行机制又称为 Event Loop（事件循环）。主线程运行的时候，产生堆（heap）和栈（stack），栈中的代码调用各种外部 API，它们在"任务队列"中加入各种事件（click，load，done）。只要栈中的代码执行完毕，主线程就会去读取"任务队列"，依次执行那些事件所对应的回调函数。
+主线程从"任务队列"中读取事件，这个过程是循环不断的，所以整个的这种运行机制又称为 Event Loop 事件循环。主线程运行的时候，产生堆 heap 和栈 stack，栈中的代码调用各种外部 API，它们在"任务队列"中加入各种事件（click，load，done）。只要栈中的代码执行完毕，主线程就会去读取"任务队列"，依次执行那些事件所对应的回调函数。
 
 执行栈中的代码（同步任务），总是在读取"任务队列"（异步任务）之前执行。
 
@@ -1116,11 +1116,9 @@ JavaScript 语言的一大特点就是单线程，这与它的用途有关。作
 
 除了放置异步任务的事件，"任务队列"还可以放置定时事件，即指定某些代码在多少时间之后执行。这叫做"定时器"（timer）功能，也就是定时执行的代码。
 
-定时器功能主要由 setTimeout()和 setInterval()这两个函数来完成，它们的内部运行机制完全一样，区别在于前者指定的代码是一次性执行，后者则为反复执行。
+定时器功能主要由 `setTimeout()` 和 `setInterval()` 这两个函数来完成，它们的内部运行机制完全一样，区别在于前者指定的代码是一次性执行，后者则为反复执行。`setTimeout(fn, 0)`的含义是，指定某个任务在主线程最早可得的空闲时间执行，也就是说，尽可能早得执行。它在"任务队列"的尾部添加一个事件，因此要等到同步任务和"任务队列"现有的事件都处理完，才会得到执行。
 
-总之，`setTimeout(fn, 0)`的含义是，指定某个任务在主线程最早可得的空闲时间执行，也就是说，尽可能早得执行。它在"任务队列"的尾部添加一个事件，因此要等到同步任务和"任务队列"现有的事件都处理完，才会得到执行。
-
-HTML5 标准规定了 `setTimeout()` 的第二个参数的最小值（最短间隔），不得低于 4 毫秒，如果低于这个值，就会自动增加。在此之前，老版本的浏览器都将最短间隔设为 10 毫秒。另外，对于那些 DOM 的变动（尤其是涉及页面重新渲染的部分），通常不会立即执行，而是每 16 毫秒执行一次。这时使用 requestAnimationFrame()的效果要好于 `setTimeout()` 。
+HTML5 标准规定了 `setTimeout()` 的第二个参数的最小值（最短间隔），不得低于 4 毫秒，如果低于这个值，就会自动增加。在此之前，老版本的浏览器都将最短间隔设为 10 毫秒。另外，对于那些 DOM 的变动（尤其是涉及页面重新渲染的部分），通常不会立即执行，而是每 16 毫秒执行一次。这时使用 `requestAnimationFrame()` 的效果要好于 `setTimeout()` 。
 
 需要注意的是， `setTimeout()` 只是将事件插入了"任务队列"，必须等到当前代码（执行栈）执行完，主线程才会去执行它指定的回调函数。要是当前代码耗时很长，有可能要等很久，所以并没有办法保证，回调函数一定会在 `setTimeout()` 指定的时间执行。
 
@@ -1133,9 +1131,9 @@ Node.js 也是单线程的 Event Loop，但是它的运行机制不同于浏览�
 3. libuv 库负责 Node API 的执行。它将不同的任务分配给不同的线程，形成一个 Event Loop（事件循环），以异步的方式将任务的执行结果返回给 V8 引擎。
 4. V8 引擎再将结果返回给用户。
 
-除了 setTimeout 和 setInterval 这两个方法，Node.js 还提供了另外两个与"任务队列"有关的方法：process.nextTick 和 setImmediate。它们可以帮助我们加深对"任务队列"的理解。
+除了 setTimeout 和 setInterval 这两个方法，Node.js 还提供了另外两个与"任务队列"有关的方法：`process.nextTick` 和 setImmediate。它们可以帮助我们加深对"任务队列"的理解。
 
-process.nextTick 方法可以在当前"执行栈"的尾部----下一次 Event Loop（主线程读取"任务队列"）之前----触发回调函数。也就是说，它指定的任务总是发生在所有异步任务之前。setImmediate 方法则是在当前"任务队列"的尾部添加事件，也就是说，它指定的任务总是在下一次 Event Loop 时执行，这与`setTimeout(fn, 0)`很像。请看下面的例子（via StackOverflow）。
+`process.nextTick` 方法可以在当前"执行栈"的尾部，下一次 Event Loop（主线程读取"任务队列"）之前，触发回调函数。也就是说，它指定的任务总是发生在所有异步任务之前。setImmediate 方法则是在当前"任务队列"的尾部添加事件，也就是说，它指定的任务总是在下一次 Event Loop 时执行，这与 `setTimeout(fn, 0)` 很像。请看下面的例子（via StackOverflow）。
 
 ```js
 process.nextTick(function A() {
@@ -1153,7 +1151,7 @@ setTimeout(function timeout() {
 // TIMEOUT FIRED
 ```
 
-上面代码中，由于 process.nextTick 方法指定的回调函数，总是在当前"执行栈"的尾部触发，所以不仅函数 A 比 setTimeout 指定的回调函数 timeout 先执行，而且函数 B 也比 timeout 先执行。这说明，如果有多个 process.nextTick 语句（不管它们是否嵌套），将全部在当前"执行栈"执行。
+上面代码中，由于 `process.nextTick` 方法指定的回调函数，总是在当前"执行栈"的尾部触发，所以不仅函数 A 比 setTimeout 指定的回调函数 timeout 先执行，而且函数 B 也比 timeout 先执行。这说明，如果有多个 `process.nextTick` 语句（不管它们是否嵌套），将全部在当前"执行栈"执行。
 
 现在，再看 setImmediate。
 
@@ -1170,7 +1168,7 @@ setTimeout(function timeout() {
 }, 0);
 ```
 
-上面代码中，setImmediate 与 setTimeout(fn,0)各自添加了一个回调函数 A 和 timeout，都是在下一次 Event Loop 触发。那么，哪个回调函数先执行呢？答案是不确定。运行结果可能是 1--TIMEOUT FIRED--2，也可能是 TIMEOUT FIRED--1--2。
+上面代码中，setImmediate 与 `setTimeout(fn, 0)` 各自添加了一个回调函数 A 和 timeout，都是在下一次 Event Loop 触发。那么，哪个回调函数先执行呢？答案是不确定。运行结果可能是 1--TIMEOUT FIRED--2，也可能是 TIMEOUT FIRED--1--2。
 
 令人困惑的是，Node.js 文档中称，setImmediate 指定的回调函数，总是排在 setTimeout 前面。实际上，这种情况只发生在递归调用的时候。
 
@@ -1194,7 +1192,7 @@ setImmediate(function () {
 
 上面代码中，setImmediate 和 setTimeout 被封装在一个 setImmediate 里面，它的运行结果总是 1--TIMEOUT FIRED--2，这时函数 A 一定在 timeout 前面触发。至于 2 排在 TIMEOUT FIRED 的后面（即函数 B 在 timeout 后面触发），是因为 setImmediate 总是将事件注册到下一轮 Event Loop，所以函数 A 和 timeout 是在同一轮 Loop 执行，而函数 B 在下一轮 Loop 执行。
 
-我们由此得到了 process.nextTick 和 setImmediate 的一个重要区别：多个 process.nextTick 语句总是在当前"执行栈"一次执行完，多个 setImmediate 可能则需要多次 loop 才能执行完。事实上，这正是 Node.js 10.0 版添加 setImmediate 方法的原因，否则像下面这样的递归调用 process.nextTick，将会没完没了，主线程根本不会去读取"事件队列"！
+我们由此得到了 `process.nextTick` 和 setImmediate 的一个重要区别：多个 `process.nextTick` 语句总是在当前"执行栈"一次执行完，多个 setImmediate 可能则需要多次 loop 才能执行完。事实上，这正是 Node.js 10.0 版添加 setImmediate 方法的原因，否则像下面这样的递归调用 `process.nextTick`，将会没完没了，主线程根本不会去读取"事件队列"！
 
 ```js
 process.nextTick(function foo() {
@@ -1202,21 +1200,19 @@ process.nextTick(function foo() {
 });
 ```
 
-事实上，现在要是你写出递归的 process.nextTick，Node.js 会抛出一个警告，要求你改成 setImmediate。
+事实上，现在要是你写出递归的` process.nextTick`，Node.js 会抛出一个警告，要求你改成 setImmediate。
 
-另外，由于 process.nextTick 指定的回调函数是在本次"事件循环"触发，而 setImmediate 指定的是在下次"事件循环"触发，所以很显然，前者总是比后者发生得早，而且执行效率也高（因为不用检查"任务队列"）。
+另外，由于` process.nextTick` 指定的回调函数是在本次"事件循环"触发，而 setImmediate 指定的是在下次"事件循环"触发，所以很显然，前者总是比后者发生得早，而且执行效率也高（因为不用检查"任务队列"）。
 
 ### 更多介绍
 
-Event Loop 即事件循环，是指浏览器或 Node 的一种解决 JavaScript 单线程运行时不会阻塞的一种机制，也就是我们经常使用异步的原理。
+Event Loop 即事件循环，是指浏览器或 Node 的一种解决 JavaScript 单线程运行时不会阻塞的一种机制，也就是我们经常使用异步的原理。事件循环可以协调事件、用户交互、脚本、渲染、网络等。
 
 #### 单线程和多线程
 
-JavaScript 是一个单线程的语言。单线程在程序执行时，所走的程序路径按照连续顺序排下来，前面的必须处理好，后面的才会执行。
+JavaScript 是一个单线程的语言。单线程在程序执行时，所走的程序路径按照连续顺序排下来，前面的必须处理好，后面的才会执行。设计成一个单线程，安全稳定，不会带来复杂的同步问题。
 
-以 Chrome 浏览器中为例，当你打开一个 Tab 页时，其实就是创建了一个进程。一个进程中可以有多个线程，比如渲染线程、JS 引擎线程、HTTP 请求线程等等。
-
-当你发起一个请求时，其实就是创建了一个线程，当请求结束后，该线程可能就会被销毁。
+以 Chrome 浏览器中为例，当你打开一个 Tab 页时，其实就是创建了一个进程。一个进程中可以有多个线程，比如渲染线程、JS 引擎线程、HTTP 请求线程等等。当你发起一个请求时，其实就是创建了一个线程，当请求结束后，该线程可能就会被销毁。
 
 浏览器内核是怎样的？浏览器内核是多线程的，在内核控制下各线程相互配合以保持同步，一个浏览器通常由以下常驻线程组成：
 
@@ -1226,11 +1222,9 @@ JavaScript 是一个单线程的语言。单线程在程序执行时，所走的
 4. 事件触发线程：负责将准备好的事件交给 JS 引擎执行。
 5. 异步 http 请求线程：负责执行异步请求之类函数的线程，例如 `Promise.then()`、ajax 等。
 
-为什么不设计成多线程？假设有个 DOM 节点，现在有线程 A 操作它，删除了这个 DOM；然后线程 B 又操作它，修改了这个 DOM 某部分。那么现在问题来了，咱听谁的？所以干脆设计成一个单线程，安全稳妥不出事。哪怕后期 HTML5 出了个 Web Worker 也是不允许操作 DOM 结构的，可以完成一些分布式的计算。
+Web Worker 为 Web 内容在后台线程中运行脚本提供了一种简单的方法。在 HTML5 的新规范中，实现了 Web Worker 来引入 JavaScript 的 “多线程” 技术，他的能力让我们可以在页面主运行的 JavaScript 线程中加载运行另外单独的一个或者多个 JavaScript 线程。注意：JavaScript 本质上还是单线程的，Web Worker 只是浏览器（宿主环境）提供的一个得力 API。
 
 #### 执行过程
-
-JavaScript 为了协调事件、用户交互、脚本、渲染、网络等，就搞出来一个 事件循环（Event Loop）。JavaScript 从 script 开始读取，然后不断循环，从 “任务队列” 中读取执行事件的过程，就是事件循环。
 
 Event Loop 执行过程如下：
 
@@ -1243,36 +1237,27 @@ Event Loop 执行过程如下：
 
 事件循环中的异步队列有两种：宏任务队列（MacroTask）和 微任务队列（MicroTask）。而 Web Worker 是运行在后台的 JS，独立于其他脚本，不会影响页面的性能。宏任务队列可以有多个，微任务队列只有一个。
 
-宏任务包括：
+宏任务主要包含下面几种，其中有说法说 `script` 和 UI rendering 也是宏任务，但是 [HTML 规范文档](https://html.spec.whatwg.org/multipage/webappapis.html#event-loop-processing-model) 发现这很显然是和微任务平行的一个操作步骤。
 
-- script
-- setTimeout
-- setInterval
-- setImmediate
-- I/O
-- UI rendering
+| 宏任务                | 浏览器 | Node |
+| --------------------- | ------ | ---- |
+| I/O                   | √      | √    |
+| setTimeout            | √      | √    |
+| setInterval           | √      | √    |
+| setImmediate          | ×      | √    |
+| requestAnimationFrame | √      | ×    |
 
-微任务包括：
+微任务主要包含下面几种，其中以 Promise 为基础开发的其他技术，例如 fetch API；V8 的垃圾回收过程，也算微任务。
 
-- MutationObserver
-- `Promise.then()`/`catch()`
-- 以 Promise 为基础开发的其他技术，例如 fetch API
-- V8 的垃圾回收过程
-- Node 独有的 process.nextTick
+| 微任务                               | 浏览器 | Node |
+| ------------------------------------ | ------ | ---- |
+| process.nextTick                     | ×      | √    |
+| MutationObserver                     | √      | ×    |
+| Promise.prototype.then/catch/finally | √      | √    |
 
-#### requestAnimationFrame
-
-`window.requestAnimationFrame()` 告诉浏览器——你希望执行一个动画，并且要求浏览器在下次重绘之前调用指定的回调函数更新动画。该方法需要传入一个回调函数作为参数，该回调函数会在浏览器下一次重绘之前执行。requestAnimationFrame 简称 rAF。
-
-如果我们使用 setTimeout 来实现动画效果，那么我们会发现在某些低端机上出现卡顿、抖动的现象，它产生的原因是：
+requestAnimationFrame 简称 rAF。`window.requestAnimationFrame()` 告诉浏览器——希望执行一个动画，并且要求浏览器在下次重绘之前调用指定的回调函数更新动画。该方法需要传入一个回调函数作为参数，该回调函数会在浏览器下一次重绘之前执行。如果我们使用 setTimeout 来实现动画效果，那么我们会发现在某些低端机上出现卡顿、抖动的现象，它产生的原因是：
 
 - setTimeout 的执行事件并不是确定的。它属于宏任务队列，只有当主线程上的任务执行完毕后，才会调用队列中的任务判断是否开始执行。
 - 刷新频率受屏幕分辨率和屏幕尺寸影响，因此不同设备的刷新频率不同，而 setTimeout 只能固定一个时间间隔刷新。
 
-在上面 Event Loop 的过程中，我们知道执行完微任务队列会有一步操作：执行浏览器 UI 线程的渲染工作。
-
-而 requestAnimationFrame 就在这里边执行，就不会等宏任务队列的排队，从而导致卡顿等问题了。
-
-#### Web Worker
-
-Web Worker 为 Web 内容在后台线程中运行脚本提供了一种简单的方法。在 HTML5 的新规范中，实现了 Web Worker 来引入 JavaScript 的 “多线程” 技术，他的能力让我们可以在页面主运行的 JavaScript 线程中加载运行另外单独的一个或者多个 JavaScript 线程。注意：JavaScript 本质上还是单线程的，Web Worker 只是浏览器（宿主环境）提供的一个得力 API。
+在上面 Event Loop 的过程中，我们知道执行完微任务队列会有一步操作：执行浏览器 UI 线程的渲染工作。而 requestAnimationFrame 就在这里边执行，就不会等宏任务队列的排队，从而导致卡顿等问题了。
