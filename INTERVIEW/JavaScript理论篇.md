@@ -1235,6 +1235,8 @@ Event Loop 执行过程如下：
 5. 检查是否有 Web Worker 任务，有则执行。
 6. 执行完本轮的宏任务，回到步骤 2，依次循环，直到宏任务和微任务队列为空。
 
+#### 异步队列
+
 事件循环中的异步队列有两种：宏任务队列（MacroTask）和 微任务队列（MicroTask）。而 Web Worker 是运行在后台的 JS，独立于其他脚本，不会影响页面的性能。宏任务队列可以有多个，微任务队列只有一个。
 
 宏任务主要包含下面几种，其中有说法说 `script` 和 UI rendering 也是宏任务，但是 [HTML 规范文档](https://html.spec.whatwg.org/multipage/webappapis.html#event-loop-processing-model) 发现这很显然是和微任务平行的一个操作步骤。
