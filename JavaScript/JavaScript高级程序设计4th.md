@@ -25748,21 +25748,7 @@ while (node !== null) {
 }
 ```
 
-不同的是，节点过滤器（ filter ）除了可以返回
-
-NodeFilter.FILTER_ACCEPT 和
-
-NodeFilter.FILTER_SKIP ，还可以返回
-
-NodeFilter.FILTER_REJECT 。在使用 NodeIterator 时，
-
-NodeFilter.FILTER_SKIP 和 NodeFilter.FILTER_REJECT
-
-是一样的。但在使用 TreeWalker 时，
-
-NodeFilter.FILTER_SKIP 表示跳过节点，访问子树中的下一个节点，而 NodeFilter.FILTER_REJECT 则表示跳过该节点以及该节点的整个子树。例如，如果把前面示例中的过滤器函数改为返回 NodeFilter.FILTER_REJECT （而不是
-
-NodeFilter.FILTER_SKIP ），则会导致遍历立即返回，不会访问任何节点。这是因为第一个返回的元素是 `<div>` ，其中标签名不是 "li" ，因此过滤函数返回 NodeFilter.FILTER_REJECT ，表示要跳过整个子树。因为 `<div>` 本身就是遍历的根节点，所以遍历会就此结束。
+不同的是，节点过滤器（ filter ）除了可以返回 NodeFilter.FILTER_ACCEPT 和 NodeFilter.FILTER_SKIP ，还可以返回 NodeFilter.FILTER_REJECT 。在使用 NodeIterator 时，NodeFilter.FILTER_SKIP 和 NodeFilter.FILTER_REJECT 是一样的。但在使用 TreeWalker 时， NodeFilter.FILTER_SKIP 表示跳过节点，访问子树中的下一个节点，而 NodeFilter.FILTER_REJECT 则表示跳过该节点以及该节点的整个子树。例如，如果把前面示例中的过滤器函数改为返回 NodeFilter.FILTER_REJECT （而不是 NodeFilter.FILTER_SKIP ），则会导致遍历立即返回，不会访问任何节点。这是因为第一个返回的元素是 `<div>` ，其中标签名不是 "li" ，因此过滤函数返回 NodeFilter.FILTER_REJECT ，表示要跳过整个子树。因为 `<div>` 本身就是遍历的根节点，所以遍历会就此结束。
 
 当然， TreeWalker 真正的威力是可以在 DOM 结构中四处游走。如果不使用过滤器，单纯使用 TreeWalker 的漫游能力同样可以在 DOM 树中访问`<li>`元素，比如：
 
@@ -25795,11 +25781,11 @@ nextSibling() 前往`<ul>`元素，然后使用 firstChild() 到达第一个`<li
 
 TreeWalker 类型也有一个名为 currentNode 的属性，表示遍历过程中上一次返回的节点（无论使用的是哪个遍历方法）。可以通过修改这个属性来影响接下来遍历的起点，如下面的例子所示：
 
+```
 let node = walker.nextNode(); console.log(node === walker.currentNode); // true
 
-walker.currentNode = document.body; // 修
-
-改起点
+walker.currentNode = document.body; // 修改起点
+```
 
 相比于 NodeIterator ， TreeWalker 类型为遍历 DOM 提供了更大的灵活性。
 
@@ -25866,9 +25852,7 @@ range1.selectNode(p1);
 range2.selectNodeContents(p1);
 ```
 
-例子中的这两个范围包含文档的不同部分。 range1 包含 <p>
-
-元素及其所有后代，而 range2 包含`<b>`元素、文本节点 "Hello" 和文本节点 " world!" ，如图 16-7 所示。
+例子中的这两个范围包含文档的不同部分。 range1 包含 `<p>` 元素及其所有后代，而 range2 包含`<b>`元素、文本节点 "Hello" 和文本节点 " world!" ，如图 16-7 所示。
 
 图 16-7
 
@@ -25956,7 +25940,9 @@ setStart() 和 setEnd() 真正的威力还是选择节点中的某个部分。
 
 的 "llo" 到 " world!" 中的 "o" 的部分。很简单，第一步是取得所有相关节点的引用，如下面的代码所示：
 
+```
 let p1 = document.getElementById("p1"), helloNode = p1.firstChild.firstChild, worldNode = p1.lastChild
+```
 
 文本 "Hello" 其实是`<p>`的孙子节点，因为它是`<b>`的子节点。为此可以使用 p1.firstChild 取得`<b>`，而使用
 
@@ -25964,9 +25950,11 @@ p1.firstChild.firstChild 取得 "Hello" 这个文本节点。文
 
 本节点 " world!" 是`<p>`的第二个（也是最后一个）子节点，因此可以使用 p1.lastChild 来取得它。然后，再创建范围，指定其边界，如下所示：
 
+```
 let range = document.createRange(); range.setStart(helloNode, 2);
 
 range.setEnd(worldNode, 3);
+```
 
 因为选区起点在 "Hello" 中的字母 "e" 之后，所以要给
 
@@ -25992,7 +25980,7 @@ commonAncestorContainer 是`<p>`元素，即包含这两个节点的第一个祖
 
 仍以前面例子中的范围来说，范围发现选区中缺少一个开始的
 
-<b> 标签，于是会在后台动态补上这个标签，同时还需要补上封闭 "He" 的结束标签 </b> ，结果会把 DOM 修改为这样：
+`<b>` 标签，于是会在后台动态补上这个标签，同时还需要补上封闭 "He" 的结束标签 `</b>` ，结果会把 DOM 修改为这样：
 
 ```js
 <p>
@@ -26155,15 +26143,11 @@ HTML 如下所示：
 </p>
 ```
 
-为了插入 <span> 元素，范围中必须包含完整的 DOM 结构。如果范围中包含部分选择的非文节点，这个操作会失败并报错。另外，如果给定的节点是 Document 、 DocumentType 或
-
-DocumentFragment 类型，也会导致抛出错误。
+为了插入 `<span>` 元素，范围中必须包含完整的 DOM 结构。如果范围中包含部分选择的非文节点，这个操作会失败并报错。另外，如果给定的节点是 Document 、 DocumentType 或 DocumentFragment 类型，也会导致抛出错误。
 
 ### 16.4.6 范 围 叠
 
-如果范围并没有选择文档的任何部分，则称为折叠
-
-（collapsed）。折叠范围有点类似文本框：如果文本框中有文本，那么可以用鼠标选中以高亮显示全部文本。这时候，如果再单击鼠标，则选区会被移除，光标会落在某两个字符中间。而在折叠范围时，位置会被设置为范围与文档交界的地方，可能是范围选区的开始处，也可能是结尾处。图 16-10 展示了范围折叠时会发生什么。
+如果范围并没有选择文档的任何部分，则称为折叠（collapsed）。折叠范围有点类似文本框：如果文本框中有文本，那么可以用鼠标选中以高亮显示全部文本。这时候，如果再单击鼠标，则选区会被移除，光标会落在某两个字符中间。而在折叠范围时，位置会被设置为范围与文档交界的地方，可能是范围选区的开始处，也可能是结尾处。图 16-10 展示了范围折叠时会发生什么。
 
 图 16-10
 
