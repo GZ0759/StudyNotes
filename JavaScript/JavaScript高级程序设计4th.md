@@ -19425,14 +19425,11 @@ window.open() 方法可以用于导航到指定 URL，也可以用于打开新�
 如果 window.open() 的第二个参数是一个已经存在的窗口或窗格（frame）的名字，则会在对应的窗口或窗格中打开 URL。下面是一个例子：
 
 ```js
-// 与[<a](http://www.wrox.com/) href="http://www.wrox.com" target="topFrame"/>相同
-
-window.open[(](http://www.wrox.com/)"http://www.wrox.com/", "topFrame");
+// 与<a href="http://www.wrox.com" target="topFrame"/>相同
+window.open("http://www.wrox.com/", "topFrame");
 ```
 
-执行这行代码的结果就如同用户点击了一个 href [属性为](http://www.wrox.com/) "http://www.wrox.com" ， target 属性为 "topFrame" 的链接。如果有一个窗口名叫 "topFrame" ，则这个窗口就会打开这个 URL；否则就会打开一个新窗口并将其命名为 "topFrame" 。第二个参数也可以是一个特殊的窗口名，比如
-
-\_self 、 \_parent 、 \_top 或 \_blank 。
+执行这行代码的结果就如同用户点击了一个 href 属性为"http://www.wrox.com"， target 属性为"topFrame"的链接。如果有一个窗口名叫"topFrame"，则这个窗口就会打开这个 URL；否则就会打开一个新窗口并将其命名为"topFrame"。第二个参数也可以是一个特殊的窗口名，比如_self、_parent、 _top 或_blank。
 
 1.  弹出窗口
 
@@ -19517,10 +19514,9 @@ IE 的早期版本实现针对弹窗的多重安全限制，包括不允许创�
 所有现代浏览器都内置了屏蔽弹窗的程序，因此大多数意料之外的弹窗都会被屏蔽。在浏览器屏蔽弹窗时，可能会发生一些事。如果浏览器内置的弹窗屏蔽程序阻止了弹窗，那么 window.open() 很可能会返回 null 。此时，只要检查这个方法的返回值就可以知道弹窗是否被屏蔽了，比如：
 
 ```js
-let wroxWin = window.open[(](http://www.wrox.com/)"http://www.wrox.com", "\_blank"); if (wroxWin == null){
-
+let wroxWin = window.open("http://www.wrox.com", "_blank");
+if (wroxWin == null){
 alert("The popup was blocked!");
-
 }
 ```
 
@@ -19528,25 +19524,16 @@ alert("The popup was blocked!");
 
 ```js
 let blocked = false;
-
 try {
-
-let wroxWin = window.open[(](http://www.wrox.com/)"http://www.wrox.com", "\_blank"); if (wroxWin == null){
-
-blocked = true;
-
+let wroxWin = window.open("http://www.wrox.com", "_blank");
+if (wroxWin == null){
+  blocked = true;
 }
-
 } catch (ex){
-
 blocked = true;
-
 }
-
 if (blocked){
-
 alert("The popup was blocked!");
-
 }
 ```
 
@@ -19584,11 +19571,7 @@ clearTimeout(timeoutId);
 
 clearTimeout() 没有效果。
 
-> 注意 所有超时执行的代码（函数）都会在全局作用域中的一个匿名函数中运行，因此函数中的
-
-this 值在非严格模式下始终指向 window ，而在严格模式下是 undefined 。如果给
-
-setTimeout() 提供了一个箭头函数，那么 this 会保留为定义它时所在的词汇作用域。
+> 注意 所有超时执行的代码（函数）都会在全局作用域中的一个匿名函数中运行，因此函数中的this 值在非严格模式下始终指向 window ，而在严格模式下是 undefined 。如果给setTimeout() 提供了一个箭头函数，那么 this 会保留为定义它时所在的词汇作用域。
 
 setInterval() 与 setTimeout() 的使用方法类似，只不过指定的任务会每隔指定时间就执行一次，直到取消循环定时或者页面卸载。 setInterval() 同样可以接收两个参数：要执行的代码（字符串或函数），以及把下一次执行定时代码的任务添加到队列要等待的时间（毫秒）。下面是一个例子：
 
@@ -19596,9 +19579,7 @@ setInterval() 与 setTimeout() 的使用方法类似，只不过指定的任务�
 setInterval(() => alert('Hello world!'), 10000);
 ```
 
-> 注意 这里的关键点是，第二个参数，也就是间隔时间，指的是向队列添加新任务之前等待的时间。比如，调用 setInterval() 的时间为 01:00:00，间隔时间为 3000 毫秒。这意味着 01:00:03 时，浏览器会把任务添加到执行队列。浏览器不关心这个任务什么时候执行或者执行要花多长时间。因此，到了 01:00:06，它会再向队列中添加一个任务。由此可看出，执行时间短、非阻塞的回调函数比较适合
-
-setInterval() 。
+> 注意 这里的关键点是，第二个参数，也就是间隔时间，指的是向队列添加新任务之前等待的时间。比如，调用 setInterval() 的时间为 01:00:00，间隔时间为 3000 毫秒。这意味着 01:00:03 时，浏览器会把任务添加到执行队列。浏览器不关心这个任务什么时候执行或者执行要花多长时间。因此，到了 01:00:06，它会再向队列中添加一个任务。由此可看出，执行时间短、非阻塞的回调函数比较适合setInterval() 。
 
 setInterval() 方法也会返回一个循环定时 ID，可以用于在未来某个时间点上取消循环定时。要取消循环定时，可以调用 clearInterval() 并传入定时 ID。相对于 setTimeout() 而言，取消定时的能力对 setInterval() 更加重要。毕竟，如果一直不管它，那么定时任务会一直执行到页面卸载。下面是一个常见的例子：
 
@@ -19747,9 +19728,7 @@ return args;
 }
 ```
 
-这个函数首先删除了查询字符串开头的问号，当然前提是 location.search 必须有内容。解析后的参数将被保存到 args 对象，这个对象以字面量形式创建。接着，先把查询字符串按照 \& 分割成数 组，每个元素的形式为 name=value 。 for 循环迭代这个数组，将每一个元素按照 = 分割成数组，这个数组第一项是参数名，第二项是参数值。参数名和参数值在使用 decodeURIComponent() 解码后
-
-（这是因为查询字符串通常是被编码后的格式）分别保存在 name 和 value 变量中。最后， name 作为属性而 value 作为该属性的值被添加到 args 对象。这个函数可以像下面这样使用：
+这个函数首先删除了查询字符串开头的问号，当然前提是 location.search 必须有内容。解析后的参数将被保存到 args 对象，这个对象以字面量形式创建。接着，先把查询字符串按照 \& 分割成数 组，每个元素的形式为 name=value 。 for 循环迭代这个数组，将每一个元素按照 = 分割成数组，这个数组第一项是参数名，第二项是参数值。参数名和参数值在使用 decodeURIComponent() 解码后（这是因为查询字符串通常是被编码后的格式）分别保存在 name 和 value 变量中。最后， name 作为属性而 value 作为该属性的值被添加到 args 对象。这个函数可以像下面这样使用：
 
 ```js
 // 假设查询字符串为\?q=javascript\&num=10
@@ -20165,7 +20144,7 @@ Web 开发中的常见主题。
 
 要检测当前的浏览器有很多方法，每一种都有各自的长处和不 足。问题的关键在于知道客户端检测应该是解决问题的最后一个举 措。任何时候，只要有更普适的方案可选，都应该毫不犹豫地选择。首先要设计最常用的方案，然后再考虑为特定的浏览器进行补救。
 
-### 13.1  能力检测
+## 13.1  能力检测
 
 能力检测（又称特性检测）即在 JavaScript 运行时中使用一套简单的检测逻辑，测试浏览器是否支持某种特性。这种方式不要求事先知道特定浏览器的信息，只需检测自己关心的能力是否存在即可。能力检测的基本模式如下：
 
@@ -21594,11 +21573,7 @@ document.domain = "wrox.com"; // 成 功
 document.domain = "nczonline.net"; // 出错！
 ```
 
-当页面中包含来自某个不同子域的窗格（ <frame> ）或内嵌窗格（ <iframe> ）时，设置
-
-document.domain 是有用的。因为跨源通信存在安全隐患，所以不同子域的页面间无法通过
-
-JavaScript 通信。此时，在每个页面上把 document.domain [设置为相同的值，这些页面就可以访问对方的 JavaScript 对象了。比如，一个加载自](http://www.wrox.com/) www.wrox.com 的页面中包含一个内嵌窗格，其中的页面加载自 p2p.wrox.com 。这两个页面的 document.domain 包含不同的字符串，内部和外部页面相互之间不能访问对方的 JavaScript 对象。如果每个页面都把 document.domain 设置为 wrox.com ，那这两个页面之间就可以通信了。
+当页面中包含来自某个不同子域的窗格（ `<frame>` ）或内嵌窗格（ `<iframe>` ）时，设置document.domain 是有用的。因为跨源通信存在安全隐患，所以不同子域的页面间无法通过JavaScript 通信。此时，在每个页面上把 document.domain [设置为相同的值，这些页面就可以访问对方的 JavaScript 对象了。比如，一个加载自](http://www.wrox.com/) www.wrox.com 的页面中包含一个内嵌窗格，其中的页面加载自 p2p.wrox.com 。这两个页面的 document.domain 包含不同的字符串，内部和外部页面相互之间不能访问对方的 JavaScript 对象。如果每个页面都把 document.domain 设置为 wrox.com ，那这两个页面之间就可以通信了。
 
 浏览器对 domain 属性还有一个限制，即这个属性一旦放松就不能再收紧。比如，把 document.domain 设置为 "wrox.com" 之后，就不能再将其设置回 "p2p.wrox.com" ，后者会导致错误，比如：
 
@@ -21728,19 +21703,15 @@ let radios = document.getElementsByName("color");
 
 document 对象上还暴露了几个特殊集合，这些集合也都是 HTMLCollection 的实例。这些集合是访问文档中公共部分的快捷方式，列举如下。
 
-document.anchors 包含文档中所有带 name 属性的 <a> 元素。
+document.anchors 包含文档中所有带 name 属性的 `<a>` 元素。
 
-document.applets 包含文档中所有 <applet> 元素（因为 <applet> 元素已经不建议使用，所以这个集合已经废弃）。
+document.applets 包含文档中所有 `<applet>` 元素（因为 `<applet>` 元素已经不建议使用，所以这个集合已经废弃）。
 
-document.forms 包含文档中所有 <form> 元素（与
+document.forms 包含文档中所有 `<form>` 元素（与document.getElementsByTagName ("form") 返回的结果相同）。
 
-document.getElementsByTagName ("form") 返回的结果相同）。
+document.images 包含文档中所有 `<img>` 元素（与document.getElementsByTagName ("img") 返回的结果相同）。
 
-document.images 包含文档中所有 `<img>` 元素（与
-
-document.getElementsByTagName ("img") 返回的结果相同）。
-
-document.links 包含文档中所有带 href 属性的 <a> 元素。
+document.links 包含文档中所有带 href 属性的 `<a>` 元素。
 
 这些特殊集合始终存在于 HTMLDocument 对象上，而且与所有 HTMLCollection 对象一样，其内容也会实时更新以符合当前文档的内容。
 
@@ -21784,9 +21755,7 @@ write() 、 writeln() 、 open() 和 close() 。其中， write() 和 writeln() 
 </html>
 ```
 
-这个例子会在页面加载过程中输出当前日期和时间。日期放在了 `<strong>` 元素中，如同它们之前就包含在 HTML 页面中一样。这意味着会创建一个 DOM 元素，以后也可以访问。通过 write() 和
-
-writeln() 输出的任何 HTML 都会以这种方式来处理。
+这个例子会在页面加载过程中输出当前日期和时间。日期放在了 `<strong>` 元素中，如同它们之前就包含在 HTML 页面中一样。这意味着会创建一个 DOM 元素，以后也可以访问。通过 write() 和writeln() 输出的任何 HTML 都会以这种方式来处理。
 
 write() 和 writeln() 方法经常用于动态包含外部资源，如 JavaScript 文件。在包含 JavaScript 文件时，记住不能像下面的例子中这样直接包含字符串 "`</script>`" ，因为这个字符串会被解释为脚本块的结尾，导致后面的代码不能执行：
 
@@ -21930,9 +21899,7 @@ if (element.tagName.toLowerCase() == "div"){ // 推荐，适用于所有文档
 }
 ```
 
-这个例子演示了比较 tagName 属性的情形。第一个是容易出错的写法，因为 HTML 文档中
-
-tagName 返回大写形式的标签名。第二个先把标签名转换为全部小写后再比较，这是推荐的做法，因为这对 HTML 和 XML 都适用。
+这个例子演示了比较 tagName 属性的情形。第一个是容易出错的写法，因为 HTML 文档中 tagName 返回大写形式的标签名。第二个先把标签名转换为全部小写后再比较，这是推荐的做法，因为这对 HTML 和 XML 都适用。
 
 1.  HTML 元素
 
@@ -22115,7 +22082,7 @@ return pairs.join(" ");
 
 5.  创建元素
 
-可以使用 document.createElement() 方法创建新元素。这个方法接收一个参数，即要创建元素的标签名。在 HTML 文档中，标签名是不区分大小写的，而 XML 文档（包括 XHTML）是区分大小写的。要创建 <div> 元素，可以使用下面的代码：
+可以使用 document.createElement() 方法创建新元素。这个方法接收一个参数，即要创建元素的标签名。在 HTML 文档中，标签名是不区分大小写的，而 XML 文档（包括 XHTML）是区分大小写的。要创建 `<div>` 元素，可以使用下面的代码：
 
 ```
 let div = document.createElement("div");
@@ -22263,7 +22230,7 @@ document.createTextNode() 可以用来创建新文本节点，它接收一个参
 let textNode = document.createTextNode("<strong>Hello</strong> world!");
 ```
 
-创建新文本节点后，其 ownerDocument 属性会被设置为 document 。但在把这个节点添加到文档树之前，我们不会在浏览器中看到它。以下代码创建了一个 <div> 元素并给它添加了一段文本消息：
+创建新文本节点后，其 ownerDocument 属性会被设置为 document 。但在把这个节点添加到文档树之前，我们不会在浏览器中看到它。以下代码创建了一个 `<div>` 元素并给它添加了一段文本消息：
 
 ```
 let element = document.createElement("div"); element.className = "message";
@@ -22273,7 +22240,7 @@ let textNode = document.createTextNode("Hello world!"); element.appendChild(text
 document.body.appendChild(element);
 ```
 
-这个例子首先创建了一个 <div> 元素并给它添加了值为 "message" 的 class 属性，然后又创建了一个文本节点并添加到该元素。最后一步是把这个元素添加到文档的主体上，这样元素及其包含的文本会出现在浏览器中。
+这个例子首先创建了一个 `<div>` 元素并给它添加了值为 "message" 的 class 属性，然后又创建了一个文本节点并添加到该元素。最后一步是把这个元素添加到文档的主体上，这样元素及其包含的文本会出现在浏览器中。
 
 一般来说一个元素只包含一个文本子节点。不过，也可以让元素包含多个文本子节点，如下面的例子所示：
 
@@ -24719,7 +24686,7 @@ viewBox="0 0 100 100" style="width:100%; height:100%">
 </html>
 ```
 
-在这个例子中，通过给 <svg> 元素设置自己的命名空间，将其标识为当前文档的外来元素。这样一来， <svg> 元素及其属性，包括它的所有后代都会被认为属
+在这个例子中，通过给 `<svg>` 元素设置自己的命名空间，将其标识为当前文档的外来元素。这样一来， `<svg>` 元素及其属性，包括它的所有后代都会被认为属
 
 [于](http://www.w3.org/2000/svg) ["https://www.w3.org/2000/svg"](http://www.w3.org/2000/svg) 命名空间。虽然这个文档从技术角度讲是 XHTML 文档，但由于使用了命名空间，其中包含的 SVG 代码也是有效的。
 
@@ -24766,13 +24733,10 @@ lookupPrefix(namespaceURI) ，返回给定 namespaceURI 的前缀。
 对前面的例子，可以执行以下代码：
 
 ```js
-console.log(document.body.isDefaultNamespace[(](http://www.w3.org/1999/) ["http://www.w3.org/1999/](http://www.w3.org/1999/)
-
-xhtml")); // true
-
+console.log(document.body.isDefaultNamespace("http://www.w3.org/1999/xhtml")); // true
 // 假设 svg 包含对<s:svg>元素的引用
-
-console.log(svg.lookupPrefix[(](http://www.w3.o/)"http://www.w3.o rg/2000/svg")); // "s" console.log(svg.lookupNamespaceURI("s")); [// "http://www.w3.org/2000/svg"](http://www.w3.org/2000/svg)
+console.log(svg.lookupPrefix("http://www.w3.org/2000/svg")); // "s"
+console.log(svg.lookupNamespaceURI("s")); // "http://www.w3.org/2000/svg"
 ```
 
 这些方法主要用于通过元素查询前面和命名空间 URI，以确定元素与文档的关系。
@@ -24791,17 +24755,11 @@ getElementsByTagNameNS(namespaceURI, tagName) ，返回指定命名空间 namesp
 
 ```js
 // 创建一个新 SVG 元素
-
-let svg = document.createElementNS[(](http://www.w3.org/2)"http://www.w3.org/2 000/svg", "svg");
-
+let svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
 // 创建一个任意命名空间的新属性
-
-let att = document.createAttributeNS("http://www.somewh ere.com", "random");
-
+let att = document.createAttributeNS("http://www.somewhere.com", "random");
 // 获取所有 XHTML 元素
-
-let elems = document.getElementsByTagNameNS("http://www.w 3.org/1999/xhtml", "*");
-```
+let elems = document.getElementsByTagNameNS("http://www.w3.org/1999/xhtml", "*");
 
 这些命名空间特定的方法只在文档中包含两个或两个以上命名空间时才有用。
 
@@ -24889,7 +24847,7 @@ document.body.appendChild(newNode);
 
 这个方法在 HTML 中使用得并不多，在 XML 文档中的使用会更多一些（第 22 章会深入讨论）。
 
-DOM2 View 给 Document 类型增加了新属性 defaultView ，是一个指向拥有当前文档的窗口（或窗格 <frame> ）的指针。这个规范中并没有明确视图何时可用，因此这是添加的唯一一个属性。 defaultView 属性得到了除 IE8 及更早版本之外所有浏览器的支持。IE8 及更早版本支持等价的 parentWindow 属性，
+DOM2 View 给 Document 类型增加了新属性 defaultView ，是一个指向拥有当前文档的窗口（或窗格 `<frame>` ）的指针。这个规范中并没有明确视图何时可用，因此这是添加的唯一一个属性。 defaultView 属性得到了除 IE8 及更早版本之外所有浏览器的支持。IE8 及更早版本支持等价的 parentWindow 属性，
 
 Opera 也支持这个属性。因此要确定拥有文档的窗口，可以使用以下代码：
 
@@ -25009,7 +24967,7 @@ console.log(newDiv.getUserData('name')); // "Nicholas"
 
 4.  内嵌窗格的变化
 
-DOM2 HTML 给 HTMLIFrameElement （即 <iframe> ，内嵌窗格）类型新增了一个属性，叫 contentDocument 。这个属性包含代表子内嵌窗格中内容的 document 对象的指针。下面的例子展示了如何使用这个属性：
+DOM2 HTML 给 HTMLIFrameElement （即 `<iframe>` ，内嵌窗格）类型新增了一个属性，叫 contentDocument 。这个属性包含代表子内嵌窗格中内容的 document 对象的指针。下面的例子展示了如何使用这个属性：
 
 ```js
 let iframe = document.getElementById('myIframe');
@@ -27181,7 +27139,7 @@ style="position:absolute;visibility:hidden;background-color: silver"> <li><a hre
 </ul> </body> </html>
 ```
 
-这个例子中的 <div>元素有一个上下文菜单 <ul>。作为上下文菜单， <ul>元素初始时是隐藏的。以下是实现上下文菜单功能的 JavaScript 代码：
+这个例子中的 `<div>`元素有一个上下文菜单 <ul>。作为上下文菜单， <ul>元素初始时是隐藏的。以下是实现上下文菜单功能的 JavaScript 代码：
 
 ```
 window.addEventListener("load", (event) => { let div = document.getElementById("myDiv");
@@ -27597,7 +27555,7 @@ document.getElementById("myDiv").innerHTML = "Processing...";
 </script>
 ```
 
-这里的按钮在 <div>元素中。单击按钮，会将自己删除并替换为一条消息，以阻止双击发生。这是很多网站上常见的做法。问题在于，按钮被删除之后仍然关联着一个事件处理程序。在 <div>元素上设置 innerHTML 会完全删除按钮，但事件处理程序仍然挂在按钮上面。某些浏览器，特别是 IE8 及更早版本，在这时候就会有问题了。很有可能元素的引用和事件处理程序的引用都会残留在内存中。如果知道某个元素会被删除，那么最好在删除它之前手工删除它的事件处理程序，比如：
+这里的按钮在 `<div>`元素中。单击按钮，会将自己删除并替换为一条消息，以阻止双击发生。这是很多网站上常见的做法。问题在于，按钮被删除之后仍然关联着一个事件处理程序。在 `<div>`元素上设置 innerHTML 会完全删除按钮，但事件处理程序仍然挂在按钮上面。某些浏览器，特别是 IE8 及更早版本，在这时候就会有问题了。很有可能元素的引用和事件处理程序的引用都会残留在内存中。如果知道某个元素会被删除，那么最好在删除它之前手工删除它的事件处理程序，比如：
 
 ```
 <div id="myDiv">
@@ -27721,7 +27679,7 @@ div.dispatchEvent(event);
 ```
 
 这个例子创建了一个名为 "myevent"的冒泡事件。 event 对象的 detail 属性就是一个简单的
-字符串， <div>元素和 document 都为这个事件注册了事件处理程序。因为使用
+字符串， `<div>`元素和 document 都为这个事件注册了事件处理程序。因为使用
 initCustomEvent()初始化时将事件指定为可以冒泡，所以浏览器会负责把事件冒泡到
 document。
 
