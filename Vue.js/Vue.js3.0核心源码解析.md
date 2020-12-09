@@ -3,20 +3,9 @@
 
 # 开篇词
 
-## 开篇词 | 解析 Vue.js 源码，提升编码能力
-
-你好，我是黄轶（常用 ID：ustbhuangyi），现任 Zoom 前端架构师，曾先后于百度、滴滴从事前端研发工作。我平时喜欢钻研新技术、新框架，关注前端自动化、工程化、前端架构。和很多常年打磨自身编程能力的开发者一样，我对代码有洁癖，一直在努力追求高质量的代码。
+## 解析 Vue.js 源码，提升编码能力
 
 为什么你要学习 Vue.js 源码？
-前端技术日新月异的今天，前端应用的复杂度也在日益提升，熟练掌握一门 MVVM 前端开发框架已经成为必然要求，因为它能够很大程度上帮助前端开发者提高生产力。Vue.js、React 和Angular 是目前国内最流行的三个前端 MVVM 框架，其中 Vue.js 凭借轻量、易上手的优势收获了大批粉丝。
-
-百度、阿里、腾讯、滴滴、头条、美团等大厂已经在大面积使用 Vue.js 开发 Web 前端项目，很多中小型公司也因为易上手，开发效率高而选用 Vue.js。此外，很多小程序的跨端方案，例如 uni-app、Mpx、chameleon、WePY 等框架也选择了类 Vue.js 的语法。总体而言，市场对于 Vue.js 人才的需求非常旺盛。
-
-但也正因为 Vue.js 上手门槛低，市场需求与人才现状间存在不少现实矛盾：
-
-很多初学者通过简单的培训后便入行，但所学大多是 Demo 级别的项目知识，到了真实的工作环境中往往水土不服；
-
-工作中只会简单地调用 API，而复杂的组件非常依赖开源的实现，如果找不到相关组件甚至难以完成开发需求；
 
 没有深入研究过，或者根本不懂 Vue.js 底层实现原理，开发中遇到 Bug 后不懂得如何分析解决问题，也不懂如何调试；
 
@@ -39,6 +28,7 @@
 最后，提升自己解读源码的能力。读源码本身是很好的学习方式，一旦你掌握了看源码的技巧，未来学习其他框架也会容易得多。而且，工作中也可以通过阅读项目已有代码快速熟悉项目，提高业务逻辑分析能力和重构代码的能力。
 
 道理我都懂，就是做不到？
+
 学习源码有这么多好处，很多人也明白这个道理，为什么却很少有人愿意去读源码呢？
 
 因为学习源码很枯燥，不像开发项目那样能够快速得到反馈、看到立竿见影的效果；
@@ -47,15 +37,8 @@
 
 还有很多人想要更深入地学习 Vue.js，希望能够再进阶一个高度，却不得法门。
 
-这正是我设计这个课程的原因之一。我希望结合自己多年研究源码和 Vue.js 实践经验，并结合一些在实际项目中的使用场景，来带你一起阅读源码，深入浅出地帮助你了解其技术实现原理。
-
-我曾经使用 Vue.js 重构整个滴滴出行的 WebApp，负责其中的架构设计和组件库开发，也主导过 Vue.js 开源组件库 cube-ui 的开发。我也在 Zoom 工作期间为了配合安全组的 CSP 安全策略需求，通过直接魔改 Vue.js 源码的方式，开发了 Vue.js 2.x 的 CSP 兼容版本，该版本目前在 Zoom 内部运行稳定，服务于几十个用 Vue.js 做增强开发的页面。
-
-此外，我平时喜欢写作和分享，曾经帮助很多人入门和进阶 Vue.js。在以往分享经验和对用户的答疑解惑过程中，我更加直观地感受到了 Vue.js 学习者的困惑之处，也懂得了如何才能帮助你更好地学习源码。
-
-所以只要你能认真跟随我学习源码，你会发现原本枯燥的事情也许会变得有趣起来，随着你不断深入地理解 Vue.js 的实现，你也会越来越有成就感，学习的动力也就越来越强了。
-
 课程设计
+
 我会对 Vue.js 3.0 的源码进行透彻分析，但不会一味地去解释源码，而是更加注重解读 Vue.js 在实现某个 feature 的时候，它的设计思想是什么以及为什么会这么做。相比单纯解释源码这种“翻译”的工作，我更喜欢做“阅读理解”，把每部分源码的前因后果分析清楚。
 
 课程共分三大模块，合计 22 篇文章。我会结合实际用例，循序渐进地带你深入 Vue.js 的内核实现。
@@ -70,16 +53,7 @@
 
 Vue.js 源码是一直在更新维护的，课程中的一些代码片段可能会更新，但代码容易过时，思想并不会，所以相较于代码，我会更注重思想的解读，让你知其然也知其所以然；Vue.js 版本更新也会引入一些实用的新功能，届时我也会紧随其后对新功能做解读，并且更新我们这个线上课程，以便你能够学习到新的知识点；为了便于没有 TypeScript 经验的同学理解，我会尽量将编译后的 JavaScript 代码展示出来，并且通过注释说明代码的主要功能；我还会尽量精简代码的分支逻辑，方便你理解核心流程；结合图例帮助你理解一些晦涩难懂的代码功能；结合实际用例，让你可以更加直观地明白源码背后想要解决的实际场景问题。
 
-总结
-我在百度工作的时候需要写编译打包工具，于是期间我阅读了 FIS 和 Gulp 的源码；到了滴滴以后，我使用了 Vue.js 开发项目，就开始阅读 Vue.js 的源码；开源库 better-scroll，也是在我充分阅读 iScroll 源码的基础上重构并一点点优化出来的。通过不断学习源码，我逐渐搞懂了这些工具框架背后的设计思想，学习到很多优秀的编程技巧，大幅提升了我的学习效率和技术能力，让我受益匪浅。
-
-因此，这门课我不仅希望帮你深入理解 Vue.js ，更希望带你提升读源码的能力，提升技术实力。
-
-学习源码的过程就像在翻越一座座大山，但我会一直陪伴在你身边，做你坚强的后盾。学习的过程中，你可能会遇到一些问题，但是不要担心，你可以随时在评论区留言和提问，我会尽量抽出时间来认真解答你的提问。
-
-准备好，让我们一起来感受 Vue.js 3.0 的美吧。
-
-## 导读 | 一文看懂 Vue.js 3.0 的优化
+## 一文看懂 Vue.js 3.0 的优化
 
 我们的课程是要解读 Vue.js 框架的源码，所以在进入课程之前我们先来了解一下 Vue.js 框架演进的过程，也就是 Vue.js 3.0 主要做了哪些优化。
 
@@ -89,41 +63,44 @@ Vue.js 2.x 发展了很久，现在周边的生态设施都已经非常完善了
 
 那么接下来，我们就一起来看一下 Vue.js 3.0 具体做了哪些优化。相信你学习完这篇文章，不仅能知道 Vue.js 3.0 的升级给我们开发带来的收益，还能学习到一些设计思想和理念，并在自己的开发工作中应用，获得提升。
 
-源码优化
+### 源码优化
+
 首先是源码优化，也就是小右对于 Vue.js 框架本身开发的优化，它的目的是让代码更易于开发和维护。源码的优化主要体现在使用 monorepo 和 TypeScript 管理和开发源码，这样做的目标是提升自身代码可维护性。接下来我们就来看一下这两个方面的具体变化。
 
 1. 更好的代码管理方式：monorepo
+
 首先，源码的优化体现在代码管理方式上。Vue.js 2.x 的源码托管在 src 目录，然后依据功能拆分出了 compiler（模板编译的相关代码）、core（与平台无关的通用运行时代码）、platforms（平台专有代码）、server（服务端渲染的相关代码）、sfc（.vue 单文件解析相关代码）、shared（共享工具代码） 等目录：
 
-
-
 而到了 Vue.js 3.0 ，整个源码是通过 monorepo 的方式维护的，根据功能将不同的模块拆分到 packages 目录下面不同的子目录中：
-
-
 
 可以看出相对于 Vue.js 2.x 的源码组织方式，monorepo 把这些模块拆分到不同的 package 中，每个 package 有各自的 API、类型定义和测试。这样使得模块拆分更细化，职责划分更明确，模块之间的依赖关系也更加明确，开发人员也更容易阅读、理解和更改所有模块源码，提高代码的可维护性。
 
 另外一些 package（比如 reactivity 响应式库）是可以独立于 Vue.js 使用的，这样用户如果只想使用 Vue.js 3.0 的响应式能力，可以单独依赖这个响应式库而不用去依赖整个 Vue.js，减小了引用包的体积大小，而 Vue.js 2 .x 是做不到这一点的。
 
 2. 有类型的 JavaScript：TypeScript
+
 其次，源码的优化还体现在 Vue.js 3.0 自身采用了 TypeScript 开发。Vue.js 1.x 版本的源码是没有用类型语言的，小右用 JavaScript 开发了整个框架，但对于复杂的框架项目开发，使用类型语言非常有利于代码的维护，因为它可以在编码期间帮你做类型检查，避免一些因类型问题导致的错误；也可以利于它去定义接口的类型，利于 IDE 对变量类型的推导。
 
 因此在重构 2.0 的时候，小右选型了 Flow，但是在 Vue.js 3.0 的时候抛弃 Flow 转而采用 TypeScript 重构了整个项目，这里有两方面原因，接下来我们具体说一下。
 
 首先，Flow 是 Facebook 出品的 JavaScript 静态类型检查工具，它可以以非常小的成本对已有的 JavaScript 代码迁入，非常灵活，这也是 Vue.js 2.0 当初选型它时一方面的考量。但是 Flow 对于一些复杂场景类型的检查，支持得并不好。记得在看 Vue.js 2.x 源码的时候，在某行代码的注释中看到了对 Flow 的吐槽，比如在组件更新 props 的地方出现了：
 
-复制代码
+```js
 const propOptions: any = vm.$options.props // wtf flow?
+```
+
 什么意思呢？其实是由于这里 Flow 并没有正确推导出 vm.$options.props 的类型 ，开发人员不得不强制申明 propsOptions 的类型为 any，显得很不合理；另外他也在社区平台吐槽过 Flow 团队的烂尾。
 
 其次，Vue.js 3.0 抛弃 Flow 后，使用 TypeScript 重构了整个项目。 TypeScript提供了更好的类型检查，能支持复杂的类型推导；由于源码就使用 TypeScript 编写，也省去了单独维护 d.ts 文件的麻烦；就整个 TypeScript 的生态来看，TypeScript 团队也是越做越好，TypeScript 本身保持着一定频率的迭代和更新，支持的 feature 也越来越多。
 
 此外，小右和 TypeScript 团队也一直保持了良好的沟通，我们可以期待 TypeScript 对 Vue.js 的支持会越来越好。
 
-性能优化
+### 性能优化
+
 性能优化一直是前端老生常谈的问题。那么对于 Vue.js 2.x 已经足够优秀的前端框架，它的性能优化可以从哪些方面进行突破呢？
 
 1. 源码体积优化
+
 首先是源码体积优化，我们在平时工作中也经常会尝试优化静态资源的体积，因为 JavaScript 包体积越小，意味着网络传输时间越短，JavaScript 引擎解析包的速度也越快。
 
 那么，Vue.js 3.0 在源码体积的减少方面做了哪些工作呢？
@@ -136,21 +113,24 @@ const propOptions: any = vm.$options.props // wtf flow?
 
 举个例子，一个 math 模块定义了 2 个方法 square(x) 和 cube(x) ：
 
-复制代码
+```js
 export function square(x) {
   return x * x
 }
 export function cube(x) {
   return x * x * x
 }
+```
+
 我们在这个模块外面只引入了 cube 方法：
 
-复制代码
+```js
 import { cube } from './math.js'
 // do something with cube
+```
 最终 math 模块会被 webpack 打包生成如下代码：
 
-复制代码
+```js
 /* 1 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
   'use strict';
@@ -163,20 +143,20 @@ import { cube } from './math.js'
     return x * x * x;
   }
 });
+```
 可以看到，未被引入的 square 模块被标记了， 然后压缩阶段会利用例如 uglify-js、terser 等压缩工具真正地删除这些没有用到的代码。
 
 也就是说，利用 tree-shaking 技术，如果你在项目中没有引入 Transition、KeepAlive 等组件，那么它们对应的代码就不会打包，这样也就间接达到了减少项目引入的 Vue.js 包体积的目的。
 
 2. 数据劫持优化
+
 其次是数据劫持优化。Vue.js 区别于 React 的一大特色是它的数据是响应式的，这个特性从 Vue.js 1.x 版本就一直伴随着，这也是 Vue.js 粉喜欢 Vue.js 的原因之一，DOM 是数据的一种映射，数据发生变化后可以自动更新 DOM，用户只需要专注于数据的修改，没有其余的心智负担。
 
 在 Vue.js 内部，想实现这个功能是要付出一定代价的，那就是必须劫持数据的访问和更新。其实这点很好理解，当数据改变后，为了自动更新 DOM，那么就必须劫持数据的更新，也就是说当数据发生改变后能自动执行一些代码去更新 DOM，那么问题来了，Vue.js 怎么知道更新哪一片 DOM 呢？因为在渲染 DOM 的时候访问了数据，我们可以对它进行访问劫持，这样就在内部建立了依赖关系，也就知道数据对应的 DOM 是什么了。以上只是大体的思路，具体实现要比这更复杂，内部还依赖了一个 watcher 的数据结构做依赖管理，参考下图：
 
-
-
 Vue.js 1.x 和 Vue.js 2.x 内部都是通过 Object.defineProperty 这个 API 去劫持数据的 getter 和 setter，具体是这样的：
 
-复制代码
+```js
 Object.defineProperty(data, 'a',{
   get(){
     // track
@@ -185,11 +165,13 @@ Object.defineProperty(data, 'a',{
     // trigger
   }
 })
-但这个 API 有一些缺陷，它必须预先知道要拦截的 key 是什么，所以它并不能检测对象属性的添加和删除。尽管 Vue.js 为了解决这个问题提供了 $set 和 $delete 实例方法，但是对于用户来说，还是增加了一定的心智负担。
+```
+
+但这个 API 有一些缺陷，它必须预先知道要拦截的 key 是什么，所以它并不能检测对象属性的添加和删除。尽管 Vue.js 为了解决这个问题提供了 `$set` 和 `$delete` 实例方法，但是对于用户来说，还是增加了一定的心智负担。
 
 另外 Object.defineProperty 的方式还有一个问题，举个例子，比如这个嵌套层级比较深的对象：
 
-复制代码
+```js
 export default {
   data: {
     a: {
@@ -201,11 +183,13 @@ export default {
     }
   }
 }
+```
+
 由于 Vue.js 无法判断你在运行时到底会访问到哪个属性，所以对于这样一个嵌套层级较深的对象，如果要劫持它内部深层次的对象变化，就需要递归遍历这个对象，执行 Object.defineProperty 把每一层对象数据都变成响应式的。毫无疑问，如果我们定义的响应式数据过于复杂，这就会有相当大的性能负担。
 
 为了解决上述 2 个问题，Vue.js 3.0 使用了 Proxy API 做数据劫持，它的内部是这样的：
 
-复制代码
+```js
 observed = new Proxy(data, {
   get() {
     // track
@@ -214,14 +198,15 @@ observed = new Proxy(data, {
     // trigger
   }
 })
+```
+
 由于它劫持的是整个对象，那么自然对于对象的属性的增加和删除都能检测到。
 
 但要注意的是，Proxy API 并不能监听到内部深层次的对象变化，因此 Vue.js 3.0 的处理方式是在 getter 中去递归响应式，这样的好处是真正访问到的内部对象才会变成响应式，而不是无脑递归，这样无疑也在很大程度上提升了性能，我会在后面分析响应式章节详细介绍它的具体实现原理。
 
 3. 编译优化
+
 最后是编译优化，为了便于理解，我们先来看一张图：
-
-
 
 这是 Vue.js 2.x 从 new Vue 开始渲染成 DOM 的流程，上面说过的响应式过程就发生在图中的 init 阶段，另外 template compile to render function 的流程是可以借助 vue-loader 在 webpack 编译阶段离线完成，并非一定要在运行时完成。
 
@@ -229,11 +214,10 @@ observed = new Proxy(data, {
 
 我们知道，通过数据劫持和依赖收集，Vue.js 2.x 的数据更新并触发重新渲染的粒度是组件级的：
 
-
-
 虽然 Vue 能保证触发更新的组件最小化，但在单个组件内部依然需要遍历该组件的整个 vnode 树，举个例子，比如我们要更新这个组件：
 
-复制代码
+
+```js
 <template>
   <div id="content">
     <p class="text">static text</p>
@@ -243,9 +227,8 @@ observed = new Proxy(data, {
     <p class="text">static text</p>
   </div>
 </template>
+```
 整个 diff 过程如图所示：
-
-
 
 可以看到，因为这段代码中只有一个动态节点，所以这里有很多 diff 和遍历其实都是不需要的，这就会导致 vnode 的性能跟模版大小正相关，跟动态节点的数量无关，当一些组件的整个模版内只有少量动态节点时，这些遍历都是性能的浪费。
 
@@ -255,7 +238,8 @@ Vue.js 3.0 做到了，它通过编译阶段对静态模板的分析，编译生
 
 除此之外，Vue.js 3.0 在编译阶段还包含了对 Slot 的编译优化、事件侦听函数的缓存优化，并且在运行时重写了 diff 算法，这些性能优化的内容我在后续特定的章节与你分享。
 
-语法 API 优化：Composition API
+### 语法 API 优化
+
 除了源码和性能方面，Vue.js 3.0 还在语法方面进行了优化，主要是提供了 Composition API，那么我们一起来看一下它为我们提供了什么帮助。
 
 1. 优化逻辑组织
@@ -294,7 +278,7 @@ Vue.js 3.0 提供了一种新的 API：Composition API，它有一个很好的�
 
 当我们开发项目变得复杂的时候，免不了需要抽象出一些复用的逻辑。在 Vue.js 2.x 中，我们通常会用 mixins 去复用逻辑，举一个鼠标位置侦听的例子，我们会编写如下函数 mousePositionMixin：
 
-复制代码
+```js
 const mousePositionMixin = {
   data() {
     return {
@@ -316,9 +300,10 @@ const mousePositionMixin = {
   }
 }
 export default mousePositionMixin
+```
 然后在组件中使用：
 
-复制代码
+```js
 <template>
   <div>
     Mouse position: x {{ x }} / y {{ y }}
@@ -330,13 +315,15 @@ export default {
   mixins: [mousePositionMixin]
 }
 </script>
+```
+
 使用单个 mixin 似乎问题不大，但是当我们一个组件混入大量不同的 mixins 的时候，会存在两个非常明显的问题：命名冲突和数据来源不清晰。
 
 首先每个 mixin 都可以定义自己的 props、data，它们之间是无感的，所以很容易定义相同的变量，导致命名冲突。另外对组件而言，如果模板中使用不在当前组件中定义的变量，那么就会不太容易知道这些变量在哪里定义的，这就是数据来源不清晰。但是Vue.js 3.0 设计的 Composition API，就很好地帮助我们解决了 mixins 的这两个问题。
 
 我们来看一下在 Vue.js 3.0 中如何书写这个示例：
 
-复制代码
+```js
 import { ref, onMounted, onUnmounted } from 'vue'
 export default function useMousePosition() {
   const x = ref(0)
@@ -353,9 +340,11 @@ export default function useMousePosition() {
   })
   return { x, y }
 }
+```
+
 这里我们约定 useMousePosition 这个函数为 hook 函数，然后在组件中使用：
 
-复制代码
+```js
 <template>
   <div>
     Mouse position: x {{ x }} / y {{ y }}
@@ -370,6 +359,8 @@ export default function useMousePosition() {
     }
   }
 </script>
+```
+
 可以看到，整个数据来源清晰了，即使去编写更多的 hook 函数，也不会出现命名冲突的问题。
 
 Composition API 除了在逻辑复用方面有优势，也会有更好的类型支持，因为它们都是一些函数，在调用函数时，自然所有的类型就被推导出来了，不像 Options API 所有的东西使用 this。另外，Composition API 对 tree-shaking 友好，代码也更容易压缩。
@@ -401,13 +392,14 @@ Vue.js 3.0 使用 ES2015 的语法开发，有些 API 如 Proxy 是没有 polyfi
 不过，虽然 Vue.js 3.0 距离大规模应用还有相当长一段时间，但是越早开始学习你就越能在未来掌握主动权。这段时间里，你可以关注它的发展，去学习它的设计思想，也可以去为它的生态建设贡献代码，从而提升自己的技术能力。另外也可以尝试在一些小项目中应用 Vue.js 3.0，不仅可以享受 Vue.js 3.0 带来的性能方面的优势以及 Composition API 在逻辑复用方面便利，也为了将来某一天全面升级 Vue.js 3.0 做技术储备。
 
 总结
+
 这节课我们主要讲解了 Vue.js 3.0 升级做了几个方面的优化，以及为什么会需要这些优化。希望学习完后我们也可以像小右一样去审视自己的工作，有哪些痛点，找到可以改进和努力的方向并实施，只有这样你才能够不断提升自己的能力，工作上也会有不错的产出。
 
 Vue.js 3.0 做了这么多改进，相信你也一定对它的实现细节非常感兴趣，那么在接下来的课程里，就让我对 Vue.js 的源码抽丝剥茧，一层层为你揭开 Vue.js 背后的实现原理和细节。那么还等什么，快上车吧！
 
 # 模块一：直击 Vue.js 核心组件的实现
 
-## 模块一导读 | 组件的实现：直击 Vue 核心的实现
+## 导读 | 组件的实现
 
 相信作为一个 Vue.js 的开发者，最熟悉的应该就是组件了，我们开发 Vue.js 的项目，大部分时间都是在写组件，组件系统是 Vue.js 的一个重要概念，它是一种对 DOM 结构的抽象，我们可以使用小型、独立和通常可复用的组件构建大型应用。仔细想想，几乎任意类型的应用界面都可以抽象为一个组件树，如下：
 
@@ -422,22 +414,25 @@ Vue.js 3.0 做了这么多改进，相信你也一定对它的实现细节非常
 短短几行代码，就可以构建庞大的组件结构，这一切都是 Vue.js 框架的功劳。那它究竟是怎么做到的呢，这一部分我就带你去探究组件内部实现的奥秘，看看它是如何渲染到 DOM 上并且在数据变化后又是如何重新渲染的。
 
 
-## 01 | 组件渲染：vnode 到真实 DOM 是如何转变的？
+## 01 | 组件渲染
 
 在 Vue.js 中，组件是一个非常重要的概念，整个应用的页面都是通过组件渲染来实现的，但是你知道当我们编写这些组件的时候，它的内部是如何工作的吗？从我们编写组件开始，到最终真实的 DOM 又是怎样的一个转变过程呢？这节课，我们将会学习 Vue.js 3.0 中的组件是如何渲染的，通过学习，你的这些问题将会迎刃而解。
 
 首先，组件是一个抽象的概念，它是对一棵 DOM 树的抽象，我们在页面中写一个组件节点：
 
-复制代码
+```js
 <hello-world></hello-world>
-这段代码并不会在页面上渲染一个<hello-world>标签，而它具体渲染成什么，取决于你怎么编写 HelloWorld 组件的模板。举个例子，HelloWorld 组件内部的模板定义是这样的：
+```
+这段代码并不会在页面上渲染一个`<hello-world>`标签，而它具体渲染成什么，取决于你怎么编写 HelloWorld 组件的模板。举个例子，HelloWorld 组件内部的模板定义是这样的：
 
-复制代码
+```js
 <template>
   <div>
     <p>Hello World</p>
   </div>
 </template>
+```
+
 可以看到，模板内部最终会在页面上渲染一个 div，内部包含一个 p 标签，用来显示 Hello World 文本。
 
 所以，从表现上来看，组件的模板决定了组件生成的 DOM 标签，而在 Vue.js 内部，一个组件想要真正的渲染生成 DOM，还需要经历“创建 vnode - 渲染 vnode - 生成 DOM” 这几个步骤：
@@ -453,7 +448,7 @@ Vue.js 3.0 做了这么多改进，相信你也一定对它的实现细节非常
 
 在这里，我分别给出了通过 Vue.js 2.x 和 Vue.js 3.0 来初始化应用的代码：
 
-复制代码
+```js
 // 在 Vue.js 2.x 中，初始化一个应用的方式如下
 import Vue from 'vue'
 import App from './App'
@@ -461,17 +456,19 @@ const app = new Vue({
   render: h => h(App)
 })
 app.$mount('#app')
-复制代码
+```
+```js
 // 在 Vue.js 3.0 中，初始化一个应用的方式如下
 import { createApp } from 'vue'
 import App from './app'
 const app = createApp(App)
 app.mount('#app')
+```
 可以看到，Vue.js 3.0 初始化应用的方式和 Vue.js 2.x 差别并不大，本质上都是把 App 组件挂载到 id 为 app 的 DOM 节点上。
 
 但是，在 Vue.js 3.0 中还导入了一个 createApp，其实这是个入口函数，它是 Vue.js 对外暴露的一个函数，我们来看一下它的内部实现：
 
-复制代码
+```js
 const createApp = ((...args) => {
   // 创建 app 对象
   const app = ensureRenderer().createApp(...args)
@@ -482,16 +479,18 @@ const createApp = ((...args) => {
   }
   return app
 })
+```
 从代码中可以看出 createApp 主要做了两件事情：创建 app 对象和重写 app.mount 方法。接下来，我们就具体来分析一下它们。
 
 1. 创建 app 对象
 首先，我们使用 ensureRenderer().createApp() 来创建 app 对象 ：
 
-复制代码
+```js
  const app = ensureRenderer().createApp(...args)
+```
 其中 ensureRenderer() 用来创建一个渲染器对象，它的内部代码是这样的：
 
-复制代码
+```js
 // 渲染相关的一些配置，比如更新属性的方法，操作 DOM 的方法
 const rendererOptions = {
   patchProp,
@@ -532,6 +531,7 @@ function createAppAPI(render) {
     return app
   }
 }
+```
 可以看到，这里先用 ensureRenderer() 来延时创建渲染器，这样做的好处是当用户只依赖响应式包的时候，就不会创建渲染器，因此可以通过 tree-shaking 的方式移除核心渲染逻辑相关的代码。
 
 这里涉及了渲染器的概念，它是为跨平台渲染做准备的，之后我会在自定义渲染器的相关内容中详细说明。在这里，你可以简单地把渲染器理解为包含平台渲染核心逻辑的 JavaScript 对象。
@@ -547,7 +547,7 @@ function createAppAPI(render) {
 
 这是因为 Vue.js 不仅仅是为 Web 平台服务，它的目标是支持跨平台渲染，而 createApp 函数内部的 app.mount 方法是一个标准的可跨平台的组件渲染流程：
 
-复制代码
+```js
 mount(rootContainer) {
   // 创建根组件的 vnode
   const vnode = createVNode(rootComponent, rootProps)
@@ -556,11 +556,12 @@ mount(rootContainer) {
   app._container = rootContainer
   return vnode.component.proxy
 }
+```
 标准的跨平台渲染流程是先创建 vnode，再渲染 vnode。此外参数 rootContainer 也可以是不同类型的值，比如，在 Web 平台它是一个 DOM 对象，而在其他平台（比如 Weex 和小程序）中可以是其他类型的值。所以这里面的代码不应该包含任何特定平台相关的逻辑，也就是说这些代码的执行逻辑都是与平台无关的。因此我们需要在外部重写这个方法，来完善 Web 平台下的渲染逻辑。
 
 接下来，我们再来看 app.mount 重写都做了哪些事情：
 
-复制代码
+```js
 app.mount = (containerOrSelector) => {
   // 标准化容器
   const container = normalizeContainer(containerOrSelector)
@@ -576,6 +577,7 @@ app.mount = (containerOrSelector) => {
   // 真正的挂载
   return mount(container)
 }
+```
 首先是通过 normalizeContainer 标准化容器（这里可以传字符串选择器或者 DOM 对象，但如果是字符串选择器，就需要把它转成 DOM 对象，作为最终挂载的容器），然后做一个 if 判断，如果组件对象没有定义 render 函数和 template 模板，则取容器的 innerHTML 作为组件模板内容；接着在挂载前清空容器内容，最终再调用 app.mount 的方法走标准的组件渲染流程。
 
 在这里，重写的逻辑都是和 Web 平台相关的，所以要放在外部实现。此外，这么做的目的是既能让用户在使用 API 时可以更加灵活，也兼容了 Vue.js 2.x 的写法，比如 app.mount 的第一个参数就同时支持选择器字符串和 DOM 对象两种类型。
@@ -588,13 +590,14 @@ app.mount = (containerOrSelector) => {
 
 vnode 本质上是用来描述 DOM 的 JavaScript 对象，它在 Vue.js 中可以描述不同类型的节点，比如普通元素节点、组件节点等。
 
-什么是普通元素节点呢？举个例子，在 HTML 中我们使用 <button> 标签来写一个按钮：
+什么是普通元素节点呢？举个例子，在 HTML 中我们使用 `<button>` 标签来写一个按钮：
 
-复制代码
+```js
 <button class="btn" style="width:100px;height:50px">click me</button>
-我们可以用 vnode 这样表示<button>标签：
+```
+我们可以用 vnode 这样表示`<button>`标签：
 
-复制代码
+```js
 const vnode = {
   type: 'button',
   props: { 
@@ -606,17 +609,19 @@ const vnode = {
   },
   children: 'click me'
 }
+```
 其中，type 属性表示 DOM 的标签类型，props 属性表示 DOM 的一些附加信息，比如 style 、class 等，children 属性表示 DOM 的子节点，它也可以是一个 vnode 数组，只不过 vnode 可以用字符串表示简单的文本 。
 
 什么是组件节点呢？其实， vnode 除了可以像上面那样用于描述一个真实的 DOM，也可以用来描述组件。
 
-我们先在模板中引入一个组件标签 <custom-component>：
+我们先在模板中引入一个组件标签 `<custom-component>`：
 
-复制代码
+```js
 <custom-component msg="test"></custom-component>
-我们可以用 vnode 这样表示 <custom-component> 组件标签：
+```
+我们可以用 vnode 这样表示 `<custom-component>` 组件标签：
 
-复制代码
+```js
 const CustomComponent = {
   // 在这里定义组件对象
 }
@@ -626,13 +631,14 @@ const vnode = {
     msg: 'test'
   }
 }
-组件 vnode 其实是对抽象事物的描述，这是因为我们并不会在页面上真正渲染一个 <custom-component> 标签，而是渲染组件内部定义的 HTML 标签。
+```
+组件 vnode 其实是对抽象事物的描述，这是因为我们并不会在页面上真正渲染一个 `<custom-component>` 标签，而是渲染组件内部定义的 HTML 标签。
 
 除了上两种 vnode 类型外，还有纯文本 vnode、注释 vnode 等等，但鉴于我们的主线只需要研究组件 vnode 和普通元素 vnode，所以我在这里就不赘述了。
 
 另外，Vue.js 3.0 内部还针对 vnode 的 type，做了更详尽的分类，包括 Suspense、Teleport 等，且把 vnode 的类型信息做了编码，以便在后面的 patch 阶段，可以根据不同的类型执行相应的处理逻辑：
 
-复制代码
+```js
 const shapeFlag = isString(type)
   ? 1 /* ELEMENT */
   : isSuspense(type)
@@ -644,6 +650,7 @@ const shapeFlag = isString(type)
         : isFunction(type)
           ? 2 /* FUNCTIONAL_COMPONENT */
           : 0
+```
 知道什么是 vnode 后，你可能会好奇，那么 vnode 有什么优势呢？为什么一定要设计 vnode 这样的数据结构呢？
 
 首先是抽象，引入 vnode，可以把渲染过程抽象化，从而使得组件的抽象能力也得到提升。
@@ -658,11 +665,12 @@ const shapeFlag = isString(type)
 
 回顾 app.mount 函数的实现，内部是通过 createVNode 函数创建了根组件的 vnode ：
 
-复制代码
+```js
  const vnode = createVNode(rootComponent, rootProps)
+```
 我们来看一下 createVNode 函数的大致实现：
 
-复制代码
+```js
 function createVNode(type, props = null
 ,children = null) {
   if (props) {
@@ -690,6 +698,7 @@ function createVNode(type, props = null
   normalizeChildren(vnode, children)
   return vnode
 }
+```
 通过上述代码可以看到，其实 createVNode 做的事情很简单，就是：对 props 做标准化处理、对 vnode 的类型信息编码、创建 vnode 对象，标准化子节点 children 。
 
 我们现在拥有了这个 vnode 对象，接下来要做的事情就是把它渲染到页面中去。
@@ -699,7 +708,7 @@ function createVNode(type, props = null
 
 回顾 app.mount 函数的实现，内部通过执行这段代码去渲染创建好的 vnode：
 
-复制代码
+```js
 render(vnode, rootContainer)
 const render = (vnode, container) => {
   if (vnode == null) {
@@ -714,11 +723,12 @@ const render = (vnode, container) => {
   // 缓存 vnode 节点，表示已经渲染
   container._vnode = vnode
 }
+```
 这个渲染函数 render 的实现很简单，如果它的第一个参数 vnode 为空，则执行销毁组件的逻辑，否则执行创建或者更新组件的逻辑。
 
 接下来我们接着看一下上面渲染 vnode 的代码中涉及的 patch 函数的实现：
 
-复制代码
+```js
 const patch = (n1, n2, container, anchor = null, parentComponent = null, parentSuspense = null, isSVG = false, optimized = false) => {
   // 如果存在新旧节点, 且新旧节点类型不同，则销毁旧节点
   if (n1 && !isSameVNodeType(n1, n2)) {
@@ -757,6 +767,7 @@ const patch = (n1, n2, container, anchor = null, parentComponent = null, parentS
       }
   }
 }
+```
 patch 本意是打补丁的意思，这个函数有两个功能，一个是根据 vnode 挂载 DOM，一个是根据新旧 vnode 更新 DOM。对于初次渲染，我们这里只分析创建过程，更新过程在后面的章节分析。
 
 在创建的过程中，patch 函数接受多个参数，这里我们目前只重点关注前三个：
@@ -771,7 +782,7 @@ patch 本意是打补丁的意思，这个函数有两个功能，一个是根�
 
 先来看对组件的处理。由于初始化渲染的是 App 组件，它是一个组件 vnode，所以我们来看一下组件的处理逻辑是怎样的。首先是用来处理组件的 processComponent 函数的实现：
 
-复制代码
+```js
 const processComponent = (n1, n2, container, anchor, parentComponent, parentSuspense, isSVG, optimized) => {
   if (n1 == null) {
    // 挂载组件
@@ -782,11 +793,12 @@ const processComponent = (n1, n2, container, anchor, parentComponent, parentSusp
     updateComponent(n1, n2, parentComponent, optimized)
   }
 }
+```
 该函数的逻辑很简单，如果 n1 为 null，则执行挂载组件的逻辑，否则执行更新组件的逻辑。
 
 我们接着来看挂载组件的 mountComponent 函数的实现：
 
-复制代码
+```js
 const mountComponent = (initialVNode, container, anchor, parentComponent, parentSuspense, isSVG, optimized) => {
   // 创建组件实例
   const instance = (initialVNode.component = createComponentInstance(initialVNode, parentComponent, parentSuspense))
@@ -795,6 +807,7 @@ const mountComponent = (initialVNode, container, anchor, parentComponent, parent
   // 设置并运行带副作用的渲染函数
   setupRenderEffect(instance, initialVNode, container, anchor, parentSuspense, isSVG, optimized)
 }
+```
 可以看到，挂载组件函数 mountComponent 主要做三件事情：创建组件实例、设置组件实例、设置并运行带副作用的渲染函数。
 
 首先是创建组件实例，Vue.js 3.0 虽然不像 Vue.js 2.x 那样通过类的方式去实例化组件，但内部也通过对象的方式去创建了当前渲染的组件实例。
@@ -805,7 +818,7 @@ const mountComponent = (initialVNode, container, anchor, parentComponent, parent
 
 最后是运行带副作用的渲染函数 setupRenderEffect，我们重点来看一下这个函数的实现：
 
-复制代码
+```js
 const setupRenderEffect = (instance, initialVNode, container, anchor, parentSuspense, isSVG, optimized) => {
   // 创建响应式的副作用渲染函数
   instance.update = effect(function componentEffect() {
@@ -823,6 +836,7 @@ const setupRenderEffect = (instance, initialVNode, container, anchor, parentSusp
     }
   }, prodEffectOptions)
 }
+```
 该函数利用响应式库的 effect 函数创建了一个副作用渲染函数 componentEffect （effect 的实现我们后面讲响应式章节会具体说）。副作用，这里你可以简单地理解为，当组件的数据发生变化时，effect 函数包裹的内部渲染函数 componentEffect 会重新执行一遍，从而达到重新渲染组件的目的。
 
 渲染函数内部也会判断这是一次初始渲染还是组件更新。这里我们只分析初始渲染流程。
@@ -831,32 +845,34 @@ const setupRenderEffect = (instance, initialVNode, container, anchor, parentSusp
 
 首先，是渲染组件生成 subTree，它也是一个 vnode 对象。这里要注意别把 subTree 和 initialVNode 弄混了（其实在 Vue.js 3.0 中，根据命名我们已经能很好地区分它们了，而在 Vue.js 2.x 中它们分别命名为 _vnode 和 $vnode）。我来举个例子说明，在父组件 App 中里引入了 Hello 组件：
 
-复制代码
+```js
 <template>
   <div class="app">
     <p>This is an app.</p>
     <hello></hello>
   </div>
 </template>
-在 Hello 组件中是 <div> 标签包裹着一个 <p> 标签：
+```
+在 Hello 组件中是 `<div>` 标签包裹着一个 `<p>` 标签：
 
-复制代码
+```js
 <template>
   <div class="hello">
     <p>Hello, Vue 3.0!</p>
   </div>
 </template>
-在 App 组件中， <hello> 节点渲染生成的 vnode ，对应的就是 Hello 组件的 initialVNode ，为了好记，你也可以把它称作“组件 vnode”。而 Hello 组件内部整个 DOM 节点对应的 vnode 就是执行 renderComponentRoot 渲染生成对应的 subTree，我们可以把它称作“子树 vnode”。
+```
+在 App 组件中， `<hello>` 节点渲染生成的 vnode ，对应的就是 Hello 组件的 initialVNode ，为了好记，你也可以把它称作“组件 vnode”。而 Hello 组件内部整个 DOM 节点对应的 vnode 就是执行 renderComponentRoot 渲染生成对应的 subTree，我们可以把它称作“子树 vnode”。
 
 我们知道每个组件都会有对应的 render 函数，即使你写 template，也会编译成 render 函数，而 renderComponentRoot 函数就是去执行 render 函数创建整个组件树内部的 vnode，把这个 vnode 再经过内部一层标准化，就得到了该函数的返回结果：子树 vnode。
 
 渲染生成子树 vnode 后，接下来就是继续调用 patch 函数把子树 vnode 挂载到 container 中了。
 
-那么我们又再次回到了 patch 函数，会继续对这个子树 vnode 类型进行判断，对于上述例子，App 组件的根节点是 <div> 标签，那么对应的子树 vnode 也是一个普通元素 vnode，那么我们接下来看对普通 DOM 元素的处理流程。
+那么我们又再次回到了 patch 函数，会继续对这个子树 vnode 类型进行判断，对于上述例子，App 组件的根节点是 `<div>` 标签，那么对应的子树 vnode 也是一个普通元素 vnode，那么我们接下来看对普通 DOM 元素的处理流程。
 
 首先我们来看一下处理普通 DOM元素的 processElement 函数的实现：
 
-复制代码
+```js
 const processElement = (n1, n2, container, anchor, parentComponent, parentSuspense, isSVG, optimized) => {
   isSVG = isSVG || n2.type === 'svg'
   if (n1 == null) {
@@ -868,11 +884,12 @@ const processElement = (n1, n2, container, anchor, parentComponent, parentSuspen
     patchElement(n1, n2, parentComponent, parentSuspense, isSVG, optimized)
   }
 }
+```
 该函数的逻辑很简单，如果 n1 为 null，走挂载元素节点的逻辑，否则走更新元素节点逻辑。
 
 我们接着来看挂载元素的 mountElement 函数的实现：
 
-复制代码
+```js
 const mountElement = (vnode, container, anchor, parentComponent, parentSuspense, isSVG, optimized) => {
   let el
   const { type, props, shapeFlag } = vnode
@@ -897,15 +914,17 @@ const mountElement = (vnode, container, anchor, parentComponent, parentSuspense,
   // 把创建的 DOM 元素节点挂载到 container 上
   hostInsert(el, container, anchor)
 }
+```
 可以看到，挂载元素函数主要做四件事：创建 DOM 元素节点、处理 props、处理 children、挂载 DOM 元素到 container 上。
 
 首先是创建 DOM 元素节点，通过 hostCreateElement 方法创建，这是一个平台相关的方法，我们来看一下它在 Web 环境下的定义：
 
-复制代码
+```js
 function createElement(tag, isSVG, is) {
   isSVG ? document.createElementNS(svgNS, tag)
     : document.createElement(tag, is ? { is } : undefined)
 }
+```
 它调用了底层的 DOM API document.createElement 创建元素，所以本质上 Vue.js 强调不去操作 DOM ，只是希望用户不直接碰触 DOM，它并没有什么神奇的魔法，底层还是会操作 DOM。
 
 另外，如果是其他平台比如 Weex，hostCreateElement 方法就不再是操作 DOM ，而是平台相关的 API 了，这些平台相关的方法是在创建渲染器阶段作为参数传入的。
@@ -916,13 +935,14 @@ function createElement(tag, isSVG, is) {
 
 如果子节点是纯文本，则执行 hostSetElementText 方法，它在 Web 环境下通过设置 DOM 元素的 textContent 属性设置文本：
 
-复制代码
+```js
 function setElementText(el, text) {
   el.textContent = text
 }
+```
 如果子节点是数组，则执行 mountChildren 方法：
 
-复制代码
+```js
 const mountChildren = (children, container, anchor, parentComponent, parentSuspense, isSVG, optimized, start = 0) => {
   for (let i = start; i < children.length; i++) {
     // 预处理 child
@@ -933,6 +953,7 @@ const mountChildren = (children, container, anchor, parentComponent, parentSuspe
     patch(null, child, container, anchor, parentComponent, parentSuspense, isSVG, optimized)
   }
 }
+```
 子节点的挂载逻辑同样很简单，遍历 children 获取到每一个 child，然后递归执行 patch 方法挂载每一个 child 。注意，这里有对 child 做预处理的情况（后面编译优化的章节会详细分析）。
 
 可以看到，mountChildren 函数的第二个参数是 container，而我们调用 mountChildren 方法传入的第二个参数是在 mountElement 时创建的 DOM 节点，这就很好地建立了父子关系。
@@ -941,7 +962,7 @@ const mountChildren = (children, container, anchor, parentComponent, parentSuspe
 
 处理完所有子节点后，最后通过 hostInsert 方法把创建的 DOM 元素节点挂载到 container 上，它在 Web 环境下这样定义：
 
-复制代码
+```js
 function insert(child, parent, anchor) {
   if (anchor) {
     parent.insertBefore(child, anchor)
@@ -950,6 +971,7 @@ function insert(child, parent, anchor) {
     parent.appendChild(child)
   }
 }
+```
 这里会做一个 if 判断，如果有参考元素 anchor，就执行 parent.insertBefore ，否则执行 parent.appendChild 来把 child 添加到 parent 下，完成节点的挂载。
 
 因为 insert 的执行是在处理子节点后，所以挂载的顺序是先子节点，后父节点，最终挂载到最外层的容器上。
@@ -971,20 +993,22 @@ OK，到这里我们这一节的学习也要结束啦，这节课我们主要分
 最后，给你留一道思考题目，我们平时开发页面就是把页面拆成一个个组件，那么组件的拆分粒度是越细越好吗？为什么呢？欢迎你在留言区与我分享。
 
 本节课的相关代码在源代码中的位置如下：
+```
 packages/runtime-dom/src/index.ts
 packages/runtime-core/src/apiCreateApp.ts
 packages/runtime-core/src/vnode.ts
 packages/runtime-core/src/renderer.ts
 packages/runtime-dom/src/nodeOps.ts
+```
 
-## 02 | 组件更新：完整的 DOM diff 流程是怎样的？（上）
+## 02 | 组件更新（上）
 
 上一节课我们梳理了组件渲染的过程，本质上就是把各种类型的 vnode 渲染成真实 DOM。我们也知道了组件是由模板、组件描述对象和数据构成的，数据的变化会影响组件的变化。组件的渲染过程中创建了一个带副作用的渲染函数，当数据变化的时候就会执行这个渲染函数来触发组件的更新。那么接下来，我们就具体分析一下组件的更新过程。
 
 副作用渲染函数更新组件的过程
 我们先来回顾一下带副作用渲染函数 setupRenderEffect 的实现，但是这次我们要重点关注更新组件部分的逻辑：
 
-复制代码
+```js
 const setupRenderEffect = (instance, initialVNode, container, anchor, parentSuspense, isSVG, optimized) => {
   // 创建响应式的副作用渲染函数
   instance.update = effect(function componentEffect() {
@@ -1022,6 +1046,7 @@ const setupRenderEffect = (instance, initialVNode, container, anchor, parentSusp
     }
   }, prodEffectOptions)
 }
+```
 可以看到，更新组件主要做三件事情：更新组件 vnode 节点、渲染新的子树 vnode、根据新旧子树 vnode 执行 patch 逻辑。
 
 首先是更新组件 vnode 节点，这里会有一个条件判断，判断组件实例中是否有新的组件 vnode（用 next 表示），有则更新组件 vnode，没有 next 指向之前的组件 vnode。为什么需要判断，这其实涉及一个组件更新策略的逻辑，我们稍后会讲。
@@ -1335,7 +1360,7 @@ const patchChildren = (n1, n2, container, anchor, parentComponent, parentSuspens
 packages/runtime-core/src/renderer.ts
 packages/runtime-core/src/componentRenderUtils.ts
 
-## 03 | 组件更新：完整的 DOM diff 流程是怎样的？（下）
+## 03 | 组件更新（下）
 
 下面我们来继续讲解上节课提到的核心 diff 算法。
 
