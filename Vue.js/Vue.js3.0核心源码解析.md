@@ -17,13 +17,13 @@
 
 了解技术实现原理是前端工作的必然要求，而看源码是了解技术实现原理的最直接手法，是高效提升个人技术能力的有效途径。
 
-此外，学习 Vue.js 源码还能够从更多层面提升你的技术实力：
+此外，学习  Vue.js 源码还能够从更多层面提升你的技术实力：
 
-首先，有助于提升你的 JavaScript 功底。Vue.js 源码底层是用纯原生 JavaScript 写的，你可以在阅读 Vue.js 源码的过程中学习很多 JavaScript 编程技巧。这种贴合实战的学习方式，比你天天抱着编程书看，效率要高得多。
+首先，有助于提升你的 JavaScript 功底。Vue.js 源码底层是用纯原生 JavaScript 写的，你可以在阅读  Vue.js  源码的过程中学习很多 JavaScript 编程技巧。这种贴合实战的学习方式，比你天天抱着编程书看，效率要高得多。
 
 其次，提升工作效率，形成学习与成长的良性循环。了解技术的底层实现原理，会让你在工作中对它的应用更加游刃有余，在遇到问题后可以快速定位并分析解决。这样你的工作效率就会大大提升，帮你省出更多的时间来学习和提升。
 
-再次，借鉴优秀源码的经验，学习高手思路。你可以通过阅读优秀的项目源码，了解高手是如何组织代码的，了解一些算法思想和设计模式的应用，甚至培养“造轮子”的能力。实际上，Vue.js 3.0 的设计实现中就参考了很多优秀的开源 JavaScript 库。
+再次，借鉴优秀源码的经验，学习高手思路。你可以通过阅读优秀的项目源码，了解高手是如何组织代码的，了解一些算法思想和设计模式的应用，甚至培养“造轮子”的能力。实际上，Vue.js 3.0  的设计实现中就参考了很多优秀的开源 JavaScript 库。
 
 最后，提升自己解读源码的能力。读源码本身是很好的学习方式，一旦你掌握了看源码的技巧，未来学习其他框架也会容易得多。而且，工作中也可以通过阅读项目已有代码快速熟悉项目，提高业务逻辑分析能力和重构代码的能力。
 
@@ -39,7 +39,7 @@
 
 课程设计
 
-我会对 Vue.js 3.0 的源码进行透彻分析，但不会一味地去解释源码，而是更加注重解读 Vue.js 在实现某个 feature 的时候，它的设计思想是什么以及为什么会这么做。相比单纯解释源码这种“翻译”的工作，我更喜欢做“阅读理解”，把每部分源码的前因后果分析清楚。
+我会对 Vue.js 3.0  的源码进行透彻分析，但不会一味地去解释源码，而是更加注重解读  Vue.js 在实现某个 feature 的时候，它的设计思想是什么以及为什么会这么做。相比单纯解释源码这种“翻译”的工作，我更喜欢做“阅读理解”，把每部分源码的前因后果分析清楚。
 
 课程共分三大模块，合计 22 篇文章。我会结合实际用例，循序渐进地带你深入 Vue.js 的内核实现。
 
@@ -91,7 +91,7 @@ const propOptions: any = vm.$options.props // wtf flow?
 
 什么意思呢？其实是由于这里 Flow 并没有正确推导出 vm.$options.props 的类型 ，开发人员不得不强制申明 propsOptions 的类型为 any，显得很不合理；另外他也在社区平台吐槽过 Flow 团队的烂尾。
 
-其次，Vue.js 3.0 抛弃 Flow 后，使用 TypeScript 重构了整个项目。 TypeScript提供了更好的类型检查，能支持复杂的类型推导；由于源码就使用 TypeScript 编写，也省去了单独维护 d.ts 文件的麻烦；就整个 TypeScript 的生态来看，TypeScript 团队也是越做越好，TypeScript 本身保持着一定频率的迭代和更新，支持的 feature 也越来越多。
+其次，Vue.js 3.0 抛弃 Flow 后，使用 TypeScript 重构了整个项目。 TypeScript 提供了更好的类型检查，能支持复杂的类型推导；由于源码就使用 TypeScript 编写，也省去了单独维护 d.ts 文件的麻烦；就整个 TypeScript 的生态来看，TypeScript 团队也是越做越好，TypeScript 本身保持着一定频率的迭代和更新，支持的 feature 也越来越多。
 
 此外，小右和 TypeScript 团队也一直保持了良好的沟通，我们可以期待 TypeScript 对 Vue.js 的支持会越来越好。
 
@@ -128,6 +128,7 @@ export function cube(x) {
 import { cube } from './math.js'
 // do something with cube
 ```
+
 最终 math 模块会被 webpack 打包生成如下代码：
 
 ```js
@@ -144,6 +145,7 @@ import { cube } from './math.js'
   }
 });
 ```
+
 可以看到，未被引入的 square 模块被标记了， 然后压缩阶段会利用例如 uglify-js、terser 等压缩工具真正地删除这些没有用到的代码。
 
 也就是说，利用 tree-shaking 技术，如果你在项目中没有引入 Transition、KeepAlive 等组件，那么它们对应的代码就不会打包，这样也就间接达到了减少项目引入的 Vue.js 包体积的目的。
@@ -216,7 +218,6 @@ observed = new Proxy(data, {
 
 虽然 Vue 能保证触发更新的组件最小化，但在单个组件内部依然需要遍历该组件的整个 vnode 树，举个例子，比如我们要更新这个组件：
 
-
 ```js
 <template>
   <div id="content">
@@ -228,6 +229,7 @@ observed = new Proxy(data, {
   </div>
 </template>
 ```
+
 整个 diff 过程如图所示：
 
 可以看到，因为这段代码中只有一个动态节点，所以这里有很多 diff 和遍历其实都是不需要的，这就会导致 vnode 的性能跟模版大小正相关，跟动态节点的数量无关，当一些组件的整个模版内只有少量动态节点时，这些遍历都是性能的浪费。
@@ -243,13 +245,13 @@ Vue.js 3.0 做到了，它通过编译阶段对静态模板的分析，编译生
 除了源码和性能方面，Vue.js 3.0 还在语法方面进行了优化，主要是提供了 Composition API，那么我们一起来看一下它为我们提供了什么帮助。
 
 1. 优化逻辑组织
-首先，是优化逻辑组织。
+   首先，是优化逻辑组织。
 
 在 Vue.js 1.x 和 2.x 版本中，编写组件本质就是在编写一个“包含了描述组件选项的对象”，我们把它称为 Options API，它的好处是在于写法非常符合直觉思维，对于新手来说这样很容易理解，这也是很多人喜欢 Vue.js 的原因之一。
 
 Options API 的设计是按照 methods、computed、data、props 这些不同的选项分类，当组件小的时候，这种分类方式一目了然；但是在大型组件中，一个组件可能有多个逻辑关注点，当使用 Options API 的时候，每一个关注点都有自己的 Options，如果需要修改一个逻辑点关注点，就需要在单个文件中不断上下切换和寻找。
 
-举一个官方例子 Vue CLI UI file explorer，它是 vue-cli GUI 应用程序中的一个复杂的文件浏览器组件。这个组件需要处理许多不同的逻辑关注点：
+举一个官方例子  Vue CLI UI file explorer，它是  vue-cli GUI 应用程序中的一个复杂的文件浏览器组件。这个组件需要处理许多不同的逻辑关注点：
 
 跟踪当前文件夹状态并显示其内容
 
@@ -263,18 +265,14 @@ Options API 的设计是按照 methods、computed、data、props 这些不同的
 
 处理当前工作目录的更改
 
-如果我们按照逻辑关注点做颜色编码，就可以看到当使用 Options API 去编写组件时，这些逻辑关注点是非常分散的：
-
-
+如果我们按照逻辑关注点做颜色编码，就可以看到当使用  Options API  去编写组件时，这些逻辑关注点是非常分散的：
 
 Vue.js 3.0 提供了一种新的 API：Composition API，它有一个很好的机制去解决这样的问题，就是将某个逻辑关注点相关的代码全都放在一个函数里，这样当需要修改一个功能时，就不再需要在文件中跳来跳去。
 
 通过下图，我们可以很直观地感受到 Composition API 在逻辑组织方面的优势：
 
-
-
 2. 优化逻辑复用
-其次，是优化逻辑复用。
+   其次，是优化逻辑复用。
 
 当我们开发项目变得复杂的时候，免不了需要抽象出一些复用的逻辑。在 Vue.js 2.x 中，我们通常会用 mixins 去复用逻辑，举一个鼠标位置侦听的例子，我们会编写如下函数 mousePositionMixin：
 
@@ -301,6 +299,7 @@ const mousePositionMixin = {
 }
 export default mousePositionMixin
 ```
+
 然后在组件中使用：
 
 ```js
@@ -319,7 +318,7 @@ export default {
 
 使用单个 mixin 似乎问题不大，但是当我们一个组件混入大量不同的 mixins 的时候，会存在两个非常明显的问题：命名冲突和数据来源不清晰。
 
-首先每个 mixin 都可以定义自己的 props、data，它们之间是无感的，所以很容易定义相同的变量，导致命名冲突。另外对组件而言，如果模板中使用不在当前组件中定义的变量，那么就会不太容易知道这些变量在哪里定义的，这就是数据来源不清晰。但是Vue.js 3.0 设计的 Composition API，就很好地帮助我们解决了 mixins 的这两个问题。
+首先每个 mixin 都可以定义自己的 props、data，它们之间是无感的，所以很容易定义相同的变量，导致命名冲突。另外对组件而言，如果模板中使用不在当前组件中定义的变量，那么就会不太容易知道这些变量在哪里定义的，这就是数据来源不清晰。但是 Vue.js 3.0 设计的 Composition API，就很好地帮助我们解决了 mixins 的这两个问题。
 
 我们来看一下在 Vue.js 3.0 中如何书写这个示例：
 
@@ -403,16 +402,11 @@ Vue.js 3.0 做了这么多改进，相信你也一定对它的实现细节非常
 
 相信作为一个 Vue.js 的开发者，最熟悉的应该就是组件了，我们开发 Vue.js 的项目，大部分时间都是在写组件，组件系统是 Vue.js 的一个重要概念，它是一种对 DOM 结构的抽象，我们可以使用小型、独立和通常可复用的组件构建大型应用。仔细想想，几乎任意类型的应用界面都可以抽象为一个组件树，如下：
 
-
-
 组件化也是 Vue.js 的核心思想之一，它允许我们用模板加对象描述的方式去创建一个组件，再加上我们给组件注入不同的数据，就可以完整地渲染出组件：
-
-
 
 当数据更新后，组件可以自动重新渲染，因此用户只需要专注于数据逻辑的处理，而无须关心 DOM 的操作，无论是开发体验和开发效率都得到了很大的提升。
 
 短短几行代码，就可以构建庞大的组件结构，这一切都是 Vue.js 框架的功劳。那它究竟是怎么做到的呢，这一部分我就带你去探究组件内部实现的奥秘，看看它是如何渲染到 DOM 上并且在数据变化后又是如何重新渲染的。
-
 
 ## 01 | 组件渲染
 
@@ -423,6 +417,7 @@ Vue.js 3.0 做了这么多改进，相信你也一定对它的实现细节非常
 ```js
 <hello-world></hello-world>
 ```
+
 这段代码并不会在页面上渲染一个`<hello-world>`标签，而它具体渲染成什么，取决于你怎么编写 HelloWorld 组件的模板。举个例子，HelloWorld 组件内部的模板定义是这样的：
 
 ```js
@@ -436,8 +431,6 @@ Vue.js 3.0 做了这么多改进，相信你也一定对它的实现细节非常
 可以看到，模板内部最终会在页面上渲染一个 div，内部包含一个 p 标签，用来显示 Hello World 文本。
 
 所以，从表现上来看，组件的模板决定了组件生成的 DOM 标签，而在 Vue.js 内部，一个组件想要真正的渲染生成 DOM，还需要经历“创建 vnode - 渲染 vnode - 生成 DOM” 这几个步骤：
-
-
 
 你可能会问，什么是 vnode，它和组件什么关系呢？先不要着急，我们在后面会详细说明。这里，你只需要记住它就是一个可以描述组件信息的 JavaScript 对象即可。
 
@@ -457,6 +450,7 @@ const app = new Vue({
 })
 app.$mount('#app')
 ```
+
 ```js
 // 在 Vue.js 3.0 中，初始化一个应用的方式如下
 import { createApp } from 'vue'
@@ -464,6 +458,7 @@ import App from './app'
 const app = createApp(App)
 app.mount('#app')
 ```
+
 可以看到，Vue.js 3.0 初始化应用的方式和 Vue.js 2.x 差别并不大，本质上都是把 App 组件挂载到 id 为 app 的 DOM 节点上。
 
 但是，在 Vue.js 3.0 中还导入了一个 createApp，其实这是个入口函数，它是 Vue.js 对外暴露的一个函数，我们来看一下它的内部实现：
@@ -480,14 +475,16 @@ const createApp = ((...args) => {
   return app
 })
 ```
+
 从代码中可以看出 createApp 主要做了两件事情：创建 app 对象和重写 app.mount 方法。接下来，我们就具体来分析一下它们。
 
 1. 创建 app 对象
-首先，我们使用 ensureRenderer().createApp() 来创建 app 对象 ：
+   首先，我们使用 ensureRenderer().createApp() 来创建 app 对象 ：
 
 ```js
  const app = ensureRenderer().createApp(...args)
 ```
+
 其中 ensureRenderer() 用来创建一个渲染器对象，它的内部代码是这样的：
 
 ```js
@@ -532,6 +529,7 @@ function createAppAPI(render) {
   }
 }
 ```
+
 可以看到，这里先用 ensureRenderer() 来延时创建渲染器，这样做的好处是当用户只依赖响应式包的时候，就不会创建渲染器，因此可以通过 tree-shaking 的方式移除核心渲染逻辑相关的代码。
 
 这里涉及了渲染器的概念，它是为跨平台渲染做准备的，之后我会在自定义渲染器的相关内容中详细说明。在这里，你可以简单地把渲染器理解为包含平台渲染核心逻辑的 JavaScript 对象。
@@ -541,7 +539,7 @@ function createAppAPI(render) {
 在整个 app 对象创建过程中，Vue.js 利用闭包和函数柯里化的技巧，很好地实现了参数保留。比如，在执行 app.mount 的时候，并不需要传入渲染器 render，这是因为在执行 createAppAPI 的时候渲染器 render 参数已经被保留下来了。
 
 2. 重写 app.mount 方法
-接下来，是重写 app.mount 方法。
+   接下来，是重写 app.mount 方法。
 
 根据前面的分析，我们知道 createApp 返回的 app 对象已经拥有了 mount 方法了，但在入口函数中，接下来的逻辑却是对 app.mount 方法的重写。先思考一下，为什么要重写这个方法，而不把相关逻辑放在 app 对象的 mount 方法内部来实现呢？
 
@@ -557,6 +555,7 @@ mount(rootContainer) {
   return vnode.component.proxy
 }
 ```
+
 标准的跨平台渲染流程是先创建 vnode，再渲染 vnode。此外参数 rootContainer 也可以是不同类型的值，比如，在 Web 平台它是一个 DOM 对象，而在其他平台（比如 Weex 和小程序）中可以是其他类型的值。所以这里面的代码不应该包含任何特定平台相关的逻辑，也就是说这些代码的执行逻辑都是与平台无关的。因此我们需要在外部重写这个方法，来完善 Web 平台下的渲染逻辑。
 
 接下来，我们再来看 app.mount 重写都做了哪些事情：
@@ -578,6 +577,7 @@ app.mount = (containerOrSelector) => {
   return mount(container)
 }
 ```
+
 首先是通过 normalizeContainer 标准化容器（这里可以传字符串选择器或者 DOM 对象，但如果是字符串选择器，就需要把它转成 DOM 对象，作为最终挂载的容器），然后做一个 if 判断，如果组件对象没有定义 render 函数和 template 模板，则取容器的 innerHTML 作为组件模板内容；接着在挂载前清空容器内容，最终再调用 app.mount 的方法走标准的组件渲染流程。
 
 在这里，重写的逻辑都是和 Web 平台相关的，所以要放在外部实现。此外，这么做的目的是既能让用户在使用 API 时可以更加灵活，也兼容了 Vue.js 2.x 的写法，比如 app.mount 的第一个参数就同时支持选择器字符串和 DOM 对象两种类型。
@@ -585,8 +585,9 @@ app.mount = (containerOrSelector) => {
 从 app.mount 开始，才算真正进入组件渲染流程，那么接下来，我们就重点看一下核心渲染流程做的两件事情：创建 vnode 和渲染 vnode。
 
 核心渲染流程：创建 vnode 和渲染 vnode
+
 1. 创建 vnode
-首先，是创建 vnode 的过程。
+   首先，是创建 vnode 的过程。
 
 vnode 本质上是用来描述 DOM 的 JavaScript 对象，它在 Vue.js 中可以描述不同类型的节点，比如普通元素节点、组件节点等。
 
@@ -595,12 +596,13 @@ vnode 本质上是用来描述 DOM 的 JavaScript 对象，它在 Vue.js 中可�
 ```js
 <button class="btn" style="width:100px;height:50px">click me</button>
 ```
+
 我们可以用 vnode 这样表示`<button>`标签：
 
 ```js
 const vnode = {
   type: 'button',
-  props: { 
+  props: {
     'class': 'btn',
     style: {
       width: '100px',
@@ -610,6 +612,7 @@ const vnode = {
   children: 'click me'
 }
 ```
+
 其中，type 属性表示 DOM 的标签类型，props 属性表示 DOM 的一些附加信息，比如 style 、class 等，children 属性表示 DOM 的子节点，它也可以是一个 vnode 数组，只不过 vnode 可以用字符串表示简单的文本 。
 
 什么是组件节点呢？其实， vnode 除了可以像上面那样用于描述一个真实的 DOM，也可以用来描述组件。
@@ -619,6 +622,7 @@ const vnode = {
 ```js
 <custom-component msg="test"></custom-component>
 ```
+
 我们可以用 vnode 这样表示 `<custom-component>` 组件标签：
 
 ```js
@@ -627,11 +631,12 @@ const CustomComponent = {
 }
 const vnode = {
   type: CustomComponent,
-  props: { 
+  props: {
     msg: 'test'
   }
 }
 ```
+
 组件 vnode 其实是对抽象事物的描述，这是因为我们并不会在页面上真正渲染一个 `<custom-component>` 标签，而是渲染组件内部定义的 HTML 标签。
 
 除了上两种 vnode 类型外，还有纯文本 vnode、注释 vnode 等等，但鉴于我们的主线只需要研究组件 vnode 和普通元素 vnode，所以我在这里就不赘述了。
@@ -651,6 +656,7 @@ const shapeFlag = isString(type)
           ? 2 /* FUNCTIONAL_COMPONENT */
           : 0
 ```
+
 知道什么是 vnode 后，你可能会好奇，那么 vnode 有什么优势呢？为什么一定要设计 vnode 这样的数据结构呢？
 
 首先是抽象，引入 vnode，可以把渲染过程抽象化，从而使得组件的抽象能力也得到提升。
@@ -659,7 +665,7 @@ const shapeFlag = isString(type)
 
 不过这里要特别注意，使用 vnode 并不意味着不用操作 DOM 了，很多同学会误以为 vnode 的性能一定比手动操作原生 DOM 好，这个其实是不一定的。
 
-因为，首先这种基于 vnode 实现的 MVVM 框架，在每次 render to vnode 的过程中，渲染组件会有一定的 JavaScript 耗时，特别是大组件，比如一个 1000 * 10 的 Table 组件，render to vnode 的过程会遍历 1000 * 10 次去创建内部 cell vnode，整个耗时就会变得比较长，加上 patch vnode 的过程也会有一定的耗时，当我们去更新组件的时候，用户会感觉到明显的卡顿。虽然 diff 算法在减少 DOM 操作方面足够优秀，但最终还是免不了操作 DOM，所以说性能并不是 vnode 的优势。
+因为，首先这种基于 vnode 实现的 MVVM 框架，在每次 render to vnode 的过程中，渲染组件会有一定的 JavaScript 耗时，特别是大组件，比如一个 1000 _ 10 的 Table 组件，render to vnode 的过程会遍历 1000 _ 10 次去创建内部 cell vnode，整个耗时就会变得比较长，加上 patch vnode 的过程也会有一定的耗时，当我们去更新组件的时候，用户会感觉到明显的卡顿。虽然 diff 算法在减少 DOM 操作方面足够优秀，但最终还是免不了操作 DOM，所以说性能并不是 vnode 的优势。
 
 那么，Vue.js 内部是如何创建这些 vnode 的呢？
 
@@ -668,6 +674,7 @@ const shapeFlag = isString(type)
 ```js
  const vnode = createVNode(rootComponent, rootProps)
 ```
+
 我们来看一下 createVNode 函数的大致实现：
 
 ```js
@@ -699,12 +706,13 @@ function createVNode(type, props = null
   return vnode
 }
 ```
+
 通过上述代码可以看到，其实 createVNode 做的事情很简单，就是：对 props 做标准化处理、对 vnode 的类型信息编码、创建 vnode 对象，标准化子节点 children 。
 
 我们现在拥有了这个 vnode 对象，接下来要做的事情就是把它渲染到页面中去。
 
 2. 渲染 vnode
-接下来，是渲染 vnode 的过程。
+   接下来，是渲染 vnode 的过程。
 
 回顾 app.mount 函数的实现，内部通过执行这段代码去渲染创建好的 vnode：
 
@@ -724,6 +732,7 @@ const render = (vnode, container) => {
   container._vnode = vnode
 }
 ```
+
 这个渲染函数 render 的实现很简单，如果它的第一个参数 vnode 为空，则执行销毁组件的逻辑，否则执行创建或者更新组件的逻辑。
 
 接下来我们接着看一下上面渲染 vnode 的代码中涉及的 patch 函数的实现：
@@ -768,6 +777,7 @@ const patch = (n1, n2, container, anchor = null, parentComponent = null, parentS
   }
 }
 ```
+
 patch 本意是打补丁的意思，这个函数有两个功能，一个是根据 vnode 挂载 DOM，一个是根据新旧 vnode 更新 DOM。对于初次渲染，我们这里只分析创建过程，更新过程在后面的章节分析。
 
 在创建的过程中，patch 函数接受多个参数，这里我们目前只重点关注前三个：
@@ -794,6 +804,7 @@ const processComponent = (n1, n2, container, anchor, parentComponent, parentSusp
   }
 }
 ```
+
 该函数的逻辑很简单，如果 n1 为 null，则执行挂载组件的逻辑，否则执行更新组件的逻辑。
 
 我们接着来看挂载组件的 mountComponent 函数的实现：
@@ -808,6 +819,7 @@ const mountComponent = (initialVNode, container, anchor, parentComponent, parent
   setupRenderEffect(instance, initialVNode, container, anchor, parentSuspense, isSVG, optimized)
 }
 ```
+
 可以看到，挂载组件函数 mountComponent 主要做三件事情：创建组件实例、设置组件实例、设置并运行带副作用的渲染函数。
 
 首先是创建组件实例，Vue.js 3.0 虽然不像 Vue.js 2.x 那样通过类的方式去实例化组件，但内部也通过对象的方式去创建了当前渲染的组件实例。
@@ -837,13 +849,14 @@ const setupRenderEffect = (instance, initialVNode, container, anchor, parentSusp
   }, prodEffectOptions)
 }
 ```
+
 该函数利用响应式库的 effect 函数创建了一个副作用渲染函数 componentEffect （effect 的实现我们后面讲响应式章节会具体说）。副作用，这里你可以简单地理解为，当组件的数据发生变化时，effect 函数包裹的内部渲染函数 componentEffect 会重新执行一遍，从而达到重新渲染组件的目的。
 
 渲染函数内部也会判断这是一次初始渲染还是组件更新。这里我们只分析初始渲染流程。
 
 初始渲染主要做两件事情：渲染组件生成 subTree、把 subTree 挂载到 container 中。
 
-首先，是渲染组件生成 subTree，它也是一个 vnode 对象。这里要注意别把 subTree 和 initialVNode 弄混了（其实在 Vue.js 3.0 中，根据命名我们已经能很好地区分它们了，而在 Vue.js 2.x 中它们分别命名为 _vnode 和 $vnode）。我来举个例子说明，在父组件 App 中里引入了 Hello 组件：
+首先，是渲染组件生成 subTree，它也是一个 vnode 对象。这里要注意别把 subTree 和 initialVNode 弄混了（其实在 Vue.js 3.0 中，根据命名我们已经能很好地区分它们了，而在 Vue.js 2.x 中它们分别命名为 \_vnode 和 $vnode）。我来举个例子说明，在父组件 App 中里引入了 Hello 组件：
 
 ```js
 <template>
@@ -853,6 +866,7 @@ const setupRenderEffect = (instance, initialVNode, container, anchor, parentSusp
   </div>
 </template>
 ```
+
 在 Hello 组件中是 `<div>` 标签包裹着一个 `<p>` 标签：
 
 ```js
@@ -862,6 +876,7 @@ const setupRenderEffect = (instance, initialVNode, container, anchor, parentSusp
   </div>
 </template>
 ```
+
 在 App 组件中， `<hello>` 节点渲染生成的 vnode ，对应的就是 Hello 组件的 initialVNode ，为了好记，你也可以把它称作“组件 vnode”。而 Hello 组件内部整个 DOM 节点对应的 vnode 就是执行 renderComponentRoot 渲染生成对应的 subTree，我们可以把它称作“子树 vnode”。
 
 我们知道每个组件都会有对应的 render 函数，即使你写 template，也会编译成 render 函数，而 renderComponentRoot 函数就是去执行 render 函数创建整个组件树内部的 vnode，把这个 vnode 再经过内部一层标准化，就得到了该函数的返回结果：子树 vnode。
@@ -870,7 +885,7 @@ const setupRenderEffect = (instance, initialVNode, container, anchor, parentSusp
 
 那么我们又再次回到了 patch 函数，会继续对这个子树 vnode 类型进行判断，对于上述例子，App 组件的根节点是 `<div>` 标签，那么对应的子树 vnode 也是一个普通元素 vnode，那么我们接下来看对普通 DOM 元素的处理流程。
 
-首先我们来看一下处理普通 DOM元素的 processElement 函数的实现：
+首先我们来看一下处理普通 DOM 元素的 processElement 函数的实现：
 
 ```js
 const processElement = (n1, n2, container, anchor, parentComponent, parentSuspense, isSVG, optimized) => {
@@ -885,6 +900,7 @@ const processElement = (n1, n2, container, anchor, parentComponent, parentSuspen
   }
 }
 ```
+
 该函数的逻辑很简单，如果 n1 为 null，走挂载元素节点的逻辑，否则走更新元素节点逻辑。
 
 我们接着来看挂载元素的 mountElement 函数的实现：
@@ -915,6 +931,7 @@ const mountElement = (vnode, container, anchor, parentComponent, parentSuspense,
   hostInsert(el, container, anchor)
 }
 ```
+
 可以看到，挂载元素函数主要做四件事：创建 DOM 元素节点、处理 props、处理 children、挂载 DOM 元素到 container 上。
 
 首先是创建 DOM 元素节点，通过 hostCreateElement 方法创建，这是一个平台相关的方法，我们来看一下它在 Web 环境下的定义：
@@ -925,6 +942,7 @@ function createElement(tag, isSVG, is) {
     : document.createElement(tag, is ? { is } : undefined)
 }
 ```
+
 它调用了底层的 DOM API document.createElement 创建元素，所以本质上 Vue.js 强调不去操作 DOM ，只是希望用户不直接碰触 DOM，它并没有什么神奇的魔法，底层还是会操作 DOM。
 
 另外，如果是其他平台比如 Weex，hostCreateElement 方法就不再是操作 DOM ，而是平台相关的 API 了，这些平台相关的方法是在创建渲染器阶段作为参数传入的。
@@ -940,6 +958,7 @@ function setElementText(el, text) {
   el.textContent = text
 }
 ```
+
 如果子节点是数组，则执行 mountChildren 方法：
 
 ```js
@@ -954,6 +973,7 @@ const mountChildren = (children, container, anchor, parentComponent, parentSuspe
   }
 }
 ```
+
 子节点的挂载逻辑同样很简单，遍历 children 获取到每一个 child，然后递归执行 patch 方法挂载每一个 child 。注意，这里有对 child 做预处理的情况（后面编译优化的章节会详细分析）。
 
 可以看到，mountChildren 函数的第二个参数是 container，而我们调用 mountChildren 方法传入的第二个参数是在 mountElement 时创建的 DOM 节点，这就很好地建立了父子关系。
@@ -972,6 +992,7 @@ function insert(child, parent, anchor) {
   }
 }
 ```
+
 这里会做一个 if 判断，如果有参考元素 anchor，就执行 parent.insertBefore ，否则执行 parent.appendChild 来把 child 添加到 parent 下，完成节点的挂载。
 
 因为 insert 的执行是在处理子节点后，所以挂载的顺序是先子节点，后父节点，最终挂载到最外层的容器上。
@@ -988,11 +1009,10 @@ OK，到这里我们这一节的学习也要结束啦，这节课我们主要分
 
 这里，我用一张图来带你更加直观地感受下整个组件渲染流程：
 
-
-
 最后，给你留一道思考题目，我们平时开发页面就是把页面拆成一个个组件，那么组件的拆分粒度是越细越好吗？为什么呢？欢迎你在留言区与我分享。
 
 本节课的相关代码在源代码中的位置如下：
+
 ```
 packages/runtime-dom/src/index.ts
 packages/runtime-core/src/apiCreateApp.ts
@@ -1047,6 +1067,7 @@ const setupRenderEffect = (instance, initialVNode, container, anchor, parentSusp
   }, prodEffectOptions)
 }
 ```
+
 可以看到，更新组件主要做三件事情：更新组件 vnode 节点、渲染新的子树 vnode、根据新旧子树 vnode 执行 patch 逻辑。
 
 首先是更新组件 vnode 节点，这里会有一个条件判断，判断组件实例中是否有新的组件 vnode（用 next 表示），有则更新组件 vnode，没有 next 指向之前的组件 vnode。为什么需要判断，这其实涉及一个组件更新策略的逻辑，我们稍后会讲。
@@ -1058,7 +1079,7 @@ const setupRenderEffect = (instance, initialVNode, container, anchor, parentSusp
 核心逻辑：patch 流程
 我们先来看 patch 流程的实现代码：
 
-复制代码
+```js
 const patch = (n1, n2, container, anchor = null, parentComponent = null, parentSuspense = null, isSVG = false, optimized = false) => {
   // 如果存在新旧节点, 且新旧节点类型不同，则销毁旧节点
   if (n1 && !isSameVNodeType(n1, n2)) {
@@ -1102,14 +1123,16 @@ function isSameVNodeType (n1, n2) {
   // n1 和 n2 节点的 type 和 key 都相同，才是相同节点
   return n1.type === n2.type && n1.key === n2.key
 }
+```
+
 在这个过程中，首先判断新旧节点是否是相同的 vnode 类型，如果不同，比如一个 div 更新成一个 ul，那么最简单的操作就是删除旧的 div 节点，再去挂载新的 ul 节点。
 
 如果是相同的 vnode 类型，就需要走 diff 更新流程了，接着会根据不同的 vnode 类型执行不同的处理逻辑，这里我们仍然只分析普通元素类型和组件类型的处理过程。
 
 1. 处理组件
-如何处理组件的呢？举个例子，我们在父组件 App 中里引入了 Hello 组件：
+   如何处理组件的呢？举个例子，我们在父组件 App 中里引入了 Hello 组件：
 
-复制代码
+```js
 <template>
   <div class="app">
     <p>This is an app.</p>
@@ -1131,9 +1154,10 @@ function isSameVNodeType (n1, n2) {
     }
   }
 </script>
-Hello 组件中是 <div> 包裹着一个 <p> 标签， 如下所示：
+```
+Hello 组件中是 `<div>` 包裹着一个 `<p>` 标签， 如下所示：
 
-复制代码
+```js
 <template>
   <div class="hello">
     <p>Hello, {{msg}}</p>
@@ -1146,13 +1170,14 @@ Hello 组件中是 <div> 包裹着一个 <p> 标签， 如下所示：
     }
   }
 </script>
+```
 点击 App 组件中的按钮执行 toggle 函数，就会修改 data 中的 msg，并且会触发App 组件的重新渲染。
 
 结合前面对渲染函数的流程分析，这里 App 组件的根节点是 div 标签，重新渲染的子树 vnode 节点是一个普通元素的 vnode，应该先走 processElement 逻辑。组件的更新最终还是要转换成内部真实 DOM 的更新，而实际上普通元素的处理流程才是真正做 DOM 的更新，由于稍后我们会详细分析普通元素的处理流程，所以我们先跳过这里，继续往下看。
 
 和渲染过程类似，更新过程也是一个树的深度优先遍历过程，更新完当前节点后，就会遍历更新它的子节点，因此在遍历的过程中会遇到 hello 这个组件 vnode 节点，就会执行到 processComponent 处理逻辑中，我们再来看一下它的实现，我们重点关注一下组件更新的相关逻辑：
 
-复制代码
+```js
 const processComponent = (n1, n2, container, anchor, parentComponent, parentSuspense, isSVG, optimized) => {
   if (n1 == null) {
     // 挂载组件
@@ -1179,6 +1204,8 @@ const updateComponent = (n1, n2, parentComponent, optimized) => {
     n2.el = n1.el
   }
 }
+```
+
 可以看到，processComponent 主要通过执行 updateComponent 函数来更新子组件，updateComponent 函数在更新子组件的时候，会先执行 shouldUpdateComponent 函数，根据新旧子组件 vnode 来判断是否需要更新子组件。这里你只需要知道，在 shouldUpdateComponent 函数的内部，主要是通过检测和对比组件 vnode 中的 props、chidren、dirs、transiton 等属性，来决定子组件是否需要更新。
 
 这是很好理解的，因为在一个组件的子组件是否需要更新，我们主要依据子组件 vnode 是否存在一些会影响组件更新的属性变化进行判断，如果存在就会更新子组件。
@@ -1189,7 +1216,7 @@ const updateComponent = (n1, n2, parentComponent, optimized) => {
 
 再回到副作用渲染函数中，有了前面的讲解，我们再看组件更新的这部分代码，就能很好地理解它的逻辑了：
 
-复制代码
+```js
 // 更新组件
 let { next, vnode } = instance
 // next 表示新的组件 vnode
@@ -1214,6 +1241,8 @@ const updateComponentPreRender = (instance, nextVNode, optimized) => {
   // 更新 插槽
   updateSlots(instance, nextVNode.children)
 }
+```
+
 结合上面的代码，我们在更新组件的 DOM 前，需要先更新组件 vnode 节点信息，包括更改组件实例的 vnode 指针、更新 props 和更新插槽等一系列操作，因为组件在稍后执行 renderComponentRoot 时会重新渲染新的子树 vnode ，它依赖了更新后的组件 vnode 中的 props 和 slots 等数据。
 
 所以我们现在知道了一个组件重新渲染可能会有两种场景，一种是组件本身的数据变化，这种情况下 next 是 null；另一种是父组件在更新的过程中，遇到子组件节点，先判断子组件是否需要更新，如果需要则主动执行子组件的重新渲染方法，这种情况下 next 就是新的子组件 vnode。
@@ -1225,9 +1254,9 @@ const updateComponentPreRender = (instance, nextVNode, optimized) => {
 前面也说过，组件是抽象的，组件的更新最终还是会落到对普通 DOM 元素的更新。所以接下来我们详细分析一下组件更新中对普通元素的处理流程。
 
 2. 处理普通元素
-我们再来看如何处理普通元素，我把之前的示例稍加修改，将其中的 Hello 组件删掉，如下所示：
+   我们再来看如何处理普通元素，我把之前的示例稍加修改，将其中的 Hello 组件删掉，如下所示：
 
-复制代码
+```js
 <template>
   <div class="app">
     <p>This is {{msg}}.</p>
@@ -1248,11 +1277,13 @@ const updateComponentPreRender = (instance, nextVNode, optimized) => {
     }
   }
 </script>
+```
+
 当我们点击 App 组件中的按钮会执行 toggle 函数，然后修改 data 中的 msg，这就触发了 App 组件的重新渲染。
 
 App 组件的根节点是 div 标签，重新渲染的子树 vnode 节点是一个普通元素的 vnode，所以应该先走 processElement 逻辑，我们来看这个函数的实现：
 
-复制代码
+```js
 const processElement = (n1, n2, container, anchor, parentComponent, parentSuspense, isSVG, optimized) => {
   isSVG = isSVG || n2.type === 'svg'
   if (n1 == null) {
@@ -1273,13 +1304,15 @@ const patchElement = (n1, n2, parentComponent, parentSuspense, isSVG, optimized)
   // 更新子节点
   patchChildren(n1, n2, el, null, parentComponent, parentSuspense, areChildrenSVG)
 }
+```
+
 可以看到，更新元素的过程主要做两件事情：更新 props 和更新子节点。其实这是很好理解的，因为一个 DOM 节点元素就是由它自身的一些属性和子节点构成的。
 
 首先是更新 props，这里的 patchProps 函数就是在更新 DOM 节点的 class、style、event 以及其它的一些 DOM 属性，这个过程我不再深入分析了，感兴趣的同学可以自己看这部分代码。
 
 其次是更新子节点，我们来看一下这里的 patchChildren 函数的实现：
 
-复制代码
+```js
 const patchChildren = (n1, n2, container, anchor, parentComponent, parentSuspense, isSVG, optimized = false) => {
   const c1 = n1 && n1.children
   const prevShapeFlag = n1 ? n1.shapeFlag : 0
@@ -1322,6 +1355,8 @@ const patchChildren = (n1, n2, container, anchor, parentComponent, parentSuspens
     }
   }
 }
+```
+
 对于一个元素的子节点 vnode 可能会有三种情况：纯文本、vnode 数组和空。那么根据排列组合对于新旧子节点来说就有九种情况，我们可以通过三张图来表示。
 
 首先来看一下旧子节点是纯文本的情况：
@@ -1332,8 +1367,6 @@ const patchChildren = (n1, n2, container, anchor, parentComponent, parentSuspens
 
 如果新子节点是 vnode 数组，那么先把旧子节点的文本清空，再去旧子节点的父容器下添加多个新子节点。
 
-
-
 接下来看一下旧子节点是空的情况：
 
 如果新子节点是纯文本，那么在旧子节点的父容器下添加新文本节点即可；
@@ -1341,8 +1374,6 @@ const patchChildren = (n1, n2, container, anchor, parentComponent, parentSuspens
 如果新子节点也是空，那么什么都不需要做；
 
 如果新子节点是 vnode 数组，那么直接去旧子节点的父容器下添加多个新子节点即可。
-
-
 
 最后来看一下旧子节点是 vnode 数组的情况：
 
@@ -1352,13 +1383,14 @@ const patchChildren = (n1, n2, container, anchor, parentComponent, parentSuspens
 
 如果新子节点也是 vnode 数组，那么就需要做完整的 diff 新旧子节点了，这是最复杂的情况，内部运用了核心 diff 算法。
 
-
-
 下节课我们就来深入探究一下这个复杂的 diff 算法。
 
 本节课的相关代码在源代码中的位置如下：
+
+```
 packages/runtime-core/src/renderer.ts
 packages/runtime-core/src/componentRenderUtils.ts
+```
 
 ## 03 | 组件更新（下）
 
@@ -1368,16 +1400,18 @@ packages/runtime-core/src/componentRenderUtils.ts
 
 为了方便你理解，我先举个例子，假设有这样一个列表：
 
-复制代码
+```js
 <ul>
   <li key="a">a</li>
   <li key="b">b</li>
   <li key="c">c</li>
   <li key="d">d</li>
 </ul>
+```
+
 然后我们在中间插入一行，得到一个新列表：
 
-复制代码
+```js
 <ul>
   <li key="a">a</li>
   <li key="b">b</li>
@@ -1385,15 +1419,14 @@ packages/runtime-core/src/componentRenderUtils.ts
   <li key="c">c</li>
   <li key="d">d</li>
 </ul>
+```
 在插入操作的前后，它们对应渲染生成的 vnode 可以用一张图表示：
-
-
 
 从图中我们可以直观地感受到，差异主要在新子节点中的 b 节点后面多了一个 e 节点。
 
 我们再把这个例子稍微修改一下，多添加一个 e 节点：
 
-复制代码
+```js
 <ul>
   <li key="a">a</li>
   <li key="b">b</li>
@@ -1401,18 +1434,20 @@ packages/runtime-core/src/componentRenderUtils.ts
   <li key="d">d</li>
   <li key="e">e</li>
 </ul>
+```
+
 然后我们删除中间一项，得到一个新列表：
 
-复制代码
+```js
 <ul>
   <li key="a">a</li>
   <li key="b">b</li>
   <li key="d">d</li>
   <li key="e">e</li>
 </ul>
+```
+
 在删除操作的前后，它们对应渲染生成的 vnode 可以用一张图表示：
-
-
 
 我们可以看到，这时差异主要在新子节点中的 b 节点后面少了一个 c 节点。
 
@@ -1421,7 +1456,7 @@ packages/runtime-core/src/componentRenderUtils.ts
 同步头部节点
 我们先来看一下头部节点同步的实现代码：
 
-复制代码
+```js
 const patchKeyedChildren = (c1, c2, container, parentAnchor, parentComponent, parentSuspense, isSVG, optimized) => {
   let i = 0
   const l2 = c2.length
@@ -1446,20 +1481,20 @@ const patchKeyedChildren = (c1, c2, container, parentAnchor, parentComponent, pa
     i++
   }
 }
-在整个 diff 的过程，我们需要维护几个变量：头部的索引 i、旧子节点的尾部索引 e1和新子节点的尾部索引 e2。
+```
+
+在整个 diff 的过程，我们需要维护几个变量：头部的索引 i、旧子节点的尾部索引 e1 和新子节点的尾部索引 e2。
 
 同步头部节点就是从头部开始，依次对比新节点和旧节点，如果它们相同的则执行 patch 更新节点；如果不同或者索引 i 大于索引 e1 或者 e2，则同步过程结束。
 
 我们拿第一个例子来说，通过下图看一下同步头部节点后的结果：
-
-
 
 可以看到，完成头部节点同步后：i 是 2，e1 是 3，e2 是 4。
 
 同步尾部节点
 接着从尾部开始同步尾部节点，实现代码如下：
 
-复制代码
+```js
 const patchKeyedChildren = (c1, c2, container, parentAnchor, parentComponent, parentSuspense, isSVG, optimized) => {
   let i = 0
   const l2 = c2.length
@@ -1488,11 +1523,11 @@ const patchKeyedChildren = (c1, c2, container, parentAnchor, parentComponent, pa
     e2--
   }
 }
+```
+
 同步尾部节点就是从尾部开始，依次对比新节点和旧节点，如果相同的则执行 patch 更新节点；如果不同或者索引 i 大于索引 e1 或者 e2，则同步过程结束。
 
 我们来通过下图看一下同步尾部节点后的结果：
-
-
 
 可以看到，完成尾部节点同步后：i 是 2，e1 是 1，e2 是 2。
 
@@ -1509,7 +1544,7 @@ const patchKeyedChildren = (c1, c2, container, parentAnchor, parentComponent, pa
 添加新的节点
 首先要判断新子节点是否有剩余的情况，如果满足则添加新子节点，实现代码如下：
 
-复制代码
+```js
 const patchKeyedChildren = (c1, c2, container, parentAnchor, parentComponent, parentSuspense, isSVG, optimized) => {
   let i = 0
   const l2 = c2.length
@@ -1540,18 +1575,18 @@ const patchKeyedChildren = (c1, c2, container, parentAnchor, parentComponent, pa
     }
   }
 }
+```
+
 如果索引 i 大于尾部索引 e1 且 i 小于 e2，那么从索引 i 开始到索引 e2 之间，我们直接挂载新子树这部分的节点。
 
 对我们的例子而言，同步完尾部节点后 i 是 2，e1 是 1，e2 是 2，此时满足条件需要添加新的节点，我们来通过下图看一下添加后的结果：
-
-
 
 添加完 e 节点后，旧子节点的 DOM 和新子节点对应的 vnode 映射一致，也就完成了更新。
 
 删除多余节点
 如果不满足添加新节点的情况，我就要接着判断旧子节点是否有剩余，如果满足则删除旧子节点，实现代码如下：
 
-复制代码
+```js
 const patchKeyedChildren = (c1, c2, container, parentAnchor, parentComponent, parentSuspense, isSVG, optimized) => {
   let i = 0
   const l2 = c2.length
@@ -1583,23 +1618,19 @@ const patchKeyedChildren = (c1, c2, container, parentAnchor, parentComponent, pa
     }
   }
 }
+```
+
 如果索引 i 大于尾部索引 e2，那么从索引 i 开始到索引 e1 之间，我们直接删除旧子树这部分的节点。
 
 第二个例子是就删除节点的情况，我们从同步头部节点开始，用图的方式演示这一过程。
 
 首先从头部同步节点：
 
-
-
 此时的结果：i 是 2，e1 是 4，e2 是 3。
 
 接着从尾部同步节点：
 
-
-
 此时的结果：i 是 2，e1 是 2，e2 是 1，满足删除条件，因此删除子节点中的多余节点：
-
-
 
 删除完 c 节点后，旧子节点的 DOM 和新子节点对应的 vnode 映射一致，也就完成了更新。
 
@@ -1608,7 +1639,7 @@ const patchKeyedChildren = (c1, c2, container, parentAnchor, parentComponent, pa
 
 我们再通过例子来演示存在未知子序列的情况，假设一个按照字母表排列的列表：
 
-复制代码
+```js
 <ul>
   <li key="a">a</li>
   <li key="b">b</li>
@@ -1619,9 +1650,11 @@ const patchKeyedChildren = (c1, c2, container, parentAnchor, parentComponent, pa
   <li key="g">g</li>
   <li key="h">h</li>
 </ul>
+```
+
 然后我们打乱之前的顺序得到一个新列表：
 
-复制代码
+```js
 <ul>
   <li key="a">a</li>
   <li key="b">b</li>
@@ -1632,21 +1665,17 @@ const patchKeyedChildren = (c1, c2, container, parentAnchor, parentComponent, pa
   <li key="g">g</li>
   <li key="h">h</li>
 </ul>
+```
+
 在操作前，它们对应渲染生成的 vnode 可以用一张图表示：
-
-
 
 我们还是从同步头部节点开始，用图的方式演示这一过程。
 
 首先从头部同步节点：
 
-
-
 同步头部节点后的结果：i 是 2，e1 是 7，e2 是 7。
 
 接着从尾部同步节点：
-
-
 
 同步尾部节点后的结果：i 是 2，e1 是 5，e2 是 5。可以看到它既不满足添加新节点的条件，也不满足删除旧节点的条件。那么对于这种情况，我们应该怎么处理呢？
 
@@ -1659,20 +1688,18 @@ const patchKeyedChildren = (c1, c2, container, parentAnchor, parentComponent, pa
 移动子节点
 那么什么时候需要移动呢，就是当子节点排列顺序发生变化的时候，举个简单的例子具体看一下：
 
-复制代码
+```js
 var prev = [1, 2, 3, 4, 5, 6]
 var next = [1, 3, 2, 6, 4, 5]
+```
+
 可以看到，从 prev 变成 next，数组里的一些元素的顺序发生了变化，我们可以把子节点类比为元素，现在问题就简化为我们如何用最少的移动使元素顺序从 prev 变化为 next 。
 
 一种思路是在 next 中找到一个递增子序列，比如 [1, 3, 6] 、[1, 2, 4, 5]。之后对 next 数组进行倒序遍历，移动所有不在递增序列中的元素即可。
 
 如果选择了 [1, 3, 6] 作为递增子序列，那么在倒序遍历的过程中，遇到 6、3、1 不动，遇到 5、4、2 移动即可，如下图所示：
 
-
-
 如果选择了 [1, 2, 4, 5] 作为递增子序列，那么在倒序遍历的过程中，遇到 5、4、2、1 不动，遇到 6、3 移动即可，如下图所示：
-
-
 
 可以看到第一种移动了三次，而第二种只移动了两次，递增子序列越长，所需要移动元素的次数越少，所以如何移动的问题就回到了求解最长递增子序列的问题。我们稍后会详细讲求解最长递增子序列的算法，所以先回到我们这里的问题，对未知子序列的处理。
 
@@ -1687,7 +1714,7 @@ var next = [1, 3, 2, 6, 4, 5]
 
 我们根据 key 建立新子序列的索引图，实现如下：
 
-复制代码
+```js
 const patchKeyedChildren = (c1, c2, container, parentAnchor, parentComponent, parentSuspense, isSVG, optimized) => {
   let i = 0
   const l2 = c2.length
@@ -1717,18 +1744,18 @@ const patchKeyedChildren = (c1, c2, container, parentAnchor, parentComponent, pa
     keyToNewIndexMap.set(nextChild.key, i)
   }
 }
-新旧子序列是从 i 开始的，所以我们先用 s1、s2 分别作为新旧子序列的开始索引，接着建立一个 keyToNewIndexMap 的 Map<key, index> 结构，遍历新子序列，把节点的 key 和 index 添加到这个 Map 中，注意我们这里假设所有节点都是有 key 标识的。
+```
+
+新旧子序列是从 i 开始的，所以我们先用 s1、s2 分别作为新旧子序列的开始索引，接着建立一个 keyToNewIndexMap 的 Map`<key, index>` 结构，遍历新子序列，把节点的 key 和 index 添加到这个 Map 中，注意我们这里假设所有节点都是有 key 标识的。
 
 keyToNewIndexMap 存储的就是新子序列中每个节点在新子序列中的索引，我们来看一下示例处理后的结果，如下图所示：
-
-
 
 我们得到了一个值为 {e:2,c:3,d:4,i:5} 的新子序列索引图。
 
 更新和移除旧节点
 接下来，我们就需要遍历旧子序列，有相同的节点就通过 patch 更新，并且移除那些不在新子序列中的节点，同时找出是否有需要移动的节点，我们来看一下这部分逻辑的实现：
 
-复制代码
+```js
 const patchKeyedChildren = (c1, c2, container, parentAnchor, parentComponent, parentSuspense, isSVG, optimized) => {
   let i = 0
   const l2 = c2.length
@@ -1798,6 +1825,8 @@ const patchKeyedChildren = (c1, c2, container, parentAnchor, parentComponent, pa
     }
   }
 }
+```
+
 我们建立了一个 newIndexToOldIndexMap 的数组，来存储新子序列节点的索引和旧子序列节点的索引之间的映射关系，用于确定最长递增子序列，这个数组的长度为新子序列的长度，每个元素的初始值设为 0， 它是一个特殊的值，如果遍历完了仍有元素的值为 0，则说明遍历旧子序列的过程中没有处理过这个节点，这个节点是新添加的。
 
 下面我们说说具体的操作过程：正序遍历旧子序列，根据前面建立的 keyToNewIndexMap 查找旧子序列中的节点在新子序列中的索引，如果找不到就说明新子序列中没有该节点，就删除它；如果找得到则将它在旧子序列中的索引更新到 newIndexToOldIndexMap 中。
@@ -1812,14 +1841,12 @@ const patchKeyedChildren = (c1, c2, container, parentAnchor, parentComponent, pa
 
 我们来看一下示例处理后的结果，如下图所示：
 
-
-
 可以看到， c、d、e 节点被更新，f 节点被删除，newIndexToOldIndexMap 的值为 [5, 3, 4 ,0]，此时 moved 也为 true，也就是存在节点移动的情况。
 
 移动和挂载新节点
 接下来，就到了处理未知子序列的最后一个流程，移动和挂载新节点，我们来看一下这部分逻辑的实现：
 
-复制代码
+```js
 const patchKeyedChildren = (c1, c2, container, parentAnchor, parentComponent, parentSuspense, isSVG, optimized) => {
   let i = 0
   const l2 = c2.length
@@ -1872,6 +1899,8 @@ const patchKeyedChildren = (c1, c2, container, parentAnchor, parentComponent, pa
     }
   }
 }
+```
+
 我们前面已经判断了是否移动，如果 moved 为 true 就通过 getSequence(newIndexToOldIndexMap) 计算最长递增子序列，这部分算法我会放在后文详细介绍。
 
 接着我们采用倒序的方式遍历新子序列，因为倒序遍历可以方便我们使用最后更新的节点作为锚点。在倒序的过程中，锚点指向上一个更新的节点，然后判断 newIndexToOldIndexMap[i] 是否为 0，如果是则表示这是新节点，就需要挂载它；接着判断是否存在节点移动的情况，如果存在的话则看节点的索引是不是在最长递增子序列中，如果在则倒序最长递增子序列，否则把它移动到锚点的前面。
@@ -1881,8 +1910,6 @@ const patchKeyedChildren = (c1, c2, container, parentAnchor, parentComponent, pa
 新子序列倒序完成，即完成了新节点的插入和旧节点的移动操作，也就完成了整个核心 diff 算法对节点的更新。
 
 我们来看一下示例处理后的结果，如下图所示：
-
-
 
 可以看到新子序列中的新节点 i 被挂载，旧子序列中的节点 e 移动到了 c 节点前面，至此，我们就在已知旧子节点 DOM 结构和 vnode、新子节点 vnode 的情况下，求解出生成新子节点的 DOM 的更新、移动、删除、新增等系列操作，并且以一种较小成本的方式完成 DOM 更新。
 
@@ -1897,8 +1924,6 @@ const patchKeyedChildren = (c1, c2, container, parentAnchor, parentComponent, pa
 
 假设我们有这个样一个数组 arr：[2, 1, 5, 3, 6, 4, 8, 9, 7]，求解它最长递增子序列的步骤如下：
 
-
-
 最终求得最长递增子序列的值就是 [1, 3, 4, 8, 9]。
 
 通过演示我们可以得到这个算法的主要思路：对数组遍历，依次求解长度为 i 时的最长递增子序列，当 i 元素大于 i - 1 的元素时，添加 i 元素并更新最长子序列；否则往前查找直到找到一个比 i 小的元素，然后插在该元素后面并更新对应的最长递增子序列。
@@ -1907,7 +1932,7 @@ const patchKeyedChildren = (c1, c2, container, parentAnchor, parentComponent, pa
 
 了解了算法的大致思想后，接下来我们看一下源码实现：
 
-复制代码
+```js
 function getSequence (arr) {
   const p = arr.slice()
   const result = [0]
@@ -1952,15 +1977,17 @@ function getSequence (arr) {
   }
   return result
 }
+```
+
 其中 result 存储的是长度为 i 的递增子序列最小末尾值的索引。比如我们上述例子的第九步，在对数组 p 回溯之前， result 值就是 [1, 3, 4, 7, 9] ，这不是最长递增子序列，它只是存储的对应长度递增子序列的最小末尾。因此在整个遍历过程中会额外用一个数组 p，来存储在每次更新 result 前最后一个索引的值，并且它的 key 是这次要更新的 result 值：
 
-复制代码
+```js
 j = result[result.length - 1]
 p[i] = j
 result.push(i)
+```
+
 可以看到，result 添加的新值 i 是作为 p 存储 result 最后一个值 j 的 key。上述例子遍历后 p 的结果如图所示：
-
-
 
 从 result 最后一个元素 9 对应的索引 7 开始回溯，可以看到 p[7] = 6，p[6] = 5，p[5] = 3，p[3] = 1，所以通过对 p 的回溯，得到最终的 result 值是 [1, 3 ,5 ,6 ,7]，也就找到最长递增子序列的最终索引了。这里要注意，我们求解的是最长子序列索引值，它的每个元素其实对应的是数组的下标。对于我们的例子而言，[2, 1, 5, 3, 6, 4, 8, 9, 7] 的最长子序列是 [1, 3, 4, 8, 9]，而我们求解的 [1, 3 ,5 ,6 ,7] 就是最长子序列中元素在原数组中的下标所构成的新数组。
 
@@ -1973,12 +2000,13 @@ result.push(i)
 
 下面，我们通过一张图来更加直观感受组件的更新流程：
 
-
-
 最后，给你留一道思考题目，我们使用 v-for 编写列表的时候 key 能用遍历索引 index 表示吗，为什么？欢迎你在留言区与我分享。
 
 本节课的相关代码在源代码中的位置如下：
+
+```
 packages/runtime-core/src/renderer.ts
+```
 
 # 模块二：学会新设计 Composition API
 
