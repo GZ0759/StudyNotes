@@ -856,7 +856,7 @@ const setupRenderEffect = (instance, initialVNode, container, anchor, parentSusp
 
 初始渲染主要做两件事情：渲染组件生成 subTree、把 subTree 挂载到 container 中。
 
-首先，是渲染组件生成 subTree，它也是一个 vnode 对象。这里要注意别把 subTree 和 initialVNode 弄混了（其实在 Vue.js 3.0 中，根据命名我们已经能很好地区分它们了，而在 Vue.js 2.x 中它们分别命名为 \_vnode 和 $vnode）。我来举个例子说明，在父组件 App 中里引入了 Hello 组件：
+首先，是渲染组件生成 subTree，它也是一个 vnode 对象。这里要注意别把 subTree 和 initialVNode 弄混了（其实在 Vue.js 3.0 中，根据命名我们已经能很好地区分它们了，而在 Vue.js 2.x 中它们分别命名为 _vnode 和 $vnode）。我来举个例子说明，在父组件 App 中里引入了 Hello 组件：
 
 ```js
 <template>
@@ -2051,9 +2051,10 @@ export default {
 }
 </script>
 ```
+
 可以看到，这段代码和 Vue.js 2.x 组件的写法相比，多了一个 setup 启动函数，另外组件中也没有定义 props、data、computed 这些 options。
 
-在 setup 函数内部，定义了一个响应式对象 state，它是通过 reactive API 创建的。state 对象有 count 和 double 两个属性，其中 count 对应一个数字属性的值；而double 通过 computed API 创建，对应一个计算属性的值。reactive API 和 computed API 不是我们关注的重点，在后续响应式章节我会详细介绍。
+在 setup 函数内部，定义了一个响应式对象 state，它是通过 reactive API 创建的。state 对象有 count 和 double 两个属性，其中 count 对应一个数字属性的值；而 double 通过 computed API 创建，对应一个计算属性的值。reactive API 和 computed API 不是我们关注的重点，在后续响应式章节我会详细介绍。
 
 这里需要注意的是，模板中引用到的变量 state 和 increment 包含在 setup 函数的返回对象中，那么它们是如何建立联系的呢？
 
@@ -2063,8 +2064,6 @@ export default {
 
 创建和设置组件实例
 首先，我们来回顾一下组件的渲染流程：创建 vnode 、渲染 vnode 和生成 DOM。
-
-
 
 其中渲染 vnode 的过程主要就是在挂载组件：
 
@@ -2078,6 +2077,7 @@ const mountComponent = (initialVNode, container, anchor, parentComponent, parent
   setupRenderEffect(instance, initialVNode, container, anchor, parentSuspense, isSVG, optimized)
 }
 ```
+
 可以看到，这段挂载组件的代码主要做了三件事情：创建组件实例、设置组件实例和设置并运行带副作用的渲染函数。前两个流程就跟我们今天提到的问题息息相关，所以这一节课我们将重点分析它们。
 
 先看创建组件实例的流程，我们要关注 createComponentInstance 方法的实现：
@@ -2189,6 +2189,7 @@ function createComponentInstance (vnode, parent, suspense) {
   return instance
 }
 ```
+
 从上述代码中可以看到，组件实例 instance 上定义了很多属性，你千万不要被这茫茫多的属性吓到，因为其中一些属性是为了实现某个场景或者某个功能所定义的，你只需要通过我在代码中的注释大概知道它们是做什么的即可。
 
 Vue.js 2.x 使用 new Vue 来初始化一个组件的实例，到了 Vue.js 3.0，我们直接通过创建对象去创建组件的实例。这两种方式并无本质的区别，都是引用一个对象，在整个组件的生命周期中去维护组件的状态数据和上下文环境。
@@ -2213,6 +2214,7 @@ function setupComponent (instance, isSSR = false) {
   return setupResult
 }
 ```
+
 可以看到，我们从组件 vnode 中获取了 props、children、shapeFlag 等属性，然后分别对 props 和插槽进行初始化，这两部分逻辑在后续的章节再详细分析。根据 shapeFlag 的值，我们可以判断这是不是一个有状态组件，如果是则要进一步去设置有状态组件的实例。
 
 接下来我们要关注到 setupStatefulComponent 函数，它主要做了三件事：创建渲染上下文代理、判断处理 setup 函数和完成组件实例设置。它代码如下所示：
@@ -2241,10 +2243,11 @@ function setupStatefulComponent (instance, isSSR) {
   }
 }
 ```
+
 创建渲染上下文代理
 首先是创建渲染上下文代理的流程，它主要对 instance.ctx 做了代理。在分析实现前，我们需要思考一个问题，这里为什么需要代理呢？
 
-其实在 Vue.js 2.x 中，也有类似的数据代理逻辑，比如 props 求值后的数据，实际上存储在 this._props 上，而 data 中定义的数据存储在 this._data 上。举个例子：
+其实在 Vue.js 2.x 中，也有类似的数据代理逻辑，比如 props 求值后的数据，实际上存储在 `this._props` 上，而 data 中定义的数据存储在 `this._data` 上。举个例子：
 
 ```
 <template>
@@ -2258,7 +2261,8 @@ export default {
 }
 </script>
 ```
-在初始化组件的时候，data 中定义的 msg 在组件内部是存储在 this._data 上的，而模板渲染的时候访问 this.msg，实际上访问的是 this._data.msg，这是因为 Vue.js 2.x 在初始化 data 的时候，做了一层 proxy 代理。
+
+在初始化组件的时候，data 中定义的 msg 在组件内部是存储在 `this._data` 上的，而模板渲染的时候访问 this.msg，实际上访问的是 `this._data.msg`，这是因为 Vue.js 2.x 在初始化 data 的时候，做了一层 proxy 代理。
 
 到了 Vue.js 3.0，为了方便维护，我们把组件中不同状态的数据存储到不同的属性中，比如存储到 setupState、ctx、data、props 中。我们在执行组件渲染函数的时候，为了方便用户使用，会直接访问渲染上下文 instance.ctx 中的属性，所以我们也要做一层 proxy，对渲染上下文 instance.ctx 属性的访问和修改，代理到对 setupState、ctx、data、props 中的数据的访问和修改。
 
@@ -2353,6 +2357,7 @@ const PublicInstanceProxyHandlers = {
   }
 }
 ```
+
 可以看到，函数首先判断 key 不以 $ 开头的情况，这部分数据可能是 setupState、data、props、ctx 中的一种，其中 data、props 我们已经很熟悉了；setupState 就是 setup 函数返回的数据，稍后我们会详细说；ctx 包括了计算属性、组件方法和用户自定义的一些数据。
 
 如果 key 不以 $ 开头，那么就依次判断 setupState、data、props、ctx 中是否包含这个 key，如果包含就返回对应值。注意这个判断顺序很重要，在 key 相同时它会决定数据获取的优先级，举个例子：
@@ -2378,6 +2383,7 @@ const PublicInstanceProxyHandlers = {
   }
 </script>
 ```
+
 我们在 data 和 setup 中都定义了 msg 变量，但最终输出到界面上的是"msg from setup"，这是因为 setupState 的判断优先级要高于 data。
 
 再回到 get 函数中，我们可以看到这里定义了 accessCache 作为渲染代理的属性访问缓存，它具体是干什么的呢？组件在渲染时会经常访问数据进而触发 get 函数，这其中最昂贵的部分就是多次调用 hasOwn 去判断 key 在不在某个类型的数据中，但是在普通对象上执行简单的属性访问相对要快得多。所以在第一次获取 key 对应的数据后，我们利用 accessCache[key] 去缓存数据，下一次再次根据 key 查找数据，我们就可以直接通过 accessCache[key] 获取对应的值，就不需要依次调用 hasOwn 去判断了。这也是一个性能优化的小技巧。
@@ -2419,6 +2425,7 @@ const PublicInstanceProxyHandlers = {
   }
 }
 ```
+
 结合代码来看，函数主要做的事情就是对渲染上下文 instance.ctx 中的属性赋值，它实际上是代理到对应的数据类型中去完成赋值操作的。这里仍然要注意顺序问题，和 get 一样，优先判断 setupState，然后是 data，接着是 props。
 
 我们对之前的例子做点修改，添加一个方法：
@@ -2450,6 +2457,7 @@ const PublicInstanceProxyHandlers = {
   }
 </script>
 ```
+
 我们点击按钮会执行 random 函数，这里的 this 指向的就是 instance.ctx，我们修改 this.msg 会触发 set 函数，所以最终修改的是 setupState 中的 msg 对应的值。
 
 注意，如果我们直接对 props 中的数据赋值，在非生产环境中会收到一条警告，这是因为直接修改 props 不符合数据单向流动的设计思想；如果对 Vue.js 内部以 $ 开头的保留属性赋值，同样也会收到一条警告。
@@ -2463,6 +2471,7 @@ export default {
   }
 }
 ```
+
 当执行 this.userMsg 赋值的时候，会触发 set 函数，最终 userMsg 会被保留到 ctx 中。
 
 最后是 has 代理过程，当我们判断属性是否存在于 instance.ctx 渲染上下文中时，就会进入 has 函数，这个在平时项目中用的比较少，同样来举个例子，当执行 created 钩子函数中的 'msg' in this 时，就会触发 has 函数。
@@ -2474,6 +2483,7 @@ export default {
   }
 }
 ```
+
 下面我们来看一下 has 函数的实现：
 
 ```
@@ -2491,6 +2501,7 @@ const PublicInstanceProxyHandlers = {
   }
 }
 ```
+
 这个函数的实现很简单，依次判断 key 是否存在于 accessCache、data、setupState、props 、用户数据、公开属性以及全局属性中，然后返回结果。
 
 至此，我们就搞清楚了创建上下文代理的过程，让我们回到 setupStatefulComponent 函数中，接下来分析第二个流程——判断处理 setup 函数。
@@ -2511,6 +2522,7 @@ if (setup) {
   handleSetupResult(instance, setupResult)
 }
 ```
+
 如果我们在组件中定义了 setup 函数，接下来就是处理 setup 函数的流程，主要是三个步骤：创建 setup 函数上下文、执行 setup 函数并获取结果和处理 setup 函数的执行结果。接下来我们就逐个来分析。
 
 首先判断 setup 函数的参数长度，如果大于 1，则创建 setupContext 上下文。
@@ -2519,6 +2531,7 @@ if (setup) {
 const setupContext = (instance.setupContext =
     setup.length > 1 ? createSetupContext(instance) : null)
 ```
+
 举个例子，我们有个 HelloWorld 子组件，如下：
 
 ```
@@ -2542,6 +2555,7 @@ const setupContext = (instance.setupContext =
   }
 </script>
 ```
+
 我们在父组件引用这个组件：
 
 ```
@@ -2566,6 +2580,7 @@ const setupContext = (instance.setupContext =
   }
 </script>
 ```
+
 可以看到，HelloWorld 子组件的 setup 函数接收两个参数，第一个参数 props 对应父组件传入的 props 数据，第二个参数 emit 是一个对象，实际上就是 setupContext。
 
 下面我们来看一下用 createSetupContext 函数来创建 setupContext：
@@ -2579,6 +2594,7 @@ function createSetupContext (instance) {
   }
 }
 ```
+
 这里返回了一个对象，包括 attrs、slots 和 emit 三个属性。setupContext 让我们在 setup 函数内部可以获取到组件的属性、插槽以及派发事件的方法 emit。
 
 可以预见的是，这个 setupContext 对应的就是 setup 函数第二个参数，我们接下来看一下 setup 函数具体是如何执行的。
@@ -2588,6 +2604,7 @@ function createSetupContext (instance) {
 ```
 const setupResult = callWithErrorHandling(setup, instance, 0 /* SETUP_FUNCTION */, [instance.props, setupContext])
 ```
+
 我们具体来看一下 callWithErrorHandling 函数的实现：
 
 ```
@@ -2602,6 +2619,7 @@ function callWithErrorHandling (fn, instance, type, args) {
   return res
 }
 ```
+
 可以看到，它其实就是对 fn 做的一层包装，内部还是执行了 fn，并在有参数的时候传入参数，所以 setup 的第一个参数是 instance.props，第二个参数是 setupContext。函数执行过程中如果有 JavaScript 执行错误就会捕获错误，并执行 handleError 函数来处理。
 
 执行 setup 函数并拿到了返回的结果，那么接下来就要用 handleSetupResult 函数来处理结果。
@@ -2609,6 +2627,7 @@ function callWithErrorHandling (fn, instance, type, args) {
 ```
 handleSetupResult(instance, setupResult)
 ```
+
 我们详细看一下 handleSetupResult 函数的实现：
 
 ```
@@ -2624,6 +2643,7 @@ function handleSetupResult(instance, setupResult) {
   finishComponentSetup(instance)
 }
 ```
+
 可以看到，当 setupResult 是一个对象的时候，我们把它变成了响应式并赋值给 instance.setupState，这样在模板渲染的时候，依据前面的代理规则，instance.ctx 就可以从 instance.setupState 上获取到对应的数据，这就在 setup 函数与模板渲染间建立了联系。
 
 另外 setup 不仅仅支持返回一个对象，也可以返回一个函数作为组件的渲染函数。我们可以改写前面的示例，来看一下这时的情况：
@@ -2649,6 +2669,7 @@ function handleSetupResult(instance, setupResult) {
   }
 </script>
 ```
+
 这里，我们删除了 HelloWorld 子组件的 template 部分，并把 setup 函数的返回结果改成了函数，也就是说它会作为组件的渲染函数，一切运行正常。
 
 在 handleSetupResult 的最后，会执行 finishComponentSetup 函数完成组件实例的设置，其实这个函数和 setup 函数的执行结果已经没什么关系了，提取到外面放在 handleSetupResult 函数后面执行更合理一些。
@@ -2698,6 +2719,7 @@ function finishComponentSetup (instance) {
   }
 }
 ```
+
 函数主要做了两件事情：标准化模板或者渲染函数和兼容 Options API。接下来我们详细分析这两个流程。
 
 标准化模板或者渲染函数
@@ -2719,6 +2741,7 @@ function registerRuntimeCompiler(_compile) {
     compile = _compile;
 }
 ```
+
 回到标准化模板或者渲染函数逻辑，我们先看 instance.render 是否存在，如果不存在则开始标准化流程，这里主要需要处理以下三种情况。
 
 compile 和组件 template 属性存在，render 方法不存在的情况。此时， runtime-compiled 版本会在 JavaScript 运行时进行模板编译，生成 render 函数。
@@ -2750,12 +2773,13 @@ const RuntimeCompiledPublicInstanceProxyHandlers = {
   }
 }
 ```
+
 这里如果 key 以 _ 开头，或者 key 在全局变量的白名单内，则 has 为 false，此时则直接命中警告，不用再进行之前那一系列的判断了。
 
 了解完标准化模板或者渲染函数流程，我们来看完成组件实例设置的最后一个流程——兼容 Vue.js 2.x 的 Options API。
 
 Options API：兼容 Vue.js 2.x
-我们知道 Vue.js 2.x 是通过组件对象的方式去描述一个组件，之前我们也说过，Vue.js 3.0 仍然支持 Vue.js 2.x Options API 的写法，这主要就是通过 applyOptions方法实现的。
+我们知道 Vue.js 2.x 是通过组件对象的方式去描述一个组件，之前我们也说过，Vue.js 3.0 仍然支持 Vue.js 2.x Options API 的写法，这主要就是通过 applyOptions 方法实现的。
 
 ```
 function applyOptions(instance, options, deferredData = [], deferredWatch = [], asMixin = false) {
@@ -2786,6 +2810,7 @@ function applyOptions(instance, options, deferredData = [], deferredWatch = [], 
   // 处理生命周期 option
 }
 ```
+
 由于 applyOptions 的代码特别长，所以这里我用注释列出了它主要做的事情，感兴趣的同学可以去翻阅它的源码。
 
 总结
@@ -2793,11 +2818,10 @@ function applyOptions(instance, options, deferredData = [], deferredWatch = [], 
 
 我们通过一张图再直观感受一下 Vue.js 3.0 组件的初始化流程：
 
-
-
 最后，给你留一道思考题目，在执行 setup 函数并获取结果的时候，我们使用 callWithErrorHandling 把 setup 包装了一层，它有哪些好处？欢迎你在留言区与我分享。
 
 本节课的相关代码在源代码中的位置如下：
+
 ```
 packages/runtime-core/src/renderer.ts
 packages/runtime-core/src/component.ts
@@ -2812,8 +2836,6 @@ packages/runtime-core/src/errorHandling.ts
 除了组件化，Vue.js 另一个核心设计思想就是响应式。它的本质是当数据变化后会自动执行某个函数，映射到组件的实现就是，当数据变化后，会自动触发组件的重新渲染。响应式是 Vue.js 组件化更新渲染的一个核心机制。
 
 在介绍 Vue.js 3.0 响应式实现之前，我们先来回顾一下 Vue.js 2.x 响应式实现的部分： 它在内部通过 Object.defineProperty API 劫持数据的变化，在数据被访问的时候收集依赖，然后在数据被修改的时候通知依赖更新。我们用一张图可以直观地看清这个流程。
-
-
 
 在 Vue.js 2.x 中，Watcher 就是依赖，有专门针对组件渲染的 render watcher。注意这里有两个流程，首先是依赖收集流程，组件在 render 的时候会访问模板中的数据，触发 getter 把 render watcher 作为依赖收集，并和数据建立联系；然后是派发通知流程，当我对这些数据修改的时候，会触发 setter，通知 render watcher 更新，进而触发了组件的重新渲染。
 
@@ -2846,15 +2868,16 @@ Vue.js 3.0 为了解决 Object.defineProperty 的这些缺陷，使用 Proxy API
   }
 </script>
 ```
+
 上述组件初次渲染会显示“msg reactive”，当我们点击按钮的时候，会执行 random 函数，random 函数会修改 this.msg，就会发现组件重新渲染了。
 
-我们对这个例子做一些改动，模板部分不变，我们把 msg 数据的定义放到created 钩子中：
+我们对这个例子做一些改动，模板部分不变，我们把 msg 数据的定义放到 created 钩子中：
 
 ```
 export default {
   created() {
     this.msg = 'msg not reactive'
-  }, 
+  },
   methods: {
     random() {
       this.msg = Math.random()
@@ -2862,6 +2885,7 @@ export default {
   }
 }
 ```
+
 此时，组件初次渲染显示“msg not reactive”，但是我们再次点击按钮就会发现组件并没有重新渲染。
 
 这个问题相信你可能遇到过，其中的根本原因是我们在 created 中定义的 this.msg 并不是响应式对象，所以 Vue.js 内部不会对它做额外的处理。而 data 中定义的数据，Vue.js 内部在组件初始化的过程中会把它变成响应式，这是一个相对黑盒的过程，用户通常不会感知到。
@@ -2897,6 +2921,7 @@ export default {
   }
 </script>
 ```
+
 可以看到，我们通过 setup 函数实现和前面示例同样的功能。请注意，这里我们引入了 reactive API，它可以把一个对象数据变成响应式。 可以看出来 Composition API 更推荐用户主动定义响应式对象，而非内部的黑盒处理。这样用户可以更加明确哪些数据是响应式的，如果你不想让数据变成响应式，就定义成它的原始数据类型即可。
 
 也就是在 Vue.js 3.0 中，我们用 reactive 这个有魔力的函数，把数据变成了响应式，那么它内部到底是怎么实现的呢？我们接下来一探究竟。
@@ -2909,7 +2934,7 @@ function reactive (target) {
    // 如果尝试把一个 readonly proxy 变成响应式，直接返回这个 readonly proxy
   if (target && target.__v_isReadonly) {
      return target
-  } 
+  }
   return createReactiveObject(target, false, mutableHandlers, mutableCollectionHandlers)
 }
 function createReactiveObject(target, isReadonly, baseHandlers, collectionHandlers) {
@@ -2940,12 +2965,12 @@ function createReactiveObject(target, isReadonly, baseHandlers, collectionHandle
   return observed
 }
 ```
+
 可以看到，reactive 内部通过 createReactiveObject 函数把 target 变成了一个响应式对象。
 
 在这个过程中，createReactiveObject 函数主要做了以下几件事情。
 
-1.函数首先判断 target 是不是数组或者对象类型，如果不是则直接返回。所以原始数据 target 必须是对象或者数组。
-2.如果对一个已经是响应式的对象再次执行 reactive，还应该返回这个响应式对象，举个例子：
+1.函数首先判断 target 是不是数组或者对象类型，如果不是则直接返回。所以原始数据 target 必须是对象或者数组。 2.如果对一个已经是响应式的对象再次执行 reactive，还应该返回这个响应式对象，举个例子：
 
 ```
 import { reactive } from 'vue'
@@ -2954,6 +2979,7 @@ const observed = reactive(original)
 const observed2 = reactive(observed)
 observed === observed2
 ```
+
 可以看到 observed 已经是响应式结果了，如果对它再去执行 reactive，返回的值 observed2 和 observed 还是同一个对象引用。
 
 因为这里 reactive 函数会通过 target.__v_raw 属性来判断 target 是否已经是一个响应式对象（因为响应式对象的 __v_raw 属性会指向它自身，后面会提到），如果是的话则直接返回响应式对象。
@@ -2967,6 +2993,7 @@ const observed = reactive(original)
 const observed2 = reactive(original)
 observed === observed2
 ```
+
 可以看到，原始数据 original 被反复执行 reactive，但是响应式结果 observed 和 observed2 是同一个对象。
 
 所以这里 reactive 函数会通过 target.__v_reactive 判断 target 是否已经有对应的响应式对象（因为创建完响应式对象后，会给原始对象打上 __v_reactive 标识，后面会提到），如果有则返回这个响应式对象。
@@ -2987,7 +3014,8 @@ const isObservableType = /*#__PURE__*/ makeMap('Object,Array,Map,Set,WeakMap,Wea
 6.给原始数据打个标识，如下：
 
 ```
-target.__v_reactive = observed
+
+target._v_reactive = observed
 这就是前面“对同一个原始数据多次执行 reactive ，那么会返回相同的响应式对象”逻辑的判断依据。
 
 仔细想想看，响应式的实现方式无非就是劫持数据，Vue.js 3.0 的 reactive API 就是通过 Proxy 劫持数据，而且由于 Proxy 劫持的是整个对象，所以我们可以检测到任何对对象的修改，弥补了 Object.defineProperty API 的不足。
@@ -3003,6 +3031,7 @@ const mutableHandlers = {
   ownKeys
 }
 ```
+
 它其实就是劫持了我们对 observed 对象的一些操作，比如：
 
 访问对象属性会触发 get 函数；
@@ -3058,6 +3087,7 @@ function createGetter(isReadonly = false) {
   }
 }
 ```
+
 结合上述代码来看，get 函数主要做了四件事情，首先对特殊的 key 做了代理，这就是为什么我们在 createReactiveObject 函数中判断响应式对象是否存在 __v_raw 属性，如果存在就返回这个响应式对象本身。
 
 接着通过 Reflect.get 方法求值，如果 target 是数组且 key 命中了 arrayInstrumentations，则执行对应的函数，我们可以大概看一下 arrayInstrumentations 的实现：
@@ -3084,6 +3114,7 @@ const arrayInstrumentations = {}
   }
 })
 ```
+
 也就是说，当 target 是一个数组的时候，我们去访问 target.includes、target.indexOf 或者 target.lastIndexOf 就会执行 arrayInstrumentations 代理的函数，除了调用数组本身的方法求值外，还对数组每个元素做了依赖收集。因为一旦数组的元素被修改，数组的这几个 API 的返回结果都可能发生变化，所以我们需要跟踪数组每个元素的变化。
 
 回到 get 函数，第三步就是通过 Reflect.get 求值，然后会执行 track 函数收集依赖，我们稍后重点分析这个过程。
@@ -3123,17 +3154,17 @@ function track(target, type, key) {
   }
 }
 ```
+
 分析这个函数的实现前，我们先想一下要收集的依赖是什么，我们的目的是实现响应式，就是当数据变化的时候可以自动做一些事情，比如执行某些函数，所以我们收集的依赖就是数据变化后执行的副作用函数。
 
 再来看实现，我们把 target 作为原始的数据，key 作为访问的属性。我们创建了全局的 targetMap 作为原始数据对象的 Map，它的键是 target，值是 depsMap，作为依赖的 Map；这个 depsMap 的键是 target 的 key，值是 dep 集合，dep 集合中存储的是依赖的副作用函数。为了方便理解，可以通过下图表示它们之间的关系：
-
-
 
 所以每次 track ，就是把当前激活的副作用函数 activeEffect 作为依赖，然后收集到 target 相关的 depsMap 对应 key 下的依赖集合 dep 中。
 
 了解完依赖收集的过程，下节课我们来分析派发通知的过程。
 
 本节课的相关代码在源代码中的位置如下：
+
 ```
 packages/reactivity/src/baseHandlers.ts
 packages/reactivity/src/effect.ts
@@ -3168,6 +3199,7 @@ function createSetter() {
   }
 }
 ```
+
 结合上述代码来看，set 函数的实现逻辑很简单，主要就做两件事情， 首先通过 Reflect.set 求值 ， 然后通过 trigger 函数派发通知 ，并依据 key 是否存在于 target 上来确定通知类型，即新增还是修改。
 
 整个 set 函数最核心的部分就是 执行 trigger 函数派发通知 ，下面我们将重点分析这个过程。
@@ -3212,6 +3244,7 @@ function trigger(target, type, key, newValue) {
   effects.forEach(run)
 }
 ```
+
 trigger 函数的实现也很简单，主要做了四件事情：
 
 通过 targetMap 拿到 target 对应的依赖集合 depsMap；
@@ -3243,6 +3276,7 @@ function count() {
 logCount()
 count()
 ```
+
 可以看到，这里我们定义了响应式对象 counter，然后我们在 logCount 中访问了 counter.num，我们希望通过执行 count 函数修改 counter.num 值的时候，能自动执行 logCount 函数。
 
 按我们之前对依赖收集过程的分析，如果这个 logCount 就是 activeEffect 的话，那么就可以实现需求，但显然是做不到的，因为代码在执行到 console.log(counter.num)这一行 的时候，它对自己在 logCount 函数中的运行是一无所知的。
@@ -3250,9 +3284,10 @@ count()
 那么该怎么办呢？其实只要我们运行 logCount 函数前，把 logCount 赋值给 activeEffect 就好了，如下：
 
 ```
-activeEffect = logCount 
+activeEffect = logCount
 logCount()
 ```
+
 顺着这个思路，我们可以利用高阶函数的思想，对 logCount 做一层封装，如下：
 
 ```
@@ -3266,6 +3301,7 @@ function wrapper(fn) {
 const wrappedLog = wrapper(logCount)
 wrappedLog()
 ```
+
 这里，wrapper 本身也是一个函数，它接受 fn 作为参数，返回一个新的函数 wrapped，然后维护一个全局的 activeEffect，当 wrapped 执行的时候，把 activeEffect 设置为 fn，然后执行 fn 即可。
 
 这样当我们执行 wrappedLog 后，再去修改 counter.num，就会自动执行 logCount 函数了。
@@ -3332,6 +3368,7 @@ function createReactiveEffect(fn, options) {
   return effect
 }
 ```
+
 结合上述代码来看，effect 内部通过执行 createReactiveEffect 函数去创建一个新的 effect 函数，为了和外部的 effect 函数区分，我们把它称作 reactiveEffect 函数，并且还给它添加了一些额外属性（我在注释中都有标明）。另外，effect 函数还支持传入一个配置参数以支持更多的 feature，我们这里就不展开了，在后续的章节会详细分析。
 
 接着说，这个 reactiveEffect 函数就是响应式的副作用函数，当执行 trigger 过程派发通知的时候，执行的 effect 就是它。
@@ -3345,40 +3382,43 @@ function createReactiveEffect(fn, options) {
 其实是考虑到以下这样一个嵌套 effect 的场景：
 
 ```
-import { reactive} from 'vue' 
-import { effect } from '@vue/reactivity' 
-const counter = reactive({ 
-num: 0, 
-num2: 0 
-}) 
-function logCount() { 
-effect(logCount2) 
-console.log('num:', counter.num) 
-} 
-function count() { 
-counter.num++ 
-} 
-function logCount2() { 
-console.log('num2:', counter.num2) 
-} 
-effect(logCount) 
+import { reactive} from 'vue'
+import { effect } from '@vue/reactivity'
+const counter = reactive({
+num: 0,
+num2: 0
+})
+function logCount() {
+effect(logCount2)
+console.log('num:', counter.num)
+}
+function count() {
+counter.num++
+}
+function logCount2() {
+console.log('num2:', counter.num2)
+}
+effect(logCount)
 count()
 ```
+
 我们每次执行 effect 函数时，如果仅仅把 reactiveEffect 函数赋值给 activeEffect，那么针对这种嵌套场景，执行完 effect(logCount2) 后，activeEffect 还是 effect(logCount2) 返回的 reactiveEffect 函数，这样后续访问 counter.num 的时候，依赖收集对应的 activeEffect 就不对了，此时我们外部执行 count 函数修改 counter.num 后执行的便不是 logCount 函数，而是 logCount2 函数，最终输出的结果如下：
 
 ```
-num2: 0 
-num: 0 
+num2: 0
+num: 0
 num2: 0
 ```
+
 而我们期望的结果应该如下：
 
 ```
-num2: 0 
-num: 0 
-num2: 0 
+num2: 0
+num: 0
+num2: 0
 num: 1
 ```
+
 因此针对嵌套 effect 的场景，我们不能简单地赋值 activeEffect，应该考虑到函数的执行本身就是一种入栈出栈操作，因此我们也可以设计一个 effectStack，这样每次进入 reactiveEffect 函数就先把它入栈，然后 activeEffect 指向这个 reactiveEffect 函数，接着在 fn 执行完毕后出栈，再把 activeEffect 指向 effectStack 最后一个元素，也就是外层 effect 函数对应的 reactiveEffect。
 
 这里我们还注意到一个细节，在入栈前会执行 cleanup 函数清空 reactiveEffect 函数对应的依赖 。在执行 track 函数的时候，除了收集当前激活的 effect 作为依赖，还通过 activeEffect.deps.push(dep) 把 dep 作为 activeEffect 的依赖，这样在 cleanup 的时候我们就可以找到 effect 对应的 dep 了，然后把 effect 从这些 dep 中删除。cleanup 函数的代码如下所示：
@@ -3394,6 +3434,7 @@ function cleanup(effect) {
   }
 }
 ```
+
 为什么需要 cleanup 呢？如果遇到这种场景：
 
 ```
@@ -3430,6 +3471,7 @@ function cleanup(effect) {
   }
 </script>
 ```
+
 结合代码可以知道，这个组件的视图会根据 showMsg 变量的控制显示 msg 或者一个随机数，当我们点击 Switch View 的按钮时，就会修改这个变量值。
 
 假设没有 cleanup，在第一次渲染模板的时候，activeEffect 是组件的副作用渲染函数，因为模板 render 的时候访问了 state.msg，所以会执行依赖收集，把副作用渲染函数作为 state.msg 的依赖，我们把它称作 render effect。然后我们点击 Switch View 按钮，视图切换为显示随机数，此时我们再点击 Toggle Msg 按钮，由于修改了 state.msg 就会派发通知，找到了 render effect 并执行，就又触发了组件的重新渲染。
@@ -3451,6 +3493,7 @@ const wrapped = readonly(original)
 wrapped.foo = 2
 // warn: Set operation on key "foo" failed: target is readonly.
 ```
+
 显然，想实现上述需求就需要劫持对象，于是 Vue.js 3.0 在 reactive API 的基础上，设计并实现了 readonly API。
 
 我们先来看一下 readonly 的实现：
@@ -3487,6 +3530,7 @@ function createReactiveObject(target, isReadonly, baseHandlers, collectionHandle
   return observed
 }
 ```
+
 其实 readonly 和 reactive 函数的主要区别，就是执行 createReactiveObject 函数时的参数 isReadonly 不同。
 
 我们来看这里的代码，首先 isReadonly 变量为 true，所以在创建过程中会给原始对象 target 打上一个 __v_readonly 的标识。另外还有一个特殊情况，如果 target 已经是一个 reactive 对象，就会把它继续变成一个 readonly 响应式对象。
@@ -3514,6 +3558,7 @@ const readonlyHandlers = {
   }
 }
 ```
+
 readonlyHandlers 和 mutableHandlers 的区别主要在 get、set 和 deleteProperty 三个函数上。很显然，作为一个只读的响应式对象，是不允许修改属性以及删除属性的，所以在非生产环境下 set 和 deleteProperty 函数的实现都会报警告，提示用户 target 是 readonly 的。
 
 接下来我们来看一下其中 readonlyGet 的实现，它其实就是 createGetter(true) 的返回值：
@@ -3534,6 +3579,7 @@ function createGetter(isReadonly = false) {
   }
 }
 ```
+
 可以看到，它和 reactive API 最大的区别就是不做依赖收集了，这一点也非常好理解，因为它的属性不会被修改，所以就不用跟踪它的变化了。
 
 到这里，readonly API 就介绍完了，接下来我们分析一下另一个常用的响应式 API：ref。
@@ -3544,9 +3590,10 @@ ref API
 但是有时候从需求上来说，可能我只希望把一个字符串变成响应式，却不得不封装成一个对象，这样使用上多少有一些不方便，于是 Vue.js 3.0 设计并实现了 ref API。
 
 ```
-const msg = ref('Hello World') 
+const msg = ref('Hello World')
 msg.value = 'Hello Vue'
 ```
+
 我们先来看一下 ref 的实现：
 
 ```
@@ -3583,6 +3630,7 @@ function createRef(rawValue) {
   return r
 }
 ```
+
 可以看到，函数首先处理了嵌套 ref 的情况，如果传入的 rawValue 也是 ref，那么直接返回。
 
 接着对 rawValue 做了一层转换，如果 rawValue 是对象或者数组类型，那么把它转换成一个 reactive 对象。
@@ -3594,13 +3642,12 @@ function createRef(rawValue) {
 
 最后我们通过一张图来看一下整个响应式 API 实现和组件更新的关系：
 
-
-
 这幅图是不是很眼熟？没错，它和前面 Vue.js 2.x 的响应式原理图很接近，其实 Vue.js 3.0 在响应式的实现思路和 Vue.js 2.x 差别并不大，主要就是 劫持数据的方式改成用 Proxy 实现 ， 以及收集的依赖由 watcher 实例变成了组件副作用渲染函数 。
 
 最后，给你留一道思考题目，为什么说 Vue.js 3 的响应式 API 实现和 Vue.js 2.x 相比性能要好，具体好在哪里呢？它又有哪些不足呢？欢迎你在留言区与我分享。
 
 本节课的相关代码在源代码中的位置如下：
+
 ```
 packages/reactivity/src/baseHandlers.ts
 packages/reactivity/src/effect.ts
@@ -3624,13 +3671,14 @@ Vue.js 3.0 提供了一个 computed 函数作为计算属性 API，我们先来�
 我们举个简单的例子：
 
 ```
-const count = ref(1) 
-const plusOne = computed(() => count.value + 1) 
-console.log(plusOne.value) // 2 
-plusOne.value++ // error 
-count.value++ 
+const count = ref(1)
+const plusOne = computed(() => count.value + 1)
+console.log(plusOne.value) // 2
+plusOne.value++ // error
+count.value++
 console.log(plusOne.value) // 3
 ```
+
 从代码中可以看到，我们先使用 ref API 创建了一个响应式对象 count，然后使用 computed API 创建了另一个响应式对象 plusOne，它的值是 count.value + 1，当我们修改 count.value 的时候， plusOne.value 就会自动发生变化。
 
 注意，这里我们直接修改 plusOne.value 会报一个错误，这是因为如果我们传递给 computed 的是一个函数，那么这就是一个 getter 函数，我们只能获取它的值，而不能直接修改它。
@@ -3640,84 +3688,86 @@ console.log(plusOne.value) // 3
 当然，有时候我们也希望能够直接修改 computed 的返回值，那么我们可以给 computed 传入一个对象：
 
 ```
-const count = ref(1) 
-const plusOne = computed({ 
-  get: () => count.value + 1, 
-  set: val => { 
-    count.value = val - 1 
-  } 
-}) 
-plusOne.value = 1 
+const count = ref(1)
+const plusOne = computed({
+  get: () => count.value + 1,
+  set: val => {
+    count.value = val - 1
+  }
+})
+plusOne.value = 1
 console.log(count.value) // 0
 ```
+
 在这个例子中，结合上述代码可以看到，我们给 computed 函数传入了一个拥有 getter 函数和 setter 函数的对象，getter 函数和之前一样，还是返回 count.value + 1；而 setter 函数，请注意，这里我们修改 plusOne.value 的值就会触发 setter 函数，其实 setter 函数内部实际上会根据传入的参数修改计算属性的依赖值 count.value，因为一旦依赖的值被修改了，我们再去获取计算属性就会重新执行一遍 getter，所以这样获取的值也就发生了变化。
 
 好了，我们现在已经知道了 computed API 的两种使用方式了，接下来就看看它是怎样实现的：
 
 ```
-function computed(getterOrOptions) { 
-  // getter 函数 
-  let getter 
-  // setter 函数 
-  let setter 
-  // 标准化参数 
-  if (isFunction(getterOrOptions)) { 
-    // 表面传入的是 getter 函数，不能修改计算属性的值 
-    getter = getterOrOptions 
-    setter = (process.env.NODE_ENV !== 'production') 
-      ? () => { 
-        console.warn('Write operation failed: computed value is readonly') 
-      } 
-      : NOOP 
-  } 
-  else { 
-    getter = getterOrOptions.get 
-    setter = getterOrOptions.set 
-  } 
-  // 数据是否脏的 
-  let dirty = true 
-  // 计算结果 
-  let value 
-  let computed 
-  // 创建副作用函数 
-  const runner = effect(getter, { 
-    // 延时执行 
-    lazy: true, 
-    // 标记这是一个 computed effect 用于在 trigger 阶段的优先级排序 
-    computed: true, 
-    // 调度执行的实现 
-    scheduler: () => { 
-      if (!dirty) { 
-        dirty = true 
-        // 派发通知，通知运行访问该计算属性的 activeEffect 
-        trigger(computed, "set" /* SET */, 'value') 
-      } 
-    } 
-  }) 
-  // 创建 computed 对象 
-  computed = { 
-    __v_isRef: true, 
-    // 暴露 effect 对象以便计算属性可以停止计算 
-    effect: runner, 
-    get value() { 
-      // 计算属性的 getter 
-      if (dirty) { 
-        // 只有数据为脏的时候才会重新计算 
-        value = runner() 
-        dirty = false 
-      } 
-      // 依赖收集，收集运行访问该计算属性的 activeEffect 
-      track(computed, "get" /* GET */, 'value') 
-      return value 
-    }, 
-    set value(newValue) { 
-      // 计算属性的 setter 
-      setter(newValue) 
-    } 
-  } 
-  return computed 
+function computed(getterOrOptions) {
+  // getter 函数
+  let getter
+  // setter 函数
+  let setter
+  // 标准化参数
+  if (isFunction(getterOrOptions)) {
+    // 表面传入的是 getter 函数，不能修改计算属性的值
+    getter = getterOrOptions
+    setter = (process.env.NODE_ENV !== 'production')
+      ? () => {
+        console.warn('Write operation failed: computed value is readonly')
+      }
+      : NOOP
+  }
+  else {
+    getter = getterOrOptions.get
+    setter = getterOrOptions.set
+  }
+  // 数据是否脏的
+  let dirty = true
+  // 计算结果
+  let value
+  let computed
+  // 创建副作用函数
+  const runner = effect(getter, {
+    // 延时执行
+    lazy: true,
+    // 标记这是一个 computed effect 用于在 trigger 阶段的优先级排序
+    computed: true,
+    // 调度执行的实现
+    scheduler: () => {
+      if (!dirty) {
+        dirty = true
+        // 派发通知，通知运行访问该计算属性的 activeEffect
+        trigger(computed, "set" /* SET */, 'value')
+      }
+    }
+  })
+  // 创建 computed 对象
+  computed = {
+    __v_isRef: true,
+    // 暴露 effect 对象以便计算属性可以停止计算
+    effect: runner,
+    get value() {
+      // 计算属性的 getter
+      if (dirty) {
+        // 只有数据为脏的时候才会重新计算
+        value = runner()
+        dirty = false
+      }
+      // 依赖收集，收集运行访问该计算属性的 activeEffect
+      track(computed, "get" /* GET */, 'value')
+      return value
+    },
+    set value(newValue) {
+      // 计算属性的 setter
+      setter(newValue)
+    }
+  }
+  return computed
 }
 ```
+
 从代码中可以看到，computed 函数的流程主要做了三件事情：标准化参数，创建副作用函数和创建 computed 对象。我们来详细分析一下这几个步骤。
 
 首先是标准化参数。computed 函数接受两种类型的参数，一个是 getter 函数，一个是拥有 getter 和 setter 函数的对象，通过判断参数的类型，我们初始化了函数内部定义的 getter 和 setter 函数。
@@ -3732,48 +3782,50 @@ computed 函数的逻辑会有一点绕，不过不要紧，我们可以结合�
 现在，我们来看这个示例：
 
 ```
-<template> 
-  <div> 
-    {{ plusOne }} 
-  </div> 
-  <button @click="plus">plus</button> 
-</template> 
-<script> 
-  import { ref, computed } from 'vue' 
-  export default { 
-    setup() { 
-      const count = ref(0) 
-      const plusOne = computed(() => { 
-        return count.value + 1 
-      }) 
-      function plus() { 
-        count.value++ 
-      } 
-      return { 
-        plusOne, 
-        plus 
-      } 
-    } 
-  } 
+<template>
+  <div>
+    {{ plusOne }}
+  </div>
+  <button @click="plus">plus</button>
+</template>
+<script>
+  import { ref, computed } from 'vue'
+  export default {
+    setup() {
+      const count = ref(0)
+      const plusOne = computed(() => {
+        return count.value + 1
+      })
+      function plus() {
+        count.value++
+      }
+      return {
+        plusOne,
+        plus
+      }
+    }
+  }
 </script>
 ```
+
 可以看到，在这个例子中我们利用 computed API 创建了计算属性对象 plusOne，它传入的是一个 getter 函数，为了和后面计算属性对象的 getter 函数区分，我们把它称作 computed getter。另外，组件模板中引用了 plusOne 变量和 plus 函数。
 
 组件渲染阶段会访问 plusOne，也就触发了 plusOne 对象的 getter 函数：
 
 ```
-get value() { 
-  // 计算属性的 getter 
-  if (dirty) { 
-    // 只有数据为脏的时候才会重新计算 
-    value = runner() 
-    dirty = false 
-  } 
-  // 依赖收集，收集运行访问该计算属性的 activeEffect 
-  track(computed, "get" /* GET */, 'value') 
-  return value 
+get value() {
+  // 计算属性的 getter
+  if (dirty) {
+    // 只有数据为脏的时候才会重新计算
+    value = runner()
+    dirty = false
+  }
+  // 依赖收集，收集运行访问该计算属性的 activeEffect
+  track(computed, "get" /* GET */, 'value')
+  return value
 }
 ```
+
 由于默认 dirty 是 true，所以这个时候会执行 runner 函数，并进一步执行 computed getter，也就是 count.value + 1，因为访问了 count 的值，并且由于 count 也是一个响应式对象，所以就会触发 count 对象的依赖收集过程。
 
 请注意，由于是在 runner 执行的时候访问 count，所以这个时候的 activeEffect 是 runner 函数。runner 函数执行完毕，会把 dirty 设置为 false，并进一步执行 track（computed,"get",'value') 函数做依赖收集，这个时候 runner 已经执行完了，所以 activeEffect 是组件副作用渲染函数。
@@ -3783,35 +3835,35 @@ get value() {
 然后当我们点击按钮的时候，会执行 plus 函数，函数内部通过 count.value++ 修改 count 的值，并派发通知。请注意，这里不是直接调用 runner 函数，而是把 runner 作为参数去执行 scheduler 函数。我们来回顾一下 trigger 函数内部对于 effect 函数的执行方式:
 
 ```
-const run = (effect) => { 
-  // 调度执行 
-  if (effect.options.scheduler) { 
-    effect.options.scheduler(effect) 
-  } 
-  else { 
-    // 直接运行 
-    effect() 
-  } 
+const run = (effect) => {
+  // 调度执行
+  if (effect.options.scheduler) {
+    effect.options.scheduler(effect)
+  }
+  else {
+    // 直接运行
+    effect()
+  }
 }
 ```
+
 computed API 内部创建副作用函数时，已经配置了 scheduler 函数，如下：
 
 ```
-scheduler: () => { 
-  if (!dirty) { 
-    dirty = true 
-    // 派发通知，通知运行访问该计算属性的 activeEffect 
-    trigger(computed, "set" /* SET */, 'value') 
-  } 
+scheduler: () => {
+  if (!dirty) {
+    dirty = true
+    // 派发通知，通知运行访问该计算属性的 activeEffect
+    trigger(computed, "set" /* SET */, 'value')
+  }
 }
 ```
+
 它并没有对计算属性求新值，而仅仅是把 dirty 设置为 true，再执行 trigger(computed, "set" , 'value')，去通知执行 plusOne 依赖的组件渲染副作用函数，即触发组件的重新渲染。
 
 在组件重新渲染的时候，会再次访问 plusOne，我们发现这个时候 dirty 为 true，然后会再次执行 computed getter，此时才会执行 count.value + 1 求得新值。这就是虽然组件没有直接访问 count，但是当我们修改 count 的值的时候，组件仍然会重新渲染的原因。
 
 为了更加直观展示上述过程，我画了一张图：
-
-
 
 通过以上分析，我们可以看出 computed 计算属性有两个特点：
 
@@ -3825,15 +3877,16 @@ scheduler: () => {
 计算属性也支持嵌套，我们可以针对上述例子做个小修改，即不在渲染函数中访问 plusOne，而在另一个计算属性中访问：
 
 ```
-const count = ref(0) 
-const plusOne = computed(() => { 
-  return count.value + 1 
-}) 
-const plusTwo = computed(() => { 
-  return plusOne.value + 1 
-}) 
+const count = ref(0)
+const plusOne = computed(() => {
+  return count.value + 1
+})
+const plusTwo = computed(() => {
+  return plusOne.value + 1
+})
 console.log(plusTwo.value)
 ```
+
 从代码中可以看到，当我们访问 plusTwo 的时候，过程和前面都差不多，同样也是两个依赖收集的过程。对于 plusOne 来说，它收集的依赖是 plusTwo 内部的 runner 函数；对于 count 来说，它收集的依赖是 plusOne 内部的 runner 函数。
 
 接着当我们修改 count 的值时，它会派发通知，先运行 plusOne 内部的 scheduler 函数，把 plusOne 内部的 dirty 变为 true，然后执行 trigger 函数再次派发通知，接着运行 plusTwo 内部的 scheduler 函数，把 plusTwo 内部的 dirty 设置为 true。
@@ -3846,72 +3899,76 @@ console.log(plusTwo.value)
 我们曾提到计算属性内部创建副作用函数的时候会配置 computed 为 true，标识这是一个 computed effect，用于在 trigger 阶段的优先级排序。我们来回顾一下 trigger 函数执行 effects 的过程：
 
 ```
-const add = (effectsToAdd) => { 
-  if (effectsToAdd) { 
-    effectsToAdd.forEach(effect => { 
-      if (effect !== activeEffect || !shouldTrack) { 
-        if (effect.options.computed) { 
-          computedRunners.add(effect) 
-        } 
-        else { 
-          effects.add(effect) 
-        } 
-      } 
-    }) 
-  } 
-} 
-const run = (effect) => { 
-  if (effect.options.scheduler) { 
-    effect.options.scheduler(effect) 
-  } 
-  else { 
-    effect() 
-  } 
-} 
-computedRunners.forEach(run) 
+const add = (effectsToAdd) => {
+  if (effectsToAdd) {
+    effectsToAdd.forEach(effect => {
+      if (effect !== activeEffect || !shouldTrack) {
+        if (effect.options.computed) {
+          computedRunners.add(effect)
+        }
+        else {
+          effects.add(effect)
+        }
+      }
+    })
+  }
+}
+const run = (effect) => {
+  if (effect.options.scheduler) {
+    effect.options.scheduler(effect)
+  }
+  else {
+    effect()
+  }
+}
+computedRunners.forEach(run)
 effects.forEach(run)
 ```
+
 在上一节课分析 trigger 函数的时候，为了方便你理解主干逻辑，我省略了 computedRunners 的分支逻辑。实际上，在添加待运行的 effects 的时候，我们会判断每一个 effect 是不是一个 computed effect，如果是的话会添加到 computedRunners 中，在后面运行的时候会优先执行 computedRunners，然后再执行普通的 effects。
 
 那么为什么要这么设计呢？其实是考虑到了一些特殊场景，我们通过一个示例来说明：
 
 ```
-import { ref, computed } from 'vue' 
-import { effect } from '@vue/reactivity' 
-const count = ref(0) 
-const plusOne = computed(() => { 
-  return count.value + 1 
-}) 
-effect(() => { 
-  console.log(plusOne.value + count.value) 
-}) 
-function plus() { 
-  count.value++ 
-} 
+import { ref, computed } from 'vue'
+import { effect } from '@vue/reactivity'
+const count = ref(0)
+const plusOne = computed(() => {
+  return count.value + 1
+})
+effect(() => {
+  console.log(plusOne.value + count.value)
+})
+function plus() {
+  count.value++
+}
 plus()
 ```
+
 这个示例运行后的结果输出：
 
 ```
-1 
-3 
+1
+3
 3
 ```
+
 在执行 effect 函数时运行 console.log(plusOne.value + count.value)，所以第一次输出 1，此时 count.value 是 0，plusOne.value 是 1。
 
 后面连续输出两次 3 是因为， plusOne 和 count 的依赖都是这个 effect 函数，所以当我们执行 plus 函数修改 count 的值时，会触发并执行这个 effect 函数，因为 plusOne 的 runner 也是 count 的依赖，count 值修改也会执行 plusOne 的 runner，也就会再次执行 plusOne 的依赖即 effect 函数，因此会输出两次。
 
 那么为什么两次都输出 3 呢？这就跟先执行 computed runner 有关。首先，由于 plusOne 的 runner 和 effect 都是 count 的依赖，当我们修改 count 值的时候， plusOne 的 runner 和 effect 都会执行，那么此时执行顺序就很重要了。
 
-这里先执行 plusOne 的 runner，把 plusOne 的 dirty 设置为 true，然后通知它的依赖 effect 执行 plusOne.value + count.value。这个时候，由于 dirty 为 true，就会再次执行 plusOne 的 getter 计算新值，拿到了新值 2， 再加上 1 就得到 3。执行完 plusOne 的 runner 以及依赖更新之后，再去执行 count 的普通effect 依赖，从而去执行 plusOne.value + count.value，这个时候 plusOne dirty 为 false， 直接返回上次的计算结果 2，然后再加 1 就又得到 3。
+这里先执行 plusOne 的 runner，把 plusOne 的 dirty 设置为 true，然后通知它的依赖 effect 执行 plusOne.value + count.value。这个时候，由于 dirty 为 true，就会再次执行 plusOne 的 getter 计算新值，拿到了新值 2， 再加上 1 就得到 3。执行完 plusOne 的 runner 以及依赖更新之后，再去执行 count 的普通 effect 依赖，从而去执行 plusOne.value + count.value，这个时候 plusOne dirty 为 false， 直接返回上次的计算结果 2，然后再加 1 就又得到 3。
 
 如果我们把 computed runner 和 effect 的执行顺序换一下会怎样呢？我来告诉你，会输出如下结果：
 
 ```
-1 
-2 
+1
+2
 3
 ```
+
 第一次输出 1 很好理解，因为流程是一样的。第二次为什么会输出 2 呢？我们来分析一下，当我们执行 plus 函数修改 count 的值时，会触发 plusOne 的 runner 和 effect 的执行，这一次我们先让 effect 执行 plusOne.value + count.value，那么就会访问 plusOne.value，但由于 plusOne 的 runner 还没执行，所以此时 dirty 为 false，得到的值还是上一次的计算结果 1，然后再加 1 得到 2。
 
 接着再执行 plusOne 的 runner，把 plusOne 的 dirty 设置为 true，然后通知它的依赖 effect 执行 plusOne.value + count.value，这个时候由于 dirty 为 true，就会再次执行 plusOne 的 getter 计算新值，拿到了 2，然后再加上 1 就得到 3。
@@ -3933,21 +3990,23 @@ packages/reactivity/src/computed.ts
 在 Vue.js 2.x 中，你可以通过 watch 选项去初始化一个侦听器，称作 watcher：
 
 ```
-export default { 
-  watch: { 
-    a(newVal, oldVal) { 
-      console.log('new: %s,00 old: %s', newVal, oldVal) 
-    } 
-  } 
-} 
+export default {
+  watch: {
+    a(newVal, oldVal) {
+      console.log('new: %s,00 old: %s', newVal, oldVal)
+    }
+  }
+}
 ```
+
 当然你也可以通过 $watch API 去创建一个侦听器：
 
 ```
-const unwatch = vm.$watch('a', function(newVal, oldVal) { 
-  console.log('new: %s, old: %s', newVal, oldVal) 
-}) 
+const unwatch = vm.$watch('a', function(newVal, oldVal) {
+  console.log('new: %s, old: %s', newVal, oldVal)
+})
 ```
+
 与 watch 选项不同，通过 $watch API 创建的侦听器 watcher 会返回一个 unwatch 函数，你可以随时执行它来停止这个 watcher 对数据的侦听，而对于 watch 选项创建的侦听器，它会随着组件的销毁而停止对数据的侦听。
 
 在 Vue.js 3.0 中，虽然你仍可以使用 watch 选项，但针对 Composition API，Vue.js 3.0 提供了 watch API 来实现侦听器的效果。
@@ -3960,110 +4019,115 @@ watch API 的用法
 1.watch API 可以侦听一个 getter 函数，但是它必须返回一个响应式对象，当该响应式对象更新后，会执行对应的回调函数。
 
 ```
-import { reactive, watch } from 'vue' 
-const state = reactive({ count: 0 }) 
-watch(() => state.count, (count, prevCount) => { 
-  // 当 state.count 更新，会触发此回调函数 
-}) 
+import { reactive, watch } from 'vue'
+const state = reactive({ count: 0 })
+watch(() => state.count, (count, prevCount) => {
+  // 当 state.count 更新，会触发此回调函数
+})
 ```
+
 2.watch API 也可以直接侦听一个响应式对象，当响应式对象更新后，会执行对应的回调函数。
 
 ```
-import { ref, watch } from 'vue' 
-const count = ref(0) 
-watch(count, (count, prevCount) => { 
-  // 当 count.value 更新，会触发此回调函数 
-}) 
+import { ref, watch } from 'vue'
+const count = ref(0)
+watch(count, (count, prevCount) => {
+  // 当 count.value 更新，会触发此回调函数
+})
 ```
+
 3.watch API 还可以直接侦听多个响应式对象，任意一个响应式对象更新后，就会执行对应的回调函数。
 
 ```
-import { ref, watch } from 'vue' 
-const count = ref(0) 
-const count2 = ref(1) 
-watch([count, count2], ([count, count2], [prevCount, prevCount2]) => { 
-  // 当 count.value 或者 count2.value 更新，会触发此回调函数 
-}) 
+import { ref, watch } from 'vue'
+const count = ref(0)
+const count2 = ref(1)
+watch([count, count2], ([count, count2], [prevCount, prevCount2]) => {
+  // 当 count.value 或者 count2.value 更新，会触发此回调函数
+})
 ```
+
 watch API 实现原理
 侦听器的言下之意就是，当侦听的对象或者函数发生了变化则自动执行某个回调函数，这和我们前面说过的副作用函数 effect 很像， 那它的内部实现是不是依赖了 effect 呢？带着这个疑问，我们来探究 watch API 的具体实现：
 
 ```
-function watch(source, cb, options) { 
-  if ((process.env.NODE_ENV !== 'production') && !isFunction(cb)) { 
-    warn(`\`watch(fn, options?)\` signature has been moved to a separate API. ` + 
-      `Use \`watchEffect(fn, options?)\` instead. \`watch\` now only ` + 
-      `supports \`watch(source, cb, options?) signature.`) 
-  } 
-  return doWatch(source, cb, options) 
-} 
-function doWatch(source, cb, { immediate, deep, flush, onTrack, onTrigger } = EMPTY_OBJ) { 
-  // 标准化 source 
-  // 构造 applyCb 回调函数 
-  // 创建 scheduler 时序执行函数 
-  // 创建 effect 副作用函数 
-  // 返回侦听器销毁函数 
-}    
+function watch(source, cb, options) {
+  if ((process.env.NODE_ENV !== 'production') && !isFunction(cb)) {
+    warn(`\`watch(fn, options?)\` signature has been moved to a separate API. ` +
+      `Use \`watchEffect(fn, options?)\` instead. \`watch\` now only ` +
+      `supports \`watch(source, cb, options?) signature.`)
+  }
+  return doWatch(source, cb, options)
+}
+function doWatch(source, cb, { immediate, deep, flush, onTrack, onTrigger } = EMPTY_OBJ) {
+  // 标准化 source
+  // 构造 applyCb 回调函数
+  // 创建 scheduler 时序执行函数
+  // 创建 effect 副作用函数
+  // 返回侦听器销毁函数
+}
 ```
+
 从代码中可以看到，watch 函数内部调用了 doWatch 函数，调用前会在非生产环境下判断第二个参数 cb 是不是一个函数，如果不是则会报警告以告诉用户应该使用 watchEffect(fn, options) API，watchEffect API 也是侦听器相关的 API，稍后我们会详细介绍。
 
 这个 doWatch 函数很长，所以我只贴出了需要理解的部分，我用注释将这个函数的实现逻辑拆解成了几个步骤。可以看到，内部确实创建了 effect 副作用函数。接下来，就随我一步步看它具体做了哪些事情吧。
 
 标准化 source
-我们先来看watch 函数的第一个参数 source。
+我们先来看 watch 函数的第一个参数 source。
 
 通过前文知道 source 可以是 getter 函数，也可以是响应式对象甚至是响应式对象数组，所以我们需要标准化 source，这是标准化 source 的流程：
 
 ```
-// source 不合法的时候会报警告 
-const warnInvalidSource = (s) => { 
-  warn(`Invalid watch source: `, s, `A watch source can only be a getter/effect function, a ref, ` + 
-    `a reactive object, or an array of these types.`) 
-} 
-// 当前组件实例 
-const instance = currentInstance 
-let getter 
-if (isArray(source)) { 
-  getter = () => source.map(s => { 
-    if (isRef(s)) { 
-      return s.value 
-    } 
-    else if (isReactive(s)) { 
-      return traverse(s) 
-    } 
-    else if (isFunction(s)) { 
-      return callWithErrorHandling(s, instance, 2 /* WATCH_GETTER */) 
-    } 
-    else { 
-      (process.env.NODE_ENV !== 'production') && warnInvalidSource(s) 
-    } 
-  }) 
-} 
-else if (isRef(source)) { 
-  getter = () => source.value 
-} 
-else if (isReactive(source)) { 
-  getter = () => source 
-  deep = true 
-} 
-else if (isFunction(source)) { 
-  if (cb) { 
-    // getter with cb 
-    getter = () => callWithErrorHandling(source, instance, 2 /* WATCH_GETTER */) 
-  } 
-  else { 
-    // watchEffect 的逻辑 
-  } 
-} 
-else { 
-  getter = NOOP 
-  (process.env.NODE_ENV !== 'production') && warnInvalidSource(source) 
-} 
-if (cb && deep) { 
-  const baseGetter = getter 
-  getter = () => traverse(baseGetter()) 
-} 
+// source 不合法的时候会报警告
+const warnInvalidSource = (s) => {
+  warn(`Invalid watch source: `, s, `A watch source can only be a getter/effect function, a ref, ` +
+    `a reactive object, or an array of these types.`)
+}
+// 当前组件实例
+const instance = currentInstance
+let getter
+if (isArray(source)) {
+  getter = () => source.map(s => {
+    if (isRef(s)) {
+      return s.value
+    }
+    else if (isReactive(s)) {
+      return traverse(s)
+    }
+    else if (isFunction(s)) {
+      return callWithErrorHandling(s, instance, 2 /* WATCH_GETTER */)
+    }
+    else {
+      (process.env.NODE_ENV !== 'production') && warnInvalidSource(s)
+    }
+  })
+}
+else if (isRef(source)) {
+  getter = () => source.value
+}
+else if (isReactive(source)) {
+  getter = () => source
+  deep = true
+}
+else if (isFunction(source)) {
+  if (cb) {
+    // getter with cb
+    getter = () => callWithErrorHandling(source, instance, 2 /* WATCH_GETTER */)
+  }
+  else {
+    // watchEffect 的逻辑
+  }
+}
+else {
+  getter = NOOP
+  (process.env.NODE_ENV !== 'production') && warnInvalidSource(source)
+}
+if (cb && deep) {
+  const baseGetter = getter
+  getter = () => traverse(baseGetter())
+}
 ```
+
 其实，source 标准化主要是根据 source 的类型，将其变成 标准成 getter 函数。具体来说：
 
 如果 source 是 ref 对象，则创建一个访问 source.value 的 getter 函数;
@@ -4081,19 +4145,20 @@ if (cb && deep) {
 其实 deep 属于 watcher 的一个配置选项，Vue.js 2.x 也支持，表面含义是深度侦听，实际上是通过遍历对象的每一个子属性来实现。举个例子你就明白了：
 
 ```
-import { reactive, watch } from 'vue' 
-const state = reactive({ 
-  count: { 
-    a: { 
-      b: 1 
-    } 
-  } 
-}) 
-watch(state.count, (count, prevCount) => { 
-  console.log(count) 
-}) 
-state.count.a.b = 2  
+import { reactive, watch } from 'vue'
+const state = reactive({
+  count: {
+    a: {
+      b: 1
+    }
+  }
+})
+watch(state.count, (count, prevCount) => {
+  console.log(count)
+})
+state.count.a.b = 2
 ```
+
 这里，我们利用 reactive API 创建了一个嵌套层级较深的响应式对象 state，然后再调用 watch API 侦听 state.count 的变化。接下来我们修改内部属性 state.count.a.b 的值，你会发现 watcher 的回调函数执行了，为什么会执行呢？
 
 学过响应式章节，我们知道只有对象属性先被访问触发了依赖收集，再去修改这个属性，才可以通知对应的依赖更新。而从上述业务代码来看，我们修改 state.count.a.b 的值时并没有访问它 ，但还是触发了 watcher 的回调函数。
@@ -4105,21 +4170,23 @@ state.count.a.b = 2
 比如刚才的例子，我们就可以直接侦听 state.count.a.b 的变化：
 
 ```
-watch(state.count.a, (newVal, oldVal) => { 
-  console.log(newVal) 
-}) 
-state.count.a.b = 2 
+watch(state.count.a, (newVal, oldVal) => {
+  console.log(newVal)
+})
+state.count.a.b = 2
 ```
+
 这样就可以减少内部执行 traverse 的次数。你可能会问，直接侦听 state.count.a.b 可以吗？答案是不行，因为 state.count.a.b 已经是一个基础数字类型了，不符合 source 要求的参数类型，所以会在非生产环境下报警告。
 
 那么有没有办法优化使得 traverse 不执行呢？答案是可以的。我们可以侦听一个 getter 函数：
 
 ```
-watch(() => state.count.a.b, (newVal, oldVal) => { 
-  console.log(newVal) 
-}) 
-state.count.a.b = 2 
+watch(() => state.count.a.b, (newVal, oldVal) => {
+  console.log(newVal)
+})
+state.count.a.b = 2
 ```
+
 这样函数内部会访问并返回 state.count.a.b，一次 traverse 都不会执行并且依然可以侦听到它的变化从而执行 watcher 的回调函数。
 
 构造回调函数
@@ -4132,41 +4199,42 @@ cb 是一个回调函数，它有三个参数：第一个 newValue 代表新值�
 接下来我们来看一下构造回调函数的处理逻辑：
 
 ```
-let cleanup 
-// 注册无效回调函数 
-const onInvalidate = (fn) => { 
-  cleanup = runner.options.onStop = () => { 
-    callWithErrorHandling(fn, instance, 4 /* WATCH_CLEANUP */) 
-  } 
-} 
-// 旧值初始值 
-let oldValue = isArray(source) ? [] : INITIAL_WATCHER_VALUE /*{}*/ 
-// 回调函数 
-const applyCb = cb 
-  ? () => { 
-    // 组件销毁，则直接返回 
-    if (instance && instance.isUnmounted) { 
-      return 
-    } 
-    // 求得新值 
-    const newValue = runner() 
-    if (deep || hasChanged(newValue, oldValue)) { 
-      // 执行清理函数 
-      if (cleanup) { 
-        cleanup() 
-      } 
-      callWithAsyncErrorHandling(cb, instance, 3 /* WATCH_CALLBACK */, [ 
-        newValue, 
-        // 第一次更改时传递旧值为 undefined 
-        oldValue === INITIAL_WATCHER_VALUE ? undefined : oldValue, 
-        onInvalidate 
-      ]) 
-      // 更新旧值 
-      oldValue = newValue 
-    } 
-  } 
-  : void 0 
+let cleanup
+// 注册无效回调函数
+const onInvalidate = (fn) => {
+  cleanup = runner.options.onStop = () => {
+    callWithErrorHandling(fn, instance, 4 /* WATCH_CLEANUP */)
+  }
+}
+// 旧值初始值
+let oldValue = isArray(source) ? [] : INITIAL_WATCHER_VALUE /*{}*/
+// 回调函数
+const applyCb = cb
+  ? () => {
+    // 组件销毁，则直接返回
+    if (instance && instance.isUnmounted) {
+      return
+    }
+    // 求得新值
+    const newValue = runner()
+    if (deep || hasChanged(newValue, oldValue)) {
+      // 执行清理函数
+      if (cleanup) {
+        cleanup()
+      }
+      callWithAsyncErrorHandling(cb, instance, 3 /* WATCH_CALLBACK */, [
+        newValue,
+        // 第一次更改时传递旧值为 undefined
+        oldValue === INITIAL_WATCHER_VALUE ? undefined : oldValue,
+        onInvalidate
+      ])
+      // 更新旧值
+      oldValue = newValue
+    }
+  }
+  : void 0
 ```
+
 onInvalidate 函数用来注册无效回调函数 ，我们暂时不需要关注它，我们需要重点来看 applyCb。 这个函数实际上就是对 cb 做一层封装，当侦听的值发生变化时就会执行 applyCb 方法，我们来分析一下它的实现。
 
 首先，watch API 和组件实例相关，因为通常我们会在组件的 setup 函数中使用它，当组件销毁后，回调函数 cb 不应该被执行而是直接返回。
@@ -4181,29 +4249,30 @@ onInvalidate 函数用来注册无效回调函数 ，我们暂时不需要关注
 scheduler 的作用是根据某种调度的方式去执行某种函数，在 watch API 中，主要影响到的是回调函数的执行方式。我们来看一下它的实现逻辑：
 
 ```
-const invoke = (fn) => fn() 
-let scheduler 
-if (flush === 'sync') { 
-  // 同步 
-  scheduler = invoke 
-} 
-else if (flush === 'pre') { 
-  scheduler = job => { 
-    if (!instance || instance.isMounted) { 
-      // 进入异步队列，组件更新前执行 
-      queueJob(job) 
-    } 
-    else { 
-      // 如果组件还没挂载，则同步执行确保在组件挂载前 
-      job() 
-    } 
-  } 
-} 
-else { 
-  // 进入异步队列，组件更新后执行 
-  scheduler = job => queuePostRenderEffect(job, instance && instance.suspense) 
-} 
+const invoke = (fn) => fn()
+let scheduler
+if (flush === 'sync') {
+  // 同步
+  scheduler = invoke
+}
+else if (flush === 'pre') {
+  scheduler = job => {
+    if (!instance || instance.isMounted) {
+      // 进入异步队列，组件更新前执行
+      queueJob(job)
+    }
+    else {
+      // 如果组件还没挂载，则同步执行确保在组件挂载前
+      job()
+    }
+  }
+}
+else {
+  // 进入异步队列，组件更新后执行
+  scheduler = job => queuePostRenderEffect(job, instance && instance.suspense)
+}
 ```
+
 Watch API 的参数除了 source 和 cb，还支持第三个参数 options，不同的配置决定了 watcher 的不同行为。前面我们也分析了 deep 为 true 的情况，除了 source 为 reactive 对象时会默认把 deep 设置为 true，你也可以主动传入第三个参数，把 deep 设置为 true。
 
 这里，scheduler 的创建逻辑受到了第三个参数 Options 中的 flush 属性值的影响，不同的 flush 决定了 watcher 的执行时机。
@@ -4220,37 +4289,38 @@ queueJob 和 queuePostRenderEffect 在这里不是重点，所以我们放到后
 前面的分析我们提到了 runner，它其实就是 watcher 内部创建的 effect 函数，接下来，我们来分析它逻辑：
 
 ```
-const runner = effect(getter, { 
-  // 延时执行 
-  lazy: true, 
-  // computed effect 可以优先于普通的 effect 先运行，比如组件渲染的 effect 
-  computed: true, 
-  onTrack, 
-  onTrigger, 
-  scheduler: applyCb ? () => scheduler(applyCb) : scheduler 
-}) 
-// 在组件实例中记录这个 effect 
-recordInstanceBoundEffect(runner) 
-// 初次执行 
-if (applyCb) { 
-  if (immediate) { 
-    applyCb() 
-  } 
-  else { 
-    // 求旧值 
-    oldValue = runner() 
-  } 
-} 
-else { 
-  // 没有 cb 的情况 
-  runner() 
-} 
+const runner = effect(getter, {
+  // 延时执行
+  lazy: true,
+  // computed effect 可以优先于普通的 effect 先运行，比如组件渲染的 effect
+  computed: true,
+  onTrack,
+  onTrigger,
+  scheduler: applyCb ? () => scheduler(applyCb) : scheduler
+})
+// 在组件实例中记录这个 effect
+recordInstanceBoundEffect(runner)
+// 初次执行
+if (applyCb) {
+  if (immediate) {
+    applyCb()
+  }
+  else {
+    // 求旧值
+    oldValue = runner()
+  }
+}
+else {
+  // 没有 cb 的情况
+  runner()
+}
 ```
+
 这块代码逻辑是整个 watcher 实现的核心部分，即通过 effect API 创建一个副作用函数 runner，我们需要关注以下几点。
 
 runner 是一个 computed effect。因为 computed effect 可以优先于普通的 effect（比如组件渲染的 effect）先运行，这样就可以实现当配置 flush 为 pre 的时候，watcher 的执行可以优先于组件更新。
 
-runner 执行的方式。runner 是 lazy 的，它不会在创建后立刻执行。第一次手动执行 runner 会执行前面的 getter 函数，访问响应式数据并做依赖收集。注意，此时activeEffect 就是 runner，这样在后面更新响应式数据时，就可以触发 runner 执行 scheduler 函数，以一种调度方式来执行回调函数。
+runner 执行的方式。runner 是 lazy 的，它不会在创建后立刻执行。第一次手动执行 runner 会执行前面的 getter 函数，访问响应式数据并做依赖收集。注意，此时 activeEffect 就是 runner，这样在后面更新响应式数据时，就可以触发 runner 执行 scheduler 函数，以一种调度方式来执行回调函数。
 
 runner 的返回结果。手动执行 runner 就相当于执行了前面标准化的 getter 函数，getter 函数的返回值就是 watcher 计算出的值，所以我们第一次执行 runner 求得的值可以作为 oldValue。
 
@@ -4260,23 +4330,24 @@ runner 的返回结果。手动执行 runner 就相当于执行了前面标准�
 最后，会返回侦听器销毁函数，也就是 watch API 执行后返回的函数。我们可以通过调用它来停止 watcher 对数据的侦听。
 
 ```
-return () => { 
-  stop(runner) 
-  if (instance) { 
-    // 移除组件 effects 对这个 runner 的引用 
-    remove(instance.effects, runner) 
-  } 
-} 
-function stop(effect) { 
-  if (effect.active) { 
-    cleanup(effect) 
-    if (effect.options.onStop) { 
-      effect.options.onStop() 
-    } 
-    effect.active = false 
-  } 
-} 
+return () => {
+  stop(runner)
+  if (instance) {
+    // 移除组件 effects 对这个 runner 的引用
+    remove(instance.effects, runner)
+  }
+}
+function stop(effect) {
+  if (effect.active) {
+    cleanup(effect)
+    if (effect.options.onStop) {
+      effect.options.onStop()
+    }
+    effect.active = false
+  }
+}
 ```
+
 销毁函数内部会执行 stop 方法让 runner 失活，并清理 runner 的相关依赖，这样就可以停止对数据的侦听。并且，如果是在组件中注册的 watcher，也会移除组件 effects 对这个 runner 的引用。
 
 好了，到这里我们对 watch API 的分析就可以告一段落了。侦听器的内部设计很巧妙，我们可以侦听响应式数据的变化，内部创建 effect runner，首次执行 runner 做依赖收集，然后在数据发生变化后，以某种调度方式去执行回调函数。
@@ -4292,15 +4363,16 @@ packages/runtime-core/src/apiWatch.ts
 我们把之前的例子简单修改一下：
 
 ```
-import { reactive, watch } from 'vue' 
-const state = reactive({ count: 0 }) 
-watch(() => state.count, (count, prevCount) => { 
-  console.log(count) 
-}) 
-state.count++ 
-state.count++ 
-state.count++ 
+import { reactive, watch } from 'vue'
+const state = reactive({ count: 0 })
+watch(() => state.count, (count, prevCount) => {
+  console.log(count)
+})
+state.count++
+state.count++
+state.count++
 ```
+
 这里，我们修改了三次 state.count，那么 watcher 的回调函数会执行三次吗？
 
 答案是不会，实际上只输出了一次 count 的值，也就是最终计算的值 3。这在大多数场景下都是符合预期的，因为在一个 Tick（宏任务执行的生命周期）内，即使多次修改侦听的值，它的回调函数也只执行一次。
@@ -4316,47 +4388,49 @@ state.count++
 在不涉及 suspense 的情况下，queuePostRenderEffect 相当于 queuePostFlushCb，我们来看它们的实现：
 
 ```
-// 异步任务队列 
-const queue = [] 
-// 队列任务执行完后执行的回调函数队列 
-const postFlushCbs = [] 
-function queueJob(job) { 
-  if (!queue.includes(job)) { 
-    queue.push(job) 
-    queueFlush() 
-  } 
-} 
-function queuePostFlushCb(cb) { 
-  if (!isArray(cb)) { 
-    postFlushCbs.push(cb) 
-  } 
-  else { 
-    // 如果是数组，把它拍平成一维 
-    postFlushCbs.push(...cb) 
-  } 
-  queueFlush() 
-} 
+// 异步任务队列
+const queue = []
+// 队列任务执行完后执行的回调函数队列
+const postFlushCbs = []
+function queueJob(job) {
+  if (!queue.includes(job)) {
+    queue.push(job)
+    queueFlush()
+  }
+}
+function queuePostFlushCb(cb) {
+  if (!isArray(cb)) {
+    postFlushCbs.push(cb)
+  }
+  else {
+    // 如果是数组，把它拍平成一维
+    postFlushCbs.push(...cb)
+  }
+  queueFlush()
+}
 ```
+
 Vue.js 内部维护了一个 queue 数组和一个 postFlushCbs 数组，其中 queue 数组用作异步任务队列， postFlushCbs 数组用作异步任务队列执行完毕后的回调函数队列。
 
 执行 queueJob 时会把这个任务 job 添加到 queue 的队尾，而执行 queuePostFlushCb 时，会把这个 cb 回调函数添加到 postFlushCbs 的队尾。它们在添加完毕后都执行了 queueFlush 函数，我们接着看它的实现：
 
 ```
-const p = Promise.resolve() 
-// 异步任务队列是否正在执行 
-let isFlushing = false 
-// 异步任务队列是否等待执行 
-let isFlushPending = false 
-function nextTick(fn) { 
-  return fn ? p.then(fn) : p 
-} 
-function queueFlush() { 
-  if (!isFlushing && !isFlushPending) { 
-    isFlushPending = true 
-    nextTick(flushJobs) 
-  } 
-} 
+const p = Promise.resolve()
+// 异步任务队列是否正在执行
+let isFlushing = false
+// 异步任务队列是否等待执行
+let isFlushPending = false
+function nextTick(fn) {
+  return fn ? p.then(fn) : p
+}
+function queueFlush() {
+  if (!isFlushing && !isFlushPending) {
+    isFlushPending = true
+    nextTick(flushJobs)
+  }
+}
 ```
+
 可以看到，Vue.js 内部还维护了 isFlushing 和 isFlushPending 变量，用来控制异步任务的刷新逻辑。
 
 在 queueFlush 首次执行时，isFlushing 和 isFlushPending 都是 false，此时会把 isFlushPending 设置为 true，并且调用 nextTick(flushJobs) 去执行队列里的任务。
@@ -4369,34 +4443,35 @@ function queueFlush() {
 创建完任务队列后，接下来要异步执行这个队列，我们来看一下 flushJobs 的实现：
 
 ```
-const getId = (job) => (job.id == null ? Infinity : job.id) 
-function flushJobs(seen) { 
-  isFlushPending = false 
-  isFlushing = true 
-  let job 
-  if ((process.env.NODE_ENV !== 'production')) { 
-    seen = seen || new Map() 
-  } 
-  // 组件的更新是先父后子 
-  // 如果一个组件在父组件更新过程中卸载，它自身的更新应该被跳过 
-  queue.sort((a, b) => getId(a) - getId(b)) 
-  while ((job = queue.shift()) !== undefined) { 
-    if (job === null) { 
-      continue 
-    } 
-    if ((process.env.NODE_ENV !== 'production')) { 
-      checkRecursiveUpdates(seen, job) 
-    } 
-    callWithErrorHandling(job, null, 14 /* SCHEDULER */) 
-  } 
-  flushPostFlushCbs(seen) 
-  isFlushing = false 
-  // 一些 postFlushCb 执行过程中会再次添加异步任务，递归 flushJobs 会把它们都执行完毕 
-  if (queue.length || postFlushCbs.length) { 
-    flushJobs(seen) 
-  } 
-} 
+const getId = (job) => (job.id == null ? Infinity : job.id)
+function flushJobs(seen) {
+  isFlushPending = false
+  isFlushing = true
+  let job
+  if ((process.env.NODE_ENV !== 'production')) {
+    seen = seen || new Map()
+  }
+  // 组件的更新是先父后子
+  // 如果一个组件在父组件更新过程中卸载，它自身的更新应该被跳过
+  queue.sort((a, b) => getId(a) - getId(b))
+  while ((job = queue.shift()) !== undefined) {
+    if (job === null) {
+      continue
+    }
+    if ((process.env.NODE_ENV !== 'production')) {
+      checkRecursiveUpdates(seen, job)
+    }
+    callWithErrorHandling(job, null, 14 /* SCHEDULER */)
+  }
+  flushPostFlushCbs(seen)
+  isFlushing = false
+  // 一些 postFlushCb 执行过程中会再次添加异步任务，递归 flushJobs 会把它们都执行完毕
+  if (queue.length || postFlushCbs.length) {
+    flushJobs(seen)
+  }
+}
 ```
+
 可以看到，flushJobs 函数开始执行的时候，会把 isFlushPending 重置为 false，把 isFlushing 设置为 true 来表示正在执行异步任务队列。
 
 对于异步任务队列 queue，在遍历执行它们前会先对它们做一次从小到大的排序，这是因为两个主要原因：
@@ -4410,23 +4485,24 @@ function flushJobs(seen) {
 遍历完 queue 后，又会进一步执行 flushPostFlushCbs 方法去遍历执行所有推入到 postFlushCbs 的回调函数：
 
 ```
- function flushPostFlushCbs(seen) { 
-  if (postFlushCbs.length) { 
-    // 拷贝副本 
-    const cbs = [...new Set(postFlushCbs)] 
-    postFlushCbs.length = 0 
-    if ((process.env.NODE_ENV !== 'production')) { 
-      seen = seen || new Map() 
-    } 
-    for (let i = 0; i < cbs.length; i++) { 
-      if ((process.env.NODE_ENV !== 'production')) {                                                       
-        checkRecursiveUpdates(seen, cbs[i]) 
-      } 
-      cbs[i]() 
-    } 
-  } 
-} 
+ function flushPostFlushCbs(seen) {
+  if (postFlushCbs.length) {
+    // 拷贝副本
+    const cbs = [...new Set(postFlushCbs)]
+    postFlushCbs.length = 0
+    if ((process.env.NODE_ENV !== 'production')) {
+      seen = seen || new Map()
+    }
+    for (let i = 0; i < cbs.length; i++) {
+      if ((process.env.NODE_ENV !== 'production')) {
+        checkRecursiveUpdates(seen, cbs[i])
+      }
+      cbs[i]()
+    }
+  }
+}
 ```
+
 注意这里遍历前会通过 const cbs = [...new Set(postFlushCbs)] 拷贝一个 postFlushCbs 的副本，这是因为在遍历的过程中，可能某些回调函数的执行会再次修改 postFlushCbs，所以拷贝一个副本循环遍历则不会受到 postFlushCbs 修改的影响。
 
 遍历完 postFlushCbs 后，会重置 isFlushing 为 false，因为一些 postFlushCb 执行过程中可能会再次添加异步任务，所以需要继续判断如果 queue 或者 postFlushCbs 队列中还存在任务，则递归执行 flushJobs 把它们都执行完毕。
@@ -4437,36 +4513,38 @@ function flushJobs(seen) {
 我们把之前的例子改写一下：
 
 ```
-import { reactive, watch } from 'vue' 
-const state = reactive({ count: 0 }) 
-watch(() => state.count, (count, prevCount) => { 
-  state.count++ 
-  console.log(count) 
-}) 
-state.count++ 
+import { reactive, watch } from 'vue'
+const state = reactive({ count: 0 })
+watch(() => state.count, (count, prevCount) => {
+  state.count++
+  console.log(count)
+})
+state.count++
 ```
+
 如果你去跑这个示例，你会在控制台看到输出了 101 次值，然后报了错误： Maximum recursive updates exceeded 。这是因为我们在 watcher 的回调函数里更新了数据，这样会再一次进入回调函数，如果我们不加任何控制，那么回调函数会一直执行，直到把内存耗尽造成浏览器假死。
 为了避免这种情况，Vue.js 实现了 checkRecursiveUpdates 方法：
 
 ```
-const RECURSION_LIMIT = 100 
-function checkRecursiveUpdates(seen, fn) { 
-  if (!seen.has(fn)) { 
-    seen.set(fn, 1) 
-  } 
-  else { 
-    const count = seen.get(fn) 
-    if (count > RECURSION_LIMIT) { 
-      throw new Error('Maximum recursive updates exceeded. ' + 
-        "You may have code that is mutating state in your component's " + 
-        'render function or updated hook or watcher source function.') 
-    } 
-    else { 
-      seen.set(fn, count + 1) 
-    } 
-  } 
-} 
+const RECURSION_LIMIT = 100
+function checkRecursiveUpdates(seen, fn) {
+  if (!seen.has(fn)) {
+    seen.set(fn, 1)
+  }
+  else {
+    const count = seen.get(fn)
+    if (count > RECURSION_LIMIT) {
+      throw new Error('Maximum recursive updates exceeded. ' +
+        "You may have code that is mutating state in your component's " +
+        'render function or updated hook or watcher source function.')
+    }
+    else {
+      seen.set(fn, count + 1)
+    }
+  }
+}
 ```
+
 通过前面的代码，我们知道 flushJobs 一开始便创建了 seen，它是一个 Map 对象，然后在 checkRecursiveUpdates 的时候会把任务添加到 seen 中，记录引用计数 count，初始值为 1，如果 postFlushCbs 再次添加了相同的任务，则引用计数 count 加 1，如果 count 大于我们定义的限制 100 ，则说明一直在添加这个相同的任务并超过了 100 次。那么，Vue.js 会抛出这个错误，因为在正常的使用中，不应该出现这种情况，而我们上述的错误示例就会触发这种报错逻辑。
 
 优化：只用一个变量
@@ -4483,34 +4561,35 @@ function checkRecursiveUpdates(seen, fn) {
 但实际上，这里我们可以进行优化。在我看来，这里用一个变量就足够了，我们来稍微修改一下源码：
 
 ```
-function queueFlush() { 
-  if (!isFlushing) { 
-    isFlushing = true 
-    nextTick(flushJobs) 
-  } 
-} 
-function flushJobs(seen) { 
-  let job 
-  if ((process.env.NODE_ENV !== 'production')) { 
-    seen = seen || new Map() 
-  } 
-  queue.sort((a, b) => getId(a) - getId(b)) 
-  while ((job = queue.shift()) !== undefined) { 
-    if (job === null) { 
-      continue 
-    } 
-    if ((process.env.NODE_ENV !== 'production')) { 
-      checkRecursiveUpdates(seen, job) 
-    } 
-    callWithErrorHandling(job, null, 14 /* SCHEDULER */) 
-  } 
-  flushPostFlushCbs(seen) 
-  if (queue.length || postFlushCbs.length) { 
-    flushJobs(seen) 
-  } 
-  isFlushing = false 
-} 
+function queueFlush() {
+  if (!isFlushing) {
+    isFlushing = true
+    nextTick(flushJobs)
+  }
+}
+function flushJobs(seen) {
+  let job
+  if ((process.env.NODE_ENV !== 'production')) {
+    seen = seen || new Map()
+  }
+  queue.sort((a, b) => getId(a) - getId(b))
+  while ((job = queue.shift()) !== undefined) {
+    if (job === null) {
+      continue
+    }
+    if ((process.env.NODE_ENV !== 'production')) {
+      checkRecursiveUpdates(seen, job)
+    }
+    callWithErrorHandling(job, null, 14 /* SCHEDULER */)
+  }
+  flushPostFlushCbs(seen)
+  if (queue.length || postFlushCbs.length) {
+    flushJobs(seen)
+  }
+  isFlushing = false
+}
 ```
+
 可以看到，我们只需要一个 isFlushing 来控制就可以实现相同的功能了。在执行 queueFlush 的时候，判断 isFlushing 为 false，则把它设置为 true，然后 nextTick 会执行 flushJobs。在 flushJobs 函数执行完成的最后，也就是所有的任务（包括后添加的）都执行完毕，再设置 isFlushing 为 false。
 
 我这么修改源码后也跑通了 Vue.js 3.0 的单元测试，如果你觉得这么实现有问题的话，欢迎在留言区评论与我讨论。
@@ -4523,11 +4602,12 @@ watchEffect API 的作用是注册一个副作用函数，副作用函数内部�
 可以先来看一个示例：
 
 ```
-import { ref, watchEffect } from 'vue' 
-const count = ref(0) 
-watchEffect(() => console.log(count.value)) 
-count.value++ 
+import { ref, watchEffect } from 'vue'
+const count = ref(0)
+watchEffect(() => console.log(count.value))
+count.value++
 ```
+
 它的结果是依次输出 0 和 1。
 watchEffect 和前面的 watch API 有哪些不同呢？主要有三点：
 
@@ -4540,69 +4620,70 @@ watchEffect 和前面的 watch API 有哪些不同呢？主要有三点：
 对 watchEffect API 有大体了解后，我们来看一下在我整理的 watchEffect 场景下， doWatch 函数的简化版实现：
 
 ```
-function watchEffect(effect, options) { 
-  return doWatch(effect, null, options); 
-} 
-function doWatch(source, cb, { immediate, deep, flush, onTrack, onTrigger } = EMPTY_OBJ) { 
-  instance = currentInstance; 
-  let getter; 
-  if (isFunction(source)) { 
-    getter = () => { 
-      if (instance && instance.isUnmounted) { 
-        return; 
-      } 
-       // 执行清理函数 
-      if (cleanup) { 
-        cleanup(); 
-      } 
-      // 执行 source 函数，传入 onInvalidate 作为参数 
-      return callWithErrorHandling(source, instance, 3 /* WATCH_CALLBACK */, [onInvalidate]); 
-    }; 
-  } 
-  let cleanup; 
-  const onInvalidate = (fn) => { 
-    cleanup = runner.options.onStop = () => { 
-      callWithErrorHandling(fn, instance, 4 /* WATCH_CLEANUP */); 
-    }; 
-  }; 
-  let scheduler; 
-  // 创建 scheduler 
-  if (flush === 'sync') { 
-    scheduler = invoke; 
-  } 
-  else if (flush === 'pre') { 
-    scheduler = job => { 
-      if (!instance || instance.isMounted) { 
-        queueJob(job); 
-      } 
-      else { 
-        job(); 
-      } 
-    }; 
-  } 
-  else { 
-    scheduler = job => queuePostRenderEffect(job, instance && instance.suspense); 
-  } 
-  // 创建 runner 
-  const runner = effect(getter, { 
-    lazy: true, 
-    computed: true, 
-    onTrack, 
-    onTrigger, 
-    scheduler 
-  }); 
-  recordInstanceBoundEffect(runner); 
-  // 立即执行 runner 
-  runner(); 
-  // 返回销毁函数 
-  return () => { 
-    stop(runner); 
-    if (instance) { 
-      remove(instance.effects, runner); 
-    } 
-  }; 
-} 
+function watchEffect(effect, options) {
+  return doWatch(effect, null, options);
+}
+function doWatch(source, cb, { immediate, deep, flush, onTrack, onTrigger } = EMPTY_OBJ) {
+  instance = currentInstance;
+  let getter;
+  if (isFunction(source)) {
+    getter = () => {
+      if (instance && instance.isUnmounted) {
+        return;
+      }
+       // 执行清理函数
+      if (cleanup) {
+        cleanup();
+      }
+      // 执行 source 函数，传入 onInvalidate 作为参数
+      return callWithErrorHandling(source, instance, 3 /* WATCH_CALLBACK */, [onInvalidate]);
+    };
+  }
+  let cleanup;
+  const onInvalidate = (fn) => {
+    cleanup = runner.options.onStop = () => {
+      callWithErrorHandling(fn, instance, 4 /* WATCH_CLEANUP */);
+    };
+  };
+  let scheduler;
+  // 创建 scheduler
+  if (flush === 'sync') {
+    scheduler = invoke;
+  }
+  else if (flush === 'pre') {
+    scheduler = job => {
+      if (!instance || instance.isMounted) {
+        queueJob(job);
+      }
+      else {
+        job();
+      }
+    };
+  }
+  else {
+    scheduler = job => queuePostRenderEffect(job, instance && instance.suspense);
+  }
+  // 创建 runner
+  const runner = effect(getter, {
+    lazy: true,
+    computed: true,
+    onTrack,
+    onTrigger,
+    scheduler
+  });
+  recordInstanceBoundEffect(runner);
+  // 立即执行 runner
+  runner();
+  // 返回销毁函数
+  return () => {
+    stop(runner);
+    if (instance) {
+      remove(instance.effects, runner);
+    }
+  };
+}
 ```
+
 可以看到，getter 函数就是对 source 函数的简单封装，它会先判断组件实例是否已经销毁，然后每次执行 source 函数前执行 cleanup 清理函数。
 
 watchEffect 内部创建的 runner 对应的 scheduler 对象就是 scheduler 函数本身，这样它再次执行时，就会执行这个 scheduler 函数，并且传入 runner 函数作为参数，其实就是按照一定的调度方式去执行基于 source 封装的 getter 函数。
@@ -4615,17 +4696,18 @@ watchEffect 内部创建的 runner 对应的 scheduler 对象就是 scheduler �
 有些时候，watchEffect 会注册一个副作用函数，在函数内部可以做一些异步操作，但是当这个 watcher 停止后，如果我们想去对这个异步操作做一些额外事情（比如取消这个异步操作），我们可以通过 onInvalidate 参数注册一个无效函数。
 
 ```
-import {ref, watchEffect } from 'vue' 
-const id = ref(0) 
-watchEffect(onInvalidate => { 
-  // 执行异步操作 
-  const token = performAsyncOperation(id.value) 
-  onInvalidate(() => { 
-    // 如果 id 发生变化或者 watcher 停止了，则执行逻辑取消前面的异步操作 
-    token.cancel() 
-  }) 
-}) 
+import {ref, watchEffect } from 'vue'
+const id = ref(0)
+watchEffect(onInvalidate => {
+  // 执行异步操作
+  const token = performAsyncOperation(id.value)
+  onInvalidate(() => {
+    // 如果 id 发生变化或者 watcher 停止了，则执行逻辑取消前面的异步操作
+    token.cancel()
+  })
+})
 ```
+
 我们利用 watchEffect 注册了一个副作用函数，它有一个 onInvalidate 参数。在这个函数内部通过 performAsyncOperation 执行某些异步操作，并且访问了 id 这个响应式对象，然后通过 onInvalidate 注册了一个回调函数。
 
 如果 id 发生变化或者 watcher 停止了，这个回调函数将会执行，然后执行 token.cancel 取消之前的异步操作。
@@ -4633,12 +4715,13 @@ watchEffect(onInvalidate => {
 我们来回顾 onInvalidate 在 doWatch 中的实现：
 
 ```
-const onInvalidate = (fn) => { 
-  cleanup = runner.options.onStop = () => { 
-    callWithErrorHandling(fn, instance, 4 /* WATCH_CLEANUP */); 
-  }; 
-}; 
+const onInvalidate = (fn) => {
+  cleanup = runner.options.onStop = () => {
+    callWithErrorHandling(fn, instance, 4 /* WATCH_CLEANUP */);
+  };
+};
 ```
+
 实际上，当你执行 onInvalidate 的时候，就是注册了一个 cleanup 和 runner 的 onStop 方法，这个方法内部会执行 fn，也就是你注册的无效回调函数。
 
 也就是说当响应式数据发生变化，会执行 cleanup 方法，当 watcher 被停止，会执行 onStop 方法，这两者都会执行注册的无效回调函数 fn。
@@ -4655,6 +4738,7 @@ const onInvalidate = (fn) => {
 最后，给你留一道思考题目，在组件中创建的自定义 watcher，在组件销毁的时候会被销毁吗？是如何做的呢？欢迎你在留言区与我分享。
 
 本节课的相关代码在源代码中的位置如下：
+
 ```
 packages/runtime-core/src/apiWatch.ts
 packages/runtime-core/src/scheduler.ts
@@ -4667,32 +4751,33 @@ Vue.js 组件的生命周期包括创建、更新、销毁等过程。在这些�
 在 Vue.js 2.x 中，我们通常会在组件对象中定义一些生命周期钩子函数，到了 Vue.js 3.0，依然兼容 Vue.js 2.x 生命周期的语法，但是 Composition API 提供了一些生命周期函数的 API，让我们可以主动注册不同的生命周期。
 
 ```
-// Vue.js 2.x 定义生命周期钩子函数 
-export default { 
-  created() { 
-    // 做一些初始化工作 
-  }, 
-  mounted() { 
-    // 可以拿到 DOM 节点 
-  }, 
-  beforeDestroy() { 
-    // 做一些清理操作 
-  } 
-} 
-//  Vue.js 3.x 生命周期 API 改写上例 
-import { onMounted, onBeforeUnmount } from 'vue' 
-export default { 
-  setup() { 
-    // 做一些初始化工作 
-    onMounted(() => { 
-      // 可以拿到 DOM 节点 
-    }) 
-    onBeforeUnmount(()=>{ 
-      // 做一些清理操作 
-    }) 
-  } 
+// Vue.js 2.x 定义生命周期钩子函数
+export default {
+  created() {
+    // 做一些初始化工作
+  },
+  mounted() {
+    // 可以拿到 DOM 节点
+  },
+  beforeDestroy() {
+    // 做一些清理操作
+  }
+}
+//  Vue.js 3.x 生命周期 API 改写上例
+import { onMounted, onBeforeUnmount } from 'vue'
+export default {
+  setup() {
+    // 做一些初始化工作
+    onMounted(() => {
+      // 可以拿到 DOM 节点
+    })
+    onBeforeUnmount(()=>{
+      // 做一些清理操作
+    })
+  }
 }
 ```
+
 可以看到，在 Vue.js 3.0 中，setup 函数已经替代了 Vue.js 2.x 的 beforeCreate 和 created 钩子函数，我们可以在 setup 函数做一些初始化工作，比如发送一个异步 Ajax 请求获取数据。
 
 我们用 onMounted API 替代了 Vue.js 2.x 的 mounted 钩子函数，用 onBeforeUnmount API 替代了 Vue.js 2.x 的 beforeDestroy 钩子函数。
@@ -4700,18 +4785,19 @@ export default {
 其实，Vue.js 3.0 针对 Vue.js 2.x 的生命周期钩子函数做了全面替换，映射关系如下：
 
 ```
-beforeCreate -> 使用 setup() 
-created -> 使用 use setup() 
-beforeMount -> onBeforeMount 
-mounted -> onMounted 
-beforeUpdate -> onBeforeUpdate 
-updated -> onUpdated 
-beforeDestroy-> onBeforeUnmount 
-destroyed -> onUnmounted 
-activated -> onActivated 
-deactivated -> onDeactivated 
+beforeCreate -> 使用 setup()
+created -> 使用 use setup()
+beforeMount -> onBeforeMount
+mounted -> onMounted
+beforeUpdate -> onBeforeUpdate
+updated -> onUpdated
+beforeDestroy-> onBeforeUnmount
+destroyed -> onUnmounted
+activated -> onActivated
+deactivated -> onDeactivated
 errorCaptured -> onErrorCaptured
 ```
+
 除此之外，Vue.js 3.0 还新增了两个用于调试的生命周期 API：onRenderTracked 和 onRenderTriggered。
 
 那么，这些生命周期钩子函数内部是如何实现的？它们又分别在组件生命周期的哪些阶段执行的？分别适用于哪些开发场景？
@@ -4722,39 +4808,42 @@ errorCaptured -> onErrorCaptured
 首先，我们来看这些钩子函数是如何注册的，先来看一下它们的实现：
 
 ```
-const onBeforeMount = createHook('bm' /* BEFORE_MOUNT */) 
-const onMounted = createHook('m' /* MOUNTED */) 
-const onBeforeUpdate = createHook('bu' /* BEFORE_UPDATE */) 
-const onUpdated = createHook('u' /* UPDATED */) 
-const onBeforeUnmount = createHook('bum' /* BEFORE_UNMOUNT */) 
-const onUnmounted = createHook('um' /* UNMOUNTED */) 
-const onRenderTriggered = createHook('rtg' /* RENDER_TRIGGERED */) 
-const onRenderTracked = createHook('rtc' /* RENDER_TRACKED */) 
-const onErrorCaptured = (hook, target = currentInstance) => { 
-  injectHook('ec' /* ERROR_CAPTURED */, hook, target) 
+const onBeforeMount = createHook('bm' /* BEFORE_MOUNT */)
+const onMounted = createHook('m' /* MOUNTED */)
+const onBeforeUpdate = createHook('bu' /* BEFORE_UPDATE */)
+const onUpdated = createHook('u' /* UPDATED */)
+const onBeforeUnmount = createHook('bum' /* BEFORE_UNMOUNT */)
+const onUnmounted = createHook('um' /* UNMOUNTED */)
+const onRenderTriggered = createHook('rtg' /* RENDER_TRIGGERED */)
+const onRenderTracked = createHook('rtc' /* RENDER_TRACKED */)
+const onErrorCaptured = (hook, target = currentInstance) => {
+  injectHook('ec' /* ERROR_CAPTURED */, hook, target)
 }
 ```
+
 我们发现除了 onErrorCaptured，其他钩子函数都是通过 createHook 函数创建的，通过传入不同的字符串来表示不同的钩子函数。
 
 那么，我们就来分析一下 createHook 钩子函数的实现原理：
 
 ```
-const createHook = function(lifecycle)  { 
-  return function (hook, target = currentInstance) { 
-    injectHook(lifecycle, hook, target) 
-  } 
+const createHook = function(lifecycle)  {
+  return function (hook, target = currentInstance) {
+    injectHook(lifecycle, hook, target)
+  }
 }
 ```
+
 createHook 会返回一个函数，它的内部通过 injectHook 注册钩子函数。你可能会问，这里为什么要用 createHook 做一层封装而不直接使用 injectHook API 呢？比如：
 
 ```
-const onBeforeMount = function(hook,target = currentInstance) { 
-  injectHook('bm', hook, target) 
-} 
-const onMounted = function(hook,target = currentInstance) { 
-  injectHook('m', hook, target) 
+const onBeforeMount = function(hook,target = currentInstance) {
+  injectHook('bm', hook, target)
+}
+const onMounted = function(hook,target = currentInstance) {
+  injectHook('m', hook, target)
 }
 ```
+
 这样实现当然也是可以的，不过，我们可以发现，这些钩子函数内部执行逻辑很类似，都是执行 injectHook，唯一的区别是第一个参数字符串不同，所以这样的代码是可以进一步封装的，即用 createHook 封装，这就是一个典型的函数柯里化技巧。
 
 在调用 createHook 返回的函数时，也就不需要传入 lifecycle 字符串，因为它在执行 createHook 函数时就已经实现了该参数的保留。
@@ -4762,38 +4851,39 @@ const onMounted = function(hook,target = currentInstance) {
 所以，当我们通过 onMounted(hook) 注册一个钩子函数时，内部就是通过 injectHook('m', hook) 去注册的，接下来我们来进一步看 injectHook 函数的实现原理：
 
 ```
-function injectHook(type, hook, target = currentInstance, prepend = false) { 
-  const hooks = target[type] || (target[type] = []) 
-  // 封装 hook 钩子函数并缓存 
-  const wrappedHook = hook.__weh || 
-    (hook.__weh = (...args) => { 
-      if (target.isUnmounted) { 
-        return 
-      } 
-      // 停止依赖收集 
-      pauseTracking() 
-      // 设置 target 为当前运行的组件实例 
-      setCurrentInstance(target) 
-      // 执行钩子函数 
-      const res = callWithAsyncErrorHandling(hook, target, type, args) 
-      setCurrentInstance(null) 
-      // 恢复依赖收集 
-      resetTracking() 
-      return res 
-    }) 
-  if (prepend) { 
-    hooks.unshift(wrappedHook) 
-  } 
-  else { 
-    hooks.push(wrappedHook) 
-  } 
+function injectHook(type, hook, target = currentInstance, prepend = false) {
+  const hooks = target[type] || (target[type] = [])
+  // 封装 hook 钩子函数并缓存
+  const wrappedHook = hook.__weh ||
+    (hook.__weh = (...args) => {
+      if (target.isUnmounted) {
+        return
+      }
+      // 停止依赖收集
+      pauseTracking()
+      // 设置 target 为当前运行的组件实例
+      setCurrentInstance(target)
+      // 执行钩子函数
+      const res = callWithAsyncErrorHandling(hook, target, type, args)
+      setCurrentInstance(null)
+      // 恢复依赖收集
+      resetTracking()
+      return res
+    })
+  if (prepend) {
+    hooks.unshift(wrappedHook)
+  }
+  else {
+    hooks.push(wrappedHook)
+  }
 }
 ```
+
 结合代码来看，该函数主要是对用户注册的钩子函数 hook 做了一层封装，然后添加到一个数组中，把数组保存在当前组件实例的 target 上，这里，key 是用来区分钩子函数的字符串。比如， onMounted 注册的钩子函数在组件实例上就是通过 instance.m 来保存。
 
 这样的设计其实非常好理解，因为生命周期的钩子函数，是在组件生命周期的各个阶段执行，所以钩子函数必须要保存在当前的组件实例上，这样后面就可以在组件实例上通过不同的字符串 key 找到对应的钩子函数数组并执行。
 
-对于相同的钩子函数，会把封装的 wrappedHook 钩子函数缓存到 hook.__weh 中，这样后续通过 scheduler 方式执行的钩子函数就会被去重。
+对于相同的钩子函数，会把封装的 wrappedHook 钩子函数缓存到 hook._weh 中，这样后续通过 scheduler 方式执行的钩子函数就会被去重。
 
 在后续执行 wrappedHook 函数时，会先停止依赖收集，因为钩子函数内部访问的响应式对象，通常都已经执行过依赖收集，所以钩子函数执行的时候没有必要再次收集依赖，毕竟这个过程也有一定的性能消耗。
 
@@ -4809,34 +4899,35 @@ onBeforeMount 和 onMounted
 onBeforeMount 注册的 beforeMount 钩子函数会在组件挂载之前执行，onMounted 注册的 mounted 钩子函数会在组件挂载之后执行。我们来回顾一下组件副作用渲染函数关于组件挂载部分的实现：
 
 ```
-const setupRenderEffect = (instance, initialVNode, container, anchor, parentSuspense, isSVG, optimized) => { 
-  // 创建响应式的副作用渲染函数 
-  instance.update = effect(function componentEffect() { 
-    if (!instance.isMounted) { 
-      // 获取组件实例上通过 onBeforeMount 钩子函数和 onMounted 注册的钩子函数 
-      const { bm, m } = instance; 
-      // 渲染组件生成子树 vnode 
-      const subTree = (instance.subTree = renderComponentRoot(instance)) 
-      // 执行 beforemount 钩子函数 
-      if (bm) { 
-        invokeArrayFns(bm) 
-      } 
-      // 把子树 vnode 挂载到 container 中 
-      patch(null, subTree, container, anchor, instance, parentSuspense, isSVG) 
-      // 保留渲染生成的子树根 DOM 节点 
-      initialVNode.el = subTree.el 
-      // 执行 mounted 钩子函数 
-      if (m) { 
-        queuePostRenderEffect(m, parentSuspense) 
-      } 
-      instance.isMounted = true 
-    } 
-    else { 
-      // 更新组件 
-    } 
-  }, prodEffectOptions) 
+const setupRenderEffect = (instance, initialVNode, container, anchor, parentSuspense, isSVG, optimized) => {
+  // 创建响应式的副作用渲染函数
+  instance.update = effect(function componentEffect() {
+    if (!instance.isMounted) {
+      // 获取组件实例上通过 onBeforeMount 钩子函数和 onMounted 注册的钩子函数
+      const { bm, m } = instance;
+      // 渲染组件生成子树 vnode
+      const subTree = (instance.subTree = renderComponentRoot(instance))
+      // 执行 beforemount 钩子函数
+      if (bm) {
+        invokeArrayFns(bm)
+      }
+      // 把子树 vnode 挂载到 container 中
+      patch(null, subTree, container, anchor, instance, parentSuspense, isSVG)
+      // 保留渲染生成的子树根 DOM 节点
+      initialVNode.el = subTree.el
+      // 执行 mounted 钩子函数
+      if (m) {
+        queuePostRenderEffect(m, parentSuspense)
+      }
+      instance.isMounted = true
+    }
+    else {
+      // 更新组件
+    }
+  }, prodEffectOptions)
 }
 ```
+
 在执行 patch 挂载组件之前，会检测组件实例上是有否有注册的 beforeMount 钩子函数 bm，如果有则通过 invokeArrayFns 执行它，因为用户可以通过多次执行 onBeforeMount 函数注册多个 beforeMount 钩子函数，所以这里 instance.bm 是一个数组，通过遍历这个数组来依次执行 beforeMount 钩子函数。
 
 在执行 patch 挂载组件之后，会检查组件实例上是否有注册的 mounted 钩子函数 m，如果有的话则执行 queuePostRenderEffect，把 mounted 钩子函数推入 postFlushCbs 中，然后在整个应用 render 完毕后，同步执行 flushPostFlushCbs 函数调用 mounted 钩子函数。
@@ -4857,53 +4948,54 @@ onBeforeUpdate 和 onUpdated
 onBeforeUpdate 注册的 beforeUpdate 钩子函数会在组件更新之前执行，onUpdated 注册的 updated 钩子函数会在组件更新之后执行。我们来回顾一下组件副作用渲染函数关于组件更新的实现：
 
 ```
-const setupRenderEffect = (instance, initialVNode, container, anchor, parentSuspense, isSVG, optimized) => { 
-  // 创建响应式的副作用渲染函数 
-  instance.update = effect(function componentEffect() { 
-    if (!instance.isMounted) { 
-      // 渲染组件 
-    } 
-    else { 
-      // 更新组件 
-      // 获取组件实例上通过 onBeforeUpdate 钩子函数和 onUpdated 注册的钩子函数 
-      let { next, vnode, bu, u } = instance 
-      // next 表示新的组件 vnode 
-      if (next) { 
-        // 更新组件 vnode 节点信息 
-        updateComponentPreRender(instance, next, optimized) 
-      } 
-      else { 
-        next = vnode 
-      } 
-      // 渲染新的子树 vnode 
-      const nextTree = renderComponentRoot(instance) 
-      // 缓存旧的子树 vnode 
-      const prevTree = instance.subTree 
-      // 更新子树 vnode 
-      instance.subTree = nextTree 
-      // 执行 beforeUpdate 钩子函数 
-      if (bu) { 
-        invokeArrayFns(bu) 
-      } 
-      // 组件更新核心逻辑，根据新旧子树 vnode 做 patch 
-      patch(prevTree, nextTree, 
- // 如果在 teleport 组件中父节点可能已经改变，所以容器直接找旧树 DOM 元素的父节点 
-        hostParentNode(prevTree.el), 
-   // 缓存更新后的 DOM 节点 
-        getNextHostNode(prevTree), 
-        instance, 
-        parentSuspense, 
-        isSVG) 
-      // 缓存更新后的 DOM 节点 
-      next.el = nextTree.el 
-      // 执行 updated 钩子函数 
-      if (u) { 
-        queuePostRenderEffect(u, parentSuspense) 
-      } 
-    } 
-  }, prodEffectOptions) 
+const setupRenderEffect = (instance, initialVNode, container, anchor, parentSuspense, isSVG, optimized) => {
+  // 创建响应式的副作用渲染函数
+  instance.update = effect(function componentEffect() {
+    if (!instance.isMounted) {
+      // 渲染组件
+    }
+    else {
+      // 更新组件
+      // 获取组件实例上通过 onBeforeUpdate 钩子函数和 onUpdated 注册的钩子函数
+      let { next, vnode, bu, u } = instance
+      // next 表示新的组件 vnode
+      if (next) {
+        // 更新组件 vnode 节点信息
+        updateComponentPreRender(instance, next, optimized)
+      }
+      else {
+        next = vnode
+      }
+      // 渲染新的子树 vnode
+      const nextTree = renderComponentRoot(instance)
+      // 缓存旧的子树 vnode
+      const prevTree = instance.subTree
+      // 更新子树 vnode
+      instance.subTree = nextTree
+      // 执行 beforeUpdate 钩子函数
+      if (bu) {
+        invokeArrayFns(bu)
+      }
+      // 组件更新核心逻辑，根据新旧子树 vnode 做 patch
+      patch(prevTree, nextTree,
+ // 如果在 teleport 组件中父节点可能已经改变，所以容器直接找旧树 DOM 元素的父节点
+        hostParentNode(prevTree.el),
+   // 缓存更新后的 DOM 节点
+        getNextHostNode(prevTree),
+        instance,
+        parentSuspense,
+        isSVG)
+      // 缓存更新后的 DOM 节点
+      next.el = nextTree.el
+      // 执行 updated 钩子函数
+      if (u) {
+        queuePostRenderEffect(u, parentSuspense)
+      }
+    }
+  }, prodEffectOptions)
 }
 ```
+
 在执行 patch 更新组件之前，会检测组件实例上是有否有注册的 beforeUpdate 钩子函数 bu，如果有则通过 invokeArrayFns 执行它。
 
 在执行 patch 更新组件之后，会检查组件实例上是否有注册的 updated 钩子函数 u，如果有，则通过 queuePostRenderEffect 把 updated 钩子函数推入 postFlushCbs 中，因为组件的更新本身就是在 nextTick 后进行 flushJobs，因此此时再次执行 queuePostRenderEffect 推入到队列的任务，会在同一个 Tick 内执行这些 postFlushCbs，也就是执行所有 updated 的钩子函数。
@@ -4920,30 +5012,31 @@ onBeforeUnmount 和 onUnmounted
 onBeforeUnmount 注册的 beforeUnMount 钩子函数会在组件销毁之前执行，onUnmounted 注册的 unmounted 钩子函数会在组件销毁之后执行 。我们来看一下组件销毁相关逻辑实现：
 
 ```
-const unmountComponent = (instance, parentSuspense, doRemove) => { 
-  const { bum, effects, update, subTree, um } = instance 
-  // 执行 beforeUnmount 钩子函数 
-  if (bum) { 
-    invokeArrayFns(bum) 
-  } 
-  // 清理组件引用的 effects 副作用函数 
-  if (effects) { 
-    for (let i = 0; i < effects.length; i++) { 
-      stop(effects[i]) 
-    } 
-  } 
-  // 如果一个异步组件在加载前就销毁了，则不会注册副作用渲染函数 
-  if (update) { 
-    stop(update) 
-    // 调用 unmount 销毁子树 
-    unmount(subTree, instance, parentSuspense, doRemove) 
-  } 
-  // 执行 unmounted 钩子函数 
-  if (um) { 
-    queuePostRenderEffect(um, parentSuspense) 
-  } 
+const unmountComponent = (instance, parentSuspense, doRemove) => {
+  const { bum, effects, update, subTree, um } = instance
+  // 执行 beforeUnmount 钩子函数
+  if (bum) {
+    invokeArrayFns(bum)
+  }
+  // 清理组件引用的 effects 副作用函数
+  if (effects) {
+    for (let i = 0; i < effects.length; i++) {
+      stop(effects[i])
+    }
+  }
+  // 如果一个异步组件在加载前就销毁了，则不会注册副作用渲染函数
+  if (update) {
+    stop(update)
+    // 调用 unmount 销毁子树
+    unmount(subTree, instance, parentSuspense, doRemove)
+  }
+  // 执行 unmounted 钩子函数
+  if (um) {
+    queuePostRenderEffect(um, parentSuspense)
+  }
 }
 ```
+
 其实整个组件销毁的逻辑很简单，主要就是清理组件实例上绑定的 effects 副作用函数和注册的副作用渲染函数 update，以及调用 unmount 销毁子树。
 
 unmount 主要就是遍历子树，它会通过递归的方式来销毁子节点，遇到组件节点时执行 unmountComponent，遇到普通节点时则删除 DOM 元素。组件的销毁过程和渲染过程类似，都是递归的过程。
@@ -4957,31 +5050,32 @@ unmount 主要就是遍历子树，它会通过递归的方式来销毁子节点
 虽然组件在销毁阶段会清理一些定义的 effects 函数，删除组件内部的 DOM 元素，但是有一些需要清理的对象，组件并不能自动完成它们的清理，比如你在组件内部创建一个定时器，就应该在 beforeUnmount 或者 unmounted 钩子函数中清除，举个例子：
 
 ```
-<template> 
-  <div> 
-    <div> 
-      <p>{{count}}</p> 
-    </div> 
-  </div> 
-</template> 
-<script> 
-  import { ref, onBeforeUnmount } from 'vue' 
-  export default { 
-    setup () { 
-      const count = ref(0) 
-      const timer = setInterval(() => { 
-        console.log(count.value++) 
-      }, 1000) 
-      onBeforeUnmount(() => { 
-        clearInterval(timer) 
-      }) 
-      return { 
-        count 
-      } 
-    } 
-  } 
+<template>
+  <div>
+    <div>
+      <p>{{count}}</p>
+    </div>
+  </div>
+</template>
+<script>
+  import { ref, onBeforeUnmount } from 'vue'
+  export default {
+    setup () {
+      const count = ref(0)
+      const timer = setInterval(() => {
+        console.log(count.value++)
+      }, 1000)
+      onBeforeUnmount(() => {
+        clearInterval(timer)
+      })
+      return {
+        count
+      }
+    }
+  }
 </script>
 ```
+
 可以看到，这里我们在 setup 函数内部定义了一个 timer 计时器， count 每秒会加 1 并在控制台中输出。如果这个组件被销毁，就会触发 onBeforeUnmount 注册的 beforeUnmount 钩子函数，然后清除定时器。如果你不清除，就会发现组件销毁后，虽然 DOM 被移除了，计时器仍然存在，并且会一直计时并在控制台输出，这就造成了不必要的内存泄漏。
 
 接下来，我们来看通过 onErrorCaptured 注册的钩子函数。
@@ -4992,32 +5086,33 @@ onErrorCaptured
 我们先来看一下它的实现：
 
 ```
-function handleError(err, instance, type) { 
-  const contextVNode = instance ? instance.vnode : null 
-  if (instance) { 
-    let cur = instance.parent 
-    // 为了兼容 2.x 版本，暴露组件实例给钩子函数 
-    const exposedInstance = instance.proxy 
-    // 获取错误信息 
-    const errorInfo = (process.env.NODE_ENV !== 'production') ? ErrorTypeStrings[type] : type 
-    // 尝试向上查找所有父组件，执行 errorCaptured 钩子函数 
-    while (cur) { 
-      const errorCapturedHooks = cur.ec 
-      if (errorCapturedHooks) { 
-        for (let i = 0; i < errorCapturedHooks.length; i++) { 
-          // 如果执行的 errorCaptured 钩子函数并返回 true，则停止向上查找。、 
-          if (errorCapturedHooks[i](err, exposedInstance, errorInfo)) { 
-            return 
-          } 
-        } 
-      } 
-      cur = cur.parent 
-    } 
-  } 
-  // 往控制台输出未处理的错误 
-  logError(err, type, contextVNode) 
+function handleError(err, instance, type) {
+  const contextVNode = instance ? instance.vnode : null
+  if (instance) {
+    let cur = instance.parent
+    // 为了兼容 2.x 版本，暴露组件实例给钩子函数
+    const exposedInstance = instance.proxy
+    // 获取错误信息
+    const errorInfo = (process.env.NODE_ENV !== 'production') ? ErrorTypeStrings[type] : type
+    // 尝试向上查找所有父组件，执行 errorCaptured 钩子函数
+    while (cur) {
+      const errorCapturedHooks = cur.ec
+      if (errorCapturedHooks) {
+        for (let i = 0; i < errorCapturedHooks.length; i++) {
+          // 如果执行的 errorCaptured 钩子函数并返回 true，则停止向上查找。、
+          if (errorCapturedHooks[i](err, exposedInstance, errorInfo)) {
+            return
+          }
+        }
+      }
+      cur = cur.parent
+    }
+  }
+  // 往控制台输出未处理的错误
+  logError(err, type, contextVNode)
 }
 ```
+
 handleError 的实现其实很简单，它会从当前报错的组件的父组件实例开始，尝试去查找注册的 errorCaptured 钩子函数，如果有则遍历执行并且判断 errorCaptured 钩子函数的返回值是否为 true，如果是则说明这个错误已经得到了正确的处理，就会直接结束。
 
 否则会继续遍历，遍历完当前组件实例的 errorCaptured 钩子函数后，如果这个错误还没得到正确处理，则向上查找它的父组件实例，以同样的逻辑去查找是否有正确处理该错误的 errorCaptured 钩子函数，直到查找完毕。
@@ -5032,17 +5127,18 @@ onRenderTracked 和 onRenderTriggered
 onRenderTracked 和 onRenderTriggered 是 Vue.js 3.0 新增的生命周期 API，它们是在开发阶段渲染调试用的。这里再次回顾一下我们创建的副作用渲染函数的第二个参数（这里你可以去 06 课时“ 响应式：响应式内部的实现原理是怎样的？ ”中复习一下），在开发环境下它的代码是这样的：
 
 ```
-instance.update = effect(function componentEffect() { 
-// 创建或者更组件 
-}, createDevEffectOptions(instance)) 
-function createDevEffectOptions(instance) { 
-  return { 
-    scheduler: queueJob, 
-    onTrack: instance.rtc ? e => invokeArrayFns(instance.rtc, e) : void 0, 
-    onTrigger: instance.rtg ? e => invokeArrayFns(instance.rtg, e) : void 0 
-  } 
+instance.update = effect(function componentEffect() {
+// 创建或者更组件
+}, createDevEffectOptions(instance))
+function createDevEffectOptions(instance) {
+  return {
+    scheduler: queueJob,
+    onTrack: instance.rtc ? e => invokeArrayFns(instance.rtc, e) : void 0,
+    onTrigger: instance.rtg ? e => invokeArrayFns(instance.rtg, e) : void 0
+  }
 }
 ```
+
 通过上述代码我们发现，onRenderTracked 和 onRenderTriggered 注册的钩子函数，原来是在副作用渲染函数的 onTrack 和 onTrigger 对应的函数中执行的。
 
 我们当时介绍 effect 副作用函数的配置时并没有介绍这两个属性，那么它们是做什么用的呢？
@@ -5050,23 +5146,24 @@ function createDevEffectOptions(instance) {
 这就要先来看 onTrack 函数的执行时机。我们知道当访问一个响应式对象时，会执行 track 函数做依赖收集，我们来回顾一下它的实现：
 
 ```
-function track(target, type, key) { 
-  // 执行一些依赖收集的操作 
-  if (!dep.has(activeEffect)) { 
-    dep.add(activeEffect) 
-    activeEffect.deps.push(dep) 
-    if ((process.env.NODE_ENV !== 'production') && activeEffect.options.onTrack) { 
-      // 执行 onTrack 函数 
-      activeEffect.options.onTrack({ 
-        effect: activeEffect, 
-        target, 
-        type, 
-        key 
-      }) 
-    } 
-  } 
+function track(target, type, key) {
+  // 执行一些依赖收集的操作
+  if (!dep.has(activeEffect)) {
+    dep.add(activeEffect)
+    activeEffect.deps.push(dep)
+    if ((process.env.NODE_ENV !== 'production') && activeEffect.options.onTrack) {
+      // 执行 onTrack 函数
+      activeEffect.options.onTrack({
+        effect: activeEffect,
+        target,
+        type,
+        key
+      })
+    }
+  }
 }
 ```
+
 可以看到，track 函数先执行依赖收集，然后在非生产环境下检测当前的 activeEffect 的配置有没有定义 onTrack 函数，如果有的则执行该方法。
 
 因此对应到副作用渲染函数，当它执行的时候，activeEffect 就是这个副作用渲染函数，这时访问响应式数据就会触发 track 函数，在执行完依赖收集后，会执行 onTrack 函数，也就是遍历执行我们注册的 renderTracked 钩子函数。
@@ -5074,32 +5171,33 @@ function track(target, type, key) {
 接下来，我们再来回顾一下 trigger 函数的实现：
 
 ```
-function trigger (target, type, key, newValue) { 
-  // 添加要运行的 effects 集合 
-  const run = (effect) => { 
-    if ((process.env.NODE_ENV !== 'production') && effect.options.onTrigger) { 
-        // 执行 onTrigger 
-      effect.options.onTrigger({ 
-        effect, 
-        target, 
-        key, 
-        type, 
-        newValue, 
-        oldValue, 
-        oldTarget 
-      }) 
-    } 
-    if (effect.options.scheduler) { 
-      effect.options.scheduler(effect) 
-    } 
-    else { 
-      effect() 
-    } 
-  } 
-  // 遍历执行 effects 
-  effects.forEach(run) 
+function trigger (target, type, key, newValue) {
+  // 添加要运行的 effects 集合
+  const run = (effect) => {
+    if ((process.env.NODE_ENV !== 'production') && effect.options.onTrigger) {
+        // 执行 onTrigger
+      effect.options.onTrigger({
+        effect,
+        target,
+        key,
+        type,
+        newValue,
+        oldValue,
+        oldTarget
+      })
+    }
+    if (effect.options.scheduler) {
+      effect.options.scheduler(effect)
+    }
+    else {
+      effect()
+    }
+  }
+  // 遍历执行 effects
+  effects.forEach(run)
 }
 ```
+
 我们知道，trigger 函数首先要创建运行的 effects 集合，然后遍历执行，在执行的过程中，会在非生产环境下检测待执行的 effect 配置中有没有定义 onTrigger 函数，如果有则执行该方法。
 
 因此对应到我们的副作用渲染函数，当它内部依赖的响应式对象值被修改后，就会触发 trigger 函数 ，这个时候副作用渲染函数就会被添加到要运行的 effects 集合中，在遍历执行 effects 的时候会执行 onTrigger 函数，也就是遍历执行我们注册的 renderTriggered 钩子函数。
@@ -5107,38 +5205,39 @@ function trigger (target, type, key, newValue) {
 了解完 renderTracked 和 renderTriggered 钩子函数的执行时机后，我们来看一下实际场景的应用：
 
 ```
-<template> 
-  <div> 
-    <div> 
-      <p>{{count}}</p> 
-      <button @click="increase">Increase</button> 
-    </div> 
-  </div> 
-</template> 
-<script> 
-  import { ref, onRenderTracked, onRenderTriggered } from 'vue' 
-  export default { 
-    setup () { 
-      const count = ref(0) 
-      function increase () { 
-        count.value++ 
-      } 
-      onRenderTracked((e) => { 
-        console.log(e) 
-        debugger 
-      }) 
-      onRenderTriggered((e) => { 
-        console.log(e) 
-        debugger 
-      }) 
-      return { 
-        count, 
-        increase 
-      } 
-    } 
-  } 
+<template>
+  <div>
+    <div>
+      <p>{{count}}</p>
+      <button @click="increase">Increase</button>
+    </div>
+  </div>
+</template>
+<script>
+  import { ref, onRenderTracked, onRenderTriggered } from 'vue'
+  export default {
+    setup () {
+      const count = ref(0)
+      function increase () {
+        count.value++
+      }
+      onRenderTracked((e) => {
+        console.log(e)
+        debugger
+      })
+      onRenderTriggered((e) => {
+        console.log(e)
+        debugger
+      })
+      return {
+        count,
+        increase
+      }
+    }
+  }
 </script>
 ```
+
 像这样在开发阶段，我们可以通过注册这两个钩子函数，来追踪组件渲染的依赖来源以及触发组件重新渲染的数据更新来源。
 
 总结
@@ -5146,13 +5245,12 @@ function trigger (target, type, key, newValue) {
 
 最后，我们通过一张图再来直观地感受一下组件的各个生命周期：
 
-
-
 Vue.js 3.0 还有 2 个生命周期 API，分别是 onActivated 和 onDeactivated，我们将会在介绍 KeepAlive 组件时详细分析。
 
 最后，给你留一道思考题目，如果你想在路由组件切换的时候，取消组件正在发送的异步 Ajax 请求，那你应该在哪个生命周期写这个逻辑呢？欢迎你在留言区与我分享。
 
 本节课的相关代码在源代码中的位置如下：
+
 ```
 packages/runtime-core/src/apiLifecycle.ts
 packages/runtime-core/src/renderer.ts
@@ -5166,23 +5264,25 @@ Vue.js 为我们提供了很多组件通讯的方式，常见的是父子组件�
 Vue.js 2.x 给我们提供了一种依赖注入的解决方案，即在祖先组件提供一个 provide 选项，举个例子：
 
 ```
-// Provider 
-export default { 
-  provide: function () { 
-    return { 
-      foo: this.foo 
-    } 
-  } 
+// Provider
+export default {
+  provide: function () {
+    return {
+      foo: this.foo
+    }
+  }
 }
 ```
+
 这就相当于在祖先组件提供 foo 这个变量数据，我们就可以在任意子孙组件中注入这个变量数据：
 
 ```
-// Consumer 
-export default { 
-  inject: ['foo'] 
+// Consumer
+export default {
+  inject: ['foo']
 }
 ```
+
 这样，我们就可以在子孙组件中通过 this.foo 访问祖先组件提供的数据，以达到组件通讯的目的。
 
 到了 Vue.js 3.0，除了可以继续沿用这种 Options 的依赖注入，还可以使用依赖注入的 API 函数 provide 和 inject，你可以在 setup 函数中调用它们。
@@ -5190,29 +5290,31 @@ export default {
 举个例子，我们在祖先组件调用 provide API：
 
 ```
-// Provider 
-import { provide, ref } from 'vue' 
-export default { 
-  setup() { 
-    const theme = ref('dark') 
-    provide('theme', theme) 
-  } 
+// Provider
+import { provide, ref } from 'vue'
+export default {
+  setup() {
+    const theme = ref('dark')
+    provide('theme', theme)
+  }
 }
 ```
+
 然后在子孙组件调用 inject API：
 
 ```
-// Consumer 
-import { inject } from 'vue' 
-export default { 
-  setup() { 
-    const theme = inject('theme', 'light') 
-    return { 
-      theme 
-    } 
-  } 
+// Consumer
+import { inject } from 'vue'
+export default {
+  setup() {
+    const theme = inject('theme', 'light')
+    return {
+      theme
+    }
+  }
 }
 ```
+
 这里要说明的是，inject 函数接受第二个参数作为默认值，如果祖先组件上下文没有提供 theme，则使用这个默认值。
 
 实际上，你可以把依赖注入看作一部分“大范围有效的 prop”，而且它的规则更加宽松：祖先组件不需要知道哪些后代组件在使用它提供的数据，后代组件也不需要知道注入的数据来自哪里。
@@ -5223,59 +5325,60 @@ provide API
 我们先来分析 provide API 的实现原理：
 
 ```
-function provide(key, value) { 
-  let provides = currentInstance.provides 
-  const parentProvides = currentInstance.parent && currentInstance.parent.provides 
-  if (parentProvides === provides) { 
-    provides = currentInstance.provides = Object.create(parentProvides) 
-  } 
-  provides[key] = value 
+function provide(key, value) {
+  let provides = currentInstance.provides
+  const parentProvides = currentInstance.parent && currentInstance.parent.provides
+  if (parentProvides === provides) {
+    provides = currentInstance.provides = Object.create(parentProvides)
+  }
+  provides[key] = value
 }
 ```
+
 在创建组件实例的时候，组件实例的 provides 对象指向父组件实例的 provides 对象：
 
 ```
-const instance = { 
-  // 依赖注入相关 
-  provides: parent ? parent.provides : Object.create(appContext.provides), 
-  // 其它属性 
-  // ... 
+const instance = {
+  // 依赖注入相关
+  provides: parent ? parent.provides : Object.create(appContext.provides),
+  // 其它属性
+  // ...
 }
 ```
+
 这里，我们可以通过一张图直观感受一下它们之间的关系：
-
-
 
 所以在默认情况下，组件实例的 provides 继承它的父组件，但是当组件实例需要提供自己的值的时候，它使用父级提供的对象创建自己的 provides 的对象原型。通过这种方式，在 inject 阶段，我们可以非常容易通过原型链查找来自直接父级提供的数据。
 
 另外，如果组件实例提供和父级 provides 中有相同 key 的数据，是可以覆盖父级提供的数据。举个例子：
 
 ```
-import { createApp, h, provide, inject } from 'vue' 
-const ProviderOne = { 
-  setup () { 
-    provide('foo', 'foo') 
-    provide('bar', 'bar') 
-    return () => h(ProviderTwo) 
-  } 
-} 
-const ProviderTwo = { 
-  setup () { 
-    provide('foo', 'fooOverride') 
-    provide('baz', 'baz') 
-    return () => h(Consumer) 
-  } 
-} 
-const Consumer = { 
-  setup () { 
-    const foo = inject('foo') 
-    const bar = inject('bar') 
-    const baz = inject('baz') 
-    return () => h('div', [foo, bar, baz].join('&')) 
-  } 
-} 
+import { createApp, h, provide, inject } from 'vue'
+const ProviderOne = {
+  setup () {
+    provide('foo', 'foo')
+    provide('bar', 'bar')
+    return () => h(ProviderTwo)
+  }
+}
+const ProviderTwo = {
+  setup () {
+    provide('foo', 'fooOverride')
+    provide('baz', 'baz')
+    return () => h(Consumer)
+  }
+}
+const Consumer = {
+  setup () {
+    const foo = inject('foo')
+    const bar = inject('bar')
+    const baz = inject('baz')
+    return () => h('div', [foo, bar, baz].join('&'))
+  }
+}
 createApp(ProviderOne).mount('#app')
 ```
+
 可以看到，这是一个嵌套 provider 的情况。根据 provide 函数的实现，ProviderTwo 提供的 key 为 foo 的 provider 会覆盖 ProviderOne 提供的 key 为 foo 的 provider，所以最后渲染在 Consumer 组件上的就是 fooOverride&bar&baz 。
 
 接下来，我们来分析另一个依赖注入的 API —— inject。
@@ -5284,22 +5387,23 @@ inject API
 我们先来看 inject API 的实现原理：
 
 ```
-function inject(key, defaultValue) { 
-  const instance = currentInstance || currentRenderingInstance 
-  if (instance) { 
-    const provides = instance.provides 
-    if (key in provides) { 
-      return provides[key] 
-    } 
-    else if (arguments.length > 1) { 
-      return defaultValue 
-    } 
-    else if ((process.env.NODE_ENV !== 'production')) { 
-      warn(`injection "${String(key)}" not found.`) 
-    } 
-  } 
+function inject(key, defaultValue) {
+  const instance = currentInstance || currentRenderingInstance
+  if (instance) {
+    const provides = instance.provides
+    if (key in provides) {
+      return provides[key]
+    }
+    else if (arguments.length > 1) {
+      return defaultValue
+    }
+    else if ((process.env.NODE_ENV !== 'production')) {
+      warn(`injection "${String(key)}" not found.`)
+    }
+  }
 }
 ```
+
 前文我们已经分析了 provide 的实现后，在此基础上，理解 inject 的实现就非常简单了。inject 支持两个参数，第一个参数是 key，我们可以访问组件实例中的 provides 对象对应的 key，层层查找父级提供的数据。第二个参数是默认值，如果查找不到数据，则直接返回默认值。
 
 如果既查找不到数据且也没有传入默认值，则在非生产环境下报警告，提示用户找不到这个注入的数据。
@@ -5312,27 +5416,29 @@ function inject(key, defaultValue) {
 我们先来看提问者给出的一个模块化共享数据的示例，即首先在根组件创建一个共享的数据 sharedData：
 
 ```
-// Root.js 
-export const sharedData = ref('') 
-export default { 
-  name: 'Root', 
+// Root.js
+export const sharedData = ref('')
+export default {
+  name: 'Root',
   setup() {
-    // ... 
-  }, 
-  // ... 
+    // ...
+  },
+  // ...
 }
 ```
+
 然后在子组件中使用 sharedData：
 
 ```
-import { sharedData } from './Root.js' 
-export default { 
-  name: 'Root', 
+import { sharedData } from './Root.js'
+export default {
+  name: 'Root',
   setup() {
-    // 这里直接使用 sharedData 即可 
-  } 
+    // 这里直接使用 sharedData 即可
+  }
 }
 ```
+
 当然，从这个示例上来看，模块化的方式是可以共享数据，但是 provide 和 inject 与模块化方式有如下几点不同。
 
 作用域不同
@@ -5350,10 +5456,11 @@ export default {
 比如允许用户传递一个参数：
 
 ```
-export function getShareData(context) { 
-  // 根据不同的 context 参数返回不同的数据 
+export function getShareData(context) {
+  // 根据不同的 context 参数返回不同的数据
 }
 ```
+
 掌握了这些不同，在不同场景下你就应该知道选择哪种方式提供数据了。
 
 依赖注入的缺陷和应用场景
@@ -5368,64 +5475,65 @@ export function getShareData(context) {
 这里来举一个 Element-UI 组件库 Select 组件的例子：
 
 ```
-<template> 
-  <el-select v-model="value" placeholder="请选择"> 
-    <el-option 
-      v-for="item in options" 
-      :key="item.value" 
-      :label="item.label" 
-      :value="item.value"> 
-    </el-option> 
-  </el-select> 
-</template> 
-<script> 
-  export default { 
-    data() { 
-      return { 
-        options: [{ 
-          value: '选项1', 
-          label: '黄金糕' 
-        }, { 
-          value: '选项2', 
-          label: '双皮奶' 
-        }, { 
-          value: '选项3', 
-          label: '蚵仔煎' 
-        }, { 
-          value: '选项4', 
-          label: '龙须面' 
-        }, { 
-          value: '选项5', 
-          label: '北京烤鸭' 
-        }], 
-        value: '' 
-      } 
-    } 
-  } 
+<template>
+  <el-select v-model="value" placeholder="请选择">
+    <el-option
+      v-for="item in options"
+      :key="item.value"
+      :label="item.label"
+      :value="item.value">
+    </el-option>
+  </el-select>
+</template>
+<script>
+  export default {
+    data() {
+      return {
+        options: [{
+          value: '选项1',
+          label: '黄金糕'
+        }, {
+          value: '选项2',
+          label: '双皮奶'
+        }, {
+          value: '选项3',
+          label: '蚵仔煎'
+        }, {
+          value: '选项4',
+          label: '龙须面'
+        }, {
+          value: '选项5',
+          label: '北京烤鸭'
+        }],
+        value: ''
+      }
+    }
+  }
 </script>
 ```
+
 这是 Select 组件的基础示例，它最终会在页面上渲染成这样：
-
-
 
 子组件 ElOption 负责渲染每一个选项，它的内部想要访问最外层的 ElSelect 组件时，就可以通过依赖注入的方式，在 ElSelect 组件中提供组件的实例：
 
 ```
-export default { 
-  provide() { 
-    return { 
-      'select': this 
-    }; 
-  } 
+export default {
+  provide() {
+    return {
+      'select': this
+    };
+  }
 }
 ```
+
 就这样，我们可以在 ElOption 组件注入这个数据：
 
 ```
-export default { 
-  inject: ['select'] 
+export default {
+  inject: ['select']
 }
 ```
+
 虽然这些代码还是用的 Vue.js 2.x 的 Options API 方式，但是依赖注入的思想是不变的。
 
 你可能会问，为什么不在 ElOption 子组件内通过 this.$parent 访问外层的 ElSelect 组件实例呢？
@@ -5435,59 +5543,58 @@ export default {
 我们再来看另一个 Select 组件的例子：
 
 ```
-<template> 
-  <el-select v-model="value" placeholder="请选择"> 
-    <el-option-group 
-      v-for="group in options" 
-      :key="group.label" 
-      :label="group.label"> 
-      <el-option 
-        v-for="item in group.options" 
-        :key="item.value" 
-        :label="item.label" 
-        :value="item.value"> 
-      </el-option> 
-    </el-option-group> 
-  </el-select> 
-</template> 
-<script> 
-  export default { 
-    data() { 
-      return { 
-        options: [{ 
-          label: '热门城市', 
-          options: [{ 
-            value: 'Shanghai', 
-            label: '上海' 
-          }, { 
-            value: 'Beijing', 
-            label: '北京' 
-          }] 
-        }, { 
-          label: '城市名', 
-          options: [{ 
-            value: 'Chengdu', 
-            label: '成都' 
-          }, { 
-            value: 'Shenzhen', 
-            label: '深圳' 
-          }, { 
-            value: 'Guangzhou', 
-            label: '广州' 
-          }, { 
-            value: 'Dalian', 
-            label: '大连' 
-          }] 
-        }], 
-        value: '' 
-      } 
-    } 
-  } 
+<template>
+  <el-select v-model="value" placeholder="请选择">
+    <el-option-group
+      v-for="group in options"
+      :key="group.label"
+      :label="group.label">
+      <el-option
+        v-for="item in group.options"
+        :key="item.value"
+        :label="item.label"
+        :value="item.value">
+      </el-option>
+    </el-option-group>
+  </el-select>
+</template>
+<script>
+  export default {
+    data() {
+      return {
+        options: [{
+          label: '热门城市',
+          options: [{
+            value: 'Shanghai',
+            label: '上海'
+          }, {
+            value: 'Beijing',
+            label: '北京'
+          }]
+        }, {
+          label: '城市名',
+          options: [{
+            value: 'Chengdu',
+            label: '成都'
+          }, {
+            value: 'Shenzhen',
+            label: '深圳'
+          }, {
+            value: 'Guangzhou',
+            label: '广州'
+          }, {
+            value: 'Dalian',
+            label: '大连'
+          }]
+        }],
+        value: ''
+      }
+    }
+  }
 </script>
 ```
+
 这是 Select 组件的分组示例，最终会在页面上渲染成这样：
-
-
 
 显然，这里 ElOption 中的 this.$parent 指向的就不是 ElSelect 组件实例，而是 ElOptionGroup 组件实例。但如果我们用依赖注入的方式，即使结构变了，还是可以在 ElOption 组件中正确访问到 ElSelect 的实例。
 
@@ -5509,38 +5616,40 @@ Vue.js 2.x 中，框架背后帮我们做了很多事情，比如我们在 data 
 其实，二者都是把复用的逻辑放在单独的文件中维护。但从使用的方式而言，用户只是在需要混入 mixin 的组件中去申明这个 mixin，使用方式如下：
 
 ```
-<template> 
-  <div> 
-    Mouse position: x {{ x }} / y {{ y }} 
-  </div> 
-</template> 
-<script> 
-import mousePositionMixin from './mouse' 
-export default { 
-  mixins: [mousePositionMixin] 
-} 
+<template>
+  <div>
+    Mouse position: x {{ x }} / y {{ y }}
+  </div>
+</template>
+<script>
+import mousePositionMixin from './mouse'
+export default {
+  mixins: [mousePositionMixin]
+}
 </script>
 ```
+
 我们在组件中申明了 mousePositionMixin，组件模板中使用的 x、y 就来源于这个 mixin，这一切都是 Vue.js 内部帮我们做的。如果该组件只引入这单个 mixin，问题倒不大，但如果这个组件引入的 mixin 越来越多，很容易出现命名冲突的情况，以及造成数据来源不清晰等问题。
 
 而我们通过 Composition API 去编写功能类似的 hook 函数，使用方式如下：
 
 ```
-<template> 
-  <div> 
-    Mouse position: x {{ x }} / y {{ y }} 
-  </div> 
-</template> 
-<script> 
-  import useMousePosition from './mouse' 
-  export default { 
-    setup() { 
-      const { x, y } = useMousePosition() 
-      return { x, y } 
-    } 
-  } 
+<template>
+  <div>
+    Mouse position: x {{ x }} / y {{ y }}
+  </div>
+</template>
+<script>
+  import useMousePosition from './mouse'
+  export default {
+    setup() {
+      const { x, y } = useMousePosition()
+      return { x, y }
+    }
+  }
 </script>
 ```
+
 我们可以清楚地分辨出模板中使用的 x、y 是来源于 useMousePosition 函数，即便我们引入更多的 hook 函数，也不会出现命名冲突的情况。
 
 Composition API 在逻辑复用上确实有不错的优势，但是它并非完美的，使用起来会增加代码量。Composition API 属于 API 的增强，它并不是 Vue.js 3.0 组件开发的范式，如果你的组件足够简单，还是可 以使用 Options API 的。
@@ -5548,7 +5657,10 @@ Composition API 在逻辑复用上确实有不错的优势，但是它并非完�
 最后，给你留一道思考题目，如果你想利用依赖注入让整个应用下组件都能共享某个数据，你会怎么做？为什么？欢迎你在留言区与我分享。
 
 本节课的相关代码在源代码中的位置如下：
+
+```
 packages/runtime-core/src/apiInject.ts
+```
 
 # 模块三：编译过程和背后的优化思想
 
@@ -5564,7 +5676,7 @@ packages/runtime-core/src/apiInject.ts
 
 由于编译过程平时开发中很难接触到，所以不需要你对每一个细节都了解，你只要对整体有一个理解和掌握即可。另外，后续我们在分析 Vue.js 的一些特性时，也会结合编译过程一起分析，也会经常回顾编译的过程和结果，帮你加深印象。
 
-最后，在学习这章节内容的过程中，希望你可以使用官方的一个模板导出工具，在线调试模板的实时编译结果，辅助学习。如果你想在线调试编译的过程，可以在 vue-next 的源码 packages/template-explorer/dist/template-explorer.global.js 中的关键流程上打debugger 断点，然后在根目录下运行 npm run dev-compiler 命令，接着访问 http://localhost:5000/packages/template-explorer调试即可。
+最后，在学习这章节内容的过程中，希望你可以使用官方的一个模板导出工具，在线调试模板的实时编译结果，辅助学习。如果你想在线调试编译的过程，可以在 vue-next 的源码 packages/template-explorer/dist/template-explorer.global.js 中的关键流程上打 debugger 断点，然后在根目录下运行 npm run dev-compiler 命令，接着访问 http://localhost:5000/packages/template-explorer 调试即可。
 
 ## 12 | 模板解析（上）
 
@@ -5573,14 +5685,15 @@ ue.js 3.0 的编译场景分服务端 SSR 编译和 web 编译，本文我们只
 我们先来看 web 编译的入口 compile 函数，分析它的实现原理：
 
 ```
-function compile(template, options = {}) { 
-  return baseCompile(template, extend({}, parserOptions, options, { 
-    nodeTransforms: [...DOMNodeTransforms, ...(options.nodeTransforms || [])], 
-    directiveTransforms: extend({}, DOMDirectiveTransforms, options.directiveTransforms || {}), 
-    transformHoist:  null 
-  })) 
-} 
+function compile(template, options = {}) {
+  return baseCompile(template, extend({}, parserOptions, options, {
+    nodeTransforms: [...DOMNodeTransforms, ...(options.nodeTransforms || [])],
+    directiveTransforms: extend({}, DOMDirectiveTransforms, options.directiveTransforms || {}),
+    transformHoist:  null
+  }))
+}
 ```
+
 compile 函数支持两个参数，第一个参数 template 是待编译的模板字符串，第二个参数 options 是编译的一些配置信息。
 
 compile 内部通过执行 baseCompile 方法完成编译工作，可以看到 baseCompile 在参数 options 的基础上又扩展了一些配置。对于这些编译相关的配置，我们后面会在具体的场景具体分析。
@@ -5588,27 +5701,28 @@ compile 内部通过执行 baseCompile 方法完成编译工作，可以看到 b
 接下来，我们来看一下 baseCompile 的实现：
 
 ```
-function baseCompile(template,  options = {}) { 
-  const prefixIdentifiers = false 
-  // 解析 template 生成 AST 
-  const ast = isString(template) ? baseParse(template, options) : template 
-  const [nodeTransforms, directiveTransforms] = getBaseTransformPreset() 
-  // AST 转换 
-  transform(ast, extend({}, options, { 
-    prefixIdentifiers, 
-    nodeTransforms: [ 
-      ...nodeTransforms, 
-      ...(options.nodeTransforms || []) 
-    ], 
-    directiveTransforms: extend({}, directiveTransforms, options.directiveTransforms || {} 
-    ) 
-  })) 
-  // 生成代码 
-  return generate(ast, extend({}, options, { 
-    prefixIdentifiers 
-  })) 
-}     
+function baseCompile(template,  options = {}) {
+  const prefixIdentifiers = false
+  // 解析 template 生成 AST
+  const ast = isString(template) ? baseParse(template, options) : template
+  const [nodeTransforms, directiveTransforms] = getBaseTransformPreset()
+  // AST 转换
+  transform(ast, extend({}, options, {
+    prefixIdentifiers,
+    nodeTransforms: [
+      ...nodeTransforms,
+      ...(options.nodeTransforms || [])
+    ],
+    directiveTransforms: extend({}, directiveTransforms, options.directiveTransforms || {}
+    )
+  }))
+  // 生成代码
+  return generate(ast, extend({}, options, {
+    prefixIdentifiers
+  }))
+}
 ```
+
 可以看到，baseCompile 函数主要做三件事情：解析 template 生成 AST，AST 转换和生成代码。
 
 这一节课我们的目标就是解析 template 生成 AST 背后的实现原理。
@@ -5617,239 +5731,241 @@ function baseCompile(template,  options = {}) {
 你可以在百度百科中看到 AST 的定义，这里我就不赘述啦，对应到我们的 template，也可以用 AST 去描述它，比如我们有如下 template：
 
 ```
-<div class="app"> 
-  <!-- 这是一段注释 --> 
-  <hello> 
-    <p>{{ msg }}</p> 
-  </hello> 
-  <p>This is an app</p> 
-</div> 
+<div class="app">
+  <!-- 这是一段注释 -->
+  <hello>
+    <p>{{ msg }}</p>
+  </hello>
+  <p>This is an app</p>
+</div>
 ```
+
 它经过第一步解析后，生成相应的 AST 对象：
 
 ```
-{ 
-  "type": 0, 
-  "children": [ 
-    { 
-      "type": 1, 
-      "ns": 0, 
-      "tag": "div", 
-      "tagType": 0, 
-      "props": [ 
-        { 
-          "type": 6, 
-          "name": "class", 
-          "value": { 
-            "type": 2, 
-            "content": "app", 
-            "loc": { 
-              "start": { 
-                "column": 12, 
-                "line": 1, 
-                "offset": 11 
-              }, 
-              "end": { 
-                "column": 17, 
-                "line": 1, 
-                "offset": 16 
-              }, 
-              "source": "\"app\"" 
-            } 
-          }, 
-          "loc": { 
-            "start": { 
-              "column": 6, 
-              "line": 1, 
-              "offset": 5 
-            }, 
-            "end": { 
-              "column": 17, 
-              "line": 1, 
-              "offset": 16 
-            }, 
-            "source": "class=\"app\"" 
-          } 
-        } 
-      ], 
-      "isSelfClosing": false, 
-      "children": [ 
-        { 
-          "type": 3, 
-          "content": " 这是一段注释 ", 
-          "loc": { 
-            "start": { 
-              "column": 3, 
-              "line": 2, 
-              "offset": 20 
-            }, 
-            "end": { 
-              "column": 18, 
-              "line": 2, 
-              "offset": 35 
-            }, 
-            "source": "<!-- 这是一段注释 -->" 
-          } 
-        }, 
-        { 
-          "type": 1, 
-          "ns": 0, 
-          "tag": "hello", 
-          "tagType": 1, 
-          "props": [], 
-          "isSelfClosing": false, 
-          "children": [ 
-            { 
-              "type": 1, 
-              "ns": 0, 
-              "tag": "p", 
-              "tagType": 0, 
-              "props": [], 
-              "isSelfClosing": false, 
-              "children": [ 
-                { 
-                  "type": 5, 
-                  "content": { 
-                    "type": 4, 
-                    "isStatic": false, 
-                    "isConstant": false, 
-                    "content": "msg", 
-                    "loc": { 
-                      "start": { 
-                        "column": 11, 
-                        "line": 4, 
-                        "offset": 56 
-                      }, 
-                      "end": { 
-                        "column": 14, 
-                        "line": 4, 
-                        "offset": 59 
-                      }, 
-                      "source": "msg" 
-                    } 
-                  }, 
-                  "loc": { 
-                    "start": { 
-                      "column": 8, 
-                      "line": 4, 
-                      "offset": 53 
-                    }, 
-                    "end": { 
-                      "column": 17, 
-                      "line": 4, 
-                      "offset": 62 
-                    }, 
-                    "source": "{{ msg }}" 
-                  } 
-                } 
-              ], 
-              "loc": { 
-                "start": { 
-                  "column": 5, 
-                  "line": 4, 
-                  "offset": 50 
-                }, 
-                "end": { 
-                  "column": 21, 
-                  "line": 4, 
-                  "offset": 66 
-                }, 
-                "source": "<p>{{ msg }}</p>" 
-              } 
-            } 
-          ], 
-          "loc": { 
-            "start": { 
-              "column": 3, 
-              "line": 3, 
-              "offset": 38 
-            }, 
-            "end": { 
-              "column": 11, 
-              "line": 5, 
-              "offset": 77 
-            }, 
-            "source": "<hello>\n    <p>{{ msg }}</p>\n  </hello>" 
-          } 
-        }, 
-        { 
-          "type": 1, 
-          "ns": 0, 
-          "tag": "p", 
-          "tagType": 0, 
-          "props": [], 
-          "isSelfClosing": false, 
-          "children": [ 
-            { 
-              "type": 2, 
-              "content": "This is an app", 
-              "loc": { 
-                "start": { 
-                  "column": 6, 
-                  "line": 6, 
-                  "offset": 83 
-                }, 
-                "end": { 
-                  "column": 20, 
-                  "line": 6, 
-                  "offset": 97 
-                }, 
-                "source": "This is an app" 
-              } 
-            } 
-          ], 
-          "loc": { 
-            "start": { 
-              "column": 3, 
-              "line": 6, 
-              "offset": 80 
-            }, 
-            "end": { 
-              "column": 24, 
-              "line": 6, 
-              "offset": 101 
-            }, 
-            "source": "<p>This is an app</p>" 
-          } 
-        } 
-      ], 
-      "loc": { 
-        "start": { 
-          "column": 1, 
-          "line": 1, 
-          "offset": 0 
-        }, 
-        "end": { 
-          "column": 7, 
-          "line": 7, 
-          "offset": 108 
-        }, 
-        "source": "<div class=\"app\">\n  <!-- 这是一段注释 -->\n  <hello>\n    <p>{{ msg }}</p>\n  </hello>\n  <p>This is an app</p>\n</div>" 
-      } 
-    } 
-  ], 
-  "helpers": [], 
-  "components": [], 
-  "directives": [], 
-  "hoists": [], 
-  "imports": [], 
-  "cached": 0, 
-  "temps": 0, 
-  "loc": { 
-    "start": { 
-      "column": 1, 
-      "line": 1, 
-      "offset": 0 
-    }, 
-    "end": { 
-      "column": 7, 
-      "line": 7, 
-      "offset": 108 
-    }, 
-    "source": "<div class=\"app\">\n  <!-- 这是一段注释 -->\n  <hello>\n    <p>{{ msg }}</p>\n  </hello>\n  <p>This is an app</p>\n</div>" 
-  } 
-} 
+{
+  "type": 0,
+  "children": [
+    {
+      "type": 1,
+      "ns": 0,
+      "tag": "div",
+      "tagType": 0,
+      "props": [
+        {
+          "type": 6,
+          "name": "class",
+          "value": {
+            "type": 2,
+            "content": "app",
+            "loc": {
+              "start": {
+                "column": 12,
+                "line": 1,
+                "offset": 11
+              },
+              "end": {
+                "column": 17,
+                "line": 1,
+                "offset": 16
+              },
+              "source": "\"app\""
+            }
+          },
+          "loc": {
+            "start": {
+              "column": 6,
+              "line": 1,
+              "offset": 5
+            },
+            "end": {
+              "column": 17,
+              "line": 1,
+              "offset": 16
+            },
+            "source": "class=\"app\""
+          }
+        }
+      ],
+      "isSelfClosing": false,
+      "children": [
+        {
+          "type": 3,
+          "content": " 这是一段注释 ",
+          "loc": {
+            "start": {
+              "column": 3,
+              "line": 2,
+              "offset": 20
+            },
+            "end": {
+              "column": 18,
+              "line": 2,
+              "offset": 35
+            },
+            "source": "<!-- 这是一段注释 -->"
+          }
+        },
+        {
+          "type": 1,
+          "ns": 0,
+          "tag": "hello",
+          "tagType": 1,
+          "props": [],
+          "isSelfClosing": false,
+          "children": [
+            {
+              "type": 1,
+              "ns": 0,
+              "tag": "p",
+              "tagType": 0,
+              "props": [],
+              "isSelfClosing": false,
+              "children": [
+                {
+                  "type": 5,
+                  "content": {
+                    "type": 4,
+                    "isStatic": false,
+                    "isConstant": false,
+                    "content": "msg",
+                    "loc": {
+                      "start": {
+                        "column": 11,
+                        "line": 4,
+                        "offset": 56
+                      },
+                      "end": {
+                        "column": 14,
+                        "line": 4,
+                        "offset": 59
+                      },
+                      "source": "msg"
+                    }
+                  },
+                  "loc": {
+                    "start": {
+                      "column": 8,
+                      "line": 4,
+                      "offset": 53
+                    },
+                    "end": {
+                      "column": 17,
+                      "line": 4,
+                      "offset": 62
+                    },
+                    "source": "{{ msg }}"
+                  }
+                }
+              ],
+              "loc": {
+                "start": {
+                  "column": 5,
+                  "line": 4,
+                  "offset": 50
+                },
+                "end": {
+                  "column": 21,
+                  "line": 4,
+                  "offset": 66
+                },
+                "source": "<p>{{ msg }}</p>"
+              }
+            }
+          ],
+          "loc": {
+            "start": {
+              "column": 3,
+              "line": 3,
+              "offset": 38
+            },
+            "end": {
+              "column": 11,
+              "line": 5,
+              "offset": 77
+            },
+            "source": "<hello>\n    <p>{{ msg }}</p>\n  </hello>"
+          }
+        },
+        {
+          "type": 1,
+          "ns": 0,
+          "tag": "p",
+          "tagType": 0,
+          "props": [],
+          "isSelfClosing": false,
+          "children": [
+            {
+              "type": 2,
+              "content": "This is an app",
+              "loc": {
+                "start": {
+                  "column": 6,
+                  "line": 6,
+                  "offset": 83
+                },
+                "end": {
+                  "column": 20,
+                  "line": 6,
+                  "offset": 97
+                },
+                "source": "This is an app"
+              }
+            }
+          ],
+          "loc": {
+            "start": {
+              "column": 3,
+              "line": 6,
+              "offset": 80
+            },
+            "end": {
+              "column": 24,
+              "line": 6,
+              "offset": 101
+            },
+            "source": "<p>This is an app</p>"
+          }
+        }
+      ],
+      "loc": {
+        "start": {
+          "column": 1,
+          "line": 1,
+          "offset": 0
+        },
+        "end": {
+          "column": 7,
+          "line": 7,
+          "offset": 108
+        },
+        "source": "<div class=\"app\">\n  <!-- 这是一段注释 -->\n  <hello>\n    <p>{{ msg }}</p>\n  </hello>\n  <p>This is an app</p>\n</div>"
+      }
+    }
+  ],
+  "helpers": [],
+  "components": [],
+  "directives": [],
+  "hoists": [],
+  "imports": [],
+  "cached": 0,
+  "temps": 0,
+  "loc": {
+    "start": {
+      "column": 1,
+      "line": 1,
+      "offset": 0
+    },
+    "end": {
+      "column": 7,
+      "line": 7,
+      "offset": 108
+    },
+    "source": "<div class=\"app\">\n  <!-- 这是一段注释 -->\n  <hello>\n    <p>{{ msg }}</p>\n  </hello>\n  <p>This is an app</p>\n</div>"
+  }
+}
 ```
+
 可以看到，AST 是树状结构，对于树中的每个节点，会有 type 字段描述节点的类型，tag 字段描述节点的标签，props 描述节点的属性，loc 描述节点对应代码相关信息，children 指向它的子节点对象数组。
 
 当然 AST 中的节点还包含其他的一些属性，我在这里就不一一介绍了，你现在要理解的是 AST 中的节点是可以完整地描述它在模板中映射的节点信息。
@@ -5861,9 +5977,10 @@ function baseCompile(template,  options = {}) {
 因为 Vue.js 3.0 和 Vue.js 2.x 有一个很大的不同——Vue.js 3.0 支持了 Fragment 的语法，即组件可以有多个根节点，比如：
 
 ```
-<img src="./logo.jpg"> 
-<hello :msg="msg"></hello> 
+<img src="./logo.jpg">
+<hello :msg="msg"></hello>
 ```
+
 这种写法在 Vue.js 2.x 中会报错，提示模板只能有一个根节点，而 Vue.js 3.0 允许了这种写法。但是对于一棵树而言，必须有一个根节点，所以虚拟节点在这种场景下就非常有用了，它可以作为 AST 的根节点，然后其 children 包含了 img 和 hello 的节点。
 
 好了，到这里你已经大致了解了 AST，那么接下来我们看一下如何根据模板字符串来构建这个 AST 对象吧。
@@ -5871,44 +5988,46 @@ function baseCompile(template,  options = {}) {
 先来看一下 baseParse 的实现：
 
 ```
-function baseParse(content, options = {}) { 
-    // 创建解析上下文 
-    const context = createPa  rserContext(content, options) 
-    const start = getCursor(context) 
-    // 解析子节点，并创建 AST  
-    return createRoot(parseChildren(context, 0 /* DATA */, []), getSelection(context, start)) 
-} 
+function baseParse(content, options = {}) {
+    // 创建解析上下文
+    const context = createPa  rserContext(content, options)
+    const start = getCursor(context)
+    // 解析子节点，并创建 AST
+    return createRoot(parseChildren(context, 0 /* DATA */, []), getSelection(context, start))
+}
 ```
+
 baseParse 主要就做三件事情：创建解析上下文，解析子节点，创建 AST 根节点。
 
 创建解析上下文
 首先，我们来分析创建解析上下文的过程，先来看 createParserContext 的实现：
 
 ```
-// 默认解析配置 
-const defaultParserOptions = { 
-  delimiters: [`{{`, `}}`], 
-  getNamespace: () => 0 /* HTML */, 
-  getTextMode: () => 0 /* DATA */, 
-  isVoidTag: NO, 
-  isPreTag: NO, 
-  isCustomElement: NO, 
-  decodeEntities: (rawText) => rawText.replace(decodeRE, (_, p1) => decodeMap[p1]), 
-  onError: defaultOnError 
-} 
-function createParserContext(content, options) { 
-  return { 
-    options: extend({}, defaultParserOptions, options), 
-    column: 1, 
-    line: 1, 
-    offset: 0, 
-    originalSource: content, 
-    source: content, 
-    inPre: false, 
-    inVPre: false 
-  } 
-} 
+// 默认解析配置
+const defaultParserOptions = {
+  delimiters: [`{{`, `}}`],
+  getNamespace: () => 0 /* HTML */,
+  getTextMode: () => 0 /* DATA */,
+  isVoidTag: NO,
+  isPreTag: NO,
+  isCustomElement: NO,
+  decodeEntities: (rawText) => rawText.replace(decodeRE, (_, p1) => decodeMap[p1]),
+  onError: defaultOnError
+}
+function createParserContext(content, options) {
+  return {
+    options: extend({}, defaultParserOptions, options),
+    column: 1,
+    line: 1,
+    offset: 0,
+    originalSource: content,
+    source: content,
+    inPre: false,
+    inVPre: false
+  }
+}
 ```
+
 解析上下文实际上就是一个 JavaScript 对象，它维护着解析过程中的上下文，其中 options 表示解析相关配置 ，column 表示当前代码的列号，line 表示当前代码的行号，originalSource 表示最初的原始代码，source 表示当前代码，offset 表示当前代码相对于原始代码的偏移量，inPre 表示当前代码是否在 pre 标签内，inVPre 表示当前代码是否在 v-pre 指令的环境下。
 
 在后续解析的过程中，会始终维护和更新这个解析上下文，它能够表示当前解析的状态。
@@ -5919,209 +6038,211 @@ function createParserContext(content, options) {
 我们先来看一下 parseChildren 函数的实现：
 
 ```
-function parseChildren(context, mode, ancestors) { 
-  const parent = last(ancestors) 
-  const ns = parent ? parent.ns : 0 /* HTML */ 
-  const nodes = [] 
-  // 自顶向下分析代码，生成 nodes 
-  let removedWhitespace = false 
-  // 空白字符管理 
-  return removedWhitespace ? nodes.filter(Boolean) : nodes 
-} 
+function parseChildren(context, mode, ancestors) {
+  const parent = last(ancestors)
+  const ns = parent ? parent.ns : 0 /* HTML */
+  const nodes = []
+  // 自顶向下分析代码，生成 nodes
+  let removedWhitespace = false
+  // 空白字符管理
+  return removedWhitespace ? nodes.filter(Boolean) : nodes
+}
 ```
+
 parseChildren 的目的就是解析并创建 AST 节点数组。它有两个主要流程，第一个是自顶向下分析代码，生成 AST 节点数组 nodes；第二个是空白字符管理，用于提高编译的效率。
 
 首先，我们来看生成 AST 节点数组的流程：
 
 ```
-function parseChildren(context, mode, ancestors) { 
-  // 父节点 
-  const parent = last(ancestors) 
-  const ns = parent ? parent.ns : 0 /* HTML */ 
-  const nodes = [] 
-  // 判断是否遍历结束 
-  while (!isEnd(context, mode, ancestors)) { 
-    const s = context.source 
-    let node = undefined 
-    if (mode === 0 /* DATA */ || mode === 1 /* RCDATA */) { 
-      if (!context.inVPre && startsWith(s, context.options.delimiters[0])) { 
-        // 处理 {{ 插值代码 
-        node = parseInterpolation(context, mode) 
-      } 
-      else if (mode === 0 /* DATA */ && s[0] === '<') { 
-        // 处理 < 开头的代码 
-        if (s.length === 1) { 
-          // s 长度为 1，说明代码结尾是 <，报错 
-          emitError(context, 5 /* EOF_BEFORE_TAG_NAME */, 1) 
-        } 
-        else if (s[1] === '!') { 
-          // 处理 <! 开头的代码 
-          if (startsWith(s, '<!--')) { 
-            // 处理注释节点 
-            node = parseComment(context) 
-          } 
-          else if (startsWith(s, '<!DOCTYPE')) { 
-            // 处理 <!DOCTYPE 节点 
-            node = parseBogusComment(context) 
-          } 
-          else if (startsWith(s, '<![CDATA[')) { 
-            // 处理 <![CDATA[ 节点 
-            if (ns !== 0 /* HTML */) { 
-              node = parseCDATA(context, ancestors) 
-            } 
-            else { 
-              emitError(context, 1 /* CDATA_IN_HTML_CONTENT */) 
-              node = parseBogusComment(context) 
-            } 
-          } 
-          else { 
-            emitError(context, 11 /* INCORRECTLY_OPENED_COMMENT */) 
-            node = parseBogusComment(context) 
-          } 
-        } 
-        else if (s[1] === '/') { 
-          // 处理 </ 结束标签 
-          if (s.length === 2) { 
-            // s 长度为 2，说明代码结尾是 </，报错 
-            emitError(context, 5 /* EOF_BEFORE_TAG_NAME */, 2) 
-          } 
-          else if (s[2] === '>') { 
-            // </> 缺少结束标签，报错 
-            emitError(context, 14 /* MISSING_END_TAG_NAME */, 2) 
-            advanceBy(context, 3) 
-            continue 
-          } 
-          else if (/[a-z]/i.test(s[2])) { 
-            // 多余的结束标签 
-            emitError(context, 23 /* X_INVALID_END_TAG */) 
-            parseTag(context, 1 /* End */, parent) 
-            continue 
-          } 
-          else { 
-            emitError(context, 12 /* INVALID_FIRST_CHARACTER_OF_TAG_NAME */, 2) 
-            node = parseBogusComment(context) 
-          } 
-        } 
-        else if (/[a-z]/i.test(s[1])) { 
-          // 解析标签元素节点 
-          node = parseElement(context, ancestors) 
-        } 
-        else if (s[1] === '?') { 
-          emitError(context, 21 /* UNEXPECTED_QUESTION_MARK_INSTEAD_OF_TAG_NAME */, 1) 
-          node = parseBogusComment(context) 
-        } 
-        else { 
-          emitError(context, 12 /* INVALID_FIRST_CHARACTER_OF_TAG_NAME */, 1) 
-        } 
-      } 
-    } 
-    if (!node) { 
-      // 解析普通文本节点 
-      node = parseText(context, mode) 
-    } 
-    if (isArray(node)) { 
-      // 如果 node 是数组，则遍历添加 
-      for (let i = 0; i < node.length; i++) { 
-        pushNode(nodes, node[i]) 
-      } 
-    } 
-    else { 
-      // 添加单个 node 
-      pushNode(nodes, node) 
-    } 
-  } 
-} 
+function parseChildren(context, mode, ancestors) {
+  // 父节点
+  const parent = last(ancestors)
+  const ns = parent ? parent.ns : 0 /* HTML */
+  const nodes = []
+  // 判断是否遍历结束
+  while (!isEnd(context, mode, ancestors)) {
+    const s = context.source
+    let node = undefined
+    if (mode === 0 /* DATA */ || mode === 1 /* RCDATA */) {
+      if (!context.inVPre && startsWith(s, context.options.delimiters[0])) {
+        // 处理 {{ 插值代码
+        node = parseInterpolation(context, mode)
+      }
+      else if (mode === 0 /* DATA */ && s[0] === '<') {
+        // 处理 < 开头的代码
+        if (s.length === 1) {
+          // s 长度为 1，说明代码结尾是 <，报错
+          emitError(context, 5 /* EOF_BEFORE_TAG_NAME */, 1)
+        }
+        else if (s[1] === '!') {
+          // 处理 <! 开头的代码
+          if (startsWith(s, '<!--')) {
+            // 处理注释节点
+            node = parseComment(context)
+          }
+          else if (startsWith(s, '<!DOCTYPE')) {
+            // 处理 <!DOCTYPE 节点
+            node = parseBogusComment(context)
+          }
+          else if (startsWith(s, '<![CDATA[')) {
+            // 处理 <![CDATA[ 节点
+            if (ns !== 0 /* HTML */) {
+              node = parseCDATA(context, ancestors)
+            }
+            else {
+              emitError(context, 1 /* CDATA_IN_HTML_CONTENT */)
+              node = parseBogusComment(context)
+            }
+          }
+          else {
+            emitError(context, 11 /* INCORRECTLY_OPENED_COMMENT */)
+            node = parseBogusComment(context)
+          }
+        }
+        else if (s[1] === '/') {
+          // 处理 </ 结束标签
+          if (s.length === 2) {
+            // s 长度为 2，说明代码结尾是 </，报错
+            emitError(context, 5 /* EOF_BEFORE_TAG_NAME */, 2)
+          }
+          else if (s[2] === '>') {
+            // </> 缺少结束标签，报错
+            emitError(context, 14 /* MISSING_END_TAG_NAME */, 2)
+            advanceBy(context, 3)
+            continue
+          }
+          else if (/[a-z]/i.test(s[2])) {
+            // 多余的结束标签
+            emitError(context, 23 /* X_INVALID_END_TAG */)
+            parseTag(context, 1 /* End */, parent)
+            continue
+          }
+          else {
+            emitError(context, 12 /* INVALID_FIRST_CHARACTER_OF_TAG_NAME */, 2)
+            node = parseBogusComment(context)
+          }
+        }
+        else if (/[a-z]/i.test(s[1])) {
+          // 解析标签元素节点
+          node = parseElement(context, ancestors)
+        }
+        else if (s[1] === '?') {
+          emitError(context, 21 /* UNEXPECTED_QUESTION_MARK_INSTEAD_OF_TAG_NAME */, 1)
+          node = parseBogusComment(context)
+        }
+        else {
+          emitError(context, 12 /* INVALID_FIRST_CHARACTER_OF_TAG_NAME */, 1)
+        }
+      }
+    }
+    if (!node) {
+      // 解析普通文本节点
+      node = parseText(context, mode)
+    }
+    if (isArray(node)) {
+      // 如果 node 是数组，则遍历添加
+      for (let i = 0; i < node.length; i++) {
+        pushNode(nodes, node[i])
+      }
+    }
+    else {
+      // 添加单个 node
+      pushNode(nodes, node)
+    }
+  }
+}
 ```
+
 这些代码看起来很复杂，但它的思路就是自顶向下地去遍历代码，然后根据不同的情况尝试去解析代码，然后把生成的 node 添加到 AST nodes 数组中。在解析的过程中，解析上下文 context 的状态也是在不断发生变化的，我们可以通过 context.source 拿到当前解析剩余的代码 s，然后根据 s 不同的情况走不同的分支处理逻辑。在解析的过程中，可能会遇到各种错误，都会通过 emitError 方法报错。
 
 我们没有必要去了解所有代码的分支细节，只需要知道大致的解析思路即可，因此我们这里只分析四种情况：注释节点的解析、插值的解析、普通文本的解析，以及元素节点的解析。
 
 注释节点的解析
 
-首先，我们来看注释节点的解析过程，它会解析模板中的注释节点，比如 <!-- 这是一段注释 -->， 即当前代码 s 是以 <!-- 开头的字符串，则走到注释节点的解析处理逻辑。
+首先，我们来看注释节点的解析过程，它会解析模板中的注释节点，比如 `<!-- 这是一段注释 -->`， 即当前代码 s 是以 `<!-- 开头的字符串，则走到注释节点的解析处理逻辑`。
 
 我们来看 parseComment 的实现：
 
 ```
-function parseComment(context) { 
-  const start = getCursor(context) 
-  let content 
-  // 常规注释的结束符 
-  const match = /--(\!)?>/.exec(context.source) 
-  if (!match) { 
-    // 没有匹配的注释结束符 
-    content = context.source.slice(4) 
-    advanceBy(context, context.source.length) 
-    emitError(context, 7 /* EOF_IN_COMMENT */) 
-  } 
-  else { 
-    if (match.index <= 3) { 
-      // 非法的注释符号 
-      emitError(context, 0 /* ABRUPT_CLOSING_OF_EMPTY_COMMENT */) 
-    } 
-    if (match[1]) { 
-      // 注释结束符不正确 
-      emitError(context, 10 /* INCORRECTLY_CLOSED_COMMENT */) 
-    } 
-    // 获取注释的内容 
-    content = context.source.slice(4, match.index) 
-    // 截取到注释结尾之间的代码，用于后续判断嵌套注释 
-    const s = context.source.slice(0, match.index) 
-    let prevIndex = 1, nestedIndex = 0 
-    // 判断嵌套注释符的情况，存在即报错 
-    while ((nestedIndex = s.indexOf('<!--', prevIndex)) !== -1) { 
-      advanceBy(context, nestedIndex - prevIndex + 1) 
-      if (nestedIndex + 4 < s.length) { 
-        emitError(context, 16 /* NESTED_COMMENT */) 
-      } 
-      prevIndex = nestedIndex + 1 
-    } 
-    // 前进代码到注释结束符后 
-    advanceBy(context, match.index + match[0].length - prevIndex + 1) 
-  } 
-  return { 
-    type: 3 /* COMMENT */, 
-    content, 
-    loc: getSelection(context, start) 
-  } 
-} 
+function parseComment(context) {
+  const start = getCursor(context)
+  let content
+  // 常规注释的结束符
+  const match = /--(\!)?>/.exec(context.source)
+  if (!match) {
+    // 没有匹配的注释结束符
+    content = context.source.slice(4)
+    advanceBy(context, context.source.length)
+    emitError(context, 7 /* EOF_IN_COMMENT */)
+  }
+  else {
+    if (match.index <= 3) {
+      // 非法的注释符号
+      emitError(context, 0 /* ABRUPT_CLOSING_OF_EMPTY_COMMENT */)
+    }
+    if (match[1]) {
+      // 注释结束符不正确
+      emitError(context, 10 /* INCORRECTLY_CLOSED_COMMENT */)
+    }
+    // 获取注释的内容
+    content = context.source.slice(4, match.index)
+    // 截取到注释结尾之间的代码，用于后续判断嵌套注释
+    const s = context.source.slice(0, match.index)
+    let prevIndex = 1, nestedIndex = 0
+    // 判断嵌套注释符的情况，存在即报错
+    while ((nestedIndex = s.indexOf('<!--', prevIndex)) !== -1) {
+      advanceBy(context, nestedIndex - prevIndex + 1)
+      if (nestedIndex + 4 < s.length) {
+        emitError(context, 16 /* NESTED_COMMENT */)
+      }
+      prevIndex = nestedIndex + 1
+    }
+    // 前进代码到注释结束符后
+    advanceBy(context, match.index + match[0].length - prevIndex + 1)
+  }
+  return {
+    type: 3 /* COMMENT */,
+    content,
+    loc: getSelection(context, start)
+  }
+}
 ```
+
 其实，parseComment 的实现很简单，首先它会利用注释结束符的正则表达式去匹配代码，找出注释结束符。如果没有匹配到或者注释结束符不合法，都会报错。
 如果找到合法的注释结束符，则获取它中间的注释内容 content，然后截取注释开头到结尾之间的代码，并判断是否有嵌套注释，如果有嵌套注释也会报错。
 
 接着就是通过调用 advanceBy 前进代码到注释结束符后，这个函数在整个模板解析过程中经常被调用，它的目的是用来前进代码，更新 context 解析上下文，我们来看一下它的实现：
 
 ```
-function advanceBy(context, numberOfCharacters) { 
-  const { source } = context 
-  // 更新 context 的 offset、line、column 
-  advancePositionWithMutation(context, source, numberOfCharacters) 
-  // 更新 context 的 source 
-  context.source = source.slice(numberOfCharacters) 
-} 
-function advancePositionWithMutation(pos, source, numberOfCharacters = source.length) { 
-  let linesCount = 0 
-  let lastNewLinePos = -1 
-  for (let i = 0; i < numberOfCharacters; i++) { 
-    if (source.charCodeAt(i) === 10 /* newline char code */) { 
-      linesCount++ 
-      lastNewLinePos = i 
-    } 
-  } 
-  pos.offset += numberOfCharacters 
-  pos.line += linesCount 
-  pos.column = 
-    lastNewLinePos === -1 
-      ? pos.column + numberOfCharacters 
-      : numberOfCharacters - lastNewLinePos 
-  return pos 
-} 
+function advanceBy(context, numberOfCharacters) {
+  const { source } = context
+  // 更新 context 的 offset、line、column
+  advancePositionWithMutation(context, source, numberOfCharacters)
+  // 更新 context 的 source
+  context.source = source.slice(numberOfCharacters)
+}
+function advancePositionWithMutation(pos, source, numberOfCharacters = source.length) {
+  let linesCount = 0
+  let lastNewLinePos = -1
+  for (let i = 0; i < numberOfCharacters; i++) {
+    if (source.charCodeAt(i) === 10 /* newline char code */) {
+      linesCount++
+      lastNewLinePos = i
+    }
+  }
+  pos.offset += numberOfCharacters
+  pos.line += linesCount
+  pos.column =
+    lastNewLinePos === -1
+      ? pos.column + numberOfCharacters
+      : numberOfCharacters - lastNewLinePos
+  return pos
+}
 ```
+
 advanceBy 的实现很简单，主要就是更新解析上下文 context 中的 source 来前进代码，同时更新 offset、line、column 等和代码位置相关的属性。
 
 为了更直观地说明 advanceBy 的作用，前面的示例可以通过下图表示：
-
-
 
 经过 advanceBy 前进代码到注释结束符后，表示注释部分代码处理完毕，可以继续解析后续代码了。
 
@@ -6132,53 +6253,54 @@ parseComment 最终返回的值就是一个描述注释节点的对象，其中 
 接下来，我们来看插值的解析过程，它会解析模板中的插值，比如 {{ msg }} ，即当前代码 s 是以 {{ 开头的字符串，且不在 v-pre 指令的环境下（v-pre 会跳过插值的解析），则会走到插值的解析处理逻辑 parseInterpolation 函数，我们来看它的实现：
 
 ```
-function parseInterpolation(context, mode) { 
-  // 从配置中获取插值开始和结束分隔符，默认是 {{ 和 }} 
-  const [open, close] = context.options.delimiters 
-  const closeIndex = context.source.indexOf(close, open.length) 
-  if (closeIndex === -1) { 
-    emitError(context, 25 /* X_MISSING_INTERPOLATION_END */) 
-    return undefined 
-  } 
-  const start = getCursor(context) 
-  // 代码前进到插值开始分隔符后 
-  advanceBy(context, open.length) 
-  // 内部插值开始位置 
-  const innerStart = getCursor(context) 
-  // 内部插值结束位置 
-  const innerEnd = getCursor(context) 
-  // 插值原始内容的长度 
-  const rawContentLength = closeIndex - open.length 
-  // 插值原始内容 
-  const rawContent = context.source.slice(0, rawContentLength) 
-  // 获取插值的内容，并前进代码到插值的内容后 
-  const preTrimContent = parseTextData(context, rawContentLength, mode) 
-  const content = preTrimContent.trim() 
-  // 内容相对于插值开始分隔符的头偏移 
-  const startOffset = preTrimContent.indexOf(content) 
-  if (startOffset > 0) { 
-    // 更新内部插值开始位置 
-    advancePositionWithMutation(innerStart, rawContent, startOffset) 
-  } 
-  // 内容相对于插值结束分隔符的尾偏移 
-  const endOffset = rawContentLength - (preTrimContent.length - content.length - startOffset) 
-  // 更新内部插值结束位置 
-  advancePositionWithMutation(innerEnd, rawContent, endOffset); 
-  // 前进代码到插值结束分隔符后 
-  advanceBy(context, close.length) 
-  return { 
-    type: 5 /* INTERPOLATION */, 
-    content: { 
-      type: 4 /* SIMPLE_EXPRESSION */, 
-      isStatic: false, 
-      isConstant: false, 
-      content, 
-      loc: getSelection(context, innerStart, innerEnd) 
-    }, 
-    loc: getSelection(context, start) 
-  } 
-} 
+function parseInterpolation(context, mode) {
+  // 从配置中获取插值开始和结束分隔符，默认是 {{ 和 }}
+  const [open, close] = context.options.delimiters
+  const closeIndex = context.source.indexOf(close, open.length)
+  if (closeIndex === -1) {
+    emitError(context, 25 /* X_MISSING_INTERPOLATION_END */)
+    return undefined
+  }
+  const start = getCursor(context)
+  // 代码前进到插值开始分隔符后
+  advanceBy(context, open.length)
+  // 内部插值开始位置
+  const innerStart = getCursor(context)
+  // 内部插值结束位置
+  const innerEnd = getCursor(context)
+  // 插值原始内容的长度
+  const rawContentLength = closeIndex - open.length
+  // 插值原始内容
+  const rawContent = context.source.slice(0, rawContentLength)
+  // 获取插值的内容，并前进代码到插值的内容后
+  const preTrimContent = parseTextData(context, rawContentLength, mode)
+  const content = preTrimContent.trim()
+  // 内容相对于插值开始分隔符的头偏移
+  const startOffset = preTrimContent.indexOf(content)
+  if (startOffset > 0) {
+    // 更新内部插值开始位置
+    advancePositionWithMutation(innerStart, rawContent, startOffset)
+  }
+  // 内容相对于插值结束分隔符的尾偏移
+  const endOffset = rawContentLength - (preTrimContent.length - content.length - startOffset)
+  // 更新内部插值结束位置
+  advancePositionWithMutation(innerEnd, rawContent, endOffset);
+  // 前进代码到插值结束分隔符后
+  advanceBy(context, close.length)
+  return {
+    type: 5 /* INTERPOLATION */,
+    content: {
+      type: 4 /* SIMPLE_EXPRESSION */,
+      isStatic: false,
+      isConstant: false,
+      content,
+      loc: getSelection(context, innerStart, innerEnd)
+    },
+    loc: getSelection(context, start)
+  }
+}
 ```
+
 parseInterpolation 的实现也很简单，首先它会尝试找插值的结束分隔符，如果找不到则报错。
 
 如果找到，先前进代码到插值开始分隔符后，然后通过 parseTextData 获取插值中间的内容并前进代码到插值内容后，除了普通字符串，parseTextData 内部会处理一些 HTML 实体符号比如 &nbsp 。由于插值的内容可能是前后有空白字符的，所以最终返回的 content 需要执行一下 trim 函数。
@@ -6194,31 +6316,32 @@ parseInterpolation 最终返回的值就是一个描述插值节点的对象，�
 接下来，我们来看普通文本的解析过程，它会解析模板中的普通文本，比如 This is an app ，即当前代码 s 既不是以 {{ 插值分隔符开头的字符串，也不是以 < 开头的字符串，则走到普通文本的解析处理逻辑，我们来看 parseText 的实现：
 
 ```
-function parseText(context, mode) { 
-  // 文本结束符 
-  const endTokens = ['<', context.options.delimiters[0]] 
-  if (mode === 3 /* CDATA */) { 
-    // CDATA 标记 XML 中的纯文本 
-    endTokens.push(']]>') 
-  } 
-  let endIndex = context.source.length 
-  // 遍历文本结束符，匹配找到结束的位置 
-  for (let i = 0; i < endTokens.length; i++) { 
-    const index = context.source.indexOf(endTokens[i], 1) 
-    if (index !== -1 && endIndex > index) { 
-      endIndex = index 
-    } 
-  } 
-  const start = getCursor(context) 
-  // 获取文本的内容，并前进代码到文本的内容后 
-  const content = parseTextData(context, endIndex, mode) 
-  return { 
-    type: 2 /* TEXT */, 
-    content, 
-    loc: getSelection(context, start) 
-  } 
-} 
+function parseText(context, mode) {
+  // 文本结束符
+  const endTokens = ['<', context.options.delimiters[0]]
+  if (mode === 3 /* CDATA */) {
+    // CDATA 标记 XML 中的纯文本
+    endTokens.push(']]>')
+  }
+  let endIndex = context.source.length
+  // 遍历文本结束符，匹配找到结束的位置
+  for (let i = 0; i < endTokens.length; i++) {
+    const index = context.source.indexOf(endTokens[i], 1)
+    if (index !== -1 && endIndex > index) {
+      endIndex = index
+    }
+  }
+  const start = getCursor(context)
+  // 获取文本的内容，并前进代码到文本的内容后
+  const content = parseTextData(context, endIndex, mode)
+  return {
+    type: 2 /* TEXT */,
+    content,
+    loc: getSelection(context, start)
+  }
+}
 ```
+
 同样，parseText 的实现很简单。对于一段文本来说，都是在遇到 < 或者插值分隔符 {{ 结束，所以会遍历这些结束符，匹配并找到文本结束的位置，然后执行 parseTextData 获取文本的内容，并前进代码到文本的内容后。
 
 parseText 最终返回的值就是一个描述文本节点的对象，其中 type 表示它是一个文本节点，content 表示文本的内容，loc 表示文本的代码开头和结束的位置信息。
@@ -6226,6 +6349,7 @@ parseText 最终返回的值就是一个描述文本节点的对象，其中 typ
 这部分内容比较多，所以本课时的内容就先到这。下节课中，我们接着分析元素节点，继续解析 template 生成 AST 的背后实现原理。
 
 本节课的相关代码在源代码中的位置如下：
+
 ```
 packages/compiler-core/src/compile.ts
 packages/compiler-core/src/parse.ts
@@ -6233,7 +6357,7 @@ packages/compiler-core/src/parse.ts
 
 ## 13 | 模板解析（下）
 
-这一节课我们依然要解析 template 生成 AST 背后的实现原理，上节课，我们知道了baseParse 主要就做三件事情：创建解析上下文，解析子节点，创建 AST 根节点。
+这一节课我们依然要解析 template 生成 AST 背后的实现原理，上节课，我们知道了 baseParse 主要就做三件事情：创建解析上下文，解析子节点，创建 AST 根节点。
 
 我们讲到了解析子节点，主要有四种情况，分别是注释节点的解析、插值的解析、普通文本的解析，以及元素节点的解析，这节课我们就到了最后的元素节点。
 
@@ -6247,6 +6371,7 @@ packages/compiler-core/src/parse.ts
   <hello :msg="msg"></hello>
 </div>
 ```
+
 相对于前面三种类型的解析过程，元素节点的解析过程应该是最复杂的了，即当前代码 s 是以 < 开头，并且后面跟着字母，说明它是一个标签的开头，则走到元素节点的解析处理逻辑，我们来看 parseElement 的实现：
 
 ```
@@ -6302,6 +6427,7 @@ function parseElement(context, ancestors) {
   return element
 }
 ```
+
 可以看到，这个过程中 parseElement 主要做了三件事情：解析开始标签，解析子节点，解析闭合标签。
 
 首先，我们来看解析开始标签的过程。主要通过 parseTag 方法来解析并创建一个标签节点，来看它的实现原理：
@@ -6392,6 +6518,7 @@ function parseTag(context, type, parent) {
   };
 }
 ```
+
 parseTag 首先匹配标签文本结束的位置，并前进代码到标签文本后面的空白字符后，然后解析标签中的属性，比如 class、style 和指令等，parseAttributes 函数的实现我就不多说了，感兴趣的同学可以自己去看，它最终会解析生成一个 props 的数组，并前进代码到属性后。
 
 接着去检查是不是一个 pre 标签，如果是则设置 context.inPre 为 true；再去检查属性中有没有 v-pre 指令，如果有则设置 context.inVPre 为 true，并重置上下文 context 和重新解析属性；接下来再去判断是不是一个自闭和标签，并前进代码到闭合标签后；最后判断标签类型，是组件、插槽还是模板。
@@ -6418,6 +6545,7 @@ parseTag 最终返回的值就是一个描述标签节点的对象，其中 type
   <hello :msg="msg"></hello>
 </div>
 ```
+
 div 标签到下一行会有一个换行符，hello 标签前面也有空白字符，这些空白字符在解析的过程中会被当作文本节点解析处理。但这些空白节点显然是没有什么意义的，所以我们需要移除这些节点，减少后续对这些没用意义的节点的处理，以提高编译效率。
 
 我们先来看一下空白字符管理相关逻辑代码：
@@ -6437,7 +6565,7 @@ function parseChildren(context, mode, ancestors) {
           if (!/[^\t\r\n\f ]/.test(node.content)) {
             // 匹配空白字符
             const prev = nodes[i - 1]
-            const next = nodes[i + 1] 
+            const next = nodes[i + 1]
             // 如果空白字符是开头或者结尾节点
             // 或者空白字符与注释节点相连
             // 或者空白字符在两个元素之间并包含换行符
@@ -6481,6 +6609,7 @@ function parseChildren(context, mode, ancestors) {
   return removedWhitespace ? nodes.filter(Boolean) : nodes
 }
 ```
+
 这段代码逻辑很简单，主要就是遍历 nodes，拿到每一个 AST 节点，判断是否为一个文本节点，如果是则判断它是不是空白字符；如果是则进一步判断空白字符是开头或还是结尾节点，或者空白字符与注释节点相连，或者空白字符在两个元素之间并包含换行符，如果满足上述这些情况，这些空白字符节点都应该被移除。
 
 此外，不满足这三种情况的空白字符都会被压缩成一个空格，非空文本中间的空白字符也会被压缩成一个空格，在生产环境下注释节点也会被移除。
@@ -6507,6 +6636,7 @@ function createRoot(children, loc = locStub) {
   }
 }
 ```
+
 createRoot 的实现非常简单，它就是返回一个 JavaScript 对象，作为 AST 根节点。其中 type 表示它是一个根节点类型，children 是我们前面解析的子节点数组。除此之外，这个根节点还添加了其它的属性，当前我们并不需要搞清楚每一个属性代表的含义，这些属性我们在分析后续的处理流程中会介绍。
 
 总结
@@ -6515,6 +6645,7 @@ createRoot 的实现非常简单，它就是返回一个 JavaScript 对象，作
 最后，给你留一道思考题目，在 parseTag 的过程中，如果解析的属性有 v-pre 标签，为什么要回到之前的 context，重新解析一次？欢迎你在留言区与我分享。
 
 本节课的相关代码在源代码中的位置如下：
+
 ```
 packages/compiler-core/src/parse.ts
 packages/compiler-core/src/ast.ts
@@ -6536,6 +6667,7 @@ AST 转换过程非常复杂，有非常多的分支逻辑，为了方便你理�
   </div>
 </div>
 ```
+
 示例中，我们有普通的 DOM 节点，有组件节点，有 v-bind 指令，有 v-if 指令，有文本节点，也有表达式节点。
 
 对于这个模板，我们通过 parse 生成一个 AST 对象，接下来我们就来分析这个 AST 对象的转换都做了哪些事情。
@@ -6556,6 +6688,7 @@ transform(ast, extend({}, options, {
   )
 }))
 ```
+
 我们先来看一下 getBaseTransformPreset 返回哪些节点和指令的转换方法：
 
 ```
@@ -6578,6 +6711,7 @@ function getBaseTransformPreset(prefixIdentifiers) {
   ]
 }
 ```
+
 这里并不需要你进一步去看每个转换函数的实现，只要大致了解有哪些转换函数即可，这些转换函数会在后续执行 transform 的时候调用。
 
 注意这里我们只分析在 Node.js 环境下的编译过程。Web 环境的编译结果可能会有一些差别，我们会在后续章节说明。
@@ -6603,6 +6737,7 @@ function transform(root, options) {
   root.cached = context.cached
 }
 ```
+
 transform 的核心流程主要有四步：创建 transform 上下文、遍历 AST 节点、静态提升以及创建根代码生成节点。接下来，我们就好好分析一下每一步主要做了什么。
 
 创建 transform 上下文
@@ -6693,6 +6828,7 @@ function createTransformContext(root, { prefixIdentifiers = false, hoistStatic =
   return context
 }
 ```
+
 其实，这个上下文对象 context 维护了 transform 过程的一些配置，比如前面提到的节点和指令的转换函数等；还维护了 transform 过程的一些状态数据，比如当前处理的 AST 节点，当前 AST 节点在子节点中的索引，以及当前 AST 节点的父节点等。此外，context 还包含了在转换过程中可能会调用的一些辅助函数，和一些修改 context 对象的方法。
 
 你现在也没必要去了解它的每一个属性和方法的含义，只需要你大致有一个印象即可，未来分析某个具体场景，再回过头了解它们的实现即可。
@@ -6762,6 +6898,7 @@ function traverseNode(node, context) {
   }
 }
 ```
+
 这里，traverseNode 函数的基本思路就是递归遍历 AST 节点，针对每个节点执行一系列的转换函数，有些转换函数还会设计一个退出函数，当你执行转换函数后，它会返回一个新函数，然后在你处理完子节点后再执行这些退出函数，这是因为有些逻辑的处理需要依赖子节点的处理结果才能继续执行。
 
 Vue.js 内部大概内置了八种转换函数，分别处理指令、表达式、元素节点、文本节点等不同的特性。限于篇幅，我不会介绍所有转换函数，感兴趣的同学可以后续自行分析。
@@ -6891,6 +7028,7 @@ const transformElement = (node, context) => {
   }
 }
 ```
+
 可以看到，只有当 AST 节点是组件或者普通元素节点时，才会返回一个退出函数，而且它会在该节点的子节点逻辑处理完毕后执行。
 
 分析这个退出函数前，我们需要知道节点函数的转换目标，即创建一个实现 VNodeCall 接口的代码生成节点，也就是说，生成这个代码生成节点后，后续的代码生成阶段可以根据这个节点对象生成目标代码。
@@ -6932,7 +7070,7 @@ function createVNodeCall(context, tag, props, children, patchFlag, dynamicProps,
       context.helper(CREATE_VNODE)
     }
     if (directives) {
-      context.helper(WITH_DIRECTIVES) 
+      context.helper(WITH_DIRECTIVES)
     }
   }
   return {
@@ -6949,6 +7087,7 @@ function createVNodeCall(context, tag, props, children, patchFlag, dynamicProps,
   }
 }
 ```
+
 createVNodeCall 的实现很简单，它最后返回了一个对象，包含了传入的参数数据。这里要注意 context.helper 函数的调用，它会把一些 Symbol 对象添加到 context.helpers 数组中，目的是为了后续代码生成阶段，生成一些辅助代码。
 
 对于我们示例中的根节点：
@@ -6958,6 +7097,7 @@ createVNodeCall 的实现很简单，它最后返回了一个对象，包含了�
   // ...
 </div>
 ```
+
 它转换后生成的 node.codegenNode ：
 
 ```
@@ -6977,6 +7117,7 @@ createVNodeCall 的实现很简单，它最后返回了一个对象，包含了�
   "type": 13
 }
 ```
+
 这个 codegenNode 相比之前的 AST 节点对象，多了很多和编译优化相关的属性，它们会在代码生成阶段会起到非常重要作用，在后续的章节你就可以深入了解到。
 
 表达式节点转换函数
@@ -7009,6 +7150,7 @@ const transformExpression = (node, context) => {
   }
 }
 ```
+
 由于表达式本身不会再有子节点，所以它也不需要退出函数，直接在进入函数时做转换处理即可。
 
 需要注意的是，只有在 Node.js 环境下的编译或者是 Web 端的非生产环境下才会执行 transformExpression，原因我稍后会告诉你。
@@ -7023,6 +7165,7 @@ transformExpression 主要做的事情就是转换插值和元素指令中的动
   "content": "msg + test"
 }
 ```
+
 经过 processExpression 处理后，node.content 的值变成了一个复合表达式对象：
 
 ```
@@ -7046,7 +7189,8 @@ transformExpression 主要做的事情就是转换插值和元素指令中的动
   "identifiers": []
 }
 ```
-这里，我们重点关注对象中的 children 属性，它是一个长度为 3 的数组，其实就是把表达式msg + test拆成了三部分，其中变量 msg 和 test 对应都加上了前缀 _ctx。
+
+这里，我们重点关注对象中的 children 属性，它是一个长度为 3 的数组，其实就是把表达式 msg + test 拆成了三部分，其中变量 msg 和 test 对应都加上了前缀 _ctx。
 
 那么为什么需要加这个前缀呢？
 
@@ -7067,6 +7211,7 @@ processExpression 的详细实现我们不会分析，但你需要知道，这�
 这部分内容比较多，所以本课时的内容就先到这。下节课，我们接着分析遍历 AST 节点中的 Text 节点的转换函数。
 
 本节课的相关代码在源代码中的位置如下：
+
 ```
 packages/compiler-core/src/compile.ts
 packages/compiler-core/src/transform.ts
@@ -7154,6 +7299,7 @@ const transformText = (node, context) => {
   }
 }
 ```
+
 transformText 函数只处理根节点、元素节点、 v-for 以及 v-if 分支相关的节点，它也会返回一个退出函数，因为 transformText 要保证所有表达式节点都已经被处理才执行转换逻辑。
 
 transformText 主要的目的就是合并一些相邻的文本节点，然后为内部每一个文本节点创建一个代码生成节点。
@@ -7193,6 +7339,7 @@ transformText 主要的目的就是合并一些相邻的文本节点，然后为
   }
 ]
 ```
+
 转换后，这两个文本节点被合并成一个复合表达式节点，结果如下：
 
 ```
@@ -7230,6 +7377,7 @@ transformText 主要的目的就是合并一些相邻的文本节点，然后为
   }
 ]
 ```
+
 合并完子文本节点后，接着判断如果是一个只带有单个文本子元素的纯元素节点，则什么都不需要转换，因为这种情况在运行时可以直接设置元素的 textContent 来更新文本。
 
 最后就是去处理节点包含文本子节点且多个子节点的情况，举个例子：
@@ -7241,6 +7389,7 @@ transformText 主要的目的就是合并一些相邻的文本节点，然后为
   hi
 </p>
 ```
+
 上述 p 标签的子节点经过前面的文本合并流程后，还有 3 个子节点。针对这种情况，我们可以遍历子节点，找到所有的文本节点或者是复合表达式节点，然后为这些子节点通过 createCallExpression 创建一个调用函数表达式的代码生成节点。
 
 我们来看 createCallExpression 的实现：
@@ -7255,6 +7404,7 @@ function createCallExpression(callee, args = [], loc = locStub) {
   }
 }
 ```
+
 createCallExpression 的实现很简单，就是返回一个类型为 JS_CALL_EXPRESSION 的对象，它包含了执行的函数名和参数。
 
 这里，针对我们创建的函数表达式所生成的节点，它对应的函数名是 createTextVNode，参数 callArgs 是子节点本身 child，如果是动态插值节点，那么参数还会多一个 TEXT 的 patchFlag。
@@ -7271,6 +7421,7 @@ const transformIf = createStructuralDirectiveTransform(/^(if|else|else-if)$/, (n
   })
 })
 ```
+
 在分析函数的实现前，我们先来看一下 v-if 节点转换的目的，为了方便你的理解，我还是通过示例来说明：
 
 ```
@@ -7281,6 +7432,7 @@ const transformIf = createStructuralDirectiveTransform(/^(if|else|else-if)$/, (n
   <p>static</p>
 </div>
 ```
+
 在 parse 阶段，这个模板解析生成的 AST 节点如下：
 
 ```
@@ -7312,7 +7464,7 @@ const transformIf = createStructuralDirectiveTransform(/^(if|else|else-if)$/, (n
     "codegenNode": undefined,
     "isSelfClosing": false,
     "ns": 0,
-    "props": [{ 
+    "props": [{
       "type": 7,
       "name": "else",
       "exp": undefined,
@@ -7325,6 +7477,7 @@ const transformIf = createStructuralDirectiveTransform(/^(if|else|else-if)$/, (n
   }
 ]
 ```
+
 v-if 指令用于条件性地渲染一块内容，显然上述 AST 节点对于最终去生成条件的代码而言，是不够语义化的，于是我们需要对它们做一层转换，使其成为语义化强的代码生成节点。
 
 现在我们回过头看 transformIf 的实现，它是通过 createStructuralDirectiveTransform 函数创建的一个结构化指令的转换函数，在 Vue.js 中，v-if、v-else-if、v-else 和 v-for 这些都属于结构化指令，因为它们能影响代码的组织结构。
@@ -7361,6 +7514,7 @@ function createStructuralDirectiveTransform(name, fn) {
   }
 }
 ```
+
 可以看到，createStructuralDirectiveTransform 接受 2 个参数，第一个 name 是指令的名称，第二个 fn 是构造转换退出函数的方法。
 
 createStructuralDirectiveTransform 最后会返回一个函数，在我们的场景下，这个函数就是 transformIf 转换函数。
@@ -7378,6 +7532,7 @@ createStructuralDirectiveTransform 最后会返回一个函数，在我们的场
   })
 }
 ```
+
 可以看出，这个匿名函数内部执行了 processIf 函数，它会先对 v-if 和它的相邻节点做转换，然后返回一个退出函数，在它们的子节点都转换完毕后执行。
 
 我们来看 processIf 函数的实现：
@@ -7403,6 +7558,7 @@ function processIf(node, dir, context, processCodegen) {
   }
 }
 ```
+
 processIf 主要就是用来处理 v-if 节点以及 v-if 的相邻节点，比如 v-else-if 和 v-else，并且它们会走不同的处理逻辑。
 
 我们先来看 v-if 的处理逻辑。首先，它会执行 createIfBranch 去创建一个分支节点：
@@ -7417,6 +7573,7 @@ function createIfBranch(node, dir) {
   }
 }
 ```
+
 这个分支节点很好理解，因为 v-if 节点内部的子节点可以属于一个分支，v-else-if 和 v-else 节点内部的子节点也都可以属于一个分支，而最终页面渲染执行哪个分支，这取决于哪个分支节点的 condition 为 true。
 
 所以分支节点返回的对象，就包含了 condition 条件，以及它的子节点 children。注意，如果节点 node 不是 template，那么 children 指向的就是这个单个 node 构造的数组。
@@ -7458,6 +7615,7 @@ function processIf(node, dir, context, processCodegen) {
   }
 }
 ```
+
 这段处理逻辑就是从当前节点往前面的兄弟节点遍历，找到 v-if 节点后，把当前节点删除，然后根据当前节点创建一个分支节点，把这个分支节点添加到前面创建的 IF 节点的 branches 中。此外，由于这个节点已经删除，那么需要在这里把这个节点的子节点通过 traverseNode 遍历一遍。
 
 这么处理下来，就相当于完善了 IF 节点的信息了，IF 节点的 branches 就包含了所有分支节点了。
@@ -7491,6 +7649,7 @@ function processIf(node, dir, context, processCodegen) {
   })
 }
 ```
+
 可以看到，当 v-if 节点执行退出函数时，会通过 createCodegenNodeForBranch 创建 IF 分支节点的 codegenNode，我们来看一下它的实现：
 
 ```
@@ -7507,6 +7666,7 @@ function createCodegenNodeForBranch(branch, index, context) {
   }
 }
 ```
+
 当分支节点存在 condition 的时候，比如 v-if、和 v-else-if，它通过 createConditionalExpression 返回一个条件表达式节点：
 
 ```
@@ -7521,6 +7681,7 @@ function createConditionalExpression(test, consequent, alternate, newline = true
   }
 }
 ```
+
 其中 consequent 在这里是 IF 主 branch 的子节点对应的代码生成节点，alternate 是后补 branch 子节点对应的代码生成节点。
 
 接着，我们来看一下 createChildrenCodegenNode 的实现：
@@ -7542,7 +7703,7 @@ function createChildrenCodegenNode(branch, index, context) {
     else {
       return createVNodeCall(context, helper(FRAGMENT), createObjectExpression([keyProperty]), children, `${64 /* STABLE_FRAGMENT */} /* ${PatchFlagNames[64 /* STABLE_FRAGMENT */]} */`, undefined, undefined, true, false, branch.loc)
     }
-  } 
+  }
   else {
     const vnodeCall = firstChild
       .codegenNode;
@@ -7562,6 +7723,7 @@ function createChildrenCodegenNode(branch, index, context) {
   }
 }
 ```
+
 createChildrenCodegenNode 主要就是判断每个分支子节点是不是一个 vnodeCall，如果这个子节点不是组件节点的话，则把它转变成一个 BlockCall，也就是让 v-if 的每一个分支都可以创建一个 Block。
 
 这个行为是很好理解的，因为 v-if 是条件渲染的，我们知道在某些条件下某些分支是不会渲染的，那么它内部的动态节点就不能添加到外部的 Block 中的，所以它就需要单独创建一个 Block 来维护分支内部的动态节点，这样也就构成了 Block tree。
@@ -7619,6 +7781,7 @@ createChildrenCodegenNode 主要就是判断每个分支子节点是不是一个
   }
 }
 ```
+
 可以看到，相比原节点，转换后的 IF 节点无论是在语义化还是在信息上，都更加丰富，我们可以依据它在代码生成阶段生成所需的代码。
 
 静态提升
@@ -7629,6 +7792,7 @@ if (options.hoistStatic) {
   hoistStatic(root, context)
 }
 ```
+
 静态提升也是 Vue.js 3.0 在编译阶段设计了一个优化策略，为了便于你理解，我先举个简单的例子：
 
 ```
@@ -7636,6 +7800,7 @@ if (options.hoistStatic) {
 <p>static</p>
 <p>static</p>
 ```
+
 我们为它配置了 hoistStatic，经过编译后，它的代码就变成了这样：
 
 ```
@@ -7650,6 +7815,7 @@ export function render(_ctx, _cache) {
   ], 64 /* STABLE_FRAGMENT */))
 }
 ```
+
 这里，我们先忽略 openBlock、Fragment ，我会在代码生成章节详细说明，重点看一下 _hoisted_1 和 _hoisted_2 这两个变量，它们分别对应模板中两个静态 p 标签生成的 vnode，可以发现它的创建是在 render 函数外部执行的。
 这样做的好处是，不用每次在 render 阶段都执行一次 createVNode 创建 vnode 对象，直接用之前在内存中创建好的 vnode 即可。
 
@@ -7738,6 +7904,7 @@ function walk(node, context, resultCache, doNotHoistNode = false) {
   }
 }
 ```
+
 可以看到，hoistStatic 主要就是从根节点开始，通过递归的方式去遍历节点，只有普通元素和文本节点才能被静态提升，所以针对这些节点，这里通过 getStaticType 去获取静态类型，如果节点是一个元素类型，getStaticType 内部还会递归判断它的子节点的静态类型。
 
 虽然有的节点包含一些动态子节点，但它本身的静态属性还是可以被静态提升的。
@@ -7755,6 +7922,7 @@ function hoist(exp) {
 }
 child.codegenNode = context.hoist(child.codegenNode)
 ```
+
 改动后的 codegenNode 会在生成代码阶段帮助我们生成静态提升的相关代码。
 
 createRootCodegen
@@ -7786,6 +7954,7 @@ function createRootCodegen(root, context) {
   }
 }
 ```
+
 createRootCodegen 做的事情很简单，就是为 root 这个虚拟的 AST 根节点创建一个代码生成节点，如果 root 的子节点 children 是单个元素节点，则将其转换成一个 Block，把这个 child 的 codegenNode 赋值给 root 的 codegenNode。
 
 如果 root 的子节点 children 是多个节点，则返回一个 fragement 的代码生成节点，并赋值给 root 的 codegenNode。
@@ -7803,6 +7972,7 @@ root.hoists = context.hoists
 root.temps = context.temps
 root.cached = context.cached
 ```
+
 这样后续在代码生成节点时，就可以通过 root 这个根节点访问到这些变量了。
 
 总结
@@ -7813,6 +7983,7 @@ root.cached = context.cached
 最后，给你留一道思考题目，我们已经知道静态提升的好处是，针对静态节点不用每次在 render 阶段都执行一次 createVNode 创建 vnode 对象，但它有没有成本呢？为什么？欢迎你在留言区与我分享。
 
 本节课的相关代码在源代码中的位置如下：
+
 ```
 packages/compiler-core/src/ast.ts
 packages/compiler-core/src/transform.ts
@@ -7839,6 +8010,7 @@ packages/compiler-core/src/transforms/hoistStatic.ts
   </div>
 </div>
 ```
+
 代码生成的结果是和编译配置相关的，你可以打开官方提供的模板导出工具平台，点击右上角的 Options 修改编译配置。为了让你理解核心的流程，这里我只分析一种配置方案，当然当你理解整个编译核心流程后，也可以修改这些配置分析其他的分支逻辑。
 
 我们分析的编译配置是：mode 为 module，prefixIdentifiers 开启，hoistStatic 开启，其他配置均不开启。
@@ -7864,6 +8036,7 @@ export function render(_ctx, _cache) {
   ]))
 }
 ```
+
 示例的模板是如何转换生成这样的代码的？在 AST 转换后，会执行 generate 函数生成代码：
 
 ```
@@ -7871,6 +8044,7 @@ return generate(ast, extend({}, options, {
   prefixIdentifiers
 }))
 ```
+
 generate 函数的输入就是转换后的 AST 根节点，我们看一下它的实现：
 
 ```
@@ -7955,6 +8129,7 @@ function generate(ast, options = {}) {
   };
 }
 ```
+
 generate 主要做五件事情：创建代码生成上下文，生成预设代码，生成渲染函数，生成资源声明代码，以及生成创建 VNode 树的表达式。接下来，我们就依次详细分析这几个流程。
 
 创建代码生成上下文
@@ -8007,15 +8182,16 @@ function createCodegenContext(ast, { mode = 'function', prefixIdentifiers = mode
   return context
 }
 ```
+
 这个上下文对象 context 维护了 generate 过程的一些配置，比如 mode、prefixIdentifiers；也维护了 generate 过程的一些状态数据，比如当前生成的代码 code，当前生成代码的缩进 indentLevel 等。
 
 此外，context 还包含了在 generate 过程中可能会调用的一些辅助函数，接下来我会介绍几个常用的方法，它们会在整个代码生成节点过程中经常被用到。
 
 push(code)，就是在当前的代码 context.code 后追加 code 来更新它的值。
 
-indent()，它的作用就是增加代码的缩进，它会让上下文维护的代码缩进 context.indentLevel 加 1，内部会执行 newline 方法，添加一个换行符，以及两倍indentLevel 对应的空格来表示缩进的长度。
+indent()，它的作用就是增加代码的缩进，它会让上下文维护的代码缩进 context.indentLevel 加 1，内部会执行 newline 方法，添加一个换行符，以及两倍 indentLevel 对应的空格来表示缩进的长度。
 
-deindent()，和 indent 相反，它会减少代码的缩进，让上下文维护的代码缩进 context.indentLevel 减 1，在内部会执行 newline 方法去添加一个换行符，并减少两倍indentLevel 对应的空格的缩进长度。
+deindent()，和 indent 相反，它会减少代码的缩进，让上下文维护的代码缩进 context.indentLevel 减 1，在内部会执行 newline 方法去添加一个换行符，并减少两倍 indentLevel 对应的空格的缩进长度。
 
 上下文创建完毕后，接下来就到了真正的代码生成阶段，在分析的过程中我会结合示例讲解，让你更直观地理解整个代码的生成过程，我们先来看生成预设代码。
 
@@ -8050,6 +8226,7 @@ function genModulePreamble(ast, context, genScopeId) {
   push(`export `)
 }
 ```
+
 下面我们结合前面的示例来分析这个过程，此时 genScopeId 为 false，所以相关逻辑我们可以不看。ast.helpers 是在 transform 阶段通过 context.helper 方法添加的，它的值如下：
 
 ```
@@ -8061,6 +8238,7 @@ function genModulePreamble(ast, context, genScopeId) {
   Symbol(createBlock)
 ]
 ```
+
 ast.helpers 存储了 Symbol 对象的数组，我们可以从 helperNameMap 中找到每个 Symbol 对象对应的字符串，helperNameMap 的定义如下：
 
 ```
@@ -8094,6 +8272,7 @@ const helperNameMap = {
   [WITH_CTX]: `withCtx`
 }
 ```
+
 由于 optimizeBindings 是 false，所以会执行如下代码：
 
 ```
@@ -8102,11 +8281,13 @@ push(`import { ${ast.helpers
   .join(', ')} } from ${JSON.stringify(runtimeModuleName)}\n`)
 }
 ```
+
 最终会生成这些代码，并更新到 context.code 中：
 
 ```
 import { resolveComponent as _resolveComponent, createVNode as _createVNode, createCommentVNode as _createCommentVNode, toDisplayString as _toDisplayString, openBlock as _openBlock, createBlock as _createBlock } from "vue"
 ```
+
 通过生成的代码，我们可以直观地感受到，这里就是从 Vue 中引入了一些辅助方法，那么为什么需要引入这些辅助方法呢，这就和 Vue.js 3.0 的设计有关了。
 
 在 Vue.js 2.x 中，创建 VNode 的方法比如 $createElement、_c 这些都是挂载在组件的实例上，在生成渲染函数的时候，直接从组件实例 vm 中访问这些方法即可。
@@ -8133,6 +8314,7 @@ function genHoists(hoists, context) {
   context.pure = false
 }
 ```
+
 首先通过执行 newline 生成一个空行，然后遍历 hoists 数组，生成静态提升变量定义的方法。此时 hoists 的值是这样的：
 
 ```
@@ -8182,7 +8364,7 @@ function genHoists(hoists, context) {
     "children": {
       "type": 2, /* ELEMENT */
       "content": "static"
-    },                                                  
+    },
     "patchFlag": "-1 /* HOISTED */",
     "isBlock": false,
     "disableTracking": false
@@ -8200,6 +8382,7 @@ function genHoists(hoists, context) {
   }
 ]
 ```
+
 这里，hoists 数组的长度为 4，前两个都是 JavaScript 对象表达式节点，后两个是 VNodeCall 节点，通过 genNode 我们可以把这些节点生成对应的代码，这个方法我们后续会详细说明，这里先略过。
 
 然后通过遍历 hoists 我们生成如下代码：
@@ -8211,9 +8394,10 @@ const _hoisted_2 = { key: 1 }
 const _hoisted_3 = /*#__PURE__*/_createVNode("p", null, "static", -1 /* HOISTED */)
 const _hoisted_4 = /*#__PURE__*/_createVNode("p", null, "static", -1 /* HOISTED */)
 ```
+
 可以看到，除了从 Vue 中导入辅助方法，我们还创建了静态提升的变量。
 
-我们回到 genModulePreamble，接着会执行newline()和push(export )，非常好理解，也就是添加了一个空行和 export 字符串。
+我们回到 genModulePreamble，接着会执行 newline()和 push(export )，非常好理解，也就是添加了一个空行和 export 字符串。
 
 至此，预设代码生成完毕，我们就得到了这些代码：
 
@@ -8224,7 +8408,8 @@ const _hoisted_2 = { key: 1 }
 const _hoisted_3 = /*#__PURE__*/_createVNode("p", null, "static", -1 /* HOISTED */)
 const _hoisted_4 = /*#__PURE__*/_createVNode("p", null, "static", -1 /* HOISTED */)
 ```
-export 
+
+export
 生成渲染函数
 接下来，就是生成渲染函数了，我们回到 generate 函数：
 
@@ -8237,6 +8422,7 @@ push(`function ssrRender(_ctx, _push, _parent, _attrs) {`);
 }
 indent();
 ```
+
 由于 ssr 为 false, 所以生成如下代码：
 
 ```
@@ -8247,6 +8433,7 @@ const _hoisted_3 = /*#__PURE__*/_createVNode("p", null, "static", -1 /* HOISTED 
 const _hoisted_4 = /*#__PURE__*/_createVNode("p", null, "static", -1 /* HOISTED */)
 export function render(_ctx, _cache) {
 ```
+
 注意，这里代码的最后一行有 2 个空格的缩进。
 
 另外，由于 useWithBlock 为 false，所以我们也不需生成 with 相关的代码。而且，这里我们创建了 render 的函数声明，接下来的代码都是在生成 render 的函数体。
@@ -8277,7 +8464,8 @@ if (ast.temps > 0) {
   }
 }
 ```
-在我们的示例中，directives 数组长度为 0，temps 的值是 0，所以自定义指令和临时变量代码生成的相关逻辑跳过，而这里 components的值是["hello"]。
+
+在我们的示例中，directives 数组长度为 0，temps 的值是 0，所以自定义指令和临时变量代码生成的相关逻辑跳过，而这里 components 的值是["hello"]。
 
 接着就通过 genAssets 去生成自定义组件声明代码，我们来看一下它的实现：
 
@@ -8293,6 +8481,7 @@ function genAssets(assets, type, { helper, push, newline }) {
   }
 }
 ```
+
 这里的 helper 函数就是从前面提到的 helperNameMap 中查找对应的字符串，对于 component，返回的就是 resolveComponent。
 
 接着会遍历 assets 数组，生成自定义组件声明代码，在这个过程中，它们会把变量通过 toValidAssetId 进行一层包装：
@@ -8302,6 +8491,7 @@ function toValidAssetId(name, type) {
   return `_${type}_${name.replace(/[^\w]/g, '_')}`;
 }
 ```
+
 比如 hello 组件，执行 toValidAssetId 就变成了 _component_hello。
 
 因此对于我们的示例而言，genAssets 后生成的代码是这样的：
@@ -8315,6 +8505,7 @@ const _hoisted_4 = /*#__PURE__*/_createVNode("p", null, "static", -1 /* HOISTED 
 export function render(_ctx, _cache) {
   const _component_hello = _resolveComponent("hello")
 ```
+
 这很好理解，通过 resolveComponent，我们就可以解析到注册的自定义组件对象，然后在后面创建组件 vnode 的时候当做参数传入。
 
 回到 generate 函数，接下来会执行如下代码：
@@ -8328,6 +8519,7 @@ if (!ssr) {
   push(`return `);
 }
 ```
+
 这里是指，如果生成了资源声明代码，则在尾部添加一个换行符，然后再生成一个空行，并且如果不是 ssr，则再添加一个 return 字符串，此时得到的代码结果如下：
 
 ```
@@ -8338,11 +8530,13 @@ const _hoisted_3 = /*#__PURE__*/_createVNode("p", null, "static", -1 /* HOISTED 
 const _hoisted_4 = /*#__PURE__*/_createVNode("p", null, "static", -1 /* HOISTED */)
 export function render(_ctx, _cache) {
   const _component_hello = _resolveComponent("hello")
-  return 
+  return
 ```
+
 好的，我们就先分析到这里，下节课继续来看生成创建 VNode 树的表达式的过程。
 
 本节课的相关代码在源代码中的位置如下：
+
 ```
 packages/compiler-core/src/codegen.ts
 ```
@@ -8363,6 +8557,7 @@ else {
   push(`null`);
 }
 ```
+
 前面我们在转换过程中给根节点添加了 codegenNode，所以接下来就是通过 genNode 生成创建 VNode 树的表达式，我们来看它的实现：
 
 ```
@@ -8441,6 +8636,7 @@ function genNode(node, context) {
   }
 }
 ```
+
 genNode 主要的思路就是根据不同的节点类型，生成不同的代码，这里有十几种情况，我就不全部讲一遍了，仍然是以我们的示例为主，来分析它们的实现，没有分析到的分支我的建议是大致了解即可，未来如果遇到相关的场景，你再来详细看它们的实现也不迟。
 
 现在，我们来看一下根节点 codegenNode 的值：
@@ -8462,6 +8658,7 @@ genNode 主要的思路就是根据不同的节点类型，生成不同的代码
   patchFlag: undefined
 }
 ```
+
 由于根节点的 codegenNode 类型是 13，也就是一个 VNodeCall，所以会执行 genVNodeCall 生成创建 VNode 节点的表达式代码，它的实现如下 :
 
 ```
@@ -8490,6 +8687,7 @@ function genVNodeCall(node, context) {
   }
 }
 ```
+
 根据我们的示例来看，directives 没定义，不用处理，isBlock 为 true，disableTracking 为 false，那么生成如下打开 Block 的代码：
 
 ```
@@ -8502,6 +8700,7 @@ export function render(_ctx, _cache) {
   const _component_hello = _resolveComponent("hello")
   return (_openBlock()
 ```
+
 接着往下看，会判断 pure 是否为 true，如果是则生成相关的注释，虽然这里的 pure 为 false，但是之前我们在生成静态提升变量相关代码的时候 pure 为 true，所以生成了注释代码 /#PURE/。
 
 接下来会判断 isBlock，如果它为 true 则在生成创建 Block 相关代码，如果它为 false，则生成创建 VNode 的相关代码。
@@ -8518,11 +8717,13 @@ export function render(_ctx, _cache) {
   const _component_hello = _resolveComponent("hello")
   return (_openBlock(), _createBlock(
 ```
+
 生成了一个_createBlock 的函数调用后，下面就需要生成函数的参数，通过如下代码生成：
 
 ```
 genNodeList(genNullableArgs([tag, props, children, patchFlag, dynamicProps]), context)
 ```
+
 依据代码的执行顺序，我们先来看 genNullableArgs 的实现：
 
 ```
@@ -8535,6 +8736,7 @@ function genNullableArgs(args) {
   return args.slice(0, i + 1).map(arg => arg || `null`)
 }
 ```
+
 这个方法很简单，就是倒序遍历参数数组，找到第一个不为空的参数，然后返回该参数前面的所有参数构成的新数组。
 
 genNullableArgs 传入的参数数组依次是 tag、props、children、patchFlag 和 dynamicProps，对于我们的示例而言，此时 patchFlag 和 dynamicProps 为 undefined，所以 genNullableArgs 返回的是一个[tag, props, children]这样的数组。
@@ -8569,6 +8771,7 @@ function genNodeList(nodes, context, multilines = false, comma = true) {
   }
 }
 ```
+
 genNodeList 就是通过遍历 nodes，拿到每一个 node，然后判断 node 的类型，如果 node 是字符串，就直接添加到代码中；如果是一个数组，则执行 genNodeListAsArray 生成数组形式的代码，否则是一个对象，则递归执行 genNode 生成节点代码。
 
 我们还是根据示例代码走完这个流程，此时 nodes 的值如下：
@@ -8595,6 +8798,7 @@ genNodeList 就是通过遍历 nodes，拿到每一个 node，然后判断 node 
   ]
 ]
 ```
+
 接下来我们依据 nodes 的值继续生成代码，首先 nodes 第一个元素的值是 'div' 字符串，根据前面的逻辑，直接把字符串添加到代码上即可，由于 multilines 为 false，comma 为 true，因此生成如下代码：
 
 ```
@@ -8607,6 +8811,7 @@ export function render(_ctx, _cache) {
   const _component_hello = _resolveComponent("hello")
   return (_openBlock(), _createBlock("div",
 ```
+
 接下来看 nodes 第二个元素，它代表的是 vnode 的属性 props，是一个简单的对象表达式，就会递归执行 genNode，进一步执行 genExpression，来看一下它的实现：
 
 ```
@@ -8615,6 +8820,7 @@ function genExpression(node, context) {
   context.push(isStatic ? JSON.stringify(content) : content, node)
 }
 ```
+
 这里 genExpression 非常简单，就是往代码中添加 content 的内容。此时 node 中的 content 值是 _hoisted_1，再回到 genNodeList，由于 multilines 为 false，comma 为 true，因此生成如下代码：
 
 ```
@@ -8627,6 +8833,7 @@ export function render(_ctx, _cache) {
   const _component_hello = _resolveComponent("hello")
   return (_openBlock(), _createBlock("div", _hoisted_1,
 ```
+
 接下来我们再看 nodes 第三个元素，它代表的是子节点 chidren，是一个数组，那么会执行 genNodeListAsArray，来看它的实现：
 
 ```
@@ -8639,6 +8846,7 @@ function genNodeListAsArray(nodes, context) {
   context.push(`]`)
 }
 ```
+
 genNodeListAsArray 主要是把一个 node 列表生成一个类似数组形式的代码，所以前后会添加中括号，并且判断是否要生成多行代码，如果是多行，前后还需要加减代码的缩进，而中间部分的代码，则继续递归调用 genNodeList 生成。
 
 那么针对我们的示例，此时参数 nodes 的值如下：
@@ -8655,6 +8863,7 @@ genNodeListAsArray 主要是把一个 node 列表生成一个类似数组形式�
   }
 ]
 ```
+
 它是一个长度为 1 的数组，但是这个数组元素的类型是一个对象，所以 multilines 为 true。那么在执行 genNodeList 之前，生成的代码是这样的：
 
 ```
@@ -8667,7 +8876,8 @@ export function render(_ctx, _cache) {
   const _component_hello = _resolveComponent("hello")
   return (_openBlock(), _createBlock("div", _hoisted_1, [
 ```
-接下来就是递归执行 genNodeList 的过程，由于 nodes 数组只有一个对象类型的元素，则执行 genNode，并且这个对象的类型是 IF 表达式，回顾 genNode 的实现，此时会执行到genNode(node.codegenNode, context)，也就是取节点的 codegenNode，进一步执行 genNode，我们来看一下这个 codegenNode：
+
+接下来就是递归执行 genNodeList 的过程，由于 nodes 数组只有一个对象类型的元素，则执行 genNode，并且这个对象的类型是 IF 表达式，回顾 genNode 的实现，此时会执行到 genNode(node.codegenNode, context)，也就是取节点的 codegenNode，进一步执行 genNode，我们来看一下这个 codegenNode：
 
 ```
 {
@@ -8712,6 +8922,7 @@ export function render(_ctx, _cache) {
   newline: true
 }
 ```
+
 它是一个条件表达式节点，它主要包括 3 个重要的属性，其中 test 表示逻辑测试，它是一个表达式节点，consequent 表示主逻辑，它是一个 vnode 调用节点，alternate 表示备选逻辑，它也是一个 vnode 调用节点。
 
 其实条件表达式节点要生成代码就是一个条件表达式，用伪代码表示是：test ? consequent : alternate。
@@ -8757,6 +8968,7 @@ function genConditionalExpression(node, context) {
   needNewline && deindent(true /* without newline */)
 }
 ```
+
 genConditionalExpression 的主要目的就是生成条件表达式代码，所以首先它会生成逻辑测试的代码。对于示例，我们这里是一个简单表达式节点，所以生成的代码是这样的：
 
 ```
@@ -8770,6 +8982,7 @@ export function render(_ctx, _cache) {
   return (_openBlock(), _createBlock("div", _hoisted_1, [
     (_ctx.flag)
 ```
+
 接下来就是生成一些换行和缩进，紧接着生成主逻辑代码，也就是把 consequent 这个 vnode 调用节点通过 genNode 转换生成代码，这又是一个递归过程，其中的细节我就不再赘述了，执行完后会生成如下代码：
 
 ```
@@ -8784,6 +8997,7 @@ export function render(_ctx, _cache) {
     (_ctx.flag)
       ? _createVNode(_component_hello, { key: 0 })
 ```
+
 接下来就是生成备选逻辑的代码，即把 alternate 这个 vnode 调用节点通过 genNode 转换生成代码，同样内部的细节我就不赘述了，感兴趣同学可以自行调试。
 
 需要注意的是，alternate 对应的节点的 isBlock 属性是 true，所以会生成创建 Block 相关的代码，最终生成的代码如下：
@@ -8805,6 +9019,7 @@ export function render(_ctx, _cache) {
           _hoisted_4
         ]))
 ```
+
 接下来我们回到 genNodeListAsArray 函数，处理完 children，那么下面就会减少缩进，并添加闭合的中括号，就会生成如下的代码：
 
 ```
@@ -8825,6 +9040,7 @@ export function render(_ctx, _cache) {
         ]))
   ]
 ```
+
 genNodeListAsArray 处理完子节点后，回到 genNodeList，发现所有 nodes 也处理完了，则回到 genVNodeCall 函数，接下来的逻辑就是补齐函数调用的右括号，此时生成的代码是这样的：
 
 ```
@@ -8845,6 +9061,7 @@ export function render(_ctx, _cache) {
         ]))
   ]))
 ```
+
 那么至此，根节点 vnode 树的表达式就创建好了。我们再回到 generate 函数，接下来就需要添加右括号 “}” 来闭合渲染函数，最终生成如下代码：
 
 ```
@@ -8866,6 +9083,7 @@ export function render(_ctx, _cache) {
   ]))
 }
 ```
+
 这就是示例 template 编译生成的最终代码，虽然我们忽略了其中子节点的一些实现细节，但是整体流程还是很容易理解的，主要就是一个递归的思想，遇到不同类型的节点，执行相应的代码生成函数生成代码即可。
 
 节点生成代码的所需的信息可以从节点的属性中获取，这完全得益于前面 transform 的语法分析阶段生成的 codegenNode，根据这些信息就能很容易地生成对应的代码了。
@@ -8884,7 +9102,8 @@ function openBlock(disableTracking = false) {
   blockStack.push((currentBlock = disableTracking ? null : []));
 }
 ```
-Vue.js 3.0 在运行时设计了一个 blockStack 和 currentBlock，其中 blockStack 表示一个 Block Tree，因为要考虑嵌套 Block 的情况，而currentBlock 表示当前的 Block。
+
+Vue.js 3.0 在运行时设计了一个 blockStack 和 currentBlock，其中 blockStack 表示一个 Block Tree，因为要考虑嵌套 Block 的情况，而 currentBlock 表示当前的 Block。
 
 openBlock 的实现很简单，往当前 blockStack push 一个新的 Block，作为 currentBlock。
 
@@ -8896,7 +9115,7 @@ openBlock 的实现很简单，往当前 blockStack push 一个新的 Block，�
 function createVNode(type, props = null
 ,children = null) {
   // 处理 props 相关逻辑，标准化 class 和 style
-  // 对 vnode 类型信息编码 
+  // 对 vnode 类型信息编码
   // 创建 vnode 对象
   // 标准化子节点，把不同数据类型的 children 转成数组或者文本类型。
   // 添加动态 vnode 节点到 currentBlock 中
@@ -8914,6 +9133,7 @@ function createVNode(type, props = null
   return vnode
 }
 ```
+
 注释中写的前面几个过程，我们在之前的章节已经讲过了，我们来看函数的最后，这里会判断 vnode 是不是一个动态节点，如果是则把它添加到 currentBlock 中，这就是动态 vnode 节点的收集过程。
 
 我们接着来看 createBlock 的实现：
@@ -8933,13 +9153,15 @@ function createBlock(type, props, children, patchFlag, dynamicProps) {
   return vnode
 }
 ```
-这时候你可能会好奇，为什么要设计 openBlock 和 createBlock 两个函数呢？比如下面这个函数render()：
+
+这时候你可能会好奇，为什么要设计 openBlock 和 createBlock 两个函数呢？比如下面这个函数 render()：
 
 ```
 function render() {
   return (openBlock(),createBlock('div', null, [/*...*/]))
 }
 ```
+
 为什么不把 openBlock 和 createBlock 放在一个函数中执行呢，像下面这样：
 
 ```
@@ -8950,10 +9172,11 @@ function createBlock(type, props, children, patchFlag, dynamicProps) {
   openBlock()
   // 创建 vnode
   const vnode = createVNode(type, props, children, patchFlag, dynamicProps, true)
-  // ...  
+  // ...
   return vnode
 }
 ```
+
 这样是不行的！其中原因其实很简单，createBlock 函数的第三个参数是 children，这些 children 中的元素也是经过 createVNode 创建的，显然一个函数的调用需要先去执行参数的计算，也就是优先去创建子节点的 vnode，然后才会执行父节点的 createBlock 或者是 createVNode。
 
 所以在父节点的 createBlock 函数执行前，子节点就已经通过 createVNode 创建了对应的 vnode ，如果把 openBlock 的逻辑放在了 createBlock 中，就相当于在子节点创建后才创建 currentBlock，这样就不能正确地收集子节点中的动态 vnode 了。
@@ -8987,6 +9210,7 @@ const patchElement = (n1, n2, parentComponent, parentSuspense, isSVG, optimized)
   }
 }
 ```
+
 我们在前面组件更新的章节分析过这个流程，在分析子节点更新的部分，当时并没有考虑到优化的场景，所以只分析了全量比对更新的场景。
 
 而实际上，如果这个 vnode 是一个 Block vnode，那么我们不用去通过 patchChildren 全量比对，只需要通过 patchBlockChildren 去比对并更新 Block 中的动态子节点即可。
@@ -9014,6 +9238,7 @@ const patchBlockChildren = (oldChildren, newChildren, fallbackContainer, parentC
   }
 }
 ```
+
 patchBlockChildren 的实现很简单，遍历新的动态子节点数组，拿到对应的新旧动态子节点，并执行 patch 更新子节点即可。
 
 这样一来，更新的复杂度就变成和动态节点的数量正相关，而不与模板大小正相关，如果一个模板的动静比越低，那么性能优化的效果就越明显。
@@ -9026,6 +9251,7 @@ patchBlockChildren 的实现很简单，遍历新的动态子节点数组，拿�
 最后，给你留一道思考题目，Block 数组是一维的，但是动态的子节点可能有嵌套关系，patchBlockChildren 内部也是递归执行了 patch 函数，那么在整个更新的过程中，会出现子节点重复更新的情况吗，为什么？欢迎你在留言区与我分享。
 
 本节课的相关代码在源代码中的位置如下：
+
 ```
 packages/compiler-core/src/codegen.ts
 packages/runtime-core/src/vnode.ts
@@ -9064,11 +9290,13 @@ Vue.js 除了核心的组件化和响应式之外，还提供了很多非常实�
   }
 </script>
 ```
+
 然后我们在父组件使用这个 BlogPost 组件的时候，可以给它传递一些 Props 数据：
 
 ```
 <blog-post title="Vue3 publish" author="yyx"></blog-post>
 ```
+
 从最终结果来看，BlogPost 组件会渲染传递的 title 和 author 数据。
 
 我们平时写组件，会经常和 Props 打交道，但你知道 Vue.js 内部是如何初始化以及更新 Props 的呢？Vue.js 3.0 在 props 的 API 设计上和 Vue.js 2.x 保持一致，那它们的底层实现层面有没有不一样的地方呢？带着这些疑问，让我们来一起探索 Props 的相关实现原理吧。
@@ -9092,6 +9320,7 @@ function setupComponent (instance, isSSR = false) {
   return setupResult
 }
 ```
+
 所以 Props 初始化，就是通过 initProps 方法来完成的，我们来看一下它的实现：
 
 ```
@@ -9122,6 +9351,7 @@ function initProps(instance, rawProps, isStateful, isSSR = false) {
   instance.attrs = attrs
 }
 ```
+
 这里，初始化 Props 主要做了以下几件事情：设置 props 的值，验证 props 是否合法，把 props 变成响应式，以及添加到实例 instance.props 上。
 
 注意，这里我们只分析有状态组件的 Props 初始化过程，所以就默认 isStateful 的值是 true。所谓有状态组件，就是你平时通过对象的方式定义的组件。
@@ -9163,6 +9393,7 @@ function setFullProps(instance, rawProps, props, attrs) {
   }
 }
 ```
+
 我们先注意函数的几个参数的含义：instance 表示组件实例；rawProps 表示原始的 props 值，也就是创建 vnode 过程中传入的 props 数据；props 用于存储解析后的 props 数据；attrs 用于存储解析后的普通属性数据。
 
 设置 Props 的过程也分成几个步骤：标准化 props 的配置，遍历 props 数据求值，以及对需要转换的 props 求值。
@@ -9241,6 +9472,7 @@ function normalizePropsOptions(comp) {
   return normalizedEntry
 }
 ```
+
 normalizePropsOptions 主要目的是标准化 props 的配置，这里需要注意，你要区分 props 的配置和 props 的数据。所谓 props 的配置，就是你在定义组件时编写的 props 配置，它用来描述一个组件的 props 是什么样的；而 props 的数据，是父组件在调用子组件的时候，给子组件传递的数据。
 
 所以这个函数首先会处理 mixins 和 extends 这两个特殊的属性，因为它们的作用都是扩展组件的定义，所以需要对它们定义中的 props 递归执行 normalizePropsOptions。
@@ -9252,7 +9484,8 @@ export default {
   props: ['name', 'nick-name']
 }
 ```
-如果 props 被定义成数组形式，那么数组的每个元素必须是一个字符串，然后把字符串都变成驼峰形式作为 key，并为normalized 的 key 对应的每一个值创建一个空对象。针对上述示例，最终标准化的 props 的定义是这样的：
+
+如果 props 被定义成数组形式，那么数组的每个元素必须是一个字符串，然后把字符串都变成驼峰形式作为 key，并为 normalized 的 key 对应的每一个值创建一个空对象。针对上述示例，最终标准化的 props 的定义是这样的：
 
 ```
 export default {
@@ -9262,6 +9495,7 @@ export default {
   }
 }
 ```
+
 如果 props 定义是一个对象形式，接着就是标准化它的每一个 prop 的定义，把数组或者函数形式的 prop 标准化成对象形式，例如：
 
 ```
@@ -9270,6 +9504,7 @@ export default {
   author: [String, Boolean]
 }
 ```
+
 注意，上述代码中的 String 和 Boolean 都是内置的构造器函数。经过标准化的 props 的定义：
 
 ```
@@ -9284,9 +9519,10 @@ export default {
   }
 }
 ```
+
 接下来，就是判断一些 prop 是否需要转换，其中，含有布尔类型的 prop 和有默认值的 prop 需要转换，这些 prop 的 key 保存在 needCastKeys 中。注意，这里会给 prop 添加两个特殊的 key，prop[0] 和 prop[1]赋值，它们的作用后续我们会说。
 
-最后，返回标准化结果 normalizedEntry，它包含标准化后的 props 定义 normalized，以及需要转换的 props key needCastKeys，并且用 comp.__props 缓存这个标准化结果，如果对同一个组件重复执行 normalizePropsOptions，直接返回这个标准化结果即可。
+最后，返回标准化结果 normalizedEntry，它包含标准化后的 props 定义 normalized，以及需要转换的 props key needCastKeys，并且用 comp._props 缓存这个标准化结果，如果对同一个组件重复执行 normalizePropsOptions，直接返回这个标准化结果即可。
 
 标准化 props 配置的目的无非就是支持用户各种的 props 配置写法，标准化统一的对象格式为了后续统一处理。
 
@@ -9316,6 +9552,7 @@ function setFullProps(instance, rawProps, props, attrs) {
   // 转换需要转换的 props
 }
 ```
+
 该过程主要就是遍历 rawProps，拿到每一个 key。由于我们在标准化 props 配置过程中已经把 props 定义的 key 转成了驼峰形式，所以也需要把 rawProps 的 key 转成驼峰形式，然后对比看 prop 是否在配置中定义。
 
 如果 rawProps 中的 prop 在配置中定义了，那么把它的值赋值到 props 对象中，如果不是，那么判断这个 key 是否为非事件派发相关，如果是那么则把它的值赋值到 attrs 对象中。另外，在遍历的过程中，遇到 key、ref 这种 key，则直接跳过。
@@ -9336,6 +9573,7 @@ function setFullProps(instance, rawProps, props, attrs) {
   }
 }
 ```
+
 在 normalizePropsOptions 的时候，我们拿到了需要转换的 props 的 key，接下来就是遍历 needCastKeys，依次执行 resolvePropValue 方法来求值。我们来看一下它的实现：
 
 ```
@@ -9365,6 +9603,7 @@ function resolvePropValue(options, props, key, value) {
   return value
 }
 ```
+
 resolvePropValue 主要就是针对两种情况的转换，第一种是默认值的情况，即我们在 prop 配置中定义了默认值，并且父组件没有传递数据的情况，这里 prop 对应的值就取默认值。
 
 第二种是布尔类型的值，前面我们在 normalizePropsOptions 的时候已经给 prop 的定义添加了两个特殊的 key，所以 opt[0] 为 true 表示这是一个含有 Boolean 类型的 prop，然后判断是否有传对应的值，如果不是且没有默认值的话，就直接转成 false，举个例子：
@@ -9376,6 +9615,7 @@ export default {
   }
 }
 ```
+
 如果父组件调用子组件的时候没有给 author 这个 prop 传值，那么它转换后的值就是 false。
 
 接着看 opt[1] 为 true，并且 props 传值是空字符串或者是 key 字符串的情况，命中这个逻辑表示这是一个含有 Boolean 和 String 类型的 prop，且 Boolean 在 String 前面，例如：
@@ -9387,6 +9627,7 @@ export default {
   }
 }
 ```
+
 这种时候如果传递的 prop 值是空字符串，或者是 author 字符串，则 prop 的值会被转换成 true。
 
 至此，props 的转换求值结束，整个 setFullProps 函数逻辑也结束了，回顾它的整个流程，我们可以发现它的主要目的就是对 props 求值，然后把求得的值赋值给 props 对象和 attrs 对象中。
@@ -9404,6 +9645,7 @@ function initProps(instance, rawProps, isStateful, isSSR = false) {
   }
 }
 ```
+
 验证过程是在非生产环境下执行的，我们来看一下 validateProps 的实现：
 
 ```
@@ -9450,14 +9692,15 @@ function validateProp(name, value, prop, isAbsent) {
   }
 }
 ```
+
 顾名思义，validateProps 就是用来检测前面求得的 props 值是否合法，它就是对标准化后的 Props 配置对象进行遍历，拿到每一个配置 opt，然后执行 validateProp 验证。
 
 对于单个 Prop 的配置，我们除了配置它的类型 type，还可以配置 required 表明它的必要性，以及 validator 自定义校验器，举个例子：
 
 ```
 export default {
-  props: { 
-    value: { 
+  props: {
+    value: {
       type: Number,
       required: true,
       validator(val) {
@@ -9467,6 +9710,7 @@ export default {
   }
 }
 ```
+
 因此 validateProp 首先验证 required 的情况，一旦 prop 配置了 required 为 true，那么必须给它传值，否则会报警告。
 
 接着是验证 prop 值的类型，由于 prop 定义的 type 可以是多个类型的数组，那么只要 prop 的值匹配其中一种类型，就是合法的，否则会报警告。
@@ -9499,6 +9743,7 @@ function initProps(instance, rawProps, isStateful, isSSR = false) {
   instance.attrs = attrs
 }
 ```
+
 在前两个流程，我们通过 setFullProps 求值赋值给 props 变量，并对 props 做了检测，接下来，就是把 props 变成响应式，并且赋值到组件的实例上。
 
 至此，Props 的初始化就完成了，相信你可能会有一些疑问，为什么 instance.props 要变成响应式，以及为什么用 shallowReactive API 呢？在接下来的 Props 更新流程的分析中，我来解答这两个问题。
@@ -9520,6 +9765,7 @@ Props 的更新
   }
 </script>
 ```
+
 这里，HelloWorld 组件接受一个 msg prop，然后在模板中渲染这个 msg。
 
 然后我们在 App 父组件中引入这个子组件，它的定义如下：
@@ -9546,6 +9792,7 @@ Props 的更新
   }
 </script>
 ```
+
 我们给 HelloWorld 子组件传递的 prop 值是 App 组件中定义的 msg 变量，它的初始值是 Hello world，在子组件的模板中会显示出来。
 
 接着当我们点击按钮修改 msg 的值的时候，就会触发父组件的重新渲染，因为我们在模板中引用了这个 msg 变量。我们会发现这时 HelloWorld 子组件显示的字符串变成了 Hello Vue，那么子组件是如何被触发重新渲染的呢？
@@ -9571,6 +9818,7 @@ const updateComponent = (n1, n2, parentComponent, optimized) => {
   }
 }
 ```
+
 在这个过程中，会执行 shouldUpdateComponent 方法判断是否需要更新子组件，内部会对比 props，由于我们的 prop 数据 msg 由 Hello world 变成了 Hello Vue，值不一样所以 shouldUpdateComponent 会返回 true，这样就把新的子组件 vnode 赋值给 instance.next，然后执行 instance.update 触发子组件的重新渲染。
 
 所以这就是触发子组件重新渲染的原因，但是子组件重新渲染了，子组件实例的 instance.props 的数据需要更新才行，不然还是渲染之前的数据，那么是如何更新 instance.props 的呢，我们接着往下看。
@@ -9616,6 +9864,7 @@ const setupRenderEffect = (instance, initialVNode, container, anchor, parentSusp
   }, prodEffectOptions)
 }
 ```
+
 在更新组件的时候，会判断是否有 instance.next,它代表新的组件 vnode，根据前面的逻辑 next 不为空，所以会执行 updateComponentPreRender 更新组件 vnode 节点信息，我们来看一下它的实现：
 
 ```
@@ -9628,6 +9877,7 @@ const updateComponentPreRender = (instance, nextVNode, optimized) => {
   updateSlots(instance, nextVNode.children)
 }
 ```
+
 其中，会执行 updateProps 更新 props 数据，我们来看它的实现：
 
 ```
@@ -9684,6 +9934,7 @@ function updateProps(instance, rawProps, rawPrevProps, optimized) {
   }
 }
 ```
+
 updateProps 主要的目标就是把父组件渲染时求得的 props 新值，更新到子组件实例的 instance.props 中。
 
 在编译阶段，我们除了捕获一些动态 vnode，也捕获了动态的 props，所以我们可以只去比对动态的 props 数据更新。
@@ -9710,7 +9961,8 @@ const Child = defineComponent({
 })
 count.value++
 ```
-这里，我们定义了父组件 Parent 和子组件 Child，子组件 Child 中定义了 prop count，除了在渲染模板中引用了 count，我们在 setup 函数中通过了 watchEffect 注册了一个回调函数，内部依赖了 props.count，当修改 count.value 的时候，我们希望这个回调函数也能执行，所以这个 prop 的值需要是响应式的，由于 setup 函数的第一个参数是props 变量，其实就是组件实例 instance.props，所以也就是要求 instance.props 是响应式的。
+
+这里，我们定义了父组件 Parent 和子组件 Child，子组件 Child 中定义了 prop count，除了在渲染模板中引用了 count，我们在 setup 函数中通过了 watchEffect 注册了一个回调函数，内部依赖了 props.count，当修改 count.value 的时候，我们希望这个回调函数也能执行，所以这个 prop 的值需要是响应式的，由于 setup 函数的第一个参数是 props 变量，其实就是组件实例 instance.props，所以也就是要求 instance.props 是响应式的。
 
 我们再来看为什么用 shallowReactive API 呢？shallow 的字面意思是浅的，从实现上来说，就是不会递归执行 reactive，只劫持最外一层对象。
 
@@ -9758,6 +10010,7 @@ function createGetter(isReadonly = false, shallow = false) {
   };
 }
 ```
+
 shallowReactive 创建的 getter 函数，shallow 变量为 true，那么就不会执行后续的递归 reactive 逻辑。也就是说，shallowReactive 只把对象 target 的最外一层属性的访问和修改处理成响应式。
 
 之所以可以这么做，是因为 props 在更新的过程中，只会修改最外层属性，所以用 shallowReactive 就足够了。
@@ -9784,6 +10037,7 @@ shallowReactive 创建的 getter 函数，shallow 变量为 true，那么就不�
   }
 </script>
 ```
+
 我们添加了 info prop，然后在模板中渲染了 info 的子属性数据，然后我们再修改一下父组件：
 
 ```
@@ -9816,9 +10070,11 @@ shallowReactive 创建的 getter 函数，shallow 变量为 true，那么就不�
   }
 </script>
 ```
+
 我们在 data 中添加了 info 变量，然后当我们点击 Add age 按钮去修改 this.info.age 的时候，触发了子组件 props 的变化了吗？子组件为什么会重新渲染呢？欢迎你在留言区与我分享。
 
 本节课的相关代码在源代码中的位置如下：
+
 ```
 packages/runtime-core/src/componentProps.ts
 packages/reactivity/src/reactive.ts
@@ -9841,6 +10097,7 @@ packages/reactivity/src/baseHandlers.ts
   <slot></slot>
 </button>
 ```
+
 然后我们在父组件中可以这么使用 TodoButton 组件：
 
 ```
@@ -9850,6 +10107,7 @@ packages/reactivity/src/baseHandlers.ts
   Add todo
 </todo-button>
 ```
+
 其实就是在 todo-button 的标签内部去编写插槽中的 DOM 内容，最终 TodoButton 组件渲染的 HTML 是这样的：
 
 ```
@@ -9859,6 +10117,7 @@ packages/reactivity/src/baseHandlers.ts
   Add todo
 </button>
 ```
+
 这个例子就是最简单的普通插槽的用法，有时候我们希望子组件可以有多个插槽，再举个例子，假设我们有一个布局组件 Layout，定义如下：
 
 ```
@@ -9874,6 +10133,7 @@ packages/reactivity/src/baseHandlers.ts
   </footer>
 </div>
 ```
+
 我们在 Layout 组件中定义了多个插槽，并且其中两个插槽标签还添加了 name 属性（没有设置 name 属性则默认 name 是 default），然后我们在父组件中可以这么使用 Layout 组件：
 
 ```
@@ -9888,7 +10148,7 @@ packages/reactivity/src/baseHandlers.ts
     <template v-slot:footer>
       <p>{{ footer }}</p>
     </template>
-  </layout>  
+  </layout>
 </template>
 <script>
   export default {
@@ -9902,6 +10162,7 @@ packages/reactivity/src/baseHandlers.ts
   }
 </script>
 ```
+
 这里使用 template 以及 v-slot 指令去把内部的 DOM 分发到子组件对应的插槽中，最终 Layout 组件渲染的 HTML 如下：
 
 ```
@@ -9917,6 +10178,7 @@ packages/reactivity/src/baseHandlers.ts
   </footer>
 </div>
 ```
+
 这个例子就是命名插槽的用法，它实现了在一个组件中定义多个插槽的需求。另外我们需要注意，父组件在插槽中引入的数据，它的作用域是父组件的。
 
 不过有些时候，我们希望父组件填充插槽内容的时候，使用子组件的一些数据，为了实现这个需求，Vue.js 提供了作用域插槽。
@@ -9941,6 +10203,7 @@ packages/reactivity/src/baseHandlers.ts
   }
 </script>
 ```
+
 注意，这里我们给 slot 标签加上了 item 属性，目的就是传递子组件中的 item 数据，然后我们可以在父组件中这么去使用 TodoList 组件：
 
 ```
@@ -9951,6 +10214,7 @@ packages/reactivity/src/baseHandlers.ts
   </template>
 </todo-list>
 ```
+
 注意，这里的 v-slot 指令的值为 slotProps，它是一个对象，它的值包含了子组件往 slot 标签中添加的 props，在我们这个例子中，v-slot 就包含了 item 属性，然后我们就可以在内部使用这个 slotProps.item 了，最终 TodoList 子组件渲染的 HTML 如下：
 
 ```
@@ -9961,6 +10225,7 @@ packages/reactivity/src/baseHandlers.ts
   </li>
 </ul>
 ```
+
 上述例子就是作用域插槽的用法，它实现了在父组件填写子组件插槽内容的时候，可以使用子组件传递数据的需求。
 
 这些就是插槽的一些常见使用方式，那么接下来，我们就来探究一下插槽背后的实现原理吧！
@@ -9983,8 +10248,9 @@ packages/reactivity/src/baseHandlers.ts
   <template v-slot:footer>
     <p>{{ footer }}</p>
   </template>
-</layout>  
+</layout>
 ```
+
 这里你可以借助模板编译工具看一下它编译后的 render 函数：
 
 ```
@@ -10005,6 +10271,7 @@ export function render(_ctx, _cache, $props, $setup, $data, $options) {
   }))
 }
 ```
+
 前面我们学习过 createBlock，它的内部通过执行 createVNode 创建了 vnode，注意 createBlock 函数的第三个参数，它表示创建的 vnode 子节点，在我们这个例子中，它是一个对象。
 
 通常，我们创建 vnode 传入的子节点是一个数组，那么对于对象类型的子节点，它内部做了哪些处理呢？我们来回顾一下 createVNode 的实现：
@@ -10026,6 +10293,7 @@ function createVNode(type,props = null,children = null) {
   return vnode
 }
 ```
+
 其中，normalizeChildren 就是用来处理传入的参数 children，我们来看一下它的实现：
 
 ```
@@ -10082,6 +10350,7 @@ function normalizeChildren (vnode, children) {
   vnode.shapeFlag |= type
 }
 ```
+
 normalizeChildren 函数主要的作用就是标准化 children 以及获取 vnode 的节点类型 shapeFlag。
 
 这里，我们重点关注插槽相关的逻辑。经过处理，vnode.children 仍然是传入的对象数据，而 vnode.shapeFlag 会与 slot 子节点类型 SLOTS_CHILDREN 进行或运算，由于 vnode 本身的 shapFlag 是 STATEFUL_COMPONENT，所以运算后的 shapeFlag 是 SLOTS_CHILDREN | STATEFUL_COMPONENT。
@@ -10127,7 +10396,8 @@ const patch = (n1, n2, container, anchor = null, parentComponent = null, parentS
   }
 }
 ```
-这里由于 type 是组件对象，shapeFlag 满足shapeFlag&6的情况，所以会走到 processComponent 的逻辑，递归去渲染子组件。
+
+这里由于 type 是组件对象，shapeFlag 满足 shapeFlag&6 的情况，所以会走到 processComponent 的逻辑，递归去渲染子组件。
 
 至此，带有子节点插槽的组件与普通的组件渲染并无区别，还是通过递归的方式去渲染子组件。
 
@@ -10149,6 +10419,7 @@ function setupComponent (instance, isSSR = false) {
   return setupResult
 }
 ```
+
 注意，这里的 instance.vnode 就是组件 vnode，我们可以从中拿到子组件的实例、props 和 children 等数据。setupComponent 执行过程中会通过 initSlots 函数去初始化插槽，并传入 instance 和 children，我们来看一下它的实现：
 
 ```
@@ -10172,6 +10443,7 @@ const initSlots = (instance, children) => {
   def(instance.slots, InternalObjectKey, 1)
 }
 ```
+
 initSlots 的实现逻辑很简单，这里的 children 就是前面传入的插槽对象数据，然后我们把它保留到 instance.slots 对象中，后续我们就可以从 instance.slots 拿到插槽的数据了。
 
 到这里，我们在子组件的初始化过程中就拿到由父组件传入的插槽数据了，那么接下来，我们就来分析子组件是如何把这些插槽数据渲染到页面上的吧。
@@ -10191,6 +10463,7 @@ initSlots 的实现逻辑很简单，这里的 children 就是前面传入的插
   </footer>
 </div>
 ```
+
 这里你可以借助模板编译工具看一下它编译后的 render 函数：
 
 ```
@@ -10209,6 +10482,7 @@ export function render(_ctx, _cache, $props, $setup, $data, $options) {
   ]))
 }
 ```
+
 通过编译后的代码我们可以看出，子组件的插槽部分的 DOM 主要通过 renderSlot 方法渲染生成的，我们来看它的实现：
 
 ```
@@ -10220,6 +10494,7 @@ function renderSlot(slots, name, props = {}, fallback) {
       : -2 /* BAIL */));
 }
 ```
+
 renderSlot 函数的第一个参数 slots 就是 instance.slots，我们在子组件初始化的时候已经获得了这个 slots 对象，第二个参数是 name。
 
 renderSlot 的实现也很简单，首先根据第二个参数 name 获取对应的插槽函数 slot，接着通过 createBlock 创建了 vnode 节点，注意，它的类型是一个 Fragment，children 是执行 slot 插槽函数的返回值。
@@ -10240,6 +10515,7 @@ _createVNode("p", null, _toDisplayString(_ctx.footer), 1 /* TEXT */)
 _: 1
 }
 ```
+
 那么对于 name 为 header，它的值就是：
 
 ```
@@ -10247,6 +10523,7 @@ _withCtx(() => [
   _createVNode("h1", null, _toDisplayString(_ctx.header), 1 /* TEXT */)
 ])
 ```
+
 它是执行 _withCtx 函数后的返回值，我们接着看 withCtx 函数的实现：
 
 ```
@@ -10262,6 +10539,7 @@ function withCtx(fn, ctx = currentRenderingInstance) {
   }
 }
 ```
+
 withCtx 的实现很简单，它支持传入一个函数 fn 和执行的上下文变量 ctx，它的默认值是 currentRenderingInstance，也就是执行 render 函数时的当前组件实例。
 
 withCtx 会返回一个新的函数，这个函数执行的时候，会先保存当前渲染的组件实例 owner，然后把 ctx 设置为当前渲染的组件实例，接着执行 fn，执行完毕后，再把之前的 owner 设置为当前组件实例。
@@ -10274,11 +10552,13 @@ withCtx 会返回一个新的函数，这个函数执行的时候，会先保存
   _createVNode("h1", null, _toDisplayString(_ctx.header), 1 /* TEXT */)
 ]
 ```
+
 我们回到 renderSlot 函数，最终插槽对应的 vnode 渲染就变成了如下函数：
 
 ```
 createBlock(Fragment, { key: props.key }, [_createVNode("h1", null, _toDisplayString(_ctx.header), 1 /* TEXT */)], 64 /* STABLE_FRAGMENT */)
 ```
+
 我们知道，createBlock 内部是会执行 createVNode 创建 vnode，vnode 创建完后，仍然会通过 patch 把 vnode 挂载到页面上，那么对于插槽的渲染，patch 过程又有什么不同呢？
 
 注意这里我们的 vnode 的 type 是 Fragement，所以在执行 patch 的时候，会执行 processFragment 逻辑，我们来看它的实现：
@@ -10303,6 +10583,7 @@ const processFragment = (n1, n2, container, anchor, parentComponent, parentSuspe
   }
 }
 ```
+
 我们只分析挂载子节点的过程，所以 n1 的值为 null，n2 就是我们前面创建的 vnode 节点，它的 children 是一个数组。
 
 processFragment 函数首先通过 hostInsert 在容器的前后插入两个空文本节点，然后在以尾文本节点作为参考锚点，通过 mountChildren 把 children 挂载到 container 容器中。
@@ -10315,6 +10596,7 @@ processFragment 函数首先通过 hostInsert 在容器的前后插入两个空�
 最后，给你留一道思考题目，作用域插槽是如何实现子组件数据传递的？欢迎你在留言区与我分享。
 
 本节课的相关代码在源代码中的位置如下：
+
 ```
 packages/runtime-core/src/componentSlots.ts
 packages/runtime-core/src/vnode.ts
@@ -10328,7 +10610,7 @@ packages/runtime-core/src/helpers/withRenderContext.ts
 
 有些时候，我们希望手动去操作某个元素节点的 DOM，比如当这个元素节点挂载到页面的时候通过操作底层的 DOM 来做一些事情。
 
-为了支持这个需求，Vue.js提供了指令的功能，它允许我们自定义指令，作用在普通的 DOM 元素上。
+为了支持这个需求，Vue.js 提供了指令的功能，它允许我们自定义指令，作用在普通的 DOM 元素上。
 
 举个聚焦输入框的例子，我们希望在页面加载时，输入框自动获得焦点，我们可以全局注册一个 v-focus 指令：
 
@@ -10343,6 +10625,7 @@ app.directive('focus', {
   }
 })
 ```
+
 当然，我们也可以在组件内部局部注册：
 
 ```
@@ -10354,6 +10637,7 @@ directives: {
   }
 }
 ```
+
 然后我们就可以在模板中使用这个指令了：`<input v-focus />`。
 
 至此我们就大致了解了指令的功能和用法，那么接下来，我们就从指令的定义、指令的注册和指令的应用三个方面来一起探究它的实现原理。
@@ -10383,6 +10667,7 @@ const logDirective = {
   }
 }
 ```
+
 然后你可以在创建应用后注册它：
 
 ```
@@ -10392,6 +10677,7 @@ const app = createApp(App)
 app.directive('log', logDirective)
 app.mount('#app')
 ```
+
 接着在 App 组件中使用这个指令：
 
 ```
@@ -10412,6 +10698,7 @@ app.mount('#app')
   }
 </script>
 ```
+
 我建议你拷贝上述代码运行这个示例，你会发现，当你点击按钮后，会先执行指令定义的 beforeMount 和 mounted 钩子函数，然后你在 input 输入框中输入一些内容，会执行 beforeUpdate 和 updated 钩子函数，然后你再次点击按钮，会执行 beforeUnmount 和 unmounted 钩子函数。
 
 所以一个指令的定义，无非就是在合适的钩子函数中编写一些相关的处理逻辑。我基于 Vue.js 3.0 写过一个简单图片懒加载的插件 vue3-lazy，你也可以去看看它的源码，了解一下一个成熟的指令插件是如何编写的。
@@ -10431,6 +10718,7 @@ app.directive('focus', {
   }
 })
 ```
+
 我们来看 directive 方法的实现：
 
 ```
@@ -10458,6 +10746,7 @@ function createApp(rootComponent, rootProps = null) {
   return app
 }
 ```
+
 directive 是 app 对象上的一个方法，它接受两个参数，第一个参数是指令的名称，第二个参数就是指令对象。
 
 指令全局注册方法的实现非常简单，就是把指令对象注册到 app 对象创建的全局上下文 context.directives 中，并用 name 作为 key。
@@ -10475,6 +10764,7 @@ directives: {
   }
 }
 ```
+
 因此全局注册和局部注册的区别是，一个保存在 appContext 中，一个保存在组件对象的定义中。
 
 指令的应用
@@ -10491,6 +10781,7 @@ export function render(_ctx, _cache, $props, $setup, $data, $options) {
   ])
 }
 ```
+
 我们再来看看如果不使用 v-focus，单个 input 编译生成后的 render 函数是怎样的：
 
 ```
@@ -10499,6 +10790,7 @@ export function render(_ctx, _cache, $props, $setup, $data, $options) {
   return (_openBlock(), _createBlock("input"))
 }
 ```
+
 对比两个编译结果可以看到，区别在于如果元素节点使用指令，那么它编译生成的 vnode 会用 withDirectives 包装一层。
 
 在分析 withDirectives 函数的实现之前先来看指令的解析函数 resolveDirective，因为前面我们已经了解指令的注册其实就是把定义的指令对象保存下来，那么 resolveDirective 做的事情就是根据指令的名称找到保存的对应指令对象，我们来看一下它的实现：
@@ -10535,9 +10827,10 @@ function resolve(registry, name) {
       registry[capitalize(camelize(name))]))
 }
 ```
+
 可以看到，resolveDirective 内部调用了 resolveAsset 函数，传入的类型名称为 directives 字符串。
 
-resolveAsset 内部先通过 resolve函数解析局部注册的资源，由于我们传入的是 directives，所以就从组件定义对象上的 directives 属性中查找对应 name 的指令，如果查找不到则通过 instance.appContext，也就是我们前面提到的全局的 appContext，根据其中的 name查找对应的指令。
+resolveAsset 内部先通过 resolve 函数解析局部注册的资源，由于我们传入的是 directives，所以就从组件定义对象上的 directives 属性中查找对应 name 的指令，如果查找不到则通过 instance.appContext，也就是我们前面提到的全局的 appContext，根据其中的 name 查找对应的指令。
 
 所以 resolveDirective 的实现很简单，优先查找组件是否局部注册该指令，如果没有则看是否全局注册该指令，如果还找不到则在非生产环境下报警告，提示用户没有解析到该指令。如果你平时在开发工作中遇到这个警告，那么你很可能就是没有注册这个指令，或者是 name 写得不对。
 
@@ -10574,6 +10867,7 @@ function withDirectives(vnode, directives) {
   return vnode
 }
 ```
+
 withDirectives 函数第一个参数是 vnode，第二个参数是指令构成的数组，因为一个元素节点上是可以应用多个指令的。
 
 withDirectives 其实就是给 vnode 添加了一个 dirs 属性，属性的值就是这个元素节点上的所有指令构成的对象数组。它通过对 directives 的遍历，拿到每一个指令对象以及指令对应的值 value、参数 arg、修饰符 modifiers 等，然后构造成一个 binding 对象，这个对象还绑定了组件的实例 instance。
@@ -10606,12 +10900,13 @@ const mountElement = (vnode, container, anchor, parentComponent, parentSuspense,
   // 把创建的 DOM 元素节点挂载到 container 上
   hostInsert(el, container, anchor)
   if (dirs) {
-    queuePostRenderEffect(()=>{ 
+    queuePostRenderEffect(()=>{
       invokeDirectiveHook(vnode, null, parentComponent, 'mounted')
     })
   }
 }
 ```
+
 这一次，我们添加了元素指令调用的相关代码，可以直观地看到，在元素插入到容器之前会执行指令的 beforeMount 钩子函数，在插入元素之后，会通过 queuePostRenderEffect 的方式执行指令的 mounted 钩子函数。
 
 钩子函数的执行，是通过调用 invokeDirectiveHook 方法完成的，我们来看它的实现：
@@ -10637,6 +10932,7 @@ function invokeDirectiveHook(vnode, prevVNode, instance, name) {
   }
 }
 ```
+
 invokeDirectiveHook 函数有四个参数，第一个和第二个参数分别代表新旧 vnode，第三个参数是组件实例 instance，第四个参数是钩子名称 name。
 
 invokeDirectiveHook 的实现很简单，通过遍历 vnode.dirs 数组，找到每一个指令对应的 binding 对象，然后从 binding 对象中根据 name 找到指令定义的对应的钩子函数，如果定义了这个钩子函数则执行它，并且传入一些响应的参数，包括元素的 DOM 节点 el，binding 对象，新旧 vnode，这就是我们在执行指令钩子函数的时候，可以访问到这些参数的原因。
@@ -10666,6 +10962,7 @@ const patchElement = (n1, n2, parentComponent, parentSuspense, isSVG, optimized)
   }
 }
 ```
+
 这一次，我们添加了元素指令调用的相关代码，可以直观地看到，在更新子节点之前会执行指令的 beforeUpdate 钩子函数，在更新完子节点之后，会通过 queuePostRenderEffect 的方式执行指令的 updated 钩子函数。
 
 最后，我们来看元素卸载时候会执行哪些指令的钩子函数。通过前面章节的学习我们了解到，一个元素的卸载是通过执行 unmount 函数，我们再来回顾一下它的实现：
@@ -10716,6 +11013,7 @@ const unmount = (vnode, parentComponent, parentSuspense, doRemove = false) => {
   }
 }
 ```
+
 unmount 方法的主要思路就是用递归的方式去遍历删除自身节点和子节点。
 
 可以看到，在移除元素的子节点之前会执行指令的 beforeUnmount 钩子函数，在移除子节点和当前节点之后，会通过 queuePostRenderEffect 的方式执行指令的 unmounted 钩子函数。
@@ -10729,15 +11027,18 @@ unmount 方法的主要思路就是用递归的方式去遍历删除自身节点
 <div v-uid="foo"></div>
 <div v-uid="foo"></div>
 ```
+
 最终会在页面上生成的 HTML 如下：
 
 ```
 <div id="foo-0"></div>
 <div id="foo-1"></div>
 ```
+
 你有什么好的思路吗？欢迎你在留言区与我分享。
 
 本节课的相关代码在源代码中的位置如下：
+
 ```
 packages/runtime-core/src/directives.ts
 packages/runtime-core/src/apiCreateApp.ts
@@ -10756,7 +11057,7 @@ v-model 也不是可以作用到任意标签，它只能在一些特定的表单
 那么 v-model 的实现原理到底是怎样的呢？接下来，我们从普通表单元素和自定义组件两个方面来分别分析它的实现。
 
 在普通表单元素上作用 v-model
-首先，我们来看在普通表单元素上作用 v-model，还是先举一个基本的示例：<input v-model="searchText"/>。
+首先，我们来看在普通表单元素上作用 v-model，还是先举一个基本的示例：`<input v-model="searchText"/>`。
 
 我们先看这个模板编译后生成的 render 函数：
 
@@ -10770,6 +11071,7 @@ export function render(_ctx, _cache, $props, $setup, $data, $options) {
   ])
 }
 ```
+
 可以看到，作用在 input 标签的 v-model 指令在编译后，除了使用 withDirectives 给这个 vnode 添加了 vModelText 指令对象外，还额外传递了一个名为 onUpdate:modelValue 的 prop，它的值是一个函数，这个函数就是用来更新变量 searchText。
 
 我们来看 vModelText 的实现：
@@ -10833,6 +11135,7 @@ function onCompositionEnd(e) {
   }
 }
 ```
+
 那么接下来，我们就来拆解这个指令的实现。首先，这个指令实现了两个钩子函数，created 和 beforeUpdate。
 
 我们先来看 created 部分的实现，根据上节课的分析，我们知道第一个参数 el 是节点的 DOM 对象，第二个参数是 binding 对象，第三个参数 vnode 是节点的 vnode 对象。
@@ -10844,7 +11147,7 @@ created 函数首先把 v-model 绑定的值 value 赋值给 el.value，这个�
 至此，我们就实现了数据的双向绑定，就是这么简单。接着我们来看 input v-model 支持的几个修饰符都分别代表什么含义。
 
 lazy 修饰符
-如果配置了 lazy 修饰符，那么监听的是 input 的 change 事件，它不会在input输入框实时输入的时候触发，而会在 input 元素值改变且失去焦点的时候触发。
+如果配置了 lazy 修饰符，那么监听的是 input 的 change 事件，它不会在 input 输入框实时输入的时候触发，而会在 input 元素值改变且失去焦点的时候触发。
 
 如果不配置 lazy，监听的是 input 的 input 事件，它会在用户实时输入的时候触发。此外，还会多监听 compositionstart 和 compositionend 事件。
 
@@ -10865,6 +11168,7 @@ number 修饰符
 ```
 <input type="checkbox" v-model="searchText"/>
 ```
+
 你可以看到，编译的结果不同，调用的指令也不一样了，我希望你可以举一反三，去自学其他类型的表单元素的 v-model 实现。
 
 在自定义组件上作用 v-model
@@ -10888,6 +11192,7 @@ app.component('custom-input', {
   }
 })
 ```
+
 我们先通过 app.component 全局注册了一个 custom-input 自定义组件，内部我们使用了原生的 input 并使用了 v-model 指令实现数据的绑定。
 
 注意这里我们不能直接把 modelValue 作为 input 对应的 v-model 数据，因为不能直接对 props 的值修改，因此这里使用计算属性。
@@ -10899,6 +11204,7 @@ app.component('custom-input', {
 ```
 <custom-input v-model="searchText"/>
 ```
+
 我们来看一下这个模板编译后生成的 render 函数：
 
 ```
@@ -10911,6 +11217,7 @@ export function render(_ctx, _cache, $props, $setup, $data, $options) {
   }, null, 8 /* PROPS */, ["modelValue", "onUpdate:modelValue"]))
 }
 ```
+
 可以看到，编译的结果似乎和指令没有什么关系，并没有调用 withDirective 函数。
 
 我们对示例稍做修改：
@@ -10918,6 +11225,7 @@ export function render(_ctx, _cache, $props, $setup, $data, $options) {
 ```
 <custom-input :modelValue="searchText" @update:modelValue="$event=>{searchText = $event}"/>
 ```
+
 然后我们再来看它编译后生成的 render 函数：
 
 ```
@@ -10930,6 +11238,7 @@ export function render(_ctx, _cache, $props, $setup, $data, $options) {
   }, null, 8 /* PROPS */, ["modelValue", "onUpdate:modelValue"]))
 }
 ```
+
 我们发现，它和前面示例的编译结果是一模一样的，因为 v-model 作用于组件上本质就是一个语法糖，就是往组件传入了一个名为 modelValue 的 prop，它的值是往组件传入的数据 data，另外它还在组件上监听了一个名为 update:modelValue 的自定义事件，事件的回调函数接受一个参数，执行的时候会把参数 $event 赋值给数据 data。
 
 正因为这个原理，所以我们想要实现自定义组件的 v-model，首先需要定义一个名为 modelValue 的 prop，然后在数据改变的时候，派发一个名为 update:modelValue 的事件。
@@ -10956,6 +11265,7 @@ export function render(_ctx, _cache, $props, $setup, $data, $options) {
   }, null, 8 /* PROPS */, ["text", "onUpdate:text"]))
 }
 ```
+
 可以看到，我们往组件传递的 prop 变成了 text，监听的自定义事件也变成了 @update:text 了。
 
 显然，如果 v-model 支持了参数，那么我们就可以在一个组件上使用多个 v-model 了：
@@ -10963,12 +11273,13 @@ export function render(_ctx, _cache, $props, $setup, $data, $options) {
 ```
 <ChildComponent v-model:title="pageTitle" v-model:content="pageContent" />
 ```
+
 至此，我们就掌握了组件 v-model 的实现原理，它的本质就是语法糖：通过 prop 向组件传递数据，并监听自定义事件接受组件反传的数据并更新。
 
 prop 的实现原理我们之前分析过，但自定义事件是如何派发的呢？因为从模板的编译结果看，除了 modelValue 这个 prop，还多了一个 onUpdate:modelValue 的 prop，它和自定义事件有什么关系？接下来我们就来分析这部分的实现。
 
 自定义事件派发
-从前面的示例我们知道，子组件会执行this.$emit('update:modelValue',value)方法派发自定义事件，$emit 内部执行了 emit 方法，我们来看一下它的实现：
+从前面的示例我们知道，子组件会执行 this.$emit('update:modelValue',value)方法派发自定义事件，$emit 内部执行了 emit 方法，我们来看一下它的实现：
 
 ```
 function emit(instance, event, ...args) {
@@ -10984,6 +11295,7 @@ function emit(instance, event, ...args) {
   }
 }
 ```
+
 emit 方法支持 3 个参数，第一个参数 instance 是组件的实例，也就是执行 $emit 方法的组件实例，第二个参数 event 是自定义事件名称，第三个参数 args 是事件传递的参数。
 
 emit 方法首先获取事件名称，把传递的 event 首字母大写，然后前面加上 on 字符串，比如我们前面派发的 update:modelValue 事件名称，处理后就变成了 onUpdate:modelValue。
@@ -11000,6 +11312,7 @@ emit 方法首先获取事件名称，把传递的 event 首字母大写，然�
 最后，给你留一道思考题目，如果自定义组件不用 v-model，也不用自定义事件监听的方式，如何实现和 v-model 一样的效果，怎么做呢？欢迎你在留言区与我分享。
 
 本节课的相关代码在源代码中的位置如下：
+
 ```
 packages/runtime-dom/src/directives/vModel.ts
 ```
@@ -11069,6 +11382,7 @@ Vue.js 除了提供了组件化和响应式的能力，以及实用的特性外�
   }
 </style>
 ```
+
 然后我们去使用这个组件：
 
 ```
@@ -11090,6 +11404,7 @@ Vue.js 除了提供了组件化和响应式的能力，以及实用的特性外�
   }
 </script>
 ```
+
 因为我们的 dialog 组件使用的是 position:absolute 绝对定位的方式，如果它的父级 DOM 有 position 不为 static 的布局方式，那么 dialog 的定位就受到了影响，不能按预期渲染了。
 
 所以一种好的解决方案是把 dialog 组件渲染的这部分 DOM 挂载到 body 下面，这样就不会受到父级样式的影响了。
@@ -11119,6 +11434,7 @@ Vue.js 除了提供了组件化和响应式的能力，以及实用的特性外�
   }
 </script>
 ```
+
 Teleport 组件使用起来非常简单，套在想要在别处渲染的组件或者 DOM 节点的外部，然后通过 to 这个 prop 去指定渲染到的位置，to 可以是一个 DOM 选择器字符串，也可以是一个 DOM 节点。
 
 了解了使用方式，接下来，我们就来分析它的实现原理，看看 Teleport 是如何脱离当前组件渲染子组件的。
@@ -11138,6 +11454,7 @@ export function render(_ctx, _cache, $props, $setup, $data, $options) {
   ]))
 }
 ```
+
 可以看到，对于 teleport 标签，它是直接创建了 Teleport 内置组件，我们接下来来看它的实现：
 
 ```
@@ -11158,6 +11475,7 @@ const Teleport = {
   hydrate: hydrateTeleport
 }
 ```
+
 Teleport 组件的实现就是一个对象，对外提供了几个方法。其中 process 方法负责组件的创建和更新逻辑，remove 方法负责组件的删除逻辑，接下来我们就从这三个方面来分析 Teleport 的实现原理。
 
 Teleport 组件创建
@@ -11199,6 +11517,7 @@ const patch = (n1, n2, container, anchor = null, parentComponent = null, parentS
   }
 }
 ```
+
 可以看到，在 patch 阶段，会判断如果 type 是一个 Teleport 组件，则会执行它的 process 方法，接下来我们来看 process 方法关于 Teleport 组件创建部分的逻辑：
 
 ```
@@ -11243,9 +11562,10 @@ function process(n1, n2, container, anchor, parentComponent, parentSuspense, isS
   }
 }
 ```
+
 Teleport 组件创建部分主要分为三个步骤，第一步在主视图里插入注释节点或者空白文本节点，第二步获取目标元素节点，第三步往目标元素插入 Teleport 组件的子节点。
 
-我们先来看第一步，会在非生产环境往 Teleport 组件原本的位置插入注释节点，在生产环境插入空白文本节点。在开发环境中，组件的 el 对象指向 teleport start 注释节点，组件的 anchor 对象指向teleport end 注释节点。
+我们先来看第一步，会在非生产环境往 Teleport 组件原本的位置插入注释节点，在生产环境插入空白文本节点。在开发环境中，组件的 el 对象指向 teleport start 注释节点，组件的 anchor 对象指向 teleport end 注释节点。
 
 接着看第二步，会通过 resolveTarget 方法从 props 中的 to 属性以及 DOM 选择器拿到对应要移动到的目标元素 target。
 
@@ -11317,6 +11637,7 @@ function process(n1, n2, container, anchor, parentComponent, parentSuspense, isS
   }
 }
 ```
+
 Teleport 组件更新无非就是做几件事情：更新子节点，处理 disabled 属性变化的情况，处理 to 属性变化的情况。
 
 首先，是更新 Teleport 组件的子节点，这里更新分为优化更新和普通的全量比对更新两种情况，之前分析过，就不再赘述了。
@@ -11336,6 +11657,7 @@ if (doRemove) {
   remove(vnode);
 }
 ```
+
 我们来看一下它的实现：
 
 ```
@@ -11349,6 +11671,7 @@ function remove(vnode, { r: remove, o: { remove: hostRemove } }) {
   }
 }
 ```
+
 Teleport 的 remove 方法实现很简单，首先通过 hostRemove 移除主视图渲染的锚点 teleport start 注释节点，然后再去遍历 Teleport 的子节点执行 remove 移除。
 
 执行完 Teleport 的 remove 方法，会继续执行 remove 方法移除 Teleport 主视图的元素 teleport end 注释节点，至此，Teleport 组件完成了移除。
@@ -11359,6 +11682,7 @@ Teleport 的 remove 方法实现很简单，首先通过 hostRemove 移除主视
 最后，给你留一道思考题，作为 Vue.js 的内置组件，它需要像用户自定义组件那样先注册后再使用吗？如果不用又是为什么呢？欢迎你在留言区与我分享。
 
 本节课的相关代码在源代码中的位置如下：
+
 ```
 packages/runtime-core/src/components/Teleport.ts
 packages/runtime-core/src/renderer.ts
@@ -11373,6 +11697,7 @@ packages/runtime-core/src/renderer.ts
 <comp-b v-else></comp-b>
 <button @click="flag=!flag">toggle</button>
 ```
+
 这里，当 flag 为 true 的时候，就会触发组件 A 的渲染，然后我们点击按钮把 flag 修改为 false，又会触发组件 A 的卸载，及组件 B 的渲染。
 
 根据我们前面的学习，我们也知道组件的挂载和卸载都是一个递归过程，会有一定的性能损耗，对于这种可能会频繁切换的组件，我们有没有办法减少这其中的性能损耗呢？
@@ -11386,6 +11711,7 @@ packages/runtime-core/src/renderer.ts
   <button @click="flag=!flag">toggle</button>
 </keep-alive>
 ```
+
 我们可以用模板导出工具看一下它编译后的 render 函数：
 
 ```
@@ -11403,7 +11729,8 @@ export function render(_ctx, _cache, $props, $setup, $data, $options) {
   ], 1024 /* DYNAMIC_SLOTS */))
 }
 ```
-我们使用了 KeepAlive 组件对这两个组件做了一层封装，KeepAlive 是一个抽象组件，它并不会渲染成一个真实的 DOM，只会渲染内部包裹的子节点，并且让内部的子组件在切换的时候，不会走一整套递归卸载和挂载 DOM的流程，从而优化了性能。
+
+我们使用了 KeepAlive 组件对这两个组件做了一层封装，KeepAlive 是一个抽象组件，它并不会渲染成一个真实的 DOM，只会渲染内部包裹的子节点，并且让内部的子组件在切换的时候，不会走一整套递归卸载和挂载 DOM 的流程，从而优化了性能。
 
 那么它具体是怎么做的呢？我们再来看 KeepAlive 组件的定义：
 
@@ -11554,6 +11881,7 @@ const KeepAliveImpl = {
   }
 }
 ```
+
 我把 KeepAlive 的实现拆成四个部分：组件的渲染、缓存的设计、Props 设计和组件的卸载。接下来，我们就来依次分析它们的实现。分析的过程中，我会结合前面的示例讲解，希望你也能够运行这个示例，并加入一些断点调试。
 
 组件的渲染
@@ -11614,6 +11942,7 @@ return () => {
   return vnode
 }
 ```
+
 函数先从 slots.default() 拿到子节点 children，它就是 KeepAlive 组件包裹的子组件，由于 KeepAlive 只能渲染单个子节点，所以当 children 长度大于 1 的时候会报警告。
 
 我们先不考虑缓存部分，KeepAlive 渲染的 vnode 就是子节点 children 的第一个元素，它是函数的返回值。
@@ -11636,6 +11965,7 @@ const cacheSubtree = () => {
   }
 }
 ```
+
 由于 pendingCacheKey 是在 KeepAlive 的 render 函数中才会被赋值，所以 KeepAlive 首次进入 onBeforeMount 钩子函数的时候是不会缓存的。
 
 然后 KeepAlive 执行 render 的时候，pendingCacheKey 会被赋值为 vnode.key，我们回过头看一下示例渲染后的模板：
@@ -11655,6 +11985,7 @@ export function render(_ctx, _cache, $props, $setup, $data, $options) {
   ], 1024 /* DYNAMIC_SLOTS */))
 }
 ```
+
 我们注意到 KeepAlive 的子节点创建的时候都添加了一个 key 的 prop，它就是专门为 KeepAlive 的缓存设计的，这样每一个子节点都能有一个唯一的 key。
 
 页面首先渲染 A 组件，接着当我们点击按钮的时候，修改了 flag 的值，会触发当前组件的重新渲染，进而也触发了 KeepAlvie 组件的重新渲染，在组件重新渲染前，会执行 onBeforeUpdate 对应的钩子函数，也就再次执行到 cacheSubtree 函数中。
@@ -11663,7 +11994,7 @@ export function render(_ctx, _cache, $props, $setup, $data, $options) {
 
 经过前面的分析，我认为 onBeforeMount 的钩子函数注入似乎并没有必要，我在源码中删除后再跑 Vue.js 3.0 的单测也能通过，如果你有不同意见，欢迎在留言区与我分享。
 
-这个时候渲染了 B 组件，当我们再次点击按钮，修改 flag 值的时候，会再次触发KeepAlvie 组件的重新渲染，当然此时执行 onBeforeUpdate 钩子函数缓存的就是 B 组件的渲染子树了。
+这个时候渲染了 B 组件，当我们再次点击按钮，修改 flag 值的时候，会再次触发 KeepAlvie 组件的重新渲染，当然此时执行 onBeforeUpdate 钩子函数缓存的就是 B 组件的渲染子树了。
 
 接着再次执行 KeepAlive 组件的 render 函数，此时就可以从缓存中根据 A 组件的 key 拿到对应的渲染子树 cachedVNode 的了，然后执行如下逻辑：
 
@@ -11685,6 +12016,7 @@ else {
   }
 }
 ```
+
 有了缓存的渲染子树后，我们就可以直接拿到它对应的 DOM 以及组件实例 component，赋值给 KeepAlive 的 vnode，并更新 vnode.shapeFlag，以便后续 patch 阶段使用。
 
 注意，这里有一个额外的缓存管理的逻辑，我们稍后讲 Props 设计的时候会详细说。
@@ -11708,7 +12040,8 @@ const processComponent = (n1, n2, container, anchor, parentComponent, parentSusp
   }
 }
 ```
-KeepAlive 首次渲染某一个子节点时，和正常的组件节点渲染没有区别，但是有缓存后，由于标记了 shapeFlag，所以在执行processComponent函数时会走到处理 KeepAlive 组件的逻辑中，执行 KeepAlive 组件实例上下文中的 activate 函数，我们来看它的实现：
+
+KeepAlive 首次渲染某一个子节点时，和正常的组件节点渲染没有区别，但是有缓存后，由于标记了 shapeFlag，所以在执行 processComponent 函数时会走到处理 KeepAlive 组件的逻辑中，执行 KeepAlive 组件实例上下文中的 activate 函数，我们来看它的实现：
 
 ```
 sharedContext.activate = (vnode, container, anchor, isSVG, optimized) => {
@@ -11727,6 +12060,7 @@ sharedContext.activate = (vnode, container, anchor, isSVG, optimized) => {
   }, parentSuspense)
 }
 ```
+
 可以看到，由于此时已经能从 vnode.el 中拿到缓存的 DOM 了，所以可以直接调用 move 方法挂载节点，然后执行 patch 方法更新组件，以防止 props 发生变化的情况。
 
 接下来，就是通过 queuePostRenderEffect 的方式，在组件渲染完毕后，执行子节点组件定义的 activated 钩子函数。
@@ -11745,6 +12079,7 @@ props: {
   max: [String, Number]
 }
 ```
+
 include 和 exclude 对应的实现逻辑如下：
 
 ```
@@ -11754,6 +12089,7 @@ if ((include && (!name || !matches(include, name))) ||
   return (current = vnode)
 }
 ```
+
 很好理解，如果子组件名称不匹配 include 的 vnode ，以及子组件名称匹配 exclude 的 vnode 都不应该被缓存，而应该直接返回。
 
 当然，由于 props 是响应式的，在 include 和 exclude props 发生变化的时候也应该有相关的处理逻辑，如下：
@@ -11764,6 +12100,7 @@ watch(() => [props.include, props.exclude], ([include, exclude]) => {
   exclude && !pruneCache(name => matches(exclude, name))
 })
 ```
+
 监听的逻辑也很简单，当 include 发生变化的时候，从缓存中删除那些 name 不匹配 include 的 vnode 节点；当 exclude 发生变化的时候，从缓存中删除那些 name 匹配 exclude 的 vnode 节点。
 
 除了 include 和 exclude 之外，KeepAlive 组件还支持了 max prop 来控制缓存的最大个数。
@@ -11777,6 +12114,7 @@ if (max && keys.size > parseInt(max, 10)) {
 pruneCacheEntry(keys.values().next().value)
 }
 ```
+
 由于新的缓存 key 都是在 keys 的结尾添加的，所以当缓存的个数超过 max 的时候，就从最前面开始删除，符合 LRU 最近最少使用的算法思想。
 
 组件的卸载
@@ -11787,6 +12125,7 @@ pruneCacheEntry(keys.values().next().value)
 ```
 vnode.shapeFlag |= 256 /* COMPONENT_SHOULD_KEEP_ALIVE */
 ```
+
 加上这个 shapeFlag 有什么用呢，我们结合前面的示例来分析。
 
 ```
@@ -11796,6 +12135,7 @@ vnode.shapeFlag |= 256 /* COMPONENT_SHOULD_KEEP_ALIVE */
   <button @click="flag=!flag">toggle</button>
 </keep-alive>
 ```
+
 当 flag 为 true 的时候，渲染 A 组件，然后我们点击按钮修改 flag 的值，会触发 KeepAlive 组件的重新渲染，会先执行 BeforeUpdate 钩子函数缓存 A 组件对应的渲染子树 vnode，然后再执行 patch 更新子组件。
 
 这个时候会执行 B 组件的渲染，以及 A 组件的卸载，我们知道组件的卸载会执行 unmount 方法，其中有一个关于 KeepAlive 组件的逻辑，如下：
@@ -11810,6 +12150,7 @@ const unmount = (vnode, parentComponent, parentSuspense, doRemove = false) => {
   // 卸载组件
 }
 ```
+
 如果 shapeFlag 满足 KeepAlive 的条件，则执行相应的 deactivate 函数，它的定义如下：
 
 ```
@@ -11828,6 +12169,7 @@ sharedContext.deactivate = (vnode) => {
   }, parentSuspense)
 }
 ```
+
 函数首先通过 move 方法从 DOM 树中移除该节点，接着通过 queuePostRenderEffect 的方式执行定义的 deactivated 钩子函数。
 
 注意，这里我们只是移除了 DOM，并没有真正意义上的执行子组件的整套卸载流程。
@@ -11846,8 +12188,9 @@ onBeforeUnmount(() => {
     }
     unmount(cached)
   })
-})  
+})
 ```
+
 它会遍历所有缓存的 vnode，并且比对缓存的 vnode 是不是当前 KeepAlive 组件渲染的 vnode。
 
 如果是的话，则执行 resetShapeFlag 方法，它的作用是修改 vnode 的 shapeFlag，不让它再被当作一个 KeepAlive 的 vnode 了，这样就可以走正常的卸载逻辑。接着通过 queuePostRenderEffect 的方式执行子组件的 deactivated 钩子函数。
@@ -11860,6 +12203,7 @@ onBeforeUnmount(() => {
 最后，给你留一道思考题，我们是如何给组件注册 activated 和 deactivated 钩子函数的，它们的执行和其他钩子函数比，有什么不同？欢迎你在留言区与我分享。
 
 本节课的相关代码在源代码中的位置如下：
+
 ```
 packages/runtime-core/src/components/KeepAlive.ts
 packages/runtime-core/src/renderer.ts
@@ -11909,6 +12253,7 @@ Transition 组件通常有三类用法：CSS 过渡，CSS 动画和 JavaScript �
   }
 </style>
 ```
+
 CSS 过渡主要定义了一些过渡的 CSS 样式，当我们点击按钮切换文本显隐的时候，就会应用这些 CSS 样式，实现过渡效果。
 
 接着来看 CSS 动画：
@@ -11951,6 +12296,7 @@ CSS 过渡主要定义了一些过渡的 CSS 样式，当我们点击按钮切�
   }
 </style>
 ```
+
 和 CSS 过渡类似，CSS 动画主要定义了一些动画的 CSS 样式，当我们去点击按钮切换文本显隐的时候，就会应用这些 CSS 样式，实现动画效果。
 
 最后，是 JavaScript 钩子：
@@ -11999,6 +12345,7 @@ CSS 过渡主要定义了一些过渡的 CSS 样式，当我们点击按钮切�
   }
 </script>
 ```
+
 Transition 组件也允许在一个过渡组件中定义它过渡生命周期的 JavaScript 钩子函数，我们可以在这些钩子函数中编写 JavaScript 操作 DOM 来实现过渡动画效果。
 
 Transition 组件的核心思想
@@ -12028,8 +12375,6 @@ v-leave-active：定义离开过渡生效时的状态。在整个离开过渡的
 
 v-leave-to：定义离开过渡的结束状态。在离开过渡被触发之后下一帧生效 (与此同时 v-leave-from 被删除)，在过渡动画完成之后移除。
 
-
-
 其实说白了 Transition 组件的核心思想就是，Transition 包裹的元素插入删除时，在适当的时机插入这些 CSS 样式，而这些 CSS 的实现则决定了元素的过渡动画。
 
 大致了解了 Transition 组件的用法和核心思想后，接下来我们就来探究 Transition 组件的实现原理。
@@ -12049,6 +12394,7 @@ Transition 组件的实现原理
   </div>
 </template>
 ```
+
 先来看模板编译后生成的 render 函数：
 
 ```
@@ -12071,7 +12417,8 @@ export function render(_ctx, _cache, $props, $setup, $data, $options) {
   ]))
 }
 ```
-对于 Transition 组件部分，生成的 render 函数主要创建了Transition 组件 vnode，并且有一个默认插槽。
+
+对于 Transition 组件部分，生成的 render 函数主要创建了 Transition 组件 vnode，并且有一个默认插槽。
 
 我们接着来看 Transition 组件的定义：
 
@@ -12181,6 +12528,7 @@ const BaseTransition = {
   }
 }
 ```
+
 可以看到，Transition 组件是在 BaseTransition 的基础上封装的高阶函数式组件。由于整个 Transition 的实现代码较多，我就挑重点，为你讲清楚整体的实现思路。
 
 我把 Transition 组件的实现分成组件的渲染、钩子函数的执行、模式的应用三个部分去详细说明。
@@ -12196,11 +12544,11 @@ Transition 组件和前面学习的 KeepAlive 组件一样，是一个抽象组�
 
 如果 Transition 组件内部没有嵌套任何子节点，那么它会渲染空的注释节点。
 
-在渲染的过程中，Transition 组件还会通过 resolveTransitionHooks 去定义组件创建和删除阶段的钩子函数对象，然后再通过 setTransitionHooks函数去把这个钩子函数对象设置到 vnode.transition 上。
+在渲染的过程中，Transition 组件还会通过 resolveTransitionHooks 去定义组件创建和删除阶段的钩子函数对象，然后再通过 setTransitionHooks 函数去把这个钩子函数对象设置到 vnode.transition 上。
 
 渲染过程中，还会判断这是否是一次更新渲染，如果是会对不同的模式执行不同的处理逻辑，我会在后续介绍模式的应用时详细说明。
 
-以上就是 Transition 组件渲染做的事情，你需要记住的是Transition 渲染的是组件嵌套的第一个子元素节点。
+以上就是 Transition 组件渲染做的事情，你需要记住的是 Transition 渲染的是组件嵌套的第一个子元素节点。
 
 但是 Transition 是如何在节点的创建和删除过程中设置那些与过渡动画相关的 CSS 的呢？这些都与钩子函数相关，我们先来看 setTransitionHooks 的实现，看看它定义的钩子函数对象是怎样的：
 
@@ -12321,11 +12669,13 @@ function resolveTransitionHooks(vnode, props, state, instance) {
   return hooks
 }
 ```
+
 钩子函数对象定义了 4 个钩子函数，分别是 beforeEnter，enter，leave 和 clone，它们的执行时机是什么，又是怎么处理 我们给 Transition 组件传递的一些 Prop 的？其中，beforeEnter、enter 和 leave 发生在元素的插入和删除阶段，接下来我们就来分析这几个钩子函数的执行过程。
 
 好的，今天我们就先讲到这里，下节课继续分析钩子函数的执行。
 
 本节课的相关代码在源代码中的位置如下：
+
 ```
 packages/runtime-core/src/components/BasetTransition.ts
 packages/runtime-core/src/renderer.ts
@@ -12364,6 +12714,7 @@ beforeEnter(el) {
   callHook(hook, [el])
 }
 ```
+
 beforeEnter 钩子函数主要做的事情就是根据 appear 的值和 DOM 是否挂载，来执行 onBeforeEnter 函数或者是 onBeforeAppear 函数，其他的逻辑我们暂时先不看。
 
 appear、onBeforeEnter、onBeforeAppear 这些变量都是从 props 中获取的，那么这些 props 是怎么初始化的呢？回到 Transition 组件的定义：
@@ -12371,6 +12722,7 @@ appear、onBeforeEnter、onBeforeAppear 这些变量都是从 props 中获取的
 ```
 const Transition = (props, { slots }) => h(BaseTransition, resolveTransitionProps(props), slots)
 ```
+
 可以看到，传递的 props 经过了 resolveTransitionProps 函数的封装，我们来看它的定义：
 
 ```
@@ -12464,6 +12816,7 @@ function resolveTransitionProps(rawProps) {
   })
 }
 ```
+
 resolveTransitionProps 函数主要作用是，在我们给 Transition 传递的 Props 基础上做一层封装，然后返回一个新的 Props 对象，由于它包含了所有的 Props 处理，你不需要一下子了解所有的实现，按需分析即可。
 
 我们来看 onBeforeEnter 函数，它的内部执行了基础 props 传入的 onBeforeEnter 钩子函数，并且给 DOM 元素 el 添加了 enterActiveClass 和 enterFromClass 样式。
@@ -12474,7 +12827,7 @@ resolveTransitionProps 函数主要作用是，在我们给 Transition 传递的
 
 onBeforeAppear 和 onBeforeEnter 的逻辑类似，就不赘述了，它是在我们给 Transition 组件传入 appear 的 Prop，且首次挂载的时候执行的。
 
-执行完 beforeEnter 钩子函数，接着插入元素到页面，然后会执行 vnode.transition 中的enter 钩子函数，我们来看它的定义：
+执行完 beforeEnter 钩子函数，接着插入元素到页面，然后会执行 vnode.transition 中的 enter 钩子函数，我们来看它的定义：
 
 ```
 enter(el) {
@@ -12518,6 +12871,7 @@ enter(el) {
   }
 }
 ```
+
 enter 钩子函数主要做的事情就是根据 appear 的值和 DOM 是否挂载，执行 onEnter 函数或者是 onAppear 函数，并且这个函数的第二个参数是一个 done 函数，表示过渡动画完成后执行的回调函数，它是异步执行的。
 
 注意，当 onEnter 或者 onAppear 函数的参数长度小于等于 1 的时候，done 函数在执行完 hook 函数后同步执行。
@@ -12547,6 +12901,7 @@ const makeEnterHook = (isAppear) => {
   }
 }
 ```
+
 在函数内部，首先执行基础 props 传入的 onEnter 钩子函数，然后在下一帧给 DOM 元素 el 移除了 enterFromClass，同时添加了 enterToClass 样式。
 
 其中，props 传入的 onEnter 函数就是我们写 Transition 组件时添加的 enter 钩子函数，enterFromClass 是我们在 beforeEnter 阶段添加的，会在当前阶段移除，新增的 enterToClass 值默认是 v-enter-to，如果给 Transition 组件传入了 name 的 prop，比如 fade，那么 enterToClass 的值就是 fade-enter-to。
@@ -12562,6 +12917,7 @@ const finishEnter = (el, isAppear, done) => {
   done && done()
 }
 ```
+
 其实就是给 DOM 元素移除 enterToClass 以及 enterActiveClass，同时执行 done 函数，进而执行 onAfterEnter 钩子函数。
 
 至此，元素进入的过渡动画逻辑就分析完了，接下来我们来分析元素离开的过渡动画逻辑。
@@ -12607,6 +12963,7 @@ leave(el, remove) {
   }
 }
 ```
+
 leave 钩子函数主要做的事情就是执行 props 传入的 onBeforeLeave 钩子函数和 onLeave 函数，onLeave 函数的第二个参数是一个 done 函数，它表示离开过渡动画结束后执行的回调函数。
 
 done 函数内部主要做的事情就是执行 remove 方法移除 DOM，然后执行 onAfterLeave 钩子函数或者是 onLeaveCancelled 函数，其它的逻辑我们也先不看。
@@ -12633,6 +12990,7 @@ onLeave(el, done) {
   onLeave && onLeave(el, resolve)
 }
 ```
+
 onLeave 函数首先给 DOM 元素添加 leaveActiveClass 和 leaveFromClass，并执行基础 props 传入的 onLeave 钩子函数，然后在下一帧移除 leaveFromClass，并添加 leaveToClass。
 
 其中，leaveActiveClass 的默认值是 v-leave-active，leaveFromClass 的默认值是 v-leave-from，leaveToClass 的默认值是 v-leave-to。如果给 Transition 组件传入了 name 的 prop，比如 fade，那么 leaveActiveClass 的值就是 fade-leave-active，leaveFromClass 的值就是 fade-leave-from，leaveToClass 的值就是 fade-leave-to。
@@ -12648,6 +13006,7 @@ const finishLeave = (el, done) => {
   done && done()
 }
 ```
+
 其实就是给 DOM 元素移除 leaveToClass 以及 leaveActiveClass，同时执行 done 函数，进而执行 onAfterLeave 钩子函数。
 
 至此，元素离开的过渡动画逻辑就分析完了，可以看出离开过渡动画和进入过渡动画是的思路差不多，本质上都是在添加和移除一些 CSS 去执行动画，并且在过程中执行用户传入的钩子函数。
@@ -12687,6 +13046,7 @@ const finishLeave = (el, done) => {
   }
 </style>
 ```
+
 我们在 show 条件为 false 的情况下，显示字符串 hi，你可以运行这个示例，然后会发现这个过渡效果有点生硬，并不理想。
 
 然后，我们给这个 Transition 组件加一个 out-in 的 mode：
@@ -12697,6 +13057,7 @@ const finishLeave = (el, done) => {
   <p v-else>hi</p>
 </transition>
 ```
+
 我们会发现这个过渡效果好多了，hello 文本先完成离开的过渡后，hi 文本开始进入过渡动画。
 
 模式非常适合这种两个元素切换的场景，Vue.js 给 Transition 组件提供了两种模式， in-out 和 out-in ，它们有什么区别呢？
@@ -12727,6 +13088,7 @@ if (mode === 'out-in') {
   return emptyPlaceholder(child)
 }
 ```
+
 当模式为 out-in 的时候，会标记 state.isLeaving 为 true，然后返回一个空的注释节点，同时更新当前元素的钩子函数中的 afterLeave 函数，内部执行 instance.update 重新渲染组件。
 
 这样做就保证了在当前元素执行离开过渡的时候，新元素只渲染成一个注释节点，这样页面上看上去还是只执行当前元素的离开过渡动画。
@@ -12739,6 +13101,7 @@ if (mode === 'out-in') {
 最后，给你留一道思考题，Transition 组件在 beforeEnter 钩子函数里会判断 el._leaveCb 是否存在，存在则执行，在 leave 钩子函数里会判断 el._enterCb 是否存在，存在则执行，这么做的原因是什么？欢迎你在留言区与我分享。
 
 本节课的相关代码在源代码中的位置如下：
+
 ```
 packages/runtime-core/src/components/BasetTransition.ts
 packages/runtime-core/src/renderer.ts
@@ -12775,6 +13138,7 @@ module.exports = {
   runtimeCompiler: true
 }
 ```
+
 然后我们修改页面的 HTML 模板，加上如下代码：
 
 ```
@@ -12787,6 +13151,7 @@ module.exports = {
   <router-view></router-view>
 </div>
 ```
+
 其中，RouterLink 和 RouterView 是 Vue Router 内置的组件。
 
 RouterLink 表示路由的导航组件，我们可以配置 to 属性来指定它跳转的链接，它最终会在页面上渲染生成 a 标签。
@@ -12821,6 +13186,7 @@ app.use(router)
 // 6. 挂载页面
 app.mount('#app')
 ```
+
 可以看到，路由的初始化过程很简单，首先需要定义一个路由配置，这个配置主要用于描述路径和组件的映射关系，即什么路径下 RouterView 应该渲染什么路由组件。
 
 接着创建路由对象实例，传入路由配置对象，并且也可以指定路由模式，Vue Router 目前支持三种模式，hash 模式，HTML5 模式和 memory 模式，我们常用的是前两种模式。
@@ -12837,7 +13203,7 @@ Vue Router 提供了一个 createRouter API，你可以通过它来创建一个�
 
 ```
 function createRouter(options) {
-  // 定义一些辅助方法和变量 
+  // 定义一些辅助方法和变量
   // ...
   // 创建 router 对象
   const router = {
@@ -12866,6 +13232,7 @@ function createRouter(options) {
   return router
 }
 ```
+
 我们省略了大部分代码，只保留了路由对象相关的代码，可以看到路由对象 router 就是一个对象，它维护了当前路径 currentRoute，且拥有很多辅助方法。
 
 目前你只需要了解这么多，创建完路由对象后，我们现在来安装它。
@@ -12919,6 +13286,7 @@ const router = {
   }
 }
 ```
+
 路由的安装的过程我们需要记住以下两件事情。
 
 全局注册 RouterView 和 RouterLink 组件——这是你安装了路由后，可以在任何组件中去使用这俩个组件的原因，如果你使用 RouterView 或者 RouterLink 的时候收到提示不能解析 router-link 和 router-view，这说明你压根就没有安装路由。
@@ -12947,6 +13315,7 @@ const START_LOCATION_NORMALIZED = {
   redirectedFrom: undefined
 }
 ```
+
 可以看到，路径对象包含了非常丰富的路径信息，具体含义我就不在这多说了，你可以参考官方文档。
 
 路由想要发生变化，就是通过改变路径完成的，路由对象提供了很多改变路径的方法，比如 router.push、router.replace，它们的底层最终都是通过 pushWithRedirect 完成路径的切换，我们来看一下它的实现：
@@ -12986,6 +13355,7 @@ function pushWithRedirect(to, redirectedFrom) {
     })
 }
 ```
+
 我省略了一部分代码的实现，这里主要来看 pushWithRedirect 的核心思路，首先参数 to 可能有多种情况，可以是一个表示路径的字符串，也可以是一个路径对象，所以要先经过一层 resolve 返回一个新的路径对象，它比前面提到的路径对象多了一个 matched 属性，它的作用我们后续会介绍。
 
 得到新的目标路径后，接下来执行 navigate 方法，它实际上是执行路由切换过程中的一系列导航守卫函数，我们后续会介绍。navigate 成功后，会执行 finalizeNavigation 完成导航，在这里完成真正的路径切换，我们来看它的实现：
@@ -13010,6 +13380,7 @@ function finalizeNavigation(toLocation, from, isPush, replace, data) {
   markAsReady()
 }
 ```
+
 这里的 finalizeNavigation 函数，我们重点关注两个逻辑，一个是更新当前的路径 currentRoute 的值，一个是执行 routerHistory.push 或者是 routerHistory.replace 方法更新浏览器的 URL 的记录。
 
 每当我们切换路由的时候，会发现浏览器的 URL 发生了变化，但是页面却没有刷新，它是怎么做的呢？
@@ -13042,6 +13413,7 @@ function createWebHistory(base) {
   return routerHistory
 }
 ```
+
 对于 routerHistory 对象而言，它有两个重要的作用，一个是路径的切换，一个是监听路径的变化。
 
 其中，路径切换主要通过 historyNavigation 来完成的，它是 useHistoryStateNavigation 函数的返回值，我们来看它的实现：
@@ -13110,6 +13482,7 @@ function useHistoryStateNavigation(base) {
   }
 }
 ```
+
 该函数返回的 push 和 replace 函数，会添加给 routerHistory 对象上，因此当我们调用 routerHistory.push 或者是 routerHistory.replace 方法的时候实际上就是在执行这两个函数。
 
 push 和 replace 方法内部都是执行了 changeLocation 方法，该函数内部执行了浏览器底层的 history.pushState 或者 history.replaceState 方法，会向当前浏览器会话的历史堆栈中添加一个状态，这样就在不刷新页面的情况下修改了页面的 URL。
@@ -13187,6 +13560,7 @@ function useHistoryListeners(base, historyState, currentLocation, replace) {
   }
 }
 ```
+
 该函数返回了 listen 方法，允许你添加一些侦听器，侦听 hstory 的变化，同时这个方法也被挂载到了 routerHistory 对象上，这样外部就可以访问到了。
 
 该函数内部还监听了浏览器底层 Window 的 popstate 事件，当我们点击浏览器的回退按钮或者是执行了 history.back 方法的时候，会触发事件的回调函数 popStateHandler，进而遍历侦听器 listeners，执行每一个侦听器函数。
@@ -13207,6 +13581,7 @@ function markAsReady(err) {
   readyHandlers.reset()
 }
 ```
+
 markAsReady 内部会执行 setupListeners 函数初始化侦听器，且保证只初始化一次。我们再接着来看 setupListeners 的实现：
 
 ```
@@ -13248,11 +13623,10 @@ function setupListeners() {
   })
 }
 ```
+
 侦听器函数也是执行 navigate 方法，执行路由切换过程中的一系列导航守卫函数，在 navigate 成功后执行 finalizeNavigation 完成导航，完成真正的路径切换。这样就保证了在用户点击浏览器回退按钮后，可以恢复到上一个路径以及更新路由视图。
 
 至此，我们就完成了路径管理，在内存中通过 currentRoute 维护记录当前的路径，通过浏览器底层 API 实现了路径的切换和 history 变化的监听。
-
- 
 
 ## 27 | Vue Router（下）
 
@@ -13328,9 +13702,10 @@ const RouterView = defineComponent({
   },
 })
 ```
+
 RouterView 组件也是基于 composition API 实现的，我们重点看它的渲染部分，由于 setup 函数的返回值是一个函数，那这个函数就是它的渲染函数。
 
-我们从后往前看，通常不带插槽的情况下，会返回 component 变量，它是根据 ViewComponent 渲染出来的，而ViewComponent 是根据matchedRoute.components[props.name] 求得的，而matchedRoute 是 matchedRouteRef对应的 value。
+我们从后往前看，通常不带插槽的情况下，会返回 component 变量，它是根据 ViewComponent 渲染出来的，而 ViewComponent 是根据 matchedRoute.components[props.name] 求得的，而 matchedRoute 是 matchedRouteRef 对应的 value。
 
 matchedRouteRef 一个计算属性，在不考虑 prop 传入 route 的情况下，它的 getter 是由 injectedRoute.matched[depth] 求得的，而 injectedRoute，就是我们在前面在安装路由时候，注入的响应式 currentRoute 对象，而 depth 就是表示这个 RouterView 的嵌套层级。
 
@@ -13374,6 +13749,7 @@ const app = createApp({})
 app.use(router)
 app.mount('#app')
 ```
+
 它和前面示例的区别在于，我们在 About 路由组件中又嵌套了一个 RouterView 组件，然后对 routes 数组中 path 为 /about 的路径配置扩展了 children 属性，对应的就是 About 组件嵌套路由的配置。
 
 当我们执行 createRouter 函数创建路由的时候，内部会执行如下代码来创建一个 matcher 对象：
@@ -13381,7 +13757,8 @@ app.mount('#app')
 ```
 const matcher = createRouterMatcher(options.routes, options)
 ```
-执行了createRouterMatcher 函数，并传入 routes 路径配置数组，它的目的就是根据路径配置对象创建一个路由的匹配对象，再来看它的实现：
+
+执行了 createRouterMatcher 函数，并传入 routes 路径配置数组，它的目的就是根据路径配置对象创建一个路由的匹配对象，再来看它的实现：
 
 ```
 function createRouterMatcher(routes, globalOptions) {
@@ -13452,13 +13829,14 @@ function createRouterMatcher(routes, globalOptions) {
   return { addRoute, resolve, removeRoute, getRoutes, getRecordMatcher }
 }
 ```
+
 createRouterMatcher 函数内部定义了一个 matchers 数组和一些辅助函数，我们先重点关注 addRoute 函数的实现，我们只关注核心流程。
 
 在 createRouterMatcher 函数的最后，会遍历 routes 路径数组调用 addRoute 方法添加初始路径。
 
 在 addRoute 函数内部，首先会把 route 对象标准化成一个 record，其实就是给路径对象添加更丰富的属性。
 
-然后再执行createRouteRecordMatcher 函数，传入标准化的 record 对象，我们再来看它的实现：
+然后再执行 createRouteRecordMatcher 函数，传入标准化的 record 对象，我们再来看它的实现：
 
 ```
 function createRouteRecordMatcher(record, parent, options) {
@@ -13484,6 +13862,7 @@ function createRouteRecordMatcher(record, parent, options) {
   return matcher
 }
 ```
+
 其实 createRouteRecordMatcher 创建的 matcher 对象不仅仅拥有 record 属性来存储 record，还扩展了一些其他属性，需要注意，如果存在 parent matcher，那么会把当前 matcher 添加到 parent.children 中去，这样就维护了父子关系，构造了树形结构。
 
 那么什么情况下会有 parent matcher 呢？让我们先回到 addRoute 函数，在创建了 matcher 对象后，接着判断 record 中是否有 children 属性，如果有则遍历 children，递归执行 addRoute 方法添加路径，并把创建 matcher 作为第二个参数 parent 传入，这也就是 parent matcher 存在的原因。
@@ -13499,6 +13878,7 @@ function createRouteRecordMatcher(record, parent, options) {
 ```
 const targetLocation = (pendingLocation = resolve(to))
 ```
+
 这里会执行 resolve 函数解析生成 targetLocation，这个 targetLocation 最后也会在 finalizeNavigation 的时候赋值 currentRoute 更新当前路径。我们来看 resolve 函数的实现：
 
 ```
@@ -13558,11 +13938,12 @@ function resolve(location, currentLocation) {
   }
 }
 ```
+
 resolve 函数主要做的事情就是根据 location 的 name 或者 path 从我们前面创建的 matchers 数组中找到对应的 matcher，然后再顺着 matcher 的 parent 一直找到链路上所有匹配的 matcher，然后获取其中的 record 属性构造成一个 matched 数组，最终返回包含 matched 属性的新的路径对象。
 
 这么做的目的就是让 matched 数组完整记录 record 路径，它的顺序和嵌套的 RouterView 组件顺序一致，也就是 matched 数组中的第 n 个元素就代表着 RouterView 嵌套的第 n 层。
 
-因此 targetLocation 和 to 相比，其实就是多了一个 matched 对象，这样再回到我们的 RouterView 组件，就可以从injectedRoute.matched[depth] [props.name]中拿到对应的组件对象定义，去渲染对应的组件了。
+因此 targetLocation 和 to 相比，其实就是多了一个 matched 对象，这样再回到我们的 RouterView 组件，就可以从 injectedRoute.matched[depth] [props.name]中拿到对应的组件对象定义，去渲染对应的组件了。
 
 至此，我们就搞清楚路径和路由组件的渲染是如何映射的了。
 
@@ -13578,6 +13959,7 @@ router.beforeEach((to, from, next) => {
   }
 })
 ```
+
 这里大致含义就是进入路由前检查用户是否登录，如果没有则跳转到登录的视图组件，否则继续。
 
 router.beforeEach 传入的参数是一个函数，我们把这类函数就称为导航守卫。
@@ -13652,6 +14034,7 @@ function navigate(to, from) {
       : Promise.reject(err)))
 }
 ```
+
 可以看到 navigate 执行导航守卫的方式是先构造 guards 数组，数组中每个元素都是一个返回 Promise 对象的函数。
 
 然后通过 runGuardQueue 去执行这些 guards，来看它的实现：
@@ -13661,11 +14044,12 @@ function runGuardQueue(guards) {
   return guards.reduce((promise, guard) => promise.then(() => guard()), Promise.resolve())
 }
 ```
-其实就是通过数组的 reduce 方法，链式执行 guard 函数，每个 guard 函数都会返回一个 Promise对象。
 
-但是从我们的例子看，我们添加的是一个普通函数，并不是一个返回 Promise对象的函数，那是怎么做的呢？
+其实就是通过数组的 reduce 方法，链式执行 guard 函数，每个 guard 函数都会返回一个 Promise 对象。
 
-原来在把 guard 添加到 guards 数组前，都会执行 guardToPromiseFn 函数把普通函数 Promise化，来看它的实现：
+但是从我们的例子看，我们添加的是一个普通函数，并不是一个返回 Promise 对象的函数，那是怎么做的呢？
+
+原来在把 guard 添加到 guards 数组前，都会执行 guardToPromiseFn 函数把普通函数 Promise 化，来看它的实现：
 
 ```
 import { warn as warn$1 } from "vue/dist/vue"
@@ -13724,6 +14108,7 @@ function guardToPromiseFn(guard, to, from, record, name) {
   })
 }
 ```
+
 guardToPromiseFn 函数返回一个新的函数，这个函数内部会执行 guard 函数。
 
 这里我们要注意 next 方法的设计，当我们在导航守卫中执行 next 时，实际上就是执行这里定义的 next 函数。
@@ -13735,11 +14120,12 @@ guardToPromiseFn 函数返回一个新的函数，这个函数内部会执行 gu
 ```
 guardCall = Promise.resolve(guardReturn)
 ```
-把导航守卫的返回值 Promise化，然后再执行 guardCall.then(next)，把导航守卫的返回值传给 next 函数。
+
+把导航守卫的返回值 Promise 化，然后再执行 guardCall.then(next)，把导航守卫的返回值传给 next 函数。
 
 当然，如果你在导航守卫中定义了第三个参数 next，但是你没有在函数中调用它，这种情况也会报警告。
 
-所以，对于导航守卫而言，经过 Promise化后添加到 guards 数组中，然后再通过 runGuards 以及 Promise 的方式链式调用，最终依次顺序执行这些导航守卫。
+所以，对于导航守卫而言，经过 Promise 化后添加到 guards 数组中，然后再通过 runGuards 以及 Promise 的方式链式调用，最终依次顺序执行这些导航守卫。
 
 总结
 好的，到这里我们这一节的学习也要结束啦，通过这节课的学习，你应该要了解 Vue Router 的基本实现原理，知道路径是如何管理的，路径和路由组件的渲染是如何映射的，导航守卫是如何执行的。
@@ -13748,15 +14134,11 @@ guardCall = Promise.resolve(guardReturn)
 
 最后，给你留一道思考题目，如果我们想给路由组件传递数据，有几种方式，分别都怎么做呢？欢迎你在留言区与我分享。
 
- 
-
 # 结束语
 
 ## 结束语 | 终点也是起点
 
-不知不觉我们的课程已经走到了尾声，不知道现在的你，还有没有刚学习这门课的兴奋感呢？在开篇词，我曾提到过“这门课我不仅希望帮你深入理解 Vue.js ，更希望带你提升读源码的能力，提升技术实力”，不知道经过几个月的学习，你是否有一定的进步呢？
-
-源码学习相比实战课程的学习，显得既抽象又枯燥，难以坚持下去，但是请你不要放弃，在学习的路上遇到困难是非常正常的，我建议你多看几遍课程，动手去写 Demo，去用debugger 单步调试，当然你也可以给我留言。
+源码学习相比实战课程的学习，显得既抽象又枯燥，难以坚持下去，但是请你不要放弃，在学习的路上遇到困难是非常正常的，我建议你多看几遍课程，动手去写 Demo，去用 debugger 单步调试，当然你也可以给我留言。
 
 一旦你学进去了，学通了，源码的学习就会变得轻松有趣且非常有成就感，那种一拍大腿，恍然大悟的感觉会非常的爽。相应的，源码大多是用原生的 JavaScript 编写的，学习过程中你的原生 JavaScript 的功力也会得到提升，因此你的技术能力一定会往上迈一个台阶。
 
@@ -13768,15 +14150,6 @@ guardCall = Promise.resolve(guardReturn)
 
 那么，你应该学习哪些源码呢，记住，一定要和你的工作相关。以我自己为例，我工作的主要技术栈就是 Vue.js，我们的组件库 zoom-ui 是 fork 了 ElementUI，在它的基础上做了全面的重构和组件增强。此外，我们的 Vue-csp 版本也是 fork 了 Vue.js 2.6.11 版本，在它的基础上修改了编译过程。我了解了它们的源码后，做这些工作自然就游刃有余了。
 
-当你源码读多了，你就可以学到不少好的编程经验，设计思想甚至是一些奇技淫巧，你也要学着吸收到你平时的工作中。其实，Vue.js 3.0 也参考了很多优秀的开源实现，比如 reactivity 库就参考了observer-util，patch 的实现参考了inferno，尤大也是站在巨人的肩膀上，才创造了这么优秀的前端框架。
-
-写在最后
-当然，作为一个负责任的老师，我也会对课程中抛出的问题负责的，我打算未来不定期地在我个人公众号写下我对这些问题的思考，欢迎你关注。
-
-
+当你源码读多了，你就可以学到不少好的编程经验，设计思想甚至是一些奇技淫巧，你也要学着吸收到你平时的工作中。其实，Vue.js 3.0 也参考了很多优秀的开源实现，比如 reactivity 库就参考了 observer-util，patch 的实现参考了 inferno，尤大也是站在巨人的肩膀上，才创造了这么优秀的前端框架。
 
 学习没有捷径，能真正能成为大牛的人，能够直面困难和挫折，敢于跳出自己的舒适区追求进步，能熬得住突破瓶颈长时间的寂寞，是肯下笨功夫的聪明人。没有什么人可以靠着学习一两门课程就能成为大牛，而真正重要的，是多年如一日的坚持，与你共勉。
-
-我想了解你对这门课程的想法，所以在这里邀请你点击链接参与课程评价，因为你的观点可以帮助我们更好地一起成长，而且有机会获得小礼物。
-
-最后，很高兴认识你，我是黄轶，后会有期。
