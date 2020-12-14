@@ -411,7 +411,7 @@ Vue.js 3.0 做了这么多改进，相信你也一定对它的实现细节非常
 
 首先，组件是一个抽象的概念，它是对一棵 DOM 树的抽象，我们在页面中写一个组件节点：
 
-```js
+```xml
 <hello-world></hello-world>
 ```
 
@@ -476,7 +476,8 @@ const createApp = ((...args) => {
 从代码中可以看出 createApp 主要做了两件事情：创建 app 对象和重写 app.mount 方法。接下来，我们就具体来分析一下它们。
 
 1. 创建 app 对象
-   首先，我们使用 ensureRenderer().createApp() 来创建 app 对象 ：
+
+首先，我们使用 ensureRenderer().createApp() 来创建 app 对象 ：
 
 ```js
  const app = ensureRenderer().createApp(...args)
@@ -536,7 +537,8 @@ function createAppAPI(render) {
 在整个 app 对象创建过程中，Vue.js 利用闭包和函数柯里化的技巧，很好地实现了参数保留。比如，在执行 app.mount 的时候，并不需要传入渲染器 render，这是因为在执行 createAppAPI 的时候渲染器 render 参数已经被保留下来了。
 
 2. 重写 app.mount 方法
-   接下来，是重写 app.mount 方法。
+
+接下来，是重写 app.mount 方法。
 
 根据前面的分析，我们知道 createApp 返回的 app 对象已经拥有了 mount 方法了，但在入口函数中，接下来的逻辑却是对 app.mount 方法的重写。先思考一下，为什么要重写这个方法，而不把相关逻辑放在 app 对象的 mount 方法内部来实现呢？
 
@@ -584,7 +586,8 @@ app.mount = (containerOrSelector) => {
 核心渲染流程：创建 vnode 和渲染 vnode
 
 1. 创建 vnode
-   首先，是创建 vnode 的过程。
+
+首先，是创建 vnode 的过程。
 
 vnode 本质上是用来描述 DOM 的 JavaScript 对象，它在 Vue.js 中可以描述不同类型的节点，比如普通元素节点、组件节点等。
 
@@ -669,7 +672,7 @@ const shapeFlag = isString(type)
 回顾 app.mount 函数的实现，内部是通过 createVNode 函数创建了根组件的 vnode ：
 
 ```js
- const vnode = createVNode(rootComponent, rootProps)
+const vnode = createVNode(rootComponent, rootProps)
 ```
 
 我们来看一下 createVNode 函数的大致实现：
@@ -709,7 +712,8 @@ function createVNode(type, props = null
 我们现在拥有了这个 vnode 对象，接下来要做的事情就是把它渲染到页面中去。
 
 2. 渲染 vnode
-   接下来，是渲染 vnode 的过程。
+
+接下来，是渲染 vnode 的过程。
 
 回顾 app.mount 函数的实现，内部通过执行这段代码去渲染创建好的 vnode：
 
@@ -1129,7 +1133,7 @@ function isSameVNodeType (n1, n2) {
 1. 处理组件
    如何处理组件的呢？举个例子，我们在父组件 App 中里引入了 Hello 组件：
 
-```js
+```vue
 <template>
   <div class="app">
     <p>This is an app.</p>
@@ -1154,7 +1158,7 @@ function isSameVNodeType (n1, n2) {
 ```
 Hello 组件中是 `<div>` 包裹着一个 `<p>` 标签， 如下所示：
 
-```js
+```vue
 <template>
   <div class="hello">
     <p>Hello, {{msg}}</p>
@@ -1168,6 +1172,7 @@ Hello 组件中是 `<div>` 包裹着一个 `<p>` 标签， 如下所示：
   }
 </script>
 ```
+
 点击 App 组件中的按钮执行 toggle 函数，就会修改 data 中的 msg，并且会触发App 组件的重新渲染。
 
 结合前面对渲染函数的流程分析，这里 App 组件的根节点是 div 标签，重新渲染的子树 vnode 节点是一个普通元素的 vnode，应该先走 processElement 逻辑。组件的更新最终还是要转换成内部真实 DOM 的更新，而实际上普通元素的处理流程才是真正做 DOM 的更新，由于稍后我们会详细分析普通元素的处理流程，所以我们先跳过这里，继续往下看。
@@ -1251,9 +1256,10 @@ const updateComponentPreRender = (instance, nextVNode, optimized) => {
 前面也说过，组件是抽象的，组件的更新最终还是会落到对普通 DOM 元素的更新。所以接下来我们详细分析一下组件更新中对普通元素的处理流程。
 
 2. 处理普通元素
-   我们再来看如何处理普通元素，我把之前的示例稍加修改，将其中的 Hello 组件删掉，如下所示：
 
-```js
+我们再来看如何处理普通元素，我把之前的示例稍加修改，将其中的 Hello 组件删掉，如下所示：
+
+```vue
 <template>
   <div class="app">
     <p>This is {{msg}}.</p>
