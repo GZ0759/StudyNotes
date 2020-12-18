@@ -25787,19 +25787,21 @@ DOM2 Traversal and Range 模块定义了与 DOM 结构交互的不同方式。
 
 # 第 17 章 事件
 
-理解事件流使用事件处理程序了解不同类型的事件
+- 理解事件流
+- 使用事件处理程序
+- 了解不同类型的事件
 
 JavaScript 与 HTML 的交互是通过事件实现的，事件代表文档或浏览器窗口中某个有意义的时刻。可以使用仅在事件发生时执行的监听器（也叫处理程序）订阅事件。在传统软件工程领域，这个模型叫 “观察者模式”，其能够做到页面行为（在 JavaScript 中定义）与页面展示（在 HTML 和 CSS 中定义）的分离。
 
 事件最早是在 IE3 和 Netscape Navigator 2 中出现的，当时的用意是把某些表单处理工作从服务器转移到浏览器上来。到了 IE4 和 Netscape Navigator 3 发布的时候，这两家浏览器都提供了类似但又不同的 API，而且持续了好几代。DOM2 开始尝试以符合逻辑的方式来标准化 DOM 事件 API。目前所有现代浏览器都实现了 DOM2 Events 的核心部分。IE8 是最后一个使用专有事件系统的主流浏览器。
+
 浏览器的事件系统非常复杂。即使所有主流浏览器都实现了 DOM2 Events，规范也没有涵盖所有的事件类型。BOM 也支持事件，这些事件与 DOM 事件之间的关系由于长期以来缺乏文档，经常容易被混淆（HTML5 已经致力于明确这些关系）。而 DOM3 新增的事件 API 又让这些问题进一步复杂化了。根据具体的需求不同，使用事件可能会相对简单，也可能会非常复杂。但无论如何，理解其中的核心概念还是最重要的。
 
 ## 17.1 时间流
 
 在第四代 Web 浏览器（IE4 和 Netscape Communicator 4）开始开发时，开发团队碰到了一个有意思的问题：页面哪个部分拥有特定的事件呢？要理解这个问题，可以在一张纸上画几个同心圆。把手指放到圆心上，则手指不仅是在一个圆圈里，而且是在所有的圆圈里。两家浏览器的开发团队都是以同样的方式看待浏览器事件的。当你点击一个按钮时，实际上不光点击了这个按钮，还点击了它的容器以及整个页面。
 
-事件流描述了页面接收事件的顺序。结果非常有意思，
-IE 和 Netscape 开发团队提出了几乎完全相反的事件流方案。IE 将支持事件冒泡流，而 Netscape Communicator 将支持事件捕获流。
+事件流描述了页面接收事件的顺序。结果非常有意思，IE 和 Netscape 开发团队提出了几乎完全相反的事件流方案。IE 将支持事件冒泡流，而 Netscape Communicator 将支持事件捕获流。
 
 ### 17.1.1 事件冒泡
 
@@ -25822,9 +25824,9 @@ IE 事件流被称为事件冒泡，这是因为事件被定义为从最具体�
 1. `<div>`
 2. `<body>`
 3. `<html>`
-4. document 也就是说， `<div>`元素，即被点击的元素，最先触发 click 事件。然后， click 事件沿 DOM 树
+4. document
 
-一路向上，在经过的每个节点上依次触发，直至到达 document 对象。图 17-1 形象地展示了这个过程。图 17-1 所有现代浏览器都支持事件冒泡，只是在实现方式上会有一些变化。IE5.5 及早期版本会跳过 `<html>`元素（从 `<body>`直接到 document）。现代浏览器中的事件会一直冒泡到 window 对象。
+也就是说， `<div>`元素，即被点击的元素，最先触发 click 事件。然后， click 事件沿 DOM 树一路向上，在经过的每个节点上依次触发，直至到达 document 对象。图 17-1 形象地展示了这个过程。图 17-1 所有现代浏览器都支持事件冒泡，只是在实现方式上会有一些变化。IE5.5 及早期版本会跳过 `<html>`元素（从 `<body>`直接到 document）。现代浏览器中的事件会一直冒泡到 window 对象。
 
 ### 17.1.2 事件捕获
 
@@ -25833,13 +25835,18 @@ Netscape Communicator 团队提出了另一种名为事件捕获的事件流。�
 1. document
 2. `<html>`
 3. `<body>`
-4. `<div>`在事件捕获中， click 事件首先由 document 元素捕获，然后沿 DOM 树依次向下传播，直至到达实际的目标元素 `<div>`。这个过程如图 17-2 所示。虽然这是 Netscape Communicator 唯一的事件流模型，但事件捕获得到了所有现代浏览器的支持。实际 上，所有浏览器都是从 window 对象开始捕获事件，而 DOM2 Events 规范规定的是从 document 开始。图 17-2 由于旧版本浏览器不支持，因此实际当中几乎不会使用事件捕获。通常建议使用事件冒泡，特殊情况 下可以使用事件捕获。
+4. `<div>`
+
+在事件捕获中， click 事件首先由 document 元素捕获，然后沿 DOM 树依次向下传播，直至到达实际的目标元素 `<div>`。这个过程如图 17-2 所示。虽然这是 Netscape Communicator 唯一的事件流模型，但事件捕获得到了所有现代浏览器的支持。实际 上，所有浏览器都是从 window 对象开始捕获事件，而 DOM2 Events 规范规定的是从 document 开始。图 17-2 由于旧版本浏览器不支持，因此实际当中几乎不会使用事件捕获。通常建议使用事件冒泡，特殊情况 下可以使用事件捕获。
 
 ### 17.1.3 DOM 事件流
 
 DOM2 Events 规范规定事件流分为 3 个阶段：事件捕获、到达目标和事件冒泡。事件捕获最先发生，为提前拦截事件提供了可能。然后，实际的目标元素接收到事件。最后一个阶段是冒泡，最迟要在这个阶段响应事件。仍以前面那个简单的 HTML 为例，点击 `<div>`元素会以如图 17-3 所示的顺序触发事件。
-图
-17-3 在 DOM 事件流中，实际的目标（ `<div>`元素）在捕获阶段不会接收到事件。这是因为捕获阶段从 document 到 `<html>`再到 `<body>`就结束了。下一阶段，即会在 `<div>`元素上触发事件的“到达目标”阶段，通常在事件处理时被认为是冒泡阶段的一部分（稍后讨论）。然后，冒泡阶段开始，事件反向传播至文档。
+
+图 17-3
+
+在 DOM 事件流中，实际的目标（ `<div>`元素）在捕获阶段不会接收到事件。这是因为捕获阶段从 document 到 `<html>`再到 `<body>`就结束了。下一阶段，即会在 `<div>`元素上触发事件的“到达目标”阶段，通常在事件处理时被认为是冒泡阶段的一部分（稍后讨论）。然后，冒泡阶段开始，事件反向传播至文档。
+
 大多数支持 DOM 事件流的浏览器实现了一个小小的拓展。虽然 DOM2 Events 规范明确捕获阶段不命中事件目标，但现代浏览器都会在捕获阶段在事件目标上触发事件。最终结果是在事件目标上有两个机会来处理事件。
 
 所有现代浏览器都支持 DOM 事件流，只有 IE8 及更早版本不支持。
@@ -25856,7 +25863,7 @@ DOM2 Events 规范规定事件流分为 3 个阶段：事件捕获、到达目�
 <input type="button" value="Click Me" onclick="console.log('Clicked')" />
 ```
 
-点击这个按钮后，控制台会输出一条消息。这种交互能力是通过为 onclick 属性指定 JavaScript 代码值来实现的。注意，因为属性的值是 JavaScript 代码，所以不能在未经转义的情况下使用 HTML 语法字符，比如和号（ &）、双引号（ "）、小于号（ <）和大于号（ >）。此时，为了避免使用 HTML 实体，可以使用单引号代替双引号。如果确实需要使用双引号，则要把代码改成下面这样：
+点击这个按钮后，控制台会输出一条消息。这种交互能力是通过为 onclick 属性指定 JavaScript 代码值来实现的。注意，因为属性的值是 JavaScript 代码，所以不能在未经转义的情况下使用 HTML 语法字符，比如和号（`&`）、双引号（`"`）、小于号（`<`）和大于号（`>`）。此时，为了避免使用 HTML 实体，可以使用单引号代替双引号。如果确实需要使用双引号，则要把代码改成下面这样：
 
 ```html
 <input type="button" value="Click Me" onclick='console.log("Clicked")' />
@@ -25864,10 +25871,13 @@ DOM2 Events 规范规定事件流分为 3 个阶段：事件捕获、到达目�
 
 在 HTML 中定义的事件处理程序可以包含精确的动作指令，也可以调用在页面其他地方定义的脚本，比如：
 
-```js
+```html
 <script>
-function showMessage() { console.log("Hello world!"); }
-</script> <input type="button" value="Click Me" onclick="showMessage()"/>
+  function showMessage() {
+    console.log('Hello world!');
+  }
+</script>
+<input type="button" value="Click Me" onclick="showMessage()" />
 ```
 
 在这个例子中，单击按钮会调用 showMessage()函数。 showMessage()函数是在单独的 `<script>`元素中定义的，而且也可以在外部文件中定义。作为事件处理程序执行的代码可以访问全局作用域中的一切。以这种方式指定的事件处理程序有一些特殊的地方。首先，会创建一个函数来封装属性的值。这个函数有一个特殊的局部变量 event，其中保存的就是 event 对象（本章后面会讨论）：
@@ -25918,8 +25928,7 @@ function() { with(document) { with(this.form) { with(this) { //属性值
 </form>
 ```
 
-点击这个例子中的按钮会显示出文本框中包含的文本。注意，事件处理程序中的代码直接引用了 username。在 HTML 中指定事件处理程序有一些问题。第一个问题是时机问题。有可能 HTML 元素已经显示在页面上，用户都与其交互了，而事件处理程序的代码还无法执行。比如在前面的例子中，如果
-showMessage()函数是在页面后面，在按钮中代码的后面定义的，那么当用户在 showMessage()函数被定义之前点击按钮时，就会发生错误。为此，大多数 HTML 事件处理程序会封装在 try / catch 块中，以便在这种情况下静默失败，如下面的例子所示：
+点击这个例子中的按钮会显示出文本框中包含的文本。注意，事件处理程序中的代码直接引用了 username。在 HTML 中指定事件处理程序有一些问题。第一个问题是时机问题。有可能 HTML 元素已经显示在页面上，用户都与其交互了，而事件处理程序的代码还无法执行。比如在前面的例子中，如果 showMessage() 函数是在页面后面，在按钮中代码的后面定义的，那么当用户在 showMessage()函数被定义之前点击按钮时，就会发生错误。为此，大多数 HTML 事件处理程序会封装在 try / catch 块中，以便在这种情况下静默失败，如下面的例子所示：
 
 ```html
 <input
@@ -26152,7 +26161,9 @@ eventPhase 整数 读 只 表示调用事件处理程序阶段：1代表捕获�
 preventDefault() 函数 读 只 用于取消事件的默认行为。只有 cancelable为 true才可以调用这个方法
 stopImmediatePropagation() 函数 读 只 用于取消所有后续事件获或事件冒泡，并阻止调用何后续事件处理程序（DOM Events中新增）
 stopPropagation() 函数 读 只 用于取消所有后续事件获或事件冒泡。只有 bubbles为 true才可以调用这个方法
+```
 
+```
 属性/方法 类型 写 读/ 说明
 target 元素 读 只 事件目标
 trusted 布尔值 读  只 true表示事件是由浏览器生成的。 false表示事件是开发者通过JavaScript创建的（DOM3 Events中新增
@@ -26181,8 +26192,7 @@ document.body.onclick = function (event) {
 ```
 
 这种情况下点击按钮， this 和 currentTarget 都等于 document.body，这是因为它是注册事件处理程序的元素。而 target 属性等于按钮本身，这是因为那才是 click 事件真正的目标。由于按钮本身并没有注册事件处理程序，因此 click 事件冒泡到 document.body，从而触发了在它上面注册的处理程序。
-type 属性在一个处理程序处理多个事件时很有用。比如下面的处理程序中就使用了
-event.type：
+type 属性在一个处理程序处理多个事件时很有用。比如下面的处理程序中就使用了 event.type：
 
 ```js
 let btn = document.getElementById('myBtn');
@@ -26289,7 +26299,14 @@ btn.attachEvent('onclick', function (event) {
 
 在第一个以 DOM0 方式指定的事件处理程序中， srcElement 属性等于 this，而在第二个事件处理程序中（运行在全局作用域下），两个值就不相等了。
 returnValue 属性等价于 DOM 的 preventDefault()方法，都是用于取消给定事件默认的行为。只不过在这里要把 returnValue 设置为 false 才是阻止默认动作。下面是一个设置该属性的例子：
-var link = document.getElementById("myLink"); link.onclick = function() { window.event.returnValue = false; };
+
+```js
+var link = document.getElementById('myLink');
+link.onclick = function () {
+  window.event.returnValue = false;
+};
+```
+
 在这个例子中， returnValue 在 onclick 事件处理程序中被设置为 false，阻止了链接的默认行为。与 DOM 不同，没有办法通过 JavaScript 确定事件是否可以被取消。
 cancelBubble 属性与 DOM stopPropagation()方法用途一样，都可以阻止事件冒泡。因为 IE8 及更早版本不支持捕获阶段，所以只会取消冒泡。 stopPropagation()则既取消捕获也取消冒泡。下面是一个取消冒泡的例子：
 
@@ -26403,21 +26420,14 @@ Web 浏览器中可以发生很多种事件。如前所述，所发生事件的�
 
 用户界面事件或 UI 事件不一定跟用户操作有关。这类事件在 DOM 规范出现之前就已经以某种形式存在了，保留它们是为了向后兼容。UI 事件主要有以下几种。
 
-DOMActivate：元素被用户通过鼠标或键盘操作激活时触发（比 click 或 keydown 更通用）。这个事件在 DOM3 Events 中已经废弃。因为浏览器实现之间存在差异，所以不要使用它。
-
-load：在 window 上当页面加载完成后触发，在窗套（ `<frameset>`）上当所有窗格（ `<frame>`）都加载完成后触发，在 `<img>`元素上当图片加载完成后触发，在 `<object>`元素上当相应对象加载完成后触发。
-
-unload：在 window 上当页面完全卸载后触发，在窗套上当所有窗格都卸载完成后触发，在 `<object>`元素上当相应对象卸载完成后触发。
-
-abort：在 `<object>`元素上当相应对象加载完成前被用户提前终止下载时触发。
-
-error：在 window 上当 JavaScript 报错时触发，在 `<img>`元素上当无法加载指定图片时触发，在 `<object>`元素上当无法加载相应对象时触发，在窗套上当一个或多个窗格无法完成加载时触发。
-
-select：在文本框（ `<input>`或 textarea）上当用户选择了一个或多个字符时触发。
-
-resize：在 window 或窗格上当窗口或窗格被缩放时触发。
-
-scroll：当用户滚动包含滚动条的元素时在元素上触发。 `<body>`元素包含已加载页面的滚动条。
+- DOMActivate：元素被用户通过鼠标或键盘操作激活时触发（比 click 或 keydown 更通用）。这个事件在 DOM3 Events 中已经废弃。因为浏览器实现之间存在差异，所以不要使用它。
+- load：在 window 上当页面加载完成后触发，在窗套（ `<frameset>`）上当所有窗格（ `<frame>`）都加载完成后触发，在 `<img>`元素上当图片加载完成后触发，在 `<object>`元素上当相应对象加载完成后触发。
+- unload：在 window 上当页面完全卸载后触发，在窗套上当所有窗格都卸载完成后触发，在 `<object>`元素上当相应对象卸载完成后触发。
+- abort：在 `<object>`元素上当相应对象加载完成前被用户提前终止下载时触发。
+- error：在 window 上当 JavaScript 报错时触发，在 `<img>`元素上当无法加载指定图片时触发，在 `<object>`元素上当无法加载相应对象时触发，在窗套上当一个或多个窗格无法完成加载时触发。
+- select：在文本框（ `<input>`或 textarea）上当用户选择了一个或多个字符时触发。
+- resize：在 window 或窗格上当窗口或窗格被缩放时触发。
+- scroll：当用户滚动包含滚动条的元素时在元素上触发。 `<body>`元素包含已加载页面的滚动条。
 
 大多数 HTML 事件与 window 对象和表单控件有关。
 除了 DOMActivate，这些事件在 DOM2 Events 中都被归为 HTML Events（ DOMActivate 在 DOM2 中仍旧是 UI 事件）。
@@ -26544,7 +26554,9 @@ window.addEventListener('unload', (event) => {
 
 无论使用何种方式，都要注意事件处理程序中的代码。因为 unload 事件是在页面卸载完成后触发的，所以不能使用页面加载后才有的对象。此时要访问 DOM 或修改页面外观都会导致错误。
 
-根据 DOM2 Events， unload 事件应该在 `<body>`而非 window 上触发。可是为了向后兼容，所有浏览器都在 window 上实现了 unload 事件。 3. resize 事件
+根据 DOM2 Events， unload 事件应该在 `<body>`而非 window 上触发。可是为了向后兼容，所有浏览器都在 window 上实现了 unload 事件。
+
+3. resize 事件
 
 当浏览器窗口被缩放到新高度或宽度时，会触发 resize 事件。这个事件在 window 上触发，因此可以通过 JavaScript 在 window 上或者为 `<body>`元素添加 onresize 属性来指定事件处理程序。优先使用 JavaScript 方式：
 
@@ -26570,23 +26582,17 @@ window.addEventListener('scroll', (event) => {
 });
 ```
 
-以上事件处理程序会在页面滚动时输出垂直方向上滚动的距离，而且适用于不同渲染模式。因为
-Safari 3.1 之前不支持 document.compatMode，所以早期版本会走第二个分支。类似于 resize， scroll 事件也会随着文档滚动而重复触发，因此最好保持事件处理程序的代码尽可能简单。
+以上事件处理程序会在页面滚动时输出垂直方向上滚动的距离，而且适用于不同渲染模式。因为 Safari 3.1 之前不支持 `document.compatMode`，所以早期版本会走第二个分支。类似于 resize， scroll 事件也会随着文档滚动而重复触发，因此最好保持事件处理程序的代码尽可能简单。
 
 ### 17.4.2 焦点事件
 
 焦点事件在页面元素获得或失去焦点时触发。这些事件可以与 document.hasFocus()和 document.activeElement 一起为开发者提供用户在页面中导航的信息。焦点事件有以下 6 种。
 
-blur：当元素失去焦点时触发。这个事件不冒泡，所有浏览器都支持。
-
-DOMFocusIn：当元素获得焦点时触发。这个事件是 focus 的冒泡版。Opera 是唯一支持这个事件的主流浏览器。DOM3 Events 废弃了 DOMFocusIn，推荐 focusin。
-
-DOMFocusOut：当元素失去焦点时触发。这个事件是 blur 的通用版。Opera 是唯一支持这个事件
-的主流浏览器。DOM3 Events 废弃了 DOMFocusOut，推荐 focusout。 focus：当元素获得焦点时触发。这个事件不冒泡，所有浏览器都支持。
-
-focusin：当元素获得焦点时触发。这个事件是 focus 的冒泡版。
-
-focusout：当元素失去焦点时触发。这个事件是 blur 的通用版。
+- blur：当元素失去焦点时触发。这个事件不冒泡，所有浏览器都支持。
+- DOMFocusIn：当元素获得焦点时触发。这个事件是 focus 的冒泡版。Opera 是唯一支持这个事件的主流浏览器。DOM3 Events 废弃了 DOMFocusIn，推荐 focusin。
+- DOMFocusOut：当元素失去焦点时触发。这个事件是 blur 的通用版。Opera 是唯一支持这个事件的主流浏览器。DOM3 Events 废弃了 DOMFocusOut，推荐 focusout。 focus：当元素获得焦点时触发。这个事件不冒泡，所有浏览器都支持。
+- focusin：当元素获得焦点时触发。这个事件是 focus 的冒泡版。
+- focusout：当元素失去焦点时触发。这个事件是 blur 的通用版。
 
 焦点事件中的两个主要事件是 focus 和 blur，这两个事件在 JavaScript 早期就得到了浏览器支持。它们最大的问题是不冒泡。这导致 IE 后来又增加了 focusin 和 focusout，Opera 又增加了 DOMFocusIn 和 DOMFocusOut。IE 新增的这两个事件已经被 DOM3 Events 标准化。当焦点从页面中的一个元素移到另一个元素上时，会依次发生如下事件。
 
@@ -26601,18 +26607,18 @@ focusout：当元素失去焦点时触发。这个事件是 blur 的通用版。
 
 ### 17.4.3 鼠标和滚轮事件
 
-鼠标事件是
-Web 开发中最常用的一组事件，这是因为鼠标是用户的主要定位设备。DOM3 Events 定义了 9 种鼠标事件。
+鼠标事件是 Web 开发中最常用的一组事件，这是因为鼠标是用户的主要定位设备。DOM3 Events 定义了 9 种鼠标事件。
 
-click：在用户单击鼠标主键（通常是左键）或按键盘回车键时触发。这主要是基于无障碍的考虑，让键盘和鼠标都可以触发 onclick 事件处理程序。 dblclick：在用户双击鼠标主键（通常是左键）时触发。这个事件不是在 DOM2 Events 中定义的，但得到了很好的支持，DOM3 Events 将其进行了标准化。
+- click：在用户单击鼠标主键（通常是左键）或按键盘回车键时触发。这主要是基于无障碍的考虑，让键盘和鼠标都可以触发 onclick 事件处理程序。
+- dblclick：在用户双击鼠标主键（通常是左键）时触发。这个事件不是在 DOM2 Events 中定义的，但得到了很好的支持，DOM3 Events 将其进行了标准化。
+- mousedown：在用户按下任意鼠标键时触发。这个事件不能通过键盘触发。
+- mouseenter：在用户把鼠标光标从元素外部移到元素内部时触发。这个事件不冒泡，也不会在光标经过后代元素时触发。 mouseenter 事件不是在 DOM2 Events 中定义的，而是 DOM3 Events 中新增的事件。
+- mouseleave：在用户把鼠标光标从元素内部移到元素外部时触发。这个事件不冒泡，也不会在光标经过后代元素时触发。 mouseleave 事件不是在 DOM2 Events 中定义的，而是 DOM3 Events 中新增的事件。
+- mousemove：在鼠标光标在元素上移动时反复触发。这个事件不能通过键盘触发。
+- mouseout：在用户把鼠标光标从一个元素移到另一个元素上时触发。移到的元素可以是原始元素的外部元素，也可以是原始元素的子元素。这个事件不能通过键盘触发。
+- mouseover：在用户把鼠标光标从元素外部移到元素内部时触发。这个事件不能通过键盘触发。
+- mouseup：在用户释放鼠标键时触发。这个事件不能通过键盘触发。
 
-mousedown：在用户按下任意鼠标键时触发。这个事件不能通过键盘触发。
-mouseenter：在用户把鼠标光标从元素外部移到元素内部时触发。这个事件不冒泡，也不会在光标经过后代元素时触发。 mouseenter 事件不是在 DOM2 Events 中定义的，而是 DOM3 Events 中新增的事件。
-
-mouseleave：在用户把鼠标光标从元素内部移到元素外部时触发。这个事件不冒泡，也不会在光标经过后代元素时触发。 mouseleave 事件不是在 DOM2 Events 中定义的，而是 DOM3 Events 中新增的事件。
-
-mousemove：在鼠标光标在元素上移动时反复触发。这个事件不能通过键盘触发。 mouseout：在用户把鼠标光标从一个元素移到另一个元素上时触发。移到的元素可以是原始元素
-的外部元素，也可以是原始元素的子元素。这个事件不能通过键盘触发。 mouseover：在用户把鼠标光标从元素外部移到元素内部时触发。这个事件不能通过键盘触发。 mouseup：在用户释放鼠标键时触发。这个事件不能通过键盘触发。
 页面中的所有元素都支持鼠标事件。除了 mouseenter 和 mouseleave，所有鼠标事件都会冒泡，都可以被取消，而这会影响浏览器的默认行为。由于事件之间存在关系，因此取消鼠标事件的默认行为也会影响其他事件。比如， click 事件触发的前提是 mousedown 事件触发后，紧接着又在同一个元素上触发了 mouseup 事件。如果 mousedown 和 mouseup 中的任意一个事件被取消，那么 click 事件就不会触发。类似地，两次连续的 click 事件会导致 dblclick 事件触发。只要有任何逻辑阻止了这两个 click 事件发生（比如取消其中一个 click 事件或者取消 mousedown 或 mouseup 事件中的任一个）， dblclick 事件就不会发生。这 4 个事件永远会按照如下顺序触发：
 
 1. mousedown
@@ -26621,7 +26627,9 @@ mousemove：在鼠标光标在元素上移动时反复触发。这个事件不�
 4. mousedown
 5. mouseup
 6. click
-7. dblclick click 和 dblclick 在触发前都依赖其他事件触发， mousedown 和 mouseup 则不会受其他事件影响。
+7. dblclick
+
+click 和 dblclick 在触发前都依赖其他事件触发， mousedown 和 mouseup 则不会受其他事件影响。
 
 IE8 及更早版本的实现中有个问题，这会导致双击事件跳过第二次 mousedown 和 click 事件。相应的顺序变成了：
 
@@ -26629,7 +26637,9 @@ IE8 及更早版本的实现中有个问题，这会导致双击事件跳过第�
 2. mouseup
 3. click
 4. mouseup
-5. dblclick 鼠标事件在 DOM3 Events 中对应的类型是 "MouseEvent"，而不是 "MouseEvents"。
+5. dblclick
+
+鼠标事件在 DOM3 Events 中对应的类型是 "MouseEvent"，而不是 "MouseEvents"。
 
 ```js
 div.addEventListener('click', (event) => {
@@ -26668,7 +26678,9 @@ div.addEventListener('click', (event) => {
 });
 ```
 
-3. 屏幕坐标鼠标事件不仅是在浏览器窗口中发生的，也是在整个屏幕上发生的。可以通过 event 对象的 screenX 和 screenY 属性获取鼠标光标在屏幕上的坐标。图 17-5 展示了浏览器中触发鼠标事件的光标的屏幕坐标。
+3. 屏幕坐标
+
+鼠标事件不仅是在浏览器窗口中发生的，也是在整个屏幕上发生的。可以通过 event 对象的 screenX 和 screenY 属性获取鼠标光标在屏幕上的坐标。图 17-5 展示了浏览器中触发鼠标事件的光标的屏幕坐标。
 
 {%}
 图 17-5 可以像下面这样获取鼠标事件的屏幕坐标：
@@ -26680,9 +26692,11 @@ div.addEventListener('click', (event) => {
 });
 ```
 
-与前面的例子类似，这段代码也为 `<div>`元素指定了 onclick 事件处理程序。当元素被点击时，会通过控制台打印出事件的屏幕坐标。 4. 修饰键
-虽然鼠标事件主要是通过鼠标触发的，但有时候要确定用户想实现的操作，还要考虑键盘按键的状态。键盘上的修饰键 Shift、Ctrl、Alt 和 Meta 经常用于修改鼠标事件的行为。DOM 规定了 4 个属性来表示这几个修饰键的状态： shiftKey、 ctrlKey、 altKey 和 metaKey。这几属性会在各自对
-应的修饰键被按下时包含布尔值 true，没有被按下时包含 false。在鼠标事件发生的，可以通过这几个属性来检测修饰键是否被按下。来看下面的例子，其中在 click 事件发生时检测了每个修饰键的状态：
+与前面的例子类似，这段代码也为 `<div>`元素指定了 onclick 事件处理程序。当元素被点击时，会通过控制台打印出事件的屏幕坐标。
+
+4. 修饰键
+   虽然鼠标事件主要是通过鼠标触发的，但有时候要确定用户想实现的操作，还要考虑键盘按键的状态。键盘上的修饰键 Shift、Ctrl、Alt 和 Meta 经常用于修改鼠标事件的行为。DOM 规定了 4 个属性来表示这几个修饰键的状态： shiftKey、 ctrlKey、 altKey 和 metaKey。这几属性会在各自对
+   应的修饰键被按下时包含布尔值 true，没有被按下时包含 false。在鼠标事件发生的，可以通过这几个属性来检测修饰键是否被按下。来看下面的例子，其中在 click 事件发生时检测了每个修饰键的状态：
 
 ```js
 let div = document.getElementById('myDiv');
@@ -26783,7 +26797,9 @@ keydown，用户按下键盘上某个键时触发，而且持续按住会重复�
 虽然所有元素都支持这些事件，但当用户在文本框中输入内容时最容易看到。输入事件只有一个，即 textInput。这个事件是对 keypress 事件的扩展，用于在文本显示给用户之前更方便地截获文本输入。 textInput 会在文本被插入到文本框之前触发。当用户按下键盘上的某个字符键时，首先会触发 keydown 事件，然后触发 keypress 事件，最后触发 keyup 事件。注意，这里 keydown 和 keypress 事件会在文本框出现变化之前触发，而 keyup 事件会在文本框出现变化之后触发。如果一个字符键被按住不放， keydown 和 keypress 就会重复触发，直到这个键被释放。对于非字符键，在键盘上按一下这个键，会先触发 keydown 事件，然后触发 keyup 事件。如果按住某个非字符键不放，则会重复触发 keydown 事件，直到这个键被释放，此时会触发 keyup 事件。
 注意键盘事件支持与鼠标事件相同的修饰键。 shiftKey、 ctrlKey、 altKey 和 metaKey 属性在键盘事件中都是可用的。IE8 及更早版本不支持 metaKey 属性。
 
-1. 键码对于 keydown 和 keyup 事件， event 对象的 keyCode 属性中会保存一个键码，对应键盘上特定的一个键。对于字母和数字键， keyCode 的值与小写字母和数字的 ASCII 编码一致。比如数字 7 键的 keyCode 为 55，而字母 A 键的 keyCode 为 65，而且跟是否按了 Shift 键无关。DOM 和 IE 的 event 对象都支持 keyCode 属性。下面这个例子展示了如何使用 keyCode 属性：
+1. 键码对于 keydown 和 keyup 事件，
+
+event 对象的 keyCode 属性中会保存一个键码，对应键盘上特定的一个键。对于字母和数字键， keyCode 的值与小写字母和数字的 ASCII 编码一致。比如数字 7 键的 keyCode 为 55，而字母 A 键的 keyCode 为 65，而且跟是否按了 Shift 键无关。DOM 和 IE 的 event 对象都支持 keyCode 属性。下面这个例子展示了如何使用 keyCode 属性：
 
 ```js
 let textbox = document.getElementById('myText');
@@ -26888,7 +26904,8 @@ textbox.addEventListener('textInput', (event) => {
 使用这些属性，可以确定用户是如何将文本输入到控件中的，从而可以辅助验证。
 
 5. 设备上的键盘事件
-   任天堂 Wii 会在用户按下 Wii 遥控器上的键时触发键盘事件。虽然不能访问 Wii 遥控器上所有的键，但其中一些键可以触发键盘事件。图 17-7 中标识出了某些键的键码。图 17-7 如图所示，按下十字键（175~178）、减号键（170）、加号键（174）、1（172）或 2（173）按钮会 触发键盘事件。无法判断电源键、A、B 或 Home 键是否已按下。
+
+任天堂 Wii 会在用户按下 Wii 遥控器上的键时触发键盘事件。虽然不能访问 Wii 遥控器上所有的键，但其中一些键可以触发键盘事件。图 17-7 中标识出了某些键的键码。图 17-7 如图所示，按下十字键（175~178）、减号键（170）、加号键（174）、1（172）或 2（173）按钮会 触发键盘事件。无法判断电源键、A、B 或 Home 键是否已按下。
 
 ### 17.4.5 合成事件
 
@@ -26920,9 +26937,11 @@ DOM2 的变化事件（ Mutation Events）是为了在 DOM 发生变化时提供
 
 DOM 规范并未涵盖浏览器都支持的所有事件。很多浏览器根据特定的用户需求或使用场景实现了自定义事件。HTML5 详尽地列出了浏览器支持的所有事件。本节讨论 HTML5 中得到浏览器较好支持的一些事件。注意这些并不是浏览器支持的所有事件。（本书后面也会涉及一些其他事件。）
 
-1. contextmenu 事件 Windows 95 通过单击鼠标右键为 PC 用户增加了上下文菜单的概念。不久，这个概念也在 Web 上得以实现。开发者面临的问题是如何确定何时该显示上下文菜单（在 Windows 上是右击鼠标，在 Mac 上是 Ctrl+单击），以及如何避免默认的上下文菜单起作用。结果就出现了 contextmenu 事件，以专门用于表示何时该显示上下文菜单，从而允许开发者取消默认的上下文菜单并提供自定义菜单。
-   contextmenu 事件冒泡，因此只要给 document 指定一个事件处理程序就可以处理页面上的所有同类事件。事件目标是触发操作的元素。这个事件在所有浏览器中都可以取消，在 DOM 合规的浏览器中使用 event.preventDefault()，在 IE8 及更早版本中将 event.returnValue 设置为
-   false。 contextmenu 事件应该算一种鼠标事件，因此 event 对象上的很多属性都与光标位置有关。通常，自定义的上下文菜单都是通过 oncontextmenu 事件处理程序触发显示，并通过 onclick 事件处理程序触发隐藏的。来看下面的例子：
+1. contextmenu 事件
+
+Windows 95 通过单击鼠标右键为 PC 用户增加了上下文菜单的概念。不久，这个概念也在 Web 上得以实现。开发者面临的问题是如何确定何时该显示上下文菜单（在 Windows 上是右击鼠标，在 Mac 上是 Ctrl+单击），以及如何避免默认的上下文菜单起作用。结果就出现了 contextmenu 事件，以专门用于表示何时该显示上下文菜单，从而允许开发者取消默认的上下文菜单并提供自定义菜单。
+contextmenu 事件冒泡，因此只要给 document 指定一个事件处理程序就可以处理页面上的所有同类事件。事件目标是触发操作的元素。这个事件在所有浏览器中都可以取消，在 DOM 合规的浏览器中使用 event.preventDefault()，在 IE8 及更早版本中将 event.returnValue 设置为
+false。 contextmenu 事件应该算一种鼠标事件，因此 event 对象上的很多属性都与光标位置有关。通常，自定义的上下文菜单都是通过 oncontextmenu 事件处理程序触发显示，并通过 onclick 事件处理程序触发隐藏的。来看下面的例子：
 
 ```html
 <!DOCTYPE html>
@@ -26977,13 +26996,8 @@ window.addEventListener('beforeunload', (event) => {
 ```
 
 3. DOMContentLoaded 事件
-   window 的 load 事件会在页面完全加载后触发，因为要等待很多外部资源加载完成，所以会花费
-   较长时间。而 DOMContentLoaded 事件会在 DOM 树构建完成后立即触发，而不用等待图片、
-   JavaScript 文件、CSS 文件或其他资源加载完成。相对于 load 事件， DOMContentLoaded 可以让
-   开发者在外部资源下载的同时就能指定事件处理程序，从而让用户能够更快地与页面交互。
-   要处理 DOMContentLoaded 事件，需要给 document 或 window 添加事件处理程序（实际的事
-   件目标是 document，但会冒泡到 window）。下面是一个在 document 上监听
-   DOMContentLoaded 事件的例子：
+
+window 的 load 事件会在页面完全加载后触发，因为要等待很多外部资源加载完成，所以会花费较长时间。而 DOMContentLoaded 事件会在 DOM 树构建完成后立即触发，而不用等待图片、JavaScript 文件、CSS 文件或其他资源加载完成。相对于 load 事件， DOMContentLoaded 可以让开发者在外部资源下载的同时就能指定事件处理程序，从而让用户能够更快地与页面交互。要处理 DOMContentLoaded 事件，需要给 document 或 window 添加事件处理程序（实际的事件目标是 document，但会冒泡到 window）。下面是一个在 document 上监听 DOMContentLoaded 事件的例子：
 
 ```js
 document.addEventListener('DOMContentLoaded', (event) => {
@@ -27093,8 +27107,7 @@ window.addEventListener('hashchange', (event) => {
 
 随着智能手机和平板计算机的出现，用户与浏览器交互的新方式应运而生。为此，一批新事件被发明了出来。设备事件可以用于确定用户使用设备的方式。 W3C 在 2011 年就开始起草一份新规范，用于定义新设备及设备相关的事件。
 
-1. orientationchange 事件苹果公司在移动 Safari 浏览器上创造了 orientationchange 事件，以方便开发者判断用户的设备是处于垂直模式还是水平模式。移动 Safari 在 window 上暴露了 window.orientation 属性，它有以下 3 种值之一：0 表示垂直模式，90 表示左转水平模式（主屏幕键在右侧），–90 表示右转水平模
-   式（主屏幕键在左）。虽然相关文档也提及设备倒置后的值为 180，但设备本身至今还不支持。图 17-9 展示了 window.orientation 属性的各种值。图 17-9
+1. orientationchange 事件苹果公司在移动 Safari 浏览器上创造了 orientationchange 事件，以方便开发者判断用户的设备是处于垂直模式还是水平模式。移动 Safari 在 window 上暴露了 window.orientation 属性，它有以下 3 种值之一：0 表示垂直模式，90 表示左转水平模式（主屏幕键在右侧），–90 表示右转水平模式（主屏幕键在左）。虽然相关文档也提及设备倒置后的值为 180，但设备本身至今还不支持。图 17-9 展示了 window.orientation 属性的各种值。图 17-9
    每当用户旋转设备改变了模式，就会触发 orientationchange 事件。但 event 对象上没有暴露任何有用的信息，这是因为相关信息都可以从 window.orientation 属性中获取。以下是这个事件典型的用法：
 
 ```js
@@ -27134,8 +27147,7 @@ window.addEventListener('deviceorientation', (event) => {
 });
 ```
 
-这个例子只适用于移动 WebKit 浏览器，因为使用的是专有的 webkitTransform 属性（CSS 标准的 transform 属性的临时版本）。“箭头”（arrow）元素会随着 event.alpha 值的变化而变化，呈现出指南针的样子。这里给 CSS3 旋转变形函数传入了四舍五入后的值，以确保平顺。 3. devicemotion 事件 DeviceOrientationEvent 规范也定义了 devicemotion 事件。这个事件用于提示设备实际上在移动，
-而不仅仅是改变了朝向。例如， devicemotion 事件可以用来确定设备正在掉落或者正拿在一个行走的人手里。
+这个例子只适用于移动 WebKit 浏览器，因为使用的是专有的 webkitTransform 属性（CSS 标准的 transform 属性的临时版本）。“箭头”（arrow）元素会随着 event.alpha 值的变化而变化，呈现出指南针的样子。这里给 CSS3 旋转变形函数传入了四舍五入后的值，以确保平顺。 3. devicemotion 事件 DeviceOrientationEvent 规范也定义了 devicemotion 事件。这个事件用于提示设备实际上在移动，而不仅仅是改变了朝向。例如， devicemotion 事件可以用来确定设备正在掉落或者正拿在一个行走的人手里。
 当 devicemotion 事件触发时， event 对象中包含如下额外的属性。 acceleration：对象，包含 x、 y 和 z 属性，反映不考虑重力情况下各个维度的加速信息。 accelerationIncludingGravity：对象，包含 x、 y 和 z 属性，反映各个维度的加速信息，包含 z 轴自然重力加速度。 interval：毫秒，距离下次触发 devicemotion 事件的时间。此值在事件之间应为常量。 rotationRate：对象，包含 alpha、 beta 和 gamma 属性，表示设备朝向。
 如果无法提供 acceleration、 accelerationIncludingGravity 和 rotationRate 信息，则属性值为 null。为此，在使用这些属性前必须先检测它们的值是否为 null。比如：
 
@@ -27155,11 +27167,11 @@ window.addEventListener('devicemotion', (event) => {
 
 Safari 为 iOS 定制了一些专有事件，以方便开发者。因为 iOS 设备没有鼠标和键盘，所以常规的鼠标和键盘事件不足以创建具有完整交互能力的网页。同时，WebKit 也为 Android 定制了很多专有事件，成为了事实标准，并被纳入 W3C 的 Touch Events 规范。本节介绍的事件只适用于触屏设备。
 
-1. 触摸事件 iPhone 3G 发布时，iOS 2.0 内置了新版本的 Safari。这个新的移动 Safari 支持一些与触摸交互有关的新事件。后来的 Android 浏览器也实现了同样的事件。当手指放在屏幕上、在屏幕上滑动或从屏幕移开
-   时，触摸事件即会触发。触摸事件有如下几种。 touchstart：手指放到屏幕上时触发（即使有一个手指已经放在了屏幕上）。 touchmove：手指在屏幕上滑动时连续触发。在这个事件中调用 preventDefault ()可以阻
-   止滚动。 touchend：手指从屏幕上移开时触发。 touchcancel：系统停止跟踪触摸时触发。文档中并未明确什么情况下停止跟踪。
-   这些事件都会冒泡，也都可以被取消。尽管触摸事件不属于 DOM 规范，但浏览器仍然以兼容 DOM 的
-   方式实现了它们。因此，每个触摸事件的 event 对象都提供了鼠标事件的公共属性： bubbles、 cancelable、 view、 clientX、 clientY、 screenX、 screenY、 detail、 altKey、 shiftKey、 ctrlKey 和 metaKey。
+1. 触摸事件
+
+iPhone 3G 发布时，iOS 2.0 内置了新版本的 Safari。这个新的移动 Safari 支持一些与触摸交互有关的新事件。后来的 Android 浏览器也实现了同样的事件。当手指放在屏幕上、在屏幕上滑动或从屏幕移开时，触摸事件即会触发。触摸事件有如下几种。 touchstart：手指放到屏幕上时触发（即使有一个手指已经放在了屏幕上）。 touchmove：手指在屏幕上滑动时连续触发。在这个事件中调用 preventDefault ()可以阻止滚动。 touchend：手指从屏幕上移开时触发。 touchcancel：系统停止跟踪触摸时触发。文档中并未明确什么情况下停止跟踪。
+这些事件都会冒泡，也都可以被取消。尽管触摸事件不属于 DOM 规范，但浏览器仍然以兼容 DOM 的
+方式实现了它们。因此，每个触摸事件的 event 对象都提供了鼠标事件的公共属性： bubbles、 cancelable、 view、 clientX、 clientY、 screenX、 screenY、 detail、 altKey、 shiftKey、 ctrlKey 和 metaKey。
 
 除了这些公共的 DOM 属性，触摸事件还提供了以下 3 个属性用于跟踪触点。 touches： Touch 对象的数组，表示当前屏幕上的每个触点。 targetTouches： Touch 对象的数组，表示特定于事件目标的触点。
 changedTouches： Touch 对象的数组，表示自上次用户动作之后变化的触点。每个 Touch 对象都包含下列属性。 clientX：触点在视口中的 x 坐标。 clientY：触点在视口中的 y 坐标。 identifier：触点 ID。
@@ -27471,9 +27483,9 @@ document 对象随时可用，任何时候都可以给它添加事件处理程�
 创建 event 对象之后，需要使用事件相关的信息来初始化。每种类型的 event 对象都有特定的方法，可以使用相应数据来完成初始化。方法的名字并不相同，这取决于调用 createEvent()时传入的参数。
 事件模拟的最后一步是触发事件。为此要使用 dispatchEvent()方法，这个方法存在于所有支持事件的 DOM 节点之上。 dispatchEvent()方法接收一个参数，即表示要触发事件的 event 对象。调用 dispatchEvent()方法之后，事件就“转正”了，接着便冒泡并触发事件处理程序执行。
 
-1. 模拟鼠标事件模拟鼠标事件需要先创建一个新的鼠标 event 对象，然后再使用必要的信息对其进行初始化。要创建鼠标 event 对象，可以调用 createEvent()方法并传入 "MouseEvents"参数。这样就会返回一个 event 对象，这个对象有一个 initMouseEvent()方法，用于为新对象指定鼠标的特定信息。 initMouseEvent()方法接收 15 个参数，分别对应鼠标事件会暴露的属性。这些参数列举 如下。type（字符串）：要触发的事件类型，如 "click"。 bubbles（布尔值）：表示事件是否冒泡。为精确模拟鼠标事件，应该设置为 true。 cancelable（布尔值）：表示事件是否可以取消。为精确模拟鼠标事件，应该设置为 true。 view（AbstractView）：与事件关联的视图。基本上始终是 document.defaultView。 detail（整数）：关于事件的额外信息。只被事件处理程序使用，通常为 0。 screenX（整数）：事件相对于屏幕的 x 坐标。 screenY（整数）：事件相对于屏幕的 y
-   坐标。 clientX（整数）：事件相对于视口的 x 坐标。 clientY（整数）：事件相对于视口的 y 坐标。 ctrlkey（布尔值）：表示是否按下了 Ctrl 键。默认为 false。 altkey（布尔值）：表示是否按下了 Alt 键。默认为 false。 shiftkey（布尔值）：表示是否按下了 Shift 键。默认为 false。 metakey（布尔值）：表示是否按下了 Meta 键。默认为 false。 button（整数）：表示按下了哪个按钮。默认为 0。 relatedTarget（对象）：与事件相关的对象。只在模拟 mouseover 和 mouseout 时使用。
-   显然， initMouseEvent()方法的这些参数与鼠标事件的 event 对象属性是一一对应的。前 4 个参数是正确模拟事件唯一重要的几个参数，这是因为它们是浏览器要用的，其他参数则是事件处理程序要用的。 event 对象的 target 属性会自动设置为调用 dispatchEvent()方法时传入的节点。下面来看一个使用默认值模拟单击事件的例子：
+1. 模拟鼠标事件模拟鼠标事件需要先创建一个新的鼠标 event 对象，然后再使用必要的信息对其进行初始化。要创建鼠标 event 对象，可以调用 createEvent()方法并传入 "MouseEvents"参数。这样就会返回一个 event 对象，这个对象有一个 initMouseEvent()方法，用于为新对象指定鼠标的特定信息。 initMouseEvent()方法接收 15 个参数，分别对应鼠标事件会暴露的属性。这些参数列举 如下。type（字符串）：要触发的事件类型，如 "click"。 bubbles（布尔值）：表示事件是否冒泡。为精确模拟鼠标事件，应该设置为 true。 cancelable（布尔值）：表示事件是否可以取消。为精确模拟鼠标事件，应该设置为 true。 view（AbstractView）：与事件关联的视图。基本上始终是 document.defaultView。 detail（整数）：关于事件的额外信息。只被事件处理程序使用，通常为 0。 screenX（整数）：事件相对于屏幕的 x 坐标。 screenY（整数）：事件相对于屏幕的 y 坐标。 clientX（整数）：事件相对于视口的 x 坐标。 clientY（整数）：事件相对于视口的 y 坐标。 ctrlkey（布尔值）：表示是否按下了 Ctrl 键。默认为 false。 altkey（布尔值）：表示是否按下了 Alt 键。默认为 false。 shiftkey（布尔值）：表示是否按下了 Shift 键。默认为 false。 metakey（布尔值）：表示是否按下了 Meta 键。默认为 false。 button（整数）：表示按下了哪个按钮。默认为 0。 relatedTarget（对象）：与事件相关的对象。只在模拟 mouseover 和 mouseout 时使用。
+
+显然， initMouseEvent()方法的这些参数与鼠标事件的 event 对象属性是一一对应的。前 4 个参数是正确模拟事件唯一重要的几个参数，这是因为它们是浏览器要用的，其他参数则是事件处理程序要用的。 event 对象的 target 属性会自动设置为调用 dispatchEvent()方法时传入的节点。下面来看一个使用默认值模拟单击事件的例子：
 
 ```js
 let btn = document.getElementById('myBtn');
@@ -27644,8 +27656,7 @@ textbox.fireEvent('onkeypress', event);
 ## 17.7 小结
 
 事件是 JavaScript 与网页结合的主要方式。最常见的事件是在 DOM3 Events 规范或 HTML5 中定义的。虽然基本的事件都有规范定义，但很多浏览器在规范之外实现了自己专有的事件，以方便开发者更好地满足用户交互需求，其中一些专有事件直接与特殊的设备相关。
-围绕着使用事件，需要考虑内存与性能问题。例如：
-最好限制一个页面中事件处理程序的数量，因为它们会占用过多内存，导致页面响应缓慢；
+围绕着使用事件，需要考虑内存与性能问题。例如：最好限制一个页面中事件处理程序的数量，因为它们会占用过多内存，导致页面响应缓慢；
 利用事件冒泡，事件委托可以解决限制事件处理程序数量的问题；
 最好在页面卸载之前删除所有事件处理程序。
 使用 JavaScript 也可以在浏览器中模拟事件。DOM2 Events 和 DOM3 Events 规范提供了模拟方法，可以模拟所有原生 DOM 事件。键盘事件一定程度上也是可以模拟的，有时候需要组合其他技术。IE8 及更早版本也支持事件模拟，只是接口与 DOM 方式不同。
