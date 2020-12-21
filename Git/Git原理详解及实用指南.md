@@ -53,15 +53,15 @@ stage 这个词在 Git 里，是「集中收集改动以待提交」的意思。
 
 在 Git 的使用中，经常会需要对指定的提交进行操作。每一个提交都有一个它唯一的指定方式——它的 SHA-1 校验和。两个 SHA-1 值的重复概率极低，所以可以使用这个 SHA-1 值来指代提交，也可以只使用它的前几位来指代它（例如第一个 `78bb0ab7d541…16b77`，你使用 `78bb0ab` 甚至 `78bb` 来指代它通常也可以），但毕竟这种没有任何含义的字符串是很难记忆的，所以 Git 提供了「引用」的机制：使用固定的字符串作为引用，指向某个提交，作为操作提交时的快捷方式。
 
-HEAD 是引用中最特殊的一个：它是指向当前提交的引用。所谓当前提交这个概念很简单，它指的就是当前工作目录所对应的提交。每次当有新的提交的时候，工作目录自动与最新的提交对应；而与此同时，HEAD 也会转而指向最新的提交。事实上，当使用 `checkout`、`reset` 等指令手动指定改变当前提交的时候，HEAD 也会一起跟过去。所以永远可以用 HEAD 来操作当前提交。
+HEAD 是引用中最特殊的一个：它是指向当前提交的引用。所谓当前提交这个概念很简单，它指的就是当前工作目录所对应的提交。每次当有新的提交的时候，工作目录自动与最新的提交对应；而与此同时，HEAD 也会转而指向最新的提交。事实上，当使用 checkout、reset 等指令手动指定改变当前提交的时候，HEAD 也会一起跟过去。所以永远可以用 HEAD 来操作当前提交。
 
 2. 分支 branch
 
-HEAD 是 Git 中一个独特的引用，它是唯一的。而除了 HEAD 之外，Git 还有一种引用，叫做 `branch`（分支）。HEAD 除了可以指向提交，还可以指向一个分支，当它指向某个分支的时候，会通过这个分支来间接地指向某个提交；另外，当 HEAD 在提交时自动向前移动的时候，它会像一个拖钩一样带着它所指向的分支一起移动。
+HEAD 是 Git 中一个独特的引用，它是唯一的。而除了 HEAD 之外，Git 还有一种引用，叫做 branch（分支）。HEAD 除了可以指向提交，还可以指向一个分支，当它指向某个分支的时候，会通过这个分支来间接地指向某个提交；另外，当 HEAD 在提交时自动向前移动的时候，它会像一个拖钩一样带着它所指向的分支一起移动。
 
 3. 默认分支：master
 
-上面的这个 `master` ，其实是一个特殊的分支：它是 Git 的默认分支（俗称主 `branch` / 主分支）。新创建的 repository（仓库）是没有任何提交的。但在它创建第一个提交时，会把主分支指向它，并把 HEAD 指向主分支。
+上面的这个 master ，其实是一个特殊的分支：它是 Git 的默认分支（俗称主 branch / 主分支）。新创建的 repository（仓库）是没有任何提交的。但在它创建第一个提交时，会把主分支指向它，并把 HEAD 指向主分支。
 
 当有人使用 `git clone` 时，除了从远程仓库把这个仓库目录下载到工作目录中，还会 `checkout` （签出）主分支，签出的意思就是把某个提交作为当前提交，把 HEAD 移动过去，并把工作目录的文件内容替换成这个提交所对应的内容。
 
@@ -101,7 +101,7 @@ git checkout feature1
 git push origin feature1
 ```
 
-推送的时候之后上传当前分支，并不会上传 HEAD；远程仓库的 HEAD 是永远指向默认分支（即 `master`）的。
+推送的时候之后上传当前分支，并不会上传 HEAD；远程仓库的 HEAD 是永远指向默认分支（即 master）的。
 
 # 7 进阶 3：合并提交
 
@@ -123,9 +123,9 @@ git push origin feature1
 
 3. 特殊情况：HEAD 落后于 目标 commit——fast-forward
 
-而另一种情况：如果 HEAD 和目标提交依然是不存在分叉，但 HEAD 不是领先于目标提交，而是落后于目标提交。那么 Git 会直接把 HEAD（以及它所指向的 `branch`，如果有的话）移动到目标提交。这种操作有一个专有称谓，叫做 "fast-forward"（快速前移）。
+而另一种情况：如果 HEAD 和目标提交依然是不存在分叉，但 HEAD 不是领先于目标提交，而是落后于目标提交。那么 Git 会直接把 HEAD（以及它所指向的 branch，如果有的话）移动到目标提交。这种操作有一个专有称谓，叫做 "fast-forward"（快速前移）。
 
-一般情况下，创建新的 `branch` 都是会和原 `branch` 并行开发的，不然没必要开 `branch` ，直接在原 `branch` 上开发就好。但事实上，情形其实很常见，因为这其实是 `pull` 操作的一种经典情形：本地的 `master` 没有新提交，而远端仓库中有同事提交了新内容到 `master`。
+一般情况下，创建新的 branch 都是会和原 branch 并行开发的，不然没必要开 branch ，直接在原 branch 上开发就好。但事实上，情形其实很常见，因为这其实是 `pull` 操作的一种经典情形：本地的 master 没有新提交，而远端仓库中有同事提交了新内容到 master。
 
 # 8 进阶 4：最流行的工作流 Feature Branching
 
@@ -136,7 +136,9 @@ git push origin feature1
 
 实质上，Feature Branching 这种工作流，为团队开发时两个关键的问题提供了解决方案。  
 
-**代码分享**。还可以利用 Pull Request 来进一步简化。Pull Request 并不是 Git 的内容，而是一些 Git 仓库服务提供方（例如 GitHub）所提供的一种便捷功能，它可以让团队的成员方便地讨论一个分支，并在讨论结束后一键合并这个分支到主分支`master`。
+**代码分享**
+
+Pull Request 并不是 Git 的内容，而是一些 Git 仓库服务提供方（例如 GitHub）所提供的一种便捷功能，它可以让团队的成员方便地讨论一个分支，并在讨论结束后一键合并这个分支到主分支`master`。
 
 - 把分支推送到中央仓库；
 - 在中央仓库处创建一个 Pull Request。
@@ -145,7 +147,9 @@ git push origin feature1
 
 最后需要点一下页面中那个绿色的 "Merge pull request" 按钮，GitHub 就会自动地在中央仓库帮你把分支合并到主分支了。另外，GitHub 还设计了一个贴心的 "Delete branch" 按钮，方便你在合并之后一键删除分支。
 
-**一人多任务**。如果是在独立的分支上做事，切换任务是很简单的。只要稍微把目前未提交的代码简单收尾一下，然后做一个带有「未完成」标记的提交（例如，在提交信息里标上「TODO」），然后回到主分支去创建一个新的分支就好了。
+**一人多任务**
+
+如果是在独立的分支上做事，切换任务是很简单的。只要稍微把目前未提交的代码简单收尾一下，然后做一个带有「未完成」标记的提交（例如，在提交信息里标上「TODO」），然后回到主分支去创建一个新的分支就好了。
 
 # 9 进阶 5：关于 add
 
@@ -155,8 +159,6 @@ git push origin feature1
 
 # 10 进阶 6：查看记录
 
-## 10.1 查看历史记录
-
 `git log` 可以查看历史记录。
 
 - `log -p` 查看详细历史。可以看到每一个提交的每一行改动，所以很适合用于代码 review。`-p` 是 `--patch` 的缩写。
@@ -165,10 +167,8 @@ git push origin feature1
 `show` 查看具体的 commit。如果你想看某个具体的提交的改动内容，可以用 `show`。
 
 - 通过`git show`查看当前 `commit`
-- 通过`commit`引用（`branch`或HEAD标记）或它的`SHA-1`码看任意一个`commit`。
+- 通过`commit`引用（branch或HEAD标记）或它的`SHA-1`码看任意一个`commit`。
 - 在 `commit` 的引用或 `SHA-1` 后输入文件名，可以看指定 commit 中的指定文件。
-
-## 10.2 看未提交的内容
 
 如果想看未提交的内容，可以用 `diff`。
 
@@ -188,7 +188,7 @@ git checkout master
 git merge branch1
 ```
 
-为了避免和远端仓库发生冲突，一般不要从 `master` 向其他 `branch` 执行 `rebase` 操作。而如果是 `master` 以外的 `branch` 之间的 `rebase`（比如 `branch1` 和 `branch2` 之间），就不必这么多费一步，直接 `rebase` 就好。
+为了避免和远端仓库发生冲突，一般不要从 master 向其他 branch 执行 `rebase` 操作。而如果是 master 以外的 branch 之间的 `rebase`（比如 `branch1` 和 `branch2` 之间），就不必这么多费一步，直接 `rebase` 就好。
 
 # 12 高级 2：修改上次提交
 
@@ -207,7 +207,7 @@ git commit --amend
 
 `rebase -i` 是 `rebase --interactive` 的缩写形式，意为「交互式 rebase」。所谓「交互式 rebase」，就是在 `rebase` 的操作执行之前，你可以指定要 `rebase` 的 `commit` 链中的每一个 `commit` 是否需要进一步修改。
 
-说明：在 Git 中，有两个「偏移符号」： `^` 和 `~`。`^` 的用法：在 `commit` 的后面加一个或多个 `^` 号，可以把 `commit` 往回偏移，偏移的数量是 `^` 的数量。例如：`master^` 表示 `master` 指向的 `commit` 之前的那个 `commit`； `HEAD^^`  表示 HEAD 所指向的 `commit` 往前数两个 `commit`。`~` 的用法：在 `commit` 的后面加上 `~` 号和一个数，可以把 `commit` 往回偏移，偏移的数量是 `~` 号后面的数。例如：`HEAD~5` 表示 HEAD 指向的 `commit`往前数 5 个 `commit`。
+说明：在 Git 中，有两个「偏移符号」： `^` 和 `~`。`^` 的用法：在 `commit` 的后面加一个或多个 `^` 号，可以把 `commit` 往回偏移，偏移的数量是 `^` 的数量。例如：`master^` 表示 master 指向的 `commit` 之前的那个 `commit`； `HEAD^^`  表示 HEAD 所指向的 `commit` 往前数两个 `commit`。`~` 的用法：在 `commit` 的后面加上 `~` 号和一个数，可以把 `commit` 往回偏移，偏移的数量是 `~` 号后面的数。例如：`HEAD~5` 表示 HEAD 指向的 `commit`往前数 5 个 `commit`。
 
 ```shell
 git rebase -i HEAD^^
@@ -245,8 +245,6 @@ git rebase --continue
 
 # 14 高级 4：撤销提交
 
-## reset --hard 丢弃最新的提交
-
 提交了`commit`，写完回头看了看，你觉得「不行这得重新写」。那么你可以用 `reset --hard` 来撤销这条 `commit`。
 
 ```shell
@@ -273,17 +271,13 @@ git rebase --onto HEAD^^ HEAD^ branch1
 
 上面这行代码的意思是：以倒数第二个 `commit` 为起点（起点不包含在 `rebase` 序列里哟），`branch1` 为终点，`rebase` 到倒数第三个 `commit` 上。
 
-# 16 高级 6：代码已经 push 上去了才发现写错？
+# 16 高级 6：修改推送后的代码
 
-## 出错的内容在你自己的 branch
-
-假如是某个你自己独立开发的 `branch` 出错了，不会影响到其他人，那没关系用前面几节讲的方法把写错的 `commit` 修改或者删除掉，然后再 `push` 上去就好了。由于你在本地对已有的 `commit` 做了修改，这时你再 `push` 就会失败，因为中央仓库包含本地没有的 `commit`s。你本来就希望用本地的内容覆盖掉中央仓库的内容。那么这时就不要乖乖听话，按照提示去先 `pull` 一下再 `push` 了，而是要选择「强行」`push`。
+假如是某个你自己独立开发的 branch 出错了，不会影响到其他人，那没关系用前面几节讲的方法把写错的 `commit` 修改或者删除掉，然后再 `push` 上去就好了。由于你在本地对已有的 `commit` 做了修改，这时你再 `push` 就会失败，因为中央仓库包含本地没有的 `commit`s。你本来就希望用本地的内容覆盖掉中央仓库的内容。那么这时就不要乖乖听话，按照提示去先 `pull` 一下再 `push` 了，而是要选择「强行」`push`。
 
 ```shell
 git push origin branch1 -f
 ```
-
-## 出错的内容已经合并到 master
 
 增加一个新的提交，把之前提交的内容抹掉。例如之前你增加了一行代码，你希望撤销它，那么你就做一个删掉这行代码的提交；如果你删掉了一行代码，你希望撤销它，那么你就做一个把这行代码还原回来的提交。这种事做起来也不算麻烦，因为 Git 有一个对应的指令：`revert`。
 
@@ -301,9 +295,9 @@ git revert HEAD^
 
 ## reset 的本质：移动 HEAD 以及它所指向的 branch
 
-`reset`的本质是移动HEAD，并且捎带上HEAD所指向的`branch`，也就是说它是用来重置HEAD以及它所指向的`branch`的位置的。而 `reset --hard HEAD^` 之所以起到了撤销 `commit` 的效果，是因为它把 HEAD 和它所指向的 `branch` 一起移动到了当前 `commit` 的父 `commit` 上，从而起到了「撤销」的效果。
+`reset`的本质是移动HEAD，并且捎带上HEAD所指向的branch，也就是说它是用来重置HEAD以及它所指向的branch的位置的。而 `reset --hard HEAD^` 之所以起到了撤销 `commit` 的效果，是因为它把 HEAD 和它所指向的 branch 一起移动到了当前 `commit` 的父 `commit` 上，从而起到了「撤销」的效果。
 
-所以同理，`reset --hard` 不仅可以撤销提交，还可以用来把 HEAD 和 `branch` 移动到其他的任何地方。`reset` 指令可以重置 HEAD 和 `branch` 的位置，不过在重置它们的同时，对工作目录可以选择不同的操作，而对工作目录的操作的不同，就是通过 `reset` 后面跟的参数来确定的。
+所以同理，`reset --hard` 不仅可以撤销提交，还可以用来把 HEAD 和 branch 移动到其他的任何地方。`reset` 指令可以重置 HEAD 和 branch 的位置，不过在重置它们的同时，对工作目录可以选择不同的操作，而对工作目录的操作的不同，就是通过 `reset` 后面跟的参数来确定的。
 
 ## reset --hard：重置工作目录
 
@@ -313,7 +307,7 @@ git revert HEAD^
 
 ## reset --soft：保留工作目录
 
-`reset --soft` 会在重置 HEAD 和 `branch` 时，保留工作目录和暂存区中的内容，并把重置 HEAD 所带来的新的差异放进暂存区。
+`reset --soft` 会在重置 HEAD 和 branch 时，保留工作目录和暂存区中的内容，并把重置 HEAD 所带来的新的差异放进暂存区。
 
 > Does not touch the index file or the working tree at all (but resets the head to <commit>, just like all modes do). This leaves all your changed files "Changes to be committed", as git status would put it.
 
@@ -327,27 +321,23 @@ git revert HEAD^
 
 # 18 高级 8：checkout 的本质
 
-实质上，`checkout` 并不止可以切换 `branch`。`checkout` 本质上的功能其实是：签出（ checkout ）指定的 `commit`。
+实质上，`checkout` 并不止可以切换 branch。`checkout` 本质上的功能其实是：签出（ checkout ）指定的 `commit`。
 
-`git checkout branch名` 的本质，其实是把 HEAD 指向指定的 `branch`，然后签出这个 `branch` 所对应的 `commit` 的工作目录。所以同样的，`checkout` 的目标也可以不是 `branch`，而直接指定某个 `commit`。
+`git checkout branch名` 的本质，其实是把 HEAD 指向指定的 branch，然后签出这个 branch 所对应的 `commit` 的工作目录。所以同样的，`checkout` 的目标也可以不是 branch，而直接指定某个 `commit`。
 
 在 `git status` 的提示语中，Git 会告诉你可以用 `checkout -- 文件名` 的格式，通过「签出」的方式来撤销指定文件的修改。
 
-## checkout 和 reset 的不同
+`checkout` 和 `reset` 都可以切换 HEAD 的位置，它们除了有许多细节的差异外，最大的区别在于：`reset` 在移动 HEAD 时会带着它所指向的 branch 一起移动，而 `checkout` 不会。当你用 `checkout` 指向其他地方的时候，HEAD 和 它所指向的 branch 就自动脱离了。
 
-`checkout` 和 `reset` 都可以切换 HEAD 的位置，它们除了有许多细节的差异外，最大的区别在于：`reset` 在移动 HEAD 时会带着它所指向的 `branch` 一起移动，而 `checkout` 不会。当你用 `checkout` 指向其他地方的时候，HEAD 和 它所指向的 `branch` 就自动脱离了。
-
-事实上，`checkout` 有一个专门用来只让 HEAD 和 `branch` 脱离而不移动 HEAD 的用法：
+事实上，`checkout` 有一个专门用来只让 HEAD 和 branch 脱离而不移动 HEAD 的用法：
 
 ```shell
 git checkout --detach
 ```
 
-执行这行代码，Git 就会把 HEAD 和 `branch` 脱离，直接指向当前 `commit`。
+执行这行代码，Git 就会把 HEAD 和 branch 脱离，直接指向当前 `commit`。
 
-# 19 高级 9：紧急情况：「立即给我打个包，现在马上！」
-
-## stash：临时存放工作目录的改动
+# 19 高级 9：临时存放工作目录的改动
 
 "stash" 这个词，和它意思比较接近的中文翻译是「藏匿」，是「把东西放在一个秘密的地方以备未来使用」的意思。在 Git 中，`stash` 指令可以帮你把工作目录的内容全部放在你本地的一个独立的地方，它不会被提交，也不会被删除，你把东西放起来之后就可以去做你的临时工作了，做完以后再来取走，就可以继续之前手头的事了。
 
@@ -361,9 +351,9 @@ git stash -u
 
 ## reflog ：引用的 log
 
-`reflog` 是 "reference log" 的缩写，使用它可以查看 Git 仓库中的引用的移动记录。如果不指定引用，它会显示 HEAD 的移动记录。假如你误删了 `branch1` 这个 `branch`，那么你可以查看一下 HEAD 的移动历史。
+`reflog` 是 "reference log" 的缩写，使用它可以查看 Git 仓库中的引用的移动记录。如果不指定引用，它会显示 HEAD 的移动记录。假如你误删了 `branch1` 这个 branch，那么你可以查看一下 HEAD 的移动历史。
 
-HEAD 的最后一次移动行为是「从 `branch1` 移动到 `master`」。而在这之后，`branch1` 就被删除了。所以它之前的那个 `commit` 就是 `branch1` 被删除之前的位置了，也就是第二行的 `c08de9a`。
+HEAD 的最后一次移动行为是「从 `branch1` 移动到 master」。而在这之后，`branch1` 就被删除了。所以它之前的那个 `commit` 就是 `branch1` 被删除之前的位置了，也就是第二行的 `c08de9a`。
 
 所以现在就可以切换回 `c08de9a`，然后重新创建 `branch1` ：
 
@@ -374,17 +364,17 @@ git checkout -b branch1
 
 这样，你刚删除的 `branch1` 就找回来了。
 
-注意：不再被引用直接或间接指向的 `commit`s 会在一定时间后被 Git 回收，所以使用 `reflog` 来找回删除的 `branch` 的操作一定要及时，不然有可能会由于 `commit` 被回收而再也找不回来。
+注意：不再被引用直接或间接指向的 `commit`s 会在一定时间后被 Git 回收，所以使用 `reflog` 来找回删除的 branch 的操作一定要及时，不然有可能会由于 `commit` 被回收而再也找不回来。
 
 ## 查看其他引用的 reflog
 
-`reflog` 默认查看 HEAD 的移动历史，除此之外，也可以手动加上名称来查看其他引用的移动历史，例如某个 `branch`。
+`reflog` 默认查看 HEAD 的移动历史，除此之外，也可以手动加上名称来查看其他引用的移动历史，例如某个 branch。
 
 ```shell
 git reflog master
 ```
 
-# 21 额外说点：.gitignore——排除不想被管理的文件和目录
+# 21 排除不想被管理的文件和目录
 
 在 Git 中有一个特殊的文本文件：`.gitignore`。这个文本文件记录了所有你希望被 Git 忽略的目录和文件。
 
