@@ -16775,7 +16775,7 @@ const Counter = {
 
 为了解决这个问题，Vuex 提供了一系列 `mapXXX` 辅助函数帮助我们实现在组件中可以很方便的注入 `store` 的属性和方法。
 
-#### `mapState`
+#### mapState
 
 我们先来看一下 `mapState` 的用法：
 
@@ -16904,7 +16904,7 @@ function installModule (store, rootState, path, module, hot) {
 }
 ```
 
-#### `mapGetters`
+#### mapGetters
 
 我们先来看一下 `mapGetters` 的用法：
 
@@ -16951,7 +16951,7 @@ export const mapGetters = normalizeNamespace((namespace, getters) => {
 
 `mapGetters` 也同样支持 `namespace`，如果不写 `namespace` ，访问一个子 `module` 的属性需要写很长的 `key`，一旦我们使用了 `namespace`，就可以方便我们的书写，每个 `mappedGetter` 的实现实际上就是取 `this.$store.getters[val]`。
 
-#### `mapMutations`
+#### mapMutations
 
 我们可以在组件中使用 `this.$store.commit('xxx')` 提交 `mutation`，或者使用 `mapMutations` 辅助函数将组件中的 `methods` 映射为 `store.commit` 的调用。
 
@@ -17003,7 +17003,7 @@ export const mapMutations = normalizeNamespace((namespace, mutations) => {
 
 可以看到 `mappedMutation` 同样支持了 `namespace`，并且支持了传入额外的参数 `args`，作为提交 `mutation` 的 `payload`，最终就是执行了 `store.commit` 方法，并且这个 `commit` 会根据传入的 `namespace` 映射到对应 `module` 的 `commit` 上。
 
-#### `mapActions`
+#### mapActions
 
 我们可以在组件中使用 `this.$store.dispatch('xxx')` 提交 `action`，或者使用 `mapActions` 辅助函数将组件中的 `methods` 映射为 `store.dispatch` 的调用。
 
@@ -17127,7 +17127,7 @@ plugins.forEach(plugin => plugin(this))
 
 在我们实际项目中，我们用到的最多的就是 Vuex 内置的 `Logger` 插件，它能够帮我们追踪 `state` 变化，然后输出一些格式化日志。下面我们就来分析这个插件的实现。
 
-### `Logger` 插件
+### Logger 插件
 
 `Logger` 插件的定义在 `src/plugins/logger.js` 中：
 
