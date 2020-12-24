@@ -26025,9 +26025,23 @@ btn.addEventListener(
 通过 addEventListener()添加的事件处理程序只能使用 removeEventListener()并传入与添加时同样的参数来移除。这意味着使用 addEventListener()添加的匿名函数无法移除，如下面的例子所示：
 
 ```js
-let btn = document.getElementById("myBtn"); btn.addEventListener("click", () => { console.log(this.id); }, false);
+let btn = document.getElementById('myBtn');
+btn.addEventListener(
+  'click',
+  () => {
+    console.log(this.id);
+  },
+  false
+);
 //其他代码
-btn.removeEventListener("click", function() { //没有效果！ console.log(this.id); }, false);
+btn.removeEventListener(
+  'click',
+  function () {
+    //没有效果！
+    console.log(this.id);
+  },
+  false
+);
 ```
 
 这个例子通过 addEventListener()添加了一个匿名函数作为事件处理程序。然后，又以看起来相同的参数调用了 removeEventListener()。但实际上，第二个参数与传给 addEventListener()的完全不是一回事。传给 removeEventListener()的事件处理函数必须与传给 addEventListener()的是同一个，如下面的例子所示：
@@ -26081,12 +26095,16 @@ btn.attachEvent('onclick', function () {
 使用 attachEvent()添加的事件处理程序将使用 detachEvent()来移除，只要提供相同的参数。与使用 DOM 方法类似，作为事件处理程序添加的匿名函数也无法移除。但只要传给 detachEvent()方法相同的函数引用，就可以移除。下面的例子演示了附加和剥离事件：
 
 ```js
-var btn = document.getElementById("myBtn"); var handler = function() {
-console.log("Clicked"); }; btn.attachEvent("onclick", handler);
+var btn = document.getElementById('myBtn');
+var handler = function () {
+  console.log('Clicked');
+};
+btn.attachEvent('onclick', handler);
 //其他代码
-btn.detachEvent("onclick", handler);
-这里先把事件处理程序保存到变量 handler，之后又将其传给 detachEvent()来移除事件处理程序。
+btn.detachEvent('onclick', handler);
 ```
+
+这里先把事件处理程序保存到变量 handler，之后又将其传给 detachEvent()来移除事件处理程序。
 
 ### 17.2.5 跨浏览器事件处理程序
 
@@ -26705,8 +26723,8 @@ div.addEventListener('click', (event) => {
 与前面的例子类似，这段代码也为 `<div>`元素指定了 onclick 事件处理程序。当元素被点击时，会通过控制台打印出事件的屏幕坐标。
 
 4. 修饰键
-   虽然鼠标事件主要是通过鼠标触发的，但有时候要确定用户想实现的操作，还要考虑键盘按键的状态。键盘上的修饰键 Shift、Ctrl、Alt 和 Meta 经常用于修改鼠标事件的行为。DOM 规定了 4 个属性来表示这几个修饰键的状态： shiftKey、 ctrlKey、 altKey 和 metaKey。这几属性会在各自对
-   应的修饰键被按下时包含布尔值 true，没有被按下时包含 false。在鼠标事件发生的，可以通过这几个属性来检测修饰键是否被按下。来看下面的例子，其中在 click 事件发生时检测了每个修饰键的状态：
+
+虽然鼠标事件主要是通过鼠标触发的，但有时候要确定用户想实现的操作，还要考虑键盘按键的状态。键盘上的修饰键 Shift、Ctrl、Alt 和 Meta 经常用于修改鼠标事件的行为。DOM 规定了 4 个属性来表示这几个修饰键的状态： shiftKey、 ctrlKey、 altKey 和 metaKey。这几属性会在各自对应的修饰键被按下时包含布尔值 true，没有被按下时包含 false。在鼠标事件发生的，可以通过这几个属性来检测修饰键是否被按下。来看下面的例子，其中在 click 事件发生时检测了每个修饰键的状态：
 
 ```js
 let div = document.getElementById('myDiv');
@@ -26795,15 +26813,18 @@ document.addEventListener('mousewheel', (event) => {
 
 这个例子简单地显示了鼠标滚轮事件触发时 wheelDelta 的值。多数情况下只需知道滚轮滚动的方向，而这通过 wheelDelta 值的符号就可以知道。
 注意 HTML5 也增加了 mousewheel 事件，以反映大多数浏览器对它的支持。 9. 触摸屏设备 iOS 和 Android 等触摸屏设备的实现大相径庭，因为触摸屏通常不支持鼠标操作。在为触摸屏设备开发时，要记住以下事项。
-不支持 dblclick 事件。双击浏览器窗口可以放大，但没有办法覆盖这个行为。单指点触屏幕上的可点击元素会触发 mousemove 事件。如果操作会导致内容变化，则不会再触发其他事件。如果屏幕上没有变化，则会相继触发 mousedown、 mouseup 和 click 事
-件。点触不可点击的元素不会触发事件。可点击元素是指点击时有默认动作的元素（如链接）或指定了 onclick 事件处理程序的元素。 mousemove 事件也会触发 mouseover 和 mouseout 事件。双指点触屏幕并滑动导致页面滚动时会触发 mousewheel 和 scroll 事件。 10. 无障碍问题如果 Web 应用或网站必须考虑残障人士，特别是使用屏幕阅读器的用户，那么必须小心使用鼠标事件。如前所述，按回车键可以触发 click 事件，但其他鼠标事件不能通过键盘触发。因此，建议不要使用 click 事件之外的其他鼠标事件向用户提示功能或触发代码执行，这是因为其他鼠标事件会严格妨碍盲人或视障用户使用。以下是几条使用鼠标事件时应该遵循的无障碍建议。使用 click 事件执行代码。有人认为，当使用 onmousedown 执行代码时，应用程序会运行得更快。对视力正常用户来说确实如此。但在屏幕阅读器上，这样会导致代码无法执行，这是因为屏幕阅读器无法触发 mousedown 事件。不要使用 mouseover 向用户显示新选项。同样，原因是屏幕阅读器无法触发 mousedown 事件。如果必须要通过这种方式显示新选项，那么可以考虑显示相同信息的键盘快捷键。
+不支持 dblclick 事件。双击浏览器窗口可以放大，但没有办法覆盖这个行为。单指点触屏幕上的可点击元素会触发 mousemove 事件。如果操作会导致内容变化，则不会再触发其他事件。如果屏幕上没有变化，则会相继触发 mousedown、 mouseup 和 click 事件。点触不可点击的元素不会触发事件。可点击元素是指点击时有默认动作的元素（如链接）或指定了 onclick 事件处理程序的元素。 mousemove 事件也会触发 mouseover 和 mouseout 事件。双指点触屏幕并滑动导致页面滚动时会触发 mousewheel 和 scroll 事件。 10. 无障碍问题如果 Web 应用或网站必须考虑残障人士，特别是使用屏幕阅读器的用户，那么必须小心使用鼠标事件。如前所述，按回车键可以触发 click 事件，但其他鼠标事件不能通过键盘触发。因此，建议不要使用 click 事件之外的其他鼠标事件向用户提示功能或触发代码执行，这是因为其他鼠标事件会严格妨碍盲人或视障用户使用。以下是几条使用鼠标事件时应该遵循的无障碍建议。使用 click 事件执行代码。有人认为，当使用 onmousedown 执行代码时，应用程序会运行得更快。对视力正常用户来说确实如此。但在屏幕阅读器上，这样会导致代码无法执行，这是因为屏幕阅读器无法触发 mousedown 事件。不要使用 mouseover 向用户显示新选项。同样，原因是屏幕阅读器无法触发 mousedown 事件。如果必须要通过这种方式显示新选项，那么可以考虑显示相同信息的键盘快捷键。
 不要使用 dblclick 执行重要的操作，这是因为键盘不能触发这个事件。遵循这些简单的建议可以极大提升 Web 应用或网站对残障人士的无障碍性。
 注意要了解更多关于网站无障碍的信息，可以参考 WebAIM 网站。
 
 ### 17.4.4 键盘与输入事件
 
 键盘事件是用户操作键盘时触发的。 DOM2 Events 最初定义了键盘事件，但该规范在最终发布前删除了相应内容。因此，键盘事件很大程度上是基于原始的 DOM0 实现的。 DOM3 Events 为键盘事件提供了一个首先在 IE9 中完全实现的规范。其他浏览器也开始实现该规范，但仍然存在很多遗留的实现。键盘事件包含 3 个事件：
-keydown，用户按下键盘上某个键时触发，而且持续按住会重复触发。 keypress，用户按下键盘上某个键并产生字符时触发，而且持续按住会重复触发。Esc 键也会触发这个事件。DOM3 Events 废弃了 keypress 事件，而推荐 textInput 事件。 keyup，用户释放键盘上某个键时触发。
+
+- keydown，用户按下键盘上某个键时触发，而且持续按住会重复触发。
+- keypress，用户按下键盘上某个键并产生字符时触发，而且持续按住会重复触发。Esc 键也会触发这个事件。DOM3 Events 废弃了 keypress 事件，而推荐 textInput 事件。
+- keyup，用户释放键盘上某个键时触发。
+
 虽然所有元素都支持这些事件，但当用户在文本框中输入内容时最容易看到。输入事件只有一个，即 textInput。这个事件是对 keypress 事件的扩展，用于在文本显示给用户之前更方便地截获文本输入。 textInput 会在文本被插入到文本框之前触发。当用户按下键盘上的某个字符键时，首先会触发 keydown 事件，然后触发 keypress 事件，最后触发 keyup 事件。注意，这里 keydown 和 keypress 事件会在文本框出现变化之前触发，而 keyup 事件会在文本框出现变化之后触发。如果一个字符键被按住不放， keydown 和 keypress 就会重复触发，直到这个键被释放。对于非字符键，在键盘上按一下这个键，会先触发 keydown 事件，然后触发 keyup 事件。如果按住某个非字符键不放，则会重复触发 keydown 事件，直到这个键被释放，此时会触发 keyup 事件。
 注意键盘事件支持与鼠标事件相同的修饰键。 shiftKey、 ctrlKey、 altKey 和 metaKey 属性在键盘事件中都是可用的。IE8 及更早版本不支持 metaKey 属性。
 
@@ -26861,8 +26882,7 @@ textbox.addEventListener('keypress', (event) => {
 });
 ```
 
-一旦有了字母编码，就可以使用 String.fromCharCode()方法将其转换为实际的字符了。 3. DOM3 的变化尽管所有浏览器都实现了某种形式的键盘事件，DOM3 Events 还是做了一些修改。比如，DOM3 Events 规范并未规定 charCode 属性，而是定义了 key 和 char 两个新属性。其中， key 属性用于替代 keyCode，且包含字符串。在按下字符键时， key 的值等于文本字符（如“k”或“M”）；在按下非字符键时， key 的值是键名（如“Shift”或“ArrowDown”）。 char 属性在按下字符键时与 key 类似，在按下非字符键时为 null。 IE 支持 key 属性但不支持 char 属性。Safari 和 Chrome 支持 keyIdentifier 属性，在按下非字符键时返回与 key 一样的值（如“Shift”）。对于字符键， keyIdentifier 返回以“U+0000”形式表
-示 Unicode 值的字符串形式的字符编码。
+一旦有了字母编码，就可以使用 String.fromCharCode()方法将其转换为实际的字符了。 3. DOM3 的变化尽管所有浏览器都实现了某种形式的键盘事件，DOM3 Events 还是做了一些修改。比如，DOM3 Events 规范并未规定 charCode 属性，而是定义了 key 和 char 两个新属性。其中， key 属性用于替代 keyCode，且包含字符串。在按下字符键时， key 的值等于文本字符（如“k”或“M”）；在按下非字符键时， key 的值是键名（如“Shift”或“ArrowDown”）。 char 属性在按下字符键时与 key 类似，在按下非字符键时为 null。 IE 支持 key 属性但不支持 char 属性。Safari 和 Chrome 支持 keyIdentifier 属性，在按下非字符键时返回与 key 一样的值（如“Shift”）。对于字符键， keyIdentifier 返回以“U+0000”形式表示 Unicode 值的字符串形式的字符编码。
 
 ```js
 let textbox = document.getElementById('myText');
@@ -26887,8 +26907,7 @@ textbox.addEventListener('keypress', (event) => {
 });
 ```
 
-与 key 属性类似， location 属性也没有得到广泛支持，因此不建议在跨浏览器开发时使用。最后一个变化是给 event 对象增加了 getModifierState()方法。这个方法接收一个参数，一个等于 Shift、 Control、 Alt、 AltGraph 或 Meta 的字符串，表示要检测的修饰键。如
-果给定的修饰键处于激活状态（键被按住），则方法返回 true，否则返回 false：
+与 key 属性类似， location 属性也没有得到广泛支持，因此不建议在跨浏览器开发时使用。最后一个变化是给 event 对象增加了 getModifierState()方法。这个方法接收一个参数，一个等于 Shift、 Control、 Alt、 AltGraph 或 Meta 的字符串，表示要检测的修饰键。如果给定的修饰键处于激活状态（键被按住），则方法返回 true，否则返回 false：
 
 ```js
 let textbox = document.getElementById('myText');
@@ -26909,8 +26928,7 @@ textbox.addEventListener('textInput', (event) => {
 });
 ```
 
-这个例子会实时把输入文本框的文本通过日志打印出来。 event 对象上还有一个名为 inputMethod 的属性，该属性表示向控件中输入文本的手段。可能的值如下： 0，表示浏览器不能确定是什么输入手段； 1，表示键盘； 2，表示粘贴； 3，表示拖放操作； 4，表示 IME； 5，表示表单选项； 6，表示手写（如使用手写笔）；
-7，表示语音； 8，表示组合方式； 9，表示脚本。
+这个例子会实时把输入文本框的文本通过日志打印出来。 event 对象上还有一个名为 inputMethod 的属性，该属性表示向控件中输入文本的手段。可能的值如下： 0，表示浏览器不能确定是什么输入手段； 1，表示键盘； 2，表示粘贴； 3，表示拖放操作； 4，表示 IME； 5，表示表单选项； 6，表示手写（如使用手写笔）；7，表示语音； 8，表示组合方式； 9，表示脚本。
 使用这些属性，可以确定用户是如何将文本输入到控件中的，从而可以辅助验证。
 
 5. 设备上的键盘事件
@@ -26920,7 +26938,11 @@ textbox.addEventListener('textInput', (event) => {
 ### 17.4.5 合成事件
 
 合成事件是 DOM3 Events 中新增的，用于处理通常使用 IME 输入时的复杂输入序列。IME 可以让用户输入物理键盘上没有的字符。例如，使用拉丁字母键盘的用户还可以使用 IME 输入日文。IME 通常需要同时按下多个键才能输入一个字符。合成事件用于检测和控制这种输入。合成事件有以下 3 种：
-compositionstart，在 IME 的文本合成系统打开时触发，表示输入即将开始； compositionupdate，在新字符插入输入字段时触发； compositionend，在 IME 的文本合成系统关闭时触发，表示恢复正常键盘输入。
+
+- compositionstart，在 IME 的文本合成系统打开时触发，表示输入即将开始；
+- compositionupdate，在新字符插入输入字段时触发；
+- compositionend，在 IME 的文本合成系统关闭时触发，表示恢复正常键盘输入。
+
 合成事件在很多方面与输入事件很类似。在合成事件触发时，事件目标是接收文本的输入字段。唯一增加的事件属性是 data，其中包含的值视情况而异：
 在 compositionstart 事件中，包含正在编辑的文本（例如，已经选择了文本但还没替换）；在 compositionupdate 事件中，包含要插入的新字符；在 compositionend 事件中，包含本次合成过程中输入的全部内容。
 与文本事件类似，合成事件可以用来在必要时过滤输入内容。可以像下面这样使用合成事件：
@@ -26995,7 +27017,9 @@ window.addEventListener('load', (event) => {
 ```
 
 这里在 `<div>`元素上指定了一个 oncontextmenu 事件处理程序。这个事件处理程序首先取消默认行，确保不会显示浏览器默认的上下文菜单。接着基于 event 对象的 clientX 和 clientY 属性把 `<ul>`元素放到适当位置。最后一步通过将 visibility 属性设置为 "visible"让自定义上下文菜单显示出来。另外，又给 document 添加了一个 onclick 事件处理程序，以便在单击事件发生时隐藏上下文菜单（系统上下文菜单就是这样隐藏的）。
-虽然这个例子很简单，但它是网页中所有自定义上下文菜单的基础。在这个简单例子的基础上，再添加一些 CSS，上下文菜单就会更漂亮。 2. beforeunload 事件 beforeunload 事件会在 window 上触发，用意是给开发者提供阻止页面被卸载的机会。这个事件会在页面即将从浏览器中卸载时触发，如果页面需要继续使用，则可以不被卸载。这个事件不能取消，否则就意味着可以把用户永久阻拦在一个页面上。相反，这个事件会向用户显示一个确认框，其 中的消息表明浏览器即将卸载页面，并请用户确认是希望关闭页面，还是继续留在页面上（见图 17-8）。图 17-8 为了显示类似图 17-8 的确认框，需要将 event.returnValue 设置为要在确认框中显示的字符串 （对于 IE 和 Firefox 来说），并将其作为函数值返回（对于 Safari 和 Chrome 来说），如下所示：
+虽然这个例子很简单，但它是网页中所有自定义上下文菜单的基础。在这个简单例子的基础上，再添加一些 CSS，上下文菜单就会更漂亮。 2. beforeunload 事件
+
+beforeunload 事件会在 window 上触发，用意是给开发者提供阻止页面被卸载的机会。这个事件会在页面即将从浏览器中卸载时触发，如果页面需要继续使用，则可以不被卸载。这个事件不能取消，否则就意味着可以把用户永久阻拦在一个页面上。相反，这个事件会向用户显示一个确认框，其 中的消息表明浏览器即将卸载页面，并请用户确认是希望关闭页面，还是继续留在页面上（见图 17-8）。图 17-8 为了显示类似图 17-8 的确认框，需要将 event.returnValue 设置为要在确认框中显示的字符串 （对于 IE 和 Firefox 来说），并将其作为函数值返回（对于 Safari 和 Chrome 来说），如下所示：
 
 ```js
 window.addEventListener('beforeunload', (event) => {
@@ -27052,9 +27076,7 @@ document.addEventListener('readystatechange', (event) => {
 ```
 
 当 readystatechange 事件触发时，这段代码会检测 document.readyState 属性，以确定当前是不是交互或完成状态。如果是，则移除事件处理程序，以保证其他阶段不再执行。注意，因为这里的事件处理程序是匿名函数，所以使用了 arguments.callee 作为函数指针。然后，又打印出一条表示内容已加载的消息。这样的逻辑可以保证尽可能接近使用 DOMContentLoaded 事件的效果。
-注意使用 readystatechange 只能尽量模拟 DOMContentLoaded，但做不到分毫不差。 load 事件和 readystatechange 事件发生的顺序在不同页面中是不一样的。 5. pageshow 与 pagehide 事件 Firefox 和 Opera 开发了一个名为往返缓存（ bfcache，back-forward cache）的功能，此功能旨在使用浏览器“前进”和“后退”按钮时加快页面之间的切换。这个缓存不仅存储页面数据，也存储 DOM 和 JavaScript 状态，实际上是把整个页面都保存在内存里。如果页面在缓存中，那么导航到这个页面时
-就不会触发 load 事件。通常，这不会导致什么问题，因为整个页面状态都被保存起来了。不过， Firefx 决定提供一些事件，把往返缓存的行为暴露出来。第一个事件是 pageshow，其会在页面显示时触发，无论是否来自往返缓存。在新加载的页面上，
-pageshow 会在 load 事件之后触发；在来自往返缓存的页面上， pageshow 会在页面状态完全恢复后触发。注意，虽然这个事件的目标是 document，但事件处理程序必须添加到 window 上。下面的例子展示了追踪这些事件的代码：
+注意使用 readystatechange 只能尽量模拟 DOMContentLoaded，但做不到分毫不差。 load 事件和 readystatechange 事件发生的顺序在不同页面中是不一样的。 5. pageshow 与 pagehide 事件 Firefox 和 Opera 开发了一个名为往返缓存（ bfcache，back-forward cache）的功能，此功能旨在使用浏览器“前进”和“后退”按钮时加快页面之间的切换。这个缓存不仅存储页面数据，也存储 DOM 和 JavaScript 状态，实际上是把整个页面都保存在内存里。如果页面在缓存中，那么导航到这个页面时就不会触发 load 事件。通常，这不会导致什么问题，因为整个页面状态都被保存起来了。不过， Firefx 决定提供一些事件，把往返缓存的行为暴露出来。第一个事件是 pageshow，其会在页面显示时触发，无论是否来自往返缓存。在新加载的页面上，pageshow 会在 load 事件之后触发；在来自往返缓存的页面上， pageshow 会在页面状态完全恢复后触发。注意，虽然这个事件的目标是 document，但事件处理程序必须添加到 window 上。下面的例子展示了追踪这些事件的代码：
 
 ```js
 (function () {
@@ -27117,8 +27139,10 @@ window.addEventListener('hashchange', (event) => {
 
 随着智能手机和平板计算机的出现，用户与浏览器交互的新方式应运而生。为此，一批新事件被发明了出来。设备事件可以用于确定用户使用设备的方式。 W3C 在 2011 年就开始起草一份新规范，用于定义新设备及设备相关的事件。
 
-1. orientationchange 事件苹果公司在移动 Safari 浏览器上创造了 orientationchange 事件，以方便开发者判断用户的设备是处于垂直模式还是水平模式。移动 Safari 在 window 上暴露了 window.orientation 属性，它有以下 3 种值之一：0 表示垂直模式，90 表示左转水平模式（主屏幕键在右侧），–90 表示右转水平模式（主屏幕键在左）。虽然相关文档也提及设备倒置后的值为 180，但设备本身至今还不支持。图 17-9 展示了 window.orientation 属性的各种值。图 17-9
-   每当用户旋转设备改变了模式，就会触发 orientationchange 事件。但 event 对象上没有暴露任何有用的信息，这是因为相关信息都可以从 window.orientation 属性中获取。以下是这个事件典型的用法：
+1. orientationchange 事件
+
+苹果公司在移动 Safari 浏览器上创造了 orientationchange 事件，以方便开发者判断用户的设备是处于垂直模式还是水平模式。移动 Safari 在 window 上暴露了 window.orientation 属性，它有以下 3 种值之一：0 表示垂直模式，90 表示左转水平模式（主屏幕键在右侧），–90 表示右转水平模式（主屏幕键在左）。虽然相关文档也提及设备倒置后的值为 180，但设备本身至今还不支持。图 17-9 展示了 window.orientation 属性的各种值。图 17-9
+每当用户旋转设备改变了模式，就会触发 orientationchange 事件。但 event 对象上没有暴露任何有用的信息，这是因为相关信息都可以从 window.orientation 属性中获取。以下是这个事件典型的用法：
 
 ```js
 window.addEventListener('load', (event) => {
@@ -27180,8 +27204,7 @@ Safari 为 iOS 定制了一些专有事件，以方便开发者。因为 iOS 设
 1. 触摸事件
 
 iPhone 3G 发布时，iOS 2.0 内置了新版本的 Safari。这个新的移动 Safari 支持一些与触摸交互有关的新事件。后来的 Android 浏览器也实现了同样的事件。当手指放在屏幕上、在屏幕上滑动或从屏幕移开时，触摸事件即会触发。触摸事件有如下几种。 touchstart：手指放到屏幕上时触发（即使有一个手指已经放在了屏幕上）。 touchmove：手指在屏幕上滑动时连续触发。在这个事件中调用 preventDefault ()可以阻止滚动。 touchend：手指从屏幕上移开时触发。 touchcancel：系统停止跟踪触摸时触发。文档中并未明确什么情况下停止跟踪。
-这些事件都会冒泡，也都可以被取消。尽管触摸事件不属于 DOM 规范，但浏览器仍然以兼容 DOM 的
-方式实现了它们。因此，每个触摸事件的 event 对象都提供了鼠标事件的公共属性： bubbles、 cancelable、 view、 clientX、 clientY、 screenX、 screenY、 detail、 altKey、 shiftKey、 ctrlKey 和 metaKey。
+这些事件都会冒泡，也都可以被取消。尽管触摸事件不属于 DOM 规范，但浏览器仍然以兼容 DOM 的方式实现了它们。因此，每个触摸事件的 event 对象都提供了鼠标事件的公共属性： bubbles、 cancelable、 view、 clientX、 clientY、 screenX、 screenY、 detail、 altKey、 shiftKey、 ctrlKey 和 metaKey。
 
 除了这些公共的 DOM 属性，触摸事件还提供了以下 3 个属性用于跟踪触点。 touches： Touch 对象的数组，表示当前屏幕上的每个触点。 targetTouches： Touch 对象的数组，表示特定于事件目标的触点。
 changedTouches： Touch 对象的数组，表示自上次用户动作之后变化的触点。每个 Touch 对象都包含下列属性。 clientX：触点在视口中的 x 坐标。 clientY：触点在视口中的 y 坐标。 identifier：触点 ID。
@@ -27224,8 +27247,7 @@ document.addEventListener('touchmove', handleTouchEvent);
 2. 手势事件 iOS 2.0 中的 Safari 还增加了一种手势事件。手势事件会在两个手指触碰屏幕且相对距离或旋转角度变 化时触发。手势事件有以下 3 种。 gesturestart：一个手指已经放在屏幕上，再把另一个手指放到屏幕上时触发。 gesturechange：任何一个手指在屏幕上的位置发生变化时触发。 gestureend：其中一个手指离开屏幕时触发。
 
 只有在两个手指同时接触事件接收者时，这些事件才会触发。在一个元素上设置事件处理程序，意味着两个手指必须都在元素边界以内才能触发手势事件（这个元素就是事件目标）。因为这些事件会冒泡，所以也可以把事件处理程序放到文档级别，从而可以处理所有手势事件。使用这种方式时，事件的目标就是两个手指均位于其边界内的元素。
-触摸事件和手势事件存在一定的关系。当一个手指放在屏幕上时，会触发 touchstart 事件。当另一个手指放到屏幕上时， gesturestart 事件会首先触发，然后紧接着触发这个手指的 touchstart 事件。如果两个手指或其中一个手指移动，则会触发 gesturechange 事件。只要其中一个手指离开屏幕，就会触发 gestureend 事件，紧接着触发该手指的 touchend 事件。与触摸事件类似，每个手势事件的 event 对象都包含所有标准的鼠标事件属性： bubbles、 cancelable、 view、 clientX、 clientY、 screenX、 screenY、 detail、
-altKey、 shiftKey、 ctrlKey 和 metaKey。新增的两个 event 对象属性是 rotation 和 scale。 rotation 属性表示手指变化旋转的度数，负值表示逆时针旋转，正值表示顺时针旋转（从 0 开始）。 scale 属性表示两指之间距离变化（对捏）的程度。开始时为 1，然后随着距离增大或缩小相应地增大或缩小。
+触摸事件和手势事件存在一定的关系。当一个手指放在屏幕上时，会触发 touchstart 事件。当另一个手指放到屏幕上时， gesturestart 事件会首先触发，然后紧接着触发这个手指的 touchstart 事件。如果两个手指或其中一个手指移动，则会触发 gesturechange 事件。只要其中一个手指离开屏幕，就会触发 gestureend 事件，紧接着触发该手指的 touchend 事件。与触摸事件类似，每个手势事件的 event 对象都包含所有标准的鼠标事件属性： bubbles、 cancelable、 view、 clientX、 clientY、 screenX、 screenY、 detail、altKey、 shiftKey、 ctrlKey 和 metaKey。新增的两个 event 对象属性是 rotation 和 scale。 rotation 属性表示手指变化旋转的度数，负值表示逆时针旋转，正值表示顺时针旋转（从 0 开始）。 scale 属性表示两指之间距离变化（对捏）的程度。开始时为 1，然后随着距离增大或缩小相应地增大或缩小。
 可以像下面这样使用手势事件的属性：
 
 ```js
@@ -27486,14 +27508,18 @@ document 对象随时可用，任何时候都可以给它添加事件处理程�
 ### 17.6.1 DOM 事件模拟
 
 任何时候，都可以使用 document.createEvent()方法创建一个 event 对象。这个方法接收一个参数，此参数是一个表示要创建事件类型的字符串。在 DOM2 中，所有这些字符串都是英文复数形式，但在 DOM3 中，又把它们改成了英文单数形式。可用的字符串值是以下值之一。
-"UIEvents"（DOM3 中是 "UIEvent"）：通用用户界面事件（鼠标事件和键盘事件都继承自这 个事件）。
-"MouseEvents"（DOM3 中是 "MouseEvent"）：通用鼠标事件。
-"HTMLEvents"（DOM3 中没有）：通用 HTML 事件（HTML 事件已经分散到了其他事件大类 中）。
+
+- "UIEvents"（DOM3 中是 "UIEvent"）：通用用户界面事件（鼠标事件和键盘事件都继承自这 个事件）。
+- "MouseEvents"（DOM3 中是 "MouseEvent"）：通用鼠标事件。
+- "HTMLEvents"（DOM3 中没有）：通用 HTML 事件（HTML 事件已经分散到了其他事件大类 中）。
+
 注意，键盘事件不是在 DOM2 Events 中规定的，而是后来在 DOM3 Events 中增加的。
 创建 event 对象之后，需要使用事件相关的信息来初始化。每种类型的 event 对象都有特定的方法，可以使用相应数据来完成初始化。方法的名字并不相同，这取决于调用 createEvent()时传入的参数。
 事件模拟的最后一步是触发事件。为此要使用 dispatchEvent()方法，这个方法存在于所有支持事件的 DOM 节点之上。 dispatchEvent()方法接收一个参数，即表示要触发事件的 event 对象。调用 dispatchEvent()方法之后，事件就“转正”了，接着便冒泡并触发事件处理程序执行。
 
-1. 模拟鼠标事件模拟鼠标事件需要先创建一个新的鼠标 event 对象，然后再使用必要的信息对其进行初始化。要创建鼠标 event 对象，可以调用 createEvent()方法并传入 "MouseEvents"参数。这样就会返回一个 event 对象，这个对象有一个 initMouseEvent()方法，用于为新对象指定鼠标的特定信息。 initMouseEvent()方法接收 15 个参数，分别对应鼠标事件会暴露的属性。这些参数列举 如下。type（字符串）：要触发的事件类型，如 "click"。 bubbles（布尔值）：表示事件是否冒泡。为精确模拟鼠标事件，应该设置为 true。 cancelable（布尔值）：表示事件是否可以取消。为精确模拟鼠标事件，应该设置为 true。 view（AbstractView）：与事件关联的视图。基本上始终是 document.defaultView。 detail（整数）：关于事件的额外信息。只被事件处理程序使用，通常为 0。 screenX（整数）：事件相对于屏幕的 x 坐标。 screenY（整数）：事件相对于屏幕的 y 坐标。 clientX（整数）：事件相对于视口的 x 坐标。 clientY（整数）：事件相对于视口的 y 坐标。 ctrlkey（布尔值）：表示是否按下了 Ctrl 键。默认为 false。 altkey（布尔值）：表示是否按下了 Alt 键。默认为 false。 shiftkey（布尔值）：表示是否按下了 Shift 键。默认为 false。 metakey（布尔值）：表示是否按下了 Meta 键。默认为 false。 button（整数）：表示按下了哪个按钮。默认为 0。 relatedTarget（对象）：与事件相关的对象。只在模拟 mouseover 和 mouseout 时使用。
+1. 模拟鼠标事件
+
+模拟鼠标事件需要先创建一个新的鼠标 event 对象，然后再使用必要的信息对其进行初始化。要创建鼠标 event 对象，可以调用 createEvent()方法并传入 "MouseEvents"参数。这样就会返回一个 event 对象，这个对象有一个 initMouseEvent()方法，用于为新对象指定鼠标的特定信息。 initMouseEvent()方法接收 15 个参数，分别对应鼠标事件会暴露的属性。这些参数列举 如下。type（字符串）：要触发的事件类型，如 "click"。 bubbles（布尔值）：表示事件是否冒泡。为精确模拟鼠标事件，应该设置为 true。 cancelable（布尔值）：表示事件是否可以取消。为精确模拟鼠标事件，应该设置为 true。 view（AbstractView）：与事件关联的视图。基本上始终是 document.defaultView。 detail（整数）：关于事件的额外信息。只被事件处理程序使用，通常为 0。 screenX（整数）：事件相对于屏幕的 x 坐标。 screenY（整数）：事件相对于屏幕的 y 坐标。 clientX（整数）：事件相对于视口的 x 坐标。 clientY（整数）：事件相对于视口的 y 坐标。 ctrlkey（布尔值）：表示是否按下了 Ctrl 键。默认为 false。 altkey（布尔值）：表示是否按下了 Alt 键。默认为 false。 shiftkey（布尔值）：表示是否按下了 Shift 键。默认为 false。 metakey（布尔值）：表示是否按下了 Meta 键。默认为 false。 button（整数）：表示按下了哪个按钮。默认为 0。 relatedTarget（对象）：与事件相关的对象。只在模拟 mouseover 和 mouseout 时使用。
 
 显然， initMouseEvent()方法的这些参数与鼠标事件的 event 对象属性是一一对应的。前 4 个参数是正确模拟事件唯一重要的几个参数，这是因为它们是浏览器要用的，其他参数则是事件处理程序要用的。 event 对象的 target 属性会自动设置为调用 dispatchEvent()方法时传入的节点。下面来看一个使用默认值模拟单击事件的例子：
 
@@ -27523,8 +27549,11 @@ event.initMouseEvent(
 btn.dispatchEvent(event);
 ```
 
-所有鼠标事件，包括 dblclick 都可以像这样在 DOM 合规的浏览器中模拟出来。 2. 模拟键盘事件如前所述，DOM2 Events 中没有定义键盘事件，因此模拟键盘事件并不直观。键盘事件曾在 DOM2
-Events 的草案中提到过，但最终成为推荐标准前又被删掉了。要注意的是，DOM3 Events 中定义的键盘事件与 DOM2 Events 草案最初定义的键盘事件差别很大。在 DOM3 中创建键盘事件的方式是给 createEvent()方法传入参数 "KeyboardEvent"。这样会返回一个 event 对象，这个对象有一个 initKeyboardEvent()方法。这个方法接收以下参数。 type（字符串）：要触发的事件类型，如 "keydown"。 bubbles（布尔值）：表示事件是否冒泡。为精确模拟键盘事件，应该设置为 true。 cancelable（布尔值）：表示事件是否可以取消。为精确模拟键盘事件，应该设置为 true。 view（AbstractView）：与事件关联的视图。基本上始终是 document.defaultView。 key（字符串）：按下按键的字符串代码。 location（整数）：按下按键的位置。0 表示默认键，1 表示左边，2 表示右边，3 表示数字键盘，4 表示移动设备（虚拟键盘），5 表示游戏手柄。 modifiers（字符串）：空格分隔的修饰键列表，如 "Shift"。 repeat（整数）：连续按了这个键多少次。
+所有鼠标事件，包括 dblclick 都可以像这样在 DOM 合规的浏览器中模拟出来。
+
+2. 模拟键盘事件
+
+如前所述，DOM2 Events 中没有定义键盘事件，因此模拟键盘事件并不直观。键盘事件曾在 DOM2 Events 的草案中提到过，但最终成为推荐标准前又被删掉了。要注意的是，DOM3 Events 中定义的键盘事件与 DOM2 Events 草案最初定义的键盘事件差别很大。在 DOM3 中创建键盘事件的方式是给 createEvent()方法传入参数 "KeyboardEvent"。这样会返回一个 event 对象，这个对象有一个 initKeyboardEvent()方法。这个方法接收以下参数。 type（字符串）：要触发的事件类型，如 "keydown"。 bubbles（布尔值）：表示事件是否冒泡。为精确模拟键盘事件，应该设置为 true。 cancelable（布尔值）：表示事件是否可以取消。为精确模拟键盘事件，应该设置为 true。 view（AbstractView）：与事件关联的视图。基本上始终是 document.defaultView。 key（字符串）：按下按键的字符串代码。 location（整数）：按下按键的位置。0 表示默认键，1 表示左边，2 表示右边，3 表示数字键盘，4 表示移动设备（虚拟键盘），5 表示游戏手柄。 modifiers（字符串）：空格分隔的修饰键列表，如 "Shift"。 repeat（整数）：连续按了这个键多少次。
 注意，DOM3 Events 废弃了 keypress 事件，因此只能通过上述方式模拟 keydown 和 keyup 事件：
 
 ```js
