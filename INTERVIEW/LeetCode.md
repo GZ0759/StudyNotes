@@ -197,6 +197,43 @@ var lengthOfLongestSubstring = function (s) {
 输出: "bb"
 ```
 
+## 解决 - 对称查找
+
+```js
+const longestPalindrome = (s) => {
+  let max = '';
+  let length = s.length;
+  if (length < 2) {
+    return s;
+  }
+  for (let i = 0; i <= length; i++) {
+    let newMax = core(s, i);
+    max = newMax.length > max.length ? newMax : max;
+  }
+  return max;
+};
+
+const core = (str, index) => {
+  // 递归遍历
+  const loop = (prev, next) => {
+    if (!str[prev] || !str[next]) {
+      return str.slice(prev + 1, next);
+    }
+    if (str.charAt(prev) === str.charAt(next)) {
+      return loop(prev - 1, next + 1);
+    } else {
+      return str.slice(prev + 1, next);
+    }
+  }
+  // 一核对称
+  let maxOne = loop(index - 1, index + 1);
+  // 双核对称
+  let maxTwo = loop(index, index + 1);
+  // 返回结果
+  return maxOne.length > maxTwo.length ? maxOne : maxTwo;
+}
+```
+
 # 007 - 整数反转（reverse-integer）
 
 * 难度：简单
