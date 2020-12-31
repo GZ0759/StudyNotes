@@ -45,7 +45,7 @@
 
 # 第 1 章 JavaScript 不只是简单的构建块
 
-## 1.1 JavaScript 对象、基本类型和字面值之间的区别
+## 1.1 对象、基本类型和字面值之间的区别
 
 People toss around terms like object, primitive, and literal. What is the difference between the three, and how can you tell which is which?
 
@@ -375,13 +375,9 @@ JavaScript 中没有数组类型。相反，通过 JavaScript 的 Array 对象�
 
 ## 2.1 在数组中搜索
 
-### 问题
-
 想要在数组中搜索一个特定值，如果找到的话，获取该数组元素的索引。
 
 You want to search an array for a specific value and get the array element index if found.
-
-### 解决方案
 
 使用 ES5 Array 对象方法 `indexOf()` 和 `lastIndexOf()`
 
@@ -389,8 +385,6 @@ You want to search an array for a specific value and get the array element index
 var animals = new Array("dog", "cat", "seal", "elephant", "walrus", "lion");
 console.log(animals.indexOf("elephant")); // prints 3
 ```
-
-### 讨论
 
 使用数组方法`indexOf()`和`lastIndexOf()`，两个方法都接受一个搜索值，再将数组中的每个元素比较，如果找到则返回表示该数组元素的一个索引，没有找到则返回-1，前者返回找到的第一个元素，后者返回找到的最后一个元素。两个方法都接受一个开始索引，表示在哪里开始搜索。
 
@@ -403,7 +397,7 @@ console.log(animals.indexOf("cat", 2)); // prints 5
 console.log(animals.lastIndexOf("cat", 4)); // prints 1
 ```
 
-还可以使用 ES6 的`findIndex()`方法，测试每个数组值并且当测试成功的时候返回数组元素的索引。
+还可以使用 ES6 的`findIndex()` 方法，测试每个数组值并且当测试成功的时候返回数组元素的索引。
 
 ```js
 var nums = [2, 4, 19, 15, 183, 6, 7, 1, 1];
@@ -418,15 +412,11 @@ console.log(nums[over]);
 
 这两个方法都接受一个回调函数，以及另一个可选的参数，它在函数中的作用就像 this。该回调函数有 3 个参数，数组元素、索引和数组自身。但是，只有一个参数是必需的。这些方法都不修改原始的数组。
 
-## 2.2 用 concat()和 apply()将一个二维数组扁平化
-
-### 问题
+## 2.2 用concat()和apply()将一个二维数组扁平化
 
 想要将一个两维数组扁平化为一个单维数组。
 
 You want to flatten a two-dimensional array.
-
-### 解决方案
 
 使用 Array 对象`concat()`方法，把多维数组合并为一个单维数组。
 
@@ -440,8 +430,6 @@ fruitarray[3] = ["raspberry", "kiwi"];
 var newArray = fruitarray.concat.apply([], fruitarray);
 console.log(newArray[5]); // tangerine
 ```
-
-### 讨论
 
 Array 对象 `concat()`方法接受一个或多个数组，并且将数组元素附加到用来调用该方法的父数组的内容的末尾。合并的数组作为一个新的数组返回。这种功能的用途之一是，返回由一个多维数组中的元素所组成的一个单维数组。
 
@@ -461,8 +449,6 @@ var newArray = fruitarray[0].concat(
 
 You want to find occurrences of a given value in an array, and either remove the element or replace with another value.
 
-### 解决方案
-
 使用 Array 的`indexOf()`和`splice()`方法，找到并删除/替换数组元素。
 
 ```javascript
@@ -474,8 +460,6 @@ animals.splice(animals.lastIndexOf("cat"), 1, "monkey");
 // dog,cat,seal,lion,monkey
 console.log(animals.toString());
 ```
-
-### 讨论
 
 `splice()`方法可接受 3 个参数，第一个参数是进行拼接处的索引（必须），第二个参数是删除元素的数目（可选），第三个参数是一组替换元素（可选）。如果索引是负数，那么将从数组末尾开始拼接该元素，而不是从数组开头进行。
 
@@ -521,13 +505,9 @@ console.log(charSets); // ["bb", "cd", "cc", "dd"]
 
 ## 2.4 提取一个数组的一部分
 
-### 问题
-
 想要从一个数组提取一部分，但是保持最初的数组的完整性。
 
 You want to extract out a portion of an array but keep the original array intact.
-
-### 解决方案
 
 使用 Array 对象的`slice()`方法，来提取一个已有数组的一部分的一个浅拷贝。
 
@@ -545,8 +525,6 @@ var animals = [
 var domestic = animals.slice(4, 7);
 console.log(domestic); // ['cat','dog','rabbit'];
 ```
-
-### 解决方案
 
 `slice()`方法复制一个已有的数组的一部分，返回一个新的数组。它执行浅拷贝，这意味着，如果数组元素时对象，两个数组都指向相同的对象。对新数组中的对象进行修改，会在旧的数组的相同的对象中反应出来。
 
@@ -566,13 +544,9 @@ console.log(mArray[1]); // ['raspberry','lemon']
 
 ## 2.5 对每个数组元素应用一个函数
 
-### 问题
-
 想要使用一个函数来检查一个数组值，如果满足给定的条件，就替换它。
 
 You want to use a function to check an array value, and replace it if it matches a given criterion.
-
-### 解决方案
 
 使用 Array 的`forEach()`方法，来针对每个数组元素应用一个回调函数。
 
@@ -586,17 +560,13 @@ charSets.forEach(replaceElement);
 console.log(charSets); // ["**", "bb", "cd", "**", "cc", "**", "dd", "**"]
 ```
 
-### 讨论
-
 `forEach()`方法接受一个参数，即回调函数。该函数自身有 3 个参数：数组元素、元素的索引和数组。所以这 3 个参数都用于该函数中，但是，只有第一个参数是必需的。
 
 警告：不要从传递给`forEach()`的函数中返回一个值，因为该值将会被丢弃。
 
-### 参见
-
 如果想要修改数组的一个副本，而不是替换最初的数组，使用`map()`方法。
 
-### 额外知识：关于条件语句
+**额外知识：关于条件语句**
 
 关于条件语句。在单个一行中使用条件语句，可以不用使用花括号。同时可以更加晦涩一些，虽然这种方法比传统的 if 语句可读性要差一点。
 
@@ -608,13 +578,9 @@ element == "ab" && (array[index] = "**");
 
 ## 2.6 使用 foreach()和 call()遍历 querySelectorAll()结果
 
-### 问题
-
 想要对调用`querySelectorAll()`所返回的一个 nodeList，使用`forEach()`。
 
 You want to use forEach() on the nodeList returned from a call to querySelector All().
-
-### 解决方案
 
 可以将`forEach()`强制地和一个 NodeList 一起使用。
 
@@ -626,21 +592,15 @@ var cells = document.querySelectorAll("td + td");
 });
 ```
 
-### 讨论
-
 `forEach()`是一个 Array 方法，而 `querySelectorAll()`的结果是一个 NodeList，这是和 Array 不同类型的一种对象。为了让`forEach()`和 NodeList 一起使用，可以在一个空的数组上调用该方法，然后在该对象上使用`call()`，从而在 NodeList 上模拟了一个 Array 的效果。
 
 这种方法简单，但是有缺点。这种强制的方式是一次性的，如果需要再次使用相同的功能的话，必须再次重复它。
 
 ## 2.7 对数组中的每个元素执行一个函数并放回一个新数组
 
-### 问题
-
 想要把一个十进制数的数组转换为一个新的数组，其中都是它们等价的十六进制数形式。
 
 You want to convert an array of decimal numbers into a new array with their hexadecimal equivalents.
-
-### 解决方案
 
 使用 Array 对象的`map()`方法来创建一个新的数组，该数组中包含了通过传递给 map 方法的回调函数修改原数组后得到的元素。
 
@@ -652,19 +612,13 @@ var hexArray = decArray.map(function (element) {
 console.log(hexArray); // ["17", "ff", "7a", "5", "10", "63"]
 ```
 
-### 讨论
-
 和`forEach()`方法一样，`map()`方法也对每一个数组元素应用一个回调函数，但是`map()`方法的结果是一个新的数组，而不是修改最初的数组。因此，使用`forEach()`的时候不会返回一个值，但是使用`map()`的时候必须返回一个值。
 
 ## 2.8 创建一个过滤后的数组
 
-### 问题
-
 想要过滤一个数组中的元素的值，并且把结果赋给一个新的数组。
 
 You want to filter element values in an array and assign the results to a new array.
-
-### 解决方案
 
 使用 Array 对象的`filter()`方法。
 
@@ -676,19 +630,13 @@ var newArray = charSet.filter(function (element) {
 console.log(newArray); // ["bb", "cd", "cc", "dd"]
 ```
 
-### 讨论
-
 `filter()`方法将一个回调函数应用于每一个数组元素，作为参数传递给`filter()`方法的函数返回一个布尔值，它根据测试数组元素的结果来返回。这个返回值决定了该数组元素是否添加到一个新的数组中，如果返回 true，将会添加；否则将不会添加。
 
 ## 2.9 验证数组内容
 
-### 问题
-
 想要确保数组内容满足某个条件。
 
 You want to ensure that array contents meet certain criteria.
-
-### 解决方案
 
 使用 Array `every()`方法来检查每个元素复合给定的条件，例如下面的代码确保数组的每个元素都由字母字符组成。
 
@@ -721,13 +669,11 @@ var result = elemSet.some(testValue);
 console.log(result); // true
 ```
 
-### 讨论
-
 `every()`函数和`some()`函数不会对所有的数组元素执行，它们只是处理满足自己功能性所必需的那么多的数组元素。
 
 使用`every()`方法时，如果该函数返回一个 false 值，处理就会结束，并且该方法也返回 false，而`some()`方法将继续测试每个数组元素，直到回调函数返回 true，此时不再验证其他元素，该方法也返回 true。
 
-### 额外知识：在数组方法中使用匿名函数
+**额外知识：在数组方法中使用匿名函数**
 
 使用命名函数的好处是，当调试代码的时候，它会出现在栈追踪中，而匿名函数则不会这样。当要处理简单的、目标明确的功能的时候，这不是一个问题。
 
@@ -737,13 +683,9 @@ console.log(result); // true
 
 ## 2.10 使用一个关联数组来存储表单元素名和值
 
-### 问题
-
 想要存储表单元素的名称和值，以便随后用于验证。
 
 You want to store form element names and values for later validation purposes.
-
-### 解决方案
 
 使用关联数组来存储元素，使用元素标识符作为数组索引。
 
@@ -762,21 +704,15 @@ Object.keys(elemArray).forEach(function (key) {
 });
 ```
 
-### 讨论
-
 大多数 javascript 数组使用数字索引，如`arr[0] = value;`。然而，可以使用 javascript 创建一个关联数组，其中，数组索引可以是表示关键字的一个字符串，把该字符串映射到一个给定的值。在解决方案中，数组索引是给定的数组元素的标识符，而实际的数组值是表单元素的值。
 
 可以创建一个关联数组，但是，不能使用 Array 对象来做到这一点。使用 Array 对象有风险并且令人沮丧，特别是如果要使用某个采用了 prototype 属性的内建库来扩展对象。
 
 ## 2.11 使用解构赋值简化代码
 
-### 问题
-
 想要将数组元素的支赋给几个变量，但是确实不像单独地赋每一个值。
 
 You want to assign array element values to several variables, but you really don’t want to have assign each, individually.
-
-### 解决方案
 
 使用 ES 6 的解构赋值来简化数组赋值。
 
@@ -785,8 +721,6 @@ var stateValues = [459, 144, 96, 34, 0, 14];
 var [Arizona, Missouri, Idaho, Nebraska, Texas, Minnesota] = stateValues;
 console.log(Missouri); // 144
 ```
-
-### 讨论
 
 在解决方案中，声明了变量并且用一个数组中的值来实例化它们，从位置为 0 的数组索引开始。如果变量的数目少于数组元素的数目，元素值会赋给它们，直到所有的变量都已经复制。如果变量数目比数组元素数目多，未匹配的变量也会创建，但是将它们设置为 undefined。
 
@@ -799,9 +733,7 @@ javascript 函数提供了一种方法把一段代码封装起来，以便能够
 有 3 种基本的方式可以创建函数：声明式函数、匿名函数或函数构造函数、函数字面值或函数表达式。
 
 - 声明式函数：通过使用 function 关键字触发的一条语句，并且当 JavaScript 应用程序初次载入的时候解析。
-
 - 匿名函数或函数构造函数：匿名函数是使用 new 运算符构造的，并且引用 Function 对象。和声明式函数不同，每次访问匿名函数的时候解析它。
-
 - 函数字面值或函数表达式：字面值函数是一个函数表达式，包括参数和函数体，用于在另一个函数的参数中作为回调函数。
 
 ## 3.1 放置函数并提升
