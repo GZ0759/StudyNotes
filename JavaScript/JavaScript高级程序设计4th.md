@@ -16902,7 +16902,7 @@ double('b', successCallback, failureCallback);
 // Failure: Must provide number as first argument（大约 1000 毫秒之后）
 ```
 
-这种模式已经不可取了，因为必须在初始化异步操作时定义回 调。异步函数的返回值只在短时间内存在，只有预备好将这个短时间内存在的值作为参数的回调才能接收到它。
+这种模式已经不可取了，因为必须在初始化异步操作时定义回调。异步函数的返回值只在短时间内存在，只有预备好将这个短时间内存在的值作为参数的回调才能接收到它。
 
 3. 嵌套异步回调
 
@@ -16939,7 +16939,7 @@ double(3, successCallback, failureCallback);
 
 ### 11.2.1 Promises/A+规范
 
-早期的期约机制在 jQuery 和 Dojo 中是以 Deferred API 的形式出现 的。到了 2010 年，CommonJS 项目实现的 Promises/A 规范日益流行起 来。Q 和 Bluebird 等第三方 JavaScript 期约库也越来越得到社区认可，虽然这些库的实现多少都有些不同。为弥合现有实现之间的差异，2012 年 Promises/A+组织分叉（fork）了 CommonJS 的 Promises/A 建议，并以相同的名字制定了 Promises/A+规范。这个规范最终成为了 ECMAScript 6 规范实现的范本。
+早期的期约机制在 jQuery 和 Dojo 中是以 Deferred API 的形式出现 的。到了 2010 年，CommonJS 项目实现的 Promises/A 规范日益流行起来。Q 和 Bluebird 等第三方 JavaScript 期约库也越来越得到社区认可，虽然这些库的实现多少都有些不同。为弥合现有实现之间的差异，2012 年 Promises/A+组织分叉（fork）了 CommonJS 的 Promises/A 建议，并以相同的名字制定了 Promises/A+规范。这个规范最终成为了 ECMAScript 6 规范实现的范本。
 
 ECMAScript 6 增加了对 Promises/A+规范的完善支持，即 Promise 类型。一经推出， Promise 就大受欢迎，成为了主导性的异步编程机制。所有现代浏览器都支持 ES6 期约，很多其他浏览器 API（如 `fetch()` 和 Battery Status API）也以期约为基础。
 
@@ -16970,9 +16970,9 @@ setTimeout(console.log, 0, p); // Promise <pending>
 
 期约主要有两大用途。首先是抽象地表示一个异步操作。期约的状态代表期约是否完成。“待定”表示尚未开始或者正在执行中。“兑现”表示已经成功完成，而“拒绝”则表示没有成功完成。
 
-某些情况下，这个状态机就是期约可以提供的最有用的信息。知道一段异步代码已经完成，对于其他代码而言已经足够了。比 如，假设期约要向服务器发送一个 HTTP 请求。请求返回 200~299 范围内的状态码就足以让期约的状态变为“兑现”。类似地，如果请求返回的状态码不在 200~299 这个范围内，那么就会把期约状态切换为“拒绝”。
+某些情况下，这个状态机就是期约可以提供的最有用的信息。知道一段异步代码已经完成，对于其他代码而言已经足够了。比如，假设期约要向服务器发送一个 HTTP 请求。请求返回 200~299 范围内的状态码就足以让期约的状态变为“兑现”。类似地，如果请求返回的状态码不在 200~299 这个范围内，那么就会把期约状态切换为“拒绝”。
 
-在另外一些情况下，期约封装的异步操作会实际生成某个值，而程序期待期约状态改变时可以访问这个值。相应地，如果期约被拒绝，程序就会期待期约状态改变时可以拿到拒绝的理由。比 如，假设期约向服务器发送一个 HTTP 请求并预定会返回一个 JSON。如果请求返回范围在 200~299 的状态码，则足以让期约的状态变为兑现。此时期约内部就可以收到一个 JSON 字符串。类似地，如果请求返回的状态码不在 200~299 这个范围内，那么就会把期约状态切换为拒绝。此时拒绝的理由可能是一个 Error 对象，包含着 HTTP 状态码及相关错误消息。
+在另外一些情况下，期约封装的异步操作会实际生成某个值，而程序期待期约状态改变时可以访问这个值。相应地，如果期约被拒绝，程序就会期待期约状态改变时可以拿到拒绝的理由。比如，假设期约向服务器发送一个 HTTP 请求并预定会返回一个 JSON。如果请求返回范围在 200~299 的状态码，则足以让期约的状态变为兑现。此时期约内部就可以收到一个 JSON 字符串。类似地，如果请求返回的状态码不在 200~299 这个范围内，那么就会把期约状态切换为拒绝。此时拒绝的理由可能是一个 Error 对象，包含着 HTTP 状态码及相关错误消息。
 
 为了支持这两种用例，每个期约只要状态切换为兑现，就会有一个私有的内部值（value）。类似地，每个期约只要状态切换为拒绝，就会有一个私有的内部理由（reason）。无论是值还是理由，都是包含原始值或对象的不可修改的引用。二者都是可选的，而且默认值为 undefined 。在期约到达某个落定状态时执行的异步代码始终会收到这个值或理由。
 
@@ -17141,7 +17141,7 @@ try {
 
 ### 11.2.3 期约的实例方法
 
-期约实例的方法是连接外部同步代码与内部异步代码之间的桥 梁。这些方法可以访问异步操作返回的数据，处理期约成功和失败的输出，连续对期约求值，或者添加只有期约进入终止状态时才会执行的代码。
+期约实例的方法是连接外部同步代码与内部异步代码之间的桥梁。这些方法可以访问异步操作返回的数据，处理期约成功和失败的输出，连续对期约求值，或者添加只有期约进入终止状态时才会执行的代码。
 
 1. 实现 Thenable 接口
 
@@ -17282,9 +17282,9 @@ let p11 = p1.then(() => Error('qux'));
 setTimeout(console.log, 0, p11); // Promise <resolved>: Error: qux
 ```
 
-onRejected 处理程序也与之类似： onRejected 处理程序返回的值也会被 Promise.resolve() 包装。乍一看这可能有点违反直觉，但是想一想， onRejected 处理程序的任务不就是捕获异步错误吗？因此，拒绝处理程序在捕获错误后不抛出异常是符合期约的行为，应该返回一个解决期约。
+onRejected 处理程序也与之类似： onRejected 处理程序返回的值也会被 `Promise.resolve()` 包装。乍一看这可能有点违反直觉，但是想一想， onRejected 处理程序的任务不就是捕获异步错误吗？因此，拒绝处理程序在捕获错误后不抛出异常是符合期约的行为，应该返回一个解决期约。
 
-下面的代码片段展示了用 Promise.reject() 替代之前例子中的 Promise.resolve() 之后的结果：
+下面的代码片段展示了用 `Promise.reject()` 替代之前例子中的 `Promise.resolve()` 之后的结果：
 
 ```js
 let p1 = Promise.reject('foo');
@@ -17330,7 +17330,7 @@ setTimeout(console.log, 0, p11); // Promise <resolved>: Error: qux
 
 3. Promise.prototype.catch()
 
-Promise.prototype.catch() 方法用于给期约添加拒绝处理程序。这个方法只接收一个参数： onRejected 处理程序。事实上，这个方法就是一个语法糖，调用它就相当于调用 Promise.prototype.the(null, onRejected) 。
+`Promise.prototype.catch()` 方法用于给期约添加拒绝处理程序。这个方法只接收一个参数： onRejected 处理程序。事实上，这个方法就是一个语法糖，调用它就相当于调用 `Promise.prototype.the(null, onRejected)` 。
 
 下面的代码展示了这两种同样的情况：
 
@@ -17345,7 +17345,7 @@ p.then(null, onRejected); // rejected
 p.catch(onRejected); // rejected
 ```
 
-Promise.prototype.catch() 返回一个新的期约实例：
+`Promise.prototype.catch()` 返回一个新的期约实例：
 
 ```js
 let p1 = new Promise(() => {});
@@ -17355,11 +17355,11 @@ setTimeout(console.log, 0, p2); // Promise <pending>
 setTimeout(console.log, 0, p1 === p2); // false
 ```
 
-在返回新期约实例方面， Promise.prototype.catch() 的行为与 Promise.prototype.then() 的 onRejected 处理程序是一样的。
+在返回新期约实例方面， `Promise.prototype.catch()` 的行为与 `Promise.prototype.then()` 的 onRejected 处理程序是一样的。
 
 4.  Promise.prototype.finally()
 
-Promise.prototype.finally() 方法用于给期约添加 onFinally 处理程序，这个处理程序在期约转换为解决或拒绝状态时都会执行。这个方法可以避免 onResolved 和 onRejected 处理程序中出现冗余代码。但 onFinally 处理程序没有办法知道期约的状态是解决还是拒绝，所以这个方法主要用于添加清理代码。
+`Promise.prototype.finally()` 方法用于给期约添加 onFinally 处理程序，这个处理程序在期约转换为解决或拒绝状态时都会执行。这个方法可以避免 onResolved 和 onRejected 处理程序中出现冗余代码。但 onFinally 处理程序没有办法知道期约的状态是解决还是拒绝，所以这个方法主要用于添加清理代码。
 
 ```js
 let p1 = Promise.resolve();
@@ -17373,7 +17373,7 @@ p1.finally(onFinally); // Finally
 p2.finally(onFinally); // Finally
 ```
 
-Promise.prototype.finally() 方法返回一个新的期约实例：
+`Promise.prototype.finally()` 方法返回一个新的期约实例：
 
 ```js
 let p1 = new Promise(() => {});
@@ -17383,7 +17383,7 @@ setTimeout(console.log, 0, p2); // Promise <pending>
 setTimeout(console.log, 0, p1 === p2); // false
 ```
 
-这个新期约实例不同于 then() 或 catch() 方式返回的实例。因为 onFinally 被设计为一个状态无关的方法，所以多数情况下它都会原样后传父期约。无论父期约是解决还是拒绝，都会原样后传。
+这个新期约实例不同于 `then()` 或 `catch()` 方式返回的实例。因为 onFinally 被设计为一个状态无关的方法，所以多数情况下它都会原样后传父期约。无论父期约是解决还是拒绝，都会原样后传。
 
 ```js
 let p1 = Promise.resolve('foo');
@@ -17464,9 +17464,9 @@ console.log('then() returns');
 // onResolved handler
 ```
 
-在这个例子中，在一个解决期约上调用 then() 会把 onResolved 处理程序推进消息队列。但这个处理程序在当前线程上的同步代码执行完成前不会执行。因此，跟在 then() 后面的同步代码一定先于处理程序执行。
+在这个例子中，在一个解决期约上调用 `then()` 会把 onResolved 处理程序推进消息队列。但这个处理程序在当前线程上的同步代码执行完成前不会执行。因此，跟在 `then()` 后面的同步代码一定先于处理程序执行。
 
-先添加处理程序后解决期约也是一样的。如果添加处理程序后，同步代码才改变期约状态，那么处理程序仍然会基于该状态变化表现出非重入特性。下面的例子展示了即使先添加了 onResolved 处理程序，再同步调用 resolve() ，处理程序也不会进入同步线程执行：
+先添加处理程序后解决期约也是一样的。如果添加处理程序后，同步代码才改变期约状态，那么处理程序仍然会基于该状态变化表现出非重入特性。下面的例子展示了即使先添加了 onResolved 处理程序，再同步调用 `resolve()` ，处理程序也不会进入同步线程执行：
 
 ```js
 let synchronousResolve;
@@ -17495,7 +17495,7 @@ console.log('3: synchronousResolve() returns');
 
 在这个例子中，即使期约状态变化发生在添加处理程序之后，处理程序也会等到运行的消息队列让它出列时才会执行。
 
-非重入适用于 onResolved / onRejected 处理程序、catch() 处理程序和 finally() 处理程序。下面的例子演示了这些处理程序都只能异步执行：
+非重入适用于 onResolved / onRejected 处理程序、`catch()` 处理程序和 `finally()` 处理程序。下面的例子演示了这些处理程序都只能异步执行：
 
 ```js
 let p1 = Promise.resolve();
@@ -17527,7 +17527,7 @@ console.log('p4.finally() returns');
 
 6. 邻近处理程序的执行顺序
 
-如果给期约添加了多个处理程序，当期约状态变化时，相关处理程序会按照添加它们的顺序依次执行。无论是 then() 、catch() 还是 finally() 添加的处理程序都是如此。
+如果给期约添加了多个处理程序，当期约状态变化时，相关处理程序会按照添加它们的顺序依次执行。无论是 `then()` 、`catch()` 还是 `finally()` 添加的处理程序都是如此。
 
 ```js
 let p1 = Promise.resolve();
@@ -17558,7 +17558,7 @@ p1.finally(() => setTimeout(console.log, 0, 8));
 
 到了落定状态后，期约会提供其解决值（如果兑现）或其拒绝理由（如果拒绝）给相关状态的处理程序。拿到返回值后，就可以进一步对这个值进行操作。比如，第一次网络请求返回的 JSON 是发送第二次请求必需的数据，那么第一次请求返回的值就应该传给 onResolved 处理程序继续处理。当然，失败的网络请求也应该把 HTTP 状态码传给 onRejected 处理程序。
 
-在执行函数中，解决的值和拒绝的理由是分别作为 resolve()和 reject() 的第一个参数往后传的。然后，这些值又会传给它们各自的处理程序，作为 onResolved 或 onRejected 处理程序的唯一参数。下面的例子展示了上述传递过程：
+在执行函数中，解决的值和拒绝的理由是分别作为 `resolve()` 和 `reject()` 的第一个参数往后传的。然后，这些值又会传给它们各自的处理程序，作为 onResolved 或 onRejected 处理程序的唯一参数。下面的例子展示了上述传递过程：
 
 ```js
 let p1 = new Promise((resolve, reject) => resolve('foo'));
@@ -17568,7 +17568,7 @@ let p2 = new Promise((resolve, reject) => reject('bar'));
 p2.catch((reason) => console.log(reason)); // bar
 ```
 
-Promise.resolve() 和 Promise.reject() 在被调用时就会接收解决值和拒绝理由。同样地，它们返回的期约也会像执行器一样把这些值传给 onResolved 或 onRejected 处理程序：
+`Promise.resolve()` 和 `Promise.reject()` 在被调用时就会接收解决值和拒绝理由。同样地，它们返回的期约也会像执行器一样把这些值传给 onResolved 或 onRejected 处理程序：
 
 ```js
 let p1 = Promise.resolve('foo');
@@ -17580,7 +17580,7 @@ p2.catch((reason) => console.log(reason)); // bar
 
 8. 拒绝期约与拒绝错误处理
 
-拒绝期约类似于 throw() 表达式，因为它们都代表一种程序状态，即需要中断或者特殊处理。在期约的执行函数或处理程序中抛出错误会导致拒绝，对应的错误对象会成为拒绝的理由。因此以下这些期约都会以一个错误对象为由被拒绝：
+拒绝期约类似于 `throw()` 表达式，因为它们都代表一种程序状态，即需要中断或者特殊处理。在期约的执行函数或处理程序中抛出错误会导致拒绝，对应的错误对象会成为拒绝的理由。因此以下这些期约都会以一个错误对象为由被拒绝：
 
 ```js
 let p1 = new Promise((resolve, reject) => reject(Error('foo')));
@@ -17599,7 +17599,7 @@ setTimeout(console.log, 0, p4); // Promise <rejected>: Error: foo
 // 也会抛出 4 个未捕获错误
 ```
 
-期约可以以任何理由拒绝，包括 undefined ，但最好统一使用错误对象。这样做主要是因为创建错误对象可以让浏览器捕获错误对象中的栈追踪信息，而这些信息对调试是非常关键的。例 如，前面例子中抛出的 4 个错误的栈追踪信息如下：
+期约可以以任何理由拒绝，包括 undefined ，但最好统一使用错误对象。这样做主要是因为创建错误对象可以让浏览器捕获错误对象中的栈追踪信息，而这些信息对调试是非常关键的。例如，前面例子中抛出的 4 个错误的栈追踪信息如下：
 
 ```
 Uncaught (in promise) Error: foo
@@ -17619,9 +17619,9 @@ Uncaught (in promise) Error: foo
   at Promise.resolve.then (test.html:7)
 ```
 
-所有错误都是异步抛出且未处理的，通过错误对象捕获的栈追踪信息展示了错误发生的路径。注意错误的顺序：Promise.resolve().then() 的错误最后才出现，这是因为它需要在运行时消息队列中添加处理程序；也就是说，在最终抛出未捕获错误之前它还会创建另一个期约。
+所有错误都是异步抛出且未处理的，通过错误对象捕获的栈追踪信息展示了错误发生的路径。注意错误的顺序：`Promise.resolve().then()` 的错误最后才出现，这是因为它需要在运行时消息队列中添加处理程序；也就是说，在最终抛出未捕获错误之前它还会创建另一个期约。
 
-这个例子同样揭示了异步错误有意思的副作用。正常情况下，在通过 throw() 关键字抛出错误时，JavaScript 运行时的错误处理机制会停止执行抛出错误之后的任何指令：
+这个例子同样揭示了异步错误有意思的副作用。正常情况下，在通过 `throw()` 关键字抛出错误时，JavaScript 运行时的错误处理机制会停止执行抛出错误之后的任何指令：
 
 ```js
 throw Error('foo');
@@ -17640,7 +17640,7 @@ console.log('bar');
 // Uncaught (in promise) Error: foo
 ```
 
-如本章前面的 Promise.reject() 示例所示，异步错误只能通过异步的 onRejected 处理程序捕获：
+如本章前面的 `Promise.reject()` 示例所示，异步错误只能通过异步的 onRejected 处理程序捕获：
 
 ```js
 // 正 确
@@ -17666,7 +17666,7 @@ let p = new Promise((resolve, reject) => {
 setTimeout(console.log, 0, p); // Promise <resolved>: bar
 ```
 
-then() 和 catch() 的 onRejected 处理程序在语义上相当于 try / catch 。出发点都是捕获错误之后将其隔离，同时不影响正常逻辑执行。为此， onRejected 处理程序的任务应该是在捕获异步错误之后返回一个解决的期约。下面的例子中对比了同步错误处理与异步错误处理：
+`then()` 和 `catch()` 的 onRejected 处理程序在语义上相当于 try / catch 。出发点都是捕获错误之后将其隔离，同时不影响正常逻辑执行。为此， onRejected 处理程序的任务应该是在捕获异步错误之后返回一个解决的期约。下面的例子中对比了同步错误处理与异步错误处理：
 
 ```js
 console.log('begin synchronous execution');
