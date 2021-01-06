@@ -200,37 +200,70 @@ var lengthOfLongestSubstring = function (s) {
 ## 解决 - 对称查找
 
 ```js
-const longestPalindrome = (s) => {
-  let max = '';
-  let length = s.length;
+var longestPalindrome = function (s='aaaa444') {
+  let length = s.length,
+    max = '';
   if (length < 2) {
     return s;
   }
-  for (let i = 0; i <= length; i++) {
-    let newMax = core(s, i);
-    max = newMax.length > max.length ? newMax : max;
-  }
+  // 递归遍历
+  const core = (index) => {
+    const loop = (pre, next) => {
+      if (s[pre] && s[next] && s[pre] === s[next]) {
+        return loop(pre - 1, next + 1);
+      } else {
+        return s.slice(pre + 1, next);
+      }
+    };
+    // 一核
+    let sCore = loop(index - 1, index + 1);
+    // 双核
+    let dCore = loop(index, index + 1);
+    return sCore.length > dCore.length ? sCore : dCore;
+  };
+  s.split('').forEach((_, index) => {
+    let tem = core(index);
+    tem.length > max.length && (max = tem);
+  });
   return max;
 };
+```
 
-const core = (str, index) => {
-  // 递归遍历
-  const loop = (prev, next) => {
-    if (!str[prev] || !str[next]) {
-      return str.slice(prev + 1, next);
-    }
-    if (str.charAt(prev) === str.charAt(next)) {
-      return loop(prev - 1, next + 1);
-    } else {
-      return str.slice(prev + 1, next);
-    }
-  }
-  // 一核对称
-  let maxOne = loop(index - 1, index + 1);
-  // 双核对称
-  let maxTwo = loop(index, index + 1);
-  // 返回结果
-  return maxOne.length > maxTwo.length ? maxOne : maxTwo;
+## 解法 - 动态规划
+
+```js
+const longestPalindrome = (s) => {
+  let dp = [];
+  for (let i = 0; i < s.length; i++) {
+    dp[i] = [];
+  };
+
+  let max = -1;
+  let str = '';
+  // 这样可以遍历出所有子串, 以不同子串的开头为基准, 遍历所有子串
+  for (let k = 0; k < s.length; k++) {
+    // 采用不同的间隔依次遍历
+    // 这里 i 是子串的开始索引, j 是子串的结束索引, k + 1 其实就是子串的长度
+    for (let i = 0; i + k < s.length; i++) {
+      let j = i + k;
+      if (k == 0) {
+        dp[i][j] = true;
+      } else if (k <= 2) {
+        if (s[i] == s[j]) {
+          dp[i][j] = true;
+        } else {
+          dp[i][j] = false;
+        }
+      } else {
+        dp[i][j] = (dp[i + 1][j - 1] && s[i] == s[j]) ? true : false;
+      }
+      if (j - i > max && dp[i][j]) {
+        max = j - i;
+        str = s.substring(i, j + 1);
+      }
+    };
+  };
+  return str;
 }
 ```
 
