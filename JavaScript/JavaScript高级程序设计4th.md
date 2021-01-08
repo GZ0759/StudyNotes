@@ -19046,17 +19046,13 @@ foo();
 通过 location 对象获取页面信息使用 navigator 对象
 了解浏览器通过 history 对象操作浏览器历史
 
-虽然 ECMAScript 把浏览器对象模型（BOM，Browser Object Model）描述为 JavaScript 的核心，但实际上 BOM 是使用 JavaScript 开发 Web 应用程序的核心。BOM 提供了与网页无关的浏览器功能对象。多年来，
-
-BOM 是在缺乏规范的背景下发展起来的，因此既充满乐趣又问题多多。毕竟，浏览器开发商都按照自己的意愿来为它添砖加瓦。最终，浏览器实现之间共通的部分成为了事实标准，为 Web 开发提供了浏览器间互操作的基础。HTML5 规范中有一部分涵盖了 BOM 的主要内容，因为 W3C 希望将 JavaScript 在浏览器中最基础的部分标准化。
+虽然 ECMAScript 把浏览器对象模型（BOM，Browser Object Model）描述为 JavaScript 的核心，但实际上 BOM 是使用 JavaScript 开发 Web 应用程序的核心。BOM 提供了与网页无关的浏览器功能对象。多年来，BOM 是在缺乏规范的背景下发展起来的，因此既充满乐趣又问题多多。毕竟，浏览器开发商都按照自己的意愿来为它添砖加瓦。最终，浏览器实现之间共通的部分成为了事实标准，为 Web 开发提供了浏览器间互操作的基础。HTML5 规范中有一部分涵盖了 BOM 的主要内容，因为 W3C 希望将 JavaScript 在浏览器中最基础的部分标准化。
 
 ## 12.1 window 对象
 
 BOM 的核心是 window 对象，表示浏览器的实例。 window 对象在浏览器中有两重身份，一个是 ECMAScript 中的 Global 对象，另一个就是浏览器窗口的 JavaScript 接口。这意味着网页中定义的所有对象、变量和函数都以 window 作为其 Global 对象，都可以访问其上定义的 parseInt() 等全局方 法。
 
-> 注意 因为 window 对象的属性在全局作用域中有效，所以很多浏览器 API 及相关构造函数都以
-
-window 对象属性的形式暴露出来。这些 API 将在全书各章中介绍，特别是第 20 章。
+> 注意 因为 window 对象的属性在全局作用域中有效，所以很多浏览器 API 及相关构造函数都以 window 对象属性的形式暴露出来。这些 API 将在全书各章中介绍，特别是第 20 章。
 
 另外，由于实现不同，某些 window 对象的属性在不同浏览器间可能差异很大。本章不会介绍已经废弃的、非标准化或特定于浏览器的 window 属性。
 
@@ -19076,9 +19072,7 @@ sayAge(); // 29
 window.sayAge(); // 29
 ```
 
-这里，变量 age 和函数 sayAge() 被定义在全局作用域中，它们自动成为了 window 对象的成员。因此，变量 age 可以通过 window.age 来访问，而函数 sayAge() 也可以通过
-
-window.sayAge() 来访问。因为 sayAge() 存在于全局作用域， this.age 映射到 window.age ，所以就可以显示正确的结果了。
+这里，变量 age 和函数 sayAge() 被定义在全局作用域中，它们自动成为了 window 对象的成员。因此，变量 age 可以通过 window.age 来访问，而函数 sayAge() 也可以通过 window.sayAge() 来访问。因为 sayAge() 存在于全局作用域， this.age 映射到 window.age ，所以就可以显示正确的结果了。
 
 如果在这里使用 let 或 const 替代 var ，则不会把变量添加给全局对象：
 
@@ -19112,15 +19106,9 @@ var newValue = window.oldValue;
 
 2.  窗口关系
 
-top 对象始终指向最上层（最外层）窗口，即浏览器窗口本身。而 parent 对象则始终指向当前窗口的父窗口。如果当前窗口是最上层窗口，则 parent 等于 top （都等于 window ）。最上层的
+top 对象始终指向最上层（最外层）窗口，即浏览器窗口本身。而 parent 对象则始终指向当前窗口的父窗口。如果当前窗口是最上层窗口，则 parent 等于 top （都等于 window ）。最上层的 window 如果不是通过 window.open() 打开的，那么其 name 属性就不会包含值，本章后面会讨论。
 
-window 如果不是通过 window.open() 打开的，那么其 name 属性就不会包含值，本章后面会讨论。
-
-还有一个 self 对象，它是终极 window 属性，始终会指向 window 。实际上， self 和
-
-window 就是同一个对象。之所以还要暴露 self ，就是为了和 top 、 parent 保持一致。这些属性都是 window 对象的属性，因此访问 window.parent 、 window.top 和 window.self 都可以。这意味着可以把访问多个窗口的 window 对象串联起来，比如
-
-window.parent.parent 。
+还有一个 self 对象，它是终极 window 属性，始终会指向 window 。实际上， self 和 window 就是同一个对象。之所以还要暴露 self ，就是为了和 top 、 parent 保持一致。这些属性都是 window 对象的属性，因此访问 window.parent 、 window.top 和 window.self 都可以。这意味着可以把访问多个窗口的 window 对象串联起来，比如 window.parent.parent 。
 
 3.  窗口位置与像素比
 
@@ -19146,13 +19134,9 @@ window.moveTo(200, 300);
 window.moveBy(-50, 0);
 ```
 
-依浏览器而定，以上方法可能会被部分或全部禁用。像素比
+依浏览器而定，以上方法可能会被部分或全部禁用。像素比 CSS 像素是 Web 开发中使用的统一像素单位。这个单位的背后其实是一个角度：0.0213°。如果屏幕距离人眼是一臂长，则以这个角度计算的 CSS 像素大小约为 1/96 英寸。这样定义像素大小是为了在不同设备上统一标准。比如，低分辨率平板设备上 12 像素（CSS 像素）的文字应该与高清 4K 屏幕下 12 像素（CSS 像素）的文字具有相同大小。这就带来了一个问题，不同像素密度的屏幕下就会有不同的缩放系数，以便把物理像素（屏幕实际的分辨率）转换为 CSS 像素（浏览器报告的虚拟分辨率）。
 
-CSS 像素是 Web 开发中使用的统一像素单位。这个单位的背后其实是一个角度：0.0213°。如果屏幕距离人眼是一臂长，则以这个角度计算的 CSS 像素大小约为 1/96 英寸。这样定义像素大小是为了在不同设备上统一标准。比如，低分辨率平板设备上 12 像素（CSS 像素）的文字应该与高清 4K 屏幕下 12 像素（CSS 像素）的文字具有相同大小。这就带来了一个问题，不同像素密度的屏幕下就会有不同的缩放系数，以便把物理像素（屏幕实际的分辨率）转换为 CSS 像素（浏览器报告的虚拟分辨率）。
-
-举个例子，手机屏幕的物理分辨率可能是 1920×1080，但因为其像素可能非常小，所以浏览器就需要将其分辨率降为较低的逻辑分辨率，比如 640×320。这个物理像素与 CSS 像素之间的转换比率由
-
-window.devicePixelRatio 属性提供。对于分辨率从 1920×1080 转换为 640×320 的设备，
+举个例子，手机屏幕的物理分辨率可能是 1920×1080，但因为其像素可能非常小，所以浏览器就需要将其分辨率降为较低的逻辑分辨率，比如 640×320。这个物理像素与 CSS 像素之间的转换比率由 window.devicePixelRatio 属性提供。对于分辨率从 1920×1080 转换为 640×320 的设备，
 
 window.devicePixelRatio 的值就是 3。这样一来，12 像素（CSS 像素）的文字实际上就会用 36 像素的物理像素来显示。
 
@@ -19162,9 +19146,7 @@ window.devicePixelRatio 实际上与每英寸像素数（DPI，dots per inch）�
 
 在不同浏览器中确定浏览器窗口大小没有想象中那么容易。所有现代浏览器都支持 4 个属性：
 
-innerWidth 、 innerHeight 、 outerWidth 和 outerHeight 。 outerWidth 和
-
-outerHeight 返回浏览器窗口自身的大小（不管是在最外层 window 上使用，还是在窗格 <frame>中使用）。 innerWidth 和 innerHeight 返回浏览器窗口中页面视口的大小（不包含浏览器边框和工具栏）。
+innerWidth 、 innerHeight 、 outerWidth 和 outerHeight 。 outerWidth 和 outerHeight 返回浏览器窗口自身的大小（不管是在最外层 window 上使用，还是在窗格 `<frame>` 中使用）。 innerWidth 和 innerHeight 返回浏览器窗口中页面视口的大小（不包含浏览器边框和工具栏）。
 
 document.documentElement.clientWidth 和 document.documentElement.clientHeight 返回页面视口的宽度和高度。 浏览器窗口自身的精确尺寸不好确定，但可以确定页面视口的大小，如下所示：
 
@@ -19269,10 +19251,10 @@ window.open() 方法可以用于导航到指定 URL，也可以用于打开新�
 
 ```js
 // 与<a href="http://www.wrox.com" target="topFrame"/>相同
-window.open("http://www.wrox.com/", "topFrame");
+window.open('http://www.wrox.com/', 'topFrame');
 ```
 
-执行这行代码的结果就如同用户点击了一个 href 属性为"http://www.wrox.com"， target 属性为"topFrame"的链接。如果有一个窗口名叫"topFrame"，则这个窗口就会打开这个 URL；否则就会打开一个新窗口并将其命名为"topFrame"。第二个参数也可以是一个特殊的窗口名，比如_self、_parent、 _top 或_blank。
+执行这行代码的结果就如同用户点击了一个 href 属性为"http://www.wrox.com"， target 属性为"topFrame"的链接。如果有一个窗口名叫"topFrame"，则这个窗口就会打开这个 URL；否则就会打开一个新窗口并将其命名为"topFrame"。第二个参数也可以是一个特殊的窗口名，比如\_self、\_parent、 \_top 或\_blank。
 
 1.  弹出窗口
 
@@ -19281,9 +19263,11 @@ window.open("http://www.wrox.com/", "topFrame");
 特性字符串是一个逗号分隔的设置字符串，用于指定新窗口包含的特性。下表列出了一些选项。
 这些设置需要以逗号分隔的名值对形式出现，其中名值对以等号连接。（特性字符串中不能包含空格。）来看下面的例子：
 
+```js
 window.open[(](http://www.wrox.com/)"http://www.wrox.com/",
 
 "wroxWindow", "height=400,width=400,top=10,left=10,resizable=yes");
+```
 
 这行代码会打开一个可缩放的新窗口，大小为 400 像素 ×400 像素，位于离屏幕左边及顶边各 10 像素的位置。
 
@@ -19346,9 +19330,7 @@ wroxWin.opener = null;
 
 IE 的早期版本实现针对弹窗的多重安全限制，包括不允许创建弹窗或把弹窗移出屏幕之外，以及不允许隐藏状态栏等。从 IE7 开始，地址栏也不能隐藏了，而且弹窗默认是不能移动或缩放的。Firefox 1 禁用了隐藏状态栏的功能，因此无论 window.open() 的特性字符串是什么，都不会隐藏弹窗的状态栏。Firefox 3 强制弹窗始终显示地址栏。Opera 只会在主窗口中打开新窗口，但不允许它们出现在系统对话框的位置。
 
-此外，浏览器会在用户操作下才允许创建弹窗。在网页加载过程中调用 window.open() 没有效
-
-果，而且还可能导致向用户显示错误。弹窗通常可能在鼠标点击或按下键盘中某个键的情况下才能打开。
+此外，浏览器会在用户操作下才允许创建弹窗。在网页加载过程中调用 window.open() 没有效果，而且还可能导致向用户显示错误。弹窗通常可能在鼠标点击或按下键盘中某个键的情况下才能打开。
 
 > 注意 IE 对打开本地网页的窗口再弹窗解除了某些限制。同样的代码如果来自服务器，则会施加弹窗限制。
 
@@ -19357,9 +19339,9 @@ IE 的早期版本实现针对弹窗的多重安全限制，包括不允许创�
 所有现代浏览器都内置了屏蔽弹窗的程序，因此大多数意料之外的弹窗都会被屏蔽。在浏览器屏蔽弹窗时，可能会发生一些事。如果浏览器内置的弹窗屏蔽程序阻止了弹窗，那么 window.open() 很可能会返回 null 。此时，只要检查这个方法的返回值就可以知道弹窗是否被屏蔽了，比如：
 
 ```js
-let wroxWin = window.open("http://www.wrox.com", "_blank");
-if (wroxWin == null){
-alert("The popup was blocked!");
+let wroxWin = window.open('http://www.wrox.com', '_blank');
+if (wroxWin == null) {
+  alert('The popup was blocked!');
 }
 ```
 
@@ -19368,15 +19350,15 @@ alert("The popup was blocked!");
 ```js
 let blocked = false;
 try {
-let wroxWin = window.open("http://www.wrox.com", "_blank");
-if (wroxWin == null){
+  let wroxWin = window.open('http://www.wrox.com', '_blank');
+  if (wroxWin == null) {
+    blocked = true;
+  }
+} catch (ex) {
   blocked = true;
 }
-} catch (ex){
-blocked = true;
-}
-if (blocked){
-alert("The popup was blocked!");
+if (blocked) {
+  alert('The popup was blocked!');
 }
 ```
 
@@ -19410,11 +19392,9 @@ let timeoutId = setTimeout(() => alert('Hello world!'), 1000);
 clearTimeout(timeoutId);
 ```
 
-只要是在指定时间到达之前调用 clearTimeout() ，就可以取消超时任务。在任务执行后再调用
+只要是在指定时间到达之前调用 clearTimeout() ，就可以取消超时任务。在任务执行后再调用 clearTimeout() 没有效果。
 
-clearTimeout() 没有效果。
-
-> 注意 所有超时执行的代码（函数）都会在全局作用域中的一个匿名函数中运行，因此函数中的this 值在非严格模式下始终指向 window ，而在严格模式下是 undefined 。如果给setTimeout() 提供了一个箭头函数，那么 this 会保留为定义它时所在的词汇作用域。
+> 注意 所有超时执行的代码（函数）都会在全局作用域中的一个匿名函数中运行，因此函数中的 this 值在非严格模式下始终指向 window ，而在严格模式下是 undefined 。如果给 setTimeout() 提供了一个箭头函数，那么 this 会保留为定义它时所在的词汇作用域。
 
 setInterval() 与 setTimeout() 的使用方法类似，只不过指定的任务会每隔指定时间就执行一次，直到取消循环定时或者页面卸载。 setInterval() 同样可以接收两个参数：要执行的代码（字符串或函数），以及把下一次执行定时代码的任务添加到队列要等待的时间（毫秒）。下面是一个例子：
 
@@ -19422,7 +19402,7 @@ setInterval() 与 setTimeout() 的使用方法类似，只不过指定的任务�
 setInterval(() => alert('Hello world!'), 10000);
 ```
 
-> 注意 这里的关键点是，第二个参数，也就是间隔时间，指的是向队列添加新任务之前等待的时间。比如，调用 setInterval() 的时间为 01:00:00，间隔时间为 3000 毫秒。这意味着 01:00:03 时，浏览器会把任务添加到执行队列。浏览器不关心这个任务什么时候执行或者执行要花多长时间。因此，到了 01:00:06，它会再向队列中添加一个任务。由此可看出，执行时间短、非阻塞的回调函数比较适合setInterval() 。
+> 注意 这里的关键点是，第二个参数，也就是间隔时间，指的是向队列添加新任务之前等待的时间。比如，调用 setInterval() 的时间为 01:00:00，间隔时间为 3000 毫秒。这意味着 01:00:03 时，浏览器会把任务添加到执行队列。浏览器不关心这个任务什么时候执行或者执行要花多长时间。因此，到了 01:00:06，它会再向队列中添加一个任务。由此可看出，执行时间短、非阻塞的回调函数比较适合 setInterval() 。
 
 setInterval() 方法也会返回一个循环定时 ID，可以用于在未来某个时间点上取消循环定时。要取消循环定时，可以调用 clearInterval() 并传入定时 ID。相对于 setTimeout() 而言，取消定时的能力对 setInterval() 更加重要。毕竟，如果一直不管它，那么定时任务会一直执行到页面卸载。下面是一个常见的例子：
 
@@ -19470,9 +19450,7 @@ setTimeout(incrementNumber, 500);
 
 8.  系统对话框
 
-使用 alert() 、 confirm() 和 promt() 方法，可以让浏览器调用系统对话框向用户显示消
-
-息。这些对话框与浏览器中显示的网页无关，而且也不包含 HTML。它们的外观由操作系统或者浏览器决定，无法使用 CSS 设置。此外，这些对话框都是同步的模态对话框，即在它们显示的时候，代码会停止执行，在它们消失以后，代码才会恢复执行。
+使用 alert() 、 confirm() 和 promt() 方法，可以让浏览器调用系统对话框向用户显示消息。这些对话框与浏览器中显示的网页无关，而且也不包含 HTML。它们的外观由操作系统或者浏览器决定，无法使用 CSS 设置。此外，这些对话框都是同步的模态对话框，即在它们显示的时候，代码会停止执行，在它们消失以后，代码才会恢复执行。
 
 alert() 方法在本书示例中经常用到。它接收一个要显示给用户的字符串。与 `console.log` 可以接收任意数量的参数且能一次性打印这些参数不同， alert() 只接收一个参数。调用 alert() 时，传入的字符串会显示在一个系统对话框中。对话框只有一个“OK”（确定）按钮。如果传给 alert() 的参数不是一个原始字符串，则会调用这个值的 toString() 方法将其转换为字符串。
 
@@ -19532,16 +19510,12 @@ window.find();
 
 ## 12.2 location 对象
 
-location 是最有用的 BOM 对象之一，提供了当前窗口中加载文档的信息，以及通常的导航功能。这个对象独特的地方在于，它既是 window 的属性，也是 document 的属性。也就是说，
-
-window.location 和 document.location 指向同一个对象。 location 对象不仅保存着当前加载文档的信息，也保存着把 URL 解析为离散片段后能够通过属性访问的信息。这些解析后的属性在下表中有详细说明（ location 前缀是必需的）。
+location 是最有用的 BOM 对象之一，提供了当前窗口中加载文档的信息，以及通常的导航功能。这个对象独特的地方在于，它既是 window 的属性，也是 document 的属性。也就是说，window.location 和 document.location 指向同一个对象。 location 对象不仅保存着当前加载文档的信息，也保存着把 URL 解析为离散片段后能够通过属性访问的信息。这些解析后的属性在下表中有详细说明（ location 前缀是必需的）。
 假设浏览器当前加载的 URL 是 http://foouser:barpassword\@www.wrox.com:80/WileyCDA/\? q=javascript#contents， location 对象的内容如下表所示。
 
 1.  查询字符串
 
-location 的多数信息都可以通过上面的属性获取。但是 URL 中的查询字符串并不容易使用。虽然
-
-location.search 返回了从问号开始直到 URL 末尾的所有内容，但没有办法逐个访问每个查询参数。下面的函数解析了查询字符串，并返回一个以每个查询参数为属性的对象：
+location 的多数信息都可以通过上面的属性获取。但是 URL 中的查询字符串并不容易使用。虽然 location.search 返回了从问号开始直到 URL 末尾的所有内容，但没有办法逐个访问每个查询参数。下面的函数解析了查询字符串，并返回一个以每个查询参数为属性的对象：
 
 ```js
 let getQueryStringArgs = function() {
@@ -19585,11 +19559,7 @@ alert(args\["num"\]); // "10"
 
 URLSearchParams
 
-URLSearchParams 提供了一组标准 API 方法，通过它们可以检查和修改查询字符串。给
-
-URLSearchParams 构造函数传入一个查询字符串，就可以创建一个实例。这个实例上暴露了
-
-get() 、 set() 和 delete() 等方法，可以对查询字符串执行相应操作。下面来看一个例子：
+URLSearchParams 提供了一组标准 API 方法，通过它们可以检查和修改查询字符串。给 URLSearchParams 构造函数传入一个查询字符串，就可以创建一个实例。这个实例上暴露了 get() 、 set() 和 delete() 等方法，可以对查询字符串执行相应操作。下面来看一个例子：
 
 ```js
 let qs = '?q=javascript&num=10';
@@ -19632,9 +19602,7 @@ for (let param of searchParams) {
 location.assign[(](http://www.wrox.com/)"http://www.wrox.com");
 ```
 
-这行代码会立即启动导航到新 URL 的操作，同时在浏览器历史记录中增加一条记录。如果给
-
-location.href 或 window.location 设置一个 URL，也会以同一个 URL 值调用 assign() 方法。比如，下面两行代码都会执行与显式调用 assign() 一样的操作：
+这行代码会立即启动导航到新 URL 的操作，同时在浏览器历史记录中增加一条记录。如果给 location.href 或 window.location 设置一个 URL，也会以同一个 URL 值调用 assign() 方法。比如，下面两行代码都会执行与显式调用 assign() 一样的操作：
 
 ```js
 window.location [=](http://www.wrox.com/) "http://www.wrox.com"; location.href = ["](http://www.wrox.com/)http://www.wrox.com";
@@ -19724,9 +19692,7 @@ navigator 对象的属性通常用于确定浏览器的类型。
 
 1.  检 测 件
 
-检测浏览器是否安装了某个插件是开发中常见的需求。除 IE10 及更低版本外的浏览器，都可以通过
-
-plugins 数组来确定。这个数组中的每一项都包含如下属性。
+检测浏览器是否安装了某个插件是开发中常见的需求。除 IE10 及更低版本外的浏览器，都可以通过 plugins 数组来确定。这个数组中的每一项都包含如下属性。
 
 name ：插件名称。 description ：插件介绍。 filename ：插件的文件名。
 
@@ -19758,21 +19724,15 @@ alert(hasPlugin('Flash'));
 alert(hasPlugin('QuickTime'));
 ```
 
-这个 hasPlugin() 方法接收一个参数，即待检测插件的名称。第一步是把插件名称转换为小写形式，以便于比较。然后，遍历 plugins 数组，通过 indexOf() 方法检测每个 name 属性，看传入的名称是不是存在于某个数组中。比较的字符串全部小写，可以避免大小写问题。传入的参数应该尽可能独一无二，以避免混淆。像 "Flash" 、 "QuickTime" 这样的字符串就可以避免混淆。这个方法可以在
+这个 hasPlugin() 方法接收一个参数，即待检测插件的名称。第一步是把插件名称转换为小写形式，以便于比较。然后，遍历 plugins 数组，通过 indexOf() 方法检测每个 name 属性，看传入的名称是不是存在于某个数组中。比较的字符串全部小写，可以避免大小写问题。传入的参数应该尽可能独一无二，以避免混淆。像 "Flash" 、 "QuickTime" 这样的字符串就可以避免混淆。这个方法可以在 Firefox、Safari、Opera 和 Chrome 中检测插件。
 
-Firefox、Safari、Opera 和 Chrome 中检测插件。
-
-> 注意 plugins 数组中的每个插件对象还有一个 MimeType 对象，可以通过中括号访问。每个
-
-MimeType 对象有 4 个属性： description 描述 MIME 类型， enabledPlugin 是指向插件对象的指针， suffixes 是该 MIME 类型对应扩展名的逗号分隔的字符串， type 是完整的 MIME 类型字符串。
+> 注意 plugins 数组中的每个插件对象还有一个 MimeType 对象，可以通过中括号访问。每个 MimeType 对象有 4 个属性： description 描述 MIME 类型， enabledPlugin 是指向插件对象的指针， suffixes 是该 MIME 类型对应扩展名的逗号分隔的字符串， type 是完整的 MIME 类型字符串。
 
 IE11 的 window.navigator 对象开始支持 plugins 和 mimeTypes 属性。这意味着前面定义的函数可以适用于所有较新版本的浏览器。而且，IE11 中的 ActiveXObject 也从 DOM 中隐身了，意味着不能再用它来作为检测特性的手段。
 
 旧版本 IE 中的插件检测
 
-IE10 及更低版本中检测插件的问题比较多，因为这些浏览器不支持 Netscape 式的插件。在这些 IE 中检测插件要使用专有的 ActiveXObject ，并尝试实例化特定的插件。IE 中的插件是实现为 COM 对象的，由唯一的字符串标识。因此，要检测某个插件就必须知道其 COM 标识符。例如，Flash 的标识符
-
-是 "ShockwaveFlash.ShockwaveFlash" 。知道了这个信息后，就可以像这样检测 IE 中是否安装了 Flash：
+IE10 及更低版本中检测插件的问题比较多，因为这些浏览器不支持 Netscape 式的插件。在这些 IE 中检测插件要使用专有的 ActiveXObject ，并尝试实例化特定的插件。IE 中的插件是实现为 COM 对象的，由唯一的字符串标识。因此，要检测某个插件就必须知道其 COM 标识符。例如，Flash 的标识符是 "ShockwaveFlash.ShockwaveFlash" 。知道了这个信息后，就可以像这样检测 IE 中是否安装了 Flash：
 
 ```js
 // 在旧版本 IE 中检测插件
@@ -19795,9 +19755,7 @@ alert(hasIEPlugin('ShockwaveFlash.ShockwaveFlash'));
 alert(hasIEPlugin('QuickTime.QuickTime'));
 ```
 
-在这个例子中， hasIEPlugin() 函数接收一个 DOM 标识符参数。为检测插件，这个函数会使用传入的标识符创建一个新 ActiveXObject 实例。相应代码封装在一个 try / catch 语句中，因此如果创建的插件不存在则会抛出错误。如果创建成功则返回 true ，如果失败则在 catch 块中返回
-
-false 。上面的例子还演示了如何检测 Flash 和 QuickTime 插件。
+在这个例子中， hasIEPlugin() 函数接收一个 DOM 标识符参数。为检测插件，这个函数会使用传入的标识符创建一个新 ActiveXObject 实例。相应代码封装在一个 try / catch 语句中，因此如果创建的插件不存在则会抛出错误。如果创建成功则返回 true ，如果失败则在 catch 块中返回 false 。上面的例子还演示了如何检测 Flash 和 QuickTime 插件。
 
 因为检测插件涉及两种方式，所以一般要针对特定插件写一个函数，而不是使用通常的检测函数。比如下面的例子：
 
@@ -19841,14 +19799,14 @@ alert(hasQuickTime());
 
 现代浏览器支持 navigator 上的（在 HTML5 中定义的） registerProtocolHandler() 方法。这个方法可以把一个网站注册为处理某种特定类型信息应用程序。随着在线 RSS 阅读器和电子邮件客户端的流行，可以借助这个方法将 Web 应用程序注册为像桌面软件一样的默认应用程序。
 
-要使用 registerProtocolHandler() 方法，必须传入 3 个参数：要处理的协议
-
-（如 "mailto" 或 "ftp" ）、处理该协议的 URL，以及应用名称。比如，要把一个 Web 应用程序注册为默认邮件客户端，可以这样做：
+要使用 registerProtocolHandler() 方法，必须传入 3 个参数：要处理的协议（如 "mailto" 或 "ftp" ）、处理该协议的 URL，以及应用名称。比如，要把一个 Web 应用程序注册为默认邮件客户端，可以这样做：
 
 ```js
-navigator.registerProtocolHandler("mailto",
-"http://www.somemailclient.com?cmd=%s",
-"Some Mail Client");
+navigator.registerProtocolHandler(
+  'mailto',
+  'http://www.somemailclient.com?cmd=%s',
+  'Some Mail Client'
+);
 ```
 
 这个例子为 "mailto" 协议注册了一个处理程序，这样邮件地址就可以通过指定的 Web 应用程序打开。注意，第二个参数是负责处理请求的 URL， \%s 表示原始的请求。
@@ -19859,7 +19817,7 @@ window 的另一个属性 screen 对象，是为数不多的几个在编程中�
 
 ## 12.5 history 对象
 
-history 对象表示当前窗口首次使用以来用户的导航历史记录。因为 history 是 window 的属性，所以每个 window 都有自己的 history 对象。出于安全考虑，这个对象不会暴露用户访问过的 URL，但可以通过它在不知道实际 URL 的情况下前进和后退。
+history 对象表示当前窗口首次使用以来用户的导航历史记录。因为 hi story 是 window 的属性，所以每个 window 都有自己的 history 对象。出于安全考虑，这个对象不会暴露用户访问过的 URL，但可以通过它在不知道实际 URL 的情况下前进和后退。
 
 1.  导航
 
@@ -19902,9 +19860,7 @@ history.back();
 
 history.forward();
 
-history 对象还有一个 length 属性，表示历史记录中有多个条目。这个属性反映了历史记录的数量，包括可以前进和后退的页面。对于窗口或标签页中加载的第一个页面， history.length 等于
-
-1。通过以下方法测试这个值，可以确定用户浏览器的起点是不是你的页面：
+history 对象还有一个 length 属性，表示历史记录中有多个条目。这个属性反映了历史记录的数量，包括可以前进和后退的页面。对于窗口或标签页中加载的第一个页面， history.length 等于1。通过以下方法测试这个值，可以确定用户浏览器的起点是不是你的页面：
 
 if (history.length == 1){
 
