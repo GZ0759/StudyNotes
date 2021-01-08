@@ -233,38 +233,31 @@ var longestPalindrome = function (s='aaaa444') {
 
 ```js
 const longestPalindrome = (s) => {
-  let dp = [];
-  for (let i = 0; i < s.length; i++) {
-    dp[i] = [];
-  };
-
+  let dp = s.split('').map(() => []);
   let max = -1;
   let str = '';
-  // 这样可以遍历出所有子串, 以不同子串的开头为基准, 遍历所有子串
-  for (let k = 0; k < s.length; k++) {
-    // 采用不同的间隔依次遍历
-    // 这里 i 是子串的开始索引, j 是子串的结束索引, k + 1 其实就是子串的长度
-    for (let i = 0; i + k < s.length; i++) {
+  dp.forEach((_, k) => {
+    // k为两点差
+    dp.forEach((_, i) => {
+      // i为左点
+      // j为右点
       let j = i + k;
+      if (j >= s.length) { return; }
       if (k == 0) {
         dp[i][j] = true;
       } else if (k <= 2) {
-        if (s[i] == s[j]) {
-          dp[i][j] = true;
-        } else {
-          dp[i][j] = false;
-        }
+        dp[i][j] = s[i] == s[j];
       } else {
-        dp[i][j] = (dp[i + 1][j - 1] && s[i] == s[j]) ? true : false;
+        dp[i][j] = dp[i + 1][j - 1] && s[i] == s[j];
       }
-      if (j - i > max && dp[i][j]) {
-        max = j - i;
+      if (k > max && dp[i][j]) {
+        max = k;
         str = s.substring(i, j + 1);
       }
-    };
-  };
+    });
+  });
   return str;
-}
+};
 ```
 
 # 007 - 整数反转（reverse-integer）
