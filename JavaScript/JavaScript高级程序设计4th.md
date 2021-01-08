@@ -27924,11 +27924,11 @@ textbox.fireEvent('onkeypress', event);
 
 ## 18.1 使用 requestAnimationFrame
 
-很长时间以来，计时器和定时执行都是 JavaScript 动画最先进的工具。虽然 CSS 过渡和动画方便了 Web 开发者实现某些动画，但 JavaScript 动画领域多年来进展甚微。Firefox 4 率先在浏览器中为 JavaScript 动画增加了一个名为 mozRequestAnimationFrame()方法的 API。这个方法会告诉浏览器要执行动画了，于是浏览器可以通过最优方式确定重绘的时序。自从出现之后，这个 API 被广泛采用，现在作为 requestAnimationFrame()方法已经得到各大浏览器的支持。
+很长时间以来，计时器和定时执行都是 JavaScript 动画最先进的工具。虽然 CSS 过渡和动画方便了 Web 开发者实现某些动画，但 JavaScript 动画领域多年来进展甚微。Firefox 4 率先在浏览器中为 JavaScript 动画增加了一个名为 `mozRequestAnimationFrame()` 方法的 API。这个方法会告诉浏览器要执行动画了，于是浏览器可以通过最优方式确定重绘的时序。自从出现之后，这个 API 被广泛采用，现在作为 `requestAnimationFrame()` 方法已经得到各大浏览器的支持。
 
 ### 18.1.1 早期定时动画
 
-以前，在 JavaScript 中创建动画基本上就是使用 setInterval()来控制动画的执行。下面的例子展示了使用 setInterval()的基本模式：
+以前，在 JavaScript 中创建动画基本上就是使用 `setInterval()` 来控制动画的执行。下面的例子展示了使用 `setInterval()` 的基本模式：
 
 ```js
 (function () {
@@ -27941,14 +27941,14 @@ textbox.fireEvent('onkeypress', event);
 })();
 ```
 
-作为一个小型动画库的标配，这个 updateAnimations()方法会周期性运行注册的动画任务，并反映出每个任务的变化（例如，同时更新滚动新闻和进度条）。如果没有动画需要更新，则这个方法既可以什么也不做，直接退出，也可以停止动画循环，等待其他需要更新的动画。
+作为一个小型动画库的标配，这个 `updateAnimations()` 方法会周期性运行注册的动画任务，并反映出每个任务的变化（例如，同时更新滚动新闻和进度条）。如果没有动画需要更新，则这个方法既可以什么也不做，直接退出，也可以停止动画循环，等待其他需要更新的动画。
 这种定时动画的问题在于无法准确知晓循环之间的延时。定时间隔必须足够短，这样才能让不同的动画类型都能平滑顺畅，但又要足够长，以便产生浏览器可以渲染出来的变化。一般计算机显示器的屏幕刷新率都是 60Hz，基本上意味着每秒需要重绘 60 次。大多数浏览器会限制重绘频率，使其不超出屏幕的刷新率，这是因为超过刷新率，用户也感知不到。
 因此，实现平滑动画最佳的重绘间隔为 1000 毫秒/60，大约 17 毫秒。以这个速度重绘可以实现最平滑的动画，因为这已经是浏览器的极限了。如果同时运行多个动画，可能需要加以限流，以免 17 毫秒的重绘间隔过快，导致动画过早运行完。
-虽然使用 setInterval()的定时动画比使用多个 setTimeout()实现循环效率更高，但也不是没有问题。无论 setInterval()还是 setTimeout()都是不能保证时间精度的。作为第二个参数的延时只能保证何时会把代码添加到浏览器的任务队列，不能保证添加到队列就会立即运行。如果队列前面还有其他任务，那么就要等这些任务执行完再执行。简单来讲，这里毫秒延时并不是说何时这些代码会执行，而只是说到时候会把回调加到任务队列。如果添加到队列后，主线程还被其他任务占用，比如正在处理用户操作，那么回调就不会马上执行。
+虽然使用 `setInterval()` 的定时动画比使用多个 `setTimeout()` 实现循环效率更高，但也不是没有问题。无论 `setInterval()` 还是 `setTimeout()` 都是不能保证时间精度的。作为第二个参数的延时只能保证何时会把代码添加到浏览器的任务队列，不能保证添加到队列就会立即运行。如果队列前面还有其他任务，那么就要等这些任务执行完再执行。简单来讲，这里毫秒延时并不是说何时这些代码会执行，而只是说到时候会把回调加到任务队列。如果添加到队列后，主线程还被其他任务占用，比如正在处理用户操作，那么回调就不会马上执行。
 
 ### 18.1.2 时间间隔的问题
 
-知道何时绘制下一帧是创造平滑动画的关键。直到几年前，都没有办法确切保证何时能让浏览器把下一帧绘制出来。随着 `<canvas>`的流行和 HTML5 游戏的兴起，开发者发现 setInterval()和 setTimeout()的不精确是个大问题。
+知道何时绘制下一帧是创造平滑动画的关键。直到几年前，都没有办法确切保证何时能让浏览器把下一帧绘制出来。随着 `<canvas>`的流行和 HTML5 游戏的兴起，开发者发现 `setInterval()` 和 `setTimeout()` 的不精确是个大问题。
 浏览器自身计时器的精度让这个问题雪上加霜。浏览器的计时器精度不足毫秒。以下是几个浏览器计时器的精度情况：
 
 - IE8 及更早版本的计时器精度为 15.625 毫秒；
@@ -27960,9 +27960,9 @@ IE9 之前版本的计时器精度是 15.625 毫秒，意味着 0 ～ 15 范围�
 
 ### 18.1.3 requestAnimationFrame
 
-Mozilla 的 Robert O'Callahan 一直在思考这个问题，并提出了一个独特的方案。他指出，浏览器知道 CSS 过渡和动画应该什么时候开始，并据此计算出正确的时间间隔，到时间就去刷新用户界面。但对于 JavaScript 动画，浏览器不知道动画什么时候开始。他给出的方案是创造一个名为 mozRequestAnimationFrame()的新方法，用以通知浏览器某些 JavaScript 代码要执行动画了。这样浏览器就可以在运行某些代码后进行适当的优化。目前所有浏览器都支持这个方法不带前缀的版本，即 requestAnimationFrame()。
-requestAnimationFrame()方法接收一个参数，此参数是一个要在重绘屏幕前调用的函数。这个函数就是修改 DOM 样式以反映下一次重绘有什么变化的地方。为了实现动画循环，可以把多个
-requestAnimationFrame()调用串联起来，就像以前使用setTimeout()时一样：
+Mozilla 的 Robert O'Callahan 一直在思考这个问题，并提出了一个独特的方案。他指出，浏览器知道 CSS 过渡和动画应该什么时候开始，并据此计算出正确的时间间隔，到时间就去刷新用户界面。但对于 JavaScript 动画，浏览器不知道动画什么时候开始。他给出的方案是创造一个名为 `mozRequestAnimationFrame()` 的新方法，用以通知浏览器某些 JavaScript 代码要执行动画了。这样浏览器就可以在运行某些代码后进行适当的优化。目前所有浏览器都支持这个方法不带前缀的版本，即 `requestAnimationFrame()` 。
+`requestAnimationFrame()` 方法接收一个参数，此参数是一个要在重绘屏幕前调用的函数。这个函数就是修改 DOM 样式以反映下一次重绘有什么变化的地方。为了实现动画循环，可以把多个
+`requestAnimationFrame()` 调用串联起来，就像以前使用 `setTimeout()` 时一样：
 
 ```js
 function updateProgress() {
@@ -27975,13 +27975,13 @@ function updateProgress() {
 requestAnimationFrame(updateProgress);
 ```
 
-因为 requestAnimationFrame()只会调用一次传入的函数，所以每次更新用户界面时需要再手动调用它一次。同样，也需要控制动画何时停止。结果就会得到非常平滑的动画。
-目前为止， requestAnimationFrame()已经解决了浏览器不知道 JavaScript 动画何时开始的问题，以及最佳间隔是多少的问题，但是，不知道自己的代码何时实际执行的问题呢？这个方案同样也给出了解决方法。
-传给 requestAnimationFrame()的函数实际上可以接收一个参数，此参数是一个 DOMHighResTimeStamp 的实例（比如 performance.now() 返回的值），表示下次重绘的时间。这一点非常重要： requestAnimationFrame()实际上把重绘任务安排在了未来一个已知的时间点上，而且通过这个参数告诉了开发者。基于这个参数，就可以更好地决定如何调优动画了。
+因为 `requestAnimationFrame()` 只会调用一次传入的函数，所以每次更新用户界面时需要再手动调用它一次。同样，也需要控制动画何时停止。结果就会得到非常平滑的动画。
+目前为止， `requestAnimationFrame()` 已经解决了浏览器不知道 JavaScript 动画何时开始的问题，以及最佳间隔是多少的问题，但是，不知道自己的代码何时实际执行的问题呢？这个方案同样也给出了解决方法。
+传给 `requestAnimationFrame()` 的函数实际上可以接收一个参数，此参数是一个 DOMHighResTimeStamp 的实例（比如 `performance.now()`  返回的值），表示下次重绘的时间。这一点非常重要： `requestAnimationFrame()` 实际上把重绘任务安排在了未来一个已知的时间点上，而且通过这个参数告诉了开发者。基于这个参数，就可以更好地决定如何调优动画了。
 
 ### 18.1.4 cancelAnimationFrame
 
-与 setTimeout()类似， requestAnimationFrame()也返回一个请求 ID，可以用于通过另一个方法 cancelAnimationFrame()来取消重绘任务。下面的例子展示了刚把一个任务加入队列又立即将其取消：
+与 `setTimeout()` 类似， `requestAnimationFrame()` 也返回一个请求 ID，可以用于通过另一个方法 `cancelAnimationFrame()` 来取消重绘任务。下面的例子展示了刚把一个任务加入队列又立即将其取消：
 
 ```js
 let requestID = window.requestAnimationFrame(() => {
@@ -27992,10 +27992,10 @@ window.cancelAnimationFrame(requestID);
 
 ### 18.1.5 通过 requestAnimationFrame 节流
 
-requestAnimationFrame 这个名字有时候会让人误解，因为看不出来它跟排期任务有关。支持这个方法的浏览器实际上会暴露出作为钩子的回调队列。所谓钩子（hook），就是浏览器在执行下一次重绘之前的一个点。这个回调队列是一个可修改的函数列表，包含应该在重绘之前调用的函数。每次调用requestAnimationFrame()都会在队列上推入一个回调函数，队列的长度没有限制。
+requestAnimationFrame 这个名字有时候会让人误解，因为看不出来它跟排期任务有关。支持这个方法的浏览器实际上会暴露出作为钩子的回调队列。所谓钩子（hook），就是浏览器在执行下一次重绘之前的一个点。这个回调队列是一个可修改的函数列表，包含应该在重绘之前调用的函数。每次调用 `requestAnimationFrame()` 都会在队列上推入一个回调函数，队列的长度没有限制。
 
-这个回调队列的行为不一定跟动画有关。不过，通过 requestAnimationFrame()递归地向队列中加入回调函数，可以保证每次重绘最多只调用一次回调函数。这是一个非常好的节流工具。在频繁执行影响页面外观的代码时（比如滚动事件监听器），可以利用这个回调队列进行节流。
-先来看一个原生实现，其中的滚动事件监听器每次触发都会调用名为 expensiveOperation()（耗时操作）的函数。当向下滚动网页时，这个事件很快就会被触发并执行成百上千次：
+这个回调队列的行为不一定跟动画有关。不过，通过 `requestAnimationFrame()` 递归地向队列中加入回调函数，可以保证每次重绘最多只调用一次回调函数。这是一个非常好的节流工具。在频繁执行影响页面外观的代码时（比如滚动事件监听器），可以利用这个回调队列进行节流。
+先来看一个原生实现，其中的滚动事件监听器每次触发都会调用名为 `expensiveOperation()`（耗时操作）的函数。当向下滚动网页时，这个事件很快就会被触发并执行成百上千次：
 
 ```js
 function expensiveOperation() {
@@ -28006,7 +28006,7 @@ window.addEventListener('scroll', () => {
 });
 ```
 
-如果想把事件处理程序的调用限制在每次重绘前发生，那么可以像这样下面把它封装到 requestAnimationFrame()调用中：
+如果想把事件处理程序的调用限制在每次重绘前发生，那么可以像这样下面把它封装到 `requestAnimationFrame()` 调用中：
 
 ```js
 function expensiveOperation() {
@@ -28060,7 +28060,7 @@ window.addEventListener('scroll', () => {
 ```
 
 与其他元素一样， width 和 height 属性也可以在 DOM 节点上设置，因此可以随时修改。整个元素还可以通过 CSS 添加样式，并且元素在添加样式或实际绘制内容前是不可见的。
-要在画布上绘制图形，首先要取得绘图上下文。使用 getContext()方法可以获取对绘图上下文的引用。对于平面图形，需要给这个方法传入参数 "2d"，表示要获取 2D 上下文对象：
+要在画布上绘制图形，首先要取得绘图上下文。使用 `getContext()` 方法可以获取对绘图上下文的引用。对于平面图形，需要给这个方法传入参数 "2d"，表示要获取 2D 上下文对象：
 
 ```js
 let drawing = document.getElementById('drawing');
@@ -28071,8 +28071,8 @@ if (drawing.getContext) {
 }
 ```
 
-使用 `<canvas>`元素时，最好先测试一下 getContext()方法是否存在。有些浏览器对 HTML 规范中没有的元素会创建默认 HTML 元素对象。这就意味着即使 drawing 包含一个有效的元素引用， getContext()方法也未必存在。
-可以使用 toDataURL()方法导出 `<canvas>`元素上的图像。这个方法接收一个参数：要生成图像的 MIME 类型（与用来创建图形的上下文无关）。例如，要从画布上导出一张 PNG 格式的图片，可以这样做：
+使用 `<canvas>`元素时，最好先测试一下 `getContext()` 方法是否存在。有些浏览器对 HTML 规范中没有的元素会创建默认 HTML 元素对象。这就意味着即使 drawing 包含一个有效的元素引用， `getContext()` 方法也未必存在。
+可以使用 `toDataURL()` 方法导出 `<canvas>`元素上的图像。这个方法接收一个参数：要生成图像的 MIME 类型（与用来创建图形的上下文无关）。例如，要从画布上导出一张 PNG 格式的图片，可以这样做：
 
 ```js
 let drawing = document.getElementById('drawing');
@@ -28087,9 +28087,9 @@ if (drawing.getContext) {
 }
 ```
 
-浏览器默认将图像编码为 PNG 格式，除非另行指定。Firefox 和 Opera 还支持传入 "image/jpeg"进行 JPEG 编码。因为这个方法是后来才增加到规范中的，所以支持的浏览器也是在后面的版本实现的，包括 IE9、Firefox 3.5 和 Opera 10。
+浏览器默认将图像编码为 PNG 格式，除非另行指定。Firefox 和 Opera 还支持传入 "image/jpeg" 进行 JPEG 编码。因为这个方法是后来才增加到规范中的，所以支持的浏览器也是在后面的版本实现的，包括 IE9、Firefox 3.5 和 Opera 10。
 
-如果画布中的图像是其他域绘制过来的， toDataURL()方法就会抛出错误。相关内容本章后面会讨论。
+如果画布中的图像是其他域绘制过来的， `toDataURL()` 方法就会抛出错误。相关内容本章后面会讨论。
 
 ## 18.3 2D 绘图上下文
 
@@ -28114,7 +28114,7 @@ if (drawing.getContext) {
 
 ### 18.3.2 绘制矩形
 
-矩形是唯一一个可以直接在 2D 绘图上下文中绘制的形状。与绘制矩形相关的方法有 3 个： fillRect()、 strokeRect()和 clearRect()。这些方法都接收 4 个参数：矩形 x 坐标、矩形 y 坐标、矩形宽度和矩形高度。这几个参数的单位都是像素。 fillRect()方法用于以指定颜色在画布上绘制并填充矩形。填充的颜色使用 fillStyle 属性指定。来看下面的例子：
+矩形是唯一一个可以直接在 2D 绘图上下文中绘制的形状。与绘制矩形相关的方法有 3 个： `fillRect()` 、 `strokeRect()` 和 `clearRect()` 。这些方法都接收 4 个参数：矩形 x 坐标、矩形 y 坐标、矩形宽度和矩形高度。这几个参数的单位都是像素。 `fillRect()` 方法用于以指定颜色在画布上绘制并填充矩形。填充的颜色使用 fillStyle 属性指定。来看下面的例子：
 
 ```js
 let drawing = document.getElementById('drawing');
@@ -28665,14 +28665,12 @@ gl = drawing.getContext("webgl");
 if (gl) {
 //使用WebGL
 } else {
-alert("WebGL context could not be
-created.");
+alert("WebGL context could not becreated.");
 } }
 ```
 
 1. 常量如果你熟悉 OpenGL，那么可能知道用于操作的各种常量。这些常量在 OpenGL 中的名字以 GL*开头。在 WebGL 中， context 对象上的常量则不包含 GL*前缀。例如， GL_COLOR_BUFFER_BIT 常量在 WebGL 中要这样访问 gl.COLOR_BUFFER_BIT。WebGL 以这种方式支持大部分 OpenGL 常量（少数常量不支持）。
-2. 方法命名 OpenGL（同时也是 WebGL）中的很多方法会包含相关的数据类型信息。接收不同类型和不同数量参数的方法，会通过方法名的后缀体现这些信息。表示参数数量的数字（1~4）在先，表示数
-   据类型的字符串（“f”表示浮点数，“i”表示整数）在后。比如， gl.uniform4f()的意思是需要 4 个浮点数值参数，而 gl.uniform3i()表示需要 3 个整数值参数。
+2. 方法命名 OpenGL（同时也是 WebGL）中的很多方法会包含相关的数据类型信息。接收不同类型和不同数量参数的方法，会通过方法名的后缀体现这些信息。表示参数数量的数字（1~4）在先，表示数据类型的字符串（“f”表示浮点数，“i”表示整数）在后。比如， gl.uniform4f()的意思是需要 4 个浮点数值参数，而 gl.uniform3i()表示需要 3 个整数值参数。
    还有很多方法接收数组，这类方法用字母“v”（vector）来表示。因此， gl.uniform3iv()就是要接收一个包含 3 个值的数组参数。在编写 WebGL 代码时，要记住这些约定。
 3. 准备绘图准备使用 WebGL 上下文之前，通常需要先指定一种实心颜色清除 `<canvas>`。为此，要调用 clearColor()方法并传入 4 个参数，分别表示红、绿、蓝和透明度值。每个参数必须是 0~1 范围内的值，表示各个组件在最终颜色的强度。比如：
 
@@ -28717,8 +28715,7 @@ gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([0, 0.5, 1]), gl.STATIC_DRAW);
 gl.deleteBuffer(buffer);
 ```
 
-6. 错误与 JavaScript 多数情况下不同的是，在 WebGL 操作中通常不会抛出错误。必须在调用可能失败的方法后，调用 gl.getError() 方法。这个方法返回一个常量，表示发生的错误类型。下面列出
-   了这些常量。 gl.NO_ERROR：上一次操作没有发生错误（0 值）。 gl.INVALID_ENUM：上一次操作没有传入 WebGL 预定义的常量。 gl.INVALID_VALUE：上一次操作需要无符号数值，但是传入了负数。 gl.INVALID_OPERATION：上一次操作在当前状态下无法完成。 gl.OUT_OF_MEMORY：上一次操作因内存不足而无法完成。 gl.CONTEXT_LOST_WEBGL：上一次操作因外部事件（如设备掉电）而丢失了 WebGL 上下文。每次调用 gl.getError()方法会返回一个错误值。第一次调用之后，再调用 gl.getError()可能会返回另一个错误值。如果有多个错误，则可以重复这个过程，直到 gl.getError()返回 gl.NO_ERROR。如果执行了多次操作，那么可以通过循环调用 getError()：
+6. 错误与 JavaScript 多数情况下不同的是，在 WebGL 操作中通常不会抛出错误。必须在调用可能失败的方法后，调用 gl.getError() 方法。这个方法返回一个常量，表示发生的错误类型。下面列出了这些常量。 gl.NO_ERROR：上一次操作没有发生错误（0 值）。 gl.INVALID_ENUM：上一次操作没有传入 WebGL 预定义的常量。 gl.INVALID_VALUE：上一次操作需要无符号数值，但是传入了负数。 gl.INVALID_OPERATION：上一次操作在当前状态下无法完成。 gl.OUT_OF_MEMORY：上一次操作因内存不足而无法完成。 gl.CONTEXT_LOST_WEBGL：上一次操作因外部事件（如设备掉电）而丢失了 WebGL 上下文。每次调用 gl.getError()方法会返回一个错误值。第一次调用之后，再调用 gl.getError()可能会返回另一个错误值。如果有多个错误，则可以重复这个过程，直到 gl.getError()返回 gl.NO_ERROR。如果执行了多次操作，那么可以通过循环调用 getError()：
 
 ```js
 let errorCode = gl.getError();
@@ -28841,7 +28838,9 @@ if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
 ```
 
 这个升级需要一些语法的变化。
-顶点 attribute 变量要使用 in 而不是 attribute 关键字声明。使用 varying 关键字为顶点或片段着色器声明的变量，现在必须根据相应着色器的行为改为使用 in 或 out。预定义的输出变量 gl_FragColor 没有了，片段着色器必须为颜色输出声明自己的 out 变量。纹理查找函数 texture2D 和 textureCube 统一成了一个 texture 函数。 8. 绘图
+顶点 attribute 变量要使用 in 而不是 attribute 关键字声明。使用 varying 关键字为顶点或片段着色器声明的变量，现在必须根据相应着色器的行为改为使用 in 或 out。预定义的输出变量 gl_FragColor 没有了，片段着色器必须为颜色输出声明自己的 out 变量。纹理查找函数 texture2D 和 textureCube 统一成了一个 texture 函数。 
+
+8. 绘图
 WebGL 只能绘制三种形状：点、线和三角形。其他形状必须通过这三种基本形状在 3D 空间的组合来绘制。WebGL 绘图要使用 drawArrays()和 drawElements()方法，前者使用数组缓冲区，后者则操作元素数组缓冲区。 drawArrays()和 drawElements()的第一个参数都表示要绘制形状的常量。下面列出了这些常量。 gl.POINTS：将每个顶点当成一个点来绘制。 gl.LINES：将数组作为一系列顶点，在这些顶点间绘制直线。每个顶点既是起点也是终点，因此数组中的顶点必须是偶数个才能开始绘制。
 gl.LINE_LOOP：将数组作为一系列顶点，在这些顶点间绘制直线。从第一个顶点到第二个顶点绘制一条直线，再从第二个顶点到第三个顶点绘制一条直线，以此类推，直到绘制到最后一个顶点。此时再从最后一个顶点到第一个顶点绘制一条直线。这样就可以绘制出形状的轮廓。
 gl.LINE_STRIP：类似于 gl.LINE_LOOP，区别在于不会从最后一个顶点到第一个顶点绘制直线。
