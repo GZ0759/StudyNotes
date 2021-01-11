@@ -19937,9 +19937,7 @@ BOM 中的另外两个对象也提供了一些功能。 screen 对象中保存�
 
 虽然浏览器厂商齐心协力想要实现一致的接口，但事实上仍然是每家浏览器都有自己的长处与不足。跨平台的浏览器尽管版本相同，但总会存在不同的问题。这些差异迫使 Web 开发者要么面向最大公约数而设计，要么（更常见地）使用各种方法来检测客户端，以克服或避免这些缺陷。
 
-客户端检测一直是 Web 开发中饱受争议的话题，这些话题普遍围绕所有浏览器应支持一系列公共特性，理想情况下是这样的。而现实当中，浏览器之间的差异和莫名其妙的行为，让客户端检测变成一种补救措施，而且也成为了开发策略的重要一环。如今，浏览器之间的差异相对 IE 大溃败以前已经好很多了，但浏览器间的不一致性依旧是
-
-Web 开发中的常见主题。
+客户端检测一直是 Web 开发中饱受争议的话题，这些话题普遍围绕所有浏览器应支持一系列公共特性，理想情况下是这样的。而现实当中，浏览器之间的差异和莫名其妙的行为，让客户端检测变成一种补救措施，而且也成为了开发策略的重要一环。如今，浏览器之间的差异相对 IE 大溃败以前已经好很多了，但浏览器间的不一致性依旧是 Web 开发中的常见主题。
 
 要检测当前的浏览器有很多方法，每一种都有各自的长处和不 足。问题的关键在于知道客户端检测应该是解决问题的最后一个举 措。任何时候，只要有更普适的方案可选，都应该毫不犹豫地选择。首先要设计最常用的方案，然后再考虑为特定的浏览器进行补救。
 
@@ -19953,9 +19951,11 @@ if (object.propertyInQuestion) {
 // 使用 object.propertyInQuestion
 
 }
+```
 
 比如，IE5 之前的版本中没有 document.getElementById()这个 DOM 方法，但可以通过 document.all 属性实现同样的功能。为此，可以进行如下能力检测：
 
+```
 function getElement(id) {
 
 if (document.getElementById) {
@@ -19973,13 +19973,9 @@ throw new Error("No way to retrieve element!");
 }
 ```
 
-这个 getElement() 函数的目的是根据给定的 ID 获取元素。因为标准的方式是使用 document.getElementById() ，所以首先测试它。如果这个函数存在（不是 undefined ），那就使用这个方法；否则检测 document.all 是否存在，如果存在则使用。如果这
+这个 getElement() 函数的目的是根据给定的 ID 获取元素。因为标准的方式是使用 document.getElementById() ，所以首先测试它。如果这个函数存在（不是 undefined ），那就使用这个方法；否则检测 document.all 是否存在，如果存在则使用。如果这两个能力都不存在（基本上不可能），则抛出错误说明功能无法实现。
 
-两个能力都不存在（基本上不可能），则抛出错误说明功能无法实现。
-
-能力检测的关键是理解两个重要概念。首先，如前所述，应该先检测最常用的方式。在前面的例子中就是先检测
-
-document.getElementById() 再检测 document.all 。测试最常用的方案可以优化代码执行，这是因为在多数情况下都可以避免无谓检测。
+能力检测的关键是理解两个重要概念。首先，如前所述，应该先检测最常用的方式。在前面的例子中就是先检测 document.getElementById() 再检测 document.all 。测试最常用的方案可以优化代码执行，这是因为在多数情况下都可以避免无谓检测。
 
 其次是必须检测切实需要的特性。某个能力存在并不代表别的能力也存在。比如下面的例子：
 
@@ -20001,9 +19997,7 @@ return window.innerWidth;
 }
 ```
 
-这个例子展示了不正确的能力检测方式。 getWindowWidth()函数首先检测 document.all 是否存在，如果存在则返回 document.documentElement.clientWidth ，理由是 IE8 及更低版本不支持 window.innerWidth 。这个例子的问题在于检测到
-
-document.all 存在并不意味着浏览器是 IE。事实，也可能是某个早期版本的 Opera，既支持 document.all 也支持 windown.innerWidth 。
+这个例子展示了不正确的能力检测方式。 getWindowWidth()函数首先检测 document.all 是否存在，如果存在则返回 document.documentElement.clientWidth ，理由是 IE8 及更低版本不支持 window.innerWidth 。这个例子的问题在于检测到 document.all 存在并不意味着浏览器是 IE。事实，也可能是某个早期版本的 Opera，既支持 document.all 也支持 windown.innerWidth 。
 
 1.  安全能力检测
 
@@ -20037,9 +20031,7 @@ return typeof object.sort == "function";
 
 上面的代码中使用的 typeof 操作符可以确定 sort 是不是函数，从而确认是否可以调用它对数据进行排序。
 
-进行能力检测时应该尽量使用 typeof 操作符，但光有它还不 够。尤其是某些宿主对象并不保证对 typeof 测试返回合理的值。最
-
-有名的例子就是 Internet Explorer（IE）。在多数浏览器中，下面的代码都会在 document.createElement() 存在时返回 true ：
+进行能力检测时应该尽量使用 typeof 操作符，但光有它还不 够。尤其是某些宿主对象并不保证对 typeof 测试返回合理的值。最有名的例子就是 Internet Explorer（IE）。在多数浏览器中，下面的代码都会在 document.createElement() 存在时返回 true ：
 
 ```
 // 不适用于 IE8 及更低版本
@@ -20053,9 +20045,7 @@ return typeof document.createElement == "function";
 
 但在 IE8 及更低版本中，这个函数会返回 false 。这是因为
 
-typeof document.createElement 返回 "object" 而" "function" 。前面提到过，DOM 对象是宿主对象，而宿主对象在 IE8 及更低版本中是通过 COM 而非 JScript 实现的。因此，
-
-document.createElement() 函数被实现为 COM 对象，
+typeof document.createElement 返回 "object" 而" "function" 。前面提到过，DOM 对象是宿主对象，而宿主对象在 IE8 及更低版本中是通过 COM 而非 JScript 实现的。因此， document.createElement() 函数被实现为 COM 对象，
 
 typeof 返回 "object" 。IE9 对 DOM 方法会返回 "function" 。
 
@@ -20067,9 +20057,7 @@ typeof 返回 "object" 。IE9 对 DOM 方法会返回 "function" 。
 
 1.  检测特性
 
-可以按照能力将浏览器归类。如果你的应用程序需要使用特定的浏览器能力，那么最好集中检测所有能力，而不是等到用的时候
-
-再重复检测。比如：
+可以按照能力将浏览器归类。如果你的应用程序需要使用特定的浏览器能力，那么最好集中检测所有能力，而不是等到用的时候再重复检测。比如：
 
 ```
 // 检测浏览器是否支持 Netscape 式的插件
@@ -20197,11 +20185,7 @@ let isFirefox = !!(navigator.vendor \&\& navigator.vendorSub);
 let isIE = !!(document.all \&\& document.uniqueID);
 ```
 
-这是错误使用能力检测的典型示例。过去，Firefox 可以通过
-
-navigator.vendor 和 navigator.vendorSub 来检测，但后来 Safari 也实现了同样的属性，于是这段代码就会产生误报。为确定 IE，这段代码检测了 document.all 和
-
-document.uniqueID 。这是假设 IE 将来的版本中还会继续存在这两个属性，而且其他浏览器也不会实现它们。不过这两个检测都使用双重否定操作符来产生布尔值（这样可以生成便于存储和访问的结果）。
+这是错误使用能力检测的典型示例。过去，Firefox 可以通过 navigator.vendor 和 navigator.vendorSub 来检测，但后来 Safari 也实现了同样的属性，于是这段代码就会产生误报。为确定 IE，这段代码检测了 document.all 和 document.uniqueID 。这是假设 IE 将来的版本中还会继续存在这两个属性，而且其他浏览器也不会实现它们。不过这两个检测都使用双重否定操作符来产生布尔值（这样可以生成便于存储和访问的结果）。
 
 > 注意 能力检测最适合用于决定下一步该怎么做，而不一定能够作为辨识浏览器的标志。
 
@@ -20222,19 +20206,15 @@ HTTP 规范（1.0 和 1.1）要求浏览器应该向服务器发送包含浏览�
 1.  早期浏览器
 
 美国国家超级计算应用中心（NCSA，National Center for Supercomputing Applications）发布于 1993 年的 Mosaic 是早期 Web 浏览器的代表，其用户代理字符串相当简单，类似于：
-
+```
 Mosaic/0.9
+```
+虽然在不同操作系统和平台中可能会有所不同，但基本形式都是这么简单直接。斜杠前是产品名称（有时候可能是“NCSA Mosaic”之类的），斜杠后是产品版本。
 
-虽然在不同操作系统和平台中可能会有所不同，但基本形式都是这么简单直接。斜杠前是产品名称（有时候可能是“NCSA
-
-Mosaic”之类的），斜杠后是产品版本。
-
-在网景公司准备开发浏览器时，代号确定为“Mozilla”（Mosaic
-
-Killer 的简写）。第一个公开发行版 Netscape Navigator 2 的用户代理字符串是这样的：
-
+在网景公司准备开发浏览器时，代号确定为“Mozilla”（Mosaic Killer 的简写）。第一个公开发行版 Netscape Navigator 2 的用户代理字符串是这样的：
+```
 Mozilla/Version \[Language\] (Platform; Encryption)
-
+```
 网景公司遵守了将产品名称和版本作为用户代理字符串的规定，但又在后面添加了如下信息。
 
 Language：语言代码，表示浏览器的目标使用语言。
@@ -20244,34 +20224,38 @@ Platform：表示浏览器所在的操作系统和/或平台。
 Encryption：包含的安全加密类型，可能的值是 U（128 位加密）、I（40 位加密）和 N（无加密）。
 
 Netscape Navigator 2 的典型用户代理字符串如下所示：
-
+```
 Mozilla/2.02 \[fr\] (WinNT; I)
-
+```
 这个字符串表示 Netscape Navigator 2.02，在主要使用法语地区的发行，运行在 Windows NT 上，40 位加密。总体上看，通过产品名称还是很容易知道这是什么浏览器的。
 
 2.  Netscape Navigator 3 和 IE3 1996 年，Netscape Navigator 3 发布之后超过 Mosaic 成为最受欢迎的浏览器。其用户代理字符串也发生了一些小变化，删除了语言信息，并将操作系统或系统 CPU 信息（OS-or-CPU description）等列为可选信息。此时的格式如下：
 
+```
 Mozilla/Version (Platform; Encryption \[; OS\- or\-CPU description\])
+```
 
 运行在 Windows 系统上的 Netscape Navigator 3 的典型用户代理字符串如下：
 
+```
 Mozilla/3.0 (Win95; U)
+```
 
 这个字符串表示 Netscape Navigator 3 运行在 Windows 95 上，采用了 128 位加密。注意在 Windows 系统上，没有“OS-or-CPU”部分。 Netscape Navigator 3 发布后不久，微软也首次对外发布了 IE3。这是因为当时 Netscape Navigator 是市场占有率最高的浏览器，很多服务器在返回网页之前都会特意检测其用户代理字符串。如果 IE 因此打不开网页，那么这个当时初出茅庐的浏览器就会遭受重 创。为此，IE 就在用户代理字符串中添加了兼容 Netscape 用户代理字符串的内容。结果格式为：
 
+```
 Mozilla/2.0 (compatible; MSIE Version; Operating System)
+```
 
 比如，Windows 95 平台上的 IE3.02 的用户代理字符串如下：
 
+```
 Mozilla/2.0 (compatible; MSIE 3.02; Windows 95)
+```
 
-当时的大多数浏览器检测程序都只看用户代理字符串中的产品名称，因此 IE 成功地将自己伪装成了 Mozilla，也就是 Netscape
+当时的大多数浏览器检测程序都只看用户代理字符串中的产品名称，因此 IE 成功地将自己伪装成了 Mozilla，也就是 Netscape Navigator。这个做法引发了一些争议，因为它违反了浏览器标识的初衷。另外，真正的浏览器版本也跑到了字符串中间。
 
-Navigator。这个做法引发了一些争议，因为它违反了浏览器标识的初衷。另外，真正的浏览器版本也跑到了字符串中间。
-
-这个字符串中还有一个地方很有意思，即它将自己标识为 Mozilla
-
-2.0 而不是 3.0。3.0 是当时市面上使用最多的版本，按理说使用这个版本更合逻辑。背后的原因至今也没有揭开，不过很可能就是当事人一时大意造成的。
+这个字符串中还有一个地方很有意思，即它将自己标识为 Mozilla 2.0 而不是 3.0。3.0 是当时市面上使用最多的版本，按理说使用这个版本更合逻辑。背后的原因至今也没有揭开，不过很可能就是当事人一时大意造成的。
 
 3.  Netscape Communicator4 和 IE4\~8
 
@@ -20386,9 +20370,7 @@ Mozilla/5.0 (Windows NT 6.1; rv:2.0.1) Gecko/20100101 Firefox 4.0.1
 
 2003 年，苹果宣布将发布自己的浏览器 Safari。Safari 的渲染引擎叫 WebKit，是基于 Linux 平台浏览器 Konqueror 使用的渲染引擎 KHTML 开发的。几年后，WebKit 又分叉出自己的开源项目，专注于渲染引擎开发。
 
-这个新浏览器和渲染引擎的开发者也面临与当初 IE3.0 时代同样的问题：怎样才能保证浏览器不被排除在流行的站点之外。答案就
-
-是在用户代理字符串中添加足够多的信息，让网站知道这个浏览器与其他浏览器是兼容的。于是 Safari 就有了下面这样的用户代理字符串：
+这个新浏览器和渲染引擎的开发者也面临与当初 IE3.0 时代同样的问题：怎样才能保证浏览器不被排除在流行的站点之外。答案就是在用户代理字符串中添加足够多的信息，让网站知道这个浏览器与其他浏览器是兼容的。于是 Safari 就有了下面这样的用户代理字符串：
 
 Mozilla/5.0 (Platform; Encryption; OS\-or\-CPU; Language)
 
@@ -20432,9 +20414,7 @@ Mozilla/5.0 (compatible; Konqueror/3.5; SunOS) KHTML/3.5.0 (like Gecko)
 
 Konqueror 和 KHTML 的版本号通常是一致的，有时候也只有子版本号不同。比如 Konqueror 是 3.5，而 KHTML 是 3.5.1。 7. Chrome
 
-谷歌的 Chrome 浏览器使用 Blink 作为渲染引擎，使用 V8 作为
-
-JavaScript 引擎。Chrome 的用户代理字符串包含所有 WebKit 的信息，另外又加上了 Chrome 及其版本的信息。其格式如下所示：
+谷歌的 Chrome 浏览器使用 Blink 作为渲染引擎，使用 V8 作为 JavaScript 引擎。Chrome 的用户代理字符串包含所有 WebKit 的信息，另外又加上了 Chrome 及其版本的信息。其格式如下所示：
 
 Mozilla/5.0 (Platform; Encryption; OS\-or\-CPU; Language)
 
@@ -20450,7 +20430,9 @@ US) AppleWebKit/534.7
 
 (KHTML, like Gecko) Chrome/7.0.517.44 Safari/534.7
 
-其中的 Safari 版本和 WebKit 版本有可能始终保持一致，但也不能肯定。 8. Opera
+其中的 Safari 版本和 WebKit 版本有可能始终保持一致，但也不能肯定。 
+
+8. Opera
 
 在用户代理字符串方面引发争议最大的一个浏览器就是 Opera。
 
@@ -20510,7 +20492,9 @@ Opera 最近的版本已经改为在更标准的字符串末尾追加 "OPR" 标�
 
 Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36 OPR/52.0.2871.64
 
-9.  iOS 与 Android iOS 和 Androd 移动操作系统上默认的浏览器都是基于 WebKit 的，因此具有与相应桌面浏览器一样的用户代理字符串。iOS 设备遵循以下基本格式：
+9.  iOS 与 Android 
+
+iOS 和 Androd 移动操作系统上默认的浏览器都是基于 WebKit 的，因此具有与相应桌面浏览器一样的用户代理字符串。iOS 设备遵循以下基本格式：
 
 Mozilla/5.0 (Platform; Encryption; OS\-or\-CPU like Mac OS X; Language)
 
@@ -20648,13 +20632,13 @@ console.log(navigator.userAgent); "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:
 
 navigator.vendor 属性是一个字符串，通常包含浏览器开发商信息。返回这个字符串是浏览器 navigator 兼容模式的一个功能。根据 HTML 实时标准：
 
-navigator.vendor 返回一个空字符串，也可能返回字符串 "Apple Computer, Inc." 或字符串 "Google
-
-Inc." 。
+navigator.vendor 返回一个空字符串，也可能返回字符串 "Apple Computer, Inc." 或字符串 "Google Inc." 。
 
 例如，Chrome 中的这个 navigator.vendor 属性返回下面的字符串：
 
+```
 console.log(navigator.vendor); // "Google Inc."
+```
 
 3.  navigator.platform
 
@@ -20690,9 +20674,7 @@ console.log(screen.pixelDepth); // 24
 
 5.  screen.orientation
 
-screen.orientation 属性返回一个
-
-ScreenOrientation 对象，其中包含 Screen Orientation API 定义的屏幕信息。这里面最有意思的属性是 angle 和 type ，前者返回相对于默认状态下屏幕的角度，后者返回以下 4 种枚举值之一：
+screen.orientation 属性返回一个 ScreenOrientation 对象，其中包含 Screen Orientation API 定义的屏幕信息。这里面最有意思的属性是 angle 和 type ，前者返回相对于默认状态下屏幕的角度，后者返回以下 4 种枚举值之一：
 
 portrait-primary portrait-secondary landscape-primary landscape-secondary
 
@@ -20720,9 +20702,7 @@ navigator.geolocation 属性暴露了 Geolocation API，可以让浏览器脚本
 
 手机 GPS 的坐标系统可能具有极高的精度，而 IP 地址的精度就要差很多。根据 Geolocation API 规范：
 
-地理位置信息的主要来源是 GPS 和 IP 地址、射频识别
-
-（RFID）、Wi\-Fi 及蓝牙 Mac 地址、GSM/CDMA 蜂窝 ID 以及用户输入等信息。
+地理位置信息的主要来源是 GPS 和 IP 地址、射频识别（RFID）、Wi\-Fi 及蓝牙 Mac 地址、GSM/CDMA 蜂窝 ID 以及用户输入等信息。
 
 > 注意 浏览器也可能会利用 Google Location Service（Chrome 和 Firefox）等服务确定位置。有时候，你可能会发现自己并没有 GPS，但浏览器给出的坐标却非常精确。浏览器会收集所有可用的无线网络，包括 Wi-Fi 和蜂窝信号。拿到这些信息后，再去查询网络数据库。这样就可以精确地报告出你的设备位置。
 
@@ -20772,9 +20752,7 @@ Coordinates 对象包含一个 speed 属性，表示设备每秒移动的速度�
 
 > 注意 设备不会根据两点的向量来测量速度和朝向。不过，如果可能的话，可以尝试基于两次连续的测量数据得到的向量来手动计算。当然，如果向量的精度不够，那么计算结果的精度肯定也不够。
 
-获取浏览器地理位置并不能保证成功。因此
-
-getCurrentPosition() 方法也接收失败回调函数作为第二个参数，这个函数会收到一个 PositionError 对象。在失败的情况下， PositionError 对象中会包含一个 code 属性和一个 message 属性，后者包含对错误的简短描述。 code 属性是一个整数，表示以下 3 种错误。
+获取浏览器地理位置并不能保证成功。因此 getCurrentPosition() 方法也接收失败回调函数作为第二个参数，这个函数会收到一个 PositionError 对象。在失败的情况下， PositionError 对象中会包含一个 code 属性和一个 message 属性，后者包含对错误的简短描述。 code 属性是一个整数，表示以下 3 种错误。
 
 PERMISSION_DENIED ：浏览器未被允许访问设备位置。页面第一次尝试访问 Geolocation API 时，浏览器会弹出确认对话框取得用户授权（每个域分别获取）。如果返回了这个错误码，则要么是用户不同意授权，要么是在不安全的环境下访问了 Geolocation API。 message 属性还会提供额外信息。
 
@@ -20856,9 +20834,7 @@ navigator.connection 属性使用。这个 API 提供了一些只读属性，并
 
 downlink ：整数，表示当前设备的带宽（以 Mbit/s 为单 位），舍入到最接近的 25kbit/s。这个值可能会根据历史网络吞吐量计算，也可能根据连接技术的能力来计算。 downlinkMax ：整数，表示当前设备最大的下行带宽（以 Mbit/s 为单位），根据网络的第一跳来确定。因为第一跳不一定反映端到端的网络速度，所以这个值只能用作粗略的上限值。
 
-effectiveType ：字符串枚举值，表示连接速度和质
-
-量。这些值对应不同的蜂窝数据网络连接技术，但也用于分类无线网络。这个值有以下 4 种可能。
+effectiveType ：字符串枚举值，表示连接速度和质量。这些值对应不同的蜂窝数据网络连接技术，但也用于分类无线网络。这个值有以下 4 种可能。
 
 slow-2g
 
@@ -20916,9 +20892,7 @@ charging ：布尔值，表示设备当前是否正接入电源充电。如果�
 
 dischargingTime ：整数，表示预计离电量耗尽还有多少秒。如果设备没有电池，则返回 `Infinity` 。
 
-level ：浮点数，表示电量百分比。电量完全耗尽返回
-
-0.0，电池充满返回 1.0。如果设备没有电池，则返回 1.0。
+level ：浮点数，表示电量百分比。电量完全耗尽返回0.0，电池充满返回 1.0。如果设备没有电池，则返回 1.0。
 
 这个 API 还提供了 4 个事件属性，可用于设置在相应的电池事件发生时调用的回调函数。可以通过给 BatteryManager 添加事件监听器，也可以通过给事件属性赋值来使用这些属性。
 
@@ -20982,9 +20956,7 @@ navigator.hardwareConcurrency 属性返回浏览器支持的逻辑处理器核�
 
 2.  设备内存大小
 
-navigator.deviceMemory 属性返回设备大致的系统内存大小，包含单位为 GB 的浮点数（舍入为最接近的 2 的幂：512MB 返
-
-回 0.5，4GB 返回 4）。
+navigator.deviceMemory 属性返回设备大致的系统内存大小，包含单位为 GB 的浮点数（舍入为最接近的 2 的幂：512MB 返回 0.5，4GB 返回 4）。
 
 3.  最大触点数
 
