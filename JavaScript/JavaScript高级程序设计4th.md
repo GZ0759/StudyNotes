@@ -20279,11 +20279,7 @@ Mozilla/4.0 (compatible; MSIE Version; Operating System)
 
 Mozilla/4.0 (compatible; MSIE 4.0; Windows 98)
 
-更新版本号之后，IE 的版本号跟 Mozilla 的就一致了，识别同为第
-
-4 代的两款浏览器也方便 了。可是，这种版本同步就此打住。在
-
-IE4.5（只针对 Mac）面世时，Mozilla 的版本号还是 4，IE 的版本号却变了：
+更新版本号之后，IE 的版本号跟 Mozilla 的就一致了，识别同为第 4 代的两款浏览器也方便 了。可是，这种版本同步就此打住。在 IE4.5（只针对 Mac）面世时，Mozilla 的版本号还是 4，IE 的版本号却变了：
 
 Mozilla/4.0 (compatible; MSIE 4.5; Mac_PowerPC)
 
@@ -20299,9 +20295,7 @@ Mozilla/4.0 (compatible; MSIE Version; Operating System; Trident/TridentVersion)
 
 Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 5.1; Trident/4.0)
 
-这个新增的“Trident”是为了让开发者知道什么时候 IE8 运行兼容模式。在兼容模式下，MSIE 的版本会变成 7，但 Trident 的版本不
-
-变：
+这个新增的“Trident”是为了让开发者知道什么时候 IE8 运行兼容模式。在兼容模式下，MSIE 的版本会变成 7，但 Trident 的版本不变：
 
 Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.1; Trident/4.0)
 
@@ -20315,7 +20309,9 @@ Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; Trident/5.0)
 
 Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 6.1; Trident/5.0)
 
-所有这些改变都是为了让之前的用户代理检测脚本正常运作，同时还能为新脚本提供额外的信息。 4. Gecko
+所有这些改变都是为了让之前的用户代理检测脚本正常运作，同时还能为新脚本提供额外的信息。 
+
+4. Gecko
 
 Gecko 渲染引擎是 Firefox 的核心。Gecko 最初是作为通用 Mozilla 浏览器（即后来的 Netscape 6）的一部分开发的。有一个针对 Netscape 6 的用户代理字符串规范，规定了未来的版本应该如何构造这个字符串。新的格式与之前一直沿用到 4.版的格式有了很大出入：
 
@@ -20396,9 +20392,7 @@ AppleWebKit/522.15.5
 
 (KHTML, like Gecko) Version/3.0.3 Safari/522.15.5
 
-注意这个变化只针对 Safari 而不包括 WebKit。因此，其他基于
-
-WebKit 的浏览器可能不会有这个变化。一般来说，与 Gecko 一样，通常识别是不是 WebKit 比识别是不是 Safari 更重要。 6. Konqueror Konqueror 是与 KDE Linux 桌面环境打包发布的浏览器，基于开源渲染引擎 KHTML。虽然只有 Linux 平台的版本，Konqueror 的用户却不少。为实现最大化兼容，Konqueror 决定采用 Internet Explore 的用户代理字符串格式：
+注意这个变化只针对 Safari 而不包括 WebKit。因此，其他基于 WebKit 的浏览器可能不会有这个变化。一般来说，与 Gecko 一样，通常识别是不是 WebKit 比识别是不是 Safari 更重要。 6. Konqueror Konqueror 是与 KDE Linux 桌面环境打包发布的浏览器，基于开源渲染引擎 KHTML。虽然只有 Linux 平台的版本，Konqueror 的用户却不少。为实现最大化兼容，Konqueror 决定采用 Internet Explore 的用户代理字符串格式：
 
 Mozilla/5.0 (compatible; Konqueror/Version; OS\-or\-CPU)
 
@@ -20412,7 +20406,9 @@ OS\-or\-CPU) KHTML/KHTMLVersion (like Gecko)
 
 Mozilla/5.0 (compatible; Konqueror/3.5; SunOS) KHTML/3.5.0 (like Gecko)
 
-Konqueror 和 KHTML 的版本号通常是一致的，有时候也只有子版本号不同。比如 Konqueror 是 3.5，而 KHTML 是 3.5.1。 7. Chrome
+Konqueror 和 KHTML 的版本号通常是一致的，有时候也只有子版本号不同。比如 Konqueror 是 3.5，而 KHTML 是 3.5.1。 
+
+7. Chrome
 
 谷歌的 Chrome 浏览器使用 Blink 作为渲染引擎，使用 V8 作为 JavaScript 引擎。Chrome 的用户代理字符串包含所有 WebKit 的信息，另外又加上了 Chrome 及其版本的信息。其格式如下所示：
 
@@ -20456,9 +20452,7 @@ Opera/8.0 (Windows NT 5.1; U; en)
 
 默认情况下，Opera 会返回这个简单的用户代理字符串。这是唯一一个使用产品名称和版本完全标识自身的主流浏览器。不过，与其他浏览器一样，Opera 也遇到了使用这种字符串的问题。虽然从技术角度看这是正确的，但网上已经有了很多浏览器检测代码只考虑 Mozilla 这个产品名称。还有不少代码专门针对 IE 或 Gecko。为了不让这些检测代码判断错误，Opera 坚持使用唯一标识自身的字符串。
 
-从 Opera 9 开始，Opera 也采用了两个策略改变自己的字符串。一是把自己标识为别的浏览器，如 Firefox 或 IE。这时候的字符串跟
-
-Firefox 和 IE 的一样，只不过末尾会多一个 "Opera" 及其版本号。比如：
+从 Opera 9 开始，Opera 也采用了两个策略改变自己的字符串。一是把自己标识为别的浏览器，如 Firefox 或 IE。这时候的字符串跟 Firefox 和 IE 的一样，只不过末尾会多一个 "Opera" 及其版本号。比如：
 
 Mozilla/5.0 (Windows NT 5.1; U; en; rv:1.8.1) Gecko/20061208 Firefox/2.0.0
 
@@ -20468,13 +20462,9 @@ Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; en) Opera 9.50
 
 第一个字符串把 Opera 9.5 标识为 Firefox 2，同时保持了 Opera 版本信息。第二个字符串把 Opera 9.5 标识为 IE6，也保持了 Opera 版本信息。虽然这些字符串可以通过针对 Firefox 和 IE 的测试，但也可以被识别为 Opera。
 
-另一个策略是伪装成 Firefox 或 IE。这种情况下的用户代理字符串与 Firefox 和 IE 返回的一样，末尾也没有 "Opera" 及其版本信
+另一个策略是伪装成 Firefox 或 IE。这种情况下的用户代理字符串与 Firefox 和 IE 返回的一样，末尾也没有 "Opera" 及其版本信息。这样就根本没办法区分 Opera 与其他浏览器了。更严重的是， Opera 还会根据访问的网站不同设置不同的用户代理字符串，却不通知用户。比如，导航到 My Yahoo 网站会导致 Opera 将自己伪装成 Firefox。这就导致很难通过用户代理字符串来识别 Opera。
 
-息。这样就根本没办法区分 Opera 与其他浏览器了。更严重的是， Opera 还会根据访问的网站不同设置不同的用户代理字符串，却不通知用户。比如，导航到 My Yahoo 网站会导致 Opera 将自己伪装成 Firefox。这就导致很难通过用户代理字符串来识别 Opera。
-
-> 注意 在 Opera 7 之前的版本中，Opera 可以解析 Windows 操作系统字符串的含义。比如，Windows NT 5.1 实际上表示 Windows XP。因此 Opera 6 的用户代理字符串中会包含 Windows
-
-XP 而不是 Windows NT 5.1。为了与其他浏览器表现更一致， Opera 7 及后来的版本就改为使用官方报告的操作系统字符串， 而不是自己转换的了。
+> 注意 在 Opera 7 之前的版本中，Opera 可以解析 Windows 操作系统字符串的含义。比如，Windows NT 5.1 实际上表示 Windows XP。因此 Opera 6 的用户代理字符串中会包含 Windows XP 而不是 Windows NT 5.1。为了与其他浏览器表现更一致， Opera 7 及后来的版本就改为使用官方报告的操作系统字符串， 而不是自己转换的了。
 
 Opera 10 又修改了字符串格式，变成了下面这样：
 
@@ -20482,9 +20472,7 @@ Opera/9.80 (OS\-or\-CPU; Encryption; Language)
 
 Presto/PrestoVersion Version/Version
 
-注意开头的版本号 Opera/9.80 是固定不变的。Opera 没有 9.8 这个版本，但 Opera 工程师担心某些浏览器检测脚本会错误地把
-
-Opera/10.0 当成 Opera 1 而不是 Opera 10。因此，Opera 10 新增了额外的 Presto 标识（Presto 是 Opera 的渲染引擎）和版本标识。比如，下面是 Windows 7 上的 Opera 10.63 的字符串：
+注意开头的版本号 Opera/9.80 是固定不变的。Opera 没有 9.8 这个版本，但 Opera 工程师担心某些浏览器检测脚本会错误地把 Opera/10.0 当成 Opera 1 而不是 Opera 10。因此，Opera 10 新增了额外的 Presto 标识（Presto 是 Opera 的渲染引擎）和版本标识。比如，下面是 Windows 7 上的 Opera 10.63 的字符串：
 
 Opera/9.80 (Windows NT 6.1; U; en) Presto/2.6.30 Version/10.63
 
@@ -20502,9 +20490,7 @@ AppleWebKit/AppleWebKitVersion (KHTML, like Gecko) Version/BrowserVersion
 
 Mobile/MobileVersion Safari/SafariVersion
 
-注意其中用于辅助判断 Mac 操作系统的 "like Mac OS X" 和 "Mobile" 相关的标识。这里的 Mobile 标识除了说明这是移动 WebKit 之外并没有什么用。平台可能
-
-是 "iPhone" 、 "iPod" 或 "iPad" ，因设备而异。例如：
+注意其中用于辅助判断 Mac 操作系统的 "like Mac OS X" 和 "Mobile" 相关的标识。这里的 Mobile 标识除了说明这是移动 WebKit 之外并没有什么用。平台可能是 "iPhone" 、 "iPod" 或 "iPad" ，因设备而异。例如：
 
 Mozilla/5.0 (iPhone; U; CPU iPhone OS 3_0 like Mac OS X; en\-us)
 
@@ -20514,9 +20500,7 @@ Version/4.0 Mobile/7A341 Safari/528.16
 
 注意在 iOS 3 以前，操作系统的版本号不会出现在用户代理字符串中。
 
-默认的 Android 浏览器通常与 iOS 上的浏览器格式相同，只是没有
-
-Mobile 后面的版本号（ "Mobile" 标识还有）。例如：
+默认的 Android 浏览器通常与 iOS 上的浏览器格式相同，只是没有 Mobile 后面的版本号（ "Mobile" 标识还有）。例如：
 
 Mozilla/5.0 (Linux; U; Android 2.2; en\-us; Nexus One Build/FRF91)
 
@@ -20596,15 +20580,11 @@ CURRENT-DEVICE
 
 Google Closure Mootools
 
-> 注意 Mozilla 维基有一个页
-
-面“Compatibility/UADetectionLibraries”，其中提供了用户代理 解析程序的列表，可以用来识别 Mozilla 浏览器（甚至所有主流浏览器）。这些解析程序是按照语言分组的。这个页面好像维护不频繁，但其中给出了所有主流的解析库。> （注意 JavaScript 部分包含客户端库和 Node.js 库。）GitHub 上的文章“Are We Detectable Yet\?”中还有一张可视化的表格，能让我们对这些库的检测能力一目了然。
+> 注意 Mozilla 维基有一个页面“Compatibility/UADetectionLibraries”，其中提供了用户代理 解析程序的列表，可以用来识别 Mozilla 浏览器（甚至所有主流浏览器）。这些解析程序是按照语言分组的。这个页面好像维护不频繁，但其中给出了所有主流的解析库。> （注意 JavaScript 部分包含客户端库和 Node.js 库。）GitHub 上的文章“Are We Detectable Yet\?”中还有一张可视化的表格，能让我们对这些库的检测能力一目了然。
 
 ## 13.3 软件与硬件检测
 
-现代浏览器提供了一组与页面执行环境相关的信息，包括浏览器、操作系统、硬件和周边设备信息。这些属性可以通过暴露在
-
-window.navigator 上的一组 API 获得。不过，这些 API 的跨浏览器支持还不够好，远未达到标准化的程度。
+现代浏览器提供了一组与页面执行环境相关的信息，包括浏览器、操作系统、硬件和周边设备信息。这些属性可以通过暴露在 window.navigator 上的一组 API 获得。不过，这些 API 的跨浏览器支持还不够好，远未达到标准化的程度。
 
 > 注意 强烈建议在使用这些 API 之前先检测它们是否存在，因为其中多数都不是强制性的，且很多浏览器没有支持。另外，本节介绍的特性有时候不一定可靠。
 
@@ -20616,9 +20596,7 @@ window.navigator 上的一组 API 获得。不过，这些 API 的跨浏览器�
 
 navigator.oscpu 属性是一个字符串，通常对应用户代理字符串中操作系统/系统架构相关信息。根据 HTML 实时标准：
 
-oscpu 属性的获取方法必须返回空字符串或者表示浏览器所在平台的字符串，比如 "Windows NT 10.0; Win64;
-
-x64" 或 "Linux x86_64" 。
+oscpu 属性的获取方法必须返回空字符串或者表示浏览器所在平台的字符串，比如 "Windows NT 10.0; Win64; x64" 或 "Linux x86_64" 。
 
 比如，Windows 10 上的 Firefox 的 oscpu 属性应该对应于以下加粗的部分：
 
@@ -20644,15 +20622,9 @@ console.log(navigator.vendor); // "Google Inc."
 
 navigator.platform 属性是一个字符串，通常表示浏览器所在的操作系统。根据 HTML 实时标准：
 
-navigator.platform 必须返回一个字符串或表示浏览器所在平台的字符串，例
+navigator.platform 必须返回一个字符串或表示浏览器所在平台的字符串，例如 "MacIntel" 、 "Win32" 、 "FreeBSD i386" 或 "WebTV OS" 。
 
-如 "MacIntel" 、 "Win32" 、 "FreeBSD
-
-i386" 或 "WebTV OS" 。
-
-例如，Windows 系统下 Chrome 中的这个
-
-navigator.platform 属性返回下面的字符串：
+例如，Windows 系统下 Chrome 中的这个 navigator.platform 属性返回下面的字符串：
 
 ```
 console.log(navigator.platform); // "Win32"
@@ -20696,9 +20668,7 @@ navigator 对象暴露出一些 API，可以提供浏览器和操作系统的状
 
 navigator.geolocation 属性暴露了 Geolocation API，可以让浏览器脚本感知当前设备的地理位置。这个 API 只在安全执行环境（通过 HTTPS 获取的脚本）中可用。
 
-这个 API 可以查询宿主系统并尽可能精确地返回设备的位置信
-
-息。根据宿主系统的硬件和配置，返回结果的精度可能不一样。
+这个 API 可以查询宿主系统并尽可能精确地返回设备的位置信息。根据宿主系统的硬件和配置，返回结果的精度可能不一样。
 
 手机 GPS 的坐标系统可能具有极高的精度，而 IP 地址的精度就要差很多。根据 Geolocation API 规范：
 
@@ -20826,9 +20796,7 @@ connectionStateChange); window.addEventListener('offline', connectionStateChange
 // false
 ```
 
-当然，到底怎么才算联网取决于浏览器与系统实现。有些浏览器可能会认为只要连接到局域网就算“在线”，而不管是否真正接入了互联网。 navigator 对象还暴露了 NetworkInformation API，可以通过
-
-navigator.connection 属性使用。这个 API 提供了一些只读属性，并为连接属性变化事件处理程序定义了一个事件对象。
+当然，到底怎么才算联网取决于浏览器与系统实现。有些浏览器可能会认为只要连接到局域网就算“在线”，而不管是否真正接入了互联网。 navigator 对象还暴露了 NetworkInformation API，可以通过 navigator.connection 属性使用。这个 API 提供了一些只读属性，并为连接属性变化事件处理程序定义了一个事件对象。
 
 以下是 NetworkInformation API 暴露的属性。
 
@@ -21056,9 +21024,7 @@ if (someNode.nodeType == 1) {
 
 文档中的所有节点都与其他节点有关系。这些关系可以形容为家族关系，相当于把文档树比作家谱。在 HTML 中， `<body>` 元素是`<html>`元素的子元素，而`<html>`元素则是 `<body>` 元素的父元素。 `<head>` 元素是 `<body>` 元素的同胞元素，因为它们有共同的父元素`<html>`。
 
-每个节点都有一个 childNodes 属性，其中包含一个 NodeList 的实例。 NodeList 是一个类数组对象，用于存储可以按位置存取的有序节点。注意， NodeList 并不是 Array 的实例，但可以使用中括号访问它的值，而且它也有 length 属性。 NodeList 对象独特的地方在于，它其实是一个对 DOM 结构的查询，因此 DOM 结构的变化会自动地在 NodeList 中反映出来。我们通常说
-
-NodeList 是实时的活动对象，而不是第一次访问时所获得内容的快照。
+每个节点都有一个 childNodes 属性，其中包含一个 NodeList 的实例。 NodeList 是一个类数组对象，用于存储可以按位置存取的有序节点。注意， NodeList 并不是 Array 的实例，但可以使用中括号访问它的值，而且它也有 length 属性。 NodeList 对象独特的地方在于，它其实是一个对 DOM 结构的查询，因此 DOM 结构的变化会自动地在 NodeList 中反映出来。我们通常说 NodeList 是实时的活动对象，而不是第一次访问时所获得内容的快照。
 
 下面的例子展示了如何使用中括号或使用 item() 方法访问 NodeList 中的元素：
 
@@ -21498,7 +21464,7 @@ document.write("<script type=\"text/javascript\" src=\"file.js\">" + "</script>"
 </html>
 ```
 
-虽然这样写看起来没错，但输出之后的 "`</script>`" 会匹配最外层的 `<script>` 标签，导致页面中显示出 `");` 。为避免出现这个问题，需要对前面的例子稍加修改：
+虽然这样写看起来没错，但输出之后的 `"</script>"` 会匹配最外层的 `<script>` 标签，导致页面中显示出 `");` 。为避免出现这个问题，需要对前面的例子稍加修改：
 
 ```html
 <html>
@@ -21515,7 +21481,7 @@ document.write("<script type=\"text/javascript\" src=\"file.js\">" + "</script>"
 </html>
 ```
 
-这里的字符串 "</script>" 不会再匹配最外层的 `<script>` 标签，因此不会在页面中输出额外内容。
+这里的字符串 `"</script>"` 不会再匹配最外层的 `<script>` 标签，因此不会在页面中输出额外内容。
 
 前面的例子展示了在页面渲染期间通过 document.write() 向文档中输出内容。如果是在页面加载完之后再调用 document.write() ，则输出的内容会重写整个页面，如下面的例子所示：
 
@@ -21595,9 +21561,7 @@ if (element.tagName.toLowerCase() == 'div') {
 
 1.  HTML 元素
 
-所有 HTML 元素都通过 HTMLElement 类型表示，包括其直接实例和间接实例。另外，
-
-HTMLElement 直接继承 Element 并增加了一些属性。每个属性都对应下列属性之一，它们是所有 HTML 元素上都有的标准属性：
+所有 HTML 元素都通过 HTMLElement 类型表示，包括其直接实例和间接实例。另外，HTMLElement 直接继承 Element 并增加了一些属性。每个属性都对应下列属性之一，它们是所有 HTML 元素上都有的标准属性：
 
 id ，元素在文档中的唯一标识符；
 
@@ -21650,9 +21614,7 @@ alert(div.getAttribute('lang')); // "en"
 alert(div.getAttribute('dir')); // "ltr"
 ```
 
-注意传给 getAttribute() 的属性名与它们实际的属性名是一样的，因此这里要传 "class" 而非 "className" （ className 是作为对象属性时才那么拼写的）。如果给定的属性不存在，则
-
-getAttribute() 返回 null 。
+注意传给 getAttribute() 的属性名与它们实际的属性名是一样的，因此这里要传 "class" 而非 "className" （ className 是作为对象属性时才那么拼写的）。如果给定的属性不存在，则 getAttribute() 返回 null 。
 
 getAttribute() 方法也能取得不是 HTML 语言正式属性的自定义属性的值。比如下面的元素：
 
@@ -21985,7 +21947,9 @@ element.appendChild(textNode);
 document.body.appendChild(element);
 
 let newNode = element.firstChild.splitText(5);
-alert(element.firstChild.nodeValue); // "Hello" alert(newNode.nodeValue); // " world!" alert(element.childNodes.length); // 2
+alert(element.firstChild.nodeValue); // "Hello" 
+alert(newNode.nodeValue); // " world!" 
+alert(element.childNodes.length); // 2
 ```
 
 在这个例子中，包含 "Hello world!" 的文本节点被从位置 5 拆分成两个文本节点。位置 5 对应 "Hello" 和 "world!" 之间的空格，因此原始文本节点包含字符串 "Hello" ，而新文本节点包含文本 " world!" （包含空格）。
@@ -22060,13 +22024,7 @@ nodeValue 值为 null ；
 
 parentNode 值为 Document 对象；不支持子节点。
 
-DocumentType 对象在 DOM Level 1 中不支持动态创建，只能在解析文档代码时创建。对于支持这个类型的浏览器， DocumentType 对象保存在 document.doctype 属性中。DOM Level 1 规定了
-
-DocumentType 对象的 3 个属性： name 、 entities 和 notations 。其中， name 是文档类型的名称， entities 是这个文档类型描述的实体的 NamedNodeMap ，而 notations 是这个文档类型描述的表示法的 NamedNodeMap 。因为浏览器中的文档通常是 HTML 或 XHTML 文档类型，所以
-
-entities 和 notations 列表为空。（这个对象只包含行内声明的文档类型。）无论如何，只有
-
-name 属性是有用的。这个属性包含文档类型的名称，即紧跟在 `<!DOCTYPE` 后面的那串文本。比如下面的 HTML 4.01 严格文档类型：
+DocumentType 对象在 DOM Level 1 中不支持动态创建，只能在解析文档代码时创建。对于支持这个类型的浏览器， DocumentType 对象保存在 document.doctype 属性中。DOM Level 1 规定了DocumentType 对象的 3 个属性： name 、 entities 和 notations 。其中， name 是文档类型的名称， entities 是这个文档类型描述的实体的 NamedNodeMap ，而 notations 是这个文档类型描述的表示法的 NamedNodeMap 。因为浏览器中的文档通常是 HTML 或 XHTML 文档类型，所以 entities 和 notations 列表为空。（这个对象只包含行内声明的文档类型。）无论如何，只有 name 属性是有用的。这个属性包含文档类型的名称，即紧跟在 `<!DOCTYPE` 后面的那串文本。比如下面的 HTML 4.01 严格文档类型：
 
 ```html
 <!DOCTYPE html PUBLIC "-// W3C// DTD HTML 4.01// EN" ["http:// www.w3.org/TR/html4/strict.dtd">
@@ -22093,9 +22051,7 @@ nodeValue 值为 null ；
 
 parentNode 值为 null ；
 
-子节点可以是 Element 、 ProcessingInstruction 、 Comment 、 Text 、
-
-CDATASection 或 EntityReference 。
+子节点可以是 Element 、 ProcessingInstruction 、 Comment 、 Text 、CDATASection 或 EntityReference 。
 
 不能直接把文档片段添加到文档。相反，文档片段的作用是充当其他要被添加到文档的节点的仓库。可以使用 document.createDocumentFragment() 方法像下面这样创建文档片段：
 
@@ -22103,9 +22059,7 @@ CDATASection 或 EntityReference 。
 let fragment = document.createDocumentFragment();
 ```
 
-文档片段从 Node 类型继承了所有文档类型具备的可以执行 DOM 操作的方法。如果文档中的一个节点被添加到一个文档片段，则该节点会从文档树中移除，不会再被浏览器渲染。添加到文档片段的新节点同样不属于文档树，不会被浏览器渲染。可以通过 appendChild() 或 insertBefore() 方法将文档
-
-片段的内容添加到文档。在把文档片段作为参数传给这些方法时，这个文档片段的所有子节点会被添加到文档中相应的位置。文档片段本身永远不会被添加到文档树。以下面的 HTML 为例：
+文档片段从 Node 类型继承了所有文档类型具备的可以执行 DOM 操作的方法。如果文档中的一个节点被添加到一个文档片段，则该节点会从文档树中移除，不会再被浏览器渲染。添加到文档片段的新节点同样不属于文档树，不会被浏览器渲染。可以通过 appendChild() 或 insertBefore() 方法将文档片段的内容添加到文档。在把文档片段作为参数传给这些方法时，这个文档片段的所有子节点会被添加到文档中相应的位置。文档片段本身永远不会被添加到文档树。以下面的 HTML 为例：
 
 ```html
 <ul id="myList"></ul>
@@ -22126,9 +22080,7 @@ for (let i = 0; i < 3; ++i) {
 ul.appendChild(fragment);
 ```
 
-这个例子先创建了一个文档片段，然后取得了`<ul>`元素的引用。接着通过 for 循环创建了 3 个列表项，每一项都包含表明自己身份的文本。为此先创建`<li>`元素，再创建文本节点并添加到该元素。然后通过 appendChild() 把`<li>`元素添加到文档片段。循环结束后，通过把文档片段传给
-
-appendChild() 将所有列表项添加到了`<ul>`元素。此时，文档片段的子节点全部被转移到了 `<ul>` 元素。
+这个例子先创建了一个文档片段，然后取得了`<ul>`元素的引用。接着通过 for 循环创建了 3 个列表项，每一项都包含表明自己身份的文本。为此先创建`<li>`元素，再创建文本节点并添加到该元素。然后通过 appendChild() 把`<li>`元素添加到文档片段。循环结束后，通过把文档片段传给 appendChild() 将所有列表项添加到了`<ul>`元素。此时，文档片段的子节点全部被转移到了 `<ul>` 元素。
 
 9.  Attr 类型
 
@@ -22146,9 +22098,7 @@ parentNode 值为 null ；在 HTML 中不支持子节点；
 
 属性节点尽管是节点，却不被认为是 DOM 文档树的一部分。 Attr 节点很少直接被引用，通常开发者更喜欢使用 getAttribute() 、 removeAttribute() 和 setAttribute() 方法操作属性。
 
-Attr 对象上有 3 个属性： name 、 value 和 specified 。其中， name 包含属性名（与
-
-nodeName 一样）， value 包含属性值（与 nodeValue 一样），而 specified 是一个布尔值，表示属性使用的是默认值还是被指定的值。
+Attr 对象上有 3 个属性： name 、 value 和 specified 。其中， name 包含属性名（与 nodeName 一样）， value 包含属性值（与 nodeValue 一样），而 specified 是一个布尔值，表示属性使用的是默认值还是被指定的值。
 
 可以使用 document.createAttribute() 方法创建新的 Attr 节点，参数为属性名。比如，要给元素添加 align 属性，可以使用下列代码：
 
@@ -22157,7 +22107,9 @@ let attr = document.createAttribute('align');
 attr.value = 'left';
 element.setAttributeNode(attr);
 
-alert(element.attributes['align'].value); // "left" alert(element.getAttributeNode("align").value); // "left" alert(element.getAttribute("align")); // "left"
+alert(element.attributes['align'].value); // "left" 
+alert(element.getAttributeNode("align").value); // "left" 
+alert(element.getAttribute("align")); // "left"
 ```
 
 在这个例子中，首先创建了一个新属性。调用 createAttribute() 并传入 "align" 为新属性设置了 name 属性，因此就不用再设置了。随后， value 属性被赋值为 "left" 。为把这个新属性添加到元素上，可以使用元素的 setAttributeNode() 方法。添加这个属性后，可以通过不同方式访问
@@ -22224,9 +22176,7 @@ let script = document.createElement("script"); script.appendChild(document.creat
 {alert('hi');}")); document.body.appendChild(script);
 ```
 
-以上代码可以在 Firefox 、 Safari 、 Chrome 和 Opera 中运行。不过在旧版本的 IE 中可能会导致问题。这是因为 IE 对 `<script>` 元素做了特殊处理，不允许常规 DOM 访问其子节点。但
-
-`<script>` 元素上有一个 text 属性，可以用来添加 JavaScript 代码，如下所示：
+以上代码可以在 Firefox 、 Safari 、 Chrome 和 Opera 中运行。不过在旧版本的 IE 中可能会导致问题。这是因为 IE 对 `<script>` 元素做了特殊处理，不允许常规 DOM 访问其子节点。但 `<script>` 元素上有一个 text 属性，可以用来添加 JavaScript 代码，如下所示：
 
 ```
 var script = document.createElement("script"); script.text = "function sayHi(){alert('hi');}"; document.body.appendChild(script);
@@ -22386,9 +22336,7 @@ loadStyleString('body{background-color:red}');
 
 3.  操作表格
 
-表格是 HTML 中最复杂的结构之一。通过 DOM 编程创建`<table>`元素，通常要涉及大量标签，包括表行、表元、表题，等等。因此，通过 DOM 编程创建和修改表格时可能要写很多代码。假设要通过
-
-DOM 来创建以下 HTML 表格：
+表格是 HTML 中最复杂的结构之一。通过 DOM 编程创建`<table>`元素，通常要涉及大量标签，包括表行、表元、表题，等等。因此，通过 DOM 编程创建和修改表格时可能要写很多代码。假设要通过 DOM 来创建以下 HTML 表格：
 
 ```html
 <table border="1" width="100%">
