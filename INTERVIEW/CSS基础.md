@@ -17,8 +17,6 @@
 
 CSS 中的 box-sizing 属性定义了 user agent（用户代理） 应该如何计算一个元素的总宽度和总高度。
 
-在 CSS 盒子模型的默认定义里，对一个元素所设置的 width 与 height 只会应用到这个元素的内容区。如果这个元素有任何的 border 或 padding ，绘制到屏幕上时的盒子宽度和高度会加上设置的边框和内边距值。这意味着当你调整一个元素的宽度和高度时需要时刻注意到这个元素的边框和内边距。
-
 1. content-box 是默认值。任何边框和内边距的宽度都会被增加到最后绘制出来的元素宽度中。
 2. border-box 告诉浏览器：你想要设置的边框和内边距的值是包含在 width 内的。
 
@@ -80,10 +78,24 @@ CSS 中的 box-sizing 属性定义了 user agent（用户代理） 应该如何�
 
 **position的值？**
 
+position 属性被指定为从下面的值列表中选择的单个关键字。
+
+1. static 
+该关键字指定元素使用正常的布局行为，即元素在文档常规流中当前的布局位置。此时 top, right, bottom, left 和 z-index 属性无效。
+2. relative
+该关键字下，元素先放置在未添加定位时的位置，再在不改变页面布局的前提下调整元素位置（因此会在此元素未添加定位时所在位置留下空白）。`position:relative` 对 `table-*-group`, `table-row`, `table-column`, `table-cell`, `table-caption` 元素无效。
+3. absolute
+元素会被移出正常文档流，并不为元素预留空间，通过指定元素相对于最近的非 static 定位祖先元素的偏移，来确定元素位置。绝对定位的元素可以设置外边距（margins），且不会与其他边距合并。
+4. fixed
+元素会被移出正常文档流，并不为元素预留空间，而是通过指定元素相对于屏幕视口（viewport）的位置来指定元素位置。元素的位置在屏幕滚动时不会改变。打印时，元素会出现在的每页的固定位置。fixed 属性会创建新的层叠上下文。当元素祖先的 transform, perspective 或 filter 属性非 none 时，容器由视口改为该祖先。
+5. sticky
+元素根据正常文档流进行定位，然后相对它的最近滚动祖先（nearest scrolling ancestor）和 containing block (最近块级祖先 nearest block-level ancestor)，包括table-related元素，基于top, right, bottom, 和 left的值进行偏移。偏移值不会影响任何其他元素的位置。
+该值总是创建一个新的层叠上下文（stacking context）。注意，一个sticky元素会“固定”在离它最近的一个拥有“滚动机制”的祖先上（当该祖先的overflow 是 hidden, scroll, auto, 或 overlay时），即便这个祖先不是最近的真实可滚动祖先。这有效地抑制了任何“sticky”行为。
+
 - static（默认）：按照正常文档流进行排列；
 - relative（相对定位）：不脱离文档流，参考自身静态位置通过 top, bottom, left, right 定位；
-- absolute(绝对定位)：参考距其最近一个不为static的父级元素通过top, bottom, left, right 定位；
-- fixed(固定定位)：所固定的参照对像是可视窗口。
+- absolute（绝对定位）：参考距其最近一个不为static的父级元素通过top, bottom, left, right 定位；
+- fixed（固定定位）：所固定的参照对像是可视窗口。
 
 # 分析
 
@@ -160,12 +172,6 @@ Chrome 中文界面下默认会将小于 12px 的文本强制按照 12px 显示,
 无论属于哪种，都要先找到其祖先元素中最近的 position 值不为 static 的元素，然后再判断：
 
 若此元素为 inline 元素，则 containing block 为能够包含这个元素生成的第一个和最后一个 inline box 的 padding box (除 margin, border 外的区域) 的最小矩形；否则,则由这个祖先元素的 padding box 构成。如果都找不到，则为 initial containing block。
-
-补充：
-
-- static(默认的)/relative：简单说就是它的父元素的内容框（即去掉padding的部分）
-- absolute: 向上找最近的定位为absolute/relative的元素
-- fixed: 它的containing block一律为根元素(html/body)
 
 16 CSS里的visibility属性有个collapse属性值？在不同浏览器下以后什么区别？
 

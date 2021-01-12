@@ -200,7 +200,7 @@ var lengthOfLongestSubstring = function (s) {
 ## 解决 - 对称查找
 
 ```js
-var longestPalindrome = function (s='aaaa444') {
+var longestPalindrome = function (s) {
   let length = s.length,
     max = '';
   if (length < 2) {
