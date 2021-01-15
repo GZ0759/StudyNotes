@@ -3829,7 +3829,4586 @@ function baseCompile (
 
 # 5. 生命周期篇
 
+## 生命周期篇综述
+
+
+### 前言
+
+在`Vue`中，每个`Vue`实例从被创建出来到最终被销毁都会经历一个过程，就像人一样，从出生到死亡。在这一过程里会发生许许多多的事，例如设置数据监听，编译模板，组件挂载等。在`Vue`中，把`Vue`实例从被创建出来到最终被销毁的这一过程称为`Vue`实例的生命周期，同时，在`Vue`实例生命周期的不同阶段`Vue`还提供了不同的钩子函数，以方便用户在不同的生命周期阶段做一些额外的事情。那么，接下来的几篇文章我们就从源码角度深入剖析一下一个`Vue`实例在从生到死的生命周期里到底都经历了些什么，每个阶段都做了哪些事情。
+
+### 生命周期流程图
+
+下图是`Vue`官网给出的`Vue`实例的生命周期流程图，如下：
+
+![](~@/learn-vue-source-code/lifecycle/1.jpg)
+
+从图中我们可以看到，`Vue`实例的生命周期大致可分为4个阶段：
+
+- 初始化阶段：为`Vue`实例上初始化一些属性，事件以及响应式数据；
+- 模板编译阶段：将模板编译成渲染函数；
+- 挂载阶段：将实例挂载到指定的`DOM`上，即将模板渲染到真实`DOM`中；
+- 销毁阶段：将实例自身从父组件中删除，并取消依赖追踪及事件监听器；
+
+
+
+### 总结
+
+本篇文章是生命周期篇的开篇综述，借用`Vue`官网的生命周期流程图介绍了一个`Vue`实例的生命周期大致可分为四个阶段，分别是初始化阶段、模板编译阶段、挂载阶段、销毁阶段。接下来的几篇文章我们就从这个流程图为基础，自上到下，从每个阶段入手，深入分析在每个阶段里都干了些什么。
+
+## 初始化阶段(new Vue)
+
+
+### 前言
+
+上篇文章中介绍了`Vue`实例的生命周期大致分为4个阶段，那么首先我们先从第一个阶段——初始化阶段开始入手分析。从生命周期流程图中我们可以看到，初始化阶段所做的工作也可大致分为两部分：第一部分是`new Vue()`，也就是创建一个`Vue`实例；第二部分是为创建好的`Vue`实例初始化一些事件、属性、响应式数据等。接下来我们就从源码角度来深入分析一下初始化阶段所做的工作及其内部原理。
+
+### new Vue()都干了什么
+
+初始化阶段所做的第一件事就是`new Vue()`创建一个`Vue`实例，那么`new Vue()`的内部都干了什么呢？ 我们知道，`new` 关键字在 `JS`中表示从一个类中实例化出一个对象来，由此可见， `Vue` 实际上是一个类。所以`new Vue()`实际上是执行了`Vue`类的构造函数，那么我们来看一下`Vue`类是如何定义的，`Vue`类的定义是在源码的`src/core/instance/index.js` 中，如下：
+
+```javascript
+function Vue (options) {
+  if (process.env.NODE_ENV !== 'production' &&
+    !(this instanceof Vue)
+  ) {
+    warn('Vue is a constructor and should be called with the `new` keyword')
+  }
+  this._init(options)
+}
+```
+
+可以看到，`Vue`类的定义非常简单，其构造函数核心就一行代码：
+
+```javascript
+this._init(options)
+```
+
+调用原型上的`_init(options)`方法并把用户所写的选项`options`传入。那这个`_init`方法是从哪来的呢？在`Vue`类定义的下面还有几行代码，其中之一就是：
+
+```javascript
+initMixin(Vue)
+```
+
+这一行代码执行了`initMixin`函数，那`initMixin`函数又是从哪儿来的呢？该函数定义位于源码的`src/core/instance/init.js` 中，如下：
+
+```javascript
+export function initMixin (Vue) {
+  Vue.prototype._init = function (options) {
+    const vm = this
+    vm.$options = mergeOptions(
+        resolveConstructorOptions(vm.constructor),
+        options || {},
+        vm
+    )
+    vm._self = vm
+    initLifecycle(vm)
+    initEvents(vm)
+    initRender(vm)
+    callHook(vm, 'beforeCreate')
+    initInjections(vm) // resolve injections before data/props
+    initState(vm)
+    initProvide(vm) // resolve provide after data/props
+    callHook(vm, 'created')
+
+    if (vm.$options.el) {
+      vm.$mount(vm.$options.el)
+    }
+  }
+}
+```
+
+可以看到，在`initMixin`函数内部就只干了一件事，那就是给`Vue`类的原型上绑定`_init`方法，同时`_init`方法的定义也在该函数内部。现在我们知道了，`new Vue()`会执行`Vue`类的构造函数，构造函数内部会执行`_init`方法，所以`new Vue()`所干的事情其实就是`_init`方法所干的事情，那么我们着重来分析下`_init`方法都干了哪些事情。
+
+首先，把`Vue`实例赋值给变量`vm`，并且把用户传递的`options`选项与当前构造函数的`options`属性及其父级构造函数的`options`属性进行合并（关于属性如何合并的问题下面会介绍），得到一个新的`options`选项赋值给`$options`属性，并将`$options`属性挂载到`Vue`实例上，如下：
+
+```javascript
+vm.$options = mergeOptions(
+    resolveConstructorOptions(vm.constructor),
+    options || {},
+    vm
+)
+```
+
+接着，通过调用一些初始化函数来为`Vue`实例初始化一些属性，事件，响应式数据等，如下：
+
+```javascript
+initLifecycle(vm)       // 初始化生命周期
+initEvents(vm)        // 初始化事件
+initRender(vm)         // 初始化渲染
+callHook(vm, 'beforeCreate')  // 调用生命周期钩子函数
+initInjections(vm)   //初始化injections
+initState(vm)    // 初始化props,methods,data,computed,watch
+initProvide(vm) // 初始化 provide
+callHook(vm, 'created')  // 调用生命周期钩子函数
+```
+
+可以看到，除了调用初始化函数来进行相关数据的初始化之外，还在合适的时机调用了`callHook`函数来触发生命周期的钩子，关于`callHook`函数是如何触发生命周期的钩子会在下面介绍，我们先继续往下看：
+
+```javascript
+if (vm.$options.el) {
+    vm.$mount(vm.$options.el)
+}
+```
+
+在所有的初始化工作都完成以后，最后，会判断用户是否传入了`el`选项，如果传入了则调用`$mount`函数进入模板编译与挂载阶段，如果没有传入`el`选项，则不进入下一个生命周期阶段，需要用户手动执行`vm.$mount`方法才进入下一个生命周期阶段。
+
+以上就是`new Vue()`所做的所有事情，可以看到，整个初始化阶段都是在`new Vue()`里完成的，关于`new Vue()`里调用的一些初始化函数具体是如何进行初始化的，我们将在接下来的几篇文章里逐一介绍。下面我们先来看看上文中遗留的属性合并及`callHook`函数是如何触发生命周期的钩子的问题。
+
+### 合并属性
+
+在上文中，`_init`方法里首先会调用`mergeOptions`函数来进行属性合并，如下：
+
+```javascript
+vm.$options = mergeOptions(
+    resolveConstructorOptions(vm.constructor),
+    options || {},
+    vm
+)
+```
+
+
+
+ 它实际上就是把 `resolveConstructorOptions(vm.constructor)` 的返回值和 `options` 做合并，`resolveConstructorOptions` 的实现先不考虑，可简单理解为返回 `vm.constructor.options`，相当于 `Vue.options`，那么这个 `Vue.options`又是什么呢，其实在 `initGlobalAPI(Vue)` 的时候定义了这个值，代码在 `src/core/global-api/index.js` 中：
+
+```javascript
+export function initGlobalAPI (Vue: GlobalAPI) {
+  // ...
+  Vue.options = Object.create(null)
+  ASSET_TYPES.forEach(type => {
+    Vue.options[type + 's'] = Object.create(null)
+  })
+
+  extend(Vue.options.components, builtInComponents)
+  // ...
+}
+```
+
+ 首先通过 `Vue.options = Object.create(null)` 创建一个空对象，然后遍历 `ASSET_TYPES`，`ASSET_TYPES` 的定义在 `src/shared/constants.js` 中：
+
+```javascript
+export const ASSET_TYPES = [
+  'component',
+  'directive',
+  'filter'
+]
+```
+
+所以上面遍历 `ASSET_TYPES` 后的代码相当于：
+
+```js
+Vue.options.components = {}
+Vue.options.directives = {}
+Vue.options.filters = {}
+```
+
+最后通过 `extend(Vue.options.components, builtInComponents)` 把一些内置组件扩展到 `Vue.options.components` 上，`Vue` 的内置组件目前 有`<keep-alive>`、`<transition>` 和`<transition-group>` 组件，这也就是为什么我们在其它组件中使用这些组件不需要注册的原因。
+
+ 那么回到 `mergeOptions` 这个函数，它的定义在 `src/core/util/options.js` 中：
+
+```javascript
+/**
+ * Merge two option objects into a new one.
+ * Core utility used in both instantiation and inheritance.
+ */
+export function mergeOptions (
+  parent: Object,
+  child: Object,
+  vm?: Component
+): Object {
+
+  if (typeof child === 'function') {
+    child = child.options
+  }
+  const extendsFrom = child.extends
+  if (extendsFrom) {
+    parent = mergeOptions(parent, extendsFrom, vm)
+  }
+  if (child.mixins) {
+    for (let i = 0, l = child.mixins.length; i < l; i++) {
+      parent = mergeOptions(parent, child.mixins[i], vm)
+    }
+  }
+  const options = {}
+  let key
+  for (key in parent) {
+    mergeField(key)
+  }
+  for (key in child) {
+    if (!hasOwn(parent, key)) {
+      mergeField(key)
+    }
+  }
+  function mergeField (key) {
+    const strat = strats[key] || defaultStrat
+    options[key] = strat(parent[key], child[key], vm, key)
+  }
+  return options
+}
+```
+
+可以看出，`mergeOptions`函数的 主要功能是把 `parent` 和 `child` 这两个对象根据一些合并策略，合并成一个新对象并返回。首先递归把 `extends` 和 `mixins` 合并到 `parent` 上，
+
+```javascript
+ const extendsFrom = child.extends
+  if (extendsFrom) {
+    parent = mergeOptions(parent, extendsFrom, vm)
+  }
+  if (child.mixins) {
+    for (let i = 0, l = child.mixins.length; i < l; i++) {
+      parent = mergeOptions(parent, child.mixins[i], vm)
+    }
+  }
+```
+
+然后创建一个空对象`options`，遍历 `parent`，把`parent`中的每一项通过调用 `mergeField`函数合并到空对象`options`里，
+
+```javascript
+const options = {}
+let key
+for (key in parent) {
+    mergeField(key)
+}
+```
+
+接着再遍历 `child`，把存在于`child`里但又不在 `parent`中 的属性继续调用 `mergeField`函数合并到空对象`options`里，
+
+```javascript
+for (key in child) {
+    if (!hasOwn(parent, key)) {
+        mergeField(key)
+    }
+}
+```
+
+最后，`options`就是最终合并后得到的结果，将其返回。
+
+这里值得一提的是 `mergeField` 函数，它不是简单的把属性从一个对象里复制到另外一个对象里，而是根据被合并的不同的选项有着不同的合并策略。例如，对于`data`有`data`的合并策略，即该文件中的`strats.data`函数；对于`watch`有`watch`的合并策略，即该文件中的`strats.watch`函数等等。这就是设计模式中非常典型的**策略模式**。
+
+关于这些合并策略都很简单，我们不一一展开介绍，仅介绍生命周期钩子函数的合并策略，因为我们后面会用到。生命周期钩子函数的合并策略如下：
+
+```javascript
+/**
+ * Hooks and props are merged as arrays.
+ */
+function mergeHook (parentVal,childVal):  {
+  return childVal
+    ? parentVal
+      ? parentVal.concat(childVal)
+      : Array.isArray(childVal)
+        ? childVal
+        : [childVal]
+    : parentVal
+}
+
+LIFECYCLE_HOOKS.forEach(hook => {
+  strats[hook] = mergeHook
+})
+```
+
+ 这其中的 `LIFECYCLE_HOOKS` 的定义在 `src/shared/constants.js` 中：
+
+```javascript
+export const LIFECYCLE_HOOKS = [
+  'beforeCreate',
+  'created',
+  'beforeMount',
+  'mounted',
+  'beforeUpdate',
+  'updated',
+  'beforeDestroy',
+  'destroyed',
+  'activated',
+  'deactivated',
+  'errorCaptured'
+]
+```
+
+ 这里定义了所有钩子函数名称，所以对于钩子函数的合并策略都是 `mergeHook` 函数。`mergeHook` 函数的实现用了一个多层嵌套的三元运算符，如果嵌套太深不好理解的话我们可以将其展开，如下：
+
+ ```javascript
+function mergeHook (parentVal,childVal):  {
+  if (childVal) {
+    if (parentVal) {
+      return parentVal.concat(childVal)
+    } else {
+      if (Array.isArray(childVal)) {
+        return childVal
+      } else {
+        return [childVal]
+      }
+    }
+  } else {
+    return parentVal
+  }
+}
+ ```
+
+ 从展开后的代码中可以看到，它的合并策略是这样子的：如果 `childVal`不存在，就返回 `parentVal`；否则再判断是否存在 `parentVal`，如果存在就把 `childVal` 添加到 `parentVal` 后返回新数组；否则返回 `childVal` 的数组。所以回到 `mergeOptions` 函数，一旦 `parent` 和 `child` 都定义了相同的钩子函数，那么它们会把 2 个钩子函数合并成一个数组。
+
+那么问题来了，为什么要把相同的钩子函数转换成数组呢？这是因为`Vue`允许用户使用`Vue.mixin`方法（关于该方法会在后面章节中介绍）向实例混入自定义行为，`Vue`的一些插件通常都是这么做的。所以当`Vue.mixin`和用户在实例化`Vue`时，如果设置了同一个钩子函数，那么在触发钩子函数时，就需要同时触发这个两个函数，所以转换成数组就是为了能在同一个生命周期钩子列表中保存多个钩子函数。
+
+### callHook函数如何触发钩子函数
+
+关于`callHook`函数如何触发钩子函数的问题，我们只需看一下该函数的实现源码即可，该函数的源码位于`src/core/instance/lifecycle.js` 中，如下：
+
+```javascript
+export function callHook (vm: Component, hook: string) {
+  const handlers = vm.$options[hook]
+  if (handlers) {
+    for (let i = 0, j = handlers.length; i < j; i++) {
+      try {
+        handlers[i].call(vm)
+      } catch (e) {
+        handleError(e, vm, `${hook} hook`)
+      }
+    }
+  }
+}
+```
+
+可以看到，`callHook`函数逻辑非常简单。首先从实例的`$options`中获取到需要触发的钩子名称所对应的钩子函数数组`handlers`，我们说过，每个生命周期钩子名称都对应了一个钩子函数数组。然后遍历该数组，将数组中的每个钩子函数都执行一遍。
+
+### 总结
+
+本篇文章介绍了生命周期第一个阶段——初始化阶段中所做的第一件事：`new Vue()`。
+
+首先，分析了`new Vue()`时其内部都干了些什么。其主要逻辑就是：合并配置，调用一些初始化函数，触发生命周期钩子函数，调用`$mount`开启下一个阶段。
+
+接着，就合并属性进行了详细介绍，知道了对于不同的选项有着不同的合并策略，并挑出钩子函数的合并策略进行了分析。
+
+最后，分析了`callHook`函数的源码，知道了`callHook`函数如何触发钩子函数的。
+
+接下来后面几篇文章将对调用的这些初始化函数进行逐个分析。
+
+## 初始化阶段(initLifecycle)
+
+
+### 前言
+
+在上篇文章中，我们介绍了生命周期初始化阶段的整体工作流程，以及在该阶段都做了哪些事情。我们知道了，在该阶段会调用一些初始化函数，对`Vue`实例的属性、数据等进行初始化工作。那这些初始化函数都初始化了哪些东西以及都怎么初始化的呢？接下来我们就把这些初始化函数一一展开介绍，本篇文章介绍第一个初始化函数`initLifecycle`。
+
+### initLifecycle函数分析
+
+`initLifecycle`函数的定义位于源码的`src/core/instance/lifecycle.js`中，其代码如下：
+
+```javascript
+export function initLifecycle (vm: Component) {
+  const options = vm.$options
+
+  // locate first non-abstract parent
+  let parent = options.parent
+  if (parent && !options.abstract) {
+    while (parent.$options.abstract && parent.$parent) {
+      parent = parent.$parent
+    }
+    parent.$children.push(vm)
+  }
+
+  vm.$parent = parent
+  vm.$root = parent ? parent.$root : vm
+
+  vm.$children = []
+  vm.$refs = {}
+
+  vm._watcher = null
+  vm._inactive = null
+  vm._directInactive = false
+  vm._isMounted = false
+  vm._isDestroyed = false
+  vm._isBeingDestroyed = false
+}
+```
+
+可以看到，`initLifecycle`函数的代码量并不多，逻辑也不复杂。其主要是给`Vue`实例上挂载了一些属性并设置了默认值，值得一提的是挂载`$parent` 属性和`$root`属性， 下面我们就来逐个分析。
+
+首先是给实例上挂载`$parent`属性，这个属性有点意思，我们先来看看代码：
+
+```javascript
+let parent = options.parent
+if (parent && !options.abstract) {
+  while (parent.$options.abstract && parent.$parent) {
+    parent = parent.$parent
+  }
+  parent.$children.push(vm)
+}
+
+vm.$parent = parent
+```
+
+从代码中可以看到，逻辑是这样子的：如果当前组件不是抽象组件并且存在父级，那么就通过`while`循环来向上循环，如果当前组件的父级是抽象组件并且也存在父级，那就继续向上查找当前组件父级的父级，直到找到第一个不是抽象类型的父级时，将其赋值`vm.$parent`，同时把该实例自身添加进找到的父级的`$children`属性中。这样就确保了在子组件的`$parent`属性上能访问到父组件实例，在父组件的`$children`属性上也能访问子组件的实例。
+
+接着是给实例上挂载`$root`属性，如下：
+
+```javascript
+vm.$root = parent ? parent.$root : vm
+```
+
+实例的`$root`属性表示当前实例的根实例，挂载该属性时，首先会判断如果当前实例存在父级，那么当前实例的根实例`$root`属性就是其父级的根实例`$root`属性，如果不存在，那么根实例`$root`属性就是它自己。这很好理解，举个例子：假如有一个人，他如果有父亲，那么他父亲的祖先肯定也是他的祖先，同理，他的儿子的祖先也肯定是他的祖先，我们不需要真正的一层一层的向上递归查找到他祖先本人，只需要知道他父亲的祖先是谁然后告诉他即可。如果他没有父亲，那说明他自己就是祖先，那么他后面的儿子、孙子的`$root`属性就是他自己了。
+
+这就是一个自上到下将根实例的`$root`属性依次传递给每一个子实例的过程。
+
+最后，再初始化了一些其它属性，因为都是简单的赋初始值，这里就不再一一介绍，等后面内容涉及到的时候再介绍。
+
+```javascript
+vm.$children = []
+vm.$refs = {}
+
+vm._watcher = null
+vm._inactive = null
+vm._directInactive = false
+vm._isMounted = false
+vm._isDestroyed = false
+vm._isBeingDestroyed = false
+```
+
+### 总结
+
+本篇文章介绍了初始化阶段调用的第一个初始化函数——`initLifecycle`函数。该函数的逻辑非常简单，就是给实例初始化了一些属性，包括以`$`开头的供用户使用的外部属性，也包括以`_`开头的供内部使用的内部属性。
+
+## 初始化阶段(initEvents)
+
+
+### 前言
+
+本篇文章介绍生命周期初始化阶段所调用的第二个初始化函数——`initEvents`。从函数名字上来看，这个初始化函数是初始化实例的事件系统。我们知道，在`Vue`中，当我们在父组件中使用子组件时可以给子组件上注册一些事件，这些事件即包括使用`v-on`或`@`注册的自定义事件，也包括注册的浏览器原生事件（需要加 `.native` 修饰符），如下：
+
+```html
+<child @select="selectHandler" 	@click.native="clickHandler"></child>
+```
+
+不管是什么事件，当子组件（即实例）在初始化的时候都需要进行一定的初始化，那么本篇文章就来看看实例上的事件都是如何进行初始化的。
+
+### 解析事件
+
+我们先从解析事件开始说起，回顾之前的模板编译解析中，当遇到开始标签的时候，除了会解析开始标签，还会调用`processAttrs` 方法解析标签中的属性，`processAttrs` 方法位于源码的 `src/compiler/parser/index.js`中， 如下：
+
+```javascript
+export const onRE = /^@|^v-on:/
+export const dirRE = /^v-|^@|^:/
+
+function processAttrs (el) {
+  const list = el.attrsList
+  let i, l, name, value, modifiers
+  for (i = 0, l = list.length; i < l; i++) {
+    name  = list[i].name
+    value = list[i].value
+    if (dirRE.test(name)) {
+      // 解析修饰符
+      modifiers = parseModifiers(name)
+      if (modifiers) {
+        name = name.replace(modifierRE, '')
+      }
+      if (onRE.test(name)) { // v-on
+        name = name.replace(onRE, '')
+        addHandler(el, name, value, modifiers, false, warn)
+      }
+    }
+  }
+}
+```
+
+从上述代码中可以看到，在对标签属性进行解析时，判断如果属性是指令，首先通过 `parseModifiers` 解析出属性的修饰符，然后判断如果是事件的指令，则执行 `addHandler(el, name, value, modifiers, false, warn)` 方法，  该方法定义在 `src/compiler/helpers.js` 中，如下：
+
+```javascript
+export function addHandler (el,name,value,modifiers) {
+  modifiers = modifiers || emptyObject
+
+  // check capture modifier 判断是否有capture修饰符
+  if (modifiers.capture) {
+    delete modifiers.capture
+    name = '!' + name // 给事件名前加'!'用以标记capture修饰符
+  }
+  // 判断是否有once修饰符
+  if (modifiers.once) {
+    delete modifiers.once
+    name = '~' + name // 给事件名前加'~'用以标记once修饰符
+  }
+  // 判断是否有passive修饰符
+  if (modifiers.passive) {
+    delete modifiers.passive
+    name = '&' + name // 给事件名前加'&'用以标记passive修饰符
+  }
+
+  let events
+  if (modifiers.native) {
+    delete modifiers.native
+    events = el.nativeEvents || (el.nativeEvents = {})
+  } else {
+    events = el.events || (el.events = {})
+  }
+
+  const newHandler: any = {
+    value: value.trim()
+  }
+  if (modifiers !== emptyObject) {
+    newHandler.modifiers = modifiers
+  }
+
+  const handlers = events[name]
+  if (Array.isArray(handlers)) {
+    handlers.push(newHandler)
+  } else if (handlers) {
+    events[name] = [handlers, newHandler]
+  } else {
+    events[name] = newHandler
+  }
+
+  el.plain = false
+}
+```
+
+在`addHandler` 函数里做了 3 件事情，首先根据 `modifier` 修饰符对事件名 `name` 做处理，接着根据 `modifier.native` 判断事件是一个浏览器原生事件还是自定义事件，分别对应 `el.nativeEvents` 和 `el.events`，最后按照 `name` 对事件做归类，并把回调函数的字符串保留到对应的事件中。
+
+ 在前言中的例子中，父组件的 `child` 节点生成的 `el.events` 和 `el.nativeEvents` 如下：
+
+```javascript
+el.events = {
+  select: {
+    value: 'selectHandler'
+  }
+}
+
+el.nativeEvents = {
+  click: {
+    value: 'clickHandler'
+  }
+}
+```
+
+ 然后在模板编译的代码生成阶段，会在 `genData` 函数中根据 `AST` 元素节点上的 `events` 和 `nativeEvents` 生成`_c(tagName,data,children)`函数中所需要的 `data` 数据，它的定义在 `src/compiler/codegen/index.js` 中：
+
+```javascript
+export function genData (el state) {
+  let data = '{'
+  // ...
+  if (el.events) {
+    data += `${genHandlers(el.events, false,state.warn)},`
+  }
+  if (el.nativeEvents) {
+    data += `${genHandlers(el.nativeEvents, true, state.warn)},`
+  }
+  // ...
+  return data
+}
+```
+
+生成的`data`数据如下：
+
+```javascript
+{
+  // ...
+  on: {"select": selectHandler},
+  nativeOn: {"click": function($event) {
+      return clickHandler($event)
+    }
+  }
+  // ...
+}
+```
+
+可以看到，最开始的模板中标签上注册的事件最终会被解析成用于创建元素型`VNode`的`_c(tagName,data,children)`函数中`data`数据中的两个对象，自定义事件对象`on`，浏览器原生事件`nativeOn`。
+
+在前面的文章中我们说过，模板编译的最终目的是创建`render`函数供挂载的时候调用生成虚拟`DOM`，那么在挂载阶段， 如果被挂载的节点是一个组件节点，则通过 `createComponent` 函数创建一个组件 `vnode`，该函数位于源码的 `src/core/vdom/create-component.js` 中， 如下：
+
+```javascript
+export function createComponent (
+  Ctor: Class<Component> | Function | Object | void,
+  data: ?VNodeData,
+  context: Component,
+  children: ?Array<VNode>,
+  tag?: string
+): VNode | Array<VNode> | void {
+  // ...
+  const listeners = data.on
+
+  data.on = data.nativeOn
+
+  // ...
+  const name = Ctor.options.name || tag
+  const vnode = new VNode(
+    `vue-component-${Ctor.cid}${name ? `-${name}` : ''}`,
+    data, undefined, undefined, undefined, context,
+    { Ctor, propsData, listeners, tag, children },
+    asyncFactory
+  )
+
+  return vnode
+}
+```
+
+可以看到，把 自定义事件`data.on` 赋值给了 `listeners`，把浏览器原生事件 `data.nativeOn` 赋值给了 `data.on`，这说明所有的原生浏览器事件处理是在当前父组件环境中处理的。而对于自定义事件，会把 `listeners` 作为 `vnode` 的 `componentOptions` 传入，放在子组件初始化阶段中处理， 在子组件的初始化的时候，  拿到了父组件传入的 `listeners`，然后在执行 `initEvents` 的过程中，会处理这个 `listeners`。
+
+所以铺垫了这么多，结论来了：**父组件给子组件的注册事件中，把自定义事件传给子组件，在子组件实例化的时候进行初始化；而浏览器原生事件是在父组件中处理。**
+
+换句话说：**实例初始化阶段调用的初始化事件函数`initEvents`实际上初始化的是父组件在模板中使用v-on或@注册的监听子组件内触发的事件。**
+
+###   initEvents函数分析
+
+了解了以上过程之后，我们终于进入了正题，开始分析`initEvents`函数，该函数位于源码的`src/instance/events.js`中，如下：
+
+```javascript
+export function initEvents (vm: Component) {
+  vm._events = Object.create(null)
+  // init parent attached events
+  const listeners = vm.$options._parentListeners
+  if (listeners) {
+    updateComponentListeners(vm, listeners)
+  }
+}
+```
+
+可以看到，`initEvents`函数逻辑非常简单，首先在`vm`上新增`_events`属性并将其赋值为空对象，用来存储事件。
+
+```javascript
+vm._events = Object.create(null)
+```
+
+接着，获取父组件注册的事件赋给`listeners`，如果`listeners`不为空，则调用`updateComponentListeners`函数，将父组件向子组件注册的事件注册到子组件的实例中，如下：
+
+```javascript
+const listeners = vm.$options._parentListeners
+if (listeners) {
+  updateComponentListeners(vm, listeners)
+}
+```
+
+这个`updateComponentListeners`函数是什么呢？该函数定义如下：
+
+```javascript
+export function updateComponentListeners (
+  vm: Component,
+  listeners: Object,
+  oldListeners: ?Object
+) {
+  target = vm
+  updateListeners(listeners, oldListeners || {}, add, remove, vm)
+  target = undefined
+}
+
+function add (event, fn, once) {
+  if (once) {
+    target.$once(event, fn)
+  } else {
+    target.$on(event, fn)
+  }
+}
+
+function remove (event, fn) {
+  target.$off(event, fn)
+}
+```
+
+可以看到，`updateComponentListeners`函数其实也没有干什么，只是调用了`updateListeners`函数，并把`listeners`以及`add`和`remove`这两个函数传入。我们继续跟进，看看`updateListeners`函数干了些什么，`updateListeners`函数位于源码的`src/vdom/helpers/update-listeners.js`中，如下：
+
+```javascript
+export function updateListeners (
+  on: Object,
+  oldOn: Object,
+  add: Function,
+  remove: Function,
+  vm: Component
+) {
+  let name, def, cur, old, event
+  for (name in on) {
+    def = cur = on[name]
+    old = oldOn[name]
+    event = normalizeEvent(name)
+    if (isUndef(cur)) {
+      process.env.NODE_ENV !== 'production' && warn(
+        `Invalid handler for event "${event.name}": got ` + String(cur),
+        vm
+      )
+    } else if (isUndef(old)) {
+      if (isUndef(cur.fns)) {
+        cur = on[name] = createFnInvoker(cur)
+      }
+      add(event.name, cur, event.once, event.capture, event.passive, event.params)
+    } else if (cur !== old) {
+      old.fns = cur
+      on[name] = old
+    }
+  }
+  for (name in oldOn) {
+    if (isUndef(on[name])) {
+      event = normalizeEvent(name)
+      remove(event.name, oldOn[name], event.capture)
+    }
+  }
+}
+
+```
+
+可以看到，该函数的作用是对比`listeners`和`oldListeners`的不同，并调用参数中提供的`add`和`remove`进行相应的注册事件和卸载事件。其思想是：如果`listeners`对象中存在某个`key`（即事件名）而`oldListeners`中不存在，则说明这个事件是需要新增的；反之，如果`oldListeners`对象中存在某个`key`（即事件名）而`listeners`中不存在，则说明这个事件是需要从事件系统中卸载的；
+
+该函数接收5个参数，分别是`on`、`oldOn`、`add`、`remove`、`vm`，其中`on`对应`listeners`，`oldOn`对应`oldListeners`。
+
+首先对`on`进行遍历， 获得每一个事件名，然后调用 `normalizeEvent` 函数（关于该函数下面会介绍）处理， 处理完事件名后， 判断事件名对应的值是否存在，如果不存在则抛出警告，如下：
+
+```javascript
+for (name in on) {
+  def = cur = on[name]
+  old = oldOn[name]
+  event = normalizeEvent(name)
+  if (isUndef(cur)) {
+    process.env.NODE_ENV !== 'production' && warn(
+      `Invalid handler for event "${event.name}": got ` + String(cur),
+      vm
+    )
+  }
+}
+```
+
+如果存在，则继续判断该事件名在`oldOn`中是否存在，如果不存在，则调用`add`注册事件，如下：
+
+```javascript
+if (isUndef(old)) {
+  if (isUndef(cur.fns)) {
+    cur = on[name] = createFnInvoker(cur)
+  }
+  add(event.name, cur, event.once, event.capture, event.passive, event.params)
+}
+```
+
+这里定义了 `createFnInvoker` 方法并返回`invoker`函数:
+
+```javascript
+export function createFnInvoker (fns) {
+  function invoker () {
+    const fns = invoker.fns
+    if (Array.isArray(fns)) {
+      const cloned = fns.slice()
+      for (let i = 0; i < cloned.length; i++) {
+        cloned[i].apply(null, arguments)
+      }
+    } else {
+      // return handler return value for single handlers
+      return fns.apply(null, arguments)
+    }
+  }
+  invoker.fns = fns
+  return invoker
+}
+```
+
+ 由于一个事件可能会对应多个回调函数，所以这里做了数组的判断，多个回调函数就依次调用。注意最后的赋值逻辑， `invoker.fns = fns`，每一次执行 `invoker` 函数都是从 `invoker.fns` 里取执行的回调函数，回到 `updateListeners`，当我们第二次执行该函数的时候，判断如果 `cur !== old`，那么只需要更改 `old.fns = cur` 把之前绑定的 `involer.fns` 赋值为新的回调函数即可，并且 通过 `on[name] = old` 保留引用关系，这样就保证了事件回调只添加一次，之后仅仅去修改它的回调函数的引用。
+
+```javascript
+if (cur !== old) {
+  old.fns = cur
+  on[name] = old
+}
+```
+
+ 最后遍历 `oldOn`， 获得每一个事件名，判断如果事件名在`on`中不存在，则表示该事件是需要从事件系统中卸载的事件，则调用 `remove`方法卸载该事件。
+
+ 以上就是`updateListeners`函数的所有逻辑，那么上面还遗留了一个`normalizeEvent` 函数是干什么用的呢？还记得我们在解析事件的时候，当事件上有修饰符的时候，我们会根据不同的修饰符给事件名前面添加不同的符号以作标识，其实这个`normalizeEvent` 函数就是个反向操作，根据事件名前面的不同标识反向解析出该事件所带的何种修饰符，其代码如下：
+
+```javascript
+const normalizeEvent = cached((name: string): {
+  name: string,
+  once: boolean,
+  capture: boolean,
+  passive: boolean,
+  handler?: Function,
+  params?: Array<any>
+} => {
+  const passive = name.charAt(0) === '&'
+  name = passive ? name.slice(1) : name
+  const once = name.charAt(0) === '~'
+  name = once ? name.slice(1) : name
+  const capture = name.charAt(0) === '!'
+  name = capture ? name.slice(1) : name
+  return {
+    name,
+    once,
+    capture,
+    passive
+  }
+})
+```
+
+可以看到，就是判断事件名的第一个字符是何种标识进而判断出事件带有何种修饰符，最终将真实事件名及所带的修饰符返回。
+
+### 总结
+
+本篇文章介绍了生命周期初始化阶段所调用的第二个初始化函数——`initEvents`。该函数是用来初始化实例的事件系统的。
+
+我们先从模板编译时对组件标签上的事件解析入手分析，我们知道了，父组件既可以给子组件上绑定自定义事件，也可以绑定浏览器原生事件。这两种事件有着不同的处理时机，浏览器原生事件是由父组件处理，而自定义事件是在子组件初始化的时候由父组件传给子组件，再由子组件注册到实例的事件系统中。
+
+也就是说：**初始化事件函数initEvents实际上初始化的是父组件在模板中使用v-on或@注册的监听子组件内触发的事件。**
+
+最后分析了`initEvents`函数的具体实现过程，该函数内部首先在实例上新增了`_events`属性并将其赋值为空对象，用来存储事件。接着通过调用`updateComponentListeners`函数，将父组件向子组件注册的事件注册到子组件实例中的`_events`对象里。
+
+## 初始化阶段(initInjections)
+
+
+### 前言
+
+本篇文章介绍生命周期初始化阶段所调用的第四个初始化函数——`initInjections`。从函数名字上来看，该函数是用来初始化实例中的`inject`选项的。说到`inject`选项，那必然离不开`provide`选项，这两个选项都是成对出现的，它们的作用是：允许一个祖先组件向其所有子孙后代注入一个依赖，不论组件层次有多深，并在起上下游关系成立的时间里始终生效。并且
+
+`provide` 选项应该是一个对象或返回一个对象的函数。该对象包含可注入其子孙的属性。在该对象中你可以使用 ES2015 Symbols 作为 key，但是只在原生支持 `Symbol` 和 `Reflect.ownKeys` 的环境下可工作。
+
+`inject` 选项应该是：
+
+- 一个字符串数组，或
+- 一个对象，对象的 key 是本地的绑定名，value 是：
+  - 在可用的注入内容中搜索用的 key (字符串或 Symbol)，或
+  - 一个对象，该对象的：
+    - `from` 属性是在可用的注入内容中搜索用的 key (字符串或 Symbol)
+    - `default` 属性是降级情况下使用的 value
+
+这两个选项在我们日常开发中使用的频率不是很高，但是在一些组件库中使用的很频繁，官方文档给出了使用示例，如下：
+
+```javascript
+// 父级组件提供 'foo'
+var Parent = {
+  provide: {
+    foo: 'bar'
+  },
+  // ...
+}
+
+// 子组件注入 'foo'
+var Child = {
+  inject: ['foo'],
+  created () {
+    console.log(this.foo) // => "bar"
+  }
+  // ...
+}
+```
+
+利用 ES2015 Symbols、函数 `provide` 和对象 `inject`：
+
+```javascript
+const s = Symbol()
+
+const Provider = {
+  provide () {
+    return {
+      [s]: 'foo'
+    }
+  }
+}
+
+const Child = {
+  inject: { s },
+  // ...
+}
+```
+
+> 接下来 2 个例子只工作在 Vue 2.2.1 或更高版本。低于这个版本时，注入的值会在 `props` 和 `data` 初始化之后得到。
+
+使用一个注入的值作为一个属性的默认值：
+
+```javascript
+const Child = {
+  inject: ['foo'],
+  props: {
+    bar: {
+      default () {
+        return this.foo
+      }
+    }
+  }
+}
+```
+
+使用一个注入的值作为数据入口：
+
+```javascript
+const Child = {
+  inject: ['foo'],
+  data () {
+    return {
+      bar: this.foo
+    }
+  }
+}
+```
+
+> 在 2.5.0+ 的注入可以通过设置默认值使其变成可选项：
+
+```javascript
+const Child = {
+  inject: {
+    foo: { default: 'foo' }
+  }
+}
+```
+
+如果它需要从一个不同名字的属性注入，则使用 `from` 来表示其源属性：
+
+```javascript
+const Child = {
+  inject: {
+    foo: {
+      from: 'bar',
+      default: 'foo'
+    }
+  }
+}
+```
+
+与 prop 的默认值类似，你需要对非原始值使用一个工厂方法：
+
+```javascript
+const Child = {
+  inject: {
+    foo: {
+      from: 'bar',
+      default: () => [1, 2, 3]
+    }
+  }
+}
+```
+
+总结起来一句话就是：父组件可以使用`provide`选项给自己的下游子孙组件内注入一些数据，在下游子孙组件中可以使用`inject`选项来接收这些数据以便为自己所用。
+
+另外，这里有一点需要注意：`provide` 和 `inject` 选项绑定的数据不是响应式的。
+
+了解了他们的作用及使用方法后，我们就来看下`initInjections`函数是如何来初始化`inject`选项的。
+
+### initInjections函数分析
+
+分析之前，我们先说一个问题，细心的同学可能会发现，既然`inject`选项和`provide`选项都是成对出现的，那为什么在初始化的时候不一起初始化呢？为什么在`init`函数中调用`initInjections`函数和`initProvide`函数之间穿插一个`initState`函数呢？
+
+其实不然，在官方文档示例中说了，`provide`选项注入的值作为数据入口，如下：
+
+```javascript
+const Child = {
+  inject: ['foo'],
+  data () {
+    return {
+      bar: this.foo
+    }
+  }
+}
+```
+
+这里所说的数据就是我们通常所写`data`、`props`、`watch`、`computed`及`method`，所以`inject`选项接收到注入的值有可能被以上这些数据所使用到，所以在初始化完`inject`后需要先初始化这些数据，然后才能再初始化`provide`，所以在调用`initInjections`函数对`inject`初始化完之后需要先调用`initState`函数对数据进行初始化，最后再调用`initProvide`函数对`provide`进行初始化。
+
+OK，接下来我们就来分析`initInjections`函数的具体原理，该函数定义位于源码的`src/core/instance/inject.js`中，如下：
+
+```javascript
+export function initInjections (vm: Component) {
+  const result = resolveInject(vm.$options.inject, vm)
+  if (result) {
+    toggleObserving(false)
+    Object.keys(result).forEach(key => {
+      defineReactive(vm, key, result[key])
+    }
+    toggleObserving(true)
+  }
+}
+
+export let shouldObserve: boolean = true
+export function toggleObserving (value: boolean) {
+  shouldObserve = value
+}
+```
+
+可以看到，`initInjections`函数的逻辑并不复杂，首先调用`resolveInject`把`inject`选项中的数据转化成键值对的形式赋给`result`，如官方文档给出的例子，那么`result`应为如下样子：
+
+```javascript
+// 父级组件提供 'foo'
+var Parent = {
+  provide: {
+    foo: 'bar'
+  }
+}
+
+// 子组件注入 'foo'
+var Child = {
+  inject: ['foo'],
+}
+
+// result
+result = {
+    'foo':'bar'
+}
+```
+
+然后遍历`result`中的每一对键值，调用`defineReactive`函数将其添加当前实例上，如下：
+
+```javascript
+if (result) {
+    toggleObserving(false)
+    Object.keys(result).forEach(key => {
+        defineReactive(vm, key, result[key])
+    }
+    toggleObserving(true)
+}
+```
+
+此处有一个地方需要注意，在把`result`中的键值添加到当前实例上之前，会先调用`toggleObserving(false)`，而这个函数内部是把`shouldObserve = false`，这是为了告诉`defineReactive`函数仅仅是把键值添加到当前实例上而不需要将其转换成响应式，这个就呼应了官方文档在介绍`provide` 和 `inject` 选项用法的时候所提示的：
+
+> `provide` 和 `inject` 绑定并不是可响应的。这是刻意为之的。然而，如果你传入了一个可监听的对象，那么其对象的属性还是可响应的。
+
+`initInjections`函数的逻辑就介绍完了，接下来我们看看`resolveInject`函数内部是如何把`inject` 选项中数据转换成键值对的。
+
+#### olveInject函数分析
+
+我们知道，`inject` 选项中的每一个数据`key`都是由其上游父级组件提供的，所以我们应该把每一个数据`key`从当前组件起，不断的向上游父级组件中查找该数据`key`对应的值，直到找到为止。如果在上游所有父级组件中没找到，那么就看在`inject` 选项是否为该数据`key`设置了默认值，如果设置了就使用默认值，如果没有设置，则抛出异常。
+
+OK，以上是我们的分析，下面我们就来看下`resolveInject`函数的源码，验证我们的分析，源码如下：
+
+```javascript
+export function resolveInject (inject: any, vm: Component): ?Object {
+  if (inject) {
+    const result = Object.create(null)
+    const keys =  Object.keys(inject)
+
+    for (let i = 0; i < keys.length; i++) {
+      const key = keys[i]
+      const provideKey = inject[key].from
+      let source = vm
+      while (source) {
+        if (source._provided && hasOwn(source._provided, provideKey)) {
+          result[key] = source._provided[provideKey]
+          break
+        }
+        source = source.$parent
+      }
+      if (!source) {
+        if ('default' in inject[key]) {
+          const provideDefault = inject[key].default
+          result[key] = typeof provideDefault === 'function'
+            ? provideDefault.call(vm)
+            : provideDefault
+        } else if (process.env.NODE_ENV !== 'production') {
+          warn(`Injection "${key}" not found`, vm)
+        }
+      }
+    }
+    return result
+  }
+}
+```
+
+在分析函数源码之前，我们对照着官网给出的示例，这样会比较好理解一些。
+
+```javascript
+var Parent = {
+  provide: {
+    foo: 'bar'
+  },
+  // ...
+}
+const Child = {
+  inject: {
+    foo: {
+      from: 'bar',
+      default: () => [1, 2, 3]
+    }
+  }
+}
+```
+
+
+
+可以看到，在函数源码中，首先创建一个空对象`result`，用来存储`inject` 选项中的数据`key`及其对应的值，作为最后的返回结果。
+
+然后获取当前`inject` 选项中的所有`key`，然后遍历每一个`key`，拿到每一个`key`的`from`属性记作`provideKey`，`provideKey`就是上游父级组件提供的源属性，然后开启一个`while`循环，从当前组件起，不断的向上游父级组件的`_provided`属性中（父级组件使用`provide`选项注入数据时会将注入的数据存入自己的实例的`_provided`属性中）查找，直到查找到源属性的对应的值，将其存入`result`中，如下：
+
+```javascript
+for (let i = 0; i < keys.length; i++) {
+  const key = keys[i]
+  const provideKey = inject[key].from
+  let source = vm
+  while (source) {
+    if (source._provided && hasOwn(source._provided, provideKey)) {
+      result[key] = source._provided[provideKey]
+      break
+    }
+    source = source.$parent
+  }
+}
+```
+
+如果没有找到，那么就看`inject` 选项中当前的数据`key`是否设置了默认值，即是否有`default`属性，如果有的话，则拿到这个默认值，官方文档示例中说了，默认值可以为一个工厂函数，所以当默认值是函数的时候，就去该函数的返回值，否则就取默认值本身。如果没有设置默认值，则抛出异常。如下：
+
+```javascript
+if (!source) {
+  if ('default' in inject[key]) {
+    const provideDefault = inject[key].default
+    result[key] = typeof provideDefault === 'function'
+        ? provideDefault.call(vm)
+    : provideDefault
+  } else if (process.env.NODE_ENV !== 'production') {
+    warn(`Injection "${key}" not found`, vm)
+  }
+}
+```
+
+最后将`result`返回。这就是`resolveInject`函数的所有逻辑。
+
+此时你可能会有个疑问，官方文档中说`inject` 选项可以是一个字符串数组，也可以是一个对象，在上面的代码中只看见了处理当为对象的情况，那如果是字符串数组呢？怎么没有处理呢？
+
+其实在初始化阶段`_init`函数在合并属性的时候还调用了一个将`inject` 选项数据规范化的函数`normalizeInject`，该函数的作用是将以下这三种写法：
+
+```javascript
+// 写法一
+var Child = {
+  inject: ['foo']
+}
+
+// 写法二
+const Child = {
+  inject: {
+    foo: { default: 'xxx' }
+  }
+}
+
+// 写法三
+const Child = {
+  inject: {
+    foo
+  }
+}
+```
+
+统统转换成以下规范化格式：
+
+```javascript
+const Child = {
+  inject: {
+    foo: {
+      from: 'foo',
+      default: 'xxx'  //如果有默认的值就有default属性
+    }
+  }
+}
+```
+
+这样做的目的是，不管用户使用了何种写法，统统将其转化成一种便于集中处理的写法。
+
+该函数的定义位于源码的`src/core/util/options.js`中，如下：
+
+```javascript
+function normalizeInject (options: Object, vm: ?Component) {
+  const inject = options.inject
+  if (!inject) return
+  const normalized = options.inject = {}
+  if (Array.isArray(inject)) {
+    for (let i = 0; i < inject.length; i++) {
+      normalized[inject[i]] = { from: inject[i] }
+    }
+  } else if (isPlainObject(inject)) {
+    for (const key in inject) {
+      const val = inject[key]
+      normalized[key] = isPlainObject(val)
+        ? extend({ from: key }, val)
+        : { from: val }
+    }
+  } else if (process.env.NODE_ENV !== 'production') {
+    warn(
+      `Invalid value for option "inject": expected an Array or an Object, ` +
+      `but got ${toRawType(inject)}.`,
+      vm
+    )
+  }
+}
+```
+
+该函数的逻辑并不复杂，如果用户给`inject`选项传入的是一个字符串数组（写法一），那么就遍历该数组，把数组的每一项变成
+
+```javascript
+inject:{
+  foo:{
+    from:'foo'
+  }
+}
+```
+
+如果给`inject`选项传入的是一个对象，那就遍历对象中的每一个`key`，给写法二形式的`key`对应的值扩展`{ from: key }`，变成：
+
+```javascript
+inject:{
+  foo:{
+    from: 'foo',
+    default: 'xxx'
+  }
+}
+```
+
+将写法三形式的`key`对应的值变成：
+
+```javascript
+inject:{
+  foo:{
+    from: 'foo'
+  }
+}
+```
+
+总之一句话就是把各种写法转换成一种规范化写法，便于集中处理。
+
+### 总结
+
+本篇文章介绍生命周期初始化阶段所调用的第四个初始化函数——`initInjections`。该函数是用来初始化`inject`选项的。
+
+由于`inject`选项在日常开发中使用频率不高，所以首先我们先根据官方文档回顾了该选项的作用及使用方法。
+
+接着，我们分析了`initInjections`函数的内部实现原理，分析了是根据`inject`选项中的数据`key`是如何自底向上查找上游父级组件所注入的对应的值。
+
+另外，对`inject`选项的规范化函数`normalizeInject`也进行了分析，`Vue`为用户提供了自由多种的写法，其内部是将各种写法最后进行统一规范化处理。
+
+
+## 初始化阶段(initState)
+
+
+### 前言
+
+ 本篇文章介绍生命周期初始化阶段所调用的第五个初始化函数——`initState`。 从函数名字上来看，这个函数是用来初始化实例状态的，那么什么是实例的状态呢？在前面文章中我们略有提及，在我们日常开发中，在`Vue`组件中会写一些如`props`、`data`、`methods`、`computed`、`watch`选项，我们把这些选项称为实例的状态选项。也就是说，`initState`函数就是用来初始化这些状态的，那么接下来我们就来分析该函数是如何初始化这些状态选项的。
+
+### initState函数分析
+
+首先我们先来分析`initState`函数，该函数的定义位于源码的`src/core/instance/state.js`中，如下：
+
+```javascript
+export function initState (vm: Component) {
+  vm._watchers = []
+  const opts = vm.$options
+  if (opts.props) initProps(vm, opts.props)
+  if (opts.methods) initMethods(vm, opts.methods)
+  if (opts.data) {
+    initData(vm)
+  } else {
+    observe(vm._data = {}, true /* asRootData */)
+  }
+  if (opts.computed) initComputed(vm, opts.computed)
+  if (opts.watch && opts.watch !== nativeWatch) {
+    initWatch(vm, opts.watch)
+  }
+}
+```
+
+可以看到，该函数的代码并不多，而且逻辑也非常清晰。
+
+首先，给实例上新增了一个属性`_watchers`，用来存储当前实例中所有的`watcher`实例，无论是使用`vm.$watch`注册的`watcher`实例还是使用`watch`选项注册的`watcher`实例，都会被保存到该属性中。
+
+这里我们再额外多说一点，在变化侦测篇中我们介绍了`Vue`中对数据变化的侦测是使用属性拦截的方式实现的，但是`Vue`并不是对所有数据都使用属性拦截的方式侦测变化，这是因为数据越多，数据上所绑定的依赖就会多，从而造成依赖追踪的内存开销就会很大，所以从`Vue 2.0`版本起，`Vue`不再对所有数据都进行侦测，而是将侦测粒度提高到了组件层面，对每个组件进行侦测，所以在每个组件上新增了`vm._watchers`属性，用来存放这个组件内用到的所有状态的依赖，当其中一个状态发生变化时，就会通知到组件，然后由组件内部使用虚拟`DOM`进行数据比对，从而降低内存开销，提高性能。
+
+继续回到源码，接下来就是判断实例中有哪些选项就调用对应的选项初始化子函数进行初始化，如下：
+
+```javascript
+if (opts.props) initProps(vm, opts.props)
+if (opts.methods) initMethods(vm, opts.methods)
+if (opts.data) {
+    initData(vm)
+} else {
+    observe(vm._data = {}, true /* asRootData */)
+}
+if (opts.computed) initComputed(vm, opts.computed)
+if (opts.watch && opts.watch !== nativeWatch) {
+    initWatch(vm, opts.watch)
+}
+```
+
+先判断实例中是否有`props`选项，如果有，就调用`props`选项初始化函数`initProps`去初始化`props`选项；
+
+再判断实例中是否有`methods`选项，如果有，就调用`methods`选项初始化函数`initMethods`去初始化`methods`选项；
+
+接着再判断实例中是否有`data`选项，如果有，就调用`data`选项初始化函数`initData`去初始化`data`选项；如果没有，就把`data`当作空对象并将其转换成响应式；
+
+接着再判断实例中是否有`computed`选项，如果有，就调用`computed`选项初始化函数`initComputed`去初始化`computed`选项；
+
+最后判断实例中是否有`watch`选项，如果有，就调用`watch`选项初始化函数`initWatch`去初始化`watch`选项；
+
+总之一句话就是：有什么选项就调用对应的选项初始化子函数去初始化什么选项。
+
+以上就是`initState`函数的所有逻辑，其实你会发现，在函数内部初始化这5个选项的时候它的顺序是有意安排的，不是毫无章法的。如果你在开发中有注意到我们在`data`中可以使用`props`，在`watch`中可以观察`data`和`props`，之所以可以这样做，就是因为在初始化的时候遵循了这种顺序，先初始化`props`，接着初始化`data`，最后初始化`watch`。
+
+下面我们就针对这5个状态选项对应的5个初始化子函数进行逐一分析，看看其内部分别都是如何进行初始化的。
+
+### 初始化props
+
+`props`选项通常是由当前组件的父级组件传入的，当父组件在调用子组件的时候，通常会把`props`属性值作为标签属性添加在子组件的标签上，如下：
+
+```html
+<Child prop1="xxx" prop2="yyy"></Child>
+```
+
+在前面文章介绍初始化事件`initEvents`函数的时候我们说了，在模板编译的时候，当解析到组件标签时会将所有的标签属性都解析出来然后在子组件实例化的时候传给子组件，当然这里面就包括`props`数据。
+
+在子组件内部，通过`props`选项来接收父组件传来的数据，在接收的时候可以这样写：
+
+```javascript
+// 写法一
+props: ['name']
+
+// 写法二
+props: {
+    name: String, // [String, Number]
+}
+
+// 写法三
+props: {
+    name:{
+		type: String
+    }
+}
+
+```
+
+可以看到，`Vue`给用户提供的`props`选项写法非常自由，根据`Vue`的惯例，写法虽多但是最终处理的时候肯定只处理一种写法，此时你肯定会想到，处理之前先对数据进行规范化，将所有写法都转化成一种写法。对，你没有猜错，同规范化事件一样，在合并属性的时候也进行了`props`数据的规范化。
+
+####  规范化数据
+
+`props`数据规范化函数的定义位于源码的`src/core/util/options.js`中，如下：
+
+```javascript
+function normalizeProps (options, vm) {
+  const props = options.props
+  if (!props) return
+  const res = {}
+  let i, val, name
+  if (Array.isArray(props)) {
+    i = props.length
+    while (i--) {
+      val = props[i]
+      if (typeof val === 'string') {
+        name = camelize(val)
+        res[name] = { type: null }
+      } else if (process.env.NODE_ENV !== 'production') {
+        warn('props must be strings when using array syntax.')
+      }
+    }
+  } else if (isPlainObject(props)) {
+    for (const key in props) {
+      val = props[key]
+      name = camelize(key)
+      res[name] = isPlainObject(val)
+        ? val
+        : { type: val }
+    }
+  } else if (process.env.NODE_ENV !== 'production') {
+    warn(
+      `Invalid value for option "props": expected an Array or an Object, ` +
+      `but got ${toRawType(props)}.`,
+      vm
+    )
+  }
+  options.props = res
+}
+```
+
+上面代码中，首先拿到实例中的`props`选项，如果不存在，则直接返回。
+
+```javascript
+const props = options.props
+if (!props) return
+```
+
+如果存在，则定义一个空对象`res`，用来存储最终的结果。接着判断如果`props`选项是一个数组（写法一），则遍历该数组中的每一项元素，如果该元素是字符串，那么先将该元素统一转化成驼峰式命名，然后将该元素作为`key`，将`{type: null}`作为`value`存入`res`中；如果该元素不是字符串，则抛出异常。如下：
+
+```javascript
+if (Array.isArray(props)) {
+    i = props.length
+    while (i--) {
+        val = props[i]
+        if (typeof val === 'string') {
+            name = camelize(val)
+            res[name] = { type: null }
+        } else if (process.env.NODE_ENV !== 'production') {
+            warn('props must be strings when using array syntax.')
+        }
+    }
+}
+```
+
+如果`props`选项不是数组那就继续判断是不是一个对象，如果是一个对象，那就遍历对象中的每一对键值，拿到每一对键值后，先将键名统一转化成驼峰式命名，然后判断值是否还是一个对象，如果值是对象（写法三），那么就将该键值对存入`res`中；如果值不是对象（写法二），那么就将键名作为`key`，将`{type: null}`作为`value`存入`res`中。如下：
+
+```javascript
+if (isPlainObject(props)) {
+    for (const key in props) {
+        val = props[key]
+        name = camelize(key)
+        res[name] = isPlainObject(val)
+            ? val
+        : { type: val }
+    }
+}
+```
+
+如果`props`选项既不是数组也不是对象，那么如果在非生产环境下就抛出异常，最后将`res`作为规范化后的结果重新赋值给实例的`props`选项。如下：
+
+```javascript
+if (process.env.NODE_ENV !== 'production') {
+    warn(
+        `Invalid value for option "props": expected an Array or an Object, ` +
+        `but got ${toRawType(props)}.`,
+        vm
+    )
+}
+options.props = res
+```
+
+以上就是对`props`数据的规范化处理，可以看到，无论是三种写法的哪一种，最终都会被转化成如下写法：
+
+```javascript
+props: {
+    name:{
+        type: xxx
+    }
+}
+```
+
+####  initProps函数分析
+
+将`props`选项规范化完成之后，接下来我们就可以来真正的初始化`props`选项了，`initProps`函数的定义位于源码的`src/core/instance/state.js`中，如下：
+
+```javascript
+function initProps (vm: Component, propsOptions: Object) {
+  const propsData = vm.$options.propsData || {}
+  const props = vm._props = {}
+  // cache prop keys so that future props updates can iterate using Array
+  // instead of dynamic object key enumeration.
+  const keys = vm.$options._propKeys = []
+  const isRoot = !vm.$parent
+  // root instance props should be converted
+  if (!isRoot) {
+    toggleObserving(false)
+  }
+  for (const key in propsOptions) {
+    keys.push(key)
+    const value = validateProp(key, propsOptions, propsData, vm)
+    /* istanbul ignore else */
+    if (process.env.NODE_ENV !== 'production') {
+      const hyphenatedKey = hyphenate(key)
+      if (isReservedAttribute(hyphenatedKey) ||
+          config.isReservedAttr(hyphenatedKey)) {
+        warn(
+          `"${hyphenatedKey}" is a reserved attribute and cannot be used as component prop.`,
+          vm
+        )
+      }
+      defineReactive(props, key, value, () => {
+        if (vm.$parent && !isUpdatingChildComponent) {
+          warn(
+            `Avoid mutating a prop directly since the value will be ` +
+            `overwritten whenever the parent component re-renders. ` +
+            `Instead, use a data or computed property based on the prop's ` +
+            `value. Prop being mutated: "${key}"`,
+            vm
+          )
+        }
+      })
+    } else {
+      defineReactive(props, key, value)
+    }
+    // static props are already proxied on the component's prototype
+    // during Vue.extend(). We only need to proxy props defined at
+    // instantiation here.
+    if (!(key in vm)) {
+      proxy(vm, `_props`, key)
+    }
+  }
+  toggleObserving(true)
+}
+```
+
+可以看到，该函数接收两个参数：当前`Vue`实例和当前实例规范化后的`props`选项。
+
+在函数内部首先定义了4个变量，分别是：
+
+```javascript
+const propsData = vm.$options.propsData || {}
+const props = vm._props = {}
+const keys = vm.$options._propKeys = []
+const isRoot = !vm.$parent
+```
+
+- propsData:父组件传入的真实`props`数据。
+- props:指向`vm._props`的指针，所有设置到`props`变量中的属性都会保存到`vm._props`中。
+- keys:指向`vm.$options._propKeys`的指针，缓存`props`对象中的`key`，将来更新`props`时只需遍历`vm.$options._propKeys`数组即可得到所有`props`的`key`。
+- isRoot:当前组件是否为根组件。
+
+接着，判断当前组件是否为根组件，如果不是，那么不需要将`props`数组转换为响应式的，`toggleObserving(false)`用来控制是否将数据转换成响应式。如下：
+
+```javascript
+if (!isRoot) {
+    toggleObserving(false)
+}
+```
+
+接着，遍历`props`选项拿到每一对键值，先将键名添加到`keys`中，然后调用`validateProp`函数（关于该函数下面会介绍）校验父组件传入的`props`数据类型是否匹配并获取到传入的值`value`，然后将键和值通过`defineReactive`函数添加到`props`（即`vm._props`）中，如下：
+
+```javascript
+for (const key in propsOptions) {
+    keys.push(key)
+    const value = validateProp(key, propsOptions, propsData, vm)
+    if (process.env.NODE_ENV !== 'production') {
+      const hyphenatedKey = hyphenate(key)
+      if (isReservedAttribute(hyphenatedKey) ||
+          config.isReservedAttr(hyphenatedKey)) {
+        warn(
+          `"${hyphenatedKey}" is a reserved attribute and cannot be used as component prop.`,
+          vm
+        )
+      }
+      defineReactive(props, key, value, () => {
+        if (vm.$parent && !isUpdatingChildComponent) {
+          warn(
+            `Avoid mutating a prop directly since the value will be ` +
+            `overwritten whenever the parent component re-renders. ` +
+            `Instead, use a data or computed property based on the prop's ` +
+            `value. Prop being mutated: "${key}"`,
+            vm
+          )
+        }
+      })
+    } else {
+      defineReactive(props, key, value)
+    }
+  }
+```
+
+添加完之后再判断这个`key`在当前实例`vm`中是否存在，如果不存在，则调用`proxy`函数在`vm`上设置一个以`key`为属性的代码，当使用`vm[key]`访问数据时，其实访问的是`vm._props[key]`。如下：
+
+```javascript
+if (!(key in vm)) {
+    proxy(vm, `_props`, key)
+}
+```
+
+以上就是`initProps`函数的所有逻辑，接下来我们再看一下是如何通过`validateProp`函数校验父组件传入的`props`数据类型是否匹配并获取到传入的值的。
+
+####  validateProp函数分析
+
+`validateProp`函数的定义位于源码的`src/core/util/props.js`中，如下：
+
+```javascript
+export function validateProp (key,propOptions,propsData,vm) {
+  const prop = propOptions[key]
+  const absent = !hasOwn(propsData, key)
+  let value = propsData[key]
+  // boolean casting
+  const booleanIndex = getTypeIndex(Boolean, prop.type)
+  if (booleanIndex > -1) {
+    if (absent && !hasOwn(prop, 'default')) {
+      value = false
+    } else if (value === '' || value === hyphenate(key)) {
+      // only cast empty string / same name to boolean if
+      // boolean has higher priority
+      const stringIndex = getTypeIndex(String, prop.type)
+      if (stringIndex < 0 || booleanIndex < stringIndex) {
+        value = true
+      }
+    }
+  }
+  // check default value
+  if (value === undefined) {
+    value = getPropDefaultValue(vm, prop, key)
+    // since the default value is a fresh copy,
+    // make sure to observe it.
+    const prevShouldObserve = shouldObserve
+    toggleObserving(true)
+    observe(value)
+    toggleObserving(prevShouldObserve)
+  }
+  if (process.env.NODE_ENV !== 'production') {
+    assertProp(prop, key, value, vm, absent)
+  }
+  return value
+}
+```
+
+可以看到，该函数接收4个参数，分别是：
+
+- key:遍历`propOptions`时拿到的每个属性名。
+- propOptions:当前实例规范化后的`props`选项。
+- propsData:父组件传入的真实`props`数据。
+- vm:当前实例。
+
+在函数内部首先定义了3个变量，分别是：
+
+```javascript
+const prop = propOptions[key]
+const absent = !hasOwn(propsData, key)
+let value = propsData[key]
+```
+
+- prop:当前`key`在`propOptions`中对应的值。
+- absent:当前`key`是否在`propsData`中存在，即父组件是否传入了该属性。
+- value:当前`key`在`propsData`中对应的值，即父组件对于该属性传入的真实值。
+
+接着，判断`prop`的`type`属性是否是布尔类型（Boolean）,`getTypeIndex`函数用于判断`prop`的`type`属性中是否存在某种类型，如果存在，则返回该类型在`type`属性中的索引（因为`type`属性可以是数组），如果不存在则返回-1。
+
+如果是布尔类型的话，那么有两种边界情况需要单独处理：
+
+1. 如果`absent`为`true`，即父组件没有传入该`prop`属性并且该属性也没有默认值的时候，将该属性值设置为`false`，如下：
+
+   ```javascript
+   if (absent && !hasOwn(prop, 'default')) {
+       value = false
+   }
+   ```
+
+2. 如果父组件传入了该`prop`属性，那么需要满足以下几点：
+
+   - 该属性值为空字符串或者属性值与属性名相等；
+   - `prop`的`type`属性中不存在`String`类型；
+   - 如果`prop`的`type`属性中存在`String`类型，那么`Boolean`类型在`type`属性中的索引必须小于`String`类型的索引，即`Boolean`类型的优先级更高;
+
+   则将该属性值设置为`true`，如下：
+
+   ```javascript
+   if (value === '' || value === hyphenate(key)) {
+       const stringIndex = getTypeIndex(String, prop.type)
+       if (stringIndex < 0 || booleanIndex < stringIndex) {
+           value = true
+       }
+   }
+   ```
+
+   另外，在判断属性值与属性名相等的时候，是先将属性名由驼峰式转换成用`-`连接的字符串，下面的这几种写法，子组件的`prop`都将被设置为`true`：
+
+   ```html
+   <Child name></Child>
+   <Child name="name"></Child>
+   <Child userName="user-name"></Child>
+   ```
+
+   如果不是布尔类型，是其它类型的话，那就只需判断父组件是否传入该属性即可，如果没有传入，则该属性值为`undefined`，此时调用`getPropDefaultValue`函数（关于该函数下面会介绍）获取该属性的默认值，并将其转换成响应式，如下：
+
+   ```javascript
+   if (value === undefined) {
+       value = getPropDefaultValue(vm, prop, key)
+       // since the default value is a fresh copy,
+       // make sure to observe it.
+       const prevShouldObserve = shouldObserve
+       toggleObserving(true)
+       observe(value)
+       toggleObserving(prevShouldObserve)
+   }
+   ```
+
+   如果父组件传入了该属性并且也有对应的真实值，那么在非生产环境下会调用`assertProp`函数（关于该函数下面会介绍）校验该属性值是否与要求的类型相匹配。如下：
+
+   ```javascript
+   if (process.env.NODE_ENV !== 'production' ) {
+       assertProp(prop, key, value, vm, absent)
+   }
+   ```
+
+   最后将父组件传入的该属性的真实值返回。
+
+####  getPropDefaultValue函数分析
+
+`getPropDefaultValue`函数的定义位于源码的`src/core/util/props.js`中，如下：
+
+```javascript
+function getPropDefaultValue (vm, prop, key){
+  // no default, return undefined
+  if (!hasOwn(prop, 'default')) {
+    return undefined
+  }
+  const def = prop.default
+  // warn against non-factory defaults for Object & Array
+  if (process.env.NODE_ENV !== 'production' && isObject(def)) {
+    warn(
+      'Invalid default value for prop "' + key + '": ' +
+      'Props with type Object/Array must use a factory function ' +
+      'to return the default value.',
+      vm
+    )
+  }
+  // the raw prop value was also undefined from previous render,
+  // return previous default value to avoid unnecessary watcher trigger
+  if (vm && vm.$options.propsData &&
+    vm.$options.propsData[key] === undefined &&
+    vm._props[key] !== undefined
+  ) {
+    return vm._props[key]
+  }
+  // call factory function for non-Function types
+  // a value is Function if its prototype is function even across different execution context
+  return typeof def === 'function' && getType(prop.type) !== 'Function'
+    ? def.call(vm)
+    : def
+}
+```
+
+该函数接收三个参数，分别是：
+
+- vm:当前实例；
+- prop:子组件`props`选项中的每个`key`对应的值；
+- key:子组件`props`选项中的每个`key`；
+
+其作用是根据子组件`props`选项中的`key`获取其对应的默认值。
+
+首先判断`prop`中是否有`default`属性，如果没有，则表示没有默认值，直接返回。如下：
+
+```javascript
+if (!hasOwn(prop, 'default')) {
+    return undefined
+}
+```
+
+如果有则取出`default`属性，赋给变量`def`。接着判断在非生产环境下`def`是否是一个对象，如果是，则抛出警告：对象或数组默认值必须从一个工厂函数获取。如下：
+
+```javascript
+const def = prop.default
+// warn against non-factory defaults for Object & Array
+if (process.env.NODE_ENV !== 'production' && isObject(def)) {
+    warn(
+        'Invalid default value for prop "' + key + '": ' +
+        'Props with type Object/Array must use a factory function ' +
+        'to return the default value.',
+        vm
+    )
+}
+```
+
+接着，再判断如果父组件没有传入该`props`属性，但是在`vm._props`中有该属性值，这说明`vm._props`中的该属性值就是默认值，如下：
+
+```javascript
+if (vm && vm.$options.propsData &&
+    vm.$options.propsData[key] === undefined &&
+    vm._props[key] !== undefined
+   ) {
+    return vm._props[key]
+}
+```
+
+最后，判断`def`是否为函数并且`prop.type`不为`Function`，如果是的话表明`def`是一个返回对象或数组的工厂函数，那么将函数的返回值作为默认值返回；如果`def`不是函数，那么则将`def`作为默认值返回。如下：
+
+```javascript
+return typeof def === 'function' && getType(prop.type) !== 'Function'
+    ? def.call(vm)
+	: def
+```
+
+####  assertProp函数分析
+
+`assertProp`函数的定义位于源码的`src/core/util/props.js`中，如下：
+
+```javascript
+function assertProp (prop,name,value,vm,absent) {
+  if (prop.required && absent) {
+    warn(
+      'Missing required prop: "' + name + '"',
+      vm
+    )
+    return
+  }
+  if (value == null && !prop.required) {
+    return
+  }
+  let type = prop.type
+  let valid = !type || type === true
+  const expectedTypes = []
+  if (type) {
+    if (!Array.isArray(type)) {
+      type = [type]
+    }
+    for (let i = 0; i < type.length && !valid; i++) {
+      const assertedType = assertType(value, type[i])
+      expectedTypes.push(assertedType.expectedType || '')
+      valid = assertedType.valid
+    }
+  }
+  if (!valid) {
+    warn(
+      `Invalid prop: type check failed for prop "${name}".` +
+      ` Expected ${expectedTypes.map(capitalize).join(', ')}` +
+      `, got ${toRawType(value)}.`,
+      vm
+    )
+    return
+  }
+  const validator = prop.validator
+  if (validator) {
+    if (!validator(value)) {
+      warn(
+        'Invalid prop: custom validator check failed for prop "' + name + '".',
+        vm
+      )
+    }
+  }
+}
+
+```
+
+该函数接收5个参数，分别是：
+
+- prop:`prop`选项;
+- name:`props`中`prop`选项的`key`;
+- value:父组件传入的`propsData`中`key`对应的真实数据；
+- vm:当前实例；
+- absent:当前`key`是否在`propsData`中存在，即父组件是否传入了该属性。
+
+其作用是校验父组件传来的真实值是否与`prop`的`type`类型相匹配，如果不匹配则在非生产环境下抛出警告。
+
+函数内部首先判断`prop`中如果设置了必填项（即`prop.required`为`true`）并且父组件又没有传入该属性，此时则抛出警告：提示该项必填。如下：
+
+```javascript
+if (prop.required && absent) {
+    warn(
+        'Missing required prop: "' + name + '"',
+        vm
+    )
+    return
+}
+```
+
+接着判断如果该项不是必填的并且该项的值`value`不存在，那么此时是合法的，直接返回。如下：
+
+```javascript
+if (value == null && !prop.required) {
+    return
+}
+```
+
+接下来定义了3个变量，分别是：
+
+```javascript
+let type = prop.type
+let valid = !type || type === true
+const expectedTypes = []
+```
+
+
+
+- type:`prop`中的`type`类型；
+- valid：校验是否成功；
+- expectedTypes：保存期望类型的数组，当校验失败抛出警告时，会提示用户该属性所期望的类型是什么；
+
+通常情况下，`type`可以是一个原生构造函数，也可以是一个包含多种类型的数组，还可以不设置该属性。如果用户设置的是原生构造函数或数组，那么此时`vaild`默认为`false`（`!type`），如果用户没有设置该属性，表示不需要校验，那么此时`vaild`默认为`true`，即校验成功。
+
+另外，当`type`等于`true`时，即出现这样的写法：`props:{name:true}`，这说明`prop`一定会校验成功。所以当出现这种语法的时候，此时`type === true`，所以`vaild`默认为`true`。
+
+接下来开始校验类型，如果用户设置了`type`属性，则判断该属性是不是数组，如果不是，则统一转化为数组，方便后续处理，如下：
+
+```javascript
+if (type) {
+    if (!Array.isArray(type)) {
+        type = [type]
+    }
+}
+```
+
+接下来遍历`type`数组，并调用`assertType`函数校验`value`。`assertType`函数校验后会返回一个对象，如下：
+
+```javascript
+{
+    vaild:true,       // 表示是否校验成功
+    expectedType：'Boolean'   // 表示被校验的类型
+}
+```
+
+然后将被校验的类型添加到`expectedTypes`中，并将`vaild`变量设置为`assertedType.valid`，如下：
+
+```javascript
+for (let i = 0; i < type.length && !valid; i++) {
+    const assertedType = assertType(value, type[i])
+    expectedTypes.push(assertedType.expectedType || '')
+    valid = assertedType.valid
+}
+```
+
+这里请注意：上面循环中的条件语句有这样一个条件：`!vaild`，即`type`数组中还要有一个校验成功，循环立即结束，表示校验通过。
+
+接下来，如果循环完毕后`vaild`为`false`，即表示校验未通过，则抛出警告。如下：
+
+```javascript
+if (!valid) {
+    warn(
+        `Invalid prop: type check failed for prop "${name}".` +
+        ` Expected ${expectedTypes.map(capitalize).join(', ')}` +
+        `, got ${toRawType(value)}.`,
+        vm
+    )
+    return
+}
+```
+
+另外，`prop`选项还支持自定义校验函数，如下：
+
+```javascript
+props:{
+   // 自定义验证函数
+    propF: {
+      validator: function (value) {
+        // 这个值必须匹配下列字符串中的一个
+        return ['success', 'warning', 'danger'].indexOf(value) !== -1
+      }
+    }
+}
+```
+
+所以还需要使用用户传入的自定义校验函数来校验数据。首先获取到用户传入的校验函数，调用该函数并将待校验的数据传入，如果校验失败，则抛出警告。如下：
+
+```javascript
+const validator = prop.validator
+if (validator) {
+    if (!validator(value)) {
+        warn(
+            'Invalid prop: custom validator check failed for prop "' + name + '".',
+            vm
+        )
+    }
+}
+```
+
+
+
+### 初始化methods
+
+初始化`methods`相较而言就比较简单了，它的初始化函数定义位于源码的`src/core/instance/state.js`中，如下：
+
+```javascript
+function initMethods (vm, methods) {
+  const props = vm.$options.props
+  for (const key in methods) {
+    if (process.env.NODE_ENV !== 'production') {
+      if (methods[key] == null) {
+        warn(
+          `Method "${key}" has an undefined value in the component definition. ` +
+          `Did you reference the function correctly?`,
+          vm
+        )
+      }
+      if (props && hasOwn(props, key)) {
+        warn(
+          `Method "${key}" has already been defined as a prop.`,
+          vm
+        )
+      }
+      if ((key in vm) && isReserved(key)) {
+        warn(
+          `Method "${key}" conflicts with an existing Vue instance method. ` +
+          `Avoid defining component methods that start with _ or $.`
+        )
+      }
+    }
+    vm[key] = methods[key] == null ? noop : bind(methods[key], vm)
+  }
+}
+```
+
+从代码中可以看到，初始化`methods`无非就干了三件事：判断`method`有没有？`method`的命名符不符合命名规范？如果`method`既有又符合规范那就把它挂载到`vm`实例上。下面我们就逐行分析源码，来过一遍这三件事。
+
+首先，遍历`methods`选项中的每一个对象，在非生产环境下判断如果`methods`中某个方法只有`key`而没有`value`，即只有方法名没有方法体时，抛出异常：提示用户方法未定义。如下：
+
+```javascript
+if (methods[key] == null) {
+    warn(
+        `Method "${key}" has an undefined value in the component definition. ` +
+        `Did you reference the function correctly?`,
+        vm
+    )
+}
+```
+
+接着判断如果`methods`中某个方法名与`props`中某个属性名重复了，就抛出异常：提示用户方法名重复了。如下：
+
+```javascript
+if (props && hasOwn(props, key)) {
+    warn(
+        `Method "${key}" has already been defined as a prop.`,
+        vm
+    )
+}
+```
+
+接着判断如果`methods`中某个方法名如果在实例`vm`中已经存在并且方法名是以`_`或`$`开头的，就抛出异常：提示用户方法名命名不规范。如下：
+
+```javascript
+if ((key in vm) && isReserved(key)) {
+    warn(
+        `Method "${key}" conflicts with an existing Vue instance method. ` +
+        `Avoid defining component methods that start with _ or $.`
+    )
+}
+```
+
+其中，`isReserved`函数是用来判断字符串是否以`_`或`$`开头。
+
+最后，如果上述判断都没问题，那就`method`绑定到实例`vm`上，这样，我们就可以通过`this.xxx`来访问`methods`选项中的`xxx`方法了，如下：
+
+```javascript
+vm[key] = methods[key] == null ? noop : bind(methods[key], vm)
+```
+
+### 初始化data
+
+初始化`data`也比较简单，它的初始化函数定义位于源码的`src/core/instance/state.js`中，如下：
+
+```javascript
+function initData (vm) {
+    let data = vm.$options.data
+    data = vm._data = typeof data === 'function'
+        ? getData(data, vm)
+    : data || {}
+    if (!isPlainObject(data)) {
+        data = {}
+        process.env.NODE_ENV !== 'production' && warn(
+            'data functions should return an object:\n' +
+            'https://vuejs.org/v2/guide/components.html##data-Must-Be-a-Function',
+            vm
+        )
+    }
+    // proxy data on instance
+    const keys = Object.keys(data)
+    const props = vm.$options.props
+    const methods = vm.$options.methods
+    let i = keys.length
+    while (i--) {
+        const key = keys[i]
+        if (process.env.NODE_ENV !== 'production') {
+            if (methods && hasOwn(methods, key)) {
+                warn(
+                    `Method "${key}" has already been defined as a data property.`,
+                    vm
+                )
+            }
+        }
+        if (props && hasOwn(props, key)) {
+            process.env.NODE_ENV !== 'production' && warn(
+                `The data property "${key}" is already declared as a prop. ` +
+                `Use prop default value instead.`,
+                vm
+            )
+        } else if (!isReserved(key)) {
+            proxy(vm, `_data`, key)
+        }
+    }
+    // observe data
+    observe(data, true /* asRootData */)
+}
+```
+
+可以看到，`initData`函数的逻辑并不复杂，跟`initMethods`函数的逻辑有几分相似。就是通过一系列条件判断用户传入的`data`选项是否合法，最后将`data`转换成响应式并绑定到实例`vm`上。下面我们就来仔细看一下代码逻辑。
+
+首先获取到用户传入的`data`选项，赋给变量`data`，同时将变量`data`作为指针指向`vm._data`，然后判断`data`是不是一个函数，如果是就调用`getData`函数获取其返回值，将其保存到`vm._data`中。如果不是，就将其本身保存到`vm._data`中。如下：
+
+```javascript
+let data = vm.$options.data
+data = vm._data = typeof data === 'function'
+    ? getData(data, vm)
+	: data || {}
+```
+
+我们知道，无论传入的`data`选项是不是一个函数，它最终的值都应该是一个对象，如果不是对象的话，就抛出警告：提示用户`data`应该是一个对象。如下：
+
+```javascript
+if (!isPlainObject(data)) {
+    data = {}
+    process.env.NODE_ENV !== 'production' && warn(
+        'data functions should return an object:\n' +
+        'https://vuejs.org/v2/guide/components.html##data-Must-Be-a-Function',
+        vm
+    )
+}
+```
+
+接下来遍历`data`对象中的每一项，在非生产环境下判断`data`对象中是否存在某一项的`key`与`methods`中某个属性名重复，如果存在重复，就抛出警告：提示用户属性名重复。如下：
+
+```javascript
+if (process.env.NODE_ENV !== 'production') {
+    if (methods && hasOwn(methods, key)) {
+        warn(
+            `Method "${key}" has already been defined as a data property.`,
+            vm
+        )
+    }
+}
+```
+
+接着再判断是否存在某一项的`key`与`prop`中某个属性名重复，如果存在重复，就抛出警告：提示用户属性名重复。如下：
+
+```javascript
+if (props && hasOwn(props, key)) {
+    process.env.NODE_ENV !== 'production' && warn(
+        `The data property "${key}" is already declared as a prop. ` +
+        `Use prop default value instead.`,
+        vm
+    )
+}
+```
+
+如果都没有重复，则调用`proxy`函数将`data`对象中`key`不以`_`或`$`开头的属性代理到实例`vm`上，这样，我们就可以通过`this.xxx`来访问`data`选项中的`xxx`数据了。如下：
+
+```javascript
+if (!isReserved(key)) {
+    proxy(vm, `_data`, key)
+}
+```
+
+最后，调用`observe`函数将`data`中的数据转化成响应式，如下：
+
+```javascript
+observe(data, true /* asRootData */)
+```
+
+
+
+### 初始化computed
+
+计算属性`computed`相信大家一定不会陌生，在日常开发中肯定会经常用到，而且我们知道计算属性有一个很大的特点就是： 计算属性的结果会被缓存，除非依赖的响应式属性变化才会重新计算。 那么接下来我们就来看一下计算属性是如何实现这些功能的的。
+
+####  回顾用法
+
+首先，根据官方文档的使用示例，我们来回顾一下计算属性的用法，如下：
+
+```javascript
+var vm = new Vue({
+  data: { a: 1 },
+  computed: {
+    // 仅读取
+    aDouble: function () {
+      return this.a * 2
+    },
+    // 读取和设置
+    aPlus: {
+      get: function () {
+        return this.a + 1
+      },
+      set: function (v) {
+        this.a = v - 1
+      }
+    }
+  }
+})
+vm.aPlus   // => 2
+vm.aPlus = 3
+vm.a       // => 2
+vm.aDouble // => 4
+```
+
+可以看到，`computed`选项中的属性值可以是一个函数，那么该函数默认为取值器`getter`，用于仅读取数据；还可以是一个对象，对象里面有取值器`getter`和存值器`setter`，用于读取和设置数据。
+
+####  initComputed函数分析
+
+了解了计算属性的用法之后，下面我们就来分析一下计算属性的初始化函数`initComputed`的内部原理是怎样的。`initComputed`函数的定义位于源码的`src/core/instance/state.js`中，如下：
+
+```javascript
+function initComputed (vm: Component, computed: Object) {
+    const watchers = vm._computedWatchers = Object.create(null)
+    const isSSR = isServerRendering()
+
+    for (const key in computed) {
+        const userDef = computed[key]
+        const getter = typeof userDef === 'function' ? userDef : userDef.get
+        if (process.env.NODE_ENV !== 'production' && getter == null) {
+            warn(
+                `Getter is missing for computed property "${key}".`,
+                vm
+            )
+        }
+
+        if (!isSSR) {
+            // create internal watcher for the computed property.
+            watchers[key] = new Watcher(
+                vm,
+                getter || noop,
+                noop,
+                computedWatcherOptions
+            )
+        }
+
+        if (!(key in vm)) {
+            defineComputed(vm, key, userDef)
+        } else if (process.env.NODE_ENV !== 'production') {
+            if (key in vm.$data) {
+                warn(`The computed property "${key}" is already defined in data.`, vm)
+            } else if (vm.$options.props && key in vm.$options.props) {
+                warn(`The computed property "${key}" is already defined as a prop.`, vm)
+            }
+        }
+    }
+}
+```
+
+可以看到，在函数内部，首先定义了一个变量`watchers`并将其赋值为空对象，同时将其作为指针指向`vm._computedWatchers`，如下：
+
+```javascript
+const watchers = vm._computedWatchers = Object.create(null)
+```
+
+接着，遍历`computed`选项中的每一项属性，首先获取到每一项的属性值，记作`userDef`，然后判断`userDef`是不是一个函数，如果是函数，则该函数默认为取值器`getter`，将其赋值给变量`getter`；如果不是函数，则说明是一个对象，则取对象中的`get`属性作为取值器赋给变量`getter`。如下：
+
+```javascript
+const userDef = computed[key]
+const getter = typeof userDef === 'function' ? userDef : userDef.get
+```
+
+接着判断在非生产环境下如果上面两种情况取到的取值器不存在，则抛出警告：提示用户计算属性必须有取值器。如下：
+
+```javascript
+if (process.env.NODE_ENV !== 'production' && getter == null) {
+    warn(
+        `Getter is missing for computed property "${key}".`,
+        vm
+    )
+}
+```
+
+接着判断如果不是在服务端渲染环境下，则创建一个`watcher`实例，并将当前循环到的的属性名作为键，创建的`watcher`实例作为值存入`watchers`对象中。如下：
+
+```javascript
+if (!isSSR) {
+    // create internal watcher for the computed property.
+    watchers[key] = new Watcher(
+        vm,
+        getter || noop,
+        noop,
+        computedWatcherOptions
+    )
+}
+```
+
+最后，判断当前循环到的的属性名是否存在于当前实例`vm`上，如果存在，则在非生产环境下抛出警告；如果不存在，则调用`defineComputed`函数为实例`vm`上设置计算属性。
+
+以上就是`initComputed`函数的内部逻辑，接下里我们再来看一下`defineComputed`函数是如何为实例`vm`上设置计算属性的。
+
+####  defineComputed函数分析
+
+
+
+`defineComputed`函数的定义位于源码的`src/core/instance/state.js`中，如下：
+
+```javascript
+const sharedPropertyDefinition = {
+  enumerable: true,
+  configurable: true,
+  get: noop,
+  set: noop
+}
+
+export function defineComputed (target,key,userDef) {
+  const shouldCache = !isServerRendering()
+  if (typeof userDef === 'function') {
+    sharedPropertyDefinition.get = shouldCache
+      ? createComputedGetter(key)
+      : userDef
+    sharedPropertyDefinition.set = noop
+  } else {
+    sharedPropertyDefinition.get = userDef.get
+      ? shouldCache && userDef.cache !== false
+        ? createComputedGetter(key)
+        : userDef.get
+      : noop
+    sharedPropertyDefinition.set = userDef.set
+      ? userDef.set
+      : noop
+  }
+  if (process.env.NODE_ENV !== 'production' &&
+      sharedPropertyDefinition.set === noop) {
+    sharedPropertyDefinition.set = function () {
+      warn(
+        `Computed property "${key}" was assigned to but it has no setter.`,
+        this
+      )
+    }
+  }
+  Object.defineProperty(target, key, sharedPropertyDefinition)
+}
+
+
+```
+
+该函数接受3个参数，分别是：`target`、`key`和`userDef`。其作用是为`target`上定义一个属性`key`，并且属性`key`的`getter`和`setter`根据`userDef`的值来设置。下面我们就来看一下该函数的具体逻辑。
+
+首先定义了变量`sharedPropertyDefinition`，它是一个默认的属性描述符。
+
+接着，在函数内部定义了变量`shouldCache`，用于标识计算属性是否应该有缓存。该变量的值是当前环境是否为非服务端渲染环境，如果是非服务端渲染环境则该变量为`true`。也就是说，只有在非服务端渲染环境下计算属性才应该有缓存。如下：
+
+```javascript
+const shouldCache = !isServerRendering()
+```
+
+接着，判断如果`userDef`是一个函数，则该函数默认为取值器`getter`，此处在非服务端渲染环境下并没有直接使用`userDef`作为`getter`，而是调用`createComputedGetter`函数（关于该函数下面会介绍）创建了一个`getter`，这是因为`userDef`只是一个普通的`getter`，它并没有缓存功能，所以我们需要额外创建一个具有缓存功能的`getter`，而在服务端渲染环境下可以直接使用`userDef`作为`getter`，因为在服务端渲染环境下计算属性不需要缓存。由于用户没有设置`setter`函数，所以将`sharedPropertyDefinition.set`设置为`noop`。如下：
+
+```javascript
+if (typeof userDef === 'function') {
+    sharedPropertyDefinition.get = shouldCache
+        ? createComputedGetter(key)
+    : userDef
+    sharedPropertyDefinition.set = noop
+}
+```
+
+如果`userDef`不是一个函数，那么就将它当作对象处理。在设置`sharedPropertyDefinition.get`的时候先判断`userDef.get`是否存在，如果不存在，则将其设置为`noop`，如果存在，则同上面一样，在非服务端渲染环境下并且用户没有明确的将`userDef.cache`设置为`false`时调用`createComputedGetter`函数创建一个`getter`赋给`sharedPropertyDefinition.get`。然后设置`sharedPropertyDefinition.set`为`userDef.set`函数。如下：
+
+```javascript
+sharedPropertyDefinition.get = userDef.get
+      ? shouldCache && userDef.cache !== false
+        ? createComputedGetter(key)
+        : userDef.get
+      : noop
+sharedPropertyDefinition.set = userDef.set
+    ? userDef.set
+	: noop
+```
+
+接着，再判断在非生产环境下如果用户没有设置`setter`的话，那么就给`setter`一个默认函数，这是为了防止用户在没有设置`setter`的情况下修改计算属性，从而为其抛出警告，如下：
+
+```javascript
+if (process.env.NODE_ENV !== 'production' &&
+    sharedPropertyDefinition.set === noop) {
+    sharedPropertyDefinition.set = function () {
+        warn(
+            `Computed property "${key}" was assigned to but it has no setter.`,
+            this
+        )
+    }
+}
+```
+
+最后调用`Object.defineProperty`方法将属性`key`绑定到`target`上，其中的属性描述符就是上面设置的`sharedPropertyDefinition`。如此以来，就将计算属性绑定到实例`vm`上了。
+
+以上就是`defineComputed`函数的所有逻辑。另外，我们发现，计算属性有没有缓存及其响应式貌似主要在于是否将`getter`设置为`createComputedGetter`函数的返回结果。那么接下来，我们就对这个`createComputedGetter`函数一探究竟。
+
+####  createComputedGetter函数分析
+
+`createComputedGetter`函数的定义位于源码的`src/core/instance/state.js`中，如下：
+
+```javascript
+function createComputedGetter (key) {
+    return function computedGetter () {
+        const watcher = this._computedWatchers && this._computedWatchers[key]
+        if (watcher) {
+            watcher.depend()
+            return watcher.evaluate()
+        }
+    }
+}
+```
+
+可以看到，该函数是一个高阶函数，其内部返回了一个`computedGetter`函数，所以其实是将`computedGetter`函数赋给了`sharedPropertyDefinition.get`。当获取计算属性的值时会执行属性的`getter`，而属性的`getter`就是 `sharedPropertyDefinition.get`，也就是说最终执行的 `computedGetter`函数。
+
+在`computedGetter`函数内部，首先存储在当前实例上`_computedWatchers`属性中`key`所对应的`watcher`实例，如果`watcher`存在，则调用`watcher`实例上的`depend`方法和`evaluate`方法，并且将`evaluate`方法的返回值作为计算属性的计算结果返回。那么`watcher`实例上的`depend`方法和`evaluate`方法又是什么呢？
+
+####  depend和evaluate
+
+回顾上文中创建`watcher`实例的时候：
+
+```javascript
+const computedWatcherOptions = { computed: true }
+watchers[key] = new Watcher(
+    vm,
+    getter || noop,
+    noop,
+    computedWatcherOptions
+)
+```
+
+传入的参数中第二个参数是`getter`函数，第四个参数是一个对象`computedWatcherOptions`。
+
+我们再回顾`Watcher`类的定义，如下：
+
+```javascript
+export default class Watcher {
+    constructor (vm,expOrFn,cb,options,isRenderWatcher) {
+        if (options) {
+            // ...
+            this.computed = !!options.computed
+            // ...
+        } else {
+            // ...
+        }
+
+        this.dirty = this.computed // for computed watchers
+        if (typeof expOrFn === 'function') {
+            this.getter = expOrFn
+        }
+
+        if (this.computed) {
+            this.value = undefined
+            this.dep = new Dep()
+        }
+    }
+
+    evaluate () {
+        if (this.dirty) {
+            this.value = this.get()
+            this.dirty = false
+        }
+        return this.value
+    }
+
+    /**
+     * Depend on this watcher. Only for computed property watchers.
+     */
+    depend () {
+        if (this.dep && Dep.target) {
+            this.dep.depend()
+        }
+    }
+
+    update () {
+        if (this.computed) {
+            if (this.dep.subs.length === 0) {
+                this.dirty = true
+            } else {
+                this.getAndInvoke(() => {
+                    this.dep.notify()
+                })
+            }
+        }
+    }
+
+    getAndInvoke (cb: Function) {
+        const value = this.get()
+        if (
+            value !== this.value ||
+            // Deep watchers and watchers on Object/Arrays should fire even
+            // when the value is the same, because the value may
+            // have mutated.
+            isObject(value) ||
+            this.deep
+        ) {
+            // set new value
+            const oldValue = this.value
+            this.value = value
+            this.dirty = false
+            if (this.user) {
+                try {
+                    cb.call(this.vm, value, oldValue)
+                } catch (e) {
+                    handleError(e, this.vm, `callback for watcher "${this.expression}"`)
+                }
+            } else {
+                cb.call(this.vm, value, oldValue)
+            }
+        }
+    }
+}
+```
+
+可以看到，在实例化`Watcher`类的时候，第四个参数传入了一个对象`computedWatcherOptions = { computed: true }`，该对象中的`computed`属性标志着这个`watcher`实例是计算属性的`watcher`实例，即`Watcher`类中的`this.computed`属性，同时类中还定义了`this.dirty`属性用于标志计算属性的返回值是否有变化，计算属性的缓存就是通过这个属性来判断的，每当计算属性依赖的数据发生变化时，会将`this.dirty`属性设置为`true`，这样下一次读取计算属性时，会重新计算结果返回，否则直接返回之前的计算结果。
+
+当调用`watcher.depend()`方法时，会将读取计算属性的那个`watcher`添加到计算属性的`watcher`实例的依赖列表中，当计算属性中用到的数据发生变化时，计算属性的`watcher`实例就会执行`watcher.update()`方法，在`update`方法中会判断当前的`watcher`是不是计算属性的`watcher`，如果是则调用`getAndInvoke`去对比计算属性的返回值是否发生了变化，如果真的发生变化，则执行回调，通知那些读取计算属性的`watcher`重新执行渲染逻辑。
+
+当调用`watcher.evaluate()`方法时，会先判断`this.dirty`是否为`true`，如果为`true`，则表明计算属性所依赖的数据发生了变化，则调用`this.get()`重新获取计算结果最后返回；如果为`false`，则直接返回之前的计算结果。
+
+其内部原理如图所示：
+
+![](~@/learn-vue-source-code/lifecycle/2.png)
+
+
+### 初始化watch
+
+接下来就是最后一个初始化函数了——初始化`watch`选项。在日常开发中`watch`选项也经常会使用到，它可以用来侦听某个已有的数据，当该数据发生变化时执行对应的回调函数。那么，接下来我们就来看一些`watch`选项是如何被初始化的。
+
+####  回顾用法
+
+首先，根据官方文档的使用示例，我们来回顾一下`watch`选项的用法，如下：
+
+```javascript
+var vm = new Vue({
+  data: {
+    a: 1,
+    b: 2,
+    c: 3,
+    d: 4,
+    e: {
+      f: {
+        g: 5
+      }
+    }
+  },
+  watch: {
+    a: function (val, oldVal) {
+      console.log('new: %s, old: %s', val, oldVal)
+    },
+    // methods选项中的方法名
+    b: 'someMethod',
+    // 深度侦听，该回调会在任何被侦听的对象的 property 改变时被调用，不论其被嵌套多深
+    c: {
+      handler: function (val, oldVal) { /* ... */ },
+      deep: true
+    },
+    // 该回调将会在侦听开始之后被立即调用
+    d: {
+      handler: 'someMethod',
+      immediate: true
+    },
+    // 调用多个回调
+    e: [
+      'handle1',
+      function handle2 (val, oldVal) { /* ... */ },
+      {
+        handler: function handle3 (val, oldVal) { /* ... */ },
+      }
+    ],
+    // 侦听表达式
+    'e.f': function (val, oldVal) { /* ... */ }
+  }
+})
+vm.a = 2 // => new: 2, old: 1
+```
+
+可以看到，`watch`选项的用法非常灵活。首先`watch`选项是一个对象，键是需要观察的表达式，值是对应回调函数。值也可以是方法名，或者包含选项的对象。既然给用户提供的用法灵活，那么在代码中就需要按条件来判断，根据不同的用法做相应的处理。
+
+####  initWatch函数分析
+
+了解了`watch`选项的用法之后，下面我们就来分析一下`watch`选项的初始化函数`initWatch`的内部原理是怎样的。`initWatch`函数的定义位于源码的`src/core/instance/state.js`中，如下：
+
+```javascript
+function initWatch (vm, watch) {
+  for (const key in watch) {
+    const handler = watch[key]
+    if (Array.isArray(handler)) {
+      for (let i = 0; i < handler.length; i++) {
+        createWatcher(vm, key, handler[i])
+      }
+    } else {
+      createWatcher(vm, key, handler)
+    }
+  }
+}
+```
+
+
+
+可以看到，在函数内部会遍历`watch`选项，拿到每一项的`key`和对应的值`handler`。然后判断`handler`是否为数组，如果是数组则循环该数组并将数组中的每一项依次调用`createWatcher`函数来创建`watcher`；如果不是数组，则直接调用`createWatcher`函数来创建`watcher`。那么这个`createWatcher`函数是如何创建`watcher`的呢？
+
+####  createWatcher函数分析
+
+`createWatcher`函数的定义位于源码的`src/core/instance/state.js`中，如下：
+
+```javascript
+function createWatcher (
+  vm: Component,
+  expOrFn: string | Function,
+  handler: any,
+  options?: Object
+) {
+  if (isPlainObject(handler)) {
+    options = handler
+    handler = handler.handler
+  }
+  if (typeof handler === 'string') {
+    handler = vm[handler]
+  }
+  return vm.$watch(expOrFn, handler, options)
+}
+```
+
+可以看到，该函数接收4个参数，分别是：
+
+- vm:当前实例；
+- expOrFn:被侦听的属性表达式
+- handler:`watch`选项中每一项的值
+- options:用于传递给`vm.$watch`的选项对象
+
+在该函数内部，首先会判断传入的`handler`是否为一个对象，如果是一个对象，那么就认为用户使用的是这种写法：
+
+```javascript
+watch: {
+    c: {
+        handler: function (val, oldVal) { /* ... */ },
+		deep: true
+    }
+}
+```
+
+即带有侦听选项的写法，此时就将`handler`对象整体记作`options`，把`handler`对象中的`handler`属性作为真正的回调函数记作`handler`，如下：
+
+```javascript
+if (isPlainObject(handler)) {
+    options = handler
+    handler = handler.handler
+}
+```
+
+接着判断传入的`handler`是否为一个字符串，如果是一个字符串，那么就认为用户使用的是这种写法：
+
+```javascript
+watch: {
+    // methods选项中的方法名
+    b: 'someMethod',
+}
+```
+
+即回调函数是`methods`选项中的一个方法名，我们知道，在初始化`methods`选项的时候会将选项中的每一个方法都绑定到当前实例上，所以此时我们只需从当前实例上取出该方法作为真正的回调函数记作`handler`，如下：
+
+```javascript
+if (typeof handler === 'string') {
+    handler = vm[handler]
+}
+```
+
+如果既不是对象又不是字符串，那么我们就认为它是一个函数，就不做任何处理。
+
+针对不同类型的值处理完毕后，`expOrFn`是被侦听的属性表达式，`handler`变量是回调函数，`options`变量为侦听选项，最后，调用`vm.$watcher`方法（关于该方法在介绍全局实例方法的时候会详细介绍）并传入以上三个参数完成初始化`watch`。
+
+### 总结
+
+本篇文章介绍了生命周期初始化阶段所调用的第五个初始化函数——`initState`。该初始化函数内部总共初始化了5个选项，分别是：`props`、`methods`、`data`、`computed`和`watch`。
+
+这5个选项的初始化顺序不是任意的，而是经过精心安排的。只有按照这种顺序初始化我们才能在开发中在`data`中可以使用`props`，在`watch`中可以观察`data`和`props`。
+
+这5个选项中的所有属性最终都会被绑定到实例上，这也就是我们为什么可以使用`this.xxx`来访问任意属性。同时正是因为这一点，这5个选项中的所有属性名都不应该有所重复，这样会造成属性之间相互覆盖。
+
+最后，我们对这5个选项分别都是如何进行初始化的内部原理进行了逐一分析。
+
+## 模板编译阶段
+
+
+### 前言
+
+前几篇文章中我们介绍了生命周期的初始化阶段，我们知道，在初始化阶段各项工作做完之后调用了`vm.$mount`方法，该方法的调用标志着初始化阶段的结束和进入下一个阶段，从官方文档给出的生命周期流程图中可以看到，下一个阶段就进入了模板编译阶段，该阶段所做的主要工作是获取到用户传入的模板内容并将其编译成渲染函数。
+
+![](~@/learn-vue-source-code/lifecycle/3.png)
+
+
+模板编译阶段并不是存在于`Vue`的所有构建版本中，它只存在于完整版（即`vue.js`）中。在只包含运行时版本（即`vue.runtime.js`）中并不存在该阶段，这是因为当使用`vue-loader`或`vueify`时，`*.vue`文件内部的模板会在构建时预编译成渲染函数，所以是不需要编译的，从而不存在模板编译阶段，由上一步的初始化阶段直接进入下一阶段的挂载阶段。
+
+在这里，我们有必要介绍一下什么是完整版和只包含运行时版。
+
+ `vue`基于源码构建的有两个版本，一个是`runtime only`(一个只包含运行时的版本)，另一个是`runtime + compiler`(一个同时包含编译器和运行时的完整版本)。而两个版本的区别仅在于后者包含了一个编译器。
+
+- 完整版本
+
+  一个完整的`Vue`版本是包含编译器的，我们可以使用`template`选项进行模板编写。编译器会自动将`template`选项中的模板字符串编译成渲染函数的代码,源码中就是`render`函数。如果你需要在客户端编译模板 (比如传入一个字符串给 `template` 选项，或挂载到一个元素上并以其 `DOM` 内部的 HTML 作为模板)，就需要一个包含编译器的版本。 如下：
+
+  ```javascript
+  // 需要编译器的版本
+  new Vue({
+    template: '<div>{{ hi }}</div>'
+  })
+  ```
+
+- 只包含运行时版本
+
+  只包含运行时的版本拥有创建`Vue`实例、渲染并处理`Virtual DOM`等功能，基本上就是除去编译器外的完整代码。该版本的适用场景有两种：
+
+  1.我们在选项中通过手写`render`函数去定义渲染过程，这个时候并不需要包含编译器的版本便可完整执行。
+
+  ```javascript
+  // 不需要编译器
+  new Vue({
+    render (h) {
+      return h('div', this.hi)
+    }
+  })
+  ```
+
+   2.借助`vue-loader`这样的编译工具进行编译，当我们利用`webpack`进行`Vue`的工程化开发时，常常会利用`vue-loader`对`*.vue`文件进行编译，尽管我们也是利用`template`模板标签去书写代码，但是此时的`Vue`已经不需要利用编译器去负责模板的编译工作了，这个过程交给了插件去实现。
+
+很明显，编译过程对性能会造成一定的损耗，并且由于加入了编译的流程代码，`Vue`代码的总体积也更加庞大(运行时版本相比完整版体积要小大约 30%)。因此在实际开发中，我们需要借助像`webpack`的`vue-loader`这类工具进行编译，将`Vue`对模板的编译阶段合并到`webpack`的构建流程中，这样不仅减少了生产环境代码的体积，也大大提高了运行时的性能，一举两得。
+
+为了完整的学习源码，本篇文章将会分析完整版中的模板编译阶段到底做了些什么。
+
+### 模板编译阶段分析
+
+上文中说了，完整版和只包含运行时版之间的差异主要在于是否有模板编译阶段，而是否有模板编译阶段主要表现在`vm.$mount`方法的实现上。此时你可能会有疑问：照这么说，`$mount`方法也有两个版本？对的，你可以这么理解，但归根结底来说还是一种。我们分别来看一下。
+
+####  两种$mount方法对比
+
+只包含运行时版本的`$mount`代码如下：
+
+```javascript
+Vue.prototype.$mount = function (el,hydrating) {
+  el = el && inBrowser ? query(el) : undefined;
+  return mountComponent(this, el, hydrating)
+};
+```
+
+在该版本中的`$mount`方法内部获取到`el`选项对应的`DOM`元素后直接调用`mountComponent`函数进行挂载操作，关于该函数我们会在挂载阶段详细介绍。
+
+而完整版本的`$mount`代码如下：
+
+```javascript
+var mount = Vue.prototype.$mount;
+Vue.prototype.$mount = function (el,hydrating) {
+  // 省略获取模板及编译代码
+
+  return mount.call(this, el, hydrating)
+}
+```
+
+注意，在完整版本的`$mount`定义之前，先将`Vue`原型上的`$mount`方法先缓存起来，记作变量`mount`。此时你可能会问了，这`$mount`方法还没定义呢，怎么先缓存起来了。
+
+其实在源码中，是先定义只包含运行时版本的`$mount`方法，再定义完整版本的`$mount`方法，所以此时缓存的`mount`变量就是只包含运行时版本的`$mount`方法。
+
+为什么要这么做呢？上文我们说了，完整版本和只包含运行时版本之间的差异主要在于是否有模板编译阶段，只包含运行时版本没有模板编译阶段，初始化阶段完成后直接进入挂载阶段，而完整版本是初始化阶段完成后进入模板编译阶段，然后再进入挂载阶段。也就是说，这两个版本最终都会进入挂载阶段。所以在完整版本的`$mount`方法中将模板编译完成后需要回头去调只包含运行时版本的`$mount`方法以进入挂载阶段。
+
+这也就是在完整版本的`$mount`方法中先把只包含运行时版本的`$mount`方法缓存下来，记作变量`mount`，然后等模板编译完成，再执行`mount`方法（即只包含运行时版本的`$mount`方法）。
+
+所以分析模板编译阶段其实就是分析完整版的`vm.$mount`方法的实现。
+
+####  完整版的vm.$mount方法分析
+
+完整版的`vm.$mount`方法定义位于源码的`src/platforms/web/entry-runtime-with-compiler.js`中，如下：
+
+```javascript
+var mount = Vue.prototype.$mount;
+Vue.prototype.$mount = function (el,hydrating) {
+  el = el && query(el);
+  if (el === document.body || el === document.documentElement) {
+    warn(
+      "Do not mount Vue to <html> or <body> - mount to normal elements instead."
+    );
+    return this
+  }
+
+  var options = this.$options;
+  // resolve template/el and convert to render function
+  if (!options.render) {
+    var template = options.template;
+    if (template) {
+      if (typeof template === 'string') {
+          if (template.charAt(0) === '#') {
+            template = idToTemplate(template);
+            /* istanbul ignore if */
+            if (!template) {
+              warn(
+                ("Template element not found or is empty: " + (options.template)),
+                this
+              );
+            }
+          }
+      } else if (template.nodeType) {
+        template = template.innerHTML;
+      } else {
+        {
+          warn('invalid template option:' + template, this);
+        }
+        return this
+      }
+    } else if (el) {
+      template = getOuterHTML(el);
+    }
+    if (template) {
+      if (config.performance && mark) {
+        mark('compile');
+      }
+
+      var ref = compileToFunctions(template, {
+        outputSourceRange: "development" !== 'production',
+        shouldDecodeNewlines: shouldDecodeNewlines,
+        shouldDecodeNewlinesForHref: shouldDecodeNewlinesForHref,
+        delimiters: options.delimiters,
+        comments: options.comments
+      }, this);
+      var render = ref.render;
+      var staticRenderFns = ref.staticRenderFns;
+      options.render = render;
+      options.staticRenderFns = staticRenderFns;
+
+      if (config.performance && mark) {
+        mark('compile end');
+        measure(("vue " + (this._name) + " compile"), 'compile', 'compile end');
+      }
+    }
+  }
+  return mount.call(this, el, hydrating)
+};
+```
+
+从代码中可以看到，该函数可大致分为三部分：
+
+- 根据传入的`el`参数获取`DOM`元素；
+- 在用户没有手写`render`函数的情况下获取传入的模板`template`；
+- 将获取到的`template`编译成`render`函数；
+
+接下来我们就逐一分析。
+
+首先，根据传入的`el`参数获取`DOM`元素。如下：
+
+```javascript
+el = el && query(el);
+
+function query (el) {
+  if (typeof el === 'string') {
+    var selected = document.querySelector(el);
+    if (!selected) {
+      warn(
+        'Cannot find element: ' + el
+      );
+      return document.createElement('div')
+    }
+    return selected
+  } else {
+    return el
+  }
+}
+```
+
+由于`el`参数可以是元素，也可以是字符串类型的元素选择器，所以调用`query`函数来获取到`el`对应的`DOM`元素。由于`query`函数比较简单，就是根据传入的`el`参数是否为字符串从而以不同方式获取到对应的`DOM`元素，这里就不逐行展开介绍了。
+
+另外，这里还多了一个判断，就是判断获取到`el`对应的`DOM`元素如果是`body`或`html`元素时，将会抛出警告。这是因为`Vue`会将模板中的内容替换`el`对应的`DOM`元素，如果是`body`或`html`元素时，替换之后将会破坏整个`DOM`文档，所以不允许`el`是`body`或`html`。如下：
+
+```javascript
+if (el === document.body || el === document.documentElement) {
+  warn(
+    "Do not mount Vue to <html> or <body> - mount to normal elements instead."
+  );
+  return this
+}
+```
+
+
+
+接着，在用户没有手写`render`函数的情况下获取传入的模板`template`；如下：
+
+```javascript
+if (!options.render) {
+  var template = options.template;
+  if (template) {
+    if (typeof template === 'string') {
+      if (template.charAt(0) === '#') {
+        template = idToTemplate(template);
+        /* istanbul ignore if */
+        if (!template) {
+          warn(
+            ("Template element not found or is empty: " + (options.template)),
+            this
+          );
+        }
+      }
+    } else if (template.nodeType) {
+        template = template.innerHTML;
+    } else {
+      {
+        warn('invalid template option:' + template, this);
+      }
+      return this
+    }
+  } else if (el) {
+    template = getOuterHTML(el);
+  }
+}
+```
+
+首先获取用户传入的`template`选项赋给变量`template`，如果变量`template`存在，则接着判断如果`template`是字符串并且以`##`开头，则认为`template`是`id`选择符，则调用`idToTemplate`函数获取到选择符对应的`DOM`元素的`innerHTML`作为模板，如下：
+
+```javascript
+if (template) {
+  if (typeof template === 'string') {
+    if (template.charAt(0) === '#') {
+      template = idToTemplate(template);
+    }
+  }
+}
+
+var idToTemplate = cached(function (id) {
+  var el = query(id);
+  return el && el.innerHTML
+});
+```
+
+如果`template`不是字符串，那就判断它是不是一个`DOM`元素，如果是，则使用该`DOM`元素的`innerHTML`作为模板，如下：
+
+```javascript
+if (template.nodeType) {
+  template = template.innerHTML;
+}
+```
+
+如果既不是字符串，也不是`DOM`元素，此时会抛出警告：提示用户`template`选项无效。如下：
+
+```javascript
+else {
+  {
+    warn('invalid template option:' + template, this);
+  }
+  return this
+}
+```
+
+如果变量`template`不存在，表明用户没有传入`template`选项，则根据传入的`el`参数调用`getOuterHTML`函数获取外部模板，如下：
+
+```javascript
+if (el) {
+  template = getOuterHTML(el);
+}
+
+function getOuterHTML (el) {
+  if (el.outerHTML) {
+    return el.outerHTML
+  } else {
+    var container = document.createElement('div');
+    container.appendChild(el.cloneNode(true));
+    return container.innerHTML
+  }
+}
+```
+
+不管是从内部的`template`选项中获取模板，还是从外部获取模板，总之就是要获取到用户传入的模板内容，有了模板内容接下来才能将模板编译成渲染函数。
+
+获取到模板之后，接下来要做的事就是将其编译成渲染函数，如下：
+
+```javascript
+if (template) {
+  var ref = compileToFunctions(template, {
+    outputSourceRange: "development" !== 'production',
+    shouldDecodeNewlines: shouldDecodeNewlines,
+    shouldDecodeNewlinesForHref: shouldDecodeNewlinesForHref,
+    delimiters: options.delimiters,
+    comments: options.comments
+  }, this);
+  var render = ref.render;
+  var staticRenderFns = ref.staticRenderFns;
+  options.render = render;
+  options.staticRenderFns = staticRenderFns;
+}
+```
+
+关于将模板编译成渲染函数的具体步骤在前面文章模板编译篇中已经做了详细介绍，在这里，我们仅做简单回顾。
+
+把模板编译成渲染函数是在`compileToFunctions`函数中进行的，该函数接收待编译的模板字符串和编译选项作为参数，返回一个对象，对象里面的`render`属性即是编译好的渲染函数，最后将渲染函数设置到`$options`上。
+
+### 总结
+
+本篇文章介绍了生命周期中的第二个阶段——模板编译阶段。
+
+首先介绍了`Vue`源码构建的两种版本：完整版本和只包含运行时版本。并且我们知道了模板编译阶段只存在于完整版中，在只包含运行时版本中不存在该阶段，这是因为在只包含运行时版本中，当使用`vue-loader`或`vueify`时，`*.vue`文件内部的模板会在构建时预编译成渲染函数，所以是不需要编译的，从而不存在模板编译阶段。
+
+然后对比了两种版本`$mount`方法的区别。它们的区别在于在`$mount`方法中是否进行了模板编译。在只包含运行时版本的`$mount`方法中获取到`DOM`元素后直接进入挂载阶段，而在完整版本的`$mount`方法中是先将模板进行编译，然后回过头调只包含运行时版本的`$mount`方法进入挂载阶段。
+
+最后，我们知道了分析模板编译阶段其实就是分析完整版的`vm.$mount`方法的实现，我们将完整版的`vm.$mount`方法源码进行了逐行分析。知道了在该阶段中所做的工作就是：从用户传入的`el`选项和`template`选项中获取到用户传入的内部或外部模板，然后将获取到的模板编译成渲染函数。
+
+## 挂载阶段
+
+
+### 前言
+
+模板编译阶段完成之后，接下来就进入了挂载阶段，从官方文档给出的生命周期流程图中可以看到，挂载阶段所做的主要工作是创建`Vue`实例并用其替换`el`选项对应的`DOM`元素，同时还要开启对模板中数据（状态）的监控，当数据（状态）发生变化时通知其依赖进行视图更新。
+
+![](~@/learn-vue-source-code/lifecycle/4.png)
+
+
+### 挂载阶段分析
+
+在上篇文章介绍模板编译阶段中我们说过，在完整版本的`$mount`方法中将模板编译完成之后，会回过头去调只包含运行时版本的`$mount`方法进入挂载阶段，所以要想分析挂载阶段我们必须从只包含运行时版本的`$mount`方法入手。
+
+只包含运行时版本的`$mount`代码如下：
+
+```javascript
+Vue.prototype.$mount = function (el,hydrating) {
+  el = el && inBrowser ? query(el) : undefined;
+  return mountComponent(this, el, hydrating)
+};
+```
+
+可以看到，在该函数内部首先获取到`el`选项对应的`DOM`元素，然后调用`mountComponent`函数并将`el`选项对应的`DOM`元素传入，进入挂载阶段。那么，下面我们来看下`mountComponent`函数内部都干了些什么。
+
+`mountComponent`函数的定义位于源码的`src/core/instance/lifecycle.js`中，如下：
+
+```javascript
+export function mountComponent (vm,el,hydrating) {
+    vm.$el = el
+    if (!vm.$options.render) {
+        vm.$options.render = createEmptyVNode
+    }
+    callHook(vm, 'beforeMount')
+
+    let updateComponent
+
+    updateComponent = () => {
+        vm._update(vm._render(), hydrating)
+    }
+    new Watcher(vm, updateComponent, noop, {
+        before () {
+            if (vm._isMounted) {
+                callHook(vm, 'beforeUpdate')
+            }
+        }
+    }, true /* isRenderWatcher */)
+    hydrating = false
+
+    if (vm.$vnode == null) {
+        vm._isMounted = true
+        callHook(vm, 'mounted')
+    }
+    return vm
+}
+```
+
+可以看到，在该函数中，首先会判断实例上是否存在渲染函数，如果不存在，则设置一个默认的渲染函数`createEmptyVNode`，该渲染函数会创建一个注释类型的`VNode`节点。如下：
+
+```javascript
+vm.$el = el
+if (!vm.$options.render) {
+    vm.$options.render = createEmptyVNode
+}
+```
+
+
+
+然后调用`callHook`函数来触发`beforeMount`生命周期钩子函数，如下：
+
+```javascript
+callHook(vm, 'beforeMount')
+```
+
+
+
+该钩子函数触发后标志着正式开始执行挂载操作。
+
+接下来定义了一个`updateComponent`函数，如下：
+
+```javascript
+updateComponent = () => {
+    vm._update(vm._render(), hydrating)
+}
+```
+
+在该函数内部，首先执行渲染函数`vm._render()`得到一份最新的`VNode`节点树，然后执行` vm._update()`方法对最新的`VNode`节点树与上一次渲染的旧`VNode`节点树进行对比并更新`DOM`节点(即`patch`操作)，完成一次渲染。
+
+也就是说，如果调用了`updateComponent`函数，就会将最新的模板内容渲染到视图页面中，这样就完成了挂载操作的一半工作，即图中的上半部分：
+
+![](~@/learn-vue-source-code/lifecycle/5.png)
+
+
+
+
+为什么说是完成了一半操作呢？这是因为在挂载阶段不但要将模板渲染到视图中，同时还要开启对模板中数据（状态）的监控，当数据（状态）发生变化时通知其依赖进行视图更新。即图中的下半部分：
+
+![](~@/learn-vue-source-code/lifecycle/6.png)
+
+
+继续往下看，接下来创建了一个`Watcher`实例，并将定义好的`updateComponent`函数传入。要想开启对模板中数据（状态）的监控，这一段代码是关键，如下：
+
+```javascript
+new Watcher(
+    vm,                    // 第一个参数
+    updateComponent,       // 第二个参数
+    noop,                  // 第三个参数
+    {                      // 第四个参数
+        before () {
+          if (vm._isMounted) {
+            callHook(vm, 'beforeUpdate')
+          }
+        }
+	},
+    true                    // 第五个参数
+)
+```
+
+可以看到，在创建`Watcher`实例的时候，传入的第二个参数是`updateComponent`函数。回顾一下我们在数据侦测篇文章中介绍`Watcher`类的时候，`Watcher`类构造函数的第二个参数支持两种类型：函数和数据路径（如`a.b.c`）。如果是数据路径，会根据路径去读取这个数据；如果是函数，会执行这个函数。一旦读取了数据或者执行了函数，就会触发数据或者函数内数据的`getter`方法，而在`getter`方法中会将`watcher`实例添加到该数据的依赖列表中，当该数据发生变化时就会通知依赖列表中所有的依赖，依赖接收到通知后就会调用第四个参数回调函数去更新视图。
+
+换句话说，上面代码中把`updateComponent`函数作为第二个参数传给`Watcher`类从而创建了`watcher`实例，那么`updateComponent`函数中读取的所有数据都将被`watcher`所监控，这些数据中只要有任何一个发生了变化，那么`watcher`都将会得到通知，从而会去调用第四个参数回调函数去更新视图，如此反复，直到实例被销毁。
+
+
+
+这样就完成了挂载阶段的另一半工作。
+
+如此之后，挂载阶段才算是全部完成了，接下来调用挂载完成的生命周期钩子函数`mounted`。
+
+### 总结
+
+本篇文章介绍了生命周期中的第三个阶段——挂载阶段。
+
+在该阶段中所做的主要工作是创建`Vue`实例并用其替换`el`选项对应的`DOM`元素，同时还要开启对模板中数据（状态）的监控，当数据（状态）发生变化时通知其依赖进行视图更新。
+
+我们将挂载阶段所做的工作分成两部分进行了分析，第一部分是将模板渲染到视图上，第二部分是开启对模板中数据（状态）的监控。两部分工作都完成以后挂载阶段才算真正的完成了。
+
+## 销毁阶段
+
+
+### 前言
+
+接下来到了生命周期流程的最后一个阶段——销毁阶段。从官方文档给出的生命周期流程图中可以看到，当调用了`vm.$destroy`方法，`Vue`实例就进入了销毁阶段，该阶段所做的主要工作是将当前的`Vue`实例从其父级实例中删除，取消当前实例上的所有依赖追踪并且移除实例上的所有事件监听器。也就是说，当这个阶段完成之后，当前的`Vue`实例的整个生命流程就全部走完了，最终“寿终正寝”了。
+
+![](~@/learn-vue-source-code/lifecycle/7.png)
+
+
+本篇文章就来分析一下在销毁阶段都做了哪些工作。
+
+### 销毁阶段分析
+
+上文说了，当调用了实例的`$destroy`方法之后，当前实例就进入了销毁阶段。所以分析销毁阶段就是分析`$destroy`方法的内部实现。该方法的定义位于源码的`src/core/instance.lifecycle.js`中，如下：
+
+```javascript
+Vue.prototype.$destroy = function () {
+  const vm: Component = this
+  if (vm._isBeingDestroyed) {
+    return
+  }
+  callHook(vm, 'beforeDestroy')
+  vm._isBeingDestroyed = true
+  // remove self from parent
+  const parent = vm.$parent
+  if (parent && !parent._isBeingDestroyed && !vm.$options.abstract) {
+    remove(parent.$children, vm)
+  }
+  // teardown watchers
+  if (vm._watcher) {
+    vm._watcher.teardown()
+  }
+  let i = vm._watchers.length
+  while (i--) {
+    vm._watchers[i].teardown()
+  }
+  // remove reference from data ob
+  // frozen object may not have observer.
+  if (vm._data.__ob__) {
+    vm._data.__ob__.vmCount--
+  }
+  // call the last hook...
+  vm._isDestroyed = true
+  // invoke destroy hooks on current rendered tree
+  vm.__patch__(vm._vnode, null)
+  // fire destroyed hook
+  callHook(vm, 'destroyed')
+  // turn off all instance listeners.
+  vm.$off()
+  // remove __vue__ reference
+  if (vm.$el) {
+    vm.$el.__vue__ = null
+  }
+  // release circular reference (##6759)
+  if (vm.$vnode) {
+    vm.$vnode.parent = null
+  }
+}
+```
+
+可以看到，在上述代码中，首先判断当前实例的`_isBeingDestroyed`属性是否为`true`，因为该属性标志着当前实例是否处于正在被销毁的状态，如果它为`true`，则直接`return`退出函数，防止反复执行销毁逻辑。如下：
+
+```javascript
+const vm: Component = this
+if (vm._isBeingDestroyed) {
+  return
+}
+```
+
+接着，触发生命周期钩子函数`beforeDestroy`，该钩子函数的调用标志着当前实例正式开始销毁。如下：
+
+```javascript
+callHook(vm, 'beforeDestroy')
+```
+
+接下来，就进入了当前实例销毁的真正逻辑。
+
+首先，需要将当前的`Vue`实例从其父级实例中删除，如下：
+
+```javascript
+const parent = vm.$parent
+if (parent && !parent._isBeingDestroyed && !vm.$options.abstract) {
+  remove(parent.$children, vm)
+}
+```
+
+上面代码表示：如果当前实例有父级实例，同时该父级实例没有被销毁并且不是抽象组件，那么就将当前实例从其父级实例的`$children`属性中删除，即将自己从父级实例的子实例列表中删除。
+
+把自己从父级实例的子实例列表中删除之后，接下来就开始将自己身上的依赖追踪和事件监听移除。
+
+我们知道， 实例身上的依赖包含两部分：一部分是实例自身依赖其他数据，需要将实例自身从其他数据的依赖列表中删除；另一部分是实例内的数据对其他数据的依赖（如用户使用`$watch`创建的依赖），也需要从其他数据的依赖列表中删除实例内数据。所以删除依赖的时候需要将这两部分依赖都删除掉。如下：
+
+```javascript
+// teardown watchers
+if (vm._watcher) {
+  vm._watcher.teardown()
+}
+let i = vm._watchers.length
+while (i--) {
+  vm._watchers[i].teardown()
+}
+```
+
+在上述代码中，首先执行`vm._watcher.teardown()`将实例自身从其他数据的依赖列表中删除，`teardown`方法的作用是从所有依赖向的`Dep`列表中将自己删除。然后，在前面文章介绍`initState`函数时我们知道，所有实例内的数据对其他数据的依赖都会存放在实例的`_watchers`属性中，所以我们只需遍历`_watchers`，将其中的每一个`watcher`都调用`teardown`方法，从而实现移除实例内数据对其他数据的依赖。
+
+接下来移除实例内响应式数据的引用、给当前实例上添加`_isDestroyed`属性来表示当前实例已经被销毁，同时将实例的`VNode`树设置为`null`，如下：
+
+```javascript
+if (vm._data.__ob__) {
+  vm._data.__ob__.vmCount--
+}
+vm._isDestroyed = true
+vm.__patch__(vm._vnode, null)
+```
+
+接着，触发生命周期钩子函数`destroyed`，如下：
+
+```javascript
+callHook(vm, 'destroyed')
+```
+
+最后，调用实例的`vm.$off`方法（关于该方法在后面介绍实例方法时会详细介绍），移除实例上的所有事件监听器。如下：
+
+```javascript
+vm.$off()
+```
+
+最后，再移除一些相关属性的引用，至此，当前实例算是销毁完毕。
+
+### 总结
+
+本篇文章介绍了生命周期流程的最后一个阶段——销毁阶段。
+
+我们知道了，当调用了实例上的`vm.$destory`方法后，实例就进入了销毁阶段，在该阶段所做的主要工作是将当前的`Vue`实例从其父级实例中删除，取消当前实例上的所有依赖追踪并且移除实例上的所有事件监听器。并且对照源码将所做的工作都进行了逐行分析。
+
 # 6. 实例方法篇
+
+## 数据相关的方法
+
+###  前言
+
+与数据相关的实例方法有 3 个，分别是`vm.$set`、`vm.$delete`和`vm.$watch`。它们是在`stateMixin`函数中挂载到`Vue`原型上的，代码如下：
+
+```javascript
+import { set, del } from "../observer/index";
+
+export function stateMixin(Vue) {
+  Vue.prototype.$set = set;
+  Vue.prototype.$delete = del;
+  Vue.prototype.$watch = function(expOrFn, cb, options) {};
+}
+```
+
+当执行`stateMixin`函数后，会向`Vue`原型上挂载上述 3 个实例方法。
+
+接下来，我们就来分析这 3 个与数据相关的实例方法其内部的原理都是怎样的。
+
+###  vm.\$watch
+
+#### 1 用法回顾
+
+在介绍方法的内部原理之前，我们先根据官方文档示例回顾一下它的用法。
+
+```javascript
+vm.$watch(expOrFn, callback, [options]);
+```
+
+- **参数**：
+
+  - `{string | Function} expOrFn`
+  - `{Function | Object} callback`
+  - `{Object} [options]`
+    - `{boolean} deep`
+    - `{boolean} immediate`
+
+- **返回值**：`{Function} unwatch`
+
+- **用法**：
+
+  观察 `Vue` 实例变化的一个表达式或计算属性函数。回调函数得到的参数为新值和旧值。表达式只接受监督的键路径。对于更复杂的表达式，用一个函数取代。
+
+  注意：在变异 (不是替换) 对象或数组时，旧值将与新值相同，因为它们的引用指向同一个对象/数组。`Vue` 不会保留变异之前值的副本。
+
+- **示例**：
+
+  ```javascript
+  // 键路径
+  vm.$watch("a.b.c", function(newVal, oldVal) {
+    // 做点什么
+  });
+
+  // 函数
+  vm.$watch(
+    function() {
+      // 表达式 `this.a + this.b` 每次得出一个不同的结果时
+      // 处理函数都会被调用。
+      // 这就像监听一个未被定义的计算属性
+      return this.a + this.b;
+    },
+    function(newVal, oldVal) {
+      // 做点什么
+    }
+  );
+  ```
+
+  `vm.$watch` 返回一个取消观察函数，用来停止触发回调：
+
+  ```javascript
+  var unwatch = vm.$watch("a", cb);
+  // 之后取消观察
+  unwatch();
+  ```
+
+- **选项：deep**
+
+  为了发现对象内部值的变化，可以在选项参数中指定 `deep: true` 。注意监听数组的变动不需要这么做。
+
+  ```javascript
+  vm.$watch("someObject", callback, {
+    deep: true
+  });
+  vm.someObject.nestedValue = 123;
+  // callback is fired
+  ```
+
+- **选项：immediate**
+
+  在选项参数中指定 `immediate: true` 将立即以表达式的当前值触发回调：
+
+  ```javascript
+  vm.$watch("a", callback, {
+    immediate: true
+  });
+  // 立即以 `a` 的当前值触发回调
+  ```
+
+  注意在带有 `immediate` 选项时，你不能在第一次回调时取消侦听给定的 property。
+
+  ```javascript
+  // 这会导致报错
+  var unwatch = vm.$watch(
+    "value",
+    function() {
+      doSomething();
+      unwatch();
+    },
+    { immediate: true }
+  );
+  ```
+
+  如果你仍然希望在回调内部调用一个取消侦听的函数，你应该先检查其函数的可用性：
+
+  ```javascript
+  var unwatch = vm.$watch(
+    "value",
+    function() {
+      doSomething();
+      if (unwatch) {
+        unwatch();
+      }
+    },
+    { immediate: true }
+  );
+  ```
+
+#### 2 内部原理
+
+`$watch`的定义位于源码的`src/core/instance/state.js`中，如下：
+
+```javascript
+Vue.prototype.$watch = function(expOrFn, cb, options) {
+  const vm: Component = this;
+  if (isPlainObject(cb)) {
+    return createWatcher(vm, expOrFn, cb, options);
+  }
+  options = options || {};
+  options.user = true;
+  const watcher = new Watcher(vm, expOrFn, cb, options);
+  if (options.immediate) {
+    cb.call(vm, watcher.value);
+  }
+  return function unwatchFn() {
+    watcher.teardown();
+  };
+};
+```
+
+可以看到，`$watch`方法的代码并不多，逻辑也不是很复杂。
+
+在函数内部，首先判断传入的回调函数是否为一个对象，就像下面这种形式：
+
+```javascript
+vm.$watch("a.b.c", {
+  handler: function(val, oldVal) {
+    /* ... */
+  },
+  deep: true
+});
+```
+
+如果传入的回调函数是个对象，那就表明用户是把第二个参数回调函数`cb`和第三个参数选项`options`合起来传入的，此时调用`createWatcher`函数，该函数定义如下：
+
+```javascript
+function createWatcher(vm, expOrFn, handler, options) {
+  if (isPlainObject(handler)) {
+    options = handler;
+    handler = handler.handler;
+  }
+  if (typeof handler === "string") {
+    handler = vm[handler];
+  }
+  return vm.$watch(expOrFn, handler, options);
+}
+```
+
+可以看到，该函数内部其实就是从用户合起来传入的对象中把回调函数`cb`和参数`options`剥离出来，然后再以常规的方式调用`$watch`方法并将剥离出来的参数穿进去。
+
+接着获取到用户传入的`options`，如果用户没有传入则将其赋值为一个默认空对象，如下：
+
+```javascript
+options = options || {};
+```
+
+`$watch`方法内部会创建一个`watcher`实例，由于该实例是用户手动调用`$watch`方法创建而来的，所以给`options`添加`user`属性并赋值为`true`，用于区分用户创建的`watcher`实例和`Vue`内部创建的`watcher`实例，如下：
+
+```javascript
+options.user = true;
+```
+
+接着，传入参数创建一个`watcher`实例，如下：
+
+```javascript
+const watcher = new Watcher(vm, expOrFn, cb, options);
+```
+
+接着判断如果用户在选项参数`options`中指定的`immediate`为`true`，则立即用被观察数据当前的值触发回调，如下：
+
+```javascript
+if (options.immediate) {
+  cb.call(vm, watcher.value);
+}
+```
+
+最后返回一个取消观察函数`unwatchFn`，用来停止触发回调。如下：
+
+```javascript
+return function unwatchFn() {
+  watcher.teardown();
+};
+```
+
+这个取消观察函数`unwatchFn`内部其实是调用了`watcher`实例的`teardown`方法，那么我们来看一下这个`teardown`方法是如何实现的。其代码如下：
+
+```javascript
+export default class Watcher {
+  constructor(/* ... */) {
+    // ...
+    this.deps = [];
+  }
+  teardown() {
+    let i = this.deps.length;
+    while (i--) {
+      this.deps[i].removeSub(this);
+    }
+  }
+}
+```
+
+在之前介绍变化侦测篇的文章中我们说过，谁读取了数据，就表示谁依赖了这个数据，那么谁就会存在于这个数据的依赖列表中，当这个数据变化时，就会通知谁。也就是说，如果谁不想依赖这个数据了，那么只需从这个数据的依赖列表中把谁删掉即可。
+
+在上面代码中，创建`watcher`实例的时候会读取被观察的数据，读取了数据就表示依赖了数据，所以`watcher`实例就会存在于数据的依赖列表中，同时`watcher`实例也记录了自己依赖了哪些数据，另外我们还说过，每个数据都有一个自己的依赖管理器`dep`，`watcher`实例记录自己依赖了哪些数据其实就是把这些数据的依赖管理器`dep`存放在`watcher`实例的`this.deps = []`属性中，当取消观察时即`watcher`实例不想依赖这些数据了，那么就遍历自己记录的这些数据的依赖管理器，告诉这些数据可以从你们的依赖列表中把我删除了。
+
+举个例子：
+
+```javascript
+vm.$watch(
+  function() {
+    return this.a + this.b;
+  },
+  function(newVal, oldVal) {
+    // 做点什么
+  }
+);
+```
+
+例如上面`watcher`实例，它观察了数据`a`和数据`b`，那么它就依赖了数据`a`和数据`b`，那么这个`watcher`实例就存在于数据`a`和数据`b`的依赖管理器`depA`和`depB`中，同时`watcher`实例的`deps`属性中也记录了这两个依赖管理器，即`this.deps=[depA,depB]`，
+
+当取消观察时，就遍历`this.deps`，让每个依赖管理器调用其`removeSub`方法将这个`watcher`实例从自己的依赖列表中删除。
+
+下面还有最后一个问题，当选项参数`options`中的`deep`属性为`true`时，如何实现深度观察呢？
+
+首先我们来看看什么是深度观察，假如有如下被观察的数据：
+
+```javascript
+obj = {
+  a: 2
+};
+```
+
+所谓深度观察，就是当`obj`对象发生变化时我们会得到通知，通知当`obj.a`属性发生变化时我们也要能得到通知，简单的说就是观察对象内部值的变化。
+
+要实现这个功能也不难，我们知道，要想让数据变化时通知我们，那我们只需成为这个数据的依赖即可，因为数据变化时会通知它所有的依赖，那么如何成为数据的依赖呢，很简单，读取一下数据即可。也就是说我们只需在创建`watcher`实例的时候把`obj`对象内部所有的值都递归的读一遍，那么这个`watcher`实例就会被加入到对象内所有值的依赖列表中，之后当对象内任意某个值发生变化时就能够得到通知了。
+
+有了初步的思想后，接下来我们看看代码中是如何实现的。我们知道，在创建`watcher`实例的时候，会执行`Watcher`类中`get`方法来读取一下被观察的数据，如下：
+
+```javascript
+export default class Watcher {
+  constructor(/* ... */) {
+    // ...
+    this.value = this.get();
+  }
+  get() {
+    // ...
+    // "touch" every property so they are all tracked as
+    // dependencies for deep watching
+    if (this.deep) {
+      traverse(value);
+    }
+    return value;
+  }
+}
+```
+
+可以看到，在`get`方法中，如果传入的`deep`为`true`，则会调用`traverse`函数，并且在源码中，对于这一步操作有个很形象的注释：
+
+```text
+"touch" every property so they are all tracked as dependencies for deep watching
+
+“触摸”每个属性，以便将它们全部作为深度监视的依赖项进行跟踪
+```
+
+所谓“触摸”每个属性，不就是将每个属性都读取一遍么？哈哈
+
+回到代码，`traverse`函数定义如下：
+
+```javascript
+const seenObjects = new Set();
+
+export function traverse(val: any) {
+  _traverse(val, seenObjects);
+  seenObjects.clear();
+}
+
+function _traverse(val: any, seen: SimpleSet) {
+  let i, keys;
+  const isA = Array.isArray(val);
+  if (
+    (!isA && !isObject(val)) ||
+    Object.isFrozen(val) ||
+    val instanceof VNode
+  ) {
+    return;
+  }
+  if (val.__ob__) {
+    const depId = val.__ob__.dep.id;
+    if (seen.has(depId)) {
+      return;
+    }
+    seen.add(depId);
+  }
+  if (isA) {
+    i = val.length;
+    while (i--) _traverse(val[i], seen);
+  } else {
+    keys = Object.keys(val);
+    i = keys.length;
+    while (i--) _traverse(val[keys[i]], seen);
+  }
+}
+```
+
+可以看到，该函数其实就是个递归遍历的过程，把被观察数据的内部值都递归遍历读取一遍。
+
+首先先判断传入的`val`类型，如果它不是`Array`或`object`，再或者已经被冻结，那么直接返回，退出程序。如下：
+
+```javascript
+const isA = Array.isArray(val);
+if ((!isA && !isObject(val)) || Object.isFrozen(val) || val instanceof VNode) {
+  return;
+}
+```
+
+然后拿到`val`的`dep.id`，存入创建好的集合`seen`中，因为集合相比数据而言它有天然的去重效果，以此来保证存入的`dep.id`没有重复，不会造成重复收集依赖，如下：
+
+```javascript
+if (val.__ob__) {
+  const depId = val.__ob__.dep.id;
+  if (seen.has(depId)) {
+    return;
+  }
+  seen.add(depId);
+}
+```
+
+接下来判断如果是数组，则循环数组，将数组中每一项递归调用`_traverse`；如果是对象，则取出对象所有的`key`，然后执行读取操作，再递归内部值，如下：
+
+```javascript
+if (isA) {
+  i = val.length;
+  while (i--) _traverse(val[i], seen);
+} else {
+  keys = Object.keys(val);
+  i = keys.length;
+  while (i--) _traverse(val[keys[i]], seen);
+}
+```
+
+这样，把被观察数据内部所有的值都递归的读取一遍后，那么这个`watcher`实例就会被加入到对象内所有值的依赖列表中，之后当对象内任意某个值发生变化时就能够得到通知了。
+
+###  vm.\$set
+
+`vm.$set` 是全局 `Vue.set` 的**别名**，其用法相同。
+
+#### 1 用法回顾
+
+在介绍方法的内部原理之前，我们先根据官方文档示例回顾一下它的用法。
+
+```javascript
+vm.$set(target, propertyName / index, value);
+```
+
+- **参数**：
+
+  - `{Object | Array} target`
+  - `{string | number} propertyName/index`
+  - `{any} value`
+
+- **返回值**：设置的值。
+
+- **用法**：
+
+  向响应式对象中添加一个属性，并确保这个新属性同样是响应式的，且触发视图更新。它必须用于向响应式对象上添加新属性，因为 `Vue` 无法探测普通的新增属性 (比如 `this.myObject.newProperty = 'hi'`)
+
+- **注意**：对象不能是 `Vue` 实例，或者 `Vue` 实例的根数据对象。
+
+#### 2 内部原理
+
+还记得我们在介绍数据变化侦测的时候说过，对于`object`型数据，当我们向`object`数据里添加一对新的`key/value`或删除一对已有的`key/value`时，`Vue`是无法观测到的；而对于`Array`型数据，当我们通过数组下标修改数组中的数据时，`Vue`也是是无法观测到的；
+
+正是因为存在这个问题，所以`Vue`设计了`set`和`delete`这两个方法来解决这一问题，下面我们就先来看看`set`方法的内部实现原理。
+
+`set`方法的定义位于源码的`src/core/observer/index.js`中，如下：
+
+```javascript
+export function set(target, key, val) {
+  if (
+    process.env.NODE_ENV !== "production" &&
+    (isUndef(target) || isPrimitive(target))
+  ) {
+    warn(
+      `Cannot set reactive property on undefined, null, or primitive value: ${(target: any)}`
+    );
+  }
+  if (Array.isArray(target) && isValidArrayIndex(key)) {
+    target.length = Math.max(target.length, key);
+    target.splice(key, 1, val);
+    return val;
+  }
+  if (key in target && !(key in Object.prototype)) {
+    target[key] = val;
+    return val;
+  }
+  const ob = (target: any).__ob__;
+  if (target._isVue || (ob && ob.vmCount)) {
+    process.env.NODE_ENV !== "production" &&
+      warn(
+        "Avoid adding reactive properties to a Vue instance or its root $data " +
+          "at runtime - declare it upfront in the data option."
+      );
+    return val;
+  }
+  if (!ob) {
+    target[key] = val;
+    return val;
+  }
+  defineReactive(ob.value, key, val);
+  ob.dep.notify();
+  return val;
+}
+```
+
+可以看到，方法内部的逻辑并不复杂，就是根据不同的情况作出不同的处理。
+
+首先判断在非生产环境下如果传入的`target`是否为`undefined`、`null`或是原始类型，如果是，则抛出警告，如下：
+
+```javascript
+if (
+  process.env.NODE_ENV !== "production" &&
+  (isUndef(target) || isPrimitive(target))
+) {
+  warn(
+    `Cannot set reactive property on undefined, null, or primitive value: ${(target: any)}`
+  );
+}
+```
+
+接着判断如果传入的`target`是数组并且传入的`key`是有效索引的话，那么就取当前数组长度与`key`这两者的最大值作为数组的新长度，然后使用数组的`splice`方法将传入的索引`key`对应的`val`值添加进数组。这里注意一点，为什么要用`splice`方法呢？还记得我们在介绍`Array`类型数据的变化侦测方式时说过，数组的`splice`方法已经被我们创建的拦截器重写了，也就是说，当使用`splice`方法向数组内添加元素时，该元素会自动被变成响应式的。如下：
+
+```javascript
+if (Array.isArray(target) && isValidArrayIndex(key)) {
+  target.length = Math.max(target.length, key);
+  target.splice(key, 1, val);
+  return val;
+}
+```
+
+如果传入的`target`不是数组，那就当做对象来处理。
+
+首先判断传入的`key`是否已经存在于`target`中，如果存在，表明这次操作不是新增属性，而是对已有的属性进行简单的修改值，那么就只修改属性值即可，如下：
+
+```javascript
+if (key in target && !(key in Object.prototype)) {
+  target[key] = val;
+  return val;
+}
+```
+
+接下来获取到`target`的`__ob__`属性，我们说过，该属性是否为`true`标志着`target`是否为响应式对象，接着判断如果`tragte`是 `Vue` 实例，或者是 `Vue` 实例的根数据对象，则抛出警告并退出程序，如下：
+
+```javascript
+const ob = (target: any).__ob__;
+if (target._isVue || (ob && ob.vmCount)) {
+  process.env.NODE_ENV !== "production" &&
+    warn(
+      "Avoid adding reactive properties to a Vue instance or its root $data " +
+        "at runtime - declare it upfront in the data option."
+    );
+  return val;
+}
+```
+
+接着判断如果`ob`属性为`false`，那么表明`target`不是一个响应式对象，那么我们只需简单给它添加上新的属性，不用将新属性转化成响应式，如下：
+
+```javascript
+if (!ob) {
+  target[key] = val;
+  return val;
+}
+```
+
+最后，如果`target`是对象，并且是响应式，那么就调用`defineReactive`方法将新属性值添加到`target`上，`defineReactive`方会将新属性添加完之后并将其转化成响应式，最后通知依赖更新，如下：
+
+```javascript
+defineReactive(ob.value, key, val);
+ob.dep.notify();
+```
+
+以上，就是`set`方法的内部原理。其逻辑流程图如下：
+
+![](~@/learn-vue-source-code/instanceMethods/1.jpg)
+
+###  vm.\$delete
+
+`vm.$delete` 是全局 `Vue.delete`的**别名**，其用法相同。
+
+#### 1 用法回顾
+
+在介绍方法的内部原理之前，我们先根据官方文档示例回顾一下它的用法。
+
+```javascript
+vm.$delete(target, propertyName / index);
+```
+
+- **参数**：
+
+  - `{Object | Array} target`
+  - `{string | number} propertyName/index`
+
+  > 仅在 2.2.0+ 版本中支持 Array + index 用法。
+
+- **用法**：
+
+  删除对象的属性。如果对象是响应式的，确保删除能触发更新视图。这个方法主要用于避开 `Vue` 不能检测到属性被删除的限制，但是你应该很少会使用它。
+
+  > 在 2.2.0+ 中同样支持在数组上工作。
+
+* **注意**： 目标对象不能是一个 `Vue` 实例或 `Vue` 实例的根数据对象。
+
+#### 2 内部原理
+
+`delete`方法是用来解决 `Vue` 不能检测到属性被删除的限制，该方法的定义位于源码的`src/core.observer/index.js`中，如下：
+
+```javascript
+export function del(target, key) {
+  if (
+    process.env.NODE_ENV !== "production" &&
+    (isUndef(target) || isPrimitive(target))
+  ) {
+    warn(
+      `Cannot delete reactive property on undefined, null, or primitive value: ${(target: any)}`
+    );
+  }
+  if (Array.isArray(target) && isValidArrayIndex(key)) {
+    target.splice(key, 1);
+    return;
+  }
+  const ob = (target: any).__ob__;
+  if (target._isVue || (ob && ob.vmCount)) {
+    process.env.NODE_ENV !== "production" &&
+      warn(
+        "Avoid deleting properties on a Vue instance or its root $data " +
+          "- just set it to null."
+      );
+    return;
+  }
+  if (!hasOwn(target, key)) {
+    return;
+  }
+  delete target[key];
+  if (!ob) {
+    return;
+  }
+  ob.dep.notify();
+}
+```
+
+该方法的内部原理与`set`方法有几分相似，都是根据不同情况作出不同处理。
+
+首先判断在非生产环境下如果传入的`target`不存在，或者`target`是原始值，则抛出警告，如下：
+
+```javascript
+if (
+  process.env.NODE_ENV !== "production" &&
+  (isUndef(target) || isPrimitive(target))
+) {
+  warn(
+    `Cannot set reactive property on undefined, null, or primitive value: ${(target: any)}`
+  );
+}
+```
+
+接着判断如果传入的`target`是数组并且传入的`key`是有效索引的话，就使用数组的`splice`方法将索引`key`对应的值删掉，为什么要用`splice`方法上文中也解释了，就是因为数组的`splice`方法已经被我们创建的拦截器重写了，所以使用该方法会自动通知相关依赖。如下：
+
+```javascript
+if (Array.isArray(target) && isValidArrayIndex(key)) {
+  target.splice(key, 1);
+  return;
+}
+```
+
+如果传入的`target`不是数组，那就当做对象来处理。
+
+接下来获取到`target`的`__ob__`属性，我们说过，该属性是否为`true`标志着`target`是否为响应式对象，接着判断如果`tragte`是 `Vue` 实例，或者是 `Vue` 实例的根数据对象，则抛出警告并退出程序，如下：
+
+```javascript
+const ob = (target: any).__ob__;
+if (target._isVue || (ob && ob.vmCount)) {
+  process.env.NODE_ENV !== "production" &&
+    warn(
+      "Avoid adding reactive properties to a Vue instance or its root $data " +
+        "at runtime - declare it upfront in the data option."
+    );
+  return val;
+}
+```
+
+接着判断传入的`key`是否存在于`target`中，如果`key`本来就不存在于`target`中，那就不用删除，直接退出程序即可，如下：
+
+```javascript
+if (!hasOwn(target, key)) {
+  return;
+}
+```
+
+最后，如果`target`是对象，并且传入的`key`也存在于`target`中，那么就从`target`中将该属性删除，同时判断当前的`target`是否为响应式对象，如果是响应式对象，则通知依赖更新；如果不是，删除完后直接返回不通知更新，如下：
+
+```javascript
+delete target[key];
+if (!ob) {
+  return;
+}
+ob.dep.notify();
+```
+
+以上，就是`delete`方法的内部原理。
+
+## 事件相关的方法
+
+###  前言
+
+与事件相关的实例方法有4个，分别是`vm.$on`、`vm.$emit`、`vm.$off`和`vm.$once`。它们是在`eventsMixin`函数中挂载到`Vue`原型上的，代码如下：
+
+```javascript
+export function eventsMixin (Vue) {
+    Vue.prototype.$on = function (event, fn) {}
+    Vue.prototype.$once = function (event, fn) {}
+    Vue.prototype.$off = function (event, fn) {}
+    Vue.prototype.$emit = function (event) {}
+}
+```
+
+当执行`eventsMixin`函数后，会向`Vue`原型上挂载上述4个实例方法。
+
+ 接下来，我们就来分析这4个与事件相关的实例方法其内部的原理都是怎样的。
+
+###  vm.$on
+
+#### 1 用法回顾
+
+在介绍方法的内部原理之前，我们先根据官方文档示例回顾一下它的用法。
+
+```javascript
+vm.$on( event, callback )
+```
+
+- **参数**：
+
+  - `{string | Array<string>} event` (数组只在 2.2.0+ 中支持)
+  - `{Function} callback`
+
+- **作用**：
+
+  监听当前实例上的自定义事件。事件可以由`vm.$emit`触发。回调函数会接收所有传入事件触发函数的额外参数。
+
+- **示例**：
+
+  ```javascript
+  vm.$on('test', function (msg) {
+    console.log(msg)
+  })
+  vm.$emit('test', 'hi')
+  // => "hi"
+  ```
+
+#### 2 内部原理
+
+在介绍内部原理之前，我们先有一个这样的概念：`$on`和`$emit`这两个方法的内部原理是设计模式中最典型的发布订阅模式，首先定义一个事件中心，通过`$on`订阅事件，将事件存储在事件中心里面，然后通过`$emit`触发事件中心里面存储的订阅事件。
+
+OK，有了这个概念之后，接下来，我们就先来看看`$on`方法的内部原理。该方法的定义位于源码的`src/core/instance/event.js`中，如下：
+
+```javascript
+Vue.prototype.$on = function (event, fn) {
+    const vm: Component = this
+    if (Array.isArray(event)) {
+        for (let i = 0, l = event.length; i < l; i++) {
+            this.$on(event[i], fn)
+        }
+    } else {
+        (vm._events[event] || (vm._events[event] = [])).push(fn)
+    }
+    return vm
+}
+```
+
+`$on`方法接收两个参数，第一个参数是订阅的事件名，可以是数组，表示订阅多个事件。第二个参数是回调函数，当触发所订阅的事件时会执行该回调函数。
+
+首先，判断传入的事件名是否是一个数组，如果是数组，就表示需要一次性订阅多个事件，就遍历该数组，将数组中的每一个事件都递归调用`$on`方法将其作为单个事件订阅。如下：
+
+```javascript
+if (Array.isArray(event)) {
+    for (let i = 0, l = event.length; i < l; i++) {
+        this.$on(event[i], fn)
+    }
+}
+```
+
+如果不是数组，那就当做单个事件名来处理，以该事件名作为`key`，先尝试在当前实例的`_events`属性中获取其对应的事件列表，如果获取不到就给其赋空数组为默认值，并将第二个参数回调函数添加进去。如下：
+
+```javascript
+else {
+    (vm._events[event] || (vm._events[event] = [])).push(fn)
+}
+```
+
+那么问题来了，当前实例的`_events`属性是干嘛的呢？
+
+还记得我们在介绍生命周期初始化阶段的初始化事件`initEvents`函数中，在该函数中，首先在当前实例上绑定了`_events`属性并给其赋值为空对象，如下：
+
+```javascript
+export function initEvents (vm: Component) {
+    vm._events = Object.create(null)
+    // ...
+
+}
+```
+
+这个`_events`属性就是用来作为当前实例的事件中心，所有绑定在这个实例上的事件都会存储在事件中心`_events`属性中。
+
+以上，就是`$on`方法的内部原理。
+
+###  vm.$emit
+
+#### 1 用法回顾
+
+在介绍方法的内部原理之前，我们先根据官方文档示例回顾一下它的用法。
+
+```javascript
+vm.$emit( eventName, […args] )
+```
+
+- **参数**：
+  - `{string} eventName`
+  - `[...args]`
+- **作用**：
+  触发当前实例上的事件。附加参数都会传给监听器回调。
+
+#### 2 内部原理
+
+该方法接收的第一个参数是要触发的事件名，之后的附加参数都会传给被触发事件的回调函数。该方法的定义位于源码的`src/core/instance/event.js`中，如下：
+
+```javascript
+Vue.prototype.$emit = function (event: string): Component {
+    const vm: Component = this
+    let cbs = vm._events[event]
+    if (cbs) {
+      cbs = cbs.length > 1 ? toArray(cbs) : cbs
+      const args = toArray(arguments, 1)
+      for (let i = 0, l = cbs.length; i < l; i++) {
+        try {
+          cbs[i].apply(vm, args)
+        } catch (e) {
+          handleError(e, vm, `event handler for "${event}"`)
+        }
+      }
+    }
+    return vm
+  }
+}
+```
+
+该方法的逻辑很简单，就是根据传入的事件名从当前实例的`_events`属性（即事件中心）中获取到该事件名所对应的回调函数`cbs`，如下：
+
+```javascript
+let cbs = vm._events[event]
+```
+
+然后再获取传入的附加参数`args`，如下：
+
+```javascript
+const args = toArray(arguments, 1)
+```
+
+由于`cbs`是一个数组，所以遍历该数组，拿到每一个回调函数，执行回调函数并将附加参数`args`传给该回调。如下：
+
+```javascript
+for (let i = 0, l = cbs.length; i < l; i++) {
+    try {
+        cbs[i].apply(vm, args)
+    } catch (e) {
+        handleError(e, vm, `event handler for "${event}"`)
+    }
+}
+```
+
+以上，就是`$emit`方法的内部原理。
+
+
+
+###  vm.$off
+
+#### 1 用法回顾
+
+在介绍方法的内部原理之前，我们先根据官方文档示例回顾一下它的用法。
+
+```javascript
+vm.$off( [event, callback] )
+```
+
+- **参数**：
+
+  - `{string | Array<string>} event` (只在 2.2.2+ 支持数组)
+  - `{Function} [callback]`
+
+- **作用**：
+
+  移除自定义事件监听器。
+
+  - 如果没有提供参数，则移除所有的事件监听器；
+  - 如果只提供了事件，则移除该事件所有的监听器；
+  - 如果同时提供了事件与回调，则只移除这个回调的监听器。
+
+#### 2 内部原理
+
+通过用法回顾我们知道，该方法用来移除事件中心里面某个事件的回调函数，根据所传入参数的不同，作出不同的处理。该方法的定义位于源码的`src/core/instance/event.js`中，如下：
+
+```javascript
+Vue.prototype.$off = function (event, fn) {
+    const vm: Component = this
+    // all
+    if (!arguments.length) {
+        vm._events = Object.create(null)
+        return vm
+    }
+    // array of events
+    if (Array.isArray(event)) {
+        for (let i = 0, l = event.length; i < l; i++) {
+            this.$off(event[i], fn)
+        }
+        return vm
+    }
+    // specific event
+    const cbs = vm._events[event]
+    if (!cbs) {
+        return vm
+    }
+    if (!fn) {
+        vm._events[event] = null
+        return vm
+    }
+    if (fn) {
+        // specific handler
+        let cb
+        let i = cbs.length
+        while (i--) {
+            cb = cbs[i]
+            if (cb === fn || cb.fn === fn) {
+                cbs.splice(i, 1)
+                break
+            }
+        }
+    }
+    return vm
+}
+```
+
+可以看到，在该方法内部就是通过不断判断所传参数的情况进而进行不同的逻辑处理，接下来我们逐行分析。
+
+首先，判断如果没有传入任何参数（即`arguments.length`为0），这就是第一种情况：如果没有提供参数，则移除所有的事件监听器。我们知道，当前实例上的所有事件都存储在事件中心`_events`属性中，要想移除所有的事件，那么只需把`_events`属性重新置为空对象即可。如下：
+
+```javascript
+if (!arguments.length) {
+    vm._events = Object.create(null)
+    return vm
+}
+```
+
+接着，判断如果传入的需要移除的事件名是一个数组，就表示需要一次性移除多个事件，那么我们只需同订阅多个事件一样，遍历该数组，然后将数组中的每一个事件都递归调用`$off`方法进行移除即可。如下：
+
+```javascript
+if (Array.isArray(event)) {
+    for (let i = 0, l = event.length; i < l; i++) {
+        this.$off(event[i], fn)
+    }
+    return vm
+}
+```
+
+接着，获取到需要移除的事件名在事件中心中对应的回调函数`cbs`。如下：
+
+```javascript
+const cbs = vm._events[event]
+```
+
+接着，判断如果`cbs`不存在，那表明在事件中心从来没有订阅过该事件，那就谈不上移除该事件，直接返回，退出程序即可。如下：
+
+```javascript
+if (!cbs) {
+    return vm
+}
+```
+
+接着，如果`cbs`存在，但是没有传入回调函数`fn`，这就是第二种情况：如果只提供了事件，则移除该事件所有的监听器。这个也不难，我们知道，在事件中心里面，一个事件名对应的回调函数是一个数组，要想移除所有的回调函数我们只需把它对应的数组设置为`null`即可。如下：
+
+```javascript
+if (!fn) {
+    vm._events[event] = null
+    return vm
+}
+```
+
+接着，如果既传入了事件名，又传入了回调函数，`cbs`也存在，那这就是第三种情况：如果同时提供了事件与回调，则只移除这个回调的监听器。那么我们只需遍历所有回调函数数组`cbs`，如果`cbs`中某一项与`fn`相同，或者某一项的`fn`属性与`fn`相同，那么就将其从数组中删除即可。如下：
+
+```javascript
+if (fn) {
+    // specific handler
+    let cb
+    let i = cbs.length
+    while (i--) {
+        cb = cbs[i]
+        if (cb === fn || cb.fn === fn) {
+            cbs.splice(i, 1)
+            break
+        }
+    }
+}
+```
+
+以上，就是`$off`方法的内部原理。
+
+
+
+
+
+
+
+
+
+###  vm.$once
+
+#### 1 用法回顾
+
+在介绍方法的内部原理之前，我们先根据官方文档示例回顾一下它的用法。
+
+```javascript
+vm.$once( event, callback )
+```
+
+- **参数**：
+
+  - `{string} event`
+  - `{Function} callback`
+
+- **作用**：
+
+  监听一个自定义事件，但是只触发一次。一旦触发之后，监听器就会被移除。
+
+#### 2 内部原理
+
+该方法的作用是先订阅事件，但是该事件只能触发一次，也就是说当该事件被触发后会立即移除。要实现这个功能也不难，我们可以定义一个子函数，用这个子函数来替换原本订阅事件所对应的回调，也就是说当触发订阅事件时，其实执行的是这个子函数，然后再子函数内部先把该订阅移除，再执行原本的回调，以此来达到只触发一次的目的。
+
+下面我们就来看下源码的实现。该方法的定义位于源码的`src/core/instance/event.js`中，如下：
+
+```javascript
+Vue.prototype.$once = function (event, fn) {
+    const vm: Component = this
+    function on () {
+        vm.$off(event, on)
+        fn.apply(vm, arguments)
+    }
+    on.fn = fn
+    vm.$on(event, on)
+    return vm
+}
+```
+
+可以看到，在上述代码中，被监听的事件是`event`，其原本对应的回调是`fn`，然后定义了一个子函数`on`。
+
+在该函数内部，先通过`$on`方法订阅事件，同时所使用的回调函数并不是原本的`fn`而是子函数`on`，如下：
+
+```javascript
+vm.$on(event, on)
+```
+
+也就是说，当事件`event`被触发时，会执行子函数`on`。
+
+然后在子函数内部先通过`$off`方法移除订阅的事件，这样确保该事件不会被再次触发，接着执行原本的回调`fn`，如下：
+
+```javascript
+function on () {
+    vm.$off(event, on)
+    fn.apply(vm, arguments)
+}
+```
+
+另外，还有一行代码`on.fn = fn`是干什么的呢？
+
+上文我们说了，我们用子函数`on`替换了原本的订阅事件所对应的回调`fn`，那么在事件中心`_events`属性中存储的该事件名就会变成如下这个样子：
+
+```javascript
+vm._events = {
+    'xxx':[on]
+}
+```
+
+但是用户自己却不知道传入的`fn`被替换了，当用户在触发该事件之前想调用`$off`方法移除该事件时：
+
+```javascript
+vm.$off('xxx',fn)
+```
+
+此时就会出现问题，因为在`_events`属性中的事件名`xxx`对应的回调函数列表中没有`fn`，那么就会移除失败。这就让用户费解了，用户明明给`xxx`事件传入的回调函数是`fn`，现在反而找不到`fn`导致事件移除不了了。
+
+所以，为了解决这一问题，我们需要给`on`上绑定一个`fn`属性，属性值为用户传入的回调`fn`，这样在使用`$off`移除事件的时候，`$off`内部会判断如果回调函数列表中某一项的`fn`属性与`fn`相同时，就可以成功移除事件了。
+
+以上，就是`$once`方法的内部原理。
+
+## 生命周期相关的方法
+
+###  前言
+
+与生命周期相关的实例方法有4个，分别是`vm.$mount`、`vm.$forceUpdate`、`vm.$nextTick`和`vm.$destory`。其中，`$forceUpdate`和`$destroy`方法是在`lifecycleMixin`函数中挂载到`Vue`原型上的，`$nextTick`方法是在`renderMixin`函数中挂载到`Vue`原型上的，而`$mount`方法是在跨平台的代码中挂载到`Vue`原型上的。代码如下：
+
+```javascript
+export function lifecycleMixin (Vue) {
+    Vue.prototype.$forceUpdate = function () {}
+    Vue.prototype.$destroy = function (fn) {}
+}
+
+export function renderMixin (Vue) {
+    Vue.prototype.$nextTick = function (fn) {}
+}
+```
+
+当执行`lifecycleMixin`和`renderMixin`函数后，会向`Vue`原型上挂载相应的实例方法。
+
+接下来，我们就来分析这4个与生命周期相关的实例方法其内部的原理都是怎样的。
+
+###  vm.$mount
+
+#### 1 用法回顾
+
+在介绍方法的内部原理之前，我们先根据官方文档示例回顾一下它的用法。
+
+```javascript
+vm.$mount( [elementOrSelector] )
+```
+
+- **参数**：
+
+  - `{Element | string} [elementOrSelector]`
+  - `{boolean} [hydrating]`
+
+- **返回值**：`vm` - 实例自身
+
+- **作用**：
+
+  如果 `Vue` 实例在实例化时没有收到 el 选项，则它处于“未挂载”状态，没有关联的 DOM 元素。可以使用 `vm.$mount()` 手动地挂载一个未挂载的实例。
+
+  如果没有提供 `elementOrSelector` 参数，模板将被渲染为文档之外的的元素，并且你必须使用原生 `DOM API `把它插入文档中。
+
+  这个方法返回实例自身，因而可以链式调用其它实例方法。
+
+#### 2 内部原理
+
+关于该方法的内部原理在介绍**生命周期篇的模板编译阶段**中已经详细分析过，此处不再重复。
+
+###  vm.$forceUpdate
+
+#### 1 用法回顾
+
+在介绍方法的内部原理之前，我们先根据官方文档示例回顾一下它的用法。
+
+```javascript
+vm.$forceUpdate()
+```
+
+- **作用**：
+
+  迫使 `Vue` 实例重新渲染。注意它仅仅影响实例本身和插入插槽内容的子组件，而不是所有子组件。
+
+#### 2 内部原理
+
+通过用法回顾我们知道， 该方法是用来迫使`Vue` 实例重新渲染的。也就是说，当调用了该方法，当前实例会立即重新渲染。
+
+在分析原理之前，我们先思考这样一个问题：什么情况下实例会重新渲染？那就是当实例依赖的数据发生变化时，变化的数据会通知其收集的依赖列表中的依赖进行更新，在之前的文章中我们说过，收集依赖就是收集`watcher`，依赖更新就是`watcher`调用`update`方法更新，所以实例依赖的数据发生变化时，就会通知实例`watcher`去执行`update`方法进行更新。
+
+那么我们就知道了，实例的重新渲染其实就是实例`watcher`执行了`update`方法。
+
+OK，有了这个概念之后，接下来我们来分析`$forceUpdate`源码实现，代码如下：
+
+```javascript
+Vue.prototype.$forceUpdate = function () {
+    const vm: Component = this
+    if (vm._watcher) {
+        vm._watcher.update()
+    }
+}
+```
+
+可以看到，源码实现的逻辑跟我们上面分析的是一致的。在之前的文章中我们说过，当前实例的`_watcher`属性就是该实例的`watcher`，所以要想让实例重新渲染，我们只需手动的去执行一下实例`watcher`的`update`方法即可。
+
+
+
+###  vm.$nextTick
+
+`vm.$nextTick` 是全局 `Vue.nextTick` 的**别名**，其用法相同。
+
+#### 1 用法回顾
+
+在介绍方法的内部原理之前，我们先根据官方文档示例回顾一下它的用法。
+
+```javascript
+vm.$nextTick( [callback] )
+```
+
+- **参数**：
+
+  - `{Function} [callback]`
+
+- **用法**：
+
+  将回调延迟到下次 DOM 更新循环之后执行。在修改数据之后立即使用它，然后等待 DOM 更新。它跟全局方法 `Vue.nextTick` 一样，不同的是回调的 `this` 自动绑定到调用它的实例上。
+
+  > 2.1.0 起新增：如果没有提供回调且在支持 Promise 的环境中，则返回一个 Promise。请注意 Vue 不自带 Promise 的 polyfill，所以如果你的目标浏览器不是原生支持 Promise (IE：你们都看我干嘛)，你得自行 polyfill。
+
+从上面的官方文档对`$nextTick`方法的介绍中我们似乎还是不能理解该方法的作用，那么我们举个例子看一下，如下：
+
+```vue
+<template>
+	<div id="example">{{message}}</div>
+</template>
+<script>
+    var vm = new Vue({
+      el: '##example',
+      data: {
+        message: '123'
+      }
+    })
+    vm.message = 'new message' // 更改数据
+    console.log(vm.$el.innerHTML) // '123'
+    Vue.nextTick(function () {
+      console.log(vm.$el.innerHTML) // 'new message'
+    })
+</script>
+```
+
+在上面例子中，当我们更新了`message`的数据后，立即获取`vm.$el.innerHTML`，发现此时获取到的还是更新之前的数据：123。但是当我们使用`nextTick`来获取`vm.$el.innerHTML`时，此时就可以获取到更新后的数据了。这是为什么呢？
+
+这里就涉及到`Vue`中对`DOM`的更新策略了，`Vue` 在更新 `DOM` 时是**异步**执行的。只要侦听到数据变化，`Vue` 将开启一个事件队列，并缓冲在同一事件循环中发生的所有数据变更。如果同一个 `watcher` 被多次触发，只会被推入到事件队列中一次。这种在缓冲时去除重复数据对于避免不必要的计算和 `DOM` 操作是非常重要的。然后，在下一个的事件循环“tick”中，`Vue` 刷新事件队列并执行实际 (已去重的) 工作。
+
+在上面这个例子中，当我们通过 `vm.message = 'new message'`更新数据时，此时该组件不会立即重新渲染。当刷新事件队列时，组件会在下一个事件循环“tick”中重新渲染。所以当我们更新完数据后，此时又想基于更新后的 `DOM` 状态来做点什么，此时我们就需要使用`Vue.nextTick(callback)`，把基于更新后的`DOM` 状态所需要的操作放入回调函数`callback`中，这样回调函数将在 `DOM` 更新完成后被调用。
+
+OK，现在大家应该对`nextTick`是什么、为什么要有`nextTick`以及怎么使用`nextTick`有个大概的了解了。那么问题又来了，`Vue`为什么要这么设计？为什么要异步更新`DOM`？这就涉及到另外一个知识：`JS`的运行机制。
+
+#### 2 JS的运行机制
+
+我们知道 `JS` 执行是单线程的，它是基于事件循环的。事件循环大致分为以下几个步骤：
+
+1. 所有同步任务都在主线程上执行，形成一个执行栈（`execution context stack`）。
+2. 主线程之外，还存在一个"任务队列"（`task queue`）。只要异步任务有了运行结果，就在"任务队列"之中放置一个事件。
+3. 一旦"执行栈"中的所有同步任务执行完毕，系统就会读取"任务队列"，看看里面有哪些事件。那些对应的异步任务，于是结束等待状态，进入执行栈，开始执行。
+4. 主线程不断重复上面的第三步。
+
+主线程的执行过程就是一个 `tick`，而所有的异步结果都是通过 “任务队列” 来调度。 任务队列中存放的是一个个的任务（`task`）。 规范中规定 `task` 分为两大类，分别是宏任务(`macro task`) 和微任务(`micro task`），并且每执行完一个个宏任务(`macro task`)后，都要去清空该宏任务所对应的微任务队列中所有的微任务(`micro task`），他们的执行顺序如下所示：
+
+```javascript
+for (macroTask of macroTaskQueue) {
+    // 1. 处理当前的宏任务
+    handleMacroTask();
+
+    // 2. 处理对应的所有微任务
+    for (microTask of microTaskQueue) {
+        handleMicroTask(microTask);
+    }
+}
+```
+
+在浏览器环境中，常见的
+
+- 宏任务(`macro task`) 有 `setTimeout`、`MessageChannel`、`postMessage`、`setImmediate`；
+- 微任务(`micro task`）有`MutationObsever` 和 `Promise.then`。
+
+OK，有了这个概念之后，接下来我们就进入正菜：从`Vue`源码角度来分析`nextTick`的实现原理。
+
+#### 3 内部原理
+
+`nextTick` 的定义位于源码的`src/core/util/next-tick.js`中，其大概可分为两大部分：
+
+1. 能力检测
+2. 根据能力检测以不同方式执行回调队列
+
+##### 检测
+
+`Vue` 在内部对异步队列尝试使用原生的 `Promise.then`、`MutationObserver` 和 `setImmediate`，如果执行环境不支持，则会采用 `setTimeout(fn, 0)` 代替。
+
+宏任务耗费的时间是大于微任务的，所以在浏览器支持的情况下，优先使用微任务。如果浏览器不支持微任务，使用宏任务；但是，各种宏任务之间也有效率的不同，需要根据浏览器的支持情况，使用不同的宏任务。
+
+这一部分的源码如下：
+
+```javascript
+let microTimerFunc
+let macroTimerFunc
+let useMacroTask = false
+
+/* 对于宏任务(macro task) */
+// 检测是否支持原生 setImmediate(高版本 IE 和 Edge 支持)
+if (typeof setImmediate !== 'undefined' && isNative(setImmediate)) {
+    macroTimerFunc = () => {
+        setImmediate(flushCallbacks)
+    }
+}
+// 检测是否支持原生的 MessageChannel
+else if (typeof MessageChannel !== 'undefined' && (
+    isNative(MessageChannel) ||
+    // PhantomJS
+    MessageChannel.toString() === '[object MessageChannelConstructor]'
+)) {
+    const channel = new MessageChannel()
+    const port = channel.port2
+    channel.port1.onmessage = flushCallbacks
+    macroTimerFunc = () => {
+        port.postMessage(1)
+    }
+}
+// 都不支持的情况下，使用setTimeout
+else {
+    macroTimerFunc = () => {
+        setTimeout(flushCallbacks, 0)
+    }
+}
+
+/* 对于微任务(micro task) */
+// 检测浏览器是否原生支持 Promise
+if (typeof Promise !== 'undefined' && isNative(Promise)) {
+    const p = Promise.resolve()
+    microTimerFunc = () => {
+        p.then(flushCallbacks)
+    }
+}
+// 不支持的话直接指向 macro task 的实现。
+else {
+    // fallback to macro
+    microTimerFunc = macroTimerFunc
+}
+```
+
+首先声明了两个变量： `microTimerFunc` 和 `macroTimerFunc` ，它们分别对应的是 `micro task` 的函数和 `macro task` 的函数。对于 `macro task` 的实现，优先检测是否支持原生 `setImmediate`，这是一个高版本 `IE` 和`Edge` 才支持的特性，不支持的话再去检测是否支持原生的 `MessageChannel`，如果也不支持的话就会降级为 `setTimeout 0`；而对于 `micro task` 的实现，则检测浏览器是否原生支持 `Promise`，不支持的话直接指向 `macro task` 的实现。
+
+##### 回调队列
+
+接下来就进入了核心函数`nextTick`中，如下：
+
+```javascript
+const callbacks = []   // 回调队列
+let pending = false    // 异步锁
+
+// 执行队列中的每一个回调
+function flushCallbacks () {
+    pending = false     // 重置异步锁
+    // 防止出现nextTick中包含nextTick时出现问题，在执行回调函数队列前，提前复制备份并清空回调函数队列
+    const copies = callbacks.slice(0)
+    callbacks.length = 0
+    // 执行回调函数队列
+    for (let i = 0; i < copies.length; i++) {
+        copies[i]()
+    }
+}
+
+export function nextTick (cb?: Function, ctx?: Object) {
+    let _resolve
+    // 将回调函数推入回调队列
+    callbacks.push(() => {
+        if (cb) {
+            try {
+                cb.call(ctx)
+            } catch (e) {
+                handleError(e, ctx, 'nextTick')
+            }
+        } else if (_resolve) {
+            _resolve(ctx)
+        }
+    })
+    // 如果异步锁未锁上，锁上异步锁，调用异步函数，准备等同步函数执行完后，就开始执行回调函数队列
+    if (!pending) {
+        pending = true
+        if (useMacroTask) {
+            macroTimerFunc()
+        } else {
+            microTimerFunc()
+        }
+    }
+    // 如果没有提供回调，并且支持Promise，返回一个Promise
+    if (!cb && typeof Promise !== 'undefined') {
+        return new Promise(resolve => {
+            _resolve = resolve
+        })
+    }
+}
+```
+
+首先，先来看 `nextTick`函数，该函数的主要逻辑是：先把传入的回调函数 `cb` 推入 回调队列`callbacks` 数组，同时在接收第一个回调函数时，执行能力检测中对应的异步方法（异步方法中调用了回调函数队列）。最后一次性地根据 `useMacroTask` 条件执行 `macroTimerFunc` 或者是 `microTimerFunc`，而它们都会在下一个 tick 执行 `flushCallbacks`，`flushCallbacks` 的逻辑非常简单，对 `callbacks` 遍历，然后执行相应的回调函数。
+
+`nextTick` 函数最后还有一段逻辑：
+
+```javascript
+if (!cb && typeof Promise !== 'undefined') {
+  return new Promise(resolve => {
+    _resolve = resolve
+  })
+}
+```
+
+这是当 `nextTick` 不传 `cb` 参数的时候，提供一个 Promise 化的调用，比如：
+
+```javascript
+nextTick().then(() => {})
+```
+
+当 `_resolve` 函数执行，就会跳到 `then` 的逻辑中。
+
+这里有两个问题需要注意：
+
+1. 如何保证只在接收第一个回调函数时执行异步方法？
+
+   `nextTick`源码中使用了一个异步锁的概念，即接收第一个回调函数时，先关上锁，执行异步方法。此时，浏览器处于等待执行完同步代码就执行异步代码的情况。
+
+2. 执行 `flushCallbacks` 函数时为什么需要备份回调函数队列？执行的也是备份的回调函数队列？
+
+   因为，会出现这么一种情况：`nextTick` 的回调函数中还使用 `nextTick`。如果 `flushCallbacks` 不做特殊处理，直接循环执行回调函数，会导致里面`nextTick` 中的回调函数会进入回调队列。
+
+
+
+以上就是对 `nextTick` 的源码分析，我们了解到数据的变化到 `DOM` 的重新渲染是一个异步过程，发生在下一个 tick。当我们在实际开发中，比如从服务端接口去获取数据的时候，数据做了修改，如果我们的某些方法去依赖了数据修改后的 DOM 变化，我们就必须在 `nextTick` 后执行。
+
+
+
+###  vm.$destory
+
+#### 1 用法回顾
+
+在介绍方法的内部原理之前，我们先根据官方文档示例回顾一下它的用法。
+
+```javascript
+vm.$destroy()
+```
+
+- **用法**：
+
+  完全销毁一个实例。清理它与其它实例的连接，解绑它的全部指令及事件监听器。
+
+  触发 `beforeDestroy` 和 `destroyed` 的钩子。
+
+#### 2 内部原理
+
+关于该方法的内部原理在介绍**生命周期篇的销毁阶段**中已经详细分析过，此处不再重复。
+
 
 # 7. 全局 API 篇
 
