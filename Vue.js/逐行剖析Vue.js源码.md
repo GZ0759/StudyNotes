@@ -8412,8 +8412,2341 @@ vm.$destroy()
 
 # 7. 全局 API 篇
 
+## 全局API分析
+
+
+###  前言
+
+与实例方法不同，实例方法是将方法挂载到`Vue`的原型上，而全局API是直接在`Vue`上挂载方法。在`Vue`中，全局API一共有12个，分别是`Vue.extend`、`Vue.nextTick`、`Vue.set`、`Vue.delete`、`Vue.directive`、`Vue.filter `、`Vue.component`、`Vue.use`、`Vue.mixin`、`Vue.observable`、`Vue.version`。这12个API中有的是我们在日常业务开发中经常会用到的，有的是对`Vue`内部或外部插件提供的，我们在日常业务开发中几乎用不到。接下来我们就对这12个API逐个进行分析，看看其内部原理都是怎样的。
+
+
+###  Vue.extend
+
+#### 1 用法回顾
+
+其用法如下：
+
+```javascript
+Vue.extend( options )
+```
+
+- **参数**：
+
+  - `{Object} options`
+
+- **作用**：
+
+  使用基础 `Vue` 构造器，创建一个“子类”。参数是一个包含组件选项的对象。
+
+  `data` 选项是特例，需要注意 - 在 `Vue.extend()` 中它必须是函数
+
+  ```html
+  <div id="mount-point"></div>
+  ```
+
+  ```javascript
+  // 创建构造器
+  var Profile = Vue.extend({
+    template: '<p>{{firstName}} {{lastName}} aka {{alias}}</p>',
+    data: function () {
+      return {
+        firstName: 'Walter',
+        lastName: 'White',
+        alias: 'Heisenberg'
+      }
+    }
+  })
+  // 创建 Profile 实例，并挂载到一个元素上。
+  new Profile().$mount('##mount-point')
+  ```
+
+  结果如下：
+
+  ```html
+  <p>Walter White aka Heisenberg</p>
+  ```
+
+#### 2 原理分析
+
+通过用法回顾我们知道，`Vue.extend`的作用是创建一个继承自`Vue`类的子类，可接收的参数是一个包含组件选项的对象。
+
+既然是`Vue`类的子类，那么除了它本身独有的一些属性方法，还有一些是从`Vue`类中继承而来，所以创建子类的过程其实就是一边给子类上添加上独有的属性，一边将父类的公共属性复制到子类上。接下来，我们就来看看源码是如何实现这个过程的。
+
+该API的定义位于源码的`src/core/global-api/extend.js`中，如下：
+
+```javascript
+Vue.extend = function (extendOptions: Object): Function {
+    extendOptions = extendOptions || {}
+    const Super = this
+    const SuperId = Super.cid
+    const cachedCtors = extendOptions._Ctor || (extendOptions._Ctor = {})
+    if (cachedCtors[SuperId]) {
+        return cachedCtors[SuperId]
+    }
+
+    const name = extendOptions.name || Super.options.name
+    if (process.env.NODE_ENV !== 'production' && name) {
+        validateComponentName(name)
+    }
+
+    const Sub = function VueComponent (options) {
+        this._init(options)
+    }
+    Sub.prototype = Object.create(Super.prototype)
+    Sub.prototype.constructor = Sub
+    Sub.cid = cid++
+    Sub.options = mergeOptions(
+        Super.options,
+        extendOptions
+    )
+    Sub['super'] = Super
+
+    if (Sub.options.props) {
+        initProps(Sub)
+    }
+    if (Sub.options.computed) {
+        initComputed(Sub)
+    }
+
+    // allow further extension/mixin/plugin usage
+    Sub.extend = Super.extend
+    Sub.mixin = Super.mixin
+    Sub.use = Super.use
+
+    // create asset registers, so extended classes
+    // can have their private assets too.
+    ASSET_TYPES.forEach(function (type) {
+        Sub[type] = Super[type]
+    })
+    // enable recursive self-lookup
+    if (name) {
+        Sub.options.components[name] = Sub
+    }
+
+    Sub.superOptions = Super.options
+    Sub.extendOptions = extendOptions
+    Sub.sealedOptions = extend({}, Sub.options)
+
+    // cache constructor
+    cachedCtors[SuperId] = Sub
+    return Sub
+}
+
+```
+
+可以看到，虽然代码量稍微有点多，但是逻辑并不复杂，下面我们就来逐行分析一下。
+
+首先，该函数内部定义了几个变量，如下：
+
+```javascript
+extendOptions = extendOptions || {}
+const Super = this
+const SuperId = Super.cid
+const cachedCtors = extendOptions._Ctor || (extendOptions._Ctor = {})
+```
+
+
+
+- extendOptions：用户传入的一个包含组件选项的对象参数；
+- Super：指向父类，即基础 `Vue`类；
+- SuperId：父类的`cid`属性，无论是基础 `Vue`类还是从基础 `Vue`类继承而来的类，都有一个`cid`属性，作为该类的唯一标识；
+- cachedCtors：缓存池，用于缓存创建出来的类；
+
+
+
+接着，在缓存池中先尝试获取是否之前已经创建过的该子类，如果之前创建过，则直接返回之前创建的。之所以有这一步，是因为`Vue`为了性能考虑，反复调用`Vue.extend`其实应该返回同一个结果，只要返回结果是固定的，就可以将结果缓存，再次调用时，只需从缓存中取出结果即可。在API方法定义的最后，当创建完子类后，会使用父类的`cid`作为`key`，创建好的子类作为`value`，存入缓存池`cachedCtors`中。如下：
+
+```javascript
+if (cachedCtors[SuperId]) {
+    return cachedCtors[SuperId]
+}
+```
+
+
+
+接着，获取到传入的选项参数中的`name`字段，并且在开发环境下校验`name`字段是否合法，如下：
+
+```javascript
+const name = extendOptions.name || Super.options.name
+if (process.env.NODE_ENV !== 'production' && name) {
+    validateComponentName(name)
+}
+```
+
+接着，创建一个类`Sub`，这个类就是将要继承基础`Vue`类的子类，如下：
+
+```javascript
+const Sub = function VueComponent (options) {
+    this._init(options)
+}
+```
+
+到这里，我们已经把类创建好了，接下来的工作就是让该类去继承基础`Vue`类，让其具备一些基础`Vue`类的能力。
+
+首先，将父类的原型继承到子类中，并且为子类添加唯一标识`cid`，如下：
+
+```javascript
+Sub.prototype = Object.create(Super.prototype)
+Sub.prototype.constructor = Sub
+Sub.cid = cid++
+```
+
+接着，将父类的`options`与子类的`options`进行合并，将合并结果赋给子类的`options`属性，如下：
+
+```javascript
+Sub.options = mergeOptions(
+    Super.options,
+    extendOptions
+)
+```
+
+接着，将父类保存到子类的`super`属性中，以确保在子类中能够拿到父类，如下：
+
+```javascript
+Sub['super'] = Super
+```
+
+接着，如果选项中存在`props`属性，则初始化它，如下：
+
+```javascript
+if (Sub.options.props) {
+    initProps(Sub)
+}
+
+function initProps (Comp) {
+  const props = Comp.options.props
+  for (const key in props) {
+    proxy(Comp.prototype, `_props`, key)
+  }
+}
+```
+
+初始化`props`属性其实就是把参数中传入的`props`选项代理到原型的`_props`中。
+
+接着，如果选项中存在`computed`属性，则初始化它，如下：
+
+```javascript
+if (Sub.options.computed) {
+    initComputed(Sub)
+}
+
+function initComputed (Comp) {
+  const computed = Comp.options.computed
+  for (const key in computed) {
+    defineComputed(Comp.prototype, key, computed[key])
+  }
+}
+```
+
+初始化`props`属性就是遍历参数中传入的`computed`选项，将每一项都调用`defineComputed`函数定义到子类原型上。此处的`defineComputed`函数与我们之前在生命周期初始化阶段`initState`中所介绍的`defineComputed`函数是一样的。
+
+接着，将父类中的一些属性复制到子类中，如下：
+
+```javascript
+Sub.extend = Super.extend
+Sub.mixin = Super.mixin
+Sub.use = Super.use
+
+export const ASSET_TYPES = [
+  'component',
+  'directive',
+  'filter'
+]
+// create asset registers, so extended classes
+// can have their private assets too.
+ASSET_TYPES.forEach(function (type) {
+    Sub[type] = Super[type]
+})
+// enable recursive self-lookup
+if (name) {
+    Sub.options.components[name] = Sub
+}
+```
+
+接着，给子类新增三个独有的属性，如下：
+
+```javascript
+Sub.superOptions = Super.options
+Sub.extendOptions = extendOptions
+Sub.sealedOptions = extend({}, Sub.options)
+```
+
+最后，使用父类的`cid`作为`key`，创建好的子类`Sub`作为`value`，存入缓存池`cachedCtors`中。如下：
+
+```javascript
+// cache constructor
+cachedCtors[SuperId] = Sub
+```
+
+最终将创建好的子类`Sub`返回。
+
+以上，就是`Vue.extend`的所有逻辑。其实总体来讲，整个过程就是先创建一个类`Sub`，接着通过原型继承的方式将该类继承基础`Vue`类，然后给`Sub`类添加一些属性以及将父类的某些属性复制到`Sub`类上，最后将`Sub`类返回。
+
+###  Vue.nextTick
+
+#### 1 用法回顾
+
+其用法如下：
+
+```javascript
+Vue.nextTick( [callback, context] )
+```
+
+- **参数**：
+
+  - `{Function} [callback]`
+  - `{Object} [context]`
+
+- **作用**：
+
+  在下次 DOM 更新循环结束之后执行延迟回调。在修改数据之后立即使用这个方法，获取更新后的 DOM。
+
+  ```javascript
+  // 修改数据
+  vm.msg = 'Hello'
+  // DOM 还没有更新
+  Vue.nextTick(function () {
+    // DOM 更新了
+  })
+
+  // 作为一个 Promise 使用 (2.1.0 起新增，详见接下来的提示)
+  Vue.nextTick()
+    .then(function () {
+      // DOM 更新了
+    })
+  ```
+
+  > 2.1.0 起新增：如果没有提供回调且在支持 Promise 的环境中，则返回一个 Promise。请注意 Vue 不自带 Promise 的 polyfill，所以如果你的目标浏览器不原生支持 Promise (IE：你们都看我干嘛)，你得自己提供 polyfill。
+
+#### 2 原理分析
+
+该API的原理同实例方法 `$nextTick`原理一样，此处不再重复。唯一不同的是实例方法 `$nextTick` 中回调的 `this` 绑定在调用它的实例上。
+
+###  Vue.set
+
+#### 1 用法回顾
+
+其用法如下：
+
+```javascript
+Vue.set( target, propertyName/index, value )
+```
+
+- **参数**：
+
+  - `{Object | Array} target`
+  - `{string | number} propertyName/index`
+  - `{any} value`
+
+- **返回值**：设置的值。
+
+- **作用**：
+
+  向响应式对象中添加一个属性，并确保这个新属性同样是响应式的，且触发视图更新。它必须用于向响应式对象上添加新属性，因为 Vue 无法探测普通的新增属性 (比如 `this.myObject.newProperty = 'hi'`)
+
+#### 2 原理分析
+
+该API的原理同实例方法 `$set`原理一样，此处不再重复。
+
+###  Vue.delete
+
+#### 1 用法回顾
+
+其用法如下：
+
+```javascript
+Vue.delete( target, propertyName/index )
+```
+
+- **参数**：
+
+  - `{Object | Array} target`
+  - `{string | number} propertyName/index`
+
+  > 仅在 2.2.0+ 版本中支持 Array + index 用法。
+
+- **作用**：
+
+  删除对象的属性。如果对象是响应式的，确保删除能触发更新视图。这个方法主要用于避开 Vue 不能检测到属性被删除的限制，但是你应该很少会使用它。
+
+  > 在 2.2.0+ 中同样支持在数组上工作。
+
+
+
+#### 2 原理分析
+
+该API的原理同实例方法 `$delete`原理一样，此处不再重复。
+
+###  Vue.directive
+
+#### 1 用法回顾
+
+其用法如下：
+
+```javascript
+Vue.directive( id, [definition] )
+```
+
+- **参数**：
+
+  - `{string} id`
+  - `{Function | Object} [definition]`
+
+- **作用**：
+
+  注册或获取全局指令。
+
+  ```javascript
+  // 注册
+  Vue.directive('my-directive', {
+    bind: function () {},
+    inserted: function () {},
+    update: function () {},
+    componentUpdated: function () {},
+    unbind: function () {}
+  })
+
+  // 注册 (指令函数)
+  Vue.directive('my-directive', function () {
+    // 这里将会被 `bind` 和 `update` 调用
+  })
+
+  // getter，返回已注册的指令
+  var myDirective = Vue.directive('my-directive')
+  ```
+
+#### 2 原理分析
+
+从用法回顾中可以知道，该API是用来注册或获取全局指令的，接收两个参数：指令`id`和指令的定义。这里需要注意一点的是：注册指令是将定义好的指令存放在某个位置，获取指令是根据指令`id`从存放指令的位置来读取指令。至于如何让指令生效的问题我们会在指令篇单独展开介绍。
+
+下面我们就来看一下该API的内部实现原理，其代码如下：
+
+```javascript
+Vue.options = Object.create(null)
+Vue.options['directives'] = Object.create(null)
+
+Vue.directive= function (id,definition) {
+    if (!definition) {
+        return this.options['directives'][id]
+    } else {
+        if (type === 'directive' && typeof definition === 'function') {
+            definition = { bind: definition, update: definition }
+        }
+        this.options['directives'][id] = definition
+        return definition
+    }
+}
+```
+
+可以看到，我们在`Vue`类上创建了`options`属性，其属性值为一个空对象，并且在`options`属性中添加了`directives`属性，其值也是一个空对象，这个`directives`属性就是用来存放指令的位置。如下：
+
+```javascript
+Vue.options = Object.create(null)
+Vue.options['directives'] = Object.create(null)
+```
+
+
+
+前文我们说了，该API可以用来注册或获取全局指令，这两种功能的切换取决于是否传入了`definition`参数。如果没有传入`definition`参数，则表示为获取指令，那么就从存放指令的地方根据指令`id`来读取指令并返回，如下：
+
+```javascript
+if (!definition) {
+    return this.options['directives'][id]
+}
+```
+
+如果传入了`definition`参数，则表示为注册指令，那么继续判断`definition`参数是否是一个函数，如果是函数，则默认监听`bind`和`update`两个事件，即将`definition`函数分别赋给`bind`和`update`两个属性。如下：
+
+```javascript
+if (type === 'directive' && typeof definition === 'function') {
+    definition = { bind: definition, update: definition }
+}
+```
+
+如果`definition`参数不是一个函数，那么即认为它是用户自定义的指令对象，直接将其保存在`this.options['directives']`中，如下：
+
+```javascript
+this.options['directives'][id] = definition
+```
+
+以上，就是`Vue.directives`的所有逻辑。
+
+###  Vue.filter
+
+#### 1 用法回顾
+
+其用法如下：
+
+```javascript
+Vue.filter( id, [definition] )
+```
+
+- **参数**：
+
+  - `{string} id`
+  - `{Function} [definition]`
+
+- **作用**：
+
+  注册或获取全局过滤器。
+
+  ``` javascript
+  // 注册
+  Vue.filter('my-filter', function (value) {
+    // 返回处理后的值
+  })
+
+  // getter，返回已注册的过滤器
+  var myFilter = Vue.filter('my-filter')
+  ```
+
+#### 2 原理分析
+
+从用法回顾中可以知道，该API是用来注册或获取全局过滤器的，接收两个参数：过滤器`id`和过滤器的定义。同全局指令一样，注册过滤器是将定义好的过滤器存放在某个位置，获取过滤器是根据过滤器`id`从存放过滤器的位置来读取过滤器。至于如何让过滤器生效的问题我们会在过滤器篇单独展开介绍。
+
+下面我们就来看一下该API的内部实现原理，其代码如下：
+
+```javascript
+Vue.options = Object.create(null)
+Vue.options['filters'] = Object.create(null)
+
+Vue.filter= function (id,definition) {
+    if (!definition) {
+        return this.options['filters'][id]
+    } else {
+        this.options['filters'][id] = definition
+        return definition
+    }
+}
+```
+
+可以看到，同全局指令一样，`Vue.options['filters']`是用来存放全局过滤器的地方。还是根据是否传入了`definition`参数来决定本次操作是注册过滤器还是获取过滤器。如果没有传入`definition`参数，则表示本次操作为获取过滤器，那么就从存放过滤器的地方根据过滤器`id`来读取过滤器并返回；如果传入了`definition`参数，则表示本次操作为注册过滤器，那就直接将其保存在`this.options['filters']`中。
+
+
+
+###  Vue.component
+
+#### 1 用法回顾
+
+其用法如下：
+
+```javascript
+Vue.component( id, [definition] )
+```
+
+- **参数**：
+
+  - `{string} id`
+  - `{Function | Object} [definition]`
+
+- **作用**：
+
+  注册或获取全局组件。注册还会自动使用给定的`id`设置组件的名称
+
+  ```javascript
+  // 注册组件，传入一个扩展过的构造器
+  Vue.component('my-component', Vue.extend({ /* ... */ }))
+
+  // 注册组件，传入一个选项对象 (自动调用 Vue.extend)
+  Vue.component('my-component', { /* ... */ })
+
+  // 获取注册的组件 (始终返回构造器)
+  var MyComponent = Vue.component('my-component')
+  ```
+
+#### 2 原理分析
+
+从用法回顾中可以知道，该API是用来注册或获取全局组件的，接收两个参数：组件`id`和组件的定义。 同全局指令一样，注册全局组件是将定义好的组件存放在某个位置，获取组件是根据组件`id`从存放组件的位置来读取组件。
+
+下面我们就来看一下该API的内部实现原理，其代码如下：
+
+```javascript
+Vue.options = Object.create(null)
+Vue.options['components'] = Object.create(null)
+
+Vue.filter= function (id,definition) {
+    if (!definition) {
+        return this.options['components'][id]
+    } else {
+        if (process.env.NODE_ENV !== 'production' && type === 'component') {
+            validateComponentName(id)
+        }
+        if (type === 'component' && isPlainObject(definition)) {
+            definition.name = definition.name || id
+            definition = this.options._base.extend(definition)
+        }
+        this.options['components'][id] = definition
+        return definition
+    }
+}
+```
+
+可以看到，同全局指令一样，`Vue.options['components']`是用来存放全局组件的地方。还是根据是否传入了`definition`参数来决定本次操作是注册组件还是获取组件。如果没有传入`definition`参数，则表示本次操作为获取组件，那么就从存放组件的地方根据组件`id`来读取组件并返回；如果传入了`definition`参数，则表示本次操作为注册组件，如果是注册组件，那么在非生产环境下首先会校验组件的`name`值是否合法，如下：
+
+```javascript
+if (process.env.NODE_ENV !== 'production' && type === 'component') {
+    validateComponentName(id)
+}
+```
+
+接着，判断传入的`definition`参数是否是一个对象，如果是对象，则使用`Vue.extend`方法将其变为`Vue`的子类，同时如果`definition`对象中不存在`name`属性时，则使用组件`id`作为组件的`name`属性。如下：
+
+```javascript
+if (type === 'component' && isPlainObject(definition)) {
+    definition.name = definition.name || id
+    definition = this.options._base.extend(definition)
+}
+```
+
+最后，将注册好的组件保存在`this.options['components']`中。
+
+### directive、filter、component小结
+
+通过对`Vue.directive`、`Vue.filter`和`Vue.component`这三个API的分析，细心的你肯定会发现这三个API的代码实现非常的相似，是的，这是我们为了便于理解故意拆开的，其实在源码中这三个API的实现是写在一起的，位于源码的`src/core/global-api/index,js`和`src/core/global-api/assets,js`中，如下：
+
+```javascript
+export const ASSET_TYPES = [
+  'component',
+  'directive',
+  'filter'
+]
+
+Vue.options = Object.create(null)
+ASSET_TYPES.forEach(type => {
+    Vue.options[type + 's'] = Object.create(null)
+})
+
+ASSET_TYPES.forEach(type => {
+    Vue[type] = function (id,definition) {
+        if (!definition) {
+            return this.options[type + 's'][id]
+        } else {
+            if (process.env.NODE_ENV !== 'production' && type === 'component') {
+                validateComponentName(id)
+            }
+            if (type === 'component' && isPlainObject(definition)) {
+                definition.name = definition.name || id
+                definition = this.options._base.extend(definition)
+            }
+            if (type === 'directive' && typeof definition === 'function') {
+                definition = { bind: definition, update: definition }
+            }
+            this.options[type + 's'][id] = definition
+            return definition
+        }
+    }
+})
+```
+
+###  Vue.use
+
+#### 1 用法回顾
+
+其用法如下：
+
+```javascript
+Vue.use( plugin )
+```
+
+- **参数**：
+
+  - `{Object | Function} plugin`
+
+- **作用**：
+
+  安装 Vue.js 插件。如果插件是一个对象，必须提供 `install` 方法。如果插件是一个函数，它会被作为 install 方法。install 方法调用时，会将 `Vue` 作为参数传入。
+
+  该方法需要在调用 `new Vue()` 之前被调用。
+
+  当 `install` 方法被同一个插件多次调用，插件将只会被安装一次。
+
+
+
+#### 2 原理分析
+
+从用法回顾中可以知道，该API是用来安装`Vue.js`插件的。并且我们知道了，该API内部会调用插件提供的`install` 方法，同时将`Vue` 作为参数传入。另外，由于插件只会被安装一次，所以该API内部还应该防止 `install` 方法被同一个插件多次调用。下面我们就来看一下该API的内部实现原理。
+
+该API的定义位于源码的`src/core/global-api/use.js`中，代码如下：
+
+```javascript
+Vue.use = function (plugin) {
+    const installedPlugins = (this._installedPlugins || (this._installedPlugins = []))
+    if (installedPlugins.indexOf(plugin) > -1) {
+        return this
+    }
+
+    // additional parameters
+    const args = toArray(arguments, 1)
+    args.unshift(this)
+    if (typeof plugin.install === 'function') {
+        plugin.install.apply(plugin, args)
+    } else if (typeof plugin === 'function') {
+        plugin.apply(null, args)
+    }
+    installedPlugins.push(plugin)
+    return this
+}
+```
+
+可以看到，在该函数内部，首先定义了一个变量`installedPlugins`,该变量初始值是一个空数组，用来存储已安装过的插件。首先判断传入的插件是否存在于`installedPlugins`数组中（即已被安装过），如果存在的话，则直接返回，防止重复安装。如下：
+
+```javascript
+const installedPlugins = (this._installedPlugins || (this._installedPlugins = []))
+if (installedPlugins.indexOf(plugin) > -1) {
+    return this
+}
+```
+
+接下来获取到传入的其余参数，并且使用`toArray`方法将其转换成数组，同时将`Vue`插入到该数组的第一个位置，这是因为在后续调用`install`方法时，`Vue`必须作为第一个参数传入。如下：
+
+```javascript
+const args = toArray(arguments, 1)
+args.unshift(this)
+```
+
+在用法回顾中说了，传入的插件可以是一个提供了 `install` 方法的对象。也可以是一个函数，那么这个函数会被作为 install 方法。所以在接下来会根据这两种不同的情况分别处理。
+
+首先，判断传入的插件如果是一个提供了 `install` 方法的对象，那么就执行该对象中提供的 `install` 方法并传入参数完成插件安装。如下：
+
+```javascript
+if (typeof plugin.install === 'function') {
+    plugin.install.apply(plugin, args)
+}
+```
+
+如果传入的插件是一个函数，那么就把这个函数当作`install`方法执行，同时传入参数完成插件安装。如下：
+
+```javascript
+else if (typeof plugin === 'function') {
+    plugin.apply(null, args)
+}
+```
+
+插件安装完成之后，将该插件添加进已安装插件列表中，防止重复安装。如下：
+
+```javascript
+installedPlugins.push(plugin)
+```
+
+以上，就是`Vue.use`的所有逻辑。
+
+### . Vue.mixin
+
+#### .1 用法回顾
+
+其用法如下：
+
+```javascript
+Vue.mixin( mixin )
+```
+
+- **参数**：
+
+  - `{Object} mixin`
+
+- **作用**：
+
+  全局注册一个混入，影响注册之后所有创建的每个 Vue 实例。插件作者可以使用混入，向组件注入自定义的行为。**不推荐在应用代码中使用**。
+
+
+
+#### .2 原理分析
+
+从用法回顾中可以知道，该API是用来向全局注册一个混入，即可以修改`Vue.options`属性，并且会影响之后的所有`Vue`实例，这个API虽然在日常的业务开发中几乎用不到，但是在编写`Vue`插件时用处非常大。下面我们就来看一下该API的内部实现原理。
+
+该API的定义位于源码的`src/core/global-api/mixin.js`中，代码如下：
+
+```javascript
+Vue.mixin = function (mixin: Object) {
+    this.options = mergeOptions(this.options, mixin)
+    return this
+}
+```
+
+可以看到，该API的实现非常简单。因为上文中我们说了，该API就是通过修改`Vue.options`属性进而影响之后的所有`Vue`实例。所以我们只需将传入的`mixin`对象与`this.options`合并即可，然后将合并后的新对象作为`this.options`传给之后的所有`Vue`实例，从而达到改变其原有特性的效果。
+
+### . Vue.compile
+
+#### .1 用法回顾
+
+其用法如下：
+
+```javascript
+Vue.compile( template )
+```
+
+- **参数**：
+
+  - `{string} template`
+
+- **作用**：
+
+  在 render 函数中编译模板字符串。**只在独立构建时有效**
+
+  ```javascript
+  var res = Vue.compile('<div><span>{{ msg }}</span></div>')
+
+  new Vue({
+    data: {
+      msg: 'hello'
+    },
+    render: res.render,
+    staticRenderFns: res.staticRenderFns
+  })
+  ```
+
+
+#### .2 原理分析
+
+从用法回顾中可以知道，该API是用来编译模板字符串的，我们在日常业务开发中几乎用不到，它内部是调用了`compileToFunctions`方法，如下：
+
+```javascript
+Vue.compile = compileToFunctions;
+```
+
+关于`compileToFunctions`方法在**模板编译篇**已经做了非常详细的介绍，此处不再重复。
+
+### . Vue.observable
+
+#### .1 用法回顾
+
+其用法如下：
+
+```javascript
+Vue.observable( object )
+```
+
+- **参数**：
+
+  - `{Object} object`
+
+- **用法**：
+
+  让一个对象可响应。Vue 内部会用它来处理 `data` 函数返回的对象。
+
+  返回的对象可以直接用于[渲染函数](https://cn.vuejs.org/v2/guide/render-function.html)和[计算属性](https://cn.vuejs.org/v2/guide/computed.html)内，并且会在发生改变时触发相应的更新。也可以作为最小化的跨组件状态存储器，用于简单的场景：
+
+  ```javascript
+  const state = Vue.observable({ count: 0 })
+
+  const Demo = {
+    render(h) {
+      return h('button', {
+        on: { click: () => { state.count++ }}
+      }, `count is: ${state.count}`)
+    }
+  }
+  ```
+
+#### .2 原理分析
+
+从用法回顾中可以知道，该API是用来将一个普通对象转化成响应式对象。在日常业务开发中也几乎用不到，它内部是调用了`observe`方法，关于该方法在**数据变化侦测篇**已经做了非常详细的介绍，此处不再重复。
+
+
+### . Vue.version
+
+#### .1 用法回顾
+
+其用法如下：
+
+```javascript
+Vue.version
+```
+
+- **细节**：提供字符串形式的 Vue 安装版本号。这对社区的插件和组件来说非常有用，你可以根据不同的版本号采取不同的策略。
+
+- **用法**：
+
+  ```javascript
+  var version = Number(Vue.version.split('.')[0])
+
+  if (version === 2) {
+    // Vue v2.x.x
+  } else if (version === 1) {
+    // Vue v1.x.x
+  } else {
+    // Unsupported versions of Vue
+  }
+  ```
+
+#### .2 原理分析
+
+从用法回顾中可以知道，该API是用来标识当前构建的`Vue.js`的版本号，对于日常业务开发几乎用不到，但是对于插件编写非常有用，可以根据`Vue`版本的不同从而做一些不同的事情。
+
+该API是在构建时读取了`package.json`中的`version`字段，然后将其赋值给`Vue.version`。
+
+
+
 # 8. 过滤器篇
+
+## 用法回顾
+
+
+###  前言
+
+过滤器在我们日常开发中应该算是一个非常常用的功能了，它经常会被用来格式化模板中的文本。过滤器可以单个使用，也可以多个串联一起使用，还可以传参数使用。那么在`Vue`中过滤器是如何工作的呢？其内部原理是怎样的？`Vue`又是如何识别出我们所写的过滤器的？接下来，我们将从源码角度出发，探究过滤器内部的工作原理，分析其工作流程，揭开它神秘的面纱。
+
+###  用法回顾
+
+在介绍过滤器内部原理之前，我们先根据官方文档来回顾一下过滤器的使用方法。
+
+#### 1 使用方式
+
+过滤器有两种使用方式：**在双花括号插值中和在 v-bind 表达式中** (后者从 2.1.0+ 开始支持)。过滤器应该被添加在 JavaScript 表达式的尾部，由“|”符号指示：
+
+```html
+<!-- 在双花括号中 -->
+{{ message | capitalize }}
+
+<!-- 在 `v-bind` 中 -->
+<div v-bind:id="rawId | formatId"></div>
+```
+
+#### 2 过滤器的定义
+
+你可以在一个组件的选项中定义本地的过滤器：
+
+```javascript
+filters: {
+  capitalize: function (value) {
+    if (!value) return ''
+    value = value.toString()
+    return value.charAt(0).toUpperCase() + value.slice(1)
+  }
+}
+```
+
+也可以在创建 `Vue` 实例之前使用全局API`Vue.filter`来定义全局过滤器：
+
+```javascript
+Vue.filter('capitalize', function (value) {
+  if (!value) return ''
+  value = value.toString()
+  return value.charAt(0).toUpperCase() + value.slice(1)
+})
+```
+
+当全局过滤器和局部过滤器重名时，会采用局部过滤器。
+
+#### 3 串联过滤器
+
+过滤器函数总接收表达式的值 (之前的操作链的结果) 作为第一个参数。在上述例子中，`capitalize` 过滤器函数将会收到 `message` 的值作为第一个参数。
+
+过滤器可以串联：
+
+```javascript
+{{ message | filterA | filterB }}
+```
+
+在这个例子中，`filterA` 被定义为接收单个参数的过滤器函数，表达式 `message` 的值将作为参数传入到函数中。然后继续调用同样被定义为接收单个参数的过滤器函数 `filterB`，将 `filterA` 的结果传递到 `filterB` 中。
+
+过滤器是 JavaScript 函数，因此可以接收参数：
+
+```javascript
+{{ message | filterA('arg1', arg2) }}
+```
+
+这里，`filterA` 被定义为接收三个参数的过滤器函数。其中 `message` 的值作为第一个参数，普通字符串 `'arg1'` 作为第二个参数，表达式 `arg2` 的值作为第三个参数。
+
+###  小结
+
+通过用法回顾可以知道，过滤器有两种使用方式，分别是在双花括号插值中和在 v-bind 表达式中。无论是哪种使用方式，它的使用形式都是`表达式 | 过滤器1 | 过滤器2 | ...`。
+
+并且，我们知道了过滤器的定义也有两种方式，分别是在组件选项内定义和使用全局API`Vue.filter`定义全局过滤器。在组件选项内定义的过滤器称为本地过滤器，它只能用于当前组件中。使用`Vue.filter`定义的过滤器称为全局过滤器，它可以用在任意组件中。
+
+另外，我们还知道了过滤器不仅可以单个使用，还可以多个串联一起使用。当多个过滤器串联一起使用的时候，前一个过滤器的输出是后一个过滤器的输入，通过将多种不同的过滤器进行组合使用来将文本处理成最终需要的格式。
+
+最后，官方文档还说了所谓过滤器本质上就是一个`JS`函数，所以我们在使用过滤器的时候还可以给过滤器传入参数，过滤器接收的第一个参数永远是表达式的值，或者是前一个过滤器处理后的结果，后续其余的参数可以被用于过滤器内部的过滤规则中。
+
+了解了过滤器的用法之后，那么接下来我们就对其内部原理一探究竟。
+
+## 工作原理
+
+
+###  前言
+
+通过上一篇用法回顾我们知道，过滤器有两种使用方式，分别是在双花括号插值中和在 v-bind 表达式中。但是无论是哪一种使用方式，过滤器都是写在模板里面的。既然是写在模板里面，那么它就会被编译，会被编译成渲染函数字符串，然后在挂载的时候会执行渲染函数，从而就会使过滤器生效。举个例子：
+
+假如有如下过滤器：
+
+``` javascript
+{
+  {
+    message | capitalize
+  }
+}
+
+filters: {
+  capitalize: function(value) {
+    if (!value) return ''
+    value = value.toString()
+    return value.charAt(0).toUpperCase() + value.slice(1)
+  }
+}
+```
+
+那么它被编译成渲染函数字符串后，会变成这个样子：
+
+``` javascript
+_f("capitalize")(message);
+```
+
+如果你是初次看到这个 `_f` 这样的函数，请不要惊慌。这跟我们在介绍模板编译篇中代码生成阶段时所看到的 `_c` 、 `_e` 函数一样，它都对应着一个函数， `_f` 对应的是 `resolveFilter` 函数，通过模板编译会生成一个 `_f` 函数调用字符串，当执行渲染函数的时候，就会执行 `_f` 函数，从而让过滤器生效。
+
+也就是说，真正让过滤器生效的是 `_f` 函数，即 `resolveFilter` 函数，所以接下来我们就分析一下 `resolveFilter` 函数的内部原理。
+
+###  resolveFilter 函数分析
+
+`resolveFilter` 函数的定义位于源码的 `src/core/instance/render-helpers.js` 中，如下：
+
+``` javascript
+import {
+  identity,
+  resolveAsset
+} from "core/util/index";
+
+export function resolveFilter(id) {
+  return resolveAsset(this.$options, "filters", id, true) || identity;
+}
+```
+
+可以看到， `resolveFilter` 函数内部只有一行代码，就是调用 `resolveAsset` 函数并获取其返回值，如果返回值不存在，则返回 `identity` ，而 `identity` 是一个返回同参数一样的值，如下：
+
+``` javascript
+/**
+ * Return same value
+ */
+export const identity = (_) => _;
+```
+
+显然，更令我们关心的是 `resolveAsset` 函数，该函数的定义位于源码的 `src/core/util/options.js` 中，如下：
+
+``` javascript
+export function resolveAsset(options, type, id, warnMissing) {
+  if (typeof id !== "string") {
+    return;
+  }
+  const assets = options[type];
+  // 先从本地注册中查找
+  if (hasOwn(assets, id)) return assets[id];
+  const camelizedId = camelize(id);
+  if (hasOwn(assets, camelizedId)) return assets[camelizedId];
+  const PascalCaseId = capitalize(camelizedId);
+  if (hasOwn(assets, PascalCaseId)) return assets[PascalCaseId];
+  // 再从原型链中查找
+  const res = assets[id] || assets[camelizedId] || assets[PascalCaseId];
+  if (process.env.NODE_ENV !== "production" && warnMissing && !res) {
+    warn("Failed to resolve " + type.slice(0, -1) + ": " + id, options);
+  }
+  return res;
+}
+```
+
+调用该函数时传入了 4 个参数，分别是当前实例的 `$options` 属性， `type` 为 `filters` ， `id` 为当前过滤器的 `id` 。
+
+在该函数内部，首先判断传入的参数 `id` （即当前过滤器的名称 `id` ）是否为字符串类型，如果不是，则直接退出程序。如下：
+
+``` javascript
+if (typeof id !== "string") {
+  return;
+}
+```
+
+接着，获取到当前实例的 `$options` 属性中所有的过滤器，赋给变量 `assets` ，上篇文章中说过，定义过滤器有两种方式，一种是定义在组件的选项中，一种是使用 `Vue.filter` 定义。在之前的文章中我们说过，组件中的所有选项都会被合并到当前实例的 `$options` 属性中，并且使用 `Vue.filter` 定义的过滤器也会被添加到 `$options` 中的 `filters` 属性中，所以不管是以何种方式定义的过滤器，我们都可以从 `$options` 中的 `filters` 属性中获取到。如下：
+
+``` javascript
+const assets = options[type];
+```
+
+获取到所有的过滤器后，接下来我们只需根据过滤器 `id` 取出对应的过滤器函数即可，如下：
+
+``` javascript
+// 先从本地注册中查找
+if (hasOwn(assets, id)) return assets[id];
+const camelizedId = camelize(id);
+if (hasOwn(assets, camelizedId)) return assets[camelizedId];
+const PascalCaseId = capitalize(camelizedId);
+if (hasOwn(assets, PascalCaseId)) return assets[PascalCaseId];
+// 再从原型链中查找
+const res = assets[id] || assets[camelizedId] || assets[PascalCaseId];
+if (process.env.NODE_ENV !== "production" && warnMissing && !res) {
+  warn("Failed to resolve " + type.slice(0, -1) + ": " + id, options);
+}
+return res;
+```
+
+上述代码中，根据过滤器 `id` 查找过滤器首先先从本地注册中查找，先通过 `hasOwn` 函数检查 `assets` 自身中是否存在，如果存在则直接返回；如果不存在，则将过滤器 `id` 转化成驼峰式后再次查找，如果存在则直接返回；如果也不存在，则将过滤器 `id` 转化成首字母大写后再次查找，如果存在则直接返回；如果还不存在，则再从原型链中查找，如果存在则直接返回；如果还不存在，则在非生产环境下抛出警告。
+
+以上，就是 `resolveFilter` 函数的所有逻辑。可以看到， `resolveFilter` 函数其实就是在根据过滤器 `id` 获取到用户定义的对应的过滤器函数并返回，拿到用户定义的过滤器函数之后，就可以调用该函数并传入参数使其生效了。如下图所示：
+![](~@/learn-vue-source-code/filter/1.jpg)
+
+###  串联过滤器原理
+
+上文分析了单个过滤器的工作原理，对于多个过滤器串联一起使用其原理也是相同的，还是先根据过滤器 `id` 获取到对应的过滤器函数，然后传入参数调用即可，唯一有所区别的是：对于多个串联过滤器，在调用过滤器函数传递参数时，后一个过滤器的输入参数是前一个过滤器的输出结果。举个例子：
+
+假如有如下过滤器：
+
+``` javascript
+{
+  {
+    message | filterA | filterB
+  }
+}
+
+filters: {
+  filterA: function(value) {
+    // ...
+  },
+  filterB: function(value) {
+    // ...
+  },
+}
+```
+
+那么它被编译成渲染函数字符串后，会变成这个样子：
+
+![](~@/learn-vue-source-code/filter/2.jpg)
+
+可以看到，过滤器 `filterA` 的执行结果作为参数传给了过滤器 `filterB` 。
+
+###  过滤器接收参数
+
+上一篇文章中说了，过滤器本质上就是一个 `JS` 函数，既然是函数，那它肯定就可以接收参数，唯一一点需要注意的就是：过滤器的第一个参数永远是表达式的值，或者是前一个过滤器处理后的结果，后续其余的参数可以被用于过滤器内部的过滤规则中。举个例子：
+
+假如有如下过滤器：
+
+``` javascript
+{
+  {
+    message | filterA | filterB(arg)
+  }
+}
+
+filters: {
+  filterA: function(value) {
+    // ...
+  },
+  filterB: function(value, arg) {
+    return value + arg
+  },
+}
+```
+
+那么它被编译成渲染函数字符串后，会变成这个样子：
+
+![](~@/learn-vue-source-code/filter/3.jpg)
+
+可以看到，当过滤器接收其余参数时，它的参数都是从第二个参数开始往后传入的。
+
+###  小结
+
+本篇文章介绍了过滤器的内部工作原理，就是将用户写在模板中的过滤器通过模板编译，编译成 `_f` 函数的调用字符串，之后在执行渲染函数的时候会执行 `_f` 函数，从而使过滤器生效。
+
+所谓 `_f` 函数其实就是 `resolveFilter` 函数的别名，在 `resolveFilter` 函数内部是根据过滤器 `id` 从当前实例的 `$options` 中的 `filters` 属性中获取到对应的过滤器函数，在之后执行渲染函数的时候就会执行获取到的过滤器函数。
+
+现在我们已经了解了过滤器的工作原理，那么 `Vue` 在模板编译的时候是如何识别出用户所写的过滤器并且解析出过滤器中的内容呢？下篇文章我们来介绍 `Vue` 如何解析过滤器。
+
+## 解析过滤器
+
+
+###  前言
+
+在上篇文章中我们说了，无论用户是以什么方式使用过滤器，终归是将解析器写在模板中，既然是在模板中，那它肯定就会被解析编译，通过解析用户所写的模板，进而解析出用户所写的过滤器`message | filterA | filterB`中哪部分是被处理的表达式，哪部分是过滤器`id`及其参数。
+
+还记得我们在介绍模板编译篇的解析阶段中说过，用户所写的模板会被三个解析器所解析，分别是`HTML`解析器`parseHTML`、文本解析器`parseText`和过滤器解析器`parseFilters`。其中`HTML`解析器是主线，在使用`HTML`解析器`parseHTML`函数解析模板中`HTML`标签的过程中，如果遇到文本信息，就会调用文本解析器`parseText`函数进行文本解析；如果遇到文本中包含过滤器，就会调用过滤器解析器`parseFilters`函数进行解析。在之前的文章中，我们只对`HTML`解析器`parseHTML`和文本解析器`parseText`其内部原理进行了分析，没有分析过滤器解析器`parseFilters`，那么本篇文章就来分析过滤器解析器的内部原理。
+
+
+
+###  在何处解析过滤器
+
+我们一再强调，过滤器有两种使用方式，分别是**在双花括号插值中和在 v-bind 表达式中**，如下：
+
+```javascript
+<!-- 在双花括号中 -->
+{{ message | capitalize }}
+
+<!-- 在 `v-bind` 中 -->
+<div v-bind:id="rawId | formatId"></div>
+```
+
+两种不同的使用方式唯一的区别是将过滤器写在不同的地方，既然有两种不同的地方可以书写过滤器，那解析的时候必然要在这两种不同地方都进行解析。
+
+- 写在 v-bind 表达式中
+
+  v-bind 表达式中的过滤器它属于存在于标签属性中，那么写在该处的过滤器就需要在处理标签属性时进行解析。我们知道，在`HTML`解析器`parseHTML`函数中负责处理标签属性的函数是`processAttrs`，所以会在`processAttrs`函数中调用过滤器解析器`parseFilters`函数对写在该处的过滤器进行解析，如下：
+
+  ```javascript
+  function processAttrs (el) {
+      // 省略无关代码...
+      if (bindRE.test(name)) { // v-bind
+          // 省略无关代码...
+          value = parseFilters(value)
+          // 省略无关代码...
+      }
+      // 省略无关代码...
+  }
+  ```
+
+- 写在双花括号中
+
+  在双花括号中的过滤器它属于存在于标签文本中，那么写在该处的过滤器就需要在处理标签文本时进行解析。我们知道，在`HTML`解析器`parseHTML`函数中，当遇到文本信息时会调用`parseHTML`函数的`chars`钩子函数，在`chars`钩子函数内部又会调用文本解析器`parseText`函数对文本进行解析，而写在该处的过滤器它就是存在于文本中，所以会在文本解析器`parseText`函数中调用过滤器解析器`parseFilters`函数对写在该处的过滤器进行解析，如下：
+
+  ```javascript
+  export function parseText (text,delimiters){
+      // 省略无关代码...
+      const exp = parseFilters(match[1].trim())
+      // 省略无关代码...
+  }
+  ```
+
+现在我们已经知道了过滤器会在何处进行解析，那么接下来我们就来分析过滤器解析器`parseFilters`函数，来看看其内部是如何对过滤器进行解析的。
+
+###  parseFilters函数分析
+
+`parseFilters`函数的定义位于源码的`src/complier/parser/filter-parser.js`文件中，其代码如下：
+
+```javascript
+export function parseFilters (exp) {
+  let inSingle = false                     // exp是否在 '' 中
+  let inDouble = false                     // exp是否在 "" 中
+  let inTemplateString = false             // exp是否在 `` 中
+  let inRegex = false                      // exp是否在 \\ 中
+  let curly = 0                            // 在exp中发现一个 { 则curly加1，发现一个 } 则curly减1，直到culy为0 说明 { ... }闭合
+  let square = 0                           // 在exp中发现一个 [ 则curly加1，发现一个 ] 则curly减1，直到culy为0 说明 [ ... ]闭合
+  let paren = 0                            // 在exp中发现一个 ( 则curly加1，发现一个 ) 则curly减1，直到culy为0 说明 ( ... )闭合
+  let lastFilterIndex = 0
+  let c, prev, i, expression, filters
+
+
+  for (i = 0; i < exp.length; i++) {
+    prev = c
+    c = exp.charCodeAt(i)
+    if (inSingle) {
+      if (c === 0x27 && prev !== 0x5C) inSingle = false
+    } else if (inDouble) {
+      if (c === 0x22 && prev !== 0x5C) inDouble = false
+    } else if (inTemplateString) {
+      if (c === 0x60 && prev !== 0x5C) inTemplateString = false
+    } else if (inRegex) {
+      if (c === 0x2f && prev !== 0x5C) inRegex = false
+    } else if (
+      c === 0x7C && // pipe
+      exp.charCodeAt(i + 1) !== 0x7C &&
+      exp.charCodeAt(i - 1) !== 0x7C &&
+      !curly && !square && !paren
+    ) {
+      if (expression === undefined) {
+        // first filter, end of expression
+        lastFilterIndex = i + 1
+        expression = exp.slice(0, i).trim()
+      } else {
+        pushFilter()
+      }
+    } else {
+      switch (c) {
+        case 0x22: inDouble = true; break         // "
+        case 0x27: inSingle = true; break         // '
+        case 0x60: inTemplateString = true; break // `
+        case 0x28: paren++; break                 // (
+        case 0x29: paren--; break                 // )
+        case 0x5B: square++; break                // [
+        case 0x5D: square--; break                // ]
+        case 0x7B: curly++; break                 // {
+        case 0x7D: curly--; break                 // }
+      }
+      if (c === 0x2f) { // /
+        let j = i - 1
+        let p
+        // find first non-whitespace prev char
+        for (; j >= 0; j--) {
+          p = exp.charAt(j)
+          if (p !== ' ') break
+        }
+        if (!p || !validDivisionCharRE.test(p)) {
+          inRegex = true
+        }
+      }
+    }
+  }
+
+  if (expression === undefined) {
+    expression = exp.slice(0, i).trim()
+  } else if (lastFilterIndex !== 0) {
+    pushFilter()
+  }
+
+  function pushFilter () {
+    (filters || (filters = [])).push(exp.slice(lastFilterIndex, i).trim())
+    lastFilterIndex = i + 1
+  }
+
+  if (filters) {
+    for (i = 0; i < filters.length; i++) {
+      expression = wrapFilter(expression, filters[i])
+    }
+  }
+
+  return expression
+}
+
+function wrapFilter (exp: string, filter: string): string {
+  const i = filter.indexOf('(')
+  if (i < 0) {
+    // _f: resolveFilter
+    return `_f("${filter}")(${exp})`
+  } else {
+    const name = filter.slice(0, i)
+    const args = filter.slice(i + 1)
+    return `_f("${name}")(${exp}${args !== ')' ? ',' + args : args}`
+  }
+}
+```
+
+该函数的作用的是将传入的形如`'message | capitalize'`这样的过滤器字符串转化成`_f("capitalize")(message)`，接下来我们就来分析一下其内部逻辑。
+
+在该函数内部，首先定义了一些变量，如下：
+
+```javascript
+let inSingle = false
+let inDouble = false
+let inTemplateString = false
+let inRegex = false
+let curly = 0
+let square = 0
+let paren = 0
+let lastFilterIndex = 0
+```
+
+
+
+- inSingle：标志exp是否在 ' ... ' 中；
+- inDouble：标志exp是否在 " ... " 中；
+- inTemplateString：标志exp是否在 \` ... \` 中；
+- inRegex：标志exp是否在 \\  ...  \ 中；
+- curly = 0 :  在exp中发现一个 { 则curly加1，发现一个 } 则curly减1，直到culy为0 说明 { ... }闭合；
+- square = 0：在exp中发现一个 [ 则curly加1，发现一个 ] 则curly减1，直到culy为0 说明 [ ... ]闭合；
+- paren = 0：在exp中发现一个 ( 则curly加1，发现一个 ) 则curly减1，直到culy为0 说明 ( ... )闭合；
+- lastFilterIndex = 0：解析游标，每循环过一个字符串游标加1；
+
+接着，从头开始遍历传入的`exp`每一个字符，通过判断每一个字符是否是特殊字符（如`'`,`"`,`{`,`}`,`[`,`]`,`(`,`)`,`\`,`|`）进而判断出`exp`字符串中哪些部分是表达式，哪些部分是过滤器`id`，如下：
+
+```javascript
+for (i = 0; i < exp.length; i++) {
+    prev = c
+    c = exp.charCodeAt(i)
+    if (inSingle) {
+        if (c === 0x27 && prev !== 0x5C) inSingle = false
+    } else if (inDouble) {
+        if (c === 0x22 && prev !== 0x5C) inDouble = false
+    } else if (inTemplateString) {
+        if (c === 0x60 && prev !== 0x5C) inTemplateString = false
+    } else if (inRegex) {
+        if (c === 0x2f && prev !== 0x5C) inRegex = false
+    } else if (
+        c === 0x7C && // pipe
+        exp.charCodeAt(i + 1) !== 0x7C &&
+        exp.charCodeAt(i - 1) !== 0x7C &&
+        !curly && !square && !paren
+    ) {
+        if (expression === undefined) {
+            // first filter, end of expression
+            lastFilterIndex = i + 1
+            expression = exp.slice(0, i).trim()
+        } else {
+            pushFilter()
+        }
+    } else {
+        switch (c) {
+            case 0x22: inDouble = true; break         // "
+            case 0x27: inSingle = true; break         // '
+            case 0x60: inTemplateString = true; break // `
+            case 0x28: paren++; break                 // (
+            case 0x29: paren--; break                 // )
+            case 0x5B: square++; break                // [
+            case 0x5D: square--; break                // ]
+            case 0x7B: curly++; break                 // {
+            case 0x7D: curly--; break                 // }
+        }
+        if (c === 0x2f) { // /
+            let j = i - 1
+            let p
+            // find first non-whitespace prev char
+            for (; j >= 0; j--) {
+                p = exp.charAt(j)
+                if (p !== ' ') break
+            }
+            if (!p || !validDivisionCharRE.test(p)) {
+                inRegex = true
+            }
+        }
+    }
+}
+
+if (expression === undefined) {
+    expression = exp.slice(0, i).trim()
+} else if (lastFilterIndex !== 0) {
+    pushFilter()
+}
+
+function pushFilter () {
+    (filters || (filters = [])).push(exp.slice(lastFilterIndex, i).trim())
+    lastFilterIndex = i + 1
+}
+```
+
+可以看到，虽然代码稍微有些长，但是其逻辑非常简单。为了便于阅读，我们提供一个上述代码中所涉及到的`ASCII`码与字符的对应关系，如下：
+
+```
+0x22 ----- "
+0x27 ----- '
+0x28 ----- (
+0x29 ----- )
+0x2f ----- /
+0x5C ----- \
+0x5B ----- [
+0x5D ----- ]
+0x60 ----- `
+0x7C ----- |
+0x7B ----- {
+0x7D ----- }
+```
+
+上述代码的逻辑就是将字符串`exp`的每一个字符都从前往后开始一个一个匹配，匹配出那些特殊字符，如`'`,`"`,\`，`{`,`}`,`[`,`]`,`(`,`)`,`\`,`|`。
+
+如果匹配到`'`,`"`,\`字符，说明当前字符在字符串中，那么直到匹配到下一个同样的字符才结束，同时， 匹配 `()`, `{}`,` []` 这些需要两边相等闭合, 那么匹配到的 `|` 才被认为是过滤器中的`|`。
+
+当匹配到过滤器中的`|`符时，那么`|`符前面的字符串就认为是待处理的表达式，将其存储在 `expression` 中，后面继续匹配，如果再次匹配到过滤器中的 `|`符 ,并且此时` expression`有值， 那么说明后面还有第二个过滤器，那么此时两个`|`符之间的字符串就是第一个过滤器的`id`，此时调用 `pushFilter`函数将第一个过滤器添加进`filters`数组中。举个例子：
+
+假如有如下过滤器字符串：
+
+```javascript
+message | filter1 | filter2(arg)
+```
+
+那么它的匹配过程如下图所示：
+
+![](~@/learn-vue-source-code/filter/4.jpg)
+
+
+将上例中的过滤器字符串都匹配完毕后，会得到如下结果：
+
+```javascript
+expression = message
+filters = ['filter1','filter2(arg)']
+```
+
+
+
+接下来遍历得到的`filters`数组，并将数组的每一个元素及`expression`传给`wrapFilter`函数，用来生成最终的`_f`函数调用字符串，如下：
+
+```javascript
+if (filters) {
+    for (i = 0; i < filters.length; i++) {
+        expression = wrapFilter(expression, filters[i])
+    }
+}
+
+function wrapFilter (exp, filter) {
+  const i = filter.indexOf('(')
+  if (i < 0) {
+    return `_f("${filter}")(${exp})`
+  } else {
+    const name = filter.slice(0, i)
+    const args = filter.slice(i + 1)
+    return `_f("${name}")(${exp}${args !== ')' ? ',' + args : args}`
+  }
+}
+```
+
+可以看到， 在`wrapFilter`函数中，首先在解析得到的每个过滤器中查找是否有`(`，以此来判断过滤器中是否接收了参数，如果没有`(`，表示该过滤器没有接收参数，则直接构造`_f`函数调用字符串即`_f("filter1")(message)`并返回赋给`expression`，如下：
+
+```javascript
+const i = filter.indexOf('(')
+if (i < 0) {
+    return `_f("${filter}")(${exp})`
+}
+```
+
+接着，将新的`experssion`与`filters`数组中下一个过滤器再调用`wrapFilter`函数,如果下一个过滤器有参数，那么先取出过滤器`id`，再取出其带有的参数，生成第二个过滤器的`_f`函数调用字符串，即`_f("filter2")(_f("filter1")(message),arg)`，如下：
+
+```javascript
+const name = filter.slice(0, i)
+const args = filter.slice(i + 1)
+return `_f("${name}")(${exp}${args !== ')' ? ',' + args : args}`
+```
+
+
+
+这样就最终生成了用户所写的过滤器的`_f`函数调用字符串。
+
+###  小结
+
+本篇文章介绍了`Vue`是如何解析用户所写的过滤器的。
+
+首先，我们介绍了两种不同写法的过滤器会在不同的地方进行解析，但是解析原理都是相同的，都是调用过滤器解析器`parseFilters`函数进行解析。
+
+接着，我们分析了`parseFilters`函数的内部逻辑。该函数接收一个形如`'message | capitalize'`这样的过滤器字符串作为，最终将其转化成`_f("capitalize")(message)`输出。在`parseFilters`函数的内部是通过遍历传入的过滤器字符串每一个字符，根据每一个字符是否是一些特殊的字符从而作出不同的处理，最终，从传入的过滤器字符串中解析出待处理的表达式`expression`和所有的过滤器`filters`数组。
+
+最后，将解析得到的`expression`和`filters`数组通过调用`wrapFilter`函数将其构造成`_f`函数调用字符串。
 
 # 9. 指令篇
 
+## 自定义指令
+
+###  前言
+
+在`Vue`中，除了`Vue`本身为我们提供的一些内置指令之外，`Vue`还支持用户自定义指令。并且用户有两种定义指令的方式：一种是使用全局 API——`Vue.directive`来定义全局指令，这种方式定义的指令会被存放在`Vue.options['directives']`中；另一种是在组件内的`directive`选项中定义专为该组件使用的局部指令，这种方式定义的指令会被存放在`vm.$options['directives']`中。
+
+可以看到，无论是使用哪一种方式定义的指令它都是将定义好的指令存放在指定的地方，而并不能让指令生效。那么定义的指令什么时候才会生效呢？或者说它是如何生效的呢？本篇文章就来带你探究自定义指令如何生效的内部原理。
+
+###  何时生效
+
+我们知道，指令是作为标签属性写在模板中的`HTML`标签上的，那么又回到那句老话了，既然是写在模板中的，那它必然会经过模板编译，编译之后会产生虚拟`DOM`，在虚拟`DOM`渲染更新时，除了更新节点的内容之外，节点上的一些指令、事件等内容也需要更新。另外，我们还知道，虚拟`DOM`节点的更新不只是更新一个已有的节点，也有可能是创建一个新的节点，还有可能是删除一个节点等等，这些都叫做虚拟`DOM`节点的更新，那么既然虚拟`DOM`节点更新的概念这么大，那到底该什么时候处理指令的相关逻辑，执行指令函数，让指令生效呢？
+
+其实，在虚拟`DOM`渲染更新的时候，它在执行相关操作的同时，还会在每个阶段触发相应的钩子函数，我们只需监听不同的钩子函数，就可以在虚拟`DOM`渲染更新的不同阶段做一些额外的事情。下表给出了虚拟`DOM`在渲染更新的不同阶段所触发的不同的钩子函数及其触发时机：
+
+| 钩子函数名称 | 触发时机                                                                                                                                     | 回调参数                |
+| ------------ | -------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------- |
+| init         | 已创建 VNode，在 patch 期间发现新的虚拟节点时被触发                                                                                          | VNode                   |
+| create       | 已基于 VNode 创建了 DOM 元素                                                                                                                 | emptyNode 和 VNode      |
+| activate     | keep-alive 组件被创建                                                                                                                        | emptyNode 和 innerNode  |
+| insert       | VNode 对应的 DOM 元素被插入到父节点中时被触发                                                                                                | VNode                   |
+| prepatch     | 一个 VNode 即将被 patch 之前触发                                                                                                             | oldVNode 和 VNode       |
+| update       | 一个 VNode 更新时触发                                                                                                                        | oldVNode 和 VNode       |
+| postpatch    | 一个 VNode 被 patch 完毕时触发                                                                                                               | oldVNode 和 VNode       |
+| destory      | 一个 VNode 对应的 DOM 元素从 DOM 中移除时或者它的父元素从 DOM 中移除时触发                                                                   | VNode                   |
+| remove       | 一个 VNode 对应的 DOM 元素从 DOM 中移除时触发。与 destory 不同的是，如果是直接将该 VNode 的父元素从 DOM 中移除导致该元素被移除，那么不会触发 | VNode 和 removeCallback |
+
+所以我们只需在恰当的阶段监听对应的钩子函数来处理指令的相关逻辑，从而就可以使指令生效了。
+
+现在我们来设想一下，在什么阶段处理指令的逻辑会比较合适？仔细想一下，当一个节点被创建成`DOM`元素时，如果这个节点上有指令，那此时得处理指令逻辑，让指令生效；当一个节点被更新时，如果节点更新之前没有指令，而更新之后有了指令，或者是更新前后节点上的指令发生了变化，那此时得处理指令逻辑，让指令生效；另外，当节点被移除时，那节点上的指令自然也就没有用了，此时还得处理指令逻辑。
+
+基于以上设想，我们得出一个结论：在虚拟`DOM`渲染更新的`create`、`update`、`destory`阶段都得处理指令逻辑，所以我们需要监听这三个钩子函数来处理指令逻辑。事实上，`Vue`也是这么做的，代码如下：
+
+```javascript
+export default {
+  create: updateDirectives,
+  update: updateDirectives,
+  destroy: function unbindDirectives(vnode: VNodeWithData) {
+    updateDirectives(vnode, emptyNode);
+  },
+};
+```
+
+可以看到，分别监听了这三个钩子函数，当虚拟`DOM`渲染更新的时候会触发这三个钩子函数，从而就会执行`updateDirectives`函数，在该函数内部就会去处理指令的相关逻辑，我们在下面会详细分析该函数内部是如何处理指令逻辑。
+
+###  指令钩子函数
+
+`Vue`对于自定义指令定义对象提供了几个钩子函数，这几个钩子函数分别对应着指令的几种状态，一个指令从第一次被绑定到元素上到最终与被绑定的元素解绑，它会经过以下几种状态：
+
+- bind：只调用一次，指令第一次绑定到元素时调用。在这里可以进行一次性的初始化设置。
+- inserted：被绑定元素插入父节点时调用 (仅保证父节点存在，但不一定已被插入文档中)。
+- update：所在组件的 VNode 更新时调用，**但是可能发生在其子 VNode 更新之前**。
+- componentUpdated：指令所在组件的 VNode **及其子 VNode** 全部更新后调用。
+- unbind：只调用一次，指令与元素解绑时调用。
+
+有了每个状态的钩子函数，这样我们就可以让指令在不同状态下做不同的事情。
+
+例如，我们想让指令所绑定的输入框一插入到 DOM 中，输入框就获得焦点，那么，我们就可以这样定义指令:
+
+```javascript
+// 注册一个全局自定义指令 `v-focus`
+Vue.directive("focus", {
+  // 当被绑定的元素插入到 DOM 中时……
+  inserted: function(el) {
+    // 聚焦元素
+    el.focus();
+  },
+});
+```
+
+在模板中使用该指令，如下：
+
+```html
+<input v-focus />
+```
+
+可以看到，我们在定义该指令的时候，我们将获取焦点的逻辑写在了`inserted`钩子函数里面，这样就保证了当被绑定的元素插入到父节点时，获取焦点的逻辑就会被执行。
+
+同理，我们也可以在一个指令中设置多个钩子函数，从而让一个指令在不同状态下做不同的事。
+
+OK，有了这个概念之后，接下来我们就来分析指令是如何生效的。
+
+###  如何生效
+
+在第二章节中我们知道了，当虚拟`DOM`渲染更新的时候会触发`create`、`update`、`destory`这三个钩子函数，从而就会执行`updateDirectives`函数来处理指令的相关逻辑，执行指令函数，让指令生效。所以，探究指令如何生效的问题就是分析`updateDirectives`函数的内部逻辑。
+
+`updateDirectives`函数的定义位于源码的`src/core/vdom/modules/directives.js`文件中，如下：
+
+```javascript
+function updateDirectives(oldVnode: VNodeWithData, vnode: VNodeWithData) {
+  if (oldVnode.data.directives || vnode.data.directives) {
+    _update(oldVnode, vnode);
+  }
+}
+```
+
+可以看到，该函数的内部是判断了如果新旧`VNode`中只要有一方涉及到了指令，那就调用`_update`方法去处理指令逻辑。
+
+`_update`方法定义如下：
+
+```javascript
+function _update(oldVnode, vnode) {
+  const isCreate = oldVnode === emptyNode;
+  const isDestroy = vnode === emptyNode;
+  const oldDirs = normalizeDirectives(
+    oldVnode.data.directives,
+    oldVnode.context
+  );
+  const newDirs = normalizeDirectives(vnode.data.directives, vnode.context);
+
+  const dirsWithInsert = [];
+  const dirsWithPostpatch = [];
+
+  let key, oldDir, dir;
+  for (key in newDirs) {
+    oldDir = oldDirs[key];
+    dir = newDirs[key];
+    if (!oldDir) {
+      // new directive, bind
+      callHook(dir, "bind", vnode, oldVnode);
+      if (dir.def && dir.def.inserted) {
+        dirsWithInsert.push(dir);
+      }
+    } else {
+      // existing directive, update
+      dir.oldValue = oldDir.value;
+      dir.oldArg = oldDir.arg;
+      callHook(dir, "update", vnode, oldVnode);
+      if (dir.def && dir.def.componentUpdated) {
+        dirsWithPostpatch.push(dir);
+      }
+    }
+  }
+
+  if (dirsWithInsert.length) {
+    const callInsert = () => {
+      for (let i = 0; i < dirsWithInsert.length; i++) {
+        callHook(dirsWithInsert[i], "inserted", vnode, oldVnode);
+      }
+    };
+    if (isCreate) {
+      mergeVNodeHook(vnode, "insert", callInsert);
+    } else {
+      callInsert();
+    }
+  }
+
+  if (dirsWithPostpatch.length) {
+    mergeVNodeHook(vnode, "postpatch", () => {
+      for (let i = 0; i < dirsWithPostpatch.length; i++) {
+        callHook(dirsWithPostpatch[i], "componentUpdated", vnode, oldVnode);
+      }
+    });
+  }
+
+  if (!isCreate) {
+    for (key in oldDirs) {
+      if (!newDirs[key]) {
+        // no longer present, unbind
+        callHook(oldDirs[key], "unbind", oldVnode, oldVnode, isDestroy);
+      }
+    }
+  }
+}
+```
+
+可以看到，该方法内首先定义了一些变量，如下：
+
+```javascript
+const isCreate = oldVnode === emptyNode;
+const isDestroy = vnode === emptyNode;
+const oldDirs = normalizeDirectives(oldVnode.data.directives, oldVnode.context);
+const newDirs = normalizeDirectives(vnode.data.directives, vnode.context);
+
+const dirsWithInsert = [];
+const dirsWithPostpatch = [];
+```
+
+- isCreate:判断当前节点`vnode`对应的旧节点`oldVnode`是不是一个空节点，如果是的话，表明当前节点是一个新创建的节点。
+- isDestroy:判断当前节点`vnode`是不是一个空节点，如果是的话，表明当前节点对应的旧节点将要被销毁。
+- oldDirs:旧的指令集合，即`oldVnode`中保存的指令。
+- newDirs:新的指令集合，即`vnode`中保存的指令。
+- dirsWithInsert:保存需要触发`inserted`指令钩子函数的指令列表。
+- dirsWithPostpatch:保存需要触发`componentUpdated`指令钩子函数的指令列表。
+
+另外，你可能还看到了在定义新旧指令集合的变量中调用了`normalizeDirectives`函数，其实该函数是用来模板中使用到的指令从存放指令的地方取出来，并将其格式进行统一化，其定义如下：
+
+```javascript
+function normalizeDirectives (dirs,vm):  {
+  const res = Object.create(null)
+  if (!dirs) {
+    return res
+  }
+  let i, dir
+  for (i = 0; i < dirs.length; i++) {
+    dir = dirs[i]
+    if (!dir.modifiers) {
+      dir.modifiers = emptyModifiers
+    }
+    res[getRawDirName(dir)] = dir
+    dir.def = resolveAsset(vm.$options, 'directives', dir.name, true)
+  }
+  return res
+}
+```
+
+以第三章节中的`v-focus`指令为例，通过`normalizeDirectives`函数取出的指令会变成如下样子：
+
+```javascript
+{
+    'v-focus':{
+        name : 'focus' ,  // 指令的名称
+        value : '',       // 指令的值
+        arg:'',           // 指令的参数
+        modifiers:{},     // 指令的修饰符
+        def:{
+            inserted:fn
+        }
+    }
+}
+```
+
+OK,言归正传，获取到`oldDirs`和`newDirs`之后，接下来要做的事情就是对比这两个指令集合并触发对应的指令钩子函数。
+
+首先，循环`newDirs`，并分别从`oldDirs`和`newDirs`取出当前循环到的指令分别保存在变量`oldDir`和`dir`中，如下：
+
+```javascript
+let key, oldDir, dir;
+for (key in newDirs) {
+  oldDir = oldDirs[key];
+  dir = newDirs[key];
+}
+```
+
+然后判断当前循环到的指令名`key`在旧的指令列表`oldDirs`中是否存在，如果不存在，说明该指令是首次绑定到元素上的一个新指令，此时调用`callHook`触发指令中的`bind`钩子函数，接着判断如果该新指令在定义时设置了`inserted`钩子函数，那么将该指令添加到`dirsWithInsert`中，以保证执行完所有指令的`bind`钩子函数后再执行指令的`inserted`钩子函数，如下：
+
+```javascript
+// 判断当前循环到的指令名`key`在旧的指令列表`oldDirs`中是否存在，如果不存在，那么说明这是一个新的指令
+if (!oldDir) {
+  // new directive, bind
+  // 触发指令中的`bind`钩子函数
+  callHook(dir, "bind", vnode, oldVnode);
+  // 如果定义了inserted 时的钩子函数 那么将该指令添加到dirsWithInsert中
+  if (dir.def && dir.def.inserted) {
+    dirsWithInsert.push(dir);
+  }
+}
+```
+
+如果当前循环到的指令名`key`在旧的指令列表`oldDirs`中存在时，说明该指令在之前已经绑定过了，那么这一次的操作应该是更新指令。
+
+首先，在`dir`上添加`oldValue`属性和`oldArg`属性，用来保存上一次指令的`value`属性值和`arg`属性值，然后调用`callHook`触发指令中的`update`钩子函数，接着判断如果该指令在定义时设置了`componentUpdated`钩子函数，那么将该指令添加到`dirsWithPostpatch`中，以保证让指令所在的组件的`VNode`及其子`VNode`全部更新完后再执行指令的`componentUpdated`钩子函数，如下：
+
+```javascript
+else {
+    // existing directive, update
+    dir.oldValue = oldDir.value
+    dir.oldArg = oldDir.arg
+    callHook(dir, 'update', vnode, oldVnode)
+    if (dir.def && dir.def.componentUpdated) {
+        dirsWithPostpatch.push(dir)
+    }
+}
+```
+
+最后，判断`dirsWithInsert`数组中是否有元素，如果有，则循环`dirsWithInsert`数组，依次执行每一个指令的`inserted`钩子函数，如下：
+
+```javascript
+if (dirsWithInsert.length) {
+  const callInsert = () => {
+    for (let i = 0; i < dirsWithInsert.length; i++) {
+      callHook(dirsWithInsert[i], "inserted", vnode, oldVnode);
+    }
+  };
+}
+```
+
+从上述代码中可以看到，并没有直接去循环执行每一个指令的`inserted`钩子函数，而是新创建了一个`callInsert`函数，当执行该函数的时候才会去循环执行每一个指令的`inserted`钩子函数。这又是为什么呢？
+
+这是因为指令的`inserted`钩子函数必须在被绑定元素插入到父节点时调用，那么如果是一个新增的节点，如何保证它已经被插入到父节点了呢？我们之前说过，虚拟`DOM`在渲染更新的不同阶段会触发不同的钩子函数，比如当`DOM`节点在被插入到父节点时会触发`insert`函数，那么我们就知道了，当虚拟`DOM`渲染更新的`insert`钩子函数被调用的时候就标志着当前节点已经被插入到父节点了，所以我们要在虚拟`DOM`渲染更新的`insert`钩子函数内执行指令的`inserted`钩子函数。也就是说，当一个新创建的元素被插入到父节点中时**虚拟`DOM`渲染更新的`insert`钩子函数**和**指令的`inserted`钩子函数**都要被触发。既然如此，那就可以把这两个钩子函数通过调用`mergeVNodeHook`方法进行合并，然后统一在虚拟`DOM`渲染更新的`insert`钩子函数中触发，这样就保证了元素确实被插入到父节点中才执行的指令的`inserted`钩子函数，如下：
+
+```javascript
+if (dirsWithInsert.length) {
+  const callInsert = () => {
+    for (let i = 0; i < dirsWithInsert.length; i++) {
+      callHook(dirsWithInsert[i], "inserted", vnode, oldVnode);
+    }
+  };
+  if (isCreate) {
+    mergeVNodeHook(vnode, "insert", callInsert);
+  } else {
+    callInsert();
+  }
+}
+```
+
+同理，我们也需要保证指令所在的组件的`VNode`及其子`VNode`全部更新完后再执行指令的`componentUpdated`钩子函数，所以我们将虚拟`DOM`渲染更新的`postpatch`钩子函数和指令的`componentUpdated`钩子函数进行合并触发，如下：
+
+```javascript
+if (dirsWithPostpatch.length) {
+  mergeVNodeHook(vnode, "postpatch", () => {
+    for (let i = 0; i < dirsWithPostpatch.length; i++) {
+      callHook(dirsWithPostpatch[i], "componentUpdated", vnode, oldVnode);
+    }
+  });
+}
+```
+
+最后，当`newDirs`循环完毕后，再循环`oldDirs`，如果某个指令存在于旧的指令列表`oldDirs`而在新的指令列表`newDirs`中不存在，那说明该指令是被废弃的，所以则触发指令的`unbind`钩子函数对指令进行解绑。如下：
+
+```javascript
+if (!isCreate) {
+  for (key in oldDirs) {
+    if (!newDirs[key]) {
+      // no longer present, unbind
+      callHook(oldDirs[key], "unbind", oldVnode, oldVnode, isDestroy);
+    }
+  }
+}
+```
+
+以上就是指令生效的全部逻辑。所谓让指令生效，其实就是在合适的时机执行定义指令时所设置的钩子函数。
+
+###  总结
+
+本篇文章介绍了关于自定义指令如何生效的相关内容。
+
+首先，我们知道了如果一个`DOM`节点上绑定了指令，那么在这个`DOM`节点所对应虚拟`DOM`节点进行渲染更新的时候，不但会处理节点渲染更新的逻辑，还会处理节点上指令的相关逻辑。具体处理指令逻辑的时机是在虚拟`DOM`渲染更新的`create`、`update`、`destory`阶段。
+
+接着，我们介绍了`Vue`对于自定义指令定义对象提供了几个钩子函数，这几个钩子函数分别对应着指令的几种状态，我们可以根据实际的需求将指令逻辑写在合适的指令状态钩子函数中，比如，我们想让指令所绑定的元素一插入到`DOM`中就执行指令逻辑，那我们就应该把指令逻辑写在指令的`inserted`钩子函数中。
+
+接着，我们逐行分析了`updateDirectives`函数，在该函数中就是对比新旧两份`VNode`上的指令列表，通过对比的异同点从而执行指令不同的钩子函数，让指令生效。
+
+最后，一句话概括就是：**所谓让指令生效，其实就是在合适的时机执行定义指令时所设置的钩子函数。**
+
+
 # 10. 内置组件篇
+
+## keep-alive
+
+
+###  前言
+
+`<keep-alive>` 是 `Vue` 实现的一个内置组件，也就是说 `Vue` 源码不仅实现了一套组件化的机制，也实现了一些内置组件，关于`<keep-alive>`组件，官网如下介绍：
+
+> `<keep-alive>`是`Vue`中内置的一个抽象组件，它自身不会渲染一个 `DOM` 元素，也不会出现在父组件链中。当它包裹动态组件时，会缓存不活动的组件实例，而不是销毁它们。
+
+这句话的意思简单来说：就是我们可以把一些不常变动的组件或者需要缓存的组件用`<keep-alive>`包裹起来，这样`<keep-alive>`就会帮我们把组件保存在内存中，而不是直接的销毁，这样做可以保留组件的状态或避免多次重新渲染，以提高页面性能。
+
+我们来举个例子看看，假如有如下代码：
+
+```html
+<div id="app">
+  <button @click="switchComp('child1')">组件1</button>
+  <button @click="switchComp('child2')">组件2</button>
+  <component :is="chooseComponent"></component>
+</div>
+<body>
+  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+  <script>
+    var child1 = {
+      template: '<div>组件1:<input type="text"/></div>',
+    }
+    var child2 = {
+      template: '<div>组件2:<input type="text"/></div>'
+    }
+    var vm = new Vue({
+      el: '##app',
+      components: {
+        child1,
+        child2,
+      },
+      data() {
+        return {
+          chooseComponent: 'child1',
+        }
+      },
+      methods: {
+        switchComp(component) {
+          this.chooseComponent = component;
+        }
+      }
+    })
+  </script>
+</body>
+```
+
+可以看到，上述代码中定义了两个子组件`child1`和`child2`，然后使用两个按钮和一个动态组件来做出点击按钮切换不同组件的效果，如下图：
+
+![](~@/learn-vue-source-code/BuiltInComponents/1.gif)
+
+
+从上图中可以看到，我们给组件1和组件2的输入框中分别输入了不同的内容后，之后当我们点击按钮切换组件的时候，切换之前输入的内容已经不存在了，这就说明点击按钮切换组件是把之前的组件销毁，然后又重新挂载了一次。
+
+但是我们有时候又会有这样的需求：当用户再次切回组件时保留切走之前的组件状态。此时`Vue`内置的`<keep-alive>`组件就派上用场了，我们将上述代码中的动态组件用`<keep-alive>`包裹一下，如下：
+
+```html
+<div id="app">
+  <button @click="switchComp('child1')">组件1</button>
+  <button @click="switchComp('child2')">组件2</button>
+  <keep-alive>
+    <component :is="chooseComponent"></component>
+  </keep-alive>
+</div>
+```
+
+此时的效果如下：
+
+![](~@/learn-vue-source-code/BuiltInComponents/2.gif)
+
+
+可以看到，`child1`和`child2`不管怎么切换它都能保留自己切换之前的状态了。这就说明，当我们切换组件的时候，组件并没有被销毁，而是被保存在了内存中，这样当我们再次切回去的时候就可以拿到切走之前的状态。
+
+那么，`<keep-alive>`组件到底是如何实现这个功能的呢？本篇文章就来分析`<keep-alive>`组件的内部实现原理。
+
+### 用法回顾
+
+介绍原理之前，我们先根据官方文档来回顾一下`<keep-alive>`组件的具体用法，如下：
+
+`<keep-alive>`组件可接收三个属性：
+
+- `include` - 字符串或正则表达式。只有名称匹配的组件会被缓存。
+- `exclude` - 字符串或正则表达式。任何名称匹配的组件都不会被缓存。
+- `max` - 数字。最多可以缓存多少组件实例。
+
+`include` 和 `exclude` 属性允许组件有条件地缓存。二者都可以用逗号分隔字符串、正则表达式或一个数组来表示：
+
+```html
+<!-- 逗号分隔字符串 -->
+<keep-alive include="a,b">
+  <component :is="view"></component>
+</keep-alive>
+
+<!-- 正则表达式 (使用 `v-bind`) -->
+<keep-alive :include="/a|b/">
+  <component :is="view"></component>
+</keep-alive>
+
+<!-- 数组 (使用 `v-bind`) -->
+<keep-alive :include="['a', 'b']">
+  <component :is="view"></component>
+</keep-alive>
+```
+
+匹配时首先检查组件自身的 `name` 选项，如果 `name` 选项不可用，则匹配它的局部注册名称 (父组件 `components` 选项的键值)，也就是组件的标签值。匿名组件不能被匹配。
+
+`max`表示最多可以缓存多少组件实例。一旦这个数字达到了，在新实例被创建之前，**已缓存组件中最久没有被访问的实例**会被销毁掉。
+
+请读者注意此处加粗的地方，暂时有个印象，后面我们会详细说明。
+
+```html
+<keep-alive :max="10">
+  <component :is="view"></component>
+</keep-alive>
+```
+
+OK，以上就是`<keep-alive>`组件的用法，下面我们将着重介绍其内部实现原理。
+
+###  实现原理
+
+`<keep-alive>`组件的定义位于源码的 `src/core/components/keep-alive.js` 文件中，如下：
+
+```javascript
+export default {
+  name: 'keep-alive',
+  abstract: true,
+
+  props: {
+    include: [String, RegExp, Array],
+    exclude: [String, RegExp, Array],
+    max: [String, Number]
+  },
+
+  created () {
+    this.cache = Object.create(null)
+    this.keys = []
+  },
+
+  destroyed () {
+    for (const key in this.cache) {
+      pruneCacheEntry(this.cache, key, this.keys)
+    }
+  },
+
+  mounted () {
+    this.$watch('include', val => {
+      pruneCache(this, name => matches(val, name))
+    })
+    this.$watch('exclude', val => {
+      pruneCache(this, name => !matches(val, name))
+    })
+  },
+
+  render() {
+    /* 获取默认插槽中的第一个组件节点 */
+    const slot = this.$slots.default
+    const vnode = getFirstComponentChild(slot)
+    /* 获取该组件节点的componentOptions */
+    const componentOptions = vnode && vnode.componentOptions
+
+    if (componentOptions) {
+      /* 获取该组件节点的名称，优先获取组件的name字段，如果name不存在则获取组件的tag */
+      const name = getComponentName(componentOptions)
+
+      const { include, exclude } = this
+      /* 如果name不在inlcude中或者存在于exlude中则表示不缓存，直接返回vnode */
+      if (
+        (include && (!name || !matches(include, name))) ||
+        // excluded
+        (exclude && name && matches(exclude, name))
+      ) {
+        return vnode
+      }
+
+      const { cache, keys } = this
+      const key = vnode.key == null
+        // same constructor may get registered as different local components
+        // so cid alone is not enough (##3269)
+        ? componentOptions.Ctor.cid + (componentOptions.tag ? `::${componentOptions.tag}` : '')
+        : vnode.key
+      if (cache[key]) {
+        vnode.componentInstance = cache[key].componentInstance
+        // make current key freshest
+        remove(keys, key)
+        keys.push(key)
+      } else {
+        cache[key] = vnode
+        keys.push(key)
+        // prune oldest entry
+        if (this.max && keys.length > parseInt(this.max)) {
+          pruneCacheEntry(cache, keys[0], keys, this._vnode)
+        }
+      }
+
+      vnode.data.keepAlive = true
+    }
+    return vnode || (slot && slot[0])
+  }
+}
+```
+
+可以看到，该组件内没有常规的`<template></template>`标签，取而代之的是它内部多了一个叫做`render`的函数，所以它不是一个常规的模板组件，而是一个函数式组件。执行 `<keep-alive>` 组件渲染的时候，就会执行到这个 `render` 函数。了解了这个以后，接下来我们从上到下一步一步细细阅读。
+
+#### ops
+
+在`props`选项内接收传进来的三个属性：`include`、`exclude`和`max`。如下：
+
+```javascript
+props: {
+    include: [String, RegExp, Array],
+    exclude: [String, RegExp, Array],
+    max: [String, Number]
+}
+```
+
+
+
+`include` 表示只有匹配到的组件会被缓存，而 `exclude` 表示任何匹配到的组件都不会被缓存， `max`表示缓存组件的数量，因为我们是缓存的 `vnode` 对象，它也会持有 DOM，当我们缓存的组件很多的时候，会比较占用内存，所以该配置允许我们指定缓存组件的数量。
+
+#### eated
+
+在 `created` 钩子函数里定义并初始化了两个属性： `this.cache` 和 `this.keys`。
+
+```javascript
+created () {
+    this.cache = Object.create(null)
+    this.keys = []
+}
+```
+
+`this.cache`是一个对象，用来存储需要缓存的组件，它将以如下形式存储：
+
+```javascript
+this.cache = {
+    'key1':'组件1',
+    'key2':'组件2',
+    // ...
+}
+```
+
+`this.keys`是一个数组，用来存储每个需要缓存的组件的`key`，即对应`this.cache`对象中的键值。
+
+#### stroyed
+
+当`<keep-alive>`组件被销毁时，此时会调用`destroyed`钩子函数，在该钩子函数里会遍历`this.cache`对象，然后将那些被缓存的并且当前没有处于被渲染状态的组件都销毁掉并将其从`this.cache`对象中剔除。如下：
+
+```javascript
+destroyed () {
+    for (const key in this.cache) {
+        pruneCacheEntry(this.cache, key, this.keys)
+    }
+}
+
+// pruneCacheEntry函数
+function pruneCacheEntry (cache,key,keys,current) {
+  const cached = cache[key]
+  /* 判断当前没有处于被渲染状态的组件，将其销毁*/
+  if (cached && (!current || cached.tag !== current.tag)) {
+    cached.componentInstance.$destroy()
+  }
+  cache[key] = null
+  remove(keys, key)
+}
+```
+
+
+
+#### unted
+
+在`mounted`钩子函数中观测 `include` 和 `exclude` 的变化，如下：
+
+```javascript
+mounted () {
+    this.$watch('include', val => {
+        pruneCache(this, name => matches(val, name))
+    })
+    this.$watch('exclude', val => {
+        pruneCache(this, name => !matches(val, name))
+    })
+}
+```
+
+如果`include` 或`exclude` 发生了变化，即表示定义需要缓存的组件的规则或者不需要缓存的组件的规则发生了变化，那么就执行`pruneCache`函数，函数如下：
+
+```javascript
+function pruneCache (keepAliveInstance, filter) {
+  const { cache, keys, _vnode } = keepAliveInstance
+  for (const key in cache) {
+    const cachedNode = cache[key]
+    if (cachedNode) {
+      const name = getComponentName(cachedNode.componentOptions)
+      if (name && !filter(name)) {
+        pruneCacheEntry(cache, key, keys, _vnode)
+      }
+    }
+  }
+}
+
+function pruneCacheEntry (cache,key,keys,current) {
+  const cached = cache[key]
+  if (cached && (!current || cached.tag !== current.tag)) {
+    cached.componentInstance.$destroy()
+  }
+  cache[key] = null
+  remove(keys, key)
+}
+```
+
+在该函数内对`this.cache`对象进行遍历，取出每一项的`name`值，用其与新的缓存规则进行匹配，如果匹配不上，则表示在新的缓存规则下该组件已经不需要被缓存，则调用`pruneCacheEntry`函数将这个已经不需要缓存的组件实例先销毁掉，然后再将其从`this.cache`对象中剔除。
+
+#### nder
+
+接下来就是重头戏`render`函数，也是本篇文章中的重中之重。以上工作都是一些辅助工作，真正实现缓存功能的就在这个`render`函数里，接下来我们逐行分析它。
+
+在`render`函数中首先获取第一个子组件节点的 `vnode`：
+
+```javascript
+/* 获取默认插槽中的第一个组件节点 */
+const slot = this.$slots.default
+const vnode = getFirstComponentChild(slot)
+```
+
+由于我们也是在 `<keep-alive>` 标签内部写 DOM，所以可以先获取到它的默认插槽，然后再获取到它的第一个子节点。`<keep-alive>` 只处理第一个子元素，所以一般和它搭配使用的有 `component` 动态组件或者是 `router-view`。
+
+接下来获取该组件节点的名称：
+
+```javascript
+/* 获取该组件节点的名称 */
+const name = getComponentName(componentOptions)
+
+/* 优先获取组件的name字段，如果name不存在则获取组件的tag */
+function getComponentName (opts: ?VNodeComponentOptions): ?string {
+  return opts && (opts.Ctor.options.name || opts.tag)
+}
+```
+
+然后用组件名称跟 `include`、`exclude` 中的匹配规则去匹配：
+
+```javascript
+const { include, exclude } = this
+/* 如果name与include规则不匹配或者与exclude规则匹配则表示不缓存，直接返回vnode */
+if (
+    (include && (!name || !matches(include, name))) ||
+    // excluded
+    (exclude && name && matches(exclude, name))
+) {
+    return vnode
+}
+```
+
+如果组件名称与 `include` 规则不匹配或者与 `exclude` 规则匹配，则表示不缓存该组件，直接返回这个组件的 `vnode`，否则的话走下一步缓存：
+
+```javascript
+const { cache, keys } = this
+/* 获取组件的key */
+const key = vnode.key == null
+? componentOptions.Ctor.cid + (componentOptions.tag ? `::${componentOptions.tag}` : '')
+: vnode.key
+
+/* 如果命中缓存，则直接从缓存中拿 vnode 的组件实例 */
+if (cache[key]) {
+    vnode.componentInstance = cache[key].componentInstance
+    /* 调整该组件key的顺序，将其从原来的地方删掉并重新放在最后一个 */
+    remove(keys, key)
+    keys.push(key)
+}
+/* 如果没有命中缓存，则将其设置进缓存 */
+else {
+    cache[key] = vnode
+    keys.push(key)
+    /* 如果配置了max并且缓存的长度超过了this.max，则从缓存中删除第一个 */
+    if (this.max && keys.length > parseInt(this.max)) {
+        pruneCacheEntry(cache, keys[0], keys, this._vnode)
+    }
+}
+/* 最后设置keepAlive标记位 */
+vnode.data.keepAlive = true
+```
+
+首先获取组件的`key`值：
+
+```javascript
+const key = vnode.key == null?
+componentOptions.Ctor.cid + (componentOptions.tag ? `::${componentOptions.tag}` : '')
+: vnode.key
+```
+
+拿到`key`值后去`this.cache`对象中去寻找是否有该值，如果有则表示该组件有缓存，即命中缓存：
+
+```javascript
+/* 如果命中缓存，则直接从缓存中拿 vnode 的组件实例 */
+if (cache[key]) {
+    vnode.componentInstance = cache[key].componentInstance
+    /* 调整该组件key的顺序，将其从原来的地方删掉并重新放在最后一个 */
+    remove(keys, key)
+    keys.push(key)
+}
+```
+
+直接从缓存中拿 `vnode` 的组件实例，此时重新调整该组件key的顺序，将其从原来的地方删掉并重新放在`this.keys`中最后一个。
+
+如果`this.cache`对象中没有该`key`值：
+
+```javascript
+/* 如果没有命中缓存，则将其设置进缓存 */
+else {
+    cache[key] = vnode
+    keys.push(key)
+    /* 如果配置了max并且缓存的长度超过了this.max，则从缓存中删除第一个 */
+    if (this.max && keys.length > parseInt(this.max)) {
+        pruneCacheEntry(cache, keys[0], keys, this._vnode)
+    }
+}
+```
+
+表明该组件还没有被缓存过，则以该组件的`key`为键，组件`vnode`为值，将其存入`this.cache`中，并且把`key`存入`this.keys`中。此时再判断`this.keys`中缓存组件的数量是否超过了设置的最大缓存数量值`this.max`，如果超过了，则把第一个缓存组件删掉。
+
+那么问题来了：<font color=red>**为什么要删除第一个缓存组件并且为什么命中缓存了还要调整组件key的顺序？**</font>
+
+这其实应用了一个缓存淘汰策略LRU：
+
+> LRU（**Least recently used**，最近最少使用）算法根据数据的历史访问记录来进行淘汰数据，其核心思想是“如果数据最近被访问过，那么将来被访问的几率也更高”。
+
+它的算法是这样子的：
+
+![](~@/learn-vue-source-code/BuiltInComponents/3.png)
+
+1. 将新数据从尾部插入到`this.keys`中；
+2. 每当缓存命中（即缓存数据被访问），则将数据移到`this.keys`的尾部；
+3. 当`this.keys`满的时候，将头部的数据丢弃；
+
+LRU的核心思想是如果数据最近被访问过，那么将来被访问的几率也更高，所以我们将命中缓存的组件`key`重新插入到`this.keys`的尾部，这样一来，`this.keys`中越往头部的数据即将来被访问几率越低，所以当缓存数量达到最大值时，我们就删除将来被访问几率最低的数据，即`this.keys`中第一个缓存的组件。这也就之前加粗强调的**已缓存组件中最久没有被访问的实例**会被销毁掉的原因所在。
+
+
+
+OK，言归正传，以上工作做完后设置 `vnode.data.keepAlive = true` ，最后将`vnode`返回。
+
+以上就是`render`函数的整个过程。
+
+###  生命周期钩子
+
+组件一旦被 `<keep-alive>` 缓存，那么**再次渲染**的时候就不会执行 `created`、`mounted` 等钩子函数，但是我们很多业务场景都是希望在我们被缓存的组件再次被渲染的时候做一些事情，好在` Vue` 提供了 `activated`和`deactivated` 两个钩子函数，它的执行时机是 `<keep-alive>` 包裹的组件激活时调用和停用时调用，下面我们就通过一个简单的例子来演示一下这两个钩子函数，示例如下：
+
+```javascript
+let A = {
+  template: '<div class="a">' +
+  '<p>A Comp</p>' +
+  '</div>',
+  name: 'A',
+  mounted(){
+  	console.log('Comp A mounted')
+  },
+  activated(){
+  	console.log('Comp A activated')
+  },
+  deactivated(){
+  	console.log('Comp A deactivated')
+  }
+}
+
+let B = {
+  template: '<div class="b">' +
+  '<p>B Comp</p>' +
+  '</div>',
+  name: 'B',
+  mounted(){
+  	console.log('Comp B mounted')
+  },
+  activated(){
+  	console.log('Comp B activated')
+  },
+  deactivated(){
+  	console.log('Comp B deactivated')
+  }
+}
+
+let vm = new Vue({
+  el: '##app',
+  template: '<div>' +
+  '<keep-alive>' +
+  '<component :is="currentComp">' +
+  '</component>' +
+  '</keep-alive>' +
+  '<button @click="change">switch</button>' +
+  '</div>',
+  data: {
+    currentComp: 'A'
+  },
+  methods: {
+    change() {
+      this.currentComp = this.currentComp === 'A' ? 'B' : 'A'
+    }
+  },
+  components: {
+    A,
+    B
+  }
+})
+```
+
+在上述代码中，我们定义了两个组件`A`和`B`并为其绑定了钩子函数，并且在根组件中用 `<keep-alive>`组件包裹了一个动态组件，这个动态组件默认指向组件`A`，当点击`switch`按钮时，动态切换组件`A`和`B`。我们来看下效果：
+
+![](~@/learn-vue-source-code/BuiltInComponents/4.gif)
+
+从图中我们可以看到，当第一次打开页面时，组件`A`被挂载，执行了组件`A`的`mounted`和`activated`钩子函数，当点击`switch`按钮后，组件`A`停止调用，同时组件`B`被挂载，此时执行了组件`A`的`deactivated`和组件`B`的`mounted`和`activated`钩子函数。此时再点击`switch`按钮，组件`B`停止调用，组件`A`被再次激活，我们发现现在只执行了组件`A`的`activated`钩子函数，这就验证了文档中所说的**组件一旦被 `<keep-alive>` 缓存，那么再次渲染的时候就不会执行 `created`、`mounted` 等钩子函数。**
+
+###  总结
+
+本篇文章介绍了`Vue`中的内置组件`<keep-alive>`组件。
+
+首先，通过简单例子介绍了`<keep-alive>`组件的使用场景。
+
+接着，根据官方文档回顾了`<keep-alive>`组件的具体用法。
+
+然后，从源码角度深入分析了`<keep-alive>`组件的内部原理，并且知道了该组件使用了`LRU`的缓存策略。
+
+最后，观察了`<keep-alive>`组件对应的两个生命周期钩子函数的调用时机。
+
+读完这篇文章相信在面试中被问到`<keep-alive>`组件的实现原理的时候就不慌不忙啦。
+
