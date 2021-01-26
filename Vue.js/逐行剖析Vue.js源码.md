@@ -1642,7 +1642,7 @@ OK,处理完毕，可见源码中的处理逻辑跟我们之前分析的逻辑�
 
 ### 什么是模板编译
 
-我们知道，在日常开发中，我们把写在`<template></template>`标签中的类似于原生`HTML`的内容称之为模板。这时你可能会问了，为什么说是“类似于原生`HTML`的内容”而不是“就是`HTML`的内容”？因为我们在开发中，在`<template></template>`标签中除了写一些原生`HTML`的标签，我们还会写一些变量插值，如{{xxx}}，或者写一些 Vue 指令，如`v-on`、`v-if`等。而这些东西都是在原生`HTML`语法中不存在的，不被接受的。但是事实上我们确实这么写了，也被正确识别了，页面也正常显示了，这又是为什么呢？
+我们知道，在日常开发中，我们把写在`<template></template>`标签中的类似于原生`HTML`的内容称之为模板。这时你可能会问了，为什么说是“类似于原生`HTML`的内容”而不是“就是`HTML`的内容”？因为我们在开发中，在`<template></template>`标签中除了写一些原生`HTML`的标签，我们还会写一些变量插值，如`{{xxx}}`，或者写一些 Vue 指令，如`v-on`、`v-if`等。而这些东西都是在原生`HTML`语法中不存在的，不被接受的。但是事实上我们确实这么写了，也被正确识别了，页面也正常显示了，这又是为什么呢？
 
 这就归功于 Vue 的模板编译了， Vue 会把用户在`<template></template>`标签中写的类似于原生`HTML`的内容进行编译，把原生`HTML`的内容找出来，再把非原生`HTML`找出来，经过一系列的逻辑处理生成渲染函数，也就是`render`函数，而`render`函数会将模板内容生成对应的`VNode`，而`VNode`再经过前几篇文章介绍的`patch`过程从而得到将要渲染的视图中的`VNode`，最后根据`VNode`创建真实的`DOM`节点并插入到视图中， 最终完成视图的渲染更新。
 
@@ -1711,7 +1711,7 @@ export const createCompiler = createCompilerCreator(function baseCompile (
 可以看到 `baseCompile` 的代码非常的简短主要核心代码。
 
 - **const ast =parse(template.trim(), options)**:`parse` 会用正则等方式解析 `template` 模板中的指令、`class`、`style`等数据，形成`AST`。
-- **optimize(ast, options)**: `optimize` 的主要作用是标记静态节点，这是  Vue  在编译过程中的一处优化，挡在进行`patch` 的过程中， `DOM-Diff` 算法会直接跳过静态节点，从而减少了比较的过程，优化了 `patch` 的性能。
+- **optimize(ast, options)**: `optimize` 的主要作用是标记静态节点，这是 Vue 在编译过程中的一处优化，挡在进行`patch` 的过程中， `DOM-Diff` 算法会直接跳过静态节点，从而减少了比较的过程，优化了 `patch` 的性能。
 - **const code =generate(ast, options)**: 将 `AST` 转化成 `render`函数字符串的过程，得到结果是 `render`函数 的字符串以及 `staticRenderFns` 字符串。
 
 最终 `baseCompile` 的返回值
