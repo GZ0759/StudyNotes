@@ -16937,11 +16937,11 @@ double(3, successCallback, failureCallback);
 
 期约是对尚不存在结果的一个替身。期约（promise）这个名字最早是由 Daniel Friedman 和 David Wise 在他们于 1976 年发表的论文“The Impact of Applicative Programming on Multiprocessing”中提出来的。但直到十几年以后，Barbara Liskov 和 Liuba Shrira 在 1988 年发表了论文“Promises—Linguistic Support for Efficient Asynchronous Procedure Calls in Distributed Systems”，这个概念才真正确立下来。同一时期的计算机科学家还使用了“终局”（eventual）、“期许”（future）、“延迟”（delay）和“迟付”（deferred）等术语指代同样的概念。所有这些概念描述的都是一种异步程序执行的机制。
 
-### 11.2.1 Promises/A+规范
+### 11.2.1 Promises/A+ 规范
 
-早期的期约机制在 jQuery 和 Dojo 中是以 Deferred API 的形式出现 的。到了 2010 年，CommonJS 项目实现的 Promises/A 规范日益流行起来。Q 和 Bluebird 等第三方 JavaScript 期约库也越来越得到社区认可，虽然这些库的实现多少都有些不同。为弥合现有实现之间的差异，2012 年 Promises/A+组织分叉（fork）了 CommonJS 的 Promises/A 建议，并以相同的名字制定了 Promises/A+规范。这个规范最终成为了 ECMAScript 6 规范实现的范本。
+早期的期约机制在 jQuery 和 Dojo 中是以 Deferred API 的形式出现 的。到了 2010 年，CommonJS 项目实现的 Promises/A 规范日益流行起来。Q 和 Bluebird 等第三方 JavaScript 期约库也越来越得到社区认可，虽然这些库的实现多少都有些不同。为弥合现有实现之间的差异，2012 年 Promises/A+ 组织分叉（fork）了 CommonJS 的 Promises/A 建议，并以相同的名字制定了 Promises/A+ 规范。这个规范最终成为了 ECMAScript 6 规范实现的范本。
 
-ECMAScript 6 增加了对 Promises/A+规范的完善支持，即 Promise 类型。一经推出， Promise 就大受欢迎，成为了主导性的异步编程机制。所有现代浏览器都支持 ES6 期约，很多其他浏览器 API（如 `fetch()` 和 Battery Status API）也以期约为基础。
+ECMAScript 6 增加了对 Promises/A+ 规范的完善支持，即 Promise 类型。一经推出， Promise 就大受欢迎，成为了主导性的异步编程机制。所有现代浏览器都支持 ES6 期约，很多其他浏览器 API（如 `fetch()` 和 Battery Status API）也以期约为基础。
 
 ### 11.2.2 期约基础
 
