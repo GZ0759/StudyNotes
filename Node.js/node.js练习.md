@@ -1,11 +1,13 @@
 # 合并所有 MD 文件
 
+需求：将当前文件夹下的所有 markdown 文件整合在一个新的 markdown 文件中。
+
 ```js
 const fs = require('fs');
 
 async function print(path) {
   let dir = await fs.readdirSync(path);
-//   过滤index.md/index.js
+  // 过滤index.md/index.js
   dir = dir.filter((item) => item.indexOf('index') < 0);
   let content = '';
   for (const dirent of dir) {
