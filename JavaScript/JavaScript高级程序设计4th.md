@@ -6201,45 +6201,40 @@ JavaScript 比较独特的一点是，函数实际上是 Function 类型的实�
 
 本章内容
 
-对象
-数组与定型数组
-Map 、 WeakMap 、 Set 以及 WeakSet 类型
+- 对象
+- 数组与定型数组
+- Map 、 WeakMap 、 Set 以及 WeakSet 类型
 
 ## 6.1 Object
 
-到目前为止，大多数引用值的示例使用的是 Object 类型。
-
-Object 是 ECMAScript 中最常用的类型之一。虽然 Object 的实例没有多少功能，但很适合存储和在应用程序间交换数据。
+到目前为止，大多数引用值的示例使用的是 Object 类型。Object 是 ECMAScript 中最常用的类型之一。虽然 Object 的实例没有多少功能，但很适合存储和在应用程序间交换数据。
 
 显式地创建 Object 的实例有两种方式。第一种是使用 new 操作符和 Object 构造函数，如下所示：
 
-```
-let person = new Object(); person.name = "Nicholas"; person.age = 29;
-```
-
-另一种方式是使用对象字面量（object literal）表示法。对象字面量是对象定义的简写形式，目的是为了简化包含大量属性的对象的创建。比
-
-如，下面的代码定义了与前面示例相同的 person 对象，但使用的是对象字面量表示法：
-
-```
-let person = { name: "Nicholas", age: 29
-
-};
+```js
+let person = new Object();
+person.name = 'Nicholas';
+person.age = 29;
 ```
 
-在这个例子中，左大括号（ { ）表示对象字面量开始，因为它出现在一个表达式上下文（expression context）中。在 ECMAScript 中，表达式上下文指的是期待返回值的上下文。赋值操作符表示后面要期待一个值，因此左大括号表示一个表达式的开始。同样是左大括号，如果出现在语句上下文（statement context）中，比如 if 语句的条件后面，则表示一个语句块的开始。
+另一种方式是使用对象字面量（object literal）表示法。对象字面量是对象定义的简写形式，目的是为了简化包含大量属性的对象的创建。比如，下面的代码定义了与前面示例相同的 person 对象，但使用的是对象字面量表示法：
 
-接下来指定了 name 属性，后跟一个冒号，然后是属性的值。逗号用于在对象字面量中分隔属性，因此字符串 "Nicholas" 后面有一个逗
+```js
+let person = { name: 'Nicholas', age: 29 };
+```
 
-号，而 29 后面没有，因为 age 是这个对象的最后一个属性。在最后一个属性后面加上逗号在非常老的浏览器中会导致报错，但所有现代浏览器都支持这种写法。
+在这个例子中，左大括号（ `{` ）表示对象字面量开始，因为它出现在一个表达式上下文（expression context）中。在 ECMAScript 中，表达式上下文指的是期待返回值的上下文。赋值操作符表示后面要期待一个值，因此左大括号表示一个表达式的开始。同样是左大括号，如果出现在语句上下文（statement context）中，比如 if 语句的条件后面，则表示一个语句块的开始。
+
+接下来指定了 name 属性，后跟一个冒号，然后是属性的值。逗号用于在对象字面量中分隔属性，因此字符串 "Nicholas" 后面有一个逗号，而 29 后面没有，因为 age 是这个对象的最后一个属性。在最后一个属性后面加上逗号在非常老的浏览器中会导致报错，但所有现代浏览器都支持这种写法。
 
 在对象字面量表示法中，属性名可以是字符串或数值，比如：
 
-```
-let person = { "name": "Nicholas", "age": 29,
+```js
+let person = {
+  name: 'Nicholas',
+  age: 29,
 
-5: true
-
+  5: true,
 };
 ```
 
@@ -6247,41 +6242,36 @@ let person = { "name": "Nicholas", "age": 29,
 
 当然也可以用对象字面量表示法来定义一个只有默认属性和方法的对象，只要使用一对大括号，中间留空就行了：
 
-```
+```js
 let person = {}; // 与 new Object()相同
 
-person.name = "Nicholas"; person.age = 29;
+person.name = 'Nicholas';
+person.age = 29;
 ```
 
 这个例子跟本节开始的第一个例子是等效的，虽然看起来有点怪。对象字面量表示法通常只在为了让属性一目了然时才使用。
 
-> 注意 在使用对象字面量表示法定义对象时，并不会实际调用
-
-Object 构造函数。
+> 注意 在使用对象字面量表示法定义对象时，并不会实际调用 Object 构造函数。
 
 虽然使用哪种方式创建 Object 实例都可以，但实际上开发者更倾向于使用对象字面量表示法。这是因为对象字面量代码更少，看起来也更有封装所有相关数据的感觉。事实上，对象字面量已经成为给函数传递大量可选参数的主要方式，比如：
 
-```
-function displayInfo(args) { let output = "";
-
-if (typeof args.name == "string"){ output += "Name: " \+ args.name \+ "\\n";
-
+```js
+function displayInfo(args) {
+  let output = '';
+  if (typeof args.name == 'string') {
+    output += 'Name: ' + args.name + 'n';
+  }
+  if (typeof args.age == 'number') {
+    output += 'Age: ' + args.age + 'n';
+  }
+  alert(output);
 }
-
-if (typeof args.age == "number") { output += "Age: " \+ args.age \+ "\\n";
-
-}
-
-alert(output);
-
-}
-
-displayInfo({ name: "Nicholas", age: 29
-
+displayInfo({
+  name: 'Nicholas',
+  age: 29,
 });
-
-displayInfo({ name: "Greg"
-
+displayInfo({
+  name: 'Greg',
 });
 ```
 
@@ -6291,22 +6281,21 @@ displayInfo({ name: "Greg"
 
 虽然属性一般是通过点语法来存取的，这也是面向对象语言的惯例，但也可以使用中括号来存取属性。在使用中括号时，要在括号内使用属性名的字符串形式，比如：
 
-```
-console.log(person\["name"\]); // "Nicholas"
-
+```js
+console.log(person['name']); // "Nicholas"
 console.log(person.name); // "Nicholas"
 ```
 
 从功能上讲，这两种存取属性的方式没有区别。使用中括号的主要优势就是可以通过变量访问属性，就像下面这个例子中一样：
 
-```
-let propertyName = "name"; console.log(person\[propertyName\]); // "Nicholas"
+```JS
+let propertyName = "name"; console.log(person[propertyName]); // "Nicholas"
 ```
 
 另外，如果属性名中包含可能会导致语法错误的字符，或者包含关键字/保留字时，也可以使用中括号语法。比如：
 
-```
-person\["first name"\] = "Nicholas";
+```JS
+person["first name"] = "Nicholas";
 ```
 
 因为 "first name" 中包含一个空格，所以不能使用点语法来访 问。不过，属性名中是可以包含非字母数字字符的，这时候只要用中括号语法存取它们就行了。
@@ -6323,191 +6312,155 @@ person\["first name"\] = "Nicholas";
 
 有几种基本的方式可以创建数组。一种是使用 Array 构造函数，比如：
 
-```
+```js
 let colors = new Array();
 ```
 
 如果知道数组中元素的数量，那么可以给构造函数传入一个数值，然后 length 属性就会被自动创建并设置为这个值。比如，下面的代码会创建一个初始 length 为 20 的数组：
 
-```
-
-```
-
+```js
 let colors = new Array(20);
+```
 
 也可以给 Array 构造函数传入要保存的元素。比如，下面的代码会创建一个包含 3 个字符串值的数组：
 
-```
-let colors = new Array("red", "blue", "green");
+```js
+let colors = new Array('red', 'blue', 'green');
 ```
 
 创建数组时可以给构造函数传一个值。这时候就有点问题了，因为如果这个值是数值，则会创建一个长度为指定数值的数组；而如果这个值是其他类型的，则会创建一个只包含该特定值的数组。下面看一个例子：
 
-```
+```js
 let colors = new Array(3); // 创建一个包含 3 个元素的数组
-
-let names = new Array("Greg"); // 创建一个只包含一个元素，即字符串"Greg"的数组
+let names = new Array('Greg'); // 创建一个只包含一个元素，即字符串"Greg"的数组
 ```
 
 在使用 Array 构造函数时，也可以省略 new 操作符。结果是一样的，比如：
 
-```
-let colors = Array(3); // 创建一个包含 3 个元素的数组 let names = Array("Greg"); // 创建一个只包含一个元素，即字符串"Greg"的数组
+```js
+let colors = Array(3); // 创建一个包含 3 个元素的数组
+let names = Array('Greg'); // 创建一个只包含一个元素，即字符串"Greg"的数组
 ```
 
 另一种创建数组的方式是使用数组字面量（array literal）表示法。数组字面量是在中括号中包含以逗号分隔的元素列表，如下面的例子所示：
 
-```
-let colors = \["red", "blue", "green"\]; // 创建一个包含 3 个元素的数组
+```js
+let colors = ['red', 'blue', 'green']; // 创建一个包含 3 个元素的数组
 
-let names = \[\]; // 创 建 一 个 空 数 组
+let names = []; // 创 建 一 个 空 数 组
 
-let values = \[1,2,\]; // 创 建 一 个 包 含 2 个 元 素 的 数 组
+let values = [1, 2]; // 创 建 一 个 包 含 2 个 元 素 的 数 组
 ```
 
 在这个例子中，第一行创建一个包含 3 个字符串的数组。第二行用一对空中括号创建了一个空数组。第三行展示了在数组最后一个值后面加逗号的效果： values 是一个包含两个值（1 和 2）的数组。
 
-> 注意 与对象一样，在使用数组字面量表示法创建数组不会调用
+> 注意 与对象一样，在使用数组字面量表示法创建数组不会调用 Array 构造函数。
 
-Array 构造函数。
-
-Array 构造函数还有两个 ES6 新增的用于创建数组的静态方法：
-
-from() 和 of() 。 from() 用于将类数组结构转换为数组实例，而
-
-of() 用于将一组参数转换为数组实例。
+Array 构造函数还有两个 ES6 新增的用于创建数组的静态方法：from() 和 of() 。 from() 用于将类数组结构转换为数组实例，而 of() 用于将一组参数转换为数组实例。
 
 Array.from() 的第一个参数是一个类数组对象，即任何可迭代的结构，或者有一个 length 属性和可索引元素的结构。这种方式可用于很多场合：
 
-```
+```js
 // 字符串会被拆分为单字符数组
-
-console.log(Array.from("Matt")); // \["M", "a", "t", "t"\]
-
+console.log(Array.from('Matt')); // ["M", "a", "t", "t"]
 // 可以使用 from()将集合和映射转换为一个新数组
-
-const m = new Map().set(1, 2)
-
-.set(3, 4); const s = new Set().add(1)
-
-.add(2)
-
-.add(3)
-
-.add(4);
-
-console.log(Array.from(m)); // \[\[1, 2\], \[3, 4\]\]
-
-console.log(Array.from(s)); // \[1, 2, 3, 4\]
-
+const m = new Map().set(1, 2).set(3, 4);
+const s = new Set().add(1).add(2).add(3).add(4);
+console.log(Array.from(m)); // [[1, 2], [3, 4]]
+console.log(Array.from(s)); // [1, 2, 3, 4]
 // Array.from()对现有数组执行浅复制
-
-const a1 = \[1, 2, 3, 4\]; const a2 = Array.from(a1);
-
-console.log(a1); // \[1, 2, 3, 4\]
-
+const a1 = [1, 2, 3, 4];
+const a2 = Array.from(a1);
+console.log(a1); // [1, 2, 3, 4]
 alert(a1 === a2); // false
-
 // 可以使用任何可迭代对象
-
 const iter = {
-
-\*\[Symbol.iterator\]() { yield 1;
-
-yield 2;
-
-yield 3;
-
-yield 4;
-
-}
-
+  *[Symbol.iterator]() {
+    yield 1;
+    yield 2;
+    yield 3;
+    yield 4;
+  },
 };
-
-console.log(Array.from(iter)); // \[1, 2, 3, 4\]
-
+console.log(Array.from(iter)); // [1, 2, 3, 4]
 // arguments 对象可以被轻松地转换为数组
-
-function getArgsArray() { return Array.from(arguments);
-
+function getArgsArray() {
+  return Array.from(arguments);
 }
-
-console.log(getArgsArray(1, 2, 3, 4)); // \[1, 2, 3,
-
-4\]
-
+console.log(getArgsArray(1, 2, 3, 4)); // [1, 2, 3, 4]
 // from()也能转换带有必要属性的自定义对象
-
 const arrayLikeObject = {
-
-length: 4
-
+  0: 1,
+  1: 2,
+  2: 3,
+  3: 4,
+  length: 4,
 };
-
-console.log(Array.from(arrayLikeObject)); // \[1, 2,
-
-3, 4\]
+console.log(Array.from(arrayLikeObject)); // [1, 2, 3, 4]
 ```
 
-Array.from() 还接收第二个可选的映射函数参数。这个函数可以直接增强新数组的值，而无须像调用 Array.from().map() 那样先创建一个中间数组。还可以接收第三个可选参数，用于指定映射函数中
+Array.from() 还接收第二个可选的映射函数参数。这个函数可以直接增强新数组的值，而无须像调用 Array.from().map() 那样先创建一个中间数组。还可以接收第三个可选参数，用于指定映射函数中 this 的值。但这个重写的 this 值在箭头函数中不适用。
 
-this 的值。但这个重写的 this 值在箭头函数中不适用。
-
-```
-x\*\*this.exponent}, {exponent: 2});
-
-console.log(a2); // \[1, 4, 9, 16\]
-
-console.log(a3); // \[1, 4, 9, 16\]
+```js
+const a1 = [1, 2, 3, 4];
+const a2 = Array.from(a1, (x) => x ** 2);
+const a3 = Array.from(
+  a1,
+  function (x) {
+    return x ** this.exponent;
+  },
+  { exponent: 2 }
+);
+console.log(a2); // [1, 4, 9, 16]
+console.log(a3); // [1, 4, 9, 16]
 ```
 
 Array.of() 可以把一组参数转换为数组。这个方法用于替代在 ES6 之前常用的 Array.prototype.slice.call(arguments) ，一种异常笨拙的将 arguments 对象转换为数组的写法：
 
 ```
-console.log(Array.of(1, 2, 3, 4)); // \[1, 2, 3, 4\]
-
-console.log(Array.of(undefined)); // \[undefined\]
+console.log(Array.of(1, 2, 3, 4)); // [1, 2, 3, 4]
+console.log(Array.of(undefined)); // [undefined]
 ```
 
 ### 6.2.2 数组空位
 
-使用数组字面量初始化数组时，可以使用一串逗号来创建空位
-
-（hole）。ECMAScript 会将逗号之间相应索引位置的值当成空位，ES6 规范重新定义了该如何处理这些空位。
+使用数组字面量初始化数组时，可以使用一串逗号来创建空位（hole）。ECMAScript 会将逗号之间相应索引位置的值当成空位，ES6 规范重新定义了该如何处理这些空位。
 
 可以像下面这样创建一个空位数组：
 
-```
-const options = \[,,,,,\]; // 创建包含 5 个元素的数组
+```js
+const options = [, , , , ,]; // 创建包含 5 个元素的数组
 
 console.log(options.length); // 5
 
-console.log(options); // \[,,,,,\]
+console.log(options); // [,,,,,]
 ```
 
 ES6 新增的方法和迭代器与早期 ECMAScript 版本中存在的方法行为不同。ES6 新增方法普遍将这些空位当成存在的元素，只不过值为 undefined ：
 
+```js
+const options = [1, , , , 5];
+
+for (const option of options) {
+  console.log(option === undefined);
+}
+
+// false
+
+// true
+
+// true
+
+// true
+
+// false
 ```
-const options = \[1,,,,5\];
 
-for (const option of options) { console.log(option === undefined);
+const a = Array.from([,,,]); // 使用 ES6 的 Array.from()创建的包含 3 个空位的数组
 
-}
-
-// false
-
-// true
-
-// true
-
-// true
-
-// false
-
-const a = Array.from(\[,,,\]); // 使用 ES6 的 Array.from()创建的包含 3 个空位的数组
-
-for (const val of a) { alert(val === undefined);
-
+```js
+for (const val of a) {
+  alert(val === undefined);
 }
 
 // true
@@ -6516,12 +6469,10 @@ for (const val of a) { alert(val === undefined);
 
 // true
 
-alert(Array.of(...\[,,,\])); // \[undefined, undefined, undefined\]
+alert(Array.of(...[, , ,])); // [undefined, undefined, undefined]
 
-for (const \[index, value\] of options.entries()) {
-
-alert(value);
-
+for (const [index, value] of options.entries()) {
+  alert(value);
 }
 
 // 1
@@ -6537,12 +6488,12 @@ alert(value);
 
 ES6 之前的方法则会忽略这个空位，但具体的行为也会因方法而异：
 
-```
-const options = \[1,,,,5\];
+```js
+const options = [1, , , , 5];
 
 // map()会跳过空位置
 
-console.log(options.map(() => 6)); // \[6, undefined, undefined, undefined, 6\]
+console.log(options.map(() => 6)); // [6, undefined, undefined, undefined, 6]
 
 // join()视空位置为空字符串
 
@@ -6555,83 +6506,70 @@ console.log(options.join('-')); // "1----5"
 
 要取得或设置数组的值，需要使用中括号并提供相应值的数字索引，如下所示：
 
+```js
+let colors = ['red', 'blue', 'green']; // 定义一个字符串数组
+
+alert(colors[0]); // 显 示 第 一 项
+
+colors[2] = 'black'; // 修 改 第 三 项
+
+colors[3] = 'brown'; // 添 加 第 四 项
 ```
-let colors = \["red", "blue", "green"\]; // 定义一个字符串数组
 
-alert(colors\[0\]); // 显 示 第 一 项
-
-colors\[2\] = "black"; // 修 改 第 三 项
-
-colors\[3\] = "brown"; // 添 加 第 四 项
-```
-
-在中括号中提供的索引表示要访问的值。如果索引小于数组包含的元素数，则返回存储在相应位置的元素，就像示例中 colors\[0\] 显
-
-示 "red" 一样。设置数组的值方法也是一样的，就是替换指定位置的值。如果把一个值设置给超过数组最大索引的索引，就像示例中的 colors\[3\] ，则数组长度会自动扩展到该索引值加 1（示例中设置的索引 3，所以数组长度变成了 4）。
+在中括号中提供的索引表示要访问的值。如果索引小于数组包含的元素数，则返回存储在相应位置的元素，就像示例中 colors[0] 显示 "red" 一样。设置数组的值方法也是一样的，就是替换指定位置的值。如果把一个值设置给超过数组最大索引的索引，就像示例中的 colors[3] ，则数组长度会自动扩展到该索引值加 1（示例中设置的索引 3，所以数组长度变成了 4）。
 
 数组中元素的数量保存在 length 属性中，这个属性始终返回 0 或大于 0 的值，如下例所示：
 
-```
-let colors = \["red", "blue", "green"\]; // 创建一个包含 3 个字符串的数组
+```js
+let colors = ['red', 'blue', 'green']; // 创建一个包含 3 个字符串的数组
 
-let names = \[\]; // 创 建 一 个 空 数 组
+let names = []; // 创 建 一 个 空 数 组
 
 alert(colors.length); // 3
 
 alert(names.length); // 0
 ```
 
-数组 length 属性的独特之处在于，它不是只读的。通过修改
+数组 length 属性的独特之处在于，它不是只读的。通过修改 length 属性，可以从数组末尾删除或添加元素。来看下面的例子：
 
-length 属性，可以从数组末尾删除或添加元素。来看下面的例子：
-
-```
-let colors = \["red", "blue", "green"\]; // 创建一个包含
-```
-
-3 个字符串的数组
-
-```
-colors.length = 2; alert(colors\[2\]); // undefined
+```js
+let colors = ['red', 'blue', 'green']; // 创建一个包含 3 个字符串的数组
+colors.length = 2;
+alert(colors[2]); // undefined
 ```
 
-这里，数组 colors 一开始有 3 个值。将 length 设置为 2，就删除了最后一个（位置 2 的）值，因此 colors\[2\] 就没有值了。如果将
+这里，数组 colors 一开始有 3 个值。将 length 设置为 2，就删除了最后一个（位置 2 的）值，因此 colors[2] 就没有值了。如果将 length 设置为大于数组元素数的值，则新添加的元素都将以 undefined 填充，如下例所示：
 
-length 设置为大于数组元素数的值，则新添加的元素都将以
+```js
+let colors = ['red', 'blue', 'green']; // 创建一个包含 3 个字符串的数组
 
-undefined 填充，如下例所示：
-
-```
-let colors = \["red", "blue", "green"\]; // 创建一个包含 3 个字符串的数组
-
-colors.length = 4; alert(colors\[3\]); // undefined
+colors.length = 4;
+alert(colors[3]); // undefined
 ```
 
 这里将数组 colors 的 length 设置为 4，虽然数组只包含 3 个元素。位置 3 在数组中不存在，因此访问其值会返回特殊值 undefined 。
 
 使用 length 属性可以方便地向数组末尾添加元素，如下例所示：
 
+```js
+let colors = ['red', 'blue', 'green']; // 创建一个包含 3 个字符串的数组
+
+colors[colors.length] = 'black'; // 添 加 一 种 颜 色 （ 位 置 3）
+
+colors[colors.length] = 'brown'; // 再 添 加 一 种 颜 色 （ 位 置 4）
 ```
-let colors = \["red", "blue", "green"\]; // 创建一个包含 3 个字符串的数组
 
-colors\[colors.length\] = "black"; // 添 加 一 种 颜 色 （ 位 置 3）
+数组中最后一个元素的索引始终是 length - 1 ，因此下一个新增槽位的索引就是 length 。每次在数组最后一个元素后面新增一项，数组的 length 属性都会自动更新，以反映变化。这意味着第二行的 colors[colors.length] 会在位置 3 添加一个新元素，下一行则会在位置 4 添加一个新元素。新的长度会在新增元素被添加到当前数组外部的位置上时自动更新。换句话说，就是 length 属性会更新为位置加上 1，如下例所示：
 
-colors\[colors.length\] = "brown"; // 再 添 加 一 种 颜 色 （ 位 置 4）
-```
+```js
+let colors = ['red', 'blue', 'green']; // 创建一个包含 3 个字符串的数组
 
-数组中最后一个元素的索引始终是 length \- 1 ，因此下一个新增槽位的索引就是 length 。每次在数组最后一个元素后面新增一项，数组的 length 属性都会自动更新，以反映变化。这意味着第二行的
-
-colors\[colors.length\] 会在位置 3 添加一个新元素，下一行则会在位置 4 添加一个新元素。新的长度会在新增元素被添加到当前数组外部的位置上时自动更新。换句话说，就是 length 属性会更新为位置加上 1，如下例所示：
-
-```
-let colors = \["red", "blue", "green"\]; // 创建一个包含 3 个字符串的数组
-
-colors\[99\] = "black"; // 添 加 一 种 颜色（位置 99）
+colors[99] = 'black'; // 添 加 一 种 颜色（位置 99）
 
 alert(colors.length); // 100
 ```
 
-这里， colors 数组有一个值被插入到位置 99，结果新 length 就变成了 100（99 + 1）。这中间的所有元素，即位置 3\~98，实际上并不存在，因此在访问时会返回 undefined 。
+这里， colors 数组有一个值被插入到位置 99，结果新 length 就变成了 100（99 + 1）。这中间的所有元素，即位置 3~98，实际上并不存在，因此在访问时会返回 undefined 。
 
 > 注意 数组最多可以包含 4 294 967 295 个元素，这对于大多数编程任务应该足够了。如果尝试添加更多项，则会导致抛出错误。以这个最大值作为初始值创建数组，可能导致脚本运行时间过长的错误。
 
@@ -6639,11 +6577,9 @@ alert(colors.length); // 100
 
 一个经典的 ECMAScript 问题是判断一个对象是不是数组。在只有一个网页（因而只有一个全局作用域）的情况下，使用 instanceof 操作符就足矣：
 
-```
-if (value instanceof Array){
-
-// 操作数组
-
+```js
+if (value instanceof Array) {
+  // 操作数组
 }
 ```
 
@@ -6651,57 +6587,44 @@ if (value instanceof Array){
 
 为解决这个问题，ECMAScript 提供了 Array.isArray() 方法。这个方法的目的就是确定一个值是否为数组，而不用管它是在哪个全局执行上下文中创建的。来看下面的例子：
 
-```
-if (Array.isArray(value)){
-
-// 操作数组
-
+```js
+if (Array.isArray(value)) {
+  // 操作数组
 }
 ```
 
 ### 6.2.5 迭代器方法
 
-在 ES6 中， Array 的原型上暴露了 3 个用于检索数组内容的方法：
+在 ES6 中， Array 的原型上暴露了 3 个用于检索数组内容的方法：keys() 、 values() 和 entries() 。 keys() 返回数组索引的迭代器， values() 返回数组元素的迭代器，而 entries() 返回索引/值对的迭代器：
 
-keys() 、 values() 和 entries() 。 keys() 返回数组索引的迭代器， values() 返回数组元素的迭代器，而 entries() 返回索引/值对的迭代器：
-
-```
-const a = \["foo", "bar", "baz", "qux"\];
+```js
+const a = ['foo', 'bar', 'baz', 'qux'];
 
 // 因为这些方法都返回迭代器，所以可以将它们的内容
 
 // 通过 Array.from()直接转换为数组实例
 
-const aKeys = Array.from(a.keys()); const aValues = Array.from(a.values());
+const aKeys = Array.from(a.keys());
+const aValues = Array.from(a.values());
 
 const aEntries = Array.from(a.entries());
 ```
 
 使用 ES6 的解构可以非常容易地在循环中拆分键/值对：
 
-```
-const a = \["foo", "bar", "baz", "qux"\];
-
-for (const \[idx, element\] of a.entries()) \[ alert(idx);
-
-alert(element);
-
+```js
+const a = ['foo', 'bar', 'baz', 'qux'];
+for (const [idx, element] of a.entries()) {
+  alert(idx);
+  alert(element);
 }
-
 // 0
-
 // foo
-
 // 1
-
 // bar
-
 // 2
-
 // baz
-
 // 3
-
 // qux
 ```
 
@@ -6709,20 +6632,18 @@ alert(element);
 
 ### 6.2.6 复制和填充方法
 
-ES6 新增了两个方法：批量复制方法 fill() ，以及填充数组方法
-
-copyWithin() 。这两个方法的函数签名类似，都需要指定既有数组实例上的一个范围，包含开始索引，不包含结束索引。使用这个方法创建的数组不能缩放。
+ES6 新增了两个方法：批量复制方法 fill() ，以及填充数组方法 copyWithin() 。这两个方法的函数签名类似，都需要指定既有数组实例上的一个范围，包含开始索引，不包含结束索引。使用这个方法创建的数组不能缩放。
 
 使用 fill() 方法可以向一个已有的数组中插入全部或部分相同的值。开始索引用于指定开始填充的位置，它是可选的。如果不提供结束索引，则一直填充到数组末尾。负值索引从数组末尾开始计算。也可以将负索引想象成数组长度加上它得到的一个正索引：
 
-```
-const zeroes = \[0, 0, 0, 0, 0\];
+```js
+const zeroes = [0, 0, 0, 0, 0];
 
 // 用 5 填充整个数组
 
 zeroes.fill(5);
 
-console.log(zeroes); // \[5, 5, 5, 5, 5\]
+console.log(zeroes); // [5, 5, 5, 5, 5]
 
 zeroes.fill(0); // 重 置
 
@@ -6737,110 +6658,98 @@ zeroes.fill(7, 1, 3);
 
 fill() 静默忽略超出数组边界、零长度及方向相反的索引范围：
 
-```
-const zeroes = \[0, 0, 0, 0, 0\];
+```js
+const zeroes = [0, 0, 0, 0, 0];
 
 // 索引过低，忽略
 
-zeroes.fill(1, \-10, \-6);
+zeroes.fill(1, -10, -6);
 
-console.log(zeroes); // \[0, 0, 0, 0, 0\]
+console.log(zeroes); // [0, 0, 0, 0, 0]
 
 // 索引过高，忽略
 
 zeroes.fill(1, 10, 15);
 
-console.log(zeroes); // \[0, 0, 0, 0, 0\]
+console.log(zeroes); // [0, 0, 0, 0, 0]
 
 // 索引反向，忽略
 
 zeroes.fill(2, 4, 2);
 
-console.log(zeroes); // \[0, 0, 0, 0, 0\]
+console.log(zeroes); // [0, 0, 0, 0, 0]
 
 // 索引部分可用，填充可用部分
 
-zeroes.fill(4, 3, 10)
+zeroes.fill(4, 3, 10);
 
-console.log(zeroes); // \[0, 0, 0, 4, 4\]
+console.log(zeroes); // [0, 0, 0, 4, 4]
 ```
 
 与 fill() 不同， copyWithin() 会按照指定范围浅复制数组中的部分内容，然后将它们插入到指定索引开始的位置。开始索引和结束索引则与 fill() 使用同样的计算方法：
 
-```
+```js
 let ints,
-
-reset = () => ints = \[0, 1, 2, 3, 4, 5, 6, 7, 8,
-
-9\];
-
+reset = () => ints = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
 reset();
-
 // 从 ints 中复制索引 0 开始的内容，插入到索引 5 开始的位置
-
 // 在源索引或目标索引到达数组边界时停止
-
 ints.copyWithin(5);
-
-console.log(ints); // \[0, 1, 2, 3, 4, 0, 1, 2, 3,
-
-4\]
-
+console.log(ints); // [0, 1, 2, 3, 4, 0, 1, 2, 3, 4]
 reset();
-
 // 从 ints 中复制索引 5 开始的内容，插入到索引 0 开始的位置
-
 ints.copyWithin(0, 5);
-
-console.log(ints); // \[5, 6, 7, 8, 9, 5, 6, 7, 8,
-
-9\]
-
+console.log(ints); // [5, 6, 7, 8, 9, 5, 6, 7, 8, 9]
 reset();
-
 // 从 ints 中复制索引 0 开始到索引 3 结束的内容
-
 // 插入到索引 4 开始的位置
-
 ints.copyWithin(4, 0, 3);
-
-alert(ints); // \[0, 1, 2, 3, 0, 1, 2, 7, 8, 9\]
-
+alert(ints); // [0, 1, 2, 3, 0, 1, 2, 7, 8, 9]
 reset();
-
 // JavaScript 引擎在插值前会完整复制范围内的值
-
 // 因此复制期间不存在重写的风险
-
 ints.copyWithin(2, 0, 6);
-
-alert(ints); // \[0, 1, 0, 1, 2, 3, 4, 5, 8, 9\]
-
+alert(ints); // [0, 1, 0, 1, 2, 3, 4, 5, 8, 9]
 reset();
-
 // 支持负索引值，与 fill()相对于数组末尾计算正向索引的过程是一样的
-
-ints.copyWithin(-4, \-7, \-3);
-
-alert(ints); // \[0, 1, 2, 3, 4, 5, 3, 4, 5, 6\]
+ints.copyWithin(-4, -7, -3);
+alert(ints); // [0, 1, 2, 3, 4, 5, 3, 4, 5, 6]
+copyWithin()静默忽略超出数组边界、零长度及方向相反的索引范围：
+let ints,
+reset = () => ints = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+reset();
+// 索引过低，忽略
+ints.copyWithin(1, -15, -12);
+alert(ints); // [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+reset();
+// 索引过高，忽略
+ints.copyWithin(1, 12, 15);
+alert(ints); // [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+reset();
+// 索引反向，忽略
+ints.copyWithin(2, 4, 2);
+alert(ints); // [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+reset();
+// 索引部分可用，复制、填充可用部分
+ints.copyWithin(4, 7, 10)
+alert(ints); // [0, 1, 2, 3, 7, 8, 9, 7, 8, 9];
+```
 
 copyWithin() 静默忽略超出数组边界、零长度及方向相反的索引范围：
 
+```js
 let ints,
-
-reset = () => ints = \[0, 1, 2, 3, 4, 5, 6, 7, 8,
-
-9\];
+  reset = () => (ints = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]);
 
 reset();
 
 // 索引过低，忽略
 
-ints.copyWithin(1, \-15, \-12);
+ints.copyWithin(1, -15, -12);
 
-alert(ints); // \[0, 1, 2, 3, 4, 5, 6, 7, 8, 9\];
+alert(ints); // [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
 
-reset()
+reset();
 
 // 索引过高，忽略
 
@@ -6849,26 +6758,20 @@ ints.copyWithin(1, 12, 15);
 
 ### 6.2.7 转换方法
 
-前面提到过，所有对象都有 `toLocaleString()` 、 toString()
+前面提到过，所有对象都有 `toLocaleString()` 、 toString() 和 valueOf() 方法。其中， valueOf() 返回的还是数组本身。而 toString() 返回由数组中每个值的等效字符串拼接而成的一个逗号分隔的字符串。也就是说，对数组的每个值都会调用其 toString() 方 法，以得到最终的字符串。来看下面的例子：
 
-和 valueOf() 方法。其中， valueOf() 返回的还是数组本身。而
-
-toString() 返回由数组中每个值的等效字符串拼接而成的一个逗号分隔的字符串。也就是说，对数组的每个值都会调用其 toString() 方 法，以得到最终的字符串。来看下面的例子：
-
+```js
+let colors = ['red', 'blue', 'green']; // 创建一个包含 3 个字符串的数组
+alert(colors.toString()); // red,blue,green
+alert(colors.valueOf()); // red,blue,green
+alert(colors); // red,blue,green
 ```
-let colors = \["red", "blue", "green"\]; // 创建一个包含
-```
 
-3 个字符串的数组
 首先是被显式调用的 toString() 和 valueOf() 方法，它们分别返回了数组的字符串表示，即将所有字符串组合起来，以逗号分隔。最后一行代码直接用 alert() 显示数组，因为 alert() 期待字符串，所以会在后台调用数组的 toString() 方法，从而得到跟前面一样的结果。
 
-toLocaleString() 方法也可能返回跟 toString() 和
+toLocaleString() 方法也可能返回跟 toString() 和 valueOf() 相同的结果，但也不一定。在调用数组的 toLocaleString() 方法时，会得到一个逗号分隔的数组值的字符串。它与另外两个方法唯一的区别是，为了得到最终的字符串，会调用数组每个值的 `toLocaleString()` 方法，而不是 toString() 方法。看下面的例子：
 
-valueOf() 相同的结果，但也不一定。在调用数组的
-
-toLocaleString() 方法时，会得到一个逗号分隔的数组值的字符串。它与另外两个方法唯一的区别是，为了得到最终的字符串，会调用数组每个值的 `toLocaleString()` 方法，而不是 toString() 方法。看下面的例子：
-
-```
+```js
 let person1 = { `toLocaleString()` {
 
 return "Nikolaos";
@@ -6895,7 +6798,7 @@ toString() { return "Greg";
 
 };
 
-let people = \[person1, person2\];
+let people = [person1, person2];
 
 alert(people); // Nicholas,Greg
 
@@ -6904,44 +6807,33 @@ alert(people.toString()); // Nicholas,Greg
 alert(people.toLocaleString()); // Nikolaos,Grigorios
 ```
 
-这里定义了两个对象 person1 和 person2 ，它们都定义了
-
-toString() 和 `toLocaleString()` 方法，而且返回不同的值。然后又创建了一个包含这两个对象的数组 people 。在将数组传给 alert()时，输出的是 "Nicholas,Greg" ，这是因为会在数组每一项上调用
-
-toString() 方法（与下一行显式调用 toString() 方法结果一样）。而在调用数组的 `toLocaleString()` 方法时，结果变成 了 "Nikolaos, Grigorios" ，这是因为调用了数组每一项的
-
-toLocaleString() 方法。
+这里定义了两个对象 person1 和 person2 ，它们都定义了 toString() 和 `toLocaleString()` 方法，而且返回不同的值。然后又创建了一个包含这两个对象的数组 people 。在将数组传给 alert()时，输出的是 "Nicholas,Greg" ，这是因为会在数组每一项上调用 toString() 方法（与下一行显式调用 toString() 方法结果一样）。而在调用数组的 `toLocaleString()` 方法时，结果变成 了 "Nikolaos, Grigorios" ，这是因为调用了数组每一项的 toLocaleString() 方法。
 
 继承的方法 `toLocaleString()` 以及 toString() 都返回数组值的逗号分隔的字符串。如果想使用不同的分隔符，则可以使用 join() 方法。 join() 方法接收一个参数，即字符串分隔符，返回包含所有项的字符串。来看下面的例子：
 
-let colors = \["red", "green", "blue"\]; alert(colors.join(",")); // red,green,blue alert(colors.join("||")); // red||green||blue
+```js
+let colors = ['red', 'green', 'blue'];
+alert(colors.join(',')); // red,green,blue alert(colors.join("||")); // red||green||blue
+```
 
-这里在 colors 数组上调用了 join() 方法，得到了与调用
+这里在 colors 数组上调用了 join() 方法，得到了与调用 toString() 方法相同的结果。传入逗号，结果就是逗号分隔的字符串。最后一行给 join() 传入了双竖线，得到了字符串 "red||green||blue" 。如果不给 join() 传入任何参数，或者传入 undefined ，则仍然使用逗号作为分隔符。
 
-toString() 方法相同的结果。传入逗号，结果就是逗号分隔的字符串。最后一行给 join() 传入了双竖线，得到了字符
-
-串 "red||green||blue" 。如果不给 join() 传入任何参数，或者传入 undefined ，则仍然使用逗号作为分隔符。
-
-> 注意 如果数组中某一项是 null 或 undefined ，则在 join() 、
-
-toLocaleString() 、 toString() 和 valueOf() 返回的结果中会以空字符串表示。
+> 注意 如果数组中某一项是 null 或 undefined ，则在 join() 、toLocaleString() 、 toString() 和 valueOf() 返回的结果中会以空字符串表示。
 
 ### 6.2.8 栈方法
 
-ECMAScript 给数组提供几个方法，让它看起来像是另外一种数据结 构。数组对象可以像栈一样，也就是一种限制插入和删除项的数据结构。栈是一种后进先出（LIFO，Last-In-First-Out）的结构，也就是最近添加的项先被删除。数据项的插入（称为推入，push）和删除（称为弹出，pop）只在栈的一个地方发生，即栈顶。ECMAScript 数组提供了 push() 和
-
-pop() 方法，以实现类似栈的行为。
+ECMAScript 给数组提供几个方法，让它看起来像是另外一种数据结 构。数组对象可以像栈一样，也就是一种限制插入和删除项的数据结构。栈是一种后进先出（LIFO，Last-In-First-Out）的结构，也就是最近添加的项先被删除。数据项的插入（称为推入，push）和删除（称为弹出，pop）只在栈的一个地方发生，即栈顶。ECMAScript 数组提供了 push() 和 pop() 方法，以实现类似栈的行为。
 
 push() 方法接收任意数量的参数，并将它们添加到数组末尾，返回数组的最新长度。 pop() 方法则用于删除数组的最后一项，同时减少数组的 length 值，返回被删除的项。来看下面的例子：
 
-```
+```js
 let colors = new Array(); // 创 建 一 个 数 组
 
-let count = colors.push("red", "green"); // 推入两项
+let count = colors.push('red', 'green'); // 推入两项
 
 alert(count); // 2
 
-count = colors.push("black"); // 再推入一项
+count = colors.push('black'); // 再推入一项
 
 alert(count); // 3
 
@@ -6952,18 +6844,15 @@ alert(item); // black
 alert(colors.length); // 2
 ```
 
-这里创建了一个当作栈来使用的数组（注意不需要任何额外的代码，
-
-push() 和 pop() 都是数组的默认方法）。首先，使用 push() 方法把两个字符串推入数组末尾，将结果保存在变量 count 中（结果为
-
-2 ） 。
+这里创建了一个当作栈来使用的数组（注意不需要任何额外的代码，push() 和 pop() 都是数组的默认方法）。首先，使用 push() 方法把两个字符串推入数组末尾，将结果保存在变量 count 中（结果为 2 ） 。
 
 然后，再推入另一个值，再把结果保存在 count 中。因为现在数组中有 3 个元素，所以 push() 返回 3 。在调用 pop() 时，会返回数组的最后一项，即字符串 "black" 。此时数组还有两个元素。
 
 栈方法可以与数组的其他任何方法一起使用，如下例所示：
 
-```
-let colors = \["red", "blue"\]; colors.push("brown"); // 再 添 加 一 项 colors\[3\] = "black"; // 添 加 一 项
+```js
+let colors = ['red', 'blue'];
+colors.push('brown'); // 再 添 加 一 项 colors[3] = "black"; // 添 加 一 项
 
 alert(colors.length); // 4
 
@@ -6976,20 +6865,16 @@ alert(item); // black
 
 ### 6.2.9 队列方法
 
-就像栈是以 LIFO 形式限制访问的数据结构一样，队列以先进先出
+就像栈是以 LIFO 形式限制访问的数据结构一样，队列以先进先出（FIFO，First-In-First-Out）形式限制访问。队列在列表末尾添加数据，但从列表开头获取数据。因为有了在数据末尾添加数据的 push() 方法，所以要模拟队列就差一个从数组开头取得数据的方法了。这个数组方法叫 shift() ，它会删除数组的第一项并返回它，然后数组长度减 1。使用 shift() 和 push() ，可以把数组当成队列来使用：
 
-（FIFO，First-In-First-Out）形式限制访问。队列在列表末尾添加数据，但从列表开头获取数据。因为有了在数据末尾添加数据的 push() 方法，所以要模拟队列就差一个从数组开头取得数据的方法了。这个数组方法叫 shift() ，它会删除数组的第一项并返回它，然后数组长度减 1。使用
-
-shift() 和 push() ，可以把数组当成队列来使用：
-
-```
+```js
 let colors = new Array(); // 创 建 一 个 数 组
 
-let count = colors.push("red", "green"); // 推入两项
+let count = colors.push('red', 'green'); // 推入两项
 
 alert(count); // 2
 
-count = colors.push("black"); // 再推入一项
+count = colors.push('black'); // 再推入一项
 
 alert(count); // 3
 
@@ -7002,12 +6887,10 @@ alert(colors.length); // 2
 
 这个例子创建了一个数组并用 push() 方法推入三个值。加粗的那行代码使用 shift() 方法取得了数组的第一项，即 "red" 。删除这一项之后， "green" 成为第一个元素， "black" 成为第二个元素，数组此时就包含两项。
 
-ECMAScript 也为数组提供了 unshift() 方法。顾名思义，
+ECMAScript 也为数组提供了 unshift() 方法。顾名思义，unshift() 就是执行跟 shift() 相反的操作：在数组开头添加任意多个值，然后返回新的数组长度。通过使用 unshift() 和 pop() ，可以在相反方向上模拟队列，即在数组开头添加新数据，在数组末尾取得数 据，如下例所示：
 
-unshift() 就是执行跟 shift() 相反的操作：在数组开头添加任意多个值，然后返回新的数组长度。通过使用 unshift() 和 pop() ，可以在相反方向上模拟队列，即在数组开头添加新数据，在数组末尾取得数 据，如下例所示：
-
-```
-count = colors.unshift("black"); // 再推入一项
+```js
+count = colors.unshift('black'); // 再推入一项
 
 alert(count); // 3
 
@@ -7018,99 +6901,88 @@ alert(item); // green
 alert(colors.length); // 2
 ```
 
-这里，先创建一个数组，再通过 unshift() 填充数组。首先，给数组添加 "red" 和 "green" ，再添加 "black" ，得到
-
-```
-\["black","red","green"\] 。调用 pop() 时，删除最后一项 "green" 并返回它。
-```
+这里，先创建一个数组，再通过 unshift() 填充数组。首先，给数组添加 "red" 和 "green" ，再添加 "black" ，得到 ["black","red","green"] 。调用 pop() 时，删除最后一项 "green" 并返回它。
 
 ### 6.2.10 排序方法
 
-数组有两个方法可以用来对元素重新排序： reverse() 和
+数组有两个方法可以用来对元素重新排序： reverse() 和 sort() 。顾名思义， reverse() 方法就是将数组元素反向排列。比如：
 
-sort() 。顾名思义， reverse() 方法就是将数组元素反向排列。比如：
-
+```js
+let values = [1, 2, 3, 4, 5];
+values.reverse();
+alert(values); // 5,4,3,2,1
 ```
-let values = \[1, 2, 3, 4, 5\]; values.reverse(); alert(values); // 5,4,3,2,1
-```
 
-这里，数组 values 的初始状态为 \[1,2,3,4,5\] 。通过调用
-
-reverse() 反向排序，得到了 \[5,4,3,2,1\] 。这个方法很直观，但不够灵活，所以才有了 sort() 方法。
+这里，数组 values 的初始状态为 [1,2,3,4,5] 。通过调用 reverse() 反向排序，得到了 [5,4,3,2,1] 。这个方法很直观，但不够灵活，所以才有了 sort() 方法。
 
 默认情况下， sort() 会按照升序重新排列数组元素，即最小的值在前面，最大的值在后面。为此， sort() 会在每一项上调用 String()转型函数，然后比较字符串来决定顺序。即使数组的元素都是数值，也会先把数组转换为字符串再比较、排序。比如：
 
 ```
-let values = \[0, 1, 5, 10, 15\]; values.sort();
+let values = [0, 1, 5, 10, 15]; values.sort();
 
 alert(values); // 0,1,10,15,5
 ```
 
-一开始数组中数值的顺序是正确的，但调用 sort() 会按照这些数值的字符串形式重新排序。因此，即使 5 小于 10，但字符串 "10" 在字符
-
-串 "5" 的前头，所以 10 还是会排到 5 前面。很明显，这在多数情况下都不是最合适的。为此， sort() 方法可以接收一个比较函数，用于判断哪个值应该排在前面。
+一开始数组中数值的顺序是正确的，但调用 sort() 会按照这些数值的字符串形式重新排序。因此，即使 5 小于 10，但字符串 "10" 在字符串 "5" 的前头，所以 10 还是会排到 5 前面。很明显，这在多数情况下都不是最合适的。为此， sort() 方法可以接收一个比较函数，用于判断哪个值应该排在前面。
 
 比较函数接收两个参数，如果第一个参数应该排在第二个参数前面，就返回负值；如果两个参数相等，就返回 0；如果第一个参数应该排在第二个参数后面，就返回正值。下面是使用简单比较函数的一个例子：
 
-```
-function compare(value1, value2) { if (value1 < value2) {
-
-return \-1;
-
-} else if (value1 \> value2) { return 1;
-
-} else { return 0;
-
-}
-
+```js
+function compare(value1, value2) {
+  if (value1 < value2) {
+    return -1;
+  } else if (value1 > value2) {
+    return 1;
+  } else {
+    return 0;
+  }
 }
 ```
 
-这个比较函数可以适用于大多数数据类型，可以把它当作参数传给
+这个比较函数可以适用于大多数数据类型，可以把它当作参数传给 sort() 方法，如下所示：
 
-sort() 方法，如下所示：
-
-```
-let values = \[0, 1, 5, 10, 15\]; values.sort(compare); alert(values); // 0,1,5,10,15
+```js
+let values = [0, 1, 5, 10, 15];
+values.sort(compare);
+alert(values); // 0,1,5,10,15
 ```
 
 在给 sort() 方法传入比较函数后，数组中的数值在排序后保持了正确的顺序。当然，比较函数也可以产生降序效果，只要把返回值交换一下即可：
 
-```
-function compare(value1, value2) { if (value1 < value2) {
-
-return 1;
-
-} else if (value1 \> value2) { return \-1;
-
-} else { return 0;
-
+```js
+function compare(value1, value2) {
+  if (value1 < value2) {
+    return 1;
+  } else if (value1 > value2) {
+    return -1;
+  } else {
+    return 0;
+  }
 }
 
-}
-
-let values = \[0, 1, 5, 10, 15\]; values.sort(compare); alert(values); // 15,10,5,1,0
+let values = [0, 1, 5, 10, 15];
+values.sort(compare);
+alert(values); // 15,10,5,1,0
 ```
 
 此外，这个比较函数还可简写为一个箭头函数：
 
-```
-let values = \[0, 1, 5, 10, 15\];
+```js
+let values = [0, 1, 5, 10, 15];
 
-values.sort((a, b) => a < b \? 1 : a \> b \? \-1 : 0); alert(values); // 15,10,5,1,0
+values.sort((a, b) => (a < b ? 1 : a > b ? -1 : 0));
+alert(values); // 15,10,5,1,0
 ```
 
 在这个修改版函数中，如果第一个值应该排在第二个值后面则返回 1，如果第一个值应该排在第二个值前面则返回-1。交换这两个返回值之后，较大的值就会排在前头，数组就会按照降序排序。当然，如果只是想反转数组的顺序， reverse() 更简单也更快。
 
 > 注意 reverse() 和 sort() 都返回调用它们的数组的引用。
 
-如果数组的元素是数值，或者是其 valueOf() 方法返回数值的对象
+如果数组的元素是数值，或者是其 valueOf() 方法返回数值的对象（如 Date 对象），这个比较函数还可以写得更简单，因为这时可以直接用第二个值减去第一个值：
 
-（如 Date 对象），这个比较函数还可以写得更简单，因为这时可以直接用第二个值减去第一个值：
-
-```
-function compare(value1, value2){ return value2 \- value1;
-
+```js
+function compare(value1, value2) {
+  return value2 - value1;
 }
 ```
 
@@ -7120,104 +6992,76 @@ function compare(value1, value2){ return value2 \- value1;
 
 对于数组中的元素，我们有很多操作方法。比如， concat() 方法可以在现有数组全部元素基础上创建一个新数组。它首先会创建一个当前数组的副本，然后再把它的参数添加到副本末尾，最后返回这个新构建的数组。如果传入一个或多个数组，则 concat() 会把这些数组的每一项都添加到结果数组。如果参数不是数组，则直接把它们添加到结果数组末尾。来看下面的例子：
 
-```
-let colors = \["red", "green", "blue"\];
+```js
+let colors = ['red', 'green', 'blue'];
 
-let colors2 = colors.concat("yellow", \["black", "brown"\]);
+let colors2 = colors.concat('yellow', ['black', 'brown']);
 
-console.log(colors); // \["red", "green","blue"\]
+console.log(colors); // ["red", "green","blue"]
 
-console.log(colors2); // \["red", "green", "blue", "yellow", "black", "brown"\]
-
-这里先创建一个包含 3 个值的数组 colors 。然后 colors 调用
-
-concat() 方法，传入字符串 "yellow" 和一个包
-
-含 "black" 和 "brown" 的数组。保存在 colors2 中的结果就是
-
-\["red", "green", "blue", "yellow", "black",
-
-"brown"\] 。原始数组 colors 保持不变。
+console.log(colors2); // ["red", "green", "blue", "yellow", "black", "brown"]
 ```
 
-打平数组参数的行为可以重写，方法是在参数数组上指定一个特殊的符号： Symbol.isConcatSpreadable 。这个符号能够阻止
+这里先创建一个包含 3 个值的数组 colors 。然后 colors 调用 concat() 方法，传入字符串 "yellow" 和一个包含 "black" 和 "brown" 的数组。保存在 colors2 中的结果就是 ["red", "green", "blue", "yellow", "black","brown"] 。原始数组 colors 保持不变。
 
-concat() 打平参数数组。相反，把这个值设置为 true 可以强制打平类数组对象：
+打平数组参数的行为可以重写，方法是在参数数组上指定一个特殊的符号： Symbol.isConcatSpreadable 。这个符号能够阻止 concat() 打平参数数组。相反，把这个值设置为 true 可以强制打平类数组对象：
 
-```
-let colors = \["red", "green", "blue"\]; let newColors = \["black", "brown"\]; let moreNewColors = {
-
-\[Symbol.isConcatSpreadable\]: true, length: 2,
-
-0: "pink",
-
-1: "cyan"
-
+```js
+let colors = ['red', 'green', 'blue'];
+let newColors = ['black', 'brown'];
+let moreNewColors = {
+  [Symbol.isConcatSpreadable]: true,
+  length: 2,
+  0: 'pink',
+  1: 'cyan',
 };
-
-newColors\[Symbol.isConcatSpreadable\] = false;
-
+newColors[Symbol.isConcatSpreadable] = false;
 // 强制不打平数组
-
-let colors2 = colors.concat("yellow", newColors);
-
+let colors2 = colors.concat('yellow', newColors);
 // 强制打平类数组对象
-
 let colors3 = colors.concat(moreNewColors);
-
-console.log(colors); // \["red", "green", "blue"\]
-
-console.log(colors2); // \["red", "green", "blue",
-
-"yellow", \["black", "brown"\]\]
-
-console.log(colors3); // \["red", "green", "blue", "pink", "cyan"\]
+console.log(colors); // ["red", "green", "blue"]
+console.log(colors2); // ["red", "green", "blue", "yellow", ["black", "brown"]]
+console.log(colors3); // ["red", "green", "blue", "pink", "cyan"]
 ```
 
 接下来，方法 slice() 用于创建一个包含原有数组中一个或多个元素的新数组。 slice() 方法可以接收一个或两个参数：返回元素的开始索引和结束索引。如果只有一个参数，则 slice() 会返回该索引到数组末尾的所有元素。如果有两个参数，则 slice() 返回从开始索引到结束索引对应的所有元素，其中不包含结束索引对应的元素。记住，这个操作不影响原始数组。来看下面的例子：
 
-```
-let colors = \["red", "green", "blue", "yellow", "purple"\];
+```js
+let colors = ['red', 'green', 'blue', 'yellow', 'purple'];
 
-let colors2 = colors.slice(1); let colors3 = colors.slice(1, 4);
+let colors2 = colors.slice(1);
+let colors3 = colors.slice(1, 4);
 
 alert(colors2); // green,blue,yellow,purple
 
 alert(colors3); // green,blue,yellow
 ```
 
-这里， colors 数组一开始有 5 个元素。调用 slice() 传入 1 会得到包含 4 个元素的新数组。其中不包括 "red" ，这是因为拆分操作要从位置
+这里， colors 数组一开始有 5 个元素。调用 slice() 传入 1 会得到包含 4 个元素的新数组。其中不包括 "red" ，这是因为拆分操作要从位置 1 开始，即从 "green" 开始。得到的 colors2 数组包含 "green" 、 "blue" 、 "yellow" 和 "purple" 。 colors3 数组是通过调用 slice() 并传入 1 和 4 得到的，即从位置 1 开始复制到位置 3。因此 colors3 包含 "green" 、 "blue" 和 "yellow" 。
 
-1 开始，即从 "green" 开始。得到的 colors2 数组包
-
-含 "green" 、 "blue" 、 "yellow" 和 "purple" 。 colors3 数组是通过调用 slice() 并传入 1 和 4 得到的，即从位置 1 开始复制到位置 3。因此 colors3 包含 "green" 、 "blue" 和 "yellow" 。
-
-> 注意 如果 slice() 的参数有负值，那么就以数值长度加上这个负值的结果确定位置。比如，在包含 5 个元素的数组上调用
-
-slice(-2,-1) ，就相当于调用 slice(3,4) 。如果结束位置小于开始位置，则返回空数组。
+> 注意 如果 slice() 的参数有负值，那么就以数值长度加上这个负值的结果确定位置。比如，在包含 5 个元素的数组上调用 slice(-2,-1) ，就相当于调用 slice(3,4) 。如果结束位置小于开始位置，则返回空数组。
 
 或许最强大的数组方法就属 splice() 了，使用它的方式可以有很多种。 splice() 的主要目的是在数组中间插入元素，但有 3 种不同的方式使用这个方法。
 
-删除。需要给 splice() 传 2 个参数：要删除的第一个元素的位置和要删除的元素数量。可以从数组中删除任意多个元素，比如 splice(0, 2) 会删除前两个元素。
-
-插入。需要给 splice() 传 3 个参数：开始位置、0（要删除的元素数量）和要插入的元素，可以在数组中指定的位置插入元素。第三个参数之后还可以传第四个、第五个参数，乃至任意多个要插入的元 素。比如， splice(2, 0, "red", "green") 会从数组位置 2 开始插入字符串 "red" 和 "green" 。
-
-替换。 splice() 在删除元素的同时可以在指定位置插入新元素，同样要传入 3 个参数：开始位置、要删除元素的数量和要插入的任意
+- 删除。需要给 splice() 传 2 个参数：要删除的第一个元素的位置和要删除的元素数量。可以从数组中删除任意多个元素，比如 splice(0, 2) 会删除前两个元素。
+- 插入。需要给 splice() 传 3 个参数：开始位置、0（要删除的元素数量）和要插入的元素，可以在数组中指定的位置插入元素。第三个参数之后还可以传第四个、第五个参数，乃至任意多个要插入的元 素。比如， splice(2, 0, "red", "green") 会从数组位置 2 开始插入字符串 "red" 和 "green" 。
+- 替换。 splice() 在删除元素的同时可以在指定位置插入新元素，同样要传入 3 个参数：开始位置、要删除元素的数量和要插入的任意
 
 多个元素。要插入的元素数量不一定跟删除的元素数量一致。比如， splice(2, 1, "red", "green") 会在位置 2 删除一个元素，然后从该位置开始向数组中插入 "red" 和 "green" 。
 
 splice() 方法始终返回这样一个数组，它包含从数组中被删除的元素（如果没有删除元素，则返回空数组）。以下示例展示了上述 3 种使用方式。
 
-```
-let colors = \["red", "green", "blue"\];
+```js
+let colors = ['red', 'green', 'blue'];
 
-let removed = colors.splice(0,1); // 删除第一项
+let removed = colors.splice(0, 1); // 删除第一项
 
 alert(colors); // green,blue
 
 alert(removed); // red， 只 有 一 个 元 素 的 数 组
 
-removed = colors.splice(1, 0, "yellow", "orange");
+removed = colors.splice(1, 0, 'yellow', 'orange');
 
 // 在位置 1 插入两个元素
 
@@ -7230,15 +7074,7 @@ alert(removed);
 // 空数组
 ```
 
-这个例子中， colors 数组一开始包含 3 个元素。第一次调用
-
-splice() 时，只删除了第一项， colors 中还
-
-有 "green" 和 "blue" 。第二次调用 slice() 时，在位置 1 插入两项，然后 colors 包
-
-含 "green" 、 "yellow" 、 "orange" 和 "blue" 。这次没删除任何项，因此返回空数组。最后一次调用 splice() 时删除了位置 1 上的一项，同时又插入了 "red" 和 "purple" 。最后， colors 数组包
-
-含 "green" 、 "red" 、 "purple" 、 "orange" 和 "blue" 。
+这个例子中， colors 数组一开始包含 3 个元素。第一次调用 splice() 时，只删除了第一项， colors 中还有 "green" 和 "blue" 。第二次调用 slice() 时，在位置 1 插入两项，然后 colors 包含 "green" 、 "yellow" 、 "orange" 和 "blue" 。这次没删除任何项，因此返回空数组。最后一次调用 splice() 时删除了位置 1 上的一项，同时又插入了 "red" 和 "purple" 。最后， colors 数组包含 "green" 、 "red" 、 "purple" 、 "orange" 和 "blue" 。
 
 ### 6.2.12 搜索和位置方法
 
@@ -7246,21 +7082,30 @@ ECMAScript 提供两类搜索数组的方法：按严格相等搜索和按断言
 
 1.  严格相等
 
-ECMAScript 提供了 3 个严格相等的搜索方法： indexOf() 、
-
-lastIndexOf() 和 includes() 。其中，前两个方法在所有版本中都可用，而第三个方法是 ECMAScript 7 新增的。这些方法都接收两个参数：要查找的元素和一个可选的起始搜索位置。 indexOf() 和 includes() 方法从数组前头（第一项）开始向后搜索，而
-
-lastIndexOf() 从数组末尾（最后一项）开始向前搜索。
+ECMAScript 提供了 3 个严格相等的搜索方法： indexOf() 、lastIndexOf() 和 includes() 。其中，前两个方法在所有版本中都可用，而第三个方法是 ECMAScript 7 新增的。这些方法都接收两个参数：要查找的元素和一个可选的起始搜索位置。 indexOf() 和 includes() 方法从数组前头（第一项）开始向后搜索，而 lastIndexOf() 从数组末尾（最后一项）开始向前搜索。
 
 indexOf() 和 lastIndexOf() 都返回要查找的元素在数组中的位置，如果没找到则返回-1。 includes() 返回布尔值，表示是否至少找到一个与指定元素匹配的项。在比较第一个参数跟数组每一项时，会使用全等（ === ）比较，也就是说两项必须严格相等。下面来看一些例子：
 
-let person = { name: "Nicholas" }; let people = \[{ name: "Nicholas" }\]; let morePeople = \[person\];
+```js
+let numbers = [1, 2, 3, 4, 5, 4, 3, 2, 1];
+alert(numbers.indexOf(4)); // 3
+alert(numbers.lastIndexOf(4)); // 5
+alert(numbers.includes(4)); // true
+alert(numbers.indexOf(4, 4)); // 5
+alert(numbers.lastIndexOf(4, 4)); // 3
+alert(numbers.includes(4, 7)); // false
+let person = { name: 'Nicholas' };
+let people = [{ name: 'Nicholas' }];
+let morePeople = [person];
+alert(people.indexOf(person)); // -1
+alert(morePeople.indexOf(person)); // 0
+alert(people.includes(person)); // false
+alert(morePeople.includes(person)); // true
+```
 
 2.  断言函数
 
-ECMAScript 也允许按照定义的断言函数搜索数组，每个索引都会调用这个函数。断言函数的返回值决定了相应索引的元素是否被认为匹
-
-配。
+ECMAScript 也允许按照定义的断言函数搜索数组，每个索引都会调用这个函数。断言函数的返回值决定了相应索引的元素是否被认为匹配。
 
 断言函数接收 3 个参数：元素、索引和数组本身。其中元素是数组中当前搜索的元素，索引是当前元素的索引，而数组就是正在搜索的数组。断言函数返回真值，表示是否匹配。
 
@@ -7268,8 +7113,8 @@ find() 和 findIndex() 方法使用了断言函数。这两个方法都从数组
 
 findIndex() 返回第一个匹配元素的索引。这两个方法也都接收第二个可选的参数，用于指定断言函数内部 this 的值。
 
-```
-const people = \[
+```js
+const people = [
 
 {
 
@@ -7283,7 +7128,7 @@ name: "Nicholas", age: 29
 
 }
 
-\];
+];
 
 alert(people.find((element, index, array) => element.age < 28));
 
@@ -7298,55 +7143,47 @@ alert(people.findIndex((element, index, array)
 
 找到匹配项后，这两个方法都不再继续搜索。
 
-```
-const evens = \[2, 4, 6\];
+```js
+const evens = [2, 4, 6];
 
 // 找到匹配后，永远不会检查数组的最后一个元素
 
-evens.find((element, index, array) => { console.log(element); console.log(index); console.log(array);
+evens.find((element, index, array) => {
+  console.log(element);
+  console.log(index);
+  console.log(array);
 
-return element === 4;
-
+  return element === 4;
 });
 // 1
 
-// \[2, 4, 6\]
+// [2, 4, 6]
 ```
 
 ### 6.2.13 迭代方法
 
-ECMAScript 为数组定义了 5 个迭代方法。每个方法接收两个参数：以每一项为参数运行的函数，以及可选的作为函数运行上下文的作用域对象
+ECMAScript 为数组定义了 5 个迭代方法。每个方法接收两个参数：以每一项为参数运行的函数，以及可选的作为函数运行上下文的作用域对象（影响函数中 this 的值）。传给每个方法的函数接收 3 个参数：数组元素、元素索引和数组本身。因具体方法而异，这个函数的执行结果可能会也可能不会影响方法的返回值。数组的 5 个迭代方法如下。
 
-（影响函数中 this 的值）。传给每个方法的函数接收 3 个参数：数组元素、元素索引和数组本身。因具体方法而异，这个函数的执行结果可能会也可能不会影响方法的返回值。数组的 5 个迭代方法如下。
-
-every() ：对数组每一项都运行传入的函数，如果对每一项函数都返回 true ，则这个方法返回 true 。
-
-filter() ：对数组每一项都运行传入的函数，函数返回 true 的项会组成数组之后返回。
-
-forEach() ：对数组每一项都运行传入的函数，没有返回值。 map() ：对数组每一项都运行传入的函数，返回由每次函数调用的结果构成的数组。
-
-some() ：对数组每一项都运行传入的函数，如果有一项函数返回
-
-true ，则这个方法返回 true 。
+- every() ：对数组每一项都运行传入的函数，如果对每一项函数都返回 true ，则这个方法返回 true 。
+- filter() ：对数组每一项都运行传入的函数，函数返回 true 的项会组成数组之后返回。
+- forEach() ：对数组每一项都运行传入的函数，没有返回值。
+- map() ：对数组每一项都运行传入的函数，返回由每次函数调用的结果构成的数组。
+- some() ：对数组每一项都运行传入的函数，如果有一项函数返回 true ，则这个方法返回 true 。
 
 这些方法都不改变调用它们的数组。
 
-在这些方法中， every() 和 some() 是最相似的，都是从数组中搜索符合某个条件的元素。对 every() 来说，传入的函数必须对每一项都返回 true ，它才会返回 true ；否则，它就返回 false 。而对
+在这些方法中， every() 和 some() 是最相似的，都是从数组中搜索符合某个条件的元素。对 every() 来说，传入的函数必须对每一项都返回 true ，它才会返回 true ；否则，它就返回 false 。而对 some() 来说，只要有一项让传入的函数返回 true ，它就会返回 true 。下面是一个例子：
 
-some() 来说，只要有一项让传入的函数返回 true ，它就会返回
-
-true 。下面是一个例子：
-
-```
-let numbers = \[1, 2, 3, 4, 5, 4, 3, 2, 1\];
+```js
+let numbers = [1, 2, 3, 4, 5, 4, 3, 2, 1];
 
 let everyResult = numbers.every((item, index, array)
 
-=> item \> 2); alert(everyResult); // false
+=> item > 2); alert(everyResult); // false
 
 let someResult = numbers.some((item, index, array)
 
-=> item \> 2); alert(someResult); // true
+=> item > 2); alert(someResult); // true
 ```
 
 以上代码调用了 every() 和 some() ，传入的函数都是在给定项大于 2 时返回 true 。 every() 返回 false 是因为并不是每一项都能达到要求。而 some() 返回 true 是因为至少有一项满足条件。
@@ -7355,10 +7192,10 @@ let someResult = numbers.some((item, index, array)
 
 2 的数组，可以使用如下代码：
 
-```
-let numbers = \[1, 2, 3, 4, 5, 4, 3, 2, 1\];
+```js
+let numbers = [1, 2, 3, 4, 5, 4, 3, 2, 1];
 
-let filterResult = numbers.filter((item, index, array) => item \> 2);
+let filterResult = numbers.filter((item, index, array) => item > 2);
 
 alert(filterResult); // 3,4,5,4,3
 ```
@@ -7367,10 +7204,10 @@ alert(filterResult); // 3,4,5,4,3
 
 接下来 map() 方法也会返回一个数组。这个数组的每一项都是对原始数组中同样位置的元素运行传入函数而返回的结果。例如，可以将一个数组中的每一项都乘以 2，并返回包含所有结果的数组，如下所示：
 
-```
-let numbers = \[1, 2, 3, 4, 5, 4, 3, 2, 1\];
+```js
+let numbers = [1, 2, 3, 4, 5, 4, 3, 2, 1];
 
-let mapResult = numbers.map((item, index, array) => item \* 2);
+let mapResult = numbers.map((item, index, array) => item * 2);
 
 alert(mapResult); // 2,4,6,8,10,8,6,4,2
 ```
@@ -7379,13 +7216,11 @@ alert(mapResult); // 2,4,6,8,10,8,6,4,2
 
 最后，再来看一看 forEach() 方法。这个方法只会对每一项运行传入的函数，没有返回值。本质上， forEach() 方法相当于使用 for 循环遍历数组。比如：
 
-```
-let numbers = \[1, 2, 3, 4, 5, 4, 3, 2, 1\];
+```js
+let numbers = [1, 2, 3, 4, 5, 4, 3, 2, 1];
 
 numbers.forEach((item, index, array) => {
-
-// 执行某些操作
-
+  // 执行某些操作
 });
 ```
 
@@ -7393,39 +7228,29 @@ numbers.forEach((item, index, array) => {
 
 ### 6.2.14 归并方法
 
-ECMAScript 为数组提供了两个归并方法： reduce() 和
+ECMAScript 为数组提供了两个归并方法： reduce() 和 reduceRight() 。这两个方法都会迭代数组的所有项，并在此基础上构建一个最终返回值。 reduce() 方法从数组第一项开始遍历到最后一项。而 reduceRight() 从最后一项开始遍历至第一项。
 
-reduceRight() 。这两个方法都会迭代数组的所有项，并在此基础上构建一个最终返回值。 reduce() 方法从数组第一项开始遍历到最后一项。而 reduceRight() 从最后一项开始遍历至第一项。
-
-这两个方法都接收两个参数：对每一项都会运行的归并函数，以及可选的以之为归并起点的初始值。传给 reduce() 和 reduceRight() 的函数接收 4 个参数：上一个归并值、当前项、当前项的索引和数组本身。这个函数返回的任何值都会作为下一次调用同一个函数的第一个参数。如果没有给这两个方法传入可选的第二个参数（作为归并起点值），则第一
-
-次迭代将从数组的第二项开始，因此传给归并函数的第一个参数是数组的第一项，第二个参数是数组的第二项。
+这两个方法都接收两个参数：对每一项都会运行的归并函数，以及可选的以之为归并起点的初始值。传给 reduce() 和 reduceRight() 的函数接收 4 个参数：上一个归并值、当前项、当前项的索引和数组本身。这个函数返回的任何值都会作为下一次调用同一个函数的第一个参数。如果没有给这两个方法传入可选的第二个参数（作为归并起点值），则第一次迭代将从数组的第二项开始，因此传给归并函数的第一个参数是数组的第一项，第二个参数是数组的第二项。
 
 可以使用 reduce() 函数执行累加数组中所有数值的操作，比如：
 
-```
-let values = \[1, 2, 3, 4, 5\];
+```js
+let values = [1, 2, 3, 4, 5];
 
-let sum = values.reduce((prev, cur, index, array) => prev \+ cur);
+let sum = values.reduce((prev, cur, index, array) => prev + cur);
 
 alert(sum); // 15
 ```
 
-第一次执行归并函数时， prev 是 1， cur 是 2。第二次执行时，
+第一次执行归并函数时， prev 是 1， cur 是 2。第二次执行时，prev 是 3（1 + 2）， cur 是 3（数组第三项）。如此递进，直到把所有项都遍历一次，最后返回归并结果。
 
-prev 是 3（1 + 2）， cur 是 3（数组第三项）。如此递进，直到把所有项都遍历一次，最后返回归并结果。
+reduceRight() 方法与之类似，只是方向相反。来看下面的例子：
 
-reduceRight() 方法与之类似，只是方向相反。来看下面的例
+```js
+let values = [1, 2, 3, 4, 5];
 
-子：
-
-```
-let values = \[1, 2, 3, 4, 5\];
-
-let sum = values.reduceRight(function(prev, cur, index, array){
-
-return prev \+ cur;
-
+let sum = values.reduceRight(function (prev, cur, index, array) {
+  return prev + cur;
 });
 
 alert(sum); // 15
@@ -7441,29 +7266,17 @@ alert(sum); // 15
 
 1.  历史
 
-随着浏览器的流行，不难想象人们会满怀期待地通过它来运行复杂的
-
-3D 应用程序。早在 2006 年，Mozilla、Opera 等浏览器提供商就实验性地在浏览器中增加了用于渲染复杂图形应用程序的编程平台，无须安装任何插件。其目标是开发一套 JavaScript API，从而充分利用 3D 图形 API 和 GPU 加速，以便在 <canvas> 元素上渲染复杂的图形。
+随着浏览器的流行，不难想象人们会满怀期待地通过它来运行复杂的 3D 应用程序。早在 2006 年，Mozilla、Opera 等浏览器提供商就实验性地在浏览器中增加了用于渲染复杂图形应用程序的编程平台，无须安装任何插件。其目标是开发一套 JavaScript API，从而充分利用 3D 图形 API 和 GPU 加速，以便在 `<canvas>` 元素上渲染复杂的图形。
 
 1.  WebGL
 
-最后的 JavaScript API 是基于 OpenGL ES（OpenGL for Embedded
+最后的 JavaScript API 是基于 OpenGL ES（OpenGL for Embedded Systems）2.0 规范的。OpenGL ES 是 OpenGL 专注于 2D 和 3D 计算机图形的子集。这个新 API 被命名为 WebGL（Web Grapics Library），于 2011 年发布 1.0 版。有了它，开发者就能够编写涉及复杂图形的应用程序，它会被兼容 WebGL 的浏览器原生解释执行。
 
-Systems）2.0 规范的。OpenGL ES 是 OpenGL 专注于 2D 和 3D 计算机图形的子集。这个新 API 被命名为 WebGL（Web Grapics Library），于 2011 年发布 1.0 版。有了它，开发者就能够编写涉及复杂图形的应用程序，它会被兼容 WebGL 的浏览器原生解释执行。
-
-在 WebGL 的早期版本中，因为 JavaScript 数组与原生数组之间不匹配，所以出现了性能问题。图形驱动程序 API 通常不需要以 JavaScript 默认双精度浮点格式传递给它们的数值，而这恰恰是 JavaScript 数组在内存中的格式。因此，每次 WebGL 与 JavaScript 运行时之间传递数组时，
-
-WebGL 绑定都需要在目标环境分配新数组，以其当前格式迭代数组，然后将数值转型为新数组中的适当格式，而这些要花费很多时间。
+在 WebGL 的早期版本中，因为 JavaScript 数组与原生数组之间不匹配，所以出现了性能问题。图形驱动程序 API 通常不需要以 JavaScript 默认双精度浮点格式传递给它们的数值，而这恰恰是 JavaScript 数组在内存中的格式。因此，每次 WebGL 与 JavaScript 运行时之间传递数组时，WebGL 绑定都需要在目标环境分配新数组，以其当前格式迭代数组，然后将数值转型为新数组中的适当格式，而这些要花费很多时间。
 
 2.  定型数组
 
-这当然是难以接受的，Mozilla 为解决这个问题而实现了
-
-CanvasFloatArray 。这是一个提供 JavaScript 接口的、C 语言风格的浮点值数组。JavaScript 运行时使用这个类型可以分配、读取和写入数组。这个数组可以直接传给底层图形驱动程序 API，也可以直接从
-
-底层获取到。最终， CanvasFloatArray 变成了
-
-Float32Array ，也就是今天定型数组中可用的第一个“类型”。
+这当然是难以接受的，Mozilla 为解决这个问题而实现了 CanvasFloatArray 。这是一个提供 JavaScript 接口的、C 语言风格的浮点值数组。JavaScript 运行时使用这个类型可以分配、读取和写入数组。这个数组可以直接传给底层图形驱动程序 API，也可以直接从底层获取到。最终， CanvasFloatArray 变成了 Float32Array ，也就是今天定型数组中可用的第一个“类型”。
 
 2.  ArrayBuffer
 
@@ -7473,33 +7286,26 @@ Float32Array 实际上是一种“视图”，可以允许 JavaScript 运行时�
 
 ArrayBuffer() 是一个普通的 JavaScript 构造函数，可用于在内存中分配特定数量的字节空间。
 
-```
+```js
 const buf = new ArrayBuffer(16); // 在内存中分配 16 字节
 
 alert(buf.byteLength); // 16
 ```
 
-ArrayBuffer 一经创建就不能再调整大小。不过，可以使用
+ArrayBuffer 一经创建就不能再调整大小。不过，可以使用 slice() 复制其全部或部分到一个新实例中：
 
-slice() 复制其全部或部分到一个新实例中：
-
-```
-const buf1 = new ArrayBuffer(16); const buf2 = buf1.slice(4, 12); alert(buf2.byteLength); // 8
+```js
+const buf1 = new ArrayBuffer(16);
+const buf2 = buf1.slice(4, 12);
+alert(buf2.byteLength); // 8
 ```
 
 ArrayBuffer 某种程度上类似于 C++的 malloc() ，但也有几个明显的区别。
 
-malloc() 在分配失败时会返回一个 null 指针。 ArrayBuffer
-
-在分配失败时会抛出错误。
-
-malloc() 可以利用虚拟内存，因此最大可分配尺寸只受可寻址系统内存限制。 ArrayBuffer 分配的内存不能超过 Number.MAX_SAFE_INTEGER （）字节。
-
-malloc() 调用成功不会初始化实际的地址。声明 ArrayBuffer
-
-则会将所有二进制位初始化为 0。
-
-通过 malloc() 分配的堆内存除非调用 free() 或程序退出，否则系统不能再使用。而通过声明 ArrayBuffer 分配的堆内存可以被当成垃圾回收，不用手动释放。
+- malloc() 在分配失败时会返回一个 null 指针。 ArrayBuffer 在分配失败时会抛出错误。
+- malloc() 可以利用虚拟内存，因此最大可分配尺寸只受可寻址系统内存限制。 ArrayBuffer 分配的内存不能超过 Number.MAX_SAFE_INTEGER （）字节。
+- malloc() 调用成功不会初始化实际的地址。声明 ArrayBuffer 则会将所有二进制位初始化为 0。
+- 通过 malloc() 分配的堆内存除非调用 free() 或程序退出，否则系统不能再使用。而通过声明 ArrayBuffer 分配的堆内存可以被当成垃圾回收，不用手动释放。
 
 不能仅通过对 ArrayBuffer 的引用就读取或写入其内容。要读取或写入 ArrayBuffer ，就必须通过视图。视图有不同的类型，但引用的都是 ArrayBuffer 中存储的二进制数据。
 
@@ -7509,7 +7315,7 @@ malloc() 调用成功不会初始化实际的地址。声明 ArrayBuffer
 
 必须在对已有的 ArrayBuffer 读取或写入时才能创建 DataView 实例。这个实例可以使用全部或部分 ArrayBuffer ，且维护着对该缓冲实例的引用，以及视图在缓冲中开始的位置。
 
-```
+```js
 const buf = new ArrayBuffer(16);
 
 // DataView 默认使用整个 ArrayBuffer
@@ -7522,7 +7328,8 @@ const fullDataView = new DataView(buf);
 
 // byteLength=8 限制视图为前 8 个字节
 
-const firstHalfDataView = new DataView(buf, 0, 8); alert(firstHalfDataView.byteOffset); // 0
+const firstHalfDataView = new DataView(buf, 0, 8);
+alert(firstHalfDataView.byteOffset); // 0
 
 alert(firstHalfDataView.byteLength); // 8
 
@@ -7540,11 +7347,7 @@ const secondHalfDataView = new DataView(buf, 8);
 要通过 DataView 读取缓冲，还需要几个组件。
 
 - 首先是要读或写的字节偏移量。可以看成 DataView 中的某种“地址”。
-
-- DataView 应该使用 ElementType 来实现 JavaScript 的 Number
-
-类型到缓冲内二进制格式的转换。
-
+- DataView 应该使用 ElementType 来实现 JavaScript 的 Number 类型到缓冲内二进制格式的转换。
 - 最后是内存中值的字节序。默认为大端字节序。
 
 1.  ElementType
@@ -7553,90 +7356,13 @@ DataView 对存储在缓冲内的数据类型没有预设。它暴露的 API 强
 
 ECMAScript 6 支持 8 种不同的 ElementType （见下表）。
 
-ElementType 字 说明 等价的 C 类 值的范围
-
-节 型
-
-Int8 1
-
-Uint8 1
-
-Int16 2
-
-8 位有符号整数
-
-8 位无符号整数
-
-16 位有符号整数
-
-16 位
-
-signed
-
-char \-128\~127
-
-unsigned
-
-char 0\~255
-
-short \-32 768\~32 767
-
-Uint16 2
-
-无符号整数
-
-32 位
-
-unsigned short
-
-0\~65 535
-
-Int32 4
-
-有符号整数
-
-32 位
-
-int \-2 147 483 648\~2 147
-
-483 647
-
-Uint32 4
-
-无符
-
-号整数
-
-32 位
-
-unsigned int
-
-0\~4 294 967 295
-
-Float32 4
-
-IEEE-
-
-754 浮
-
-点数
-
-float \-3.4e+38\~+3.4e+38
-
-Float64 8 64 位 IEEE-
-
-double \-1.7e+308\~+1.7e+308
-
-754 浮
-
-点数
-
 DataView 为上表中的每种类型都暴露了 get 和 set 方法，这些方法使用 byteOffset （字节偏移量）定位要读取或写入值的位 置。类型是可以互换使用的，如下例所示：
 
-```
+```js
 // 在内存中分配两个字节并声明一个 DataView
 
-const buf = new ArrayBuffer(2); const view = new DataView(buf);
+const buf = new ArrayBuffer(2);
+const view = new DataView(buf);
 
 // 说明整个缓冲确实所有二进制位都是 0
 
@@ -7652,7 +7378,7 @@ alert(view.getInt16(0)); // 0
 
 // 将整个缓冲都设置为 1
 
-// 255 的二进制表示是 11111111（2\^8 \- 1）
+// 255 的二进制表示是 11111111（2^8 - 1）
 
 view.setUint8(0, 255);
 
@@ -7660,13 +7386,13 @@ view.setUint8(0, 255);
 
 // 255 的十六进制表示是 0xFF
 
-view.setUint8(1, 0xFF);
+view.setUint8(1, 0xff);
 
 // 现在，缓冲里都是 1 了
 
-// 如果把它当成二补数的有符号整数，则应该是\-1
+// 如果把它当成二补数的有符号整数，则应该是-1
 
-alert(view.getInt16(0)); // \-1
+alert(view.getInt16(0)); // -1
 ```
 
 2.  字节序
@@ -7675,10 +7401,11 @@ alert(view.getInt16(0)); // \-1
 
 JavaScript 运行时所在系统的原生字节序决定了如何读取或写入字节，但 DataView 并不遵守这个约定。对一段内存而言， DataView 是一个中立接口，它会遵循你指定的字节序。 DataView 的所有 API 方法都以大端字节序作为默认值，但接收一个可选的布尔值参数，设置为 true 即可启用小端字节序。
 
-```
+```js
 // 在内存中分配两个字节并声明一个 DataView
 
-const buf = new ArrayBuffer(2); const view = new DataView(buf);
+const buf = new ArrayBuffer(2);
+const view = new DataView(buf);
 
 // 填充缓冲，让第一位和最后一位都是 1 view.setUint8(0, 0x80); // 设置最左边的位等于 1 view.setUint8(1, 0x01); // 设置最右边的位等于 1
 
@@ -7692,7 +7419,7 @@ const buf = new ArrayBuffer(2); const view = new DataView(buf);
 
 // 0x80 是高字节，0x01 是低字节
 
-// 0x8001 = 2\^15 + 2\^0 = 32768 + 1 = 32769
+// 0x8001 = 2^15 + 2^0 = 32768 + 1 = 32769
 
 alert(view.getUint16(0)); // 32769
 
@@ -7700,7 +7427,7 @@ alert(view.getUint16(0)); // 32769
 
 // 0x01 是高字节，0x80 是低字节
 
-// 0x0180 = 2\^8 + 2\^7 = 256 + 128 = 384
+// 0x0180 = 2^8 + 2^7 = 256 + 128 = 384
 
 alert(view.getUint16(0, true)); // 384
 
@@ -7737,8 +7464,9 @@ alert(view.getUint8(1)); // 0
 
 DataView 完成读、写操作的前提是必须有充足的缓冲区，否则就会抛出 RangeError ：
 
-```
-const buf = new ArrayBuffer(6); const view = new DataView(buf);
+```js
+const buf = new ArrayBuffer(6);
+const view = new DataView(buf);
 
 // 尝试读取部分超出缓冲范围的值
 
@@ -7767,14 +7495,15 @@ view.setInt32(4, 123);
 
 DataView 在写入缓冲里会尽最大努力把一个值转换为适当的类型，后备为 0。如果无法转换，则抛出错误：
 
-```
-const buf = new ArrayBuffer(1); const view = new DataView(buf);
+```js
+const buf = new ArrayBuffer(1);
+const view = new DataView(buf);
 
 view.setInt8(0, 1.5);
 
 alert(view.getInt8(0)); // 1
 
-view.setInt8(0, \[4\]);
+view.setInt8(0, [4]);
 
 alert(view.getInt8(0)); // 4
 
@@ -7789,17 +7518,11 @@ view.setInt8(0, Symbol());
 
 4.  定型数组
 
-定型数组是另一种形式的 ArrayBuffer 视图。虽然概念上与
+定型数组是另一种形式的 ArrayBuffer 视图。虽然概念上与 DataView 接近，但定型数组的区别在于，它特定于一种 ElementType 且遵循系统原生的字节序。相应地，定型数组提供了适用面更广的 API 和更高的性能。设计定型数组的目的就是提高与 WebGL 等原生库交换二进制数据的效率。由于定型数组的二进制表示对操作系统而言是一种容易使用的格式，JavaScript 引擎可以重度优化算术运算、按位运算和其他对定型数组的常见操作，因此使用它们速度极快。
 
-DataView 接近，但定型数组的区别在于，它特定于一种
+创建定型数组的方式包括读取已有的缓冲、使用自有缓冲、填充可迭代结构，以及填充基于任意类型的定型数组。另外，通过 `<ElementType>.from()` 和 `<ElementType>.of()` 也可以创建定型数组：
 
-ElementType 且遵循系统原生的字节序。相应地，定型数组提供了适用面更广的 API 和更高的性能。设计定型数组的目的就是提高与 WebGL 等原生库交换二进制数据的效率。由于定型数组的二进制表示对操作系统而言是一种容易使用的格式，JavaScript 引擎可以重度优化算术运算、按位运算和其他对定型数组的常见操作，因此使用它们速度极快。
-
-创建定型数组的方式包括读取已有的缓冲、使用自有缓冲、填充可迭代结构，以及填充基于任意类型的定型数组。另外，通过
-
-<ElementType>.from() 和 <ElementType>.of() 也可以创建定型数组：
-
-```
+```js
 // 创建一个 12 字节的缓冲
 
 const buf = new ArrayBuffer(12);
@@ -7826,15 +7549,15 @@ alert(ints2.length); // 6
 
 alert(ints2.buffer.byteLength); // 24
 
-// 创建一个包含\[2, 4, 6, 8\]的 Int32Array
+// 创建一个包含[2, 4, 6, 8]的 Int32Array
 
-const ints3 = new Int32Array(\[2, 4, 6, 8\]);
+const ints3 = new Int32Array([2, 4, 6, 8]);
 
 alert(ints3.length); // 4
 
 alert(ints3.buffer.byteLength); // 16
 
-alert(ints3\[2\]); // 6
+alert(ints3[2]); // 6
 
 // 通过复制 ints3 的值创建一个 Int16Array
 
@@ -7846,7 +7569,7 @@ const ints4 = new Int16Array(ints3);
 
 // 基于普通数组来创建一个 Int16Array
 
-const ints5 = Int16Array.from(\[3, 5, 7, 9\]);
+const ints5 = Int16Array.from([3, 5, 7, 9]);
 
 // 基于传入的参数创建一个 Float32Array
 
@@ -7854,7 +7577,7 @@ const floats = Float32Array.of(3.14, 2.718, 1.618);
 
 alert(floats.length); // 3
 
-alert(floats.buffer.byteLength); // 12 alert(floats\[2\]); // 1.6180000305175781
+alert(floats.buffer.byteLength); // 12 alert(floats[2]); // 1.6180000305175781
 ```
 
 定型数组的构造函数和实例都有一个 BYTES_PER_ELEMENT 属性，返回该类型数组中每个元素的大小：
@@ -7863,36 +7586,44 @@ alert(floats.buffer.byteLength); // 12 alert(floats\[2\]); // 1.6180000305175781
 
 从很多方面看，定型数组与普通数组都很相似。定型数组支持如下操作符、方法和属性：
 
-```
-\[\]
+- `[]`
+- `copyWithin() `
+- `entries() `
+- `every() `
+- `fill() `
+- `filter() `
+- `find()`
+- `findIndex() `
+- `forEach() `
+- `indexOf() `
+- `join()`
+- `keys() `
+- `lastIndexOf() `
+- `length`
+- `map() `
+- `reduce() `
+- `reduceRight() `
+- `reverse() `
+- `slice() `
+- `some()`
+- `sort() `
+- `toLocaleString()`
+- `toString() `
+- `values()`
 
-copyWithin() entries() every() fill() filter() find()
+其中，返回新数组的方法也会返回包含同样元素类型（element type）的新定型数组：
 
-findIndex() forEach() indexOf() join()
-
-keys() lastIndexOf() length
-
-map() reduce() reduceRight() reverse() slice() some()
-
-sort() `toLocaleString()` toString() values()
-```
-
-其中，返回新数组的方法也会返回包含同样元素类型（element type）
-
-的新定型数组：
-
-```
-const ints = new Int16Array(\[1, 2, 3\]); const doubleints = ints.map(x => 2\*x);
+```js
+const ints = new Int16Array([1, 2, 3]);
+const doubleints = ints.map((x) => 2 * x);
 
 alert(doubleints instanceof Int16Array); // true
 ```
 
-定型数组有一个 Symbol.iterator 符号属性，因此可以通过
+定型数组有一个 Symbol.iterator 符号属性，因此可以通过 for..of 循环和扩展操作符来操作：
 
-for..of 循环和扩展操作符来操作：
-
-```
-const ints = new Int16Array(\[1, 2, 3\]); for (const int of ints) {
+```js
+const ints = new Int16Array([1, 2, 3]); for (const int of ints) {
 
 alert(int);
 
@@ -7903,19 +7634,18 @@ alert(Math.max(...ints)); // 3
 
 定型数组同样使用数组缓冲来存储数据，而数组缓冲无法调整大小。因此，下列方法不适用于定型数组：
 
-```
-concat() pop()
+- concat()
+- pop()
+- push()
+- shift()
+- splice()
+- unshift()
 
-push() shift() splice() unshift()
-```
-
-不过，定型数组也提供了两个新方法，可以快速向外或向内复制数
-
-据 ： set() 和 subarray() 。
+不过，定型数组也提供了两个新方法，可以快速向外或向内复制数据 ： set() 和 subarray() 。
 
 set() 从提供的数组或定型数组中把值复制到当前定型数组中指定的索引位置：
 
-```
+```js
 // 创建长度为 8 的 int16 数组
 
 const container = new Int16Array(8);
@@ -7926,44 +7656,47 @@ const container = new Int16Array(8);
 
 container.set(Int8Array.of(1, 2, 3, 4));
 
-console.log(container); // \[1,2,3,4,0,0,0,0\]
+console.log(container); // [1,2,3,4,0,0,0,0]
 
 // 把普通数组复制为后 4 个值
 
 // 偏移量 4 表示从索引 4 开始插入
 
-container.set(\[5,6,7,8\], 4);
+container.set([5, 6, 7, 8], 4);
 
-console.log(container); // \[1,2,3,4,5,6,7,8\]
+console.log(container); // [1,2,3,4,5,6,7,8]
 
 // 溢出会抛出错误
 
-container.set(\[5,6,7,8\], 7);
+container.set([5, 6, 7, 8], 7);
 
 // RangeError
 ```
 
 subarray() 执行与 set() 相反的操作，它会基于从原始定型数组中复制的值返回一个新定型数组。复制值时的开始索引和结束索引是可选的：
 
-```
+```js
 const source = Int16Array.of(2, 4, 6, 8);
 
 // 把整个数组复制为一个同类型的新数组
 
-const fullCopy = source.subarray(); console.log(fullCopy); // \[2, 4, 6, 8\]
+const fullCopy = source.subarray();
+console.log(fullCopy); // [2, 4, 6, 8]
 
 // 从索引 2 开始复制数组
 
-const halfCopy = source.subarray(2); console.log(halfCopy); // \[6, 8\]
+const halfCopy = source.subarray(2);
+console.log(halfCopy); // [6, 8]
 
 // 从索引 1 开始复制到索引 3
 
-const partialCopy = source.subarray(1, 3); console.log(partialCopy); // \[4, 6\]
+const partialCopy = source.subarray(1, 3);
+console.log(partialCopy); // [4, 6]
 ```
 
 定型数组没有原生的拼接能力，但使用定型数组 API 提供的很多工具可以手动构建：
 
-```
+```js
 // 第一个参数是应该返回的数组类型
 
 // 其余参数是应该拼接在一起的定型数组
@@ -8000,9 +7733,9 @@ Int16Array.of(4, 5, 6),
 
 Float32Array.of(7, 8, 9));
 
-console.log(concatArray); // \[1, 2, 3, 4, 5, 6,
+console.log(concatArray); // [1, 2, 3, 4, 5, 6,
 
-7, 8, 9\]
+7, 8, 9]
 
 console.log(concatArray instanceof Int32Array);
 
@@ -8013,12 +7746,12 @@ console.log(concatArray instanceof Int32Array);
 
 定型数组中值的下溢和上溢不会影响到其他索引，但仍然需要考虑数组的元素应该是什么类型。定型数组对于可以存储的每个索引只接受一个相关位，而不考虑它们对实际数值的影响。以下代码演示了如何处理下溢和上溢：
 
-```
+```js
 // 长度为 2 的有符号整数数组
 
 // 每个索引保存一个二补数形式的有符号整数
 
-// 范围是\-128（\-1 \* 2\^7）\~127（2\^7 \- 1）
+// 范围是-128（-1 * 2^7）~127（2^7 - 1）
 
 const ints = new Int8Array(2);
 
@@ -8026,126 +7759,113 @@ const ints = new Int8Array(2);
 
 // 每个索引保存一个无符号整数
 
-// 范围是 0\~255（2\^7 \- 1）
+// 范围是 0~255（2^7 - 1）
 
 const unsignedInts = new Uint8Array(2);
 
 // 下溢的位会被转换为其无符号的等价值
 
-// 0xFF 是以二补数形式表示的\-1（截取到 8 位）,
+// 0xFF 是以二补数形式表示的-1（截取到 8 位）,
 
 // 但 255 是一个无符号整数
 
-unsignedInts\[1\] = \-1 // 0xFF (truncated to 8 bits)
+unsignedInts[1] = -1; // 0xFF (truncated to 8 bits)
 
-console.log(unsignedInts); // \[0, 255\]
+console.log(unsignedInts); // [0, 255]
 
 // 上溢自动变成二补数形式
 
-// 0x80 是无符号整数的 128，是二补数形式的\-128
+// 0x80 是无符号整数的 128，是二补数形式的-128
 
-ints\[1\] = 128; // 0x80
+ints[1] = 128; // 0x80
 
-console.log(ints); // \[0, \-128\]
+console.log(ints); // [0, -128]
 
 // 下溢自动变成二补数形式
 
-// 0xFF 是无符号整数的 255，是二补数形式的\-1
+// 0xFF 是无符号整数的 255，是二补数形式的-1
 
-ints\[1\] = 255; // 0xFF
+ints[1] = 255; // 0xFF
 
-console.log(ints); // \[0, \-1\]
+console.log(ints); // [0, -1]
 ```
 
 除了 8 种元素类型，还有一种“夹板”数组类型： Uint8ClampedArray ，不允许任何方向溢出。超出最大值 255 的值会被向下舍入为 255，而小于最小值 0 的值会被向上舍入为 0。
 
-```
-const clampedInts = new Uint8ClampedArray(\[-1, 0, 255, 256\]);
+```js
+const clampedInts = new Uint8ClampedArray([-1, 0, 255, 256]);
 
-console.log(clampedInts); // \[0, 0, 255, 255\]
+console.log(clampedInts); // [0, 0, 255, 255]
 ```
 
 按照 JavaScript 之父 Brendan Eich 的说法：“ Uint8ClampedArray 完全是 HTML5 canvas 元素的历史留存。除非真的做跟 canvas 相关的开发，否则不要使用它。”
 
 ## 6.4 Map
 
-ECMAScript 6 以前，在 JavaScript 中实现“键/值”式存储可以使用
+ECMAScript 6 以前，在 JavaScript 中实现“键/值”式存储可以使用 Object 来方便高效地完成，也就是使用对象属性作为键，再使用属性来引用值。但这种实现并非没有问题，为此 TC39 委员会专门为“键/值”存储定义了一个规范。
 
-Object 来方便高效地完成，也就是使用对象属性作为键，再使用属性来引用值。但这种实现并非没有问题，为此 TC39 委员会专门为“键/值”存储定义了一个规范。
-
-作为 ECMAScript 6 的新增特性， Map 是一种新的集合类型，为这门语言带来了真正的键/值存储机制。 Map 的大多数特性都可以通过
-
-Object 类型实现，但二者之间还是存在一些细微的差异。具体实践中使用哪一个，还是值得细细甄别。
+作为 ECMAScript 6 的新增特性， Map 是一种新的集合类型，为这门语言带来了真正的键/值存储机制。 Map 的大多数特性都可以通过 Object 类型实现，但二者之间还是存在一些细微的差异。具体实践中使用哪一个，还是值得细细甄别。
 
 1.  基本 API
 
 使用 new 关键字和 Map 构造函数可以创建一个空映射：
 
-```
+```js
 const m = new Map();
 ```
 
 如果想在创建的同时初始化实例，可以给 Map 构造函数传入一个可迭代对象，需要包含键/值对数组。可迭代对象中的每个键/值对都会按照迭代顺序插入到新映射实例中：
 
-```
+```js
 // 使用嵌套数组初始化映射
 
-const m1 = new Map(\[ \["key1", "val1"\],
+const m1 = new Map([
+  ['key1', 'val1'],
 
-\["key2", "val2"\],
+  ['key2', 'val2'],
 
-\["key3", "val3"\]
-
-\]);
+  ['key3', 'val3'],
+]);
 
 alert(m1.size); // 3
 
 // 使用自定义迭代器初始化映射
-const m2 = new Map({ \[Symbol.iterator\]: function\*() {
-
-}
-
-});
+const m2 = new Map({ [Symbol.iterator]: function* () {} });
 
 alert(m2.size); // 3
 
 // 映射期待的键/值对，无论是否提供
 
-const m3 = new Map(\[\[\]\]); alert(m3.has(undefined)); // true alert(m3.get(undefined)); // undefined
+const m3 = new Map([[]]);
+alert(m3.has(undefined)); // true alert(m3.get(undefined)); // undefined
 ```
 
-初始化之后，可以使用 set() 方法再添加键/值对。另外，可以使用
+初始化之后，可以使用 set() 方法再添加键/值对。另外，可以使用 get() 和 has() 进行查询，可以通过 size 属性获取映射中的键/值对的数量，还可以使用 delete() 和 clear() 删除值。
 
-get() 和 has() 进行查询，可以通过 size 属性获取映射中的键/值对的数量，还可以使用 delete() 和 clear() 删除值。
-
-```
-m.set("firstName", "Matt")
-
-.set("lastName", "Frisbie");
+```js
+m.set('firstName', 'Matt').set('lastName', 'Frisbie');
 
 m.clear(); // 清除这个映射实例中的所有键/值对
 ```
 
 set() 方法返回映射实例，因此可以把多个操作连缀起来，包括初始化声明：
 
-```
-const m = new Map().set("key1", "val1");
+```js
+const m = new Map().set('key1', 'val1');
 
-m.set("key2", "val2")
-
-.set("key3", "val3");
+m.set('key2', 'val2').set('key3', 'val3');
 
 alert(m.size); // 3
 ```
 
-与 Object 只能使用数值、字符串或符号作为键不同， Map 可以使用任何 JavaScript 数据类型作为键。 Map 内部使用 SameValueZero 比较操作
+与 Object 只能使用数值、字符串或符号作为键不同， Map 可以使用任何 JavaScript 数据类型作为键。 Map 内部使用 SameValueZero 比较操作（ECMAScript 规范内部定义，语言中不能使用），基本上相当于使用严格对象相等的标准来检查键的匹配性。与 Object 类似，映射的值是没有限制的。
 
-（ECMAScript 规范内部定义，语言中不能使用），基本上相当于使用严格对象相等的标准来检查键的匹配性。与 Object 类似，映射的值是没有限制的。
-
-```
+```js
 const m = new Map();
 
-m.set(functionKey, "functionValue"); m.set(symbolKey, "symbolValue"); m.set(objectKey, "objectValue");
+m.set(functionKey, 'functionValue');
+m.set(symbolKey, 'symbolValue');
+m.set(objectKey, 'objectValue');
 
 alert(m.get(functionKey)); // functionValue
 
@@ -8155,12 +7875,12 @@ alert(m.get(objectKey)); // objectValue
 
 // SameValueZero 比较意味着独立实例不冲突
 
-alert(m.get(function() {})); // undefined
+alert(m.get(function () {})); // undefined
 ```
 
 与严格相等一样，在映射中用作键和值的对象及其他“集合”类型，在自己的内容或属性被修改时仍然保持不变：
 
-```
+```js
 const m = new Map();
 
 m.set(objKey, objVal); m.set(arrKey, arrVal);
@@ -8171,7 +7891,7 @@ arrVal.push("bar");
 
 console.log(m.get(objKey)); // {bar: "bar"}
 
-console.log(m.get(arrKey)); // \["bar"\]
+console.log(m.get(arrKey)); // ["bar"]
 
 SameValueZero 比较也可能导致意想不到的冲突：
 
@@ -8179,7 +7899,7 @@ const m = new Map();
 
 const a = 0/"", // NaN b = 0/"", // NaN pz = +0,
 
-nz = \-0;
+nz = -0;
 
 alert(a === b); // false
 
@@ -8194,95 +7914,87 @@ alert(m.get(b)); // foo
 alert(m.get(nz)); // bar
 ```
 
-> 注意 SameValueZero 是 ECMAScript 规范新增的相等性比较算法。关于
-
-ECMAScript 的相等性比较，可以参考 MDN 文档中的文章“Equality Comparisons and Sameness”。
+> 注意 SameValueZero 是 ECMAScript 规范新增的相等性比较算法。关于 ECMAScript 的相等性比较，可以参考 MDN 文档中的文章“Equality Comparisons and Sameness”。
 
 2.  顺序与迭代
 
 与 Object 类型的一个主要差异是， Map 实例会维护键值对的插入顺序，因此可以根据插入顺序执行迭代操作。
 
-映射实例可以提供一个迭代器（ Iterator ），能以插入顺序生成
+映射实例可以提供一个迭代器（ Iterator ），能以插入顺序生成 [key, value] 形式的数组。可以通过 entries() 方法（或者 Symbol.iterator 属性，它引用 entries() ）取得这个迭代器：
 
-\[key, value\] 形式的数组。可以通过 entries() 方法（或者
+```js
+const m = new Map([
+  ['key1', 'val1'],
 
-Symbol.iterator 属性，它引用 entries() ）取得这个迭代器：
+  ['key2', 'val2'],
 
-```
-const m = new Map(\[ \["key1", "val1"\],
+  ['key3', 'val3'],
+]);
 
-\["key2", "val2"\],
+alert(m.entries === m[Symbol.iterator]); // true
 
-\["key3", "val3"\]
-
-\]);
-
-alert(m.entries === m\[Symbol.iterator\]); // true
-
-for (let pair of m.entries()) { alert(pair);
-
+for (let pair of m.entries()) {
+  alert(pair);
 }
 
-// \[key1,val1\]
+// [key1,val1]
 
-// \[key2,val2\]
+// [key2,val2]
 
-// \[key3,val3\]
+// [key3,val3]
 
-for (let pair of m\[Symbol.iterator\]()) { alert(pair);
-
+for (let pair of m[Symbol.iterator]()) {
+  alert(pair);
 }
 
-// \[key1,val1\]
+// [key1,val1]
 
-// \[key2,val2\]
+// [key2,val2]
 
-// \[key3,val3\]
+// [key3,val3]
 ```
 
 因为 entries() 是默认迭代器，所以可以直接对映射实例使用扩展操作，把映射转换为数组：
 
+```js
+const m = new Map([
+  ['key1', 'val1'],
+
+  ['key2', 'val2'],
+
+  ['key3', 'val3'],
+]);
+
+console.log([...m]); // [[key1,val1],[key2,val2], [key3,val3]]
 ```
-const m = new Map(\[ \["key1", "val1"\],
 
-\["key2", "val2"\],
+如果不使用迭代器，而是使用回调方式，则可以调用映射的 forEach() 方法并传入回调，依次迭代每个键/值对。传入的回调接收可选的第二个参数，这个参数用于重写回调内部 this 的值：
 
-\["key3", "val3"\]
+```js
+const m = new Map([
+  ['key1', 'val1'],
 
-\]);
+  ['key2', 'val2'],
 
-console.log(\[...m\]); // \[\[key1,val1\],\[key2,val2\], \[key3,val3\]\]
-```
+  ['key3', 'val3'],
+]);
 
-如果不使用迭代器，而是使用回调方式，则可以调用映射的
-
-forEach() 方法并传入回调，依次迭代每个键/值对。传入的回调接收可选的第二个参数，这个参数用于重写回调内部 this 的值：
-
-```
-const m = new Map(\[ \["key1", "val1"\],
-
-\["key2", "val2"\],
-
-\["key3", "val3"\]
-
-\]);
-
-m.forEach((val, key) => alert(\`\${key} \-> \${val}\`));
+m.forEach((val, key) => alert(`${key} -> ${val}`));
 ```
 
 keys() 和 values() 分别返回以插入顺序生成键和值的迭代器：
 
-```
-const m = new Map(\[ \["key1", "val1"\],
+```js
+const m = new Map([
+  ['key1', 'val1'],
 
-\["key2", "val2"\],
+  ['key2', 'val2'],
 
-\["key3", "val3"\]
+  ['key3', 'val3'],
+]);
 
-\]);
-
-for (let key of m.keys()) { alert(key);
-
+for (let key of m.keys()) {
+  alert(key);
 }
 
 // key1
@@ -8292,9 +8004,7 @@ for (let key of m.keys()) { alert(key);
 // key3
 
 for (let key of m.values()) {
-
-alert(key);
-
+  alert(key);
 }
 
 // value1
@@ -8306,10 +8016,10 @@ alert(key);
 
 键和值在迭代器遍历时是可以修改的，但映射内部的引用则无法修 改。当然，这并不妨碍修改作为键或值的对象内部的属性，因为这样并不影响它们在映射实例中的身份：
 
-```
-const m1 = new Map(\[ \["key1", "val1"\]
+```js
+const m1 = new Map([ ["key1", "val1"]
 
-\]);
+]);
 
 // 作为键的字符串原始值是不能修改的
 
@@ -8321,11 +8031,11 @@ alert(m1.get("key1")); // val1
 
 }
 
-const keyObj = {id: 1}; const m = new Map(\[
+const keyObj = {id: 1}; const m = new Map([
 
-\[keyObj, "val1"\]
+[keyObj, "val1"]
 
-\]);
+]);
 
 // 修改了作为键的对象的属性，但对象在映射内部仍然引用相同的值
 
@@ -8338,39 +8048,29 @@ for (let key of m.keys()) { key.id = "newKey";
 
 1.  内存占用
 
-Object 和 Map 的工程级实现在不同浏览器间存在明显差异，但存储单个键/值对所占用的内存数量都会随键的数量线性增加。批量添加或删除键/值对则取决于各浏览器对该类型内存分配的工程实现。不同浏览器的情况不同，但给定固定大小的内存， Map 大约可以比
-
-Object 多存储 50\%的键/值对。
+Object 和 Map 的工程级实现在不同浏览器间存在明显差异，但存储单个键/值对所占用的内存数量都会随键的数量线性增加。批量添加或删除键/值对则取决于各浏览器对该类型内存分配的工程实现。不同浏览器的情况不同，但给定固定大小的内存， Map 大约可以比 Object 多存储 50%的键/值对。
 
 2.  插入性能
 
-向 Object 和 Map 中插入新键/值对的消耗大致相当，不过插入
-
-Map 在所有浏览器中一般会稍微快一点儿。对这两个类型来说，插入速度并不会随着键/值对数量而线性增加。如果代码涉及大量插入操作，那么显然 Map 的性能更佳。
+向 Object 和 Map 中插入新键/值对的消耗大致相当，不过插入 Map 在所有浏览器中一般会稍微快一点儿。对这两个类型来说，插入速度并不会随着键/值对数量而线性增加。如果代码涉及大量插入操作，那么显然 Map 的性能更佳。
 
 3.  查找速度
 
-与插入不同，从大型 Object 和 Map 中查找键/值对的性能差异极小，但如果只包含少量键/值对，则 Object 有时候速度更快。在把
-
-Object 当成数组使用的情况下（比如使用连续整数作为属性），浏览器引擎可以进行优化，在内存中使用更高效的布局。这对 Map 来说是不可能的。对这两个类型而言，查找速度不会随着键/值对数量增加而线性增加。如果代码涉及大量查找操作，那么某些情况下可能选择 Object 更好一些。
+与插入不同，从大型 Object 和 Map 中查找键/值对的性能差异极小，但如果只包含少量键/值对，则 Object 有时候速度更快。在把 Object 当成数组使用的情况下（比如使用连续整数作为属性），浏览器引擎可以进行优化，在内存中使用更高效的布局。这对 Map 来说是不可能的。对这两个类型而言，查找速度不会随着键/值对数量增加而线性增加。如果代码涉及大量查找操作，那么某些情况下可能选择 Object 更好一些。
 
 4.  删除性能
 
-使用 delete 删除 Object 属性的性能一直以来饱受诟病，目前在很多浏览器中仍然如此。为此，出现了一些伪删除对象属性的操作，包括把属性值设置为 undefined 或 null 。但很多时候，这都是一种讨厌的或不适宜的折中。而对大多数浏览器引擎来说， Map 的
-
-delete() 操作都比插入和查找更快。如果代码涉及大量删除操作，那么毫无疑问应该选择 Map 。
+使用 delete 删除 Object 属性的性能一直以来饱受诟病，目前在很多浏览器中仍然如此。为此，出现了一些伪删除对象属性的操作，包括把属性值设置为 undefined 或 null 。但很多时候，这都是一种讨厌的或不适宜的折中。而对大多数浏览器引擎来说， Map 的 delete() 操作都比插入和查找更快。如果代码涉及大量删除操作，那么毫无疑问应该选择 Map 。
 
 ## 6.5 WeakMap
 
-ECMAScript 6 新增的“弱映射”（ WeakMap ）是一种新的集合类型，为这门语言带来了增强的键/值对存储机制。 WeakMap 是 Map 的“兄
-
-弟”类型，其 API 也是 Map 的子集。 WeakMap 中的“weak”（弱），描述的是 JavaScript 垃圾回收程序对待“弱映射”中键的方式。
+ECMAScript 6 新增的“弱映射”（ WeakMap ）是一种新的集合类型，为这门语言带来了增强的键/值对存储机制。 WeakMap 是 Map 的“兄弟”类型，其 API 也是 Map 的子集。 WeakMap 中的“weak”（弱），描述的是 JavaScript 垃圾回收程序对待“弱映射”中键的方式。
 
 1.  基本 API
 
 可以使用 new 关键字实例化一个空的 WeakMap ：
 
-```
+```js
 const wm = new WeakMap();
 ```
 
@@ -8378,30 +8078,32 @@ const wm = new WeakMap();
 
 如果想在初始化时填充弱映射，则构造函数可以接收一个可迭代对象，其中需要包含键/值对数组。可迭代对象中的每个键/值都会按照迭代顺序插入新实例中：
 
-```
+```js
 // 使用嵌套数组初始化弱映射
 
-const wm1 = new WeakMap(\[ \[key1, "val1"\],
+const wm1 = new WeakMap([
+  [key1, 'val1'],
 
-\[key2, "val2"\],
+  [key2, 'val2'],
 
-\[key3, "val3"\]
+  [key3, 'val3'],
+]);
 
-\]);
-
-alert(wm.get(key1)); // val2 alert(wm.get(key2)); // val2 alert(wm.get(key3)); // val3
+alert(wm.get(key1)); // val2 
+alert(wm.get(key2)); // val2 
+alert(wm.get(key3)); // val3
 
 // 初始化是全有或全无的操作
 
 // 只要有一个键无效就会抛出错误，导致整个初始化失败
 
-const wm2 = new WeakMap(\[ \[key1, "val1"\],
+const wm2 = new WeakMap([
+  [key1, 'val1'],
 
-\["BADKEY", "val2"\],
+  ['BADKEY', 'val2'],
 
-\[key3, "val3"\]
-
-\]);
+  [key3, 'val3'],
+]);
 
 // TypeError: Invalid value used as WeakMap key
 
@@ -8411,31 +8113,25 @@ typeof wm2;
 
 // 原始值可以先包装成对象再用作键
 
-const stringKey = new String("key1"); const wm3 = new WeakMap(\[
-
-stringKey, "val1"
-
-\]);
+const stringKey = new String('key1');
+const wm3 = new WeakMap([stringKey, 'val1']);
 
 alert(wm3.get(stringKey)); // "val1"
 ```
 
-初始化之后可以使用 set() 再添加键/值对，可以使用 get() 和
+初始化之后可以使用 set() 再添加键/值对，可以使用 get() 和 has() 查询，还可以使用 delete() 删除：
 
-has() 查询，还可以使用 delete() 删除：
-
-```
+```js
 const wm = new WeakMap();
 
-const key1 = {id: 1}, key2 = {id: 2};
+const key1 = { id: 1 },
+  key2 = { id: 2 };
 
 alert(wm.has(key1)); // false
 
 alert(wm.get(key1)); // undefined
 
-wm.set(key1, "Matt")
-
-.set(key2, "Frisbie");
+wm.set(key1, 'Matt').set(key2, 'Frisbie');
 
 alert(wm.has(key1)); // true
 
@@ -8450,12 +8146,13 @@ alert(wm.has(key2)); // true
 
 set() 方法返回弱映射实例，因此可以把多个操作连缀起来，包括初始化声明：
 
-```
-const wm = new WeakMap().set(key1, "val1"); wm.set(key2, "val2")
+```js
+const wm = new WeakMap().set(key1, 'val1');
+wm.set(key2, 'val2').set(key3, 'val3');
 
-.set(key3, "val3");
-
-alert(wm.get(key1)); // val1 alert(wm.get(key2)); // val2 alert(wm.get(key3)); // val3
+alert(wm.get(key1)); // val1
+alert(wm.get(key2)); // val2
+alert(wm.get(key3)); // val3
 ```
 
 2.  弱键
@@ -8464,27 +8161,25 @@ WeakMap 中“weak”表示弱映射的键是“弱弱地拿着”的。意思�
 
 来看下面的例子：
 
-```
+```js
 const wm = new WeakMap();
 
-wm.set({}, "val");
+wm.set({}, 'val');
 ```
 
 set() 方法初始化了一个新对象并将它用作一个字符串的键。因为没有指向这个对象的其他引用，所以当这行代码执行完成后，这个对象键就会被当作垃圾回收。然后，这个键/值对就从弱映射中消失了，使其成为一个空映射。在这个例子中，因为值也没有被引用，所以这对键/值被破坏以后，值本身也会成为垃圾回收的目标。
 
 再看一个稍微不同的例子：
 
-```
+```js
 const wm = new WeakMap();
 
-const container = { key: {}
+const container = { key: {} };
 
-};
+wm.set(container.key, 'val');
 
-wm.set(container.key, "val");
-
-function removeReference() { container.key = null;
-
+function removeReference() {
+  container.key = null;
 }
 ```
 
@@ -8492,9 +8187,7 @@ function removeReference() { container.key = null;
 
 3.  不可迭代键
 
-因为 WeakMap 中的键/值对任何时候都可能被销毁，所以没必要提供迭代其键/值对的能力。当然，也用不着像 clear() 这样一次性销毁所有键/值的方法。 WeakMap 确实没有这个方法。因为不可能迭代，所以也不可能在不知道对象引用的情况下从弱映射中取得值。即便代码可以访问
-
-WeakMap 实例，也没办法看到其中的内容。
+因为 WeakMap 中的键/值对任何时候都可能被销毁，所以没必要提供迭代其键/值对的能力。当然，也用不着像 clear() 这样一次性销毁所有键/值的方法。 WeakMap 确实没有这个方法。因为不可能迭代，所以也不可能在不知道对象引用的情况下从弱映射中取得值。即便代码可以访问 WeakMap 实例，也没办法看到其中的内容。
 
 WeakMap 实例之所以限制只能用对象作为键，是为了保证只有通过键对象的引用才能取得值。如果允许原始值，那就没办法区分初始化时使用的字符串字面量和初始化之后使用的一个相等的字符串了。
 
@@ -8508,92 +8201,80 @@ WeakMap 实例与现有 JavaScript 对象有着很大不同，可能一时不容
 
 下面是一个示例实现：
 
-```
+```js
 const wm = new WeakMap();
 
-class User { constructor(id) {
+class User {
+  constructor(id) {
+    this.idProperty = Symbol('id');
+    this.setId(id);
+  }
 
-this.idProperty = Symbol('id'); this.setId(id);
+  setPrivate(property, value) {
+    const privateMembers = wm.get(this) || {};
+    privateMembers[property] = value;
+    wm.set(this, privateMembers);
+  }
 
+  getPrivate(property) {
+    return wm.get(this)[property];
+  }
+
+  setId(id) {
+    this.setPrivate(this.idProperty, id);
+  }
+
+  getId() {
+    return this.getPrivate(this.idProperty);
+  }
 }
 
-setPrivate(property, value) {
-
-const privateMembers = wm.get(this) || {}; privateMembers\[property\] = value; wm.set(this, privateMembers);
-
-}
-
-getPrivate(property) {
-
-return wm.get(this)\[property\];
-
-}
-
-setId(id) { this.setPrivate(this.idProperty, id);
-
-}
-
-getId() {
-
-return this.getPrivate(this.idProperty);
-
-}
-
-}
-
-const user = new User(123); alert(user.getId()); // 123 user.setId(456);
+const user = new User(123);
+alert(user.getId()); // 123 user.setId(456);
 
 alert(user.getId()); // 456
 
 // 并不是真正私有的
 
-alert(wm.get(user)\[user.idProperty\]); // 456
+alert(wm.get(user)[user.idProperty]); // 456
 ```
 
 慧眼独具的读者会发现，对于上面的实现，外部代码只需要拿到对象实例的引用和弱映射，就可以取得“私有”变量了。为了避免这种访 问，可以用一个闭包把 WeakMap 包装起来，这样就可以把弱映射与外界完全隔离开了：
 
-```
+```js
 const User = (() => {
+  const wm = new WeakMap();
 
-const wm = new WeakMap();
+  class User {
+    constructor(id) {
+      this.idProperty = Symbol('id');
+      this.setId(id);
+    }
 
-class User { constructor(id) {
+    setPrivate(property, value) {
+      const privateMembers = wm.get(this) || {};
+      privateMembers[property] = value;
+      wm.set(this, privateMembers);
+    }
 
-this.idProperty = Symbol('id'); this.setId(id);
+    getPrivate(property) {
+      return wm.get(this)[property];
+    }
 
-}
+    setId(id) {
+      this.setPrivate(this.idProperty, id);
+    }
 
-setPrivate(property, value) {
+    getId(id) {
+      return this.getPrivate(this.idProperty);
+    }
+  }
 
-const privateMembers = wm.get(this) || {}; privateMembers\[property\] = value; wm.set(this, privateMembers);
-
-}
-
-getPrivate(property) {
-
-return wm.get(this)\[property\];
-
-}
-
-setId(id) {
-
-this.setPrivate(this.idProperty, id);
-
-}
-
-getId(id) {
-
-return this.getPrivate(this.idProperty);
-
-}
-
-}
-
-return User;
-
+  return User;
 })();
 
-const user = new User(123); alert(user.getId()); // 123 user.setId(456); alert(user.getId()); // 456
+const user = new User(123);
+alert(user.getId()); // 123 user.setId(456); alert(user.getId()); // 456
 ```
 
 这样，拿不到弱映射中的健，也就无法取得弱映射中对应的值。虽然这防止了前面提到的访问，但整个代码也完全陷入了 ES6 之前的闭包私有变量模式。
@@ -8602,112 +8283,108 @@ const user = new User(123); alert(user.getId()); // 123 user.setId(456); alert(u
 
 因为 WeakMap 实例不会妨碍垃圾回收，所以非常适合保存关联元数据。来看下面这个例子，其中使用了常规的 Map ：
 
-```
+```js
 const m = new Map();
 
 const loginButton = document.querySelector('#login');
 
 // 给这个节点关联一些元数据
 
-m.set(loginButton, {disabled: true});
+m.set(loginButton, { disabled: true });
 ```
 
 假设在上面的代码执行后，页面被 JavaScript 改变了，原来的登录按钮从 DOM 树中被删掉了。但由于映射中还保存着按钮的引用，所以对应的 DOM 节点仍然会逗留在内存中，除非明确将其从映射中删除或者等到映射本身被销毁。
 
 如果这里使用的是弱映射，如以下代码所示，那么当节点从 DOM 树中被删除后，垃圾回收程序就可以立即释放其内存（假设没有其他地方引用这个对象）：
 
-```
+```js
 const wm = new WeakMap();
 
 const loginButton = document.querySelector('#login');
 
 // 给这个节点关联一些元数据
 
-wm.set(loginButton, {disabled: true});
+wm.set(loginButton, { disabled: true });
 ```
 
 ## 6.6 Set
 
-ECMAScript 6 新增的 Set 是一种新集合类型，为这门语言带来集合数据结构。 Set 在很多方面都像是加强的 Map ，这是因为它们的大多数
-
-API 和行为都是共有的。
+ECMAScript 6 新增的 Set 是一种新集合类型，为这门语言带来集合数据结构。 Set 在很多方面都像是加强的 Map ，这是因为它们的大多数 API 和行为都是共有的。
 
 1.  基本 API
 
 使用 new 关键字和 Set 构造函数可以创建一个空集合：
 
-```
+```js
 const m = new Set();
 ```
 
 如果想在创建的同时初始化实例，则可以给 Set 构造函数传入一个可迭代对象，其中需要包含插入到新集合实例中的元素：
 
-```
+```js
 // 使用数组初始化集合
 
-const s1 = new Set(\["val1", "val2", "val3"\]); alert(s1.size); // 3
+const s1 = new Set(['val1', 'val2', 'val3']);
+alert(s1.size); // 3
 
 // 使用自定义迭代器初始化集合
 
-const s2 = new Set({ \[Symbol.iterator\]: function\*() {
-
-yield "val1"; yield "val2"; yield "val3";
-
-}
-
+const s2 = new Set({
+  [Symbol.iterator]: function* () {
+    yield 'val1';
+    yield 'val2';
+    yield 'val3';
+  },
 });
 
 alert(s2.size); // 3
 ```
 
-初始化之后，可以使用 add() 增加值，使用 has() 查询，通过
+初始化之后，可以使用 add() 增加值，使用 has() 查询，通过 size 取得元素数量，以及使用 delete() 和 clear() 删除元素：
 
-size 取得元素数量，以及使用 delete() 和 clear() 删除元素：
-
-```
-alert(s.has("Matt")); // false alert(s.has("Frisbie")); // true alert(s.size); // 1
-```
-
+```js
+alert(s.has('Matt')); // false
+alert(s.has('Frisbie')); // true
+alert(s.size); // 1
 s.clear(); // 销毁集合实例中的所有值
-
-```
-alert(s.has("Matt")); // false alert(s.has("Frisbie")); // false alert(s.size); // 0
+alert(s.has('Matt')); // false
+alert(s.has('Frisbie')); // false
+alert(s.size); // 0
 ```
 
 add() 返回集合的实例，所以可以将多个添加操作连缀起来，包括初始化：
 
-```
-const s = new Set().add("val1");
+```js
+const s = new Set().add('val1');
 
-s.add("val2")
-
-.add("val3");
+s.add('val2').add('val3');
 
 alert(s.size); // 3
 ```
 
 与 Map 类似， Set 可以包含任何 JavaScript 数据类型作为值。集合也使用 SameValueZero 操作（ECMAScript 内部定义，无法在语言中使用），基本上相当于使用严格对象相等的标准来检查值的匹配性。
 
-```
+```js
 const s = new Set();
 
 // SameValueZero 检查意味着独立的实例不会冲突
 
-alert(s.has(function() {})); // false
+alert(s.has(function () {})); // false
 ```
 
 与严格相等一样，用作值的对象和其他“集合”类型在自己的内容或属性被修改时也不会改变：
 
-```
+```js
 const s = new Set();
 
 const objVal = {},
+  arrVal = [];
 
-arrVal = \[\];
+s.add(objVal);
+s.add(arrVal);
 
-s.add(objVal); s.add(arrVal);
-
-objVal.bar = "bar"; arrVal.push("bar");
+objVal.bar = 'bar';
+arrVal.push('bar');
 
 alert(s.has(objVal)); // true
 
@@ -8716,10 +8393,11 @@ alert(s.has(arrVal)); // true
 
 add() 和 delete() 操作是幂等的。 delete() 返回一个布尔值，表示集合中是否存在要删除的值：
 
-```
+```js
 const s = new Set();
 
-s.add('foo'); alert(s.size); // 1 s.add('foo'); alert(s.size); // 1
+s.add('foo');
+alert(s.size); // 1 s.add('foo'); alert(s.size); // 1
 
 // 集合里有这个值
 
@@ -8736,15 +8414,15 @@ Set 会维护值插入时的顺序，因此支持按顺序迭代。
 
 集合实例可以提供一个迭代器（ Iterator ），能以插入顺序生成集合内容。可以通过 values() 方法及其别名方法 keys() （或者 Symbol.iterator 属性，它引用 values() ）取得这个迭代器：
 
-```
-const s = new Set(\["val1", "val2", "val3"\]);
+```js
+const s = new Set(['val1', 'val2', 'val3']);
 
-alert(s.values === s\[Symbol.iterator\]); // true
+alert(s.values === s[Symbol.iterator]); // true
 
-alert(s.keys === s\[Symbol.iterator\]); // true
+alert(s.keys === s[Symbol.iterator]); // true
 
-for (let value of s.values()) { alert(value);
-
+for (let value of s.values()) {
+  alert(value);
 }
 
 // val1
@@ -8753,8 +8431,8 @@ for (let value of s.values()) { alert(value);
 
 // val3
 
-for (let value of s\[Symbol.iterator\]()) { alert(value);
-
+for (let value of s[Symbol.iterator]()) {
+  alert(value);
 }
 
 // val1
@@ -8766,38 +8444,38 @@ for (let value of s\[Symbol.iterator\]()) { alert(value);
 
 因为 values() 是默认迭代器，所以可以直接对集合实例使用扩展操作，把集合转换为数组：
 
-```
-const s = new Set(\["val1", "val2", "val3"\]);
+```js
+const s = new Set(['val1', 'val2', 'val3']);
 
-console.log(\[...s\]); // \["val1", "val2", "val3"\]
+console.log([...s]); // ["val1", "val2", "val3"]
 ```
 
 集合的 entries() 方法返回一个迭代器，可以按照插入顺序产生包含两个元素的数组，这两个元素是集合中每个值的重复出现：
 
-```
-const s = new Set(\["val1", "val2", "val3"\]);
+```js
+const s = new Set(['val1', 'val2', 'val3']);
 
-for (let pair of s.entries()) { console.log(pair);
-
+for (let pair of s.entries()) {
+  console.log(pair);
 }
 ```
 
-如果不使用迭代器，而是使用回调方式，则可以调用集合的
+如果不使用迭代器，而是使用回调方式，则可以调用集合的 forEach() 方法并传入回调，依次迭代每个键/值对。传入的回调接收可选的第二个参数，这个参数用于重写回调内部 this 的值：
 
-forEach() 方法并传入回调，依次迭代每个键/值对。传入的回调接收可选的第二个参数，这个参数用于重写回调内部 this 的值：
+```js
+const s = new Set(['val1', 'val2', 'val3']);
 
-```
-const s = new Set(\["val1", "val2", "val3"\]);
+s.forEach((val, dupVal) =>
+  alert(`${val} ->
 
-s.forEach((val, dupVal) => alert(\`\${val} \->
-
-\${dupVal}\`));
+${dupVal}`)
+);
 ```
 
 修改集合中值的属性不会影响其作为集合值的身份：
 
-```
-const s1 = new Set(\["val1"\]);
+```js
+const s1 = new Set(["val1"]);
 
 // 字符串原始值作为值不会被修改
 
@@ -8811,7 +8489,7 @@ alert(s1.has("val1")); // true
 
 const valObj = {id: 1};
 
-const s2 = new Set(\[valObj\]);
+const s2 = new Set([valObj]);
 
 // 修改值对象的属性，但对象仍然存在于集合中
 for (let value of s2.values()) { value.id = "newVal";
@@ -8821,157 +8499,126 @@ for (let value of s2.values()) { value.id = "newVal";
 
 从各方面来看， Set 跟 Map 都很相似，只是 API 稍有调整。唯一需要强调的就是集合的 API 只支持自引用操作。很多开发者都喜欢使用 Set 操作，但需要手动实现：或者是子类化 Set ，或者是定义一个实用函数库。要把两种方式合二为一，可以在子类上实现静态方法，然后在实例方法中使用这些静态方法。在实现这些操作时，需要考虑几个地方。
 
-某些 Set 操作是有关联性的，因此最好让实现的方法能支持处理任意多个集合实例。
-
-Set 保留插入顺序，所有方法返回的集合必须保证顺序。
-
-尽可能高效地使用内存。扩展操作符的语法很简洁，但尽可能避免集合和数组间的相互转换能够节省对象初始化成本。
-
-不要修改已有的集合实例。 union(a, b) 或 a.union(b) 应该返回包含结果的新集合实例。
-
-```
-class XSet extends Set { union(...sets) {
-
-return XSet.union(this, ...sets)
-
-}
-
-intersection(...sets) {
-
-return XSet.intersection(this, ...sets);
-
-}
-
-difference(set) {
-
-return XSet.difference(this, set);
-
-}
-
-symmetricDifference(set) {
-
-return XSet.symmetricDifference(this, set);
-
-}
-
-cartesianProduct(set) {
-
-return XSet.cartesianProduct(this, set);
-
-}
-
-powerSet() {
-
-return XSet.powerSet(this);
-
-}
-
-// 返回两个或更多集合的并集
-
-static union(a, ...bSets) { const unionSet = new XSet(a); for (const b of bSets) {
-
-for (const bValue of b) { unionSet.add(bValue);
-
-}
-
-}
-
-return unionSet;
-
-}
-
-// 返回两个或更多集合的交集
-
-static intersection(a, ...bSets) { const intersectionSet = new XSet(a);
-
-for (const aValue of intersectionSet) { for (const b of bSets) {
-
-if (!b.has(aValue)) { intersectionSet.delete(aValue);
-
-}
-
-}
-
-}
-
-return intersectionSet;
-
-}
-
-// 返回两个集合的差集
-
-static difference(a, b) {
-
-const differenceSet = new XSet(a); for (const bValue of b) {
-
-if (a.has(bValue)) { differenceSet.delete(bValue);
-
-}
-
-}
-
-return differenceSet;
-
-}
-
-// 返回两个集合的对称差集
-
-static symmetricDifference(a, b) {
-
-// 按照定义，对称差集可以表达为
-
-return a.union(b).difference(a.intersection(b));
-
-}
-
-// 返回两个集合（数组对形式）的笛卡儿积
-
-// 必须返回数组集合，因为笛卡儿积可能包含相同值的对
-
-static cartesianProduct(a, b) {
-
-const cartesianProductSet = new XSet(); for (const aValue of a) {
-
-for (const bValue of b) { cartesianProductSet.add(\[aValue, bValue\]);
-
-}
-
-}
-
-return cartesianProductSet;
-
-}
-
-// 返回一个集合的幂集
-
-static powerSet(a) {
-
-const powerSet = new XSet().add(new XSet()); for (const aValue of a) {
-
-for (const set of new XSet(powerSet)) { powerSet.add(new XSet(set).add(aValue));
-
-}
-
-}
-
-return powerSet;
-
-}
-
+- 某些 Set 操作是有关联性的，因此最好让实现的方法能支持处理任意多个集合实例。
+- Set 保留插入顺序，所有方法返回的集合必须保证顺序。
+- 尽可能高效地使用内存。扩展操作符的语法很简洁，但尽可能避免集合和数组间的相互转换能够节省对象初始化成本。
+- 不要修改已有的集合实例。 union(a, b) 或 a.union(b) 应该返回包含结果的新集合实例。
+
+```js
+class XSet extends Set {
+  union(...sets) {
+    return XSet.union(this, ...sets);
+  }
+
+  intersection(...sets) {
+    return XSet.intersection(this, ...sets);
+  }
+
+  difference(set) {
+    return XSet.difference(this, set);
+  }
+
+  symmetricDifference(set) {
+    return XSet.symmetricDifference(this, set);
+  }
+
+  cartesianProduct(set) {
+    return XSet.cartesianProduct(this, set);
+  }
+
+  powerSet() {
+    return XSet.powerSet(this);
+  }
+
+  // 返回两个或更多集合的并集
+
+  static union(a, ...bSets) {
+    const unionSet = new XSet(a);
+    for (const b of bSets) {
+      for (const bValue of b) {
+        unionSet.add(bValue);
+      }
+    }
+
+    return unionSet;
+  }
+
+  // 返回两个或更多集合的交集
+
+  static intersection(a, ...bSets) {
+    const intersectionSet = new XSet(a);
+
+    for (const aValue of intersectionSet) {
+      for (const b of bSets) {
+        if (!b.has(aValue)) {
+          intersectionSet.delete(aValue);
+        }
+      }
+    }
+
+    return intersectionSet;
+  }
+
+  // 返回两个集合的差集
+
+  static difference(a, b) {
+    const differenceSet = new XSet(a);
+    for (const bValue of b) {
+      if (a.has(bValue)) {
+        differenceSet.delete(bValue);
+      }
+    }
+
+    return differenceSet;
+  }
+
+  // 返回两个集合的对称差集
+
+  static symmetricDifference(a, b) {
+    // 按照定义，对称差集可以表达为
+
+    return a.union(b).difference(a.intersection(b));
+  }
+
+  // 返回两个集合（数组对形式）的笛卡儿积
+
+  // 必须返回数组集合，因为笛卡儿积可能包含相同值的对
+
+  static cartesianProduct(a, b) {
+    const cartesianProductSet = new XSet();
+    for (const aValue of a) {
+      for (const bValue of b) {
+        cartesianProductSet.add([(aValue, bValuebValuebValuebValue)]);
+      }
+    }
+
+    return cartesianProductSet;
+  }
+
+  // 返回一个集合的幂集
+
+  static powerSet(a) {
+    const powerSet = new XSet().add(new XSet());
+    for (const aValue of a) {
+      for (const set of new XSet(powerSet)) {
+        powerSet.add(new XSet(set).add(aValue));
+      }
+    }
+
+    return powerSet;
+  }
 }
 ```
 
 ## 6.7 WeakSet
 
-ECMAScript 6 新增的“弱集合”（ WeakSet ）是一种新的集合类型，为这门语言带来了集合数据结构。 WeakSet 是 Set 的“兄弟”类型，其
-
-API 也是 Set 的子集。 WeakSet 中的“weak”（弱），描述的是 JavaScript 垃圾回收程序对待“弱集合”中值的方式。
+ECMAScript 6 新增的“弱集合”（ WeakSet ）是一种新的集合类型，为这门语言带来了集合数据结构。 WeakSet 是 Set 的“兄弟”类型，其 API 也是 Set 的子集。 WeakSet 中的“weak”（弱），描述的是 JavaScript 垃圾回收程序对待“弱集合”中值的方式。
 
 1.  基本 API
 
 可以使用 new 关键字实例化一个空的 WeakSet ：
 
-```
+```js
 const ws = new WeakSet();
 ```
 
@@ -8979,18 +8626,20 @@ const ws = new WeakSet();
 
 如果想在初始化时填充弱集合，则构造函数可以接收一个可迭代对 象，其中需要包含有效的值。可迭代对象中的每个值都会按照迭代顺序插入到新实例中：
 
-```
+```js
 // 使用数组初始化弱集合
 
-const ws1 = new WeakSet(\[val1, val2, val3\]);
+const ws1 = new WeakSet([(val1, val2, val3val3)]);
 
-alert(ws1.has(val1)); // true alert(ws1.has(val2)); // true alert(ws1.has(val3)); // true
+alert(ws1.has(val1)); // true
+alert(ws1.has(val2)); // true
+alert(ws1.has(val3)); // true
 
 // 初始化是全有或全无的操作
 
 // 只要有一个值无效就会抛出错误，导致整个初始化失败
 
-const ws2 = new WeakSet(\[val1, "BADVAL", val3\]);
+const ws2 = new WeakSet([(val1, 'BADVAL', val3val3)]);
 
 // TypeError: Invalid value used in WeakSet
 
@@ -9000,30 +8649,30 @@ typeof ws2;
 
 // 原始值可以先包装成对象再用作值
 
-const stringVal = new String("val1"); const ws3 = new WeakSet(\[stringVal\]); alert(ws3.has(stringVal)); // true
+const stringVal = new String('val1');
+const ws3 = new WeakSet([stringValstringVal]);
+alert(ws3.has(stringVal)); // true
 ```
 
 初始化之后可以使用 add() 再添加新值，可以使用 has() 查询，还可以使用 delete() 删除：
 
-```
+```js
 const ws = new WeakSet();
 
-const val1 = {id: 1}, val2 = {id: 2};
+const val1 = { id: 1 },
+  val2 = { id: 2 };
 
 alert(ws.has(val1)); // false
 
-ws.add(val1)
-
-.add(val2);
-
+ws.add(val1).add(val2);
 ```
 
 add() 方法返回弱集合实例，因此可以把多个操作连缀起来，包括初始化声明：
 
-```
-const ws = new WeakSet().add(val1); ws.add(val2)
-
-.add(val3); alert(ws.has(val1)); // true
+```js
+const ws = new WeakSet().add(val1);
+ws.add(val2).add(val3);
+alert(ws.has(val1)); // true
 
 alert(ws.has(val2)); // true
 
@@ -9036,7 +8685,7 @@ WeakSet 中“weak”表示弱集合的值是“弱弱地拿着”的。意思�
 
 来看下面的例子：
 
-```
+```js
 const ws = new WeakSet();
 
 ws.add({});
@@ -9046,17 +8695,14 @@ add() 方法初始化了一个新对象，并将它用作一个值。因为没�
 
 再看一个稍微不同的例子：
 
-```
+```js
 const ws = new WeakSet();
 
-const container = { val: {}
+const container = { val: {} };
 
-};
-
-ws.add(container.val); function removeReference() {
-
-container.val = null;
-
+ws.add(container.val);
+function removeReference() {
+  container.val = null;
 }
 ```
 
@@ -9074,7 +8720,7 @@ WeakSet 之所以限制只能用对象作为值，是为了保证只有通过值
 
 来看下面的例子，这里使用了一个普通 Set ：
 
-```
+```js
 const disabledElements = new Set();
 
 const loginButton = document.querySelector('#login');
@@ -9084,13 +8730,11 @@ const loginButton = document.querySelector('#login');
 disabledElements.add(loginButton);
 ```
 
-这样，通过查询元素在不在 disabledElements 中，就可以知道它是不是被禁用了。不过，假如元素从 DOM 树中被删除了，它的引用却仍然
-
-保存在 Set 中，因此垃圾回收程序也不能回收它。
+这样，通过查询元素在不在 disabledElements 中，就可以知道它是不是被禁用了。不过，假如元素从 DOM 树中被删除了，它的引用却仍然保存在 Set 中，因此垃圾回收程序也不能回收它。
 
 为了让垃圾回收程序回收元素的内存，可以在这里使用 WeakSet ：
 
-```
+```js
 const disabledElements = new WeakSet();
 
 const loginButton = document.querySelector('#login');
@@ -9112,24 +8756,20 @@ ECMAScript 6 新增的迭代器和扩展操作符对集合引用类型特别有�
 
 如本章前面所示，有 4 种原生集合类型定义了默认迭代器：
 
-Array
+- Array
+- 所有定型数组
+- Map Set
 
-所有定型数组
+很简单，这意味着上述所有类型都支持顺序迭代，都可以传入 for-of 循环：
 
-Map Set
+```js
+let iterableThings = [ Array.of(1, 2),
 
-很简单，这意味着上述所有类型都支持顺序迭代，都可以传入 for-
+typedArr = Int16Array.of(3, 4), new Map([[5, 6], [7, 8]]),
 
-of 循环：
+new Set([9, 10])
 
-```
-let iterableThings = \[ Array.of(1, 2),
-
-typedArr = Int16Array.of(3, 4), new Map(\[\[5, 6\], \[7, 8\]\]),
-
-new Set(\[9, 10\])
-
-\];
+];
 
 for (const iterableThing of iterableThings) { for (const x of iterableThing) {
 
@@ -9138,88 +8778,81 @@ console.log(x);
 
 这也意味着所有这些类型都兼容扩展操作符。扩展操作符在对可迭代对象执行浅复制时特别有用，只需简单的语法就可以复制整个对象：
 
-```
-let arr1 = \[1, 2, 3\];
+```js
+let arr1 = [1, 2, 3];
 
-let arr2 = \[...arr1\];
+let arr2 = [...arr1];
 
-console.log(arr1); // \[1, 2, 3\]
+console.log(arr1); // [1, 2, 3]
 
-console.log(arr2); // \[1, 2, 3\]
+console.log(arr2); // [1, 2, 3]
 
 console.log(arr1 === arr2); // false
 ```
 
 对于期待可迭代对象的构造函数，只要传入一个可迭代对象就可以实现复制：
 
-```
-let map1 = new Map(\[\[1, 2\], \[3, 4\]\]); let map2 = new Map(map1);
+```js
+let map1 = new Map([
+  [1, 2],
+  [3, 4],
+]);
+let map2 = new Map(map1);
 ```
 
 浅复制意味着只会复制对象引用：
 
+```js
+let arr1 = [{}];
+
+let arr2 = [...arr1];
+
+arr1[0].foo = 'bar';
+console.log(arr2[0]); // { foo: 'bar' }
 ```
-let arr1 = \[{}\];
 
-let arr2 = \[...arr1\];
+上面的这些类型都支持多种构建方法，比如 Array.of() 和 Array.from() 静态方法。在与扩展操作符一起使用时，可以非常方便地实现互操作：
 
-arr1\[0\].foo = 'bar'; console.log(arr2\[0\]); // { foo: 'bar' }
-```
-
-上面的这些类型都支持多种构建方法，比如 Array.of() 和
-
-Array.from() 静态方法。在与扩展操作符一起使用时，可以非常方便地实现互操作：
-
-```
-let arr1 = \[1, 2, 3\];
+```js
+let arr1 = [1, 2, 3];
 
 // 把数组复制到定型数组
-let typedArr1 = Int16Array.of(...arr1); let typedArr2 = Int16Array.from(arr1);
+let typedArr1 = Int16Array.of(...arr1);
+let typedArr2 = Int16Array.from(arr1);
 
 // 把数组复制到集合
 
-let set = new Set(typedArr2); console.log(set); // Set {1, 2, 3}
+let set = new Set(typedArr2);
+console.log(set); // Set {1, 2, 3}
 
 // 把集合复制回数组
 
-let arr2 = \[...set\]; console.log(arr2); // \[1, 2, 3\]
+let arr2 = [...set];
+console.log(arr2); // [1, 2, 3]
 ```
 
 ## 6.9 小结
 
 JavaScript 中的对象是引用值，可以通过几种内置引用类型创建特定类型的对象。
 
-引用类型与传统面向对象编程语言中的类相似，但实现不同。
-
-Object 类型是一个基础类型，所有引用类型都从它继承了基本的行为。
-
-Array 类型表示一组有序的值，并提供了操作和转换值的能力。
-
-定型数组包含一套不同的引用类型，用于管理数值在内存中的类型。
-
-Date 类型提供了关于日期和时间的信息，包括当前日期和时间以及计算。
-
-RegExp 类型是 ECMAScript 支持的正则表达式的接口，提供了大多数基本正则表达式以及一些高级正则表达式的能力。
+- 引用类型与传统面向对象编程语言中的类相似，但实现不同。
+- Object 类型是一个基础类型，所有引用类型都从它继承了基本的行为。
+- Array 类型表示一组有序的值，并提供了操作和转换值的能力。
+- 定型数组包含一套不同的引用类型，用于管理数值在内存中的类型。
+- Date 类型提供了关于日期和时间的信息，包括当前日期和时间以及计算。
+- RegExp 类型是 ECMAScript 支持的正则表达式的接口，提供了大多数基本正则表达式以及一些高级正则表达式的能力。
 
 JavaScript 比较独特的一点是，函数其实是 Function 类型的实例，这意味着函数也是对象。由于函数是对象，因此也就具有能够增强自身行为的方法。
 
-因为原始值包装类型的存在，所以 JavaScript 中的原始值可以拥有类似对象的行为。有 3 种原始值包装类型： Boolean 、 Number 和
+因为原始值包装类型的存在，所以 JavaScript 中的原始值可以拥有类似对象的行为。有 3 种原始值包装类型： Boolean 、 Number 和 String 。它们都具有如下特点。
 
-String 。它们都具有如下特点。
+- 每种包装类型都映射到同名的原始类型。
+- 在以读模式访问原始值时，后台会实例化一个原始值包装对象，通过这个对象可以操作数据。
+- 涉及原始值的语句只要一执行完毕，包装对象就会立即销毁。
 
-每种包装类型都映射到同名的原始类型。
+JavaScript 还有两个在一开始执行代码时就存在的内置对象：Global 和 Math 。其中， Global 对象可以在大多数 ECMAScript 实现中访问。不过浏览器将 Global 实现为 window 对象。所有全局变量和函数都是 Global 对象的属性。 Math 对象包含辅助完成复杂数学计算的属性和方法。
 
-在以读模式访问原始值时，后台会实例化一个原始值包装对象，通过这个对象可以操作数据。
-
-涉及原始值的语句只要一执行完毕，包装对象就会立即销毁。
-
-JavaScript 还有两个在一开始执行代码时就存在的内置对象：
-
-Global 和 Math 。其中， Global 对象可以在大多数 ECMAScript 实现中访问。不过浏览器将 Global 实现为 window 对象。所有全局变量和函数都是 Global 对象的属性。 Math 对象包含辅助完成复杂数学计算的属性和方法。
-
-ECMAScript 6 新增了一批引用类型： Map 、 WeakMap 、 Set 和
-
-WeakSet 。这些类型为组织应用程序数据和简化内存管理提供了新能力。
+ECMAScript 6 新增了一批引用类型： Map 、 WeakMap 、 Set 和 WeakSet 。这些类型为组织应用程序数据和简化内存管理提供了新能力。
 
 # 第 7 章 迭代器与生成器
 
@@ -9257,9 +8890,8 @@ for (let index = 0; index < collection.length; ++index) {
 
 由于如下原因，通过这种循环来执行例程并不理想。
 
-迭代之前需要事先知道如何使用数据结构。数组中的每一项都只能先通过引用取得数组对象，然后再通过 [] 操作符取得特定索引位置上的项。这种情况并不适用于所有数据结构。
-
-遍历顺序并不是数据结构固有的。通过递增索引来访问数据是特定于数组类型的方式，并不适用于其他具有隐式顺序的数据结 构。
+- 迭代之前需要事先知道如何使用数据结构。数组中的每一项都只能先通过引用取得数组对象，然后再通过 [] 操作符取得特定索引位置上的项。这种情况并不适用于所有数据结构。
+- 遍历顺序并不是数据结构固有的。通过递增索引来访问数据是特定于数组类型的方式，并不适用于其他具有隐式顺序的数据结 构。
 
 ES5 新增了 Array.prototype.forEach() 方法，向通用迭代需求迈进了一步（但仍然不够理想）：
 
@@ -9269,17 +8901,13 @@ let collection = ['foo', 'bar', 'baz'];
 collection.forEach((item) => console.log(item));
 
 // foo
-
 // bar
-
 // baz
 ```
 
 这个方法解决了单独记录索引和通过数组对象取得值的问题。不过，没有办法标识迭代何时终止。因此这个方法只适用于数组，而且回调结构也比较笨拙。
 
-在 ECMAScript 较早的版本中，执行迭代必须使用循环或其他辅助结构。随着代码量增加，代码会变得越发混乱。很多语言都通过原生语言结构解决了这个问题，开发者无须事先知道如何迭代就能实现迭代操作。这个解决方案就是迭代器模式。Python、Java、C++，还有其他很多语言都对这个模式提供了完备的支持。JavaScript 在 ECMAScript
-
-6 以后也支持了迭代器模式。
+在 ECMAScript 较早的版本中，执行迭代必须使用循环或其他辅助结构。随着代码量增加，代码会变得越发混乱。很多语言都通过原生语言结构解决了这个问题，开发者无须事先知道如何迭代就能实现迭代操作。这个解决方案就是迭代器模式。Python、Java、C++，还有其他很多语言都对这个模式提供了完备的支持。JavaScript 在 ECMAScript 6 以后也支持了迭代器模式。
 
 ## 7.2 迭代器模式
 
@@ -9301,65 +8929,62 @@ let arr = [3, 1, 4];
 let set = new Set().add(3).add(1).add(4);
 ```
 
-不过，可迭代对象不一定是集合对象，也可以是仅仅具有类似数组行为的其他数据结构，比如本章开头提到的计数循环。该循环中生
-
-成的值是暂时性的，但循环本身是在执行迭代。计数循环和数组都具有可迭代对象的行为。
+不过，可迭代对象不一定是集合对象，也可以是仅仅具有类似数组行为的其他数据结构，比如本章开头提到的计数循环。该循环中生成的值是暂时性的，但循环本身是在执行迭代。计数循环和数组都具有可迭代对象的行为。
 
 > 注意 临时性可迭代对象可以实现为生成器，本章后面会讨论。
 
-任何实现 Iterable 接口的数据结构都可以被实现 Iterator 接口的结构“消费”（consume）。迭代器（iterator）是按需创建的一次性对象。每个迭代器都会关联一个可迭代对象，而迭代器会暴露迭代其关联可迭代对象的 API。迭代器无须了解与其关联的可迭代对象的结构，只需要知道如何取得连续的值。这种概念上的分离正是
-
-Iterable 和 Iterator 的强大之处。
+任何实现 Iterable 接口的数据结构都可以被实现 Iterator 接口的结构“消费”（consume）。迭代器（iterator）是按需创建的一次性对象。每个迭代器都会关联一个可迭代对象，而迭代器会暴露迭代其关联可迭代对象的 API。迭代器无须了解与其关联的可迭代对象的结构，只需要知道如何取得连续的值。这种概念上的分离正是 Iterable 和 Iterator 的强大之处。
 
 ### 7.2.1 可迭代协议
 
-实现 Iterable 接口（可迭代协议）要求同时具备两种能力：支持迭代的自我识别能力和创建实现 Iterator 接口的对象的能 力。在 ECMAScript 中，这意味着必须暴露一个属性作为“默认迭代
-
-器”，而且这个属性必须使用特殊的 Symbol.iterator 作为键。这个默认迭代器属性必须引用一个迭代器工厂函数，调用这个工厂函数必须返回一个新迭代器。
+实现 Iterable 接口（可迭代协议）要求同时具备两种能力：支持迭代的自我识别能力和创建实现 Iterator 接口的对象的能 力。在 ECMAScript 中，这意味着必须暴露一个属性作为“默认迭代器”，而且这个属性必须使用特殊的 Symbol.iterator 作为键。这个默认迭代器属性必须引用一个迭代器工厂函数，调用这个工厂函数必须返回一个新迭代器。
 
 很多内置类型都实现了 Iterable 接口：
 
-字符串数组 映射 集合
-
-arguments 对象
-
-NodeList 等 DOM 集合类型
+- 字符串数组
+- 映射
+- 集合
+- arguments
+- 对象
+- NodeList 等 DOM 集合类型
 
 检查是否存在默认迭代器属性可以暴露这个工厂函数：
 
 ```js
-let num = 1; let obj = {};
-
+let num = 1;
+let obj = {};
 // 这两种类型没有实现迭代器工厂函数
-
 console.log(num[Symbol.iterator]); // undefined
-
 console.log(obj[Symbol.iterator]); // undefined
-
-2).set('c', 3);
-
-let set = new Set().add('a').add('b').add('c'); let els = document.querySelectorAll('div');
-
+let str = 'abc';
+let arr = ['a', 'b', 'c'];
+let map = new Map().set('a', 1).set('b', 2).set('c', 3);
+let set = new Set().add('a').add('b').add('c');
+let els = document.querySelectorAll('div');
+// 这些类型都实现了迭代器工厂函数
+console.log(str[Symbol.iterator]); // f values() { [native code] }
+console.log(arr[Symbol.iterator]); // f values() { [native code] }
+console.log(map[Symbol.iterator]); // f values() { [native code] }
+console.log(set[Symbol.iterator]); // f values() { [native code] }
+console.log(els[Symbol.iterator]); // f values() { [native code] }
 // 调用这个工厂函数会生成一个迭代器
-
-console.log(str[Symbol.iterator]()); // StringIterator {} console.log(arr[Symbol.iterator]()); // ArrayIterator {} console.log(map[Symbol.iterator]()); // MapIterator{} console.log(set[Symbol.iterator]()); // SetIterator {} console.log(els[Symbol.iterator]()); // ArrayIterator {}
+console.log(str[Symbol.iterator]()); // StringIterator {}
+console.log(arr[Symbol.iterator]()); // ArrayIterator {}
+console.log(map[Symbol.iterator]()); // MapIterator {}
+console.log(set[Symbol.iterator]()); // SetIterator {}
+console.log(els[Symbol.iterator]()); // ArrayIterator {}
 ```
 
 实际写代码过程中，不需要显式调用这个工厂函数来生成迭代 器。实现可迭代协议的所有类型都会自动兼容接收可迭代对象的任何语言特性。接收可迭代对象的原生语言特性包括：
 
-for-of 循环数组解构
-
-扩展操作符
-
-Array.from()
-
-创建集合创建映射
-
-Promise.all() 接收由期约组成的可迭代对象
-
-Promise.race() 接收由期约组成的可迭代对象
-
-yield\* 操作符，在生成器中使用
+- for-of 循环数组
+- 解构
+- 扩展操作符
+- Array.from()
+- 创建集合创建映射
+- Promise.all() 接收由期约组成的可迭代对象
+- Promise.race() 接收由期约组成的可迭代对象
+- yield\* 操作符，在生成器中使用
 
 这些原生语言结构会在后台调用提供的可迭代对象的这个工厂函数，从而创建一个迭代器：
 
@@ -9431,15 +9056,9 @@ for (let el of fooArr) {
 
 ### 7.2.2 迭代器协议
 
-迭代器是一种一次性使用的对象，用于迭代与其关联的可迭代对象。迭代器 API 使用 next() 方法在可迭代对象中遍历数据。每次成功调用 next() ，都会返回一个 IteratorResult 对象，其中包
+迭代器是一种一次性使用的对象，用于迭代与其关联的可迭代对象。迭代器 API 使用 next() 方法在可迭代对象中遍历数据。每次成功调用 next() ，都会返回一个 IteratorResult 对象，其中包含迭代器返回的下一个值。若不调用 next() ，则无法知道迭代器的当前位置。
 
-含迭代器返回的下一个值。若不调用 next() ，则无法知道迭代器的当前位置。
-
-next() 方法返回的迭代器对象 IteratorReault 包含两个属性： done 和 value 。 done 是一个布尔值，表示是否还可以再次调用 next() 取得下一个值； value 包含可迭代对象的下一个值
-
-（ done 为 false ），或者 undefined （ done 为 true ）。
-
-done: true 状态称为“耗尽”。可以通过以下简单的数组来演示：
+next() 方法返回的迭代器对象 IteratorReault 包含两个属性： done 和 value 。 done 是一个布尔值，表示是否还可以再次调用 next() 取得下一个值； value 包含可迭代对象的下一个值（ done 为 false ），或者 undefined （ done 为 true ）。done: true 状态称为“耗尽”。可以通过以下简单的数组来演示：
 
 ```js
 // 可迭代对象
@@ -9457,9 +9076,7 @@ console.log(arr[Symbol.iterator]); // f values()
 let iter = arr[Symbol.iterator](); console.log(iter); // ArrayIterator {}
 ```
 
-这里通过创建迭代器并调用 next() 方法按顺序迭代了数组，直至不再产生新值。迭代器并不知道怎么从可迭代对象中取得下一个
-
-值，也不知道可迭代对象有多大。只要迭代器到达 done: true 状态，后续调用 next() 就一直返回同样的值了：
+这里通过创建迭代器并调用 next() 方法按顺序迭代了数组，直至不再产生新值。迭代器并不知道怎么从可迭代对象中取得下一个值，也不知道可迭代对象有多大。只要迭代器到达 done: true 状态，后续调用 next() 就一直返回同样的值了：
 
 ```js
 let arr = ['foo'];
@@ -9656,15 +9273,11 @@ for (let item of iter) {
 
 可选的 return() 方法用于指定在迭代器提前关闭时执行的逻辑。执行迭代的结构在想让迭代器知道它不想遍历到可迭代对象耗尽时，就可以“关闭”迭代器。可能的情况包括：
 
-for-of 循环通过 break 、 continue 、 return 或
-
-throw 提前退出；
+for-of 循环通过 break 、 continue 、 return 或 throw 提前退出；
 
 解构操作并未消费所有值。
 
-return() 方法必须返回一个有效的 IteratorResult 对
-
-象。简单情况下，可以只返回 { done: true } 。因为这个返回值只会用在生成器的上下文中，所以本章后面再讨论这种情况。
+return() 方法必须返回一个有效的 IteratorResult 对象。简单情况下，可以只返回 { done: true } 。因为这个返回值只会用在生成器的上下文中，所以本章后面再讨论这种情况。
 
 如下面的代码所示，内置语言结构在发现还有更多值可以迭代，但不会消费这些值时，会自动调用 return() 方法。
 
@@ -9757,9 +9370,7 @@ for (let i of iter) {
 // 5
 ```
 
-因为 return() 方法是可选的，所以并非所有迭代器都是可关闭的。要知道某个迭代器是否可关闭，可以测试这个迭代器实例的
-
-return 属性是不是函数对象。不过，仅仅给一个不可关闭的迭代器增加这个方法并不能让它变成可关闭的。这是因为调用 return() 不会强制迭代器进入关闭状态。即便如此， return() 方法还是会被调用。
+因为 return() 方法是可选的，所以并非所有迭代器都是可关闭的。要知道某个迭代器是否可关闭，可以测试这个迭代器实例的 return 属性是不是函数对象。不过，仅仅给一个不可关闭的迭代器增加这个方法并不能让它变成可关闭的。这是因为调用 return() 不会强制迭代器进入关闭状态。即便如此， return() 方法还是会被调用。
 
 ```js
 let a = [1, 2, 3, 4, 5];
@@ -10028,17 +9639,17 @@ for (let _ of nTimes(3)) {
 // foo
 ```
 
-传给生成器的函数可以控制迭代循环的次数。在 n 为 0 时，
-
-while 条件为假，循环退出，生成器函数返回。
+传给生成器的函数可以控制迭代循环的次数。在 n 为 0 时，while 条件为假，循环退出，生成器函数返回。
 
 2.  使用 yield 实现输入和输出
 
 除了可以作为函数的中间返回语句使用， yield 关键字还可以作为函数的中间参数使用。上一次让生成器函数暂停的 yield 关键字会接收到传给 next() 方法的第一个值。这里有个地方不太好理解——第一次调用 next() 传入的值不会被使用，因为这一次调用是为了开始执行生成器函数：
 
-```
-function* generatorFn(initial) { console.log(initial); console.log(yield); console.log(yield);
-
+```js
+function* generatorFn(initial) {
+  console.log(initial);
+  console.log(yield);
+  console.log(yield);
 }
 
 let generatorObject = generatorFn('foo');
@@ -10062,9 +9673,7 @@ console.log(generatorObject.next('bar')); //
 { done: true, value: 'bar' }
 ```
 
-因为函数必须对整个表达式求值才能确定要返回的值，所以它在遇到 yield 关键字时暂停执行并计算出要产生的
-
-值： "foo" 。下一次调用 next() 传入了 "bar" ，作为交给同一个 yield 的值。然后这个值被确定为本次生成器函数要返回的值。
+因为函数必须对整个表达式求值才能确定要返回的值，所以它在遇到 yield 关键字时暂停执行并计算出要产生的值： "foo" 。下一次调用 next() 传入了 "bar" ，作为交给同一个 yield 的值。然后这个值被确定为本次生成器函数要返回的值。
 
 yield 关键字并非只能使用一次。比如，以下代码就定义了一个无穷计数生成器函数：
 
@@ -10208,35 +9817,34 @@ for (const x of generatorFn()) {
 因为 yield\* 实际上只是将一个可迭代对象序列化为一连串可以单独产出的值，所以这跟把 yield 放到一个循环里没什么不同。下面两个生成器函数的行为是等价的：
 
 ```js
-function* generatorFnA() { for (const x of [1, 2, 3]) {
-
-yield x;
-
+function* generatorFnA() {
+  for (const x of [1, 2, 3]) {
+    yield x;
+  }
 }
 
+for (const x of generatorFnA()) {
+  console.log(x);
 }
 
-for (const x of generatorFnA()) { console.log(x);
-
+function* generatorFnB() {
+  yield* [1, 2, 3];
 }
 
-function* generatorFnB() { yield* [1, 2, 3];
+for (const x of generatorFnB()) {
+  console.log(x);
+}
+```
 
+yield\* 的值是关联迭代器返回 done: true 时的 value 属性。对于普通迭代器来说，这个值是 undefined ：
+
+```js
+function* generatorFn() {
+  console.log('iter value:', yield* [1, 2, 3]);
 }
 
-for (const x of generatorFnB()) { console.log(x);
-
-}
-yield* 的值是关联迭代器返回 done: true 时的 value 属性。对于普通迭代器来说，这个值是 undefined ：
-
-function* generatorFn() { console.log('iter value:', yield* [1, 2,
-
-3]);
-
-}
-
-for (const x of generatorFn()) { console.log('value:', x);
-
+for (const x of generatorFn()) {
+  console.log('value:', x);
 }
 
 // value: 1
@@ -10432,23 +10040,20 @@ return visitedNodes.size === this.nodes.size;
 
 因为生成器对象实现了 Iterable 接口，而且生成器函数和默认迭代器被调用之后都产生迭代器，所以生成器格外适合作为默认迭代器。下面是一个简单的例子，这个类的默认迭代器可以用一行代码产出类的内容：
 
-```
-class Foo { constructor() {
+```js
+class Foo {
+  constructor() {
+    this.values = [1, 2, 3];
+  }
 
-this.values = [1, 2, 3];
-
+  *[Symbol.iterator]() {
+    yield* this.values;
+  }
 }
 
-* [Symbol.iterator]() { yield* this.values;
-
-}
-
-}
-
-const f = new Foo(); for (const x of f) {
-
-console.log(x);
-
+const f = new Foo();
+for (const x of f) {
+  console.log(x);
 }
 ```
 
@@ -10456,15 +10061,13 @@ console.log(x);
 
 ### 7.3.4 提前终止生成
 
-与迭代器类似，生成器也支持“可关闭”的概念。一个实现
+与迭代器类似，生成器也支持“可关闭”的概念。一个实现 Iterator 接口的对象一定有 next() 方法，还有一个可选的 return() 方法用于提前终止迭代器。生成器对象除了有这两个方法，还有第三个方法： throw() 。
 
-Iterator 接口的对象一定有 next() 方法，还有一个可选的
-
-return() 方法用于提前终止迭代器。生成器对象除了有这两个方法，还有第三个方法： throw() 。
-
+```js
 function\* generatorFn() {} const g = generatorFn();
 
 console.log(g); // generatorFn
+```
 
 return() 和 throw() 方法都可以用于强制生成器进入关闭状态。
 
@@ -10492,9 +10095,7 @@ function* generatorFn() {
 }
 ```
 
-for-of 循环等内置语言结构会忽略状态为 done: true 的
-
-IteratorObject 内部返回的值。
+for-of 循环等内置语言结构会忽略状态为 done: true 的 IteratorObject 内部返回的值。
 
 ```js
 function* generatorFn() {
@@ -28842,6 +28443,2597 @@ HTML5 的 `<canvas>`元素为 JavaScript 提供了动态创建图形的 API。�
 # 第 19 章 表单脚本
 
 # 第 20 章 JavaScript API
+
+本章内容
+
+- Atomics 与 SharedArrayBuffer
+- 跨上下文消息
+- Encoding API
+- File API 与 Blob API
+- 拖放
+- Notifications API
+- Page Visibility API
+- Streams API
+- 计时 API
+- Web 组件
+- Web Cryptography API
+
+随着 Web 浏览器能力的增加，其复杂性也在迅速增加。从很多方面看，现代 Web 浏览器已经成为构建于诸多规范之上、集不同 API 于一身的“瑞士军刀”。浏览器规范的生态在某种程度上是混乱而无序的。一些规范如 HTML5，定义了一批增强已有标准的 API 和浏览器特性。而另一些规范如 Web Cryptography API 和 Notifications API，只为一个特性定义了一个 API。不同浏览器实现这些新 API 的情况也不同，有的会实现其中一部分，有的则干脆尚未实现。
+
+最终，是否使用这些比较新的 API 还要看项目是支持更多浏览器，还是要采用更多现代特性。有些 API 可以通过腻子脚本来模拟，但腻子脚本通常会带来性能问题，此外也会增加网站 JavaScript 代码的体积。
+
+## 20.1 Atomics 与 SharedArrayBuffer
+
+多个上下文访问 SharedArrayBuffer 时，如果同时对缓冲区执行操作，就可能出现资源争用问题。Atomics API 通过强制同一时刻只能对缓冲区执行一个操作，可以让多个上下文安全地读写一个 SharedArrayBuffer。Atomics API 是 ES2017 中定义的。
+
+仔细研究会发现 Atomics API 非常像一个简化版的指令集架构（ ISA），这并非意外。原子操作的本质会排斥操作系统或计算机硬件通常会自动执行的优化（比如指令重新排序）。原子操作也让并发访问内存变得不可能，如果应用不当就可能导致程序执行变慢。为此， Atomics API 的设计初衷是在最少但很稳定的原子行为基础之上，构建复杂的多线程 JavaScript 程序。
+
+### 20.1.1 SharedArrayBuffer
+
+SharedArrayBuffer 与 ArrayBuffer 具有同样的 API。二者的主要区别是 ArrayBuffer 必须在不同执行上下文间切换， SharedArrayBuffer 则可以被任意多个执行上下文同时使用。
+
+在多个执行上下文间共享内存意味着并发线程操作成为了可能。传统 JavaScript 操作对于并发内存访问导致的资源争用没有提供保护。下面的例子演示了 4 个专用工作线程访问同一个 SharedArrayBuffer 导致的资源争用问题：
+
+```js
+const workerScript = ` 
+self.onmessage = ({data}) => { 
+    const view = new Uint32Array(data); 
+    // 执行 1000000次加操作 
+    for (let i = 0; i < 1E6; ++i) { 
+        // 线程不安全加操作会导致资源争用 view[0] += 1; 
+    } 
+    self.postMessage(null); 
+}; `;
+const workerScriptBlobUrl = URL.createObjectURL(new Blob([workerScript]));
+// 创建容量为 4的工作线程池
+const workers = [];
+for (let i = 0; i < 4; ++i) {
+  workers.push(new Worker(workerScriptBlobUrl));
+}
+// 在最后一个工作线程完成后打印出最终值
+let responseCount = 0;
+for (const worker of workers) {
+  worker.onmessage = () => {
+    if (++responseCount == workers.length) {
+      console.log(`Final buffer value: ${view[0]}`);
+    }
+  };
+}
+// 初始化 SharedArrayBuffer
+const sharedArrayBuffer = new SharedArrayBuffer(4);
+const view = new Uint32Array(sharedArrayBuffer);
+view[0] = 1;
+// 把 SharedArrayBuffer发送到每个工作线程
+for (const worker of workers) {
+  worker.postMessage(sharedArrayBuffer);
+}
+//（期待结果为 4000001。实际输出可能类似这样：）
+// Final buffer value: 2145106
+```
+
+为解决这个问题， Atomics API 应运而生。 Atomics API 可以保证 SharedArrayBuffer 上的 JavaScript 操作是线程安全的。
+
+### 20.1.2 原子操作基础
+
+任何全局上下文中都有 Atomics 对象，这个对象上暴露了用于执行线程安全操作的一套静态方法，其中多数方法以一个 TypedArray 实例（一个 SharedArrayBuffer 的引用）作为第一个参数，以相关操作数作为后续参数。
+
+1. 算术及位操作方法
+
+Atomics API 提供了一套简单的方法用以执行就地修改操作。在 ECMA 规范中，这些方法被定义为 AtomicReadModifyWrite 操作。在底层，这些方法都会从 SharedArrayBuffer 中某个位置读取值，然后执行算术或位操作，最后再把计算结果写回相同的位置。这些操作的原子本质意味着上述读取、修改、写回操作会按照顺序执行，不会被其他线程中断。
+
+以下代码演示了所有算术方法：
+
+```js
+// 创建大小为 1的缓冲区
+let sharedArrayBuffer = new SharedArrayBuffer(1);
+// 基于缓冲创建 Uint8Array
+let typedArray = new Uint8Array(sharedArrayBuffer);
+// 所有 ArrayBuffer全部初始化为 0
+console.log(typedArray); // Uint8Array[0]
+const index = 0; const increment = 5;
+// 对索引 0处的值执行原子加 5
+Atomics.add(typedArray, index, increment);
+console.log(typedArray); // Uint8Array[5]
+// 对索引 0处的值执行原子减 5
+Atomics.sub(typedArray, index, increment);
+console.log(typedArray); // Uint8Array[0]
+以下代码演示了所有位方法：
+// 创建大小为 1的缓冲区
+let sharedArrayBuffer = new SharedArrayBuffer(1);
+// 基于缓冲创建 Uint8Array
+let typedArray = new Uint8Array(sharedArrayBuffer);
+// 所有 ArrayBuffer全部初始化为 0
+console.log(typedArray); // Uint8Array[0]
+
+const index = 0;
+// 对索引 0处的值执行原子或 0b1111
+Atomics.or(typedArray, index, 0b1111);
+console.log(typedArray); // Uint8Array[15]
+// 对索引 0处的值执行原子与 0b1111
+Atomics.and(typedArray, index, 0b1100);
+console.log(typedArray); // Uint8Array[12]
+// 对索引 0处的值执行原子异或 0b1111
+Atomics.xor(typedArray, index, 0b1111);
+console.log(typedArray); // Uint8Array[3]
+```
+
+前面线程不安全的例子可以改写为下面这样：
+
+```js
+const workerScript = ` self.onmessage = ({data}) => {
+const view = new Uint32Array(data);
+// 执行 1000000次加操作 for (let i = 0; i < 1E6; ++i) {
+// 线程安全的加操作 Atomics.add(view, 0, 1); }
+self.postMessage(null); }; `;
+const workerScriptBlobUrl = URL.createObjectURL(new Blob([workerScript]));
+// 创建容量为 4的工作线程池
+const workers = []; for (let i = 0; i < 4; ++i) {
+workers.push(new Worker(workerScriptBlobUrl)); }
+// 在最后一个工作线程完成后打印出最终值
+let responseCount = 0; for (const worker of workers) {
+worker.onmessage = () => { if (++responseCount == workers.length) { console.log(`Final buffer value: ${view[0]}`); } }; }
+// 初始化 SharedArrayBuffer
+const sharedArrayBuffer = new SharedArrayBuffer(4); const view = new Uint32Array(sharedArrayBuffer); view[0] = 1;
+// 把 SharedArrayBuffer发送到每个工作线程
+for (const worker of workers) {
+20.1 Atomics与 SharedArrayBuffer 613
+worker.postMessage(sharedArrayBuffer); }
+//（期待结果为 4000001） // Final buffer value: 4000001
+```
+
+2. 原子读和写
+
+浏览器的 JavaScript 编译器和 CPU 架构本身都有权限重排指令以提升程序执行效率。正常情况下， JavaScript 的单线程环境是可以随时进行这种优化的。但多线程下的指令重排可能导致资源争用，而且极难排错。
+Atomics API 通过两种主要方式解决了这个问题。
+
+- 所有原子指令相互之间的顺序永远不会重排。
+- 使用原子读或原子写保证所有指令（包括原子和非原子指令）都不会相对原子读 /写重新排序。这意味着位于原子读 /写之前的所有指令会在原子读 /写发生前完成，而位于原子读 /写之后的所有指令会在原子读 /写完成后才会开始。
+
+除了读写缓冲区的值， Atomics.load()和 Atomics.store()还可以构建“代码围栏”。JavaScript 引擎保证非原子指令可以相对于 load()或 store()本地重排，但这个重排不会侵犯原子读 /写的边界。以下代码演示了这种行为：
+
+```js
+const sharedArrayBuffer = new SharedArrayBuffer(4);
+const view = new Uint32Array(sharedArrayBuffer);
+// 执行非原子写 view[0] = 1;
+// 非原子写可以保证在这个读操作之前完成，因此这里一定会读到 1
+console.log(Atomics.load(view, 0)); // 1
+// 执行原子写
+Atomics.store(view, 0, 2);
+// 非原子读可以保证在原子写完成后发生，因此这里一定会读到 2 console.log(view[0]); // 2
+```
+
+3. 原子交换
+
+为了保证连续、不间断的先读后写， Atomics API 提供了两种方法： exchange()和 compareExchange()。Atomics.exchange()执行简单的交换，以保证其他线程不会中断值的交换：
+
+```js
+const sharedArrayBuffer = new SharedArrayBuffer(4);
+const view = new Uint32Array(sharedArrayBuffer);
+// 在索引 0处写入 3
+Atomics.store(view, 0, 3);
+// 从索引 0处读取值，然后在索引 0处写入 4
+console.log(Atomics.exchange(view, 0, 4)); // 3
+// 从索引 0处读取值
+console.log(Atomics.load(view, 0)); // 4
+```
+
+在多线程程序中，一个线程可能只希望在上次读取某个值之后没有其他线程修改该值的情况下才对共享缓冲区执行写操作。如果这个值没有被修改，这个线程就可以安全地写入更新后的值；如果这个值被修改了，那么执行写操作将会破坏其他线程计算的值。对于这种任务， Atomics API 提供了 compare-
+
+Exchange()方法。这个方法只在目标索引处的值与预期值匹配时才会执行写操作。来看下面这个例子：
+
+```js
+const sharedArrayBuffer = new SharedArrayBuffer(4);
+const view = new Uint32Array(sharedArrayBuffer);
+// 在索引 0处写入 5
+Atomics.store(view, 0, 5); // 从缓冲区读取值
+let initial = Atomics.load(view, 0);
+// 对这个值执行非原子操作
+let result = initial ** 2;
+// 只在缓冲区未被修改的情况下才会向缓冲区写入新值
+Atomics.compareExchange(view, 0, initial, result);
+// 检查写入成功
+console.log(Atomics.load(view, 0)); // 25
+```
+
+如果值不匹配， compareExchange()调用则什么也不做：
+
+```js
+const sharedArrayBuffer = new SharedArrayBuffer(4);
+const view = new Uint32Array(sharedArrayBuffer);
+// 在索引 0处写入 5 Atomics.store(view, 0, 5); // 从缓冲区读取值 let initial = Atomics.load(view, 0);
+// 对这个值执行非原子操作 let result = initial ** 2;
+// 只在缓冲区未被修改的情况下才会向缓冲区写入新值
+Atomics.compareExchange(view, 0, -1, result);
+// 检查写入失败 console.log(Atomics.load(view, 0)); // 5
+```
+
+4. 原子 Futex 操作与加锁
+
+如果没有某种锁机制，多线程程序就无法支持复杂需求。为此， Atomics API 提供了模仿 Linux Futex（快速用户空间互斥量，fast user-space mutex）的方法。这些方法本身虽然非常简单，但可以作为更复杂锁机制的基本组件。
+
+Atomics.wait()和 Atomics.notify()通过示例很容易理解。下面这个简单的例子创建了 4 个工作线程，用于对长度为 1 的 Int32Array 进行操作。这些工作线程会依次取得锁并执行自己的加操作：
+
+```js
+const workerScript = ` self.onmessage = ({data}) => { const view = new Int32Array(data);
+console.log('Waiting to obtain lock');
+// 遇到初始值则停止， 10000毫秒超时
+Atomics.wait(view, 0, 0, 1E5);
+console.log('Obtained lock');
+// 在索引 0处加 1 Atomics.add(view, 0, 1);
+console.log('Releasing lock');
+// 只允许 1个工作线程继续执行
+ Atomics.notify(view, 0, 1);
+self.postMessage(null); }; `;
+const workerScriptBlobUrl = URL.createObjectURL(new Blob([workerScript]));
+const workers = [];
+for (let i = 0; i < 4; ++i) {
+  workers.push(new Worker(workerScriptBlobUrl));
+}
+// 在最后一个工作线程完成后打印出最终值
+let responseCount = 0;
+for (const worker of workers) {
+  worker.onmessage = () => {
+    if (++responseCount == workers.length) {
+      console.log(`Final buffer value: ${view[0]}`);
+    }
+  };
+}
+// 初始化 SharedArrayBuffer
+const sharedArrayBuffer = new SharedArrayBuffer(8);
+const view = new Int32Array(sharedArrayBuffer);
+// 把 SharedArrayBuffer发送到每个工作线程
+for (const worker of workers) {
+  worker.postMessage(sharedArrayBuffer);
+}
+// 1000毫秒后释放第一个锁
+setTimeout(() => Atomics.notify(view, 0, 1), 1000);
+// Waiting to obtain lock // Waiting to obtain lock // Waiting to obtain lock // Waiting to obtain lock // Obtained lock // Releasing lock // Obtained lock // Releasing lock // Obtained lock // Releasing lock // Obtained lock // Releasing lock // Final buffer value: 4
+```
+
+因为是使用 0 来初始化 SharedArrayBuffer，所以每个工作线程都会到达 Atomics.wait()并停止执行。在停止状态下，执行线程存在于一个等待队列中，在经过指定时间或在相应索引上调用 Atomics.notify()之前，一直保持暂停状态。 1000 毫秒之后，顶部执行上下文会调用 Atomics.notify()释放其中一个等待的线程。这个线程执行完毕后会再次调用 Atomics.notify()释放另一个线程。这个过程会持续到所有线程都执行完毕并通过 postMessage()传出最终的值。
+Atomics API 还提供了 Atomics.isLockFree()方法。不过我们基本上应该不会用到。这个方法在高性能算法中可以用来确定是否有必要获取锁。规范中的介绍如下：
+Atomics.isLockFree()是一个优化原语。基本上，如果一个原子原语（ compareExchange、 load、store、add、sub、and、or、xor 或 exchange）在 n 字节大小的数据上的原子步骤在不调用代理在组成数据的 n 字节之外获得锁的情况下可以执行，则 Atomics.isLockFree(n)会返回 true。高性能算法会使用 Atomics.isLockFree 确定是否在关键部分使用锁或原子操作。如果原子原语需要加锁，则算法提供自己的锁会更高效。
+Atomics.isLockFree(4)始终返回 true，因为在所有已知的相关硬件上都是支持的。能够如此假设通常可以简化程序。
+
+## 20.2 跨上下文消息
+
+跨文档消息，有时候也简称为 XDM（cross-document messaging），是一种在不同执行上下文（如不同工作线程或不同源的页面）间传递信息的能力。例如， www.wrox.com上的页面想要与包含在内嵌窗格中的 p2p.wrox.com 上面的页面通信。在 XDM 之前，要以安全方式实现这种通信需要很多工作。 XDM 以安全易用的方式规范化了这个功能。
+
+XDM 的核心是 postMessage()方法。除了 XDM，这个方法名还在 HTML5 中很多地方用到过，但目的都一样，都是把数据传送到另一个位置。
+postMessage()方法接收 3 个参数：消息、表示目标接收源的字符串和可选的可传输对象的数组（只与工作线程相关）。第二个参数对于安全非常重要，其可以限制浏览器交付数据的目标。下面来看一个例子：
+
+```js
+let iframeWindow = document.getElementById('myframe').contentWindow;
+iframeWindow.postMessage('A secret', 'http://www.wrox.com');
+```
+
+最后一行代码尝试向内嵌窗格中发送一条消息，而且指定了源必须是 "http://www.wrox.com"。如果源匹配，那么消息将会交付到内嵌窗格；否则， postMessage()什么也不做。这个限制可以保护信息不会因地址改变而泄露。如果不想限制接收目标，则可以给 postMessage()的第二个参数传 "\*"，但不推荐这么做。
+接收到 XDM 消息后，window 对象上会触发 message 事件。这个事件是异步触发的，因此从消息发出到接收到消息（接收窗口触发 message 事件）可能有延迟。传给 onmessage 事件处理程序的 event 对象包含以下 3 方面重要信息。
+
+- data：作为第一个参数传递给 postMessage()的字符串数据。
+- origin：发送消息的文档源，例如 "http://www.wrox.com"。
+
+- source：发送消息的文档中 window 对象的代理。这个代理对象主要用于在发送上一条消息的窗口中执行 postMessage()方法。如果发送窗口有相同的源，那么这个对象应该就是 window 对象。
+
+接收消息之后验证发送窗口的源是非常重要的。与 postMessage()的第二个参数可以保证数据不会意外传给未知页面一样，在 onmessage 事件处理程序中检查发送窗口的源可以保证数据来自正确的地方。基本的使用方式如下所示：
+
+```js
+window.addEventListener('message', (event) => {
+  // 确保来自预期发送者
+  if (event.origin == 'http://www.wrox.com') {
+    // 对数据进行一些处理
+    processMessage(event.data);
+    // 可选：向来源窗口发送一条消息
+    event.source.postMessage('Received!', 'http://p2p.wrox.com');
+  }
+});
+```
+
+大多数情况下， event.source 是某个 window 对象的代理，而非实际的 window 对象。因此不能通过它访问所有窗口下的信息。最好只使用 postMessage()，这个方法永远存在而且可以调用。
+
+XDM 有一些怪异之处。首先， postMessage()的第一个参数的最初实现始终是一个字符串。后来，第一个参数改为允许任何结构的数据传入，不过并非所有浏览器都实现了这个改变。为此，最好就是只通过 postMessage()发送字符串。如果需要传递结构化数据，那么最好先对该数据调用 JSON.stringify()，通过 postMessage()传过去之后，再在 onmessage 事件处理程序中调用 JSON.parse()。
+在通过内嵌窗格加载不同域时，使用 XDM 是非常方便的。这种方法在混搭（ mashup）和社交应用中非常常用。通过使用 XDM 与内嵌窗格中的网页通信，可以保证包含页面的安全。 XDM 也可以用于同源页面之间通信。
+
+## 20.3 Encoding API
+
+Encoding API 主要用于实现字符串与定型数组之间的转换。规范新增了 4 个用于执行转换的全局类： TextEncoder、TextEncoderStream、TextDecoder 和 TextDecoderStream。
+
+### 20.3.1 文本编码
+
+Encoding API 提供了两种将字符串转换为定型数组二进制格式的方法：批量编码和流编码。把字符串转换为定型数组时，编码器始终使用 UTF-8。
+
+1. 批量编码所谓批量，指的是 JavaScript 引擎会同步编码整个字符串。对于非常长的字符串，可能会花较长时间。批量编码是通过 TextEncoder 的实例完成的：
+
+```js
+const textEncoder = new TextEncoder();
+```
+
+这个实例上有一个 encode()方法，该方法接收一个字符串参数，并以 Uint8Array 格式返回每个字符的 UTF-8 编码：
+
+```js
+const textEncoder = new TextEncoder();
+const decodedText = 'foo';
+const encodedText = textEncoder.encode(decodedText);
+// f的 UTF-8编码是 0x66（即十进制 102） // o的 UTF-8编码是 0x6F（即二进制 111） console.log(encodedText); // Uint8Array(3) [102, 111, 111]
+```
+
+编码器是用于处理字符的，有些字符（如表情符号）在最终返回的数组中可能会占多个索引：
+
+```js
+const textEncoder = new TextEncoder();
+const decodedText = '.';
+const encodedText = textEncoder.encode(decodedText);
+// .的 UTF-8编码是 0xF0 0x9F 0x98 0x8A（即十进制 240、159、152、138） console.log(encodedText); // Uint8Array(4) [240, 159, 152, 138]
+```
+
+编码器实例还有一个 encodeInto()方法，该方法接收一个字符串和目标 Unit8Array，返回一个字典，该字典包含 read 和 written 属性，分别表示成功从源字符串读取了多少字符和向目标数组写入了多少字符。如果定型数组的空间不够，编码就会提前终止，返回的字典会体现这个结果：
+
+```js
+const textEncoder = new TextEncoder();
+const fooArr = new Uint8Array(3);
+const barArr = new Uint8Array(2);
+const fooResult = textEncoder.encodeInto('foo', fooArr);
+const barResult = textEncoder.encodeInto('bar', barArr);
+console.log(fooArr); // Uint8Array(3) [102, 111, 111]
+console.log(fooResult); // { read: 3, written: 3 }
+console.log(barArr); // Uint8Array(2) [98, 97] console.log(barResult); // { read: 2, written: 2 }
+```
+
+encode()要求分配一个新的 Unit8Array，encodeInto()则不需要。对于追求性能的应用，这个差别可能会带来显著不同。
+
+2. 流编码
+
+TextEncoderStream 其实就是 TransformStream 形式的 TextEncoder。将解码后的文本流通过管道输入流编码器会得到编码后文本块的流：
+
+```js
+async function* chars() {
+  const decodedText = 'foo';
+  for (let char of decodedText) {
+    yield await new Promise((resolve) => setTimeout(resolve, 1000, char));
+  }
+}
+const decodedTextStream = new ReadableStream({
+  async start(controller) {
+    for await (let chunk of chars()) {
+      controller.enqueue(chunk);
+    }
+    controller.close();
+  },
+});
+const encodedTextStream = decodedTextStream.pipeThrough(
+  new TextEncoderStream()
+);
+const readableStreamDefaultReader = encodedTextStream.getReader();
+(async function () {
+  while (true) {
+    const { done, value } = await readableStreamDefaultReader.read();
+    if (done) {
+      break;
+    } else {
+      console.log(value);
+    }
+  }
+})();
+// Uint8Array[102] // Uint8Array[111] // Uint8Array[111]
+```
+
+### 20.3.2 文本解码
+
+Encoding API 提供了两种将定型数组转换为字符串的方式：批量解码和流解码。与编码器类不同，在将定型数组转换为字符串时，解码器支持非常多的字符串编码，可以参考 Encoding Standard 规范的 “Names and labels”一节。默认字符编码格式是 UTF-8。
+
+1. 批量解码所谓批量，指的是 JavaScript 引擎会同步解码整个字符串。对于非常长的字符串，可能会花较长时间。批量解码是通过 TextDecoder 的实例完成的：
+
+```js
+const textDecoder = new TextDecoder();
+```
+
+这个实例上有一个 decode()方法，该方法接收一个定型数组参数，返回解码后的字符串：
+
+```js
+const textDecoder = new TextDecoder();
+// f的 UTF-8编码是 0x66（即十进制 102） // o的 UTF-8编码是 0x6F（即二进制 111） const encodedText = Uint8Array.of(102, 111, 111); const decodedText = textDecoder.decode(encodedText);
+console.log(decodedText); // foo
+```
+
+解码器不关心传入的是哪种定型数组，它只会专心解码整个二进制表示。在下面这个例子中，只包含 8 位字符的 32 位值被解码为 UTF-8 格式，解码得到的字符串中填充了空格：
+
+```js
+const textDecoder = new TextDecoder();
+// f的 UTF-8编码是 0x66（即十进制 102） // o的 UTF-8编码是 0x6F（即二进制 111） const encodedText = Uint32Array.of(102, 111, 111); const decodedText = textDecoder.decode(encodedText);
+console.log(decodedText); // "f o o "
+```
+
+解码器是用于处理定型数组中分散在多个索引上的字符的，包括表情符号：
+
+```js
+const textDecoder = new TextDecoder();
+// .的 UTF-8编码是 0xF0 0x9F 0x98 0x8A（即十进制 240、159、152、138） const encodedText = Uint8Array.of(240, 159, 152, 138); const decodedText = textDecoder.decode(encodedText);
+console.log(decodedText); // .
+```
+
+与 TextEncoder 不同，TextDecoder 可以兼容很多字符编码。比如下面的例子就使用了 UTF-16 而非默认的 UTF-8：
+
+```js
+const textDecoder = new TextDecoder('utf-16');
+// f的 UTF-8编码是 0x0066（即十进制 102） // o的 UTF-8编码是 0x006F（即二进制 111） const encodedText = Uint16Array.of(102, 111, 111); const decodedText = textDecoder.decode(encodedText);
+console.log(decodedText); // foo
+```
+
+2. 流解码
+
+TextDecoderStream 其实就是 TransformStream 形式的 TextDecoder。将编码后的文本流通过管道输入流解码器会得到解码后文本块的流：
+
+```js
+async function* chars() {
+  // 每个块必须是一个定型数组
+  const encodedText = [102, 111, 111].map((x) => Uint8Array.of(x));
+  for (let char of encodedText) {
+    yield await new Promise((resolve) => setTimeout(resolve, 1000, char));
+  }
+}
+const encodedTextStream = new ReadableStream({
+  async start(controller) {
+    for await (let chunk of chars()) {
+      controller.enqueue(chunk);
+    }
+    controller.close();
+  },
+});
+const decodedTextStream = encodedTextStream.pipeThrough(
+  new TextDecoderStream()
+);
+const readableStreamDefaultReader = decodedTextStream.getReader();
+(async function () {
+  while (true) {
+    const { done, value } = await readableStreamDefaultReader.read();
+    if (done) {
+      break;
+    } else {
+      console.log(value);
+    }
+  }
+})();
+// f // o // o
+```
+
+文本解码器流能够识别可能分散在不同块上的代理对。解码器流会保持块片段直到取得完整的字符。比如在下面的例子中，流解码器在解码流并输出字符之前会等待传入 4 个块：
+
+```js
+async function* chars() {
+  // .的 UTF-8编码是 0xF0 0x9F 0x98 0x8A（即十进制 240、159、152、138）
+  const encodedText = [240, 159, 152, 138].map((x) => Uint8Array.of(x));
+  for (let char of encodedText) {
+    yield await new Promise((resolve) => setTimeout(resolve, 1000, char));
+  }
+}
+const encodedTextStream = new ReadableStream({
+  async start(controller) {
+    for await (let chunk of chars()) {
+      controller.enqueue(chunk);
+    }
+    controller.close();
+  },
+});
+const decodedTextStream = encodedTextStream.pipeThrough(
+  new TextDecoderStream()
+);
+const readableStreamDefaultReader = decodedTextStream.getReader();
+(async function () {
+  while (true) {
+    const { done, value } = await readableStreamDefaultReader.read();
+    if (done) {
+      break;
+    } else {
+      console.log(value);
+    }
+  }
+})();
+// .
+```
+
+文本解码器流经常与 fetch()一起使用，因为响应体可以作为 ReadableStream 来处理。比如：
+
+```js
+const response = await fetch(url);
+const stream = response.body.pipeThrough(new TextDecoderStream());
+const decodedStream = stream.getReader();
+for await (let decodedChunk of decodedStream) {
+  console.log(decodedChunk);
+}
+```
+
+## 20.4 File API 与 Blob API
+
+Web 应用程序的一个主要的痛点是无法操作用户计算机上的文件。 2000 年之前，处理文件的唯一方式是把`<input type="file">`放到一个表单里，仅此而已。 File API 与 Blob API 是为了让 Web 开发者能以安全的方式访问客户端机器上的文件，从而更好地与这些文件交互而设计的。
+
+### 20.4.1 File 类型
+
+File API 仍然以表单中的文件输入字段为基础，但是增加了直接访问文件信息的能力。 HTML5 在 DOM 上为文件输入元素添加了 files 集合。当用户在文件字段中选择一个或多个文件时，这个 files 集合中会包含一组 File 对象，表示被选中的文件。每个 File 对象都有一些只读属性。
+
+- name：本地系统中的文件名。
+
+- size：以字节计的文件大小。
+
+- type：包含文件 MIME 类型的字符串。
+
+- lastModifiedDate：表示文件最后修改时间的字符串。这个属性只有 Chome 实现了。
+
+例如，通过监听 change 事件然后遍历 files 集合可以取得每个选中文件的信息：
+
+```js
+let filesList = document.getElementById('files-list');
+filesList.addEventListener('change', (event) => {
+  let files = event.target.files,
+    i = 0,
+    len = files.length;
+  while (i < len) {
+    const f = files[i];
+    console.log(`${f.name} (${f.type}, ${f.size} bytes)`);
+    i++;
+  }
+});
+```
+
+这个例子简单地在控制台输出了每个文件的信息。仅就这个能力而言，已经可以说是 Web 应用向前迈进的一大步了。不过， File API 还提供了 FileReader 类型，让我们可以实际从文件中读取数据。
+
+### 20.4.2 FileReader 类型
+
+FileReader 类型表示一种异步文件读取机制。可以把 FileReader 想象成类似于 XMLHttpRequest，只不过是用于从文件系统读取文件，而不是从服务器读取数据。 FileReader 类型提供了几个读取文件数据的方法。
+
+- readAsText(file, encoding)：从文件中读取纯文本内容并保存在 result 属性中。第二个参数表示编码，是可选的。
+
+- readAsDataURL(file)：读取文件并将内容的数据 URI 保存在 result 属性中。
+
+- readAsBinaryString(file)：读取文件并将每个字符的二进制数据保存在 result 属性中。
+
+- readAsArrayBuffer(file)：读取文件并将文件内容以 ArrayBuffer 形式保存在 result 属性。这些读取数据的方法为处理文件数据提供了极大的灵活性。例如，为了向用户显示图片，可以将图片读取为数据 URI，而为了解析文件内容，可以将文件读取为文本。因为这些读取方法是异步的，所以每个 FileReader 会发布几个事件，其中 3 个最有用的事件是 progress、error 和 load，分别表示还有更多数据、发生了错误和读取完成。
+
+progress 事件每 50 毫秒就会触发一次，其与 XHR 的 progress 事件具有相同的信息： lengthComputable、loaded 和 total。此外，在 progress 事件中可以读取 FileReader 的 result 属性，即使其中尚未包含全部数据。
+error 事件会在由于某种原因无法读取文件时触发。触发 error 事件时，FileReader 的 error 属性会包含错误信息。这个属性是一个对象，只包含一个属性： code。这个错误码的值可能是 1（未找到文件）、2（安全错误）、3（读取被中断）、4（文件不可读）或 5（编码错误）。
+load 事件会在文件成功加载后触发。如果 error 事件被触发，则不会再触发 load 事件。下面的例子演示了所有这 3 个事件：
+
+```js
+let filesList = document.getElementById('files-list');
+filesList.addEventListener('change', (event) => {
+  let info = '',
+    output = document.getElementById('output'),
+    progress = document.getElementById('progress'),
+    files = event.target.files,
+    type = 'default',
+    reader = new FileReader();
+  if (/image/.test(files[0].type)) {
+    reader.readAsDataURL(files[0]);
+    type = 'image';
+  } else {
+    reader.readAsText(files[0]);
+    type = 'text';
+  }
+  reader.onerror = function () {
+    output.innerHTML =
+      'Could not read file, error code is ' + reader.error.code;
+  };
+  reader.onprogress = function (event) {
+    if (event.lengthComputable) {
+      progress.innerHTML = `${event.loaded}/${event.total}`;
+    }
+  };
+  reader.onload = function () {
+    let html = '';
+    switch (type) {
+      case 'image':
+        html = `<img src="${reader.result}">`;
+        break;
+
+      case 'text':
+        html = reader.result;
+        break;
+    }
+    output.innerHTML = html;
+  };
+});
+```
+
+以上代码从表单字段中读取一个文件，并将其内容显示在了网页上。如果文件的 MIME 类型表示它是一个图片，那么就将其读取后保存为数据 URI，在 load 事件触发时将数据 URI 作为图片插入页面中。如果文件不是图片，则读取后将其保存为文本并原样输出到网页上。 progress 事件用于跟踪和显示读取文件的进度，而 error 事件用于监控错误。
+如果想提前结束文件读取，则可以在过程中调用 abort()方法，从而触发 abort 事件。在 load、 error 和 abort 事件触发后，还会触发 loadend 事件。loadend 事件表示在上述 3 种情况下，所有读取操作都已经结束。 readAsText()和 readAsDataURL()方法已经得到了所有主流浏览器支持。
+
+### 20.4.3 FileReaderSync 类型
+
+顾名思义， FileReaderSync 类型就是 FileReader 的同步版本。这个类型拥有与 FileReader 相同的方法，只有在整个文件都加载到内存之后才会继续执行。 FileReaderSync 只在工作线程中可用，因为如果读取整个文件耗时太长则会影响全局。
+假设通过 postMessage()向工作线程发送了一个 File 对象。以下代码会让工作线程同步将文件读取到内存中，然后将文件的数据 URL 发回来：
+
+```js
+// worker.js
+self.omessage = (messageEvent) => {
+  const syncReader = new FileReaderSync();
+  console.log(syncReader); // FileReaderSync {}
+  // 读取文件时阻塞工作线程 const result = syncReader.readAsDataUrl(messageEvent.data);
+  // PDF文件的示例响应 console.log(result); // data:application/pdf;base64,JVBERi0xLjQK...
+  // 把 URL发回去
+  self.postMessage(result);
+};
+```
+
+### 20.4.4 Blob 与部分读取
+
+某些情况下，可能需要读取部分文件而不是整个文件。为此， File 对象提供了一个名为 slice()的方法。slice()方法接收两个参数：起始字节和要读取的字节数。这个方法返回一个 Blob 的实例，而 Blob 实际上是 File 的超类。
+blob 表示二进制大对象（binary larget object），是 JavaScript 对不可修改二进制数据的封装类型。包含字符串的数组、 ArrayBuffers、ArrayBufferViews，甚至其他 Blob 都可以用来创建 blob。Blob 构造函数可以接收一个 options 参数，并在其中指定 MIME 类型：
+
+```js
+console.log(new Blob(['foo'])); // Blob {size: 3, type: ""}
+console.log(new Blob(['{"a": "b"}'], { type: 'application/json' })); // {size: 10, type: "application/json"}
+console.log(new Blob(['<p>Foo</p>', '<p>Bar</p>'], { type: 'text/html' })); // {size: 20, type: "text/html"}
+```
+
+Blob 对象有一个 size 属性和一个 type 属性，还有一个 slice()方法用于进一步切分数据。另外也可以使用 FileReader 从 Blob 中读取数据。下面的例子只会读取文件的前 32 字节：
+
+```js
+let filesList = document.getElementById('files-list');
+filesList.addEventListener('change', (event) => {
+  let info = '',
+    output = document.getElementById('output'),
+    progress = document.getElementById('progress'),
+    files = event.target.files,
+    reader = new FileReader(),
+    blob = blobSlice(files[0], 0, 32);
+  if (blob) {
+    reader.readAsText(blob);
+    reader.onerror = function () {
+      output.innerHTML =
+        'Could not read file, error code is ' + reader.error.code;
+    };
+    reader.onload = function () {
+      output.innerHTML = reader.result;
+    };
+  } else {
+    console.log("Your browser doesn't support slice().");
+  }
+});
+```
+
+只读取部分文件可以节省时间，特别是在只需要数据特定部分比如文件头的时候。
+
+### 20.4.5 对象 URL 与 Blob
+
+对象 URL 有时候也称作 Blob URL，是指引用存储在 File 或 Blob 中数据的 URL。对象 URL 的优点是不用把文件内容读取到 JavaScript 也可以使用文件。只要在适当位置提供对象 URL 即可。要创建对象 URL，可以使用 window.URL.createObjectURL()方法并传入 File 或 Blob 对象。这个函数返回的值是一个指向内存中地址的字符串。因为这个字符串是 URL，所以可以在 DOM 中直接使用。例如，以下代码使用对象 URL 在页面中显示了一张图片：
+
+```js
+let filesList = document.getElementById('files-list');
+filesList.addEventListener('change', (event) => {
+  let info = '',
+    output = document.getElementById('output'),
+    progress = document.getElementById('progress'),
+    files = event.target.files,
+    reader = new FileReader(),
+    url = window.URL.createObjectURL(files[0]);
+  if (url) {
+    if (/image/.test(files[0].type)) {
+      output.innerHTML = `<img src="${url}">`;
+    } else {
+      output.innerHTML = 'Not an image.';
+    }
+  } else {
+    output.innerHTML = "Your browser doesn't support object URLs.";
+  }
+});
+```
+
+如果把对象 URL 直接放到`<img>`标签，就不需要把数据先读到 JavaScript 中了。`<img>`标签可以直接从相应的内存位置把数据读取到页面上。
+使用完数据之后，最好能释放与之关联的内存。只要对象 URL 在使用中，就不能释放内存。如果想表明不再使用某个对象 URL，则可以把它传给 window.URL.revokeObjectURL()。页面卸载时，所有对象 URL 占用的内存都会被释放。不过，最好在不使用时就立即释放内存，以便尽可能保持页面占用最少资源。
+
+### 20.4.6 读取拖放文件
+
+组合使用 HTML5 拖放 API 与 File API 可以创建读取文件信息的有趣功能。在页面上创建放置目标后，可以从桌面上把文件拖动并放到放置目标。这样会像拖放图片或链接一样触发 drop 事件。被放置的文件可以通过事件的 event.dataTransfer.files 属性读到，这个属性保存着一组 File 对象，就像文本输入字段一样。
+下面的例子会把拖放到页面放置目标上的文件信息打印出来：
+
+```js
+let droptarget = document.getElementById('droptarget');
+function handleEvent(event) {
+  let info = '',
+    output = document.getElementById('output'),
+    files,
+    i,
+    len;
+  event.preventDefault();
+  if (event.type == 'drop') {
+    files = event.dataTransfer.files;
+    i = 0;
+    len = files.length;
+    while (i < len) {
+      info += `${files[i].name} (${files[i].type}, ${files[i].size} bytes)<br>`;
+      i++;
+    }
+    output.innerHTML = info;
+  }
+}
+droptarget.addEventListener('dragenter', handleEvent);
+droptarget.addEventListener('dragover', handleEvent);
+droptarget.addEventListener('drop', handleEvent);
+```
+
+与后面要介绍的拖放的例子一样，必须取消 dragenter、dragover 和 drop 的默认行为。在 drop 事件处理程序中，可以通过 event.dataTransfer.files 读到文件，此时可以获取文件的相关信息。
+
+## 20.5 媒体元素
+
+随着嵌入音频和视频元素在 Web 应用上的流行，大多数内容提供商会强迫使用 Flash 以便达到最佳的跨浏览器兼容性。 HTML5 新增了两个与媒体相关的元素，即 `<audio>`和`<video>`，从而为浏览器提供了嵌入音频和视频的统一解决方案。
+这两个元素既支持 Web 开发者在页面中嵌入媒体文件，也支持 JavaScript 实现对媒体的自定义控制。以下是它们的用法：
+
+```html
+<!--嵌入视频 -->
+<video src="conference.mpg" id="myVideo">Video player not available.</video>
+<!--嵌入音频 -->
+<audio src="song.mp3" id="myAudio">Audio player not available.</audio>
+```
+
+每个元素至少要求有一个 src 属性，以表示要加载的媒体文件。我们也可以指定表示视频播放器大小的 width 和 height 属性，以及在视频加载期间显示图片 URI 的 poster 属性。另外， controls 属性如果存在，则表示浏览器应该显示播放界面，让用户可以直接控制媒体。开始和结束标签之间的内容是在媒体播放器不可用时显示的替代内容。
+由于浏览器支持的媒体格式不同，因此可以指定多个不同的媒体源。为此，需要从元素中删除 src 属性，使用一个或多个 `<source>`元素代替，如下面的例子所示：
+
+```html
+<!--嵌入视频 -->
+<video id="myVideo">
+  <source src="conference.webm" type="video/webm; codecs='vp8, vorbis'" />
+  <source src="conference.ogv" type="video/ogg; codecs='theora, vorbis'" />
+  <source src="conference.mpg" />
+  Video player not available.
+</video>
+<!--嵌入音频 -->
+<audio id="myAudio">
+  <source src="song.ogg" type="audio/ogg" />
+  <source src="song.mp3" type="audio/mpeg" />
+  Audio player not available.
+</audio>
+```
+
+讨论不同音频和视频的编解码器超出了本书范畴，但浏览器支持的编解码器确实可能有所不同，因此指定多个源文件通常是必需的。
+
+### 20.5.1 属性
+
+`<video>`和`<audio>`元素提供了稳健的 JavaScript 接口。这两个元素有很多共有属性，可以用于确定媒体的当前状态，如下表所示。
+
+```
+属  性 数据类型 说  明
+autoplay  Boolean 取得或设置 autoplay标签
+buffered  TimeRanges 对象，表示已下载缓冲的时间范围
+bufferedBytes  ByteRanges 对象，表示已下载缓冲的字节范围
+bufferingRate  Integer 平均每秒下载的位数
+bufferingThrottled  Boolean 表示缓冲是否被浏览器截流
+controls  Boolean 取得或设置 controls属性，用于显示或隐藏浏览器内置控件
+currentLoop  Integer 媒体已经播放的循环次数
+currentSrc  String 当前播放媒体的 URL
+currentTime  Float 已经播放的秒数
+defaultPlaybackRate  Float 取得或设置默认回放速率。默认为 1.0秒
+duration  Float 媒体的总秒数
+ended  Boolean 表示媒体是否播放完成
+loop  Boolean 取得或设置媒体是否应该在播放完再循环开始
+muted  Boolean 取得或设置媒体是否静音
+networkState  Integer 表示媒体当前网络连接状态。 0表示空， 1表示加载中， 2表示加载元数据，
+3表示加载了第一帧， 4表示加载完成
+paused  Boolean 表示播放器是否暂停
+playbackRate  Float 取得或设置当前播放速率。用户可能会让媒体播放快一些或慢一些。与 defaultPlaybackRate不同，该属性会保持不变，除非开发者修改
+played  TimeRanges 到目前为止已经播放的时间范围
+readyState  Integer 表示媒体是否已经准备就绪。 0表示媒体不可用， 1表示可以显示当前帧，
+2表示媒体可以开始播放， 3表示媒体可以从头播到尾
+seekable  TimeRanges 可以跳转的时间范围
+seeking  Boolean 表示播放器是否正移动到媒体文件的新位置
+src  String 媒体文件源。可以在任何时候重写
+start  Float 取得或设置媒体文件中的位置，以秒为单位，从该处开始播放
+totalBytes  Integer 资源需要的字节总数（如果知道的话）
+videoHeight  Integer 返回视频（不一定是元素）的高度。只适用于 <video>
+videoWidth  Integer 返回视频（不一定是元素）的宽度。只适用于 <video>
+volume  Float 取得或设置当前音量，值为 0.0到 1.0
+（续）
+```
+
+上述很多属性也可以在 `<audio>`或`<video>`标签上设置。
+
+### 20.5.2 事件
+
+除了有很多属性，媒体元素还有很多事件。这些事件会监控由于媒体回放或用户交互导致的不同属性的变化。下表列出了这些事件。
+
+```
+事  件 何时触发
+abort 下载被中断
+canplay 回放可以开始， readyState为 2
+canplaythrough 回放可以继续，不应该中断， readState为 3
+canshowcurrentframe 已经下载当前帧， readyState为 1
+dataunavailable 不能回放，因为没有数据， readyState为 0
+durationchange  duration属性的值发生变化
+emptied 网络连接关闭了
+empty 发生了错误，阻止媒体下载
+ended 媒体已经播放完一遍，且停止了
+error 下载期间发生了网络错误
+load 所有媒体已经下载完毕。这个事件已被废弃，使用 canplaythrough代替
+loadeddata 媒体的第一帧已经下载
+loadedmetadata 媒体的元数据已经下载
+loadstart 下载已经开始
+pause 回放已经暂停
+play 媒体已经收到开始播放的请求
+playing 媒体已经实际开始播放了
+progress 下载中
+ratechange 媒体播放速率发生变化
+seeked 跳转已结束
+seeking 回放已移动到新位置
+stalled 浏览器尝试下载，但尚未收到数据
+timeupdate  currentTime被非常规或意外地更改了
+volumechange  volume或 muted属性值发生了变化
+waiting 回放暂停，以下载更多数据
+```
+
+这些事件被设计得尽可能具体，以便 Web 开发者能够使用较少的 HTML 和 JavaScript 创建自定义的音频/视频播放器（而不是创建新 Flash 影片）。
+
+### 20.5.3 自定义媒体播放器
+
+使用`<audio>`和`<video>`的 play()和 pause()方法，可以手动控制媒体文件的播放。综合使用属性、事件和这些方法，可以方便地创建自定义的媒体播放器，如下面的例子所示：
+
+```html
+<div class="mediaplayer">
+  <div class="video">
+    <video
+      id="player"
+      src="movie.mov"
+      poster="mymovie.jpg"
+      width="300"
+      height="200"
+    >
+      Video player not available.
+    </video>
+  </div>
+  <div class="controls">
+    <input type="button" value="Play" id="video-btn" />
+    <span id="curtime">0</span>/<span id="duration">0</span>
+  </div>
+</div>
+```
+
+通过使用 JavaScript 创建一个简单的视频播放器，上面这个基本的 HTML 就可以被激活了，如下所示：
+
+```js
+// 取得元素的引用
+let player = document.getElementById('player'),
+  btn = document.getElementById('video-btn'),
+  curtime = document.getElementById('curtime'),
+  duration = document.getElementById('duration');
+// 更新时长
+duration.innerHTML = player.duration;
+// 为按钮添加事件处理程序
+btn.addEventListener('click', (event) => {
+  if (player.paused) {
+    player.play();
+    btn.value = 'Pause';
+  } else {
+    player.pause();
+    btn.value = 'Play';
+  }
+});
+// 周期性更新当前时间
+setInterval(() => {
+  curtime.innerHTML = player.currentTime;
+}, 250);
+```
+
+这里的 JavaScript 代码简单地为按钮添加了事件处理程序，可以根据当前状态播放和暂停视频。此外，还给 `<video>`元素的 load 事件添加了事件处理程序，以便显示视频的时长。最后，重复的计时器用于更新当前时间。通过监听更多事件以及使用更多属性，可以进一步扩展这个自定义的视频播放器。同样的代码也可以用于 `<audio>`元素以创建自定义的音频播放器。
+
+### 20.5.4 检测编解码器
+
+如前所述，并不是所有浏览器都支持 `<video>`和`<audio>`的所有编解码器，这通常意味着必须提供多个媒体源。为此，也有 JavaScript API 可以用来检测浏览器是否支持给### 定格式和编解码器。这两个媒体元素都有一个名为 canPlayType()的方法，该方法接收一个格式 /编解码器字符串，返回一个字符串值："probably"、"maybe"或""（空字符串），其中空字符串就是假值，意味着可以在 if 语句中像这样使用 canPlayType()：
+
+```js
+if (audio.canPlayType("audio/mpeg")) { // 执行某些操作 }
+```
+
+"probably"和"maybe"都是真值，在 if 语句的上下文中可以转型为 true。
+在只给 canPlayType()提供一个 MIME 类型的情况下，最可能返回的值是 "maybe"和空字符串。
+这是因为文件实际上只是一个包装音频和视频数据的容器，而真正决定文件是否可以播放的是编码。在同时提供 MIME 类型和编解码器的情况下，返回值的可能性会提高到 "probably"。下面是几个例子：
+
+```js
+let audio = document.getElementById("audio-player"); // 很可能是 "maybe" if (audio.canPlayType("audio/mpeg")) {
+// 执行某些操作 } // 可能是 "probably"
+20.6原生拖放 631
+if (audio.canPlayType("audio/ogg; codecs=\"vorbis\"")) {
+// 执行某些操作
+}
+```
+
+注意，编解码器必须放到引号中。同样，也可以在视频元素上使用 canPlayType()检测视频格式。
+
+### 20.5.5 音频类型
+
+`<audio>`元素还有一个名为 Audio 的原生 JavaScript 构造函数，支持在任何时候播放音频。 Audio 类型与 Image 类似，都是 DOM 元素的对等体，只是不需插入文档即可工作。要通过 Audio 播放音频，只需创建一个新实例并传入音频源文件：
+
+```js
+let audio = new Audio('sound.mp3');
+EventUtil.addHandler(audio, 'canplaythrough', function (event) {
+  audio.play();
+});
+```
+
+创建 Audio 的新实例就会开始下载指定的文件。下载完毕后，可以调用 play()来播放音频。
+在 iOS 中调用 play()方法会弹出一个对话框，请求用户授权播放声音。为了连续播放，必须在 onfinish 事件处理程序中立即调用 play()。
+
+## 20.6 原生拖放
+
+IE4 最早在网页中为 JavaScript 引入了对拖放功能的支持。当时，网页中只有两样东西可以触发拖放：图片和文本。拖动图片就是简单地在图片上按住鼠标不放然后移动鼠标。而对于文本，必须先选中，然后再以同样的方式拖动。在 IE4 中，唯一有效的放置目标是文本框。 IE5 扩展了拖放能力，添加了新的事件，让网页中几乎一切都可以成为放置目标。 IE5.5 又进一步，允许几乎一切都可以拖动（ IE6 也支持这个功能）。HTML5 在 IE 的拖放实现基础上标准化了拖放功能。所有主流浏览器都根据 HTML5 规范实现了原生的拖放。
+关于拖放最有意思的可能就是可以跨窗格、跨浏览器容器，有时候甚至可以跨应用程序拖动元素。浏览器对拖放的支持可以让我们实现这些功能。
+
+### 20.6.1 拖放事件
+
+拖放事件几乎可以让开发者控制拖放操作的方方面面。关键的部分是确定每个事件是在哪里触发的。有的事件在被拖放元素上触发，有的事件则在放置目标上触发。在某个元素被拖动时，会（按顺序）触发以下事件：
+(1) dragstart
+(2) drag
+(3) dragend
+
+在按住鼠标键不放并开始移动鼠标的那一刻，被拖动元素上会触发 dragstart 事件。此时光标会变成非放置符号（圆环中间一条斜杠），表示元素不能放到自身上。拖动开始时，可以在 ondragstart 事件处理程序中通过 JavaScript 执行某些操作。
+dragstart 事件触发后，只要目标还被拖动就会持续触发 drag 事件。这个事件类似于 mousemove，即随着鼠标移动而不断触发。当拖动停止时（把元素放到有效或无效的放置目标上），会触发 dragend 事件。
+
+所有这 3 个事件的目标都是被拖动的元素。默认情况下，浏览器在拖动开始后不会改变被拖动元素的外观，因此是否改变外观由你来决定。不过，大多数浏览器此时会创建元素的一个半透明副本，始终跟随在光标下方。
+在把元素拖动到一个有效的放置目标上时，会依次触发以下事件：
+(1) dragenter
+(2) dragover
+(3) dragleave 或 drop
+
+只要一把元素拖动到放置目标上， dragenter 事件（类似于 mouseover 事件）就会触发。 dragenter 事件触发之后，会立即触发 dragover 事件，并且元素在放置目标范围内被拖动期间此事件会持续触发。当元素被拖动到放置目标之外， dragover 事件停止触发， dragleave 事件触发（类似于 mouseout 事件）。如果被拖动元素被放到了目标上，则会触发 drop 事件而不是 dragleave 事件。这些事件的目标是放置目标元素。
+
+### 20.6.2 自定义放置目标
+
+在把某个元素拖动到无效放置目标上时，会看到一个特殊光标（圆环中间一条斜杠）表示不能放下。即使所有元素都支持放置目标事件，这些元素默认也是不允许放置的。如果把元素拖动到不允许放置的目标上，无论用户动作是什么都不会触发 drop 事件。不过，通过覆盖 dragenter 和 dragover 事件的默认行为，可以把任何元素转换为有效的放置目标。例如，如果有一个 ID 为"droptarget"的<div>元素，那么可以使用以下代码把它转换成一个放置目标：
+
+```js
+let droptarget = document.getElementById('droptarget');
+droptarget.addEventListener('dragover', (event) => {
+  event.preventDefault();
+});
+droptarget.addEventListener('dragenter', (event) => {
+  event.preventDefault();
+});
+```
+
+执行上面的代码之后，把元素拖动到这个 <div>上应该可以看到光标变成了允许放置的样子。另外， drop 事件也会触发。
+在 Firefox 中，放置事件的默认行为是导航到放在放置目标上的 URL。这意味着把图片拖动到放置目标上会导致页面导航到图片文件，把文本拖动到放置目标上会导致无效 URL 错误。为阻止这个行为，在 Firefox 中必须取消 drop 事件的默认行为：
+
+```js
+droptarget.addEventListener('drop', (event) => {
+  event.preventDefault();
+});
+```
+
+### 20.6.3 dataTransfer 对象
+
+除非数据受影响，否则简单的拖放并没有实际意义。为实现拖动操作中的数据传输， IE5 在 event 对象上暴露了 dataTransfer 对象，用于从被拖动元素向放置目标传递字符串数据。因为这个对象是 event 的属性，所以在拖放事件的事件处理程序外部无法访问 dataTransfer。在事件处理程序内部，
+可以使用这个对象的属性和方法实现拖放功能。 dataTransfer 对象现在已经纳入了 HTML5 工作草案。
+dataTransfer 对象有两个主要方法： getData()和 setData()。顾名思义， getData()用于获取 setData()存储的值。 setData()的第一个参数以及 getData()的唯一参数是一个字符串，表示要设置的数据类型： "text"或"URL"，如下所示：
+
+```js
+// 传递文本
+event.dataTransfer.setData('text', 'some text');
+let text = event.dataTransfer.getData('text');
+// 传递 URL
+event.dataTransfer.setData('URL', 'http://www.wrox.com/');
+let url = event.dataTransfer.getData('URL');
+```
+
+虽然这两种数据类型是 IE 最初引入的，但 HTML5 已经将其扩展为允许任何 MIME 类型。为向后兼容， HTML5 还会继续支持 "text"和"URL"，但它们会分别被映射到 "text/plain"和"text/uri-list"。
+dataTransfer 对象实际上可以包含每种 MIME 类型的一个值，也就是说可以同时保存文本和 URL，两者不会相互覆盖。存储在 dataTransfer 对象中的数据只能在放置事件中读取。如果没有在 ondrop 事件处理程序中取得这些数据， dataTransfer 对象就会被销毁，数据也会丢失。
+在从文本框拖动文本时，浏览器会调用 setData()并将拖动的文本以 "text"格式存储起来。类似地，在拖动链接或图片时，浏览器会调用 setData()并把 URL 存储起来。当数据被放置在目标上时，可以使用 getData()获取这些数据。当然，可以在 dragstart 事件中手动调用 setData()存储自定义数据，以便将来使用。
+作为文本的数据和作为 URL 的数据有一个区别。当把数据作为文本存储时，数据不会被特殊对待。而当把数据作为 URL 存储时，数据会被作为网页中的一个链接，意味着如果把它放到另一个浏览器窗口，浏览器会导航到该 URL。
+直到版本 5，Firefox 都不能正确地把 "url"映射为 "text/uri-list"或把"text"映射为"text/plain"。不过，它可以把 "Text"（第一个字母大写）正确映射为 "text/plain"。在通过 dataTransfer 获取数据时，为保持最大兼容性，需要对 URL 检测两个值并对文本使用 "Text"：
+
+```js
+let dataTransfer = event.dataTransfer; // 读取 URL
+let url = dataTransfer.getData('url') || dataTransfer.getData('text/uri-list'); // 读取文本
+let text = dataTransfer.getData('Text');
+```
+
+这里要注意，首先应该尝试短数据名。这是因为直到版本 10，IE 都不支持扩展的类型名，而且会在遇到无法识别的类型名时抛出错误。
+
+### 20.6.4 dropEffect 与 effectAllowed
+
+dataTransfer 对象不仅可以用于实现简单的数据传输，还可以用于确定能够对被拖动元素和放置目标执行什么操作。为此，可以使用两个属性： dropEffect 与 effectAllowed。
+dropEffect 属性可以告诉浏览器允许哪种放置行为。这个属性有以下 4 种可能的值。
+
+- "none"：被拖动元素不能放到这里。这是除文本框之外所有元素的默认值。
+- "move"：被拖动元素应该移动到放置目标。
+- "copy"：被拖动元素应该复制到放置目标。
+- "link"：表示放置目标会导航到被拖动元素（仅在它是 URL 的情况下）。
+
+在把元素拖动到放置目标上时，上述每种值都会导致显示一种不同的光标。不过，是否导致光标示意的动作还要取决于开发者。换句话说，如果没有代码参与，则没有什么会自动移动、复制或链接。唯一不用考虑的就是光标自己会变。为了使用 dropEffect 属性，必须在放置目标的 ondragenter 事件处理程序中设置它。
+除非同时设置 effectAllowed，否则 dropEffect 属性也没有用。 effectAllowed 属性表示对被拖动元素是否允许 dropEffect。这个属性有如下几个可能的值。
+
+- "uninitialized"：没有给被拖动元素设置动作。
+
+- "none"：被拖动元素上没有允许的操作。
+
+- "copy"：只允许 "copy"这种 dropEffect。
+
+- "link"：只允许 "link"这种 dropEffect。
+
+- "move"：只允许 "move"这种 dropEffect。
+
+- "copyLink"：允许"copy"和"link"两种 dropEffect。
+
+- "copyMove"：允许"copy"和"move"两种 dropEffect。
+
+- "linkMove"：允许"link"和"move"两种 dropEffect。
+
+- "all"：允许所有 dropEffect。必须在 ondragstart 事件处理程序中设置这个属性。假设我们想允许用户把文本从一个文本框拖动到一个 <div>元素。那么必须同时把 dropEffect 和
+
+effectAllowed 属性设置为 "move"。因为 <div>元素上放置事件的默认行为是什么也不做，所以文本不会自动地移动自己。如果覆盖这个默认行为，文本就会自动从文本框中被移除。然后是否把文本插入 <div>元素就取决于你了。如果是把 dropEffect 和 effectAllowed 属性设置为 "copy"，那么文本框中的文本不会自动被移除。
+
+### 20.6.5 可拖动能力
+
+默认情况下，图片、链接和文本是可拖动的，这意味着无须额外代码用户便可以拖动它们。文本只有在被选中后才可以拖动，而图片和链接在任意时候都是可以拖动的。
+我们也可以让其他元素变得可以拖动。 HTML5 在所有 HTML 元素上规定了一个 draggable 属性，表示元素是否可以拖动。图片和链接的 draggable 属性自动被设置为 true，而其他所有元素此属性的默认值为 false。如果想让其他元素可拖动，或者不允许图片和链接被拖动，都可以设置这个属性。例如：
+
+```html
+<!--禁止拖动图片 -->
+<img src="smile.gif" draggable="false" alt="Smiley face" />
+<!--让元素可以拖动 -->
+<div draggable="true">...</div>
+```
+
+### 20.6.6 其他成员
+
+HTML5 规范还为 dataTransfer 对象定义了下列方法。
+
+- addElement(element)：为拖动操作添加元素。这纯粹是为了传输数据，不会影响拖动操作的外观。在本书写作时，还没有浏览器实现这个方法。
+
+- clearData(format)：清除以特定格式存储的数据。
+
+- setDragImage(element, x, y)：允许指定拖动发生时显示在光标下面的图片。这个方法接收 3 个参数：要显示的 HTML 元素及标识光标位置的图片上的 x 和 y 坐标。这里的 HTML 元素可以是一张图片，此时显示图片；也可以是其他任何元素，此时显示渲染后的元素。
+
+- types：当前存储的数据类型列表。这个集合类似数组，以字符串形式保存数据类型，比如 "text"。
+
+## 20.7 Notifications API
+
+Notifications API 用于向用户显示通知。无论从哪个角度看，这里的通知都很类似 alert()对话框：都使用 JavaScript API 触发页面外部的浏览器行为，而且都允许页面处理用户与对话框或通知弹层的交互。不过，通知提供更灵活的自定义能力。
+Notifications API 在 Service Worker 中非常有用。渐进 Web 应用（ PWA，Progressive Web Application）通过触发通知可以在页面不活跃时向用户显示消息，看起来就像原生应用。
+
+### 20.7.1 通知权限
+
+Notifications API 有被滥用的可能，因此默认会开启两项安全措施： .通知只能在运行在安全上下文的代码中被触发； .通知必须按照每个源的原则明确得到用户允许。用户授权显示通知是通过浏览器内部的一个对话框完成的。除非用户没有明确给出允许或拒绝的答复，否则这个权限请求对每个域只会出现一次。浏览器会记住用户的选择，如果被拒绝则无法重来。页面可以使用全局对象 Notification 向用户请求通知权限。这个对象有一个 requestPemission()方法，该方法返回一个期约，用户在授权对话框上执行操作后这个期约会解决。
+
+```js
+Notification.requestPermission().then((permission) => {
+  console.log('User responded to permission request:', permission);
+});
+```
+
+"granted"值意味着用户明确授权了显示通知的权限。除此之外的其他值意味着显示通知会静默失败。如果用户拒绝授权，这个值就是 "denied"。一旦拒绝，就无法通过编程方式挽回，因为不可能再触发授权提示。
+
+### 20.7.2 显示和隐藏通知
+
+Notification 构造函数用于创建和显示通知。最简单的通知形式是只显示一个标题，这个标题内容可以作为第一个参数传给 Notification 构造函数。以下面这种方式调用 Notification，应该会立即显示通知：
+
+```js
+new Notification('Title text!');
+```
+
+可以通过 options 参数对通知进行自定义，包括设置通知的主体、图片和振动等：
+
+```js
+new Notification('Title text!', {
+  body: 'Body text!',
+  image: 'path/to/image.png',
+  vibrate: true,
+});
+```
+
+调用这个构造函数返回的 Notification 对象的 close()方法可以关闭显示的通知。下面的例子展示了显示通知后 1000 毫秒再关闭它：
+
+```js
+const n = new Notification('I will close in 1000ms');
+setTimeout(() => n.close(), 1000);
+```
+
+### 20.7.3 通知生命周期回调
+
+通知并非只用于显示文本字符串，也可用于实现交互。 Notifications API 提供了 4 个用于添加回调的
+生命周期方法：
+
+- onshow 在通知显示时触发；
+- onclick 在通知被点击时触发；
+- onclose 在通知消失或通过 close()关闭时触发；
+- onerror 在发生错误阻止通知显示时触发。下面的代码将每个生命周期事件都通过日志打印了出来：
+
+```js
+const n = new Notification('foo');
+n.onshow = () => console.log('Notification was shown!');
+n.onclick = () => console.log('Notification was clicked!');
+n.onclose = () => console.log('Notification was closed!');
+n.onerror = () => console.log('Notification experienced an error!');
+```
+
+## 20.8 Page Visibility API
+
+Web 开发中一个常见的问题是开发者不知道用户什么时候真正在使用页面。如果页面被最小化或隐藏在其他标签页后面，那么轮询服务器或更新动画等功能可能就没有必要了。 Page Visibility API 旨在为开发者提供页面对用户是否可见的信息。
+这个 API 本身非常简单，由 3 部分构成。
+
+- document.visibilityState 值，表示下面 4 种状态之一。 .页面在后台标签页或浏览器中最小化了。 .页面在前台标签页中。 .实际页面隐藏了，但对页面的预览是可见的（例如在 Windows 7 上，用户鼠标移到任务栏图标上会显示网页预览）。 .页面在屏外预渲染。
+
+- visibilitychange 事件，该事件会在文档从隐藏变可见（或反之）时触发。
+
+- document.hidden 布尔值，表示页面是否隐藏。这可能意味着页面在后台标签页或浏览器中被最小化了。这个值是为了向后兼容才继续被浏览器支持的，应该优先使用 document.visibilityState 检测页面可见性。
+
+要想在页面从可见变为隐藏或从隐藏变为可见时得到通知，需要监听 visibilitychange 事件。 document.visibilityState 的值是以下三个字符串之一：
+
+- "hidden"
+
+- "visible"
+
+- "prerender"
+
+## 20.9 Streams API
+
+Streams API 是为了解决一个简单但又基础的问题而生的： Web 应用如何消费有序的小信息块而不是大块信息？这种能力主要有两种应用场景。 .大块数据可能不会一次性都可用。网络请求的响应就是一个典型的例子。网络负载是以连续信息包形式交付的，而流式处理可以让应用在数据一到达就能使用，而不必等到所有数据都加载完毕。
+.大块数据可能需要分小部分处理。视频处理、数据压缩、图像编码和 JSON 解析都是可以分成小部分进行处理，而不必等到所有数据都在内存中时再处理的例子。
+第 24 章在讨论网络请求和远程资源时会介绍 Streams API 在 fetch()中的应用，不过 Streams API 本身是通用的。实现 Observable 接口的 JavaScript 库共享了很多流的基础概念。
+
+### 20.9.1 理解流
+
+提到流，可以把数据想像成某种通过管道输送的液体。 JavaScript 中的流借用了管道相关的概念，因为原理是相通的。根据规范，“这些 API 实际是为映射低级 I/O 原语而设计，包括适当时候对字节流的规范化”。Stream API 直接解决的问题是处理网络请求和读写磁盘。
+Stream API 定义了三种流。 .可读流：可以通过某个公共接口读取数据块的流。数据在内部从底层源进入流，然后由消费者（consumer）进行处理。
+.可写流：可以通过某个公共接口写入数据块的流。生产者（producer）将数据写入流，数据在内部传入底层数据槽（ sink）。
+.转换流：由两种流组成，可写流用于接收数据（可写端），可读流用于输出数据（可读端）。这两个流之间是转换程序（transformer），可以根据需要检查和修改流内容。
+块、内部队列和反压流的基本单位是块（chunk）。块可是任意数据类型，但通常是定型数组。每个块都是离散的流片段，可以作为一个整体来处理。更重要的是，块不是固定大小的，也不一定按固定间隔到达。在理想的流当中，块的大小通常近似相同，到达间隔也近似相等。不过好的流实现需要考虑边界情况。前面提到的各种类型的流都有入口和出口的概念。有时候，由于数据进出速率不同，可能会出现不匹配的情况。为此流平衡可能出现如下三种情形。 .流出口处理数据的速度比入口提供数据的速度快。流出口经常空闲（可能意味着流入口效率较低），但只会浪费一点内存或计算资源，因此这种流的不平衡是可以接受的。 .流入和流出均衡。这是理想状态。 .流入口提供数据的速度比出口处理数据的速度快。这种流不平衡是固有的问题。此时一定会在某个地方出现数据积压，流必须相应做出处理。流不平衡是常见问题，但流也提供了解决这个问题的工具。所有流都会为已进入流但尚未离开流的块提供一个内部队列。对于均衡流，这个内部队列中会有零个或少量排队的块，因为流出口块出列的速度与流入口块入列的速度近似相等。这种流的内部队列所占用的内存相对比较小。
+如果块入列速度快于出列速度，则内部队列会不断增大。流不能允许其内部队列无限增大，因此它会使用反压（backpressure）通知流入口停止发送数据，直到队列大小降到某个既定的阈值之下。这个阈值由排列策略决定，这个策略定义了内部队列可以占用的最大内存，即高水位线（high water mark）。
+
+### 20.9.2 可读流
+
+可读流是对底层数据源的封装。底层数据源可以将数据填充到流中，允许消费者通过流的公共接口读取数据。
+
+1. ReadableStreamDefaultController
+
+来看下面的生成器，它每 1000 毫秒就会生成一个递增的整数：
+
+```js
+async function* ints() {
+  // 每 1000毫秒生成一个递增的整数
+  for (let i = 0; i < 5; ++i) {
+    yield await new Promise((resolve) => setTimeout(resolve, 1000, i));
+  }
+}
+```
+
+这个生成器的值可以通过可读流的控制器传入可读流。访问这个控制器最简单的方式就是创建 ReadableStream 的一个实例，并在这个构造函数的 underlyingSource 参数（第一个参数）中定义 start()方法，然后在这个方法中使用作为参数传入的 controller。默认情况下，这个控制器参数是 ReadableStreamDefaultController 的一个实例：
+
+```js
+const readableStream = new ReadableStream({ start(controller) { console.log(controller); // ReadableStreamDefaultController {} } });
+```
+
+调用控制器的 enqueue()方法可以把值传入控制器。所有值都传完之后，调用 close()关闭流：
+
+```js
+async function* ints() {
+  // 每 1000毫秒生成一个递增的整数
+  for (let i = 0; i < 5; ++i) {
+    yield await new Promise((resolve) => setTimeout(resolve, 1000, i));
+  }
+}
+const readableStream = new ReadableStream({
+  async start(controller) {
+    for await (let chunk of ints()) {
+      controller.enqueue(chunk);
+    }
+    controller.close();
+  },
+});
+```
+
+2. ReadableStreamDefaultReader
+
+前面的例子把 5 个值加入了流的队列，但没有把它们从队列中读出来。为此，需要一个 Readable-StreamDefaultReader 的实例，该实例可以通过流的 getReader()方法获取。调用这个方法会获得流的锁，保证只有这个读取器可以从流中读取值：
+
+```js
+async function* ints() {
+  // 每 1000毫秒生成一个递增的整数
+  for (let i = 0; i < 5; ++i) {
+    yield await new Promise((resolve) => setTimeout(resolve, 1000, i));
+  }
+}
+const readableStream = new ReadableStream({
+  async start(controller) {
+    for await (let chunk of ints()) {
+      controller.enqueue(chunk);
+    }
+    controller.close();
+  },
+});
+console.log(readableStream.locked); // false
+const readableStreamDefaultReader = readableStream.getReader();
+console.log(readableStream.locked); // true
+```
+
+消费者使用这个读取器实例的 read()方法可以读出值：
+
+```js
+async function* ints() {
+  // 每 1000毫秒生成一个递增的整数
+  for (let i = 0; i < 5; ++i) {
+    yield await new Promise((resolve) => setTimeout(resolve, 1000, i));
+  }
+}
+const readableStream = new ReadableStream({
+  async start(controller) {
+    for await (let chunk of ints()) {
+      controller.enqueue(chunk);
+    }
+    controller.close();
+  },
+});
+console.log(readableStream.locked); // false
+const readableStreamDefaultReader = readableStream.getReader();
+console.log(readableStream.locked); // true
+// 消费者
+(async function () {
+  while (true) {
+    const { done, value } = await readableStreamDefaultReader.read();
+    if (done) {
+      break;
+    } else {
+      console.log(value);
+    }
+  }
+})();
+// 0 // 1 // 2 // 3 // 4
+```
+
+### 20.9.3 可写流
+
+可写流是底层数据槽的封装。底层数据槽处理通过流的公共接口写入的数据。
+
+1. 创建 WritableStream
+
+来看下面的生成器，它每 1000 毫秒就会生成一个递增的整数：
+
+```js
+async function* ints() {
+  // 每 1000毫秒生成一个递增的整数
+  for (let i = 0; i < 5; ++i) {
+    yield await new Promise((resolve) => setTimeout(resolve, 1000, i));
+  }
+}
+```
+
+这些值通过可写流的公共接口可以写入流。在传给 WritableStream 构造函数的 underlyingSink 参数中，通过实现 write()方法可以获得写入的数据：
+
+```js
+const readableStream = new ReadableStream({
+  write(value) {
+    console.log(value);
+  },
+});
+```
+
+2. WritableStreamDefaultWriter
+
+要把获得的数据写入流，可以通过流的 getWriter()方法获取 WritableStreamDefaultWriter 的实例。这样会获得流的锁，确保只有一个写入器可以向流中写入数据：
+
+```js
+async function* ints() {
+  // 每 1000毫秒生成一个递增的整数
+  for (let i = 0; i < 5; ++i) {
+    yield await new Promise((resolve) => setTimeout(resolve, 1000, i));
+  }
+}
+const writableStream = new WritableStream({
+  write(value) {
+    console.log(value);
+  },
+});
+console.log(writableStream.locked); // false
+const writableStreamDefaultWriter = writableStream.getWriter();
+console.log(writableStream.locked); // true
+```
+
+在向流中写入数据前，生产者必须确保写入器可以接收值。 writableStreamDefaultWriter.ready 返回一个期约，此期约会在能够向流中写入数据时解决。然后，就可以把值传给 writableStream- DefaultWriter.write()方法。写入数据之后，调用 writableStreamDefaultWriter.close()将流关闭：
+
+```js
+async function* ints() {
+  // 每 1000毫秒生成一个递增的整数
+  for (let i = 0; i < 5; ++i) {
+    yield await new Promise((resolve) => setTimeout(resolve, 1000, i));
+  }
+}
+const writableStream = new WritableStream({
+  write(value) {
+    console.log(value);
+  },
+});
+console.log(writableStream.locked); // false
+const writableStreamDefaultWriter = writableStream.getWriter();
+console.log(writableStream.locked); // true
+// 生产者
+(async function () {
+  for await (let chunk of ints()) {
+    await writableStreamDefaultWriter.ready;
+    writableStreamDefaultWriter.write(chunk);
+  }
+  writableStreamDefaultWriter.close();
+})();
+```
+
+### 20.9.4 转换流
+
+转换流用于组合可读流和可写流。数据块在两个流之间的转换是通过 transform()方法完成的。来看下面的生成器，它每 1000 毫秒就会生成一个递增的整数：
+
+```js
+async function* ints() {
+  // 每 1000毫秒生成一个递增的整数
+  for (let i = 0; i < 5; ++i) {
+    yield await new Promise((resolve) => setTimeout(resolve, 1000, i));
+  }
+}
+```
+
+下面的代码创建了一个 TransformStream 的实例，通过 transform()方法将每个值翻倍：
+
+```js
+async function* ints() {
+  // 每 1000毫秒生成一个递增的整数
+  for (let i = 0; i < 5; ++i) {
+    yield await new Promise((resolve) => setTimeout(resolve, 1000, i));
+  }
+}
+const { writable, readable } = new TransformStream({
+  transform(chunk, controller) {
+    controller.enqueue(chunk * 2);
+  },
+});
+```
+
+向转换流的组件流（可读流和可写流）传入数据和从中获取数据，与本章前面介绍的方法相同：
+
+```js
+async function* ints() {
+  // 每 1000毫秒生成一个递增的整数
+  for (let i = 0; i < 5; ++i) {
+    yield await new Promise((resolve) => setTimeout(resolve, 1000, i));
+  }
+}
+const { writable, readable } = new TransformStream({
+  transform(chunk, controller) {
+    controller.enqueue(chunk * 2);
+  },
+});
+const readableStreamDefaultReader = readable.getReader();
+const writableStreamDefaultWriter = writable.getWriter();
+// 消费者
+(async function () {
+  while (true) {
+    const { done, value } = await readableStreamDefaultReader.read();
+    if (done) {
+      break;
+    } else {
+      console.log(value);
+    }
+  }
+})();
+// 生产者
+(async function () {
+  for await (let chunk of ints()) {
+    await writableStreamDefaultWriter.ready;
+    writableStreamDefaultWriter.write(chunk);
+  }
+  writableStreamDefaultWriter.close();
+})();
+```
+
+### 20.9.5 通过管道连接流
+
+流可以通过管道连接成一串。最常见的用例是使用 pipeThrough()方法把 ReadableStream 接入 TransformStream。从内部看， ReadableStream 先把自己的值传给 TransformStream 内部的 WritableStream，然后执行转换，接着转换后的值又在新的 ReadableStream 上出现。下面的例子将一个整数的 ReadableStream 传入 TransformStream，TransformStream 对每个值做加倍处理：
+
+```js
+async function* ints() { // 每 1000毫秒生成一个递增的整数
+for (let i = 0; i < 5; ++i) {
+yield await new Promise((resolve) => setTimeout(resolve, 1000, i)); } }
+const integerStream = new ReadableStream({ async start(controller) { for await (let chunk of ints()) { controller.enqueue(chunk); }
+controller.close(); } });
+const doublingStream = new TransformStream({ transform(chunk, controller) { controller.enqueue(chunk * 2);
+20.9 Streams API 643
+} });
+// 通过管道连接流
+const pipedStream = integerStream.pipeThrough(doublingStream);
+// 从连接流的输出获得读取器
+const pipedStreamDefaultReader = pipedStream.getReader();
+// 消费者
+(async function() { while(true) { const { done, value } = await pipedStreamDefaultReader.read();
+if (done) { break; } else { console.log(value); } } })();
+// 0 // 2 // 4 // 6 // 8
+```
+
+另外，使用 pipeTo()方法也可以将 ReadableStream 连接到 WritableStream。整个过程与使用 pipeThrough()类似：
+
+```js
+async function* ints() {
+  // 每 1000毫秒生成一个递增的整数
+  for (let i = 0; i < 5; ++i) {
+    yield await new Promise((resolve) => setTimeout(resolve, 1000, i));
+  }
+}
+const integerStream = new ReadableStream({
+  async start(controller) {
+    for await (let chunk of ints()) {
+      controller.enqueue(chunk);
+    }
+    controller.close();
+  },
+});
+const writableStream = new WritableStream({
+  write(value) {
+    console.log(value);
+  },
+});
+const pipedStream = integerStream.pipeTo(writableStream);
+// 0 // 1
+
+// 2 // 3 // 4
+```
+
+注意，这里的管道连接操作隐式从 ReadableStream 获得了一个读取器，并把产生的值填充到 WritableStream。
+
+## 20.10 计时 API
+
+页面性能始终是 Web 开发者关心的话题。 Performance 接口通过 JavaScript API 暴露了浏览器内部的度量指标，允许开发者直接访问这些信息并基于这些信息实现自己想要的功能。这个接口暴露在 window.performance 对象上。所有与页面相关的指标，包括已经定义和将来会定义的，都会存在于这个对象上。
+Performance 接口由多个 API 构成：
+
+- High Resolution Time API
+
+- Performance Timeline API
+
+- Navigation Timing API
+
+- User Timing API
+
+- Resource Timing API
+
+- Paint Timing API
+
+有关这些规范的更多信息以及新增的性能相关规范，可以关注 W3C 性能工作组的 GitHub 项目页面。
+
+### 20.10.1 High Resolution Time API
+
+Date.now()方法只适用于日期时间相关操作，而且是不要求计时精度的操作。在下面的例子中，函数 foo()调用前后分别记录了一个时间戳：
+
+```js
+const t0 = Date.now(); foo(); const t1 = Date.now();
+const duration = t1 – t0;
+console.log(duration);
+```
+
+考虑如下 duration 会包含意外值的情况。
+
+- duration 是 0。Date.now()只有毫秒级精度，如果 foo()执行足够快，则两个时间戳的值会相等。
+
+- duration 是负值或极大值。如果在 foo()执行时，系统时钟被向后或向前调整了（如切换到夏令时），则捕获的时间戳不会考虑这种情况，因此时间差中会包含这些调整。
+
+为此，必须使用不同的计时 API 来精确且准确地度量时间的流逝。 High Resolution Time API 定义了 window.performance.now()，这个方法返回一个微秒精度的浮点值。因此，使用这个方法先后捕获的时间戳更不可能出现相等的情况。而且这个方法可以保证时间戳单调增长。
+
+```js
+const t0 = performance.now(); const t1 = performance.now();
+console.log(t0); // 1768.625000026077
+console.log(t1); // 1768.6300000059418
+const duration = t1 – t0; console.log(duration); // 0.004999979864805937
+```
+
+performance.now()计时器采用相对度量。这个计时器在执行上下文创建时从 0 开始计时。例如，打开页面或创建工作线程时， performance.now()就会从 0 开始计时。由于这个计时器在不同上下文中初始化时可能存在时间差，因此不同上下文之间如果没有共享参照点则不可能直接比较 performance.now()。 performance.timeOrigin 属性返回计时器初始化时全局系统时钟的值。
+
+```js
+const relativeTimestamp = performance.now();
+const absoluteTimestamp = performance.timeOrigin + relativeTimestamp;
+console.log(relativeTimestamp); // 244.43500000052154
+console.log(absoluteTimestamp); // 1561926208892.4001
+```
+
+### 20.10.2 Performance Timeline API
+
+Performance Timeline API 使用一套用于度量客户端延迟的工具扩展了 Performance 接口。性能度量将会采用计算结束与开始时间差的形式。这些开始和结束时间会被记录为 DOMHighResTimeStamp 值，而封装这个时间戳的对象是 PerformanceEntry 的实例。
+浏览器会自动记录各种 PerformanceEntry 对象，而使用 performance.mark()也可以记录自定义的 PerformanceEntry 对象。在一个执行上下文中被记录的所有性能条目可以通过 performance. getEntries()获取：
+
+```js
+console.log(performance.getEntries());
+// [PerformanceNavigationTiming, PerformanceResourceTiming, ... ]
+这个返回的集合代表浏览器的性能时间线（performance timeline）。每个 PerformanceEntry对象都有 name、entryType、startTime和 duration属性：
+const entry = performance.getEntries()[0];
+console.log(entry.name); // "https://foo.com"
+console.log(entry.entryType); // navigation
+console.log(entry.startTime); // 0
+console.log(entry.duration); // 182.36500001512468
+```
+
+不过， PerformanceEntry 实际上是一个抽象基类。所有记录条目虽然都继承 PerformanceEntry，但最终还是如下某个具体类的实例：
+
+- PerformanceMark
+
+- PerformanceMeasure
+
+- PerformanceFrameTiming
+
+- PerformanceNavigationTiming
+
+- PerformanceResourceTiming
+
+- PerformancePaintTiming
+
+上面每个类都会增加大量属性，用于描述与相应条目有关的元数据。每个实例的 name 和 entryType 属性会因为各自的类不同而不同。
+
+1. User Timing API
+
+User Timing API 用于记录和分析自定义性能条目。如前所述，记录自定义性能条目要使用 performance.mark()方法：
+
+```js
+performance.mark('foo');
+console.log(performance.getEntriesByType('mark')[0]); // PerformanceMark { // name: "foo", // entryType: "mark", // startTime: 269.8800000362098, // duration: 0 // }
+```
+
+在计算开始前和结束后各创建一个自定义性能条目可以计算时间差。最新的标记（ mark）会被推到 getEntriesByType()返回数组的开始：
+
+```js
+performance.mark('foo');
+for (let i = 0; i < 1e6; ++i) {}
+performance.mark('bar');
+const [endMark, startMark] = performance.getEntriesByType('mark');
+console.log(startMark.startTime - endMark.startTime); // 1.3299999991431832
+```
+
+除了自定义性能条目，还可以生成 PerformanceMeasure（性能度量）条目，对应由名字作为标识的两个标记之间的持续时间。 PerformanceMeasure 的实例由 performance.measure()方法生成：
+
+```js
+performance.mark('foo');
+for (let i = 0; i < 1e6; ++i) {}
+performance.mark('bar');
+performance.measure('baz', 'foo', 'bar');
+const [differenceMark] = performance.getEntriesByType('measure');
+console.log(differenceMark); // PerformanceMeasure { // name: "baz", // entryType: "measure", // startTime: 298.9800000214018, // duration: 1.349999976810068 // }
+```
+
+2. Navigation Timing API
+
+Navigation Timing API 提供了高精度时间戳，用于度量当前页面加载速度。浏览器会在导航事件发生时自动记录 PerformanceNavigationTiming 条目。这个对象会捕获大量时间戳，用于描述页面是何时以及如何加载的。
+下面的例子计算了 loadEventStart 和 loadEventEnd 时间戳之间的差：
+
+```js
+const [performanceNavigationTimingEntry] = performance.getEntriesByType('navigation');
+console.log(performanceNavigationTimingEntry); // PerformanceNavigationTiming { // connectEnd: 2.259999979287386 // connectStart: 2.259999979287386 // decodedBodySize: 122314 // domComplete: 631.9899999652989 // domContentLoadedEventEnd: 300.92499998863786 // domContentLoadedEventStart: 298.8950000144541 // domInteractive: 298.88499999651685 // domainLookupEnd: 2.259999979287386 // domainLookupStart: 2.259999979287386 // duration: 632.819999998901 // encodedBodySize: 21107 // entryType: "navigation" // fetchStart: 2.259999979287386 // initiatorType: "navigation" // loadEventEnd: 632.819999998901 // loadEventStart: 632.0149999810383 // name: " https://foo.com " // nextHopProtocol: "h2" // redirectCount: 0 // redirectEnd: 0 // redirectStart: 0 // requestStart: 7.7099999762140214 // responseEnd: 130.50999998813495 // responseStart: 127.16999999247491 // secureConnectionStart: 0 // serverTiming: [] // startTime: 0 // transferSize: 21806 // type: "navigate" // unloadEventEnd: 132.73999997181818 // unloadEventStart: 132.41999997990206 // workerStart: 0 // }
+console.log(performanceNavigationTimingEntry.loadEventEnd –
+performanceNavigationTimingEntry.loadEventStart);
+// 0.805000017862767
+```
+
+3. Resource Timing API
+
+Resource Timing API 提供了高精度时间戳，用于度量当前页面加载时请求资源的速度。浏览器会在加载资源时自动记录 PerformanceResourceTiming。这个对象会捕获大量时间戳，用于描述资源加载的速度。
+下面的例子计算了加载一个特定资源所花的时间：
+
+```js
+const performanceResourceTimingEntry = performance.getEntriesByType('resource')[0];
+console.log(performanceResourceTimingEntry); // PerformanceResourceTiming { // connectEnd: 138.11499997973442
+
+// connectStart: 138.11499997973442 // decodedBodySize: 33808 // domainLookupEnd: 138.11499997973442 // domainLookupStart: 138.11499997973442 // duration: 0 // encodedBodySize: 33808 // entryType: "resource" // fetchStart: 138.11499997973442 // initiatorType: "link" // name: "https://static.foo.com/bar.png", // nextHopProtocol: "h2" // redirectEnd: 0 // redirectStart: 0 // requestStart: 138.11499997973442 // responseEnd: 138.11499997973442 // responseStart: 138.11499997973442 // secureConnectionStart: 0 // serverTiming: [] // startTime: 138.11499997973442 // transferSize: 0 // workerStart: 0 // }
+console.log(performanceResourceTimingEntry.responseEnd –
+performanceResourceTimingEntry.requestStart);
+// 493.9600000507198
+```
+
+通过计算并分析不同时间的差，可以更全面地审视浏览器加载页面的过程，发现可能存在的性能瓶颈。
+
+## 20.11 Web 组件
+
+这里所说的 Web 组件指的是一套用于增强 DOM 行为的工具，包括影子 DOM、自定义元素和 HTML 模板。这一套浏览器 API 特别混乱。
+
+.并没有统一的“ Web Components”规范：每个 Web 组件都在一个不同的规范中定义。
+.有些 Web 组件如影子 DOM 和自定义元素，已经出现了向后不兼容的版本问题。 .浏览器实现极其不一致。由于存在这些问题，因此使用 Web 组件通常需要引入一个 Web 组件库，比如 Polymer。这种库可以作为腻子脚本，模拟浏览器中缺失的 Web 组件。
+
+### 20.11.1 HTML 模板
+
+在 Web 组件之前，一直缺少基于 HTML 解析构建 DOM 子树，然后在需要时再把这个子树渲染出来的机制。一种间接方案是使用 innerHTML 把标记字符串转换为 DOM 元素，但这种方式存在严重的安全隐患。另一种间接方案是使用 document.createElement()构建每个元素，然后逐个把它们添加到孤儿根节点（不是添加到 DOM），但这样做特别麻烦，完全与标记无关。
+相反，更好的方式是提前在页面中写出特殊标记，让浏览器自动将其解析为 DOM 子树，但跳过渲染。这正是 HTML 模板的核心思想，而 `<template>`标签正是为这个目的而生的。下面是一个简单的 HTML 模板的例子：
+
+```js
+<template id="foo">
+  {' '}
+  <p>I'm inside a template!</p>{' '}
+</template>
+```
+
+1. 使用 DocumentFragment
+
+在浏览器中渲染时，上面例子中的文本不会被渲染到页面上。因为 `<template>`的内容不属于活动文档，所以 document.querySelector()等 DOM 查询方法不会发现其中的 `<p>`标签。这是因为 `<p>`存在于一个包含在 HTML 模板中的 DocumentFragment 节点内。
+在浏览器中通过开发者工具检查网页内容时，可以看到 `<template>`中的 DocumentFragment：
+
+```html
+<template id="foo">
+  #document-fragment
+  <p>I'm inside a template!</p>
+</template>
+```
+
+通过`<template>`元素的 content 属性可以取得这个 DocumentFragment 的引用：
+
+```js
+console.log(document.querySelector('#foo').content); // #document-fragment
+```
+
+此时的 DocumentFragment 就像一个对应子树的最小化 document 对象。换句话说， DocumentFragment 上的 DOM 匹配方法可以查询其子树中的节点：
+
+```js
+const fragment = document.querySelector('#foo').content;
+console.log(document.querySelector('p')); // null
+console.log(fragment.querySelector('p')); // <p>...<p>
+```
+
+DocumentFragment 也是批量向 HTML 中添加元素的高效工具。比如，我们想以最快的方式给某个 HTML 元素添加多个子元素。如果连续调用 document.appendChild()，则不仅费事，还会导致多次布局重排。而使用 DocumentFragment 可以一次性添加所有子节点，最多只会有一次布局重排：
+
+```js
+// 开始状态： // <div id="foo"></div> // // 期待的最终状态： // <div id="foo"> // <p></p> // <p></p> // <p></p> // </div> // 也可以使用 document.createDocumentFragment() const fragment = new DocumentFragment();
+const foo = document.querySelector('#foo');
+// 为 DocumentFragment添加子元素不会导致布局重排 fragment.appendChild(document.createElement('p')); fragment.appendChild(document.createElement('p')); fragment.appendChild(document.createElement('p'));
+console.log(fragment.children.length); // 3
+foo.appendChild(fragment);
+
+console.log(fragment.children.length); // 0
+console.log(document.body.innerHTML); // <div id="foo"> // <p></p> // <p></p> // <p></p> // </div>
+```
+
+2. 使用`<template>`标签
+
+注意，在前面的例子中， DocumentFragment 的所有子节点都高效地转移到了 foo 元素上，转移之后 DocumentFragment 变空了。同样的过程也可以使用 `<template>`标签重现：
+
+```js
+const fooElement = document.querySelector('#foo');
+const barTemplate = document.querySelector('#bar');
+const barFragment = barTemplate.content;
+console.log(document.body.innerHTML); // <div id="foo"> // </div> // <template id="bar">
+
+// <p></p> // <p></p> // <p></p>
+// </template>
+fooElement.appendChild(barFragment);
+console.log(document.body.innerHTML); // <div id="foo">
+// <p></p> // <p></p> // <p></p>
+// </div> // <tempate id="bar"></template>
+```
+
+如果想要复制模板，可以使用 importNode()方法克隆 DocumentFragment：
+
+```js
+const fooElement = document.querySelector('#foo'); const barTemplate = document.querySelector('#bar'); const barFragment = barTemplate.content;
+console.log(document.body.innerHTML); // <div id="foo"> // </div> // <template id="bar"> // <p></p> // <p></p> // <p></p> // </template>
+fooElement.appendChild(document.importNode(barFragment, true));
+console.log(document.body.innerHTML); // <div id="foo">
+// <p></p> // <p></p> // <p></p>
+20.11 Web组件 651
+// </div> // <template id="bar">
+// <p></p> // <p></p> // <p></p>
+// </template>
+```
+
+3. 模板脚本
+
+脚本执行可以推迟到将 DocumentFragment 的内容实际添加到 DOM 树。下面的例子演示了这个过程：
+
+```js
+// 页面 HTML： // // <div id="foo"></div> // <template id="bar"> // <script>console.log('Template script executed');</script> // </template>
+const fooElement = document.querySelector('#foo');
+const barTemplate = document.querySelector('#bar');
+const barFragment = barTemplate.content;
+console.log('About to add template');
+fooElement.appendChild(barFragment);
+console.log('Added template');
+// About to add template
+// Template script executed
+// Added template
+```
+
+如果新添加的元素需要进行某些初始化，这种延迟执行是有用的。
+
+### 20.11.2 影子 DOM
+
+概念上讲，影子 DOM（shadow DOM） Web 组件相当直观，通过它可以将一个完整的 DOM 树作为节点添加到父 DOM 树。这样可以实现 DOM 封装，意味着 CSS 样式和 CSS 选择符可以限制在影子 DOM 子树而不是整个顶级 DOM 树中。
+影子 DOM 与 HTML 模板很相似，因为它们都是类似 document 的结构，并允许与顶级 DOM 有一定程度的分离。不过，影子 DOM 与 HTML 模板还是有区别的，主要表现在影子 DOM 的内容会实际渲染到页面上，而 HTML 模板的内容不会。
+
+1. 理解影子 DOM
+
+假设有以下 HTML 标记，其中包含多个类似的 DOM 子树：
+
+```js
+<div>
+<p>Make me red!</p> </div> <div>
+<p>Make me blue!</p> </div> <div>
+<p>Make me green!</p> </div>
+```
+
+从其中的文本节点可以推断出，这 3 个 DOM 子树会分别渲染为不同的颜色。常规情况下，为了给每个子树应用唯一的样式，又不使用 style 属性，就需要给每个子树添加一个唯一的类名，然后通过相应的选择符为它们添加样式：
+
+```js
+<div class="red-text">
+<p>Make me red!</p> </div> <div class="green-text">
+<p>Make me green!</p> </div> <div class="blue-text">
+<p>Make me blue!</p> </div>
+<style> .red-text {
+color: red; } .green-text {
+color: green; } .blue-text {
+color: blue; } </style>
+```
+
+当然，这个方案也不是十分理想，因为这跟在全局命名空间中定义变量没有太大区别。尽管知道这些样式与其他地方无关，所有 CSS 样式还会应用到整个 DOM。为此，就要保持 CSS 选择符足够特别，以防这些样式渗透到其他地方。但这也仅是一个折中的办法而已。理想情况下，应该能够把 CSS 限制在使用它们的 DOM 上：这正是影子 DOM 最初的使用场景。
+
+2. 创建影子 DOM
+   考虑到安全及避免影子 DOM 冲突，并非所有元素都可以包含影子 DOM。尝试给无效元素或者已经有了影子 DOM 的元素添加影子 DOM 会导致抛出错误。以下是可以容纳影子 DOM 的元素。
+
+- 任何以有效名称创建的自定义元素（参见 HTML 规范中相关的定义）
+- `<article>`
+- `<aside>`
+- `<blockquote>`
+- `<body>`
+- `<div>`
+- `<footer>`
+- `<h1>`
+- `<h2>`
+- `<h3>`
+- `<h4>`
+- `<h5>`
+- `<h6>`
+- `<header>`
+- `<main>`
+- `<nav>`
+- `<p>`
+- `<section>`
+- `<span>`
+
+影子 DOM 是通过 attachShadow()方法创建并添加给有效 HTML 元素的。容纳影子 DOM 的元素被称为影子宿主（shadow host）。影子 DOM 的根节点被称为影子根（shadow root）。
+
+attachShadow()方法需要一个 shadowRootInit 对象，返回影子 DOM 的实例。 shadowRootInit 对象必须包含一个 mode 属性，值为"open"或"closed"。对 "open"影子 DOM 的引用可以通过 shadowRoot 属性在 HTML 元素上获得，而对 "closed"影子 DOM 的引用无法这样获取。
+
+下面的代码演示了不同 mode 的区别：
+
+```js
+document.body.innerHTML = ` <div id="foo"></div> <div id="bar"></div> `;
+const foo = document.querySelector('#foo');
+const bar = document.querySelector('#bar');
+const openShadowDOM = foo.attachShadow({ mode: 'open' });
+const closedShadowDOM = bar.attachShadow({ mode: 'closed' });
+console.log(openShadowDOM); // #shadow-root (open)
+console.log(closedShadowDOM); // #shadow-root (closed)
+console.log(foo.shadowRoot); // #shadow-root (open)
+console.log(bar.shadowRoot); // null
+```
+
+一般来说，需要创建保密（ closed）影子 DOM 的场景很少。虽然这可以限制通过影子宿主访问影子 DOM，但恶意代码有很多方法绕过这个限制，恢复对影子 DOM 的访问。简言之，不能为了安全而创建保密影子 DOM。
+
+3. 使用影子 DOM
+
+把影子 DOM 添加到元素之后，可以像使用常规 DOM 一样使用影子 DOM。来看下面的例子，这里重新创建了前面红 /绿/蓝子树的示例：
+
+```js
+for (let color of ['red', 'green', 'blue']) {
+  const div = document.createElement('div');
+  const shadowDOM = div.attachShadow({ mode: 'open' });
+  document.body.appendChild(div);
+  shadowDOM.innerHTML = ` <p>Make me ${color}</p> 
+<style> p { 
+color: ${color}; } </style> 
+`;
+}
+```
+
+虽然这里使用相同的选择符应用了 3 种不同的颜色，但每个选择符只会把样式应用到它们所在的影子 DOM 上。为此， 3 个<p>元素会出现 3 种不同的颜色。可以这样验证这些元素分别位于它们自己的影子 DOM 中：
+
+```js
+for (let color of ['red', 'green', 'blue']) {
+  const div = document.createElement('div');
+  const shadowDOM = div.attachShadow({ mode: 'open' });
+  document.body.appendChild(div);
+  shadowDOM.innerHTML = ` <p>Make me ${color}</p> 
+<style> p { 
+color: ${color}; } </style> 
+`;
+}
+function countP(node) {
+  console.log(node.querySelectorAll('p').length);
+}
+countP(document); // 0
+for (let element of document.querySelectorAll('div')) {
+  countP(element.shadowRoot);
+}
+// 1 // 1 // 1
+```
+
+在浏览器开发者工具中可以更清楚地看到影子 DOM。例如，前面的例子在浏览器检查窗口中会显示成这样：
+
+```html
+<body>
+  <div>
+    #shadow-root (open)
+    <p>Make me red!</p>
+    <style>
+      p {
+        color: red;
+      }
+    </style>
+  </div>
+  <div>
+    #shadow-root (open)
+    <p>Make me green!</p>
+    <style>
+      p {
+        color: green;
+      }
+    </style>
+  </div>
+  <div>
+    #shadow-root (open)
+    <p>Make me blue!</p>
+    <style>
+      p {
+        color: blue;
+      }
+    </style>
+  </div>
+</body>
+```
+
+影子 DOM 并非铁板一块。 HTML 元素可以在 DOM 树间无限制移动：
+
+```js
+document.body.innerHTML = ` <div></div> <p id="foo">Move me</p> `;
+const divElement = document.querySelector('div');
+const pElement = document.querySelector('p');
+const shadowDOM = divElement.attachShadow({ mode: 'open' });
+// 从父 DOM中移除元素
+divElement.parentElement.removeChild(pElement);
+// 把元素添加到影子 DOM
+shadowDOM.appendChild(pElement);
+// 检查元素是否移动到了影子 DOM中
+console.log(shadowDOM.innerHTML); // <p id="foo">Move me</p>
+```
+
+4. 合成与影子 DOM 槽位
+
+影子 DOM 是为自定义 Web 组件设计的，为此需要支持嵌套 DOM 片段。从概念上讲，可以这么说：位于影子宿主中的 HTML 需要一种机制以渲染到影子 DOM 中去，但这些 HTML 又不必属于影子 DOM 树。
+
+默认情况下，嵌套内容会隐藏。来看下面的例子，其中的文本在 1000 毫秒后会被隐藏：
+
+```js
+document.body.innerHTML = ` <div> 
+<p>Foo</p> </div> `;
+setTimeout(
+  () => document.querySelector('div').attachShadow({ mode: 'open' }),
+  1000
+);
+```
+
+影子 DOM 一添加到元素中，浏览器就会赋予它最高优先级，优先渲染它的内容而不是原来的文本。在这个例子中，由于影子 DOM 是空的，因此 <div>会在 1000 毫秒后变成空的。为了显示文本内容，需要使用 <slot>标签指示浏览器在哪里放置原来的 HTML。下面的代码修改了前面的例子，让影子宿主中的文本出现在了影子 DOM 中：
+
+```js
+document.body.innerHTML = ` <div id="foo"> 
+<p>Foo</p> </div> `;
+
+document
+  .querySelector('div')
+  .attachShadow({ mode: 'open' }).innerHTML = `<div id="bar"> 
+<slot></slot> 
+<div>`;
+```
+
+现在，投射进去的内容就像自己存在于影子 DOM 中一样。检查页面会发现原来的内容实际上替代了<slot>：
+
+```js
+<body>
+  {' '}
+  <div id="foo">
+    {' '}
+    #shadow-root (open) <div id="bar">
+      <p>Foo</p>
+    </div>
+  </div>
+</body>
+```
+
+注意，虽然在页面检查窗口中看到内容在影子 DOM 中，但这实际上只是 DOM 内容的投射（projection）。实际的元素仍然处于外部 DOM 中：
+
+```js
+document.body.innerHTML = ` 
+<div id="foo"> <p>Foo</p> 
+</div> 
+`;
+document.querySelector('div').attachShadow({ mode: 'open' }).innerHTML = ` 
+<div id="bar"> <slot></slot> </div>`;
+console.log(document.querySelector('p').parentElement);
+// <div id="foo"></div>
+```
+
+下面是使用槽位（ slot）改写的前面红 /绿/蓝子树的例子：
+
+```js
+for (let color of ['red', 'green', 'blue']) {
+  const divElement = document.createElement('div');
+  divElement.innerText = `Make me ${color}`;
+  document.body.appendChild(divElement);
+  divElement.attachShadow({ mode: 'open' }).innerHTML = ` <p><slot></slot></p> 
+<style> p { color: ${color}; 
+} </style> `;
+}
+```
+
+除了默认槽位，还可以使用命名槽位（named slot）实现多个投射。这是通过匹配的 slot/name 属性对实现的。带有 slot="foo"属性的元素会被投射到带有 name="foo"的<slot>上。下面的例子演示了如何改变影子宿主子元素的渲染顺序：
+
+```js
+document.body.innerHTML = ` <div> 
+<p slot="foo">Foo</p> <p slot="bar">Bar</p> 
+</div> `;
+document.querySelector('div').attachShadow({ mode: 'open' }).innerHTML = ` 
+<slot name="bar"></slot> <slot name="foo"></slot> 
+`;
+// Renders:
+// Bar // Foo
+```
+
+5. 事件重定向
+
+如果影子 DOM 中发生了浏览器事件（如 click），那么浏览器需要一种方式以让父 DOM 处理事件。不过，实现也必须考虑影子 DOM 的边界。为此，事件会逃出影子 DOM 并经过事件重定向（event retarget）在外部被处理。逃出后，事件就好像是由影子宿主本身而非真正的包装元素触发的一样。下面的代码演示了这个过程：
+
+```js
+// 创建一个元素作为影子宿主 document.body.innerHTML = ` <div onclick="console.log('Handled outside:', event.target)"></div> `;
+// 添加影子 DOM并向其中插入 HTML
+document.querySelector('div').attachShadow({ mode: 'open' }).innerHTML = ` 
+<button onclick="console.log('Handled inside:', event.target)">Foo</button> `;
+// 点击按钮时：
+// Handled inside: <button onclick="..."></button> // Handled outside: <div onclick="..."></div>
+```
+
+注意，事件重定向只会发生在影子 DOM 中实际存在的元素上。使用 <slot>标签从外部投射进来的元素不会发生事件重定向，因为从技术上讲，这些元素仍然存在于影子 DOM 外部。
+
+### 20.11.3 自定义元素
+
+如果你使用 JavaScript 框架，那么很可能熟悉自定义元素的概念。这是因为所有主流框架都以某种形式提供了这个特性。自定义元素为 HTML 元素引入了面向对象编程的风格。基于这种风格，可以创建自定义的、复杂的和可重用的元素，而且只要使用简单的 HTML 标签或属性就可以创建相应的实例。
+
+1. 创建自定义元素
+
+浏览器会尝试将无法识别的元素作为通用元素整合进 DOM。当然，这些元素默认也不会做任何通
+
+用 HTML 元素不能做的事。来看下面的例子，其中胡乱编的 HTML 标签会变成一个 HTMLElement 实例：
+
+```js
+document.body.innerHTML = ` 
+<x-foo >I'm inside a nonsense element.</x-foo > 
+`;
+console.log(document.querySelector('x-foo') instanceof HTMLElement); // true
+```
+
+自定义元素在此基础上更进一步。利用自定义元素，可以在 <x-foo>标签出现时为它定义复杂的行为，同样也可以在 DOM 中将其纳入元素生命周期管理。自定义元素要使用全局属性 customElements，这个属性会返回 CustomElementRegistry 对象。
+
+```js
+console.log(customElements); // CustomElementRegistry {}
+```
+
+调用 customElements.define()方法可以创建自定义元素。下面的代码创建了一个简单的自定义元素，这个元素继承 HTMLElement：
+
+```js
+class FooElement extends HTMLElement {}
+customElements.define('x-foo', FooElement);
+document.body.innerHTML = ` <x-foo >I'm inside a nonsense element.</x-foo > `;
+console.log(document.querySelector('x-foo') instanceof FooElement); // true
+```
+
+自定义元素的威力源自类定义。例如，可以通过调用自定义元素的构造函数来控制这个类在 DOM 中每个实例的行为：
+
+```js
+class FooElement extends HTMLElement {
+  constructor() {
+    super();
+    console.log('x-foo');
+  }
+}
+customElements.define('x-foo', FooElement);
+document.body.innerHTML = ` <x-foo></x-foo> <x-foo></x-foo> <x-foo></x-foo> `;
+// x-foo // x-foo // x-foo
+```
+
+如果自定义元素继承了一个元素类，那么可以使用 is 属性和 extends 选项将标签指定为该自定义元素的实例：
+
+```js
+class FooElement extends HTMLDivElement {
+  constructor() {
+    super();
+    console.log('x-foo');
+  }
+}
+customElements.define('x-foo', FooElement, { extends: 'div' });
+document.body.innerHTML = ` <div is="x-foo"></div> <div is="x-foo"></div> <div is="x-foo"></div> `;
+// x-foo // x-foo // x-foo
+```
+
+2. 添加 Web 组件内容
+
+因为每次将自定义元素添加到 DOM 中都会调用其类构造函数，所以很容易自动给自定义元素添加子 DOM 内容。虽然不能在构造函数中添加子 DOM（会抛出 DOMException），但可以为自定义元素添加影子 DOM 并将内容添加到这个影子 DOM 中：
+
+```js
+class FooElement extends HTMLElement {
+  constructor() {
+    super();
+    // this引用 Web组件节点
+    this.attachShadow({ mode: 'open' });
+    this.shadowRoot.innerHTML = ` <p>I'm inside a custom element!</p> `;
+  }
+}
+customElements.define('x-foo', FooElement);
+document.body.innerHTML += `<x-foo></x-foo`;
+// 结果 DOM： // <body> // <x-foo>
+// #shadow-root (open) // <p>I'm inside a custom element!</p>
+// <x-foo> // </body>
+```
+
+为避免字符串模板和 innerHTML 不干净，可以使用 HTML 模板和 document.createElement()重构这个例子：
+
+```js
+//（初始的 HTML） // <template id="x-foo-tpl"> // <p>I'm inside a custom element template!</p> // </template>
+
+const template = document.querySelector('#x-foo-tpl');
+class FooElement extends HTMLElement {
+  constructor() {
+    super();
+    this.attachShadow({ mode: 'open' });
+    this.shadowRoot.appendChild(template.content.cloneNode(true));
+  }
+}
+customElements.define('x-foo', FooElement);
+document.body.innerHTML += `<x-foo></x-foo`;
+// 结果 DOM： // <body> // <template id="x-foo-tpl"> // <p>I'm inside a custom element template!</p> // </template> // <x-foo>
+// #shadow-root (open) // <p>I'm inside a custom element template!</p>
+// <x-foo> // </body>
+```
+
+这样可以在自定义元素中实现高度的 HTML 和代码重用，以及 DOM 封装。使用这种模式能够自由创建可重用的组件而不必担心外部 CSS 污染组件的样式。 3. 使用自定义元素生命周期方法可以在自定义元素的不同生命周期执行代码。带有相应名称的自定义元素类的实例方法会在不同生命周期阶段被调用。自定义元素有以下 5 个生命周期方法。
+
+- constructor()：在创建元素实例或将已有 DOM 元素升级为自定义元素时调用。
+
+- connectedCallback()：在每次将这个自定义元素实例添加到 DOM 中时调用。
+
+- disconnectedCallback()：在每次将这个自定义元素实例从 DOM 中移除时调用。
+
+- attributeChangedCallback()：在每次可观察属性的值发生变化时调用。在元素实例初始化时，初始值的定义也算一次变化。
+
+- adoptedCallback()：在通过 document.adoptNode()将这个自定义元素实例移动到新文档
+
+对象时调用。下面的例子演示了这些构建、连接和断开连接的回调：
+
+```js
+class FooElement extends HTMLElement {
+  constructor() {
+    super();
+    console.log('ctor');
+  }
+  connectedCallback() {
+    console.log('connected');
+  }
+  disconnectedCallback() {
+    console.log('disconnected');
+  }
+}
+customElements.define('x-foo', FooElement);
+const fooElement = document.createElement('x-foo');
+// ctor
+document.body.appendChild(fooElement);
+// connected
+document.body.removeChild(fooElement);
+// disconnected
+```
+
+4. 反射自定义元素属性
+
+自定义元素既是 DOM 实体又是 JavaScript 对象，因此两者之间应该同步变化。换句话说，对 DOM 的修改应该反映到 JavaScript 对象，反之亦然。要从 JavaScript 对象反射到 DOM，常见的方式是使用获取函数和设置函数。下面的例子演示了在 JavaScript 对象和 DOM 之间反射 bar 属性的过程：
+
+```js
+document.body.innerHTML = `<x-foo></x-foo>`;
+class FooElement extends HTMLElement {
+  constructor() {
+    super();
+    this.bar = true;
+  }
+  get bar() {
+    return this.getAttribute('bar');
+  }
+  set bar(value) {
+    this.setAttribute('bar', value);
+  }
+}
+customElements.define('x-foo', FooElement);
+console.log(document.body.innerHTML);
+// <x-foo bar="true"></x-foo>
+```
+
+另一个方向的反射（从 DOM 到 JavaScript 对象）需要给相应的属性添加监听器。为此，可以使用 observedAttributes()获取函数让自定义元素的属性值每次改变时都调用 attributeChanged-Callback()：
+
+```js
+class FooElement extends HTMLElement {
+  static get observedAttributes() {
+    // 返回应该触发 attributeChangedCallback()执行的属性
+    return ['bar'];
+  }
+  get bar() {
+    return this.getAttribute('bar');
+  }
+  set bar(value) {
+    this.setAttribute('bar', value);
+  }
+
+  attributeChangedCallback(name, oldValue, newValue) {
+    if (oldValue !== newValue) {
+      console.log(`${oldValue} -> ${newValue}`);
+      this[name] = newValue;
+    }
+  }
+}
+customElements.define('x-foo', FooElement);
+document.body.innerHTML = `<x-foo bar="false"></x-foo>`;
+// null -> false
+document.querySelector('x-foo').setAttribute('bar', true);
+// false -> true
+```
+
+5. 升级自定义元素
+
+并非始终可以先定义自定义元素，然后再在 DOM 中使用相应的元素标签。为解决这个先后次序问题，Web 组件在 CustomElementRegistry 上额外暴露了一些方法。这些方法可以用来检测自定义元素是否定义完成，然后可以用它来升级已有元素。
+如果自定义元素已经有定义，那么 CustomElementRegistry.get()方法会返回相应自定义元素的类。类似地， CustomElementRegistry.whenDefined()方法会返回一个期约，当相应自定义元素有定义之后解决：
+
+```js
+customElements.whenDefined('x-foo').then(() => console.log('defined!'));
+console.log(customElements.get('x-foo')); // undefined customElements.define('x-foo', class {});
+// defined!
+console.log(customElements.get('x-foo')); // class FooElement {}
+```
+
+连接到 DOM 的元素在自定义元素有定义时会自动升级。如果想在元素连接到 DOM 之前强制升级，可以使用 CustomElementRegistry.upgrade()方法： // 在自定义元素有定义之前会创建 HTMLUnknownElement 对象
+
+```js
+const fooElement = document.createElement('x-foo');
+// 创建自定义元素 class FooElement extends HTMLElement {} customElements.define('x-foo', FooElement);
+console.log(fooElement instanceof FooElement); // false
+// 强制升级
+customElements.upgrade(fooElement);
+console.log(fooElement instanceof FooElement); // true
+```
+
+## 20.12 Web Cryptography API
+
+Web Cryptography API 描述了一套密码学工具，规范了 JavaScript 如何以安全和符合惯例的方式实现加密。这些工具包括生成、使用和应用加密密钥对，加密和解密消息，以及可靠地生成随机数。
+
+### 20.12.1 生成随机数
+
+在需要生成随机值时，很多人会使用 Math.random()。这个方法在浏览器中是以伪随机数生成器
+（PRNG，PseudoRandom Number Generator）方式实现的。所谓“伪”指的是生成值的过程不是真的随机。 PRNG 生成的值只是模拟了随机的特性。浏览器的 PRNG 并未使用真正的随机源，只是对一个内部状态应用了固定的算法。每次调用 Math.random()，这个内部状态都会被一个算法修改，而结果会被转换为一个新的随机值。例如， V8 引擎使用了一个名为 xorshift128+的算法来执行这种修改。
+由于算法本身是固定的，其输入只是之前的状态，因此随机数顺序也是确定的。 xorshift128+使用 128 位内部状态，而算法的设计让任何初始状态在重复自身之前都会产生 2128–1 个伪随机值。这种循环被称为置换循环（permutation cycle），而这个循环的长度被称为一个周期（period）。很明显，如果攻击者知道 PRNG 的内部状态，就可以预测后续生成的伪随机值。如果开发者无意中使用 PRNG 生成了私有密钥用于加密，则攻击者就可以利用 PRNG 的这个特性算出私有密钥。
+伪随机数生成器主要用于快速计算出看起来随机的值。不过并不适合用于加密计算。为解决这个问题，密码学安全伪随机数生成器（CSPRNG，Cryptographically Secure PseudoRandom Number Generator）额外增加了一个熵作为输入，例如测试硬件时间或其他无法预计行为的系统特性。这样一来，计算速度明显比常规 PRNG 慢很多，但 CSPRNG 生成的值就很难预测，可以用于加密了。
+Web Cryptography API 引入了 CSPRNG，这个 CSPRNG 可以通过 crypto.getRandomValues()在全局 Crypto 对象上访问。与 Math.random()返回一个介于 0 和 1 之间的浮点数不同， getRandomValues()会把随机值写入作为参数传给它的定型数组。定型数组的类不重要，因为底层缓冲区会被随机的二进制位填充。
+下面的例子展示了生成 5 个 8 位随机值：
+
+```js
+const array = new Uint8Array(1);
+for (let i=0; i<5; ++i) { console.log(crypto.getRandomValues(array)); }
+// Uint8Array [41] // Uint8Array [250] // Uint8Array [51] // Uint8Array [129] // Uint8Array [35]
+getRandomValues()最多可以生成 216（65 536）字节，超出则会抛出错误：
+
+const fooArray = new Uint8Array(2 ** 16); console.log(window.crypto.getRandomValues(fooArray)); // Uint32Array(16384) [...]
+const barArray = new Uint8Array((2 ** 16) + 1); console.log(window.crypto.getRandomValues(barArray)); // Error
+```
+
+要使用 CSPRNG 重新实现 Math.random()，可以通过生成一个随机的 32 位数值，然后用它去除最大的可能值 0xFFFFFFFF。这样就会得到一个介于 0 和 1 之间的值：
+
+```js
+function randomFloat() {
+  // 生成 32位随机值
+  const fooArray = new Uint32Array(1);
+  // 最大值是 2^32 –1
+  const maxUint32 = 0xffffffff;
+  // 用最大可能的值来除
+  return crypto.getRandomValues(fooArray)[0] / maxUint32;
+}
+console.log(randomFloat()); // 0.5033651619458955
+```
+
+### 20.12.2 使用 SubtleCrypto 对象
+
+Web Cryptography API 重头特性都暴露在了 SubtleCrypto 对象上，可以通过 window.crypto. subtle 访问：
+
+```js
+console.log(crypto.subtle); // SubtleCrypto {}
+```
+
+这个对象包含一组方法，用于执行常见的密码学功能，如加密、散列、签名和生成密钥。因为所有密码学操作都在原始二进制数据上执行，所以 SubtleCrypto 的每个方法都要用到 ArrayBuffer 和 ArrayBufferView 类型。由于字符串是密码学操作的重要应用场景，因此 TextEncoder 和 TextDecoder 是经常与 SubtleCrypto 一起使用的类，用于实现二进制数据与字符串之间的相互转换。
+
+1. 生成密码学摘要
+
+计算数据的密码学摘要是非常常用的密码学操作。这个规范支持 4 种摘要算法： SHA-1 和 3 种 SHA-2。
+
+- SHA-1（Secure Hash Algorithm 1）：架构类似 MD5 的散列函数。接收任意大小的输入，生成 160 位消息散列。由于容易受到碰撞攻击，这个算法已经不再安全。
+
+- SHA-2（Secure Hash Algorithm 2）：构建于相同耐碰撞单向压缩函数之上的一套散列函数。规范支持其中 3 种：SHA-256、SHA-384 和 SHA-512。生成的消息摘要可以是 256 位（SHA-256）、 384 位（SHA-384）或 512 位（SHA-512）。这个算法被认为是安全的，广泛应用于很多领域和协议，包括 TLS、PGP 和加密货币（如比特币）。
+  SubtleCrypto.digest()方法用于生成消息摘要。要使用的散列算法通过字符串 "SHA-1"、 "SHA-256"、"SHA-384"或"SHA-512"指定。下面的代码展示了一个使用 SHA-256 为字符串 "foo"生成消息摘要的例子：
+
+```js
+(async function () {
+  const textEncoder = new TextEncoder();
+  const message = textEncoder.encode('foo');
+  const messageDigest = await crypto.subtle.digest('SHA-256', message);
+  console.log(new Uint32Array(messageDigest));
+})();
+// Uint32Array(8) [1806968364, 2412183400, 1011194873, 876687389, // 1882014227, 2696905572, 2287897337, 2934400610]
+```
+
+通常，在使用时，二进制的消息摘要会转换为十六进制字符串格式。通过将二进制数据按 8 位进行
+分割，然后再调用 toString(16)就可以把任何数组缓冲区转换为十六进制字符串：
+
+```js
+(async function () {
+  const textEncoder = new TextEncoder();
+  const message = textEncoder.encode('foo');
+  const messageDigest = await crypto.subtle.digest('SHA-256', message);
+  const hexDigest = Array.from(new Uint8Array(messageDigest))
+    .map((x) => x.toString(16).padStart(2, '0'))
+    .join('');
+  console.log(hexDigest);
+})();
+// 2c26b46b68ffc68ff99b453c1d30413413422d706483bfa0f98a5e886266e7ae
+```
+
+软件公司通常会公开自己软件二进制安装包的摘要，以便用户验证自己下载到的确实是该公司发布的版本（而不是被恶意软件篡改过的版本）。下面的例子演示了下载 Firefox v67.0，通过 SHA-512 计算其散列，再下载其 SHA-512 二进制验证摘要，最后检查两个十六进制字符串匹配：
+
+```js
+(async function() { const mozillaCdnUrl = '// download-
+origin.cdn.mozilla.net/pub/firefox/releases/67.0 /'; const firefoxBinaryFilename = 'linux-x86_64/en-US/firefox-67.0.tar.bz2'; const firefoxShaFilename = 'SHA512SUMS';
+console.log('Fetching Firefox binary...'); const fileArrayBuffer = await (await fetch(mozillaCdnUrl + firefoxBinaryFilename)) .arrayBuffer();
+console.log('Calculating Firefox digest...'); const firefoxBinaryDigest = await crypto.subtle.digest('SHA-512', fileArrayBuffer); const firefoxHexDigest = Array.from(new Uint8Array(firefoxBinaryDigest))
+.map((x) => x.toString(16).padStart(2, '0')) .join('');
+console.log('Fetching published binary digests...'); // SHA文件包含此次发布的所有 Firefox二进制文件的摘要， // 因此要根据其格式进制拆分
+const shaPairs = (await (await fetch(mozillaCdnUrl + firefoxShaFilename)).text())
+.split(/\n/).map((x) => x.split(/\s+/));
+let verified = false;
+
+console.log('Checking calculated digest against published digests...'); for (const [sha, filename] of shaPairs) { if (filename === firefoxBinaryFilename) {
+if (sha === firefoxHexDigest) { verified = true; break;
+} } }
+console.log('Verified:', verified); })();
+// Fetching Firefox binary... // Calculating Firefox digest... // Fetching published binary digests... // Checking calculated digest against published digests... // Verified: true
+```
+
+2. CryptoKey 与算法
+
+如果没了密钥，那密码学也就没什么意义了。 SubtleCrypto 对象使用 CryptoKey 类的实例来生成密钥。CryptoKey 类支持多种加密算法，允许控制密钥抽取和使用。 CryptoKey 类支持以下算法，按各自的父密码系统归类。
+
+- RSA（Rivest-Shamir-Adleman）：公钥密码系统，使用两个大素数获得一对公钥和私钥，可用于签名/验证或加密 /解密消息。 RSA 的陷门函数被称为分解难题（factoring problem）。
+- RSASSA-PKCS1-v1_5：RSA 的一个应用，用于使用私钥给消息签名，允许使用公钥验证签名。
+  . SSA（Signature Schemes with Appendix），表示算法支持签名生成和验证操作。
+  . PKCS1（Public-Key Cryptography Standards #1）表示算法展示出的 RSA 密钥必需的数学特性。 . RSASSA-PKCS1-v1_5 是确定性的，意味着同样的，消息和密钥每次都会生成相同的签名。
+
+- RSA-PSS：RSA 的另一个应用，用于签名和验证消息。
+  . PSS（Probabilistic Signature Scheme），表示生成签名时会加盐以得到随机签名。 .与 RSASSA-PKCS1-v1_5 不同，同样的消息和密钥每次都会生成不同的签名。
+  .与 RSASSA-PKCS1-v1_5 不同， RSA-PSS 有可能约简到 RSA 分解难题的难度。
+
+.通常，虽然 RSASSA-PKCS1-v1_5 仍被认为是安全的，但 RSA-PSS 应该用于代替 RSASSA-PKCS1-v1_5。
+
+- RSA-OAEP：RSA 的一个应用，用于使用公钥加密消息，用私钥来解密。
+  . OAEP（Optimal Asymmetric Encryption Padding），表示算法利用了 Feistel 网络在加密前处理未加密的消息。
+  . OAEP 主要将确定性 RSA 加密模式转换为概率性加密模式。
+
+- ECC（Elliptic-Curve Cryptography）：公钥密码系统，使用一个素数和一个椭圆曲线获得一对公钥和私钥，可用于签名 /验证消息。 ECC 的陷门函数被称为椭圆曲线离散对数问题（elliptic curve discrete logarithm problem）。ECC 被认为优于 RSA。虽然 RSA 和 ECC 在密码学意义上都很强，但 ECC 密钥比 RSA 密钥短，而且 ECC 密码学操作比 RSA 操作快。
+
+- ECDSA（Elliptic Curve Digital Signature Algorithm）：ECC 的一个应用，用于签名和验证消息。这个算法是数字签名算法（DSA，Digital Signature Algorithm）的一个椭圆曲线风格的变体。
+
+- ECDH（Elliptic Curve Diffie-Hellman）：ECC 的密钥生成和密钥协商应用，允许两方通过公开通信渠道建立共享的机密。这个算法是 Diffie-Hellman 密钥交换（DH，Diffie-Hellman key exchange）协议的一个椭圆曲线风格的变体。
+
+- AES（Advanced Encryption Standard）：对称密钥密码系统，使用派生自置换组合网络的分组密码加密和解密数据。 AES 在不同模式下使用，不同模式算法的特性也不同。
+
+- AES-CTR：AES 的计数器模式（counter mode）。这个模式使用递增计数器生成其密钥流，其行为类似密文流。使用时必须为其提供一个随机数，用作初始化向量。 AES-CTR 加密/解密可以并行。
+
+- AES-CBC：AES 的密码分组链模式（cipher block chaining mode）。在加密纯文本的每个分组之前，先使用之前密文分组求 XOR，也就是名字中的“链”。使用一个初始化向量作为第一个分组的 XOR 输入。
+
+- AES-GCM：AES 的伽罗瓦/计数器模式（Galois/Counter mode）。这个模式使用计数器和初始化向量生成一个值，这个值会与每个分组的纯文本计算 XOR。与 CBC 不同，这个模式的 XOR 输入不依赖之前分组密文。因此 GCM 模式可以并行。由于其卓越的性能， AES-GCM 在很多网络安全协议中得到了应用。
+
+- AES-KW：AES 的密钥包装模式（key wrapping mode）。这个算法将加密密钥包装为一个可移植且加密的格式，可以在不信任的渠道中传输。传输之后，接收方可以解包密钥。与其他 AES 模式不同，AES-KW 不需要初始化向量。
+
+- HMAC（Hash-Based Message Authentication Code）：用于生成消息认证码的算法，用于验证通过不可信网络接收的消息没有被修改过。两方使用散列函数和共享私钥来签名和验证消息。
+
+- KDF（Key Derivation Functions）：可以使用散列函数从主密钥获得一个或多个密钥的算法。 KDF 能够生成不同长度的密钥，也能把密钥转换为不同格式。
+
+- HKDF（HMAC-Based Key Derivation Function）：密钥推导函数，与高熵输入（如已有密钥）一起使用。
+
+- PBKDF2（Password-Based Key Derivation Function 2）：密钥推导函数，与低熵输入（如密钥字符串）一起使用。
+
+3. 生成 CryptoKey
+
+使用 SubtleCrypto.generateKey()方法可以生成随机 CryptoKey，这个方法返回一个期约，解决为一个或多个 CryptoKey 实例。使用时需要给这个方法传入一个指定目标算法的参数对象、一个表示密钥是否可以从 CryptoKey 对象中提取出来的布尔值，以及一个表示这个密钥可以与哪个 SubtleCrypto 方法一起使用的字符串数组（ keyUsages）。
+由于不同的密码系统需要不同的输入来生成密钥，上述参数对象为每种密码系统都规定了必需的输入：
+
+- RSA 密码系统使用 RsaHashedKeyGenParams 对象；
+
+- ECC 密码系统使用 EcKeyGenParams 对象；
+
+- HMAC 密码系统使用 HmacKeyGenParams 对象；
+
+- AES 密码系统使用 AesKeyGenParams 对象。 keyUsages 对象用于说明密钥可以与哪个算法一起使用。至少要包含下列中的一个字符串：
+
+- encrypt
+
+- decrypt
+
+- sign
+
+- verify
+
+- deriveKey
+
+- deriveBits
+
+- wrapKey
+
+- unwrapKey
+
+假设要生成一个满足如下条件的对称密钥：
+.支持 AES-CTR 算法； .密钥长度 128 位；
+.不能从 CryptoKey 对象中提取；
+.可以跟 encrypt()和 decrypt()方法一起使用。那么可以参考如下代码：
+
+```js
+(async function () {
+  const params = { name: 'AES-CTR', length: 128 };
+  const keyUsages = ['encrypt', 'decrypt'];
+  const key = await crypto.subtle.generateKey(params, false, keyUsages);
+  console.log(key);
+  // CryptoKey {type: "secret", extractable: true, algorithm: {...}, usages: Array(2)}
+})();
+```
+
+假设要生成一个满足如下条件的非对称密钥：
+.支持 ECDSA 算法； .使用 P-256 椭圆曲线；
+.可以从 CryptoKey 中提取；
+.可以跟 sign()和 verify()方法一起使用。那么可以参考如下代码：
+
+```js
+(async function() { const params = {
+name: 'ECDSA',
+namedCurve: 'P-256'
+};
+const keyUsages = ['sign', 'verify'];
+const {publicKey, privateKey} = await crypto.subtle.generateKey(params, true, keyUsages);
+20.12 Web Cryptography API 669
+console.log(publicKey);
+// CryptoKey {type: "public", extractable: true, algorithm: {...}, usages: Array(1)}
+ console.log(privateKey);
+// CryptoKey {type: "private", extractable: true, algorithm: {...}, usages: Array(1)}
+})();
+```
+
+4. 导出和导入密钥
+
+如果密钥是可提取的，那么就可以在 CryptoKey 对象内部暴露密钥原始的二进制内容。使用 exportKey()方法并指定目标格式（ "raw"、"pkcs8"、"spki"或"jwk"）就可以取得密钥。这个方法返回一个期约，解决后的 ArrayBuffer 中包含密钥：
+
+```js
+(async function () {
+  const params = { name: 'AES-CTR', length: 128 };
+  const keyUsages = ['encrypt', 'decrypt'];
+  const key = await crypto.subtle.generateKey(params, true, keyUsages);
+  const rawKey = await crypto.subtle.exportKey('raw', key);
+  console.log(new Uint8Array(rawKey)); // Uint8Array[93, 122, 66, 135, 144, 182, 119, 196, 234, 73, 84, 7, 139, 43, 238, // 110]
+})();
+```
+
+与 exportKey()相反的操作要使用 importKey()方法实现。importKey()方法的签名实际上是 generateKey()和 exportKey()的组合。下面的方法会生成密钥、导出密钥，然后再导入密钥：
+
+```js
+(async function () {
+  const params = { name: 'AES-CTR', length: 128 };
+  const keyUsages = ['encrypt', 'decrypt'];
+  const keyFormat = 'raw';
+  const isExtractable = true;
+  const key = await crypto.subtle.generateKey(params, isExtractable, keyUsages);
+  const rawKey = await crypto.subtle.exportKey(keyFormat, key);
+  const importedKey = await crypto.subtle.importKey(
+    keyFormat,
+    rawKey,
+    params.name,
+    isExtractable,
+    keyUsages
+  );
+  console.log(importedKey);
+  // CryptoKey {type: "secret", extractable: true, algorithm: {...}, usages: Array(2)}
+})();
+```
+
+5. 从主密钥派生密钥
+
+使用 SubtleCrypto 对象可以通过可配置的属性从已有密钥获得新密钥。 SubtleCrypto 支持一个 deriveKey()方法和一个 deriveBits()方法，前者返回一个解决为 CryptoKey 的期约，后者返回一个解决为 ArrayBuffer 的期约。
+
+deriveBits()方法接收一个算法参数对象、主密钥和输出的位长作为参数。当两个人分别拥有自己的密钥对，但希望获得共享的加密密钥时可以使用这个方法。下面的例子使用 ECDH 算法基于两个密钥对生成了对等密钥，并确保它们派生相同的密钥位：
+
+```js
+(async function () {
+  const ellipticCurve = 'P-256';
+  const algoIdentifier = 'ECDH';
+  const derivedKeySize = 128;
+  const params = { name: algoIdentifier, namedCurve: ellipticCurve };
+  const keyUsages = ['deriveBits'];
+  const keyPairA = await crypto.subtle.generateKey(params, true, keyUsages);
+  const keyPairB = await crypto.subtle.generateKey(params, true, keyUsages);
+  // 从 A的公钥和 B的私钥派生密钥位
+  const derivedBitsAB = await crypto.subtle.deriveBits(
+    Object.assign({ public: keyPairA.publicKey }, params),
+    keyPairB.privateKey,
+    derivedKeySize
+  );
+  // 从 B的公钥和 A的私钥派生密钥位
+  const derivedBitsBA = await crypto.subtle.deriveBits(
+    Object.assign({ public: keyPairB.publicKey }, params),
+    keyPairA.privateKey,
+    derivedKeySize
+  );
+  const arrayAB = new Uint32Array(derivedBitsAB);
+  const arrayBA = new Uint32Array(derivedBitsBA);
+  // 确保密钥数组相等
+  console.log(
+    arrayAB.length === arrayBA.length &&
+      arrayAB.every((val, i) => val === arrayBA[i])
+  ); // true
+})();
+```
+
+deriveKey()方法是类似的，只不过返回的是 CryptoKey 的实例而不是 ArrayBuffer。下面的例子基于一个原始字符串，应用 PBKDF2 算法将其导入一个原始主密钥，然后派生了一个 AES-GCM 格式的新密钥：
+
+```js
+(async function() { const password = 'foobar'; const salt = crypto.getRandomValues(new Uint8Array(16)); const algoIdentifier = 'PBKDF2'; const keyFormat = 'raw'; const isExtractable = false;
+const params = {
+20.12 Web Cryptography API 671
+name: algoIdentifier };
+const masterKey = await window.crypto.subtle.importKey( keyFormat, (new TextEncoder()).encode(password), params, isExtractable,
+['deriveKey']
+);
+const deriveParams = { name: 'AES-GCM', length: 128
+};
+const derivedKey = await window.crypto.subtle.deriveKey( Object.assign({salt, iterations: 1E5, hash: 'SHA-256'}, params), masterKey, deriveParams, isExtractable, ['encrypt']
+ );
+console.log(derivedKey); // CryptoKey {type: "secret", extractable: false, algorithm: {...}, usages: Array(1)}
+})();
+```
+
+6. 使用非对称密钥签名和验证消息
+
+通过 SubtleCrypto 对象可以使用公钥算法用私钥生成签名，或者用公钥验证签名。这两种操作分别通过 SubtleCrypto.sign()和 SubtleCrypto.verify()方法完成。
+签名消息需要传入参数对象以指定算法和必要的值、 CryptoKey 和要签名的 ArrayBuffer 或
+ArrayBufferView。下面的例子会生成一个椭圆曲线密钥对，并使用私钥签名消息：
+
+```js
+(async function() {
+const keyParams = { name: 'ECDSA', namedCurve: 'P-256'
+};
+const keyUsages = ['sign', 'verify'];
+const {publicKey, privateKey} = await crypto.subtle.generateKey(keyParams, true, keyUsages);
+const message = (new TextEncoder()).encode('I am Satoshi Nakamoto');
+const signParams = { name: 'ECDSA', hash: 'SHA-256'
+};
+const signature = await crypto.subtle.sign(signParams, privateKey, message);
+console.log(new Uint32Array(signature)); // Uint32Array(16) [2202267297, 698413658, 1501924384, 691450316, 778757775, ... ] })();
+```
+
+希望通过这个签名验证消息的人可以使用公钥和 SubtleCrypto.verify()方法。这个方法的签名
+几乎与 sign()相同，只是必须提供公钥以及签名。下面的例子通过验证生成的签名扩展了前面的例子：
+
+```js
+(async function () {
+  const keyParams = { name: 'ECDSA', namedCurve: 'P-256' };
+  const keyUsages = ['sign', 'verify'];
+  const { publicKey, privateKey } = await crypto.subtle.generateKey(
+    keyParams,
+    true,
+    keyUsages
+  );
+  const message = new TextEncoder().encode('I am Satoshi Nakamoto');
+  const signParams = { name: 'ECDSA', hash: 'SHA-256' };
+  const signature = await crypto.subtle.sign(signParams, privateKey, message);
+  const verified = await crypto.subtle.verify(
+    signParams,
+    publicKey,
+    signature,
+    message
+  );
+  console.log(verified); // true
+})();
+```
+
+7. 使用对称密钥加密和解密
+
+SubtleCrypto 对象支持使用公钥和对称算法加密和解密消息。这两种操作分别通过 SubtleCrypto.
+encrypt()和 SubtleCrypto.decrypt()方法完成。
+加密消息需要传入参数对象以指定算法和必要的值、加密密钥和要加密的数据。下面的例子会生成对称 AES-CBC 密钥，用它加密消息，最后解密消息：
+
+```js
+(async function() { const algoIdentifier = 'AES-CBC';
+const keyParams = { name: algoIdentifier, length: 256
+};
+const keyUsages = ['encrypt', 'decrypt'];
+const key = await crypto.subtle.generateKey(keyParams, true, keyUsages);
+const originalPlaintext = (new TextEncoder()).encode('I am Satoshi Nakamoto');
+const encryptDecryptParams = { name: algoIdentifier, iv: crypto.getRandomValues(new Uint8Array(16))
+};
+const ciphertext = await crypto.subtle.encrypt(encryptDecryptParams, key, originalPlaintext);
+20.12 Web Cryptography API 673
+console.log(ciphertext);
+// ArrayBuffer(32) {}
+const decryptedPlaintext = await crypto.subtle.decrypt(encryptDecryptParams, key, ciphertext);
+console.log((new TextDecoder()).decode(decryptedPlaintext)); // I am Satoshi Nakamoto
+})();
+```
+
+8. 包装和解包密钥
+
+SubtleCrypto 对象支持包装和解包密钥，以便在非信任渠道传输。这两种操作分别通过 Subtle-
+Crypto.wrapKey()和 SubtleCrypto.unwrapKey()方法完成。
+包装密钥需要传入一个格式字符串、要包装的 CryptoKey 实例、要执行包装的 CryptoKey，以及一个参数对象用于指定算法和必要的值。下面的例子生成了一个对称 AES-GCM 密钥，用 AES-KW 来包装这个密钥，最后又将包装的密钥解包：
+
+```js
+(async function () {
+  const keyFormat = 'raw';
+  const extractable = true;
+  const wrappingKeyAlgoIdentifier = 'AES-KW';
+  const wrappingKeyUsages = ['wrapKey', 'unwrapKey'];
+  const wrappingKeyParams = {
+    name: wrappingKeyAlgoIdentifier,
+    length: 256,
+  };
+  const keyAlgoIdentifier = 'AES-GCM';
+  const keyUsages = ['encrypt'];
+  const keyParams = {
+    name: keyAlgoIdentifier,
+    length: 256,
+  };
+  const wrappingKey = await crypto.subtle.generateKey(
+    wrappingKeyParams,
+    extractable,
+    wrappingKeyUsages
+  );
+  console.log(wrappingKey); // CryptoKey {type: "secret", extractable: true, algorithm: {...}, usages: Array(2)}
+  const key = await crypto.subtle.generateKey(
+    keyParams,
+    extractable,
+    keyUsages
+  );
+  console.log(key); // CryptoKey {type: "secret", extractable: true, algorithm: {...}, usages: Array(1)}
+  const wrappedKey = await crypto.subtle.wrapKey(
+    keyFormat,
+    key,
+    wrappingKey,
+    wrappingKeyAlgoIdentifier
+  );
+  console.log(wrappedKey);
+  // ArrayBuffer(40) {}
+  const unwrappedKey = await crypto.subtle.unwrapKey(
+    keyFormat,
+    wrappedKey,
+    wrappingKey,
+    wrappingKeyParams,
+    keyParams,
+    extractable,
+    keyUsages
+  );
+  console.log(unwrappedKey);
+  // CryptoKey {type: "secret", extractable: true, algorithm: {...}, usages: Array(1)}
+})();
+```
+
+## 20.13 小结
+
+除了定义新标签， HTML5 还定义了一些 JavaScript API。这些 API 可以为开发者提供更便捷的 Web 接口，暴露堪比桌面应用的能力。本章主要介绍了以下 API。
+
+- Atomics API 用于保护代码在多线程内存访问模式下不发生资源争用。
+
+- postMessage()API 支持从不同源跨文档发送消息，同时保证安全和遵循同源策略。
+
+- Encoding API 用于实现字符串与缓冲区之间的无缝转换（越来越常见的操作）。
+
+- File API 提供了发送、接收和读取大型二进制对象的可靠工具。
+  .媒体元素`<audio>`和`<video>`拥有自己的 API，用于操作音频和视频。并不是每个浏览器都会支持所有媒体格式，使用 canPlayType()方法可以检测浏览器支持情况。
+  .拖放 API 支持方便地将元素标识为可拖动，并在操作系统完成放置时给出回应。可以利用它创建自定义可拖动元素和放置目标。
+
+- Notifications API 提供了一种浏览器中立的方式，以此向用户展示消通知弹层。
+- Streams API 支持以全新的方式读取、写入和处理数据。
+- Timing API 提供了一组度量数据进出浏览器时间的可靠工具。
+- Web Components API 为元素重用和封装技术向前迈进提供了有力支撑。
+- Web Cryptography API 让生成随机数、加密和签名消息成为一类特性。
 
 # 第 21 章 错误处理与调试
 
