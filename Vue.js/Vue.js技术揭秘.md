@@ -1928,13 +1928,9 @@ patch -> DOM
 
 ## 3.1 组件化
 
-Vue.js 另一个核心思想是组件化。所谓组件化，就是把页面拆分成多个组件 (component)，每个组件依赖的 CSS、JavaScript、模板、图片等资源放在一起开发和维护。组件是资源独立的，组件在系统内部可复用，组件和组件之间可以嵌套。
+Vue.js 另一个核心思想是组件化。所谓组件化，就是把页面拆分成多个组件（component），每个组件依赖的 CSS、JavaScript、模板、图片等资源放在一起开发和维护。组件是资源独立的，组件在系统内部可复用，组件和组件之间可以嵌套。
 
-我们在用 Vue.js 开发实际项目的时候，就是像搭积木一样，编写一堆组件拼装生成页面。在 Vue.js 的官网中，也是花了大篇幅来介绍什么是组件，如何编写组件以及组件拥有的属性和特性。
-
-那么在这一章节，我们将从源码的角度来分析 Vue 的组件内部是如何工作的，只有了解了内部的工作原理，才能让我们使用它的时候更加得心应手。
-
-接下来我们会用 Vue-cli 初始化的代码为例，来分析一下 Vue 组件初始化的一个过程。
+在用 Vue.js 开发实际项目的时候，都是编写一堆组件拼装生成页面。那么在这一章节，我们将从源码的角度来分析 Vue 的组件内部是如何工作的。接下来我们会用 Vue-cli 初始化的代码为例，来分析一下 Vue 组件初始化的一个过程。
 
 ```js
 import Vue from 'vue'
@@ -1949,7 +1945,7 @@ var app = new Vue({
 
 这段代码相信很多同学都很熟悉，它和我们上一章相同的点也是通过 `render` 函数去渲染的，不同的这次通过 `createElement` 传的参数是一个组件而不是一个原生的标签，那么接下来我们就开始分析这一过程。
 
-## 3.2 createComponent
+## 3.2 方法 createComponent
 
 上一章我们在分析 `createElement` 的实现的时候，它最终会调用 `_createElement` 方法，其中有一段逻辑是对参数 `tag` 的判断，如果是一个普通的 html 标签，像上一章的例子那样是一个普通的 div，则会实例化一个普通 VNode 节点，否则通过 `createComponent` 方法创建一个组件 VNode。
 
@@ -2094,7 +2090,9 @@ export function createComponent (
 
 可以看到，`createComponent` 的逻辑也会有一些复杂，但是分析源码比较推荐的是只分析核心流程，分支流程可以之后针对性的看，所以这里针对组件渲染这个 case 主要就 3 个关键步骤：
 
-构造子类构造函数，安装组件钩子函数和实例化 `vnode`。
+1. 构造子类构造函数
+2. 安装组件钩子函数
+3. 实例化 `vnode`
 
 ### 3.2.1 构造子类构造函数
 
@@ -2119,6 +2117,7 @@ export default {
   }
 }
 ```
+
 这里 export 的是一个对象，所以 `createComponent` 里的代码逻辑会执行到 `baseCtor.extend(Ctor)`，在这里 `baseCtor` 实际上就是 Vue，这个的定义是在最开始初始化 Vue 的阶段，在 `src/core/global-api/index.js` 中的 `initGlobalAPI` 函数有这么一段逻辑：
 
 ```js
@@ -2126,6 +2125,7 @@ export default {
 // components with in Weex's multi-instance scenarios.
 Vue.options._base = Vue
 ```
+
 细心的同学会发现，这里定义的是 `Vue.options`，而我们的 `createComponent` 取的是 `context.$options`，实际上在 `src/core/instance/init.js` 里 Vue 原型上的 `_init` 函数中有这么一段逻辑：
 
 ```js
@@ -2136,7 +2136,7 @@ vm.$options = mergeOptions(
 )
 ```
 
-这样就把 Vue 上的一些 `option` 扩展到了 vm.$options 上，所以我们也就能通过 `vm.$options._base` 拿到 Vue 这个构造函数了。`mergeOptions` 的实现我们会在后续章节中具体分析，现在只需要理解它的功能是把 Vue 构造函数的 `options` 和用户传入的 `options` 做一层合并，到 `vm.$options ` 上。
+这样就把 Vue 上的一些 `option` 扩展到了 `vm.$options` 上，所以我们也就能通过 `vm.$options._base` 拿到 Vue 这个构造函数了。`mergeOptions` 的实现我们会在后续章节中具体分析，现在只需要理解它的功能是把 Vue 构造函数的 `options` 和用户传入的 `options` 做一层合并，到 `vm.$options ` 上。
 
 在了解了 `baseCtor` 指向了 Vue 之后，我们来看一下 `Vue.extend` 函数的定义，在 `src/core/global-api/extend.js` 中。
 
@@ -2337,9 +2337,9 @@ return vnode
 
 这一节我们分析了 `createComponent` 的实现，了解到它在渲染一个组件的时候的 3 个关键逻辑：构造子类构造函数，安装组件钩子函数和实例化 `vnode`。`createComponent` 后返回的是组件 `vnode`，它也一样走到 `vm._update` 方法，进而执行了 `patch` 函数，我们在上一章对 `patch` 函数做了简单的分析，那么下一节我们会对它做进一步的分析。
 
-## 3.3 patch
+## 3.3 组件 patch
 
-通过前一章的分析我们知道，当我们通过 `createComponent` 创建了组件 VNode，接下来会走到 `vm._update`，执行 `vm.__patch__` 去把 VNode 转换成真正的 DOM 节点。这个过程我们在前一章已经分析过了，但是针对一个普通的 VNode 节点，接下来我们来看看组件的 VNode 会有哪些不一样的地方。
+通过前一章的分析我们知道，针对一个普通的 VNode 节点，当我们通过 `createComponent` 创建了组件 VNode，接下来会走到 `vm._update`，执行 `vm.__patch__` 去把 VNode 转换成真正的 DOM 节点。接下来我们来看看组件的 VNode 会有哪些不一样的地方。
 
 patch 的过程会调用 `createElm` 创建元素节点，回顾一下 `createElm` 的实现，它的定义在 `src/core/vdom/patch.js` 中：
 
@@ -2361,7 +2361,7 @@ function createElm (
 }
 ```
 
-### 3.3.1 createComponent
+### 3.3.1 方法 createComponent
 
 我们删掉多余的代码，只保留关键的逻辑，这里会判断 `createComponent(vnode, insertedVnodeQueue, parentElm, refElm)` 的返回值，如果为 `true` 则直接结束，那么接下来看一下 `createComponent` 方法的实现：
 
@@ -2425,8 +2425,7 @@ init (vnode: VNodeWithData, hydrating: boolean): ?boolean {
 },
 ```
 
-`init` 钩子函数执行也很简单，我们先不考虑 `keepAlive` 的情况，它是通过 `createComponentInstanceForVnode` 创建一个 Vue 的实例，然后调用 `$mount` 方法挂载子组件，
-先来看一下 `createComponentInstanceForVnode` 的实现：
+`init` 钩子函数执行也很简单，我们先不考虑 `keepAlive` 的情况，它是通过 `createComponentInstanceForVnode` 创建一个 Vue 的实例，然后调用 `$mount` 方法挂载子组件，先来看一下 `createComponentInstanceForVnode` 的实现：
 
 ```js
 export function createComponentInstanceForVnode (
@@ -2497,7 +2496,13 @@ export function initInternalComponent (vm: Component, options: InternalComponent
   }
 }
 ```
-这个过程我们重点记住以下几个点即可：`opts.parent = options.parent`、`opts._parentVnode = parentVnode`，它们是把之前我们通过 `createComponentInstanceForVnode` 函数传入的几个参数合并到内部的选项 `$options` 里了。
+
+这个过程我们重点记住以下几个点即可：
+
+- `opts.parent = options.parent`
+- `opts._parentVnode = parentVnode`
+
+它们是把之前我们通过 `createComponentInstanceForVnode` 函数传入的几个参数合并到内部的选项 `$options` 里了。
 
 再来看一下 `_init` 函数最后执行的代码：
 
@@ -2590,6 +2595,7 @@ Vue.prototype._update = function (vnode: VNode, hydrating?: boolean) {
 }
 
 ```
+
 这个 `activeInstance` 作用就是保持当前上下文的 Vue 实例，它是在 `lifecycle` 模块的全局变量，定义是 `export let activeInstance: any = null`，并且在之前我们调用 `createComponentInstanceForVnode` 方法的时候从 `lifecycle` 模块获取，并且作为参数传入的。因为实际上 JavaScript 是一个单线程，Vue 整个初始化是一个深度遍历的过程，在实例化子组件的过程中，它需要知道当前上下文的 Vue 实例是什么，并把它作为子组件的父 Vue 实例。之前我们提到过对子组件的实例化过程先会调用 `initInternalComponent(vm, options)` 合并 `options`，把 `parent` 存储在 `vm.$options` 中，在 `$mount` 之前会调用 `initLifecycle(vm)` 方法：
 
 ```js
@@ -2609,6 +2615,7 @@ export function initLifecycle (vm: Component) {
   // ...
 }
 ```
+
 可以看到 `vm.$parent` 就是用来保留当前 `vm` 的父实例，并且通过 `parent.$children.push(vm)` 来把当前的 `vm` 存储到父实例的 `$children` 中。
 
 在 `vm._update` 的过程中，把当前的 `vm` 赋值给 `activeInstance`，同时通过 `const prevActiveInstance = activeInstance` 用 `prevActiveInstance` 保留上一次的 `activeInstance`。实际上，`prevActiveInstance` 和当前的 `vm` 是一个父子关系，当一个 `vm` 实例完成它的所有子树的 patch 或者 update 过程后，`activeInstance` 会回到它的父实例，这样就完美地保证了 `createComponentInstanceForVnode` 整个深度遍历过程中，我们在实例化子组件的时候能传入当前子组件的父 Vue 实例，并在 `_init` 的过程中，通过 `vm.$parent` 把这个父子关系保留。
