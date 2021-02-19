@@ -28530,14 +28530,19 @@ let sharedArrayBuffer = new SharedArrayBuffer(1);
 let typedArray = new Uint8Array(sharedArrayBuffer);
 // 所有 ArrayBuffer全部初始化为 0
 console.log(typedArray); // Uint8Array[0]
-const index = 0; const increment = 5;
+const index = 0;
+const increment = 5;
 // 对索引 0处的值执行原子加 5
 Atomics.add(typedArray, index, increment);
 console.log(typedArray); // Uint8Array[5]
 // 对索引 0处的值执行原子减 5
 Atomics.sub(typedArray, index, increment);
 console.log(typedArray); // Uint8Array[0]
+```
+
 以下代码演示了所有位方法：
+
+```js
 // 创建大小为 1的缓冲区
 let sharedArrayBuffer = new SharedArrayBuffer(1);
 // 基于缓冲创建 Uint8Array
@@ -28567,17 +28572,27 @@ const view = new Uint32Array(data);
 self.postMessage(null); }; `;
 const workerScriptBlobUrl = URL.createObjectURL(new Blob([workerScript]));
 // 创建容量为 4的工作线程池
-const workers = []; for (let i = 0; i < 4; ++i) {
-workers.push(new Worker(workerScriptBlobUrl)); }
+const workers = [];
+for (let i = 0; i < 4; ++i) {
+  workers.push(new Worker(workerScriptBlobUrl));
+}
 // 在最后一个工作线程完成后打印出最终值
-let responseCount = 0; for (const worker of workers) {
-worker.onmessage = () => { if (++responseCount == workers.length) { console.log(`Final buffer value: ${view[0]}`); } }; }
+let responseCount = 0;
+for (const worker of workers) {
+  worker.onmessage = () => {
+    if (++responseCount == workers.length) {
+      console.log(`Final buffer value: ${view[0]}`);
+    }
+  };
+}
 // 初始化 SharedArrayBuffer
-const sharedArrayBuffer = new SharedArrayBuffer(4); const view = new Uint32Array(sharedArrayBuffer); view[0] = 1;
+const sharedArrayBuffer = new SharedArrayBuffer(4);
+const view = new Uint32Array(sharedArrayBuffer);
+view[0] = 1;
 // 把 SharedArrayBuffer发送到每个工作线程
 for (const worker of workers) {
-20.1 Atomics与 SharedArrayBuffer 613
-worker.postMessage(sharedArrayBuffer); }
+  worker.postMessage(sharedArrayBuffer);
+}
 //（期待结果为 4000001） // Final buffer value: 4000001
 ```
 
@@ -28617,9 +28632,7 @@ console.log(Atomics.exchange(view, 0, 4)); // 3
 console.log(Atomics.load(view, 0)); // 4
 ```
 
-在多线程程序中，一个线程可能只希望在上次读取某个值之后没有其他线程修改该值的情况下才对共享缓冲区执行写操作。如果这个值没有被修改，这个线程就可以安全地写入更新后的值；如果这个值被修改了，那么执行写操作将会破坏其他线程计算的值。对于这种任务， Atomics API 提供了 compare-
-
-Exchange()方法。这个方法只在目标索引处的值与预期值匹配时才会执行写操作。来看下面这个例子：
+在多线程程序中，一个线程可能只希望在上次读取某个值之后没有其他线程修改该值的情况下才对共享缓冲区执行写操作。如果这个值没有被修改，这个线程就可以安全地写入更新后的值；如果这个值被修改了，那么执行写操作将会破坏其他线程计算的值。对于这种任务， Atomics API 提供了 compare-Exchange()方法。这个方法只在目标索引处的值与预期值匹配时才会执行写操作。来看下面这个例子：
 
 ```js
 const sharedArrayBuffer = new SharedArrayBuffer(4);
@@ -28687,19 +28700,35 @@ for (const worker of workers) {
 }
 // 1000毫秒后释放第一个锁
 setTimeout(() => Atomics.notify(view, 0, 1), 1000);
-// Waiting to obtain lock // Waiting to obtain lock // Waiting to obtain lock // Waiting to obtain lock // Obtained lock // Releasing lock // Obtained lock // Releasing lock // Obtained lock // Releasing lock // Obtained lock // Releasing lock // Final buffer value: 4
+
+// Waiting to obtain lock
+// Waiting to obtain lock
+// Waiting to obtain lock
+// Waiting to obtain lock
+// Obtained lock
+// Releasing lock
+// Obtained lock
+// Releasing lock
+// Obtained lock
+// Releasing lock
+// Obtained lock
+// Releasing lock
+// Final buffer value: 4
 ```
 
 因为是使用 0 来初始化 SharedArrayBuffer，所以每个工作线程都会到达 Atomics.wait()并停止执行。在停止状态下，执行线程存在于一个等待队列中，在经过指定时间或在相应索引上调用 Atomics.notify()之前，一直保持暂停状态。 1000 毫秒之后，顶部执行上下文会调用 Atomics.notify()释放其中一个等待的线程。这个线程执行完毕后会再次调用 Atomics.notify()释放另一个线程。这个过程会持续到所有线程都执行完毕并通过 postMessage()传出最终的值。
+
 Atomics API 还提供了 Atomics.isLockFree()方法。不过我们基本上应该不会用到。这个方法在高性能算法中可以用来确定是否有必要获取锁。规范中的介绍如下：
-Atomics.isLockFree()是一个优化原语。基本上，如果一个原子原语（ compareExchange、 load、store、add、sub、and、or、xor 或 exchange）在 n 字节大小的数据上的原子步骤在不调用代理在组成数据的 n 字节之外获得锁的情况下可以执行，则 Atomics.isLockFree(n)会返回 true。高性能算法会使用 Atomics.isLockFree 确定是否在关键部分使用锁或原子操作。如果原子原语需要加锁，则算法提供自己的锁会更高效。
-Atomics.isLockFree(4)始终返回 true，因为在所有已知的相关硬件上都是支持的。能够如此假设通常可以简化程序。
+
+> Atomics.isLockFree()是一个优化原语。基本上，如果一个原子原语（ compareExchange、 load、store、add、sub、and、or、xor 或 exchange）在 n 字节大小的数据上的原子步骤在不调用代理在组成数据的 n 字节之外获得锁的情况下可以执行，则 Atomics.isLockFree(n)会返回 true。高性能算法会使用 Atomics.isLockFree 确定是否在关键部分使用锁或原子操作。如果原子原语需要加锁，则算法提供自己的锁会更高效。  
+> Atomics.isLockFree(4)始终返回 true，因为在所有已知的相关硬件上都是支持的。能够如此假设通常可以简化程序。
 
 ## 20.2 跨上下文消息
 
-跨文档消息，有时候也简称为 XDM（cross-document messaging），是一种在不同执行上下文（如不同工作线程或不同源的页面）间传递信息的能力。例如， www.wrox.com上的页面想要与包含在内嵌窗格中的 p2p.wrox.com 上面的页面通信。在 XDM 之前，要以安全方式实现这种通信需要很多工作。 XDM 以安全易用的方式规范化了这个功能。
+跨文档消息，有时候也简称为 XDM（cross-document messaging），是一种在不同执行上下文（如不同工作线程或不同源的页面）间传递信息的能力。例如， `www.wrox.com` 上的页面想要与包含在内嵌窗格中的 `p2p.wrox.com` 上面的页面通信。在 XDM 之前，要以安全方式实现这种通信需要很多工作。 XDM 以安全易用的方式规范化了这个功能。
 
 XDM 的核心是 postMessage()方法。除了 XDM，这个方法名还在 HTML5 中很多地方用到过，但目的都一样，都是把数据传送到另一个位置。
+
 postMessage()方法接收 3 个参数：消息、表示目标接收源的字符串和可选的可传输对象的数组（只与工作线程相关）。第二个参数对于安全非常重要，其可以限制浏览器交付数据的目标。下面来看一个例子：
 
 ```js
@@ -28707,12 +28736,12 @@ let iframeWindow = document.getElementById('myframe').contentWindow;
 iframeWindow.postMessage('A secret', 'http://www.wrox.com');
 ```
 
-最后一行代码尝试向内嵌窗格中发送一条消息，而且指定了源必须是 "http://www.wrox.com"。如果源匹配，那么消息将会交付到内嵌窗格；否则， postMessage()什么也不做。这个限制可以保护信息不会因地址改变而泄露。如果不想限制接收目标，则可以给 postMessage()的第二个参数传 "\*"，但不推荐这么做。
+最后一行代码尝试向内嵌窗格中发送一条消息，而且指定了源必须是 `http://www.wrox.com`。如果源匹配，那么消息将会交付到内嵌窗格；否则， postMessage()什么也不做。这个限制可以保护信息不会因地址改变而泄露。如果不想限制接收目标，则可以给 postMessage()的第二个参数传 "\*"，但不推荐这么做。
+
 接收到 XDM 消息后，window 对象上会触发 message 事件。这个事件是异步触发的，因此从消息发出到接收到消息（接收窗口触发 message 事件）可能有延迟。传给 onmessage 事件处理程序的 event 对象包含以下 3 方面重要信息。
 
 - data：作为第一个参数传递给 postMessage()的字符串数据。
-- origin：发送消息的文档源，例如 "http://www.wrox.com"。
-
+- origin：发送消息的文档源，例如 `http://www.wrox.com`。
 - source：发送消息的文档中 window 对象的代理。这个代理对象主要用于在发送上一条消息的窗口中执行 postMessage()方法。如果发送窗口有相同的源，那么这个对象应该就是 window 对象。
 
 接收消息之后验证发送窗口的源是非常重要的。与 postMessage()的第二个参数可以保证数据不会意外传给未知页面一样，在 onmessage 事件处理程序中检查发送窗口的源可以保证数据来自正确的地方。基本的使用方式如下所示：
@@ -28732,6 +28761,7 @@ window.addEventListener('message', (event) => {
 大多数情况下， event.source 是某个 window 对象的代理，而非实际的 window 对象。因此不能通过它访问所有窗口下的信息。最好只使用 postMessage()，这个方法永远存在而且可以调用。
 
 XDM 有一些怪异之处。首先， postMessage()的第一个参数的最初实现始终是一个字符串。后来，第一个参数改为允许任何结构的数据传入，不过并非所有浏览器都实现了这个改变。为此，最好就是只通过 postMessage()发送字符串。如果需要传递结构化数据，那么最好先对该数据调用 JSON.stringify()，通过 postMessage()传过去之后，再在 onmessage 事件处理程序中调用 JSON.parse()。
+
 在通过内嵌窗格加载不同域时，使用 XDM 是非常方便的。这种方法在混搭（ mashup）和社交应用中非常常用。通过使用 XDM 与内嵌窗格中的网页通信，可以保证包含页面的安全。 XDM 也可以用于同源页面之间通信。
 
 ## 20.3 Encoding API
@@ -28754,7 +28784,9 @@ const textEncoder = new TextEncoder();
 const textEncoder = new TextEncoder();
 const decodedText = 'foo';
 const encodedText = textEncoder.encode(decodedText);
-// f的 UTF-8编码是 0x66（即十进制 102） // o的 UTF-8编码是 0x6F（即二进制 111） console.log(encodedText); // Uint8Array(3) [102, 111, 111]
+// f的 UTF-8编码是 0x66（即十进制 102）
+// o的 UTF-8编码是 0x6F（即二进制 111） console.log(encodedText);
+// Uint8Array(3) [102, 111, 111]
 ```
 
 编码器是用于处理字符的，有些字符（如表情符号）在最终返回的数组中可能会占多个索引：
@@ -28763,7 +28795,8 @@ const encodedText = textEncoder.encode(decodedText);
 const textEncoder = new TextEncoder();
 const decodedText = '.';
 const encodedText = textEncoder.encode(decodedText);
-// .的 UTF-8编码是 0xF0 0x9F 0x98 0x8A（即十进制 240、159、152、138） console.log(encodedText); // Uint8Array(4) [240, 159, 152, 138]
+// .的 UTF-8编码是 0xF0 0x9F 0x98 0x8A（即十进制 240、159、152、138） console.log(encodedText);
+// Uint8Array(4) [240, 159, 152, 138]
 ```
 
 编码器实例还有一个 encodeInto()方法，该方法接收一个字符串和目标 Unit8Array，返回一个字典，该字典包含 read 和 written 属性，分别表示成功从源字符串读取了多少字符和向目标数组写入了多少字符。如果定型数组的空间不够，编码就会提前终止，返回的字典会体现这个结果：
@@ -28776,7 +28809,8 @@ const fooResult = textEncoder.encodeInto('foo', fooArr);
 const barResult = textEncoder.encodeInto('bar', barArr);
 console.log(fooArr); // Uint8Array(3) [102, 111, 111]
 console.log(fooResult); // { read: 3, written: 3 }
-console.log(barArr); // Uint8Array(2) [98, 97] console.log(barResult); // { read: 2, written: 2 }
+console.log(barArr); // Uint8Array(2) [98, 97]
+console.log(barResult); // { read: 2, written: 2 }
 ```
 
 encode()要求分配一个新的 Unit8Array，encodeInto()则不需要。对于追求性能的应用，这个差别可能会带来显著不同。
@@ -28814,7 +28848,9 @@ const readableStreamDefaultReader = encodedTextStream.getReader();
     }
   }
 })();
-// Uint8Array[102] // Uint8Array[111] // Uint8Array[111]
+// Uint8Array[102]
+// Uint8Array[111]
+// Uint8Array[111]
 ```
 
 ### 20.3.2 文本解码
@@ -28831,7 +28867,10 @@ const textDecoder = new TextDecoder();
 
 ```js
 const textDecoder = new TextDecoder();
-// f的 UTF-8编码是 0x66（即十进制 102） // o的 UTF-8编码是 0x6F（即二进制 111） const encodedText = Uint8Array.of(102, 111, 111); const decodedText = textDecoder.decode(encodedText);
+// f的 UTF-8编码是 0x66（即十进制 102）
+// o的 UTF-8编码是 0x6F（即二进制 111）
+const encodedText = Uint8Array.of(102, 111, 111);
+const decodedText = textDecoder.decode(encodedText);
 console.log(decodedText); // foo
 ```
 
@@ -28839,7 +28878,11 @@ console.log(decodedText); // foo
 
 ```js
 const textDecoder = new TextDecoder();
-// f的 UTF-8编码是 0x66（即十进制 102） // o的 UTF-8编码是 0x6F（即二进制 111） const encodedText = Uint32Array.of(102, 111, 111); const decodedText = textDecoder.decode(encodedText);
+// f的 UTF-8编码是 0x66（即十进制 102）
+// o的 UTF-8编码是 0x6F（即二进制 111）
+
+const encodedText = Uint32Array.of(102, 111, 111);
+const decodedText = textDecoder.decode(encodedText);
 console.log(decodedText); // "f o o "
 ```
 
@@ -28847,7 +28890,9 @@ console.log(decodedText); // "f o o "
 
 ```js
 const textDecoder = new TextDecoder();
-// .的 UTF-8编码是 0xF0 0x9F 0x98 0x8A（即十进制 240、159、152、138） const encodedText = Uint8Array.of(240, 159, 152, 138); const decodedText = textDecoder.decode(encodedText);
+// .的 UTF-8编码是 0xF0 0x9F 0x98 0x8A（即十进制 240、159、152、138）
+const encodedText = Uint8Array.of(240, 159, 152, 138);
+const decodedText = textDecoder.decode(encodedText);
 console.log(decodedText); // .
 ```
 
@@ -28855,7 +28900,11 @@ console.log(decodedText); // .
 
 ```js
 const textDecoder = new TextDecoder('utf-16');
-// f的 UTF-8编码是 0x0066（即十进制 102） // o的 UTF-8编码是 0x006F（即二进制 111） const encodedText = Uint16Array.of(102, 111, 111); const decodedText = textDecoder.decode(encodedText);
+// f的 UTF-8编码是 0x0066（即十进制 102）
+// o的 UTF-8编码是 0x006F（即二进制 111）
+
+const encodedText = Uint16Array.of(102, 111, 111);
+const decodedText = textDecoder.decode(encodedText);
 console.log(decodedText); // foo
 ```
 
@@ -28944,18 +28993,15 @@ for await (let decodedChunk of decodedStream) {
 
 ## 20.4 File API 与 Blob API
 
-Web 应用程序的一个主要的痛点是无法操作用户计算机上的文件。 2000 年之前，处理文件的唯一方式是把`<input type="file">`放到一个表单里，仅此而已。 File API 与 Blob API 是为了让 Web 开发者能以安全的方式访问客户端机器上的文件，从而更好地与这些文件交互而设计的。
+Web 应用程序的一个主要的痛点是无法操作用户计算机上的文件。 2000 年之前，处理文件的唯一方式是把 `<input type="file">` 放到一个表单里，仅此而已。 File API 与 Blob API 是为了让 Web 开发者能以安全的方式访问客户端机器上的文件，从而更好地与这些文件交互而设计的。
 
 ### 20.4.1 File 类型
 
 File API 仍然以表单中的文件输入字段为基础，但是增加了直接访问文件信息的能力。 HTML5 在 DOM 上为文件输入元素添加了 files 集合。当用户在文件字段中选择一个或多个文件时，这个 files 集合中会包含一组 File 对象，表示被选中的文件。每个 File 对象都有一些只读属性。
 
 - name：本地系统中的文件名。
-
 - size：以字节计的文件大小。
-
 - type：包含文件 MIME 类型的字符串。
-
 - lastModifiedDate：表示文件最后修改时间的字符串。这个属性只有 Chome 实现了。
 
 例如，通过监听 change 事件然后遍历 files 集合可以取得每个选中文件的信息：
@@ -28981,15 +29027,16 @@ filesList.addEventListener('change', (event) => {
 FileReader 类型表示一种异步文件读取机制。可以把 FileReader 想象成类似于 XMLHttpRequest，只不过是用于从文件系统读取文件，而不是从服务器读取数据。 FileReader 类型提供了几个读取文件数据的方法。
 
 - readAsText(file, encoding)：从文件中读取纯文本内容并保存在 result 属性中。第二个参数表示编码，是可选的。
-
 - readAsDataURL(file)：读取文件并将内容的数据 URI 保存在 result 属性中。
-
 - readAsBinaryString(file)：读取文件并将每个字符的二进制数据保存在 result 属性中。
+- readAsArrayBuffer(file)：读取文件并将文件内容以 ArrayBuffer 形式保存在 result 属性。
 
-- readAsArrayBuffer(file)：读取文件并将文件内容以 ArrayBuffer 形式保存在 result 属性。这些读取数据的方法为处理文件数据提供了极大的灵活性。例如，为了向用户显示图片，可以将图片读取为数据 URI，而为了解析文件内容，可以将文件读取为文本。因为这些读取方法是异步的，所以每个 FileReader 会发布几个事件，其中 3 个最有用的事件是 progress、error 和 load，分别表示还有更多数据、发生了错误和读取完成。
+这些读取数据的方法为处理文件数据提供了极大的灵活性。例如，为了向用户显示图片，可以将图片读取为数据 URI，而为了解析文件内容，可以将文件读取为文本。因为这些读取方法是异步的，所以每个 FileReader 会发布几个事件，其中 3 个最有用的事件是 progress、error 和 load，分别表示还有更多数据、发生了错误和读取完成。
 
 progress 事件每 50 毫秒就会触发一次，其与 XHR 的 progress 事件具有相同的信息： lengthComputable、loaded 和 total。此外，在 progress 事件中可以读取 FileReader 的 result 属性，即使其中尚未包含全部数据。
+
 error 事件会在由于某种原因无法读取文件时触发。触发 error 事件时，FileReader 的 error 属性会包含错误信息。这个属性是一个对象，只包含一个属性： code。这个错误码的值可能是 1（未找到文件）、2（安全错误）、3（读取被中断）、4（文件不可读）或 5（编码错误）。
+
 load 事件会在文件成功加载后触发。如果 error 事件被触发，则不会再触发 load 事件。下面的例子演示了所有这 3 个事件：
 
 ```js
@@ -29034,11 +29081,13 @@ filesList.addEventListener('change', (event) => {
 ```
 
 以上代码从表单字段中读取一个文件，并将其内容显示在了网页上。如果文件的 MIME 类型表示它是一个图片，那么就将其读取后保存为数据 URI，在 load 事件触发时将数据 URI 作为图片插入页面中。如果文件不是图片，则读取后将其保存为文本并原样输出到网页上。 progress 事件用于跟踪和显示读取文件的进度，而 error 事件用于监控错误。
+
 如果想提前结束文件读取，则可以在过程中调用 abort()方法，从而触发 abort 事件。在 load、 error 和 abort 事件触发后，还会触发 loadend 事件。loadend 事件表示在上述 3 种情况下，所有读取操作都已经结束。 readAsText()和 readAsDataURL()方法已经得到了所有主流浏览器支持。
 
 ### 20.4.3 FileReaderSync 类型
 
 顾名思义， FileReaderSync 类型就是 FileReader 的同步版本。这个类型拥有与 FileReader 相同的方法，只有在整个文件都加载到内存之后才会继续执行。 FileReaderSync 只在工作线程中可用，因为如果读取整个文件耗时太长则会影响全局。
+
 假设通过 postMessage()向工作线程发送了一个 File 对象。以下代码会让工作线程同步将文件读取到内存中，然后将文件的数据 URL 发回来：
 
 ```js
@@ -29056,6 +29105,7 @@ self.omessage = (messageEvent) => {
 ### 20.4.4 Blob 与部分读取
 
 某些情况下，可能需要读取部分文件而不是整个文件。为此， File 对象提供了一个名为 slice()的方法。slice()方法接收两个参数：起始字节和要读取的字节数。这个方法返回一个 Blob 的实例，而 Blob 实际上是 File 的超类。
+
 blob 表示二进制大对象（binary larget object），是 JavaScript 对不可修改二进制数据的封装类型。包含字符串的数组、 ArrayBuffers、ArrayBufferViews，甚至其他 Blob 都可以用来创建 blob。Blob 构造函数可以接收一个 options 参数，并在其中指定 MIME 类型：
 
 ```js
@@ -29118,11 +29168,13 @@ filesList.addEventListener('change', (event) => {
 ```
 
 如果把对象 URL 直接放到`<img>`标签，就不需要把数据先读到 JavaScript 中了。`<img>`标签可以直接从相应的内存位置把数据读取到页面上。
+
 使用完数据之后，最好能释放与之关联的内存。只要对象 URL 在使用中，就不能释放内存。如果想表明不再使用某个对象 URL，则可以把它传给 window.URL.revokeObjectURL()。页面卸载时，所有对象 URL 占用的内存都会被释放。不过，最好在不使用时就立即释放内存，以便尽可能保持页面占用最少资源。
 
 ### 20.4.6 读取拖放文件
 
 组合使用 HTML5 拖放 API 与 File API 可以创建读取文件信息的有趣功能。在页面上创建放置目标后，可以从桌面上把文件拖动并放到放置目标。这样会像拖放图片或链接一样触发 drop 事件。被放置的文件可以通过事件的 event.dataTransfer.files 属性读到，这个属性保存着一组 File 对象，就像文本输入字段一样。
+
 下面的例子会把拖放到页面放置目标上的文件信息打印出来：
 
 ```js
@@ -29155,6 +29207,7 @@ droptarget.addEventListener('drop', handleEvent);
 ## 20.5 媒体元素
 
 随着嵌入音频和视频元素在 Web 应用上的流行，大多数内容提供商会强迫使用 Flash 以便达到最佳的跨浏览器兼容性。 HTML5 新增了两个与媒体相关的元素，即 `<audio>`和`<video>`，从而为浏览器提供了嵌入音频和视频的统一解决方案。
+
 这两个元素既支持 Web 开发者在页面中嵌入媒体文件，也支持 JavaScript 实现对媒体的自定义控制。以下是它们的用法：
 
 ```html
@@ -29165,6 +29218,7 @@ droptarget.addEventListener('drop', handleEvent);
 ```
 
 每个元素至少要求有一个 src 属性，以表示要加载的媒体文件。我们也可以指定表示视频播放器大小的 width 和 height 属性，以及在视频加载期间显示图片 URI 的 poster 属性。另外， controls 属性如果存在，则表示浏览器应该显示播放界面，让用户可以直接控制媒体。开始和结束标签之间的内容是在媒体播放器不可用时显示的替代内容。
+
 由于浏览器支持的媒体格式不同，因此可以指定多个不同的媒体源。为此，需要从元素中删除 src 属性，使用一个或多个 `<source>`元素代替，如下面的例子所示：
 
 ```html
@@ -29357,24 +29411,26 @@ IE4 最早在网页中为 JavaScript 引入了对拖放功能的支持。当时�
 ### 20.6.1 拖放事件
 
 拖放事件几乎可以让开发者控制拖放操作的方方面面。关键的部分是确定每个事件是在哪里触发的。有的事件在被拖放元素上触发，有的事件则在放置目标上触发。在某个元素被拖动时，会（按顺序）触发以下事件：
-(1) dragstart
-(2) drag
-(3) dragend
+
+1. dragstart
+2. drag
+3. dragend
 
 在按住鼠标键不放并开始移动鼠标的那一刻，被拖动元素上会触发 dragstart 事件。此时光标会变成非放置符号（圆环中间一条斜杠），表示元素不能放到自身上。拖动开始时，可以在 ondragstart 事件处理程序中通过 JavaScript 执行某些操作。
 dragstart 事件触发后，只要目标还被拖动就会持续触发 drag 事件。这个事件类似于 mousemove，即随着鼠标移动而不断触发。当拖动停止时（把元素放到有效或无效的放置目标上），会触发 dragend 事件。
 
 所有这 3 个事件的目标都是被拖动的元素。默认情况下，浏览器在拖动开始后不会改变被拖动元素的外观，因此是否改变外观由你来决定。不过，大多数浏览器此时会创建元素的一个半透明副本，始终跟随在光标下方。
 在把元素拖动到一个有效的放置目标上时，会依次触发以下事件：
-(1) dragenter
-(2) dragover
-(3) dragleave 或 drop
+
+1. dragenter
+2. dragover
+3. dragleave 或 drop
 
 只要一把元素拖动到放置目标上， dragenter 事件（类似于 mouseover 事件）就会触发。 dragenter 事件触发之后，会立即触发 dragover 事件，并且元素在放置目标范围内被拖动期间此事件会持续触发。当元素被拖动到放置目标之外， dragover 事件停止触发， dragleave 事件触发（类似于 mouseout 事件）。如果被拖动元素被放到了目标上，则会触发 drop 事件而不是 dragleave 事件。这些事件的目标是放置目标元素。
 
 ### 20.6.2 自定义放置目标
 
-在把某个元素拖动到无效放置目标上时，会看到一个特殊光标（圆环中间一条斜杠）表示不能放下。即使所有元素都支持放置目标事件，这些元素默认也是不允许放置的。如果把元素拖动到不允许放置的目标上，无论用户动作是什么都不会触发 drop 事件。不过，通过覆盖 dragenter 和 dragover 事件的默认行为，可以把任何元素转换为有效的放置目标。例如，如果有一个 ID 为"droptarget"的<div>元素，那么可以使用以下代码把它转换成一个放置目标：
+在把某个元素拖动到无效放置目标上时，会看到一个特殊光标（圆环中间一条斜杠）表示不能放下。即使所有元素都支持放置目标事件，这些元素默认也是不允许放置的。如果把元素拖动到不允许放置的目标上，无论用户动作是什么都不会触发 drop 事件。不过，通过覆盖 dragenter 和 dragover 事件的默认行为，可以把任何元素转换为有效的放置目标。例如，如果有一个 ID 为"droptarget"的 `<div>` 元素，那么可以使用以下代码把它转换成一个放置目标：
 
 ```js
 let droptarget = document.getElementById('droptarget');
@@ -29386,7 +29442,7 @@ droptarget.addEventListener('dragenter', (event) => {
 });
 ```
 
-执行上面的代码之后，把元素拖动到这个 <div>上应该可以看到光标变成了允许放置的样子。另外， drop 事件也会触发。
+执行上面的代码之后，把元素拖动到这个 `<div>` 上应该可以看到光标变成了允许放置的样子。另外， drop 事件也会触发。
 在 Firefox 中，放置事件的默认行为是导航到放在放置目标上的 URL。这意味着把图片拖动到放置目标上会导致页面导航到图片文件，把文本拖动到放置目标上会导致无效 URL 错误。为阻止这个行为，在 Firefox 中必须取消 drop 事件的默认行为：
 
 ```js
@@ -29438,24 +29494,16 @@ dropEffect 属性可以告诉浏览器允许哪种放置行为。这个属性有
 除非同时设置 effectAllowed，否则 dropEffect 属性也没有用。 effectAllowed 属性表示对被拖动元素是否允许 dropEffect。这个属性有如下几个可能的值。
 
 - "uninitialized"：没有给被拖动元素设置动作。
-
 - "none"：被拖动元素上没有允许的操作。
-
 - "copy"：只允许 "copy"这种 dropEffect。
-
 - "link"：只允许 "link"这种 dropEffect。
-
 - "move"：只允许 "move"这种 dropEffect。
-
 - "copyLink"：允许"copy"和"link"两种 dropEffect。
-
 - "copyMove"：允许"copy"和"move"两种 dropEffect。
-
 - "linkMove"：允许"link"和"move"两种 dropEffect。
+- "all"：允许所有 dropEffect。必须在 ondragstart 事件处理程序中设置这个属性。假
 
-- "all"：允许所有 dropEffect。必须在 ondragstart 事件处理程序中设置这个属性。假设我们想允许用户把文本从一个文本框拖动到一个 <div>元素。那么必须同时把 dropEffect 和
-
-effectAllowed 属性设置为 "move"。因为 <div>元素上放置事件的默认行为是什么也不做，所以文本不会自动地移动自己。如果覆盖这个默认行为，文本就会自动从文本框中被移除。然后是否把文本插入 <div>元素就取决于你了。如果是把 dropEffect 和 effectAllowed 属性设置为 "copy"，那么文本框中的文本不会自动被移除。
+设我们想允许用户把文本从一个文本框拖动到一个 `<div>` 元素。那么必须同时把 dropEffect 和 effectAllowed 属性设置为 "move"。因为 `<div>` 元素上放置事件的默认行为是什么也不做，所以文本不会自动地移动自己。如果覆盖这个默认行为，文本就会自动从文本框中被移除。然后是否把文本插入 `<div>` 元素就取决于你了。如果是把 dropEffect 和 effectAllowed 属性设置为 "copy"，那么文本框中的文本不会自动被移除。
 
 ### 20.6.5 可拖动能力
 
@@ -29488,7 +29536,12 @@ Notifications API 在 Service Worker 中非常有用。渐进 Web 应用（ PWA�
 
 ### 20.7.1 通知权限
 
-Notifications API 有被滥用的可能，因此默认会开启两项安全措施： .通知只能在运行在安全上下文的代码中被触发； .通知必须按照每个源的原则明确得到用户允许。用户授权显示通知是通过浏览器内部的一个对话框完成的。除非用户没有明确给出允许或拒绝的答复，否则这个权限请求对每个域只会出现一次。浏览器会记住用户的选择，如果被拒绝则无法重来。页面可以使用全局对象 Notification 向用户请求通知权限。这个对象有一个 requestPemission()方法，该方法返回一个期约，用户在授权对话框上执行操作后这个期约会解决。
+Notifications API 有被滥用的可能，因此默认会开启两项安全措施：
+
+1. 通知只能在运行在安全上下文的代码中被触发；
+2. 通知必须按照每个源的原则明确得到用户允许。
+
+用户授权显示通知是通过浏览器内部的一个对话框完成的。除非用户没有明确给出允许或拒绝的答复，否则这个权限请求对每个域只会出现一次。浏览器会记住用户的选择，如果被拒绝则无法重来。页面可以使用全局对象 Notification 向用户请求通知权限。这个对象有一个 requestPemission()方法，该方法返回一个期约，用户在授权对话框上执行操作后这个期约会解决。
 
 ```js
 Notification.requestPermission().then((permission) => {
@@ -29525,8 +29578,7 @@ setTimeout(() => n.close(), 1000);
 
 ### 20.7.3 通知生命周期回调
 
-通知并非只用于显示文本字符串，也可用于实现交互。 Notifications API 提供了 4 个用于添加回调的
-生命周期方法：
+通知并非只用于显示文本字符串，也可用于实现交互。 Notifications API 提供了 4 个用于添加回调的生命周期方法：
 
 - onshow 在通知显示时触发；
 - onclick 在通知被点击时触发；
@@ -29562,18 +29614,25 @@ Web 开发中一个常见的问题是开发者不知道用户什么时候真正�
 
 ## 20.9 Streams API
 
-Streams API 是为了解决一个简单但又基础的问题而生的： Web 应用如何消费有序的小信息块而不是大块信息？这种能力主要有两种应用场景。 .大块数据可能不会一次性都可用。网络请求的响应就是一个典型的例子。网络负载是以连续信息包形式交付的，而流式处理可以让应用在数据一到达就能使用，而不必等到所有数据都加载完毕。
-.大块数据可能需要分小部分处理。视频处理、数据压缩、图像编码和 JSON 解析都是可以分成小部分进行处理，而不必等到所有数据都在内存中时再处理的例子。
-第 24 章在讨论网络请求和远程资源时会介绍 Streams API 在 fetch()中的应用，不过 Streams API 本身是通用的。实现 Observable 接口的 JavaScript 库共享了很多流的基础概念。
+Streams API 是为了解决一个简单但又基础的问题而生的： Web 应用如何消费有序的小信息块而不是大块信息？这种能力主要有两种应用场景。
+
+1. 大块数据可能不会一次性都可用。网络请求的响应就是一个典型的例子。网络负载是以连续信息包形式交付的，而流式处理可以让应用在数据一到达就能使用，而不必等到所有数据都加载完毕。
+2. 大块数据可能需要分小部分处理。视频处理、数据压缩、图像编码和 JSON 解析都是可以分成小部分进行处理，而不必等到所有数据都在内存中时再处理的例子。
+   第 24 章在讨论网络请求和远程资源时会介绍 Streams API 在 fetch()中的应用，不过 Streams API 本身是通用的。实现 Observable 接口的 JavaScript 库共享了很多流的基础概念。
 
 ### 20.9.1 理解流
 
 提到流，可以把数据想像成某种通过管道输送的液体。 JavaScript 中的流借用了管道相关的概念，因为原理是相通的。根据规范，“这些 API 实际是为映射低级 I/O 原语而设计，包括适当时候对字节流的规范化”。Stream API 直接解决的问题是处理网络请求和读写磁盘。
 Stream API 定义了三种流。 .可读流：可以通过某个公共接口读取数据块的流。数据在内部从底层源进入流，然后由消费者（consumer）进行处理。
-.可写流：可以通过某个公共接口写入数据块的流。生产者（producer）将数据写入流，数据在内部传入底层数据槽（ sink）。
-.转换流：由两种流组成，可写流用于接收数据（可写端），可读流用于输出数据（可读端）。这两个流之间是转换程序（transformer），可以根据需要检查和修改流内容。
-块、内部队列和反压流的基本单位是块（chunk）。块可是任意数据类型，但通常是定型数组。每个块都是离散的流片段，可以作为一个整体来处理。更重要的是，块不是固定大小的，也不一定按固定间隔到达。在理想的流当中，块的大小通常近似相同，到达间隔也近似相等。不过好的流实现需要考虑边界情况。前面提到的各种类型的流都有入口和出口的概念。有时候，由于数据进出速率不同，可能会出现不匹配的情况。为此流平衡可能出现如下三种情形。 .流出口处理数据的速度比入口提供数据的速度快。流出口经常空闲（可能意味着流入口效率较低），但只会浪费一点内存或计算资源，因此这种流的不平衡是可以接受的。 .流入和流出均衡。这是理想状态。 .流入口提供数据的速度比出口处理数据的速度快。这种流不平衡是固有的问题。此时一定会在某个地方出现数据积压，流必须相应做出处理。流不平衡是常见问题，但流也提供了解决这个问题的工具。所有流都会为已进入流但尚未离开流的块提供一个内部队列。对于均衡流，这个内部队列中会有零个或少量排队的块，因为流出口块出列的速度与流入口块入列的速度近似相等。这种流的内部队列所占用的内存相对比较小。
-如果块入列速度快于出列速度，则内部队列会不断增大。流不能允许其内部队列无限增大，因此它会使用反压（backpressure）通知流入口停止发送数据，直到队列大小降到某个既定的阈值之下。这个阈值由排列策略决定，这个策略定义了内部队列可以占用的最大内存，即高水位线（high water mark）。
+
+- 可写流：可以通过某个公共接口写入数据块的流。生产者（producer）将数据写入流，数据在内部传入底层数据槽（ sink）。
+- 转换流：由两种流组成，可写流用于接收数据（可写端），可读流用于输出数据（可读端）。这两个流之间是转换程序（transformer），可以根据需要检查和修改流内容。
+
+块、内部队列和反压流的基本单位是块（chunk）。块可是任意数据类型，但通常是定型数组。每个块都是离散的流片段，可以作为一个整体来处理。更重要的是，块不是固定大小的，也不一定按固定间隔到达。在理想的流当中，块的大小通常近似相同，到达间隔也近似相等。不过好的流实现需要考虑边界情况。前面提到的各种类型的流都有入口和出口的概念。有时候，由于数据进出速率不同，可能会出现不匹配的情况。为此流平衡可能出现如下三种情形。
+
+- 流出口处理数据的速度比入口提供数据的速度快。流出口经常空闲（可能意味着流入口效率较低），但只会浪费一点内存或计算资源，因此这种流的不平衡是可以接受的。
+- 流入和流出均衡。这是理想状态。 .流入口提供数据的速度比出口处理数据的速度快。这种流不平衡是固有的问题。此时一定会在某个地方出现数据积压，流必须相应做出处理。流不平衡是常见问题，但流也提供了解决这个问题的工具。所有流都会为已进入流但尚未离开流的块提供一个内部队列。对于均衡流，这个内部队列中会有零个或少量排队的块，因为流出口块出列的速度与流入口块入列的速度近似相等。这种流的内部队列所占用的内存相对比较小。
+  如果块入列速度快于出列速度，则内部队列会不断增大。流不能允许其内部队列无限增大，因此它会使用反压（backpressure）通知流入口停止发送数据，直到队列大小降到某个既定的阈值之下。这个阈值由排列策略决定，这个策略定义了内部队列可以占用的最大内存，即高水位线（high water mark）。
 
 ### 20.9.2 可读流
 
@@ -29875,18 +29934,12 @@ const pipedStream = integerStream.pipeTo(writableStream);
 Performance 接口由多个 API 构成：
 
 - High Resolution Time API
-
 - Performance Timeline API
-
 - Navigation Timing API
-
 - User Timing API
-
 - Resource Timing API
-
 - Paint Timing API
-
-有关这些规范的更多信息以及新增的性能相关规范，可以关注 W3C 性能工作组的 GitHub 项目页面。
+  有关这些规范的更多信息以及新增的性能相关规范，可以关注 W3C 性能工作组的 GitHub 项目页面。
 
 ### 20.10.1 High Resolution Time API
 
@@ -29930,7 +29983,11 @@ Performance Timeline API 使用一套用于度量客户端延迟的工具扩展�
 ```js
 console.log(performance.getEntries());
 // [PerformanceNavigationTiming, PerformanceResourceTiming, ... ]
-这个返回的集合代表浏览器的性能时间线（performance timeline）。每个 PerformanceEntry对象都有 name、entryType、startTime和 duration属性：
+```
+
+这个返回的集合代表浏览器的性能时间线（performance timeline）。每个 PerformanceEntry 对象都有 name、entryType、startTime 和 duration 属性：
+
+```js
 const entry = performance.getEntries()[0];
 console.log(entry.name); // "https://foo.com"
 console.log(entry.entryType); // navigation
@@ -30018,8 +30075,9 @@ performanceResourceTimingEntry.requestStart);
 
 这里所说的 Web 组件指的是一套用于增强 DOM 行为的工具，包括影子 DOM、自定义元素和 HTML 模板。这一套浏览器 API 特别混乱。
 
-.并没有统一的“ Web Components”规范：每个 Web 组件都在一个不同的规范中定义。
-.有些 Web 组件如影子 DOM 和自定义元素，已经出现了向后不兼容的版本问题。 .浏览器实现极其不一致。由于存在这些问题，因此使用 Web 组件通常需要引入一个 Web 组件库，比如 Polymer。这种库可以作为腻子脚本，模拟浏览器中缺失的 Web 组件。
+- 并没有统一的“ Web Components”规范：每个 Web 组件都在一个不同的规范中定义。
+- 有些 Web 组件如影子 DOM 和自定义元素，已经出现了向后不兼容的版本问题。
+- 浏览器实现极其不一致。由于存在这些问题，因此使用 Web 组件通常需要引入一个 Web 组件库，比如 Polymer。这种库可以作为腻子脚本，模拟浏览器中缺失的 Web 组件。
 
 ### 20.11.1 HTML 模板
 
@@ -30064,7 +30122,10 @@ DocumentFragment 也是批量向 HTML 中添加元素的高效工具。比如，
 ```js
 // 开始状态： // <div id="foo"></div> // // 期待的最终状态： // <div id="foo"> // <p></p> // <p></p> // <p></p> // </div> // 也可以使用 document.createDocumentFragment() const fragment = new DocumentFragment();
 const foo = document.querySelector('#foo');
-// 为 DocumentFragment添加子元素不会导致布局重排 fragment.appendChild(document.createElement('p')); fragment.appendChild(document.createElement('p')); fragment.appendChild(document.createElement('p'));
+// 为 DocumentFragment添加子元素不会导致布局重排
+fragment.appendChild(document.createElement('p'));
+fragment.appendChild(document.createElement('p'));
+fragment.appendChild(document.createElement('p'));
 console.log(fragment.children.length); // 3
 foo.appendChild(fragment);
 
@@ -30155,7 +30216,8 @@ color: blue; } </style>
 当然，这个方案也不是十分理想，因为这跟在全局命名空间中定义变量没有太大区别。尽管知道这些样式与其他地方无关，所有 CSS 样式还会应用到整个 DOM。为此，就要保持 CSS 选择符足够特别，以防这些样式渗透到其他地方。但这也仅是一个折中的办法而已。理想情况下，应该能够把 CSS 限制在使用它们的 DOM 上：这正是影子 DOM 最初的使用场景。
 
 2. 创建影子 DOM
-   考虑到安全及避免影子 DOM 冲突，并非所有元素都可以包含影子 DOM。尝试给无效元素或者已经有了影子 DOM 的元素添加影子 DOM 会导致抛出错误。以下是可以容纳影子 DOM 的元素。
+
+考虑到安全及避免影子 DOM 冲突，并非所有元素都可以包含影子 DOM。尝试给无效元素或者已经有了影子 DOM 的元素添加影子 DOM 会导致抛出错误。以下是可以容纳影子 DOM 的元素。
 
 - 任何以有效名称创建的自定义元素（参见 HTML 规范中相关的定义）
 - `<article>`
@@ -30299,7 +30361,7 @@ setTimeout(
 );
 ```
 
-影子 DOM 一添加到元素中，浏览器就会赋予它最高优先级，优先渲染它的内容而不是原来的文本。在这个例子中，由于影子 DOM 是空的，因此 <div>会在 1000 毫秒后变成空的。为了显示文本内容，需要使用 <slot>标签指示浏览器在哪里放置原来的 HTML。下面的代码修改了前面的例子，让影子宿主中的文本出现在了影子 DOM 中：
+影子 DOM 一添加到元素中，浏览器就会赋予它最高优先级，优先渲染它的内容而不是原来的文本。在这个例子中，由于影子 DOM 是空的，因此 `<div>` 会在 1000 毫秒后变成空的。为了显示文本内容，需要使用 `<slot>` 标签指示浏览器在哪里放置原来的 HTML。下面的代码修改了前面的例子，让影子宿主中的文本出现在了影子 DOM 中：
 
 ```js
 document.body.innerHTML = ` <div id="foo"> 
@@ -30312,7 +30374,7 @@ document
 <div>`;
 ```
 
-现在，投射进去的内容就像自己存在于影子 DOM 中一样。检查页面会发现原来的内容实际上替代了<slot>：
+现在，投射进去的内容就像自己存在于影子 DOM 中一样。检查页面会发现原来的内容实际上替代了`<slot>`：
 
 ```js
 <body>
@@ -30378,7 +30440,7 @@ document.querySelector('div').attachShadow({ mode: 'open' }).innerHTML = `
 // Handled inside: <button onclick="..."></button> // Handled outside: <div onclick="..."></div>
 ```
 
-注意，事件重定向只会发生在影子 DOM 中实际存在的元素上。使用 <slot>标签从外部投射进来的元素不会发生事件重定向，因为从技术上讲，这些元素仍然存在于影子 DOM 外部。
+注意，事件重定向只会发生在影子 DOM 中实际存在的元素上。使用 `<slot>` 标签从外部投射进来的元素不会发生事件重定向，因为从技术上讲，这些元素仍然存在于影子 DOM 外部。
 
 ### 20.11.3 自定义元素
 
@@ -30397,7 +30459,7 @@ document.body.innerHTML = `
 console.log(document.querySelector('x-foo') instanceof HTMLElement); // true
 ```
 
-自定义元素在此基础上更进一步。利用自定义元素，可以在 <x-foo>标签出现时为它定义复杂的行为，同样也可以在 DOM 中将其纳入元素生命周期管理。自定义元素要使用全局属性 customElements，这个属性会返回 CustomElementRegistry 对象。
+自定义元素在此基础上更进一步。利用自定义元素，可以在 `<x-foo>` 标签出现时为它定义复杂的行为，同样也可以在 DOM 中将其纳入元素生命周期管理。自定义元素要使用全局属性 customElements，这个属性会返回 CustomElementRegistry 对象。
 
 ```js
 console.log(customElements); // CustomElementRegistry {}
@@ -30597,8 +30659,7 @@ Web Cryptography API 描述了一套密码学工具，规范了 JavaScript 如�
 
 ### 20.12.1 生成随机数
 
-在需要生成随机值时，很多人会使用 Math.random()。这个方法在浏览器中是以伪随机数生成器
-（PRNG，PseudoRandom Number Generator）方式实现的。所谓“伪”指的是生成值的过程不是真的随机。 PRNG 生成的值只是模拟了随机的特性。浏览器的 PRNG 并未使用真正的随机源，只是对一个内部状态应用了固定的算法。每次调用 Math.random()，这个内部状态都会被一个算法修改，而结果会被转换为一个新的随机值。例如， V8 引擎使用了一个名为 xorshift128+的算法来执行这种修改。
+在需要生成随机值时，很多人会使用 Math.random()。这个方法在浏览器中是以伪随机数生成器（PRNG，PseudoRandom Number Generator）方式实现的。所谓“伪”指的是生成值的过程不是真的随机。 PRNG 生成的值只是模拟了随机的特性。浏览器的 PRNG 并未使用真正的随机源，只是对一个内部状态应用了固定的算法。每次调用 Math.random()，这个内部状态都会被一个算法修改，而结果会被转换为一个新的随机值。例如， V8 引擎使用了一个名为 xorshift128+的算法来执行这种修改。
 由于算法本身是固定的，其输入只是之前的状态，因此随机数顺序也是确定的。 xorshift128+使用 128 位内部状态，而算法的设计让任何初始状态在重复自身之前都会产生 2128–1 个伪随机值。这种循环被称为置换循环（permutation cycle），而这个循环的长度被称为一个周期（period）。很明显，如果攻击者知道 PRNG 的内部状态，就可以预测后续生成的伪随机值。如果开发者无意中使用 PRNG 生成了私有密钥用于加密，则攻击者就可以利用 PRNG 的这个特性算出私有密钥。
 伪随机数生成器主要用于快速计算出看起来随机的值。不过并不适合用于加密计算。为解决这个问题，密码学安全伪随机数生成器（CSPRNG，Cryptographically Secure PseudoRandom Number Generator）额外增加了一个熵作为输入，例如测试硬件时间或其他无法预计行为的系统特性。这样一来，计算速度明显比常规 PRNG 慢很多，但 CSPRNG 生成的值就很难预测，可以用于加密了。
 Web Cryptography API 引入了 CSPRNG，这个 CSPRNG 可以通过 crypto.getRandomValues()在全局 Crypto 对象上访问。与 Math.random()返回一个介于 0 和 1 之间的浮点数不同， getRandomValues()会把随机值写入作为参数传给它的定型数组。定型数组的类不重要，因为底层缓冲区会被随机的二进制位填充。
@@ -30676,21 +30737,48 @@ console.log(crypto.subtle); // SubtleCrypto {}
 软件公司通常会公开自己软件二进制安装包的摘要，以便用户验证自己下载到的确实是该公司发布的版本（而不是被恶意软件篡改过的版本）。下面的例子演示了下载 Firefox v67.0，通过 SHA-512 计算其散列，再下载其 SHA-512 二进制验证摘要，最后检查两个十六进制字符串匹配：
 
 ```js
-(async function() { const mozillaCdnUrl = '// download-
-origin.cdn.mozilla.net/pub/firefox/releases/67.0 /'; const firefoxBinaryFilename = 'linux-x86_64/en-US/firefox-67.0.tar.bz2'; const firefoxShaFilename = 'SHA512SUMS';
-console.log('Fetching Firefox binary...'); const fileArrayBuffer = await (await fetch(mozillaCdnUrl + firefoxBinaryFilename)) .arrayBuffer();
-console.log('Calculating Firefox digest...'); const firefoxBinaryDigest = await crypto.subtle.digest('SHA-512', fileArrayBuffer); const firefoxHexDigest = Array.from(new Uint8Array(firefoxBinaryDigest))
-.map((x) => x.toString(16).padStart(2, '0')) .join('');
-console.log('Fetching published binary digests...'); // SHA文件包含此次发布的所有 Firefox二进制文件的摘要， // 因此要根据其格式进制拆分
-const shaPairs = (await (await fetch(mozillaCdnUrl + firefoxShaFilename)).text())
-.split(/\n/).map((x) => x.split(/\s+/));
-let verified = false;
+(async function () {
+  const mozillaCdnUrl =
+    '// download-origin.cdn.mozilla.net/pub/firefox/releases/67.0 /';
+  const firefoxBinaryFilename = 'linux-x86_64/en-US/firefox-67.0.tar.bz2';
+  const firefoxShaFilename = 'SHA512SUMS';
+  console.log('Fetching Firefox binary...');
+  const fileArrayBuffer = await (
+    await fetch(mozillaCdnUrl + firefoxBinaryFilename)
+  ).arrayBuffer();
+  console.log('Calculating Firefox digest...');
+  const firefoxBinaryDigest = await crypto.subtle.digest(
+    'SHA-512',
+    fileArrayBuffer
+  );
+  const firefoxHexDigest = Array.from(new Uint8Array(firefoxBinaryDigest))
+    .map((x) => x.toString(16).padStart(2, '0'))
+    .join('');
+  console.log('Fetching published binary digests...'); // SHA文件包含此次发布的所有 Firefox二进制文件的摘要，
+  // 因此要根据其格式进制拆分
+  const shaPairs = (
+    await (await fetch(mozillaCdnUrl + firefoxShaFilename)).text()
+  )
+    .split(/\n/)
+    .map((x) => x.split(/\s+/));
+  let verified = false;
 
-console.log('Checking calculated digest against published digests...'); for (const [sha, filename] of shaPairs) { if (filename === firefoxBinaryFilename) {
-if (sha === firefoxHexDigest) { verified = true; break;
-} } }
-console.log('Verified:', verified); })();
-// Fetching Firefox binary... // Calculating Firefox digest... // Fetching published binary digests... // Checking calculated digest against published digests... // Verified: true
+  console.log('Checking calculated digest against published digests...');
+  for (const [sha, filename] of shaPairs) {
+    if (filename === firefoxBinaryFilename) {
+      if (sha === firefoxHexDigest) {
+        verified = true;
+        break;
+      }
+    }
+  }
+  console.log('Verified:', verified);
+})();
+// Fetching Firefox binary...
+// Calculating Firefox digest...
+// Fetching published binary digests...
+// Checking calculated digest against published digests...
+// Verified: true
 ```
 
 2. CryptoKey 与算法
@@ -30766,9 +30854,10 @@ console.log('Verified:', verified); })();
 - unwrapKey
 
 假设要生成一个满足如下条件的对称密钥：
-.支持 AES-CTR 算法； .密钥长度 128 位；
-.不能从 CryptoKey 对象中提取；
-.可以跟 encrypt()和 decrypt()方法一起使用。那么可以参考如下代码：
+
+- 支持 AES-CTR 算法； .密钥长度 128 位；
+- 不能从 CryptoKey 对象中提取；
+- 可以跟 encrypt()和 decrypt()方法一起使用。那么可以参考如下代码：
 
 ```js
 (async function () {
@@ -30781,22 +30870,27 @@ console.log('Verified:', verified); })();
 ```
 
 假设要生成一个满足如下条件的非对称密钥：
-.支持 ECDSA 算法； .使用 P-256 椭圆曲线；
-.可以从 CryptoKey 中提取；
-.可以跟 sign()和 verify()方法一起使用。那么可以参考如下代码：
+
+- 支持 ECDSA 算法； .使用 P-256 椭圆曲线；
+- 可以从 CryptoKey 中提取；
+- 可以跟 sign()和 verify()方法一起使用。那么可以参考如下代码：
 
 ```js
-(async function() { const params = {
-name: 'ECDSA',
-namedCurve: 'P-256'
-};
-const keyUsages = ['sign', 'verify'];
-const {publicKey, privateKey} = await crypto.subtle.generateKey(params, true, keyUsages);
-20.12 Web Cryptography API 669
-console.log(publicKey);
-// CryptoKey {type: "public", extractable: true, algorithm: {...}, usages: Array(1)}
- console.log(privateKey);
-// CryptoKey {type: "private", extractable: true, algorithm: {...}, usages: Array(1)}
+(async function () {
+  const params = {
+    name: 'ECDSA',
+    namedCurve: 'P-256',
+  };
+  const keyUsages = ['sign', 'verify'];
+  const { publicKey, privateKey } = await crypto.subtle.generateKey(
+    params,
+    true,
+    keyUsages
+  );
+  console.log(publicKey);
+  // CryptoKey {type: "public", extractable: true, algorithm: {...}, usages: Array(1)}
+  console.log(privateKey);
+  // CryptoKey {type: "private", extractable: true, algorithm: {...}, usages: Array(1)}
 })();
 ```
 
@@ -30876,26 +30970,38 @@ deriveBits()方法接收一个算法参数对象、主密钥和输出的位长�
 deriveKey()方法是类似的，只不过返回的是 CryptoKey 的实例而不是 ArrayBuffer。下面的例子基于一个原始字符串，应用 PBKDF2 算法将其导入一个原始主密钥，然后派生了一个 AES-GCM 格式的新密钥：
 
 ```js
-(async function() { const password = 'foobar'; const salt = crypto.getRandomValues(new Uint8Array(16)); const algoIdentifier = 'PBKDF2'; const keyFormat = 'raw'; const isExtractable = false;
-const params = {
-20.12 Web Cryptography API 671
-name: algoIdentifier };
-const masterKey = await window.crypto.subtle.importKey( keyFormat, (new TextEncoder()).encode(password), params, isExtractable,
-['deriveKey']
-);
-const deriveParams = { name: 'AES-GCM', length: 128
-};
-const derivedKey = await window.crypto.subtle.deriveKey( Object.assign({salt, iterations: 1E5, hash: 'SHA-256'}, params), masterKey, deriveParams, isExtractable, ['encrypt']
- );
-console.log(derivedKey); // CryptoKey {type: "secret", extractable: false, algorithm: {...}, usages: Array(1)}
+(async function () {
+  const password = 'foobar';
+  const salt = crypto.getRandomValues(new Uint8Array(16));
+  const algoIdentifier = 'PBKDF2';
+  const keyFormat = 'raw';
+  const isExtractable = false;
+  const params = {
+    name: algoIdentifier,
+  };
+  const masterKey = await window.crypto.subtle.importKey(
+    keyFormat,
+    new TextEncoder().encode(password),
+    params,
+    isExtractable,
+    ['deriveKey']
+  );
+  const deriveParams = { name: 'AES-GCM', length: 128 };
+  const derivedKey = await window.crypto.subtle.deriveKey(
+    Object.assign({ salt, iterations: 1e5, hash: 'SHA-256' }, params),
+    masterKey,
+    deriveParams,
+    isExtractable,
+    ['encrypt']
+  );
+  console.log(derivedKey); // CryptoKey {type: "secret", extractable: false, algorithm: {...}, usages: Array(1)}
 })();
 ```
 
 6. 使用非对称密钥签名和验证消息
 
 通过 SubtleCrypto 对象可以使用公钥算法用私钥生成签名，或者用公钥验证签名。这两种操作分别通过 SubtleCrypto.sign()和 SubtleCrypto.verify()方法完成。
-签名消息需要传入参数对象以指定算法和必要的值、 CryptoKey 和要签名的 ArrayBuffer 或
-ArrayBufferView。下面的例子会生成一个椭圆曲线密钥对，并使用私钥签名消息：
+签名消息需要传入参数对象以指定算法和必要的值、 CryptoKey 和要签名的 ArrayBuffer 或 ArrayBufferView。下面的例子会生成一个椭圆曲线密钥对，并使用私钥签名消息：
 
 ```js
 (async function() {
@@ -30910,8 +31016,7 @@ const signature = await crypto.subtle.sign(signParams, privateKey, message);
 console.log(new Uint32Array(signature)); // Uint32Array(16) [2202267297, 698413658, 1501924384, 691450316, 778757775, ... ] })();
 ```
 
-希望通过这个签名验证消息的人可以使用公钥和 SubtleCrypto.verify()方法。这个方法的签名
-几乎与 sign()相同，只是必须提供公钥以及签名。下面的例子通过验证生成的签名扩展了前面的例子：
+希望通过这个签名验证消息的人可以使用公钥和 SubtleCrypto.verify()方法。这个方法的签名几乎与 sign()相同，只是必须提供公钥以及签名。下面的例子通过验证生成的签名扩展了前面的例子：
 
 ```js
 (async function () {
@@ -30937,32 +31042,39 @@ console.log(new Uint32Array(signature)); // Uint32Array(16) [2202267297, 6984136
 
 7. 使用对称密钥加密和解密
 
-SubtleCrypto 对象支持使用公钥和对称算法加密和解密消息。这两种操作分别通过 SubtleCrypto.
-encrypt()和 SubtleCrypto.decrypt()方法完成。
+SubtleCrypto 对象支持使用公钥和对称算法加密和解密消息。这两种操作分别通过 SubtleCrypto.encrypt()和 SubtleCrypto.decrypt()方法完成。
 加密消息需要传入参数对象以指定算法和必要的值、加密密钥和要加密的数据。下面的例子会生成对称 AES-CBC 密钥，用它加密消息，最后解密消息：
 
 ```js
-(async function() { const algoIdentifier = 'AES-CBC';
-const keyParams = { name: algoIdentifier, length: 256
-};
-const keyUsages = ['encrypt', 'decrypt'];
-const key = await crypto.subtle.generateKey(keyParams, true, keyUsages);
-const originalPlaintext = (new TextEncoder()).encode('I am Satoshi Nakamoto');
-const encryptDecryptParams = { name: algoIdentifier, iv: crypto.getRandomValues(new Uint8Array(16))
-};
-const ciphertext = await crypto.subtle.encrypt(encryptDecryptParams, key, originalPlaintext);
-20.12 Web Cryptography API 673
-console.log(ciphertext);
-// ArrayBuffer(32) {}
-const decryptedPlaintext = await crypto.subtle.decrypt(encryptDecryptParams, key, ciphertext);
-console.log((new TextDecoder()).decode(decryptedPlaintext)); // I am Satoshi Nakamoto
+(async function () {
+  const algoIdentifier = 'AES-CBC';
+  const keyParams = { name: algoIdentifier, length: 256 };
+  const keyUsages = ['encrypt', 'decrypt'];
+  const key = await crypto.subtle.generateKey(keyParams, true, keyUsages);
+  const originalPlaintext = new TextEncoder().encode('I am Satoshi Nakamoto');
+  const encryptDecryptParams = {
+    name: algoIdentifier,
+    iv: crypto.getRandomValues(new Uint8Array(16)),
+  };
+  const ciphertext = await crypto.subtle.encrypt(
+    encryptDecryptParams,
+    key,
+    originalPlaintext
+  );
+  console.log(ciphertext);
+  // ArrayBuffer(32) {}
+  const decryptedPlaintext = await crypto.subtle.decrypt(
+    encryptDecryptParams,
+    key,
+    ciphertext
+  );
+  console.log(new TextDecoder().decode(decryptedPlaintext)); // I am Satoshi Nakamoto
 })();
 ```
 
 8. 包装和解包密钥
 
-SubtleCrypto 对象支持包装和解包密钥，以便在非信任渠道传输。这两种操作分别通过 Subtle-
-Crypto.wrapKey()和 SubtleCrypto.unwrapKey()方法完成。
+SubtleCrypto 对象支持包装和解包密钥，以便在非信任渠道传输。这两种操作分别通过 Subtle-Crypto.wrapKey()和 SubtleCrypto.unwrapKey()方法完成。
 包装密钥需要传入一个格式字符串、要包装的 CryptoKey 实例、要执行包装的 CryptoKey，以及一个参数对象用于指定算法和必要的值。下面的例子生成了一个对称 AES-GCM 密钥，用 AES-KW 来包装这个密钥，最后又将包装的密钥解包：
 
 ```js
@@ -31020,14 +31132,12 @@ Crypto.wrapKey()和 SubtleCrypto.unwrapKey()方法完成。
 除了定义新标签， HTML5 还定义了一些 JavaScript API。这些 API 可以为开发者提供更便捷的 Web 接口，暴露堪比桌面应用的能力。本章主要介绍了以下 API。
 
 - Atomics API 用于保护代码在多线程内存访问模式下不发生资源争用。
-
 - postMessage()API 支持从不同源跨文档发送消息，同时保证安全和遵循同源策略。
-
 - Encoding API 用于实现字符串与缓冲区之间的无缝转换（越来越常见的操作）。
-
 - File API 提供了发送、接收和读取大型二进制对象的可靠工具。
-  .媒体元素`<audio>`和`<video>`拥有自己的 API，用于操作音频和视频。并不是每个浏览器都会支持所有媒体格式，使用 canPlayType()方法可以检测浏览器支持情况。
-  .拖放 API 支持方便地将元素标识为可拖动，并在操作系统完成放置时给出回应。可以利用它创建自定义可拖动元素和放置目标。
+
+  - 媒体元素`<audio>`和`<video>`拥有自己的 API，用于操作音频和视频。并不是每个浏览器都会支持所有媒体格式，使用 canPlayType()方法可以检测浏览器支持情况。
+  - 拖放 API 支持方便地将元素标识为可拖动，并在操作系统完成放置时给出回应。可以利用它创建自定义可拖动元素和放置目标。
 
 - Notifications API 提供了一种浏览器中立的方式，以此向用户展示消通知弹层。
 - Streams API 支持以全新的方式读取、写入和处理数据。
