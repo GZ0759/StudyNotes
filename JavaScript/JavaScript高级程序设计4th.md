@@ -32006,7 +32006,8 @@ XHR 对象的 API 被普遍认为比较难用，而 Fetch API 自从诞生以后
 ## 24.1 XMLHttpRequest 对象
 
 IE5 是第一个引入 XHR 对象的浏览器。这个对象是通过 ActiveX 对象实现并包含在 MSXML 库中的。为此， XHR 对象的 3 个版本在浏览器中分别被暴露为 MSXML2.XMLHttp、MSXML2.XMLHttp.3.0 和 MXSML2.XMLHttp.6.0。
-所有现代浏览器都通过 XMLHttpRequest 构造函数原生支持 XHR 对象： let xhr = new XMLHttpRequest();
+
+所有现代浏览器都通过 XMLHttpRequest 构造函数原生支持 XHR 对象： `let xhr = new XMLHttpRequest()`;
 
 ### 24.1.1 使用 XHR
 
@@ -32045,6 +32046,7 @@ if ((xhr.status >= 200 && xhr.status < 300) || xhr.status == 304) {
 ```
 
 以上代码可能显示服务器返回的内容，也可能显示错误消息，取决于 HTTP 响应的状态码。为确定下一步该执行什么操作，最好检查 status 而不是 statusText 属性，因为后者已经被证明在跨浏览器的情况下不可靠。无论是什么响应内容类型， responseText 属性始终会保存响应体，而 responseXML 则对于非 XML 数据是 null。
+
 虽然可以像前面的例子一样发送同步请求，但多数情况下最好使用异步请求，这样可以不阻塞 JavaScript 代码继续执行。 XHR 对象有一个 readyState 属性，表示当前处在请求 /响应过程的哪个阶段。这个属性有如下可能的值。
 
 - 0：未初始化（ Uninitialized）。尚未调用 open()方法。
@@ -32052,7 +32054,8 @@ if ((xhr.status >= 200 && xhr.status < 300) || xhr.status == 304) {
 - 2：已发送（ Sent）。已调用 send()方法，尚未收到响应。
 - 3：接收中（ Receiving）。已经收到部分响应。
 - 4：完成（Complete）。已经收到所有响应，可以使用了。
-  每次 readyState 从一个值变成另一个值，都会触发 readystatechange 事件。可以借此机会检查 readyState 的值。一般来说，我们唯一关心的 readyState 值是 4，表示数据已就绪。为保证跨浏览器兼容， onreadystatechange 事件处理程序应该在调用 open()之前赋值。来看下面的例子：
+
+每次 readyState 从一个值变成另一个值，都会触发 readystatechange 事件。可以借此机会检查 readyState 的值。一般来说，我们唯一关心的 readyState 值是 4，表示数据已就绪。为保证跨浏览器兼容， onreadystatechange 事件处理程序应该在调用 open()之前赋值。来看下面的例子：
 
 ```js
 let xhr = new XMLHttpRequest();
@@ -32113,6 +32116,7 @@ xhr.send(null);
 ```
 
 服务器通过读取自定义头部可以确定适当的操作。自定义头部一定要区别于浏览器正常发送的头部，否则可能影响服务器正常响应。有些浏览器允许重写默认头部，有些浏览器则不允许。
+
 可以使用 getResponseHeader()方法从 XHR 对象获取响应头部，只要传入要获取头部的名称即可。如果想取得所有响应头部，可以使用 getAllResponseHeaders()方法，这个方法会返回包含所有响应头部的字符串。下面是调用这两个方法的例子：
 
 ```js
@@ -32147,6 +32151,7 @@ function addURLParam(url, name, value) {
 ```
 
 这里定义了一个 addURLParam()函数，它接收 3 个参数：要添加查询字符串的 URL、查询参数和参数值。首先，这个函数会检查 URL 中是否已经包含问号（以确定是否已经存在其他参数）。如果没有，则加上一个问号；否则就加上一个和号。然后，分别对参数名和参数值进行编码，并添加到 URL 末尾。最后一步是返回更新后的 URL。
+
 可以使用这个函数构建请求 URL，如下面的例子所示：
 
 ```js
@@ -32169,6 +32174,7 @@ xhr.open('post', 'example.php', true);
 ```
 
 接下来就是要给 send()方法传入要发送的数据。因为 XHR 最初主要设计用于发送 XML，所以可以传入序列化之后的 XML DOM 文档作为请求体。当然，也可以传入任意字符串。
+
 默认情况下，对服务器而言， POST 请求与提交表单是不一样的。服务器逻辑需要读取原始 POST 数据才能取得浏览器发送的数据。不过，可以使用 XHR 模拟表单提交。为此，第一步需要把 Content-Type 头部设置为 "application/x-www-formurlencoded"，这是提交表单时使用的内容类型。第二步是创建对应格式的字符串。 POST 数据此时使用与查询字符串相同的格式。如果网页中确实有一个表单需要序列化并通过 XHR 发送到服务器，则可以使用第 14 章的 serialize()函数来创建相应的字符串，如下所示：
 
 ```js
@@ -32236,7 +32242,9 @@ let form = document.getElementById('user-info');
 xhr.send(new FormData(form));
 ```
 
-使用 FormData 的另一个方便之处是不再需要给 XHR 对象显式设置任何请求头部了。 XHR 对象能够识别作为 FormData 实例传入的数据类型并自动配置相应的头部。 2. 超时
+使用 FormData 的另一个方便之处是不再需要给 XHR 对象显式设置任何请求头部了。 XHR 对象能够识别作为 FormData 实例传入的数据类型并自动配置相应的头部。
+
+2. 超时
 
 IE8 给 XHR 对象增加了一个 timeout 属性，用于表示发送请求后等待多少毫秒，如果响应不成功就中断请求。之后所有浏览器都在自己的 XHR 实现中增加了这个属性。在给 timeout 属性设置了一个时间且在该时间过后没有收到响应时， XHR 对象就会触发 timeout 事件，调用 ontimeout 事件处理程序。这个特性后来也被添加到了 XMLHttpRequest Level 2 规范。下面看一个例子：
 
@@ -32268,6 +32276,7 @@ xhr.send(null);
 3. overrideMimeType()方法
 
 Firefox 首先引入了 overrideMimeType()方法用于重写 XHR 响应的 MIME 类型。这个特性后来也被添加到了 XMLHttpRequest Level 2。因为响应返回的 MIME 类型决定了 XHR 对象如何处理响应，所以如果有办法覆盖服务器返回的类型，那么是有帮助的。
+
 假设服务器实际发送了 XML 数据，但响应头设置的 MIME 类型是 text/plain。结果就会导致虽然数据是 XML，但 responseXML 属性值是 null。此时调用 overrideMimeType()可以保证将响应当成 XML 而不是纯文本来处理：
 
 ```js
@@ -32339,6 +32348,7 @@ xhr.send(null);
 
 通过 XHR 进行 Ajax 通信的一个主要限制是跨源安全策略。默认情况下， XHR 只能访问与发起请求的页面在同一个域内的资源。这个安全限制可以防止某些恶意行为。不过，浏览器也需要支持合法跨源访问的能力。
 跨源资源共享（ CORS，Cross-Origin Resource Sharing）定义了浏览器与服务器如何实现跨源通信。 CORS 背后的基本思路就是使用自定义的 HTTP 头部允许浏览器和服务器相互了解，以确实请求或响应应该成功还是失败。
+
 对于简单的请求，比如 GET 或 POST 请求，没有自定义头部，而且请求体是 text/plain 类型，这样的请求在发送时会有一个额外的头部叫 Origin。Origin 头部包含发送请求的页面的源（协议、域名和端口），以便服务器确定是否为其提供响应。下面是 Origin 头部的一个示例：
 
 ```
@@ -32352,6 +32362,7 @@ Access-Control-Allow-Origin: http://www.nczonline.net
 ```
 
 如果没有这个头部，或者有但源不匹配，则表明不会响应浏览器请求。否则，服务器就会处理这个请求。注意，无论请求还是响应都不会包含 cookie 信息。
+
 现代浏览器通过 XMLHttpRequest 对象原生支持 CORS。在尝试访问不同源的资源时，这个行为会被自动触发。要向不同域的源发送请求，可以使用标准 XHR 对象并给 open()方法传入一个绝对 URL，比如：
 
 ```js
@@ -32370,9 +32381,9 @@ xhr.send(null);
 ```
 
 跨域 XHR 对象允许访问 status 和 statusText 属性，也允许同步请求。出于安全考虑，跨域 XHR 对象也施加了一些额外限制。
-.不能使用 setRequestHeader()设置自定义头部。
-.不能发送和接收 cookie。
 
+- 不能使用 setRequestHeader()设置自定义头部。
+- 不能发送和接收 cookie。
 - getAllResponseHeaders()方法始终返回空字符串。
 
 因为无论同域还是跨域请求都使用同一个接口，所以最好在访问本地资源时使用相对 URL，在访问远程资源时使用绝对 URL。这样可以更明确地区分使用场景，同时避免出现访问本地资源时出现头部或 cookie 信息访问受限的问题。
@@ -32420,7 +32431,8 @@ CORS 出现之前，实现跨源 Ajax 通信是有点麻烦的。开发者需要
 
 ### 24.4.1 图片探测
 
-图片探测是利用 <img>标签实现跨域通信的最早的一种技术。任何页面都可以跨域加载图片而不必担心限制，因此这也是在线广告跟踪的主要方式。可以动态创建图片，然后通过它们的 onload 和 onerror 事件处理程序得知何时收到响应。
+图片探测是利用 `<img>` 标签实现跨域通信的最早的一种技术。任何页面都可以跨域加载图片而不必担心限制，因此这也是在线广告跟踪的主要方式。可以动态创建图片，然后通过它们的 onload 和 onerror 事件处理程序得知何时收到响应。
+
 这种动态创建图片的技术经常用于图片探测（image pings）。图片探测是与服务器之间简单、跨域、单向的通信。数据通过查询字符串发送，响应可以随意设置，不过一般是位图图片或值为 204 的状态码。
 浏览器通过图片探测拿不到任何数据，但可以通过监听 onload 和 onerror 事件知道什么时候能接收到响应。下面看一个例子：
 
@@ -32433,6 +32445,7 @@ img.src = 'http://www.example.com/test?name=Nicholas';
 ```
 
 这个例子创建了一个新的 Image 实例，然后为它的 onload 和 onerror 事件处理程序添加了同一个函数。这样可以确保请求完成时无论什么响应都会收到通知。设置完 src 属性之后请求就开始了，这个例子向服务器发送了一个 name 值。
+
 图片探测频繁用于跟踪用户在页面上的点击操作或动态显示广告。当然，图片探测的缺点是只能发送 GET 请求和无法获取服务器响应的内容。这也是只能利用图片探测实现浏览器与服务器单向通信的原因。
 
 ### 24.4.2 JSONP
@@ -32450,7 +32463,8 @@ http://freegeoip.net/json/?callback=handleResponse
 ```
 
 这个 JSONP 请求的 URL 是一个地理位置服务。 JSONP 服务通常支持以查询字符串形式指定回调函数的名称。比如这个例子就把回调函数的名字指定为 handleResponse()。
-JSONP 调用是通过动态创建 <script>元素并为 src 属性指定跨域 URL 实现的。此时的 <script>与<img>元素类似，能够不受限制地从其他域加载资源。因为 JSONP 是有效的 JavaScript，所以 JSONP 响应在被加载完成之后会立即执行。比如下面这个例子：
+
+JSONP 调用是通过动态创建 `<script>` 元素并为 src 属性指定跨域 URL 实现的。此时的 `<script>` 与 `<img>` 元素类似，能够不受限制地从其他域加载资源。因为 JSONP 是有效的 JavaScript，所以 JSONP 响应在被加载完成之后会立即执行。比如下面这个例子：
 
 ```js
 function handleResponse(response) {
@@ -32464,11 +32478,13 @@ document.body.insertBefore(script, document.body.firstChild);
 ```
 
 这个例子会显示从地理位置服务获取的 IP 地址及位置信息。 JSONP 由于其简单易用，在开发者中非常流行。相比于图片探测，使用 JSONP 可以直接访问响应，实现浏览器与服务器的双向通信。不过 JSONP 也有一些缺点。首先，JSONP 是从不同的域拉取可执行代码。如果这个域并不可信，则可能在响应中加入恶意内容。此时除了完全删除 JSONP 没有其他办法。在使用不受控的 Web 服务时，一定要保证是可以信任的。
-第二个缺点是不好确定 JSONP 请求是否失败。虽然 HTML5 规定了<script>元素的 onerror 事件处理程序，但还没有被任何浏览器实现。为此，开发者经常使用计时器来决定是否放弃等待响应。这种方式并不准确，毕竟不同用户的网络连接速度和带宽是不一样的。
+
+第二个缺点是不好确定 JSONP 请求是否失败。虽然 HTML5 规定了 `<script>` 元素的 onerror 事件处理程序，但还没有被任何浏览器实现。为此，开发者经常使用计时器来决定是否放弃等待响应。这种方式并不准确，毕竟不同用户的网络连接速度和带宽是不一样的。
 
 ## 24.5 Fetch API
 
 Fetch API 能够执行 XMLHttpRequest 对象的所有任务，但更容易使用，接口也更现代化，能够在 Web 工作线程等现代 Web 工具中使用。 XMLHttpRequest 可以选择异步，而 Fetch API 则必须是异步。
+
 Fetch API 是 WHATWG 的一个“活标准”（living standard），用规范原文说，就是“ Fetch 标准定义请求、响应，以及绑定二者的流程：获取（ fetch）”。 Fetch API 本身是使用 JavaScript 请求资源的优秀工具，同时这个 API 也能够应用在服务线程（service worker）中，提供拦截、重定向和修改通过 fetch()生成的请求接口。
 
 ### 24.5.1 基本用法
@@ -32485,6 +32501,7 @@ console.log(r); // Promise <pending>
 ```
 
 URL 的格式（相对路径、绝对路径等）的解释与 XHR 对象一样。
+
 请求完成、资源可用时，期约会解决为一个 Response 对象。这个对象是 API 的封装，可以通过它取得相应资源。获取资源要使用这个对象的属性和方法，掌握响应的情况并将负载转换为有用的形式，如下所示：
 
 ```js
@@ -32559,6 +32576,7 @@ fetch('/permanent-redirect').then((response) => {
 ```
 
 在前面这几个例子中，虽然请求可能失败（如状态码为 500），但都只执行了期约的解决处理函数。事实上，只要服务器返回了响应， fetch()期约都会解决。这个行为是合理的：系统级网络协议已经成功完成消息的一次往返传输。至于真正的“成功”请求，则需要在处理响应时再定义。
+
 通常状态码为 200 时就会被认为成功了，其他情况可以被认为未成功。为区分这两种情况，可以在状态码非 200~299 时检查 Response 对象的 ok 属性：
 
 ```js
@@ -32587,9 +32605,10 @@ fetch('/hangs-forever').then(
 // TypeError: "NetworkError when attempting to fetch resource."
 ```
 
-违反 CORS、无网络连接、 HTTPS 错配及其他浏览器 /网络策略问题都会导致期约被拒绝。可以通过 url 属性检查通过 fetch()发送请求时使用的完整 URL： // foo.com/bar/baz 发送的请求
+违反 CORS、无网络连接、 HTTPS 错配及其他浏览器 /网络策略问题都会导致期约被拒绝。可以通过 url 属性检查通过 fetch()发送请求时使用的完整 URL：
 
 ```js
+// foo.com/bar/baz 发送的请求
 console.log(window.location.href); // https://foo.com/bar/baz
 fetch('qux').then((response) => console.log(response.url)); // https://foo.com/bar/qux
 fetch('/qux').then((response) => console.log(response.url)); // https://foo.com/qux
@@ -32604,86 +32623,116 @@ fetch('https://qux.com').then((response) => console.log(response.url)); // https
 ```
 键 值
 body 指定使用请求体时请求体的内容
-```
-
-必须是 Blob、BufferSource、FormData、URLSearchParams、ReadableStream 或 String 的实例 cache 用于控制浏览器与 HTTP 缓存的交互。要跟踪缓存的重定向，请求的 redirect 属性值必须是"follow"，而且必须符合同源策略限制。必须是下列值之一  
-Default - fetch()返回命中的有效缓存。不发送请求 .命中无效（ stale）缓存会发送条件式请求。如果响应已经改变，则更新缓存的值。然后 fetch()返回缓存的值  
-.未命中缓存会发送请求，并缓存响应。然后 fetch()返回响应 no-store .浏览器不检查缓存，直接发送请求  
-.不缓存响应，直接通过 fetch()返回 reload .浏览器不检查缓存，直接发送请求  
-.缓存响应，再通过 fetch()返回 no-cache .无论命中有效缓存还是无效缓存都会发送条件式请求。如果响应已经改变，则更新缓存的值。然后 fetch()返回缓存的值  
-.未命中缓存会发送请求，并缓存响应。然后 fetch()返回响应
-
-键值
-（续）
+必须是 Blob、 BufferSource、 FormData、 URLSearchParams、 ReadableStream 或 String 的实例
+cache 用于控制浏览器与 HTTP 缓存的交互。要跟踪缓存的重定向，请求的 redirect 属性值必须是"follow"，
+而且必须符合同源策略限制。必须是下列值之一
+Default
+- fetch()返回命中的有效缓存。不发送请求
+- 命中无效（stale）缓存会发送条件式请求。如果响应已经改变，则更新缓存的值。然后 fetch()
+返回缓存的值
+- 未命中缓存会发送请求，并缓存响应。然后 fetch()返回响应
+no-store
+- 浏览器不检查缓存，直接发送请求
+- 不缓存响应，直接通过 fetch()返回
+reload
+- 浏览器不检查缓存，直接发送请求
+- 缓存响应，再通过 fetch()返回
+no-cache
+- 无论命中有效缓存还是无效缓存都会发送条件式请求。如果响应已经改变，则更新缓存的值。然
+后 fetch()返回缓存的值
+- 未命中缓存会发送请求，并缓存响应。然后 fetch()返回响应
 force-cache
-.无论命中有效缓存还是无效缓存都通过 fetch()返回。不发送请求
-.未命中缓存会发送请求，并缓存响应。然后 fetch()返回响应 only-if-cached
-.只在请求模式为 same-origin 时使用缓存
-.无论命中有效缓存还是无效缓存都通过 fetch()返回。不发送请求 .未命中缓存返回状态码为 504（网关超时）的响应默认为 default
-
+- 无论命中有效缓存还是无效缓存都通过 fetch()返回。不发送请求
+- 未命中缓存会发送请求，并缓存响应。然后 fetch()返回响应
+only-if-cached
+- 只在请求模式为 same-origin 时使用缓存
+- 无论命中有效缓存还是无效缓存都通过 fetch()返回。不发送请求
+- 未命中缓存返回状态码为 504（网关超时）的响应
+默认为 default
 credentials 用于指定在外发请求中如何包含 cookie。与 XMLHttpRequest 的 withCredentials 标签类似
 必须是下列字符串值之一
-
 - omit：不发送 cookie
 - same-origin：只在请求 URL 与发送 fetch()请求的页面同源时发送 cookie
 - include：无论同源还是跨源都包含 cookie
-  在支持 Credential Management API 的浏览器中，也可以是一个 PasswordCredential 的实例 FederatedCredential 或 默认为 same-origin  
-  headers 用于指定请求头部必须是 Headers 对象实例或包含字符串格式键 /值对的常规对象默认值为不包含键 /值对的 Headers 对象。这不意味着请求不包含任何头部，浏览器仍然会随请求发送一些头部。虽然这些头部对 JavaScript 不可见，但浏览器的网络检查器可以观察到 integrity 用于强制子资源完整性
-  必须是包含子资源完整性标识符的字符串
-  默认为空字符串  
-  keepalive 用于指示浏览器允许请求存在时间超出页面生命周期。适合报告事件或分析，比如页面在 fetch()请求后很快卸载。设置 keepalive 标志的 fetch()请求可用于替代 Navigator.sendBeacon()
-  必须是布尔值
-  默认为 false  
-  method 用于指定 HTTP 请求方法
-  基本上就是如下字符串值：
-- GET - POST - PUT - PATCH - DELETE - HEAD - OPTIONS - CONNECT - TARCE
-  默认为 GET
-
-  24.5 Fetch API 727
-  （续）
-  键值
-  mode 用于指定请求模式。这个模式决定来自跨源请求的响应是否有效，以及客户端可以读取多少响应。违反这里指定模式的请求会抛出错误必须是下列字符串值之一
-
-- cors：允许遵守 CORS 协议的跨源请求。响应是“ CORS 过滤的响应”，意思是响应中可以访问的浏览器头部是经过浏览器强制白名单过滤的
-- no-cors：允许不需要发送预检请求的跨源请求（ HEAD、GET 和只带有满足 CORS 请求头部的 POST）。响应类型是 opaque，意思是不能读取响应内容
+在 支持 Credential Management API 的浏 览 器 中 ， 也 可以 是 一个 FederatedCredential 或
+PasswordCredential 的实例
+默认为 same-origin
+headers 用于指定请求头部
+必须是 Headers 对象实例或包含字符串格式键/值对的常规对象
+默认值为不包含键/值对的 Headers 对象。这不意味着请求不包含任何头部，浏览器仍然会随请求
+发送一些头部。虽然这些头部对 JavaScript 不可见，但浏览器的网络检查器可以观察到
+integrity 用于强制子资源完整性
+必须是包含子资源完整性标识符的字符串
+默认为空字符串
+keepalive 用于指示浏览器允许请求存在时间超出页面生命周期。适合报告事件或分析，比如页面在 fetch()
+请求后很快卸载。设置 keepalive 标志的 fetch()请求可用于替代 Navigator.sendBeacon()
+必须是布尔值
+默认为 false
+method 用于指定 HTTP 请求方法
+基本上就是如下字符串值：
+- GET
+- POST
+- PUT
+- PATCH
+- DELETE
+- HEAD
+- OPTIONS
+- CONNECT
+- TARCE
+默认为 GET
+mode 用于指定请求模式。这个模式决定来自跨源请求的响应是否有效，以及客户端可以读取多少响应。
+违反这里指定模式的请求会抛出错误
+必须是下列字符串值之一
+- cors：允许遵守 CORS 协议的跨源请求。响应是“CORS 过滤的响应”，意思是响应中可以访问
+的浏览器头部是经过浏览器强制白名单过滤的
+- no-cors：允许不需要发送预检请求的跨源请求（HEAD、 GET 和只带有满足 CORS 请求头部的
+POST）。响应类型是 opaque，意思是不能读取响应内容
 - same-origin：任何跨源请求都不允许发送
-- navigate：用于支持 HTML 导航，只在文档间导航时使用。基本用不到在通过构造函数手动创建 Request 实例时，默认为 cors；否则，默认为 no-cors
-
-redirect 用于指定如何处理重定向响应（状态码为 301、302、303、307 或 308）必须是下列字符串值之一
-
+- navigate：用于支持 HTML 导航，只在文档间导航时使用。基本用不到
+在通过构造函数手动创建 Request 实例时，默认为 cors；否则，默认为 no-cors
+redirect 用于指定如何处理重定向响应（状态码为 301、 302、 303、 307 或 308）
+必须是下列字符串值之一
 - follow：跟踪重定向请求，以最终非重定向 URL 的响应作为最终响应
 - error：重定向请求会抛出错误
 - manual：不跟踪重定向请求，而是返回 opaqueredirect 类型的响应，同时仍然暴露期望的重
-
-定向 URL。允许以手动方式跟踪重定向默认为 follow
-referrer 用于指定 HTTP 的 Referer 头部的内容必须是下列字符串值之一
-
+定向 URL。允许以手动方式跟踪重定向
+默认为 follow
+referrer 用于指定 HTTP 的 Referer 头部的内容
+必须是下列字符串值之一
 - no-referrer：以 no-referrer 作为值
-- client/about:client：以当前 URL 或 no-referrer（取决于来源策略 referrerPolicy）作为值
-- <URL>：以伪造 URL 作为值。伪造 URL 的源必须与执行脚本的源匹配默认为 client/about:client
-
-referrerPolicy 用于指定 HTTP 的 Referer 头部必须是下列字符串值之一
+- client/about:client：以当前 URL 或 no-referrer（取决于来源策略 referrerPolicy）作
+为值
+- <URL>：以伪造 URL 作为值。伪造 URL 的源必须与执行脚本的源匹配
+默认为 client/about:client
+referrerPolicy 用于指定 HTTP 的 Referer 头部
+必须是下列字符串值之一
 no-referrer
-.请求中不包含 Referer 头部 no-referrer-when-downgrade
-.对于从安全 HTTPS 上下文发送到 HTTP URL 的请求，不包含 Referer 头部
-.对于所有其他请求，将 Referer 设置为完整 URL origin
-.对于所有请求，将 Referer 设置为只包含源 same-origin
-.对于跨源请求，不包含 Referer 头部
-.对于同源请求，将 Referer 设置为完整 URL
-
-键值
-（续）
+- 请求中不包含 Referer 头部
+no-referrer-when-downgrade
+- 对于从安全 HTTPS 上下文发送到 HTTP URL 的请求，不包含 Referer 头部
+- 对于所有其他请求，将 Referer 设置为完整 URL
+origin
+- 对于所有请求，将 Referer 设置为只包含源
+same-origin
+- 对于跨源请求，不包含 Referer 头部
+- 对于同源请求，将 Referer 设置为完整 URL
 strict-origin
-.对于从安全 HTTPS 上下文发送到 HTTP URL 的请求，不包含 Referer 头部
-.对于所有其他请求，将 Referer 设置为只包含源 origin-when-cross-origin
-.对于跨源请求，将 Referer 设置为只包含源
-.对于同源请求，将 Referer 设置为完整 URL strict-origin-when-cross-origin
-.对于从安全 HTTPS 上下文发送到 HTTP URL 的请求，不包含 Referer 头部
-.对于所有其他跨源请求，将 Referer 设置为只包含源
-.对于同源请求，将 Referer 设置为完整 URL unsafe-url
-.对于所有请求，将 Referer 设置为完整 URL 默认为 no-referrer-when-downgrade
-
-signal 用于支持通过 AbortController 中断进行中的 fetch()请求必须是 AbortSignal 的实例默认为未关联控制器的 AbortSignal 实例
+- 对于从安全 HTTPS 上下文发送到 HTTP URL 的请求，不包含 Referer 头部
+- 对于所有其他请求，将 Referer 设置为只包含源
+origin-when-cross-origin
+- 对于跨源请求，将 Referer 设置为只包含源
+- 对于同源请求，将 Referer 设置为完整 URL
+strict-origin-when-cross-origin
+- 对于从安全 HTTPS 上下文发送到 HTTP URL 的请求，不包含 Referer 头部
+- 对于所有其他跨源请求，将 Referer 设置为只包含源
+- 对于同源请求，将 Referer 设置为完整 URL
+unsafe-url
+- 对于所有请求，将 Referer 设置为完整 URL
+默认为 no-referrer-when-downgrade
+signal 用于支持通过 AbortController 中断进行中的 fetch()请求
+必须是 AbortSignal 的实例
+默认为未关联控制器的 AbortSignal 实例
+```
 
 ### 24.5.2 常见 Fetch 请求模式
 
@@ -32720,15 +32769,21 @@ fetch('/send-me-params', {
 因为请求体支持 FormData 实现，所以 fetch()也可以序列化并发送文件字段中的文件：
 
 ```js
-let imageFormData = new FormData(); let imageInput = document.querySelector("input[type='file']");
+let imageFormData = new FormData();
+let imageInput = document.querySelector("input[type='file']");
 imageFormData.append('image', imageInput.files[0]);
-fetch('/img-upload', { method: 'POST', body: imageFormData
-});
+fetch('/img-upload', { method: 'POST', body: imageFormData });
+```
+
 这个 fetch()实现可以支持多个文件：
-let imageFormData = new FormData(); let imageInput = document.querySelector("input[type='file'][multiple]");
-for (let i = 0; i < imageInput.files.length; ++i) { imageFormData.append('image', imageInput.files[i]); }
-fetch('/img-upload', { method: 'POST', body: imageFormData
-});
+
+```js
+let imageFormData = new FormData();
+let imageInput = document.querySelector("input[type='file'][multiple]");
+for (let i = 0; i < imageInput.files.length; ++i) {
+  imageFormData.append('image', imageInput.files[i]);
+}
+fetch('/img-upload', { method: 'POST', body: imageFormData });
 ```
 
 4. 加载 Blob 文件
@@ -33153,6 +33208,7 @@ r1.text().then(console.log); // TypeError: Failed to execute 'text' on 'Response
 ### 24.5.6 Request、Response 及 Body 混入
 
 Request 和 Response 都使用了 Fetch API 的 Body 混入，以实现两者承担有效载荷的能力。这个混入为两个类型提供了只读的 body 属性（实现为 ReadableStream）、只读的 bodyUsed 布尔值（表示 body 流是否已读）和一组方法，用于从流中读取内容并将结果转换为某种 JavaScript 对象类型。
+
 通常，将 Request 和 Response 主体作为流来使用主要有两个原因。一个原因是有效载荷的大小可能会导致网络延迟，另一个原因是流 API 本身在处理有效载荷方面是有优势的。除此之外，最好是一次性获取资源主体。
 
 Body 混入提供了 5 个方法，用于将 ReadableStream 转存到缓冲区的内存里，将缓冲区转换为某种 JavaScript 对象类型，以及通过期约来产生结果。在解决之前，期约会等待主体流报告完成及缓冲被解析。这意味着客户端必须等待响应的资源完全加载才能访问其内容。
@@ -33328,6 +33384,7 @@ console.log(request.bodyUsed); // true console.log(response.bodyUsed); // true
 7. 使用 ReadableStream 主体
 
 JavaScript 编程逻辑很多时候会将访问网络作为原子操作，比如请求是同时创建和发送的，响应数据也是以统一的格式一次性暴露出来的。这种约定隐藏了底层的混乱，让涉及网络的代码变得很清晰。
+
 从 TCP/IP 角度来看，传输的数据是以分块形式抵达端点的，而且速度受到网速的限制。接收端点会为此分配内存，并将收到的块写入内存。 Fetch API 通过 ReadableStream 支持在这些块到达时就实时读取和操作这些数据。
 
 正如 Stream API 所定义的，ReadableStream 暴露了 getReader()方法，用于产生 ReadableStream-DefaultReader，这个读取器可以用于在数据到达时异步获取数据块。数据流的格式是 Uint8Array。
@@ -33431,8 +33488,14 @@ fetch('https://fetch.spec.whatwg.org/')
 ```
 
 在这些例子中，当读取完 Uint8Array 块之后，浏览器会将其标记为可以被垃圾回收。对于需要在不连续的内存中连续检查大量数据的情况，这样可以节省很多内存空间。
+
 缓冲区的大小，以及浏览器是否等待缓冲区被填充后才将其推到流中，要根据 JavaScript 运行时的实现。浏览器会控制等待分配的缓冲区被填满，同时会尽快将缓冲区数据（有时候可能未填充数据）发送到流。
-不同浏览器中分块大小可能不同，这取决于带宽和网络延迟。此外，浏览器如果决定不等待网络，也可以将部分填充的缓冲区发送到流。最终，我们的代码要准备好处理以下情况： .不同大小的 Uint8Array 块； .部分填充的 Uint8Array 块； .块到达的时间间隔不确定。默认情况下，块是以 Uint8Array 格式抵达的。因为块的分割不会考虑编码，所以会出现某些值作为多字节字符被分散到两个连续块中的情况。手动处理这些情况是很麻烦的，但很多时候可以使用 Encoding API 的可插拔方案。要将 Uint8Array 转换为可读文本，可以将缓冲区传给 TextDecoder，返回转换后的值。通过设置 stream: true，可以将之前的缓冲区保留在内存，从而让跨越两个块的内容能够被正确解码：
+
+不同浏览器中分块大小可能不同，这取决于带宽和网络延迟。此外，浏览器如果决定不等待网络，也可以将部分填充的缓冲区发送到流。最终，我们的代码要准备好处理以下情况：
+
+- 不同大小的 Uint8Array 块；
+- 部分填充的 Uint8Array 块；
+- 块到达的时间间隔不确定。默认情况下，块是以 Uint8Array 格式抵达的。因为块的分割不会考虑编码，所以会出现某些值作为多字节字符被分散到两个连续块中的情况。手动处理这些情况是很麻烦的，但很多时候可以使用 Encoding API 的可插拔方案。要将 Uint8Array 转换为可读文本，可以将缓冲区传给 TextDecoder，返回转换后的值。通过设置 stream: true，可以将之前的缓冲区保留在内存，从而让跨越两个块的内容能够被正确解码：
 
 ```js
 let decoder = new TextDecoder();
@@ -33496,8 +33559,13 @@ fetch('https://fetch.spec.whatwg.org/')
 ## 24.6 Beacon API
 
 为了把尽量多的页面信息传到服务器，很多分析工具需要在页面生命周期中尽量晚的时候向服务器发送遥测或分析数据。因此，理想的情况下是通过浏览器的 unload 事件发送网络请求。这个事件表示用户要离开当前页面，不会再生成别的有用信息了。
+
 在 unload 事件触发时，分析工具要停止收集信息并把收集到的数据发给服务器。这时候有一个问题，因为 unload 事件对浏览器意味着没有理由再发送任何结果未知的网络请求（因为页面都要被销毁了）。例如，在 unload 事件处理程序中创建的任何异步请求都会被浏览器取消。为此，异步 XMLHttpRequest 或 fetch()不适合这个任务。分析工具可以使用同步 XMLHttpRequest 强制发送请求，但这样做会导致用户体验问题。浏览器会因为要等待 unload 事件处理程序完成而延迟导航到下一个页面。
-为解决这个问题， W3C 引入了补充性的 Beacon API。这个 API 给 navigator 对象增加了一个 sendBeacon()方法。这个简单的方法接收一个 URL 和一个数据有效载荷参数，并会发送一个 POST 请求。可选的数据有效载荷参数有 ArrayBufferView、Blob、DOMString、FormData 实例。如果请求成功进入了最终要发送的任务队列，则这个方法返回 true，否则返回 false。
+
+为解决这个问题， W3C 引入了补充性的 Beacon API。这个 API 给 navigator 对象增加了一个 sendBeacon()方法。这个简单的方法接收一个 URL 和一个数据有效载荷参数，并会发送一个 POST 请求。可选的数据有效载荷
+
+参数有 ArrayBufferView、Blob、DOMString、FormData 实例。如果请求成功进入了最终要发送的任务队列，则这个方法返回 true，否则返回 false。
+
 可以像下面这样使用这个方法：
 
 ```js
@@ -33511,15 +33579,17 @@ navigator.sendBeacon(
 这个方法虽然看起来只不过是 POST 请求的一个语法糖，但它有几个重要的特性。
 
 - sendBeacon()并不是只能在页面生命周期末尾使用，而是任何时候都可以使用。
-  .调用 sendBeacon()后，浏览器会把请求添加到一个内部的请求队列。浏览器会主动地发送队
-  列中的请求。 .浏览器保证在原始页面已经关闭的情况下也会发送请求。 .状态码、超时和其他网络原因造成的失败完全是不透明的，不能通过编程方式处理。
-
-.信标（beacon）请求会携带调用 sendBeacon()时所有相关的 cookie。
+- 调用 sendBeacon()后，浏览器会把请求添加到一个内部的请求队列。浏览器会主动地发送队列中的请求。
+- 浏览器保证在原始页面已经关闭的情况下也会发送请求。
+- 状态码、超时和其他网络原因造成的失败完全是不透明的，不能通过编程方式处理。
+- 信标（beacon）请求会携带调用 sendBeacon()时所有相关的 cookie。
 
 ## 24.7 Web Socket
 
 Web Socket（套接字）的目标是通过一个长时连接实现与服务器全双工、双向的通信。在 JavaScript 中创建 Web Socket 时，一个 HTTP 请求会发送到服务器以初始化连接。服务器响应后，连接使用 HTTP 的 Upgrade 头部从 HTTP 协议切换到 Web Socket 协议。这意味着 Web Socket 不能通过标准 HTTP 服务器实现，而必须使用支持该协议的专有服务器。
+
 因为 Web Socket 使用了自定义协议，所以 URL 方案（scheme）稍有变化：不能再使用 `http://`或 `https://`，而要使用 `ws://`和 `wss://`。前者是不安全的连接，后者是安全连接。在指定 Web Socket URL 时，必须包含 URL 方案，因为将来有可能再支持其他方案。
+
 使用自定义协议而非 HTTP 协议的好处是，客户端与服务器之间可以发送非常少的数据，不会对 HTTP 造成任何负担。使用更小的数据包让 Web Socket 非常适合带宽和延迟问题比较明显的移动应用。使用自定义协议的缺点是，定义协议的时间比定义 JavaScript API 要长。Web Socket 得到了所有主流浏览器支持。
 
 ### 24.7.1 API
@@ -33601,26 +33671,29 @@ socket.onclose = function (event) {
 ```
 
 请求这个 URL，可以假定返回 ID 为 23 的用户信息。访问者可以将 23 改为 24 或 56，甚至其他任何值。getuserinfo.php 文件必须知道访问者是否拥有访问相应数据的权限。否则，服务器就会大门敞开，泄露所有用户的信息。
-在未授权系统可以访问某个资源时，可以将其视为跨站点请求伪造（ CSRF，cross-site request forgery）攻击。未授权系统会按照处理请求的服务器的要求伪装自己。 Ajax 应用程序，无论大小，都会受到 CSRF 攻击的影响，包括无害的漏洞验证攻击和恶意的数据盗窃或数据破坏攻击。
-关于安全防护 Ajax 相关 URL 的一般理论认为，需要验证请求发送者拥有对资源的访问权限。可以通过如下方式实现。
-.要求通过 SSL 访问能够被 Ajax 访问的资源。
-.要求每个请求都发送一个按约定算法计算好的令牌（ token）。注意，以下手段对防护 CSRF 攻击是无效的。
-.要求 POST 而非 GET 请求（很容易修改请求方法）。
 
-.使用来源 URL 验证来源（来源 URL 很容易伪造）。
-.基于 cookie 验证（同样很容易伪造）。
+在未授权系统可以访问某个资源时，可以将其视为跨站点请求伪造（ CSRF，cross-site request forgery）攻击。未授权系统会按照处理请求的服务器的要求伪装自己。 Ajax 应用程序，无论大小，都会受到 CSRF 攻击的影响，包括无害的漏洞验证攻击和恶意的数据盗窃或数据破坏攻击。
+
+关于安全防护 Ajax 相关 URL 的一般理论认为，需要验证请求发送者拥有对资源的访问权限。可以通过如下方式实现。
+
+- 要求通过 SSL 访问能够被 Ajax 访问的资源。
+- 要求每个请求都发送一个按约定算法计算好的令牌（ token）。注意，以下手段对防护 CSRF 攻击是无效的。
+- 要求 POST 而非 GET 请求（很容易修改请求方法）。
+- 使用来源 URL 验证来源（来源 URL 很容易伪造）。
+- 基于 cookie 验证（同样很容易伪造）。
 
 ## 24.9 小结
 
 Ajax 是无须刷新当前页面即可从服务器获取数据的一个方法，具有如下特点。
-.让 Ajax 迅速流行的中心对象是 XMLHttpRequest（XHR）。
-.这个对象最早由微软发明，并在 IE5 中作为通过 JavaScript 从服务器获取 XML 数据的一种手段。
-.之后，Firefox、Safari、Chrome 和 Opera 都复刻了相同的实现。 W3C 随后将 XHR 行为写入 Web 标准。
-.虽然不同浏览器的实现有些差异，但 XHR 对象的基本使用在所有浏览器中相对是规范的，因此可以放心地在 Web 应用程序中使用。
+
+- 让 Ajax 迅速流行的中心对象是 XMLHttpRequest（XHR）。
+- 这个对象最早由微软发明，并在 IE5 中作为通过 JavaScript 从服务器获取 XML 数据的一种手段。
+- 之后，Firefox、Safari、Chrome 和 Opera 都复刻了相同的实现。 W3C 随后将 XHR 行为写入 Web 标准。
+- 虽然不同浏览器的实现有些差异，但 XHR 对象的基本使用在所有浏览器中相对是规范的，因此可以放心地在 Web 应用程序中使用。
 
 XHR 的一个主要限制是同源策略，即通信只能在相同域名、相同端口和相同协议的前提下完成。访问超出这些限制之外的资源会导致安全错误，除非使用了正式的跨域方案。这个方案叫作跨源资源共享（CORS，Cross-Origin Resource Sharing），XHR 对象原生支持 CORS。图片探测和 JSONP 是另外两种跨域通信技术，但没有 CORS 可靠。
-Fetch API 是作为对 XHR 对象的一种端到端的替代方案而提出的。这个 API 提供了优秀的基于期约的结构、更直观的接口，以及对 Stream API 的最好支持。 Web Socket 是与服务器的全双工、双向通信渠道。与其他方案不同， Web Socket 不使用 HTTP，而使用了自定义协议，目的是更快地发送小数据块。这需要专用的服务器，但速度优势明显。
 
+Fetch API 是作为对 XHR 对象的一种端到端的替代方案而提出的。这个 API 提供了优秀的基于期约的结构、更直观的接口，以及对 Stream API 的最好支持。 Web Socket 是与服务器的全双工、双向通信渠道。与其他方案不同， Web Socket 不使用 HTTP，而使用了自定义协议，目的是更快地发送小数据块。这需要专用的服务器，但速度优势明显。
 
 # 第 25 章 客户端存储
 
