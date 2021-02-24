@@ -2519,11 +2519,11 @@ export function initInternalComponent (vm: Component, options: InternalComponent
 
 ```js
 if (vm.$options.el) {
-   vm.$mount(vm.$options.el)
+  vm.$mount(vm.$options.el)
 }
 ```
 
-由于组件初始化的时候是不传 el 的，因此组件是自己接管了 `$mount` 的过程，这个过程的主要流程在上一章介绍过了，回到组件 `init` 的过程，`componentVNodeHooks` 的 `init` 钩子函数，在完成实例化的 `_init` 后，接着会执行 
+由于组件初始化的时候是不传 `el` 的，因此组件是自己接管了 `$mount` 的过程，这个过程的主要流程在上一章介绍过了，回到组件 `init` 的过程，`componentVNodeHooks` 的 `init` 钩子函数，在完成实例化的 `_init` 后，接着会执行 
 
 ```js
 child.$mount(hydrating ? vnode.elm : undefined, hydrating)
@@ -2736,15 +2736,22 @@ function createComponent (vnode, insertedVnodeQueue, parentElm, refElm) {
 }
 ```
 
-在完成组件的整个 `patch` 过程后，最后执行 `insert(parentElm, vnode.elm, refElm)` 完成组件的 DOM 插入，如果组件 `patch` 过程中又创建了子组件，那么DOM 的插入顺序是先子后父。
+在完成组件的整个 `patch` 过程后，最后执行 `insert(parentElm, vnode.elm, refElm)` 完成组件的 DOM 插入，如果组件 `patch` 过程中又创建了子组件，那么 DOM 的插入顺序是先子后父。
 
 ### 3.3.2 总结
 
-那么到此，一个组件的 VNode 是如何创建、初始化、渲染的过程也就介绍完毕了。在对组件化的实现有一个大概了解后，接下来我们来介绍一下这其中的一些细节。我们知道编写一个组件实际上是编写一个 JavaScript 对象，对象的描述就是各种配置，之前我们提到在 `_init` 的最初阶段执行的就是 `merge options` 的逻辑，那么下一节我们从源码角度来分析合并配置的过程。
+那么到此，一个组件的 VNode 是如何创建、初始化、渲染的过程也就介绍完毕了。patch 的整体流程是调用 createComponent 进行子组件初始化，然后子组件 render 和 patch，如果 patch 过程有递归子组件则继续调用其 createComponent，最后进行嵌套组件的插入（先子后父）。
+
+而 activeInstance 为当前激活的 vm 实例。`vm.$vnode` 为组件的占位 Vnode，`vm._vnode` 为组件的渲染 vnode。
+
+编写一个组件实际上是编写一个 JavaScript 对象，对象的描述就是各种配置，之前提到在 `_init` 的最初阶段执行的就是 `merge options` 的逻辑，那么下一节我们从源码角度来分析合并配置的过程。
 
 ## 3.4 合并配置
 
-通过之前章节的源码分析我们知道，`new Vue` 的过程通常有 2 种场景，一种是外部我们的代码主动调用 `new Vue(options)` 的方式实例化一个 Vue 对象；另一种是我们上一节分析的组件过程中内部通过 `new Vue(options)` 实例化子组件。
+通过之前章节的源码分析我们知道，`new Vue` 的过程通常有 2 种场景：
+
+1. 外部我们的代码主动调用 `new Vue(options)` 的方式实例化一个 Vue 对象；
+2. 我们上一节分析的组件过程中内部通过 `new Vue(options)` 实例化子组件。
 
 无论哪种场景，都会执行实例的 `_init(options)` 方法，它首先会执行一个 `merge options` 的逻辑，相关的代码在 `src/core/instance/init.js` 中：
 
@@ -3105,9 +3112,9 @@ vm.$options = {
 
 ### 3.4.3 总结
 
-那么至此，Vue 初始化阶段对于 `options` 的合并过程就介绍完了，我们需要知道对于 `options` 的合并有 2 种方式，子组件初始化过程通过 `initInternalComponent` 方式要比外部初始化 Vue 通过 `mergeOptions` 的过程要快，合并完的结果保留在 `vm.$options` 中。
+对于 `options` 的合并有 2 种方式，外部初始化 Vue 通过 `mergeOptions` 并遵循一定的合并策略；子组件初始化过程通过 `initInternalComponent` ，同时它的合并更快。合并完的结果保留在 `vm.$options` 中。
 
-纵观一些库、框架的设计几乎都是类似的，自身定义了一些默认配置，同时又可以在初始化阶段传入一些定义配置，然后去 merge 默认配置，来达到定制化不同需求的目的。只不过在 Vue 的场景下，会对 merge 的过程做一些精细化控制，虽然我们在开发自己的 JSSDK 的时候并没有 Vue 这么复杂，但这个设计思想是值得我们借鉴的。
+库、框架的设计几乎都是类似的，自身定义了一些默认配置，同时又可以在初始化阶段传入一些定义配置，然后去 merge 默认配置，来达到定制化不同需求的目的。
 
 ## 3.5 生命周期
 
