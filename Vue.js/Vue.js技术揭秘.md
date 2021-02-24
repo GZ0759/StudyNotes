@@ -183,41 +183,41 @@ src
 ├── shared          # 共享代码
 ```
 
-### 1.2.1 compiler
+**1. compiler**
 
 compiler 目录包含 Vue.js 所有编译相关的代码。它包括把模板解析成 ast 语法树，ast 语法树优化，代码生成等功能。
 
 编译的工作可以在构建时做（借助 webpack、vue-loader 等辅助插件）；也可以在运行时做，使用包含构建功能的 Vue.js。显然，编译是一项耗性能的工作，所以更推荐前者——离线编译。
 
-### 1.2.2 core
+**2. core**
 
 core 目录包含了 Vue.js 的核心代码，包括内置组件、全局 API 封装，Vue 实例化、观察者、虚拟 DOM、工具函数等等。
 
 这里的代码可谓是 Vue.js 的灵魂，也是我们之后需要重点分析的地方。
 
-### 1.2.3 platform
+**3. platform**
 
 Vue.js 是一个跨平台的 MVVM 框架，它可以跑在 web 上，也可以配合 weex 跑在 native 客户端上。platform 是 Vue.js 的入口，2 个目录代表 2 个主要入口，分别打包成运行在 web 上和 weex 上的 Vue.js。
 
 我们会重点分析 web 入口打包后的 Vue.js，对于 weex 入口打包的 Vue.js，感兴趣的同学可以自行研究。
 
-### 1.2.4 server
+**4. server**
 
 Vue.js 2.0 支持了服务端渲染，所有服务端渲染相关的逻辑都在这个目录下。注意：这部分代码是跑在服务端的 Node.js，不要和跑在浏览器端的 Vue.js 混为一谈。
 
 服务端渲染主要的工作是把组件渲染为服务器端的 HTML 字符串，将它们直接发送到浏览器，最后将静态标记"混合"为客户端上完全交互的应用程序。
 
-### 1.2.5 sfc
+**5. sfc**
 
 通常我们开发 Vue.js 都会借助 webpack 构建， 然后通过 .vue 单文件来编写组件。
 
 这个目录下的代码逻辑会把 .vue 文件内容解析成一个 JavaScript 的对象。
 
-### 1.2.6 shared
+**6. shared**
 
 Vue.js 会定义一些工具方法，这里定义的工具方法都是会被浏览器端的 Vue.js 和服务端的 Vue.js 所共享的。
 
-### 1.2.7 总结
+**7. 总结**
 
 从 Vue.js 的目录设计可以看到，作者把功能模块拆分的非常清楚，相关的逻辑放在一个独立的目录下维护，并且把复用的代码也抽成一个独立目录。这样的目录设计让代码的阅读性和可维护性都变强，是非常值得学习和推敲的。
 
@@ -526,7 +526,7 @@ export default Vue
 
 那么，当我们的代码执行 `import Vue from 'vue'` 的时候，就是从这个入口执行代码来初始化 Vue，那么 Vue 到底是什么，它是怎么初始化的，我们来一探究竟。
 
-### 1.4.1 Vue 的入口
+**1. Vue 的入口**
 
 在这个入口 JS 的上方我们可以找到 `Vue` 的来源：`import Vue from './runtime/index'`，我们先来看一下这块儿的实现，它定义在 `src/platforms/web/runtime/index.js` 中：
 
@@ -695,7 +695,7 @@ export function initGlobalAPI (Vue: GlobalAPI) {
 
 这里就是在 Vue 上扩展的一些全局方法的定义，Vue 官网中关于全局 API 都可以在这里找到，这里不会介绍细节，会在之后的章节我们具体介绍到某个 API 的时候会详细介绍。有一点要注意的是，`Vue.util` 暴露的方法最好不要依赖，因为它可能经常会发生变化，是不稳定的。
 
-### 1.4.2 总结
+**2. 总结**
 
 那么至此，Vue 的初始化过程基本介绍完毕。这一节的目的是让同学们对 Vue 是什么有一个直观的认识，它本质上就是一个用 Function 实现的 Class，然后它的原型 prototype 以及它本身都扩展了一系列的方法和属性，那么 Vue 能做什么，它是怎么做的，我们会在后面的章节一层层帮大家揭开 Vue 的神秘面纱。
 
@@ -1110,7 +1110,7 @@ export function initRender (vm: Component) {
 
 `vm._render` 最终是通过执行 `createElement` 方法并返回的是 `vnode`，它是一个虚拟 Node。Vue 2.0 相比 Vue 1.0 最大的升级就是利用了 Virtual DOM。因此在分析 `createElement` 的实现前，我们先了解一下 Virtual DOM 的概念。
 
-## 2.5 虚拟 DOM 概念
+## 2.5 render 方法之 Virtual DOM
 
 Virtual DOM 这个概念相信大部分人都不会陌生，它产生的前提是浏览器中的 DOM 是很“昂贵"的，为了更直观的感受，我们可以简单的把一个简单的 div 元素的属性都打印出来，如图所示：
 
@@ -1198,7 +1198,7 @@ export default class VNode {
 
 Virtual DOM 除了它的数据结构的定义，映射到真实的 DOM 实际上要经历 VNode 的 create、diff、patch 等过程。那么在 Vue.js 中，VNode 的 create 是通过之前提到的 `createElement` 方法创建的，我们接下来分析这部分的实现。
 
-## 2.6 方法 createElement 
+## 2.6 render 方法之 createElement 
 
 Vue.js 利用 createElement 方法创建 VNode，它定义在 `src/core/vdom/create-elemenet.js` 中：
 
@@ -1324,7 +1324,7 @@ export function _createElement (
 
 `createElement` 函数的流程略微有点多，我们接下来主要分析 2 个重点的流程：children 的规范化以及 VNode 的创建。
 
-1. children 的规范化 normalize
+1. children 的规范化
 
 由于 Virtual DOM 实际上是一个树状结构，每一个 VNode 可能会有若干个子节点，这些子节点应该也是 VNode 的类型。`_createElement` 接收的第 4 个参数 children 是任意类型的，因此我们需要把它们规范成 VNode 类型。
 
@@ -1461,7 +1461,7 @@ if (typeof tag === 'string') {
 
 这里先对 `tag` 做判断，如果是 `string` 类型，则接着判断如果是内置的一些节点，则直接创建一个普通 VNode，如果是为已注册的组件名，则通过 `createComponent` 创建一个组件类型的 VNode，否则创建一个未知的标签的 VNode。 如果是 `tag` 一个 `Component` 类型，则直接调用 `createComponent` 创建一个组件类型的 VNode 节点。
 
-对于 `createComponent` 创建组件类型的 VNode 的过程，我们之后会去介绍，本质上它还是返回了一个 VNode。
+> 对于 `createComponent` 创建组件类型的 VNode 的过程，我们之后会去介绍，本质上它还是返回了一个 VNode。
 
 **总结**
 
@@ -1660,7 +1660,8 @@ export function createPatchFunction (backend) {
 
 `createPatchFunction` 内部定义了一系列的辅助方法，最终返回了一个 `patch` 方法，这个方法就赋值给了 `vm._update` 函数里调用的 `vm.__patch__`。
 
-> 因为前面介绍过，`patch` 是平台相关的，在 Web 和 Weex 环境，它们把虚拟 DOM 映射到 “平台 DOM” 的方法是不同的，并且对 “DOM” 包括的属性模块创建和更新也不尽相同。因此每个平台都有各自的 `nodeOps` 和 `modules`，它们的代码需要托管在 `src/platforms` 这个大目录下。  
+因为前面介绍过，`patch` 是平台相关的，在 Web 和 Weex 环境，它们把虚拟 DOM 映射到 “平台 DOM” 的方法是不同的，并且对 “DOM” 包括的属性模块创建和更新也不尽相同。因此每个平台都有各自的 `nodeOps` 和 `modules`，它们的代码需要托管在 `src/platforms` 这个大目录下。  
+
 > 而不同平台的 `patch` 的主要逻辑部分是相同的，所以这部分公共的部分托管在 `core` 这个大目录下。差异化部分只需要通过参数来区别，这里用到了一个函数柯里化的技巧，通过 `createPatchFunction` 把差异化参数提前固化，这样不用每次调用 `patch` 的时候都传递 `nodeOps` 和 `modules` 了，这种编程技巧也非常值得学习。
 
 在这里，`nodeOps` 表示对 “平台 DOM” 的一些操作方法，`modules` 表示平台的一些模块，它们会在整个 `patch` 过程的不同阶段执行相应的钩子函数。这些代码的具体实现会在之后的章节介绍。
@@ -1928,13 +1929,13 @@ patch -> DOM
 
 ## 3.1 组件化
 
-Vue.js 另一个核心思想是组件化。所谓组件化，就是把页面拆分成多个组件（component），每个组件依赖的 CSS、JavaScript、模板、图片等资源放在一起开发和维护。
+Vue.js 另一个核心思想是组件化。所谓组件化，就是把页面拆分成多个组件（component），每个组件依赖的 CSS、JavaScript、模板、图片等资源放在一起开发和维护。在用 Vue.js 开发实际项目的时候，都是编写一堆组件拼装生成页面。
 
 - 组件是资源独立的
 - 组件在系统内部可复用
 - 组件和组件之间可以嵌套
 
-在用 Vue.js 开发实际项目的时候，都是编写一堆组件拼装生成页面。那么在这一章节，我们将从源码的角度来分析 Vue 的组件内部是如何工作的。接下来我们会用 Vue-cli 初始化的代码为例，来分析一下 Vue 组件初始化的一个过程。
+那么在这一章节，我们将从源码的角度来分析 Vue 的组件内部是如何工作的。首先，以用 Vue-cli 初始化的代码为例，来分析一下 Vue 组件初始化的一个过程。
 
 ```js
 import Vue from 'vue'
@@ -2097,6 +2098,8 @@ export function createComponent (
 1. 构造子类构造函数
 2. 安装组件钩子函数
 3. 实例化 `vnode`
+
+下面分别详细分析这三个步骤。
 
 ### 3.2.1 构造子类构造函数
 
@@ -2453,7 +2456,9 @@ export function createComponentInstanceForVnode (
 }
 ```
 
-`createComponentInstanceForVnode` 函数构造的一个内部组件的参数，然后执行 `new vnode.componentOptions.Ctor(options)`。这里的 `vnode.componentOptions.Ctor` 对应的就是子组件的构造函数，我们上一节分析了它实际上是继承于 Vue 的一个构造器 `Sub`，相当于 `new Sub(options)` 这里有几个关键参数要注意几个点，`_isComponent` 为 `true` 表示它是一个组件，`parent` 表示当前激活的组件实例（注意，这里比较有意思的是如何拿到组件实例，后面会介绍。
+`createComponentInstanceForVnode` 函数构造的一个内部组件的参数，然后执行 `new vnode.componentOptions.Ctor(options)`。这里的 `vnode.componentOptions.Ctor` 对应的就是子组件的构造函数，我们上一节分析了它实际上是继承于 Vue 的一个构造器 `Sub`，相当于 `new Sub(options)` 。
+
+> 这里有几个关键参数要注意几个点，`_isComponent` 为 `true` 表示它是一个组件，`parent` 表示当前激活的组件实例（注意，这里比较有意思的是如何拿到组件实例，后面会介绍）。
 
 所以子组件的实例化实际上就是在这个时机执行的，并且它会执行实例的 `_init` 方法，这个过程有一些和之前不同的地方需要挑出来说，代码在 `src/core/instance/init.js` 中：
 
@@ -2518,7 +2523,13 @@ if (vm.$options.el) {
 }
 ```
 
-由于组件初始化的时候是不传 el 的，因此组件是自己接管了 `$mount` 的过程，这个过程的主要流程在上一章介绍过了，回到组件 `init` 的过程，`componentVNodeHooks` 的 `init` 钩子函数，在完成实例化的 `_init` 后，接着会执行 `child.$mount(hydrating ? vnode.elm : undefined, hydrating)` 。这里 `hydrating` 为 true 一般是服务端渲染的情况，我们只考虑客户端渲染，所以这里 `$mount` 相当于执行 `child.$mount(undefined, false)`，它最终会调用 `mountComponent` 方法，进而执行 `vm._render()` 方法：
+由于组件初始化的时候是不传 el 的，因此组件是自己接管了 `$mount` 的过程，这个过程的主要流程在上一章介绍过了，回到组件 `init` 的过程，`componentVNodeHooks` 的 `init` 钩子函数，在完成实例化的 `_init` 后，接着会执行 
+
+```js
+child.$mount(hydrating ? vnode.elm : undefined, hydrating)
+``` 
+
+这里 `hydrating` 为 true 一般是服务端渲染的情况，我们只考虑客户端渲染，所以这里 `$mount` 相当于执行 `child.$mount(undefined, false)`，它最终会调用 `mountComponent` 方法，进而执行 `vm._render()` 方法：
 
 ```js
 Vue.prototype._render = function (): VNode {
@@ -2542,7 +2553,7 @@ Vue.prototype._render = function (): VNode {
 }
 ```
 
-我们只保留关键部分的代码，这里的 `_parentVnode` 就是当前组件的父 VNode，而 `render` 函数生成的 `vnode` 当前组件的渲染 `vnode`，`vnode` 的 `parent` 指向了 `_parentVnode`，也就是 `vm.$vnode`，它们是一种父子的关系。
+我们只保留关键部分的代码，这里的 `_parentVnode` 就是当前组件的父 VNode，而 `render` 函数生成的为当前组件的渲染 `vnode`，该 `vnode` 的 `parent` 指向了 `_parentVnode`，也就是 `vm.$vnode`，它们是一种父子的关系。
 
 我们知道在执行完 `vm._render` 生成 VNode 后，接下来就要执行 `vm._update` 去渲染 VNode 了。来看一下组件渲染的过程中有哪些需要注意的，`vm._update` 的定义在 `src/core/instance/lifecycle.js` 中：
 
@@ -2602,7 +2613,9 @@ Vue.prototype._update = function (vnode: VNode, hydrating?: boolean) {
 
 ```
 
-这个 `activeInstance` 作用就是保持当前上下文的 Vue 实例，它是在 `lifecycle` 模块的全局变量，定义是 `export let activeInstance: any = null`，并且在之前我们调用 `createComponentInstanceForVnode` 方法的时候从 `lifecycle` 模块获取，并且作为参数传入的。因为实际上 JavaScript 是一个单线程，Vue 整个初始化是一个深度遍历的过程，在实例化子组件的过程中，它需要知道当前上下文的 Vue 实例是什么，并把它作为子组件的父 Vue 实例。之前我们提到过对子组件的实例化过程先会调用 `initInternalComponent(vm, options)` 合并 `options`，把 `parent` 存储在 `vm.$options` 中，在 `$mount` 之前会调用 `initLifecycle(vm)` 方法：
+这个 `activeInstance` 作用就是保持当前上下文的 Vue 实例，它是在 `lifecycle` 模块的全局变量，定义是 `export let activeInstance: any = null`，并且在之前我们调用 `createComponentInstanceForVnode` 方法的时候从 `lifecycle` 模块获取，并且作为参数传入的。
+
+因为实际上 JavaScript 是一个单线程，Vue 整个初始化是一个深度遍历的过程，在实例化子组件的过程中，它需要知道当前上下文的 Vue 实例是什么，并把它作为子组件的父 Vue 实例。之前我们提到过对子组件的实例化过程先会调用 `initInternalComponent(vm, options)` 合并 `options`，把 `parent` 存储在 `vm.$options` 中，在 `$mount` 之前会调用 `initLifecycle(vm)` 方法：
 
 ```js
 export function initLifecycle (vm: Component) {
@@ -2818,6 +2831,7 @@ export function initGlobalAPI (Vue: GlobalAPI) {
   // ...
 }
 ```
+
 首先通过 `Vue.options = Object.create(null)` 创建一个空对象，然后遍历 `ASSET_TYPES`，`ASSET_TYPES` 的定义在 `src/shared/constants.js` 中：
 
 ```js
@@ -2835,6 +2849,7 @@ Vue.options.components = {}
 Vue.options.directives = {}
 Vue.options.filters = {}
 ```
+
 接着执行了 `Vue.options._base = Vue`，它的作用在我们上节实例化子组件的时候介绍了。
 
 最后通过 `extend(Vue.options.components, builtInComponents)` 把一些内置组件扩展到 `Vue.options.components` 上，Vue 的内置组件目前有 `<keep-alive>`、`<transition>` 和 `<transition-group>` 组件，这也就是为什么我们在其它组件中使用 `<keep-alive>` 组件不需要注册的原因，这块儿后续我们介绍 `<keep-alive>` 组件的时候会详细讲。
@@ -2928,6 +2943,7 @@ export const LIFECYCLE_HOOKS = [
   'errorCaptured'
 ]
 ```
+
 这里定义了 Vue.js 所有的钩子函数名称，所以对于钩子函数，他们的合并策略都是 `mergeHook` 函数。这个函数的实现也非常有意思，用了一个多层 3 元运算符，逻辑就是如果不存在 `childVal` ，就返回 `parentVal`；否则再判断是否存在 `parentVal`，如果存在就把 `childVal` 添加到 `parentVal` 后返回新数组；否则返回 `childVal` 的数组。所以回到 `mergeOptions` 函数，一旦 `parent` 和 `child` 都定义了相同的钩子函数，那么它们会把 2 个钩子函数合并成一个数组。
 
 关于其它属性的合并策略的定义都可以在 `src/core/util/options.js` 文件中看到，这里不一一介绍了，感兴趣的同学可以自己看。
@@ -2935,6 +2951,7 @@ export const LIFECYCLE_HOOKS = [
 通过执行 `mergeField` 函数，把合并后的结果保存到 `options` 对象中，最终返回它。
 
 因此，在我们当前这个 case 下，执行完如下合并后：
+
 ```js
 vm.$options = mergeOptions(
   resolveConstructorOptions(vm.constructor),
@@ -2942,6 +2959,7 @@ vm.$options = mergeOptions(
   vm
 )
 ```
+
 `vm.$options` 的值差不多是如下这样：
 
 ```js
@@ -2991,6 +3009,7 @@ Vue.extend = function (extendOptions: Object): Function {
   return Sub
 }
 ```
+
 我们只保留关键逻辑，这里的 `extendOptions` 对应的就是前面定义的组件对象，它会和 `Vue.options` 合并到 `Sub.opitons` 中。
 
 接下来我们再回忆一下子组件的初始化过程，代码定义在 `src/core/vdom/create-component.js` 中：
@@ -3094,8 +3113,6 @@ vm.$options = {
 
 每个 Vue 实例在被创建之前都要经过一系列的初始化过程。例如需要设置数据监听、编译模板、挂载实例到 DOM、在数据变化时更新 DOM 等。同时在这个过程中也会运行一些叫做生命周期钩子的函数，给予用户机会在一些特定的场景下添加他们自己的代码。
 
-<img :src="$withBase('/assets/lifecycle.png')"/>
-
 在我们实际项目开发过程中，会非常频繁地和 Vue 组件的生命周期打交道，接下来我们就从源码的角度来看一下这些生命周期的钩子函数是如何被执行的。
 
 源码中最终执行生命周期的函数都是调用 `callHook` 方法，它的定义在 `src/core/instance/lifecycle` 中：
@@ -3127,7 +3144,7 @@ export function callHook (vm: Component, hook: string) {
 
 了解了生命周期的执行方式后，接下来我们会具体介绍每一个生命周期函数它的调用时机。
 
-### 3.5.1 beforeCreate & created
+### 3.5.1 实例创建前后
 
 `beforeCreate` 和 `created` 函数都是在实例化 `Vue` 的阶段，在 `_init` 方法中执行的，它的定义在 `src/core/instance/init.js` 中：
 
@@ -3146,13 +3163,13 @@ Vue.prototype._init = function (options?: Object) {
 }
 ```
 
-可以看到 `beforeCreate` 和 `created` 的钩子调用是在 `initState` 的前后，`initState` 的作用是初始化 `props`、`data`、`methods`、`watch`、`computed` 等属性，之后我们会详细分析。那么显然 `beforeCreate` 的钩子函数中就不能获取到 `props`、`data` 中定义的值，也不能调用 `methods` 中定义的函数。
+可以看到 `beforeCreate` 和 `created` 的钩子调用是在 `initState` 的前后，`initState` 的作用是初始化 `props`、`data`、`methods`、`watch`、`computed` 等属性，之后我们会详细分析。那么显然 `beforeCreate` 的钩子函数中就不能获取到 `props` 和 `data` 中定义的值，也不能调用 `methods` 中定义的函数。
 
 在这俩个钩子函数执行的时候，并没有渲染 DOM，所以我们也不能够访问 DOM，一般来说，如果组件在加载的时候需要和后端有交互，放在这俩个钩子函数执行都可以，如果是需要访问 `props`、`data` 等数据的话，就需要使用 `created` 钩子函数。之后我们会介绍 vue-router 和 vuex 的时候会发现它们都混合了 `beforeCreate` 钩子函数。
 
-### 3.5.2 beforeMount & mounted
+### 3.5.2 实例挂载前后
 
-顾名思义，`beforeMount` 钩子函数发生在 `mount`，也就是 DOM 挂载之前，它的调用时机是在 `mountComponent` 函数中，定义在 `src/core/instance/lifecycle.js` 中：
+顾名思义，`beforeMount` 钩子函数发生在 DOM 挂载之前，它的调用时机是在 `mountComponent` 函数中，定义在 `src/core/instance/lifecycle.js` 中：
 
 ```js
 export function mountComponent (
@@ -3245,7 +3262,7 @@ const componentVNodeHooks = {
 ```
 我们可以看到，每个子组件都是在这个钩子函数中执行 `mounted` 钩子函数，并且我们之前分析过，`insertedVnodeQueue` 的添加顺序是先子后父，所以对于同步渲染的子组件而言，`mounted` 钩子函数的执行顺序也是先子后父。 
 
-### 3.5.3 beforeUpdate & updated
+### 3.5.3 数据更新前后
 
 顾名思义，`beforeUpdate` 和 `updated` 的钩子函数执行时机都应该是在数据更新的时候，到目前为止，我们还没有分析 Vue 的数据双向绑定、更新相关，下一章我会详细介绍这个过程。
 
@@ -3322,6 +3339,7 @@ export function mountComponent (
   // ...
 }
 ```
+
 那么在实例化 `Watcher` 的过程中，在它的构造函数里会判断 `isRenderWatcher`，接着把当前 `watcher` 的实例赋值给 `vm._watcher`，定义在 `src/core/observer/watcher.js` 中：
 
 ```js
@@ -3346,7 +3364,7 @@ export default class Watcher {
 
 同时，还把当前 `wathcer` 实例 push 到 `vm._watchers` 中，`vm._watcher` 是专门用来监听 `vm` 上数据变化然后重新渲染的，所以它是一个渲染相关的 `watcher`，因此在 `callUpdatedHooks` 函数中，只有 `vm._watcher` 的回调执行完毕后，才会执行 `updated` 钩子函数。
 
-### 3.5.4 beforeDestroy & destroyed
+### 3.5.4 实例销毁前后
 
 顾名思义，`beforeDestroy` 和 `destroyed` 钩子函数的执行时机在组件销毁的阶段，组件的销毁过程之后会详细介绍，最终会调用 `$destroy` 方法，它的定义在 `src/core/instance/lifecycle.js` 中：
  
@@ -3394,23 +3412,24 @@ Vue.prototype.$destroy = function () {
     }
   }
 ```
+
 `beforeDestroy` 钩子函数的执行时机是在 `$destroy` 函数执行最开始的地方，接着执行了一系列的销毁动作，包括从 `parent` 的 `$children` 中删掉自身，删除 `watcher`，当前渲染的 VNode 执行销毁钩子函数等，执行完毕后再调用 `destroy` 钩子函数。
 
 在 `$destroy` 的执行过程中，它又会执行 ` vm.__patch__(vm._vnode, null)` 触发它子组件的销毁钩子函数，这样一层层的递归调用，所以 `destroy` 钩子函数执行顺序是先子后父，和 `mounted` 过程一样。
 
-### 3.5.5 activated & deactivated
+### 3.5.5 缓存组件激活与停用
 
 `activated` 和 `deactivated` 钩子函数是专门为 `keep-alive` 组件定制的钩子，我们会在介绍 `keep-alive` 组件的时候详细介绍，这里先留个悬念。
 
 ### 3.5.6 总结
 
-这一节主要介绍了 Vue 生命周期中各个钩子函数的执行时机以及顺序，通过分析，我们知道了如在 `created` 钩子函数中可以访问到数据，在 `mounted` 钩子函数中可以访问到 DOM，在 `destroy` 钩子函数中可以做一些定时器销毁工作，了解它们有利于我们在合适的生命周期去做不同的事情。
+这一节主要介绍了 Vue 生命周期中各个钩子函数的执行时机以及顺序，通过分析，我们知道了如在 `created` 钩子函数中可以访问到数据，在 `mounted` 钩子函数中可以访问到 DOM 内容，在 `destroy` 钩子函数中可以做一些定时器销毁工作，了解它们有利于我们在合适的生命周期去做不同的事情。
 
 ## 3.6 组件注册
 
 在 Vue.js 中，除了它内置的组件如 `keep-alive`、`component`、`transition`、`transition-group` 等，其它用户自定义组件在使用前必须注册。很多同学在开发过程中可能会遇到如下报错信息：
 
-``` 
+```
 'Unknown custom element: <xxx> - did you register the component correctly?
  For recursive components, make sure to provide the "name" option.'
 ```
@@ -3463,6 +3482,7 @@ export function initAssetRegisters (Vue: GlobalAPI) {
   })
 }
 ```
+
 函数首先遍历 `ASSET_TYPES`，得到 `type` 后挂载到 Vue 上 。`ASSET_TYPES` 的定义在 `src/shared/constants.js` 中：
 
 ```js
@@ -3472,7 +3492,8 @@ export const ASSET_TYPES = [
   'filter'
 ]
 ```
-所以实际上 Vue 是初始化了 3 个全局函数，并且如果 `type` 是 `component` 且 `definition` 是一个对象的话，通过 `this.opitons._base.extend`， 相当于 `Vue.extend` 把这个对象转换成一个继承于 Vue 的构造函数，最后通过 `this.options[type + 's'][id] = definition` 把它挂载到 `Vue.options.components` 上。
+
+所以实际上 Vue 是初始化了 3 个全局函数，并且如果 `type` 是 `component` 且 `definition` 是一个对象的话，通过 `this.opitons._base.extend`，相当于 `Vue.extend` 把这个对象转换成一个继承于 Vue 的构造函数，最后通过 `this.options[type + 's'][id] = definition` 把它挂载到 `Vue.options.components` 上。
 
 由于我们每个组件的创建都是通过 `Vue.extend` 继承而来，我们之前分析过在继承的过程中有这么一段逻辑：
 
@@ -3525,6 +3546,7 @@ export function _createElement (
   // ...
 }
 ```
+
 这里有一个判断逻辑 `isDef(Ctor = resolveAsset(context.$options, 'components', tag))`，先来看一下 `resolveAsset` 的定义，在 `src/core/utils/options.js` 中：
 
 ```js
@@ -3561,6 +3583,7 @@ export function resolveAsset (
   return res
 }
 ```
+
 这段逻辑很简单，先通过 `const assets = options[type]` 拿到 `assets`，然后再尝试拿 `assets[id]`，这里有个顺序，先直接使用 `id` 拿，如果不存在，则把 `id` 变成驼峰的形式再拿，如果仍然不存在则在驼峰的基础上把首字母再变成大写的形式再拿，如果仍然拿不到则报错。这样说明了我们在使用 `Vue.component(id, definition)` 全局注册组件的时候，id 可以是连字符、驼峰或首字母大写的形式。
 
 那么回到我们的调用 `resolveAsset(context.$options, 'components', tag)`，即拿 `vm.$options.components[tag]`，这样我们就可以在 `resolveAsset` 的时候拿到这个组件的构造函数，并作为 `createComponent` 的钩子的参数。
@@ -3802,6 +3825,7 @@ export function once (fn: Function): Function {
   }
 }
 ````
+
 `once` 逻辑非常简单，传入一个函数，并返回一个新函数，它非常巧妙地利用闭包和一个标志位保证了它包装的函数只会执行一次，也就是确保 `resolve` 和 `reject` 函数只执行一次。
 
 接下来执行 `const res = factory(resolve, reject)` 逻辑，这块儿就是执行我们组件的工厂函数，同时把 `resolve` 和 `reject` 函数作为参数传入，组件的工厂函数通常会先发送请求去加载我们的异步组件的 JS 文件，拿到组件定义的对象 `res` 后，执行 `resolve(res)` 逻辑，它会先执行 `factory.resolved = ensureCtor(res, baseCtor)`：
@@ -3819,6 +3843,7 @@ function ensureCtor (comp: any, base) {
     : comp
 }
 ```
+
 这个函数目的是为了保证能找到异步组件 JS 定义的组件对象，并且如果它是一个普通对象，则调用 `Vue.extend` 把它转换成一个组件的构造函数。
 
 `resolve` 逻辑最后判断了 `sync`，显然我们这个场景下 `sync` 为 false，那么就会执行 `forceRender` 函数，它会遍历 `factory.contexts`，拿到每一个调用异步组件的实例 `vm`, 执行 `vm.$forceUpdate()` 方法，它的定义在 `src/core/instance/lifecycle.js` 中：
@@ -3850,6 +3875,7 @@ if (isUndef(factory.resolved)) {
   res.then(resolve, reject)
 }
 ```
+
 当组件异步加载成功后，执行 `resolve`，加载失败则执行 `reject`，这样就非常巧妙地实现了配合 webpack 2+ 的异步加载组件的方式（`Promise`）加载异步组件。
 
 ### 3.7.3 高级异步组件
@@ -3871,6 +3897,7 @@ const AsyncComp = () => ({
 })
 Vue.component('async-example', AsyncComp)
 ```
+
 高级异步组件的初始化逻辑和普通异步组件一样，也是执行 `resolveAsyncComponent`，当执行完 `res = factory(resolve, reject)`，返回值就是定义的组件对象，显然满足 `else if (isDef(res.component) && typeof res.component.then === 'function')` 的逻辑，接着执行 `res.component.then(resolve, reject)`，当异步组件加载成功后，执行 `resolve`，失败执行 `reject`。
 
 因为异步组件加载是一个异步过程，它接着又同步执行了如下逻辑：
@@ -3906,6 +3933,7 @@ if (isDef(res.timeout)) {
   }, res.timeout)
 }
 ```
+
 先判断 `res.error` 是否定义了 error 组件，如果有的话则赋值给 `factory.errorComp`。
 接着判断 `res.loading` 是否定义了 loading 组件，如果有的话则赋值给 `factory.loadingComp`，如果设置了 `res.delay` 且为 0，则设置 `factory.loading = true`，否则延时 `delay` 的时间执行：
 
@@ -4031,7 +4059,6 @@ export function createAsyncPlaceholder (
 
 当执行 `forceRender` 的时候，会触发组件的重新渲染，那么会再一次执行 `resolveAsyncComponent`，这时候就会根据不同的情况，可能返回 loading、error 或成功加载的异步组件，返回值不为 `undefined`，因此就走正常的组件 `render`、`patch` 过程，与组件第一次渲染流程不一样，这个时候是存在新旧 `vnode` 的，下一章我会分析组件更新的 `patch` 过程。
 
-
 ### 3.7.5 总结
 
 通过以上代码分析，我们对 Vue 的异步组件的实现有了深入的了解，知道了 3 种异步组件的实现方式，并且看到高级异步组件的实现是非常巧妙的，它实现了 loading、resolve、reject、timeout 4 种状态。异步组件实现的本质是 2 次渲染，除了 0 delay 的高级异步组件第一次直接渲染成 loading 组件外，其它都是第一次渲染生成一个注释节点，当异步获取组件成功后，再通过 `forceRender` 强制重新渲染，这样就能正确渲染出我们异步加载的组件了。
@@ -4072,10 +4099,10 @@ var app = new Vue({
 
 在分析前，我们先直观的想一下，如果不用 Vue 的话，我们会通过最简单的方法实现这个需求：监听点击事件，修改数据，手动操作 DOM 重新渲染。这个过程和使用 Vue 的最大区别就是多了一步“手动操作 DOM 重新渲染”。这一步看上去并不多，但它背后又潜在的几个要处理的问题：
 
-1. 我需要修改哪块的 DOM？
-2. 我的修改效率和性能是不是最优的？
-3. 我需要对数据每一次的修改都去操作 DOM 吗？
-4. 我需要 case by case 去写修改 DOM 的逻辑吗？
+1. 需要修改哪块的 DOM？
+2. 修改效率和性能是不是最优的？
+3. 需要对数据每一次的修改都去操作 DOM 吗？
+4. 需要逐步地去写修改 DOM 的逻辑吗？
 
 如果我们使用了 Vue，那么上面几个问题 Vue 内部就帮你做了，那么 Vue 是如何在我们对数据修改后自动做这些事情呢，接下来我们将进入一些 Vue 响应式系统的底层的细节。
 
@@ -5521,6 +5548,7 @@ export class Observer {
   }
 }
 ```
+
 这里我们只需要关注 `value` 是 Array 的情况，首先获取 `augment`，这里的 `hasProto` 实际上就是判断对象中是否存在 `__proto__`，如果存在则 `augment` 指向 `protoAugment`， 否则指向 `copyAugment`，来看一下这两个函数的定义：
 
 ```js
@@ -8666,7 +8694,7 @@ AST 树管理的目标是构建一颗 AST 树，本质上它要维护 `root` 根
 
 当我们在处理开始标签的时候，判断如果有 `currentParent`，会把当前 AST 元素 push 到 `currentParent.chilldren` 中，同时把 AST 元素的 `parent` 指向 `currentParent`。
 
- 接着就是更新 `currentParent` 和 `stack` ，判断当前如果不是一个一元标签，我们要把它生成的 AST 元素 push 到 `stack` 中，并且把当前的 AST 元素赋值给 `currentParent`。
+接着就是更新 `currentParent` 和 `stack` ，判断当前如果不是一个一元标签，我们要把它生成的 AST 元素 push 到 `stack` 中，并且把当前的 AST 元素赋值给 `currentParent`。
 
 `stack` 和 `currentParent` 除了在处理开始标签的时候会变化，在处理闭合标签的时候也会变化，因此整个 AST 树管理要结合闭合标签的处理逻辑看。
 
@@ -8753,6 +8781,7 @@ if (text) {
   }
 }
 ```
+
 文本构造的 AST 元素有 2 种类型，一种是有表达式的，`type` 为 2，一种是纯文本，`type` 为 3。在我们的例子中，文本就是 `{{item}}:{{index}}`，是个表达式，通过执行 `parseText(text, delimiters)` 对文本解析，它的定义在 `src/compiler/parser/text-parser.js` 中：
 
 ```js
@@ -8803,7 +8832,7 @@ export function parseText (
 
 `parseText` 首先根据分隔符（默认是 `{{}}`）构造了文本匹配的正则表达式，然后再循环匹配文本，遇到普通文本就 push 到 `rawTokens` 和 `tokens` 中，如果是表达式就转换成 `_s(${exp})` push 到 `tokens` 中，以及转换成 `{@binding:exp}` push 到 `rawTokens` 中。
   
- 对于我们的例子 `{{item}}:{{index}}`，`tokens` 就是 `[_s(item),'":"',_s(index)]`；`rawTokens` 就是 `[{'@binding':'item'},':',{'@binding':'index'}]`。那么返回的对象如下：
+对于我们的例子 `{{item}}:{{index}}`，`tokens` 就是 `[_s(item),'":"',_s(index)]`；`rawTokens` 就是 `[{'@binding':'item'},':',{'@binding':'index'}]`。那么返回的对象如下：
  
  ```js
 return {
@@ -9551,6 +9580,7 @@ function genNode (node: ASTNode, state: CodegenState): string {
   }
 }
 ```
+
 `genChildren` 的就是遍历 `children`，然后执行 `genNode` 方法，根据不同的 `type` 执行具体的方法。在我们的例子中，`li` AST 元素节点的 `children` 是 type 为 2 的表达式 AST 元素节点，那么会执行到 `genText(node)` 逻辑。
 
 ```js
@@ -9915,6 +9945,7 @@ function genHandler (
   }
 }
 ```
+
 子组件生成的 `data` 串为：
 
 ```js
@@ -10130,6 +10161,7 @@ export function createComponent (
   return vnode
 }
 ```
+
 我们只关注事件相关的逻辑，可以看到，它把 `data.on` 赋值给了 `listeners`，把 `data.nativeOn` 赋值给了 `data.on`，这样所有的原生 DOM 事件处理跟我们刚才介绍的一样，它是在当前组件环境中处理的。而对于自定义事件，我们把 `listeners` 作为 `vnode` 的 `componentOptions` 传入，它是在子组件初始化阶段中处理的，所以它的处理环境是子组件。
 
 然后在子组件的初始化的时候，会执行 `initInternalComponent` 方法，它的定义在 `src/core/instance/init.js` 中：
@@ -10144,6 +10176,7 @@ export function initInternalComponent (vm: Component, options: InternalComponent
   // ...
 }
 ```
+
 这里拿到了父组件传入的 `listeners`，然后在执行 `initEvents` 的过程中，会处理这个 `listeners`，定义在 `src/core/instance/events.js` 中：
 
 ```js
@@ -10442,6 +10475,7 @@ export default function model (
   return true
 }
 ```
+
 也就是说我们执行 `needRuntime = !!gen(el, dir, state.warn)` 就是在执行 `model` 函数，它会根据 AST 元素节点的不同情况去执行不同的逻辑，对于我们这个 case 而言，它会命中 `genDefaultModel(el, value, modifiers)` 的逻辑，稍后我们也会介绍组件的处理，其它分支同学们可以自行去看。我们来看一下 `genDefaultModel` 的实现：
 
 ```js
@@ -10494,6 +10528,7 @@ function genDefaultModel (
   }
 }
 ```
+
 `genDefaultModel` 函数先处理了 `modifiers`，它的不同主要影响的是 `event` 和 `valueExpression` 的值，对于我们的例子，`event` 为 `input`，`valueExpression` 为 `$event.target.value`。然后去执行 `genAssignmentCode` 去生成代码，它的定义在 `src/compiler/directives/model.js` 中：
 
 ```js
