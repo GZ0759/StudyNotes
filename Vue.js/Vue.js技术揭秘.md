@@ -2750,8 +2750,8 @@ function createComponent (vnode, insertedVnodeQueue, parentElm, refElm) {
 
 通过之前章节的源码分析我们知道，`new Vue` 的过程通常有 2 种场景：
 
-1. 外部我们的代码主动调用 `new Vue(options)` 的方式实例化一个 Vue 对象；
-2. 我们上一节分析的组件过程中内部通过 `new Vue(options)` 实例化子组件。
+1. 外部主动通过 `new Vue(options)` 的方式实例化一个 Vue 对象；
+2. 内部自动通过 `new Vue(options)` 的方式实例化子组件。
 
 无论哪种场景，都会执行实例的 `_init(options)` 方法，它首先会执行一个 `merge options` 的逻辑，相关的代码在 `src/core/instance/init.js` 中：
 
@@ -2774,9 +2774,7 @@ Vue.prototype._init = function (options?: Object) {
 }
 ```
 
-可以看到不同场景对于 `options` 的合并逻辑是不一样的，并且传入的 `options` 值也有非常大的不同，接下来我会分开介绍 2 种场景的 options 合并过程。
-
-为了更直观，我们可以举个简单的示例：
+可以看到不同场景对于 `options` 的合并逻辑是不一样的，并且传入的 `options` 值也有非常大的不同，接下来我会分开介绍 2 种场景的 options 合并过程。为了更直观，我们可以举个简单的示例：
 
 ```js
 import Vue from 'vue'
@@ -2808,7 +2806,7 @@ let app = new Vue({
 })
 ```
 
-### 3.4.1 外部调用场景
+### 3.4.1 外部实例化 Vue 对象
 
 当执行 `new Vue` 的时候，在执行 `this._init(options)` 的时候，就会执行如下逻辑去合并 `options`：
 
@@ -2911,7 +2909,11 @@ export function mergeOptions (
 }
 ```
 
-`mergeOptions` 主要功能就是把 `parent` 和 `child` 这两个对象根据一些合并策略，合并成一个新对象并返回。比较核心的几步，先递归把 `extends` 和 `mixins` 合并到 `parent` 上，然后遍历 `parent`，调用 `mergeField`，然后再遍历 `child`，如果 `key` 不在 `parent` 的自身属性上，则调用 `mergeField`。
+`mergeOptions` 主要功能就是把 `parent` 和 `child` 这两个对象根据一些合并策略，合并成一个新对象并返回。比较核心的几步是，
+
+1. 先递归把 `extends` 和 `mixins` 合并到 `parent` 上;
+2. 然后遍历 `parent`，调用 `mergeField`;
+3. 然后再遍历 `child`，如果 `key` 不在 `parent` 的自身属性上，则调用 `mergeField`。
 
 这里有意思的是 `mergeField` 函数，它对不同的 `key` 有着不同的合并策略。举例来说，对于生命周期函数，它的合并策略是这样的：
 
@@ -2933,6 +2935,7 @@ LIFECYCLE_HOOKS.forEach(hook => {
   strats[hook] = mergeHook
 })
 ```
+
 这其中的 `LIFECYCLE_HOOKS` 的定义在 `src/shared/constants.js` 中：
 
 ```js
@@ -2989,7 +2992,7 @@ vm.$options = {
 }
 ```
 
-### 3.4.2 组件场景
+### 3.4.2 内部实例化组件
 
 由于组件的构造函数是通过 `Vue.extend` 继承自 `Vue` 的，先回顾一下这个过程，代码定义在 `src/core/global-api/extend.js` 中。
 
@@ -3036,7 +3039,7 @@ export function createComponentInstanceForVnode (
 }
 ```
 
-这里的 `vnode.componentOptions.Ctor` 就是指向 `Vue.extend` 的返回值 `Sub`， 所以 执行 `new vnode.componentOptions.Ctor(options)` 接着执行 `this._init(options)`，因为 `options._isComponent` 为 true，那么合并 `options` 的过程走到了 ` initInternalComponent(vm, options)` 逻辑。先来看一下它的代码实现，在 `src/core/instance/init.js` 中：
+这里的 `vnode.componentOptions.Ctor` 就是指向 `Vue.extend` 的返回值 `Sub`，所以执行 `new vnode.componentOptions.Ctor(options)` 接着执行 `this._init(options)`，因为 `options._isComponent` 为 true，那么合并 `options` 的过程走到了 `initInternalComponent(vm, options)` 逻辑。先来看一下它的代码实现，在 `src/core/instance/init.js` 中：
 
 ```js
 export function initInternalComponent (vm: Component, options: InternalComponentOptions) {
@@ -3059,9 +3062,11 @@ export function initInternalComponent (vm: Component, options: InternalComponent
 }
 ```
 
-`initInternalComponent` 方法首先执行 `const opts = vm.$options = Object.create(vm.constructor.options)`，这里的 `vm.constructor` 就是子组件的构造函数 `Sub`，相当于 `vm.$options = Object.create(Sub.options)`。
+`initInternalComponent` 方法首先执行 `Object.create` 方法，这里的 `vm.constructor` 就是子组件的构造函数 `Sub`，相当于 `vm.$options = Object.create(Sub.options)`。把组件构造函数的 options 挂载到 `vm.$options` 的 `_prop_` 上。
 
-接着又把实例化子组件传入的子组件父 VNode 实例 `parentVnode`、子组件的父 Vue 实例 `parent` 保存到 `vm.$options` 中，另外还保留了 `parentVnode` 配置中的如 `propsData` 等其它的属性。
+接着又把传入的 `options` 对象中的 `_parentVnode` 和 `parent` 保存到 `vm.$options` 中，并另外保存 `_parentVnode` 的相关配置。
+
+> 在该实例化子组件过程中，`_parentVnode` 为子组件的父 VNode 实例，`parent` 为子组件的父 Vue 实例。
 
 这么看来，`initInternalComponent` 只是做了简单一层对象赋值，并不涉及到递归、合并策略等复杂逻辑。
 
@@ -3112,15 +3117,13 @@ vm.$options = {
 
 ### 3.4.3 总结
 
-对于 `options` 的合并有 2 种方式，外部初始化 Vue 通过 `mergeOptions` 并遵循一定的合并策略；子组件初始化过程通过 `initInternalComponent` ，同时它的合并更快。合并完的结果保留在 `vm.$options` 中。
+对于 `options` 的合并有 2 种方式，外部通过 `mergeOptions` 并遵循一定的合并策略；子组件通过 `initInternalComponent` 进行合并。合并完的结果都保留在其 `vm.$options` 中。
 
 库、框架的设计几乎都是类似的，自身定义了一些默认配置，同时又可以在初始化阶段传入一些定义配置，然后去 merge 默认配置，来达到定制化不同需求的目的。
 
 ## 3.5 生命周期
 
 每个 Vue 实例在被创建之前都要经过一系列的初始化过程。例如需要设置数据监听、编译模板、挂载实例到 DOM、在数据变化时更新 DOM 等。同时在这个过程中也会运行一些叫做生命周期钩子的函数，给予用户机会在一些特定的场景下添加他们自己的代码。
-
-在我们实际项目开发过程中，会非常频繁地和 Vue 组件的生命周期打交道，接下来我们就从源码的角度来看一下这些生命周期的钩子函数是如何被执行的。
 
 源码中最终执行生命周期的函数都是调用 `callHook` 方法，它的定义在 `src/core/instance/lifecycle` 中：
 
@@ -3145,9 +3148,7 @@ export function callHook (vm: Component, hook: string) {
 }
 ```
 
-`callHook` 函数的逻辑很简单，根据传入的字符串 `hook`，去拿到 `vm.$options[hook]` 对应的回调函数数组，然后遍历执行，执行的时候把 `vm` 作为函数执行的上下文。
-
-在上一节中，我们详细地介绍了 Vue.js 合并 `options` 的过程，各个阶段的生命周期的函数也被合并到 `vm.$options` 里，并且是一个数组。因此 `callhook` 函数的功能就是调用某个生命周期钩子注册的所有回调函数。
+`callHook` 函数的逻辑很简单，根据传入的字符串 `hook`，去拿到 `vm.$options[hook]` 对应的回调函数数组，然后遍历执行，执行的时候把 `vm` 作为函数执行的上下文。因此 `callhook` 函数的功能就是调用某个生命周期钩子注册的所有回调函数。
 
 了解了生命周期的执行方式后，接下来我们会具体介绍每一个生命周期函数它的调用时机。
 
@@ -3170,9 +3171,11 @@ Vue.prototype._init = function (options?: Object) {
 }
 ```
 
-可以看到 `beforeCreate` 和 `created` 的钩子调用是在 `initState` 的前后，`initState` 的作用是初始化 `props`、`data`、`methods`、`watch`、`computed` 等属性，之后我们会详细分析。那么显然 `beforeCreate` 的钩子函数中就不能获取到 `props` 和 `data` 中定义的值，也不能调用 `methods` 中定义的函数。
+可以看到 `beforeCreate` 和 `created` 的钩子调用是在 `initState` 的前后，`initState` 的作用是初始化 `props`、`data`、`methods`、`watch`、`computed` 等属性。
 
-在这俩个钩子函数执行的时候，并没有渲染 DOM，所以我们也不能够访问 DOM，一般来说，如果组件在加载的时候需要和后端有交互，放在这俩个钩子函数执行都可以，如果是需要访问 `props`、`data` 等数据的话，就需要使用 `created` 钩子函数。之后我们会介绍 vue-router 和 vuex 的时候会发现它们都混合了 `beforeCreate` 钩子函数。
+在 `beforeCreate` 的钩子函数中就不能获取到 `props` 和 `data` 中定义的值，也不能调用 `methods` 中定义的函数。同时因为没有渲染 DOM 相关操作，所以也不能访问 DOM 。一般来说，如果组件在加载的时候需要和后端有交互，放在这俩个钩子函数执行都可以，如果是需要访问 `props`、`data` 等数据的话，就需要使用 `created` 钩子函数。
+
+> 之后我们会介绍 vue-router 和 vuex 的时候会发现它们都混合了 `beforeCreate` 钩子函数。
 
 ### 3.5.2 实例挂载前后
 
@@ -3235,7 +3238,9 @@ export function mountComponent (
 }
 ```
 
-在执行 `vm._render()` 函数渲染 VNode 之前，执行了 `beforeMount` 钩子函数，在执行完 `vm._update()` 把 VNode patch 到真实 DOM 后，执行 `mounted` 钩子。注意，这里对 `mounted` 钩子函数执行有一个判断逻辑，`vm.$vnode` 如果为 `null`，则表明这不是一次组件的初始化过程，而是我们通过外部 `new Vue` 初始化过程。那么对于组件，它的 `mounted` 时机在哪儿呢？
+在执行 `vm._render()` 函数渲染 VNode 之前，执行了 `beforeMount` 钩子函数，在执行完 `vm._update()` 把 VNode patch 到真实 DOM 后，执行 `mounted` 钩子。
+
+注意，这里对 `mounted` 钩子函数执行有一个判断逻辑，`vm.$vnode` 如果为 `null`，则表明这不是一次组件的初始化过程，而是我们通过外部 `new Vue` 初始化过程。那么对于组件，它的 `mounted` 时机在哪儿呢？
 
 之前我们提到过，组件的 VNode patch 到 DOM 后，会执行 `invokeInsertHook` 函数，把 `insertedVnodeQueue` 里保存的钩子函数依次执行一遍，它的定义在 `src/core/vdom/patch.js` 中：
 
@@ -3252,6 +3257,7 @@ function invokeInsertHook (vnode, queue, initial) {
   }
 }
 ```
+
 该函数会执行 `insert` 这个钩子函数，对于组件而言，`insert` 钩子函数的定义在 `src/core/vdom/create-component.js` 中的 `componentVNodeHooks` 中：
 
 ```js
@@ -3267,6 +3273,7 @@ const componentVNodeHooks = {
   },
 }
 ```
+
 我们可以看到，每个子组件都是在这个钩子函数中执行 `mounted` 钩子函数，并且我们之前分析过，`insertedVnodeQueue` 的添加顺序是先子后父，所以对于同步渲染的子组件而言，`mounted` 钩子函数的执行顺序也是先子后父。 
 
 ### 3.5.3 数据更新前后
@@ -3300,7 +3307,7 @@ export function mountComponent (
 
 注意这里有个判断，也就是在组件已经 `mounted` 之后，才会去调用这个钩子函数。
 
-`update` 的执行时机是在`flushSchedulerQueue` 函数调用的时候，它的定义在 `src/core/observer/scheduler.js` 中：
+`update` 的执行时机是在 `flushSchedulerQueue` 函数调用的时候，它的定义在 `src/core/observer/scheduler.js` 中：
 
 ```js
 function flushSchedulerQueue () {
@@ -3422,7 +3429,7 @@ Vue.prototype.$destroy = function () {
 
 `beforeDestroy` 钩子函数的执行时机是在 `$destroy` 函数执行最开始的地方，接着执行了一系列的销毁动作，包括从 `parent` 的 `$children` 中删掉自身，删除 `watcher`，当前渲染的 VNode 执行销毁钩子函数等，执行完毕后再调用 `destroy` 钩子函数。
 
-在 `$destroy` 的执行过程中，它又会执行 ` vm.__patch__(vm._vnode, null)` 触发它子组件的销毁钩子函数，这样一层层的递归调用，所以 `destroy` 钩子函数执行顺序是先子后父，和 `mounted` 过程一样。
+在 `$destroy` 的执行过程中，它又会执行 `vm.__patch__(vm._vnode, null)` 触发它子组件的销毁钩子函数，这样一层层的递归调用，所以 `destroy` 钩子函数执行顺序是先子后父，和 `mounted` 过程一样。
 
 ### 3.5.5 缓存组件激活与停用
 
@@ -3511,7 +3518,7 @@ Sub.options = mergeOptions(
 )
 ```
 
-也就是说它会把 `Vue.options` 合并到 `Sub.options`，也就是组件的 `options` 上， 然后在组件的实例化阶段，会执行 `merge options` 逻辑，把 `Sub.options.components` 合并到 `vm.$options.components` 上。
+也就是说它会把 `Vue.options` 合并到 `Sub.options`，也就是组件的 `options` 上，然后在组件的实例化阶段，会执行 `merge options` 逻辑，把 `Sub.options.components` 合并到 `vm.$options.components` 上。
 
 然后在创建 `vnode` 的过程中，会执行 `_createElement` 方法，我们再来回顾一下这部分的逻辑，它的定义在 `src/core/vdom/create-element.js` 中：
 
@@ -3875,7 +3882,7 @@ Vue.component(
   () => import('./my-async-component')
 )
 ```
-webpack 2+ 支持了异步加载的语法糖：`() => import('./my-async-component')`，当执行完 `res = factory(resolve, reject)`，返回的值就是 ` import('./my-async-component')` 的返回值，它是一个 `Promise` 对象。接着进入 if 条件，又判断了 `typeof res.then === 'function')`，条件满足，执行：
+webpack 2+ 支持了异步加载的语法糖：`() => import('./my-async-component')`，当执行完 `res = factory(resolve, reject)`，返回的值就是 `import('./my-async-component')` 的返回值，它是一个 `Promise` 对象。接着进入 if 条件，又判断了 `typeof res.then === 'function')`，条件满足，执行：
 
 ```js
 if (isUndef(factory.resolved)) {
@@ -3946,8 +3953,8 @@ if (isDef(res.timeout)) {
 
 ```js
 if (isUndef(factory.resolved) && isUndef(factory.error)) {
-    factory.loading = true
-    forceRender()
+  factory.loading = true
+  forceRender()
 }
 ```
 
@@ -3967,6 +3974,7 @@ return factory.loading
 那么这时候我们有几种情况，按逻辑的执行顺序，对不同的情况做判断。
 
 **异步组件加载失败**
+
 当异步组件加载失败，会执行 `reject` 函数：
 
 ```js
@@ -3981,6 +3989,7 @@ const reject = once(reason => {
   }
 })
 ```
+
 这个时候会把 `factory.error` 设置为 `true`，同时执行 `forceRender()` 再次执行到 `resolveAsyncComponent`：
 
 ```js
@@ -4010,6 +4019,7 @@ if (isDef(factory.resolved)) {
   return factory.resolved
 }
 ```
+
 那么这个时候直接返回 `factory.resolved`，渲染成功加载的组件。
 
 **异步组件加载中**
@@ -4104,18 +4114,18 @@ var app = new Vue({
 
 当我们去修改 `this.message` 的时候，模板对应的插值也会渲染成新的数据，那么这一切是怎么做到的呢？
 
-在分析前，我们先直观的想一下，如果不用 Vue 的话，我们会通过最简单的方法实现这个需求：监听点击事件，修改数据，手动操作 DOM 重新渲染。这个过程和使用 Vue 的最大区别就是多了一步“手动操作 DOM 重新渲染”。这一步看上去并不多，但它背后又潜在的几个要处理的问题：
+在分析前，我们先直观的想一下，如果不用 Vue 的话，我们会通过最简单的方法实现这个需求：监听点击事件，修改数据，手动操作 DOM 重新渲染。这个过程和使用 Vue 的最大区别就是多了最后一步。这一步看上去并不多，但它背后又潜在的几个要处理的问题：
 
 1. 需要修改哪块的 DOM？
 2. 修改效率和性能是不是最优的？
 3. 需要对数据每一次的修改都去操作 DOM 吗？
 4. 需要逐步地去写修改 DOM 的逻辑吗？
 
-如果我们使用了 Vue，那么上面几个问题 Vue 内部就帮你做了，那么 Vue 是如何在我们对数据修改后自动做这些事情呢，接下来我们将进入一些 Vue 响应式系统的底层的细节。
+那么 Vue 是如何在我们对数据修改后自动做这些事情呢，接下来我们将进入一些 Vue 响应式系统的底层的细节。
 
 ## 4.2 响应式对象
 
-可能很多小伙伴之前都了解过 Vue.js 实现响应式的核心是利用了 ES5 的 `Object.defineProperty`，这也是为什么 Vue.js 不能兼容 IE8 及以下浏览器的原因，我们先来对它有个直观的认识。
+其实 Vue.js 实现响应式的核心是利用了 ES5 的 `Object.defineProperty`，这也是为什么 Vue.js 不能兼容 IE8 及以下浏览器的原因。
 
 ### 4.2.1 Object.defineProperty    
 
@@ -4127,7 +4137,10 @@ Object.defineProperty(obj, prop, descriptor)
 
 `obj` 是要在其上定义属性的对象；`prop` 是要定义或修改的属性的名称；`descriptor` 是将被定义或修改的属性描述符。
 
-比较核心的是 `descriptor`，它有很多可选键值，具体的可以去参阅它的[文档](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Object/defineProperty)。这里我们最关心的是 `get` 和 `set`，`get` 是一个给属性提供的 getter 方法，当我们访问了该属性的时候会触发 getter 方法；`set` 是一个给属性提供的 setter 方法，当我们对该属性做修改的时候会触发 setter 方法。
+比较核心的是 `descriptor`，它有很多可选键值，具体的可以去参阅它的[文档](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Object/defineProperty)。这里我们最关心的是如下两种：
+
+1. `get` 是一个给属性提供的 getter 方法，当我们访问了该属性的时候会触发 getter 方法；
+2. `set` 是一个给属性提供的 setter 方法，当我们对该属性做修改的时候会触发 setter 方法。
 
 一旦对象拥有了 getter 和 setter，我们可以简单地把这个对象称为响应式对象。那么 Vue.js 把哪些对象变成了响应式对象了呢，接下来我们从源码层面分析。
 
@@ -4155,7 +4168,7 @@ export function initState (vm: Component) {
 
 `initState` 方法主要是对 `props`、`methods`、`data`、`computed` 和 `wathcer` 等属性做了初始化操作。这里我们重点分析 `props` 和 `data`，对于其它属性的初始化我们之后再详细分析。
 
-**initProps**
+**1. initProps**
 
 ```js
 function initProps (vm: Component, propsOptions: Object) {
@@ -4209,7 +4222,7 @@ function initProps (vm: Component, propsOptions: Object) {
 
 `props` 的初始化主要过程，就是遍历定义的 `props` 配置。遍历的过程主要做两件事情：一个是调用 `defineReactive` 方法把每个 `prop` 对应的值变成响应式，可以通过 `vm._props.xxx` 访问到定义 `props` 中对应的属性。对于 `defineReactive` 方法，我们稍后会介绍；另一个是通过 `proxy` 把 `vm._props.xxx` 的访问代理到 `vm.xxx` 上，我们稍后也会介绍。
 
-**initData**
+**2. initData**
 
 ```js
 function initData (vm: Component) {
@@ -4479,7 +4492,7 @@ export function defineReactive (
 
 `defineReactive` 函数最开始初始化 `Dep` 对象的实例，接着拿到 `obj` 的属性描述符，然后对子对象递归调用 `observe` 方法，这样就保证了无论 `obj` 的结构多复杂，它的所有子属性也能变成响应式的对象，这样我们访问或修改 `obj` 中一个嵌套较深的属性，也能触发 getter 和 setter。最后利用 `Object.defineProperty` 去给 `obj` 的属性 `key` 添加 getter 和 setter。而关于 getter 和 setter 的具体实现，我们会在之后介绍。
 
-### 总结
+### 4.2.7 总结
 
 这一节我们介绍了响应式对象，核心就是利用 `Object.defineProperty` 给数据添加了 getter 和 setter，目的就是为了在我们访问数据以及写数据的时候能自动执行一些逻辑：getter 做的事情是依赖收集，setter 做的事情是派发更新，那么在接下来的章节我们会重点对这两个过程分析。
  
@@ -6273,6 +6286,7 @@ function sameVnode (a, b) {
   )
 }
 ```
+
 `sameVnode` 的逻辑非常简单，如果两个 `vnode` 的 `key` 不相等，则是不同的；否则继续判断对于同步组件，则判断 `isComment`、`data`、`input` 类型等是否相同，对于异步组件，则判断 `asyncFactory` 是否相同。
 
 所以根据新旧 `vnode` 是否为 `sameVnode`，会走到不同的更新逻辑，我们先来说一下不同的情况。
@@ -9640,8 +9654,6 @@ export function genText (text: ASTText | ASTExpression): string {
 
 前面几章我们分析了 Vue 的核心以及编译过程，除此之外，Vue 还提供了很多好用的 feature 如 `event`、`v-model`、`slot`、`keep-alive`、`transition` 等等。对他们的理解有助于我们在平时开发中更好地应用这些 feature，即使出现 bug 我们也可以很从容地应对。
 
-这一章是一个可扩展的章节，除了已分析的这些 feature 外，未来我们可能会扩展更多的内容。
-
 ## 6.2 event
 
 我们平时开发工作中，处理组件间的通讯，原生的交互，都离不开事件。对于一个组件元素，我们不仅仅可以绑定原生的 DOM 事件，还可以绑定自定义事件，非常灵活和方便。那么接下来我们从源码角度来看看它的实现原理。
@@ -10875,7 +10887,7 @@ let vm = new Vue({
  
 ## 6.4 slot
 
-Vue 的组件提供了一个非常有用的特性 —— `slot` 插槽，它让组件的实现变的更加灵活。我们平时在开发组件库的时候，为了让组件更加灵活可定制，经常用插槽的方式让用户可以自定义内容。插槽分为普通插槽和作用域插槽，它们可以解决不同的场景，但它是怎么实现的呢，下面我们就从源码的角度来分析插槽的实现原理。
+Vue 的组件提供了一个非常有用的特性 `slot` 插槽，它让组件的实现变的更加灵活。我们平时在开发组件库的时候，为了让组件更加灵活可定制，经常用插槽的方式让用户可以自定义内容。插槽分为普通插槽和作用域插槽，它们可以解决不同的场景，但它是怎么实现的呢，下面我们就从源码的角度来分析插槽的实现原理。
 
 ### 普通插槽
 
@@ -10979,6 +10991,7 @@ function processSlot (el) {
   }
 }
 ```
+
 当解析到标签上有 `slot` 属性的时候，会给对应的 AST 元素节点添加 `slotTarget` 属性，然后在 `codegen` 阶段，在 `genData` 中会处理 `slotTarget`，相关代码在 `src/compiler/codegen/index.js` 中：
 
 ```js
@@ -10986,6 +10999,7 @@ if (el.slotTarget && !el.slotScope) {
   data += `slot:${el.slotTarget},`
 }
 ```
+
 会给 `data` 添加一个 `slot` 属性，并指向 `slotTarget`，之后会用到。在我们的例子中，父组件最终生成的代码如下：
 
 ```js
@@ -11013,6 +11027,7 @@ function processSlot (el) {
   // ...
 }
 ```
+
 当遇到 `slot` 标签的时候会给对应的 AST 元素节点添加 `slotName` 属性，然后在 `codegen` 阶段，会判断如果当前 AST 元素节点是 `slot` 标签，则执行 `genSlot` 函数，它的定义在 `src/compiler/codegen/index.js` 中：
 
 ```js
@@ -11057,6 +11072,7 @@ with(this) {
    )
 }
 ```
+
 在编译章节我们了解到，`_t` 函数对应的就是 `renderSlot` 方法，它的定义在 `src/core/instance/render-heplpers/render-slot.js` 中：
 
 ```js
@@ -11255,6 +11271,7 @@ function processSlot (el) {
   // ...
 } 
 ```
+
 这块逻辑很简单，读取 `scoped-slot` 属性并赋值给当前 AST 元素节点的 `slotScope` 属性，接下来在构造 AST 树的时候，会执行以下逻辑：
 
 ```js
@@ -11269,6 +11286,7 @@ if (element.elseif || element.else) {
   element.parent = currentParent
 }
 ```
+
 可以看到对于拥有 `scopedSlot` 属性的 AST 元素节点而言，是不会作为 `children` 添加到当前 AST 树中，而是存到父 AST 元素节点的 `scopedSlots` 属性上，它是一个对象，以插槽名称 `name` 为 `key`。
 
 然后在 `genData` 的过程，会对 `scopedSlots` 做处理：
@@ -11374,6 +11392,7 @@ function genSlot (el: ASTElement, state: CodegenState): string {
   return res + ')'
 }
 ```
+
 它会对 `attrs` 和 `v-bind` 做处理，对应到我们的例子，最终生成的代码如下：
 
 ```js
@@ -11429,6 +11448,7 @@ export function renderSlot (
   vm.$scopedSlots = _parentVnode.data.scopedSlots || emptyObject
 }
 ```
+
 这个 `_parentVNode.data.scopedSlots` 对应的就是我们在父组件通过执行 `resolveScopedSlots` 返回的对象。所以回到 `genSlot` 函数，我们就可以通过插槽的名称拿到对应的 `scopedSlotFn`，然后把相关的数据扩展到 `props` 上，作为函数的参数传入，原来之前我们提到的函数这个时候执行，然后返回生成的 `vnodes`，为后续渲染节点用。
 
 后续流程之前已介绍过，不再赘述，那么至此，作用域插槽的实现也就分析完毕。
@@ -11617,6 +11637,7 @@ function pruneCacheEntry (
   remove(keys, key)
 }
 ```
+
 除了从缓存中删除外，还要判断如果要删除的缓存并的组件 `tag` 不是当前渲染组件 `tag`，也执行删除缓存的组件实例的 `$destroy` 方法。
 
 最后设置 `vnode.data.keepAlive = true` ，这个作用稍后我们介绍。
@@ -11646,6 +11667,7 @@ function pruneCache (keepAliveInstance: any, filter: Function) {
   }
 }
 ```
+
 逻辑很简单，观测他们的变化执行 `pruneCache` 函数，其实就是对 `cache` 做遍历，发现缓存的节点名称和新的规则没有匹配上的时候，就把这个缓存节点从缓存中摘除。
 
 ### 组件渲染
@@ -11821,6 +11843,7 @@ function createComponent (vnode, insertedVnodeQueue, parentElm, refElm) {
   }
 }
 ```
+
 这个时候 `isReactivated` 为 true，并且在执行 `init` 钩子函数的时候不会再执行组件的 `mount` 过程了，相关逻辑在 `src/core/vdom/create-component.js` 中：
 
 ```js
@@ -12983,9 +13006,7 @@ export function leave (vnode: VNodeWithData, rm: Function) {
 那么到此为止基本的 `<transition>` 过渡的实现分析完毕了，总结起来，Vue 的过渡实现分为以下几个步骤：
 
 1. 自动嗅探目标元素是否应用了 CSS 过渡或动画，如果是，在恰当的时机添加/删除 CSS 类名。
-
 2. 如果过渡组件提供了 JavaScript 钩子函数，这些钩子函数将在恰当的时机被调用。
-
 3. 如果没有找到 JavaScript 钩子并且也没有检测到 CSS 过渡/动画，DOM 操作 (插入/删除) 在下一帧中立即执行。
 
 所以真正执行动画的是我们写的 CSS 或者是 JavaScript 钩子函数，而 Vue 的 `<transition>` 只是帮我们很好地管理了这些 CSS 的添加/删除，以及钩子函数的执行时机。

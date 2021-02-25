@@ -1,18 +1,7 @@
 > Vue.js 组件精讲  
 > Aresn iView 的作者 《Vue.js实战》的作者  
 
-
-# 0. 开篇：Vue.js 的精髓——组件
-
-## 写在前面
-
-Vue.js，无疑是当下最火热的前端框架 <sup>*Almost*</sup>，而 Vue.js 最精髓的，正是它的组件与组件化。写一个 Vue 工程，也就是在写一个个的组件。
-
-业务场景是千变万化的，而不变的是 Vue.js 组件开发的核心思想和使用技巧，掌握了 Vue.js 组件的各种开发模式，再复杂的业务场景也可以轻松化解。本小册则着重介绍笔者在 3 年的 Vue.js 开发及两年的 [iView](https://github.com/iview/iview) 开源中积累和沉淀的对 Vue.js 组件的见解和经验。
-
-本小册**不会**介绍 Vue.js 的基础用法，因为市面上已经沉淀了大量的相关技术资料，而且 Vue.js 的文档已经足够详细。如果您尚未接触 Vue.js 或正打算开始了解，推荐您先阅读笔者出版的[《Vue.js 实战》](https://item.jd.com/12215519.html)（清华大学出版社）一书，它适合刚接触 Vue.js 的开发者。因此，本小册适合已经了解或使用过 Vue.js 的开发者。
-
-这一节，我们先笼统地聊聊 Vue.js 组件和组件化以及本小册各章节的梳理。
+# 0. 开篇语
 
 ## 组件的分类
 
@@ -22,9 +11,7 @@ Vue.js，无疑是当下最火热的前端框架 <sup>*Almost*</sup>，而 Vue.j
 
    在项目开发中，我们写的大部分代码都是这类的组件（页面），协同开发时，每人维护自己的页面，很少有交集。这类组件相对是最好写的，因为主要是还原设计稿，完成需求，不需要太多模块和架构设计上的考虑。
 
-2. 不包含业务，独立、具体功能的基础组件，比如**日期选择器**、**模态框**等。这类组件作为项目的基础控件，会被大量使用，因此组件的 API 进行过高强度的抽象，可以通过不同配置实现不同的功能。比如笔者开源的 iView，就是包含了 50 多个这样基础组件的 UI 组件库。
-
-   每个公司都有自己的组件使用规范或组件库，但要开发和维护一套像 iView 这样的组件库，投入的人力和精力还是很重的，所以出于成本考虑，很多项目都会使用已有的开源组件库。
+2. 不包含业务，独立、具体功能的基础组件，比如日期选择器、模态框等。这类组件作为项目的基础控件，会被大量使用，因此组件的 API 进行过高强度的抽象，可以通过不同配置实现不同的功能。比如笔者开源的 iView，就是包含了 50 多个这样基础组件的 UI 组件库。
 
    独立组件的开发难度要高于第一类组件，因为它的侧重点是 API 的设计、兼容性、性能、以及复杂的功能。这类组件对 JavaScript 的编程能力有一定要求，也会包含非常多的技巧，比如在不依赖 Vuex 和 Bus（因为独立组件，无法依赖其它库）的情况下，各组件间的通信，还会涉及很多脑壳疼的逻辑，比如日期选择器要考虑不同时区、国家的日历习惯，支持多种日期格式。
 
@@ -38,25 +25,19 @@ Vue.js，无疑是当下最火热的前端框架 <sup>*Almost*</sup>，而 Vue.j
 
 因为本小册是围绕 Vue.js 组件展开的，所以第二节会讲解 Vue.js 组件的三个 API：`prop`、`event`、`slot`，当然，如果你已经开发过一些独立组件，完全可以跳过这节内容。
 
-
-
 3 - 7 小节会介绍组件间通信的一些方法和黑科技，一部分是 Vue.js 内置的，一部分是自行实现的，在实际开发中，会非常实用。同时也利用这些方法完成了两个具体的实战案例：
 
 1. 具有数据校验功能的表单组件 —— Form；
 2. 组合多选框组件 —— CheckboxGroup & Checkbox。
 
-本小册都会以这种核心科技 + 对应实战的形式展开。
-
-
-
-8 - 10 小节介绍 Vue 的构造器 extend 和手动挂载组件 $mount 的用法及案例。Vue.js 除了我们正常 `new Vue()` 外，还可以手动挂载的，这 3 节将介绍手动挂载一个 Vue 组件的使用场景。其中涉及到两个案例：
+8 - 10 小节介绍 Vue 的构造器 extend 和手动挂载组件 `$mount` 的用法及案例。Vue.js 除了我们正常 `new Vue()` 外，还可以手动挂载的，这 3 节将介绍手动挂载一个 Vue 组件的使用场景。其中涉及到两个案例：
 
 1. 动态渲染 .vue 文件的组件 —— Display；
-2. 全局通知组件 —— $Alert。
+2. 全局通知组件 —— `$Alert`。
 
-**Display** 组件用于将 `.vue` 文件渲染出来，线上的案例是 [iView Run](https://run.iviewui.com/)，它不需要你重新编译项目，就可以渲染一个标准的 Vue.js 组件。
+Display 组件用于将 `.vue` 文件渲染出来，线上的案例是 [iView Run](https://run.iviewui.com/)，它不需要你重新编译项目，就可以渲染一个标准的 Vue.js 组件。
 
-**$Alert** 是全局的通知组件，它的调用方法不同于常规组件。常规组件使用方法形如：
+`$Alert` 是全局的通知组件，它的调用方法不同于常规组件。常规组件使用方法形如：
 
 ```html
 <template>
@@ -88,33 +69,19 @@ export default {
 
 虽然与常规 Vue 组件调用方式不同，但底层仍然由 Vue 组件构成和维护。
 
-
-
 11 - 12 小节介绍 Render 函数与 Functional Render，并完成一个能够渲染自定义列的 Table 组件。Render 函数也是 Vue.js 组件重要的一部分，只不过在大多数业务中不常使用。本小节会介绍它的使用场景。
 
-13 小节介绍**作用域 slot（slot-scope）**，并基于这种方法同样实现 Table 组件。slot 用的很多，但 slot-scope  在业务中并不常用，但在一些特定场景下，比如组件内部有循环体时，会非常实用。
+13 小节介绍作用域 slot（slot-scope），并基于这种方法同样实现 Table 组件。slot 用的很多，但 slot-scope  在业务中并不常用，但在一些特定场景下，比如组件内部有循环体时，会非常实用。
 
 14 - 15 小节介绍递归组件，并完成树形控件 —— Tree。
 
 16 - 19 小节是综合拓展，会着重讲解 Vue.js 容易忽略却很重要的 API，以及对 Vue.js 面试题的详细分析。除此之外，还会总结笔者在两年的 iView 开源经历中的经验，除了技术细节外，还包括开源项目的持续性发展、推广等。
 
-## 结语
-
-三年前，我开始接触 Vue.js 框架，当时就被它的轻量、组件化和友好的 API 所吸引。与此同时，我也开源了 iView 项目。三年的磨(cǎi )砺(kēng)，沉淀了不少关于 Vue.js 组件的经验。
-
-本小册的内容也许不会让你的技术一夜间突飞猛进，但绝对使你醍醐灌顶。
-
-那么，请准备好一台电脑和一杯咖啡，一起来探索 Vue.js 的精髓吧。
-
-# 1. 基础：Vue.js 组件的三个 API：prop、event、slot
-
-```!
-如果您已经对 Vue.js 组件的基础用法了如指掌，可以跳过本小节，不过当做复习稍读一下也无妨。
-```
+# 1. 组件的关键 API 
 
 ## 组件的构成
 
-一个再复杂的组件，都是由三部分组成的：prop、event、slot，它们构成了 Vue.js 组件的 API。如果你开发的是一个通用组件，那一定要事先设计好这三部分，因为组件一旦发布，后面再修改 API 就很困难了，使用者都是希望不断新增功能，修复 bug，而不是经常变更接口。如果你阅读别人写的组件，也可以从这三个部分展开，它们可以帮助你快速了解一个组件的所有功能。
+一个再复杂的组件，都是由三部分组成的：prop、event、slot，它们构成了 Vue.js 组件的 API。
 
 ### 属性 prop 
 
@@ -310,19 +277,10 @@ export default {
 
 我们想在 component-a 中，访问到引用它的页面中（这里就是 parent.vue）的两个 component-b 组件，那这种情况下，就得配置额外的插件或工具了，比如 Vuex 和 Bus 的解决方案，本小册不再做它们的介绍，读者可以自行阅读相关内容。不过，它们都是依赖第三方插件的存在，这在开发独立组件时是不可取的，而在小册的后续章节，会陆续介绍一些黑科技，它们完全不依赖任何三方插件，就可以轻松得到任意的组件实例，或在任意组件间进行通信，且适用于任意场景。
 
-## 结语
-
-本小节带您复习了 Vue.js 组件的核心知识点，虽然这并没有完全覆盖 Vue.js 的 API，但对于组件开发来说已经足够了，后续章节也会陆续扩展更多的用法。
-
-基于 Vue.js 开发独立组件，并不是新奇的挑战，坦率地讲，它本质上还是 JavaScript。掌握了 Vue.js 组件的这三个 API 后，剩下的便是程序的设计。在组件开发中，最难的环节应当是解耦组件的交互逻辑，尽量把复杂的逻辑分发到不同的子组件中，然后彼此建立联系，在这其中，计算属性（computed）和混合（mixins）是两个重要的技术点，合理利用，就能发挥出 Vue.js 语言的最大特点：把状态（数据）的维护交给 Vue.js 处理，我们只专注在交互上。
-
-当您最终读完本小册时，应该会总结出和笔者一样的感悟：Vue.js 组件开发，玩到最后还是在拼 JavaScript 功底。对于每一位使用 Vue.js 的开发者来说，阅读完本小册都可以尝试开发和维护一套属于自己的组件库，并乐在其中，而且你会越发觉得，一个组件或一套组件库，就是融合了前端精髓的产出。
-
 ## 扩展阅读
 
 - [Vue 组件通信之 Bus](https://juejin.im/post/5a4353766fb9a044fb080927)
 - [Vuex 通俗版教程](https://juejin.im/entry/58cb4c36b123db00532076a2)
-
 
 # 2. 组件的通信 1：provide / inject
 
@@ -330,17 +288,11 @@ export default {
 
 ## 什么是 provide / inject
 
-`provide / inject` 是 Vue.js 2.2.0 版本后新增的 API，在文档中这样介绍 ：
+`provide / inject` 是 Vue.js 2.2.0 版本后新增的 API，在[文档]((https://cn.vuejs.org/v2/api/#provide-inject))中这样介绍 ：
 
-> [https://cn.vuejs.org/v2/api/#provide-inject](https://cn.vuejs.org/v2/api/#provide-inject)
->
-> 这对选项需要一起使用，以允许一个祖先组件向其所有子孙后代注入一个依赖，不论组件层次有多深，并在起上下游关系成立的时间里始终生效。如果你熟悉 React，这与 React 的上下文特性很相似。
-
-并且文档中有如下提示：
+这对选项需要一起使用，以允许一个祖先组件向其所有子孙后代注入一个依赖，不论组件层次有多深，并在起上下游关系成立的时间里始终生效。如果你熟悉 React，这与 React 的上下文特性很相似。
 
 > provide 和 inject 主要为高阶插件/组件库提供用例。并不推荐直接用于应用程序代码中。
-
-看不懂上面的介绍没有关系，不过上面的这句提示应该明白，就是说 Vue.js 不建议在业务中使用这对 API，而是在插件 / 组件库（比如 iView，事实上 iView 的很多组件都在用）。**不过建议归建议，如果你用好了，这个 API 会非常有用。**
 
 我们先来看一下这个 API 怎么用，假设有两个组件： **A.vue** 和 **B.vue**，B 是 A 的子组件。
 
@@ -544,8 +496,6 @@ export default {
 
 ## 独立组件中使用
 
-如果你顾忌 Vue.js 文档中所说，provide / inject 不推荐直接在应用程序中使用，那没有关系，仍然使用你熟悉的 Vuex 或 Bus 来管理你的项目就好。我们介绍的这对 API，主要还是在独立组件中发挥作用的。
-
 只要一个组件使用了 `provide` 向下提供数据，那其下所有的子组件都可以通过 `inject` 来注入，不管中间隔了多少代，而且可以注入多个来自不同父级提供的数据。需要注意的是，一旦注入了某个数据，比如上面示例中的 `app`，那这个组件中就不能再声明 `app` 这个数据了，因为它已经被父级占有。
 
 独立组件使用 provide / inject 的场景，主要是具有联动关系的组件，比如接下来很快会介绍的第一个实战：具有数据校验功能的表单组件 Form。它其实是两个组件，一个是 Form，一个是 FormItem，FormItem 是 Form 的子组件，它会依赖 Form 组件上的一些特性（props），所以就需要得到父组件 Form，这在 Vue.js 2.2.0 版本以前，是没有 provide / inject 这对 API 的，而 Form 和 FormItem 不一定是父子关系，中间很可能间隔了其它组件，所以不能单纯使用 `$parent` 来向上获取实例。在 Vue.js 2.2.0 之前，一种比较可行的方案是用计算属性动态获取：
@@ -572,12 +522,7 @@ export default {
 
 不过，这一切的前提是你使用 Vue.js 2.2.0 以上版本。
 
-## 结语
-
-如果这是你第一次听说 provide / inject 这对 API，一定觉得它太神奇了，至少笔者第一时间知晓时是这样的。它解决了独立组件间通信的问题，用好了还有出乎意料的效果。笔者在开发 [iView Developer](https://dev.iviewui.com) 时，全站就是使用这种方法来做全局数据的管理的，如果你有机会一个人做一个项目时，不妨试试这种方法。
-
-下一节，将介绍另一种组件间通信的方法，不同于 provide / inject 的是，它们不是 Vue.js 内置的 API。
-# 3. 组件的通信 2：派发与广播——自行实现 dispatch 和 broadcast 方法
+# 3. 组件的通信 2：派发与广播
 
 上一讲的 provide / inject API 主要解决了跨级组件间的通信问题，不过它的使用场景，主要是子组件获取上级组件的状态，跨级组件间建立了一种主动提供与依赖注入的关系。然后有两种场景它不能很好的解决：
 
@@ -586,7 +531,7 @@ export default {
 
 这种父子（含跨级）传递数据的通信方式，Vue.js 并没有提供原生的 API 来支持，而是推荐使用大型数据状态管理工具 Vuex，而我们之前已经介绍过 Vuex 的场景与在独立组件（或库）中使用的限制。本小节则介绍一种在父子组件间通信的方法 `dispatch` 和 `broadcast`。
 
-## \$on 与 \$emit
+## 自定义事件系统
 
 如果您使用过较早的 Vue.js 1.x 版本，肯定对 *\$dispatch* 和 *\$broadcast* 这两个内置的方法很熟悉，不过它们都在 Vue.js 2.x 里废弃了。在正式介绍主角前，我们先看看 `$on` 与 `$emit` 这两个 API，因为它们是本节内容的基础。
 
@@ -623,10 +568,6 @@ export default {
 
 这里看似是在父组件 *parent.vue* 中绑定的自定义事件 **test** 的处理句柄，然而事件 test 并不是在父组件上触发的，而是在子组件 *child.vue* 里触发的，只是通过 `v-on` 在父组件中监听。既然是子组件自己触发的，那它自己也可以监听到，这就要使用 `$on` 来监听实例上的事件，换言之，组件使用 `$emit` 在自己实例上触发事件，并用 `$on` 监听它。
 
-听起来这种神（sāo）操作有点多此一举，我们不妨先来看个示例：
-
-（也可通过在线链接 [https://run.iviewui.com/ggsomfHM](https://run.iviewui.com/ggsomfHM) 直接运行该示例）
-
 ```html
 <template>
   <div>
@@ -653,15 +594,13 @@ export default {
 
 `$on` 监听了自己触发的自定义事件 test，因为有时不确定何时会触发事件，一般会在 `mounted` 或 `created` 钩子中来监听。
 
-仅上面的示例，的确是多此一举的，因为大可在 handleEmitEvent 里直接写 window.alert(text)，没必要绕一圈。
+仅上面的示例，的确是多此一举的，因为大可在 handleEmitEvent 里直接写 `window.alert(text)`，没必要绕一圈。
 
 之所以多此一举，是因为 handleEmitEvent 是当前组件内的 `<button>` 调用的，如果这个方法不是它自己调用，而是其它组件调用的，那这个用法就大有可为了。
 
 了解了 `$on` 和 `$emit` 的用法后，我们再来看两个“过时的” API。
 
-## Vue.js 1.x 的 \$dispatch 与 \$broadcast
-
-虽然 Vue.js 1.x 已经成为过去时，但为了充分理解本节通信方法的使用场景，还是有必要来了解一点它的历史。
+## 基于组件树结构的事件流方式
 
 在 Vue.js 1.x 中，提供了两个方法：`$dispatch` 和 `$broadcast` ，前者用于向上级派发事件，只要是它的父级（一级或多级以上），都可以在组件内通过 `$on` （或 events，2.x 已废弃）监听到，后者相反，是由上级向下级广播事件的。
 
@@ -700,15 +639,13 @@ export default {
 </script>
 ```
 
-$broadcast 类似，只不过方向相反。这两种方法一旦发出事件后，任何组件都是可以接收到的，就近原则，而且会在第一次接收到后停止冒泡，除非返回 true。
+`$broadcast` 类似，只不过方向相反。这两种方法一旦发出事件后，任何组件都是可以接收到的，就近原则，而且会在第一次接收到后停止冒泡，除非返回 true。
 
 这两个方法虽然看起来很好用，但是在 Vue.js 2.x 中都废弃了，官方给出的解释是：
 
 > 因为基于组件树结构的事件流方式有时让人难以理解，并且在组件结构扩展的过程中会变得越来越脆弱。
 
 虽然在业务开发中，它没有 Vuex 这样专门管理状态的插件清晰好用，但对独立组件（库）的开发，绝对是福音。因为独立组件一般层级并不会很复杂，并且剥离了业务，不会变的难以维护。
-
-知道了 *\$dispatch* 和 *\$broadcast* 的前世今生，接下来我们就在 Vue.js 2.x 中自行实现这两个方法。
 
 ## 自行实现 dispatch 和 broadcast 方法
 
@@ -745,6 +682,7 @@ export default {
 先来看下 **emitter.js** 的代码：
 
 ```js
+// https://github.com/iview/iview/blob/2.0/src/mixins/emitter.js
 function broadcast(componentName, eventName, params) {
   this.$children.forEach(child => {
     const name = child.$options.name;
@@ -823,7 +761,7 @@ export default {
 }
 ```
 
-同理，如果是 B 向 A 通信，在 B 中调用 dispatch 方法，在 A 中使用 $on 监听事件即可。
+同理，如果是 B 向 A 通信，在 B 中调用 dispatch 方法，在 A 中使用 `$on` 监听事件即可。
 
 以上就是自行实现的 dispatch 和 broadcast 方法，相比 Vue.js 1.x，有以下不同：
 
@@ -831,14 +769,11 @@ export default {
 - 无冒泡机制；
 - 第三个参数传递的数据，只能是一个（较多时可以传入一个对象），而 Vue.js 1.x 可以传入多个参数，当然，你对 emitter.js 稍作修改，也能支持传入多个参数，只是一般场景传入一个对象足以。
 
-## 结语
-
-Vue.js 的组件通信到此还没完全结束，如果你想“趁热打铁”一口气看完，可以先阅读第 6 节组件的通信 3。亦或按顺序看下一节的实战，来进一步加深理解 provide / inject 和 dispatch / broadcast 这两对通信方法的使用场景。
-
-注：本节部分代码参考 [iView](https://github.com/iview/iview/blob/2.0/src/mixins/emitter.js)。
-# 4. 实战 1：具有数据校验功能的表单组件——Form
+# 4. 实战 1：具有数据校验功能的表单组件
 
 在第 3 节和第 4 节中，我们介绍了组件间的两种通信方法：provide / inject 和 dispatch / broadcast，前者是 Vue.js 内置的，主要用于子组件获取父组件（包括跨级）的状态；后者是自行实现的一种混合，用于父子组件（包括跨级）间通过自定义事件通信。本小节则基于这两种通信方法，来实现一个具有数据校验功能的表单组件——Form。
+
+本节部分代码参考 [iView](https://github.com/iview/iview/tree/2.0/src/components/form)。
 
 ## Form 组件概览
 
@@ -1478,17 +1413,9 @@ handleSubmit () {
 
 > 项目基于 Vue CLI 3 构建，下载安装依赖后，通过 npm run serve 可访问。
 
-## 结语
-
-组件最终的效果看起来有点 “low”，但它实现的功能却不简单。通过这个实战，你或许已经感受到本小册一开始说的，组件写到最后，都是在拼 JavaScript 功底。的确，Vue.js 组件为我们提供了一种新的代码组织形式，但归根到底，是离不开 JS 的。
-
-这个实战，你应该对独立组件间的通信用法有进一步的认知了吧，不过，这还不是组件通信的终极方案，下一节，我们就来看看适用于任何场景的组件通信方案。
-
-注：本节部分代码参考 [iView](https://github.com/iview/iview/tree/2.0/src/components/form)。
-
 ## 扩展阅读
 - [一份超级详细的Vue-cli3.0使用教程](https://juejin.im/post/5bdec6e8e51d4505327a8952)
-# 5. 组件的通信 3：找到任意组件实例——findComponents 系列方法
+# 5. 组件的通信 3：找到任意组件实例
 
 ## 概述
 
@@ -1510,13 +1437,17 @@ handleSubmit () {
 
 5 个函数的原理，都是通过递归、遍历，找到指定组件的 `name` 选项匹配的组件实例并返回。
 
-> 本节以及后续章节，都是基于上一节的工程来完成，后续不再重复说明。
->
-> 完整源码地址：[https://github.com/icarusion/vue-component-book](https://github.com/icarusion/vue-component-book)
+- 向上找到最近的指定组件——findComponentUpward
+- 向上找到所有的指定组件——findComponentsUpward
+- 向下找到最近的指定组件——findComponentDownward
+- 向下找到所有指定的组件——findComponentsDownward
+- 找到指定组件的兄弟组件——findBrothersComponents
+
+完整源码地址：[https://github.com/icarusion/vue-component-book](https://github.com/icarusion/vue-component-book)
 
 在目录 `src` 下新建文件夹 `utils` 用来放置工具函数，并新建文件 `assist.js`，本节所有函数都在这个文件里完成，每个函数都通过 `export` 对外提供（如果你不了解 export，请查看扩展阅读1）。
 
-### 向上找到最近的指定组件——findComponentUpward
+### 向上找到最近的指定组件
 
 先看代码：
 
@@ -1600,7 +1531,7 @@ findComponentUpward 方法会在 while 语句里不断向上覆盖当前的 `par
 
 findComponentUpward 只会找到最近的一个组件实例，如果要找到全部符合要求的组件，就需要用到下面的这个方法。
 
-### 向上找到所有的指定组件——findComponentsUpward
+### 向上找到所有的指定组件
 
 代码如下：
 
@@ -1625,7 +1556,7 @@ export { findComponentsUpward };
 
 findComponentsUpward 的使用场景较少，一般只用在递归组件里面（后面小节会介绍），因为这个函数是一直向上寻找父级（parent）的，只有递归组件的父级才是自身。事实上，iView 在使用这个方法也都是用在递归组件的场景，比如菜单组件 Menu。由于递归组件在 Vue.js 组件里面并不常用，那自然 findComponentsUpward 也不常用了。
 
-### 向下找到最近的指定组件——findComponentDownward
+### 向下找到最近的指定组件
 
 代码如下：
 
@@ -1710,7 +1641,7 @@ export { findComponentDownward };
 
 示例中的 A 和 B 是父子关系，因此也可以直接用 `ref` 来访问，但如果不是父子关系，中间间隔多代，用它就很方便了。
 
-### 向下找到所有指定的组件——findComponentsDownward
+### 向下找到所有指定的组件
 
 如果要向下找到所有的指定组件，要用到 findComponentsDownward 函数，代码如下：
 
@@ -1731,7 +1662,7 @@ export { findComponentsDownward };
 
 用法与 findComponentDownward 大同小异，就不再写用例了。
 
-### 找到指定组件的兄弟组件——findBrothersComponents
+### 找到指定组件的兄弟组件
 
 代码如下：
 
@@ -1823,23 +1754,19 @@ export default {
 
 以上就是 5 个函数的详细介绍，get 到这 5 个，以后就再也不用担心组件通信了。
 
-## 结语
-
-只有你认真开发过 Vue.js 独立组件，才会明白这 5 个函数的强大之处。
-
 ## 扩展阅读
 
 - [ES6 Module 的语法](http://es6.ruanyifeng.com/#docs/module)
 
 注：本节部分代码参考 [iView](https://github.com/iview/iview/blob/2.0/src/utils/assist.js)。
-# 6. 实战 2：组合多选框组件——CheckboxGroup & Checkbox
+
+# 6. 实战 2：组合多选框组件
 
 在第 5 节，我们完成了具有数据校验功能的组件 Form，本小节继续开发一个新的组件——组合多选框 Checkbox。它作为基础组件，也能集成在 Form 内并应用其验证规则。
 
 ## Checkbox 组件概览
 
 多选框组件也是由两个组件组成：CheckboxGroup 和 Checkbox。单独使用时，只需要一个 Checkbox，组合使用时，两者都要用到。效果如下图所示：
-
 
 ![](https://user-gold-cdn.xitu.io/2018/11/2/166d39853b7facd8?w=562&h=334&f=png&s=29035)
 
@@ -2207,16 +2134,12 @@ Checkbox 新增的 prop： `label` 只会在组合使用时有效，结合 `mode
 1. 将 CheckboxGroup 和 Checkbox 组件集成在 Form 里完成一个数据校验的示例；
 2. 参考本节的代码，实现一个单选组件 Radio 和 RadioGroup。
 
-## 结语
-
-你看到的简单组件，其实都不简单。
-
 ## 扩展阅读
 
 - [v-model 指令在组件中怎么玩](https://juejin.im/post/598bf7a3f265da3e252a1d6a)
 
 注：本节部分代码参考 [iView](https://github.com/iview/iview/tree/2.0/src/components/checkbox)。
-# 7. Vue 的构造器——extend 与手动挂载——$mount
+# 7. Vue 的构造器与手动挂载
 
 本节介绍两个 Vue.js 内置但却不常用的 API——extend 和 $mount，它们经常一起使用。不常用，是因为在业务开发中，基本没有它们的用武之地，但在独立组件开发时，在一些特定的场景它们是至关重要的。
 
@@ -2336,28 +2259,13 @@ const notification = Instance.$children[0];
 
 需要注意的是，我们是用 `$mount` 手动渲染的组件，如果要销毁，也要用 `$destroy` 来手动销毁实例，必要时，也可以用 `removeChild` 把节点从 DOM 中移除。
 
-## 结语
-
-这两个 API 并不难理解，只是不常使用罢了，因为多数情况下，我们只关注在业务层，并使用现成的组件库。
-
-使用 Vue.js 也有二八原则，即 80% 的人看过 [Vue.js 文档教程篇](https://cn.vuejs.org/v2/guide/)，20% 的人看过 [Vue.js 文档 API](https://cn.vuejs.org/v2/api/)。
-
-下一节，我们来做点有趣的东西。
-
 ## 扩展阅读
 
 - [聊聊 Vue.js 的 template 编译](https://juejin.im/post/59da1c116fb9a00a4a4cf6dd)
 
+# 8. 实战 3：动态渲染 .vue 文件的组件
 
-# 8. 实战 3：动态渲染 .vue 文件的组件—— Display
-
-你可能用过 [jsfiddle](https://jsfiddle.net/) 或 [jsbin](https://jsbin.com) 之类的网站，在里面你可以用 CDN 的形式引入 Vue.js，然后在线写示例，实时运行，比如下面这个例子：
-
-[https://jsfiddle.net/c87yh92v/](https://jsfiddle.net/c87yh92v/)
-
-不过，这类网站主要是一个 html，里面包含 js、css 部分，渲染侧是用 iframe 嵌入你编写的 html，并实时更新。在这些网站写示例，是不能直接写 `.vue` 文件的，因为没法进行编译。
-
-再来看另一个网站 [iView Run](https://run.iviewui.com/)（之前小节也有提到），它是能够在线编写一个标准的 `.vue` 文件，并及时渲染的，它也预置了 iView 环境，你可以使用 iView 组件库全部的组件。本小节，我们就来实现这样一个能够动态渲染 .vue 文件的 `Display` 组件，当然，用到的核心技术就是上一节的 `extend` 和 `$mount`。
+网站 [iView Run](https://run.iviewui.com/)（之前小节也有提到），它是能够在线编写一个标准的 `.vue` 文件，并及时渲染的，它也预置了 iView 环境，你可以使用 iView 组件库全部的组件。本小节，我们就来实现这样一个能够动态渲染 .vue 文件的 `Display` 组件，当然，用到的核心技术就是上一节的 `extend` 和 `$mount`。
 
 ## 接口设计
 
@@ -2499,7 +2407,7 @@ arg1, arg2, ... argN 是被函数使用的参数名称，**functionBody** 是一
 </script>
 ```
 
-extend 构造的实例通过 $mount 渲染后，挂载到了组件唯一的一个节点 `<div ref="display">` 上。
+extend 构造的实例通过 `$mount` 渲染后，挂载到了组件唯一的一个节点 `<div ref="display">` 上。
 
 现在 html 和 js 都有了，还剩下 css。加载 css 没有什么奇技淫巧，就是创建一个 `<style>` 标签，然后把 css 写进去，再插入到页面的 `<head>` 中，这样 css 就被浏览器解析了。为了便于后面在 `this.code` 变化或组件销毁时移除动态创建的 `<style>` 标签，我们给每个 style 标签加一个随机 id 用于标识。
 
@@ -2660,24 +2568,20 @@ module.exports = {
 
 以上就是 Display 组件所有的内容，如果你感兴趣，可以把它进一步封装，做成 iView Run 这样的产品。
 
-## 结语
-
-这个小小的 Display 组件，能做的事还有很多，比如要写一套 Vue 组件库的文档，传统方法是在开发环境写一个个的 .vue 文件，然后编译打包、上传资源、上线，如果要修改，哪怕一个标点符号，都要重新编译打包、上传资源、上线。有了 Display 组件，只需要提供一个服务来在线修改文档的 .vue，就能实时更新，不用打包、上传、上线。
-
-还有一点很重要的是，可以看到，在 iView Run 里，默认是直接可以写 iView 组件库的全部组件，并没有额外引入，这是因为 Display 所在的工程，已经将 iView 安装在了全局，Vue.extend 在构造实例时，已经可以使用全局安装的插件了，如果你还全局安装了其它插件，比如 axios，都是可以直接使用的。
-
 ## 扩展阅读
 
 - [new Function](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Function)
 - [Vue.js 2.0 独立构建和运行时构建的区别](https://jingsam.github.io/2016/10/23/standalone-vs-runtime-only-build-in-vuejs2.html)
 
 
-# 9. 实战 4：全局提示组件——$Alert
+# 9. 实战 4：全局提示组件
 
 有一种 Vue.js 组件，它不同于常规的组件，但组件结构本身很简单，比如下面的全局提示组件：
 
 
 ![](https://user-gold-cdn.xitu.io/2018/11/10/166fcc05107e987c?w=3187&h=2087&f=png&s=265274)
+
+注：本节部分代码参考 [iView](https://github.com/iview/iview/tree/2.0/src/components/base/notification)。
 
 实现这样一个组件并不难，只需要简单的几行 div 和 css，但使用者可能要这样来显示组件：
 
@@ -2852,7 +2756,7 @@ Alert 组件不同于常规的组件使用方式，它最终是通过 JS 来调�
 
 ## 2/3 实例化封装
 
-这一步，我们对 Alert 组件进一步封装，让它能够实例化，而不是常规的组件使用方法。实例化组件我们在第 8 节中介绍过，可以使用 Vue.extend 或 new Vue，然后用 $mount 挂载到 body 节点下。
+这一步，我们对 Alert 组件进一步封装，让它能够实例化，而不是常规的组件使用方法。实例化组件我们在第 8 节中介绍过，可以使用 Vue.extend 或 new Vue，然后用 `$mount` 挂载到 body 节点下。
 
 在 `src/components/alert` 目录下新建 `notification.js` 文件：
 
@@ -3000,13 +2904,7 @@ new Vue({
 4. 在 notification.js 的 new Vue 时，使用了 Render 函数来渲染 alert.vue，这是因为使用 template 在 runtime 的 Vue.js 版本下是会报错的。
 5. 本例的 content 只能是字符串，如果要显示自定义的内容，除了用 `v-html` 指令，也能用 Functional Render（之后章节会介绍）。
 
-## 结语
-
-Vue.js 的精髓是组件，组件的精髓是 JavaScript。将 JavaScript 开发中的技巧结合 Vue.js 组件，就能玩出不一样的东西。
-
-注：本节部分代码参考 [iView](https://github.com/iview/iview/tree/2.0/src/components/base/notification)。
-
-# 10. 更灵活的组件：Render 函数与 Functional Render
+# 10. 更灵活的组件
 
 Vue.js 2.x 与 Vue.js 1.x 最大的区别就在于 2.x 使用了 Virtual DOM（虚拟 DOM）来更新 DOM 节点，提升渲染性能。
 
@@ -3422,12 +3320,9 @@ Vue.js 提供了一个 `functional` 的布尔值选项，设置为 true 可以�
 
 就此例来说，完全可以用 slot 取代 Functional Render，那是因为只有 `render` 这一个 prop。如果示例中的 `<Render>` 是用 `v-for` 生成的，也就是多个时，用 一个 slot 是实现不了的，那时用 Render 函数就很方便了，后面章节会专门介绍。
 
-## 结语
-
-如果想换一种思路写 Vue.js，就试试 Render 函数吧，它会让你“又爱又恨”！
-
 注：本节部分内容参考了《Vue.js 实战》（清华大学出版社），部分代码参考 [iView](https://github.com/iview/iview/blob/2.0/src/components/transfer/transfer.vue)。
-# 11. 实战 5：可用 Render 自定义列的表格组件——Table
+
+# 11. 实战 5：可用 Render 自定义列的表格组件
 
 表格组件 Table 是中后台产品中最常用的组件之一，用于展示大量结构化的数据。大多数组件库都提供了表格组件，比如 [iView](https://www.iviewui.com/components/table)，功能也是非常强大。正规的表格，是由 `<table>`、`<thead>`、`<tbody>`、`<tr>`、`<th>`、`<td>` 这些标签组成，一般分为表头 **columns** 和数据 **data**。本小节就来开发一个最基本的表格组件 Table，它支持使用 Render 函数来自定义某一列。
 
@@ -4040,7 +3935,7 @@ Render 函数虽好，但也是有弊端的，通过上面的示例可以发现�
 ## 扩展阅读
 
 - [Div 和 Table 的区别](https://www.cnblogs.com/lovebear/archive/2012/04/18/2456081.html)
-# 12. 实战 6：可用 slot-scope 自定义列的表格组件——Table
+# 12. 实战 6：可用 slot-scope 自定义列的表格组件
 
 上一节，我们基于 Render 函数实现了在表格中自定义列模板的组件 Table，虽说 Render 函数能够完全发挥 JavaScript 的编程能力，实现几乎所有的自定义工作，但本质上，使用者写的是一个庞大的 JS 对象，它不具备 DOM 结构，可读性和可维护性都比较差。对于大部分写 Vue.js 的开发者来说，更倾向于使用 template 的语法，毕竟它是 Vue.js 独有的特性。本小节则在上一节的 Table 组件基础上修改，实现一种达到同样渲染效果，但对使用者更友好的 slot-scope 写法。
 
@@ -4564,9 +4459,6 @@ table.vue 也要做一点修改：
 
 方案 3 也是推荐使用的，当 Table 的功能足够复杂，层级会嵌套的比较深，那时方案 1 的 slot 就不会定义在第一级组件中，中间可能会隔许多组件，slot 就要一层层中转，相比在任何地方都能直接使用的 Render 就要麻烦了。所以，如果你的组件层级简单，推荐用第一种方案；如果你的组件已经成型（某 API 基于 Render 函数），但一时间不方便支持 slot-scope，而使用者又想用，那就选方案 2；如果你的组件已经成型（某 API 基于 Render 函数），但组件层级复杂，要按方案 1 那样支持 slot-scope 可能改动较大，还有可能带来新的 bug，那就用方案 3，它不会破坏原有的任何内容，但会额外支持 slot-scope 用法，关键是改动简单。
 
-## 结语
-
-理论上，绝大多数能用 Render 的地方，都可以用 slot-scope。对于极客来说，喜欢挑战各种新奇的写法，所以会在 Vue.js 中大量使用 Render 函数、JSX 甚至 TS；而对于求稳的开发者来说，常规的 template、slot、slot-scope 写法会是好的选择。如果非要选一种，那要从你团队的整体情况来定，如果团队大部分是写后端为主的，那可能更倾向于 TS；如果写过 React，或许 JSX 是不错的选择；如果实在不知道选什么，那就求稳吧！
 # 13. 递归组件与动态组件
 
 ## 递归组件
@@ -4836,7 +4728,8 @@ keep-alive 还有一些额外的 props 可以配置：
 ## 扩展阅读
 
 - [异步组件](https://cn.vuejs.org/v2/guide/components-dynamic-async.html#异步组件)
-# 14. 实战 7：树形控件——Tree
+
+# 14. 实战 7：树形控件
 
 本小节基于 Vue.js 的递归组件知识，来开发一个常见的树形控件—Tree。
 
@@ -5223,6 +5116,7 @@ export default {
 - [浅拷贝与深拷贝](https://juejin.im/post/5b5dcf8351882519790c9a2e)
 
 注：本节部分代码参考 [iView](https://github.com/iview/iview/blob/2.0/src/utils/assist.js#L114)。
+
 # 15. 拓展：Vue.js 容易忽略的 API 详解
 
 前面的 15 小节已经覆盖了 Vue.js 组件的绝大部分内容，但还是有一些 API 容易忽略。本节则对 Vue.js 的一些重要且易忽略的 API 进行详细介绍。
@@ -5586,27 +5480,27 @@ computed: {
 
 还有一些 API，可能不常用，也比较简单，只需知道就好，本册不详细展开介绍，可以通过指引到 Vue.js 文档查看。
 
-### [delimiters](https://cn.vuejs.org/v2/api/#delimiters)
+1. [delimiters](https://cn.vuejs.org/v2/api/#delimiters)
 
 改变纯文本插入分隔符，Vue.js 默认的是 `{{ }}`，如果你使用其它一些后端模板，比如 Python 的 Tornado 框架，那 Vue.js 和 Tornado 的 `{{ }}` 就冲突了，这时用它可以修改为指定的分隔符。
 
-### [v-once](https://cn.vuejs.org/v2/api/#v-once)
+2. [v-once](https://cn.vuejs.org/v2/api/#v-once)
 
 只渲染元素和组件**一次**。随后的重新渲染，元素/组件及其所有的子节点将被视为静态内容并跳过。这可以用于优化更新性能。
 
-### [vm.$isServer](https://cn.vuejs.org/v2/api/#vm-isServer)
+3. [vm.$isServer](https://cn.vuejs.org/v2/api/#vm-isServer)
 
 当前 Vue 实例是否运行于服务器，如果你的组件要兼容 SSR，它会很有用。
 
-### [inheritAttrs](https://cn.vuejs.org/v2/api/#inheritAttrs)
+4. [inheritAttrs](https://cn.vuejs.org/v2/api/#inheritAttrs)
 
 一些原生的 html 特性，比如 `id`，即使没有定义 props，也会被集成到组件根节点上，设置 inheritAttrs 为 false 可以关闭此特性。
 
-### [errorHandler](https://cn.vuejs.org/v2/api/#errorHandler)
+5. [errorHandler](https://cn.vuejs.org/v2/api/#errorHandler)
 
 使用 `errorHandler` 可以进行异常信息的获取。
 
-### [watch](https://cn.vuejs.org/v2/api/#watch)
+6. [watch](https://cn.vuejs.org/v2/api/#watch)
 
 监听状态的变化，用的也很多了，但它和 computed 一样，也有 Object 的写法，这样能配置更多的选项，比如：
 
@@ -5616,26 +5510,21 @@ computed: {
 
 完整的配置可以阅读文档。
 
-### [comments](https://cn.vuejs.org/v2/api/#comments)
+7. [comments](https://cn.vuejs.org/v2/api/#comments)
 
 开启会保留 html 注释。
 
-### [transition](https://cn.vuejs.org/v2/api/#transition)
+8. [transition](https://cn.vuejs.org/v2/api/#transition)
 
 内置的组件，可做过渡效果，比如 CSS 的高度从 0 到 auto（使用纯 CSS 是无法实现动画的）。
 
-## 结语
-
-彻底掌握一门语言（框架），不需要阅读它所有的源码，但至少要阅读它所有的 [API](https://cn.vuejs.org/v2/api/)。
-# 16. 拓展：Vue.js 面试、常见问题答疑
+# 16. 拓展：Vue.js 面试问题
 
 在过去的很多面试中，我会经常问候选人一些关于 Vue.js 的问题。这些问题从题面来看很简单，但仔细想又不是那么简单，不同的人，会答出不同的层次，从而更好地了解一个人对 Vue.js 的理解程度。
 
-## 题目
+## v-show 与 v-if 区别
 
-### v-show 与 v-if 区别
-
-第一题应该是最简单的，提这个问题，也是想让候选人不那么紧张，因为但凡用过 Vue.js，多少知道 `v-show` 和 `v-if`  的区别，否则就没得聊了。不过这最简单的一道题，有三个层次，我会逐一追问。首先，基本所有人都会说到：
+第一题应该是最简单的，提这个问题，也是想让候选人不那么紧张，因为但凡用过 Vue.js，多少知道 `v-show` 和 `v-if` 的区别，否则就没得聊了。不过这最简单的一道题，有三个层次，我会逐一追问。首先，基本所有人都会说到：
 
 `v-show` 只是 CSS 级别的 `display: none;` 和 `display: block;` 之间的切换，而 `v-if` 决定是否会选择代码块的内容（或组件）。
 
@@ -5647,7 +5536,7 @@ computed: {
 
 因为当 `v-if="false"` 时，内部组件是不会渲染的，所以在特定条件才渲染部分组件（或内容）时，可以先将条件设置为 `false`，需要时（或异步，比如 $nextTick）再设置为 `true`，这样可以优先渲染重要的其它内容，合理利用，可以进行性能优化。
 
-### 绑定 class 的数组用法
+## 绑定 class 的数组用法
 
 动态绑定 class 应该不陌生吧，这也是最基本的，但是这个问题却有点绕，什么叫**绑定 class 的数组用法？**我们看一下，最常用的绑定 class 怎么写：
 
@@ -5696,7 +5585,7 @@ computed: {
 
 示例来自 iView 的 Button 组件，可以看到，数组里，可以是固定的值，还有动态值（对象）的混合。
 
-### 计算属性和 watch 的区别
+## 计算属性和 watch 的区别
 
 回答该题前，一般都会思考一下。很多人会偏题，直接去答计算属性和 watch 怎么用，这是不得分的，因为题目是问**区别**，并不是用法。
 
@@ -5726,7 +5615,7 @@ computed: {
 - deep 是否深度
 - immediate 是否立即执行
 
-### 事件修饰符
+## 事件修饰符
 
 这个问题我会先写一段代码：
 
@@ -5766,24 +5655,24 @@ computed: {
 
 而且，事件修饰符在连用时，是有先后顺序的。
 
-### 组件中 data 为什么是函数
+## 组件中 data 为什么是函数
 
 为什么组件中的 data 必须是一个函数，然后 return 一个对象，而 new Vue 实例里，data 可以直接是一个对象？
 
 因为组件是用来复用的，JS 里对象是引用关系，这样作用域没有隔离，而 new Vue 的实例，是不会被复用的，因此不存在引用对象的问题。
 
-### keep-alive 的理解
+## keep-alive 的理解
 
 这是个概念题，主要考察候选人是否知道这个用法。简单说，就是把一个组件的编译缓存起来。在第 14 节有过详细介绍，也可以看看 [Vue.js 的文档](https://cn.vuejs.org/v2/guide/components-dynamic-async.html#在动态组件上使用-keep-alive)。
 
-### 递归组件的要求
+## 递归组件的要求
 
 回答这道题，首先你得知道什么是**递归组件**。而不到 10% 的人知道递归组件。其实在实际业务中用的确实不多，在独立组件中会经常使用，第 14 节和 15 节专门讲过递归组件。那回到问题，递归组件的要求是什么？主要有两个：
 
 - 要给组件设置 **name**；
 - 要有一个明确的结束条件。
 
-### 自定义组件的语法糖 v-model 是怎样实现的
+## 自定义组件的语法糖 v-model 是怎样实现的
 
 在第 16 节已经详细介绍过，这里的 v-model，并不是给普通输入框 `<input />` 用的那种 v-model，而是在自定义组件上使用。既然是语法糖，就能够还原，我们先还原一下：
 
@@ -5830,11 +5719,11 @@ computed: {
 
 如果你能说到 `model` 选项，绝对是加分的。
 
-### Vuex 中 mutations 和 actions 的区别
+## Vuex 中 mutations 和 actions 的区别
 
 主要的区别是，actions 可以执行异步。actions 是调用 mutations，而 mutations 来修改 store。
 
-### Render 函数
+## Render 函数
 
 这是比较难的一题了，因为很少有人会去了解 Vue.js 的 Render 函数，因为基本用不到。Render 函数的内容本小册已经很深入的讲解过了，遇到这个问题，一般可以从这几个方面来回答：
 
@@ -5876,7 +5765,7 @@ createElement () {
 
 常用的参数，主要是指上面第二个参数里的值了，这个比较多，得去看 Vue.js 的文档。
 
-### 怎样理解单向数据流
+## 怎样理解单向数据流
 
 这个概念出现在组件通信。父组件是通过 prop 把数据传递到子组件的，但是这个 prop 只能由父组件修改，子组件不能修改，否则会报错。子组件想修改时，只能通过 `$emit` 派发一个自定义事件，父组件接收到后，由父组件修改。
 
@@ -5912,7 +5801,7 @@ createElement () {
 
 如果你能提到 v-model 实现数据的双向绑定、.sync 用法，会大大加分的，这些在第 16 节已经详细介绍过。
 
-### 生命周期
+## 生命周期
 
 [Vue.js 生命周期](https://cn.vuejs.org/v2/api/#选项-生命周期钩子) 主要有 8 个阶段：
 
@@ -5922,7 +5811,7 @@ createElement () {
 - 更新前 / 后（beforeUpdate / updated）：当 data 变化时，会触发 beforeUpdate 和 updated 方法。这两个不常用，且不推荐使用。
 - 销毁前 / 后（beforeDestroy / destroyed）：beforeDestroy 是在 Vue 实例销毁前触发，一般在这里要通过 removeEventListener 解除手动绑定的事件。实例销毁后，触发 destroyed。
 
-### 组件间通信
+## 组件间通信
 
 本小册一半的篇幅都在讲组件的通信，如果能把这些都吃透，基本上 Vue.js 的面试就稳了。
 
@@ -5942,28 +5831,25 @@ createElement () {
 
 除了常规的通信方法，本册介绍的 dispatch / broadcast 和 findComponents 系列方法也可以说的，如果能说到这些，说明你对 Vue.js 组件已经有较深入的研究。
 
-### 路由的跳转方式
+## 路由的跳转方式
 
 一般有两种：
 
 1. 通过 `<router-link to="home">`，router-link 标签会渲染为 `<a>` 标签，在 template 中的跳转都是用这种；
 2. 另一种是编程式导航，也就是通过 JS 跳转，比如 `router.push('/home')`。
 
-### Vue.js 2.x 双向绑定原理
+## Vue.js 2.x 双向绑定原理
 
 这个问题几乎是面试必问的，回答也是有深有浅。基本上要知道核心的 API 是通过 `Object.defineProperty()` 来劫持各个属性的 setter / getter，在数据变动时发布消息给订阅者，触发相应的监听回调，这也是为什么 Vue.js 2.x 不支持 IE8 的原因（IE 8 不支持此 API，且无法通过 polyfill 实现）。
 
 Vue.js 文档已经对 [深入响应式原理](https://cn.vuejs.org/v2/guide/reactivity.html) 解释的很透彻了。
 
-### 什么是 MVVM，与 MVC 有什么区别
+## 什么是 MVVM，与 MVC 有什么区别
 
 MVVM 模式是由经典的软件架构 MVC 衍生来的。当 View（视图层）变化时，会自动更新到 ViewModel（视图模型），反之亦然。View 和 ViewModel 之间通过双向绑定（data-binding）建立联系。与 MVC 不同的是，它没有 Controller 层，而是演变为 ViewModel。
 
 ViewModel 通过双向数据绑定把 View 层和 Model 层连接了起来，而 View 和 Model 之间的同步工作是由 Vue.js 完成的，我们不需要手动操作 DOM，只需要维护好数据状态。
 
-## 结语
-
-一个人的简历，是由简单到复杂再到简单，技术是无止尽的，接触的越多，越能感到自己的渺小。
 # 17. 拓展：如何做好一个开源项目（上篇）
 
 ## iView 的故事
@@ -6040,16 +5926,10 @@ ViewModel 通过双向数据绑定把 View 层和 Model 层连接了起来，而
 
 对于 Vue.js 组件库来说，生态一般分为脚手架、后台模板和业务组件。最新的 Vue CLI 3 提供了插件机制，现在的主流做法都是提供一个类似 [vue-cli-plugin-iview](https://github.com/iview/vue-cli-plugin-iview) 的插件，很少有单独提供自己的工程了，在文档里，要推荐使用者用 Vue CLI 3 来管理项目，享受 Vue 的生态。后台模板是开箱即用的，默认配置好了路由、权限管理、多语言、登录等常规的后台系统功能，使用者 down 下来后，稍作修改就能很快开发自己的后台管理系统，主流的 UI 组件库，都会提供自家的后台模板，当然也有第三方专注在做后台模板的。最后一类业务组件，比如城市级联选择器 [iview-area](https://github.com/iview/iview-area)，它基于 iView 的基础组件开发，但又不是基础组件，所以不能归到 iView 里，只能作为独立组件单独维护，业务组件理论上使用者可以自己封装，但是重复性的工作，还是交给社区做吧，这就是开源。
 
-下一篇，将介绍：
-- **持续运营**
-- **国际化**
-- **让更多的人参与**
-- **让 Robot 来做“坏人”**
-- **赞助与商业化**
-
 ## 扩展阅读
 
 - [2016我的心路历程：从 Vue 到 Webpack 到 iView](https://juejin.im/post/5880108f8d6d810058ae0def)
+
 # 18. 拓展：如何做好一个开源项目（下篇）
 ## 持续运营
 
@@ -6164,13 +6044,6 @@ robot 还有一个作用：翻译。它会把中文的 issues 自动翻译为英
 
 以上，就是我从事开源工作两年多的一些浅薄经验，希望能给聪明的你带来帮助。
 
-## 结语
-
-每个开发者，都应该尝试维护一个开源项目。
-
-每个开发者，都应该抱着一颗敬畏之心使用他人的开源项目，而不是“用你的是看得起你”。
-
-每个开发者，都应该适当地赞助一个帮助过你的开源项目。
 # 19. 写在最后
 
 亲爱的读者，到这里本小册就要结束了，你是否从中学习到了属于你的知识呢？我们来回顾一下小册的内容吧。
@@ -6185,7 +6058,7 @@ Vue.js 在开发独立组件时，由于它的特殊性，无法使用 Vuex、Bu
 
 1. 具有数据校验功能的 Form 组件，它用到了第 1 种组件通信；
 2. 组合多选框 Checkbox 组件，它用到了第 2 种和第 3 种组件通信；
-3. Display 组件，它利用 Vue.js 的构造器 extend 和手动挂载 $mount API；
+3. Display 组件，它利用 Vue.js 的构造器 extend 和手动挂载 `$mount` API；
 4. 全局通知 \$Alert 组件，也是利用了 \$mount API，与传统组件不同的是，它基于 Vue.js 组件开发，但却是以 JavaScript 的形式调用的，并且组件会在 body 节点下渲染；
 5. 表格组件 Table，典型的数据驱动型组件，使用了函数式组件（Functional Render）来自定义列模板；
 6. 表格组件 Table，与上例不同的是，它的自定义列模板使用了 `slot-scope`；
