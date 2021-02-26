@@ -3171,11 +3171,11 @@ Vue.prototype._init = function (options?: Object) {
 }
 ```
 
-可以看到 `beforeCreate` 和 `created` 的钩子调用是在 `initState` 的前后，`initState` 的作用是初始化 `props`、`data`、`methods`、`watch`、`computed` 等属性。
+可以看到 `beforeCreate` 和 `created` 的钩子调用是在 `initState` 方法的前后，该方法的作用是初始化 `props`、`data`、`methods`、`watch`、`computed` 等属性。在 `beforeCreate` 的钩子函数中就不能获取到 `props` 和 `data` 中定义的值，也不能调用 `methods` 中定义的函数。同时因为没有渲染 DOM 相关操作，所以也不能访问 DOM 。
 
-在 `beforeCreate` 的钩子函数中就不能获取到 `props` 和 `data` 中定义的值，也不能调用 `methods` 中定义的函数。同时因为没有渲染 DOM 相关操作，所以也不能访问 DOM 。一般来说，如果组件在加载的时候需要和后端有交互，放在这俩个钩子函数执行都可以，如果是需要访问 `props`、`data` 等数据的话，就需要使用 `created` 钩子函数。
+一般来说，如果组件在加载的时候需要和后端有交互，放在这俩个钩子函数执行都可以，如果是需要访问 `props`、`data` 等数据的话，就需要使用 `created` 钩子函数。
 
-> 之后我们会介绍 vue-router 和 vuex 的时候会发现它们都混合了 `beforeCreate` 钩子函数。
+> 之后我们介绍 vue-router 和 vuex 的时候会发现它们都混合了 `beforeCreate` 钩子函数。
 
 ### 3.5.2 实例挂载前后
 
@@ -3302,7 +3302,6 @@ export function mountComponent (
   }, true /* isRenderWatcher */)
   // ...
 }
-
 ```
 
 注意这里有个判断，也就是在组件已经 `mounted` 之后，才会去调用这个钩子函数。
@@ -3630,10 +3629,10 @@ export default {
 
 ```js
 Vue.component('async-example', function (resolve, reject) {
-   // 这个特殊的 require 语法告诉 webpack
-   // 自动将编译后的代码分割成不同的块，
-   // 这些块将通过 Ajax 请求自动下载。
-   require(['./my-async-component'], resolve)
+  // 这个特殊的 require 语法告诉 webpack
+  // 自动将编译后的代码分割成不同的块，
+  // 这些块将通过 Ajax 请求自动下载。
+  require(['./my-async-component'], resolve)
 })
 ```
 
