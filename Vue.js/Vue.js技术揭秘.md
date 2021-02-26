@@ -3171,7 +3171,7 @@ Vue.prototype._init = function (options?: Object) {
 }
 ```
 
-可以看到 `beforeCreate` 和 `created` 的钩子调用是在 `initState` 方法的前后，该方法的作用是初始化 `props`、`data`、`methods`、`watch`、`computed` 等属性。在 `beforeCreate` 的钩子函数中就不能获取到 `props` 和 `data` 中定义的值，也不能调用 `methods` 中定义的函数。同时因为没有渲染 DOM 相关操作，所以也不能访问 DOM 。
+可以看到 `beforeCreate` 和 `created` 的钩子调用是在 `initState` 方法的前后，该方法的作用是初始化 `props`、`data`、`methods`、`watch`、`computed` 等属性。因此，在 `beforeCreate` 的钩子函数中就不能获取到 `props` 和 `data` 中定义的值，同时，也不能调用 `methods` 中定义的函数。同时因为没有渲染 DOM 相关操作，所以也不能访问 DOM 。
 
 一般来说，如果组件在加载的时候需要和后端有交互，放在这俩个钩子函数执行都可以，如果是需要访问 `props`、`data` 等数据的话，就需要使用 `created` 钩子函数。
 
@@ -3383,47 +3383,47 @@ export default class Watcher {
  
 ```js
 Vue.prototype.$destroy = function () {
-    const vm: Component = this
-    if (vm._isBeingDestroyed) {
-      return
-    }
-    callHook(vm, 'beforeDestroy')
-    vm._isBeingDestroyed = true
-    // remove self from parent
-    const parent = vm.$parent
-    if (parent && !parent._isBeingDestroyed && !vm.$options.abstract) {
-      remove(parent.$children, vm)
-    }
-    // teardown watchers
-    if (vm._watcher) {
-      vm._watcher.teardown()
-    }
-    let i = vm._watchers.length
-    while (i--) {
-      vm._watchers[i].teardown()
-    }
-    // remove reference from data ob
-    // frozen object may not have observer.
-    if (vm._data.__ob__) {
-      vm._data.__ob__.vmCount--
-    }
-    // call the last hook...
-    vm._isDestroyed = true
-    // invoke destroy hooks on current rendered tree
-    vm.__patch__(vm._vnode, null)
-    // fire destroyed hook
-    callHook(vm, 'destroyed')
-    // turn off all instance listeners.
-    vm.$off()
-    // remove __vue__ reference
-    if (vm.$el) {
-      vm.$el.__vue__ = null
-    }
-    // release circular reference (#6759)
-    if (vm.$vnode) {
-      vm.$vnode.parent = null
-    }
+  const vm: Component = this
+  if (vm._isBeingDestroyed) {
+    return
   }
+  callHook(vm, 'beforeDestroy')
+  vm._isBeingDestroyed = true
+  // remove self from parent
+  const parent = vm.$parent
+  if (parent && !parent._isBeingDestroyed && !vm.$options.abstract) {
+    remove(parent.$children, vm)
+  }
+  // teardown watchers
+  if (vm._watcher) {
+    vm._watcher.teardown()
+  }
+  let i = vm._watchers.length
+  while (i--) {
+    vm._watchers[i].teardown()
+  }
+  // remove reference from data ob
+  // frozen object may not have observer.
+  if (vm._data.__ob__) {
+    vm._data.__ob__.vmCount--
+  }
+  // call the last hook...
+  vm._isDestroyed = true
+  // invoke destroy hooks on current rendered tree
+  vm.__patch__(vm._vnode, null)
+  // fire destroyed hook
+  callHook(vm, 'destroyed')
+  // turn off all instance listeners.
+  vm.$off()
+  // remove __vue__ reference
+  if (vm.$el) {
+    vm.$el.__vue__ = null
+  }
+  // release circular reference (#6759)
+  if (vm.$vnode) {
+    vm.$vnode.parent = null
+  }
+}
 ```
 
 `beforeDestroy` 钩子函数的执行时机是在 `$destroy` 函数执行最开始的地方，接着执行了一系列的销毁动作，包括从 `parent` 的 `$children` 中删掉自身，删除 `watcher`，当前渲染的 VNode 执行销毁钩子函数等，执行完毕后再调用 `destroy` 钩子函数。
@@ -3621,7 +3621,7 @@ export default {
  
 ### 3.6.3 总结
 
-通过这一小节的分析，我们对组件的注册过程有了认识，并理解了全局注册和局部注册的差异。其实在平时的工作中，当我们使用到组件库的时候，往往更通用基础组件都是全局注册的，而编写的特例场景的业务组件都是局部注册的。了解了它们的原理，对我们在工作中到底使用全局注册组件还是局部注册组件是有这非常好的指导意义的。
+通过这一小节的分析，我们对组件的注册过程有了认识，并理解了全局注册和局部注册的差异。全局注册的组件可以在任意地方使用，通常是组件库的基础组件；而局部注册的组件只能在当前组件内使用，通常是编写的特例场景的业务组件。
 
 ## 3.7 异步组件
 
@@ -3893,7 +3893,9 @@ if (isUndef(factory.resolved)) {
 
 ### 3.7.3 高级异步组件
 
-由于异步加载组件需要动态加载 JS，有一定网络延时，而且有加载失败的情况，所以通常我们在开发异步组件相关逻辑的时候需要设计 loading 组件和 error 组件，并在适当的时机渲染它们。Vue.js 2.3+ 支持了一种高级异步组件的方式，它通过一个简单的对象配置，帮你搞定 loading 组件和 error 组件的渲染时机，你完全不用关心细节，非常方便。接下来我们就从源码的角度来分析高级异步组件是怎么实现的。
+由于异步加载组件需要动态加载 JS，有一定网络延时，而且有加载失败的情况，所以通常我们在开发异步组件相关逻辑的时候需要设计 loading 组件和 error 组件，并在适当的时机渲染它们。
+
+Vue.js 2.3+ 支持了一种高级异步组件的方式，它通过一个简单的对象配置，轻松搞定 loading 组件和 error 组件的渲染时机，接下来我们就从源码的角度来分析高级异步组件是怎么实现的。
 
 ```js
 const AsyncComp = () => ({
@@ -4077,7 +4079,7 @@ export function createAsyncPlaceholder (
 
 ### 3.7.5 总结
 
-通过以上代码分析，我们对 Vue 的异步组件的实现有了深入的了解，知道了 3 种异步组件的实现方式，并且看到高级异步组件的实现是非常巧妙的，它实现了 loading、resolve、reject、timeout 4 种状态。异步组件实现的本质是 2 次渲染，除了 0 delay 的高级异步组件第一次直接渲染成 loading 组件外，其它都是第一次渲染生成一个注释节点，当异步获取组件成功后，再通过 `forceRender` 强制重新渲染，这样就能正确渲染出我们异步加载的组件了。
+深入了解 Vue 的异步组件的实现，知道有 3 种异步组件的实现方式。异步组件实现的本质是 2 次渲染，除了 0 delay 的高级异步组件第一次直接渲染成 loading 组件外，其它都是第一次渲染生成一个注释节点，当异步获取组件成功后，再通过 `forceRender` 强制重新渲染，这样就能正确渲染出我们异步加载的组件了。
 
 # 第四章：深入响应式原理
 
@@ -4111,16 +4113,18 @@ var app = new Vue({
 })
 ```
 
-当我们去修改 `this.message` 的时候，模板对应的插值也会渲染成新的数据，那么这一切是怎么做到的呢？
+当我们去修改 `this.message` 的时候，模板对应的插值也会渲染成新的数据。如果不用 Vue 的话，怎么简单实现这个需求呢？
 
-在分析前，我们先直观的想一下，如果不用 Vue 的话，我们会通过最简单的方法实现这个需求：监听点击事件，修改数据，手动操作 DOM 重新渲染。这个过程和使用 Vue 的最大区别就是多了最后一步。这一步看上去并不多，但它背后又潜在的几个要处理的问题：
+最少需要以下三步：监听点击事件，修改数据，手动操作 DOM 重新渲染。
+
+这个过程和使用 Vue 的最大区别就是多了最后一步，在修改数据后如何重新渲染 DOM 。这一步看上去并不多，但它背后又潜在的几个要处理的问题：
 
 1. 需要修改哪块的 DOM？
 2. 修改效率和性能是不是最优的？
 3. 需要对数据每一次的修改都去操作 DOM 吗？
 4. 需要逐步地去写修改 DOM 的逻辑吗？
 
-那么 Vue 是如何在我们对数据修改后自动做这些事情呢，接下来我们将进入一些 Vue 响应式系统的底层的细节。
+那么 Vue 是如何自动做这些事情呢，接下来我们将进入一些 Vue 响应式系统的底层的细节。
 
 ## 4.2 响应式对象
 
@@ -4134,7 +4138,9 @@ var app = new Vue({
 Object.defineProperty(obj, prop, descriptor)
 ```
 
-`obj` 是要在其上定义属性的对象；`prop` 是要定义或修改的属性的名称；`descriptor` 是将被定义或修改的属性描述符。
+- obj 是要在其上定义属性的对象；
+- prop 是要定义或修改的属性的名称；
+- descriptor 是将被定义或修改的属性描述符。
 
 比较核心的是 `descriptor`，它有很多可选键值，具体的可以去参阅它的[文档](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Object/defineProperty)。这里我们最关心的是如下两种：
 
