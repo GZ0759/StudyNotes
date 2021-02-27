@@ -4173,7 +4173,7 @@ export function initState (vm: Component) {
 
 `initState` 方法主要是对 `props`、`methods`、`data`、`computed` 和 `wathcer` 等属性做了初始化操作。这里我们重点分析 `props` 和 `data`，对于其它属性的初始化我们之后再详细分析。
 
-**1. initProps**
+1. `props` 的初始化主要过程在 `initProps` 方法中。
 
 ```js
 function initProps (vm: Component, propsOptions: Object) {
@@ -4227,7 +4227,7 @@ function initProps (vm: Component, propsOptions: Object) {
 
 `props` 的初始化主要过程，就是遍历定义的 `props` 配置。遍历的过程主要做两件事情：一个是调用 `defineReactive` 方法把每个 `prop` 对应的值变成响应式，可以通过 `vm._props.xxx` 访问到定义 `props` 中对应的属性。对于 `defineReactive` 方法，我们稍后会介绍；另一个是通过 `proxy` 把 `vm._props.xxx` 的访问代理到 `vm.xxx` 上，我们稍后也会介绍。
 
-**2. initData**
+2. `data` 的初始化主要过程在 `initData` 中。
 
 ```js
 function initData (vm: Component) {
@@ -4294,7 +4294,7 @@ let comP = {
 }
 ```
 
-我们可以在 `say` 函数中通过 `this.msg` 访问到我们定义在 `props` 中的 `msg`，这个过程发生在 `proxy` 阶段：
+这个代理过程发生在 `proxy` 阶段：
 
 ```js
 const sharedPropertyDefinition = {
@@ -4315,7 +4315,9 @@ export function proxy (target: Object, sourceKey: string, key: string) {
 }
 ```
 
-`proxy` 方法的实现很简单，通过 `Object.defineProperty` 把 `target[sourceKey][key]` 的读写变成了对 `target[key]`  的读写。所以对于 `props` 而言，对 `vm._props.xxx` 的读写变成了 `vm.xxx` 的读写，而对于 `vm._props.xxx` 我们可以访问到定义在 `props` 中的属性，所以我们就可以通过 `vm.xxx` 访问到定义在 `props` 中的 `xxx` 属性了。同理，对于 `data` 而言，对 `vm._data.xxxx` 的读写变成了对 `vm.xxxx` 的读写，而对于 `vm._data.xxxx` 我们可以访问到定义在 `data` 函数返回对象中的属性，所以我们就可以通过 `vm.xxxx` 访问到定义在 `data` 函数返回对象中的 `xxxx` 属性了。
+`proxy` 方法的实现很简单，通过 `Object.defineProperty` 把 `target[sourceKey][key]` 的读写变成了对 `target[key]` 的读写。
+
+所以对于 `props` 而言，对 `vm._props.xxx` 的读写变成了 `vm.xxx` 的读写，从而可以访问到定义在 `props` 中的属性。同理，我们就可以通过 `vm.xxxx` 访问到定义在 `data` 函数返回对象中的 `xxxx` 属性了。
 
 ### 4.2.4 observe
 
@@ -4499,7 +4501,9 @@ export function defineReactive (
 
 ### 4.2.7 总结
 
-这一节我们介绍了响应式对象，核心就是利用 `Object.defineProperty` 给数据添加了 getter 和 setter，目的就是为了在我们访问数据以及写数据的时候能自动执行一些逻辑：getter 做的事情是依赖收集，setter 做的事情是派发更新，那么在接下来的章节我们会重点对这两个过程分析。
+这一节我们介绍了响应式对象，核心就是利用 `Object.defineProperty` 给数据添加了 getter 和 setter，目的就是为了在我们访问数据以及写数据的时候能自动执行一些逻辑。
+
+其中 getter 做的事情是依赖收集，setter 做的事情是派发更新，那么在接下来的章节我们会重点对这两个过程分析。
  
 ## 4.3 依赖收集
 
@@ -4618,7 +4622,7 @@ export function popTarget () {
 
 `Dep` 是一个 Class，它定义了一些属性和方法，这里需要特别注意的是它有一个静态属性 `target`，这是一个全局唯一 `Watcher`，这是一个非常巧妙的设计，因为在同一时间只能有一个全局的 `Watcher` 被计算，另外它的自身属性 `subs` 也是 `Watcher` 的数组。
 
-`Dep` 实际上就是对 `Watcher` 的一种管理，`Dep`  脱离 `Watcher` 单独存在是没有意义的，为了完整地讲清楚依赖收集过程，我们有必要看一下 `Watcher` 的一些相关实现，它的定义在 `src/core/observer/watcher.js` 中：
+`Dep` 实际上就是对 `Watcher` 的一种管理，`Dep` 脱离 `Watcher` 单独存在是没有意义的，为了完整地讲清楚依赖收集过程，我们有必要看一下 `Watcher` 的一些相关实现，它的定义在 `src/core/observer/watcher.js` 中：
 
 ### 4.3.2 Watcher
 
@@ -4780,7 +4784,9 @@ this.depIds = new Set()
 this.newDepIds = new Set()
 ```
 
-其中，`this.deps` 和 `this.newDeps` 表示 `Watcher` 实例持有的 `Dep` 实例的数组；而 `this.depIds` 和 `this.newDepIds` 分别代表 `this.deps` 和 `this.newDeps` 的 `id` Set（这个 Set 是 ES6 的数据结构，它的实现在 `src/core/util/env.js` 中）。那么这里为何需要有 2 个 `Dep` 实例数组呢，稍后我们会解释。
+其中，`this.deps` 和 `this.newDeps` 表示 `Watcher` 实例持有的 `Dep` 实例的数组；而 `this.depIds` 和 `this.newDepIds` 分别代表 `this.deps` 和 `this.newDeps` 的 `id` Set 数据结构。那么这里为何需要有 2 个 `Dep` 实例数组呢，稍后我们会解释。
+
+> 这个 Set 是 ES6 的数据结构，它的实现在 `src/core/util/env.js` 中
 
 `Watcher` 还定义了一些原型的方法，和依赖收集相关的有 `get`、`addDep` 和 `cleanupDeps` 方法，单个介绍它们的实现不方便理解，我会结合整个依赖收集的过程把这几个方法讲清楚。
 
@@ -4801,13 +4807,9 @@ new Watcher(vm, updateComponent, noop, {
 }, true /* isRenderWatcher */)
 ```
 
-当我们去实例化一个渲染 `watcher` 的时候，首先进入 `watcher` 的构造函数逻辑，然后会执行它的 `this.get()` 方法，进入 `get` 函数，首先会执行：
+当我们去实例化一个渲染 `watcher` 的时候，首先进入 `watcher` 的构造函数逻辑，然后会执行构造函数的 `this.get()` 方法。
 
-```js
-pushTarget(this)
-```
-
-`pushTarget` 的定义在 `src/core/observer/dep.js` 中：
+当进入 `get` 函数，首先会执行 `pushTarget(this)` 逻辑，`pushTarget` 的定义在 `src/core/observer/dep.js` 中：
  
 ```js
 export function pushTarget (_target: Watcher) {
@@ -4816,23 +4818,23 @@ export function pushTarget (_target: Watcher) {
 }
 ```
 
-实际上就是把 `Dep.target` 赋值为当前的渲染 `watcher` 并压栈（为了恢复用）。接着又执行了：
+实际上就是把 `Dep.target` 赋值为当前的渲染 `watcher` 并压栈（栈 `targetStack` 解决嵌套组件先后渲染问题）。接着又执行了：
 
 ```js
 value = this.getter.call(vm, vm)
 ```
 
-`this.getter` 对应就是 `updateComponent` 函数，这实际上就是在执行：
+在 `Watcher` 构造函数中， `this.getter` 对应就是 `updateComponent` 函数，这实际上就是在执行：
 
 ```js
 vm._update(vm._render(), hydrating)
 ```
 
-它会先执行 `vm._render()` 方法，因为之前分析过这个方法会生成 渲染 VNode，并且在这个过程中会对 `vm` 上的数据访问，这个时候就触发了数据对象的 getter。
+它会先执行 `vm._render()` 方法，因为之前分析过这个方法会生成渲染 VNode，并且在这个过程中会对 `vm` 上的数据访问，这个时候就触发了数据对象的 getter。
 
 那么每个对象值的 getter 都持有一个 `dep`，在触发 getter 的时候会调用 `dep.depend()` 方法，也就会执行 `Dep.target.addDep(this)`。
 
-刚才我们提到这个时候 `Dep.target` 已经被赋值为渲染 `watcher`，那么就执行到 `addDep` 方法：
+这个时候 `Dep.target` 已经被赋值为渲染 `watcher`，那么就执行到 `addDep` 方法：
 
 ```js
 addDep (dep: Dep) {
@@ -4847,9 +4849,17 @@ addDep (dep: Dep) {
 }
 ```
 
-这时候会做一些逻辑判断（保证同一数据不会被添加多次）后执行 `dep.addSub(this)`，那么就会执行 `this.subs.push(sub)`，也就是说把当前的 `watcher` 订阅到这个数据持有的 `dep` 的 `subs` 中，这个目的是为后续数据变化时候能通知到哪些 `subs` 做准备。
+保证同一数据不会被添加多次后执行 `dep.addSub(this)`，那么就会执行 `this.subs.push(sub)`，也就是说把当前的 `watcher` 订阅到这个数据持有的 `dep` 的 `subs` 中，这个目的是为后续数据变化时候能通知到哪些 `subs` 做准备。
 
-所以在 `vm._render()` 过程中，会触发所有数据的 getter，这样实际上已经完成了一个依赖收集的过程。那么到这里就结束了么，其实并没有，在完成依赖收集后，还有几个逻辑要执行，首先是：
+> dep 为 Dep 实例
+
+所以在 `vm._render()` 过程中，会触发所有数据的 getter，这样实际上已经完成了一个依赖收集的过程。在完成依赖收集后，还有几个逻辑要执行：
+
+1. 可递归 `Watcher`
+2. 删除 `Dep.target`
+3. 依赖清除 `cleanupDeps()`
+
+首先是递归去访问 `value`，触发它所有子项的 `getter`，这个之后会详细讲。
 
 ```js
 if (this.deep) {
@@ -4857,25 +4867,15 @@ if (this.deep) {
 }
 ```
 
-这个是要递归去访问 `value`，触发它所有子项的 `getter`，这个之后会详细讲。接下来执行：
-
-```js
-popTarget()
-```
-
-`popTarget` 的定义在 `src/core/observer/dep.js` 中：
+接下来执行 `popTarget()` ，`popTarget` 的定义在 `src/core/observer/dep.js` 中：
 
 ```js
 Dep.target = targetStack.pop()
 ```
 
-实际上就是把 `Dep.target` 恢复成上一个状态，因为当前 vm 的数据依赖收集已经完成，那么对应的渲染`Dep.target` 也需要改变。最后执行：
+实际上就是把 `Dep.target` 恢复成上一个状态，因为当前 vm 的数据依赖收集已经完成，那么对应的渲染`Dep.target` 也需要改变。
 
-```js
-this.cleanupDeps()
-```
-
-其实很多人都分析过并了解到 Vue 有依赖收集的过程，但我几乎没有看到有人分析依赖清空的过程，其实这是大部分同学会忽视的一点，也是 Vue 考虑特别细的一点。
+最后执行 `this.cleanupDeps()` 。很多人了解 Vue 有依赖收集的过程，但其实还有依赖清空的过程，也是 Vue 考虑特别细的一点。
 
 ```js
 cleanupDeps () {
@@ -4897,19 +4897,24 @@ cleanupDeps () {
 }
 ```
 
-考虑到 Vue 是数据驱动的，所以每次数据变化都会重新 render，那么 `vm._render()` 方法又会再次执行，并再次触发数据的 getters，所以 `Wathcer` 在构造函数中会初始化 2 个 `Dep` 实例数组，`newDeps` 表示新添加的 `Dep` 实例数组，而 `deps` 表示上一次添加的 `Dep` 实例数组。
+考虑到 Vue 是数据驱动的，所以每次数据变化都会重新 render，那么 `vm._render()` 方法又会再次执行，并再次触发数据的 getters，所以 `Wathcer` 在构造函数中会初始化 2 个 `Dep` 实例数组：
+
+1. `newDeps` 表示新添加的 `Dep` 实例数组
+2. `deps` 表示上一次添加的 `Dep` 实例数组
 
 在执行 `cleanupDeps` 函数的时候，会首先遍历 `deps`，移除对 `dep.subs` 数组中 `Wathcer` 的订阅，然后把 `newDepIds` 和 `depIds` 交换，`newDeps` 和 `deps` 交换，并把 `newDepIds` 和 `newDeps` 清空。
 
-那么为什么需要做 `deps` 订阅的移除呢，在添加 `deps` 的订阅过程，已经能通过 `id` 去重避免重复订阅了。
+那么为什么需要做 `deps` 订阅的移除呢，要知道在添加 `deps` 的订阅过程，已经能通过 `id` 去重避免重复订阅了。其实是为了避免缓存不必要的订阅，导致派发更新的浪费。
 
-考虑到一种场景，我们的模板会根据 `v-if` 去渲染不同子模板 a 和 b，当我们满足某种条件的时候渲染 a 的时候，会访问到 a 中的数据，这时候我们对 a 使用的数据添加了 getter，做了依赖收集，那么当我们去修改 a 的数据的时候，理应通知到这些订阅者。那么如果我们一旦改变了条件渲染了 b 模板，又会对 b 使用的数据添加了 getter，如果我们没有依赖移除的过程，那么这时候我去修改 a 模板的数据，会通知 a 数据的订阅的回调，这显然是有浪费的。
+> 考虑到一种场景，根据 `v-if` 去渲染不同子模板 A 和 B，并且当前页面渲染为 A 模板，已经完成了 a 数据的依赖收集。如果改变了条件，渲染了 B 模板，但没有依赖移除的过程，那么此时修改 A 模板的数据，会通知 a 数据的订阅的回调，这显然是有浪费的。
 
-因此 Vue 设计了在每次添加完新的订阅，会移除掉旧的订阅，这样就保证了在我们刚才的场景中，如果渲染 b 模板的时候去修改 a 模板的数据，a 数据订阅回调已经被移除了，所以不会有任何浪费，真的是非常赞叹 Vue 对一些细节上的处理。
+因此 Vue 设计了在每次添加完新的订阅，会移除掉旧的订阅，这样就保证了在我们刚才的场景中，如果渲染 b 模板的时候去修改 a 模板的数据，a 数据订阅回调已经被移除了，所以不会有任何浪费。
 
 ### 4.3.4 总结
 
-通过这一节的分析，我们对 Vue 数据的依赖收集过程已经有了认识，并且对这其中的一些细节做了分析。收集依赖的目的是为了当这些响应式数据发生变化，触发它们的 setter 的时候，能知道应该通知哪些订阅者去做相应的逻辑处理，我们把这个过程叫派发更新，其实 `Watcher` 和 `Dep` 就是一个非常经典的观察者设计模式的实现，下一节我们来详细分析一下派发更新的过程。
+依赖收集就是订阅数据变化的 `Watcher` 的收集，目的是为了当这些响应式数据发生变化，触发它们的 `setter` 的时候，能知道应该通知哪些订阅者去做相应的逻辑处理。
+
+其实 `Watcher` 和 `Dep` 就是一个非常经典的观察者设计模式的实现，下一节我们来详细分析一下派发更新的过程。
 
 ## 4.4 派发更新
 
@@ -4969,7 +4974,7 @@ export function defineReactive (
 }
 ```
 
-setter 的逻辑有 2 个关键的点，一个是 `childOb = !shallow && observe(newVal)`，如果 `shallow` 为 false 的情况，会对新设置的值变成一个响应式对象；另一个是 `dep.notify()`，通知所有的订阅者，这是本节的关键，接下来我会带大家完整的分析整个派发更新的过程。
+这里 setter 的逻辑有 2 个关键的点，一个是 `childOb = !shallow && observe(newVal)`，如果 `shallow` 为 false 的情况，会对新设置的值变成一个响应式对象；另一个是 `dep.notify()`，通知所有的订阅者，这是本节的关键，接下来我会带大家完整的分析整个派发更新的过程。
 
 ### 4.4.1 过程分析
 
