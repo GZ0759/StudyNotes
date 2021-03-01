@@ -81,11 +81,11 @@ xhr.send(); // 向服务器发送请求
 
 ## GET 请求和 POST 请求。
 
-1. 使用 Get 请求时,参数在 URL 中显示,而使用 Post 请求,则不会显示出来；
-2. Post 传输的数据量大，可以达到 2M，而 Get 方法由于受到 URL 长度的限制,只能传递大约 1024 字节.
+1. 使用 Get 请求时，参数在 URL 中显示，而使用 Post 请求，则不会显示出来；
+2. Post 传输的数据量大，可以达到 2M，而 Get 方法由于受到 URL 长度的限制，只能传递大约 1024 字节.
 3. Get 请求请求需注意缓存问题，Post 请求不需担心这个问题；
 4. Post 请求必须设置 Content-Type 值为 application/x-form-www-urlencoded；
-5. 发送请求时,因为 Get 请求的参数都在 url 里,所以 send 函数发送的参数为 null,而 Post 请求在使用 send 方法时,却需赋予其参数；
+5. 发送请求时，因为 Get 请求的参数都在 url 里，所以 send 函数发送的参数为 null，而 Post 请求在使用 send 方法时，却需赋予其参数；
 6. GET 方式请求的数据会被浏览器缓存起来，因此其他人就可以从浏览器的历史记录中读取到这些数据，例如账号和密码等。在某种情况下，GET 方式会带来严重的安全问题。而 POST 方式相对来说就可以避免这些问题。
 
 ## TypeScript 语法
@@ -98,7 +98,13 @@ TypeScript 的编译器很智能，会进行冲突检测，举个例子，一个
 
 ## Web 客户端
 
-主流浏览器的内核。IE 浏览器是 Trident，Mozilla 浏览器是 Gecko，Safari 浏览器是 Webkit，Chrome 浏览器是 Blink，Opera 浏览器现在也是 Blink。
+主流浏览器的内核。
+
+- IE 浏览器是 Trident
+- Mozilla 浏览器是 Gecko
+- Safari 浏览器是 Webkit
+- Chrome 浏览器是 Blink
+- Opera 浏览器现在也是 Blink。
 
 同源策略是对 XHR 的一个主要约束，它为通信设置了“相同的域、相同的端口、相同的协议”这一限制。试图访问上述限制之外的资源，都会引发安全错误，除非采用被认可的跨域解决方案。这个解决方案叫做 CORS（ Cross-Origin Resource Sharing，跨源资源共享）， IE8 通过 XDomainRequest 对象支持 CORS，其他浏览器通过 XHR 对象原生支持 CORS。图像 Ping 和 JSONP 是另外两种跨域通信的技术，但不如 CORS 稳妥。
 
