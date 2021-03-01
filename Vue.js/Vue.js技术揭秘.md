@@ -4089,7 +4089,7 @@ export function createAsyncPlaceholder (
 
 前面 2 章介绍的都是 Vue 怎么实现数据渲染和组件化的，主要讲的是初始化的过程，把原始的数据最终映射到 DOM 中，但并没有涉及到数据变化到 DOM 变化的部分。而 Vue 的数据驱动除了数据渲染 DOM 之外，还有一个很重要的体现就是数据的变更会触发 DOM 的变化。
 
-其实前端开发最重要的 2 个工作，一个是把数据渲染到页面，另一个是处理用户交互。Vue 把数据渲染到页面的能力我们已经通过源码分析出其中的原理了，但是由于一些用户交互或者是其它方面导致数据发生变化重新对页面渲染的原理我们还未分析。
+其实前端开发最重要的 2 个工作，一个是把数据渲染到页面，另一个是处理用户交互。已经分析完 Vue 把数据渲染到页面能力了，但是由于一些用户交互或者是其它方面导致数据发生变化重新对页面渲染的原理我们还未分析。
 
 考虑如下示例：
 
@@ -4115,9 +4115,7 @@ var app = new Vue({
 
 当我们去修改 `this.message` 的时候，模板对应的插值也会渲染成新的数据。如果不用 Vue 的话，怎么简单实现这个需求呢？
 
-最少需要以下三步：监听点击事件，修改数据，手动操作 DOM 重新渲染。
-
-这个过程和使用 Vue 的最大区别就是多了最后一步，在修改数据后如何重新渲染 DOM 。这一步看上去并不多，但它背后又潜在的几个要处理的问题：
+最少需要以下三步：监听点击事件，修改数据，手动操作 DOM 重新渲染。这个过程和使用 Vue 的最大区别就是多了最后一步，在修改数据后如何重新渲染 DOM 。这一步看上去并不多，但它背后又潜在的几个要处理的问题：
 
 1. 需要修改哪块的 DOM？
 2. 修改效率和性能是不是最优的？
@@ -4130,7 +4128,7 @@ var app = new Vue({
 
 其实 Vue.js 实现响应式的核心是利用了 ES5 的 `Object.defineProperty`，这也是为什么 Vue.js 不能兼容 IE8 及以下浏览器的原因。
 
-### 4.2.1 Object.defineProperty    
+### 4.2.1 核心原理 Object.defineProperty    
 
 `Object.defineProperty` 方法会直接在一个对象上定义一个新属性，或者修改一个对象的现有属性， 并返回这个对象，先来看一下它的语法：
 
@@ -4149,7 +4147,7 @@ Object.defineProperty(obj, prop, descriptor)
 
 一旦对象拥有了 getter 和 setter，我们可以简单地把这个对象称为响应式对象。那么 Vue.js 把哪些对象变成了响应式对象了呢，接下来我们从源码层面分析。
 
-### 4.2.2 initState
+### 4.2.2 初始化 initState
 
 在 Vue 的初始化阶段，`_init` 方法执行的时候，会执行 `initState(vm)` 方法，它的定义在 `src/core/instance/state.js` 中。
 
@@ -4273,11 +4271,11 @@ function initData (vm: Component) {
 }
 ```
 
-`data` 的初始化主要过程也是做两件事，一个是对定义 `data` 函数返回对象的遍历，通过 `proxy` 把每一个值 `vm._data.xxx` 都代理到 `vm.xxx` 上；另一个是调用 `observe` 方法观测整个 `data` 的变化，把 `data` 也变成响应式，可以通过 `vm._data.xxx` 访问到定义 `data` 返回函数中对应的属性，`observe` 我们稍后会介绍。
+初始化 `data` 主要过程也是做两件事，一个是对定义 `data` 函数返回对象的遍历，通过 `proxy` 把每一个值 `vm._data.xxx` 都代理到 `vm.xxx` 上；另一个是调用 `observe` 方法观测整个 `data` 的变化，把 `data` 也变成响应式，可以通过 `vm._data.xxx` 访问到定义 `data` 返回函数中对应的属性，`observe` 我们稍后会介绍。
 
 可以看到，无论是 `props` 或是 `data` 的初始化都是把它们变成响应式对象，这个过程我们接触到几个函数，接下来我们来详细分析它们。
 
-### 4.2.3 proxy
+### 4.2.3 函数 proxy
 
 首先介绍一下代理，代理的作用是把 `props` 和 `data` 上的属性代理到 `vm` 实例上，这也就是为什么比如我们定义了如下 props，却可以通过 vm 实例访问到它。
 
@@ -4319,7 +4317,7 @@ export function proxy (target: Object, sourceKey: string, key: string) {
 
 所以对于 `props` 而言，对 `vm._props.xxx` 的读写变成了 `vm.xxx` 的读写，从而可以访问到定义在 `props` 中的属性。同理，我们就可以通过 `vm.xxxx` 访问到定义在 `data` 函数返回对象中的 `xxxx` 属性了。
 
-### 4.2.4 observe
+### 4.2.4 函数 observe
 
 `observe` 的功能就是用来监测数据的变化，它的定义在 `src/core/observer/index.js` 中：
 
@@ -4354,7 +4352,7 @@ export function observe (value: any, asRootData: ?boolean): Observer | void {
 
 `observe` 方法的作用就是给非 VNode 的对象类型数据添加一个 `Observer`，如果已经添加过则直接返回，否则在满足一定条件下去实例化一个 `Observer` 对象实例。接下来我们来看一下 `Observer` 的作用。
 
-### 4.2.5 Observer
+### 4.2.5 类 Observer
 
 `Observer` 是一个类，它的作用是给对象的属性添加 getter 和 setter，用于依赖收集和派发更新：
 
@@ -4429,7 +4427,7 @@ export function def (obj: Object, key: string, val: any, enumerable?: boolean) {
 
 回到 `Observer` 的构造函数，接下来会对 `value` 做判断，对于数组会调用 `observeArray` 方法，否则对纯对象调用 `walk` 方法。可以看到 `observeArray` 是遍历数组再次调用 `observe` 方法，而 `walk` 方法是遍历对象的 key 调用 `defineReactive` 方法，那么我们来看一下这个方法是做什么的。
 
-### 4.2.6 defineReactive
+### 4.2.6 函数 defineReactive
 
 `defineReactive` 的功能就是定义一个响应式对象，给对象动态添加 getter 和 setter，它的定义在 `src/core/observer/index.js` 中：
 
@@ -4557,7 +4555,7 @@ export function defineReactive (
 
 这段代码我们只需要关注 2 个地方，一个是 `const dep = new Dep()` 实例化一个 `Dep` 的实例，另一个是在 `get` 函数中通过 `dep.depend` 做依赖收集，这里还有个对 `childOb` 判断的逻辑，我们之后会介绍它的作用。
 
-### 4.3.1 Dep
+### 4.3.1 类 Dep
 
 `Dep` 是整个 getter 依赖收集的核心，它的定义在 `src/core/observer/dep.js` 中：
 
@@ -4624,7 +4622,7 @@ export function popTarget () {
 
 `Dep` 实际上就是对 `Watcher` 的一种管理，`Dep` 脱离 `Watcher` 单独存在是没有意义的，为了完整地讲清楚依赖收集过程，我们有必要看一下 `Watcher` 的一些相关实现，它的定义在 `src/core/observer/watcher.js` 中：
 
-### 4.3.2 Watcher
+### 4.3.2 类 Watcher
 
 ```js
 let uid = 0
@@ -4851,13 +4849,11 @@ addDep (dep: Dep) {
 
 保证同一数据不会被添加多次后执行 `dep.addSub(this)`，那么就会执行 `this.subs.push(sub)`，也就是说把当前的 `watcher` 订阅到这个数据持有的 `dep` 的 `subs` 中，这个目的是为后续数据变化时候能通知到哪些 `subs` 做准备。
 
-> dep 为 Dep 实例
-
 所以在 `vm._render()` 过程中，会触发所有数据的 getter，这样实际上已经完成了一个依赖收集的过程。在完成依赖收集后，还有几个逻辑要执行：
 
-1. 可递归 `Watcher`
-2. 删除 `Dep.target`
-3. 依赖清除 `cleanupDeps()`
+1. 可递归执行 `Watcher`
+2. 将 `Dep.target` 恢复上一个状态
+3. 清除依赖 `cleanupDeps()`
 
 首先是递归去访问 `value`，触发它所有子项的 `getter`，这个之后会详细讲。
 
@@ -4908,7 +4904,7 @@ cleanupDeps () {
 
 > 考虑到一种场景，根据 `v-if` 去渲染不同子模板 A 和 B，并且当前页面渲染为 A 模板，已经完成了 a 数据的依赖收集。如果改变了条件，渲染了 B 模板，但没有依赖移除的过程，那么此时修改 A 模板的数据，会通知 a 数据的订阅的回调，这显然是有浪费的。
 
-因此 Vue 设计了在每次添加完新的订阅，会移除掉旧的订阅，这样就保证了在我们刚才的场景中，如果渲染 b 模板的时候去修改 a 模板的数据，a 数据订阅回调已经被移除了，所以不会有任何浪费。
+因此 Vue 设计了在每次添加完新的订阅，会移除掉旧的订阅，这样就保证了项目不会有任何浪费。
 
 ### 4.3.4 总结
 
@@ -5241,7 +5237,7 @@ class Watcher {
 }
 ```
 
-`run` 函数实际上就是执行 `this.getAndInvoke` 方法，并传入 `watcher` 的回调函数。`getAndInvoke` 函数逻辑也很简单，先通过 `this.get()` 得到它当前的值，然后做判断，如果满足新旧值不等、新值是对象类型、`deep` 模式任何一个条件，则执行 `watcher` 的回调。
+函数 `run` 实际上就是执行 `this.getAndInvoke` 方法，并传入 `watcher` 的回调函数。`getAndInvoke` 函数逻辑也很简单，先通过 `this.get()` 得到它当前的值，然后做判断，如果满足新旧值不等、新值是对象类型、`deep` 模式任何一个条件，则执行 `watcher` 的回调。
 
 > 回调函数执行的时候会把第一个和第二个参数传入新值 `value` 和旧值 `oldValue`，这就是当我们添加自定义 `watcher` 的时候能在回调函数的参数中拿到新旧值的原因。
 
@@ -5259,7 +5255,7 @@ updateComponent = () => {
 
 派发更新就是当数据发生变化后，通知所有订阅这个数据变化的 `watcher` 执行 `update`。另外，派发更新的过程中会把所有要执行 `update` 的 `watcher` 推入队列中，在 `nextTick` 后执行 `flush` ，从而完成执行回调函数的操作，达到优化目的。
 
-## 4.5 nextTick
+## 4.5 异步更新队列 nextTick
 
 `nextTick` 是 Vue 的一个核心实现，在介绍 Vue 的 nextTick 之前，为了方便大家理解，我先简单介绍一下 JS 的运行机制。
 
@@ -5272,7 +5268,7 @@ JS 执行是单线程的，它是基于事件循环的。事件循环大致分�
 3. 一旦"执行栈"中的所有同步任务执行完毕，系统就会读取"任务队列"，看看里面有哪些事件。那些对应的异步任务，于是结束等待状态，进入执行栈，开始执行。
 4. 主线程不断重复上面的第三步。
 
-主线程的执行过程就是一个 tick，而所有的异步结果都是通过“任务队列”来调度。消息队列中存放的是一个个的任务（task）。 规范中规定 task 分为两大类，分别是 macro task 和 micro task，并且每个 macro task 结束后，都要清空所有的 micro task。
+主线程的执行过程就是一个 tick，而所有的异步结果都是通过“任务队列”来调度。消息队列中存放的是一个个的任务（task）。规范中规定 task 分为两大类，分别是 macro task 和 micro task，并且每个 macro task 结束后，都要清空所有的 micro task。
 
 关于 macro task 和 micro task 的概念，这里不会细讲，简单通过一段代码演示他们的执行顺序：
 
@@ -5291,6 +5287,8 @@ for (macroTask of macroTaskQueue) {
 在浏览器环境中，常见的 macro task 有 setTimeout、MessageChannel、postMessage、setImmediate；常见的 micro task 有 MutationObsever 和 Promise.then。
 
 ### 4.5.2 Vue 的实现
+
+Vue.js 提供了 2 种调用 `nextTick` 的方式，一种是全局 API `Vue.nextTick`，一种是实例上的方法 `vm.$nextTick`，无论我们使用哪一种，最后都是调用 `next-tick.js` 中实现的 `nextTick` 方法。
 
 在 Vue 源码 2.5+ 后，`nextTick` 的实现单独有一个 JS 文件来维护它，它的源码并不多，总共也就 100 多行。接下来我们来看一下它的实现，在 `src/core/util/next-tick.js` 中：
 
@@ -5411,12 +5409,13 @@ export function nextTick (cb?: Function, ctx?: Object) {
 }
 ```
 
-`next-tick.js` 申明了 `microTimerFunc` 和 `macroTimerFunc` 2 个变量，它们分别对应的是 micro task 的函数和 macro task 的函数。
+`next-tick.js` 申明了 `microTimerFunc` 和 `macroTimerFunc` 2 个变量，它们分别对应的是 micro task 的函数和 macro task 的函数。对于 macro task 的实现，优先检测是否支持原生 `setImmediate`，这是一个高版本 IE 和 Edge 才支持的特性，不支持的话再去检测是否支持原生的 `MessageChannel`，如果也不支持的话就会降级为 `setTimeout 0`；而对于 micro task 的实现，则检测浏览器是否原生支持 Promise，不支持的话直接指向 macro task 的实现。
 
-- 对于 macro task 的实现，优先检测是否支持原生 `setImmediate`，这是一个高版本 IE 和 Edge 才支持的特性，不支持的话再去检测是否支持原生的 `MessageChannel`，如果也不支持的话就会降级为 `setTimeout 0`；
-- 而对于 micro task 的实现，则检测浏览器是否原生支持 Promise，不支持的话直接指向 macro task 的实现。
+> 新版本 Vue 已经改成 `Promise` => `MutationObserver` => `setImmediate` 的支持顺序。
 
-`next-tick.js` 对外暴露了 2 个函数，先来看 `nextTick`，这就是我们在上一节执行 `nextTick(flushSchedulerQueue)` 所用到的函数。它的逻辑也很简单，把传入的回调函数 `cb` 压入 `callbacks` 数组，最后一次性地根据 `useMacroTask` 条件执行 `macroTimerFunc` 或者是 `microTimerFunc`，而它们都会在下一个 tick 执行 `flushCallbacks`，`flushCallbacks` 的逻辑非常简单，对 `callbacks` 遍历，然后执行相应的回调函数。
+`next-tick.js` 对外暴露了 2 个函数，`nextTick` 和 `withMacroTask` 函数。
+
+先来看 `nextTick`，这就是我们在上一节执行 `nextTick(flushSchedulerQueue)` 所用到的函数。它的逻辑也很简单，把传入的回调函数 `cb` 压入 `callbacks` 数组，最后一次性地根据 `useMacroTask` 条件执行 `macroTimerFunc` 或者是 `microTimerFunc`，而它们都会在下一个 tick 执行 `flushCallbacks`，`flushCallbacks` 的逻辑非常简单，对 `callbacks` 遍历，然后执行相应的回调函数。
 
 这里使用 `callbacks` 而不是直接在 `nextTick` 中执行回调函数的原因是保证在同一个 tick 内多次执行 `nextTick`，不会开启多个异步任务，而把这些异步任务都压成一个同步任务，在下一个 tick 执行完毕。
 
@@ -5430,34 +5429,17 @@ export function nextTick (cb?: Function, ctx?: Object) {
 }
 ```
 
-这是当 `nextTick` 不传 `cb` 参数的时候，提供一个 Promise 化的调用，比如：
-
-```js
-nextTick().then(() => {})
-```
-
-当 `_resolve` 函数执行，就会跳到 `then` 的逻辑中。
+这是当 `nextTick` 不传 `cb` 参数的时候，提供一个 Promise 化的调用，当 `callbacks` 中执行 `_resolve` 函数执行，就会跳到 `then` 的逻辑中。
 
 `next-tick.js` 还对外暴露了 `withMacroTask` 函数，它是对函数做一层包装，确保函数执行过程中对数据任意的修改，触发变化执行 `nextTick` 的时候强制走 `macroTimerFunc`。比如对于一些 DOM 交互事件，如 `v-on` 绑定的事件回调函数的处理，会强制走 macro task。
 
 ### 4.5.3 总结
 
-通过这一节对 `nextTick` 的分析，并结合上一节的 setter 分析，我们了解到数据的变化到 DOM 的重新渲染是一个异步过程，发生在下一个 tick。这就是我们平时在开发的过程中，比如从服务端接口去获取数据的时候，数据做了修改，如果我们的某些方法去依赖了数据修改后的 DOM 变化，我们就必须在 `nextTick` 后执行。比如下面的伪代码：
-
-```js
-getData(res).then(()=>{
-  this.xxx = res.data
-  this.$nextTick(() => {
-    // 这里我们可以获取变化后的 DOM
-  })
-})
-```
-
-Vue.js 提供了 2 种调用 `nextTick` 的方式，一种是全局 API `Vue.nextTick`，一种是实例上的方法 `vm.$nextTick`，无论我们使用哪一种，最后都是调用 `next-tick.js` 中实现的 `nextTick` 方法。
+通过这一节对 `nextTick` 的分析，并结合上一节的 setter 分析，我们了解到数据的变化到 DOM 的重新渲染是一个异步过程，发生在下一个 tick。这就是我们平时在开发的过程中，比如从服务端接口去获取数据的时候，数据做了修改，如果我们的某些方法去依赖了数据修改后的 DOM 变化，我们就必须在 `nextTick` 后执行。
 
 ## 4.6 检测变化的注意事项
 
-通过前面几节的分析，我们对响应式数据对象以及它的 getter 和 setter 部分做了了解，但是对于一些特殊情况是需要注意的，接下来我们就从源码的角度来看 Vue 是如何处理这些特殊情况的。
+前面几节分析了响应式数据对象以及它的 getter 和 setter 部分，但是对于一些特殊情况是需要注意的，接下来我们就从源码的角度来看 Vue 是如何处理。
 
 ### 4.6.1 对象添加属性
 
@@ -5473,12 +5455,7 @@ var vm = new Vue({
 vm.b = 2
 ```
 
-但是添加新属性的场景我们在平时开发中会经常遇到，那么 Vue 为了解决这个问题，定义了一个全局 API `Vue.set` 方法，它在 `src/core/global-api/index.js` 中初始化：
-
-```js
-Vue.set = set
-```
-这个 `set` 方法的定义在 `src/core/observer/index.js` 中：
+但是添加新属性的场景我们在平时开发中会经常遇到，那么 Vue 为了解决这个问题，定义了一个全局 API `Vue.set` 方法，它在 `src/core/global-api/index.js` 中初始化：`Vue.set = set`。这个 `set` 方法的定义在 `src/core/observer/index.js` 中：
 
 ```js
 /**
@@ -5519,11 +5496,11 @@ export function set (target: Array<any> | Object, key: any, val: any): any {
 }
 ```
 
-`set` 方法接收 3个参数：
+`set` 方法接收 3 个参数：
 
-1. `target` 可能是数组或者是普通对象，
-2. `key` 代表的是数组的下标或者是对象的键值，
-3. `val` 代表添加的值。
+1. `target` 数组或者是普通对象，
+2. `key` 数组的下标或者是对象的键值，
+3. `val` 添加的值。
 
 首先判断如果 `target` 是数组且 `key` 是一个合法的下标，则之前通过 `splice` 去添加进数组然后返回，这里的 `splice` 其实已经不仅仅是原生数组的 `splice` 了，稍后我会详细介绍数组的逻辑。
 
@@ -5531,7 +5508,7 @@ export function set (target: Array<any> | Object, key: any, val: any): any {
 
 接着再获取到 `target.__ob__` 并赋值给 `ob`，之前分析过它是在 `Observer` 的构造函数执行的时候初始化的，表示 `Observer` 的一个实例，如果它不存在，则说明 `target` 不是一个响应式的对象，则直接赋值并返回。
 
-最后通过 ` defineReactive(ob.value, key, val)` 把新添加的属性变成响应式对象，然后再通过 `ob.dep.notify()` 手动的触发依赖通知，还记得我们在给对象添加 getter 的时候有这么一段逻辑：
+最后通过 `defineReactive(ob.value, key, val)` 把新添加的属性变成响应式对象，然后再通过 `ob.dep.notify()` 手动的触发依赖通知，还记得我们在给对象添加 getter 的时候有这么一段逻辑：
 
 ```js
 export function defineReactive (
@@ -5564,16 +5541,32 @@ export function defineReactive (
 }
 ```
 
-在 getter 过程中判断了 `childOb`，并调用了 `childOb.dep.depend()` 收集了依赖，这就是为什么执行 `Vue.set` 的时候通过 `ob.dep.notify()` 能够通知到 `watcher `，从而让添加新的属性到对象也可以检测到变化。这里如果 `value` 是个数组，那么就通过 `dependArray` 把数组每个元素也去做依赖收集。
+在 getter 过程中判断了 `childOb`，并调用了 `childOb.dep.depend()` 收集了依赖，这就是为什么执行 `Vue.set` 的时候通过 `ob.dep.notify()` 能够通知到 `watcher`，从而让添加新的属性到对象也可以检测到变化。这里如果 `value` 是个数组，那么就通过 `dependArray` 把数组每个元素也去做依赖收集。
 
 ### 4.6.2 数组
 
 接着说一下数组的情况，Vue 也是不能检测到以下变动的数组：
 
-1. 当你利用索引直接设置一个项时，例如：`vm.items[indexOfItem] = newValue`
-2. 当你修改数组的长度时，例如：`vm.items.length = newLength`
+1. 利用索引直接设置一个项时，例如：`vm.items[indexOfItem] = newValue`
+2. 修改数组的长度时，例如：`vm.items.length = newLength`
 
-对于第一种情况，可以使用：`Vue.set(example1.items, indexOfItem, newValue)`；而对于第二种情况，可以使用 `vm.items.splice(newLength)`。
+为了解决第一类问题，以下两种方式都可以实现和 `vm.items[indexOfItem] = newValue` 相同的效果，同时也将在响应式系统内触发状态更新：
+
+```js
+// Vue.set
+Vue.set(vm.items, indexOfItem, newValue)
+// Vue.set alias
+vm.$set(vm.items, indexOfItem, newValue)
+
+// Array.prototype.splice
+vm.items.splice(indexOfItem, 1, newValue)
+```
+
+为了解决第二类问题，你可以使用 splice：
+
+```js
+vm.items.splice(newLength)
+```
 
 我们刚才也分析到，对于 `Vue.set` 的实现，当 `target` 是数组的时候，也是通过 `target.splice(key, 1, val)` 来添加的，那么这里的 `splice` 到底有什么黑魔法，能让添加的对象变成响应式的呢。
 
@@ -5680,7 +5673,7 @@ methodsToPatch.forEach(function (method) {
 
 Vue 的组件对象支持了计算属性 `computed` 和侦听属性 `watch` 2 个选项，很多同学不了解什么时候该用 `computed` 什么时候该用 `watch`。先不回答这个问题，我们接下来从源码实现的角度来分析它们两者有什么区别。
 
-### 4.7.1 computed
+### 4.7.1 计算属性 computed
 
 计算属性的初始化是发生在 Vue 实例初始化阶段的 `initState` 函数中，执行了 
 
@@ -5688,7 +5681,7 @@ Vue 的组件对象支持了计算属性 `computed` 和侦听属性 `watch` 2 �
 if (opts.computed) initComputed(vm, opts.computed)
 ```
 
-`initComputed` 的定义在 `src/core/instance/state.js` 中：
+而 `initComputed` 的定义在 `src/core/instance/state.js` 中：
 
 ```js
 const computedWatcherOptions = { computed: true }
@@ -5736,7 +5729,7 @@ function initComputed (vm: Component, computed: Object) {
 
 函数首先创建 `vm._computedWatchers` 为一个空对象，接着对 `computed` 对象做遍历，拿到计算属性的每一个 `userDef`，然后尝试获取这个 `userDef` 对应的 `getter` 函数，拿不到则在开发环境下报警告。
 
-接下来为每一个 `getter` 创建一个 `watcher`，这个 `watcher` 和渲染 `watcher` 有一点很大的不同，它是一个 `computed watcher`，因为 `const computedWatcherOptions = { computed: true }`。`computed watcher` 和普通 `watcher` 的差别我稍后会介绍。
+接下来为每一个 `getter` 创建一个 `watcher`，这个 `watcher` 和渲染 `watcher` 有一点很大的不同，它是一个 `computed watcher`，因为有额外的 `computedWatcherOptions` 配置。`computed watcher` 和普通 `watcher` 的差别我稍后会介绍。
 
 最后对判断如果 `key` 不是 `vm` 的属性，则调用 `defineComputed(vm, key, userDef)`，否则判断计算属性对于的 `key` 是否已经被 `data` 或者 `prop` 所占用，如果是的话则在开发环境报相应的警告。
  
@@ -5936,7 +5929,7 @@ getAndInvoke (cb: Function) {
 
 接下来我们来分析一下侦听属性 `watch` 是怎么实现的。
 
-### 4.7.2 watch
+### 4.7.2 侦听属性 watch
 
 侦听属性的初始化也是发生在 Vue 的实例初始化阶段的 `initState` 函数中，在 `computed` 初始化之后，执行了：
 
@@ -6015,7 +6008,7 @@ Vue.prototype.$watch = function (
 
 所以本质上侦听属性也是基于 `Watcher` 实现的，它是一个 `user watcher`。其实 `Watcher` 支持了不同的类型，下面我们梳理一下它有哪些类型以及它们的作用。
 
-### 4.7.3 Watcher options
+### 4.7.3 Watcher 的类型
 
 `Watcher` 的构造函数对 `options` 做的了处理，代码如下：
 
@@ -6334,7 +6327,7 @@ function sameVnode (a, b) {
 
 ### 4.8.1 新旧节点不同
 
-如果新旧 `vnode` 不同，那么更新的逻辑非常简单，它本质上是要替换已存在的节点，大致分为 3 步
+如果新旧 `vnode` 不同，那么更新的逻辑非常简单，它本质上是要替换已存在的节点，大致分为 3 。
 
 1. 创建新节点
 
@@ -6707,7 +6700,7 @@ if (isDef(data)) {
 
 那么在整个 `pathVnode` 过程中，最复杂的就是 `updateChildren` 方法了，下面我们来单独介绍它。
 
-### 4.8.3 updateChildren
+### 4.8.3 核心原理 updateChildren
 
 ```js
 function updateChildren (parentElm, oldCh, newCh, insertedVnodeQueue, removeOnly) {
@@ -6843,7 +6836,7 @@ function updateChildren (parentElm, oldCh, newCh, insertedVnodeQueue, removeOnly
 
 组件更新的过程核心就是新旧 vnode diff，对新旧节点相同以及不同的情况分别做不同的处理。新旧节点不同的更新流程是创建新节点->更新父占位符节点->删除旧节点；而新旧节点相同的更新流程是去获取它们的 children，根据不同情况做不同的更新逻辑。最复杂的情况是新旧节点相同且它们都存在子节点，那么会执行 `updateChildren` 逻辑，这块儿可以借助画图的方式配合理解。
 
-## 4.9 Props (v2.6.11)
+## 4.9 Props
 
 `Props` 作为组件的核心特性之一，也是我们平时开发 Vue 项目中接触最多的特性之一，它可以让组件的功能变得丰富，也是父子组件通讯的一个渠道。那么它的实现原理是怎样的，我们来一探究竟。
 
@@ -7658,6 +7651,20 @@ if (propsData && vm.$options.props) {
 ## 4.10 原理图
 
 <img :src="$withBase('/assets/reactive.png')">
+
+```
+data/prop => defineReactive
+
+getter/setter => depend/notify => Dep
+
+computed/watch => coumputed_watcher/user_watcher => depend&notify/addDep&update => Dep
+
+user_watcher => run => user callback
+
+$mount => render_watcher => updateComponent
+
+Dep => addDep/update => render_watcher
+```
 
 # 第五章：编译
 
