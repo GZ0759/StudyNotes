@@ -551,6 +551,15 @@ history 路由模式的实现主要基于存在下面几个特性：
 - 可以使用 popstate 事件来监听 url 的变化，从而对页面进行跳转（渲染）；
 - pushState 方法或 replaceState 方法不会触发 popstate 事件，这时我们需要手动触发页面跳转（渲染）。
 
+**vue-router 使用 params 与 query 传参有什么区别？**
+
+vue-router 可以通过 params 与 query 进行传参。
+params 是路由的一部分，必须要有。query 是拼接在 url 后面的参数，没有也没关系；params 不设置的时候，刷新页面或者返回参数会丢，query 则不会有这个问题。
+如果提供了 path，params 会被忽略。
+
+1. 引入方式不同。query要用path来引入，params要用name来引入。
+2. url不同。query在url中显示参数，params在url中不显示参数。
+
 ## 属性作用与对比
 
 ### 虚拟 DOM 的优势和劣势
