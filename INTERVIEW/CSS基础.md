@@ -117,10 +117,35 @@ position 属性被指定为从下面的值列表中选择的单个关键字。
 .triangle {
   width: 0;
   height: 0;
-  border-top: 40px solid transparent;
-  border-left: 40px solid transparent;
-  border-right: 40px solid transparent;
-  border-bottom: 40px solid #ff0000;
+  border: 40px solid transparent;
+  border-top-width: 0;
+  border-bottom-color: blue;
+}
+```
+
+**实现直角箭头**
+
+可支持旋转和缩放，进行方向管理和角度管理（角度要计算 scaleX()）
+
+```css
+.triangle {
+  position: relative;
+  width: 0;
+  height: 0;
+  border: 40px solid transparent;
+  border-top-width: 0;
+  border-bottom-color: blue;
+}
+.triangle::after {
+  content: '';
+  position: absolute;
+  left: -38px;
+  top: 2px;
+  width: 0;
+  height: 0;
+  border: 38px solid transparent;
+  border-top-width: 0;
+  border-bottom-color: white;
 }
 ```
 
