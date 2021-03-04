@@ -710,9 +710,12 @@ function flatten(array) {
 
 ```js
 function flatten(arr) {
-  while (arr.some((item) => Array.isArray(item))) {
-    arr = [].concat(...arr);
+  while (arr.some(Array.isArray)) {
+    arr = [].concat(...arr)
   }
+  // while (arr.some((item) => Array.isArray(item))) {
+  //   arr = [].concat(...arr);
+  // }
   return arr;
 }
 ```
@@ -726,7 +729,7 @@ function flatten(arr) {
   return arr
     .toString()
     .split(',')
-    .map(() => +item);
+    .map(item => +item);
 }
 ```
 
