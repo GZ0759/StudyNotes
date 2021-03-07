@@ -33601,8 +33601,22 @@ let socket = new WebSocket('ws://www.example.com/server.php');
 ```
 
 注意，必须给 WebSocket 构造函数传入一个绝对 URL。同源策略不适用于 Web Socket，因此可以打开到任意站点的连接。至于是否与来自特定源的页面通信，则完全取决于服务器。（在握手阶段就可以确定请求来自哪里。）
-浏览器会在初始化 WebSocket 对象之后立即创建连接。与 XHR 类似， WebSocket 也有一个 readyState 属性表示当前状态。不过，这个值与 XHR 中相应的值不一样。 - WebSocket.OPENING（0）：连接正在建立。 - WebSocket.OPEN（1）：连接已经建立。 - WebSocket.CLOSING（2）：连接正在关闭。 - WebSocket.CLOSE（3）：连接已经关闭。 WebSocket 对象没有 readystatechange 事件，而是有与上述不同状态对应的其他事件。
-readyState 值从 0 开始。任何时候都可以调用 close()方法关闭 Web Socket 连接： socket.close();
+
+浏览器会在初始化 WebSocket 对象之后立即创建连接。与 XHR 类似， WebSocket 也有一个 readyState 属性表示当前状态。不过，这个值与 XHR 中相应的值不一样。
+
+- WebSocket.OPENING（0）：连接正在建立。
+- WebSocket.OPEN（1）：连接已经建立。
+- WebSocket.CLOSING（2）：连接正在关闭。
+- WebSocket.CLOSE（3）：连接已经关闭。
+
+WebSocket 对象没有 readystatechange 事件，而是有与上述不同状态对应的其他事件。
+
+readyState 值从 0 开始。任何时候都可以调用 close()方法关闭 Web Socket 连接：
+
+```js
+socket.close();
+```
+
 调用 close()之后， readyState 立即变为 2（连接正在关闭），并会在关闭后变为 3（连接已经关闭）。
 
 ### 24.7.2 发送和接收数据
