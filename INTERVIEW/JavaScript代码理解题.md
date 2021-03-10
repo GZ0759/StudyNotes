@@ -26,7 +26,7 @@ function foo() {
 foo();
 ```
 
-我们知道在使用`var`创建变量的时候(不在函数里)，会把创建的变量绑定到`window`上，所以此时`a`是`window`下的属性。
+我们知道在使用`var`创建变量的时候（不在函数里），会把创建的变量绑定到`window`上，所以此时`a`是`window`下的属性。
 
 而函数`foo`也是`window`下的属性。
 
@@ -94,7 +94,7 @@ foo();
 console.log(window.a);
 ```
 
-如果把`var`改成了`let 或者 const`，变量是不会被绑定到`window`上的，所以此时会打印出三个`undefined`。
+如果把`var`改成了`let` 或者 `const`，变量是不会被绑定到`window`上的，所以此时会打印出三个`undefined`。
 
 答案：
 
@@ -147,7 +147,7 @@ function foo() {
 foo();
 ```
 
-其实这里和`1.4`很像，不过一看到函数内的函数，就很容易让人联想到闭包 😂，然后... 然后就脱口而出，答案是`2`啊，这还不简单。
+其实这里和`1.4`很像，不过一看到函数内的函数，就很容易让人联想到闭包，然后... 然后就脱口而出，答案是`2`啊，这还不简单。
 
 小伙伴们，审题可得仔细啊，这里问你的是`this.a`，而在`inner`中，`this`指向的还是`window`。
 
@@ -159,9 +159,7 @@ foo();
 
 ## 2. 隐式绑定
 
-隐式绑定，this 永远指向最后调用它的那个对象。
-
-谁最后调用的函数，函数内的`this`指向的就是谁(不考虑箭头函数)。这与上下文对象以及作用域有关。
+隐式绑定，this 永远指向最后调用它的那个对象。谁最后调用的函数，函数内的`this`指向的就是谁（不考虑箭头函数）。这与上下文对象以及作用域有关。
 
 下面你可以用这个规则来做题啦。
 
@@ -175,8 +173,6 @@ var obj = { a: 1, foo };
 var a = 2;
 obj.foo();
 ```
-
-(`var obj = { foo }`就相当于是`var obj = { foo: foo }`，这个大家应该都知道吧)
 
 在这道题中，函数`foo()`虽然是定义在`window`下，但是我在`obj`对象中引用了它，并将它重新赋值到`obj.foo`上。
 
@@ -211,16 +207,10 @@ obj.foo();
 
 ## 3. 隐式绑定的隐式丢失问题
 
-隐式绑定的基本概念大家应该都清楚了，不过其实有一个关于隐式绑定的常用考点，那就是**隐式丢失问题**。
-
-> 隐式丢失其实就是被隐式绑定的函数在特定的情况下会丢失绑定对象。
-
-有两种情况容易发生隐式丢失问题：
+隐式丢失其实就是被隐式绑定的函数在特定的情况下会丢失绑定对象。有两种情况容易发生隐式丢失问题：
 
 - 使用另一个变量来给函数取别名
 - 将函数作为参数传递时会被隐式赋值，回调函数丢失 this 绑定
-
-我们一种一种来看哈。
 
 **3.1 题目一**
 
@@ -238,13 +228,11 @@ obj.foo();
 foo2();
 ```
 
-执行这段代码会打印出啥呢 ？
-
-在这里我们已经知道了，`obj.foo()`中`this`的指向是为`obj`的(可以看第二部分`隐式绑定`)，所以`obj.foo()`执行的时候，打印出来的是`obj`对象中的`a`，也就是`1`。
+在这里我们已经知道了，`obj.foo()`中`this`的指向是为`obj`的，所以`obj.foo()`执行的时候，打印出来的是`obj`对象中的`a`，也就是`1`。
 
 但是`foo2`它不也是`obj.foo`吗？我只不过是用了一个变量`foo2`来盛放了它而已。所以你是不是认为它打印的也是`1`呢？
 
-额 😅，其实这里不是的，它打印出的是`window`下的`a`。
+额，其实这里不是的，它打印出的是`window`下的`a`。
 
 答案：
 
@@ -255,7 +243,7 @@ foo2();
 
 这是因为虽然`foo2`指向的是`obj.foo`函数，不过调用它的却是`window`对象，所以它里面`this`的指向是为`window`。
 
-其实也就相当于是`window.foo2()`，如果你不相信的话，可以看下面一题 👇。
+其实也就相当于是`window.foo2()`，如果你不相信的话，可以看下面一题。
 
 **3.2 题目二**
 
@@ -351,7 +339,7 @@ obj2.doFoo(obj.foo);
 2
 ```
 
-**所以说，如果你把一个函数当成参数传递到另一个函数的时候，也会发生隐式丢失的问题，且与包裹着它的函数的 this 指向无关。在非严格模式下，会把该函数的 this 绑定到 window 上，严格模式下绑定到 undefined。**
+所以说，如果你把一个函数当成参数传递到另一个函数的时候，也会发生隐式丢失的问题，且与包裹着它的函数的 this 指向无关。在非严格模式下，会把该函数的 this 绑定到 window 上，严格模式下绑定到 undefined。
 
 一样的代码，试试严格模式下：
 
@@ -386,9 +374,9 @@ Uncaught TypeError: Cannot read property 'a' of undefined
 
 这里有几个知识点需要注意：
 
-- 使用`.call()`或者`.apply()`的函数是会直接执行的
+- 使用`call()`或者`apply()`的函数是会直接执行的
 - `bind()`是创建一个新的函数，需要手动调用才会执行
-- `.call()`和`.apply()`用法基本类似，不过`call`接收若干个参数，而`apply`接收的是一个数组
+- `call()`和`apply()`用法基本类似，不过`call`接收若干个参数，而`apply`接收的是一个数组
 
 来看看题目一。
 
@@ -407,7 +395,7 @@ foo.apply(obj);
 foo.bind(obj);
 ```
 
-第一个`foo()` 都很好理解，这不就是默认绑定吗？😁
+第一个`foo()` 都很好理解，这不就是默认绑定吗？
 
 而第二个和第三个`foo`都使用了`call`或`apply`来改变`this`的指向，并且是立即执行的。
 
@@ -423,7 +411,7 @@ foo.bind(obj);
 
 这里想要提一嘴，如果`call、apply、bind`接收到的第一个参数是空或者`null、undefined`的话，则会忽略这个参数。
 
-例如 🌰：
+例如：
 
 ```javascript
 function foo() {
@@ -447,7 +435,7 @@ foo.call(undefined);
 
 了解了显式绑定的基本使用之后，让我们来看看它的妙用。
 
-首先，是这个例子 🌰：
+首先，是这个例子：
 
 ```javascript
 var obj1 = {
@@ -478,8 +466,6 @@ obj2.foo2();
 想想我前面说过的话，谁调用的函数，函数内的`this`指向的就是谁。
 
 而对于匿名函数，它里面的`this`在非严格模式下始终指向的都是`window`。
-
-(之前呆呆一直认为的是定时器里的函数和定时器是有关系的，所以有一些错误的理解，感谢掘友[朝游夕宴](https://juejin.im/user/5cb83422e51d456e3267e414)的指出)
 
 所以最终的结果是：
 
@@ -533,13 +519,13 @@ obj2.foo2();
 obj2.foo2.call(obj1);
 ```
 
-**注意 **：如果是这种写法的话，我改变的就是`foo2`函数内的`this`的指向了，但是我们知道，`foo2`函数内`this`的指向和`setTimeout`里函数的`this`是没有关系的，因为调用定时器的始终是`window`。
+注意：如果是这种写法的话，我改变的就是`foo2`函数内的`this`的指向了，但是我们知道，`foo2`函数内`this`的指向和`setTimeout`里函数的`this`是没有关系的，因为调用定时器的始终是`window`。
 
 并且这里使用`.bind()`也是可以的，因为定时器里的函数在时间到了之后本就是会自动执行的。
 
 **4.4 题目四**
 
-OK👌，我们不用定时器，把它干掉，换成一个函数：
+OK，我们不用定时器，把它干掉，换成一个函数：
 
 ```javascript
 var obj1 = {
@@ -626,7 +612,7 @@ Uncaught TypeError: Cannot read property 'call' of undefined
 
 **4.6 题目六**
 
-OK👌，既然刚刚`4.5`是因为函数没有返回值才报的错，那我现在给它加上返回值看看：
+OK，既然刚刚`4.5`是因为函数没有返回值才报的错，那我现在给它加上返回值看看：
 
 ```javascript
 function foo() {
@@ -643,11 +629,7 @@ foo.call(obj);
 foo().call(obj);
 ```
 
-你能想到现在会输出什么吗？
-
-答案是会输出`3`个数，还是`4`个数，亦或者`6`个数呢？
-
-😁 嘻嘻，不逗你了，结果竟然是：
+结果是：
 
 ```
 2
@@ -727,7 +709,7 @@ foo.call(obj)();
 2
 ```
 
-（请注意这个例子 🌰，后面它会与箭头函数做对比）
+（请注意这个例子，后面它会与箭头函数做对比）
 
 **4.9 题目九**
 
@@ -753,19 +735,18 @@ obj.foo().call(obj2);
 
 现在，没和你玩文字游戏了，每个`foo`返回的函数我都调用了，但是你能知道每次调用，打印出的都是什么吗？
 
-- `obj.foo()`自然是打印出`foo: obj`和`inner: window`，这个没什么疑惑的。
-- `obj.foo.(obj2)()`其实也没啥可疑惑的了，打印出`foo: obj2`和`inner: window`(类似`4.8`)。
-- 那么`obj.foo().call(obj2)`就更没啥可疑惑的了，打印出`foo: obj`和`inner: obj2`。
-
-完了，都没啥可疑惑的了。就这点东西，你都掌握了...
-
-OK，小 fo 子，请记住你现在的自信，等会做综合题的时候希望你还能如此清醒 🙏。
+```
+foo: obj
+inner: window
+foo: obj2
+inner: window
+foo: obj
+inner: obj2
+```
 
 **4.10 题目十**
 
 一直做这种题目是不是没意思，让我们加几个参数来玩玩。
-
-[阴笑]~
 
 ```javascript
 var obj = {
@@ -793,12 +774,6 @@ obj.foo.call(obj2)(1);
 
 - 开始调用`obj.foo(a)`将`2`传入`foo`函数并赋值给型参`b`，并且由于闭包的原因，使得匿名函数内能访问到`b`，之后调用匿名函数的时候，用`call()`改变了`this`的指向，使得匿名函数内`this.a`为`3`，并传入最后一个参数`1`，所以第一行输出的应该是`3 + 2 + 1`，也就是`6`。
 - 而第二行，`obj.foo.call(obj2)`这里是将`foo`函数内的`this`指向了`obj2`，同时并没有传递任何参数，所以`b`开始是`undefined`的，但是又因为有一句`b = b || this.a`，使得`b`变为了`3`；同时最后一段代码`(1)`，是在调用匿名函数，且和这个匿名函数内的`this`应该是指向`window`的，因此输出也为`3+2+1`，为`6`。
-
-这道题其实是我自己编的 😂，编完之后还觉得挺好玩的，即考到了闭包，又考到了`call`方法，还考到了算数...
-
-哈哈哈哈～
-
-(小伙子，年纪轻轻就能出如此心机的题目，让你当面试官还得了？)
 
 ## 5. 显式绑定的其它用法
 
@@ -897,7 +872,7 @@ arr.filter(function (i) {
 
 如果我们没有传递第二个参数`obj`的话，`this.a`打印出来的肯定就是`window`下的`a`了，但是传入了之后将`obj`显示绑定到第一个参数函数上。
 
-(关于`arr.filter`为什么也会打印出`1, 2, 3`，那是因为虽然我们使用了`return i > 2`，不过在执行阶段`filter`还是把每一项都打印出来)
+关于`arr.filter`为什么也会打印出`1, 2, 3`，那是因为虽然我们使用了`return i > 2`，不过在执行阶段`filter`还是把每一项都打印出来。
 
 **总结**
 
@@ -920,7 +895,7 @@ arr.filter(function (i) {
 
 **6.1 题目一**
 
-使用`new`来调用`Person`，构造了一个新对象`person1`并把它(`person1`)绑定到`Person`调用中的`this`。
+使用`new`来调用`Person`，构造了一个新对象`person1`并把它绑定到`Person`调用中的`this`。
 
 ```javascript
 function Person(name) {
@@ -972,7 +947,7 @@ var obj = {
 };
 ```
 
-好像都是函数包裹着函数，没错，其实它们的解法都差不多。😁
+好像都是函数包裹着函数，没错，其实它们的解法都差不多。
 
 所以这道题的结果为：
 
@@ -1003,7 +978,7 @@ var obj = {
 
 果然，`window.name`打印出来还是`LinDaiDai`。它会记住这个`name`属性不被回收，直到你关闭此页签。
 
-但是如果把`name`属性名换成别的(比如`dd`)，它就不会有这种情况。
+但是如果把`name`属性名换成别的（比如`dd`），它就不会有这种情况。
 
 有兴趣的小伙伴可以去尝试一下哈，这里我就不深究了...
 
@@ -1104,11 +1079,9 @@ var person1 = {
 
 ## 7. 箭头函数绑定
 
-终于到了期待已久的箭头函数绑定。
+在上面，我们有学到一个诀窍：this 永远指向最后调用它的那个对象。
 
-在上面 👆，我们有学到一个诀窍：**this 永远指向最后调用它的那个对象**。
-
-但是对于箭头函数就不是这样咯，**它里面的`this`是由外层作用域来决定的，且指向函数定义时的 this 而非执行时**。
+但是对于箭头函数就不是这样咯，它里面的`this`是由外层作用域来决定的，且指向函数定义时的 this 而非执行时。
 
 `它里面的this是由外层作用域来决定的`啥意思呢？来看看这句话：
 
@@ -1146,10 +1119,16 @@ obj.foo2()();
 
 这道题就非常有代表性，它明确了箭头函数内的`this`是由外层作用域决定的。
 
-- 对于`obj.foo1()`函数的调用，它的外层作用域是`window`，对象`obj`当然不属于作用域了(我们知道作用域只有全局作用域`window`和局部作用域函数)。所以会打印出`window`
-- `obj.foo2()()`，首先会执行`obj.foo2()`，这不是个箭头函数，所以它里面的`this`是调用它的`obj`对象，因此打印出`obj`，而返回的匿名函数是一个箭头函数，**它的`this`由外层作用域决定**，那也就是函数`foo2`咯，那也就是它的`this`会和`foo2`函数里的`this`一样，就也打印出了`obj`。
+- 对于`obj.foo1()`函数的调用，它的外层作用域是`window`，对象`obj`当然不属于作用域了（我们知道作用域只有全局作用域`window`和局部作用域函数）。所以会打印出`window`
+- `obj.foo2()()`，首先会执行`obj.foo2()`，这不是个箭头函数，所以它里面的`this`是调用它的`obj`对象，因此打印出`obj`，而返回的匿名函数是一个箭头函数，它的`this`由外层作用域决定，那也就是函数`foo2`咯，那也就是它的`this`会和`foo2`函数里的`this`一样，就也打印出了`obj`。
 
-做完了这道题心里是不是有点谱了，感觉也不是那么难嘛...😁
+```
+window
+obj
+obj
+```
+
+做完了这道题心里是不是有点谱了，感觉也不是那么难嘛...
 
 让我们来拆分一下看看区别。
 
@@ -1249,60 +1228,12 @@ obj4.foo()();
 
 答案：
 
-(额，题目太长，为了你好看，所以答案我会把题目复制一遍... 放心... 我这绝对不是为了凑字数... 😅)
-
-```javascript
-var name = 'window';
-var obj1 = {
-  name: 'obj1',
-  foo: function () {
-    console.log(this.name);
-    return function () {
-      console.log(this.name);
-    };
-  },
-};
-var obj2 = {
-  name: 'obj2',
-  foo: function () {
-    console.log(this.name);
-    return () => {
-      console.log(this.name);
-    };
-  },
-};
-var obj3 = {
-  name: 'obj3',
-  foo: () => {
-    console.log(this.name);
-    return function () {
-      console.log(this.name);
-    };
-  },
-};
-var obj4 = {
-  name: 'obj4',
-  foo: () => {
-    console.log(this.name);
-    return () => {
-      console.log(this.name);
-    };
-  },
-};
-
-obj1.foo()(); // 'obj1' 'window'
-obj2.foo()(); // 'obj2' 'obj2'
-obj3.foo()(); // 'window' 'window'
-obj4.foo()(); // 'window' 'window'
 ```
-
-哇！霖呆呆！要按你这么出题的话，得有多少`"奇形怪状"`的题目啊！
-
-哈哈 ，其实大家不用担心，做这类题只要谨记法则，找到规律，什么题都可以解了！
-
-是时候给大家发一波心理鸡汤了：
-
-(`Sorry～` 让你们承受了这个年纪不该有的表情包)
+'obj1' 'window'
+'obj2' 'obj2'
+'window' 'window'
+'window' 'window'
+```
 
 **7.4 题目四**
 
@@ -1333,8 +1264,8 @@ person2.foo2();
 
 解题思路：
 
-- `person1.foo1()`是个普通函数，**this 由最后调用它的对象决定**，即`person1`。
-- `person1.foo2()`为箭头函数，**this 由外层作用域决定，且指向函数定义时的 this 而非执行时**，在这里它的外层作用域是函数`Person`，且这个是构造函数，并且使用了`new`来生成了对象`person1`，所以此时`this`的指向是为`person1`。
+- `person1.foo1()`是个普通函数，this 由最后调用它的对象决定，即`person1`。
+- `person1.foo2()`为箭头函数，this 由外层作用域决定，且指向函数定义时的 this 而非执行时，在这里它的外层作用域是函数`Person`，且这个是构造函数，并且使用了`new`来生成了对象`person1`，所以此时`this`的指向是为`person1`。
 - `person2.foo2()`字面量创建的的对象`person2`中的`foo2`是个箭头函数，由于`person2`是直接在`window`下创建的，你可以理解为它所在的作用域就是在`window`下，因此`person2.foo2()`内的`this`应该是`window`。
 
 答案：
@@ -1394,47 +1325,18 @@ person1.foo4()();
 
 答案：
 
-```javascript
-var name = 'window';
-function Person(name) {
-  this.name = name;
-  this.foo1 = function () {
-    console.log(this.name);
-    return function () {
-      console.log(this.name);
-    };
-  };
-  this.foo2 = function () {
-    console.log(this.name);
-    return () => {
-      console.log(this.name);
-    };
-  };
-  this.foo3 = () => {
-    console.log(this.name);
-    return function () {
-      console.log(this.name);
-    };
-  };
-  this.foo4 = () => {
-    console.log(this.name);
-    return () => {
-      console.log(this.name);
-    };
-  };
-}
-var person1 = new Person('person1');
-person1.foo1()(); // 'person1' 'window'
-person1.foo2()(); // 'person1' 'person1'
-person1.foo3()(); // 'person1' 'window'
-person1.foo4()(); // 'person1' 'person1'
+```
+'person1' 'window'
+'person1' 'person1'
+'person1' 'window'
+'person1' 'person1'
 ```
 
 **7.6 题目六**
 
 **箭头函数结合`.call`的题目**
 
-箭头函数的`this`无法通过`bind、call、apply`来**直接**修改，但是可以通过改变作用域中`this`的指向来间接修改。
+箭头函数的`this`无法通过`bind、call、apply`来直接修改，但是可以通过改变作用域中`this`的指向来间接修改。
 
 ```javascript
 var name = 'window';
@@ -1471,42 +1373,23 @@ obj1.foo2().call(obj2);
 
 答案：
 
-```javascript
-var name = 'window';
-var obj1 = {
-  name: 'obj1',
-  foo1: function () {
-    console.log(this.name);
-    return () => {
-      console.log(this.name);
-    };
-  },
-  foo2: () => {
-    console.log(this.name);
-    return function () {
-      console.log(this.name);
-    };
-  },
-};
-var obj2 = {
-  name: 'obj2',
-};
-obj1.foo1.call(obj2)(); // 'obj2' 'obj2'
-obj1.foo1().call(obj2); // 'obj1' 'obj1'
-obj1.foo2.call(obj2)(); // 'window' 'window'
-obj1.foo2().call(obj2); // 'window' 'obj2'
+```
+'obj2' 'obj2'
+'obj1' 'obj1'
+'window' 'window'
+'window' 'obj2'
 ```
 
 在这道题中，`obj1.foo1.call(obj2)()`就相当于是通过改变作用域间接改变箭头函数内`this`的指向。
 
 **总结**
 
-OK👌，来总结一下箭头函数需要注意的点吧：
+OK，来总结一下箭头函数需要注意的点吧：
 
 - 它里面的`this`是由外层作用域来决定的，且指向函数定义时的`this`而非执行时
 - 字面量创建的对象，作用域是`window`，如果里面有箭头函数属性的话，`this`指向的是`window`
 - 构造函数创建的对象，作用域是可以理解为是这个构造函数，且这个构造函数的`this`是指向新建的对象的，因此`this`指向这个对象。
-- 箭头函数的`this`是无法通过`bind、call、apply`来**直接**修改，但是可以通过改变作用域中`this`的指向来间接修改。
+- 箭头函数的`this`是无法通过`bind、call、apply`来直接修改，但是可以通过改变作用域中`this`的指向来间接修改。
 
 ## 8. 综合题
 
@@ -1556,7 +1439,7 @@ person1.foo4.call(person2)();
 person1.foo4().call(person2);
 ```
 
-这里我就不写题解了，因为如果你认真看了前面的题目的话，我相信一定能做的来，其实就是将原本分散的知识点汇总在一起。😁
+这里我就不写题解了，因为如果你认真看了前面的题目的话，我相信一定能做的来，其实就是将原本分散的知识点汇总在一起。
 
 - `person1.foo1()`类似题目`4.5`
 - `person1.foo2()`类似题目`7.1`
@@ -1565,40 +1448,20 @@ person1.foo4().call(person2);
 
 答案：
 
-```javascript
-var name = 'window';
-var person1 = {
-  name: 'person1',
-  foo1: function () {
-    console.log(this.name);
-  },
-  foo2: () => console.log(this.name),
-  foo3: function () {
-    return function () {
-      console.log(this.name);
-    };
-  },
-  foo4: function () {
-    return () => {
-      console.log(this.name);
-    };
-  },
-};
-var person2 = { name: 'person2' };
+```
+'person1'
+'person2'
 
-person1.foo1(); // 'person1'
-person1.foo1.call(person2); // 'person2'
+'window'
+'window'
 
-person1.foo2(); // 'window'
-person1.foo2.call(person2); // 'window'
+'window'
+'window'
+'person2'
 
-person1.foo3()(); // 'window'
-person1.foo3.call(person2)(); // 'window'
-person1.foo3().call(person2); // 'person2'
-
-person1.foo4()(); // 'person1'
-person1.foo4.call(person2)(); // 'person2'
-person1.foo4().call(person2); // 'person1'
+'person1'
+'person2'
+'person1'
 ```
 
 **8.2 题目二**
@@ -1649,41 +1512,20 @@ person1.foo4().call(person2);
 
 答案：
 
-```javascript
-var name = 'window';
-function Person(name) {
-  this.name = name;
-  (this.foo1 = function () {
-    console.log(this.name);
-  }),
-    (this.foo2 = () => console.log(this.name)),
-    (this.foo3 = function () {
-      return function () {
-        console.log(this.name);
-      };
-    }),
-    (this.foo4 = function () {
-      return () => {
-        console.log(this.name);
-      };
-    });
-}
-var person1 = new Person('person1');
-var person2 = new Person('person2');
+```
+'person1'
+'person2'
 
-person1.foo1(); // 'person1'
-person1.foo1.call(person2); // 'person2'
+'person1'
+'person1'
 
-person1.foo2(); // 'person1'
-person1.foo2.call(person2); // 'person1'
+'window'
+'window'
+'person2'
 
-person1.foo3()(); // 'window'
-person1.foo3.call(person2)(); // 'window'
-person1.foo3().call(person2); // 'person2'
-
-person1.foo4()(); // 'person1'
-person1.foo4.call(person2)(); // 'person2'
-person1.foo4().call(person2); // 'person1'
+'person1'
+'person2'
+'person1'
 ```
 
 **8.3 题目三**
@@ -1735,39 +1577,17 @@ person1.obj.foo2().call(person2);
 
 答案
 
-```javascript
-var name = 'window';
-function Person(name) {
-  this.name = name;
-  this.obj = {
-    name: 'obj',
-    foo1: function () {
-      return function () {
-        console.log(this.name);
-      };
-    },
-    foo2: function () {
-      return () => {
-        console.log(this.name);
-      };
-    },
-  };
-}
-var person1 = new Person('person1');
-var person2 = new Person('person2');
+```
+'window'
+'window'
+'person2'
 
-person1.obj.foo1()(); // 'window'
-person1.obj.foo1.call(person2)(); // 'window'
-person1.obj.foo1().call(person2); // 'person2'
-
-person1.obj.foo2()(); // 'obj'
-person1.obj.foo2.call(person2)(); // 'person2'
-person1.obj.foo2().call(person2); // 'obj'
+'obj'
+'person2'
+'obj'
 ```
 
 **9.4 题目四**
-
-这道题是在评论区看到的，觉得挺不错的，所以加到文章中(感谢[👀](https://juejin.im/user/57c7f94279bc440063e90595)小伙伴提供的题目)
 
 来看看这里会打印出什么呢？
 
@@ -2231,7 +2051,7 @@ test5.html:102 Uncaught (in promise) Error: error!!! at test.html:102
 总结：
 
 1. `Promise`的状态一经改变就不能再改变。(见 3.1)
-2. `.then`和`.catch`都会返回一个新的`Promise`。(上面的 👆1.4 证明了)
+2. `.then`和`.catch`都会返回一个新的`Promise`。(上面的1.4 证明了)
 3. `catch`不管被连接到哪里，都能捕获上层的错误。(见 3.2)
 4. 在`Promise`中，返回任意一个非 `promise` 的值都会被包裹成 `promise` 对象，例如`return 2`会被包装为`return Promise.resolve(2)`。
 5. `Promise` 的 `.then` 或者 `.catch` 可以被调用多次, 当如果`Promise`内部的状态一经改变，并且有了一个值，那么后续每次调用`.then`或者`.catch`的时候都会直接拿到该值。(见 3.5)
@@ -2444,7 +2264,7 @@ Uncaught (in promise) TypeError: Chaining cycle detected for promise #<Promise>
 Promise.resolve(1).then(2).then(Promise.resolve(3)).then(console.log);
 ```
 
-这道题看着好像很简单，又感觉很复杂的样子，怎么这么多个`.then`啊... 😅
+这道题看着好像很简单，又感觉很复杂的样子，怎么这么多个`.then`啊...
 
 其实你只要记住**原则 8**：`.then` 或者 `.catch` 的参数期望是函数，传入非函数则会发生值透传。
 
@@ -2464,7 +2284,7 @@ Promise.resolve(1).then(2).then(Promise.resolve(3)).then(console.log);
 
 也就是说`Promise.resolve('1')`的值会进入成功的函数，`Promise.reject('2')`的值会进入失败的函数。
 
-让我们来看看这个例子 🌰：
+让我们来看看这个例子：
 
 ```javascript
 Promise.reject('err!!!')
@@ -2541,7 +2361,7 @@ fail2 Error: error!!!
 2. `.finally()`方法的回调函数不接受任何的参数，也就是说你在`.finally()`函数中是没法知道`Promise`最终的状态是`resolved`还是`rejected`的
 3. 它最终返回的默认会是一个**上一次的 Promise 对象值**，不过如果抛出的是一个异常则返回异常的`Promise`对象。
 
-来看看这个简单的例子 🌰：
+来看看这个简单的例子：
 
 ```javascript
 Promise.resolve('1')
@@ -2597,7 +2417,7 @@ Promise.resolve('1')
 
 但是如果改为`return new Error('我是finally中抛出的异常')`，打印出来的就是`'finally后面的then函数 1'`
 
-OK，👌，让我们来看一个比较难的例子 🌰：
+OK，，让我们来看一个比较难的例子：
 
 ```javascript
 function promise1() {
@@ -2706,7 +2526,7 @@ function runP1() {
 runP1(); // 调用此函数时才执行
 ```
 
-OK 👌， 让我们回归正题。
+OK ， 让我们回归正题。
 
 现在来构建这么一个函数：
 
@@ -3001,7 +2821,7 @@ console.log('start');
 
 **5.3 题目三**
 
-来吧，小伙伴们，让我们多加几个定时器看看。😁
+来吧，小伙伴们，让我们多加几个定时器看看。
 
 ```javascript
 async function async1() {
@@ -3215,7 +3035,7 @@ console.log('script end');
 
 **5.9 题目九**
 
-好的 👌，`async/await`大法已练成，咱们继续：
+好的 ，`async/await`大法已练成，咱们继续：
 
 ```javascript
 async function testSometing() {
@@ -3544,7 +3364,7 @@ const result = arr.reduce(
 );
 ```
 
-眼尖的小伙伴看出区别了吗？😁
+眼尖的小伙伴看出区别了吗？
 
 `p.then`里的代码由`() => new Promise(...)`变成了`new Promise(...)`。
 
@@ -3562,9 +3382,9 @@ const result = arr.reduce(
 
 只是一个小小的改变却有大大的区别。
 
-其实刚开始看到的时候霖呆呆我也愣了那么几秒 😂。不过等我们一步一步拆分并对想不通的地方写了几个案例来看就理解了。
+其实刚开始看到的时候霖呆呆我也愣了那么几秒。不过等我们一步一步拆分并对想不通的地方写了几个案例来看就理解了。
 
-评论区和小姐姐扯了一大堆，结果把她越弄越糊 😂。后来我改变了一种思路来描述，觉得应该直接上伪代码：
+评论区和小姐姐扯了一大堆，结果把她越弄越糊。后来我改变了一种思路来描述，觉得应该直接上伪代码：
 
 ```javascript
 const arr = [1, 2, 3];
