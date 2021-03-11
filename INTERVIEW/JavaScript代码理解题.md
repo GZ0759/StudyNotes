@@ -1771,7 +1771,7 @@ fn().then((res) => {
 
 是的，现在`start`就在`1`之前打印出来了，因为`fn`函数是之后执行的。
 
-**注意 **：之前我们很容易就以为看到 new Promise()就执行它的第一个参数函数了，其实这是不对的，就像这两道题中，我们得注意它是不是被包裹在函数当中，如果是的话，只有在函数调用的时候才会执行。
+注意：之前我们很容易就以为看到 `new Promise()` 就执行它的第一个参数函数了，其实这是不对的，就像这两道题中，我们得注意它是不是被包裹在函数当中，如果是的话，只有在函数调用的时候才会执行。
 
 答案：
 
@@ -1938,8 +1938,6 @@ console.log('start');
 
 并且要注意的是，这里的`Promise`是直接`resolve`的，而之前的`new Promise`不一样。
 
-(偷偷告诉你，这道题往下一点有流程图)
-
 因此过程分析为：
 
 - 刚开始整个脚本作为第一次宏任务来执行，我们将它标记为**宏 1**，从上至下执行
@@ -1962,8 +1960,6 @@ console.log('start');
 'promise2'
 'timer2'
 ```
-
-如果感觉有点绕的话，可以看下面这张图，就一目了然了。
 
 **2.4 题目四**
 
@@ -2046,7 +2042,7 @@ test5.html:102 Uncaught (in promise) Error: error!!! at test.html:102
 'promise2' Promise{<rejected>: Error: error!!!}
 ```
 
-## 3. 实例方法 then、catch 和 finally
+## 3. 原型方法 then、catch 和 finally
 
 总结：
 
@@ -2174,7 +2170,7 @@ Promise.reject(1)
 3
 ```
 
-结果打印的当然是 `1 和 3`啦，因为`reject(1)`此时走的就是`catch`，且第二个`then`中的`res`得到的就是`catch`中的返回值。
+结果打印的当然是 `1` 和 `3` 啦，因为`reject(1)`此时走的就是`catch`，且第二个`then`中的`res`得到的就是`catch`中的返回值。
 
 **3.5 题目五**
 
@@ -2495,7 +2491,7 @@ promise2()
   .then(() => console.log('finally2'));
 ```
 
-## 4. 原型方法 all 和 race
+## 4. 静态方法 all 和 race
 
 在做下面的题目之前，让我们先来了解一下`Promise.all()`和`Promise.race()`的用法。
 
