@@ -3315,7 +3315,7 @@ const p1 = new Promise((resolve) => {
 Promise{<resolved>: undefined}
 ```
 
-## 8. 几道大厂的面试题
+## 8. 大厂题目
 
 **8.1 使用 Promise 实现每隔 1 秒输出 1,2,3**
 
