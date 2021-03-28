@@ -5,15 +5,39 @@
 
 # 第 1 章 Vue.js 简介
 
+当应用程序开始变复杂后，需要频繁操作 DOM。由于缺乏正规的组织形式，我们的代码变得非常难以维护。
+
+这本质上是命令式操作 DOM 的问题，我们曾经用 jQuery 操作 DOM 写需求，但是当应用程序变复杂后，代码就像一坨意大利面一样，有点难以维护。我们无法继续使用命令式操作 DOM，所以 Vue.js 提供了声明式操作 DOM 的能力来解决这个问题。
+
 ## 1.1 什么是 Vue.js
 
-Vue.js，通常被称为 Vue，是一款友好的、多用途且高性能的 JavaScript 框架。
+Vue.js，通常简称为 Vue，是一款友好的、多用途且高性能的 JavaScript 框架，能够帮助我们创建可维护性和可测试性更强的代码。它是目前所有主流框架中学习曲线最平缓的框架，非常容易上手，其官方文档也写得非常清晰、易懂。
+
+它是一款渐进式的 JavaScript 框架。关于什么是渐进式，就是说如果你已经有一个现成的服务端应用，也就是非单页应用，可以将 Vue.js 作为该应用的一部分嵌入其中，带来更加丰富的交互体验。
+
+如果希望将更多业务逻辑放到前端来实现，那么 Vue.js 的核心库及其生态系统也可以满足你的各种需求。和其他前端框架一样，Vue.js 允许你将一个网页分割成可复用的组件，每个组件都有自己的 HTML、CSS 和 JavaScript 来渲染网页中一个对应的位置。
+
+如果要构建一个大型应用，就需要先搭建项目，配置一些开发环境等。Vue.js 提供了一个命令行工具，它让快速初始化一个真实的项目工程变得非常简单。
+
+我们甚至可以使用 Vue.js 的单文件组件，它包含各自的 HTML、JavaScript 以及带作用域的 CSS 或 SCSS。我本人在使用 Vue.js 开发项目时，通常都会使用单文件组件。单文件组件真的是一个非常棒的特性，它可以使项目架构变得非常清晰、可维护。
 
 ## 1.2 Vue.js 简史
+
+2013 年 7 月 28 日，有一位名叫尤雨溪，英文名叫 Evan You 的人在 GitHub 上第一次为 Vue.js 提交代码。
+
+2013 年 12 月 7 日，尤雨溪在 GitHub 上发布了新版本 0.6.0，将项目正式改名为 Vue.js，并且把默认的指令前缀变成`v-`。这一版本的发布，代表 Vue.js 正式问世。
 
 到 2015 年 10 月 26 日这天，Vue.js 终于迎来了 1.0.0 版本的发布。
 
 2016 年 10 月 1 日，也是 Vue.js 2.0 发布的日子。
+
+最早的 Vue.js 只做视图层，没有路由，没有状态管理，也没有官方的构建工具，只有一个库，放在网页里就直接用。
+
+后来，他发现 Vue.js 无法用在一些大型应用上，这样在开发不同大小的应用时，需要不停地切换框架以及思维模式。尤雨溪希望有一个方案，有足够的灵活性，能够适应不同大小的应用需求。
+
+所以，Vue.js 就慢慢开始加入了一些官方的辅助工具，比如路由（Router）、状态管理方案（Vuex）和构建工具（vue-cli）等。
+
+加入这些工具时，Vue.js 始终维持着一个理念：“这个框架应该是渐进式的。”
 
 # 第一篇 变化侦测
 
@@ -255,7 +279,9 @@ export default class Watcher {
 }
 ```
 
-这段代码可以把自己主动添加到 `data.a.b.c` 的 Dep 中去。因为在 get 方法中先把 `window.target` 设置成了 this，也就是当前 watcher 实例，然后再读一下 `data.a.b.c` 的值，这肯定会触发 getter。触发了 getter，就会触发收集依赖的逻辑。而关于收集依赖，上面已经介绍了，会从 `window.target` 中读取一个依赖并添加到 Dep 中。这就导致，只要先在 `window.target` 赋一个 this，然后再读一下值，去触发 getter，就可以把 this 主动添加到 keypath 的 Dep 中。有没有很神奇的感觉啊？
+这段代码可以把自己主动添加到 `data.a.b.c` 的 Dep 中去。
+
+因为在 get 方法中先把 `window.target` 设置成了 this，也就是当前 watcher 实例，然后再读一下 `data.a.b.c` 的值，这肯定会触发 getter。触发了 getter，就会触发收集依赖的逻辑。而关于收集依赖，上面已经介绍了，会从 `window.target` 中读取一个依赖并添加到 Dep 中。这就导致，只要先在 `window.target` 赋一个 this，然后再读一下值，去触发 getter，就可以把 this 主动添加到 keypath 的 Dep 中。
 
 依赖注入到 Dep 中后，每当 `data.a.b.c` 的值发生变化时，就会让依赖列表中所有的依赖循环触发 update 方法，也就是 Watcher 中的 update 方法。而 update 方法会执行参数中的回调函数，将 value 和 oldValue 传到参数中。
 
@@ -419,15 +445,10 @@ Watcher 的原理是先把自己设置到全局唯一的指定位置（例如 `w
 
 图 2-1 给出了 Data、Observer、Dep 和 Watcher 之间的关系。
 
-图 2-1 Data、Observer、Dep 和 Watcher 之间的关系
-
-Data 通过 Observer 转换成了 getter/setter 的形式来追踪变化。
-
-当外界通过 Watcher 读取数据时，会触发 getter 从而将 Watcher 添加到依赖中。
-
-当数据发生了变化时，会触发 setter，从而向 Dep 中的依赖（Watcher）发送通知。
-
-Watcher 接收到通知后，会向外界发送通知，变化通知到外界后可能会触发视图更新，也有可能触发用户的某个回调函数等。
+- Data 通过 Observer 转换成了 getter/setter 的形式来追踪变化。
+- 当外界通过 Watcher 读取数据时，会触发 getter 从而将 Watcher 添加到依赖中。
+- 当数据发生了变化时，会触发 setter，从而向 Dep 中的依赖（Watcher）发送通知。
+- Watcher 接收到通知后，会向外界发送通知，变化通知到外界后可能会触发视图更新，也有可能触发用户的某个回调函数等。
 
 # 第 3 章 Array 的变化侦测
 
@@ -461,11 +482,9 @@ Object 的变化是靠 setter 来追踪的，只要一个数据发生了变化�
 
 ## 3.2 拦截器
 
-上一节中，我们已经介绍了拦截器的作用，这一节介绍如何实现它。
-
 拦截器其实就是一个和 `Array.prototype` 一样的 Object，里面包含的属性一模一样，只不过这个 Object 中某些可以改变数组自身内容的方法是我们处理过的。
 
-经过整理，我们发现 Array 原型中可以改变数组自身内容的方法有 7 个，分别是 push、pop、shift、unshift、splice、sort 和 reverse。
+经过整理，发现 Array 原型中可以改变数组自身内容的方法有 7 个，分别是 push、pop、shift、unshift、splice、sort 和 reverse。
 
 下面我们写出代码：
 
@@ -589,11 +608,8 @@ function copyAugment(target, src, keys) {
 
 而现在我们虽然具备了这样的能力，但是通知谁呢？前面我们介绍 Object 时说过，答案肯定是通知 Dep 中的依赖（Watcher），但是依赖怎么收集呢？这就是本节要介绍的内容，如何收集数组的依赖！
 
-在这之前，我们先简单回顾一下 Object 的依赖是如何收集的。
-
-Object 的依赖前面介绍过，是在 defineReactive 中的 getter 里使用 Dep 收集的，每个 key 都会有一个对应的 Dep 列表来存储依赖。
-
-简单来说，就是在 getter 中收集依赖，依赖被存储在 Dep 里。
+> Object 的依赖前面介绍过，是在 defineReactive 中的 getter 里使用 Dep 收集的，每个 key 都会有一个对应的 Dep 列表来存储依赖。  
+> 简单来说，就是在 getter 中收集依赖，依赖被存储在 Dep 里。
 
 那么，数组在哪里收集依赖呢？其实数组也是在 getter 中收集依赖的。
 
@@ -1043,7 +1059,10 @@ export default class Watcher {
 
 上面的代码新增了判断 expOrFn 类型的逻辑。如果 expOrFn 是函数，则直接将它赋值给 getter；如果不是函数，再使用 parsePath 函数来读取 keypath 中的数据。keypath 指的是属性路径，例如 `a.b.c.d` 就是一个 keypath，说明从 `vm.a.b.c.d` 中读取数据。
 
-当 expOrFn 是函数时，它不只可以动态返回数据，其中读取的所有数据也会被 Watcher 观察。当 expOrFn 是字符串类型的 keypath 时，Watcher 会读取这个 keypath 所指向的数据并观察这个数据的变化。而当 expOrFn 是函数时，Watcher 会同时观察 expOrFn 函数中读取的所有 Vue.js 实例上上的响应式数据。也就是说，如果函数从 Vue.js 实例上读取了两个数据，那么 Watcher 会同时观察这两个数据的变化，当其中任意一个发生变化时，Watcher 都会得到通知。
+- 当 expOrFn 是函数时，它不只可以动态返回数据，其中读取的所有数据也会被 Watcher 观察。
+- 当 expOrFn 是字符串类型的 keypath 时，Watcher 会读取这个 keypath 所指向的数据并观察这个数据的变化。
+
+因此，当 expOrFn 是函数时，Watcher 会同时观察 expOrFn 函数中读取的所有 Vue.js 实例上上的响应式数据。也就是说，如果函数从 Vue.js 实例上读取了两个数据，那么 Watcher 会同时观察这两个数据的变化，当其中任意一个发生变化时，Watcher 都会得到通知。
 
 > 事实上，Vue.js 中计算属性（Computed）的实现原理与 expOrFn 支持函数有很大的关系。
 
@@ -3860,7 +3879,7 @@ HTML 解析器的内部原理是一小段一小段地截取模板字符串，每
 
 # 第 13 章 实例方法与全局 API 的实现原理
 
-上一章介绍了Vue.js内部的整体结构，知道了它会向构造函数添加一些属性和方法。本章中，我们将详细介绍它的实例方法和全局API的实现原理。
+上一章介绍了 Vue.js 内部的整体结构，知道了它会向构造函数添加一些属性和方法。本章中，我们将详细介绍它的实例方法和全局 API 的实现原理。
 
 ## 13.1 数据相关的实例方法
 

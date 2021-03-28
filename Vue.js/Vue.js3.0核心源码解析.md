@@ -5,24 +5,19 @@
 
 ## 学习 Vue.js 源码
 
-### 学习源码的目的
+因为 Vue.js 上手门槛低，市场需求与人才现状间存在不少现实矛盾：
 
-没有深入研究过，或者根本不懂 Vue.js 底层实现原理，开发中遇到 Bug 后不懂得如何分析解决问题，也不懂如何调试；
+- 很多初学者通过简单的培训后便入行，到了真实的工作环境中往往水土不服；
+- 工作中只会简单地调用 API，而复杂的组件非常依赖开源的实现；
+- 没有深入研究过，或者根本不懂 Vue.js 底层实现原理，开发中遇到 Bug 后不懂得如何分析解决问题，也不懂如何调试；
+- 工作中往往需要通过阅读源码去了解当前项目和一些第三方依赖库的实现方式和原理，但是简单的知识填充式的培训并不能教会这些，初学者也很难自己形成这样的能力。
 
-工作中往往需要通过阅读源码去了解当前项目和一些第三方依赖库的实现方式和原理，但是简单的知识填充式的培训并不能教会这些，初学者也很难自己形成这样的能力。
-
-初级开发人员已经很难满足当前市场需求，而高阶开发人员却显得供不应求。面试早已不只是考察你应用层面的掌握情况，面试官还喜欢考察技术背后的实现原理来判断你对技术的掌握程度，以及是否有对技术的钻研精神。如果你对于 Vue.js 的使用只是浮于表面，技术能力不过关，那你将很难在行业中立足。
-
-因此，了解技术实现原理是前端工作的必然要求，而看源码是了解技术实现原理的最直接手法，是高效提升个人技术能力的有效途径。
-
-此外，学习  Vue.js 源码还能够从更多层面提升你的技术实力：
+因此，了解技术实现原理是前端工作的必然要求，而看源码是了解技术实现原理的最直接手法，是高效提升个人技术能力的有效途径。此外，学习 Vue.js 源码还能够从更多层面提升你的技术实力：
 
 1. 有助于提升你的 JavaScript 功底。
 2. 提升工作效率，形成学习与成长的良性循环。了解技术的底层实现原理。
 3. 借鉴优秀源码的经验，学习高手思路。
 4. 提升自己解读源码的能力。
-
-### 学习源码的难度
 
 学习源码有这么多好处，很多人也明白这个道理，为什么却很少有人愿意去读源码呢？
 
@@ -32,9 +27,9 @@
 
 ### 课程设计
 
-我会对 Vue.js 3.0 的源码进行透彻分析，但不会一味地去解释源码，而是更加注重解读 Vue.js 在实现某个 feature 的时候，它的设计思想是什么以及为什么会这么做。相比单纯解释源码这种“翻译”的工作，我更喜欢做“阅读理解”，把每部分源码的前因后果分析清楚。
+接下来的课程中，将会注重解读 Vue.js 在实现某个 feature 的时候，它的设计思想是什么以及为什么会这么做，把每部分源码的前因后果分析清楚。
 
-课程共分三大模块，合计 22 篇文章。我会结合实际用例，循序渐进地带你深入 Vue.js 的内核实现。
+课程共分三大模块，合计 22 篇文章。
 
 1. 核心模块
 
@@ -46,18 +41,19 @@
 
 3. 扩展模块
 
-前面你已经了解了 Vue.js 的核心实现和编译原理，那么接下来我会带你分析 Vue.js 3.0 的内置组件的实现原理、Vue.js 3.0 一些实用特性的实现原理，以及 Vue.js 3.0 官方生态实现原理，这些内容非常贴合实际开发工作。学完之后，你会更加了解这些功能的实现原理和职责边界，在平时工作中应用起来更加得心应手。
+分析 Vue.js 3.0 的内置组件的实现原理、Vue.js 3.0 一些实用特性的实现原理，以及 Vue.js 3.0 官方生态实现原理，这些内容非常贴合实际开发工作。学完之后，你会更加了解这些功能的实现原理和职责边界，在平时工作中应用起来更加得心应手。
 
-> Vue.js 源码是一直在更新维护的，课程中的一些代码片段可能会更新，但代码容易过时，思想并不会，所以相较于代码，我会更注重思想的解读，让你知其然也知其所以然；Vue.js 版本更新也会引入一些实用的新功能，届时我也会紧随其后对新功能做解读，并且更新我们这个线上课程，以便你能够学习到新的知识点；为了便于没有 TypeScript 经验的同学理解，我会尽量将编译后的 JavaScript 代码展示出来，并且通过注释说明代码的主要功能；我还会尽量精简代码的分支逻辑，方便你理解核心流程；结合图例帮助你理解一些晦涩难懂的代码功能；结合实际用例，让你可以更加直观地明白源码背后想要解决的实际场景问题。
+> 为了便于没有 TypeScript 经验的同学理解，会尽量将编译后的 JavaScript 代码展示出来，并且通过注释说明代码的主要功能；还会尽量精简代码的分支逻辑，方便理解核心流程；结合图例帮助你理解一些晦涩难懂的代码功能；结合实际用例，让你可以更加直观地明白源码背后想要解决的实际场景问题。
 
 ## 关于 Vue.js 3.0 的优化
 
 Vue.js 从 1.x 到 2.0 版本，最大的升级就是引入了虚拟 DOM 的概念，它为后续做服务端渲染以及跨端框架 Weex 提供了基础。
 
-Vue.js 2.x 发展了很久，现在周边的生态设施都已经非常完善了，而且对于 Vue.js 用户而言，它几乎满足了我们日常开发的所有需求。你可能觉得 Vue.js 2.x 已经足够优秀，但是在 Vue.js 作者尤小右的眼中它还不够完美。在迭代 2.x 版本的过程中，小右发现了很多需要解决的痛点，比如源码自身的维护性，数据量大后带来的渲染和更新的性能问题，一些想舍弃但为了兼容一直保留的鸡肋 API 等；另外，小右还希望能给开发人员带来更好的编程体验，比如更好的 TypeScript 支持、更好的逻辑复用实践等，所以他希望能从源码、性能和语法 API 三个大的方面优化框架。
+Vue.js 2.x 发展了很久，现在周边的生态设施都已经非常完善了，而且对于 Vue.js 用户而言，它几乎满足了我们日常开发的所有需求。
 
-那么接下来，我们就一起来看一下 Vue.js 3.0 具体做了哪些优化。相信你学习完这篇文章，不仅能知道 Vue.js 3.0 的升级给我们开发带来的收益，还能学习到一些设计思想和理念，并在自己的开发工作中应用，获得提升。
+但作者小右发现了很多需要解决的痛点，比如源码自身的维护性，数据量大后带来的渲染和更新的性能问题，一些想舍弃但为了兼容一直保留的鸡肋 API 等；另外，小右还希望能给开发人员带来更好的编程体验，比如更好的 TypeScript 支持、更好的逻辑复用实践等，所以他希望能从源码、性能和语法 API 三个大的方面优化框架。
 
+那么接下来，我们就一起来看一下 Vue.js 3.0 具体做了哪些优化。
 ### 源码优化
 
 首先是源码优化，也就是作者对于 Vue.js 框架本身开发的优化，它的目的是让代码更易于开发和维护。源码的优化主要体现在使用 monorepo 和 TypeScript 管理和开发源码，这样做的目标是提升自身代码可维护性。接下来我们就来看一下这两个方面的具体变化。
@@ -70,7 +66,7 @@ Vue.js 2.x 发展了很久，现在周边的生态设施都已经非常完善了
 
 可以看出相对于 Vue.js 2.x 的源码组织方式，monorepo 把这些模块拆分到不同的 package 中，每个 package 有各自的 API、类型定义和测试。这样使得模块拆分更细化，职责划分更明确，模块之间的依赖关系也更加明确，开发人员也更容易阅读、理解和更改所有模块源码，提高代码的可维护性。
 
-另外一些 package（比如 reactivity 响应式库）是可以独立于 Vue.js 使用的，这样用户如果只想使用 Vue.js 3.0 的响应式能力，可以单独依赖这个响应式库而不用去依赖整个 Vue.js，减小了引用包的体积大小，而 Vue.js 2 .x 是做不到这一点的。
+另外一些 package（比如 reactivity 响应式库）是可以独立于 Vue.js 使用的，这样用户如果只想使用 Vue.js 3.0 的响应式能力，可以单独依赖这个响应式库而不用去依赖整个 Vue.js，减小了引用包的体积大小，而 Vue.js 2.x 是做不到这一点的。
 
 2. 有类型的 JavaScript：TypeScript
 
@@ -84,11 +80,11 @@ Vue.js 2.x 发展了很久，现在周边的生态设施都已经非常完善了
 const propOptions: any = vm.$options.props // wtf flow?
 ```
 
-什么意思呢？其实是由于这里 Flow 并没有正确推导出 vm.$options.props 的类型 ，开发人员不得不强制申明 propsOptions 的类型为 any，显得很不合理；另外他也在社区平台吐槽过 Flow 团队的烂尾。
+什么意思呢？其实是由于这里 Flow 并没有正确推导出 `vm.$options.props` 的类型 ，开发人员不得不强制申明 propsOptions 的类型为 any，显得很不合理；另外他也在社区平台吐槽过 Flow 团队的烂尾。
 
-其次，Vue.js 3.0 抛弃 Flow 后，使用 TypeScript 重构了整个项目。 TypeScript 提供了更好的类型检查，能支持复杂的类型推导；由于源码就使用 TypeScript 编写，也省去了单独维护 d.ts 文件的麻烦；就整个 TypeScript 的生态来看，TypeScript 团队也是越做越好，TypeScript 本身保持着一定频率的迭代和更新，支持的 feature 也越来越多。
+其次，Vue.js 3.0 抛弃 Flow 后，使用 TypeScript 重构了整个项目。 TypeScript 提供了更好的类型检查，能支持复杂的类型推导；由于源码就使用 TypeScript 编写，也省去了单独维护 `d.ts` 文件的麻烦；就整个 TypeScript 的生态来看，TypeScript 团队也是越做越好，TypeScript 本身保持着一定频率的迭代和更新，支持的 feature 也越来越多。
 
-此外，小右和 TypeScript 团队也一直保持了良好的沟通，我们可以期待 TypeScript 对 Vue.js 的支持会越来越好。
+此外，小右和 TypeScript 团队也一直保持了良好的沟通，可以期待 TypeScript 对 Vue.js 的支持会越来越好。
 
 ### 性能优化
 
@@ -144,9 +140,9 @@ import { cube } from './math.js'
 
 2. 数据劫持优化
 
-其次是数据劫持优化。Vue.js 区别于 React 的一大特色是它的数据是响应式的，这个特性从 Vue.js 1.x 版本就一直伴随着，这也是 Vue.js 粉喜欢 Vue.js 的原因之一，DOM 是数据的一种映射，数据发生变化后可以自动更新 DOM，用户只需要专注于数据的修改，没有其余的心智负担。
+其次是数据劫持优化。Vue.js 区别于 React 的一大特色是它的数据是响应式的，这个特性从 Vue.js 1.x 版本就一直伴随着，DOM 是数据的一种映射，数据发生变化后可以自动更新 DOM，用户只需要专注于数据的修改，没有其余的心智负担。
 
-在 Vue.js 内部，想实现这个功能是要付出一定代价的，那就是必须劫持数据的访问和更新。其实这点很好理解，当数据改变后，为了自动更新 DOM，那么就必须劫持数据的更新，也就是说当数据发生改变后能自动执行一些代码去更新 DOM，那么问题来了，Vue.js 怎么知道更新哪一片 DOM 呢？因为在渲染 DOM 的时候访问了数据，我们可以对它进行访问劫持，这样就在内部建立了依赖关系，也就知道数据对应的 DOM 是什么了。以上只是大体的思路，具体实现要比这更复杂，内部还依赖了一个 watcher 的数据结构做依赖管理，参考下图：
+在 Vue.js 内部，想实现这个功能是要付出一定代价的，那就是必须劫持数据的访问和更新。其实这点很好理解，当数据改变后，为了自动更新 DOM，那么就必须劫持数据的更新，也就是说当数据发生改变后能自动执行一些代码去更新 DOM，那么问题来了，Vue.js 怎么知道更新哪一片 DOM 呢？因为在渲染 DOM 的时候访问了数据，我们可以对它进行访问劫持，这样就在内部建立了依赖关系，也就知道数据对应的 DOM 是什么了。以上只是大体的思路，具体实现要比这更复杂，内部还依赖了一个 watcher 的数据结构做依赖管理。
 
 Vue.js 1.x 和 Vue.js 2.x 内部都是通过 `Object.defineProperty` 这个 API 去劫持数据的 getter 和 setter，具体是这样的：
 
@@ -202,6 +198,11 @@ observed = new Proxy(data, {
 
 最后是编译优化，为了便于理解，我们先来看一张图：
 
+```
+new Vue => init => $mount => compile => 
+reder => vnode => patch => DOM
+```
+
 这是 Vue.js 2.x 从 new Vue 开始渲染成 DOM 的流程，上面说过的响应式过程就发生在图中的 init 阶段，另外 template compile to render function 的流程是可以借助 vue-loader 在 webpack 编译阶段离线完成，并非一定要在运行时完成。
 
 所以想优化整个 Vue.js 的运行时，除了数据劫持部分的优化，我们可以在耗时相对较多的 patch 阶段想办法，Vue.js 3.0 也是这么做的，并且它通过在编译阶段优化编译的结果，来实现运行时 patch 过程的优化。
@@ -228,11 +229,13 @@ observed = new Proxy(data, {
 
 而对于上述例子，理想状态只需要 diff 这个绑定 message 动态节点的 p 标签即可。
 
-Vue.js 3.0 做到了，它通过编译阶段对静态模板的分析，编译生成了 Block tree。Block tree 是一个将模版基于动态节点指令切割的嵌套区块，每个区块内部的节点结构是固定的，而且每个区块只需要以一个 Array 来追踪自身包含的动态节点。借助 Block tree，Vue.js 将 vnode 更新性能由与模版整体大小相关提升为与动态内容的数量相关，这是一个非常大的性能突破，我会在后续的章节详细分析它是如何实现的。
+Vue.js 3.0 做到了，它通过编译阶段对静态模板的分析，编译生成了 Block tree。
+
+Block tree 是一个将模版基于动态节点指令切割的嵌套区块，每个区块内部的节点结构是固定的，而且每个区块只需要以一个 Array 来追踪自身包含的动态节点。借助 Block tree，Vue.js 将 vnode 更新性能由与模版整体大小相关，提升为与动态内容的数量相关，这是一个非常大的性能突破，我会在后续的章节详细分析它是如何实现的。
 
 除此之外，Vue.js 3.0 在编译阶段还包含了对 Slot 的编译优化、事件侦听函数的缓存优化，并且在运行时重写了 diff 算法，这些性能优化的内容我在后续特定的章节与你分享。
 
-### 语法 API 优化
+### 语法优化
 
 除了源码和性能方面，Vue.js 3.0 还在语法方面进行了优化，主要是提供了 Composition API，那么我们一起来看一下它为我们提供了什么帮助。
 
@@ -242,7 +245,7 @@ Vue.js 3.0 做到了，它通过编译阶段对静态模板的分析，编译生
 
 Options API 的设计是按照 methods、computed、data、props 这些不同的选项分类，当组件小的时候，这种分类方式一目了然；但是在大型组件中，一个组件可能有多个逻辑关注点，当使用 Options API 的时候，每一个关注点都有自己的 Options，如果需要修改一个逻辑点关注点，就需要在单个文件中不断上下切换和寻找。
 
-举一个官方例子  Vue CLI UI file explorer，它是  vue-cli GUI 应用程序中的一个复杂的文件浏览器组件。这个组件需要处理许多不同的逻辑关注点：
+举一个官方例子 Vue CLI UI file explorer，它是 vue-cli GUI 应用程序中的一个复杂的文件浏览器组件。这个组件需要处理许多不同的逻辑关注点：
 
 - 跟踪当前文件夹状态并显示其内容
 - 处理文件夹导航（比如打开、关闭、刷新等）
@@ -251,7 +254,7 @@ Options API 的设计是按照 methods、computed、data、props 这些不同的
 - 切换显示隐藏文件夹
 - 处理当前工作目录的更改
 
-如果我们按照逻辑关注点做颜色编码，就可以看到当使用  Options API  去编写组件时，这些逻辑关注点是非常分散的：
+如果我们按照逻辑关注点做颜色编码，就可以看到当使用 Options API  去编写组件时，这些逻辑关注点是非常分散的：
 
 Vue.js 3.0 提供了一种新的 API：Composition API，它有一个很好的机制去解决这样的问题，就是将某个逻辑关注点相关的代码全都放在一个函数里，这样当需要修改一个功能时，就不再需要在文件中跳来跳去。
 
@@ -351,7 +354,8 @@ Composition API 除了在逻辑复用方面有优势，也会有更好的类型�
 
 虽然 Composition API 有诸多优势，它也不是一点缺点都没有，关于它的具体用法和设计原理，我们会在后续的章节详细说明。这里还需要说明的是，Composition API 属于 API 的增强，它并不是 Vue.js 3.0 组件开发的范式，如果你的组件足够简单，你还是可以使用 Options API。
 
-引入 RFC：使每个版本改动可控
+### 引入 RFC
+
 作为一个流行开源框架的作者，小右可能每天都会收到各种各样的 feature request。但并不是社区一有新功能的需求，框架就会立马支持，因为随着 Vue.js 的用户越来越多，小右会更加重视稳定性，会仔细考虑所做的每一个可能对最终用户影响的更改，以及有意识去防止新 API 对框架本身实现带来的复杂性的提升。
 
 因此在 Vue.js 2.x 版本开发到后期的阶段 ，小右就启用了 RFC ，它的全称是 Request For Comments，旨在为新功能进入框架提供一个一致且受控的路径。当社区有一些新需求的想法时，它可以提交一个 RFC，然后由社区和 Vue.js 的核心团队一起讨论，如果这个 RFC 最终被通过了，那么它才会被实现。比如 2.6 版本对于 slot 新 API 的改动，就是这条 RFC 里。
@@ -360,7 +364,8 @@ Composition API 除了在逻辑复用方面有优势，也会有更好的类型�
 
 Vue.js 3.0 目前已被实现并合并的 RFC 都在这里，通过阅读它们，你也可以大致了解 Vue.js 3.0 的一些变化，以及为什么会产生这些变化，帮助你了解它的前因后果。
 
-过渡期
+### 过渡期
+
 接下来，我想再带你来了解一下 Vue.js 各版本迭代的过渡期，希望能够对你在 Vue.js 的技术选型方面和学习方向上有所帮助。
 
 通常框架的 major 版本从升级到大规模投入使用，都需要经历相当长的一段过渡期。不过， Vue.js 1.x 到 Vue.js 2.0 的升级过渡期不长，主要是因为那个时候 Vue.js 的用户还不多，生态也不完善，很多用户都是直接上手的 2.0 版本，没有旧项目的历史包袱。
@@ -372,8 +377,6 @@ Vue.js 3.0 使用 ES2015 的语法开发，有些 API 如 Proxy 是没有 polyfi
 因此可能在 Vue.js 3.0 出来的相当长的一段时间，复杂的大项目都不会考虑去升级，而一些小的、对浏览器兼容要求不高的新项目可以考虑尝鲜了。
 
 官方会继续维护 Vue.js 2.x 版本 18 个月，如果你的有些项目一辈子都不打算升级 Vue.js 3.0，那么你应该去认真学习 Vue.js 2.x 的源码，在官方不再维护的时候遇到问题你可以自己去修改它的源码来解决。
-
-不过，虽然 Vue.js 3.0 距离大规模应用还有相当长一段时间，但是越早开始学习你就越能在未来掌握主动权。这段时间里，你可以关注它的发展，去学习它的设计思想，也可以去为它的生态建设贡献代码，从而提升自己的技术能力。另外也可以尝试在一些小项目中应用 Vue.js 3.0，不仅可以享受 Vue.js 3.0 带来的性能方面的优势以及 Composition API 在逻辑复用方面便利，也为了将来某一天全面升级 Vue.js 3.0 做技术储备。
 
 # 模块一：核心组件的实现
 
@@ -459,7 +462,7 @@ const createApp = ((...args) => {
 })
 ```
 
-从代码中可以看出 createApp 主要做了两件事情：创建 app 对象和重写 app.mount 方法。接下来，我们就具体来分析一下它们。
+从代码中可以看出 createApp 主要做了两件事情：创建 app 对象和重写 `app.mount` 方法。接下来，我们就具体来分析一下它们。
 
 1. 创建 app 对象
 
@@ -571,6 +574,8 @@ app.mount = (containerOrSelector) => {
 
 ### 核心渲染流程
 
+核心渲染流程包含，创建 vnode 和渲染 vnode 两个步骤。
+
 1. 创建 vnode
 
 vnode 本质上是用来描述 DOM 的 JavaScript 对象，它在 Vue.js 中可以描述不同类型的节点，比如普通元素节点、组件节点等。
@@ -643,13 +648,12 @@ const shapeFlag = isString(type)
 
 知道什么是 vnode 后，你可能会好奇，那么 vnode 有什么优势呢？为什么一定要设计 vnode 这样的数据结构呢？
 
-首先是抽象，引入 vnode，可以把渲染过程抽象化，从而使得组件的抽象能力也得到提升。
-
-其次是跨平台，因为 patch vnode 的过程不同平台可以有自己的实现，基于 vnode 再做服务端渲染、Weex 平台、小程序平台的渲染都变得容易了很多。
+- 首先是抽象，引入 vnode，可以把渲染过程抽象化，从而使得组件的抽象能力也得到提升。
+- 其次是跨平台，因为 patch vnode 的过程不同平台可以有自己的实现，基于 vnode 再做服务端渲染、Weex 平台、小程序平台的渲染都变得容易了很多。
 
 不过这里要特别注意，使用 vnode 并不意味着不用操作 DOM 了，很多同学会误以为 vnode 的性能一定比手动操作原生 DOM 好，这个其实是不一定的。
 
-因为，首先这种基于 vnode 实现的 MVVM 框架，在每次 render to vnode 的过程中，渲染组件会有一定的 JavaScript 耗时，特别是大组件，比如一个 1000 _ 10 的 Table 组件，render to vnode 的过程会遍历 1000 _ 10 次去创建内部 cell vnode，整个耗时就会变得比较长，加上 patch vnode 的过程也会有一定的耗时，当我们去更新组件的时候，用户会感觉到明显的卡顿。虽然 diff 算法在减少 DOM 操作方面足够优秀，但最终还是免不了操作 DOM，所以说性能并不是 vnode 的优势。
+因为，首先这种基于 vnode 实现的 MVVM 框架，在每次 render to vnode 的过程中，渲染组件会有一定的 JavaScript 耗时，特别是大组件，比如一个 `1000*10` 的 Table 组件，render to vnode 的过程会遍历 `1000*10` 次去创建内部 cell vnode，整个耗时就会变得比较长，加上 patch vnode 的过程也会有一定的耗时，当我们去更新组件的时候，用户会感觉到明显的卡顿。虽然 diff 算法在减少 DOM 操作方面足够优秀，但最终还是免不了操作 DOM，所以说性能并不是 vnode 的优势。
 
 那么，Vue.js 内部是如何创建这些 vnode 的呢？
 
@@ -691,7 +695,7 @@ function createVNode(type, props = null
 }
 ```
 
-通过上述代码可以看到，其实 createVNode 做的事情很简单，就是：对 props 做标准化处理、对 vnode 的类型信息编码、创建 vnode 对象，标准化子节点 children 。
+通过上述代码可以看到，其实 createVNode 做的事情很简单，就是对 props 做标准化处理、对 vnode 的类型信息编码、创建 vnode 对象，标准化子节点 children 。
 
 我们现在拥有了这个 vnode 对象，接下来要做的事情就是把它渲染到页面中去。
 
@@ -837,7 +841,7 @@ const setupRenderEffect = (instance, initialVNode, container, anchor, parentSusp
 
 初始渲染主要做两件事情：渲染组件生成 subTree、把 subTree 挂载到 container 中。
 
-首先，是渲染组件生成 subTree，它也是一个 vnode 对象。这里要注意别把 subTree 和 initialVNode 弄混了（其实在 Vue.js 3.0 中，根据命名我们已经能很好地区分它们了，而在 Vue.js 2.x 中它们分别命名为 _vnode 和 $vnode）。我来举个例子说明，在父组件 App 中里引入了 Hello 组件：
+首先，是渲染组件生成 subTree，它也是一个 vnode 对象。这里要注意别把 subTree 和 initialVNode 弄混了（其实在 Vue.js 3.0 中，根据命名我们已经能很好地区分它们了，而在 Vue.js 2.x 中它们分别命名为 `_vnode` 和 `$vnode`）。我来举个例子说明，在父组件 App 中里引入了 Hello 组件：
 
 ```js
 <template>
@@ -974,7 +978,7 @@ function insert(child, parent, anchor) {
 }
 ```
 
-这里会做一个 if 判断，如果有参考元素 anchor，就执行 parent.insertBefore ，否则执行 parent.appendChild 来把 child 添加到 parent 下，完成节点的挂载。
+这里会做一个 if 判断，如果有参考元素 anchor，就执行 `parent.insertBefore` ，否则执行 `parent.appendChild` 来把 child 添加到 parent 下，完成节点的挂载。
 
 因为 insert 的执行是在处理子节点后，所以挂载的顺序是先子节点，后父节点，最终挂载到最外层的容器上。
 
@@ -1002,7 +1006,8 @@ packages/runtime-dom/src/nodeOps.ts
 
 上一节课我们梳理了组件渲染的过程，本质上就是把各种类型的 vnode 渲染成真实 DOM。我们也知道了组件是由模板、组件描述对象和数据构成的，数据的变化会影响组件的变化。组件的渲染过程中创建了一个带副作用的渲染函数，当数据变化的时候就会执行这个渲染函数来触发组件的更新。那么接下来，我们就具体分析一下组件的更新过程。
 
-副作用渲染函数更新组件的过程
+### 副作用渲染函数更新组件的过程
+
 我们先来回顾一下带副作用渲染函数 setupRenderEffect 的实现，但是这次我们要重点关注更新组件部分的逻辑：
 
 ```js
@@ -1053,7 +1058,8 @@ const setupRenderEffect = (instance, initialVNode, container, anchor, parentSusp
 
 最后就是核心的 patch 逻辑，用来找出新旧子树 vnode 的不同，并找到一种合适的方式更新 DOM，接下来我们就来分析这个过程。
 
-核心逻辑：patch 流程
+### 核心逻辑：patch 流程
+
 我们先来看 patch 流程的实现代码：
 
 ```js
@@ -1107,7 +1113,8 @@ function isSameVNodeType (n1, n2) {
 如果是相同的 vnode 类型，就需要走 diff 更新流程了，接着会根据不同的 vnode 类型执行不同的处理逻辑，这里我们仍然只分析普通元素类型和组件类型的处理过程。
 
 1. 处理组件
-   如何处理组件的呢？举个例子，我们在父组件 App 中里引入了 Hello 组件：
+
+如何处理组件的呢？举个例子，我们在父组件 App 中里引入了 Hello 组件：
 
 ```vue
 <template>
@@ -1340,27 +1347,21 @@ const patchChildren = (n1, n2, container, anchor, parentComponent, parentSuspens
 
 首先来看一下旧子节点是纯文本的情况：
 
-如果新子节点也是纯文本，那么做简单地文本替换即可；
-
-如果新子节点是空，那么删除旧子节点即可；
-
-如果新子节点是 vnode 数组，那么先把旧子节点的文本清空，再去旧子节点的父容器下添加多个新子节点。
+- 如果新子节点也是纯文本，那么做简单地文本替换即可；
+- 如果新子节点是空，那么删除旧子节点即可；
+- 如果新子节点是 vnode 数组，那么先把旧子节点的文本清空，再去旧子节点的父容器下添加多个新子节点。
 
 接下来看一下旧子节点是空的情况：
 
-如果新子节点是纯文本，那么在旧子节点的父容器下添加新文本节点即可；
-
-如果新子节点也是空，那么什么都不需要做；
-
-如果新子节点是 vnode 数组，那么直接去旧子节点的父容器下添加多个新子节点即可。
+- 如果新子节点是纯文本，那么在旧子节点的父容器下添加新文本节点即可；
+- 如果新子节点也是空，那么什么都不需要做；
+- 如果新子节点是 vnode 数组，那么直接去旧子节点的父容器下添加多个新子节点即可。
 
 最后来看一下旧子节点是 vnode 数组的情况：
 
-如果新子节点是纯文本，那么先删除旧子节点，再去旧子节点的父容器下添加新文本节点；
-
-如果新子节点是空，那么删除旧子节点即可；
-
-如果新子节点也是 vnode 数组，那么就需要做完整的 diff 新旧子节点了，这是最复杂的情况，内部运用了核心 diff 算法。
+- 如果新子节点是纯文本，那么先删除旧子节点，再去旧子节点的父容器下添加新文本节点；
+- 如果新子节点是空，那么删除旧子节点即可；
+- 如果新子节点也是 vnode 数组，那么就需要做完整的 diff 新旧子节点了，这是最复杂的情况，内部运用了核心 diff 算法。
 
 下节课我们就来深入探究一下这个复杂的 diff 算法。
 
@@ -1432,7 +1433,8 @@ packages/runtime-core/src/componentRenderUtils.ts
 
 综合这两个例子，我们很容易发现新旧 children 拥有相同的头尾节点。对于相同的节点，我们只需要做对比更新即可，所以 diff 算法的第一步从头部开始同步。
 
-同步头部节点
+### 同步头部节点
+
 我们先来看一下头部节点同步的实现代码：
 
 ```js
@@ -1470,7 +1472,8 @@ const patchKeyedChildren = (c1, c2, container, parentAnchor, parentComponent, pa
 
 可以看到，完成头部节点同步后：i 是 2，e1 是 3，e2 是 4。
 
-同步尾部节点
+### 同步尾部节点
+
 接着从尾部开始同步尾部节点，实现代码如下：
 
 ```js
@@ -1512,15 +1515,14 @@ const patchKeyedChildren = (c1, c2, container, parentAnchor, parentComponent, pa
 
 接下来只有 3 种情况要处理：
 
-新子节点有剩余要添加的新节点；
-
-旧子节点有剩余要删除的多余节点；
-
-未知子序列。
+1. 新子节点有剩余要添加的新节点；
+2. 旧子节点有剩余要删除的多余节点；
+3. 未知子序列。
 
 我们继续看一下具体是怎样操作的。
 
-添加新的节点
+### 添加新的节点
+
 首先要判断新子节点是否有剩余的情况，如果满足则添加新子节点，实现代码如下：
 
 ```js
@@ -1562,7 +1564,8 @@ const patchKeyedChildren = (c1, c2, container, parentAnchor, parentComponent, pa
 
 添加完 e 节点后，旧子节点的 DOM 和新子节点对应的 vnode 映射一致，也就完成了更新。
 
-删除多余节点
+### 删除多余节点
+
 如果不满足添加新节点的情况，我就要接着判断旧子节点是否有剩余，如果满足则删除旧子节点，实现代码如下：
 
 ```js
@@ -1613,7 +1616,8 @@ const patchKeyedChildren = (c1, c2, container, parentAnchor, parentComponent, pa
 
 删除完 c 节点后，旧子节点的 DOM 和新子节点对应的 vnode 映射一致，也就完成了更新。
 
-处理未知子序列
+### 处理未知子序列
+
 单纯的添加和删除节点都是比较理想的情况，操作起来也很容易，但是有些时候并非这么幸运，我们会遇到比较复杂的未知子序列，这时候 diff 算法会怎么做呢？
 
 我们再通过例子来演示存在未知子序列的情况，假设一个按照字母表排列的列表：
@@ -1664,7 +1668,8 @@ const patchKeyedChildren = (c1, c2, container, parentAnchor, parentComponent, pa
 
 当两个节点类型相同时，我们执行更新操作；当新子节点中没有旧子节点中的某些节点时，我们执行删除操作；当新子节点中多了旧子节点中没有的节点时，我们执行添加操作，这些操作我们在前面已经阐述清楚了。相对来说这些操作中最麻烦的就是移动，我们既要判断哪些节点需要移动也要清楚如何移动。
 
-移动子节点
+### 移动子节点
+
 那么什么时候需要移动呢，就是当子节点排列顺序发生变化的时候，举个简单的例子具体看一下：
 
 ```js
@@ -1686,7 +1691,8 @@ var next = [1, 3, 2, 6, 4, 5]
 
 在查找过程中需要对比新旧子序列，那么我们就要遍历某个序列，如果在遍历旧子序列的过程中需要判断某个节点是否在新子序列中存在，这就需要双重循环，而双重循环的复杂度是 O(n2) ，为了优化这个复杂度，我们可以用一种空间换时间的思路，建立索引图，把时间复杂度降低到 O(n)。
 
-建立索引图
+### 建立索引图
+
 所以处理未知子序列的第一步，就是建立索引图。
 
 通常我们在开发过程中， 会给 v-for 生成的列表中的每一项分配唯一 key 作为项的唯一 ID，这个 key 在 diff 过程中起到很关键的作用。对于新旧子序列中的节点，我们认为 key 相同的就是同一个节点，直接执行 patch 更新即可。
@@ -1731,7 +1737,7 @@ keyToNewIndexMap 存储的就是新子序列中每个节点在新子序列中的
 
 我们得到了一个值为 {e:2,c:3,d:4,i:5} 的新子序列索引图。
 
-更新和移除旧节点
+### 更新和移除旧节点
 接下来，我们就需要遍历旧子序列，有相同的节点就通过 patch 更新，并且移除那些不在新子序列中的节点，同时找出是否有需要移动的节点，我们来看一下这部分逻辑的实现：
 
 ```js
@@ -1822,7 +1828,8 @@ const patchKeyedChildren = (c1, c2, container, parentAnchor, parentComponent, pa
 
 可以看到， c、d、e 节点被更新，f 节点被删除，newIndexToOldIndexMap 的值为 [5, 3, 4 ,0]，此时 moved 也为 true，也就是存在节点移动的情况。
 
-移动和挂载新节点
+### 移动和挂载新节点
+
 接下来，就到了处理未知子序列的最后一个流程，移动和挂载新节点，我们来看一下这部分逻辑的实现：
 
 ```js
@@ -1896,7 +1903,7 @@ const patchKeyedChildren = (c1, c2, container, parentAnchor, parentComponent, pa
 
 核心 diff 算法中最复杂就是求解最长递增子序列，下面我们再来详细学习一下这个算法。
 
-最长递增子序列
+### 最长递增子序列
 求解最长递增子序列是一道经典的算法题，多数解法是使用动态规划的思想，算法的时间复杂度是 O(n2)，而 Vue.js 内部使用的是维基百科提供的一套“贪心 + 二分查找”的算法，贪心算法的时间复杂度是 O(n)，二分查找的时间复杂度是 O(logn)，所以它的总时间复杂度是 O(nlogn)。
 
 单纯地看代码并不好理解，我们用示例来看一下这个子序列的求解过程。
@@ -1970,7 +1977,8 @@ result.push(i)
 
 从 result 最后一个元素 9 对应的索引 7 开始回溯，可以看到 p[7] = 6，p[6] = 5，p[5] = 3，p[3] = 1，所以通过对 p 的回溯，得到最终的 result 值是 [1, 3 ,5 ,6 ,7]，也就找到最长递增子序列的最终索引了。这里要注意，我们求解的是最长子序列索引值，它的每个元素其实对应的是数组的下标。对于我们的例子而言，[2, 1, 5, 3, 6, 4, 8, 9, 7] 的最长子序列是 [1, 3, 4, 8, 9]，而我们求解的 [1, 3 ,5 ,6 ,7] 就是最长子序列中元素在原数组中的下标所构成的新数组。
 
-总结
+### 总结
+
 这两节课我们主要分析了组件的更新流程，知道了 Vue.js 的更新粒度是组件级别的，并且 Vue.js 在 patch 某个组件的时候，如果遇到组件这类抽象节点，在某些条件下也会触发子组件的更新。
 
 对于普通元素节点的更新，主要是更新一些属性，以及它的子节点。子节点的更新又分为多种情况，其中最复杂的情况为数组到数组的更新，内部又根据不同情况分成几个流程去 diff，遇到需要移动的情况还要去求解子节点的最长递增子序列。
@@ -1991,7 +1999,7 @@ packages/runtime-core/src/renderer.ts
 
 ## 导读 | 逻辑复用最佳实践
 
-在课前导读《一文看懂 Vue.js 3.0 的优化》中，我们讲到 Vue.js 3.0 设计了一个很强大的 API —— Composition API，它主要用来优化代码逻辑的组织和复用。
+前文中讲到 Vue.js 3.0 设计了一个很强大的 API —— Composition API，它主要用来优化代码逻辑的组织和复用。
 
 从语法上看，它提供了一个 setup 启动函数作为逻辑组织的入口，暴露了响应式 API 为用户所用，也提供了生命周期函数以及依赖注入的接口，这让我们不依托于 Options API 也可以完成一个组件的开发，并且更有利于代码逻辑的组织和复用。
 
@@ -2005,7 +2013,7 @@ Vue.js 3.0 允许我们在编写组件的时候添加一个 setup 启动函数�
 
 我们先通过一段代码认识它，在这里编写一个 button 组件：
 
-```
+```html
 <template>
   <button @click="increment">
     Count is: {{ state.count }}, double is: {{ state.double }}
@@ -2037,16 +2045,17 @@ export default {
 
 这里需要注意的是，模板中引用到的变量 state 和 increment 包含在 setup 函数的返回对象中，那么它们是如何建立联系的呢？
 
-我们先来回想一下 Vue.js 2.x 编写组件的时候，会在 props、data、methods、computed 等 options 中定义一些变量。在组件初始化阶段，Vue.js 内部会处理这些 options，即把定义的变量添加到了组件实例上。等模板编译成 render 函数的时候，内部通过 with(this){} 的语法去访问在组件实例中的变量。
+我们先来回想一下 Vue.js 2.x 编写组件的时候，会在 props、data、methods、computed 等 options 中定义一些变量。在组件初始化阶段，Vue.js 内部会处理这些 options，即把定义的变量添加到了组件实例上。等模板编译成 render 函数的时候，内部通过 `with(this){}` 的语法去访问在组件实例中的变量。
 
 那么到了 Vue.js 3.0，既支持组件定义 setup 函数，而且在模板 render 的时候，又可以访问到 setup 函数返回的值，这是如何实现的？我们来一探究竟。
 
-创建和设置组件实例
+### 创建和设置组件实例
+
 首先，我们来回顾一下组件的渲染流程：创建 vnode 、渲染 vnode 和生成 DOM。
 
 其中渲染 vnode 的过程主要就是在挂载组件：
 
-```
+```js
 const mountComponent = (initialVNode, container, anchor, parentComponent, parentSuspense, isSVG, optimized) => {
   // 创建组件实例
   const instance = (initialVNode.component = createComponentInstance(initialVNode, parentComponent, parentSuspense))
@@ -2061,7 +2070,7 @@ const mountComponent = (initialVNode, container, anchor, parentComponent, parent
 
 先看创建组件实例的流程，我们要关注 createComponentInstance 方法的实现：
 
-```
+```js
 function createComponentInstance (vnode, parent, suspense) {
   // 继承父组件实例上的 appContext，如果是根组件，则直接从根 vnode 中取。
   const appContext = (parent ? parent.appContext : vnode.appContext) || emptyAppContext;
@@ -2171,13 +2180,13 @@ function createComponentInstance (vnode, parent, suspense) {
 
 从上述代码中可以看到，组件实例 instance 上定义了很多属性，你千万不要被这茫茫多的属性吓到，因为其中一些属性是为了实现某个场景或者某个功能所定义的，你只需要通过我在代码中的注释大概知道它们是做什么的即可。
 
-Vue.js 2.x 使用 new Vue 来初始化一个组件的实例，到了 Vue.js 3.0，我们直接通过创建对象去创建组件的实例。这两种方式并无本质的区别，都是引用一个对象，在整个组件的生命周期中去维护组件的状态数据和上下文环境。
+Vue.js 2.x 使用 `new Vue` 来初始化一个组件的实例，到了 Vue.js 3.0，我们直接通过创建对象去创建组件的实例。这两种方式并无本质的区别，都是引用一个对象，在整个组件的生命周期中去维护组件的状态数据和上下文环境。
 
 创建好 instance 实例后，接下来就是设置它的一些属性。目前已完成了组件的上下文、根组件指针以及派发事件方法的设置。我们在后面会继续分析更多 instance 实例属性的设置逻辑。
 
 接着是组件实例的设置流程，对 setup 函数的处理就在这里完成，我们来看一下 setupComponent 方法的实现：
 
-```
+```js
 function setupComponent (instance, isSSR = false) {
   const { props, children, shapeFlag } = instance.vnode
   // 判断是否是一个有状态的组件
@@ -2198,7 +2207,7 @@ function setupComponent (instance, isSSR = false) {
 
 接下来我们要关注到 setupStatefulComponent 函数，它主要做了三件事：创建渲染上下文代理、判断处理 setup 函数和完成组件实例设置。它代码如下所示：
 
-```
+```js
 function setupStatefulComponent (instance, isSSR) {
   const Component = instance.type
   // 创建渲染代理的属性访问缓存
@@ -2223,7 +2232,8 @@ function setupStatefulComponent (instance, isSSR) {
 }
 ```
 
-创建渲染上下文代理
+1. 创建渲染上下文代理
+
 首先是创建渲染上下文代理的流程，它主要对 instance.ctx 做了代理。在分析实现前，我们需要思考一个问题，这里为什么需要代理呢？
 
 其实在 Vue.js 2.x 中，也有类似的数据代理逻辑，比如 props 求值后的数据，实际上存储在 `this._props` 上，而 data 中定义的数据存储在 `this._data` 上。举个例子：
@@ -2249,7 +2259,7 @@ export default {
 
 当我们访问 instance.ctx 渲染上下文中的属性时，就会进入 get 函数。我们来看一下它的实现：
 
-```
+```js
 const PublicInstanceProxyHandlers = {
   get ({ _: instance }, key) {
     const { ctx, setupState, data, props, accessCache, type, appContext } = instance
@@ -2337,9 +2347,9 @@ const PublicInstanceProxyHandlers = {
 }
 ```
 
-可以看到，函数首先判断 key 不以 $ 开头的情况，这部分数据可能是 setupState、data、props、ctx 中的一种，其中 data、props 我们已经很熟悉了；setupState 就是 setup 函数返回的数据，稍后我们会详细说；ctx 包括了计算属性、组件方法和用户自定义的一些数据。
+可以看到，函数首先判断 key 不以 `$` 开头的情况，这部分数据可能是 setupState、data、props、ctx 中的一种，其中 data、props 我们已经很熟悉了；setupState 就是 setup 函数返回的数据，稍后我们会详细说；ctx 包括了计算属性、组件方法和用户自定义的一些数据。
 
-如果 key 不以 $ 开头，那么就依次判断 setupState、data、props、ctx 中是否包含这个 key，如果包含就返回对应值。注意这个判断顺序很重要，在 key 相同时它会决定数据获取的优先级，举个例子：
+如果 key 不以 `$` 开头，那么就依次判断 setupState、data、props、ctx 中是否包含这个 key，如果包含就返回对应值。注意这个判断顺序很重要，在 key 相同时它会决定数据获取的优先级，举个例子：
 
 ```
 <template>
@@ -2365,13 +2375,13 @@ const PublicInstanceProxyHandlers = {
 
 我们在 data 和 setup 中都定义了 msg 变量，但最终输出到界面上的是"msg from setup"，这是因为 setupState 的判断优先级要高于 data。
 
-再回到 get 函数中，我们可以看到这里定义了 accessCache 作为渲染代理的属性访问缓存，它具体是干什么的呢？组件在渲染时会经常访问数据进而触发 get 函数，这其中最昂贵的部分就是多次调用 hasOwn 去判断 key 在不在某个类型的数据中，但是在普通对象上执行简单的属性访问相对要快得多。所以在第一次获取 key 对应的数据后，我们利用 accessCache[key] 去缓存数据，下一次再次根据 key 查找数据，我们就可以直接通过 accessCache[key] 获取对应的值，就不需要依次调用 hasOwn 去判断了。这也是一个性能优化的小技巧。
+再回到 get 函数中，我们可以看到这里定义了 accessCache 作为渲染代理的属性访问缓存，它具体是干什么的呢？组件在渲染时会经常访问数据进而触发 get 函数，这其中最昂贵的部分就是多次调用 hasOwn 去判断 key 在不在某个类型的数据中，但是在普通对象上执行简单的属性访问相对要快得多。所以在第一次获取 key 对应的数据后，我们利用 `accessCache[key]` 去缓存数据，下一次再次根据 key 查找数据，我们就可以直接通过 `accessCache[key]` 获取对应的值，就不需要依次调用 hasOwn 去判断了。这也是一个性能优化的小技巧。
 
-如果 key 以 $ 开头，那么接下来又会有一系列的判断，首先判断是不是 Vue.js 内部公开的 $xxx 属性或方法（比如 $parent）；然后判断是不是 vue-loader 编译注入的 css 模块内部的 key；接着判断是不是用户自定义以 $ 开头的 key；最后判断是不是全局属性。如果都不满足，就剩两种情况了，即在非生产环境下就会报两种类型的警告，第一种是在 data 中定义的数据以 $ 开头的警告，因为 $ 是保留字符，不会做代理；第二种是在模板中使用的变量没有定义的警告。
+如果 key 以 `$` 开头，那么接下来又会有一系列的判断，首先判断是不是 Vue.js 内部公开的 `$xxx` 属性或方法（比如 `$parent`）；然后判断是不是 vue-loader 编译注入的 css 模块内部的 key；接着判断是不是用户自定义以 `$` 开头的 key；最后判断是不是全局属性。如果都不满足，就剩两种情况了，即在非生产环境下就会报两种类型的警告，第一种是在 data 中定义的数据以 `$` 开头的警告，因为 `$` 是保留字符，不会做代理；第二种是在模板中使用的变量没有定义的警告。
 
 接下来是 set 代理过程，当我们修改 instance.ctx 渲染上下文中的属性的时候，就会进入 set 函数。我们来看一下 set 函数的实现：
 
-```
+```js
 const PublicInstanceProxyHandlers = {
   set ({ _: instance }, key, value) {
     const { data, setupState, ctx } = instance
@@ -2409,7 +2419,7 @@ const PublicInstanceProxyHandlers = {
 
 我们对之前的例子做点修改，添加一个方法：
 
-```
+```html
 <template>
   <p>{{ msg }}</p>
   <button @click="random">Random msg</button>
@@ -2443,7 +2453,7 @@ const PublicInstanceProxyHandlers = {
 
 如果是用户自定义的数据，比如在 created 生命周期内定义的数据，它仅用于组件上下文的共享，如下所示：
 
-```
+```js
 export default {
   created() {
     this.userMsg = 'msg from user'
@@ -2455,7 +2465,7 @@ export default {
 
 最后是 has 代理过程，当我们判断属性是否存在于 instance.ctx 渲染上下文中时，就会进入 has 函数，这个在平时项目中用的比较少，同样来举个例子，当执行 created 钩子函数中的 'msg' in this 时，就会触发 has 函数。
 
-```
+```js
 export default {
   created () {
     console.log('msg' in this)
@@ -2465,7 +2475,7 @@ export default {
 
 下面我们来看一下 has 函数的实现：
 
-```
+```js
 const PublicInstanceProxyHandlers = {
   has
     ({ _: { data, setupState, accessCache, ctx, type, appContext } }, key) {
@@ -2485,10 +2495,11 @@ const PublicInstanceProxyHandlers = {
 
 至此，我们就搞清楚了创建上下文代理的过程，让我们回到 setupStatefulComponent 函数中，接下来分析第二个流程——判断处理 setup 函数。
 
-判断处理 setup 函数
+2. 判断处理 setup 函数
+
 我们看一下整个逻辑涉及的代码：
 
-```
+```js
 // 判断处理 setup 函数
 const { setup } = Component
 if (setup) {
@@ -2506,14 +2517,14 @@ if (setup) {
 
 首先判断 setup 函数的参数长度，如果大于 1，则创建 setupContext 上下文。
 
-```
+```js
 const setupContext = (instance.setupContext =
     setup.length > 1 ? createSetupContext(instance) : null)
 ```
 
 举个例子，我们有个 HelloWorld 子组件，如下：
 
-```
+```html
 <template>
   <p>{{ msg }}</p>
   <button @click="onClick">Toggle</button>
@@ -2537,7 +2548,7 @@ const setupContext = (instance.setupContext =
 
 我们在父组件引用这个组件：
 
-```
+```html
 <template>
   <HelloWorld @toggle="toggle" :msg="msg"></HelloWorld>
 </template>
@@ -2564,7 +2575,7 @@ const setupContext = (instance.setupContext =
 
 下面我们来看一下用 createSetupContext 函数来创建 setupContext：
 
-```
+```js
 function createSetupContext (instance) {
   return {
     attrs: instance.attrs,
@@ -2580,13 +2591,13 @@ function createSetupContext (instance) {
 
 我们通过下面这行代码来执行 setup 函数并获取结果：
 
-```
+```js
 const setupResult = callWithErrorHandling(setup, instance, 0 /* SETUP_FUNCTION */, [instance.props, setupContext])
 ```
 
 我们具体来看一下 callWithErrorHandling 函数的实现：
 
-```
+```js
 function callWithErrorHandling (fn, instance, type, args) {
   let res
   try {
@@ -2603,13 +2614,13 @@ function callWithErrorHandling (fn, instance, type, args) {
 
 执行 setup 函数并拿到了返回的结果，那么接下来就要用 handleSetupResult 函数来处理结果。
 
-```
+```js
 handleSetupResult(instance, setupResult)
 ```
 
 我们详细看一下 handleSetupResult 函数的实现：
 
-```
+```js
 function handleSetupResult(instance, setupResult) {
   if (isFunction(setupResult)) {
     // setup 返回渲染函数
@@ -2627,7 +2638,7 @@ function handleSetupResult(instance, setupResult) {
 
 另外 setup 不仅仅支持返回一个对象，也可以返回一个函数作为组件的渲染函数。我们可以改写前面的示例，来看一下这时的情况：
 
-```
+```html
 <script>
   import { h } from 'vue'
   export default {
@@ -2658,7 +2669,7 @@ function handleSetupResult(instance, setupResult) {
 完成组件实例设置
 接下来我们来看一下 finishComponentSetup 函数的实现：
 
-```
+```js
 function finishComponentSetup (instance) {
   const Component = instance.type
   // 对模板或者渲染函数的标准化
@@ -2714,7 +2725,7 @@ runtime-only 和 runtime-compiled 的主要区别在于是否注册了这个 com
 
 在 Vue.js 3.0 中，compile 方法是通过外部注册的：
 
-```
+```js
 let compile;
 function registerRuntimeCompiler(_compile) {
     compile = _compile;
@@ -2733,7 +2744,7 @@ compile 和 render 方法不存在，组件 template 属性存在的情况。此
 
 另外对于使用 with 块运行时编译的渲染函数，渲染上下文的代理是 RuntimeCompiledPublicInstanceProxyHandlers，它是在之前渲染上下文代理 PublicInstanceProxyHandlers 的基础上进行的扩展，主要对 has 函数的实现做了优化：
 
-```
+```js
 const RuntimeCompiledPublicInstanceProxyHandlers = {
   ...PublicInstanceProxyHandlers,
   get(target, key) {
@@ -2760,7 +2771,7 @@ const RuntimeCompiledPublicInstanceProxyHandlers = {
 Options API：兼容 Vue.js 2.x
 我们知道 Vue.js 2.x 是通过组件对象的方式去描述一个组件，之前我们也说过，Vue.js 3.0 仍然支持 Vue.js 2.x Options API 的写法，这主要就是通过 applyOptions 方法实现的。
 
-```
+```js
 function applyOptions(instance, options, deferredData = [], deferredWatch = [], asMixin = false) {
   const {
     // 组合
@@ -2792,7 +2803,8 @@ function applyOptions(instance, options, deferredData = [], deferredWatch = [], 
 
 由于 applyOptions 的代码特别长，所以这里我用注释列出了它主要做的事情，感兴趣的同学可以去翻阅它的源码。
 
-总结
+### 总结
+
 这节课我们主要分析了组件的初始化流程，主要包括创建组件实例和设置组件实例。通过进一步细节的深入，我们也了解了渲染上下文的代理过程；了解了 Composition API 中的 setup 启动函数执行的时机，以及如何建立 setup 返回结果和模板渲染之间的联系；了解了组件定义的模板或者渲染函数的标准化过程；了解了如何兼容 Vue.js 2.x 的 Options API。
 
 我们通过一张图再直观感受一下 Vue.js 3.0 组件的初始化流程：
@@ -2814,15 +2826,16 @@ packages/runtime-core/src/errorHandling.ts
 
 除了组件化，Vue.js 另一个核心设计思想就是响应式。它的本质是当数据变化后会自动执行某个函数，映射到组件的实现就是，当数据变化后，会自动触发组件的重新渲染。响应式是 Vue.js 组件化更新渲染的一个核心机制。
 
-在介绍 Vue.js 3.0 响应式实现之前，我们先来回顾一下 Vue.js 2.x 响应式实现的部分： 它在内部通过 Object.defineProperty API 劫持数据的变化，在数据被访问的时候收集依赖，然后在数据被修改的时候通知依赖更新。我们用一张图可以直观地看清这个流程。
+在介绍 Vue.js 3.0 响应式实现之前，我们先来回顾一下 Vue.js 2.x 响应式实现的部分：它在内部通过 `Object.defineProperty` API 劫持数据的变化，在数据被访问的时候收集依赖，然后在数据被修改的时候通知依赖更新。我们用一张图可以直观地看清这个流程。
 
 在 Vue.js 2.x 中，Watcher 就是依赖，有专门针对组件渲染的 render watcher。注意这里有两个流程，首先是依赖收集流程，组件在 render 的时候会访问模板中的数据，触发 getter 把 render watcher 作为依赖收集，并和数据建立联系；然后是派发通知流程，当我对这些数据修改的时候，会触发 setter，通知 render watcher 更新，进而触发了组件的重新渲染。
 
-在导读章节，我们提到了 Object.defineProperty API 的一些缺点：不能监听对象属性新增和删除；初始化阶段递归执行 Object.defineProperty 带来的性能负担。
+在导读章节，我们提到了 `Object.defineProperty` API 的一些缺点：不能监听对象属性新增和删除；初始化阶段递归执行 `Object.defineProperty` 带来的性能负担。
 
-Vue.js 3.0 为了解决 Object.defineProperty 的这些缺陷，使用 Proxy API 重写了响应式部分，并独立维护和发布整个 reactivity 库，下面我们就一起来深入学习 Vue.js 3.0 响应式部分的实现原理。
+Vue.js 3.0 为了解决 `Object.defineProperty` 的这些缺陷，使用 Proxy API 重写了响应式部分，并独立维护和发布整个 reactivity 库，下面我们就一起来深入学习 Vue.js 3.0 响应式部分的实现原理。
 
-响应式对象的实现差异
+### 响应式对象的实现差异
+
 在 Vue.js 2.x 中构建组件时，只要我们在 data、props、computed 中定义数据，那么它就是响应式的，举个例子：
 
 ```
@@ -2905,7 +2918,8 @@ export default {
 
 也就是在 Vue.js 3.0 中，我们用 reactive 这个有魔力的函数，把数据变成了响应式，那么它内部到底是怎么实现的呢？我们接下来一探究竟。
 
-Reactive API
+### Reactive API
+
 我们先来看一下 reactive 函数的具体实现过程：
 
 ```
@@ -2949,7 +2963,8 @@ function createReactiveObject(target, isReadonly, baseHandlers, collectionHandle
 
 在这个过程中，createReactiveObject 函数主要做了以下几件事情。
 
-1.函数首先判断 target 是不是数组或者对象类型，如果不是则直接返回。所以原始数据 target 必须是对象或者数组。 2.如果对一个已经是响应式的对象再次执行 reactive，还应该返回这个响应式对象，举个例子：
+1. 函数首先判断 target 是不是数组或者对象类型，如果不是则直接返回。所以原始数据 target 必须是对象或者数组。 
+2. 如果对一个已经是响应式的对象再次执行 reactive，还应该返回这个响应式对象，举个例子：
 
 ```
 import { reactive } from 'vue'
@@ -2961,9 +2976,9 @@ observed === observed2
 
 可以看到 observed 已经是响应式结果了，如果对它再去执行 reactive，返回的值 observed2 和 observed 还是同一个对象引用。
 
-因为这里 reactive 函数会通过 target.__v_raw 属性来判断 target 是否已经是一个响应式对象（因为响应式对象的 __v_raw 属性会指向它自身，后面会提到），如果是的话则直接返回响应式对象。
+因为这里 reactive 函数会通过 `target.__v_raw` 属性来判断 target 是否已经是一个响应式对象（因为响应式对象的 `__v_raw` 属性会指向它自身，后面会提到），如果是的话则直接返回响应式对象。
 
-3.如果对同一个原始数据多次执行 reactive ，那么会返回相同的响应式对象，举个例子：
+3. 如果对同一个原始数据多次执行 reactive ，那么会返回相同的响应式对象，举个例子：
 
 ```
 import { reactive } from 'vue'
@@ -2975,9 +2990,9 @@ observed === observed2
 
 可以看到，原始数据 original 被反复执行 reactive，但是响应式结果 observed 和 observed2 是同一个对象。
 
-所以这里 reactive 函数会通过 target.__v_reactive 判断 target 是否已经有对应的响应式对象（因为创建完响应式对象后，会给原始对象打上 __v_reactive 标识，后面会提到），如果有则返回这个响应式对象。
+所以这里 reactive 函数会通过 `etarget.__v_ractive` 判断 target 是否已经有对应的响应式对象（因为创建完响应式对象后，会给原始对象打上 `__v_reactive` 标识，后面会提到），如果有则返回这个响应式对象。
 
-4.使用 canObserve 函数对 target 对象做一进步限制：
+4. 使用 canObserve 函数对 target 对象做一进步限制：
 
 ```
 const canObserve = (value) => {
@@ -2987,11 +3002,11 @@ const canObserve = (value) => {
 }
 const isObservableType = /*#__PURE__*/ makeMap('Object,Array,Map,Set,WeakMap,WeakSet')
 ```
-比如，带有 __v_skip 属性的对象、被冻结的对象，以及不在白名单内的对象如 Date 类型的对象实例是不能变成响应式的。
+比如，带有 `__v_skip` 属性的对象、被冻结的对象，以及不在白名单内的对象如 Date 类型的对象实例是不能变成响应式的。
 
-5.通过 Proxy API 劫持 target 对象，把它变成响应式。我们把 Proxy 函数返回的结果称作响应式对象，这里 Proxy 对应的处理器对象会根据数据类型的不同而不同，我们稍后会重点分析基本数据类型的 Proxy 处理器对象，reactive 函数传入的 baseHandlers 值是 mutableHandlers。
+5. 通过 Proxy API 劫持 target 对象，把它变成响应式。我们把 Proxy 函数返回的结果称作响应式对象，这里 Proxy 对应的处理器对象会根据数据类型的不同而不同，我们稍后会重点分析基本数据类型的 Proxy 处理器对象，reactive 函数传入的 baseHandlers 值是 mutableHandlers。
 
-6.给原始数据打个标识，如下：
+6. 给原始数据打个标识，如下：
 
 ```
 target._v_reactive = observed
@@ -3014,19 +3029,16 @@ const mutableHandlers = {
 
 它其实就是劫持了我们对 observed 对象的一些操作，比如：
 
-访问对象属性会触发 get 函数；
-
-设置对象属性会触发 set 函数；
-
-删除对象属性会触发 deleteProperty 函数；
-
-in 操作符会触发 has 函数；
-
-通过 Object.getOwnPropertyNames 访问对象属性名会触发 ownKeys 函数。
+- 访问对象属性会触发 get 函数；
+- 设置对象属性会触发 set 函数；
+- 删除对象属性会触发 deleteProperty 函数；
+- in 操作符会触发 has 函数；
+- 通过 Object.getOwnPropertyNames 访问对象属性名会触发 ownKeys 函数。
 
 因为无论命中哪个处理器函数，它都会做依赖收集和派发通知这两件事其中的一个，所以这里我只要分析常用的 get 和 set 函数就可以了。
 
-依赖收集：get 函数
+### 依赖收集：get 函数
+
 依赖收集发生在数据访问的阶段，由于我们用 Proxy API 劫持了数据对象，所以当这个响应式对象属性被访问的时候就会执行 get 函数，我们来看一下 get 函数的实现，其实它是执行 createGetter 函数的返回值，为了分析主要流程，这里省略了 get 函数中的一些分支逻辑，isReadonly 也默认为 false：
 
 ```
@@ -3068,7 +3080,7 @@ function createGetter(isReadonly = false) {
 }
 ```
 
-结合上述代码来看，get 函数主要做了四件事情，首先对特殊的 key 做了代理，这就是为什么我们在 createReactiveObject 函数中判断响应式对象是否存在 __v_raw 属性，如果存在就返回这个响应式对象本身。
+结合上述代码来看，get 函数主要做了四件事情，首先对特殊的 key 做了代理，这就是为什么我们在 createReactiveObject 函数中判断响应式对象是否存在 `__v_raw` 属性，如果存在就返回这个响应式对象本身。
 
 接着通过 Reflect.get 方法求值，如果 target 是数组且 key 命中了 arrayInstrumentations，则执行对应的函数，我们可以大概看一下 arrayInstrumentations 的实现：
 
@@ -3155,8 +3167,10 @@ packages/reactivity/src/reactive.ts
 
 上节课，我们讲到了在 Vue.js 3.0 中引入 reactive API，它可以把对象数据变成响应式，所以我们着重分析 reactive API 的实现原理，并学习了收集依赖的 get 函数， 这节课我们继续来分析 reactive API 中需要关注的另一个内容——派发通知的过程。
 
-reactive API
+### reactive API
+
 派发通知：set 函数
+
 派发通知发生在数据更新的阶段 ，由于我们用 Proxy API 劫持了数据对象，所以当这个响应式对象属性更新的时候就会执行 set 函数。我们来看一下 set 函数的实现，它是执行 createSetter 函数的返回值：
 
 ```
@@ -3227,13 +3241,10 @@ function trigger(target, type, key, newValue) {
 
 trigger 函数的实现也很简单，主要做了四件事情：
 
-通过 targetMap 拿到 target 对应的依赖集合 depsMap；
-
-创建运行的 effects 集合；
-
-根据 key 从 depsMap 中找到对应的 effects 添加到 effects 集合；
-
-遍历 effects 执行相关的副作用函数。
+1. 通过 targetMap 拿到 target 对应的依赖集合 depsMap；
+2. 创建运行的 effects 集合；
+3. 根据 key 从 depsMap 中找到对应的 effects 添加到 effects 集合；
+1. 遍历 effects 执行相关的副作用函数。
 
 所以每次 trigger 函数就是根据 target 和 key ，从 targetMap 中找到相关的所有副作用函数遍历执行一遍。
 
@@ -3353,7 +3364,7 @@ function createReactiveEffect(fn, options) {
 
 接着说，这个 reactiveEffect 函数就是响应式的副作用函数，当执行 trigger 过程派发通知的时候，执行的 effect 就是它。
 
-按我们之前的分析，这个 reactiveEffect 函数只需要做两件事情： 把全局的 activeEffect 指向它 ， 然后执行被包装的原始函数 fn 即可 。
+按我们之前的分析，这个 reactiveEffect 函数只需要做两件事情： 把全局的 activeEffect 指向它，然后执行被包装的原始函数 fn 即可 。
 
 但实际上它的实现要更复杂一些，首先它会判断 effect 的状态是否是 active，这其实是一种控制手段，允许在非 active 状态且非调度执行情况，则直接执行原始函数 fn 并返回，在后续学习完侦听器后你会对它的理解更加深刻。
 
@@ -3462,7 +3473,8 @@ function cleanup(effect) {
 
 至此，我们从 reactive API 入手了解了整个响应式对象的实现原理。除了 reactive API，Vue.js 3.0 还提供了其他好用的响应式 API，接下来我们一起分析一些常用的。
 
-readonly API
+### readonly API
+
 如果用 const 声明一个对象变量，虽然不能直接对这个变量赋值，但我们可以修改它的属。如果我们希望创建只读对象，不能修改它的属性，也不能给这个对象添加和删除属性，让它变成一个真正意义上的只读对象。
 
 ```
@@ -3513,7 +3525,7 @@ function createReactiveObject(target, isReadonly, baseHandlers, collectionHandle
 
 其实 readonly 和 reactive 函数的主要区别，就是执行 createReactiveObject 函数时的参数 isReadonly 不同。
 
-我们来看这里的代码，首先 isReadonly 变量为 true，所以在创建过程中会给原始对象 target 打上一个 __v_readonly 的标识。另外还有一个特殊情况，如果 target 已经是一个 reactive 对象，就会把它继续变成一个 readonly 响应式对象。
+我们来看这里的代码，首先 isReadonly 变量为 true，所以在创建过程中会给原始对象 target 打上一个 `__v_readonly` 的标识。另外还有一个特殊情况，如果 target 已经是一个 reactive 对象，就会把它继续变成一个 readonly 响应式对象。
 
 其次就是 baseHandlers 的 collectionHandlers 的区别，我们这里仍然只关心基本数据类型的 Proxy 处理器对象，readonly 函数传入的 baseHandlers 值是 readonlyHandlers。
 
@@ -3541,7 +3553,7 @@ const readonlyHandlers = {
 
 readonlyHandlers 和 mutableHandlers 的区别主要在 get、set 和 deleteProperty 三个函数上。很显然，作为一个只读的响应式对象，是不允许修改属性以及删除属性的，所以在非生产环境下 set 和 deleteProperty 函数的实现都会报警告，提示用户 target 是 readonly 的。
 
-接下来我们来看一下其中 readonlyGet 的实现，它其实就是 createGetter(true) 的返回值：
+接下来我们来看一下其中 readonlyGet 的实现，它其实就是 `createGetter(true)` 的返回值：
 
 ```
 function createGetter(isReadonly = false) {
@@ -3564,7 +3576,8 @@ function createGetter(isReadonly = false) {
 
 到这里，readonly API 就介绍完了，接下来我们分析一下另一个常用的响应式 API：ref。
 
-ref API
+### ref API
+
 通过前面的分析，我们知道 reactive API 对传入的 target 类型有限制，必须是对象或者数组类型，而对于一些基础类型（比如 String、Number、Boolean）是不支持的。
 
 但是有时候从需求上来说，可能我只希望把一个字符串变成响应式，却不得不封装成一个对象，这样使用上多少有一些不方便，于是 Vue.js 3.0 设计并实现了 ref API。
@@ -3617,7 +3630,8 @@ function createRef(rawValue) {
 
 最后定义一个对 value 属性做 getter 和 setter 劫持的对象并返回，get 部分就是执行 track 函数做依赖收集然后返回它的值；set 部分就是设置新值并且执行 trigger 函数派发通知。
 
-总结
+### 总结
+
 好的，到这里我们这一节的学习也要结束啦，我希望通过这节课的学习，你能搞明白响应式 API 的实现原理，知道什么时候收集依赖，什么时候派发更新，以及副作用函数的作用和设计原理。我还希望你能知道 reactive、readonly、ref 三种 API 的区别和各自的使用场景，这样你就可以在今后的开发中对它们应用自如啦。
 
 最后我们通过一张图来看一下整个响应式 API 实现和组件更新的关系：
@@ -3645,7 +3659,8 @@ packages/reactivity/src/ref.ts
 
 计算属性本质上还是对依赖的计算，那么为什么我们不直接用函数呢？在 Vue.js 3.0 中计算属性的 API 又是如何实现呢？接下来，就请你带着这些疑问，随我一起深入其实现原理的学习吧。
 
-计算属性 API： computed
+### 计算属性 API： computed
+
 Vue.js 3.0 提供了一个 computed 函数作为计算属性 API，我们先来看看它是如何使用的。
 
 我们举个简单的例子：
@@ -3659,7 +3674,7 @@ count.value++
 console.log(plusOne.value) // 3
 ```
 
-从代码中可以看到，我们先使用 ref API 创建了一个响应式对象 count，然后使用 computed API 创建了另一个响应式对象 plusOne，它的值是 count.value + 1，当我们修改 count.value 的时候， plusOne.value 就会自动发生变化。
+从代码中可以看到，我们先使用 ref API 创建了一个响应式对象 count，然后使用 computed API 创建了另一个响应式对象 plusOne，它的值是 `count.value + 1`，当我们修改 count.value 的时候， plusOne.value 就会自动发生变化。
 
 注意，这里我们直接修改 plusOne.value 会报一个错误，这是因为如果我们传递给 computed 的是一个函数，那么这就是一个 getter 函数，我们只能获取它的值，而不能直接修改它。
 
@@ -3679,7 +3694,7 @@ plusOne.value = 1
 console.log(count.value) // 0
 ```
 
-在这个例子中，结合上述代码可以看到，我们给 computed 函数传入了一个拥有 getter 函数和 setter 函数的对象，getter 函数和之前一样，还是返回 count.value + 1；而 setter 函数，请注意，这里我们修改 plusOne.value 的值就会触发 setter 函数，其实 setter 函数内部实际上会根据传入的参数修改计算属性的依赖值 count.value，因为一旦依赖的值被修改了，我们再去获取计算属性就会重新执行一遍 getter，所以这样获取的值也就发生了变化。
+在这个例子中，结合上述代码可以看到，我们给 computed 函数传入了一个拥有 getter 函数和 setter 函数的对象，getter 函数和之前一样，还是返回 `count.value + 1`；而 setter 函数，请注意，这里我们修改 plusOne.value 的值就会触发 setter 函数，其实 setter 函数内部实际上会根据传入的参数修改计算属性的依赖值 count.value，因为一旦依赖的值被修改了，我们再去获取计算属性就会重新执行一遍 getter，所以这样获取的值也就发生了变化。
 
 好了，我们现在已经知道了 computed API 的两种使用方式了，接下来就看看它是怎样实现的：
 
@@ -3756,7 +3771,7 @@ function computed(getterOrOptions) {
 
 最后是创建 computed 对象并返回，这个对象也拥有 getter 和 setter 函数。当 computed 对象被访问的时候会触发 getter，然后会判断是否 dirty，如果是就执行 runner，然后做依赖收集；当我们直接设置 computed 对象时会触发 setter，即执行 computed 函数内部定义的 setter 函数。
 
-计算属性的运行机制
+### 计算属性的运行机制
 computed 函数的逻辑会有一点绕，不过不要紧，我们可以结合一个应用 computed 计算属性的例子，来理解整个计算属性的运行机制。分析之前我们需要记住 computed 内部两个重要的变量，第一个 dirty 表示一个计算属性的值是否是“脏的”，用来判断需不需要重新计算，第二个 value 表示计算属性每次计算后的结果。
 
 现在，我们来看这个示例：
@@ -3808,7 +3823,7 @@ get value() {
 
 由于默认 dirty 是 true，所以这个时候会执行 runner 函数，并进一步执行 computed getter，也就是 count.value + 1，因为访问了 count 的值，并且由于 count 也是一个响应式对象，所以就会触发 count 对象的依赖收集过程。
 
-请注意，由于是在 runner 执行的时候访问 count，所以这个时候的 activeEffect 是 runner 函数。runner 函数执行完毕，会把 dirty 设置为 false，并进一步执行 track（computed,"get",'value') 函数做依赖收集，这个时候 runner 已经执行完了，所以 activeEffect 是组件副作用渲染函数。
+请注意，由于是在 runner 执行的时候访问 count，所以这个时候的 activeEffect 是 runner 函数。runner 函数执行完毕，会把 dirty 设置为 false，并进一步执行 `track(computed,"get",'value')` 函数做依赖收集，这个时候 runner 已经执行完了，所以 activeEffect 是组件副作用渲染函数。
 
 所以你要特别注意这是两个依赖收集过程：对于 plusOne 来说，它收集的依赖是组件副作用渲染函数；对于 count 来说，它收集的依赖是 plusOne 内部的 runner 函数。
 
@@ -3839,7 +3854,7 @@ scheduler: () => {
 }
 ```
 
-它并没有对计算属性求新值，而仅仅是把 dirty 设置为 true，再执行 trigger(computed, "set" , 'value')，去通知执行 plusOne 依赖的组件渲染副作用函数，即触发组件的重新渲染。
+它并没有对计算属性求新值，而仅仅是把 dirty 设置为 true，再执行 `trigger(computed, "set" , 'value')`，去通知执行 plusOne 依赖的组件渲染副作用函数，即触发组件的重新渲染。
 
 在组件重新渲染的时候，会再次访问 plusOne，我们发现这个时候 dirty 为 true，然后会再次执行 computed getter，此时才会执行 count.value + 1 求得新值。这就是虽然组件没有直接访问 count，但是当我们修改 count 的值的时候，组件仍然会重新渲染的原因。
 
@@ -3847,13 +3862,13 @@ scheduler: () => {
 
 通过以上分析，我们可以看出 computed 计算属性有两个特点：
 
-延时计算，只有当我们访问计算属性的时候，它才会真正运行 computed getter 函数计算；
-
-缓存，它的内部会缓存上次的计算结果 value，而且只有 dirty 为 true 时才会重新计算。如果访问计算属性时 dirty 为 false，那么直接返回这个 value。
+1. 延时计算，只有当我们访问计算属性的时候，它才会真正运行 computed getter 函数计算；
+2. 缓存，它的内部会缓存上次的计算结果 value，而且只有 dirty 为 true 时才会重新计算。如果访问计算属性时 dirty 为 false，那么直接返回这个 value。
 
 现在，我们就可以回答开头提的问题了。和单纯使用普通函数相比，计算属性的优势是：只要依赖不变化，就可以使用缓存的 value 而不用每次在渲染组件的时候都执行函数去计算，这是典型的空间换时间的优化思想。
 
-嵌套计算属性
+### 嵌套计算属性
+
 计算属性也支持嵌套，我们可以针对上述例子做个小修改，即不在渲染函数中访问 plusOne，而在另一个计算属性中访问：
 
 ```
@@ -3875,7 +3890,8 @@ console.log(plusTwo.value)
 
 得益于 computed 这种巧妙的设计，无论嵌套多少层计算属性都可以正常工作。
 
-计算属性的执行顺序
+### 计算属性的执行顺序
+
 我们曾提到计算属性内部创建副作用函数的时候会配置 computed 为 true，标识这是一个 computed effect，用于在 trigger 阶段的优先级排序。我们来回顾一下 trigger 函数执行 effects 的过程：
 
 ```
@@ -3933,7 +3949,7 @@ plus()
 3
 ```
 
-在执行 effect 函数时运行 console.log(plusOne.value + count.value)，所以第一次输出 1，此时 count.value 是 0，plusOne.value 是 1。
+在执行 effect 函数时运行 `console.log(plusOne.value + count.value)`，所以第一次输出 1，此时 count.value 是 0，plusOne.value 是 1。
 
 后面连续输出两次 3 是因为， plusOne 和 count 的依赖都是这个 effect 函数，所以当我们执行 plus 函数修改 count 的值时，会触发并执行这个 effect 函数，因为 plusOne 的 runner 也是 count 的依赖，count 值修改也会执行 plusOne 的 runner，也就会再次执行 plusOne 的依赖即 effect 函数，因此会输出两次。
 
@@ -3955,7 +3971,8 @@ plus()
 
 知道原因后，我们再回过头看例子。因为 effect 函数依赖了 plusOne 和 count，所以 plusOne 先计算会更合理，这就是为什么我们需要让 computed runner 的执行优先于普通的 effect 函数。
 
-总结
+### 总结
+
 好的，到这里我们这一节的学习就结束啦，我希望通过学习，你能理解计算属性的工作机制，能搞明白计算属性嵌套场景代码的执行顺序，知道计算属性的两个特点——延时计算和缓存，也希望你能够在组件的开发中合理使用计算属性。
 
 最后，给你留一道思考题目，computed 函数返回的对象实际上劫持的是 value 属性的 getter 和 setter，但为什么我们在组件的模板中访问一个计算属性变量，不用手动在后面加 .value 呢？欢迎你在留言区与我分享。
@@ -3993,10 +4010,11 @@ const unwatch = vm.$watch('a', function(newVal, oldVal) {
 
 那么，接下来就随我一起来学习 watch API 吧。
 
-watch API 的用法
+### watch API 的用法
+
 我们先来看 Vue.js 3.0 中 watch API 有哪些用法。
 
-1.watch API 可以侦听一个 getter 函数，但是它必须返回一个响应式对象，当该响应式对象更新后，会执行对应的回调函数。
+1. watch API 可以侦听一个 getter 函数，但是它必须返回一个响应式对象，当该响应式对象更新后，会执行对应的回调函数。
 
 ```
 import { reactive, watch } from 'vue'
@@ -4006,7 +4024,7 @@ watch(() => state.count, (count, prevCount) => {
 })
 ```
 
-2.watch API 也可以直接侦听一个响应式对象，当响应式对象更新后，会执行对应的回调函数。
+2. watch API 也可以直接侦听一个响应式对象，当响应式对象更新后，会执行对应的回调函数。
 
 ```
 import { ref, watch } from 'vue'
@@ -4016,7 +4034,7 @@ watch(count, (count, prevCount) => {
 })
 ```
 
-3.watch API 还可以直接侦听多个响应式对象，任意一个响应式对象更新后，就会执行对应的回调函数。
+3. watch API 还可以直接侦听多个响应式对象，任意一个响应式对象更新后，就会执行对应的回调函数。
 
 ```
 import { ref, watch } from 'vue'
@@ -4027,7 +4045,8 @@ watch([count, count2], ([count, count2], [prevCount, prevCount2]) => {
 })
 ```
 
-watch API 实现原理
+### watch API 实现原理
+
 侦听器的言下之意就是，当侦听的对象或者函数发生了变化则自动执行某个回调函数，这和我们前面说过的副作用函数 effect 很像， 那它的内部实现是不是依赖了 effect 呢？带着这个疑问，我们来探究 watch API 的具体实现：
 
 ```
@@ -4048,11 +4067,12 @@ function doWatch(source, cb, { immediate, deep, flush, onTrack, onTrigger } = EM
 }
 ```
 
-从代码中可以看到，watch 函数内部调用了 doWatch 函数，调用前会在非生产环境下判断第二个参数 cb 是不是一个函数，如果不是则会报警告以告诉用户应该使用 watchEffect(fn, options) API，watchEffect API 也是侦听器相关的 API，稍后我们会详细介绍。
+从代码中可以看到，watch 函数内部调用了 doWatch 函数，调用前会在非生产环境下判断第二个参数 cb 是不是一个函数，如果不是则会报警告以告诉用户应该使用 `watchEffect(fn, options)` API，watchEffect API 也是侦听器相关的 API，稍后我们会详细介绍。
 
 这个 doWatch 函数很长，所以我只贴出了需要理解的部分，我用注释将这个函数的实现逻辑拆解成了几个步骤。可以看到，内部确实创建了 effect 副作用函数。接下来，就随我一步步看它具体做了哪些事情吧。
 
-标准化 source
+### 标准化 source
+
 我们先来看 watch 函数的第一个参数 source。
 
 通过前文知道 source 可以是 getter 函数，也可以是响应式对象甚至是响应式对象数组，所以我们需要标准化 source，这是标准化 source 的流程：
@@ -4110,11 +4130,9 @@ if (cb && deep) {
 
 其实，source 标准化主要是根据 source 的类型，将其变成 标准成 getter 函数。具体来说：
 
-如果 source 是 ref 对象，则创建一个访问 source.value 的 getter 函数;
-
-如果 source 是 reactive 对象，则创建一个访问 source 的 getter 函数，并设置 deep 为 true（deep 的作用我稍后会说）;
-
-如果 source 是一个函数，则会进一步判断第二个参数 cb 是否存在，对于 watch API 来说，cb 是一定存在且是一个回调函数，这种情况下，getter 就是一个简单的对 source 函数封装的函数。
+1. 如果 source 是 ref 对象，则创建一个访问 source.value 的 getter 函数;
+2. 如果 source 是 reactive 对象，则创建一个访问 source 的 getter 函数，并设置 deep 为 true（deep 的作用我稍后会说）;
+3. 如果 source 是一个函数，则会进一步判断第二个参数 cb 是否存在，对于 watch API 来说，cb 是一定存在且是一个回调函数，这种情况下，getter 就是一个简单的对 source 函数封装的函数。
 
 如果 source 不满足上述条件，则在非生产环境下报警告，提示 source 类型不合法。
 
@@ -4169,7 +4187,8 @@ state.count.a.b = 2
 
 这样函数内部会访问并返回 state.count.a.b，一次 traverse 都不会执行并且依然可以侦听到它的变化从而执行 watcher 的回调函数。
 
-构造回调函数
+### 构造回调函数
+
 处理完 watch API 第一个参数 source 后，接下来处理第二个参数 cb。
 
 cb 是一个回调函数，它有三个参数：第一个 newValue 代表新值；第二个 oldValue 代表旧值。第三个参数 onInvalidate，我打算放在后面介绍。
@@ -4223,7 +4242,8 @@ onInvalidate 函数用来注册无效回调函数 ，我们暂时不需要关注
 
 最后进行判断，如果是 deep 的情况或者新旧值发生了变化，则执行回调函数 cb，传入参数 newValue 和 oldValue。注意，第一次执行的时候旧值的初始值是空数组或者 undefined。执行完回调函数 cb 后，把旧值 oldValue 再更新为 newValue，这是为了下一次的比对。
 
-创建 scheduler
+### 创建 scheduler
+
 接下来我们要分析创建 scheduler 过程。
 
 scheduler 的作用是根据某种调度的方式去执行某种函数，在 watch API 中，主要影响到的是回调函数的执行方式。我们来看一下它的实现逻辑：
@@ -4257,15 +4277,14 @@ Watch API 的参数除了 source 和 cb，还支持第三个参数 options，不
 
 这里，scheduler 的创建逻辑受到了第三个参数 Options 中的 flush 属性值的影响，不同的 flush 决定了 watcher 的执行时机。
 
-当 flush 为 sync 的时候，表示它是一个同步 watcher，即当数据变化时同步执行回调函数。
-
-当 flush 为 pre 的时候，回调函数通过 queueJob 的方式在组件更新之前执行，如果组件还没挂载，则同步执行确保回调函数在组件挂载之前执行。
-
-如果没设置 flush，那么回调函数通过 queuePostRenderEffect 的方式在组件更新之后执行。
+- 当 flush 为 sync 的时候，表示它是一个同步 watcher，即当数据变化时同步执行回调函数。
+- 当 flush 为 pre 的时候，回调函数通过 queueJob 的方式在组件更新之前执行，如果组件还没挂载，则同步执行确保回调函数在组件挂载之前执行。
+- 如果没设置 flush，那么回调函数通过 queuePostRenderEffect 的方式在组件更新之后执行。
 
 queueJob 和 queuePostRenderEffect 在这里不是重点，所以我们放到后面介绍。总之，你现在要记住，watcher 的回调函数是通过一定的调度方式执行的。
 
-创建 effect
+### 创建 effect
+
 前面的分析我们提到了 runner，它其实就是 watcher 内部创建的 effect 函数，接下来，我们来分析它逻辑：
 
 ```
@@ -4298,15 +4317,13 @@ else {
 
 这块代码逻辑是整个 watcher 实现的核心部分，即通过 effect API 创建一个副作用函数 runner，我们需要关注以下几点。
 
-runner 是一个 computed effect。因为 computed effect 可以优先于普通的 effect（比如组件渲染的 effect）先运行，这样就可以实现当配置 flush 为 pre 的时候，watcher 的执行可以优先于组件更新。
+- runner 是一个 computed effect。因为 computed effect 可以优先于普通的 effect（比如组件渲染的 effect）先运行，这样就可以实现当配置 flush 为 pre 的时候，watcher 的执行可以优先于组件更新。
+- runner 执行的方式。runner 是 lazy 的，它不会在创建后立刻执行。第一次手动执行 runner 会执行前面的 getter 函数，访问响应式数据并做依赖收集。注意，此时 activeEffect 就是 runner，这样在后面更新响应式数据时，就可以触发 runner 执行 scheduler 函数，以一种调度方式来执行回调函数。
+- runner 的返回结果。手动执行 runner 就相当于执行了前面标准化的 getter 函数，getter 函数的返回值就是 watcher 计算出的值，所以我们第一次执行 runner 求得的值可以作为 oldValue。
+- 配置了 immediate 的情况。当我们配置了 immediate ，创建完 watcher 会立刻执行 applyCb 函数，此时 oldValue 还是初始值，在 applyCb 执行时也会执行 runner 进而执行前面的 getter 函数做依赖收集，求得新值。
 
-runner 执行的方式。runner 是 lazy 的，它不会在创建后立刻执行。第一次手动执行 runner 会执行前面的 getter 函数，访问响应式数据并做依赖收集。注意，此时 activeEffect 就是 runner，这样在后面更新响应式数据时，就可以触发 runner 执行 scheduler 函数，以一种调度方式来执行回调函数。
+### 返回销毁函数
 
-runner 的返回结果。手动执行 runner 就相当于执行了前面标准化的 getter 函数，getter 函数的返回值就是 watcher 计算出的值，所以我们第一次执行 runner 求得的值可以作为 oldValue。
-
-配置了 immediate 的情况。当我们配置了 immediate ，创建完 watcher 会立刻执行 applyCb 函数，此时 oldValue 还是初始值，在 applyCb 执行时也会执行 runner 进而执行前面的 getter 函数做依赖收集，求得新值。
-
-返回销毁函数
 最后，会返回侦听器销毁函数，也就是 watch API 执行后返回的函数。我们可以通过调用它来停止 watcher 对数据的侦听。
 
 ```
@@ -4339,7 +4356,8 @@ packages/runtime-core/src/apiWatch.ts
 
 在前面的课时中，我们多次提到回调函数是以一种调度的方式执行的，特别是当 flush 不是 sync 时，它会把回调函数执行的任务推到一个异步队列中执行。接下来，我们就来分析异步执行队列的设计。分析之前，我们先来思考一下，为什么会需要异步队列？
 
-异步任务队列的设计
+### 异步任务队列的设计
+
 我们把之前的例子简单修改一下：
 
 ```
@@ -4357,12 +4375,13 @@ state.count++
 
 答案是不会，实际上只输出了一次 count 的值，也就是最终计算的值 3。这在大多数场景下都是符合预期的，因为在一个 Tick（宏任务执行的生命周期）内，即使多次修改侦听的值，它的回调函数也只执行一次。
 
-知识延伸
-组件的更新过程是异步的，我们知道修改模板中引用的响应式对象的值时，会触发组件的重新渲染，但是在一个 Tick 内，即使你多次修改多个响应式对象的值，组件的重新渲染也只执行一次。这是因为如果每次更新数据都触发组件重新渲染，那么重新渲染的次数和代价都太高了。
+> 知识延伸  
+> 组件的更新过程是异步的，我们知道修改模板中引用的响应式对象的值时，会触发组件的重新渲染，但是在一个 Tick 内，即使你多次修改多个响应式对象的值，组件的重新渲染也只执行一次。这是因为如果每次更新数据都触发组件重新渲染，那么重新渲染的次数和代价都太高了。
 
 那么，这是怎么做到的呢？我们先从异步任务队列的创建说起。
 
-异步任务队列的创建
+### 异步任务队列的创建
+
 通过前面的分析我们知道，在创建一个 watcher 时，如果配置 flush 为 pre 或不配置 flush ，那么 watcher 的回调函数就会异步执行。此时分别是通过 queueJob 和 queuePostRenderEffect 把回调函数推入异步队列中的。
 
 在不涉及 suspense 的情况下，queuePostRenderEffect 相当于 queuePostFlushCb，我们来看它们的实现：
@@ -4419,7 +4438,8 @@ function queueFlush() {
 
 因为 JavaScript 是单线程执行的，这样的异步设计使你在一个 Tick 内，可以多次执行 queueJob 或者 queuePostFlushCb 去添加任务，也可以保证在宏任务执行完毕后的微任务阶段执行一次 flushJobs。
 
-异步任务队列的执行
+### 异步任务队列的执行
+
 创建完任务队列后，接下来要异步执行这个队列，我们来看一下 flushJobs 的实现：
 
 ```
@@ -4456,9 +4476,8 @@ function flushJobs(seen) {
 
 对于异步任务队列 queue，在遍历执行它们前会先对它们做一次从小到大的排序，这是因为两个主要原因：
 
-我们创建组件的过程是由父到子，所以创建组件副作用渲染函数也是先父后子，父组件的副作用渲染函数的 effect id 是小于子组件的，每次更新组件也是通过 queueJob 把 effect 推入异步任务队列 queue 中的。所以为了保证先更新父组再更新子组件，要对 queue 做从小到大的排序。
-
-如果一个组件在父组件更新过程中被卸载，它自身的更新应该被跳过。所以也应该要保证先更新父组件再更新子组件，要对 queue 做从小到大的排序。
+- 我们创建组件的过程是由父到子，所以创建组件副作用渲染函数也是先父后子，父组件的副作用渲染函数的 effect id 是小于子组件的，每次更新组件也是通过 queueJob 把 effect 推入异步任务队列 queue 中的。所以为了保证先更新父组再更新子组件，要对 queue 做从小到大的排序。
+- 如果一个组件在父组件更新过程中被卸载，它自身的更新应该被跳过。所以也应该要保证先更新父组件再更新子组件，要对 queue 做从小到大的排序。
 
 接下来，就是遍历这个 queue，依次执行队列中的任务了，在遍历过程中，注意有一个 checkRecursiveUpdates 的逻辑，它是用来在非生产环境下检测是否有循环更新的，它的作用我们稍后会提。
 
@@ -4483,11 +4502,12 @@ function flushJobs(seen) {
 }
 ```
 
-注意这里遍历前会通过 const cbs = [...new Set(postFlushCbs)] 拷贝一个 postFlushCbs 的副本，这是因为在遍历的过程中，可能某些回调函数的执行会再次修改 postFlushCbs，所以拷贝一个副本循环遍历则不会受到 postFlushCbs 修改的影响。
+注意这里遍历前会通过 `const cbs = [...new Set(postFlushCbs)]` 拷贝一个 postFlushCbs 的副本，这是因为在遍历的过程中，可能某些回调函数的执行会再次修改 postFlushCbs，所以拷贝一个副本循环遍历则不会受到 postFlushCbs 修改的影响。
 
 遍历完 postFlushCbs 后，会重置 isFlushing 为 false，因为一些 postFlushCb 执行过程中可能会再次添加异步任务，所以需要继续判断如果 queue 或者 postFlushCbs 队列中还存在任务，则递归执行 flushJobs 把它们都执行完毕。
 
-检测循环更新
+### 检测循环更新
+
 前面我们提到了，在遍历执行异步任务和回调函数的过程中，都会在非生产环境下执行 checkRecursiveUpdates 检测是否有循环更新，它是用来解决什么问题的呢？
 
 我们把之前的例子改写一下：
@@ -4527,16 +4547,16 @@ function checkRecursiveUpdates(seen, fn) {
 
 通过前面的代码，我们知道 flushJobs 一开始便创建了 seen，它是一个 Map 对象，然后在 checkRecursiveUpdates 的时候会把任务添加到 seen 中，记录引用计数 count，初始值为 1，如果 postFlushCbs 再次添加了相同的任务，则引用计数 count 加 1，如果 count 大于我们定义的限制 100 ，则说明一直在添加这个相同的任务并超过了 100 次。那么，Vue.js 会抛出这个错误，因为在正常的使用中，不应该出现这种情况，而我们上述的错误示例就会触发这种报错逻辑。
 
-优化：只用一个变量
+### 优化：只用一个变量
+
 到这里，异步队列的设计就介绍完毕了，你可能会对 isFlushPending 和 isFlushing 有些疑问，为什么需要两个变量来控制呢？
 
 从语义上来看，isFlushPending 用于判断是否在等待 nextTick 执行 flushJobs，而 isFlushing 是判断是否正在执行任务队列。
 
 从功能上来看，它们的作用是为了确保以下两点：
 
-在一个 Tick 内可以多次添加任务到队列中，但是任务队列会在 nextTick 后执行；
-
-在执行任务队列的过程中，也可以添加新的任务到队列中，并且在当前 Tick 去执行剩余的任务队列。
+1. 在一个 Tick 内可以多次添加任务到队列中，但是任务队列会在 nextTick 后执行；
+2. 在执行任务队列的过程中，也可以添加新的任务到队列中，并且在当前 Tick 去执行剩余的任务队列。
 
 但实际上，这里我们可以进行优化。在我看来，这里用一个变量就足够了，我们来稍微修改一下源码：
 
@@ -4572,11 +4592,12 @@ function flushJobs(seen) {
 
 可以看到，我们只需要一个 isFlushing 来控制就可以实现相同的功能了。在执行 queueFlush 的时候，判断 isFlushing 为 false，则把它设置为 true，然后 nextTick 会执行 flushJobs。在 flushJobs 函数执行完成的最后，也就是所有的任务（包括后添加的）都执行完毕，再设置 isFlushing 为 false。
 
-我这么修改源码后也跑通了 Vue.js 3.0 的单元测试，如果你觉得这么实现有问题的话，欢迎在留言区评论与我讨论。
+>  我这么修改源码后也跑通了 Vue.js 3.0 的单元测试，如果你觉得这么实现有问题的话，欢迎在留言区评论与我讨论。
 
 了解完 watch API 和异步任务队列的设计后，我们再来学习侦听器提供的另一个 API—— watchEffect API。
 
-watchEffect API
+### watchEffect API
+
 watchEffect API 的作用是注册一个副作用函数，副作用函数内部可以访问到响应式对象，当内部响应式对象变化后再立即执行这个函数。
 
 可以先来看一个示例：
@@ -4591,11 +4612,9 @@ count.value++
 它的结果是依次输出 0 和 1。
 watchEffect 和前面的 watch API 有哪些不同呢？主要有三点：
 
-侦听的源不同 。watch API 可以侦听一个或多个响应式对象，也可以侦听一个 getter 函数，而 watchEffect API 侦听的是一个普通函数，只要内部访问了响应式对象即可，这个函数并不需要返回响应式对象。
-
-没有回调函数 。watchEffect API 没有回调函数，副作用函数的内部响应式对象发生变化后，会再次执行这个副作用函数。
-
-立即执行 。watchEffect API 在创建好 watcher 后，会立刻执行它的副作用函数，而 watch API 需要配置 immediate 为 true，才会立即执行回调函数。
+1. 侦听的源不同 。watch API 可以侦听一个或多个响应式对象，也可以侦听一个 getter 函数，而 watchEffect API 侦听的是一个普通函数，只要内部访问了响应式对象即可，这个函数并不需要返回响应式对象。
+2. 没有回调函数 。watchEffect API 没有回调函数，副作用函数的内部响应式对象发生变化后，会再次执行这个副作用函数。
+3. 立即执行 。watchEffect API 在创建好 watcher 后，会立刻执行它的副作用函数，而 watch API 需要配置 immediate 为 true，才会立即执行回调函数。
 
 对 watchEffect API 有大体了解后，我们来看一下在我整理的 watchEffect 场景下， doWatch 函数的简化版实现：
 
@@ -4672,7 +4691,8 @@ watchEffect 内部创建的 runner 对应的 scheduler 对象就是 scheduler �
 
 在执行 source 函数的时候，会传入一个 onInvalidate 函数作为参数，接下来我们就来分析它的作用。
 
-注册无效回调函数
+### 注册无效回调函数
+
 有些时候，watchEffect 会注册一个副作用函数，在函数内部可以做一些异步操作，但是当这个 watcher 停止后，如果我们想去对这个异步操作做一些额外事情（比如取消这个异步操作），我们可以通过 onInvalidate 参数注册一个无效函数。
 
 ```
@@ -4708,7 +4728,8 @@ const onInvalidate = (fn) => {
 
 通过这种方式，Vue.js 就很好地实现了 watcher 注册无效回调函数的需求。
 
-总结
+### 总结
+
 好的，到这里我们这一节的学习也要结束啦，通过这节课的学习，你应该掌握了侦听器内部实现原理，了解侦听器支持的几种配置参数的作用，以及异步任务队列的设计原理。
 
 你也应该掌握侦听器的常见应用场景：如何用 watch API 观测数据的变化去执行一些逻辑，如何利用 watchEffect API 去注册一些副作用函数，如何去注册无效回调函数，以及如何停止一个正在运行的 watcher。
@@ -4784,7 +4805,8 @@ errorCaptured -> onErrorCaptured
 
 带着这些疑问，我们来深入学习生命周期钩子函数背后的实现原理。
 
-注册钩子函数
+### 注册钩子函数
+
 首先，我们来看这些钩子函数是如何注册的，先来看一下它们的实现：
 
 ```
@@ -4875,7 +4897,8 @@ function injectHook(type, hook, target = currentInstance, prepend = false) {
 
 首先，我们来看通过 onBeforeMount 和 onMounted 注册的钩子函数。
 
-onBeforeMount 和 onMounted
+### onBeforeMount 和 onMounted
+
 onBeforeMount 注册的 beforeMount 钩子函数会在组件挂载之前执行，onMounted 注册的 mounted 钩子函数会在组件挂载之后执行。我们来回顾一下组件副作用渲染函数关于组件挂载部分的实现：
 
 ```
@@ -4924,7 +4947,8 @@ const setupRenderEffect = (instance, initialVNode, container, anchor, parentSusp
 
 接下来，我们来看通过 onBeforeUpdate 和 onUpdated 注册的钩子函数。
 
-onBeforeUpdate 和 onUpdated
+### onBeforeUpdate 和 onUpdated
+
 onBeforeUpdate 注册的 beforeUpdate 钩子函数会在组件更新之前执行，onUpdated 注册的 updated 钩子函数会在组件更新之后执行。我们来回顾一下组件副作用渲染函数关于组件更新的实现：
 
 ```
@@ -4988,7 +5012,8 @@ const setupRenderEffect = (instance, initialVNode, container, anchor, parentSusp
 
 接下来，我们来看通过 onBeforeUnmount 和 onUnmounted 注册的钩子函数。
 
-onBeforeUnmount 和 onUnmounted
+### onBeforeUnmount 和 onUnmounted
+
 onBeforeUnmount 注册的 beforeUnMount 钩子函数会在组件销毁之前执行，onUnmounted 注册的 unmounted 钩子函数会在组件销毁之后执行 。我们来看一下组件销毁相关逻辑实现：
 
 ```
@@ -5060,7 +5085,8 @@ unmount 主要就是遍历子树，它会通过递归的方式来销毁子节点
 
 接下来，我们来看通过 onErrorCaptured 注册的钩子函数。
 
-onErrorCaptured
+### onErrorCaptured
+
 在前面的课时中，我们多次接触过一个方法 callWithErrorHandling，它就是执行一段函数并通过 handleError 处理错误。那么，handleError 具体做了哪些事情呢？
 
 我们先来看一下它的实现：
@@ -5103,7 +5129,8 @@ errorCaptured 在平时工作中可能用的不多，但它的确是一个很实
 
 接下来，我们来看通过 onRenderTracked 和 onRenderTriggered 注册的钩子函数。
 
-onRenderTracked 和 onRenderTriggered
+### onRenderTracked 和 onRenderTriggered
+
 onRenderTracked 和 onRenderTriggered 是 Vue.js 3.0 新增的生命周期 API，它们是在开发阶段渲染调试用的。这里再次回顾一下我们创建的副作用渲染函数的第二个参数（这里你可以去 06 课时“ 响应式：响应式内部的实现原理是怎样的？ ”中复习一下），在开发环境下它的代码是这样的：
 
 ```
@@ -5220,7 +5247,8 @@ function trigger (target, type, key, newValue) {
 
 像这样在开发阶段，我们可以通过注册这两个钩子函数，来追踪组件渲染的依赖来源以及触发组件重新渲染的数据更新来源。
 
-总结
+### 总结
+
 好的，到这里我们这一节的学习就结束啦，通过学习，你应该掌握 Vue.js 中生命周期注册的 API，了解各个生命周期的执行时机和应用场景。
 
 最后，我们通过一张图再来直观地感受一下组件的各个生命周期：
@@ -5301,7 +5329,8 @@ export default {
 
 那么，依赖注入的背后实现原理是怎样的呢？接下来我们就一起分析吧。
 
-provide API
+### provide API
+
 我们先来分析 provide API 的实现原理：
 
 ```
@@ -5363,7 +5392,8 @@ createApp(ProviderOne).mount('#app')
 
 接下来，我们来分析另一个依赖注入的 API —— inject。
 
-inject API
+### inject API
+
 我们先来看 inject API 的实现原理：
 
 ```
@@ -5392,7 +5422,8 @@ function inject(key, defaultValue) {
 
 接下来我们就来探讨依赖注入和模块化共享数据的差异。
 
-对比模块化共享数据的方式
+### 对比模块化共享数据的方式
+
 我们先来看提问者给出的一个模块化共享数据的示例，即首先在根组件创建一个共享的数据 sharedData：
 
 ```
@@ -5421,15 +5452,15 @@ export default {
 
 当然，从这个示例上来看，模块化的方式是可以共享数据，但是 provide 和 inject 与模块化方式有如下几点不同。
 
-作用域不同
+- 作用域不同
 
 对于依赖注入，它的作用域是局部范围，所以你只能把数据注入以这个节点为根的后代组件中，不是这棵子树上的组件是不能访问到该数据的；而对于模块化的方式，它的作用域是全局范围的，你可以在任何地方引用它导出的数据。
 
-数据来源不同
+- 数据来源不同
 
 对于依赖注入，后代组件是不需要知道注入的数据来自哪里，只管注入并使用即可；而对于模块化的方式提供的数据，用户必须明确知道这个数据是在哪个模块定义的，从而引入它。
 
-上下文不同
+- 上下文不同
 
 对于依赖注入，提供数据的组件的上下文就是组件实例，而且同一个组件定义是可以有多个组件实例的，我们可以根据不同的组件上下文提供不同的数据给后代组件；而对于模块化提供的数据，它是没有任何上下文的，仅仅是这个模块定义的数据，如果想要根据不同的情况提供不同数据，那么从 API 层面设计就需要做更改。
 
@@ -5443,7 +5474,8 @@ export function getShareData(context) {
 
 掌握了这些不同，在不同场景下你就应该知道选择哪种方式提供数据了。
 
-依赖注入的缺陷和应用场景
+### 依赖注入的缺陷和应用场景
+
 我们再回到依赖注入，它确实提供了一种组件共享的方式，但并非完美的。正因为依赖注入是上下文相关的，所以它会将你应用程序中的组件与它们当前的组织方式耦合起来，这使得重构变得困难。
 
 来回顾一下依赖注入的特点 ：祖先组件不需要知道哪些后代组件使用它提供的数据，后代组件也不需要知道注入的数据来自哪里。
@@ -5516,9 +5548,9 @@ export default {
 
 虽然这些代码还是用的 Vue.js 2.x 的 Options API 方式，但是依赖注入的思想是不变的。
 
-你可能会问，为什么不在 ElOption 子组件内通过 this.$parent 访问外层的 ElSelect 组件实例呢？
+你可能会问，为什么不在 ElOption 子组件内通过 `this.$parent` 访问外层的 ElSelect 组件实例呢？
 
-虽然 this.$parent 指向的是它的父组件实例，在我们这个例子是可以的，但如果组件结构发生了变化呢？
+虽然 `this.$parent` 指向的是它的父组件实例，在我们这个例子是可以的，但如果组件结构发生了变化呢？
 
 我们再来看另一个 Select 组件的例子：
 
@@ -5576,13 +5608,14 @@ export default {
 
 这是 Select 组件的分组示例，最终会在页面上渲染成这样：
 
-显然，这里 ElOption 中的 this.$parent 指向的就不是 ElSelect 组件实例，而是 ElOptionGroup 组件实例。但如果我们用依赖注入的方式，即使结构变了，还是可以在 ElOption 组件中正确访问到 ElSelect 的实例。
+显然，这里 ElOption 中的 `this.$parent` 指向的就不是 ElSelect 组件实例，而是 ElOptionGroup 组件实例。但如果我们用依赖注入的方式，即使结构变了，还是可以在 ElOption 组件中正确访问到 ElSelect 的实例。
 
-所以，this.$parent 是一种强耦合的获取父组件实例方式，非常不利于代码的重构，因为一旦组件层级发生变化，就会产生非预期的后果，所以在平时的开发工作中你应该慎用这个属性。
+所以，`this.$parent` 是一种强耦合的获取父组件实例方式，非常不利于代码的重构，因为一旦组件层级发生变化，就会产生非预期的后果，所以在平时的开发工作中你应该慎用这个属性。
 
 相反，在组件库的场景中，依赖注入还是很方便的，除了示例中提供组件实例数据，还可以提供任意类型的数据。因为入口组件和它的相关子组件关联性是很强的，无论后代组件的结构如何变化，最终都会渲染在入口组件的子树上。
 
-总结
+### 总结
+
 好的，到这里我们这一节的学习就结束啦，通过这节课的学习，你应该掌握 Vue.js 依赖注入的实现原理，了解依赖注入的使用场景和它的缺陷。
 
 到目前为止，我们已经学习了 Vue.js 3.0 提供的所有常用的 Composition API。可以看到和 Vue.js 2.x Options API 相比，我们不再是通过编写一些组件配置去描述一个组件，更像是主动调用一些 API 去编写组件的实现逻辑。
@@ -5644,7 +5677,7 @@ packages/runtime-core/src/apiInject.ts
 
 # 模块三：编译过程和背后的优化思想
 
-## 导读 | 编译和优化：了解编译过程和背后的优化思想
+## 导读 | 编译和优化
 
 在组件实现的章节，我们分析了组件生成到页面 DOM 会经历创建 vnode、渲染 vnode 到 DOM 的过程。但其实我们编写组件时，并不会直接去手写组件 vnode，其中创建 vnode 的过程，实际上是 Vue.js 内部帮我们完成的。
 
@@ -5656,7 +5689,7 @@ packages/runtime-core/src/apiInject.ts
 
 由于编译过程平时开发中很难接触到，所以不需要你对每一个细节都了解，你只要对整体有一个理解和掌握即可。另外，后续我们在分析 Vue.js 的一些特性时，也会结合编译过程一起分析，也会经常回顾编译的过程和结果，帮你加深印象。
 
-最后，在学习这章节内容的过程中，希望你可以使用官方的一个模板导出工具，在线调试模板的实时编译结果，辅助学习。如果你想在线调试编译的过程，可以在 vue-next 的源码 packages/template-explorer/dist/template-explorer.global.js 中的关键流程上打 debugger 断点，然后在根目录下运行 npm run dev-compiler 命令，接着访问 http://localhost:5000/packages/template-explorer 调试即可。
+最后，在学习这章节内容的过程中，希望你可以使用官方的一个模板导出工具，在线调试模板的实时编译结果，辅助学习。如果你想在线调试编译的过程，可以在 vue-next 的源码 `packages/template-explorer/dist/template-explorer.global.js` 中的关键流程上打 debugger 断点，然后在根目录下运行 `npm run dev-compiler` 命令，接着访问 `http://localhost:5000/packages/template-explorer` 调试即可。
 
 ## 12 | 模板解析（上）
 
@@ -5707,8 +5740,11 @@ function baseCompile(template,  options = {}) {
 
 这一节课我们的目标就是解析 template 生成 AST 背后的实现原理。
 
-生成 AST 抽象语法树
+### 生成 AST 抽象语法树
+
 你可以在百度百科中看到 AST 的定义，这里我就不赘述啦，对应到我们的 template，也可以用 AST 去描述它，比如我们有如下 template：
+
+> 在计算机科学中，抽象语法树（Abstract Syntax Tree，AST），或简称语法树（Syntax tree），是源代码语法结构的一种抽象表示。它以树状的形式表现编程语言的语法结构，树上的每个节点都表示源代码中的一种结构。
 
 ```
 <div class="app">
@@ -5979,7 +6015,8 @@ function baseParse(content, options = {}) {
 
 baseParse 主要就做三件事情：创建解析上下文，解析子节点，创建 AST 根节点。
 
-创建解析上下文
+### 创建解析上下文
+
 首先，我们来分析创建解析上下文的过程，先来看 createParserContext 的实现：
 
 ```
@@ -6014,7 +6051,8 @@ function createParserContext(content, options) {
 
 创建完解析上下文，接下来就开始解析子节点了。
 
-解析子节点
+### 解析子节点
+
 我们先来看一下 parseChildren 函数的实现：
 
 ```
@@ -6034,112 +6072,208 @@ parseChildren 的目的就是解析并创建 AST 节点数组。它有两个主�
 首先，我们来看生成 AST 节点数组的流程：
 
 ```
-function parseChildren(context, mode, ancestors) {
-  // 父节点
-  const parent = last(ancestors)
-  const ns = parent ? parent.ns : 0 /* HTML */
-  const nodes = []
-  // 判断是否遍历结束
-  while (!isEnd(context, mode, ancestors)) {
-    const s = context.source
-    let node = undefined
-    if (mode === 0 /* DATA */ || mode === 1 /* RCDATA */) {
-      if (!context.inVPre && startsWith(s, context.options.delimiters[0])) {
-        // 处理 {{ 插值代码
-        node = parseInterpolation(context, mode)
-      }
-      else if (mode === 0 /* DATA */ && s[0] === '<') {
-        // 处理 < 开头的代码
-        if (s.length === 1) {
-          // s 长度为 1，说明代码结尾是 <，报错
-          emitError(context, 5 /* EOF_BEFORE_TAG_NAME */, 1)
-        }
-        else if (s[1] === '!') {
-          // 处理 <! 开头的代码
-          if (startsWith(s, '<!--')) {
-            // 处理注释节点
-            node = parseComment(context)
-          }
-          else if (startsWith(s, '<!DOCTYPE')) {
-            // 处理 <!DOCTYPE 节点
-            node = parseBogusComment(context)
-          }
-          else if (startsWith(s, '<![CDATA[')) {
-            // 处理 <![CDATA[ 节点
-            if (ns !== 0 /* HTML */) {
-              node = parseCDATA(context, ancestors)
-            }
-            else {
-              emitError(context, 1 /* CDATA_IN_HTML_CONTENT */)
-              node = parseBogusComment(context)
-            }
-          }
-          else {
-            emitError(context, 11 /* INCORRECTLY_OPENED_COMMENT */)
-            node = parseBogusComment(context)
-          }
-        }
-        else if (s[1] === '/') {
-          // 处理 </ 结束标签
-          if (s.length === 2) {
-            // s 长度为 2，说明代码结尾是 </，报错
-            emitError(context, 5 /* EOF_BEFORE_TAG_NAME */, 2)
-          }
-          else if (s[2] === '>') {
-            // </> 缺少结束标签，报错
-            emitError(context, 14 /* MISSING_END_TAG_NAME */, 2)
-            advanceBy(context, 3)
-            continue
-          }
-          else if (/[a-z]/i.test(s[2])) {
-            // 多余的结束标签
-            emitError(context, 23 /* X_INVALID_END_TAG */)
-            parseTag(context, 1 /* End */, parent)
-            continue
-          }
-          else {
-            emitError(context, 12 /* INVALID_FIRST_CHARACTER_OF_TAG_NAME */, 2)
-            node = parseBogusComment(context)
-          }
-        }
-        else if (/[a-z]/i.test(s[1])) {
-          // 解析标签元素节点
-          node = parseElement(context, ancestors)
-        }
-        else if (s[1] === '?') {
-          emitError(context, 21 /* UNEXPECTED_QUESTION_MARK_INSTEAD_OF_TAG_NAME */, 1)
-          node = parseBogusComment(context)
-        }
-        else {
-          emitError(context, 12 /* INVALID_FIRST_CHARACTER_OF_TAG_NAME */, 1)
-        }
-      }
-    }
-    if (!node) {
-      // 解析普通文本节点
-      node = parseText(context, mode)
-    }
-    if (isArray(node)) {
-      // 如果 node 是数组，则遍历添加
-      for (let i = 0; i < node.length; i++) {
-        pushNode(nodes, node[i])
-      }
-    }
-    else {
-      // 添加单个 node
-      pushNode(nodes, node)
-    }
-  }
-}
+function parseChildren(context, mode, ancestors) { 
+
+  // 父节点 
+
+  const parent = last(ancestors) 
+
+  const ns = parent ? parent.ns : 0 /* HTML */ 
+
+  const nodes = [] 
+
+  // 判断是否遍历结束 
+
+  while (!isEnd(context, mode, ancestors)) { 
+
+    const s = context.source 
+
+    let node = undefined 
+
+    if (mode === 0 /* DATA */ || mode === 1 /* RCDATA */) { 
+
+      if (!context.inVPre && startsWith(s, context.options.delimiters[0])) { 
+
+        // 处理 {{ 插值代码 
+
+        node = parseInterpolation(context, mode) 
+
+      } 
+
+      else if (mode === 0 /* DATA */ && s[0] === '<') { 
+
+        // 处理 < 开头的代码 
+
+        if (s.length === 1) { 
+
+          // s 长度为 1，说明代码结尾是 <，报错 
+
+          emitError(context, 5 /* EOF_BEFORE_TAG_NAME */, 1) 
+
+        } 
+
+        else if (s[1] === '!') { 
+
+          // 处理 <! 开头的代码 
+
+          if (startsWith(s, '<!--')) { 
+
+            // 处理注释节点 
+
+            node = parseComment(context) 
+
+          } 
+
+          else if (startsWith(s, '<!DOCTYPE')) { 
+
+            // 处理 <!DOCTYPE 节点 
+
+            node = parseBogusComment(context) 
+
+          } 
+
+          else if (startsWith(s, '<![CDATA[')) { 
+
+            // 处理 <![CDATA[ 节点 
+
+            if (ns !== 0 /* HTML */) { 
+
+              node = parseCDATA(context, ancestors) 
+
+            } 
+
+            else { 
+
+              emitError(context, 1 /* CDATA_IN_HTML_CONTENT */) 
+
+              node = parseBogusComment(context) 
+
+            } 
+
+          } 
+
+          else { 
+
+            emitError(context, 11 /* INCORRECTLY_OPENED_COMMENT */) 
+
+            node = parseBogusComment(context) 
+
+          } 
+
+        } 
+
+        else if (s[1] === '/') { 
+
+          // 处理 </ 结束标签 
+
+          if (s.length === 2) { 
+
+            // s 长度为 2，说明代码结尾是 </，报错 
+
+            emitError(context, 5 /* EOF_BEFORE_TAG_NAME */, 2) 
+
+          } 
+
+          else if (s[2] === '>') { 
+
+            // </> 缺少结束标签，报错 
+
+            emitError(context, 14 /* MISSING_END_TAG_NAME */, 2) 
+
+            advanceBy(context, 3) 
+
+            continue 
+
+          } 
+
+          else if (/[a-z]/i.test(s[2])) { 
+
+            // 多余的结束标签 
+
+            emitError(context, 23 /* X_INVALID_END_TAG */) 
+
+            parseTag(context, 1 /* End */, parent) 
+
+            continue 
+
+          } 
+
+          else { 
+
+            emitError(context, 12 /* INVALID_FIRST_CHARACTER_OF_TAG_NAME */, 2) 
+
+            node = parseBogusComment(context) 
+
+          } 
+
+        } 
+
+        else if (/[a-z]/i.test(s[1])) { 
+
+          // 解析标签元素节点 
+
+          node = parseElement(context, ancestors) 
+
+        } 
+
+        else if (s[1] === '?') { 
+
+          emitError(context, 21 /* UNEXPECTED_QUESTION_MARK_INSTEAD_OF_TAG_NAME */, 1) 
+
+          node = parseBogusComment(context) 
+
+        } 
+
+        else { 
+
+          emitError(context, 12 /* INVALID_FIRST_CHARACTER_OF_TAG_NAME */, 1) 
+
+        } 
+
+      } 
+
+    } 
+
+    if (!node) { 
+
+      // 解析普通文本节点 
+
+      node = parseText(context, mode) 
+
+    } 
+
+    if (isArray(node)) { 
+
+      // 如果 node 是数组，则遍历添加 
+
+      for (let i = 0; i < node.length; i++) { 
+
+        pushNode(nodes, node[i]) 
+
+      } 
+
+    } 
+
+    else { 
+
+      // 添加单个 node 
+
+      pushNode(nodes, node) 
+
+    } 
+
+  } 
+
+} 
 ```
 
 这些代码看起来很复杂，但它的思路就是自顶向下地去遍历代码，然后根据不同的情况尝试去解析代码，然后把生成的 node 添加到 AST nodes 数组中。在解析的过程中，解析上下文 context 的状态也是在不断发生变化的，我们可以通过 context.source 拿到当前解析剩余的代码 s，然后根据 s 不同的情况走不同的分支处理逻辑。在解析的过程中，可能会遇到各种错误，都会通过 emitError 方法报错。
 
 我们没有必要去了解所有代码的分支细节，只需要知道大致的解析思路即可，因此我们这里只分析四种情况：注释节点的解析、插值的解析、普通文本的解析，以及元素节点的解析。
 
-注释节点的解析
+1. 注释节点的解析
 
-首先，我们来看注释节点的解析过程，它会解析模板中的注释节点，比如 `<!-- 这是一段注释 -->`， 即当前代码 s 是以 `<!-- 开头的字符串，则走到注释节点的解析处理逻辑`。
+首先，我们来看注释节点的解析过程，它会解析模板中的注释节点，比如 `<!-- 这是一段注释 -->`， 即当前代码 s 是以 `<!--` 开头的字符串，则走到注释节点的解析处理逻辑。
 
 我们来看 parseComment 的实现：
 
@@ -6228,9 +6362,9 @@ advanceBy 的实现很简单，主要就是更新解析上下文 context 中的 
 
 parseComment 最终返回的值就是一个描述注释节点的对象，其中 type 表示它是一个注释节点，content 表示注释的内容，loc 表示注释的代码开头和结束的位置信息。
 
-插值的解析
+2. 插值的解析
 
-接下来，我们来看插值的解析过程，它会解析模板中的插值，比如 {{ msg }} ，即当前代码 s 是以 {{ 开头的字符串，且不在 v-pre 指令的环境下（v-pre 会跳过插值的解析），则会走到插值的解析处理逻辑 parseInterpolation 函数，我们来看它的实现：
+接下来，我们来看插值的解析过程，它会解析模板中的插值，比如 `{{ msg }}` ，即当前代码 s 是以 `{{` 开头的字符串，且不在 v-pre 指令的环境下（v-pre 会跳过插值的解析），则会走到插值的解析处理逻辑 parseInterpolation 函数，我们来看它的实现：
 
 ```
 function parseInterpolation(context, mode) {
@@ -6291,9 +6425,9 @@ parseInterpolation 的实现也很简单，首先它会尝试找插值的结束�
 
 parseInterpolation 最终返回的值就是一个描述插值节点的对象，其中 type 表示它是一个插值节点，loc 表示插值的代码开头和结束的位置信息，而 content 又是一个描述表达式节点的对象，其中 type 表示它是一个表达式节点，loc 表示内容的代码开头和结束的位置信息，content 表示插值的内容。
 
-普通文本的解析
+3. 普通文本的解析
 
-接下来，我们来看普通文本的解析过程，它会解析模板中的普通文本，比如 This is an app ，即当前代码 s 既不是以 {{ 插值分隔符开头的字符串，也不是以 < 开头的字符串，则走到普通文本的解析处理逻辑，我们来看 parseText 的实现：
+接下来，我们来看普通文本的解析过程，它会解析模板中的普通文本，比如 This is an app ，即当前代码 s 既不是以 `{{` 插值分隔符开头的字符串，也不是以 `<` 开头的字符串，则走到普通文本的解析处理逻辑，我们来看 parseText 的实现：
 
 ```
 function parseText(context, mode) {
@@ -6341,8 +6475,9 @@ packages/compiler-core/src/parse.ts
 
 我们讲到了解析子节点，主要有四种情况，分别是注释节点的解析、插值的解析、普通文本的解析，以及元素节点的解析，这节课我们就到了最后的元素节点。
 
-解析子节点
-元素节点的解析
+### 解析子节点
+
+- 元素节点的解析
 
 最后，我们来看元素节点的解析过程，它会解析模板中的标签节点，举个例子：
 
@@ -6352,7 +6487,7 @@ packages/compiler-core/src/parse.ts
 </div>
 ```
 
-相对于前面三种类型的解析过程，元素节点的解析过程应该是最复杂的了，即当前代码 s 是以 < 开头，并且后面跟着字母，说明它是一个标签的开头，则走到元素节点的解析处理逻辑，我们来看 parseElement 的实现：
+相对于前面三种类型的解析过程，元素节点的解析过程应该是最复杂的了，即当前代码 s 是以 `<` 开头，并且后面跟着字母，说明它是一个标签的开头，则走到元素节点的解析处理逻辑，我们来看 parseElement 的实现：
 
 ```
 function parseElement(context, ancestors) {
@@ -6517,7 +6652,8 @@ parseTag 最终返回的值就是一个描述标签节点的对象，其中 type
 
 通过不断地递归解析，我们就可以完整地解析整个模板，并且标签类型的 AST 节点会保持对子节点数组的引用，这样就构成了一个树形的数据结构，所以整个解析过程构造出的 AST 节点数组就能很好地映射整个模板的 DOM 结构。
 
-空白字符管理
+### 空白字符管理
+
 在前面的解析过程中，有些时候我们会遇到空白字符的情况，比如前面的例子：
 
 ```
@@ -6596,7 +6732,8 @@ function parseChildren(context, mode, ancestors) {
 
 在 parseChildren 函数的最后，会过滤掉这些被标记清除的节点并返回过滤后的 AST 节点数组。
 
-创建 AST 根节点
+### 创建 AST 根节点
+
 子节点解析完毕，baseParse 过程就剩最后一步创建 AST 根节点了，我们来看一下 createRoot 的实现：
 
 ```
@@ -6619,7 +6756,8 @@ function createRoot(children, loc = locStub) {
 
 createRoot 的实现非常简单，它就是返回一个 JavaScript 对象，作为 AST 根节点。其中 type 表示它是一个根节点类型，children 是我们前面解析的子节点数组。除此之外，这个根节点还添加了其它的属性，当前我们并不需要搞清楚每一个属性代表的含义，这些属性我们在分析后续的处理流程中会介绍。
 
-总结
+### 总结
+
 好的，到这里我们这一节的学习也要结束啦，通过这节课的学习，你应该掌握 Vue.js 编译过程的第一步，即把 template 解析生成 AST 对象，整个解析过程是一个自顶向下的分析过程，也就是从代码开始，通过语法分析，找到对应的解析处理逻辑，创建 AST 节点，处理的过程中也在不断前进代码，更新解析上下文，最终根据生成的 AST 节点数组创建 AST 根节点。
 
 最后，给你留一道思考题目，在 parseTag 的过程中，如果解析的属性有 v-pre 标签，为什么要回到之前的 context，重新解析一次？欢迎你在留言区与我分享。
@@ -6694,7 +6832,7 @@ function getBaseTransformPreset(prefixIdentifiers) {
 
 这里并不需要你进一步去看每个转换函数的实现，只要大致了解有哪些转换函数即可，这些转换函数会在后续执行 transform 的时候调用。
 
-注意这里我们只分析在 Node.js 环境下的编译过程。Web 环境的编译结果可能会有一些差别，我们会在后续章节说明。
+> 注意这里我们只分析在 Node.js 环境下的编译过程。Web 环境的编译结果可能会有一些差别，我们会在后续章节说明。
 
 我们主要来看 transform 函数的实现：
 
@@ -6720,7 +6858,8 @@ function transform(root, options) {
 
 transform 的核心流程主要有四步：创建 transform 上下文、遍历 AST 节点、静态提升以及创建根代码生成节点。接下来，我们就好好分析一下每一步主要做了什么。
 
-创建 transform 上下文
+### 创建 transform 上下文
+
 首先，我们来看创建 transform 上下文的过程，其实和 parse 过程一样，在 transform 阶段会创建一个上下文对象，它的实现过程是这样的：
 
 ```
@@ -6815,7 +6954,8 @@ function createTransformContext(root, { prefixIdentifiers = false, hoistStatic =
 
 创建完上下文对象后，接下来就需要遍历 AST 节点。
 
-遍历 AST 节点
+### 遍历 AST 节点
+
 遍历 AST 节点的过程很关键，因为核心的转换过程就是在遍历中实现的：
 
 ```
@@ -6885,7 +7025,8 @@ Vue.js 内部大概内置了八种转换函数，分别处理指令、表达式�
 
 下面我会介绍四种类型的转换函数，并结合前面的示例来分析。
 
-Element 节点转换函数
+### Element 节点转换函数
+
 首先，我们来看一下 Element 节点转换函数的实现：
 
 ```
@@ -7100,7 +7241,8 @@ createVNodeCall 的实现很简单，它最后返回了一个对象，包含了�
 
 这个 codegenNode 相比之前的 AST 节点对象，多了很多和编译优化相关的属性，它们会在代码生成阶段会起到非常重要作用，在后续的章节你就可以深入了解到。
 
-表达式节点转换函数
+### 表达式节点转换函数
+
 接下来，我们来看一下表达式节点转换函数的实现：
 
 ```
@@ -7135,7 +7277,7 @@ const transformExpression = (node, context) => {
 
 需要注意的是，只有在 Node.js 环境下的编译或者是 Web 端的非生产环境下才会执行 transformExpression，原因我稍后会告诉你。
 
-transformExpression 主要做的事情就是转换插值和元素指令中的动态表达式，把简单的表达式对象转换成复合表达式对象，内部主要是通过 processExpression 函数完成。举个例子，比如这个模板：{{ msg + test }}，它执行 parse 后生成的表达式节点 node.content 值为一个简单的表达式对象：
+transformExpression 主要做的事情就是转换插值和元素指令中的动态表达式，把简单的表达式对象转换成复合表达式对象，内部主要是通过 processExpression 函数完成。举个例子，比如这个模板：`{{ msg + test }}`，它执行 parse 后生成的表达式节点 node.content 值为一个简单的表达式对象：
 
 ```
 {
@@ -7170,21 +7312,21 @@ transformExpression 主要做的事情就是转换插值和元素指令中的动
 }
 ```
 
-这里，我们重点关注对象中的 children 属性，它是一个长度为 3 的数组，其实就是把表达式 msg + test 拆成了三部分，其中变量 msg 和 test 对应都加上了前缀 _ctx。
+这里，我们重点关注对象中的 children 属性，它是一个长度为 3 的数组，其实就是把表达式 `msg + test` 拆成了三部分，其中变量 msg 和 test 对应都加上了前缀 `_ctx`。
 
 那么为什么需要加这个前缀呢？
 
-我们就要想到模板中引用的的 msg 和 test 对象最终都是在组件实例中访问的，但为了书写模板方便，Vue.js 并没有让我们在模板中手动加组件实例的前缀，例如：{{ this.msg + this.test }}，这样写起来就会不够方便，但如果用 JSX 写的话，通常要手动写 this。
+我们就要想到模板中引用的的 msg 和 test 对象最终都是在组件实例中访问的，但为了书写模板方便，Vue.js 并没有让我们在模板中手动加组件实例的前缀，例如：`{{ this.msg + this.test }}`，这样写起来就会不够方便，但如果用 JSX 写的话，通常要手动写 this。
 
-你可能会有疑问，为什么 Vue.js 2.x 编译的结果没有 _ctx 前缀呢？这是因为 Vue.js 2.x 的编译结果使用了”黑魔法“ with，比如上述模板，在 Vue.js 2.x 最终编译的结果：with(this){return _s(msg + test)}。
+你可能会有疑问，为什么 Vue.js 2.x 编译的结果没有 `_ctx` 前缀呢？这是因为 Vue.js 2.x 的编译结果使用了”黑魔法“ with，比如上述模板，在 Vue.js 2.x 最终编译的结果：`with(this){return _s(msg + test)}`。
 
 它利用 with 的特性动态去 this 中查找 msg 和 test 属性，所以不需要手动加前缀。
 
 但是，Vue.js 3.0 在 Node.js 端的编译结果舍弃了 with，它会在 processExpression 过程中对表达式动态分析，给该加前缀的地方加上前缀。
 
-processExpression 的详细实现我们不会分析，但你需要知道，这个过程肯定有一定的成本，因为它内部依赖了 @babel/parser 库去解析表达式生成 AST 节点，并依赖了 estree-walker 库去遍历这个 AST 节点，然后对节点分析去判断是否需要加前缀，接着对 AST 节点修改，最终转换生成新的表达式对象。
+processExpression 的详细实现我们不会分析，但你需要知道，这个过程肯定有一定的成本，因为它内部依赖了 `@babel/parser` 库去解析表达式生成 AST 节点，并依赖了 estree-walker 库去遍历这个 AST 节点，然后对节点分析去判断是否需要加前缀，接着对 AST 节点修改，最终转换生成新的表达式对象。
 
-@babel/parser 这个库通常是在 Node.js 端用的，而且这库本身体积非常大，如果打包进 Vue.js 的话会让包体积膨胀 4 倍，所以我们并不会在生产环境的 Web 端引入这个库，Web 端生产环境下的运行时编译最终仍然会用 with 的方式。
+`@babel/parser` 这个库通常是在 Node.js 端用的，而且这库本身体积非常大，如果打包进 Vue.js 的话会让包体积膨胀 4 倍，所以我们并不会在生产环境的 Web 端引入这个库，Web 端生产环境下的运行时编译最终仍然会用 with 的方式。
 
 因为用 with 的话就完全不需要对表达式做转换了，这也就回答我前面的问题：只有在 Node.js 环境下的编译或者是 Web 端的非生产环境下才会执行 transformExpression。
 
@@ -7204,8 +7346,10 @@ packages/compiler-core/src/transforms/transformExpression.ts
 
 上一节课，我们已经知道了 transform 的核心流程主要有四步：创建 transform 上下文、遍历 AST 节点、静态提升以及创建根代码生成节点。这节课我们接着分析遍历 AST 节点中的 Text 节点的转换函数。
 
-遍历 AST 节点
-Text 节点转换函数
+### 遍历 AST 节点
+
+- Text 节点转换函数
+
 接下来，我们来看一下 Text 节点转换函数的实现：
 
 ```
@@ -7286,7 +7430,7 @@ transformText 主要的目的就是合并一些相邻的文本节点，然后为
 
 在内部，静态文本节点和动态插值节点都被看作是一个文本节点，所以函数首先遍历节点的子节点，然后把子节点中的相邻文本节点合并成一个。
 
-比如示例中的文本节点：<p>hello {{ msg + test }}</p>。
+比如示例中的文本节点：`<p>hello {{ msg + test }}</p>`。
 
 在转换之前，p 节点对应的 children 数组有两个元素，第一个是纯文本节点，第二个是一个插值节点，这个数组也是前面提到的表达式节点转换后的结果：
 
@@ -7389,7 +7533,8 @@ createCallExpression 的实现很简单，就是返回一个类型为 JS_CALL_EX
 
 这里，针对我们创建的函数表达式所生成的节点，它对应的函数名是 createTextVNode，参数 callArgs 是子节点本身 child，如果是动态插值节点，那么参数还会多一个 TEXT 的 patchFlag。
 
-v-if 节点转换函数
+- v-if 节点转换函数
+
 接下来，我们来看一下 v-if 节点转换函数的实现：
 
 ```
@@ -7764,7 +7909,8 @@ createChildrenCodegenNode 主要就是判断每个分支子节点是不是一个
 
 可以看到，相比原节点，转换后的 IF 节点无论是在语义化还是在信息上，都更加丰富，我们可以依据它在代码生成阶段生成所需的代码。
 
-静态提升
+### 静态提升
+
 节点转换完毕后，接下来会判断编译配置中是否配置了 hoistStatic，如果是就会执行 hoistStatic 做静态提升：
 
 ```
@@ -7905,7 +8051,8 @@ child.codegenNode = context.hoist(child.codegenNode)
 
 改动后的 codegenNode 会在生成代码阶段帮助我们生成静态提升的相关代码。
 
-createRootCodegen
+### createRootCodegen
+
 完成静态提升后，我们来到了 AST 转换的最后一步，即创建根节点的代码生成节点。我们先来看一下 createRootCodegen 的实现：
 
 ```
@@ -7955,7 +8102,8 @@ root.cached = context.cached
 
 这样后续在代码生成节点时，就可以通过 root 这个根节点访问到这些变量了。
 
-总结
+### 总结
+
 好的，到这里我们这一节的学习就结束啦，通过这节课的学习，你应该对 AST 节点内部做了哪些转换有所了解。
 
 如果说 parse 阶段是一个词法分析过程，构造基础的 AST 节点对象，那么 transform 节点就是语法分析阶段，把 AST 节点做一层转换，构造出语义化更强，信息更加丰富的 codegenCode，它在后续的代码生成阶段起着非常重要的作用。
@@ -7991,7 +8139,7 @@ packages/compiler-core/src/transforms/hoistStatic.ts
 </div>
 ```
 
-代码生成的结果是和编译配置相关的，你可以打开官方提供的模板导出工具平台，点击右上角的 Options 修改编译配置。为了让你理解核心的流程，这里我只分析一种配置方案，当然当你理解整个编译核心流程后，也可以修改这些配置分析其他的分支逻辑。
+代码生成的结果是和编译配置相关的，你可以打开官方提供的[模板导出工具平台](https://vue-next-template-explorer.netlify.app/)，点击右上角的 Options 修改编译配置。为了让你理解核心的流程，这里我只分析一种配置方案，当然当你理解整个编译核心流程后，也可以修改这些配置分析其他的分支逻辑。
 
 我们分析的编译配置是：mode 为 module，prefixIdentifiers 开启，hoistStatic 开启，其他配置均不开启。
 
@@ -8112,7 +8260,8 @@ function generate(ast, options = {}) {
 
 generate 主要做五件事情：创建代码生成上下文，生成预设代码，生成渲染函数，生成资源声明代码，以及生成创建 VNode 树的表达式。接下来，我们就依次详细分析这几个流程。
 
-创建代码生成上下文
+### 创建代码生成上下文
+
 首先，是通过执行 createCodegenContext 创建代码生成上下文，我们来看它的实现：
 
 ```
@@ -8167,15 +8316,14 @@ function createCodegenContext(ast, { mode = 'function', prefixIdentifiers = mode
 
 此外，context 还包含了在 generate 过程中可能会调用的一些辅助函数，接下来我会介绍几个常用的方法，它们会在整个代码生成节点过程中经常被用到。
 
-push(code)，就是在当前的代码 context.code 后追加 code 来更新它的值。
-
-indent()，它的作用就是增加代码的缩进，它会让上下文维护的代码缩进 context.indentLevel 加 1，内部会执行 newline 方法，添加一个换行符，以及两倍 indentLevel 对应的空格来表示缩进的长度。
-
-deindent()，和 indent 相反，它会减少代码的缩进，让上下文维护的代码缩进 context.indentLevel 减 1，在内部会执行 newline 方法去添加一个换行符，并减少两倍 indentLevel 对应的空格的缩进长度。
+- push(code)，就是在当前的代码 context.code 后追加 code 来更新它的值。
+- indent()，它的作用就是增加代码的缩进，它会让上下文维护的代码缩进 context.indentLevel 加 1，内部会执行 newline 方法，添加一个换行符，以及两倍 indentLevel 对应的空格来表示缩进的长度。
+- deindent()，和 indent 相反，它会减少代码的缩进，让上下文维护的代码缩进 context.indentLevel 减 1，在内部会执行 newline 方法去添加一个换行符，并减少两倍 indentLevel 对应的空格的缩进长度。
 
 上下文创建完毕后，接下来就到了真正的代码生成阶段，在分析的过程中我会结合示例讲解，让你更直观地理解整个代码的生成过程，我们先来看生成预设代码。
 
-生成预设代码
+### 生成预设代码
+
 因为 mode 是 module，所以会执行 genModulePreamble 生成预设代码，我们来看它的实现：
 
 ```
@@ -8387,10 +8535,11 @@ const _hoisted_1 = { class: "app" }
 const _hoisted_2 = { key: 1 }
 const _hoisted_3 = /*#__PURE__*/_createVNode("p", null, "static", -1 /* HOISTED */)
 const _hoisted_4 = /*#__PURE__*/_createVNode("p", null, "static", -1 /* HOISTED */)
+export
 ```
 
-export
-生成渲染函数
+### 生成渲染函数
+
 接下来，就是生成渲染函数了，我们回到 generate 函数：
 
 ```
@@ -8418,7 +8567,8 @@ export function render(_ctx, _cache) {
 
 另外，由于 useWithBlock 为 false，所以我们也不需生成 with 相关的代码。而且，这里我们创建了 render 的函数声明，接下来的代码都是在生成 render 的函数体。
 
-生成资源声明代码
+### 生成资源声明代码
+
 在 render 函数体的内部，我们首先要生成资源声明代码：
 
 ```
@@ -8525,7 +8675,8 @@ packages/compiler-core/src/codegen.ts
 
 上节课，我们已经知道了在 AST 转换后，会执行 generate 函数生成代码，而 generate 主要做五件事情：创建代码生成上下文，生成预设代码，生成渲染函数，生成资源声明代码，以及生成创建 VNode 树的表达式。这节课我们继续分析，来看生成创建 VNode 树的表达式的过程。
 
-生成创建 VNode 树的表达式
+### 生成创建 VNode 树的表达式
+
 我们先来看它的实现：
 
 ```
@@ -9072,7 +9223,8 @@ export function render(_ctx, _cache) {
 
 那么，这个 Block 在运行时是怎么玩的呢？为什么它会对性能优化起到很大的作用呢？接下来我们就来分析它背后的实现原理。
 
-运行时优化
+### 运行时优化
+
 首先，我们来看一下 openBlock 的实现：
 
 ```
@@ -9223,7 +9375,8 @@ patchBlockChildren 的实现很简单，遍历新的动态子节点数组，拿�
 
 这样一来，更新的复杂度就变成和动态节点的数量正相关，而不与模板大小正相关，如果一个模板的动静比越低，那么性能优化的效果就越明显。
 
-总结
+### 总结
+
 好的，到这里我们这一节的学习也要结束啦，通过这节课的学习，你应该了解了 AST 是如何生成可运行的代码，也应该明白了 Vue.js 3.0 是如何通过 Block 的方式实现了运行时组件更新的性能优化。
 
 我也推荐你写一些其他的示例，通过断点调试的方式，看看不同的场景的代码生成过程。
@@ -9240,7 +9393,7 @@ packages/runtime-core/src/renderer.ts
 
 # 模块四：探索更多实用特性背后的实现原理
 
-## 导读 | 实用特性：探索更多实用特性背后的原理
+## 导读 | 实用特性
 
 Vue.js 除了核心的组件化和响应式之外，还提供了很多非常实用的特性供我们使用，比如组件的 props、slot、directive 等特性，它们让我们的开发更加灵活。
 
@@ -9281,7 +9434,8 @@ Vue.js 除了核心的组件化和响应式之外，还提供了很多非常实�
 
 我们平时写组件，会经常和 Props 打交道，但你知道 Vue.js 内部是如何初始化以及更新 Props 的呢？Vue.js 3.0 在 props 的 API 设计上和 Vue.js 2.x 保持一致，那它们的底层实现层面有没有不一样的地方呢？带着这些疑问，让我们来一起探索 Props 的相关实现原理吧。
 
-Props 的初始化
+### Props 的初始化
+
 首先，我们来了解 Props 的初始化过程。之前在介绍 Setup 组件初始化的章节，我们介绍了在执行 setupComponent 函数的时候，会初始化 Props：
 
 ```
@@ -9338,7 +9492,8 @@ function initProps(instance, rawProps, isStateful, isSSR = false) {
 
 接下来，我们来看设置 Props 的流程。
 
-设置 Props
+### 设置 Props
+
 我们看一下 setFullProps 的实现：
 
 ```
@@ -9612,7 +9767,8 @@ export default {
 
 至此，props 的转换求值结束，整个 setFullProps 函数逻辑也结束了，回顾它的整个流程，我们可以发现它的主要目的就是对 props 求值，然后把求得的值赋值给 props 对象和 attrs 对象中。
 
-验证 Props
+### 验证 Props
+
 接下来我们再回到 initProps 函数，分析第二个流程：验证 props 是否合法。
 
 ```
@@ -9699,7 +9855,8 @@ export default {
 
 相信这些警告你在平时的开发工作中或多或少遇到过，了解了 prop 的验证原理，今后再遇到这些警告，你就能知其然并知其所以然了。
 
-响应式处理
+### 响应式处理
+
 我们再回到 initProps 方法，来看最后一个流程：把 props 变成响应式，添加到实例 instance.props 上。
 
 ```
@@ -9728,7 +9885,8 @@ function initProps(instance, rawProps, isStateful, isSSR = false) {
 
 至此，Props 的初始化就完成了，相信你可能会有一些疑问，为什么 instance.props 要变成响应式，以及为什么用 shallowReactive API 呢？在接下来的 Props 更新流程的分析中，我来解答这两个问题。
 
-Props 的更新
+### Props 的更新
+
 所谓 Props 的更新主要是指 Props 数据的更新，它最直接的反应是会触发组件的重新渲染，我们可以通过一个简单的示例分析这个过程。例如我们有这样一个子组件 HelloWorld，它是这样定义的：
 
 ```
@@ -9995,7 +10153,8 @@ shallowReactive 创建的 getter 函数，shallow 变量为 true，那么就不�
 
 之所以可以这么做，是因为 props 在更新的过程中，只会修改最外层属性，所以用 shallowReactive 就足够了。
 
-总结
+### 总结
+
 好的，到这里我们这一节的学习也要结束啦，通过这节课的学习，你应该要了解 Props 是如何被初始化的，如何被校验的，你需要区分开 Props 配置和 Props 传值这两个概念；你还应该了解 Props 是如何更新的以及实例上的 props 为什么要定义成响应式的。
 
 最后，给你留一道思考题目，我们把前面的示例稍加修改，HelloWorld 子组件如下：
@@ -10069,7 +10228,8 @@ packages/reactivity/src/baseHandlers.ts
 
 在分析插槽的实现前，我们先来简单回顾一下插槽的使用方法。
 
-插槽的用法
+### 插槽的用法
+
 举个简单的例子，假设我们有一个 TodoButton 子组件：
 
 ```
@@ -10210,7 +10370,8 @@ packages/reactivity/src/baseHandlers.ts
 
 这些就是插槽的一些常见使用方式，那么接下来，我们就来探究一下插槽背后的实现原理吧！
 
-插槽的实现
+### 插槽的实现
+
 在分析具体的代码前，我们先来想一下插槽的特点，其实就是在父组件中去编写子组件插槽部分的模板，然后在子组件渲染的时候，把这部分模板内容填充到子组件的插槽中。
 
 所以在父组件渲染阶段，子组件插槽部分的 DOM 是不能渲染的，需要通过某种方式保留下来，等到子组件渲染的时候再渲染。顺着这个思路，我们来分析具体实现的代码。
@@ -10570,7 +10731,8 @@ processFragment 函数首先通过 hostInsert 在容器的前后插入两个空�
 
 至此，我们就完成了子组件插槽内容的渲染。可以看到，插槽的实现实际上就是一种延时渲染，把父组件中编写的插槽内容保存到一个对象上，并且把具体渲染 DOM 的代码用函数的方式封装，然后在子组件渲染的时候，根据插槽名在对象中找到对应的函数，然后执行这些函数做真正的渲染。
 
-总结
+### 总结
+
 好的，到这里我们这一节课的学习就结束啦。希望你能了解插槽的实现原理，知道父组件和子组件在实现插槽 feature 的时候各自做了哪些事情。
 
 最后，给你留一道思考题目，作用域插槽是如何实现子组件数据传递的？欢迎你在留言区与我分享。
@@ -10622,7 +10784,8 @@ directives: {
 
 至此我们就大致了解了指令的功能和用法，那么接下来，我们就从指令的定义、指令的注册和指令的应用三个方面来一起探究它的实现原理。
 
-指令的定义
+### 指令的定义
+
 指令本质上就是一个 JavaScript 对象，对象上挂着一些钩子函数，我们可以举个例子来说明，比如我定义一个 v-log 指令，这个指令做的事情就是在指令的各个生命周期去输出一些 log 信息：
 
 ```
@@ -10683,7 +10846,8 @@ app.mount('#app')
 
 所以一个指令的定义，无非就是在合适的钩子函数中编写一些相关的处理逻辑。我基于 Vue.js 3.0 写过一个简单图片懒加载的插件 vue3-lazy，你也可以去看看它的源码，了解一下一个成熟的指令插件是如何编写的。
 
-指令的注册
+### 指令的注册
+
 所以当我们编写好指令后，在应用它之前，我们需要先注册它。所谓注册，其实就是把指令的定义保存到相应的地方，未来使用的时候我可以从保存的地方拿到它。
 
 指令的注册和组件一样，可以全局注册，也可以局部注册。我们来分别看一下它们的实现原理。
@@ -10747,7 +10911,8 @@ directives: {
 
 因此全局注册和局部注册的区别是，一个保存在 appContext 中，一个保存在组件对象的定义中。
 
-指令的应用
+### 指令的应用
+
 接下来，我们重点分析指令的应用过程，我们以 v-focus 指令为例，在组件中使用这个指令：`<input v-focus />`。
 
 我们先看这个模板编译后生成的 render 函数：
@@ -10998,7 +11163,8 @@ unmount 方法的主要思路就是用递归的方式去遍历删除自身节点
 
 可以看到，在移除元素的子节点之前会执行指令的 beforeUnmount 钩子函数，在移除子节点和当前节点之后，会通过 queuePostRenderEffect 的方式执行指令的 unmounted 钩子函数。
 
-总结
+### 总结
+
 好的，到这里我们这一节的学习也要结束啦，通过这节课的学习，你应该了解指令是如何定义、如何注册，以及如何应用的。指令无非就是给我们提供了在一个元素的生命周期中注入代码的途径，它的本身实现是很简单的。
 
 最后，给你留一道思考题目，请实现一个 v-uid 指令，实现创建唯一的元素 id，使用方式如下：
@@ -11036,7 +11202,8 @@ v-model 也不是可以作用到任意标签，它只能在一些特定的表单
 
 那么 v-model 的实现原理到底是怎样的呢？接下来，我们从普通表单元素和自定义组件两个方面来分别分析它的实现。
 
-在普通表单元素上作用 v-model
+### 在普通表单元素上作用 v-model
+
 首先，我们来看在普通表单元素上作用 v-model，还是先举一个基本的示例：`<input v-model="searchText"/>`。
 
 我们先看这个模板编译后生成的 render 函数：
@@ -11126,7 +11293,8 @@ created 函数首先把 v-model 绑定的值 value 赋值给 el.value，这个�
 
 至此，我们就实现了数据的双向绑定，就是这么简单。接着我们来看 input v-model 支持的几个修饰符都分别代表什么含义。
 
-lazy 修饰符
+- lazy 修饰符
+
 如果配置了 lazy 修饰符，那么监听的是 input 的 change 事件，它不会在 input 输入框实时输入的时候触发，而会在 input 元素值改变且失去焦点的时候触发。
 
 如果不配置 lazy，监听的是 input 的 input 事件，它会在用户实时输入的时候触发。此外，还会多监听 compositionstart 和 compositionend 事件。
@@ -11135,10 +11303,12 @@ lazy 修饰符
 
 然后当用户从输入法中确定选中了一些数据完成输入后，会触发 compositionend 事件，这个时候判断 e.target.composing 为 true 的话则把它设置为 false，然后再手动触发元素的 input 事件，完成数据的赋值。
 
-trim 修饰符
+- trim 修饰符
+
 如果配置了 trim 修饰符，那么会在 input 或者 change 事件的回调函数中，在获取 DOM 的值后，手动调用 trim 方法去除首尾空格。另外，还会额外监听 change 事件执行 el.value.trim() 把 DOM 的值的首尾空格去除。
 
-number 修饰符
+- number 修饰符
+
 如果配置了 number 修饰符，或者 input 的 type 是 number，就会把 DOM 的值转成 number 类型后再赋值给数据。
 
 接下来我们再来看一下 beforeUpdate 钩子函数的实现，非常简单，主要就是在组件更新前判断如果数据的值和 DOM 的值不同，则把数据更新到 DOM 上。
@@ -11151,7 +11321,8 @@ number 修饰符
 
 你可以看到，编译的结果不同，调用的指令也不一样了，我希望你可以举一反三，去自学其他类型的表单元素的 v-model 实现。
 
-在自定义组件上作用 v-model
+### 在自定义组件上作用 v-model
+
 接下来，我们来分析自定义组件上作用 v-model，看看它与表单的 v-model 有哪些不同。还是通过一个示例说明：
 
 ```
@@ -11258,7 +11429,8 @@ export function render(_ctx, _cache, $props, $setup, $data, $options) {
 
 prop 的实现原理我们之前分析过，但自定义事件是如何派发的呢？因为从模板的编译结果看，除了 modelValue 这个 prop，还多了一个 onUpdate:modelValue 的 prop，它和自定义事件有什么关系？接下来我们就来分析这部分的实现。
 
-自定义事件派发
+### 自定义事件派发
+
 从前面的示例我们知道，子组件会执行 this.$emit('update:modelValue',value)方法派发自定义事件，$emit 内部执行了 emit 方法，我们来看一下它的实现：
 
 ```
@@ -11286,7 +11458,8 @@ emit 方法首先获取事件名称，把传递的 event 首字母大写，然�
 
 找到回调函数 handler 后，再去执行这个回调函数，并且把参数 args 传入。针对 v-model 场景，这个回调函数就是拿到子组件回传的数据然后修改父元素传入到子组件的 prop 数据，这样就达到了数据双向通讯的目的。
 
-总结
+### 总结
+
 好的，到这里我们这一节的学习也要结束啦，通过这节课的学习，你应该要了解 v-model 在普通表单元素上以及在自定义指令上的实现原理分别是怎样的，以及了解自定义事件派发的实现原理。
 
 最后，给你留一道思考题目，如果自定义组件不用 v-model，也不用自定义事件监听的方式，如何实现和 v-model 一样的效果，怎么做呢？欢迎你在留言区与我分享。
@@ -11299,7 +11472,7 @@ packages/runtime-dom/src/directives/vModel.ts
 
 # 模块五：学习 Vue 内置组件的实现原理
 
-## 导读 | 内置组件：学习 Vue 内置组件的实现原理
+## 导读 | 内置组件
 
 Vue.js 除了提供了组件化和响应式的能力，以及实用的特性外，还提供了很多好用的内置组件辅助我们的开发，这些极大地丰富了 Vue.js 的能力。
 
@@ -11419,7 +11592,8 @@ Teleport 组件使用起来非常简单，套在想要在别处渲染的组件�
 
 了解了使用方式，接下来，我们就来分析它的实现原理，看看 Teleport 是如何脱离当前组件渲染子组件的。
 
-Teleport 实现原理
+### Teleport 实现原理
+
 对于这类内置组件，Vue.js 从编译阶段就做了特殊处理，我们先来看一下前面示例模板编译后的结果：
 
 ```
@@ -11458,7 +11632,8 @@ const Teleport = {
 
 Teleport 组件的实现就是一个对象，对外提供了几个方法。其中 process 方法负责组件的创建和更新逻辑，remove 方法负责组件的删除逻辑，接下来我们就从这三个方面来分析 Teleport 的实现原理。
 
-Teleport 组件创建
+### Teleport 组件创建
+
 回顾组件创建的过程，会经历 patch 阶段，我们来回顾它的实现：
 
 ```
@@ -11553,7 +11728,8 @@ Teleport 组件创建部分主要分为三个步骤，第一步在主视图里�
 
 至此，我们就已经实现了需求，把 Teleport 包裹的子节点脱离了当前组件，渲染到目标位置，是不是很简单呢？
 
-Teleport 组件更新
+### Teleport 组件更新
+
 当然，Teleport 包裹的子节点渲染后并不是一成不变的，当组件发生更新的时候，仍然会执行 patch 逻辑走到 Teleport 的 process 方法，去处理 Teleport 组件的更新，我们来看一下这部分的实现：
 
 ```
@@ -11626,7 +11802,8 @@ Teleport 组件更新无非就是做几件事情：更新子节点，处理 disa
 
 如果新节点 disabled 为 false，那么先通过 to 属性是否改变来判断目标元素 target 有没有变化，如果有变化，则把 Teleport 的子节点移动到新的 target 内部；如果目标元素没变化，则判断旧节点的 disabled 是否为 true，如果是则把 Teleport 的子节点从主视图内部移动到目标元素内部了。
 
-Teleport 组件移除
+### Teleport 组件移除
+
 前面我们学过，当组件移除的时候会执行 unmount 方法，它的内部会判断如果移除的组件是一个 Teleport 组件，就会执行组件的 remove 方法：
 
 ```
@@ -11656,7 +11833,8 @@ Teleport 的 remove 方法实现很简单，首先通过 hostRemove 移除主视
 
 执行完 Teleport 的 remove 方法，会继续执行 remove 方法移除 Teleport 主视图的元素 teleport end 注释节点，至此，Teleport 组件完成了移除。
 
-总结
+### 总结
+
 好的，到这里我们这一节的学习也要结束啦，通过这节课的学习，你应该了解了 Teleport 是如何把内部的子元素渲染到目标元素上，并且对 Teleport 组件是如何创建，更新和移除的有所理解。
 
 最后，给你留一道思考题，作为 Vue.js 的内置组件，它需要像用户自定义组件那样先注册后再使用吗？如果不用又是为什么呢？欢迎你在留言区与我分享。
@@ -11864,7 +12042,8 @@ const KeepAliveImpl = {
 
 我把 KeepAlive 的实现拆成四个部分：组件的渲染、缓存的设计、Props 设计和组件的卸载。接下来，我们就来依次分析它们的实现。分析的过程中，我会结合前面的示例讲解，希望你也能够运行这个示例，并加入一些断点调试。
 
-组件的渲染
+### 组件的渲染
+
 首先，我们来看组件的渲染部分，可以看到 KeepAlive 组件使用了 Composition API 的方式去实现，我们已经学习过了，当 setup 函数返回的是一个函数，那么这个函数就是组件的渲染函数，我们来看它的实现：
 
 ```
@@ -11931,7 +12110,8 @@ return () => {
 
 当然，没有缓存的 KeepAlive 组件是没有灵魂的，这种抽象的封装也是没有任何意义的，所以接下来我们重点来看它的缓存是如何设计的。
 
-缓存的设计
+### 缓存的设计
+
 我们先来思考一件事情，我们需要缓存什么？
 
 组件的递归 patch 过程，主要就是为了渲染 DOM，显然这个递归过程是有一定的性能耗时的，既然目标是为了渲染 DOM，那么我们是不是可以把 DOM 缓存了，这样下一次渲染我们就可以直接从缓存里获取 DOM 并渲染，就不需要每次都重新递归渲染了。
@@ -12049,7 +12229,8 @@ sharedContext.activate = (vnode, container, anchor, isSVG, optimized) => {
 
 当然，光有缓存还不够灵活，有些时候我们想针对某些子组件缓存，某些子组件不缓存，另外，我们还想限制 KeepAlive 组件的最大缓存个数，怎么办呢？KeepAlive 设计了几个 Props，允许我们可以对上述需求做配置。
 
-Props 设计
+### Props 设计
+
 KeepAlive 一共支持了三个 Props，分别是 include、exclude 和 max。
 
 ```
@@ -12097,7 +12278,8 @@ pruneCacheEntry(keys.values().next().value)
 
 由于新的缓存 key 都是在 keys 的结尾添加的，所以当缓存的个数超过 max 的时候，就从最前面开始删除，符合 LRU 最近最少使用的算法思想。
 
-组件的卸载
+### 组件的卸载
+
 了解完 KeepAlive 组件的渲染、缓存和 Props 设计后，我们接着来看 KeepAlive 组件的卸载过程。
 
 我们先来分析 KeepAlive 内部包裹的子组件的卸载过程，前面我们提到 KeepAlive 渲染的过程实际上是渲染它的第一个子组件节点，并且会给渲染的 vnode 打上如下标记：
@@ -12177,7 +12359,8 @@ onBeforeUnmount(() => {
 
 如果不是，则执行 unmount 方法重置 shapeFlag 以及执行缓存 vnode 的整套卸载流程。
 
-总结
+### 总结
+
 好的，到这里我们这一节的学习也要结束啦，通过这节课的学习，你应该明白 KeepAlive 实际上是一个抽象节点，渲染的是它的第一个子节点，并了解它的缓存设计、Props 设计和卸载过程。
 
 最后，给你留一道思考题，我们是如何给组件注册 activated 和 deactivated 钩子函数的，它们的执行和其他钩子函数比，有什么不同？欢迎你在留言区与我分享。
@@ -12195,8 +12378,9 @@ packages/runtime-core/src/renderer.ts
 
 答案是肯定的——有，Vue.js 提供了内置的 Transition 组件，它可以让我们轻松实现动画过渡效果。
 
-Transition 组件的用法
-如果你还不太熟悉 Transition 组件的使用，我建议你先去看它的官网文档。
+### Transition 组件的用法
+
+> 如果你还不太熟悉 Transition 组件的使用，我建议你先去看它的[官网文档](https://v3.vuejs.org/guide/transitions-enterleave.html)。
 
 Transition 组件通常有三类用法：CSS 过渡，CSS 动画和 JavaScript 钩子。我们分别用几个示例来说明，这里我希望你可以敲代码运行感受一下。
 
@@ -12328,38 +12512,32 @@ CSS 过渡主要定义了一些过渡的 CSS 样式，当我们点击按钮切�
 
 Transition 组件也允许在一个过渡组件中定义它过渡生命周期的 JavaScript 钩子函数，我们可以在这些钩子函数中编写 JavaScript 操作 DOM 来实现过渡动画效果。
 
-Transition 组件的核心思想
+### Transition 组件的核心思想
+
 通过前面三个示例，我们不难发现都是在点击按钮时，通过修改 v-if 的条件值来触发过渡动画的。
 
 其实 Transition 组件过渡动画的触发条件有以下四点：
 
-条件渲染 (使用 v-if)；
-
-条件展示 (使用 v-show)；
-
-动态组件；
-
-组件根节点。
+- 条件渲染 (使用 v-if)；
+- 条件展示 (使用 v-show)；
+- 动态组件；
+- 组件根节点。
 
 所以你只能在上述四种情况中使用 Transition 组件，在进入/离开过渡的时候会有 6 个 class 切换。
 
-v-enter-from：定义进入过渡的开始状态。在元素被插入之前生效，在元素被插入之后的下一帧移除。
-
-v-enter-active：定义进入过渡生效时的状态。在整个进入过渡的阶段中应用，在元素被插入之前生效，在过渡动画完成之后移除。这个类可以被用来定义进入过渡的过程时间，延迟和曲线函数。
-
-v-enter-to：定义进入过渡的结束状态。在元素被插入之后下一帧生效 (与此同时 v-enter-from 被移除)，在过渡动画完成之后移除。
-
-v-leave-from：定义离开过渡的开始状态。在离开过渡被触发时立刻生效，下一帧被移除。
-
-v-leave-active：定义离开过渡生效时的状态。在整个离开过渡的阶段中应用，在离开过渡被触发时立刻生效，在过渡动画完成之后移除。这个类可以被用来定义离开过渡的过程时间，延迟和曲线函数。
-
-v-leave-to：定义离开过渡的结束状态。在离开过渡被触发之后下一帧生效 (与此同时 v-leave-from 被删除)，在过渡动画完成之后移除。
+1. v-enter-from：定义进入过渡的开始状态。在元素被插入之前生效，在元素被插入之后的下一帧移除。
+2. v-enter-active：定义进入过渡生效时的状态。在整个进入过渡的阶段中应用，在元素被插入之前生效，在过渡动画完成之后移除。这个类可以被用来定义进入过渡的过程时间，延迟和曲线函数。
+3. v-enter-to：定义进入过渡的结束状态。在元素被插入之后下一帧生效 (与此同时 v-enter-from 被移除)，在过渡动画完成之后移除。
+4. v-leave-from：定义离开过渡的开始状态。在离开过渡被触发时立刻生效，下一帧被移除。
+5. v-leave-active：定义离开过渡生效时的状态。在整个离开过渡的阶段中应用，在离开过渡被触发时立刻生效，在过渡动画完成之后移除。这个类可以被用来定义离开过渡的过程时间，延迟和曲线函数。
+6. v-leave-to：定义离开过渡的结束状态。在离开过渡被触发之后下一帧生效 (与此同时 v-leave-from 被删除)，在过渡动画完成之后移除。
 
 其实说白了 Transition 组件的核心思想就是，Transition 包裹的元素插入删除时，在适当的时机插入这些 CSS 样式，而这些 CSS 的实现则决定了元素的过渡动画。
 
 大致了解了 Transition 组件的用法和核心思想后，接下来我们就来探究 Transition 组件的实现原理。
 
-Transition 组件的实现原理
+### Transition 组件的实现原理
+
 为了方便你的理解，我们还是结合示例来分析：
 
 ```
@@ -12513,7 +12691,7 @@ const BaseTransition = {
 
 我把 Transition 组件的实现分成组件的渲染、钩子函数的执行、模式的应用三个部分去详细说明。
 
-组件的渲染
+### 组件的渲染
 先来看 Transition 组件是如何渲染的。我们重点看 setup 函数部分的逻辑。
 
 Transition 组件和前面学习的 KeepAlive 组件一样，是一个抽象组件，组件本身不渲染任何实体节点，只渲染第一个子元素节点。
@@ -12666,7 +12844,8 @@ packages/runtime-dom/src/components/Transition.ts
 
 上节课，我们已经知道了，Vue.js 提供了内置的 Transition 组件帮我们实现动画过渡效果。在之前的分析中我把 Transition 组件的实现分成了三个部分：组件的渲染、钩子函数的执行、模式的应用。这节课我们从钩子函数的执行继续探究 Transition 组件的实现原理。
 
-钩子函数的执行
+### 钩子函数的执行
+
 这个部分我们先来看 beforeEnter 钩子函数。
 
 在 patch 阶段的 mountElement 函数中，在插入元素节点前且存在过渡的条件下会执行 vnode.transition 中的 beforeEnter 函数，我们来看它的定义：
@@ -12991,7 +13170,8 @@ const finishLeave = (el, done) => {
 
 至此，元素离开的过渡动画逻辑就分析完了，可以看出离开过渡动画和进入过渡动画是的思路差不多，本质上都是在添加和移除一些 CSS 去执行动画，并且在过程中执行用户传入的钩子函数。
 
-模式的应用
+### 模式的应用
+
 前面我们在介绍 Transition 的渲染过程中提到过模式的应用，模式有什么用呢，我们还是通过示例说明，把前面的例子稍加修改：
 
 ```
@@ -13075,7 +13255,8 @@ if (mode === 'out-in') {
 
 然后当离开动画执行完毕后，触发了 Transition 组件的重新渲染，这个时候就可以如期渲染新元素并执行进入过渡动画了，是不是很巧妙呢？
 
-总结
+### 总结
+
 好的，到这里我们这一节的学习就结束啦，通过这节课的学习，你应该了解了 Transition 组件是如何渲染的，如何执行过渡动画和相应的钩子函数的，以及当两个视图切换时，模式的工作原理是怎样的。
 
 最后，给你留一道思考题，Transition 组件在 beforeEnter 钩子函数里会判断 el._leaveCb 是否存在，存在则执行，在 leave 钩子函数里会判断 el._enterCb 是否存在，存在则执行，这么做的原因是什么？欢迎你在留言区与我分享。
@@ -13090,7 +13271,7 @@ packages/runtime-dom/src/components/Transition.ts
 
 # 特别放送：研究 Vue 官方生态的实现原理
 
-## 导读 | 研究 Vue 官方生态的实现原理
+## 导读
 
 Vue.js 是一个渐进式的前端框架，除了提供好用的核心库之外，官方还提供了前端路由解决方案。
 
@@ -13175,7 +13356,8 @@ app.mount('#app')
 
 知道了 Vue Router 的基本用法后，接下来我们就可以探究它的实现原理了。由于 Vue Router 源码加起来有几千行，限于篇幅，我会把重点放在整体的实现流程上，不会讲实现的细节。
 
-路由的实现原理
+### 路由的实现原理
+
 我们先从用户使用的角度来分析，先从路由对象的创建过程开始。
 
 路由对象的创建
@@ -13612,7 +13794,8 @@ function setupListeners() {
 
 上节课我们学习了 Vue Router 的基本用法，并且开始探究它的实现原理，今天我们继续未完的原理，一起来看路径是如何和路由组件映射的。
 
-路径和路由组件的渲染的映射
+### 路径和路由组件的渲染的映射
+
 通过前面的示例我们了解到，路由组件就是通过 RouterView 组件渲染的，那么 RouterView 是怎么渲染的呢，我们来看它的实现：
 
 ```
@@ -13929,7 +14112,8 @@ resolve 函数主要做的事情就是根据 location 的 name 或者 path 从�
 
 前面的分析过程中，我们提到过在路径切换过程中，会执行 navigate 方法，它包含了一系列的导航守卫钩子函数的执行，接下来我们就来分析这部分的实现原理。
 
-导航守卫的实现
+### 导航守卫的实现
+
 导航守卫主要是让用户在路径切换的生命周期中可以注入钩子函数，执行一些自己的逻辑，也可以取消和重定向导航，举个应用的例子：
 
 ```
@@ -14107,7 +14291,8 @@ guardCall = Promise.resolve(guardReturn)
 
 所以，对于导航守卫而言，经过 Promise 化后添加到 guards 数组中，然后再通过 runGuards 以及 Promise 的方式链式调用，最终依次顺序执行这些导航守卫。
 
-总结
+### 总结
+
 好的，到这里我们这一节的学习也要结束啦，通过这节课的学习，你应该要了解 Vue Router 的基本实现原理，知道路径是如何管理的，路径和路由组件的渲染是如何映射的，导航守卫是如何执行的。
 
 当然，路由实现的细节是非常多的，我希望你学完之后，可以对照着官网的文档的 feature，自行去分析它们的实现原理。
@@ -14116,13 +14301,9 @@ guardCall = Promise.resolve(guardReturn)
 
 # 结束语
 
-## 结束语 | 终点也是起点
+源码学习相比实战课程的学习，显得既抽象又枯燥，难以坚持下去。建议多看几遍课程，动手去写 Demo，去用 debugger 单步调试。
 
-源码学习相比实战课程的学习，显得既抽象又枯燥，难以坚持下去，但是请你不要放弃，在学习的路上遇到困难是非常正常的，我建议你多看几遍课程，动手去写 Demo，去用 debugger 单步调试，当然你也可以给我留言。
-
-一旦你学进去了，学通了，源码的学习就会变得轻松有趣且非常有成就感，那种一拍大腿，恍然大悟的感觉会非常的爽。相应的，源码大多是用原生的 JavaScript 编写的，学习过程中你的原生 JavaScript 的功力也会得到提升，因此你的技术能力一定会往上迈一个台阶。
-
-技术强了，你就有了升职加薪和跳槽的资本，吃技术这碗饭最硬核的实力就是技术本身。事实上，我之前有很多进了大厂的学生，无一例外都是源码课学的不错的。其中我最得意的一个学生，通过学习我的课程进入了滴滴，他不仅深入学习了 Vue.js 源码，还深入了解了 Webpack 的源码，遇事看源码，他的技术视野得到了很大的拓宽，通过自我驱动不断地学习，他的技术能力也是突飞猛进，还负责了 BetterScroll 2.0 重构，现在已经升级到了 D7，成为了滴滴前端架构组的核心成员之一——源码强的人真的可以为所欲为！
+相应的，源码大多是用原生的 JavaScript 编写的，学习过程中你的原生 JavaScript 的功力也会得到提升，因此你的技术能力一定会往上迈一个台阶。
 
 另外，为了激发你的学习兴趣，我在每节课的结尾都加了一个开放性的问题，其实目的就是为了希望你能主动学习，主动思考。到目前为止我也没在课程中公布答案，因为我希望你可以养成独立思考的习惯，在我看来，思考的过程比答案本身更重要。
 
