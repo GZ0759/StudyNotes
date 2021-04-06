@@ -26,26 +26,35 @@ SPA（ single-page application ）仅在 Web ⻚⾯初始化时加载相应的 H
 
 什么是 MVVM 模式？
 
-Model–View–ViewModel （MVVM） 是一个软件架构设计模式，由微软 WPF 和 Silverlight 的架构师 Ken Cooper 和 Ted Peters 开发，是一种简化用户界面的事件驱动编程方式。由 John Gossman（同样也是 WPF 和 Silverlight 的架构师）于 2005 年在他的博客上发表。
+Model–View–ViewModel （MVVM） 是一个软件架构设计模式，就是将其中的 View 的状态和行为抽象化，让我们将视图 UI 和业务逻辑分开。MVVM 源自于经典的 Model–View–Controller（MVC）模式 ，它的出现促进了前端开发与后端业务逻辑的分离，极大地提高了前端开发效率。
 
-MVVM 源自于经典的 Model–View–Controller（MVC）模式 ，MVVM 的出现促进了前端开发与后端业务逻辑的分离，极大地提高了前端开发效率，MVVM 的核心是 ViewModel 层，它就像是一个中转站（value converter），负责转换 Model 中的数据对象来让数据变得更容易管理和使用，该层向上与视图层进行双向数据绑定，向下与 Model 层通过接口请求进行数据交互，起呈上启下作用。如下图所示：
+MVVM 的核心是 ViewModel 层，它就像是一个中转站（value converter），负责转换 Model 中的数据对象来让数据变得更容易管理和使用。该层向上与视图层进行双向数据绑定，向下与 Model 层通过接口请求进行数据交互，起呈上启下作用。
 
 1. View 是视图层，也就是用户界面。前端主要由 HTML 和 CSS 来构建 。
 2. Model 是指数据模型，泛指后端进行的各种业务逻辑处理和数据操控，对于前端来说就是后端提供的 api 接口。
 3. ViewModel 是由前端开发人员组织生成和维护的视图数据层。
 
-在 ViewModel 层，前端开发者对从后端获取的 Model 数据进行转换处理，做二次封装，以生成符合 View 层使用预期的视图数据模型。需要注意的是 ViewModel 所封装出来的数据模型包括视图的状态和行为两部分，而 Model 层的数据模型是只包含状态的，比如页面的这一块展示什么，而页面加载进来时发生什么，点击这一块发生什么，这一块滚动时发生什么这些都属于视图行为（交互），视图状态和行为都封装在了 ViewModel 里。这样的封装使得 ViewModel 可以完整地去描述 View 层。
-
-MVVM 框架实现了双向绑定，这样 ViewModel 的内容会实时展现在 View 层，前端开发者再也不必低效又麻烦地通过操纵 DOM 去更新视图，MVVM 框架已经把最脏最累的一块做好了，我们开发者只需要处理和维护 ViewModel，更新数据视图就会自动得到相应更新。这样 View 层展现的不是 Model 层的数据，而是 ViewModel 的数据，由 ViewModel 负责与 Model 层交互，这就完全解耦了 View 层和 Model 层，这个解耦是至关重要的，它是前后端分离方案实施的重要一环。
+MVVM 框架实现了双向绑定，这样 ViewModel 的内容会实时展现在 View 层，前端开发者不用低效、麻烦地通过操纵 DOM 去更新视图，MVVM 框架已经把最脏最累的一块做好了，开发者只需要处理和维护 ViewModel，更新数据视图就会自动得到相应更新。这样 View 层展现的不是 Model 层的数据，而是 ViewModel 的数据，由 ViewModel 负责与 Model 层交互，这就完全解耦了 View 层和 Model 层，这个解耦是至关重要的，它是前后端分离方案实施的重要一环。
 
 ### 数据双向绑定
 
-Vue 数据双向绑定主要是指：数据变化更新视图，视图变化更新数据。主要通过一下四个步骤来实现。
+Vue 是如何实现数据双向绑定的？
 
-1. 实现监听器 Observer：对数据对象进行遍历，包括子属性对象的属性，利用 `Object.defineProperty()` 监听属性。
-2. 实现解析器 Compile：解析 Vue 模板指令，将模板中的变量都替换成数据，然后初始化渲染页面视图，并将每个指令对应的节点绑定更新函数，添加监听数据的订阅者，一旦数据有变动，收到通知，调用更新函数进行数据更新。
-3. 实现订阅者 Watcher：Watcher 订阅者是 Observer 和 Compile 之间通信的桥梁 ，主要的任务是订阅 Observer 中的属性值变化的消息，当收到属性值变化的消息时，触发解析器 Compile 中对应的更新函数。
-4. 实现订阅器 Dep：订阅器采用 发布-订阅 设计模式，用来收集订阅者 Watcher，对监听器 Observer 和 订阅者 Watcher 进行统一管理。
+Vue 数据双向绑定主要是指：数据变化更新视图，视图变化更新数据。
+
+- 输入框内容变化时，Data 中的数据同步变化。即 View => Data 的变化。
+- Data 中的数据变化时，文本节点的内容同步变化。即 Data => View 的变化。
+
+其中，View 变化更新 Data，可以通过事件监听的方式来实现，所以 Vue 的数据双向绑定的工作主要是如何根据 Data 变化更新 View。
+
+双向绑定采用**数据劫持**和**发布-订阅模式**的设计思想，主要包括四个步骤。
+
+1. 实现 Observer 监听器：用来劫持并监听所有属性，如果属性发生变化，就通知订阅者。主要是对数据对象进行遍历，通过调用 `Object.defineProperty()` 监听属性，在 getter 里面收集依赖，在 setter 里面派发更新。
+2. 实现 Compile 解析器：解析模板内容，替换模板变量，添加相关订阅者，渲染页面。
+3. 实现 Watcher 订阅者：可以收到属性的变化通知并执行相应的方法，从而更新视图。订阅者是 Observer 和 Compile 之间通信的桥梁。
+4. 实现 Dep 订阅器：主要负责收集订阅者，然后当数据变化的时候通知订阅者。
+
+> 发布-订阅模式又叫观察者模式，它定义对象间的一种一对多的依赖关系，当一个对象的状态改变时，所有依赖于它的对象都将得到通知。
 
 ### 服务端渲染
 
@@ -301,7 +310,7 @@ v-for 优先于 v-if 被解析。如果同时出现，每次渲染都会先执�
 
 v-if 是真正的条件渲染，因为它会确保在切换过程中事件监听器和子组件被销毁和重建。同时也是惰性的，如果在初始渲染时条件为假，则什么也不做。
 
-v-show 就简单得多。不管初始条件是什么，元素总是会被渲染，并且只是简单地基于 CSS 的 display 属性，进行 DOM 的显示和隐藏的切换。
+v-show 就简单得多。不管初始条件是什么，元素总是会被渲染，并且只是简单地基于 CSS 的 display 属性。因此，元素始终会被渲染并保留在 DOM 中。
 
 使用场景
 
@@ -332,22 +341,21 @@ v-show 就简单得多。不管初始条件是什么，元素总是会被渲染�
 原理：在原有选择器上添加属性选择器，控制组件 CSS 作用域
 
 ## 第四部分 生命周期
-
 ### 实例生命周期钩子
 
 Vue 的生命周期方法有哪些？
 
-每个 Vue 实例在被创建时都要经过一系列的初始化过程，在这个过程中也会运行一些叫做生命周期钩子的函数，这给用户在不同阶段添加自己代码的机会。生命周期总共分为 8 个阶段：
+每个 Vue 实例在被创建时都要经过一系列的初始化过程，在这个过程中也会运行一些叫做生命周期钩子的函数，这给用户在不同阶段添加自己代码的机会。
 
 1. 创建前/后：
 
 - beforeCreate：初始化 Vue 空的实例对象，只有一些默认的生命周期函数和默认的事件。在当前阶段 data、methods、computed 以及 watch 都不能被访问。
-- created：实例的数据对象 data 和方法 methods 都已经初始化，可以做一些初始数据的获取，不可以在当前阶段无法与 Dom 进行交互，但可以通过 `vm.$nextTick` 来访问 Dom。
+- created：实例的数据对象 data 和方法 methods 都已经初始化，可以做一些初始数据的获取，不可以在当前阶段无法与 DOM 进行交互，但可以通过 `vm.$nextTick` 来访问 DOM。
 
 2. 载入前/后：
 
 - beforeMount：模板已经在内存中编译完成，还是在挂载之前为虚拟的 DOM 节点。在此时也可以对数据进行更改，不会触发 updated。
-- mounted：实例挂载 el 完成，代表整个 Vue 实例 已经初始化完成，进行运行阶段。真实的 Dom 挂载完毕，数据完成双向绑定，可以访问到 DOM 节点，可以使用 `$refs` 属性对 DOM 进行操作。
+- mounted：实例挂载 el 完成，代表整个 Vue 实例已经初始化完成，进行运行阶段。真实的 DOM 挂载完毕，数据完成双向绑定，可以访问到 DOM 节点，可以使用 `$refs` 属性对 DOM 进行操作。
 
 3. 更新前/后：
 
@@ -363,9 +371,11 @@ Vue 的生命周期方法有哪些？
 - beforeDestroy：实例销毁前调用，实例还可以用，this 能获取到实例，常用于销毁定时器，解绑事件。
 - destroyed：实例销毁后调用，调用后所有事件监听器会被移除，所有的子实例都会被销毁。说明：当前阶段组件已被拆解，数据绑定被卸除，监听被移出，子实例也统统被销毁。
 
-源码地址：src/core/instance/lifecycle.js
+**其它**
 
-还有跟 activated、deactivated、errorCaptured 三个生命周。
+还有跟 activated、deactivated、errorCaptured 三个生命周期，一共有 11 个生命周期钩子。
+
+> 源码地址：src/core/instance/lifecycle.js
 
 ### 缓存组件相关的声明钩子
 
@@ -384,7 +394,6 @@ Vue 的生命周期方法有哪些？
 被 keep-alive 缓存的组件停用时调用。
 
 页面退出的时候会触发 deactivated，当再次前进或者后退的时候只触发 activated
-
 
 ### 钩子的实现
 
@@ -451,7 +460,9 @@ Vue 的生命周期钩子就是回调函数而已，当创建组件实例的过�
 父 destroyed
 ```
 
-第一次页面加载时会触发 beforeCreate/created/beforeMount/mounted，可以在后三个阶段进行异步请求，因为能在服务端返回的数据进行赋值。
+**第一次页面加载**
+
+第一次页面加载时会触发 beforeCreate/created/beforeMount/mounted，可以在后三个阶段进行异步请求，因为能在服务端返回的数据进行赋值。其中 DOM 渲染在 mounted 中就已经完成了。
 
 推荐在 created 钩子函数中调用，因为可以更快获取数据，减少页面等待时间。在挂载后可以进行一些 DOM 操作，但 SSR 不支持 beforeMount/mounted，因此放在 created 中有助于一致性。
 
@@ -550,37 +561,39 @@ Vue 组件间通信只要指以下 3 类通信：父子组件通信、隔代组�
 
 组件通信的方式主要有以下几种
 
-1. 通过 `props` 选项向子组件进行传递
+1. 通过 `props` 向子组件进行传递
 2. 通过 `$emit` 触发父组件自定义事件
 3. 使用 `ref` 给子组件注册引用信息
 4. 通过实例方法 `$root`、`$parent` 和 `$children` 获取对应关系的实例
-4. 通过 EventBus 中央事件总线，实现任何组件的触发事件和监听事件
-5. 通过实例方法 `$attrs` 与 `$listeners` 进行隔代通信
-6. 通过 `provide` 与 `inject` 选项为跨级组件建立一种主动提供和依赖注入的关系
-7. Vuex 状态管理模式
+5. 通过 `EventBus` 中央事件总线，实现任何组件的触发事件和监听事件
+6. 通过实例方法 `$attrs` 与 `$listeners` 进行隔代通信
+7. 通过 `provide` 与 `inject` 选项为跨级组件建立一种主动提供和依赖注入的关系
+8. 通过 `Vuex` 状态管理模式进行全局状态管理
+
+**attrs 和 Listeners**
 
 `$attrs`：包含了父作用域中不被 prop 所识别且获取的特性绑定，class 和 style 除外。当一个组件没有声明任何 prop 时，这里会包含所有父作用域的绑定，并且可以通过 `v-bind="$attrs"` 传入内部组件。通常配合 inheritAttrs 选项一起使用。
 
 `$listeners`：包含了父作用域中的 v-on 事件监听器，不含 native 修饰器的。它可以通过 `v-on="$listeners"` 传入内部组件。
 
-[Vue 父子组件数据传递( inheritAttrs + $attrs + $listeners)](https://juejin.cn/post/6844903599735046152)
-
 **Vuex 状态管理模式**
 
-Vuex 是一个专为 Vue.js 应用程序开发的状态管理模式。
+Vuex 是一个专为 Vue.js 应用程序开发的状态管理模式。它采用集中式存储管理应用的所有组件的状态，并以相应的规则保证状态以一种可预测的方式发生变化。
 
-- 每一个 Vuex 应用的核心就是 store 
+- 每一个 Vuex 应用的核心就是 store 仓库
 - store 基本上就是一个容器，它包含着应用中大部分的状态 state
-
-Vuex 的状态存储是响应式的。当 Vue 组件从 store 中读取状态的时候，若 store 中的状态发生变化，那么相应的组件也会相应地得到高效更新。改变 store 中的状态的唯一途径就是显式地提交 mutation。这样使得我们可以方便地跟踪每一个状态的变化。
+- 状态存储是响应式的，若 store 中的状态发生变化，从 store 中读状态的组件也会相应地更新
+- 改变 store 中状态的唯一途径就是显式地提交 mutation，异步逻辑则封装在 action 中
 
 主要包括以下几个模块
 
-- State：定义了应用状态的数据结构，可以在这里设置默认的初始状态。
-- Getter：允许组件从 Store 中获取数据，mapGetters 辅助函数仅仅是将 store 中的 getter 映射到局部计算属性。
-- Mutation：是唯一更改 store 中状态的方法，且必须是同步函数。
-- Action：用于提交 mutation，而不是直接变更状态，可以包含任意异步操作。
-- Module：允许将单一的 Store 拆分为多个 store 且同时保存在单一的状态树中。
+1. State：定义了应用状态的数据结构，可以在这里设置默认的初始状态。
+2. Getter：允许组件从 store 中获取数据，mapGetters 辅助函数仅仅是将 store 中的 getter 映射到局部计算属性。
+3. Mutation：是唯一更改 store 中状态的方法，且必须是同步函数。
+4. Action：用于提交 mutation，而不是直接变更状态，可以包含任意异步操作。
+5. Module：允许将单一的 store 拆分为多个 store 且同时保存在单一的状态树中。
+
+使用场景主要有：单页应用中，组件之间的状态、音乐播放、登录状态、加入购物车等等。
 
 ### 组件中的 name 选项
 
@@ -726,15 +739,15 @@ Vue 在内部对异步队列尝试使用原生的 `Promise.then`、`MutationObse
 
 Vue-router 有几种钩子函数？具体是什么及执行流程是怎样的？
 
-路由钩子的执行流程，钩子函数种类有：全局守卫、路由守卫、组件守卫。
+有多种机会植入路由导航过程中：全局的，单个路由独享的，或者组件级的。因此钩子函数种类有：全局守卫、路由守卫、组件守卫。
 
 - 全局前置守卫 beforeEach
 - 全局解析守卫 beforeResolve
 - 全局后置守卫 afterEach
 - 路由独享守卫 beforeEnter
-- 组件守卫 beforeRouterEnter
-- 组件守卫 beforeRouterUpdate
-- 组件守卫 beforeRouterLeave
+- 组件守卫 beforeRouteEnter
+- 组件守卫 beforeRouteUpdate
+- 组件守卫 beforeRouteLeave
 
 完整的导航解析流程
 
@@ -742,9 +755,9 @@ Vue-router 有几种钩子函数？具体是什么及执行流程是怎样的？
 2. 在失活的组件里调用 beforeRouteLeave 守卫。
 3. 调用全局的 beforeEach 守卫。
 4. 在重用的组件里调用 beforeRouteUpdate 守卫
-5. 在路由配置里调用 beforeEnter。
+5. 在路由配置里调用 beforeEnter 守卫。
 6. 解析异步路由组件。
-7. 在被激活的组件里调用 beforeRouteEnter。
+7. 在被激活的组件里调用 beforeRouteEnter 守卫。
 8. 调用全局的 beforeResolve 守卫
 9. 导航被确认。
 10. 调用全局的 afterEach 钩子。
@@ -757,24 +770,24 @@ vue-router 路由模式有几种？
 
 vue-router 有 3 种路由模式：hash、history、abstract。
 
-1. hash: 使用 URL hash 值来作路由。支持所有浏览器，包括不支持 HTML5 History Api 的浏览器；
+1. hash: 使用 URL hash 值来作路由。支持所有浏览器；
 2. history : 依赖 HTML5 History API 和服务器配置。
 3. abstract : 支持所有 JavaScript 运行环境，如 Node.js 服务器端。如果发现没有浏览器的 API，路由会自动强制进入这个模式。
 
 **hash 模式的实现原理**
 
-vue-router 默认 hash 模式。早期的前端路由的实现就是基于 location.hash 来实现的。其实现原理很简单，location.hash 的值就是 URL 中 `#` 后面的内容。比如下面这个`https://www.word.com#search`网站，它的 `location.hash` 的值为 '#search'。
+vue-router 默认 hash 模式。早期的前端路由的实现就是基于 `window.location.hash` 来实现的。其实现原理很简单，`window.location.hash` 的值就是 URL 中 `#` 后面的内容。比如下面这个`https://www.word.com#search`网站，它的 `window.location.hash` 的值为 '#search'。
 
 hash 路由模式的实现主要是基于下面几个特性：
 
-- URL 中 hash 值只是客户端的一种状态，也就是说当向服务器端发出请求时，hash 部分不会被发送；
-- hash 值的改变，都会在浏览器的访问历史中增加一个记录。因此我们能通过浏览器的回退、前进按钮控制 hash 的切换；
-- 可以通过 a 标签，并设置 href 属性，当用户点击这个标签后，URL  的 hash 值会发生改变；或者使用  JavaScript 来对  loaction.hash  进行赋值，改变 URL 的 hash 值；
+- URL 中 hash 值只是客户端的一种状态，用来指导浏览器动作。当向服务器端发出请求时，hash 部分不会被发送。因此不会重新加载页面；
+- hash 值的改变，都会在浏览器的访问历史中增加一个记录。因此能通过浏览器的回退、前进按钮控制 hash 的切换；
+- 可以通过 a 标签及其 href 属性使用，也可以通过 JavaScript 来对 `loaction.hash` 进行赋值，从而改变 URL 的 hash 值；
 - 可以使用 hashchange 事件来监听 hash 值的变化，从而对页面进行跳转（渲染）。
 
 **history 模式的实现原理**
 
-HTML5 提供了 History API 来实现 URL 的变化。其中做最主要的 API 有以下两个：`history.pushState()` 和 `history.repalceState()`。这两个 API 可以在不进行刷新的情况下，操作浏览器的历史纪录。唯一不同的是，前者是新增一个历史记录，后者是直接替换当前的历史记录。这个模式还需要还需要后台配置支持。
+HTML5 提供了 History API 来实现 URL 的变化。其中做最主要的 API 有以下两个：`history.pushState()` 和 `history.repalceState()`。这两个 API 可以在不进行刷新的情况下，可以对浏览器历史记录栈进行修改。唯一不同的是，前者是新增一个历史记录，后者是直接替换当前的历史记录。这个模式还需要还需要后台配置支持。
 
 history 路由模式的实现主要基于存在下面几个特性：
 
@@ -782,14 +795,27 @@ history 路由模式的实现主要基于存在下面几个特性：
 - 可以使用 popstate 事件来监听 url 的变化，从而对页面进行跳转（渲染）；
 - pushState 方法或 replaceState 方法不会触发 popstate 事件，这时我们需要手动触发页面跳转（渲染）。
 
-**vue-router 使用 params 与 query 传参有什么区别？**
+### vue-router 传参
 
-vue-router 可以通过 params 与 query 进行传参。
-params 是路由的一部分，必须要有。query 是拼接在 url 后面的参数，没有也没关系；params 不设置的时候，刷新页面或者返回参数会丢，query 则不会有这个问题。
+vue-router 使用 params 与 query 传参有什么区别？
+
+vue-router 可以通过 params 与 query 进行传参。params 是路由的一部分，必须要有。query 是拼接在 url 后面的参数，没有也没关系；params 不设置的时候，刷新页面或者返回参数会丢，query 则不会有这个问题。
+
 如果提供了 path，params 会被忽略。
 
-1. 引入方式不同。query要用path来引入，params要用name来引入。
-2. url不同。query在url中显示参数，params在url中不显示参数。
+1. 引入方式不同。query 要用 path 来引入，params 要用 name 来引入。
+2. url 不同。query 在 url 中显示参数，类似于 get 传参，params 在 url 中不显示参数。
+
+### route 与 router
+
+`$route` 和 `$router` 的区别是什么？
+
+`$route` 是路由信息对象，可以获取 path，params，query，fullPath，name 等路由信息参数。
+
+`$router` 是 VueRouter 路由实例对象，包括了路由的跳转方法，钩子函数等。
+
+- `$router.push({path:'home'});`本质是向 history 栈中添加一个路由，在我们看来是切换路由，但本质是在添加一个 history 记录
+- `$router.replace({path:'home'});`替换路由，没有历史记录
 
 ## 第八部分 性能优化
 
