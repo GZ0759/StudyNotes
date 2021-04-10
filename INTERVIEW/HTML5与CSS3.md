@@ -19,7 +19,16 @@ HTML5 中的一些有趣的新特性：
 - 新的特殊内容元素，比如 article、footer、header、nav、section
 - 新的表单控件，比如 calendar、date、time、email、url、search
 
-## 多媒体
+## 普通元素
+
+语意化更好的内容元素，比如article、footer、header、nav、section
+
+移除的元素：
+- 纯表现的元素：basefont，big，center，font, s，strike，tt，u
+- 对可用性产生负面影响的元素：frame，frameset，noframes
+
+
+## 多媒体 Video/Audio
 
 HTML5 最大特色之一就是支持音频视频，在通过增加了`<audio>`、`<video>`两个标签来实现对多媒体中的音频、视频使用的支持，只要在 Web 网页中嵌入这两个标签，而无需第三方插件（如 Flash）就可以实现音视频的播放功能。HTML5 对音频、视频文件的支持使得浏览器摆脱了对插件的依赖，加快了页面的加载速度，扩展了互联网多媒体技术的发展空间
 
@@ -27,7 +36,7 @@ HTML5 最大特色之一就是支持音频视频，在通过增加了`<audio>`�
 
 拖放（Drag 和 drop）是 HTML5 标准的组成部分。
 
-## 绘图画布
+## 绘画 Canvas
 
 HTML5 的 canvas 元素可以实现画布功能，该元素通过自带的 API 结合使用 JavaScript 脚本语言在网页上绘制图形和处理，拥有实现绘制线条、弧线以及矩形，用样式和颜色填充区域，书写样式化文本，以及添加图像的方法，且使用 JavaScript 可以控制其每一个像素。HTML5 的 canvas 元素使得浏览器无需 Flash 或 Silverlight 等插件就能直接显示图形或动画图像。
 
@@ -43,9 +52,35 @@ HTML5 支持内联 SVG。
 
 HTML5 较之传统的数据存储有自已的存储方式，允许在客户端实现较大规模的数据存储。为了满足不同的需求，HTML5 支持 DOM Storage 和 Web SQL Database 两种存储机制。其中，DOM Storage 适用于具有 key/value 对的基本本地存储；而 WebSQLDatabase 是适用于关系型数据库的存储方式，开发者可以使用 SQL 语法对这些数据进行查询、插入等操作。
 
+- 本地离线存储 localStorage 长期存储数据，浏览器关闭后数据不丢失
+- sessionStorage 的数据在浏览器关闭后自动删除
+
+请描述一下 cookies，sessionStorage 和 localStorage 的区别
+- cookie是网站为了标示用户身份而储存在用户本地终端（Client Side）上的数据（通常经过加密）
+- cookie数据始终在同源的http请求中携带（即使不需要），记会在浏览器和服务器间来回传递
+- sessionStorage和localStorage不会自动把数据发给服务器，仅在本地保存
+- 存储大小：
+    - cookie数据大小不能超过4k
+    - sessionStorage和localStorage虽然也有存储大小的限制，但比cookie大得多，可以达到5M或更大
+
+- 有期时间：
+    - localStorage 存储持久数据，浏览器关闭后数据不丢失除非主动删除数据
+    - sessionStorage  数据在当前浏览器窗口关闭后自动删除
+    - cookie  设置的cookie过期时间之前一直有效，即使窗口或浏览器关闭
+
+
+
+
 ## HTML5 应用缓存
 
 使用 HTML5，通过创建 cache manifest 文件，可以轻松地创建 web 应用的离线版本。
+
+原理：HTML5的离线存储是基于一个新建的 `.appcache`文件的缓存机制(不是存储技术)，通过这个文件上的解析清单离线存储资源，这些资源就会像cookie一样被存储了下来。之后当网络在处于离线状态下时，浏览器会通过被离线存储的数据进行页面展示
+
+如何使用：
+- 页面头部像下面一样加入一个manifest的属性；
+- 在cache.manifest文件的编写离线存储的资源
+- 在离线状态时，操作window.applicationCache进行需求实现
 
 ## 多线程
 

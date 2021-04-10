@@ -702,7 +702,9 @@ Vue.set 方法是如何实现的？
 
 源码地址：src/core/observer/index.js 202
 
-### Vue.use 是干什么的？原理是什么？
+### Vue.use 用法和原理
+
+Vue.use 是干什么的？原理是什么？
 
 Vue.use 是用来使用插件的，我们可以在插件中扩展全局组件、指令、原型方法等。如果插件是一个对象，必须提供 install 方法。如果插件是一个函数，它会被作为 install 方法。
 

@@ -6,6 +6,8 @@
 
 # 函数闭包
 
+## 闭包的概念
+
 函数和对其周围状态（lexical environment，词法环境）的引用捆绑在一起构成闭包（closure）。也就是说，闭包可以让你从内部函数访问外部函数作用域。在 JavaScript 中，每当函数被创建，就会在函数生成时生成闭包。
 
 使用闭包主要是为了设计私有的方法和变量。闭包的优点是可以避免全局变量的污染，缺点是闭包会常驻内存，会增大内存使用量，使用不当很容易造成内存泄露。闭包有三个特性：
@@ -14,92 +16,15 @@
 2. 函数内部可以引用外部的参数和变量
 3. 参数和变量不会被垃圾回收机制回收
 
-## 闭包的实用性
+**闭包的实用性**。闭包很有用，因为它允许将函数与其所操作的某些数据（环境）关联起来。这显然类似于面向对象编程。在面向对象编程中，对象允许我们将某些数据（对象的属性）与一个或者多个方法相关联。
 
-闭包很有用，因为它允许将函数与其所操作的某些数据（环境）关联起来。这显然类似于面向对象编程。在面向对象编程中，对象允许我们将某些数据（对象的属性）与一个或者多个方法相关联。
+**模拟私有方法**。编程语言中，比如 Java，是支持将方法声明为私有的，即它们只能被同一个类中的其它方法所调用。而 JavaScript 没有这种原生支持，但我们可以使用闭包来模拟私有方法。私有方法不仅仅有利于限制对代码的访问：还提供了管理全局命名空间的强大能力，避免非核心的方法弄乱了代码的公共接口部分。
 
-```js
-function makeSizer(size) {
-  return function () {
-    document.body.style.fontSize = size + 'px';
-  };
-}
+**在循环中创建闭包**。在 ECMAScript 2015 引入 let 关键字之前，在循环中有一个常见的闭包创建问题。例如，这三个闭包在循环中被创建，但他们共享了同一个词法作用域，在这个作用域中存在一个变量 item。这是因为变量 item 使用 var 进行声明，由于变量提升，所以具有函数作用域。由于循环在事件触发之前早已执行完毕，变量对象 item（被三个闭包所共享）已经指向了目标内容的最后一项。
 
-var size12 = makeSizer(12);
-var size14 = makeSizer(14);
-var size16 = makeSizer(16);
+## 解决循环闭包问题
 
-document.getElementById('size-12').onclick = size12;
-document.getElementById('size-14').onclick = size14;
-document.getElementById('size-16').onclick = size16;
-```
-
-## 模拟私有方法
-
-编程语言中，比如 Java，是支持将方法声明为私有的，即它们只能被同一个类中的其它方法所调用。而 JavaScript 没有这种原生支持，但我们可以使用闭包来模拟私有方法。私有方法不仅仅有利于限制对代码的访问：还提供了管理全局命名空间的强大能力，避免非核心的方法弄乱了代码的公共接口部分。
-
-```js
-var Counter = (function () {
-  var privateCounter = 0;
-  function changeBy(val) {
-    privateCounter += val;
-  }
-  return {
-    increment: function () {
-      changeBy(1);
-    },
-    decrement: function () {
-      changeBy(-1);
-    },
-    value: function () {
-      return privateCounter;
-    },
-  };
-})();
-```
-
-## 在循环中创建闭包
-
-在 ECMAScript 2015 引入 let 关键字之前，在循环中有一个常见的闭包创建问题。
-
-```js
-// DOM 事件回调
-function setupHelp() {
-  var helpText = [
-    { id: 'email', help: 'Your e-mail address' },
-    { id: 'name', help: 'Your full name' },
-    { id: 'age', help: 'Your age (you must be over 16)' },
-  ];
-
-  for (var i = 0; i < helpText.length; i++) {
-    var item = helpText[i];
-    document.getElementById(item.id).onfocus = function () {
-      showHelp(item.help);
-    };
-  }
-}
-
-// 打印页面元素序号
-var nodeList = document.getElementsByTagName('li');
-for (var i = 0; i < nodeList.length; i++) {
-  nodeList[i].addEventListener('click', function () {
-    window.alert(i);
-  });
-}
-
-// 定时器回调
-for (var i = 1; i <= 5; i++) {
-  setTimeout(function timer() {
-    console.log(i);
-  }, i * 1000);
-}
-```
-
-## 循环闭包的解决办法
-
-### 闭包方法
-
-使用更多的闭包来解决问题。
+1. 闭包方法。使用更多的闭包、let 块级作用域或者 `Array.prototype.forEach()` 来解决问题。
 
 ```js
 // 工厂函数
@@ -139,9 +64,7 @@ helpText.forEach(function (text) {
 });
 ```
 
-### 非闭包方法
-
-通过其他针对性方法来解决问题。
+2. 非闭包方法。通过其他针对性方法来解决问题。
 
 ```js
 // 对象属性保存
@@ -488,9 +411,9 @@ function cloneDeep5(x) {
 
 # 函数节流和防抖
 
-防抖和节流是前端开发中经常使用的一种优化手段，它们都被用来控制一段时间内方法执行的次数，可以为我们节省大量不必要的开销。
+防抖 debounce 和节流 throttle 是前端开发中经常使用的一种优化手段，它们都被用来控制一段时间内方法执行的次数，可以为我们节省大量不必要的开销。
 
-## 防抖（debounce）
+## 防抖
 
 防抖的功效，它把一组连续的调用变为了一个，最大程度地优化了效率。防抖非常适于只关心结果，不关心过程如何的情况，它能很好地将大量连续事件转为单个我们需要的事件。
 
@@ -531,7 +454,7 @@ function debounce(func, wait, flag = false) {
 
 > 不管事件触发频率多高，一定在事件触发 n 秒后才执行，如果你在一个事件触发的 n 秒内又触发了这个事件，就以新的事件的时间为准，n 秒后才执行，总之，触发完事件 n 秒内不再触发事件，n 秒后再执行。
 
-## 节流（throttle）
+## 节流
 
 节流让指定函数在规定的时间里执行次数不会超过一次，也就是说，在连续高频执行中，动作会被定期执行。节流的主要目的是将原本操作的频率降低。
 
@@ -595,9 +518,9 @@ function throttle(fn, wait) {
 }
 ```
 
-## requestAnimationFrame（rAF）
+## rAF
 
-rAF 在一定程度上和 `throttle(func, 16)` 的作用相似，但它是浏览器自带的 api，所以，它比 throttle 函数执行得更加平滑。调用 `window.requestAnimationFrame()`，浏览器会在下次刷新的时候执行指定回调函数。通常，屏幕的刷新频率是 60hz，所以，这个函数也就是大约 16.7ms 执行一次。如果你想让你的动画更加平滑，用 rAF 就再好不过了，因为它是跟着屏幕的刷新频率来的。
+requestAnimationFrame（rAF） 在一定程度上和 `throttle(func, 16)` 的作用相似，但它是浏览器自带的 api，所以，它比 throttle 函数执行得更加平滑。调用 `window.requestAnimationFrame()`，浏览器会在下次刷新的时候执行指定回调函数。通常，屏幕的刷新频率是 60hz，所以，这个函数也就是大约 16.7ms 执行一次。如果你想让你的动画更加平滑，用 rAF 就再好不过了，因为它是跟着屏幕的刷新频率来的。
 
 rAF 的写法与 debounce 和 throttle 不同，如果你想用它绘制动画，需要不停地在回调函数里调用自身，具体写法可以参考[MDN](https://developer.mozilla.org/zh-CN/docs/Web/API/Window/requestAnimationFrame)。
 
