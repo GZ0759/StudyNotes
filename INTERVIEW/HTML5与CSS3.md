@@ -52,24 +52,19 @@ HTML5 支持内联 SVG。
 
 HTML5 较之传统的数据存储有自已的存储方式，允许在客户端实现较大规模的数据存储。为了满足不同的需求，HTML5 支持 DOM Storage 和 Web SQL Database 两种存储机制。其中，DOM Storage 适用于具有 key/value 对的基本本地存储；而 WebSQLDatabase 是适用于关系型数据库的存储方式，开发者可以使用 SQL 语法对这些数据进行查询、插入等操作。
 
-- 本地离线存储 localStorage 长期存储数据，浏览器关闭后数据不丢失
-- sessionStorage 的数据在浏览器关闭后自动删除
+**DOM Storage/webstorage**
 
-请描述一下 cookies，sessionStorage 和 localStorage 的区别
-- cookie是网站为了标示用户身份而储存在用户本地终端（Client Side）上的数据（通常经过加密）
-- cookie数据始终在同源的http请求中携带（即使不需要），记会在浏览器和服务器间来回传递
-- sessionStorage和localStorage不会自动把数据发给服务器，仅在本地保存
-- 存储大小：
-    - cookie数据大小不能超过4k
-    - sessionStorage和localStorage虽然也有存储大小的限制，但比cookie大得多，可以达到5M或更大
+本地存储，存储在客户端，包括 localStorage 和 sessionStorage。存放数据大小为一般为5MB，不参与和服务器的通信。
 
-- 有期时间：
-    - localStorage 存储持久数据，浏览器关闭后数据不丢失除非主动删除数据
-    - sessionStorage  数据在当前浏览器窗口关闭后自动删除
-    - cookie  设置的cookie过期时间之前一直有效，即使窗口或浏览器关闭
+- localStorage 长期存储数据，浏览器关闭后数据不丢失，除非用户主动在浏览器清除 localStorage 信息
+- sessionStorage 仅在当前会话下有效，关闭页面或浏览器后被清除
 
+**cookie**
 
+在浏览器和服务器间来回传递。生命期为只在设置的 cookie 过期时间之前一直有效，即使窗口或浏览器关闭。存放数据大小为 4K 左右。有个数限制（各浏览器不同），一般不能超过 20 个。与服务器端通信：每次都会携带在 HTTP 头中，如果使用 cookie 保存过多数据会带来性能问题。
 
+- cookie 是网站为了标示用户身份而储存在用户本地终端上的数据（通常经过加密）
+- cookie 数据始终在同源的 http 请求中携带（即使不需要），记会在浏览器和服务器间来回传递
 
 ## HTML5 应用缓存
 
