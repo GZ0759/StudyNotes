@@ -1083,79 +1083,6 @@ var searchInsert = function (nums, target) {
 };
 ```
 
-# 070 - 爬楼梯（climbing-stairs）
-
-* 难度：简单
-* 涉及知识：动态规划
-* 题目地址：https://leetcode-cn.com/problems/climbing-stairs/
-* 题目内容：
-
-假设你正在爬楼梯。需要 n 阶你才能到达楼顶。
-
-每次你可以爬 1 或 2 个台阶。你有多少种不同的方法可以爬到楼顶呢？
-
-注意：给定 n 是一个正整数。
-
-示例 1：
-输入： 2
-输出： 2
-解释： 有两种方法可以爬到楼顶。
-1.  1 阶 + 1 阶
-2.  2 阶
-
-示例 2：
-输入： 3
-输出： 3
-解释： 有三种方法可以爬到楼顶。
-1.  1 阶 + 1 阶 + 1 阶
-2.  1 阶 + 2 阶
-3.  2 阶 + 1 阶
-
-## 解法 - 直接递归
-
-而递归，是需要时间的，递归的次数越多，耗费的时间越长，就会出现超时情况。
-
-```js
-// Time Limit Exceeded
-var climbStairs = function (n) {
-  if(n == 1){ return 1 }
-  if(n == 2){ return 2 }
-  return climbStairs(n - 1) + climbStairs(n - 2)
-};
-```
-
-## 解法 - 两数相加
-
-```js
-var climbStairs = function (n) {
-  if(n == 1){ return 1 }
-  if(n == 2){ return 2 }
-  let last = 1, next = 2;
-  for(let i = 3; i <= n; i++){
-    [last, next] = [next, last + next]
-  }
-  return next;   
-};
-```
-
-## 解法 - 数组遍历
-
-将递归转换成数组的遍历添加，从而做到最简优化。
-
-```js
-var climbStairs = function(n) {
-  if (n === 1 || n === 2 || n === 3) {
-    return n;
-  }
-
-  let memory = [0, 1, 2, 3];
-  for (let i = 4; i <= n; i++) {
-    memory[i] = memory[i - 1] + memory[i - 2];
-  }
-  return memory[n];
-};
-```
-
 # 053 - 最大子序和（maximum-subarray）
 
 * 难度：简单
@@ -1259,6 +1186,136 @@ var lengthOfLastWord = function(s) {
   s = s.replace(/(\s*$)/g, "");
   let res = s.split(' ').pop().length;
   return res;
+};
+```
+
+# 070 - 爬楼梯（climbing-stairs）
+
+* 难度：简单
+* 涉及知识：动态规划
+* 题目地址：https://leetcode-cn.com/problems/climbing-stairs/
+* 题目内容：
+
+假设你正在爬楼梯。需要 n 阶你才能到达楼顶。
+
+每次你可以爬 1 或 2 个台阶。你有多少种不同的方法可以爬到楼顶呢？
+
+注意：给定 n 是一个正整数。
+
+示例 1：
+输入： 2
+输出： 2
+解释： 有两种方法可以爬到楼顶。
+1.  1 阶 + 1 阶
+2.  2 阶
+
+示例 2：
+输入： 3
+输出： 3
+解释： 有三种方法可以爬到楼顶。
+1.  1 阶 + 1 阶 + 1 阶
+2.  1 阶 + 2 阶
+3.  2 阶 + 1 阶
+
+## 解法 - 直接递归
+
+而递归，是需要时间的，递归的次数越多，耗费的时间越长，就会出现超时情况。
+
+```js
+// Time Limit Exceeded
+var climbStairs = function (n) {
+  if(n == 1){ return 1 }
+  if(n == 2){ return 2 }
+  return climbStairs(n - 1) + climbStairs(n - 2)
+};
+```
+
+## 解法 - 两数相加
+
+```js
+var climbStairs = function (n) {
+  if(n == 1){ return 1 }
+  if(n == 2){ return 2 }
+  let last = 1, next = 2;
+  for(let i = 3; i <= n; i++){
+    [last, next] = [next, last + next]
+  }
+  return next;   
+};
+```
+
+## 解法 - 数组遍历
+
+将递归转换成数组的遍历添加，从而做到最简优化。
+
+```js
+var climbStairs = function(n) {
+  if (n === 1 || n === 2 || n === 3) {
+    return n;
+  }
+
+  let memory = [0, 1, 2, 3];
+  for (let i = 4; i <= n; i++) {
+    memory[i] = memory[i - 1] + memory[i - 2];
+  }
+  return memory[n];
+};
+```
+
+# 088 - 合并两个有序数组（merge-sorted-array）
+
+* 难度：简单
+* 涉及知识：数组、双指针
+* 题目地址：https://leetcode-cn.com/problems/merge-sorted-array/
+* 题目内容：
+
+给定两个有序整数数组 nums1 和 nums2，将 nums2 合并到 nums1 中，使得 num1 成为一个有序数组。
+
+说明:
+
+初始化 nums1 和 nums2 的元素数量分别为 m 和 n。
+你可以假设 nums1 有足够的空间（空间大小大于或等于 m + n）来保存 nums2 中的元素。
+示例:
+
+输入:
+nums1 = [1,2,3,0,0,0], m = 3
+nums2 = [2,5,6],       n = 3
+
+输出: [1,2,2,3,5,6]
+
+## 解法 - 数组排序
+
+```js
+var merge = function(nums1, m, nums2, n) {
+  // nums1.splice(m, n, ...nums2);1
+  for (let i = 0; i < n; i++) {
+    nums1[i + m] = nums2[i];
+  }
+  nums1.sort(sorter);
+  function sorter(a, b) {
+    return a - b;
+  }
+};
+```
+
+## 解法 - 双指针
+
+```js
+var merge = function (nums1, m, nums2, n) {
+  let c1 = 0,
+    c2 = 0;
+  let len = nums1.length;
+  while (c1 < m && c2 < n) {
+    // 获取插入的值，将指针往前移动
+    let value = nums1[c1] > nums2[c2] ? nums2[c2++] : nums1[c1++];
+    nums1.push(value);
+  }
+  // 获取余下的内容
+  let rest = c1 === m ? nums2.slice(c2, n) : nums1.slice(c1, m);
+  nums1.push(...rest);
+  // 删除前面的内容
+  nums1.splice(0, len);
+  return nums1;
 };
 ```
 
