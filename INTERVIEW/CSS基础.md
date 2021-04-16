@@ -2,7 +2,9 @@
 
 # 盒模型
 
-**介绍一下标准的 CSS 的盒子模型？与低版本 IE 的盒子模型有什么不同的？**
+## 标准盒模型和 IE 盒模型
+
+介绍一下标准的 CSS 的盒子模型？与低版本 IE 的盒子模型有什么不同的？
 
 完整的 CSS 盒模型应用于块级盒子，内联盒子只使用盒模型中定义的部分内容。模型定义了盒的每个部分 margin/border/padding/content，这些合在一起就可以创建我们在页面上看到的内容。为了增加一些额外的复杂性，有一个标准的和替代（IE）的盒模型。
 
@@ -15,32 +17,65 @@
 
 ## 行内元素和块级元素
 
-一个行内元素只占据它对应标签的边框所包含的空间。行内元素主要有：
-
-a/button/big/em/i/input/mark/span/select/option/strog/b/sup/sub/textarea/u
-
-块级元素占据其父元素（容器）的整个空间，因此创建了一个“块”。通常浏览器会在块级元素前后另起一个新行。块级元素主要有：
-
-table/dl-dt-dd/figure/figcaption/div/h1-h6/hr/ul-li/ol-li/nav/p/form
-
-行内块状元素 img/input
+1. 行内元素：一个行内元素只占据它对应标签的边框所包含的空间。
+  - a/button/big/em/i/input/mark/span/select/option/strog/b/sup/sub/textarea/u
+2. 块级元素：块级元素占据其父元素（容器）的整个空间，因此创建了一个“块”。通常浏览器会在块级元素前后另起一个新行。
+  - table/dl-dt-dd/figure/figcaption/div/h1-h6/hr/ul-li/ol-li/nav/p/form
+3. 行内块状元素 
+  - img/input
 
 块级元素的特点
 
 1. 独占一行，每一个块级元素都会从新的一行重新开始
-2. 排列方式：从上到下依次排布
-3. 可以直接控制宽度、高度以及盒子模型的相关css属性
+2. 排列方式是从上到下依次排布
+3. 可以直接控制宽度、高度以及盒子模型的相关 CSS 属性
 4. 在不设置宽度的情况下，块级元素的宽度是它父级元素内容的宽度，高度是它本身内容的高度
 5. 块级元素可以嵌套行内元素
-6. ul/ol下面只能是li；dl下面只能是dt，dd;
+6. ul/ol下面只能是li；dl下面只能是dt/dd
 7. p不能包裹其他块级元素包括它本身，可以嵌套行内元素
 
-**box-sizing 属性？**
+## box-sizing
 
-CSS 中的 box-sizing 属性定义了 user agent（用户代理） 应该如何计算一个元素的总宽度和总高度。
+box-sizing 属性？
+
+CSS 中的 box-sizing 属性定义了 user agent（用户代理）应该如何计算一个元素的总宽度和总高度。
 
 1. content-box 是默认值。任何边框和内边距的宽度都会被增加到最后绘制出来的元素宽度中。
 2. border-box 告诉浏览器：你想要设置的边框和内边距的值是包含在 width 内的。
+
+## 回流和重绘
+
+回流，当 Render Tree 中部分或全部元素的尺寸、结构、或某些属性发生改变时，浏览器重新渲染部分或全部文档。
+
+会导致回流的操作：
+
+- 页面首次渲染
+- 浏览器窗口大小发生改变
+- 元素尺寸或位置发生改变
+- 元素内容变化（文字数量或图片大小等等）
+- 元素字体大小变化
+- 添加或者删除可见的DOM元素
+- 激活CSS伪类（例如：:hover）
+- 查询某些属性或调用某些方法
+
+一些常用且会导致回流的属性和方法：
+
+```
+clientWidth、clientHeight、clientTop、clientLeft
+offsetWidth、offsetHeight、offsetTop、offsetLeft
+scrollWidth、scrollHeight、scrollTop、scrollLeft
+scrollIntoView()、scrollIntoViewIfNeeded()
+getComputedStyle()
+getBoundingClientRect()
+scrollTo()
+```
+
+重绘：当页面中元素样式的改变并不影响它在文档流中的位置时，浏览器会将新样式赋予给元素并重新绘制它。
+
+```
+color、background-color、visibility
+```
+
 
 # 选择器
 
@@ -56,8 +91,8 @@ CSS 中的 box-sizing 属性定义了 user agent（用户代理） 应该如何�
 
 **CSS 优先级算法如何计算？**
 
-- 元素选择符： 1
-- class 选择符： 10
+- 元素选择符：1
+- class 选择符：10
 - id 选择符：100
 - 元素标签（内联样式）：1000
 
