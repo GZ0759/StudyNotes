@@ -13,6 +13,28 @@
 
 默认浏览器会使用标准模型。如果需要使用替代模型，可以通过为其设置 `box-sizing: border-box` 来实现。 这样就可以告诉浏览器使用 border-box 来定义区域，从而设定您想要的大小。Internet Explorer 默认使用替代盒模型，IE8+ 支持使用 box-sizing 进行切换。
 
+## 行内元素和块级元素
+
+一个行内元素只占据它对应标签的边框所包含的空间。行内元素主要有：
+
+a/button/big/em/i/input/mark/span/select/option/strog/b/sup/sub/textarea/u
+
+块级元素占据其父元素（容器）的整个空间，因此创建了一个“块”。通常浏览器会在块级元素前后另起一个新行。块级元素主要有：
+
+table/dl-dt-dd/figure/figcaption/div/h1-h6/hr/ul-li/ol-li/nav/p/form
+
+行内块状元素 img/input
+
+块级元素的特点
+
+1. 独占一行，每一个块级元素都会从新的一行重新开始
+2. 排列方式：从上到下依次排布
+3. 可以直接控制宽度、高度以及盒子模型的相关css属性
+4. 在不设置宽度的情况下，块级元素的宽度是它父级元素内容的宽度，高度是它本身内容的高度
+5. 块级元素可以嵌套行内元素
+6. ul/ol下面只能是li；dl下面只能是dt，dd;
+7. p不能包裹其他块级元素包括它本身，可以嵌套行内元素
+
 **box-sizing 属性？**
 
 CSS 中的 box-sizing 属性定义了 user agent（用户代理） 应该如何计算一个元素的总宽度和总高度。
