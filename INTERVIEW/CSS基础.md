@@ -45,37 +45,60 @@ CSS 中的 box-sizing 属性定义了 user agent（用户代理）应该如何�
 
 ## 回流和重绘
 
-回流，当 Render Tree 中部分或全部元素的尺寸、结构、或某些属性发生改变时，浏览器重新渲染部分或全部文档。
+浏览器的渲染过程为：
 
-会导致回流的操作：
+1. 解析 HTML，生成 DOM 树
+2. 解析 CSS，生成 CSS 规则树（CSS Rule Tree）
+3. 将 DOM Tree 和 CSS Rule Tree 相结合，生成 渲染树（Render Tree）
+4. 从根节点开始，计算每一个元素的大小、位置，给出每个节点所应该出现的屏幕精确坐标，从而得到基于渲染树的 布局渲染树（Layout of the render tree）。
+5. 遍历渲染树，将每个节点用 UI 渲染引擎来绘制，从而将整棵树绘制到页面上，这个步骤叫 绘制渲染树（Painting the render tree）
+
+回流（reflow）：又叫重排（layout）。当元素的尺寸、结构或者触发某些属性时，浏览器会重新渲染页面，称为回流。
+
+此时，浏览器需要重新经过计算，计算后还需要重新页面布局，然后进行绘制渲染，因此是较重的操作。触发回流主要有以下几点
 
 - 页面首次渲染
-- 浏览器窗口大小发生改变
-- 元素尺寸或位置发生改变
-- 元素内容变化（文字数量或图片大小等等）
-- 元素字体大小变化
-- 添加或者删除可见的DOM元素
-- 激活CSS伪类（例如：:hover）
-- 查询某些属性或调用某些方法
+- 添加删除 DOM 元素
+- 改变边框 border、内外边距 padding/margin、宽高 width/height
+- 浏览器改变窗口 resize 
+- 元素内容、位置或字体大小发生变化
+- 读取或执行某些属性或方法，将会导致浏览器同步地计算样式和布局
 
-一些常用且会导致回流的属性和方法：
+重绘（repaint）：当元素样式的改变不影响布局或文档流位置时，浏览器会将新样式赋予给元素并重新绘制，此时由于只需要 UI 层面的重新像素绘制，因此损耗较少。
 
+在浏览器渲染过程中，对应步骤 5，即每次发生重绘，我们都会重新绘制渲染树，然后进行展示。触发重绘的操作主要有以下几点：
+
+- 修改背景色 background-color、颜色 color
+- 设置可见度 visibility
+- 设置背景图 background-image
+
+**优化**
+
+回流动了 Layout，触发了 Render Tree 进行重新渲染，所以后面还会 Painting。而重绘后面直接 Display，不会触发回流。回流必定会发生重绘，重绘不一定会引发回流。
+
+当然，很多浏览器都会优化操作：浏览器会维护 1 个队列，把所有会引起回流、重绘的操作放入这个队列，等队列中的操作到了一定的数量或者到了一定的时间间隔，浏览器就会处理队列，进行一个批处理。这样就会让多次的回流、重绘变成一次回流重绘。
+
+那么，我们做一道题：输出下面回流和重绘的次数：
+
+```js
+var s = document.body.style;
+s.padding = "2px";
+s.border = "1px solid red";
+s.color = "blue";
+s.backgroundColor = "#ccc";
+s.fontSize = "14px";
+
+document.body.appendChild(document.createTextNode('abc!'));
 ```
-clientWidth、clientHeight、clientTop、clientLeft
-offsetWidth、offsetHeight、offsetTop、offsetLeft
-scrollWidth、scrollHeight、scrollTop、scrollLeft
-scrollIntoView()、scrollIntoViewIfNeeded()
-getComputedStyle()
-getBoundingClientRect()
-scrollTo()
-```
 
-重绘：当页面中元素样式的改变并不影响它在文档流中的位置时，浏览器会将新样式赋予给元素并重新绘制它。
+答案：触发回流 4 次，触发重绘 6 次。
 
-```
-color、background-color、visibility
-```
+JS 是单线程的，JS 解析的时候渲染引擎是停止工作的。如何减少回流和重绘？
 
+- 使用 visibility 替换 display
+- 避免 table 布局。对于 Render Tree 的计算通常只需要遍历一次就可以完成，但是 table 布局需要计算多次，通常要花 3 倍于等同元素的时间，因此要避免。
+- 避免频繁做 width、height 等会触发回流的操作。
+- 操作 DOM 的时候，如果是添加 DOM 节点，可以将所有节点都在 JS 中操作完毕，再进行渲染（一次性）
 
 # 选择器
 

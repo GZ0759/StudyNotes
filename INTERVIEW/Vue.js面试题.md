@@ -741,15 +741,18 @@ Vue 在内部对异步队列尝试使用原生的 `Promise.then`、`MutationObse
 
 Vue-router 有几种钩子函数？具体是什么及执行流程是怎样的？
 
-有多种机会植入路由导航过程中：全局的，单个路由独享的，或者组件级的。因此钩子函数种类有：全局守卫、路由守卫、组件守卫。
+有多种机会植入路由导航过程中：全局的，单个路由独享的，或者组件级的。因此钩子函数种类有：
 
-- 全局前置守卫 beforeEach
-- 全局解析守卫 beforeResolve
-- 全局后置守卫 afterEach
-- 路由独享守卫 beforeEnter
-- 组件守卫 beforeRouteEnter
-- 组件守卫 beforeRouteUpdate
-- 组件守卫 beforeRouteLeave
+1. 全局守卫
+  - 全局前置守卫 beforeEach
+  - 全局解析守卫 beforeResolve
+  - 全局后置守卫 afterEach
+2. 路由守卫
+  - 路由独享守卫 beforeEnter
+3. 组件守卫
+  - 组件守卫 beforeRouteEnter
+  - 组件守卫 beforeRouteUpdate
+  - 组件守卫 beforeRouteLeave
 
 完整的导航解析流程
 
