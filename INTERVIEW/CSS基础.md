@@ -1,5 +1,25 @@
 > [50 道 CSS 基础面试题（附答案）](https://segmentfault.com/a/1190000013325778)
 
+# CSS 创建
+
+## 插入样式表
+
+link 和 @import 的区别。
+
+1. 从属关系区别
+  - `@import` 是 CSS 提供的语法规则，只有导入样式表的作用；
+  - `link` 是 HTML 提供的标签，不仅可以加载 CSS 文件，还可以定义 RSS、rel 连接属性等。
+2. 加载顺序区别
+  - 加载页面时，link 标签引入的 CSS 被同时加载；
+  - `@import` 引入的 CSS 将在页面加载完毕后被加载。
+3. 兼容性区别
+  - `@import` 是 CSS2.1 才有的语法，故只可在 IE5+ 才能识别；
+  - link 标签作为 HTML 元素，不存在兼容性问题。
+4. DOM 可控性区别。
+  - 可以通过 JS 操作 DOM ，插入 `link` 标签来改变样式；
+  - 由于 DOM 方法是基于文档的，无法使用`@import` 的方式插入样式。
+5. 权重区别。link 引入的样式权重大于`@import` 引入的样式。
+
 # 盒模型
 
 ## 标准盒模型和 IE 盒模型
@@ -102,7 +122,13 @@ JS 是单线程的，JS 解析的时候渲染引擎是停止工作的。如何�
 
 # 选择器
 
+## 选择器类型
+
 **CSS 选择器有哪些？**
+
+- 标签选择器、类选择器、id 选择器、后代选择器、子选择器、相邻选择器、通配符选择器、属性选择器。
+- 伪元素（::first-letter/::first-line/::before/::after）。
+- 伪类（:link/:visited/:hover/:active）、结构化伪类和表单伪类。
 
 | Basic Selectors | Combinators       | Pseudo-classes | Pseudo-elements |
 | --------------- | ----------------- | -------------- | --------------- |
@@ -111,6 +137,8 @@ JS 是单线程的，JS 解析的时候渲染引擎是停止工作的。如何�
 | ID 选择器       | 子选择器          | :first-child   | ::first-letter  |
 | 通配选择器      | 后代选择器        | :first-of-type | ::first-line    |
 | 属性选择器      | Column combinator | ...            | ...             |
+
+## 选择器优先级
 
 **CSS 优先级算法如何计算？**
 
@@ -124,6 +152,8 @@ JS 是单线程的，JS 解析的时候渲染引擎是停止工作的。如何�
 - `!important` > 行内样式 > `#id` > `.class` > tag > `*` > 继承 > 默认
 - 选择器 从右往左 解析
 
+## 新增伪类
+
 **CSS3 新增伪类有那些?**
 
 - p:first-of-type 选择属于其父元素的首个元素
@@ -136,7 +166,9 @@ JS 是单线程的，JS 解析的时候渲染引擎是停止工作的。如何�
 
 # CSS 属性
 
-**css 有继承性的属性有哪些？**
+## 可继承属性
+
+CSS 有继承性的属性有哪些？
 
 继承是一种规则，它允许样式不仅应用于某个特定 html 标签元素，而且应用于其后代。一般用于设置网页上的共性信息，例如网页的文字颜色、字体、文字大小等内容。
 
@@ -150,7 +182,9 @@ JS 是单线程的，JS 解析的时候渲染引擎是停止工作的。如何�
 8. 页面样式属性，如 page/page-break-inside/windows/orphans
 9. 声音样式属性，如 speak/speak-punctuation/speak-numeral
 
-**display 有哪些值？说明他们的作用?**
+## DISPLAY 类型
+
+display 有哪些值？说明他们的作用?
 
 - inline（默认）--内联
 - none--隐藏
@@ -159,36 +193,415 @@ JS 是单线程的，JS 解析的时候渲染引擎是停止工作的。如何�
 - list-item--项目列表
 - inline-block
 
-**position 的值？**
+## POSITION 类型
+
+position 的值？
 
 position 属性被指定为从下面的值列表中选择的单个关键字。
 
-1. static
-   该关键字指定元素使用正常的布局行为，即元素在文档常规流中当前的布局位置。此时 top, right, bottom, left 和 z-index 属性无效。
-2. relative
-   该关键字下，元素先放置在未添加定位时的位置，再在不改变页面布局的前提下调整元素位置（因此会在此元素未添加定位时所在位置留下空白）。`position:relative` 对 `table-*-group`, `table-row`, `table-column`, `table-cell`, `table-caption` 元素无效。
-3. absolute
-   元素会被移出正常文档流，并不为元素预留空间，通过指定元素相对于最近的非 static 定位祖先元素的偏移，来确定元素位置。绝对定位的元素可以设置外边距（margins），且不会与其他边距合并。
-4. fixed
-   元素会被移出正常文档流，并不为元素预留空间，而是通过指定元素相对于屏幕视口（viewport）的位置来指定元素位置。元素的位置在屏幕滚动时不会改变。打印时，元素会出现在的每页的固定位置。fixed 属性会创建新的层叠上下文。当元素祖先的 transform, perspective 或 filter 属性非 none 时，容器由视口改为该祖先。
-5. sticky
-   元素根据正常文档流进行定位，然后相对它的最近滚动祖先（nearest scrolling ancestor）和 containing block (最近块级祖先 nearest block-level ancestor)，包括 table-related 元素，基于 top, right, bottom, 和 left 的值进行偏移。偏移值不会影响任何其他元素的位置。
-   该值总是创建一个新的层叠上下文（stacking context）。注意，一个 sticky 元素会“固定”在离它最近的一个拥有“滚动机制”的祖先上（当该祖先的 overflow 是 hidden, scroll, auto, 或 overlay 时），即便这个祖先不是最近的真实可滚动祖先。这有效地抑制了任何“sticky”行为。
+1. static  
+  默认值，按照正常文档流进行排列，属性 top/right/bottom/left 和 z-index 无效
+2. relative  
+  相对定位，不脱离文档流，在不改变页面布局的前提下调整元素位置
+3. absolute  
+  绝对定位，元素会移出正常文档流，通过指定元素相对于最近的非 static 定位祖先元素偏移，来确定元素位置
+4. fixed  
+  固定定位，相对于屏幕视口 viewport 的位置来指定元素位置，元素位置不随屏幕滚动而改变，会创建新的层叠上下文
+5. sticky  
+  粘滞定位，元素根据正常文档流进行定位，然后相对它的最近滚动祖先进行偏移，该值会创建一个新的层叠上下文
 
-- static（默认）：按照正常文档流进行排列；
-- relative（相对定位）：不脱离文档流，参考自身静态位置通过 top, bottom, left, right 定位；
-- absolute（绝对定位）：参考距其最近一个不为 static 的父级元素通过 top, bottom, left, right 定位；
-- fixed（固定定位）：所固定的参照对像是可视窗口。
+# CSS 浮动
 
-# 分析
+## 清除浮动
 
-**CSS3 有哪些新特性？**
+浮动元素脱离了文档流，其父元素也看不到它了，因而也不会包围它。浮动产生的副作用有：父元素背景不能显示、边框不能撑开、margin/padding 设置值不能正确显示。
 
-**请解释一下 CSS3 的 flexbox（弹性盒布局模型），以及适用场景？**
+1. 为父元素添加 `overflow: hidden`或 auto ，兼容 IE 则使用 `zoom: 1`
+2. 同时浮动父元素或设置父元素固定高度
+3. 添加非浮动的清除元素或清除伪类
+
+# 新特性
+
+## CSS 新特性
+
+CSS3 有哪些新特性？
+
+1. 视觉表现更进步
+  - 圆角、阴影和渐变、transform 变换、filter 滤镜和混合模式、animation 动画
+2. 布局更为丰富
+  - CSS3 媒介查询、弹性盒子布局、格珊布局
+
+CSS3被拆分为"模块"。旧规范已拆分成小块，还增加了新的。一些最重要CSS3模块如下：
+
+选择器
+盒模型
+背景和边框
+文字特效
+2D/3D转换
+动画
+多列布局
+用户界面
+
+- CSS3 边框。可以创建圆角边框 `border-radius`，阴影框 `box-shadow` 和图片边框 `border-image`。
+- CSS3 背景。CSS3 中包含几个新的背景属性，提供更大背景元素控制。
+  - `background-image` 规定背景图片内容
+  - `background-clip`	规定背景的绘制区域。
+  - `background-origin`	规定背景图片的定位区域。
+  - `background-size`	规定背景图片的尺寸。
+- CSS3 渐变。CSS3 定义了两种类型的渐变（gradients）。
+  - 线性渐变 `linear-gradient`- 向下/向上/向左/向右/对角方向
+  - 径向渐变 `radial-gradient`- 由它们的中心定义
+- CSS3 文本效果
+  - `hanging-punctuation`	规定标点字符是否位于线框之外。
+  - `punctuation-trim`	规定是否对标点字符进行修剪。
+  - `text-align-last`	设置如何对齐最后一行或紧挨着强制换行符之前的行。
+  - `text-emphasis`	向元素的文本应用重点标记以及重点标记的前景色。
+  - `text-justify`	规定当 text-align 设置为 "justify" 时所使用的对齐方法。
+  - `text-outline`	规定文本的轮廓。
+  - `text-overflow`	规定当文本溢出包含元素时发生的事情。
+  - `text-shadow`	向文本添加阴影。
+  - `text-wrap`	规定文本的换行规则。
+  - `word-break`	规定非中日韩文本的换行规则。
+  - `word-wrap`	允许对长的不可分割的单词进行分割并换行到下一行。
+- CSS3 字体
+  - 选择的字体在新的 CSS3 版本有关于`@font-face`规则描述。您"自己的"的字体是在 CSS3 @font-face 规则中定义的。
+- CSS3 转换和变形
+  - 2D 新转换属性
+    - `transform`	适用于2D或3D转换的元素
+    - `transform-origin`	允许您更改转化元素位置
+  - 2D 转换方法
+    - `matrix(n,n,n,n,n,n)`	定义 2D 转换，使用六个值的矩阵。  
+    - `translate(x,y)`	定义 2D 转换，沿着 X 和 Y 轴移动元素。  
+    - `translateX(n)`	定义 2D 转换，沿着 X 轴移动元素。  
+    - `translateY(n)`	定义 2D 转换，沿着 Y 轴移动元素。  
+    - `scale(x,y)`	定义 2D 缩放转换，改变元素的宽度和高度。  
+    - `scaleX(n)`	定义 2D 缩放转换，改变元素的宽度。  
+    - `scaleY(n)`	定义 2D 缩放转换，改变元素的高度。  
+    - `rotate(angle)`	定义 2D 旋转，在参数中规定角度。  
+    - `skew(x-angle,y-angle)`	定义 2D 倾斜转换，沿着 X 和 Y 轴。  
+    - `skewX(angle)`	定义 2D 倾斜转换，沿着 X 轴。  
+    - `skewY(angle)`	定义 2D 倾斜转换，沿着 Y 轴。  
+  - 3D 转换属性
+    - `transform`	向元素应用 2D 或 3D 转换。
+    - `transform-origin`	允许你改变被转换元素的位置。
+    - `transform-style`	规定被嵌套元素如何在 3D 空间中显示。
+    - `perspective`	规定 3D 元素的透视效果。
+    - `perspective-origin`	规定 3D 元素的底部位置。
+    - `backface-visibility`	定义元素在不面对屏幕时是否可见。
+  - 3D 转换方法
+    - `matrix3d(n,n,n,n,n,n, n,n,n,n,n,n,n,n,n,n)`	定义 3D 转换，使用 16 个值的 4x4 矩阵。
+    - `translate3d(x,y,z)`	定义 3D 转化。
+    - `translateX(x)`	定义 3D 转化，仅使用用于 X 轴的值。
+    - `translateY(y)`	定义 3D 转化，仅使用用于 Y 轴的值。
+    - `translateZ(z)`	定义 3D 转化，仅使用用于 Z 轴的值。
+    - `scale3d(x,y,z)`	定义 3D 缩放转换。
+    - `scaleX(x)`	定义 3D 缩放转换，通过给定一个 X 轴的值。
+    - `scaleY(y)`	定义 3D 缩放转换，通过给定一个 Y 轴的值。
+    - `scaleZ(z)`	定义 3D 缩放转换，通过给定一个 Z 轴的值。
+    - `rotate3d(x,y,z,angle)`	定义 3D 旋转。
+    - `rotateX(angle)`	定义沿 X 轴的 3D 旋转。
+    - `rotateY(angle)`	定义沿 Y 轴的 3D 旋转。
+    - `rotateZ(angle)`	定义沿 Z 轴的 3D 旋转。
+    - `perspective(n)`	定义 3D 转换元素的透视视图。
+- CSS3 过渡
+  - `transition`	简写属性，用于在一个属性中设置四个过渡属性。
+  - `transition-property`	规定应用过渡的 CSS 属性的名称。
+  - `transition-duration`	定义过渡效果花费的时间。默认是 0。
+  - `transition-timing-function`	规定过渡效果的时间曲线。默认是 "ease"。
+  - `transition-delay`	规定过渡效果何时开始。默认是 0。
+- CSS3 动画
+  - `@keyframes`	规定动画。
+  - `animation`	所有动画属性的简写属性，除了 animation-play-state 属性。
+  - `animation-name`	规定 @keyframes 动画的名称。
+  - `animation-duration`	规定动画完成一个周期所花费的秒或毫秒,默认是 0。
+  - `animation-delay`	规定动画何时开始,默认是 0。
+  - `animation-iteration-count`	规定动画被播放的次数,默认是 1。
+  - `animation-direction`	规定动画是否在下一周期逆向地播放,默认是 "normal"。
+  - `animation-play-state`	规定动画是否正在运行或暂停,默认是 "running"。
+- CSS3 多列
+  - `column-count`	指定元素应该被分割的列数。
+  - `column-fill`	指定如何填充列。
+  - `column-gap`	指定列与列之间的间隙。
+  - `column-rule`	所有 column-rule-* 属性的简写。
+  - `column-rule-color`	指定两列间边框的颜色。
+  - `column-rule-style`	指定两列间边框的样式。
+  - `column-rule-width`	指定两列间边框的厚度。
+  - `column-span`	指定元素要跨越多少列。
+  - `column-width`	指定列的宽度。
+  - `columns`	设置 column-width 和 column-count 的简写。
+- CSS3 用户界面
+  - 在 CSS3 中, 增加了一些新的用户界面特性来调整元素尺寸，框尺寸和外边框，主要包括以下用户界面属性：
+    - resize 属性指定一个元素是否应该由用户去调整大小。
+      - `resize：none | both | horizontal | vertical | inherit`
+    - box-sizing 属性允许您以确切的方式定义适应某个区域的具体内容。
+      - `box-sizing: content-box | border-box | inherit`
+    - outline-offset 属性对轮廓进行偏移，并在超出边框边缘的位置绘制轮廓。
+      - `outline:outline-color outline-style outline-width outine-offset`
+- CSS3 弹性盒子
+  - CSS3 弹性盒（Flexible Box 或 flexbox），是一种当页面需要适应不同的屏幕大小以及设备类型时确保元素拥有恰当的行为的布局方式。
+  - 引入弹性盒布局模型的目的是提供一种更加有效的方式来对一个容器中的子元素进行排列、对齐和分配空白空间。
+    - `display`	指定 HTML 元素盒子类型。  
+    - `flex-flow`	flex-direction 和 flex-wrap 的简写。  
+    - `flex-direction`	指定了弹性容器中子元素的排列方式。  
+    - `flex-wrap`	设置弹性盒子的子元素超出父容器时是否换行。  
+    - `justify-content`	设置弹性盒子元素在主轴（横轴）方向上的对齐方式。  
+    - `align-items`	设置弹性盒子元素在侧轴（纵轴）方向上的对齐方式。  
+    - `align-content`	修改 flex-wrap 属性的行为，类似 align-items, 但不是设置子元素对齐，而是设置行对齐。  
+    - `order`	设置弹性盒子的子元素排列顺序。  
+    - `align-self`	在弹性子元素上使用，覆盖容器的 align-items 属性。  
+    - `flex`	设置弹性盒子的子元素如何分配空间，是 flex-grow、flex-shrink 和 flex-basis 属性的简写属性。  
+    - `flex-grow`	一个数字，规定项目将相对于其他灵活的项目进行扩展的量。  
+    - `flex-shrink`	一个数字，规定项目将相对于其他灵活的项目进行收缩的量。  
+    - `flex-basis`	项目的长度，合法值："auto"、"inherit" 或一个后跟 "%"、"px"、"em" 或任何其他长度单位的数字。  
+- CSS3 多媒体查询
+  - 多媒体查询由多种媒体组成，可以包含一个或多个表达式，表达式根据条件是否成立返回 true 或 false
+    - `@media all and (min-width: 800px) { ... }`
+  - 也可以在不同的媒体上使用不同的样式文件 `media="screen"`
+
+## 弹性盒模型
+
+请解释一下 CSS3 的 flexbox（弹性盒布局模型），以及适用场景？
 
 该布局模型的目的是提供一种更加高效的方式来对容器中的条目进行布局、对齐和分配空间。在传统的布局方式中，block 布局是把块在垂直方向从上到下依次排列的；而 inline 布局则是在水平方向来排列。弹性盒布局并没有这样内在的方向限制，可以由开发人员自由操作。
 
 试用场景：弹性布局适合于移动前端开发，在 Android 和 ios 上也完美支持。
+
+# 页面布局
+
+## 居中布局
+
+居中布局主要包括水平居中和垂直居中，其中如果是行内元素，可以分别使用 `text-align: center` 和 `line-height: 2em` 实现需求。
+
+1. 块级元素水平居中
+  - 弹性盒子 Flex 的 `justify-content` 属性设置为 `center`
+  - 将元素 width 设置为 `fit-content` 且 margin-left/margin-right 为 auto
+  - 利用绝对定位 absolute/left 偏移一半距离，另外使用 `transform: translateX(-50%)` 或者 margin-left 进行自身偏移
+2. 块级元素垂直居中
+  - 弹性盒子 Flex 的 `align-items` 属性设置为 `center`
+  - 利用 table-cell 和 vertical-align 转换成表格单元格
+  - 利用绝对定位 absolute/top 偏移一半距离，另外使用 `transform: translateY(-50%)` 或者 margin-left 进行自身偏移
+
+## 定宽与自适应
+
+使用`float + margin`。
+
+```css
+.left { float: left; width: 100px; }
+.right { margin-left: 120px; }
+```
+
+使用`float + overflow`，此方案不管是多列定宽或是不定宽，都可以完美实现，同时可以实现等高布局。
+
+```css
+.left { float: left; width: 100px; margin-right: 20px; }
+.right { overflow: hidden; }
+```
+
+使用`table`。
+
+```css
+.parent { display: table; width: 100%; table-layout: fixed; }
+.left,.right { display: table-cell; }
+.left { width: 100px; padding-right: 20px; }
+```
+
+使用`flex`。
+
+```css
+.parent { display: flex; }
+.left { width: 100px; padding-right: 20px; }
+.right { flex: 1; }
+```
+
+## 不定宽与自适应
+
+使用`float + overflow`
+
+```css
+.left { float: left; margin-right: 20px; }
+.right { overflow: hidden; }
+.left p { width: 200px; }
+```
+
+使用`table`
+
+```css
+.parent { display: table; width: 100%; }
+.left,.right { display: table-cell; }
+.left { width: 0.1%; padding-right: 20px; }
+.left p { width: 200px; }
+```
+
+使用`flex`
+
+```css
+.parent { display: flex; }
+.left { margin-right: 20px; }
+.right { flex: 1; }
+.left p { width: 200px; }
+```
+
+## 等分多列布局
+
+使用`float + margin`。
+
+```css
+.parent { margin-left: -20px; }
+.column { float: left; width: 25%; padding-left: 20px; box-sizing: border-box; }
+```
+
+使用`table + margin`。
+
+```css
+.parent-fix { margin-left: -20px; }
+.parent { display: table; width: 100%; table-layout: fixed; }
+.column { display: table-cell; padding-left: 20px; }
+```
+
+使用`flex`
+
+```css
+.parent { display: flex; }
+.column { flex: 1; }
+.column + .column { margin-left: 20px; }
+```
+
+## 等高多列布局
+
+
+使用`float + overflow`
+
+```css
+.parent { overflow: hidden; }
+.left,.right { padding-bottom: 9999px; margin-bottom: -9999px; }
+.left { float: left; width: 100px; }
+.right { overflow: hidden; }
+```
+
+使用`table`
+
+```css
+.parent { display: table; width: 100%; }
+.left { display: table-cell; width: 100px; margin-right: 20px; }
+.right { display: table-cell; }
+```
+
+使用`flex`
+
+```css
+.parent { display: flex; width: 100%; }
+.left { width: 100px; }
+.right { flex: 1; }
+```
+
+## 圣杯布局
+
+```html
+<div class="container">
+  <div class="header">header</div>
+  <div class="wrapper clearfix">
+    <div class="main col">main</div>
+    <div class="left col">left</div>
+    <div class="right col">right</div>
+  </div>
+  <div class="footer">footer</div>
+</div>
+```
+
+```css
+.container {
+  width: 500px;
+  margin: 50px auto;
+}
+.wrapper {
+  padding: 0 100px 0 100px;
+}
+.col {
+  position: relative;
+  float: left;
+}
+.header,
+.footer {
+  height: 50px;
+}
+.main {
+  width: 100%;
+  height: 200px;
+}
+.left {
+  width: 100px;
+  height: 200px;
+  margin-left: -100%;
+  left: -100px;
+}
+.right {
+  width: 100px;
+  height: 200px;
+  margin-left: -100px;
+  right: -100px;
+}
+.clearfix::after {
+  content: "";
+  display: block;
+  clear: both;
+  visibility: hidden;
+  height: 0;
+  overflow: hidden;
+}
+```
+
+## 双飞翼布局
+
+```html
+<div class="container">
+  <div class="header">header</div>
+  <div class="wrapper clearfix">
+    <div class="main col">
+      <div class="main-wrap">main</div>
+    </div>
+    <div class="left col">left</div>
+    <div class="right col">right</div>
+  </div>
+  <div class="footer">footer</div>
+</div>
+```
+
+```css
+.col {
+  float: left;
+}
+.header {
+  height: 50px;
+}
+.main {
+  width: 100%;
+}
+.main-wrap {
+  margin: 0 100px 0 100px;
+  height: 200px;
+}
+.left {
+  width: 100px;
+  height: 200px;
+  margin-left: -100%;
+}
+.right {
+  width: 100px;
+  height: 200px;
+  margin-left: -100px;
+}
+.footer {
+  height: 50px;
+}
+.clearfix::after {
+  content: "";
+  display: block;
+  clear: both;
+  visibility: hidden;
+  height: 0;
+  overflow: hidden;
+}
+```
 
 # 实现
 
@@ -561,22 +974,3 @@ webp 格式是谷歌在 2010 年推出的图片格式，压缩率只有 jpg 的 
   style="width:500px; height:600px; border: 1px solid #000000; background: url(http://img17.3lian.com/d/file/201703/07/4ceeb6fc3d7956ac7731290a603e0a84.jpg) no-repeat; background-size:cover; 　　 background-position: center center; "
 ></div>
 ```
-
-## 布局
-
-### 水平垂直居中布局
-
-水平居中。
-
-- 使用`text-align + inline-block`。此方案兼容性较好，可兼容至 IE8，对于 IE567 并不支持 inline-block，需要使用 css hack 进行兼容。
-- 使用`table + margin`。此方案兼容至 IE8，可以使用`<table/>`标签代替 css 写法，兼容性良好。另外也直接在某些情况下直接使用 `margin: 0 auto` 。
-- 使用`absolute + transform`。此方案兼容至 IE9，因为 transform 兼容性限制。如果`.child`为定宽元素，可以使用`margin-left`为元素一般宽度的负数值，兼容性极佳。
-  - 子元素绝对定位，使其左侧位置是相对框真实宽度的一半，再往左移动自身宽度的一般。
-- 使用`flex + justify-content`。通过 CSS3 的 一维布局 flex 实现，可以轻松的满足各种居中、对其、平分的布局要求。
-
-垂直居中。
-
-- 使用`height + line-height`。
-- 使用`table-cell + vertial-align`。将富矿转化为一个表格单元格显示。
-- 使用`absolute + transform`。存在 css3 兼容问题，定宽兼容性良好。
-- 使用`flex + align-items`。高版本浏览器兼容，低版本不适用。

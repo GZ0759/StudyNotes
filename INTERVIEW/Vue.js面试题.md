@@ -599,7 +599,7 @@ Vuex 是一个专为 Vue.js 应用程序开发的状态管理模式。它采用�
 
 组件中写 name 选项有哪些好处及作用？
 
-1. 可以通过名字找到对应的组件 （ 递归组件 ）
+1. 可以通过名字找到对应的组件（递归组件）
 2. 可以实现 keep-alive 缓存功能
 3. 可以识别组件，跨级组件通信时非常重要
 
@@ -696,7 +696,7 @@ Vue.set 方法是如何实现的？
 
 补充回答：
 
-1. 如果是数组，调用重写的 splice 方法 （这样可以更新视图 ）
+1. 如果是数组，调用重写的 splice 方法（这样可以更新视图 ）
 2. 如果不是响应式的也不需要将其定义成响应式属性。
 3. 如果是对象，将属性定义成响应式的 `defineReactive(ob.value, key, val)`，通知视图更新 `ob.dep.notify()`
 
@@ -773,15 +773,15 @@ Vue-router 有几种钩子函数？具体是什么及执行流程是怎样的？
 
 vue-router 路由模式有几种？
 
-vue-router 有 3 种路由模式：hash、history、abstract。
+vue-router 有 3 种路由模式：
 
 1. hash: 使用 URL hash 值来作路由。支持所有浏览器；
-2. history : 依赖 HTML5 History API 和服务器配置。
-3. abstract : 支持所有 JavaScript 运行环境，如 Node.js 服务器端。如果发现没有浏览器的 API，路由会自动强制进入这个模式。
+2. history: 依赖 HTML5 History API 和服务器配置。
+3. abstract: 支持所有 JavaScript 运行环境，如 Node.js 服务器端。如果发现没有浏览器的 API，路由会自动强制进入这个模式。
 
 **hash 模式的实现原理**
 
-vue-router 默认 hash 模式。早期的前端路由的实现就是基于 `window.location.hash` 来实现的。其实现原理很简单，`window.location.hash` 的值就是 URL 中 `#` 后面的内容。比如下面这个`https://www.word.com#search`网站，它的 `window.location.hash` 的值为 '#search'。
+vue-router 默认 hash 模式。早期的前端路由的实现就是基于 `window.location.hash` 来实现的。其实现原理很简单，`window.location.hash` 的值就是 URL 中 `#` 后面的内容。比如下面这个 `https://www.word.com#search` 网站，它的 `window.location.hash` 的值为 `#search`。
 
 hash 路由模式的实现主要是基于下面几个特性：
 
@@ -833,7 +833,7 @@ vue-router 可以通过 params 与 query 进行传参。params 是路由的一�
 3. v-for 遍历添加 key，准确使用 v-if，适当添加事件代理
 4. SPA 页面采用 keep-alive 缓存组件
 5. 长列表/无限列表性能优化
-6. 事件的销毁
+6. 在合适时机销毁事件或定时器
 7. 路由懒加载/异步组件
 8. 防抖、节流
 9. 第三方插件按需引入
