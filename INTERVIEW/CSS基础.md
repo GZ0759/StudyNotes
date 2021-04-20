@@ -120,6 +120,33 @@ JS 是单线程的，JS 解析的时候渲染引擎是停止工作的。如何�
 - 避免频繁做 width、height 等会触发回流的操作。
 - 操作 DOM 的时候，如果是添加 DOM 节点，可以将所有节点都在 JS 中操作完毕，再进行渲染（一次性）
 
+## BFC 规范
+
+对 BFC 规范的理解？
+
+块级格式化上下文，是一个独立的渲染区域，让处于 BFC 内部的元素与外部的元素相互隔离，使内外元素的定位不会相互影响。BFC 规定了内部的 Block Box 如何布局或约束规则。
+
+- 内部的 Box 会在垂直方向上一个接一个放置。
+- Box 垂直方向的距离由 margin 决定，属于同一个 BFC 的两个相邻 Box 的 margin 会发生重叠。
+- 每个元素的 margin box 的左边，与包含块 border box 的左边相接触。
+- BFC 的区域不会与 float box 重叠。
+- BFC 是页面上的一个隔离的独立容器，容器里面的子元素不会影响到外面的元素。
+- 计算 BFC 的高度时，浮动元素也会参与计算。
+
+满足下列条件之一就可触发 BFC
+
+1. 根元素，即 html 元素
+2. float 的值不为默认值 none
+3. overflow 的值为 auto、scroll 或 hidden
+4. display 的值为 inline-block/table-cell/table-caption/flex/inline-flex
+5. position 的值为 absolute/fixed/sticky
+
+解决问题
+
+- 防止外边距折叠
+- 包含浮动元素 防止父元素高度坍塌
+- 防止文字环绕
+
 # 选择器
 
 ## 选择器类型
@@ -216,9 +243,9 @@ position 属性被指定为从下面的值列表中选择的单个关键字。
 
 浮动元素脱离了文档流，其父元素也看不到它了，因而也不会包围它。浮动产生的副作用有：父元素背景不能显示、边框不能撑开、margin/padding 设置值不能正确显示。
 
-1. 为父元素添加 `overflow: hidden`或 auto ，兼容 IE 则使用 `zoom: 1`
-2. 同时浮动父元素或设置父元素固定高度
-3. 添加非浮动的清除元素或清除伪类
+1. 父元素设置 overflow 属性为 hidden/auto ，兼容 IE 则使用 `zoom: 1`
+2. 同时父元素实现浮动 float 或设置父元素固定高度 height 
+3. 利用 clear 添加非浮动的清除元素或清除伪类
 
 # 新特性
 
@@ -714,33 +741,6 @@ Chrome 中文界面下默认会将小于 12px 的文本强制按照 12px 显示,
 display 属性规定元素应该生成的框的类型；position 属性规定元素的定位类型；float 属性是一种布局方式，定义元素在哪个方向浮动。
 
 类似于优先级机制：position：absolute/fixed 优先级最高，有他们在时，float 不起作用，display 值需要调整。float 或者 absolute 定位的元素，只能是块元素或表格。
-
-**对 BFC 规范的理解？**
-
-格式化上下文，是一个独立的渲染区域，让处于 BFC 内部的元素与外部的元素相互隔离，使内外元素的定位不会相互影响。BFC 规定了内部的 Block Box 如何布局。
-
-定位方案：
-
-- 内部的 Box 会在垂直方向上一个接一个放置。
-- Box 垂直方向的距离由 margin 决定，属于同一个 BFC 的两个相邻 Box 的 margin 会发生重叠。
-- 每个元素的 margin box 的左边，与包含块 border box 的左边相接触。
-- BFC 的区域不会与 float box 重叠。
-- BFC 是页面上的一个隔离的独立容器，容器里面的子元素不会影响到外面的元素。
-- 计算 BFC 的高度时，浮动元素也会参与计算。
-
-满足下列条件之一就可触发 BFC
-
-- 根元素，即 html 元素
-- float 的值不为 none（默认）
-- position 的值为 absolute 或 fixed
-- display 的值为 inline-block/table-cell/table-caption/flex/inline-flex
-- overflow 的值不为 visible（默认）
-
-解决问题
-
-- 防止外边距折叠
-- 包含浮动元素 防止父元素高度坍塌
-- 防止文字环绕
 
 **为什么会出现浮动和什么时候需要清除浮动？清除浮动的方式？**
 
