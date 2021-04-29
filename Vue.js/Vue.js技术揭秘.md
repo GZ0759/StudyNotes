@@ -13527,7 +13527,7 @@ const app = new Vue({
 
 Vue 从它的设计上就是一个渐进式 JavaScript 框架，它本身的核心是解决视图渲染的问题，其它的能力就通过插件的方式来解决。Vue-Router 就是官方维护的路由插件，在介绍它的注册实现之前，我们先来分析一下 Vue 通用的插件注册原理。
 
-### `Vue.use`
+### Vue.use
 
 Vue 提供了 `Vue.use` 的全局 API 来注册这些插件，所以我们先来分析一下它的实现原理，定义在 `vue/src/core/global-api/use.js` 中：
 
@@ -13881,8 +13881,7 @@ constructor (options: RouterOptions = {}) {
 }
 ```
  
-构造函数定义了一些属性，其中 `this.app` 表示根 `Vue` 实例，`this.apps` 保存持有 `$options.router` 属性的 `Vue` 实例，`this.options` 保存传入的路由配置，`this.beforeHooks`、
-`this.resolveHooks`、`this.afterHooks` 表示一些钩子函数，我们之后会介绍，`this.matcher` 表示路由匹配器，我们之后会介绍，`this.fallback` 表示在浏览器不支持 `history.pushState` 的情况下，根据传入的 `fallback` 配置参数，决定是否回退到hash模式，`this.mode` 表示路由创建的模式，`this.history` 表示路由历史的具体的实现实例，它是根据 `this.mode` 的不同实现不同，它有 `History` 基类，然后不同的 `history` 实现都是继承 `History`。
+构造函数定义了一些属性，其中 `this.app` 表示根 `Vue` 实例，`this.apps` 保存持有 `$options.router` 属性的 `Vue` 实例，`this.options` 保存传入的路由配置，`this.beforeHooks`、`this.resolveHooks`、`this.afterHooks` 表示一些钩子函数，我们之后会介绍，`this.matcher` 表示路由匹配器，我们之后会介绍，`this.fallback` 表示在浏览器不支持 `history.pushState` 的情况下，根据传入的 `fallback` 配置参数，决定是否回退到 hash 模式，`this.mode` 表示路由创建的模式，`this.history` 表示路由历史的具体的实现实例，它是根据 `this.mode` 的不同实现不同，它有 `History` 基类，然后不同的 `history` 实现都是继承 `History`。
 
 实例化 `VueRouter` 后会返回它的实例 `router`，我们在 `new Vue` 的时候会把 `router` 作为配置的属性传入，回顾一下上一节我们讲 `beforeCreate` 混入的时候有这么一段代码：
 
@@ -13978,7 +13977,7 @@ export type Matcher = {
 
 `Matcher` 返回了 2 个方法，`match` 和 `addRoutes`，在上一节我们接触到了 `match` 方法，顾名思义它是做匹配，那么匹配的是什么，在介绍之前，我们先了解路由中重要的 2 个概念，`Loaction` 和 `Route`，它们的数据结构定义在 `flow/declarations.js` 中。
 
-- Location
+1. Location
 
 ```js
 declare type Location = {
@@ -13995,7 +13994,7 @@ declare type Location = {
 
 Vue-Router 中定义的 `Location` 数据结构和浏览器提供的 `window.location` 部分结构有点类似，它们都是对 `url` 的结构化描述。举个例子：`/abc?foo=bar&baz=qux#hello`，它的 `path` 是 `/abc`，`query` 是 `{foo:'bar',baz:'qux'}`。`Location` 的其他属性我们之后会介绍。
  
-- Route
+2. Route
 
 ```js
 declare type Route = {
@@ -14013,7 +14012,7 @@ declare type Route = {
 
 `Route` 表示的是路由中的一条线路，它除了描述了类似 `Loctaion` 的 `path`、`query`、`hash` 这些概念，还有 `matched` 表示匹配到的所有的 `RouteRecord`。`Route` 的其他属性我们之后会介绍。
 
-### `createMatcher`
+### createMatcher
 
 在了解了 `Location` 和 `Route` 后，我们来看一下 `matcher` 的创建过程：
 
@@ -14423,7 +14422,7 @@ function match (
 
 `match` 方法接收 3 个参数，其中 `raw` 是 `RawLocation` 类型，它可以是一个 `url` 字符串，也可以是一个 `Location` 对象；`currentRoute` 是 `Route` 类型，它表示当前的路径；`redirectedFrom` 和重定向相关，这里先忽略。`match` 方法返回的是一个路径，它的作用是根据传入的 `raw` 和当前的路径 `currentRoute` 计算出一个新的路径并返回。
  
- 首先执行了 `normalizeLocation`，它的定义在 `src/util/location.js` 中：
+首先执行了 `normalizeLocation`，它的定义在 `src/util/location.js` 中：
  
 ```js
 export function normalizeLocation (
@@ -14481,13 +14480,13 @@ export function normalizeLocation (
 
 `normalizeLocation` 方法的作用是根据 `raw`，`current` 计算出新的 `location`，它主要处理了 `raw` 的两种情况，一种是有 `params` 且没有 `path`，一种是有 `path` 的，对于第一种情况，如果 `current` 有 `name`，则计算出的 `location` 也有 `name`。
  
- 计算出新的 `location` 后，对 `location` 的 `name` 和 `path` 的两种情况做了处理。
+计算出新的 `location` 后，对 `location` 的 `name` 和 `path` 的两种情况做了处理。
  
- - `name`
+1. `name`
  
 有 `name` 的情况下就根据 `nameMap` 匹配到 `record`，它就是一个 `RouterRecord` 对象，如果 `record` 不存在，则匹配失败，返回一个空路径；然后拿到 `record` 对应的 `paramNames`，再对比 `currentRoute` 中的 `params`，把交集部分的 `params` 添加到 `location` 中，然后在通过 `fillParams` 方法根据 `record.path` 和 `location.path` 计算出 `location.path`，最后调用 `_createRoute(record, location, redirectedFrom)` 去生成一条新路径，该方法我们之后会介绍。
 
-- `path`
+2. `path`
 
 通过 `name` 我们可以很快的找到 `record`，但是通过 `path` 并不能，因为我们计算后的 `location.path` 是一个真实路径，而 `record` 中的 `path` 可能会有 `param`，因此需要对所有的 `pathList` 做顺序遍历， 然后通过 `matchRoute` 方法根据 `record.regex`、`location.path`、`location.params` 匹配，如果匹配到则也通过 `_createRoute(record, location, redirectedFrom)` 去生成一条新路径。因为是顺序遍历，所以我们书写路由配置要注意路径的顺序，因为写在前面的会优先尝试匹配。
  
@@ -14788,7 +14787,7 @@ const iterator = (hook: NavigationGuard, next) => {
 }
 ```
 
-`iterator` 函数逻辑很简单，它就是去执行每一个 导航守卫 `hook`，并传入 `route`、`current` 和匿名函数，这些参数对应文档中的 `to`、`from`、`next`，当执行了匿名函数，会根据一些条件执行 `abort` 或 `next`，只有执行 `next` 的时候，才会前进到下一个导航守卫钩子函数中，这也就是为什么官方文档会说只有执行 `next` 方法来 `resolve` 这个钩子函数。
+`iterator` 函数逻辑很简单，它就是去执行每一个导航守卫 `hook`，并传入 `route`、`current` 和匿名函数，这些参数对应文档中的 `to`、`from`、`next`，当执行了匿名函数，会根据一些条件执行 `abort` 或 `next`，只有执行 `next` 的时候，才会前进到下一个导航守卫钩子函数中，这也就是为什么官方文档会说只有执行 `next` 方法来 `resolve` 这个钩子函数。
 
 那么最后我们来看 `queue` 是怎么构造的：
 
@@ -15086,6 +15085,7 @@ if (this.router.app) {
   })
 }
 ```
+
 在根路由组件重新渲染后，遍历 `postEnterCbs` 执行回调，每一个回调执行的时候，其实是执行 ` poll(cb, match.instances, key, isValid)` 方法，因为考虑到一些了路由组件被套 `transition` 組件在一些缓动模式下不一定能拿到实例，所以用一个轮询方法不断去判断，直到能获取到组件实例，再去调用 `cb`，并把组件实例作为参数传入，这就是我们在回调函数中能拿到组件实例的原因。
 
 第七步是获取 `this.router.resolveHooks`，这个和
@@ -15122,7 +15122,6 @@ afterEach (fn: Function): Function {
 当用户使用 `router.afterEach` 注册了一个全局守卫，就会往 `router.afterHooks` 添加一个钩子函数，这样 `this.router.afterHooks` 获取的就是用户注册的全局 `afterHooks` 守卫。
 
 那么至此我们把所有导航守卫的执行分析完毕了，我们知道路由切换除了执行这些钩子函数，从表象上有 2 个地方会发生变化，一个是 url 发生变化，一个是组件发生变化。接下来我们分别介绍这两块的实现原理。
-
 ### url
 
 当我们点击 `router-link` 的时候，实际上最终会执行 `router.push`，如下：
@@ -15269,6 +15268,7 @@ export function replaceState (url?: string) {
   pushState(url, true)
 }
 ```
+
 这个时候 `path` 为空，所以执行 `replaceHash('/' + path)`，然后内部会执行一次 `getUrl`，计算出来的新的 `url` 为 `http://localhost:8080/#/`，最终会执行 `pushState(url, true)`，这就是 url 会改变的原因。
 
 ### 组件
@@ -15428,7 +15428,6 @@ data.registerRouteInstance = (vm, val) => {
     matched.instances[name] = val
   }
 }
-
 ```
 
 给 `vnode` 的 `data` 定义了 `registerRouteInstance` 方法，在 `src/install.js` 中，我们会调用该方法去注册路由的实例：
@@ -15475,8 +15474,7 @@ Vue.mixin({
 
 由于我们把根 Vue 实例的 `_route` 属性定义成响应式的，我们在每个 `<router-view>` 执行 `render` 函数的时候，都会访问  `parent.$route`，如我们之前分析会访问 `this._routerRoot._route`，触发了它的 `getter`，相当于 `<router-view>` 对它有依赖，然后再执行完 `transitionTo` 后，修改 `app._route` 的时候，又触发了`setter`，因此会通知 `<router-view>` 的渲染 `watcher` 更新，重新渲染组件。
 
-Vue-Router 还内置了另一个组件 `<router-link>`，
- 它支持用户在具有路由功能的应用中（点击）导航。 通过 `to` 属性指定目标地址，默认渲染成带有正确链接的 `<a>` 标签，可以通过配置 `tag` 属性生成别的标签。另外，当目标路由成功激活时，链接元素自动设置一个表示激活的 CSS 类名。
+Vue-Router 还内置了另一个组件 `<router-link>`，它支持用户在具有路由功能的应用中（点击）导航。 通过 `to` 属性指定目标地址，默认渲染成带有正确链接的 `<a>` 标签，可以通过配置 `tag` 属性生成别的标签。另外，当目标路由成功激活时，链接元素自动设置一个表示激活的 CSS 类名。
 
 `<router-link>` 比起写死的 `<a href="...">` 会好一些，理由如下：
 
