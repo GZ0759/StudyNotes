@@ -224,12 +224,18 @@ export default {
 
 一般来说，组件可以有以下几种关系：
 
-![组件关系](https://user-gold-cdn.xitu.io/2018/10/18/166864d066bbcf69?w=790&h=632&f=png&s=36436)
+```
+  A.vue
+    ↓
+  B.vue 
+  ↙ ↘
+C.vue D.vue
+```
 
 A 和 B、B 和 C、B 和 D 都是父子关系，C 和 D 是兄弟关系，A 和 C 是隔代关系（可能隔多代）。组件间经常会通信，Vue.js 内置的通信手段一般有两种：
 
 - `ref`：给元素或组件注册引用信息；
-- `$parent` / `$children`：访问父 / 子实例。
+- `$parent`/`$children`：访问父或子实例。
 
 这两种都是直接得到组件实例，使用后可以直接调用组件的方法或访问数据，比如下面的示例中，用 ref 来访问组件（部分代码省略）：
 
@@ -275,20 +281,20 @@ export default {
 <component-b></component-b>
 ```
 
-我们想在 component-a 中，访问到引用它的页面中（这里就是 parent.vue）的两个 component-b 组件，那这种情况下，就得配置额外的插件或工具了，比如 Vuex 和 Bus 的解决方案，本小册不再做它们的介绍，读者可以自行阅读相关内容。不过，它们都是依赖第三方插件的存在，这在开发独立组件时是不可取的，而在小册的后续章节，会陆续介绍一些黑科技，它们完全不依赖任何三方插件，就可以轻松得到任意的组件实例，或在任意组件间进行通信，且适用于任意场景。
+我们想在 component-a 中，访问到引用它的页面中（这里就是 `parent.vue`）的两个 component-b 组件，那这种情况下，就得配置额外的插件或工具了，比如 Vuex 和 Bus 的解决方案，本小册不再做它们的介绍，读者可以自行阅读相关内容。不过，它们都是依赖第三方插件的存在，这在开发独立组件时是不可取的，而在小册的后续章节，会陆续介绍一些黑科技，它们完全不依赖任何三方插件，就可以轻松得到任意的组件实例，或在任意组件间进行通信，且适用于任意场景。
 
 ## 扩展阅读
 
 - [Vue 组件通信之 Bus](https://juejin.im/post/5a4353766fb9a044fb080927)
 - [Vuex 通俗版教程](https://juejin.im/entry/58cb4c36b123db00532076a2)
 
-# 2. 组件的通信 1：provide / inject
+# 2. 跨级组件的通信（上）
 
-上一节中我们说到，`ref` 和 `$parent / $children` 在**跨级**通信时是有弊端的。当组件 A 和组件 B 中间隔了数代（甚至不确定具体级别）时，以往会借助 Vuex 或 Bus 这样的解决方案，不得不引入三方库来支持。本小节则介绍一种无依赖的组件通信方法：Vue.js 内置的 provide / inject 接口。
+上一节中我们说到，`ref` 和 `$parent`/`$children` 在**跨级**通信时是有弊端的。当组件 A 和组件 B 中间隔了数代（甚至不确定具体级别）时，以往会借助 Vuex 或 Bus 这样的解决方案，不得不引入三方库来支持。本小节则介绍一种无依赖的组件通信方法：Vue.js 内置的 provide/inject 接口。
 
-## 什么是 provide / inject
+## 什么是 provide/inject
 
-`provide / inject` 是 Vue.js 2.2.0 版本后新增的 API，在[文档]((https://cn.vuejs.org/v2/api/#provide-inject))中这样介绍 ：
+`provide/inject` 是 Vue.js 2.2.0 版本后新增的 API，在[文档]((https://cn.vuejs.org/v2/api/#provide-inject))中这样介绍：
 
 这对选项需要一起使用，以允许一个祖先组件向其所有子孙后代注入一个依赖，不论组件层次有多深，并在起上下游关系成立的时间里始终生效。如果你熟悉 React，这与 React 的上下文特性很相似。
 
@@ -313,7 +319,7 @@ export default {
 }
 ```
 
-可以看到，在 A.vue 里，我们设置了一个 **provide: name**，值为 Aresn，它的作用就是将 **name** 这个变量提供给它的所有子组件。而在 B.vue 中，通过 `inject` 注入了从 A 组件中提供的 **name** 变量，那么在组件 B 中，就可以直接通过 **this.name** 访问这个变量了，它的值也是 Aresn。这就是 provide / inject API 最核心的用法。 
+可以看到，在 A.vue 里，我们设置了一个 **provide: name**，值为 Aresn，它的作用就是将 **name** 这个变量提供给它的所有子组件。而在 B.vue 中，通过 `inject` 注入了从 A 组件中提供的 **name** 变量，那么在组件 B 中，就可以直接通过 **this.name** 访问这个变量了，它的值也是 Aresn。这就是 provide/inject API 最核心的用法。 
 
 需要注意的是：
 
@@ -325,7 +331,7 @@ export default {
 
 我们知道，在做 Vue 大型项目时，可以使用 Vuex 做状态管理，它是一个专为 Vue.js 开发的**状态管理模式**，用于集中式存储管理应用的所有组件的状态，并以相应的规则保证状态以一种可预测的方式发生变化。
 
-那了解了 provide / inject 的用法，下面来看怎样替代 Vuex。当然，我们的目的并不是为了替代 Vuex，它还是有相当大的用处，这里只是介绍另一种可行性。
+那了解了 provide/inject 的用法，下面来看怎样替代 Vuex。当然，我们的目的并不是为了替代 Vuex，它还是有相当大的用处，这里只是介绍另一种可行性。
 
 使用 Vuex，最主要的目的是跨组件通信、全局数据维护、多人协同开发。需求比如有：用户的登录信息维护、通知信息维护等全局的状态和数据。
 
@@ -344,7 +350,7 @@ export default {
 </script>
 ```
 
-使用 provide / inject 替代 Vuex，就是在这个 app.vue 文件上做文章。
+使用 provide/inject 替代 Vuex，就是在这个 app.vue 文件上做文章。
 
 我们把 app.vue 理解为一个最外层的根组件，用来存储所有需要的全局数据和状态，甚至是计算属性（computed）、方法（methods）等。因为你的项目中所有的组件（包含路由），它的父组件（或根组件）都是 app.vue，所以我们**把整个 app.vue 实例通过 `provide` 对外提供**。
 
@@ -442,7 +448,7 @@ app.vue 是整个项目第一个被渲染的组件，而且只会渲染一次（
 </script>
 ```
 
-同样非常简单。只要理解了 `this.app` 是直接获取整个 `app.vue` 的实例后，使用起来就得心应手了。想一想，配置复杂的 Vuex 的全部功能，现在是不是都可以通过 `provide / inject` 来实现了呢？
+同样非常简单。只要理解了 `this.app` 是直接获取整个 `app.vue` 的实例后，使用起来就得心应手了。想一想，配置复杂的 Vuex 的全部功能，现在是不是都可以通过 `provide/inject` 来实现了呢？
 
 ## 进阶技巧
 
@@ -498,7 +504,7 @@ export default {
 
 只要一个组件使用了 `provide` 向下提供数据，那其下所有的子组件都可以通过 `inject` 来注入，不管中间隔了多少代，而且可以注入多个来自不同父级提供的数据。需要注意的是，一旦注入了某个数据，比如上面示例中的 `app`，那这个组件中就不能再声明 `app` 这个数据了，因为它已经被父级占有。
 
-独立组件使用 provide / inject 的场景，主要是具有联动关系的组件，比如接下来很快会介绍的第一个实战：具有数据校验功能的表单组件 Form。它其实是两个组件，一个是 Form，一个是 FormItem，FormItem 是 Form 的子组件，它会依赖 Form 组件上的一些特性（props），所以就需要得到父组件 Form，这在 Vue.js 2.2.0 版本以前，是没有 provide / inject 这对 API 的，而 Form 和 FormItem 不一定是父子关系，中间很可能间隔了其它组件，所以不能单纯使用 `$parent` 来向上获取实例。在 Vue.js 2.2.0 之前，一种比较可行的方案是用计算属性动态获取：
+独立组件使用 provide/inject 的场景，主要是具有联动关系的组件，比如接下来很快会介绍的第一个实战：具有数据校验功能的表单组件 Form。它其实是两个组件，一个是 Form，一个是 FormItem，FormItem 是 Form 的子组件，它会依赖 Form 组件上的一些特性（props），所以就需要得到父组件 Form，这在 Vue.js 2.2.0 版本以前，是没有 provide/inject 这对 API 的，而 Form 和 FormItem 不一定是父子关系，中间很可能间隔了其它组件，所以不能单纯使用 `$parent` 来向上获取实例。在 Vue.js 2.2.0 之前，一种比较可行的方案是用计算属性动态获取：
 
 ```js
 computed: {
@@ -522,9 +528,9 @@ export default {
 
 不过，这一切的前提是你使用 Vue.js 2.2.0 以上版本。
 
-# 3. 组件的通信 2：派发与广播
+# 3. 跨级组件的通信（下）
 
-上一讲的 provide / inject API 主要解决了跨级组件间的通信问题，不过它的使用场景，主要是子组件获取上级组件的状态，跨级组件间建立了一种主动提供与依赖注入的关系。然后有两种场景它不能很好的解决：
+上一讲的 provide/inject API 主要解决了跨级组件间的通信问题，不过它的使用场景，主要是子组件获取上级组件的状态，跨级组件间建立了一种主动提供与依赖注入的关系。然后有两种场景它不能很好的解决：
 
 - 父组件向子组件（支持跨级）传递数据；
 - 子组件向父组件（支持跨级）传递数据。
@@ -533,7 +539,7 @@ export default {
 
 ## 自定义事件系统
 
-如果您使用过较早的 Vue.js 1.x 版本，肯定对 *\$dispatch* 和 *\$broadcast* 这两个内置的方法很熟悉，不过它们都在 Vue.js 2.x 里废弃了。在正式介绍主角前，我们先看看 `$on` 与 `$emit` 这两个 API，因为它们是本节内容的基础。
+如果您使用过较早的 Vue.js 1.x 版本，肯定对 `$dispatch` 和 `$broadcast` 这两个内置的方法很熟悉，不过它们都在 Vue.js 2.x 里废弃了。在正式介绍主角前，我们先看看 `$on` 与 `$emit` 这两个 API，因为它们是本节内容的基础。
 
 `$emit` 会在**当前组件**实例上触发自定义事件，并传递一些参数给监听器的回调，一般来说，都是在父级调用这个组件时，使用 `@on` 的方式来监听自定义事件的，比如在子组件中触发事件：
 
@@ -647,14 +653,14 @@ export default {
 
 虽然在业务开发中，它没有 Vuex 这样专门管理状态的插件清晰好用，但对独立组件（库）的开发，绝对是福音。因为独立组件一般层级并不会很复杂，并且剥离了业务，不会变的难以维护。
 
-## 自行实现 dispatch 和 broadcast 方法
+## 自行实现 dispatch/broadcast
 
-自行实现的 dispatch 和 broadcast 方法，不能保证跟 Vue.js 1.x 的  *\$dispatch* 和 *\$broadcast* 具有完全相同的体验，但基本功能是一样的，都是解决父子组件（含跨级）间的通信问题。
+自行实现的 dispatch 和 broadcast 方法，不能保证跟 Vue.js 1.x 的  `$dispatch` 和 `$broadcast` 具有完全相同的体验，但基本功能是一样的，都是解决父子组件（含跨级）间的通信问题。
 
 通过目前已知的信息，我们要实现的 dispatch 和 broadcast 方法，将具有以下功能：
 
 - 在子组件调用 dispatch 方法，向上级指定的组件实例（最近的）上触发自定义事件，并传递数据，且该上级组件已预先通过 `$on` 监听了这个事件；
-- 相反，在父组件调用 broadcast 方法，向下级指定的组件实例（最近的）上触发自定义事件，并传递数据，且该下级组件已预先通过 `$on` 监听了这个事件。
+- 在父组件调用 broadcast 方法，向下级指定的组件实例（最近的）上触发自定义事件，并传递数据，且该下级组件已预先通过 `$on` 监听了这个事件。
 
 实现这对方法的关键点在于，如何正确地向上或向下找到对应的组件实例，并在它上面触发方法。在设计一个新功能（features）时，可以先确定这个功能的 API 是什么，也就是说方法名、参数、使用样例，确定好 API，再来写具体的代码。
 
@@ -769,9 +775,9 @@ export default {
 - 无冒泡机制；
 - 第三个参数传递的数据，只能是一个（较多时可以传入一个对象），而 Vue.js 1.x 可以传入多个参数，当然，你对 emitter.js 稍作修改，也能支持传入多个参数，只是一般场景传入一个对象足以。
 
-# 4. 实战 1：具有数据校验功能的表单组件
+# 4. 实战 1：表单组件
 
-在第 3 节和第 4 节中，我们介绍了组件间的两种通信方法：provide / inject 和 dispatch / broadcast，前者是 Vue.js 内置的，主要用于子组件获取父组件（包括跨级）的状态；后者是自行实现的一种混合，用于父子组件（包括跨级）间通过自定义事件通信。本小节则基于这两种通信方法，来实现一个具有数据校验功能的表单组件——Form。
+在第 3 节和第 4 节中，我们介绍了组件间的两种通信方法：provide/inject 和 dispatch/broadcast，前者是 Vue.js 内置的，主要用于子组件获取父组件（包括跨级）的状态；后者是自行实现的一种混合，用于父子组件（包括跨级）间通过自定义事件通信。本小节则基于这两种通信方法，来实现一个具有数据校验功能的表单组件——Form。
 
 本节部分代码参考 [iView](https://github.com/iview/iview/tree/2.0/src/components/form)。
 
@@ -1063,7 +1069,7 @@ export default {
 
 通过调用 `setRules` 方法，监听表单组件的两个事件，并绑定了句柄函数 `onFieldBlur` 和 `onFieldChange`，分别对应 blur 和 change 两种事件类型。当 onFieldBlur 或 onFieldChange 函数触发时，就意味着 FormItem 要对**当前的数据**进行一次校验。当前的数据，指的就是通过表单域 Form 中定义的 props：model，结合当前 FormItem 定义的 props：prop 来确定的数据，可以回顾上文写过的用例。
 
-因为 FormItem 中只定义了数据源的某个 key 名称（即属性 prop），要拿到 Form 中 model 里的数据，需要用到第 3 节的通信方法 provide / inject。所以在 Form 中，把整个实例（this）向下提供，并在 FormItem 中注入：
+因为 FormItem 中只定义了数据源的某个 key 名称（即属性 prop），要拿到 Form 中 model 里的数据，需要用到第 3 节的通信方法 provide/inject。所以在 Form 中，把整个实例（this）向下提供，并在 FormItem 中注入：
 
 ```js
 // form.vue，部分代码省略
@@ -1419,7 +1425,7 @@ handleSubmit () {
 
 ## 概述
 
-前面的小节我们已经介绍了两种组件间通信的方法：provide / inject 和 dispatch / broadcast。它们有各自的使用场景和局限，比如前者多用于子组件获取父组件的状态，后者常用于父子组件间通过自定义事件通信。
+前面的小节我们已经介绍了两种组件间通信的方法：provide/inject 和 dispatch/broadcast。它们有各自的使用场景和局限，比如前者多用于子组件获取父组件的状态，后者常用于父子组件间通过自定义事件通信。
 
 本节将介绍第 3 种组件通信方法，也就是 findComponents 系列方法，它并非 Vue.js 内置，而是需要自行实现，以工具函数的形式来使用，它是一系列的函数，可以说是组件通信的终极方案。findComponents 系列方法最终都是返回组件的实例，进而可以读取或调用该组件的数据和方法。
 
@@ -5819,7 +5825,7 @@ createElement () {
 
 1. 父子通信：
 
-   父向子传递数据是通过 props，子向父是通过 events（$emit）；通过父链 / 子链也可以通信（\$parent / \$children）；`ref` 也可以访问组件实例；provide / inject API。
+   父向子传递数据是通过 props，子向父是通过 events（$emit）；通过父链 / 子链也可以通信（\$parent / \$children）；`ref` 也可以访问组件实例；provide/inject API。
 
 2. 兄弟通信：
 
@@ -5827,9 +5833,9 @@ createElement () {
 
 1. 跨级通信：
 
-   Bus；Vuex；provide / inject API。
+   Bus；Vuex；provide/inject API。
 
-除了常规的通信方法，本册介绍的 dispatch / broadcast 和 findComponents 系列方法也可以说的，如果能说到这些，说明你对 Vue.js 组件已经有较深入的研究。
+除了常规的通信方法，本册介绍的 dispatch/broadcast 和 findComponents 系列方法也可以说的，如果能说到这些，说明你对 Vue.js 组件已经有较深入的研究。
 
 ## 路由的跳转方式
 
@@ -6050,8 +6056,8 @@ robot 还有一个作用：翻译。它会把中文的 issues 自动翻译为英
 
 Vue.js 在开发独立组件时，由于它的特殊性，无法使用 Vuex、Bus 这样的第三方插件来做组件通信，因此小册提到了 3 种组件间的通信方法，都是支持跨多级的：
 
-1. provide / inject：由父组件通过 `provide` 向下提供一个数据，子组件在需要时，通过 `inject` 注入这个依赖，就可以直接访问父级的数据了。
-2. dispatch / broadcast：组件向上派发或向下广播一个自定义事件，组件通过 `$on` 来监听。
+1. provide/inject：由父组件通过 `provide` 向下提供一个数据，子组件在需要时，通过 `inject` 注入这个依赖，就可以直接访问父级的数据了。
+2. dispatch/broadcast：组件向上派发或向下广播一个自定义事件，组件通过 `$on` 来监听。
 3. findComponents 系列：共包含 5 个方法，通过组件的 `name` 选项，遍历找到对应的实例，这是组件通信的终极方案，适用于所有场景。
 
 本册总共讲解了 7 个组件的实例：

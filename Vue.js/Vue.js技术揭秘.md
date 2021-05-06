@@ -6195,7 +6195,7 @@ update () {
 
 在组件化章节，介绍了 Vue 的组件化实现过程，不过只讲了 Vue 组件的创建过程。因此这一章对数据响应式原理的分析，了解到当数据发生变化的时候，会触发渲染 `watcher` 的回调函数，进而执行组件的更新过程，接下来我们来详细分析这一过程。
 
-在 `mountComponent` 方法执行过程中，定义了 `updateComponent` 函数，该函数时作为渲染 `Watcher` 传入。
+在 `mountComponent` 方法执行过程中，定义了 `updateComponent` 函数，该函数时作为创建实例化 Watcher 的参数传入。
 
 ```js
 updateComponent = () => {
@@ -6210,7 +6210,7 @@ new Watcher(vm, updateComponent, noop, {
 }, true /* isRenderWatcher */)
 ```
 
-组件的更新还是调用了 `vm._update` 方法，我们再回顾一下这个方法，它的定义在 `src/core/instance/lifecycle.js` 中：
+组件的更新还是调用了 `vm._update` 方法，该这个方法定义在 `src/core/instance/lifecycle.js` 中：
 
 ```js
 Vue.prototype._update = function (vnode: VNode, hydrating?: boolean) {
@@ -6228,7 +6228,7 @@ Vue.prototype._update = function (vnode: VNode, hydrating?: boolean) {
 }
 ```
 
-组件更新的过程，会执行 `vm.$el = vm.__patch__(prevVnode, vnode)`，它仍然会调用 `patch` 函数，在 `src/core/vdom/patch.js` 中定义：
+组件更新的过程，会执行 `vm.__patch__(prevVnode, vnode)`，它仍然会调用 `patch` 函数，在 `src/core/vdom/patch.js` 中定义：
 
 ```js
 return function patch (oldVnode, vnode, hydrating, removeOnly) {
@@ -6469,7 +6469,9 @@ function invokeDestroyHook (vnode) {
 }
 ```
 
-删除节点逻辑很简单，就是遍历待删除的 `vnodes` 做删除，其中 `removeAndInvokeRemoveHook`  的作用是从 DOM 中移除节点并执行 `module` 的 `remove` 钩子函数，并对它的子节点递归调用 `removeAndInvokeRemoveHook` 函数；`invokeDestroyHook` 是执行 `module` 的 `destory` 钩子函数以及 `vnode` 的 `destory` 钩子函数，并对它的子 `vnode` 递归调用 `invokeDestroyHook` 函数；`removeNode` 就是调用平台的 DOM API 去把真正的 DOM 节点移除。
+删除节点逻辑很简单，就是遍历待删除的 `vnodes` 做删除，其中 `removeAndInvokeRemoveHook`  的作用是从 DOM 中移除节点并执行 `module` 的 `remove` 钩子函数，并对它的子节点递归调用 `removeAndInvokeRemoveHook` 函数。
+
+`invokeDestroyHook` 是执行 `module` 的 `destory` 钩子函数以及 `vnode` 的 `destory` 钩子函数，并对它的子 `vnode` 递归调用 `invokeDestroyHook` 函数；`removeNode` 就是调用平台的 DOM API 去把真正的 DOM 节点移除。
 
 在之前介绍组件生命周期的时候提到 `beforeDestroy` 和 `destroyed` 这两个生命周期钩子函数，它们就是在执行 `invokeDestroyHook` 过程中，执行了 `vnode` 的 `destory` 钩子函数，它的定义在 `src/core/vdom/create-component.js` 中：
 
@@ -6488,11 +6490,11 @@ const componentVNodeHooks = {
 }
 ```
 
-当组件并不是 `keepAlive` 的时候，会执行 `componentInstance.$destroy()` 方法，然后就会执行 `beforeDestroy & destroyed` 两个钩子函数。
+当组件并不是 `keepAlive` 的时候，会执行 `componentInstance.$destroy()` 方法，然后就会执行 `beforeDestroy` 和 `destroyed` 两个钩子函数。
 
 ### 4.8.2 新旧节点相同
 
-对于新旧节点不同的情况，这种创建新节点，更新占位符节点和删除旧节点的逻辑是很容易理解的。还有一种组件 `vnode` 的更新情况是新旧节点相同，它会调用 `patchVNode` 方法，它的定义在 `src/core/vdom/patch.js` 中：
+对于新旧节点不同的情况，这种创建新节点、更新占位符节点和删除旧节点的逻辑是很容易理解的。还有一种组件 `vnode` 的更新情况是新旧节点相同，它会调用 `patchVNode` 方法，它的定义在 `src/core/vdom/patch.js` 中：
 
 ```js
 function patchVnode (oldVnode, vnode, insertedVnodeQueue, removeOnly) {
@@ -6696,10 +6698,10 @@ if (isUndef(vnode.text)) {
 
 如果 `vnode` 是个文本节点且新旧文本不相同，则直接替换文本内容。如果不是文本节点，则判断它们的子节点，并分了几种情况处理：
 
-- `oldCh` 与 `ch` 都存在且不相同时，使用 `updateChildren` 函数来更新子节点，这个后面重点讲。
-- 如果只有 `ch` 存在，表示旧节点不需要了。如果旧的节点是文本节点则先将节点的文本清除，然后通过 `addVnodes` 将 `ch` 批量插入到新节点 `elm` 下。                    
-- 如果只有 `oldCh` 存在，表示更新的是空节点，则需要将旧的节点通过 `removeVnodes` 全部清除。       
-- 当只有旧节点是文本节点的时候，则清除其节点文本内容。
+  1. `oldCh` 与 `ch` 都存在且不相同时，使用 `updateChildren` 函数来更新子节点，这个后面重点讲。
+  2. 如果只有 `ch` 存在，表示旧节点不需要了。如果旧的节点是文本节点则先将节点的文本清除，然后通过 `addVnodes` 将 `ch` 批量插入到新节点 `elm` 下。                    
+  3. 如果只有 `oldCh` 存在，表示更新的是空节点，则需要将旧的节点通过 `removeVnodes` 全部清除。       
+  4. 当只有旧节点是文本节点的时候，则清除其节点文本内容。
 
 4. 执行 `postpatch` 钩子函数
 
@@ -6713,7 +6715,7 @@ if (isDef(data)) {
 
 那么在整个 `pathVnode` 过程中，最复杂的就是 `updateChildren` 方法了，下面我们来单独介绍它。
 
-### 4.8.3 核心原理 updateChildren
+### 4.8.3 updateChildren
 
 ```js
 function updateChildren (parentElm, oldCh, newCh, insertedVnodeQueue, removeOnly) {
@@ -6828,32 +6830,56 @@ function updateChildren (parentElm, oldCh, newCh, insertedVnodeQueue, removeOnly
 当我们点击 `change` 按钮去改变数据，最终会执行到 `updateChildren` 去更新 `li` 部分的列表数据，我们通过图的方式来描述一下它的更新过程：
 
 第一步：
-<img :src="$withBase('/assets/update-children-1.png')">
+
+```js
+`A B C D`
+`D C B A E`
+```
 
 第二步：
-<img :src="$withBase('/assets/update-children-2.png')">
+
+```js
+D `A B C` D
+  D `C B A E`
+```
 
 第三步：
-<img :src="$withBase('/assets/update-children-3.png')">
+
+```js
+D C `A B` C
+  D C `B A E`
+```
 
 第四步：
-<img :src="$withBase('/assets/update-children-4.png')">
+
+```js
+D C B `A` B
+  D C B `A E`
+```
 
 第五步：
-<img :src="$withBase('/assets/update-children-5.png')">
+
+```js
+D C B A
+  D C B A `E`
+```
 
 第六步：
-<img :src="$withBase('/assets/update-children-6.png')">
+
+```js
+D C B A E
+  D C B A E
+```
 
 ### 4.8.4 总结
 
 组件更新的过程核心就是新旧 vnode diff，对新旧节点相同以及不同的情况分别做不同的处理。新旧节点不同的更新流程是创建新节点->更新父占位符节点->删除旧节点；而新旧节点相同的更新流程是去获取它们的 children，根据不同情况做不同的更新逻辑。最复杂的情况是新旧节点相同且它们都存在子节点，那么会执行 `updateChildren` 逻辑，这块儿可以借助画图的方式配合理解。
 
-## 4.9 Props
+## 4.9 特性 Props
 
 `Props` 作为组件的核心特性之一，也是我们平时开发 Vue 项目中接触最多的特性之一，它可以让组件的功能变得丰富，也是父子组件通讯的一个渠道。那么它的实现原理是怎样的，我们来一探究竟。
 
-### 4.9.1 规范化
+### 4.9.1 规范化 normalize
 
 在初始化 `props` 之前，首先会对 `props` 做一次 `normalize`，它发生在 `mergeOptions` 的时候，在 `src/core/util/options.js` 中：
 
@@ -6905,13 +6931,11 @@ function normalizeProps (options: Object, vm: ?Component) {
 
 合并配置我们在组件化章节讲过，它主要就是处理我们定义组件的对象 `option`，然后挂载到组件的实例 `this.$options` 中。
 
-我们接下来重点看 `normalizeProps` 的实现，其实这个函数的主要目的就是把我们编写的 `props` 转成对象格式，因为实际上 `props` 除了对象格式，还允许写成数组格式。
+函数 `normalizeProps` 的主要目的就是把编写的 `props` 转成对象格式，因为实际上 `props` 除了对象格式，还允许写成数组格式。
 
-当 `props` 是一个数组，每一个数组元素 `prop` 只能是一个 `string`，表示 `prop` 的 `key`，转成驼峰格式，`prop` 的类型为空。
-
-当 `props` 是一个对象，对于 `props` 中每个 `prop` 的 `key`，我们会转驼峰格式，而它的 `value`，如果不是一个对象，我们就把它规范成一个对象。
-
-如果 `props` 既不是数组也不是对象，就抛出一个警告。
+- 如果是一个数组，每一个数组元素 `prop` 只能是一个 `string`，表示 `prop` 的 `key`，转成驼峰格式，`prop` 的类型为空。
+- 如果是一个对象，对于 `props` 中每个 `prop` 的 `key`，会转驼峰格式，而它的 `value`，如果不是一个对象，我们就把它规范成一个对象。
+- 如果 `props` 既不是数组也不是对象，就抛出一个警告。
 
 举个例子：
 
@@ -6952,7 +6976,7 @@ options.props = {
 
 由于对象形式的 `props` 可以指定每个 `prop` 的类型和定义其它的一些属性，推荐用对象形式定义 `props`。
 
-### 4.9.2 初始化
+### 4.9.2 初始化 initProps
 
 `Props` 的初始化主要发生在 `new Vue` 中的 `initState` 阶段，在 `src/core/instance/state.js` 中：
 
@@ -7065,7 +7089,7 @@ export function validateProp (
 }
 ```
 
-`validateProp` 主要就做 3 件事情：处理 `Boolean` 类型的数据，处理默认数据，`prop` 断言，并最终返回 `prop` 的值。
+`validateProp` 主要就做 3 件事情：处理 `Boolean` 类型的数据，处理默认数据和 `prop` 断言，并最终返回 `prop` 的值。
 
 先来看 `Boolean` 类型数据的处理逻辑：
 
@@ -7217,7 +7241,7 @@ function getPropDefaultValue (vm: ?Component, prop: PropOptions, key: string): a
 
 接着是开发环境下对 `prop` 的默认值是否为对象或者数组类型的判断，如果是的话会报警告，因为对象和数组类型的 `prop`，他们的默认值必须要返回一个工厂函数。
 
-接下来的判断是如果上一次组件渲染父组件传递的 `prop` 的值是 `undefined`，则直接返回 上一次的默认值 `vm._props[key]`，这样可以避免触发不必要的 `watcher` 的更新。
+接下来的判断是如果上一次组件渲染父组件传递的 `prop` 的值是 `undefined`，则直接返回上一次的默认值 `vm._props[key]`，这样可以避免触发不必要的 `watcher` 的更新。
 
 最后就是判断 `def` 如果是工厂函数且 `prop` 的类型不是 `Function` 的时候，返回工厂函数的返回值，否则直接返回 `def`。
 
@@ -7540,7 +7564,7 @@ export function updateChildComponent (
 }
 ```
 
-我们重点来看更新 `props` 的相关逻辑，这里的 `propsData` 是父组件传递的 `props` 数据，`vm` 是子组件的实例。`vm._props` 指向的就是子组件的 `props` 值，`propKeys` 就是在之前 `initProps` 过程中，缓存的子组件中定义的所有 `prop` 的 `key`。主要逻辑就是遍历 `propKeys`，然后执行 `props[key] = validateProp(key, propOptions, propsData, vm)` 重新验证和计算新的 `prop` 数据，更新 `vm._props`，也就是子组件的 `props`，这个就是子组件  `props` 的更新过程。
+我们重点来看更新 `props` 的相关逻辑，这里的 `propsData` 是父组件传递的 `props` 数据，`vm` 是子组件的实例。`vm._props` 指向的就是子组件的 `props` 值，`propKeys` 就是在之前 `initProps` 过程中，缓存的子组件中定义的所有 `prop` 的 `key`。主要逻辑就是遍历 `propKeys`，然后执行 `props[key] = validateProp(key, propOptions, propsData, vm)` 重新验证和计算新的 `prop` 数据，更新 `vm._props`，也就是子组件的 `props`，这个就是子组件 `props` 的更新过程。
 
 #### 子组件重新渲染
 
@@ -7663,21 +7687,27 @@ if (propsData && vm.$options.props) {
 
 ## 4.10 原理图
 
-<img :src="$withBase('/assets/reactive.png')">
+```js
+// 响应式数据
 
-```
 data/prop => defineReactive
 
 getter/setter => depend/notify => Dep
 
-computed/watch => coumputed_watcher/user_watcher => depend&notify/addDep&update => Dep
+Dep => addDep/update => render_watcher&User_watcher
 
-user_watcher => run => user callback
+// 计算属性和侦听属性
 
-$mount => render_watcher => updateComponent
+computed => coumputed_watcher => depend/notify => Dep
 
-Dep => addDep/update => render_watcher
+watch => user_watcher => run => user callback
+
+// 组件更新
+
+$mount => render_watcher => run => updateComponent
 ```
+
+![](http://caibaojian.com/vue-analysis/assets/reactive.png)
 
 # 第五章：编译
 
@@ -13472,7 +13502,7 @@ beforeMount () {
 
 ## 7.1 Vue-Router
 
-路由的概念相信大部分同学并不陌生，它的作用就是根据不同的路径映射到不同的视图。我们在用 Vue 开发过实际项目的时候都会用到 Vue-Router 这个官方插件来帮我们解决路由的问题。Vue-Router 的能力十分强大，它支持 `hash`、`history`、`abstract` 3 种路由方式，提供了 `<router-link>` 和 `<router-view>` 2 种组件，还提供了简单的路由配置和一系列好用的 API。
+路由的概念相信大部分同学并不陌生，它的作用就是根据不同的路径映射到不同的视图。我们在用 Vue 开发过实际项目的时候都会用到 Vue-Router 这个官方插件来帮我们解决路由的问题。Vue-Router 的能力十分强大，它支持 `hash`、`history`、`abstract` 3 种路由方式，提供了 `<router-link>` 和 `<router-view>` 两种组件，还提供了简单的路由配置和一系列好用的 API。
 
 大部分同学已经掌握了路由的基本使用，但使用的过程中也难免会遇到一些坑，那么这一章我们就来深挖 Vue-Router 的实现细节，一旦我们掌握了它的实现原理，那么就能在开发中对路由的使用更加游刃有余。
 
@@ -13538,7 +13568,7 @@ const app = new Vue({
 
 ## 7.2 路由注册
 
-Vue 从它的设计上就是一个渐进式 JavaScript 框架，它本身的核心是解决视图渲染的问题，其它的能力就通过插件的方式来解决。Vue-Router 就是官方维护的路由插件，在介绍它的注册实现之前，我们先来分析一下 Vue 通用的插件注册原理。
+Vue 从它的设计上就是一个渐进式 JavaScript 框架，它本身的核心是解决视图渲染的问题，其它能力就通过插件的方式来解决。Vue-Router 就是官方维护的路由插件，在介绍它的注册实现之前，我们先来分析一下 Vue 通用的插件注册原理。
 
 ### Vue.use
 
@@ -13567,7 +13597,7 @@ export function initUse (Vue: GlobalAPI) {
 
 `Vue.use` 接受一个 `plugin` 参数，并且维护了一个 `_installedPlugins` 数组，它存储所有注册过的 `plugin`；接着又会判断 `plugin` 有没有定义 `install` 方法，如果有的话则调用该方法，并且该方法执行的第一个参数是 `Vue`；最后把 `plugin` 存储到 `installedPlugins` 中。
 
-可以看到 Vue 提供的插件注册机制很简单，每个插件都需要实现一个静态的 `install` 方法，当我们执行 `Vue.use` 注册插件的时候，就会执行这个 `install` 方法，并且在这个 `install` 方法的第一个参数我们可以拿到 `Vue` 对象，这样的好处就是作为插件的编写方不需要再额外去`import Vue` 了。
+可以看到 Vue 提供的插件注册机制很简单，每个插件都需要实现一个静态的 `install` 方法，当我们执行 `Vue.use` 注册插件的时候，就会执行这个 `install` 方法，并且在这个 `install` 方法的第一个参数可以拿到 `Vue` 对象，这样的好处就是作为插件的编写方不需要再额外去`import Vue` 了。
 
 ### 路由安装
 
@@ -13642,9 +13672,9 @@ export function initMixin (Vue: GlobalAPI) {
 
 对于 `beforeCreate` 和 `destroyed` 钩子函数，它们都会执行 `registerInstance` 方法，这个方法的作用我们也是之后会介绍。
 
-接着给 Vue 原型上定义了 `$router` 和 `$route` 2 个属性的 get 方法，这就是为什么我们可以在组件实例上可以访问 `this.$router` 以及 `this.$route`，它们的作用之后介绍。
+接着给 Vue 原型上定义了 `$router` 和 `$route` 两个属性的 get 方法，这就是为什么我们可以在组件实例上可以访问 `this.$router` 以及 `this.$route`，它们的作用之后介绍。
 
-接着又通过 `Vue.component` 方法定义了全局的 `<router-link>` 和 `<router-view>` 2 个组件，这也是为什么我们在写模板的时候可以使用这两个标签，它们的作用也是之后介绍。
+接着又通过 `Vue.component` 方法定义了全局的 `<router-link>` 和 `<router-view>` 两个组件，这也是为什么我们在写模板的时候可以使用这两个标签，它们的作用也是之后介绍。
 
 最后定义了路由中的钩子函数的合并策略，和普通的钩子函数一样。
 
@@ -13894,7 +13924,7 @@ constructor (options: RouterOptions = {}) {
 }
 ```
  
-构造函数定义了一些属性，其中 `this.app` 表示根 `Vue` 实例，`this.apps` 保存持有 `$options.router` 属性的 `Vue` 实例，`this.options` 保存传入的路由配置，`this.beforeHooks`、`this.resolveHooks`、`this.afterHooks` 表示一些钩子函数，我们之后会介绍，`this.matcher` 表示路由匹配器，我们之后会介绍，`this.fallback` 表示在浏览器不支持 `history.pushState` 的情况下，根据传入的 `fallback` 配置参数，决定是否回退到 hash 模式，`this.mode` 表示路由创建的模式，`this.history` 表示路由历史的具体的实现实例，它是根据 `this.mode` 的不同实现不同，它有 `History` 基类，然后不同的 `history` 实现都是继承 `History`。
+构造函数定义了一些属性，其中 `this.app` 表示根 `Vue` 实例，`this.apps` 保存持有 `$options.router` 属性的 `Vue` 实例，`this.options` 保存传入的路由配置，`this.beforeHooks`、`this.resolveHooks` 和 `this.afterHooks` 表示一些钩子函数，我们之后会介绍，`this.matcher` 表示路由匹配器，我们之后会介绍，`this.fallback` 表示在浏览器不支持 `history.pushState` 的情况下，根据传入的 `fallback` 配置参数，决定是否回退到 hash 模式，`this.mode` 表示路由创建的模式，`this.history` 表示路由历史的具体的实现实例，它是根据 `this.mode` 的不同实现不同，它有 `History` 基类，然后不同的 `history` 实现都是继承 `History`。
 
 实例化 `VueRouter` 后会返回它的实例 `router`，我们在 `new Vue` 的时候会把 `router` 作为配置的属性传入，回顾一下上一节我们讲 `beforeCreate` 混入的时候有这么一段代码：
 
@@ -14320,7 +14350,7 @@ var re = pathToRegexp('/foo/:bar', keys)
 // keys = [{ name: 'bar', prefix: '/', delimiter: '/', optional: false, repeat: false, pattern: '[^\\/]+?' }]
 ```
  
- `components` 是一个对象，通常我们在配置中写的 `component` 实际上这里会被转换成 `{components: route.component}`；`instances` 表示组件的实例，也是一个对象类型；`parent` 表示父的 `RouteRecord`，因为我们配置的时候有时候会配置子路由，所以整个 `RouteRecord` 也就是一个树型结构。
+`components` 是一个对象，通常我们在配置中写的 `component` 实际上这里会被转换成 `{components: route.component}`；`instances` 表示组件的实例，也是一个对象类型；`parent` 表示父的 `RouteRecord`，因为我们配置的时候有时候会配置子路由，所以整个 `RouteRecord` 也就是一个树型结构。
 
 ```js
 if (route.children) {
@@ -14356,7 +14386,7 @@ if (name) {
 
 如果我们在路由配置中配置了 `name`，则给 `nameMap` 添加一条记录。
 
-由于 `pathList`、`pathMap`、`nameMap` 都是引用类型，所以在遍历整个 `routes` 过程中去执行 `addRouteRecord` 方法，会不断给他们添加数据。那么经过整个 `createRouteMap` 方法的执行，我们得到的就是 `pathList`、`pathMap` 和 `nameMap`。其中 `pathList` 是为了记录路由配置中的所有 `path`，而 `pathMap` 和 `nameMap` 都是为了通过 `path` 和 `name` 能快速查到对应的 `RouteRecord`。
+由于 `pathList`、`pathMap` 和 `nameMap` 都是引用类型，所以在遍历整个 `routes` 过程中去执行 `addRouteRecord` 方法，会不断给他们添加数据。那么经过整个 `createRouteMap` 方法的执行，我们得到的就是 `pathList`、`pathMap` 和 `nameMap`。其中 `pathList` 是为了记录路由配置中的所有 `path`，而 `pathMap` 和 `nameMap` 都是为了通过 `path` 和 `name` 能快速查到对应的 `RouteRecord`。
 
 再回到 `createMatcher` 函数，接下来就定义了一系列方法，最后返回了一个对象。
 
@@ -14379,7 +14409,7 @@ function addRoutes (routes) {
 }
 ```
 
-`addRoutes` 的方法十分简单，再次调用 `createRouteMap` 即可，传入新的 `routes` 配置，由于 `pathList`、`pathMap`、`nameMap` 都是引用类型，执行 `addRoutes` 后会修改它们的值。
+`addRoutes` 的方法十分简单，再次调用 `createRouteMap` 即可，传入新的 `routes` 配置，由于 `pathList`、`pathMap` 和 `nameMap` 都是引用类型，执行 `addRoutes` 后会修改它们的值。
 
 ### match
 
@@ -14491,7 +14521,7 @@ export function normalizeLocation (
 }
 ```
 
-`normalizeLocation` 方法的作用是根据 `raw`，`current` 计算出新的 `location`，它主要处理了 `raw` 的两种情况，一种是有 `params` 且没有 `path`，一种是有 `path` 的，对于第一种情况，如果 `current` 有 `name`，则计算出的 `location` 也有 `name`。
+`normalizeLocation` 方法的作用是根据 `raw` 和 `current` 计算出新的 `location`，它主要处理了 `raw` 的两种情况，一种是有 `params` 且没有 `path`，一种是有 `path` 的，对于第一种情况，如果 `current` 有 `name`，则计算出的 `location` 也有 `name`。
  
 计算出新的 `location` 后，对 `location` 的 `name` 和 `path` 的两种情况做了处理。
  
@@ -14571,7 +14601,7 @@ function formatMatch (record: ?RouteRecord): Array<RouteRecord> {
 
 ### 总结
 
-那么到此，`matcher` 相关的主流程的分析就结束了，我们了解了 `Location`、`Route`、`RouteRecord` 等概念。并通过 `matcher` 的 `match` 方法，我们会找到匹配的路径 `Route`，这个对 `Route` 的切换，组件的渲染都有非常重要的指导意义。下一节我们会回到 `transitionTo` 方法，看一看路径的切换都做了哪些事情。
+那么到此，`matcher` 相关的主流程的分析就结束了，我们了解了 `Location`、`Route` 和 `RouteRecord` 等概念。并通过 `matcher` 的 `match` 方法，我们会找到匹配的路径 `Route`，这个对 `Route` 的切换，组件的渲染都有非常重要的指导意义。下一节我们会回到 `transitionTo` 方法，看一看路径的切换都做了哪些事情。
 
 ## 7.5 路径切换
 
@@ -14738,7 +14768,7 @@ function resolveQueue (
 
 因为 `route.matched` 是一个 `RouteRecord` 的数组，由于路径是由 `current` 变向 `route`，那么就遍历对比 2 边的 `RouteRecord`，找到一个不一样的位置 `i`，那么 `next` 中从 0 到 `i` 的 `RouteRecord` 是两边都一样，则为 `updated` 的部分；从 `i` 到最后的 `RouteRecord` 是 `next` 独有的，为 `activated` 的部分；而 `current` 中从 `i` 到最后的 `RouteRecord` 则没有了，为 `deactivated` 的部分。
 
-拿到 `updated`、`activated`、`deactivated` 3 个 `ReouteRecord` 数组后，接下来就是路径变换后的一个重要部分，执行一系列的钩子函数。
+拿到 `updated`、`activated`、`deactivated` 三个 `ReouteRecord` 数组后，接下来就是路径变换后的一个重要部分，执行一系列的钩子函数。
 
 ### 导航守卫
 
@@ -14929,6 +14959,7 @@ function extractUpdateHooks (updated: Array<RouteRecord>): Array<?Function> {
   return extractGuards(updated, 'beforeRouteUpdate', bindGuard)
 }
 ```
+
 和 `extractLeaveGuards(deactivated)` 类似，`extractUpdateHooks(updated)` 获取到的就是所有重用的组件中定义的 `beforeRouteUpdate` 钩子函数。
 
 第四步是执行 `activated.map(m => m.beforeEnter)`，获取的是在激活的路由配置中定义的 `beforeEnter` 函数。
@@ -15124,6 +15155,7 @@ updateRoute (route: Route) {
   })
 }
 ```
+
 同样在我们的 `VueRouter` 类中定义了 `afterEach` 方法：
 
 ```js
