@@ -789,12 +789,7 @@ export default {
 
 ## 组件概览
 
-表单类组件在项目中会大量使用，比如输入框（Input）、单选（Radio）、多选（Checkbox）、下拉选择器（Select）等。在使用表单类组件时，也会经常用到数据校验，如果每次都写校验程序来对每一个表单控件校验，会很低效，因此需要一个能够校验基础表单控件的组件，也就是本节要完成的 Form 组件。一般的组件库都提供了这个组件，比如 iView，它能够校验内置的 15 种控件，且支持校验自定义组件，如下图所示：
-
-（也可以在线访问本示例体验：[https://run.iviewui.com/jwrqnFss](https://run.iviewui.com/jwrqnFss)）
-
-
-![](https://user-gold-cdn.xitu.io/2018/10/30/166c3b75c37ef9a8?w=900&h=958&f=gif&s=1820338)
+表单类组件在项目中会大量使用，比如输入框（Input）、单选（Radio）、多选（Checkbox）、下拉选择器（Select）等。在使用表单类组件时，也会经常用到数据校验，如果每次都写校验程序来对每一个表单控件校验，会很低效，因此需要一个能够校验基础表单控件的组件，也就是本节要完成的 Form 组件。一般的组件库都提供了这个组件，比如 iView，它能够校验内置的 15 种控件，且支持校验自定义组件，可访问[示例](https://run.iviewui.com/jwrqnFss)。
 
 Form 组件分为两个部分，一个是外层的 `Form` 表单域组件，一组表单控件只有一个 Form，而内部包含了多个 `FormItem` 组件，每一个表单控件都被一个 FormItem 包裹。基本的结构看起来像：
 
@@ -832,13 +827,13 @@ Form 要用到数据校验，并在对应的 FormItem 中给出校验失败的�
 
 在 `Form` 组件中，定义两个 props：
 
-- model：表单控件绑定的数据对象，在校验或重置时会访问该数据对象下对应的表单数据，类型为 Object。
-- rules：表单验证规则，即上面介绍的 async-validator 所使用的校验规则，类型为 Object。
+1. 表单控件绑定的数据对象 model：在校验或重置时会访问该数据对象下对应的表单数据，类型为 Object。
+2. 表单验证规则 rules：即上面介绍的 async-validator 所使用的校验规则，类型为 Object。
 
 在 `FormItem` 组件中，也定义两个 props：
 
-- label：单个表单组件的标签文本，类似原生的 `<label>` 元素，类型为 String。
-- prop：对应表单域 Form 组件 model 里的字段，用于在校验或重置时访问表单组件绑定的数据，类型为 String。
+1. label：单个表单组件的标签文本，类似原生的 `<label>` 元素，类型为 String。
+2. prop：对应表单域 Form 组件 model 里的字段，用于在校验或重置时访问表单组件绑定的数据，类型为 String。
 
 定义好 props，就可以写出大概的用例了：
 
@@ -940,11 +935,9 @@ Form 要用到数据校验，并在对应的 FormItem 中给出校验失败的�
 </script>
 ```
 
-## 缓存子组件实例
+## 缓存实例
 
-`Form` 组件的核心功能是数据校验，一个 Form 中包含了多个 FormItem，当点击提交按钮时，要逐一对每个 FormItem 内的表单组件校验，而校验是由使用者发起，并通过 `Form` 来调用每一个 `FormItem` 的验证方法，再将校验结果汇总后，通过 `Form` 返回出去。大致的流程如下图所示：
-
-![](https://user-gold-cdn.xitu.io/2018/10/30/166c3b7f124cb84a?w=1046&h=610&f=png&s=42610)
+`Form` 组件的核心功能是数据校验，一个 Form 中包含了多个 FormItem，当点击提交按钮时，要逐一对每个 FormItem 内的表单组件校验，而校验是由使用者发起，并通过 `Form` 来调用每一个 `FormItem` 的验证方法，再将校验结果汇总后，通过 `Form` 返回出去。
 
 因为要在 Form 中逐一调用 FormItem 的验证方法，而 Form 和 FormItem 是独立的，需要预先将 FormItem 的每个实例缓存在 Form 中，这个操作就需要用到第 4 节的组件通信方法。当每个 FormItem 渲染时，将其自身（this）作为参数通过 `dispatch` 派发到 Form 组件中，然后通过一个数组缓存起来；同理当 FormItem 销毁时，将其从 Form 缓存的数组中移除。相关代码如下：
 
@@ -998,8 +991,8 @@ export default {
 
 Form 支持两种事件来触发校验：
 
-- **blur**：失去焦点时触发，常见的有输入框失去焦点时触发校验；
-- **change**：实时输入时触发或选择时触发，常见的有输入框实时输入时触发校验、下拉选择器选择项目时触发校验等。
+- blur：失去焦点时触发，常见的有输入框失去焦点时触发校验；
+- change：实时输入时触发或选择时触发，常见的有输入框实时输入时触发校验、下拉选择器选择项目时触发校验等。
 
 以上两个事件，都是有具体的表单组件来触发的，我们先来编写一个简单的输入框组件 `i-input`。在 `components` 下新建目录 `input`，并创建文件 `input.vue`：
 
@@ -1072,7 +1065,7 @@ export default {
 }
 ```
 
-通过调用 `setRules` 方法，监听表单组件的两个事件，并绑定了句柄函数 `onFieldBlur` 和 `onFieldChange`，分别对应 blur 和 change 两种事件类型。当 onFieldBlur 或 onFieldChange 函数触发时，就意味着 FormItem 要对**当前的数据**进行一次校验。当前的数据，指的就是通过表单域 Form 中定义的 props：model，结合当前 FormItem 定义的 props：prop 来确定的数据，可以回顾上文写过的用例。
+通过调用 `setRules` 方法，监听表单组件的两个事件，并绑定了句柄函数 `onFieldBlur` 和 `onFieldChange`，分别对应 blur 和 change 两种事件类型。当 onFieldBlur 或 onFieldChange 函数触发时，就意味着 FormItem 要对**当前的数据**进行一次校验。当前的数据，指的就是通过表单域 Form 中定义的 `props：model`，结合当前 FormItem 定义的 `props：prop` 来确定的数据，可以回顾上文写过的用例。
 
 因为 FormItem 中只定义了数据源的某个 key 名称（即属性 prop），要拿到 Form 中 model 里的数据，需要用到第 3 节的通信方法 provide/inject。所以在 Form 中，把整个实例（this）向下提供，并在 FormItem 中注入：
 
