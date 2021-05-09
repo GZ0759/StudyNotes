@@ -1,7 +1,7 @@
 > Vue.js 组件精讲  
-> Aresn iView 的作者 《Vue.js实战》的作者  
+> Aresn iView 的作者 《Vue.js 实战》的作者
 
-# 0. 开篇语
+# 1. 开篇语
 
 ## 组件的分类
 
@@ -9,27 +9,27 @@
 
 1. 路由页面组件
 
-  由 vue-router 产生的每个页面，它本质上也是一个组件（vue 文件），主要承载当前页面的 HTML 结构，会包含数据获取、数据整理、数据可视化等常规业务。整个文件相对较大，但一般不会有 props 选项和自定义事件，因为它作为路由的渲染，不会被复用，因此也不会对外提供接口。
+由 vue-router 产生的每个页面，它本质上也是一个组件（vue 文件），主要承载当前页面的 HTML 结构，会包含数据获取、数据整理、数据可视化等常规业务。整个文件相对较大，但一般不会有 props 选项和自定义事件，因为它作为路由的渲染，不会被复用，因此也不会对外提供接口。
 
-  在项目开发中，我们写的大部分代码都是这类的组件（页面），协同开发时，每人维护自己的页面，很少有交集。这类组件相对是最好写的，因为主要是还原设计稿，完成需求，不需要太多模块和架构设计上的考虑。
+在项目开发中，我们写的大部分代码都是这类的组件（页面），协同开发时，每人维护自己的页面，很少有交集。这类组件相对是最好写的，因为主要是还原设计稿，完成需求，不需要太多模块和架构设计上的考虑。
 
 2. 功能基础组件
 
-  不包含业务，独立、具体功能的基础组件，比如日期选择器、模态框等。这类组件作为项目的基础控件，会被大量使用，因此组件的 API 进行过高强度的抽象，可以通过不同配置实现不同的功能。比如笔者开源的 iView，就是包含了 50 多个这样基础组件的 UI 组件库。
+不包含业务，独立、具体功能的基础组件，比如日期选择器、模态框等。这类组件作为项目的基础控件，会被大量使用，因此组件的 API 进行过高强度的抽象，可以通过不同配置实现不同的功能，比如包含基础组件的 UI 组件库。
 
-  独立组件的开发难度要高于第一类组件，因为它的侧重点是 API 的设计、兼容性、性能以及复杂的功能。这类组件对 JavaScript 的编程能力有一定要求，也会包含非常多的技巧，比如在不依赖 Vuex 和 Bus（因为独立组件，无法依赖其它库）的情况下，各组件间的通信，还会涉及很多脑壳疼的逻辑，比如日期选择器要考虑不同时区、国家的日历习惯，支持多种日期格式。
+独立组件的开发难度要高于第一类组件，因为它的侧重点是 API 的设计、兼容性、性能以及复杂的功能。这类组件对 JavaScript 的编程能力有一定要求，也会包含非常多的技巧，比如在不依赖 Vuex 和 Bus（因为独立组件，无法依赖其它库）的情况下，各组件间的通信，还会涉及很多脑壳疼的逻辑，比如日期选择器要考虑不同时区、国家的日历习惯，支持多种日期格式。
 
-  本小册也会重点介绍此类组件的各种开发模式和技巧，对应不同的模式，会带有具体的组件实战。
+本小册也会重点介绍此类组件的各种开发模式和技巧，对应不同的模式，会带有具体的组件实战。
 
 3. 业务组件
 
-  它不像第二类独立组件只包含某个功能，而是在业务中被多个页面复用的，它与独立组件的区别是，业务组件只在当前项目中会用到，不具有通用性，而且会包含一些业务，比如数据请求；而独立组件不含业务，在任何项目中都可以使用，功能单一，比如一个具有数据校验功能的输入框。
+它不像第二类独立组件只包含某个功能，而是在业务中被多个页面复用的，它与独立组件的区别是，业务组件只在当前项目中会用到，不具有通用性，而且会包含一些业务，比如数据请求；而独立组件不含业务，在任何项目中都可以使用，功能单一，比如一个具有数据校验功能的输入框。
 
-  业务组件更像是介于第一类和第二类之间，在开发上也与独立组件类似，但寄托于项目，你可以使用项目中的技术栈，比如 Vuex、axios、echarts 等，所以它的开发难度相对独立组件要容易点，但也有必要考虑组件的可维护性和复用性。
+业务组件更像是介于第一类和第二类之间，在开发上也与独立组件类似，但寄托于项目，你可以使用项目中的技术栈，比如 Vuex、axios、echarts 等，所以它的开发难度相对独立组件要容易点，但也有必要考虑组件的可维护性和复用性。
 
 ## 小册的内容
 
-因为本小册是围绕 Vue.js 组件展开的，所以第二节会讲解 Vue.js 组件的三个 API：prop、event 和 slot，当然，如果你已经开发过一些独立组件，完全可以跳过这节内容。
+因为本小册是围绕 Vue.js 组件展开的，所以第二节会讲解 Vue.js 组件的三个 API：prop、event 和 slot。
 
 3 - 7 小节会介绍组件间通信的一些方法和黑科技，一部分是 Vue.js 内置的，一部分是自行实现的，在实际开发中，会非常实用。同时也利用这些方法完成了两个具体的实战案例：
 
@@ -39,59 +39,29 @@
 8 - 10 小节介绍 Vue 的构造器 extend 和手动挂载组件 `$mount` 的用法及案例。Vue.js 除了我们正常 `new Vue()` 外，还可以手动挂载的，这 3 节将介绍手动挂载一个 Vue 组件的使用场景。其中涉及到两个案例：
 
 1. 动态渲染 `.vue` 文件的组件 —— Display；
+  - Display 组件用于将 `.vue` 文件渲染出来
+  - 线上的案例是 [iView Run](https://run.iviewui.com/)，它不需要你重新编译项目，就可以渲染一个标准的 Vue.js 组件。
 2. 全局通知组件 —— `$Alert`。
-
-Display 组件用于将 `.vue` 文件渲染出来，线上的案例是 [iView Run](https://run.iviewui.com/)，它不需要你重新编译项目，就可以渲染一个标准的 Vue.js 组件。
-
-`$Alert` 是全局的通知组件，它的调用方法不同于常规组件。常规组件使用方法形如：
-
-```html
-<template>
-    <Alert content="通知内容" :duration="3"></Alert>
-</template>
-<script>
-    import Alert from '../components/alert.vue';
-    
-    export default {
-        components: { Alert }
-    }
-</script>
-```
-
-而 `$Alert` 的调用更接近 JS 语法：
-
-```javascript
-export default {
-    methods: {
-        showMessage () {
-            this.$Alert({
-                content: '通知内容',
-                duration: 3
-            });
-        }
-    }
-}
-```
-
-虽然与常规 Vue 组件调用方式不同，但底层仍然由 Vue 组件构成和维护。
+  - `$Alert` 是全局的通知组件，它的调用方法不同于常规组件。
+  - 虽然与常规 Vue 组件调用方式不同，但底层仍然由 Vue 组件构成和维护。
 
 11 - 12 小节介绍 Render 函数与 Functional Render，并完成一个能够渲染自定义列的 Table 组件。Render 函数也是 Vue.js 组件重要的一部分，只不过在大多数业务中不常使用。本小节会介绍它的使用场景。
 
-13 小节介绍作用域 slot（slot-scope），并基于这种方法同样实现 Table 组件。slot 用的很多，但 slot-scope  在业务中并不常用，但在一些特定场景下，比如组件内部有循环体时，会非常实用。
+13 小节介绍作用域 slot（slot-scope），并基于这种方法同样实现 Table 组件。slot 用的很多，但 slot-scope 在业务中并不常用，但在一些特定场景下，比如组件内部有循环体时，会非常实用。
 
 14 - 15 小节介绍递归组件，并完成树形控件 —— Tree。
 
 16 - 19 小节是综合拓展，会着重讲解 Vue.js 容易忽略却很重要的 API，以及对 Vue.js 面试题的详细分析。除此之外，还会总结笔者在两年的 iView 开源经历中的经验，除了技术细节外，还包括开源项目的持续性发展、推广等。
 
-# 1. 组件的关键 API 
+# 2. 组件的关键 API
 
 ## 组件的构成
 
-一个再复杂的组件，都是由三部分组成的：prop、event、slot，它们构成了 Vue.js 组件的 API。
+一个再复杂的组件，都是由三部分组成的：prop/event/slot，它们构成了 Vue.js 组件的 API。
 
-### 属性 prop 
+### 属性 prop
 
-`prop` 定义了这个组件有哪些可配置的属性，组件的核心功能也都是它来确定的。写通用组件时，props 最好用**对象**的写法，这样可以针对每个属性设置类型、默认值或自定义校验属性的值，这点在组件开发中很重要，然而很多人却忽视，直接使用 props 的数组用法，这样的组件往往是不严谨的。比如我们封装一个按钮组件 `<i-button>`：
+`prop` 定义了这个组件有哪些可配置的属性，组件的核心功能也都是它来确定的。写通用组件时，props 最好用对象的写法，这样可以针对每个属性设置类型、默认值或自定义校验属性的值，这点在组件开发中很重要，然而很多人却忽视，直接使用 props 的数组用法，这样的组件往往是不严谨的。比如我们封装一个按钮组件 `<i-button>`：
 
 ```html
 <template>
@@ -99,7 +69,7 @@ export default {
 </template>
 <script>
   // 判断参数是否是其中之一
-  function oneOf (value, validList) {
+  function oneOf(value, validList) {
     for (let i = 0; i < validList.length; i++) {
       if (value === validList[i]) {
         return true;
@@ -111,28 +81,27 @@ export default {
   export default {
     props: {
       size: {
-        validator (value) {
+        validator(value) {
           return oneOf(value, ['small', 'large', 'default']);
         },
-        default: 'default'
+        default: 'default',
       },
       disabled: {
         type: Boolean,
-        default: false
-      }
-    }
-  }
+        default: false,
+      },
+    },
+  };
 </script>
 ```
 
 使用组件：
 
 ```html
-<i-button size="large"></i-button>
-<i-button disabled></i-button>
+<i-button size="large"></i-button> <i-button disabled></i-button>
 ```
 
-组件中定义了两个属性：尺寸 size 和 是否禁用 disabled。其中 size 使用 `validator` 进行了值的自定义验证，也就是说，从父级传入的 size，它的值必须是指定的 **small、large、default** 中的一个，默认值是 default，如果传入这三个以外的值，都会抛出一条警告。
+组件中定义了两个属性：尺寸 size 和 是否禁用 disabled。其中 size 使用 `validator` 进行了值的自定义验证，也就是说，从父级传入的 size，它的值必须是指定的 small/large/default 中的一个，默认值是 default，如果传入这三个以外的值，都会抛出一条警告。
 
 要注意的是，组件里定义的 props，都是**单向数据流**，也就是只能通过父级修改，组件自己不能修改 props 的值，只能修改定义在 data 里的数据，非要修改，也是通过后面介绍的自定义事件通知父级，由父级来修改。
 
@@ -204,11 +173,11 @@ export default {
 <script>
   export default {
     methods: {
-      handleClick (event) {
+      handleClick(event) {
         this.$emit('on-click', event);
-      }
-    }
-  }
+      },
+    },
+  };
 </script>
 ```
 
@@ -233,7 +202,7 @@ export default {
 ```
   A.vue
     ↓
-  B.vue 
+  B.vue
   ↙ ↘
 C.vue D.vue
 ```
@@ -248,17 +217,17 @@ A 和 B、B 和 C、B 和 D 都是父子关系，C 和 D 是兄弟关系，A 和
 ```js
 // component-a
 export default {
-  data () {
+  data() {
     return {
-      title: 'Vue.js'
-    }
+      title: 'Vue.js',
+    };
   },
   methods: {
-    sayHello () {
+    sayHello() {
       window.alert('Hello');
-    }
-  }
-}
+    },
+  },
+};
 ```
 
 ```html
@@ -267,18 +236,18 @@ export default {
 </template>
 <script>
   export default {
-    mounted () {
+    mounted() {
       const comA = this.$refs.comA;
-      console.log(comA.title);  // Vue.js
-      comA.sayHello();  // 弹窗
-    }
-  }
+      console.log(comA.title); // Vue.js
+      comA.sayHello(); // 弹窗
+    },
+  };
 </script>
 ```
 
 `$parent` 和 `$children` 类似，也是基于当前上下文访问父组件或全部子组件的。
 
-这两种方法的弊端是，无法在**跨级**或**兄弟**间通信，比如下面的结构：
+这两种方法的弊端是，无法在跨级或兄弟间通信，比如下面的结构：
 
 ```html
 // parent.vue
@@ -294,13 +263,13 @@ export default {
 - [Vue 组件通信之 Bus](https://juejin.im/post/5a4353766fb9a044fb080927)
 - [Vuex 通俗版教程](https://juejin.im/entry/58cb4c36b123db00532076a2)
 
-# 2. 跨级组件的通信（上）
+# 3. 跨级组件的通信（上）
 
-上一节中我们说到，`ref` 和 `$parent`/`$children` 在**跨级**通信时是有弊端的。当组件 A 和组件 B 中间隔了数代（甚至不确定具体级别）时，以往会借助 Vuex 或 Bus 这样的解决方案，不得不引入三方库来支持。本小节则介绍一种无依赖的组件通信方法：Vue.js 内置的 provide/inject 接口。
+上一节中我们说到，`ref` 和 `$parent` 或 `$children` 在跨级通信时是有弊端的。当组件 A 和组件 B 中间隔了数代（甚至不确定具体级别）时，以往会借助 Vuex 或 Bus 这样的解决方案，不得不引入三方库来支持。本小节则介绍一种无依赖的组件通信方法：Vue.js 内置的 provide/inject 接口。
 
 ## 什么是 provide/inject
 
-`provide/inject` 是 Vue.js 2.2.0 版本后新增的 API，在[文档]((https://cn.vuejs.org/v2/api/#provide-inject))中这样介绍：
+`provide/inject` 是 Vue.js 2.2.0 版本后新增的 API，在[文档](<(https://cn.vuejs.org/v2/api/#provide-inject)>)中这样介绍：
 
 这对选项需要一起使用，以允许一个祖先组件向其所有子孙后代注入一个依赖，不论组件层次有多深，并在起上下游关系成立的时间里始终生效。如果你熟悉 React，这与 React 的上下文特性很相似。
 
@@ -312,28 +281,24 @@ export default {
 // A.vue
 export default {
   provide: {
-    name: 'Aresn'
-  }
-}
+    name: 'Aresn',
+  },
+};
 
 // B.vue
 export default {
   inject: ['name'],
-  mounted () {
-    console.log(this.name);  // Aresn
-  }
-}
+  mounted() {
+    console.log(this.name); // Aresn
+  },
+};
 ```
 
-可以看到，在 A.vue 里，我们设置了一个 **provide: name**，值为 Aresn，它的作用就是将 **name** 这个变量提供给它的所有子组件。而在 B.vue 中，通过 `inject` 注入了从 A 组件中提供的 **name** 变量，那么在组件 B 中，就可以直接通过 **this.name** 访问这个变量了，它的值也是 Aresn。这就是 provide/inject API 最核心的用法。 
+可以看到，在 A.vue 里，我们设置了一个 `provide: name`，值为 Aresn，它的作用就是将 name 这个变量提供给它的所有子组件。而在 B.vue 中，通过 `inject` 注入了从 A 组件中提供的 name 变量，那么在组件 B 中，就可以直接通过 `this.name` 访问这个变量了，它的值也是 Aresn。这就是 provide/inject API 最核心的用法。
 
-需要注意的是：
+需要注意的是：provide 和 inject 绑定并**不是可响应**的。这是刻意为之的。然而，如果你传入了一个可监听的对象，那么其对象的属性还是可响应的。所以，上面 A.vue 的 name 如果改变了，B.vue 的 `this.name` 是不会改变的，仍然是 Aresn。
 
-> provide 和 inject 绑定并**不是可响应**的。这是刻意为之的。然而，如果你传入了一个可监听的对象，那么其对象的属性还是可响应的。
-
-所以，上面 A.vue 的 name 如果改变了，B.vue 的 this.name 是不会改变的，仍然是 Aresn。
-
-## 替代 Vuex
+## 替代 Vuex 的技巧
 
 我们知道，在做 Vue 大型项目时，可以使用 Vuex 做状态管理，它是一个专为 Vue.js 开发的**状态管理模式**，用于集中式存储管理应用的所有组件的状态，并以相应的规则保证状态以一种可预测的方式发生变化。
 
@@ -350,17 +315,13 @@ export default {
   </div>
 </template>
 <script>
-  export default {
-
-  }
+  export default {};
 </script>
 ```
 
 使用 provide/inject 替代 Vuex，就是在这个 app.vue 文件上做文章。
 
-我们把 app.vue 理解为一个最外层的根组件，用来存储所有需要的全局数据和状态，甚至是计算属性（computed）、方法（methods）等。因为你的项目中所有的组件（包含路由），它的父组件（或根组件）都是 app.vue，所以我们**把整个 app.vue 实例通过 `provide` 对外提供**。
-
-*app.vue：*
+我们把 app.vue 理解为一个最外层的根组件，用来存储所有需要的全局数据和状态，甚至是计算属性（computed）、方法（methods）等。因为你的项目中所有的组件（包含路由），它的父组件（或根组件）都是 app.vue，所以我们把整个 app.vue 实例通过 `provide` 对外提供。
 
 ```html
 <template>
@@ -370,12 +331,12 @@ export default {
 </template>
 <script>
   export default {
-    provide () {
+    provide() {
       return {
-        app: this
-      }
-    }
-  }
+        app: this,
+      };
+    },
+  };
 </script>
 ```
 
@@ -383,33 +344,31 @@ export default {
 
 app.vue 是整个项目第一个被渲染的组件，而且只会渲染一次（即使切换路由，app.vue 也不会被再次渲染），利用这个特性，很适合做一次性全局的状态数据管理，例如，我们将用户的登录信息保存起来：
 
-*app.vue，部分代码省略：*
-
 ```html
 <script>
   export default {
-    provide () {
+    provide() {
       return {
-        app: this
-      }
+        app: this,
+      };
     },
-    data () {
+    data() {
       return {
-        userInfo: null
-      }
+        userInfo: null,
+      };
     },
     methods: {
-      getUserInfo () {
+      getUserInfo() {
         // 这里通过 ajax 获取用户信息后，赋值给 this.userInfo，以下为伪代码
         $.ajax('/user/info', (data) => {
           this.userInfo = data;
         });
-      }
+      },
     },
-    mounted () {
+    mounted() {
       this.getUserInfo();
-    }
-  }
+    },
+  };
 </script>
 ```
 
@@ -417,77 +376,71 @@ app.vue 是整个项目第一个被渲染的组件，而且只会渲染一次（
 
 ```html
 <template>
-  <div>
-    {{ app.userInfo }}
-  </div>
+  <div>{{ app.userInfo }}</div>
 </template>
 <script>
   export default {
-    inject: ['app']
-  }
+    inject: ['app'],
+  };
 </script>
 ```
 
 是不是很简单呢。除了直接使用数据，还可以调用方法。比如在某个页面里，修改了个人资料，这时一开始在 `app.vue` 里获取的 `userInfo` 已经不是最新的了，需要重新获取。可以这样使用：
 
-*某个页面：*
-
 ```html
 <template>
-  <div>
-    {{ app.userInfo }}
-  </div>
+  <div>{{ app.userInfo }}</div>
 </template>
 <script>
   export default {
     inject: ['app'],
     methods: {
-      changeUserInfo () {
+      changeUserInfo() {
         // 这里修改完用户数据后，通知 app.vue 更新，以下为伪代码
         $.ajax('/user/update', () => {
           // 直接通过 this.app 就可以调用 app.vue 里的方法
           this.app.getUserInfo();
-        })
-      }
-    }
-  }
+        });
+      },
+    },
+  };
 </script>
 ```
 
 同样非常简单。只要理解了 `this.app` 是直接获取整个 `app.vue` 的实例后，使用起来就得心应手了。想一想，配置复杂的 Vuex 的全部功能，现在是不是都可以通过 `provide/inject` 来实现了呢？
 
-## 进阶技巧
+## 关于 mixins 的进阶技巧
 
 如果你的项目足够复杂，或需要多人协同开发时，在 `app.vue` 里会写非常多的代码，多到结构复杂难以维护。这时可以使用 Vue.js 的混合 `mixins`，将不同的逻辑分开到不同的 js 文件里。
 
 比如上面的用户信息，就可以放到混合里：
 
-*user.js：*
+_user.js：_
 
 ```js
 export default {
-  data () {
+  data() {
     return {
-      userInfo: null
-    }
+      userInfo: null,
+    };
   },
   methods: {
-    getUserInfo () {
+    getUserInfo() {
       // 这里通过 ajax 获取用户信息后，赋值给 this.userInfo，以下为伪代码
       $.ajax('/user/info', (data) => {
         this.userInfo = data;
       });
-    }
+    },
   },
-  mounted () {
+  mounted() {
     this.getUserInfo();
-  }
-}
+  },
+};
 ```
 
 然后在 `app.vue` 中混合：
 
-*app.vue：*
+_app.vue：_
 
 ```html
 <script>
@@ -495,18 +448,16 @@ export default {
 
   export default {
     mixins: [mixins_user],
-    data () {
-      return {
-
-      }
-    }
-  }
+    data() {
+      return {};
+    },
+  };
 </script>
 ```
 
 这样，跟用户信息相关的逻辑，都可以在 `user.js` 里维护，或者由某个人来维护，`app.vue` 也就很容易维护了。
 
-## 独立组件中使用
+## 在独立组件中使用
 
 只要一个组件使用了 `provide` 向下提供数据，那其下所有的子组件都可以通过 `inject` 来注入，不管中间隔了多少代，而且可以注入多个来自不同父级提供的数据。需要注意的是，一旦注入了某个数据，比如上面示例中的 `app`，那这个组件中就不能再声明 `app` 这个数据了，因为它已经被父级占有。
 
@@ -528,20 +479,20 @@ computed: {
 
 ```js
 export default {
-  inject: ['form']
-}
+  inject: ['form'],
+};
 ```
 
 不过，这一切的前提是你使用 Vue.js 2.2.0 以上版本。
 
-# 3. 跨级组件的通信（下）
+# 4. 跨级组件的通信（中）
 
 上一讲的 provide/inject API 主要解决了跨级组件间的通信问题，不过它的使用场景，主要是子组件获取上级组件的状态，跨级组件间建立了一种主动提供与依赖注入的关系。然后有两种场景它不能很好的解决：
 
 - 父组件向子组件（支持跨级）传递数据；
 - 子组件向父组件（支持跨级）传递数据。
 
-这种父子（含跨级）传递数据的通信方式，Vue.js 并没有提供原生的 API 来支持，而是推荐使用大型数据状态管理工具 Vuex，而我们之前已经介绍过 Vuex 的场景与在独立组件（或库）中使用的限制。本小节则介绍一种在父子组件间通信的方法 `dispatch` 和 `broadcast`。
+这种包含跨级的父子传递数据的通信方式，Vue.js 并没有提供原生的 API 来支持，而是推荐使用大型数据状态管理工具 Vuex，而我们之前已经介绍过 Vuex 的场景与在独立组件（或库）中使用的限制。本小节则介绍一种在父子组件间通信的方法 `dispatch` 和 `broadcast`。
 
 ## 自定义事件系统
 
@@ -553,14 +504,14 @@ export default {
 // child.vue，部分代码省略
 export default {
   methods: {
-    handleEmitEvent () {
+    handleEmitEvent() {
       this.$emit('test', 'Hello Vue.js');
-    }
-  }
-}
+    },
+  },
+};
 ```
 
-在父组件中监听由 *child.vue* 触发的自定义事件 **test**：
+在父组件中监听由 _child.vue_ 触发的自定义事件 **test**：
 
 ```html
 <!-- parent.vue，部分代码省略-->
@@ -578,7 +529,7 @@ export default {
 </script>
 ```
 
-这里看似是在父组件 *parent.vue* 中绑定的自定义事件 **test** 的处理句柄，然而事件 test 并不是在父组件上触发的，而是在子组件 *child.vue* 里触发的，只是通过 `v-on` 在父组件中监听。既然是子组件自己触发的，那它自己也可以监听到，这就要使用 `$on` 来监听实例上的事件，换言之，组件使用 `$emit` 在自己实例上触发事件，并用 `$on` 监听它。
+这里看似是在父组件 _parent.vue_ 中绑定的自定义事件 **test** 的处理句柄，然而事件 test 并不是在父组件上触发的，而是在子组件 _child.vue_ 里触发的，只是通过 `v-on` 在父组件中监听。既然是子组件自己触发的，那它自己也可以监听到，这就要使用 `$on` 来监听实例上的事件，换言之，组件使用 `$emit` 在自己实例上触发事件，并用 `$on` 监听它。
 
 ```html
 <template>
@@ -589,30 +540,28 @@ export default {
 <script>
   export default {
     methods: {
-      handleEmitEvent () {
+      handleEmitEvent() {
         // 在当前组件上触发自定义事件 test，并传值
-        this.$emit('test', 'Hello Vue.js')
-      }
+        this.$emit('test', 'Hello Vue.js');
+      },
     },
-    mounted () {
+    mounted() {
       // 监听自定义事件 test
       this.$on('test', (text) => {
         window.alert(text);
       });
-    }
-  }
+    },
+  };
 </script>
 ```
 
 `$on` 监听了自己触发的自定义事件 test，因为有时不确定何时会触发事件，一般会在 `mounted` 或 `created` 钩子中来监听。
 
-仅上面的示例，的确是多此一举的，因为大可在 handleEmitEvent 里直接写 `window.alert(text)`，没必要绕一圈。
-
-之所以多此一举，是因为 handleEmitEvent 是当前组件内的 `<button>` 调用的，如果这个方法不是它自己调用，而是其它组件调用的，那这个用法就大有可为了。
+仅上面的示例，的确是多此一举的，因为大可在 handleEmitEvent 里直接写 `window.alert(text)`，没必要绕一圈。之所以多此一举，是因为 handleEmitEvent 是当前组件内的 `<button>` 调用的，如果这个方法不是它自己调用，而是其它组件调用的，那这个用法就大有可为了。
 
 了解了 `$on` 和 `$emit` 的用法后，我们再来看两个“过时的” API。
 
-## 基于组件树结构的事件流方式
+## 基于组件树结构的事件流
 
 在 Vue.js 1.x 中，提供了两个方法：`$dispatch` 和 `$broadcast` ，前者用于向上级派发事件，只要是它的父级（一级或多级以上），都可以在组件内通过 `$on` （或 events，2.x 已废弃）监听到，后者相反，是由上级向下级广播事件的。
 
@@ -625,13 +574,13 @@ export default {
   <button @click="handleDispatch">派发事件</button>
 </template>
 <script>
-export default {
-  methods: {
-    handleDispatch () {
-      this.$dispatch('test', 'Hello, Vue.js');
-    }
-  }
-}
+  export default {
+    methods: {
+      handleDispatch() {
+        this.$dispatch('test', 'Hello, Vue.js');
+      },
+    },
+  };
 </script>
 ```
 
@@ -642,26 +591,24 @@ export default {
 </template>
 <script>
   export default {
-    mounted () {
+    mounted() {
       this.$on('test', (text) => {
-        console.log(text);  // Hello, Vue.js
+        console.log(text); // Hello, Vue.js
       });
-    }
-  }
+    },
+  };
 </script>
 ```
 
 `$broadcast` 类似，只不过方向相反。这两种方法一旦发出事件后，任何组件都是可以接收到的，就近原则，而且会在第一次接收到后停止冒泡，除非返回 true。
 
-这两个方法虽然看起来很好用，但是在 Vue.js 2.x 中都废弃了，官方给出的解释是：
-
-> 因为基于组件树结构的事件流方式有时让人难以理解，并且在组件结构扩展的过程中会变得越来越脆弱。
+这两个方法虽然看起来很好用，但是在 Vue.js 2.x 中都废弃了，官方给出的解释是：因为基于组件树结构的事件流方式有时让人难以理解，并且在组件结构扩展的过程中会变得越来越脆弱。
 
 虽然在业务开发中，它没有 Vuex 这样专门管理状态的插件清晰好用，但对独立组件（库）的开发，绝对是福音。因为独立组件一般层级并不会很复杂，并且剥离了业务，不会变的难以维护。
 
 ## 自行实现 dispatch/broadcast
 
-自行实现的 dispatch 和 broadcast 方法，不能保证跟 Vue.js 1.x 的  `$dispatch` 和 `$broadcast` 具有完全相同的体验，但基本功能是一样的，都是解决父子组件（含跨级）间的通信问题。
+自行实现的 dispatch 和 broadcast 方法，不能保证跟 Vue.js 1.x 的 `$dispatch` 和 `$broadcast` 具有完全相同的体验，但基本功能是一样的，都是解决父子组件（含跨级）间的通信问题。
 
 通过目前已知的信息，我们要实现的 dispatch 和 broadcast 方法，将具有以下功能：
 
@@ -674,29 +621,31 @@ export default {
 
 ```js
 // 部分代码省略
-import Emitter from '../mixins/emitter.js'
+import Emitter from '../mixins/emitter.js';
 
 export default {
-  mixins: [ Emitter ],
+  mixins: [Emitter],
   methods: {
-    handleDispatch () {
-      this.dispatch();  // ①
+    handleDispatch() {
+      this.dispatch(); // ①
     },
-    handleBroadcast () {
-      this.broadcast();  // ②
-    }
-  }
-}
+    handleBroadcast() {
+      this.broadcast(); // ②
+    },
+  },
+};
 ```
 
-上例中行 ① 和行 ② 的两个方法就是在导入的混合 **emitter.js** 中定义的，这个稍后我们再讲，先来分析这两个方法应该传入什么参数。一般来说，为了跟 Vue.js 1.x 的方法一致，第一个参数应当是自定义事件名，比如 “test”，第二个参数是传递的数据，比如 “Hello, Vue.js”，但在这里，有什么问题呢？只通过这两个参数，我们没办法知道要在哪个组件上触发事件，因为自行实现的这对方法，与 Vue.js 1.x 的原生方法机理上是有区别的。上文说到，实现这对方法的关键点在于准确地**找到组件实例**。那在寻找组件实例上，我们的“惯用伎俩”就是通过遍历来匹配组件的 `name` 选项，在独立组件（库）里，每个组件的 `name` 值应当是唯一的，name 主要用于递归组件，在后面小节会单独介绍。
+上例中行 ① 和行 ② 的两个方法就是在导入的混合 **emitter.js** 中定义的，这个稍后我们再讲，先来分析这两个方法应该传入什么参数。一般来说，为了跟 Vue.js 1.x 的方法一致，第一个参数应当是自定义事件名，比如 “test”，第二个参数是传递的数据，比如 “Hello, Vue.js”。
+
+但在这里，有什么问题呢？只通过这两个参数，我们没办法知道要在哪个组件上触发事件，因为自行实现的这对方法，与 Vue.js 1.x 的原生方法机理上是有区别的。上文说到，实现这对方法的关键点在于准确地**找到组件实例**。那在寻找组件实例上，我们的“惯用伎俩”就是通过遍历来匹配组件的 `name` 选项，在独立组件（库）里，每个组件的 `name` 值应当是唯一的，name 主要用于递归组件，在后面小节会单独介绍。
 
 先来看下 **emitter.js** 的代码：
 
 ```js
 // https://github.com/iview/iview/blob/2.0/src/mixins/emitter.js
 function broadcast(componentName, eventName, params) {
-  this.$children.forEach(child => {
+  this.$children.forEach((child) => {
     const name = child.$options.name;
 
     if (name === componentName) {
@@ -725,8 +674,8 @@ export default {
     },
     broadcast(componentName, eventName, params) {
       broadcast.call(this, componentName, eventName, params);
-    }
-  }
+    },
+  },
 };
 ```
 
@@ -734,27 +683,27 @@ export default {
 
 这两个方法都接收了三个参数，第一个是组件的 `name` 值，用于向上或向下递归遍历来寻找对应的组件，第二个和第三个就是上文分析的自定义事件名称和要传递的数据。
 
-可以看到，在 dispatch 里，通过 *while* 语句，不断向上遍历更新当前组件（即上下文为当前调用该方法的组件）的父组件实例（变量 parent 即为父组件实例），直到匹配到定义的 `componentName` 与某个上级组件的 `name` 选项一致时，结束循环，并在找到的组件实例上，调用 `$emit` 方法来触发自定义事件 `eventName`。broadcast 方法与之类似，只不过是向下遍历寻找。
+可以看到，在 dispatch 里，通过 while 语句，不断向上遍历更新当前组件（即上下文为当前调用该方法的组件）的父组件实例（变量 parent 即为父组件实例），直到匹配到定义的 `componentName` 与某个上级组件的 `name` 选项一致时，结束循环，并在找到的组件实例上，调用 `$emit` 方法来触发自定义事件 `eventName`。broadcast 方法与之类似，只不过是向下遍历寻找。
 
 来看一下具体的使用方法。有 **A.vue** 和 **B.vue** 两个组件，其中 B 是 A 的子组件，中间可能跨多级，在 A 中向 B 通信：
 
 ```html
 <!-- A.vue -->
 <template>
-	<button @click="handleClick">触发事件</button>
+  <button @click="handleClick">触发事件</button>
 </template>
 <script>
   import Emitter from '../mixins/emitter.js';
-  
+
   export default {
     name: 'componentA',
-    mixins: [ Emitter ],
+    mixins: [Emitter],
     methods: {
-      handleClick () {
+      handleClick() {
         this.broadcast('componentB', 'on-message', 'Hello Vue.js');
-      }
-    }
-  }
+      },
+    },
+  };
 </script>
 ```
 
@@ -762,15 +711,15 @@ export default {
 // B.vue
 export default {
   name: 'componentB',
-  created () {
+  created() {
     this.$on('on-message', this.showMessage);
   },
   methods: {
-    showMessage (text) {
+    showMessage(text) {
       window.alert(text);
-    }
-  }
-}
+    },
+  },
+};
 ```
 
 同理，如果是 B 向 A 通信，在 B 中调用 dispatch 方法，在 A 中使用 `$on` 监听事件即可。
@@ -779,38 +728,25 @@ export default {
 
 - 需要额外传入组件的 name 作为第一个参数；
 - 无冒泡机制；
-- 第三个参数传递的数据，只能是一个（较多时可以传入一个对象），而 Vue.js 1.x 可以传入多个参数，当然，你对 emitter.js 稍作修改，也能支持传入多个参数，只是一般场景传入一个对象足以。
+- 第三个参数传递的数据，只能是一个，而 Vue.js 1.x 可以传入多个参数
 
-# 4. 实战 1：表单组件
+# 5. 实战 1：表单组件
 
 在第 3 节和第 4 节中，我们介绍了组件间的两种通信方法：provide/inject 和 dispatch/broadcast，前者是 Vue.js 内置的，主要用于子组件获取父组件（包括跨级）的状态；后者是自行实现的一种混合，用于父子组件（包括跨级）间通过自定义事件通信。本小节则基于这两种通信方法，来实现一个具有数据校验功能的表单组件——Form。
-
-本节部分代码参考 [iView](https://github.com/iview/iview/tree/2.0/src/components/form)。
 
 ## 组件概览
 
 表单类组件在项目中会大量使用，比如输入框（Input）、单选（Radio）、多选（Checkbox）、下拉选择器（Select）等。在使用表单类组件时，也会经常用到数据校验，如果每次都写校验程序来对每一个表单控件校验，会很低效，因此需要一个能够校验基础表单控件的组件，也就是本节要完成的 Form 组件。一般的组件库都提供了这个组件，比如 iView，它能够校验内置的 15 种控件，且支持校验自定义组件，可访问[示例](https://run.iviewui.com/jwrqnFss)。
 
-Form 组件分为两个部分，一个是外层的 `Form` 表单域组件，一组表单控件只有一个 Form，而内部包含了多个 `FormItem` 组件，每一个表单控件都被一个 FormItem 包裹。基本的结构看起来像：
-
-```html
-<i-form>
-  <i-form-item>
-    <i-input v-model="form.name"></i-input>
-  </i-form-item>
-  <i-form-item>
-    <i-input v-model="form.mail"></i-input>
-  </i-form-item>
-</i-form>
-```
+Form 组件分为两个部分，一个是外层的 `Form` 表单域组件，一组表单控件只有一个 Form，而内部包含了多个 `FormItem` 组件，每一个表单控件都被一个 FormItem 包裹。
 
 Form 要用到数据校验，并在对应的 FormItem 中给出校验失败的提示，校验我们会用到一个开源库：[async-validator](https://github.com/yiminghe/async-validator)，基本主流的组件库都是基于它做的校验。使用它很简单，只需按要求写好一个校验规则就好，比如：
 
 ```js
 [
   { required: true, message: '邮箱不能为空', trigger: 'blur' },
-  { type: 'email', message: '邮箱格式不正确', trigger: 'blur' }
-]
+  { type: 'email', message: '邮箱格式不正确', trigger: 'blur' },
+];
 ```
 
 这个代表要校验的数据先判断是否为空（`required: true`），如果为空，则提示“邮箱不能为空”，触发校验的事件为失焦（`trigger: 'blur'`），如果第一条满足要求，再进行第二条的验证，判断是否为邮箱格式（`type: 'email'`）等等，还支持自定义校验规则。更详细的用法可以参看它的文档。
@@ -821,19 +757,16 @@ Form 要用到数据校验，并在对应的 FormItem 中给出校验失败的�
 
 在 `src/components` 下新建一个 `form` 文件夹，并初始化两个组件 `form.vue` 和 `form-item.vue`，然后初始化项目，配置路由，创建一个页面能够被访问到。
 
-> 本节所有代码可以在 [https://github.com/icarusion/vue-component-book](https://github.com/icarusion/vue-component-book) 中查看，你可以一边看源码，一边阅读本节；也可以边阅读，边动手实现一遍，遇到问题再参考完整的源码。
+> 本节所有代码可以在[源码](https://github.com/icarusion/vue-component-book)中查看。
 
-第 2 节我们介绍到，编写一个 Vue.js 组件，最重要的是设计好它的接口，一个 Vue.js 组件的接口来自三个部分：props、slots、events。而 Form 和 FormItem 两个组件主要做数据校验，用不到 events。Form 的 slot 就是一系列的 FormItem，FormItem 的 slot 就是具体的表单控件，比如输入框 `<i-input>` 。那主要设计的就是 props 了。
+第 2 节我们介绍到，编写一个 Vue.js 组件，最重要的是设计好它的接口，一个 Vue.js 组件的接口来自三个部分：props/slots/events。而 Form 和 FormItem 两个组件主要做数据校验，用不到 events。Form 的 slot 就是一系列的 FormItem，FormItem 的 slot 就是具体的表单控件，比如输入框 `<i-input>` 。那主要设计的就是 props 了。
 
-在 `Form` 组件中，定义两个 props：
-
-1. 表单控件绑定的数据对象 model：在校验或重置时会访问该数据对象下对应的表单数据，类型为 Object。
-2. 表单验证规则 rules：即上面介绍的 async-validator 所使用的校验规则，类型为 Object。
-
-在 `FormItem` 组件中，也定义两个 props：
-
-1. label：单个表单组件的标签文本，类似原生的 `<label>` 元素，类型为 String。
-2. prop：对应表单域 Form 组件 model 里的字段，用于在校验或重置时访问表单组件绑定的数据，类型为 String。
+1. 在 `Form` 组件中，定义两个 props：
+  1. model：表单控件绑定的数据对象，在校验或重置时会访问该数据对象下对应的表单数据，类型为 Object。
+  2. rules：表单验证规则，即上面介绍的 async-validator 所使用的校验规则，类型为 Object。
+2. 在 `FormItem` 组件中，也定义两个 props：
+  1. label：单个表单组件的标签文本，类似原生的 `<label>` 元素，类型为 String。
+  2. prop：对应表单域 Form 组件 model 里的字段，用于在校验或重置时访问表单组件绑定的数据，类型为 String。
 
 定义好 props，就可以写出大概的用例了：
 
@@ -857,24 +790,24 @@ Form 要用到数据校验，并在对应的 FormItem 中给出校验失败的�
 
   export default {
     components: { iForm, iFormItem, iInput },
-    data () {
+    data() {
       return {
         formValidate: {
           name: '',
-          mail: ''
+          mail: '',
         },
         ruleValidate: {
           name: [
-            { required: true, message: '用户名不能为空', trigger: 'blur' }
+            { required: true, message: '用户名不能为空', trigger: 'blur' },
           ],
           mail: [
             { required: true, message: '邮箱不能为空', trigger: 'blur' },
-            { type: 'email', message: '邮箱格式不正确', trigger: 'blur' }
+            { type: 'email', message: '邮箱格式不正确', trigger: 'blur' },
           ],
-        }
-      }
-    }
-  }
+        },
+      };
+    },
+  };
 </script>
 ```
 
@@ -883,7 +816,7 @@ Form 要用到数据校验，并在对应的 FormItem 中给出校验失败的�
 1. 这里的 `<i-input>` 并不是原生的 `<input>` 输入框，而是一个特制的输入框组件，之后会介讲解的功能和代码；
 2. `<i-form-item>` 的属性 `prop` 是字符串，所以它前面没有冒号（即不是 `:prop="name"`）。
 
-当前的两个组件只是个框框，还没有实现任何功能，不过万事开头难，定义好接口，剩下的就是补全组件的逻辑，而对于使用者，知道了 props、events、slots，就已经能写出上例的使用代码了。
+当前的两个组件只是个框框，还没有实现任何功能，不过万事开头难，定义好接口，剩下的就是补全组件的逻辑，而对于使用者，知道了 props/events/slots，就已经能写出上例的使用代码了。
 
 到此，Form 和 FormItem 的代码如下：
 
@@ -899,13 +832,13 @@ Form 要用到数据校验，并在对应的 FormItem 中给出校验失败的�
     name: 'iForm',
     props: {
       model: {
-        type: Object
+        type: Object,
       },
       rules: {
-        type: Object
-      }
-    }
-  }
+        type: Object,
+      },
+    },
+  };
 </script>
 ```
 
@@ -925,13 +858,13 @@ Form 要用到数据校验，并在对应的 FormItem 中给出校验失败的�
     props: {
       label: {
         type: String,
-        default: ''
+        default: '',
       },
       prop: {
-        type: String
-      }
-    }
-  }
+        type: String,
+      },
+    },
+  };
 </script>
 ```
 
@@ -948,19 +881,19 @@ import Emitter from '../../mixins/emitter.js';
 
 export default {
   name: 'iFormItem',
-  mixins: [ Emitter ],
+  mixins: [Emitter],
   // 组件渲染时，将实例缓存在 Form 中
-  mounted () {
+  mounted() {
     // 如果没有传入 prop，则无需校验，也就无需缓存
     if (this.prop) {
       this.dispatch('iForm', 'on-form-item-add', this);
     }
   },
   // 组件销毁前，将实例从 Form 的缓存中移除
-  beforeDestroy () {
+  beforeDestroy() {
     this.dispatch('iForm', 'on-form-item-remove', this);
-  }
-}
+  },
+};
 ```
 
 注意，Vue.js 的组件渲染顺序是由内而外的，所以 FormItem 要先于 Form 渲染，在 FormItem 的 mounted 触发时，我们向 Form 派发了事件 `on-form-item-add`，并将当前 FormItem 的实例（this）传递给了 Form，而此时，Form 的 mounted 尚未触发，因为 Form 在最外层，如果在 Form 的 mounted 里监听事件，是不可以的，所以要在其 created 内监听自定义事件，Form 的 created 要先于 FormItem 的 mounted。所以 Form 的相关代码为：
@@ -969,20 +902,20 @@ export default {
 // form.vue，部分代码省略
 export default {
   name: 'iForm',
-  data () {
+  data() {
     return {
-      fields: []
+      fields: [],
     };
   },
-  created () {
+  created() {
     this.$on('on-form-item-add', (field) => {
       if (field) this.fields.push(field);
     });
     this.$on('on-form-item-remove', (field) => {
       if (field.prop) this.fields.splice(this.fields.indexOf(field), 1);
     });
-  }
-}
+  },
+};
 ```
 
 定义的数据 `fields` 就是用来缓存所有 FormItem 实例的。
@@ -1004,46 +937,46 @@ Form 支持两种事件来触发校验：
     :value="currentValue"
     @input="handleInput"
     @blur="handleBlur"
-    />
+  />
 </template>
 <script>
   import Emitter from '../../mixins/emitter.js';
 
   export default {
     name: 'iInput',
-    mixins: [ Emitter ],
+    mixins: [Emitter],
     props: {
       value: {
         type: String,
-        default: ''
+        default: '',
       },
     },
-    data () {
+    data() {
       return {
-        currentValue: this.value
-      }
+        currentValue: this.value,
+      };
     },
     watch: {
-      value (val) {
+      value(val) {
         this.currentValue = val;
-      }
+      },
     },
     methods: {
-      handleInput (event) {
+      handleInput(event) {
         const value = event.target.value;
         this.currentValue = value;
         this.$emit('input', value);
         this.dispatch('iFormItem', 'on-form-change', value);
       },
-      handleBlur () {
+      handleBlur() {
         this.dispatch('iFormItem', 'on-form-blur', this.currentValue);
-      }
-    }
-  }
+      },
+    },
+  };
 </script>
 ```
 
-Input 组件中，绑定在 `<input>` 元素上的原生事件 `@input`，每当输入一个字符，都会调用句柄 `handleInput`，并通过 `dispatch` 方法向上级的 FormItem 组件派发自定义事件 `on-form-change`；同理，绑定的原生事件 `@blur`  会在 input 失焦时触发，并传递事件 `on-form-blur`。
+Input 组件中，绑定在 `<input>` 元素上的原生事件 `@input`，每当输入一个字符，都会调用句柄 `handleInput`，并通过 `dispatch` 方法向上级的 FormItem 组件派发自定义事件 `on-form-change`；同理，绑定的原生事件 `@blur` 会在 input 失焦时触发，并传递事件 `on-form-blur`。
 
 基础组件有了，接下来要做的，是在 FormItem 中监听来自 Input 组件派发的自定义事件。这里可以在 mounted 中监听，因为你的手速远赶不上组件渲染的速度，不过在 created 中监听也是没任何问题的。相关代码如下：
 
@@ -1051,18 +984,18 @@ Input 组件中，绑定在 `<input>` 元素上的原生事件 `@input`，每当
 // form-item.vue，部分代码省略
 export default {
   methods: {
-    setRules () {
+    setRules() {
       this.$on('on-form-blur', this.onFieldBlur);
       this.$on('on-form-change', this.onFieldChange);
     },
   },
-  mounted () {
+  mounted() {
     if (this.prop) {
       this.dispatch('iForm', 'on-form-item-add', this);
       this.setRules();
     }
-  }
-}
+  },
+};
 ```
 
 通过调用 `setRules` 方法，监听表单组件的两个事件，并绑定了句柄函数 `onFieldBlur` 和 `onFieldChange`，分别对应 blur 和 change 两种事件类型。当 onFieldBlur 或 onFieldChange 函数触发时，就意味着 FormItem 要对**当前的数据**进行一次校验。当前的数据，指的就是通过表单域 Form 中定义的 `props：model`，结合当前 FormItem 定义的 `props：prop` 来确定的数据，可以回顾上文写过的用例。
@@ -1074,17 +1007,17 @@ export default {
 export default {
   provide() {
     return {
-      form : this
+      form: this,
     };
-  }
-}
+  },
+};
 ```
 
 ```js
 // form-item.vue，部分代码省略
 export default {
-  inject: ['form']
-}
+  inject: ['form'],
+};
 ```
 
 准备好这些，接着就是最核心的校验功能了。blur 和 change 事件都会触发校验，它们调用同一个方法，只是参数不同。相关代码如下：
@@ -1097,24 +1030,24 @@ export default {
   inject: ['form'],
   props: {
     prop: {
-      type: String
+      type: String,
     },
   },
-  data () {
+  data() {
     return {
-      validateState: '',  // 校验状态
-      validateMessage: '',  // 校验不通过时的提示信息
-    }
+      validateState: '', // 校验状态
+      validateMessage: '', // 校验不通过时的提示信息
+    };
   },
   computed: {
     // 从 Form 的 model 中动态得到当前表单组件的数据
-    fieldValue () {
+    fieldValue() {
       return this.form.model[this.prop];
-    }
+    },
   },
   methods: {
     // 从 Form 的 rules 属性中，获取当前 FormItem 的校验规则
-    getRules () {
+    getRules() {
       let formRules = this.form.rules;
 
       formRules = formRules ? formRules[this.prop] : [];
@@ -1122,9 +1055,11 @@ export default {
       return [].concat(formRules || []);
     },
     // 只支持 blur 和 change，所以过滤出符合要求的 rule 规则
-    getFilteredRule (trigger) {
+    getFilteredRule(trigger) {
       const rules = this.getRules();
-      return rules.filter(rule => !rule.trigger || rule.trigger.indexOf(trigger) !== -1);
+      return rules.filter(
+        (rule) => !rule.trigger || rule.trigger.indexOf(trigger) !== -1
+      );
     },
     /**
      * 校验数据
@@ -1150,7 +1085,7 @@ export default {
 
       model[this.prop] = this.fieldValue;
 
-      validator.validate(model, { firstFields: true }, errors => {
+      validator.validate(model, { firstFields: true }, (errors) => {
         this.validateState = !errors ? 'success' : 'error';
         this.validateMessage = errors ? errors[0].message : '';
 
@@ -1162,9 +1097,9 @@ export default {
     },
     onFieldChange() {
       this.validate('change');
-    }
-  }
-}
+    },
+  },
+};
 ```
 
 在 FormItem 的 `validate()` 方法中，最终做了两件事：
@@ -1178,10 +1113,14 @@ export default {
 <!-- form-item.vue，部分代码省略 -->
 <template>
   <div>
-    <label v-if="label" :class="{ 'i-form-item-label-required': isRequired }">{{ label }}</label>
+    <label v-if="label" :class="{ 'i-form-item-label-required': isRequired }"
+      >{{ label }}</label
+    >
     <div>
       <slot></slot>
-      <div v-if="validateState === 'error'" class="i-form-item-message">{{ validateMessage }}</div>
+      <div v-if="validateState === 'error'" class="i-form-item-message">
+        {{ validateMessage }}
+      </div>
     </div>
   </div>
 </template>
@@ -1190,20 +1129,20 @@ export default {
     props: {
       label: {
         type: String,
-        default: ''
+        default: '',
       },
       prop: {
-        type: String
+        type: String,
       },
     },
-    data () {
+    data() {
       return {
-        isRequired: false,  // 是否为必填
-        validateState: '',  // 校验状态
-        validateMessage: '',  // 校验不通过时的提示信息
-      }
+        isRequired: false, // 是否为必填
+        validateState: '', // 校验状态
+        validateMessage: '', // 校验不通过时的提示信息
+      };
     },
-    mounted () {
+    mounted() {
       // 如果没有传入 prop，则无需校验，也就无需缓存
       if (this.prop) {
         this.dispatch('iForm', 'on-form-item-add', this);
@@ -1215,7 +1154,7 @@ export default {
       }
     },
     methods: {
-      setRules () {
+      setRules() {
         let rules = this.getRules();
         if (rules.length) {
           rules.every((rule) => {
@@ -1228,7 +1167,7 @@ export default {
         this.$on('on-form-change', this.onFieldChange);
       },
       // 从 Form 的 rules 属性中，获取当前 FormItem 的校验规则
-      getRules () {
+      getRules() {
         let formRules = this.form.rules;
 
         formRules = formRules ? formRules[this.prop] : [];
@@ -1236,14 +1175,14 @@ export default {
         return [].concat(formRules || []);
       },
       // 重置数据
-      resetField () {
+      resetField() {
         this.validateState = '';
         this.validateMessage = '';
 
         this.form.model[this.prop] = this.initialValue;
       },
-    }
-  }
+    },
+  };
 </script>
 <style>
   .i-form-item-label-required:before {
@@ -1263,25 +1202,25 @@ export default {
 ```js
 // form.vue，部分代码省略
 export default {
-  data () {
+  data() {
     return {
-      fields: []
+      fields: [],
     };
   },
   methods: {
     // 公开方法：全部重置数据
     resetFields() {
-      this.fields.forEach(field => {
+      this.fields.forEach((field) => {
         field.resetField();
       });
     },
     // 公开方法：全部校验数据，支持 Promise
     validate(callback) {
-      return new Promise(resolve => {
+      return new Promise((resolve) => {
         let valid = true;
         let count = 0;
-        this.fields.forEach(field => {
-          field.validate('', errors => {
+        this.fields.forEach((field) => {
+          field.validate('', (errors) => {
             if (errors) {
               valid = false;
             }
@@ -1295,12 +1234,12 @@ export default {
           });
         });
       });
-    }
+    },
   },
-}
+};
 ```
 
-虽然说 Vue.js 的 API 只来自 prop、event、slot 这三个部分，但一些场景下，需要通过 `ref` 来访问这个组件，调用它的一些内置方法，比如上面的 `validate` 和 `resetFields` 方法，就需要使用者来主动调用。
+虽然说 Vue.js 的 API 只来自 prop/event/slot 这三个部分，但一些场景下，需要通过 `ref` 来访问这个组件，调用它的一些内置方法，比如上面的 `validate` 和 `resetFields` 方法，就需要使用者来主动调用。
 
 resetFields 很简单，就是通过循环逐一调用 FormItem 的 resetField 方法来重置数据。validate 稍显复杂，它支持两种使用方法，一种是普通的回调，比如：
 
@@ -1314,17 +1253,17 @@ resetFields 很简单，就是通过循环逐一调用 FormItem 的 resetField �
 <script>
   export default {
     methods: {
-      handleSubmit () {
+      handleSubmit() {
         this.$refs.form.validate((valid) => {
           if (valid) {
             window.alert('提交成功');
           } else {
             window.alert('表单校验失败');
           }
-        })
-      }
-    }
-  }
+        });
+      },
+    },
+  };
 </script>
 ```
 
@@ -1333,7 +1272,7 @@ resetFields 很简单，就是通过循环逐一调用 FormItem 的 resetField �
 ```js
 handleSubmit () {
   const validate = this.$refs.form.validate();
-  
+
   validate.then((valid) => {
     if (valid) {
       window.alert('提交成功');
@@ -1371,58 +1310,48 @@ handleSubmit () {
 
   export default {
     components: { iForm, iFormItem, iInput },
-    data () {
+    data() {
       return {
         formValidate: {
           name: '',
-          mail: ''
+          mail: '',
         },
         ruleValidate: {
           name: [
-            { required: true, message: '用户名不能为空', trigger: 'blur' }
+            { required: true, message: '用户名不能为空', trigger: 'blur' },
           ],
           mail: [
             { required: true, message: '邮箱不能为空', trigger: 'blur' },
-            { type: 'email', message: '邮箱格式不正确', trigger: 'blur' }
+            { type: 'email', message: '邮箱格式不正确', trigger: 'blur' },
           ],
-        }
-      }
+        },
+      };
     },
     methods: {
-      handleSubmit () {
+      handleSubmit() {
         this.$refs.form.validate((valid) => {
           if (valid) {
             window.alert('提交成功');
           } else {
             window.alert('表单校验失败');
           }
-        })
+        });
       },
-      handleReset () {
+      handleReset() {
         this.$refs.form.resetFields();
-      }
-    }
-  }
+      },
+    },
+  };
 </script>
 ```
 
-运行效果：
-
-![](https://user-gold-cdn.xitu.io/2018/10/30/166c3b8a77e382ec?w=1417&h=550&f=png&s=60805)
-
-完整的示例源码可通过 GitHub 查看：
-
-[https://github.com/icarusion/vue-component-book](https://github.com/icarusion/vue-component-book)
-
-> 项目基于 Vue CLI 3 构建，下载安装依赖后，通过 npm run serve 可访问。
-
 ## 扩展阅读
 
-- [一份超级详细的Vue-cli3.0使用教程](https://juejin.im/post/5bdec6e8e51d4505327a8952)
+- [一份超级详细的 Vue-cli3.0 使用教程](https://juejin.im/post/5bdec6e8e51d4505327a8952)
 
-# 5. 组件的通信 3：找到任意组件实例
+# 6. 跨级组件的通（下）
 
-## 概述
+## 找到任意组件实例
 
 前面的小节我们已经介绍了两种组件间通信的方法：provide/inject 和 dispatch/broadcast。它们有各自的使用场景和局限，比如前者多用于子组件获取父组件的状态，后者常用于父子组件间通过自定义事件通信。
 
@@ -1438,7 +1367,7 @@ handleSubmit () {
 
 5 个不同的场景，对应 5 个不同的函数，实现原理也大同小异。
 
-## 实现
+## 五种场景的实现
 
 5 个函数的原理，都是通过递归、遍历，找到指定组件的 `name` 选项匹配的组件实例并返回。
 
@@ -1448,9 +1377,7 @@ handleSubmit () {
 - 向下找到所有指定的组件——findComponentsDownward
 - 找到指定组件的兄弟组件——findBrothersComponents
 
-完整源码地址：[https://github.com/icarusion/vue-component-book](https://github.com/icarusion/vue-component-book)
-
-在目录 `src` 下新建文件夹 `utils` 用来放置工具函数，并新建文件 `assist.js`，本节所有函数都在这个文件里完成，每个函数都通过 `export` 对外提供（如果你不了解 export，请查看扩展阅读1）。
+在目录 `src` 下新建文件夹 `utils` 用来放置工具函数，并新建文件 `assist.js`，本节所有函数都在这个文件里完成，每个函数都通过 `export` 对外提供（如果你不了解 export，请查看扩展阅读 1）。
 
 ### 向上找到最近的指定组件
 
@@ -1459,7 +1386,7 @@ handleSubmit () {
 ```js
 // assist.js
 // 由一个组件，向上找到最近的指定组件
-function findComponentUpward (context, componentName) {
+function findComponentUpward(context, componentName) {
   let parent = context.$parent;
   let name = parent.$options.name;
 
@@ -1492,41 +1419,39 @@ findComponentUpward 方法会在 while 语句里不断向上覆盖当前的 `par
   export default {
     name: 'componentA',
     components: { componentB },
-    data () {
+    data() {
       return {
-        name: 'Aresn'
-      }
+        name: 'Aresn',
+      };
     },
     methods: {
-      sayHello () {
+      sayHello() {
         console.log('Hello, Vue.js');
-      }
-    }
-  }
+      },
+    },
+  };
 </script>
 ```
 
 ```html
 <!-- component-b.vue -->
 <template>
-  <div>
-    组件 B
-  </div>
+  <div>组件 B</div>
 </template>
 <script>
   import { findComponentUpward } from '../utils/assist.js';
 
   export default {
     name: 'componentB',
-    mounted () {
+    mounted() {
       const comA = findComponentUpward(this, 'componentA');
-      
+
       if (comA) {
-        console.log(comA.name);  // Aresn
-        comA.sayHello();  // Hello, Vue.js
+        console.log(comA.name); // Aresn
+        comA.sayHello(); // Hello, Vue.js
       }
-    }
-  }
+    },
+  };
 </script>
 ```
 
@@ -1543,7 +1468,7 @@ findComponentUpward 只会找到最近的一个组件实例，如果要找到全
 ```js
 // assist.js
 // 由一个组件，向上找到所有的指定组件
-function findComponentsUpward (context, componentName) {
+function findComponentsUpward(context, componentName) {
   let parents = [];
   const parent = context.$parent;
 
@@ -1568,7 +1493,7 @@ findComponentsUpward 的使用场景较少，一般只用在递归组件里面�
 ```js
 // assist.js
 // 由一个组件，向下找到最近的指定组件
-function findComponentDownward (context, componentName) {
+function findComponentDownward(context, componentName) {
   const childrens = context.$children;
   let children = null;
 
@@ -1597,24 +1522,22 @@ export { findComponentDownward };
 ```html
 <!-- component-b.vue -->
 <template>
-  <div>
-    组件 B
-  </div>
+  <div>组件 B</div>
 </template>
 <script>
   export default {
     name: 'componentB',
-    data () {
+    data() {
       return {
-        name: 'Aresn'
-      }
+        name: 'Aresn',
+      };
     },
     methods: {
-      sayHello () {
+      sayHello() {
         console.log('Hello, Vue.js');
-      }
-    }
-  }
+      },
+    },
+  };
 </script>
 ```
 
@@ -1633,14 +1556,14 @@ export { findComponentDownward };
   export default {
     name: 'componentA',
     components: { componentB },
-    mounted () {
+    mounted() {
       const comB = findComponentDownward(this, 'componentB');
       if (comB) {
-        console.log(comB.name);  // Aresn
-        comB.sayHello();  // Hello, Vue.js
+        console.log(comB.name); // Aresn
+        comB.sayHello(); // Hello, Vue.js
       }
-    }
-  }
+    },
+  };
 </script>
 ```
 
@@ -1653,7 +1576,7 @@ export { findComponentDownward };
 ```js
 // assist.js
 // 由一个组件，向下找到所有指定的组件
-function findComponentsDownward (context, componentName) {
+function findComponentsDownward(context, componentName) {
   return context.$children.reduce((components, child) => {
     if (child.$options.name === componentName) components.push(child);
     const foundChilds = findComponentsDownward(child, componentName);
@@ -1674,18 +1597,18 @@ export { findComponentsDownward };
 ```js
 // assist.js
 // 由一个组件，找到指定组件的兄弟组件
-function findBrothersComponents (context, componentName, exceptMe = true) {
-  let res = context.$parent.$children.filter(item => {
+function findBrothersComponents(context, componentName, exceptMe = true) {
+  let res = context.$parent.$children.filter((item) => {
     return item.$options.name === componentName;
   });
-  let index = res.findIndex(item => item._uid === context._uid);
+  let index = res.findIndex((item) => item._uid === context._uid);
   if (exceptMe) res.splice(index, 1);
   return res;
 }
 export { findBrothersComponents };
 ```
 
-相比其它 4 个函数，findBrothersComponents 多了一个参数 `exceptMe`，是否把本身除外，默认是 true。寻找兄弟组件的方法，是先获取 `context.$parent.$children`，也就是父组件的全部子组件，这里面当前包含了本身，所有也会有第三个参数 exceptMe。Vue.js 在渲染组件时，都会给每个组件加一个内置的属性 `_uid`，这个 _uid 是不会重复的，借此我们可以从一系列兄弟组件中把自己排除掉。
+相比其它 4 个函数，findBrothersComponents 多了一个参数 `exceptMe`，是否把本身除外，默认是 true。寻找兄弟组件的方法，是先获取 `context.$parent.$children`，也就是父组件的全部子组件，这里面当前包含了本身，所有也会有第三个参数 exceptMe。Vue.js 在渲染组件时，都会给每个组件加一个内置的属性 `_uid`，这个 \_uid 是不会重复的，借此我们可以从一系列兄弟组件中把自己排除掉。
 
 举个例子，组件 A 是组件 B 的父级，在 B 中找到所有在 A 中的兄弟组件（也就是所有在 A 中的 B 组件）：
 
@@ -1699,31 +1622,29 @@ export { findBrothersComponents };
 </template>
 <script>
   import componentB from './component-b.vue';
-  
+
   export default {
     name: 'componentA',
-    components: { componentB }
-  }
+    components: { componentB },
+  };
 </script>
 ```
 
 ```html
 <!-- component-b.vue -->
 <template>
-  <div>
-    组件 B
-  </div>
+  <div>组件 B</div>
 </template>
 <script>
   import { findBrothersComponents } from '../utils/assist.js';
-  
+
   export default {
     name: 'componentB',
-    mounted () {
+    mounted() {
       const comsB = findBrothersComponents(this, 'componentB');
-      console.log(comsB);  // ① []，空数组
-    }
-  }
+      console.log(comsB); // ① []，空数组
+    },
+  };
 </script>
 ```
 
@@ -1748,11 +1669,11 @@ export { findBrothersComponents };
 // component-b.vue
 export default {
   name: 'componentB',
-  mounted () {
+  mounted() {
     const comsB = findBrothersComponents(this, 'componentB', false);
     console.log(comsB);
-  }
-}
+  },
+};
 ```
 
 此时就会打印出 ` [VueComponent, VueComponent]`，也就是包含自身了。
@@ -1765,7 +1686,7 @@ export default {
 
 注：本节部分代码参考 [iView](https://github.com/iview/iview/blob/2.0/src/utils/assist.js)。
 
-# 6. 实战 2：组合多选框组件
+# 7. 实战 2：组合多选框组件
 
 在第 5 节，我们完成了具有数据校验功能的组件 Form，本小节继续开发一个新的组件——组合多选框 Checkbox。它作为基础组件，也能集成在 Form 内并应用其验证规则。
 
@@ -1783,12 +1704,12 @@ export default {
 </template>
 <script>
   export default {
-    data () {
+    data() {
       return {
-        single: false
-      }
-    }
-  }
+        single: false,
+      };
+    },
+  };
 </script>
 ```
 
@@ -1805,12 +1726,12 @@ export default {
 </template>
 <script>
   export default {
-    data () {
+    data() {
       return {
-        multiple: ['option1', 'option3']
-      }
-    }
-  }
+        multiple: ['option1', 'option3'],
+      };
+    },
+  };
 </script>
 ```
 
@@ -1825,7 +1746,7 @@ export default {
 
 两个组件并行开发，会容易理不清逻辑，不妨我们先开发独立的 Checkbox 组件。
 
-## 单独使用的 Checkbox 
+## 单独使用的 Checkbox
 
 设计一个组件时，还是要从它的 3 个 API 入手：prop、event、slot。
 
@@ -1849,10 +1770,11 @@ slot 使用默认的就好，显示辅助文本。
   <label>
     <span>
       <input
-             type="checkbox"
-             :disabled="disabled"
-             :checked="currentValue"
-             @change="change">
+        type="checkbox"
+        :disabled="disabled"
+        :checked="currentValue"
+        @change="change"
+      />
     </span>
     <slot></slot>
   </label>
@@ -1863,28 +1785,28 @@ slot 使用默认的就好，显示辅助文本。
     props: {
       disabled: {
         type: Boolean,
-        default: false
+        default: false,
       },
       value: {
         type: [String, Number, Boolean],
-        default: false
+        default: false,
       },
       trueValue: {
         type: [String, Number, Boolean],
-        default: true
+        default: true,
       },
       falseValue: {
         type: [String, Number, Boolean],
-        default: false
-      }
+        default: false,
+      },
     },
-    data () {
+    data() {
       return {
-        currentValue: this.value
+        currentValue: this.value,
       };
     },
     methods: {
-      change (event) {
+      change(event) {
         if (this.disabled) {
           return false;
         }
@@ -1895,9 +1817,9 @@ slot 使用默认的就好，显示辅助文本。
         const value = checked ? this.trueValue : this.falseValue;
         this.$emit('input', value);
         this.$emit('on-change', value);
-      }
-    }
-  }
+      },
+    },
+  };
 </script>
 ```
 
@@ -1916,20 +1838,20 @@ slot 使用默认的就好，显示辅助文本。
 <script>
   export default {
     watch: {
-      value (val) {
+      value(val) {
         if (val === this.trueValue || val === this.falseValue) {
           this.updateModel();
         } else {
           throw 'Value should be trueValue or falseValue.';
         }
-      }
+      },
     },
     methods: {
-      updateModel () {
+      updateModel() {
         this.currentValue = this.value === this.trueValue;
-      }
-    }
-  }
+      },
+    },
+  };
 </script>
 ```
 
@@ -1943,16 +1865,16 @@ Checkbox 也是一个基础的表单类组件，它完全可以集成到 Form �
   import Emitter from '../../mixins/emitter.js';
 
   export default {
-    mixins: [ Emitter ],
+    mixins: [Emitter],
     methods: {
-      change (event) {
-        // ... 
+      change(event) {
+        // ...
         this.$emit('input', value);
         this.$emit('on-change', value);
         this.dispatch('iFormItem', 'on-form-change', value);
-      }
+      },
     },
-  }
+  };
 </script>
 ```
 
@@ -1976,18 +1898,20 @@ CheckboxGroup 的 API 很简单：
   <label>
     <span>
       <input
-             v-if="group"
-             type="checkbox"
-             :disabled="disabled"
-             :value="label"
-             v-model="model"
-             @change="change">
+        v-if="group"
+        type="checkbox"
+        :disabled="disabled"
+        :value="label"
+        v-model="model"
+        @change="change"
+      />
       <input
-             v-else
-             type="checkbox"
-             :disabled="disabled"
-             :checked="currentValue"
-             @change="change">
+        v-else
+        type="checkbox"
+        :disabled="disabled"
+        :checked="currentValue"
+        @change="change"
+      />
     </span>
     <slot></slot>
   </label>
@@ -1999,17 +1923,17 @@ CheckboxGroup 的 API 很简单：
     name: 'iCheckbox',
     props: {
       label: {
-        type: [String, Number, Boolean]
-      }
+        type: [String, Number, Boolean],
+      },
     },
-    data () {
+    data() {
       return {
         model: [],
         group: false,
-        parent: null
+        parent: null,
       };
     },
-    mounted () {
+    mounted() {
       this.parent = findComponentUpward(this, 'iCheckboxGroup');
 
       if (this.parent) {
@@ -2022,7 +1946,7 @@ CheckboxGroup 的 API 很简单：
         this.updateModel();
       }
     },
-  }
+  };
 </script>
 ```
 
@@ -2039,7 +1963,7 @@ Checkbox 新增的 prop： `label` 只会在组合使用时有效，结合 `mode
 <script>
   export default {
     methods: {
-      change (event) {
+      change(event) {
         if (this.disabled) {
           return false;
         }
@@ -2057,11 +1981,11 @@ Checkbox 新增的 prop： `label` 只会在组合使用时有效，结合 `mode
           this.dispatch('iFormItem', 'on-form-change', value);
         }
       },
-      updateModel () {
+      updateModel() {
         this.currentValue = this.value === this.trueValue;
       },
     },
-  }
+  };
 </script>
 ```
 
@@ -2080,27 +2004,27 @@ Checkbox 新增的 prop： `label` 只会在组合使用时有效，结合 `mode
 
   export default {
     name: 'iCheckboxGroup',
-    mixins: [ Emitter ],
+    mixins: [Emitter],
     props: {
       value: {
         type: Array,
-        default () {
+        default() {
           return [];
-        }
-      }
+        },
+      },
     },
-    data () {
+    data() {
       return {
         currentValue: this.value,
-        childrens: []
+        childrens: [],
       };
     },
     methods: {
-      updateModel (update) {
+      updateModel(update) {
         this.childrens = findComponentsDownward(this, 'iCheckbox');
         if (this.childrens) {
           const { value } = this;
-          this.childrens.forEach(child => {
+          this.childrens.forEach((child) => {
             child.model = value;
 
             if (update) {
@@ -2110,24 +2034,23 @@ Checkbox 新增的 prop： `label` 只会在组合使用时有效，结合 `mode
           });
         }
       },
-      change (data) {
+      change(data) {
         this.currentValue = data;
         this.$emit('input', data);
         this.$emit('on-change', data);
         this.dispatch('iFormItem', 'on-form-change', data);
-      }
+      },
     },
-    mounted () {
+    mounted() {
       this.updateModel(true);
     },
     watch: {
-      value () {
+      value() {
         this.updateModel(true);
-      }
-    }
+      },
+    },
   };
 </script>
-
 ```
 
 代码很容易理解，需要介绍的就是 `updateModel` 方法。可以看到，一共有 3 个地方调用了 `updateModel`，其中两个是 CheckboxGroup 的 mounted 初始化和 watch 监听的 value 变化时调用；另一个是在 Checkbox 里的 mounted 初始化时调用。这个方法的作用就是在 CheckboxGroup 里通过 `findComponentsDownward` 方法找到所有的 Checkbox，然后把 CheckboxGroup 的 `value`，赋值给 Checkbox 的 `model`，并根据 Checkbox 的 `label`，设置一次当前 Checkbox 的选中状态。这样无论是由内而外选择，或由外向内修改数据，都是双向绑定的，而且支持动态增加 Checkbox 的数量。
@@ -2144,7 +2067,8 @@ Checkbox 新增的 prop： `label` 只会在组合使用时有效，结合 `mode
 - [v-model 指令在组件中怎么玩](https://juejin.im/post/598bf7a3f265da3e252a1d6a)
 
 注：本节部分代码参考 [iView](https://github.com/iview/iview/tree/2.0/src/components/checkbox)。
-# 7. Vue 的构造器与手动挂载
+
+# 8. Vue 的构造器与手动挂载
 
 本节介绍两个 Vue.js 内置但却不常用的 API——extend 和 $mount，它们经常一起使用。不常用，是因为在业务开发中，基本没有它们的用武之地，但在独立组件开发时，在一些特定的场景它们是至关重要的。
 
@@ -2158,7 +2082,7 @@ Checkbox 新增的 prop： `label` 只会在组合使用时有效，结合 `mode
 </body>
 <script>
   const app = new Vue({
-    el: '#app'
+    el: '#app',
   });
 </script>
 ```
@@ -2171,7 +2095,7 @@ import App from './app.vue';
 
 new Vue({
   el: '#app',
-  render: h => h(App)
+  render: (h) => h(App),
 });
 ```
 
@@ -2201,9 +2125,9 @@ import Vue from 'vue';
 
 const AlertComponent = Vue.extend({
   template: '<div>{{ message }}</div>',
-  data () {
+  data() {
     return {
-      message: 'Hello, Aresn'
+      message: 'Hello, Aresn',
     };
   },
 });
@@ -2238,14 +2162,14 @@ new AlertComponent({ el: '#app' });
 import Vue from 'vue';
 import Notification from './notification.vue';
 
-const props = {};  // 这里可以传入一些组件的 props 选项
+const props = {}; // 这里可以传入一些组件的 props 选项
 
 const Instance = new Vue({
-  render (h) {
+  render(h) {
     return h(Notification, {
-      props: props
+      props: props,
     });
-  }
+  },
 });
 
 const component = Instance.$mount();
@@ -2268,7 +2192,7 @@ const notification = Instance.$children[0];
 
 - [聊聊 Vue.js 的 template 编译](https://juejin.im/post/59da1c116fb9a00a4a4cf6dd)
 
-# 8. 实战 3：动态渲染 .vue 文件的组件
+# 9. 实战 3：动态渲染 .vue 文件的组件
 
 网站 [iView Run](https://run.iviewui.com/)（之前小节也有提到），它是能够在线编写一个标准的 `.vue` 文件，并及时渲染的，它也预置了 iView 环境，你可以使用 iView 组件库全部的组件。本小节，我们就来实现这样一个能够动态渲染 .vue 文件的 `Display` 组件，当然，用到的核心技术就是上一节的 `extend` 和 `$mount`。
 
@@ -2298,17 +2222,17 @@ Display 是一个功能型的组件，没有交互和事件，只需要一个 pr
     props: {
       code: {
         type: String,
-        default: ''
-      }
+        default: '',
+      },
     },
-    data () {
+    data() {
       return {
         html: '',
         js: '',
-        css: ''
-      }
+        css: '',
+      };
     },
-  }
+  };
 </script>
 ```
 
@@ -2320,26 +2244,33 @@ Display 是一个功能型的组件，没有交互和事件，只需要一个 pr
 // display.vue，部分代码省略
 export default {
   methods: {
-    getSource (source, type) {
+    getSource(source, type) {
       const regex = new RegExp(`<${type}[^>]*>`);
       let openingTag = source.match(regex);
 
       if (!openingTag) return '';
       else openingTag = openingTag[0];
 
-      return source.slice(source.indexOf(openingTag) + openingTag.length, source.lastIndexOf(`</${type}>`));
+      return source.slice(
+        source.indexOf(openingTag) + openingTag.length,
+        source.lastIndexOf(`</${type}>`)
+      );
     },
-    splitCode () {
-      const script = this.getSource(this.code, 'script').replace(/export default/, 'return ');
+    splitCode() {
+      const script = this.getSource(this.code, 'script').replace(
+        /export default/,
+        'return '
+      );
       const style = this.getSource(this.code, 'style');
-      const template = '<div id="app">' + this.getSource(this.code, 'template') + '</div>';
+      const template =
+        '<div id="app">' + this.getSource(this.code, 'template') + '</div>';
 
       this.js = script;
       this.css = style;
       this.html = template;
     },
-  }
-}
+  },
+};
 ```
 
 getSource 方法接收两个参数：
@@ -2352,7 +2283,7 @@ getSource 方法接收两个参数：
 1. .vue 的 `<script>` 部分一般都是以 `export default` 开始的，可以看到在 splitCode 方法中将它替换为了 `return`，这个在后文会做解释，当前只要注意，我们分割完的代码，仍然是字符串；
 2. 在分割的 `<template>` 外层套了一个 `<div id="app">`，这是为了容错，有时使用者传递的 `code` 可能会忘记在外层包一个节点，没有根节点的组件，是会报错的。
 
- 准备好这些基础工作后，就可以用 `extend` 渲染组件了，在这之前，我们先思考一个问题：上文说到，当前的 `this.js` 是字符串，而 extend 接收的选项可不是字符串，而是一个对象类型，那就要先把 this.js 转为一个对象。
+准备好这些基础工作后，就可以用 `extend` 渲染组件了，在这之前，我们先思考一个问题：上文说到，当前的 `this.js` 是字符串，而 extend 接收的选项可不是字符串，而是一个对象类型，那就要先把 this.js 转为一个对象。
 
 不卖关子，来介绍 `new Function` 用法，先看个示例：
 
@@ -2370,7 +2301,7 @@ new Function ([arg1[, arg2[, ...argN]],] functionBody)
 
 arg1, arg2, ... argN 是被函数使用的参数名称，**functionBody** 是一个含有包括函数定义的 JavaScript 语句的**字符串**。也就是说，示例中的字符串 `return a + b` 被当做语句执行了。
 
-上文说到，`this.js` 中是将 *export default* 替换为 *return* 的，如果将 this.js 传入 new Function 里，那么 this.js 就执行了，这时因为有 return，返回的就是一个对象类型的 this.js 了。
+上文说到，`this.js` 中是将 _export default_ 替换为 _return_ 的，如果将 this.js 传入 new Function 里，那么 this.js 就执行了，这时因为有 return，返回的就是一个对象类型的 this.js 了。
 
 如果你还不是很理解 new Function，可以到文末的扩展阅读进一步了解。除了 new Function，你熟悉的 `eval` 函数也可以使用，它与 new Function 功能类似。
 
@@ -2383,32 +2314,32 @@ arg1, arg2, ... argN 是被函数使用的参数名称，**functionBody** 是一
 </template>
 <script>
   import Vue from 'vue';
-  
+
   export default {
-    data () {
+    data() {
       return {
-        component: null
-      }
+        component: null,
+      };
     },
     methods: {
-      renderCode () {
+      renderCode() {
         this.splitCode();
 
         if (this.html !== '' && this.js !== '') {
           const parseStrToFunc = new Function(this.js)();
 
-          parseStrToFunc.template =  this.html;
-          const Component = Vue.extend( parseStrToFunc );
+          parseStrToFunc.template = this.html;
+          const Component = Vue.extend(parseStrToFunc);
           this.component = new Component().$mount();
 
           this.$refs.display.appendChild(this.component.$el);
         }
-      }
+      },
     },
-    mounted () {
+    mounted() {
       this.renderCode();
-    }
-  }
+    },
+  };
 </script>
 ```
 
@@ -2421,7 +2352,8 @@ extend 构造的实例通过 `$mount` 渲染后，挂载到了组件唯一的一
 ```js
 // 生成随机字符串
 export default function (len = 32) {
-  const $chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890';
+  const $chars =
+    'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890';
   const maxPos = $chars.length;
   let str = '';
   for (let i = 0; i < len; i++) {
@@ -2440,13 +2372,13 @@ export default function (len = 32) {
 import randomStr from '../../utils/random_str.js';
 
 export default {
-  data () {
+  data() {
     return {
-      id: randomStr()
-    }
+      id: randomStr(),
+    };
   },
   methods: {
-    renderCode () {
+    renderCode() {
       if (this.html !== '' && this.js !== '') {
         // ...
         if (this.css !== '') {
@@ -2457,9 +2389,9 @@ export default {
           document.getElementsByTagName('head')[0].appendChild(style);
         }
       }
-    }
-  }
-}
+    },
+  },
+};
 ```
 
 当 Display 组件销毁时，也要手动销毁 extend 创建的实例以及上面的 css：
@@ -2468,7 +2400,7 @@ export default {
 // display.vue，部分代码省略
 export default {
   methods: {
-    destroyCode () {
+    destroyCode() {
       const $target = document.getElementById(this.id);
       if ($target) $target.parentNode.removeChild($target);
 
@@ -2477,12 +2409,12 @@ export default {
         this.component.$destroy();
         this.component = null;
       }
-    }
+    },
   },
-  beforeDestroy () {
+  beforeDestroy() {
     this.destroyCode();
-  }
-}
+  },
+};
 ```
 
 当 `this.code` 更新时，整个过程要重新来一次，所以要对 `code` 进行 watch 监听：
@@ -2491,12 +2423,12 @@ export default {
 // display.vue，部分代码省略
 export default {
   watch: {
-    code () {
+    code() {
       this.destroyCode();
       this.renderCode();
-    }
-  }
-}
+    },
+  },
+};
 ```
 
 以上就是 Display 组件的所有内容。
@@ -2520,19 +2452,18 @@ export default {
 
   export default {
     components: { iDisplay },
-    data () {
+    data() {
       return {
-        code: defaultCode
-      }
-    }
-  }
+        code: defaultCode,
+      };
+    },
+  };
 </script>
 ```
 
 ```js
 // src/views/default-code.js
-const code =
-`<template>
+const code = `<template>
     <div>
         <input v-model="message">
         {{ message }}
@@ -2563,7 +2494,7 @@ Vue CLI 3 默认使用了 vue.runtime.js，它不允许编译 template 模板，
 
 ```js
 module.exports = {
-  runtimeCompiler: true
+  runtimeCompiler: true,
 };
 ```
 
@@ -2578,11 +2509,9 @@ module.exports = {
 - [new Function](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Function)
 - [Vue.js 2.0 独立构建和运行时构建的区别](https://jingsam.github.io/2016/10/23/standalone-vs-runtime-only-build-in-vuejs2.html)
 
-
-# 9. 实战 4：全局提示组件
+# 10. 实战 4：全局提示组件
 
 有一种 Vue.js 组件，它不同于常规的组件，但组件结构本身很简单，比如下面的全局提示组件：
-
 
 ![](https://user-gold-cdn.xitu.io/2018/11/10/166fcc05107e987c?w=3187&h=2087&f=png&s=265274)
 
@@ -2602,12 +2531,12 @@ module.exports = {
 
   export default {
     components: { Alert },
-    data () {
+    data() {
       return {
-        show: false
-      }
-    }
-  }
+        show: false,
+      };
+    },
+  };
 </script>
 ```
 
@@ -2658,7 +2587,6 @@ methods: {
 
 最终效果如下：
 
-
 ![](https://user-gold-cdn.xitu.io/2018/11/10/166fcc09c43c2ad1?w=1208&h=314&f=gif&s=207241)
 
 我们从最简单的入手，不考虑其它，先写一个基本的 Alert 组件。
@@ -2678,15 +2606,15 @@ methods: {
 </template>
 <script>
   export default {
-    data () {
+    data() {
       return {
-        notices: []
-      }
-    }
-  }
+        notices: [],
+      };
+    },
+  };
 </script>
 <style>
-  .alert{
+  .alert {
     position: fixed;
     width: 100%;
     top: 16px;
@@ -2694,12 +2622,12 @@ methods: {
     text-align: center;
     pointer-events: none;
   }
-  .alert-content{
+  .alert-content {
     display: inline-block;
     padding: 8px 16px;
     background: #fff;
     border-radius: 3px;
-    box-shadow: 0 1px 6px rgba(0, 0, 0, .2);
+    box-shadow: 0 1px 6px rgba(0, 0, 0, 0.2);
     margin-bottom: 8px;
   }
 </style>
@@ -2715,22 +2643,25 @@ Alert 组件不同于常规的组件使用方式，它最终是通过 JS 来调�
   let seed = 0;
 
   function getUuid() {
-    return 'alert_' + (seed++);
+    return 'alert_' + seed++;
   }
 
   export default {
-    data () {
+    data() {
       return {
-        notices: []
-      }
+        notices: [],
+      };
     },
     methods: {
-      add (notice) {
+      add(notice) {
         const name = getUuid();
 
-        let _notice = Object.assign({
-          name: name
-        }, notice);
+        let _notice = Object.assign(
+          {
+            name: name,
+          },
+          notice
+        );
 
         this.notices.push(_notice);
 
@@ -2740,7 +2671,7 @@ Alert 组件不同于常规的组件使用方式，它最终是通过 JS 来调�
           this.remove(name);
         }, duration * 1000);
       },
-      remove (name) {
+      remove(name) {
         const notices = this.notices;
 
         for (let i = 0; i < notices.length; i++) {
@@ -2749,9 +2680,9 @@ Alert 组件不同于常规的组件使用方式，它最终是通过 JS 来调�
             break;
           }
         }
-      }
-    }
-  }
+      },
+    },
+  };
 </script>
 ```
 
@@ -2770,16 +2701,16 @@ Alert 组件不同于常规的组件使用方式，它最终是通过 JS 来调�
 import Alert from './alert.vue';
 import Vue from 'vue';
 
-Alert.newInstance = properties => {
+Alert.newInstance = (properties) => {
   const props = properties || {};
 
   const Instance = new Vue({
     data: props,
-    render (h) {
+    render(h) {
       return h(Alert, {
-        props: props
+        props: props,
       });
-    }
+    },
   });
 
   const component = Instance.$mount();
@@ -2788,13 +2719,13 @@ Alert.newInstance = properties => {
   const alert = Instance.$children[0];
 
   return {
-    add (noticeProps) {
+    add(noticeProps) {
       alert.add(noticeProps);
     },
-    remove (name) {
+    remove(name) {
       alert.remove(name);
-    }
-  }
+    },
+  };
 };
 
 export default Alert;
@@ -2816,7 +2747,7 @@ import Notification from './notification.js';
 
 let messageInstance;
 
-function getMessageInstance () {
+function getMessageInstance() {
   messageInstance = messageInstance || Notification.newInstance();
   return messageInstance;
 }
@@ -2826,15 +2757,15 @@ function notice({ duration = 1.5, content = '' }) {
 
   instance.add({
     content: content,
-    duration: duration
+    duration: duration,
   });
 }
 
 export default {
-  info (options) {
+  info(options) {
     return notice(options);
-  }
-}
+  },
+};
 ```
 
 `getMessageInstance` 函数用来获取实例，它不会重复创建，如果 messageInstance 已经存在，就直接返回了，只在第一次调用 Notification 的 `newInstance` 时来创建实例。
@@ -2843,27 +2774,25 @@ alert.js 对外提供了一个方法 `info`，如果需要各种显示效果，�
 
 来看一下显示一个信息提示组件的流程：
 
-
 ![](https://user-gold-cdn.xitu.io/2018/11/10/166fcc0fe6df06d2?w=1800&h=180&f=png&s=47285)
 
 最后把 alert.js 作为插件注册到 Vue 里就行，在入口文件 `src/main.js `中，通过 `prototype` 给 Vue 添加一个实例方法：
 
 ```js
 // src/main.js
-import Vue from 'vue'
-import App from './App.vue'
-import router from './router'
-import Alert from '../src/components/alert/alert.js'
+import Vue from 'vue';
+import App from './App.vue';
+import router from './router';
+import Alert from '../src/components/alert/alert.js';
 
-Vue.config.productionTip = false
+Vue.config.productionTip = false;
 
-Vue.prototype.$Alert = Alert
+Vue.prototype.$Alert = Alert;
 
 new Vue({
   router,
-  render: h => h(App)
-}).$mount('#app')
-
+  render: (h) => h(App),
+}).$mount('#app');
 ```
 
 这样在项目任何地方，都可以通过 `this.$Alert` 来调用 Alert 组件了，我们创建一个 alert 的路由，并在 `src/views` 下创建页面 `alert.vue`：
@@ -2879,19 +2808,19 @@ new Vue({
 <script>
   export default {
     methods: {
-      handleOpen1 () {
+      handleOpen1() {
         this.$Alert.info({
-          content: '我是提示信息 1'
+          content: '我是提示信息 1',
         });
       },
-      handleOpen2 () {
+      handleOpen2() {
         this.$Alert.info({
           content: '我是提示信息 2',
-          duration: 3
+          duration: 3,
         });
-      }
-    }
-  }
+      },
+    },
+  };
 </script>
 ```
 
@@ -2909,14 +2838,13 @@ new Vue({
 4. 在 notification.js 的 new Vue 时，使用了 Render 函数来渲染 alert.vue，这是因为使用 template 在 runtime 的 Vue.js 版本下是会报错的。
 5. 本例的 content 只能是字符串，如果要显示自定义的内容，除了用 `v-html` 指令，也能用 Functional Render（之后章节会介绍）。
 
-# 10. 更灵活的组件
+# 11. 更灵活的组件
 
 Vue.js 2.x 与 Vue.js 1.x 最大的区别就在于 2.x 使用了 Virtual DOM（虚拟 DOM）来更新 DOM 节点，提升渲染性能。
 
 一般来说，我们写 Vue.js 组件，模板都是写在 `<template>` 内的，但它并不是最终呈现的内容，template 只是一种对开发者友好的语法，能够一眼看到 DOM 节点，容易维护，在 Vue.js 编译阶段，会解析为 Virtual DOM。
 
 与 DOM 操作相比，Virtual DOM 是基于 JavaScript 计算的，所以开销会小很多。下图演示了 Virtual DOM 运行的过程：
-
 
 ![](https://user-gold-cdn.xitu.io/2018/11/13/1670bc4c26b9c667?w=1964&h=636&f=png&s=105521)
 
@@ -2935,12 +2863,12 @@ Vue.js 2.x 与 Vue.js 1.x 最大的区别就在于 2.x 使用了 Virtual DOM（�
 const vNode = {
   tag: 'div',
   attributes: {
-    id: 'main'
+    id: 'main',
   },
   children: [
     // p 节点
-  ]
-}
+  ],
+};
 ```
 
 vNode 对象通过一些特定的选项描述了真实的 DOM 结构。
@@ -2966,21 +2894,21 @@ vNode 对象通过一些特定的选项描述了真实的 DOM 结构。
 </template>
 <script>
   export default {
-    data () {
+    data() {
       return {
-        show: false
-      }
-    }
-  }
+        show: false,
+      };
+    },
+  };
 </script>
 ```
 
 ```js
 export default {
-  data () {
+  data() {
     return {
-      show: false
-    }
+      show: false,
+    };
   },
   render: (h) => {
     let childNode;
@@ -2989,20 +2917,24 @@ export default {
     } else {
       childNode = h('p', '内容 2');
     }
-    
-    return h('div', {
-      attrs: {
-        id: 'main'
+
+    return h(
+      'div',
+      {
+        attrs: {
+          id: 'main',
+        },
+        class: {
+          container: true,
+        },
+        style: {
+          color: 'red',
+        },
       },
-      class: {
-        container: true
-      },
-      style: {
-        color: 'red'
-      }
-    }, [childNode]);
-  }
-}
+      [childNode]
+    );
+  },
+};
 ```
 
 这里的 `h`，即 `createElement`，是 Render 函数的核心。可以看到，template 中的 **v-if / v-else** 等指令，都被 JS 的 **if / else** 替代了，那 **v-for** 自然也会被 **for** 语句替代。
@@ -3029,10 +2961,10 @@ h 有 3 个参数，分别是：
      h('p', '内容'),
      h(Component, {
        props: {
-         someProp: 'foo'
-       }
-     })
-   ]
+         someProp: 'foo',
+       },
+     }),
+   ];
    ```
 
 ### 约束
@@ -3044,30 +2976,24 @@ h 有 3 个参数，分别是：
 const Child = {
   render: (h) => {
     return h('p', 'text');
-  }
-}
+  },
+};
 
 export default {
   render: (h) => {
     // 创建一个子节点，使用组件 Child
     const ChildNode = h(Child);
-    
-    return h('div', [
-      ChildNode,
-      ChildNode
-    ]);
-  }
-}
+
+    return h('div', [ChildNode, ChildNode]);
+  },
+};
 ```
 
 ```js
 {
   render: (h) => {
-    return h('div', [
-      this.$slots.default,
-      this.$slots.default
-    ])
-  }
+    return h('div', [this.$slots.default, this.$slots.default]);
+  };
 }
 ```
 
@@ -3077,19 +3003,19 @@ export default {
 const Child = {
   render: (h) => {
     return h('p', 'text');
-  }
-}
+  },
+};
 
 export default {
   render: (h) => {
     const children = Array.apply(null, {
-      length: 5
+      length: 5,
     }).map(() => {
       return h(Child);
     });
     return h('div', children);
-  }
-}
+  },
+};
 ```
 
 对于含有组件的 slot，复用比较复杂，需要将 slot 的每个子节点都克隆一份，例如：
@@ -3097,9 +3023,10 @@ export default {
 ```js
 {
   render: (h) => {
-    function cloneVNode (vnode) {
+    function cloneVNode(vnode) {
       // 递归遍历所有子节点，并克隆
-      const clonedChildren = vnode.children && vnode.children.map(vnode => cloneVNode(vnode));
+      const clonedChildren =
+        vnode.children && vnode.children.map((vnode) => cloneVNode(vnode));
       const cloned = h(vnode.tag, vnode.data, clonedChildren);
       cloned.text = vnode.text;
       cloned.isComment = vnode.isComment;
@@ -3114,13 +3041,13 @@ export default {
     }
 
     const vNodes = this.$slots.default === undefined ? [] : this.$slots.default;
-    const clonedVNodes = this.$slots.default === undefined ? [] : vNodes.map(vnode => cloneVNode(vnode));
-    
-    return h('div', [
-      vNodes,
-      clonedVNodes
-    ])
-  }
+    const clonedVNodes =
+      this.$slots.default === undefined
+        ? []
+        : vNodes.map((vnode) => cloneVNode(vnode));
+
+    return h('div', [vNodes, clonedVNodes]);
+  };
 }
 ```
 
@@ -3128,18 +3055,14 @@ export default {
 
 深度克隆 slot 并非 Vue.js 内置方法，也没有得到推荐，属于黑科技，在一些特殊的场景才会使用到，正常业务几乎是用不到的。比如 iView 组件库的穿梭框组件 Transfer，就用到了这种方法：
 
-
 ![](https://user-gold-cdn.xitu.io/2018/11/13/1670bc4f017b9bf6?w=1246&h=654&f=png&s=108936)
 
 它的使用方法是：
 
 ```html
-<Transfer
-    :data="data"
-    :target-keys="targetKeys"
-    :render-format="renderFormat">
+<Transfer :data="data" :target-keys="targetKeys" :render-format="renderFormat">
   <div :style="{float: 'right', margin: '5px'}">
-    <Button size="small" @click="reloadMockData">Refresh</Button>
+    <button size="small" @click="reloadMockData">Refresh</button>
   </div>
 </Transfer>
 ```
@@ -3171,34 +3094,34 @@ export default {
    // 正确写法
    import Alert from './alert.vue';
    import Vue from 'vue';
-   
-   Alert.newInstance = properties => {
+
+   Alert.newInstance = (properties) => {
      const props = properties || {};
-   
+
      const Instance = new Vue({
        data: props,
-       render (h) {
+       render(h) {
          return h(Alert, {
-           props: props
+           props: props,
          });
-       }
+       },
      });
-   
+
      const component = Instance.$mount();
      document.body.appendChild(component.$el);
-   
+
      const alert = Instance.$children[0];
-   
+
      return {
-       add (noticeProps) {
+       add(noticeProps) {
          alert.add(noticeProps);
        },
-       remove (name) {
+       remove(name) {
          alert.remove(name);
-       }
-     }
+       },
+     };
    };
-   
+
    export default Alert;
    ```
 
@@ -3206,32 +3129,32 @@ export default {
    // 在 SSR 下报错的写法
    import Alert from './alert.vue';
    import Vue from 'vue';
-   
-   Alert.newInstance = properties => {
+
+   Alert.newInstance = (properties) => {
      const props = properties || {};
-   
+
      const div = document.createElement('div');
      div.innerHTML = `<Alert ${props}></Alert>`;
      document.body.appendChild(div);
-     
+
      const Instance = new Vue({
        el: div,
        data: props,
-       components: { Alert }
+       components: { Alert },
      });
-   
+
      const alert = Instance.$children[0];
-   
+
      return {
-       add (noticeProps) {
+       add(noticeProps) {
          alert.add(noticeProps);
        },
-       remove (name) {
+       remove(name) {
          alert.remove(name);
-       }
-     }
+       },
+     };
    };
-   
+
    export default Alert;
    ```
 
@@ -3261,11 +3184,11 @@ Vue.js 提供了一个 `functional` 的布尔值选项，设置为 true 可以�
    export default {
      functional: true,
      props: {
-       render: Function
+       render: Function,
      },
      render: (h, ctx) => {
        return ctx.props.render(h);
-     }
+     },
    };
    ```
 
@@ -3282,13 +3205,13 @@ Vue.js 提供了一个 `functional` 的布尔值选项，设置为 true 可以�
    </template>
    <script>
      import Render from './render.js';
-     
+
      export default {
        components: { Render },
        props: {
-         render: Function
-       }
-     }
+         render: Function,
+       },
+     };
    </script>
    ```
 
@@ -3303,21 +3226,25 @@ Vue.js 提供了一个 `functional` 的布尔值选项，设置为 true 可以�
    </template>
    <script>
      import myComponent from '../components/my-component.vue';
-     
+
      export default {
        components: { myComponent },
-       data () {
+       data() {
          return {
            render: (h) => {
-             return h('div', {
-               style: {
-                 color: 'red'
-               }
-             }, '自定义内容');
-           }
-         }
-       }
-     }
+             return h(
+               'div',
+               {
+                 style: {
+                   color: 'red',
+                 },
+               },
+               '自定义内容'
+             );
+           },
+         };
+       },
+     };
    </script>
    ```
 
@@ -3327,7 +3254,7 @@ Vue.js 提供了一个 `functional` 的布尔值选项，设置为 true 可以�
 
 注：本节部分内容参考了《Vue.js 实战》（清华大学出版社），部分代码参考 [iView](https://github.com/iview/iview/blob/2.0/src/components/transfer/transfer.vue)。
 
-# 11. 实战 5：可用 Render 自定义列的表格组件
+# 12. 实战 5：可用 Render 自定义列的表格组件
 
 表格组件 Table 是中后台产品中最常用的组件之一，用于展示大量结构化的数据。大多数组件库都提供了表格组件，比如 [iView](https://www.iviewui.com/components/table)，功能也是非常强大。正规的表格，是由 `<table>`、`<thead>`、`<tbody>`、`<tr>`、`<th>`、`<td>` 这些标签组成，一般分为表头 **columns** 和数据 **data**。本小节就来开发一个最基本的表格组件 Table，它支持使用 Render 函数来自定义某一列。
 
@@ -3335,11 +3262,9 @@ Vue.js 提供了一个 `functional` 的布尔值选项，设置为 true 可以�
 
 如果表格只是呈现数据，是比较简单的，比如下图：
 
-
 ![](https://user-gold-cdn.xitu.io/2018/11/15/16716c44a664e7f1?w=1876&h=502&f=png&s=60848)
 
 因为结构简单，我们甚至不需要组件，直接使用标准的 table 系列标签就可以。但有的时候，除了呈现数据，也会带有一些交互，比如有一列操作栏，可以编辑整行的数据：
-
 
 ![](https://user-gold-cdn.xitu.io/2018/11/15/16716c54fc74a1a5?w=2088&h=456&f=gif&s=520544)
 
@@ -3391,15 +3316,14 @@ Vue.js 提供了一个 `functional` 的布尔值选项，设置为 true 可以�
   [
     {
       title: '姓名',
-      key: 'name'
+      key: 'name',
     },
     {
       title: '年龄',
-      key: 'age'
-    }
-  ]
+      key: 'age',
+    },
+  ];
   ```
-
 
 - data：显示的结构化数据，格式为数组，其中每一个对象，就是一行的数据，比如：
 
@@ -3407,13 +3331,13 @@ Vue.js 提供了一个 `functional` 的布尔值选项，设置为 true 可以�
   [
     {
       name: '王小明',
-      age: 18
+      age: 18,
     },
     {
       name: '张小刚',
-      age: 25
-    }
-  ]
+      age: 25,
+    },
+  ];
   ```
 
 column 定义的 `key` 值，与 data 是一一对应的，这是一种常见的数据接口定义规则，也是 Vue.js 组件中，用数据驱动而不是 slot 驱动的经典案例。
@@ -3449,34 +3373,35 @@ column 定义的 `key` 值，与 data 是一一对应的，这是一种常见的
     props: {
       columns: {
         type: Array,
-        default () {
+        default() {
           return [];
-        }
+        },
       },
       data: {
         type: Array,
-        default () {
+        default() {
           return [];
-        }
-      }
-    }
-  }
+        },
+      },
+    },
+  };
 </script>
 <style>
-  table{
+  table {
     width: 100%;
     border-collapse: collapse;
     border-spacing: 0;
     empty-cells: show;
     border: 1px solid #e9e9e9;
   }
-  table th{
+  table th {
     background: #f7f7f7;
     color: #5c6b77;
     font-weight: 600;
     white-space: nowrap;
   }
-  table td, table th{
+  table td,
+  table th {
     padding: 8px 16px;
     border: 1px solid #e9e9e9;
     text-align: left;
@@ -3502,67 +3427,66 @@ tbody 内嵌套使用了两次 `v-for`，外层循环数据 data，内层循环�
 
   export default {
     components: { TableRender },
-    data () {
+    data() {
       return {
         columns: [
           {
             title: '姓名',
-            key: 'name'
+            key: 'name',
           },
           {
             title: '年龄',
-            key: 'age'
+            key: 'age',
           },
           {
             title: '出生日期',
-            key: 'birthday'
+            key: 'birthday',
           },
           {
             title: '地址',
-            key: 'address'
+            key: 'address',
           },
           {
-            title: '操作'
-          }
+            title: '操作',
+          },
         ],
         data: [
           {
             name: '王小明',
             age: 18,
             birthday: '919526400000',
-            address: '北京市朝阳区芍药居'
+            address: '北京市朝阳区芍药居',
           },
           {
             name: '张小刚',
             age: 25,
             birthday: '696096000000',
-            address: '北京市海淀区西二旗'
+            address: '北京市海淀区西二旗',
           },
           {
             name: '李小红',
             age: 30,
             birthday: '563472000000',
-            address: '上海市浦东新区世纪大道'
+            address: '上海市浦东新区世纪大道',
           },
           {
             name: '周小伟',
             age: 26,
             birthday: '687024000000',
-            address: '深圳市南山区深南大道'
-          }
-        ]
-      }
-    }
-  }
+            address: '深圳市南山区深南大道',
+          },
+        ],
+      };
+    },
+  };
 </script>
 ```
 
 运行后的效果如下图：
 
-
 ![](https://user-gold-cdn.xitu.io/2018/11/15/16716c5b99ef76ac?w=1986&h=416&f=png&s=88452)
 
-表格已经能渲染出来了，但现在的单元格只是将 data 当作纯文本来显示，所以出生日期列显示为时间戳，因为服务端对日期有时会保存为时间戳格式。如果要显示正常的日期（如1991-5-14），目前可以另写一个计算属性（computed），手动将时间戳换算为标准日期格式后，来动态修改 data 里的 `birthday` 字段。这样做对于出生日期这样的数据还好，但对于**操作**这一列就不可取了，因为它带有业务逻辑，点击**编辑**按钮，是可以对当前行数据进行修改的。这时就要用到 Render 函数。
+表格已经能渲染出来了，但现在的单元格只是将 data 当作纯文本来显示，所以出生日期列显示为时间戳，因为服务端对日期有时会保存为时间戳格式。如果要显示正常的日期（如 1991-5-14），目前可以另写一个计算属性（computed），手动将时间戳换算为标准日期格式后，来动态修改 data 里的 `birthday` 字段。这样做对于出生日期这样的数据还好，但对于**操作**这一列就不可取了，因为它带有业务逻辑，点击**编辑**按钮，是可以对当前行数据进行修改的。这时就要用到 Render 函数。
 
 ## 使用 Render 自定义列模板
 
@@ -3578,17 +3502,17 @@ export default {
     row: Object,
     column: Object,
     index: Number,
-    render: Function
+    render: Function,
   },
   render: (h, ctx) => {
     const params = {
       row: ctx.props.row,
       column: ctx.props.column,
-      index: ctx.props.index
+      index: ctx.props.index,
     };
 
     return ctx.props.render(h, params);
-  }
+  },
 };
 ```
 
@@ -3614,7 +3538,12 @@ render.js 定义了 4 个 props：
       <tr v-for="(row, rowIndex) in data">
         <td v-for="col in columns">
           <template v-if="'render' in col">
-            <Render :row="row" :column="col" :index="rowIndex" :render="col.render"></Render>
+            <Render
+              :row="row"
+              :column="col"
+              :index="rowIndex"
+              :render="col.render"
+            ></Render>
           </template>
           <template v-else>{{ row[col.key] }}</template>
         </td>
@@ -3630,18 +3559,18 @@ render.js 定义了 4 个 props：
     props: {
       columns: {
         type: Array,
-        default () {
+        default() {
           return [];
-        }
+        },
       },
       data: {
         type: Array,
-        default () {
+        default() {
           return [];
-        }
-      }
-    }
-  }
+        },
+      },
+    },
+  };
 </script>
 ```
 
@@ -3650,7 +3579,7 @@ render.js 定义了 4 个 props：
 ```js
 // src/views/table-render.vie，部分代码省略
 export default {
-  data () {
+  data() {
     return {
       columns: [
         // ...
@@ -3661,16 +3590,16 @@ export default {
             const year = date.getFullYear();
             const month = date.getMonth() + 1;
             const day = date.getDate();
-            
+
             const birthday = `${year}-${month}-${day}`;
-            
+
             return h('span', birthday);
-          }
-        }
-      ]
-    }
-  }
-}
+          },
+        },
+      ],
+    };
+  },
+};
 ```
 
 效果如下图：
@@ -3679,7 +3608,7 @@ export default {
 
 需要注意的是，columns 里定义的 render，是有两个参数的，第一个是 createElement（即 h），第二个是从 render.js 传过来的对象，它包含了当前行数据（`row`）、当前列配置（`column`）、当前是第几行（`index`），使用者可以基于这 3 个参数得到任意想要的结果。由于是自定义列了，显示什么都是使用者决定的，因此在使用了 render 的 column 里可以不用写字段 `key` 。
 
-如果你真正理解了，应该知道 columns 里定义的 render 字段，它仅仅是名字叫 render 的一个普通函数，并非 Vue.js 实例的 *render* 选项，只是我们恰巧把它叫做 render 而已，如果愿意，也可以改为其它名字，比如 renderRow。真正的 Render 函数只有一个地方，那就是 render.js 中的 render 选项，只是它代理了 column 中的 render。这里有点绕，理清这个关系，就对 Functional Render 彻底理解了。
+如果你真正理解了，应该知道 columns 里定义的 render 字段，它仅仅是名字叫 render 的一个普通函数，并非 Vue.js 实例的 _render_ 选项，只是我们恰巧把它叫做 render 而已，如果愿意，也可以改为其它名字，比如 renderRow。真正的 Render 函数只有一个地方，那就是 render.js 中的 render 选项，只是它代理了 column 中的 render。这里有点绕，理清这个关系，就对 Functional Render 彻底理解了。
 
 ## 修改当前行
 
@@ -3940,7 +3869,8 @@ Render 函数虽好，但也是有弊端的，通过上面的示例可以发现�
 ## 扩展阅读
 
 - [Div 和 Table 的区别](https://www.cnblogs.com/lovebear/archive/2012/04/18/2456081.html)
-# 12. 实战 6：可用 slot-scope 自定义列的表格组件
+
+# 13. 实战 6：可用 slot-scope 自定义列的表格组件
 
 上一节，我们基于 Render 函数实现了在表格中自定义列模板的组件 Table，虽说 Render 函数能够完全发挥 JavaScript 的编程能力，实现几乎所有的自定义工作，但本质上，使用者写的是一个庞大的 JS 对象，它不具备 DOM 结构，可读性和可维护性都比较差。对于大部分写 Vue.js 的开发者来说，更倾向于使用 template 的语法，毕竟它是 Vue.js 独有的特性。本小节则在上一节的 Table 组件基础上修改，实现一种达到同样渲染效果，但对使用者更友好的 slot-scope 写法。
 
@@ -3950,9 +3880,7 @@ slot（插槽）我们都很熟悉，它是 Vue.js 组件的 3 个 API 之一，
 
 ```html
 <ul>
-  <li v-for="book in books" :key="book.id">
-    {{ book.name }}
-  </li>
+  <li v-for="book in books" :key="book.id">{{ book.name }}</li>
 </ul>
 ```
 
@@ -3996,9 +3924,7 @@ slot（插槽）我们都很熟悉，它是 Vue.js 组件的 3 个 API 之一，
 除了可以传递参数，其它用法跟 slot 是一样的，比如也可以“具名”：
 
 ```html
-<slot :book="book" name="book">
-  {{ book.name }}
-</slot>
+<slot :book="book" name="book"> {{ book.name }} </slot>
 ```
 
 ```html
@@ -4029,10 +3955,20 @@ slot（插槽）我们都很熟悉，它是 Vue.js 组件的 3 个 API 之一，
       <tr v-for="(row, rowIndex) in data">
         <td v-for="col in columns">
           <template v-if="'render' in col">
-            <Render :row="row" :column="col" :index="rowIndex" :render="col.render"></Render>
+            <Render
+              :row="row"
+              :column="col"
+              :index="rowIndex"
+              :render="col.render"
+            ></Render>
           </template>
           <template v-else-if="'slot' in col">
-            <slot :row="row" :column="col" :index="rowIndex" :name="col.slot"></slot>
+            <slot
+              :row="row"
+              :column="col"
+              :index="rowIndex"
+              :name="col.slot"
+            ></slot>
           </template>
           <template v-else>{{ row[col.key] }}</template>
         </td>
@@ -4086,88 +4022,88 @@ slot（插槽）我们都很熟悉，它是 Vue.js 组件的 3 个 API 之一，
 
   export default {
     components: { TableSlot },
-    data () {
+    data() {
       return {
         columns: [
           {
             title: '姓名',
-            slot: 'name'
+            slot: 'name',
           },
           {
             title: '年龄',
-            slot: 'age'
+            slot: 'age',
           },
           {
             title: '出生日期',
-            slot: 'birthday'
+            slot: 'birthday',
           },
           {
             title: '地址',
-            slot: 'address'
+            slot: 'address',
           },
           {
             title: '操作',
-            slot: 'action'
-          }
+            slot: 'action',
+          },
         ],
         data: [
           {
             name: '王小明',
             age: 18,
             birthday: '919526400000',
-            address: '北京市朝阳区芍药居'
+            address: '北京市朝阳区芍药居',
           },
           {
             name: '张小刚',
             age: 25,
             birthday: '696096000000',
-            address: '北京市海淀区西二旗'
+            address: '北京市海淀区西二旗',
           },
           {
             name: '李小红',
             age: 30,
             birthday: '563472000000',
-            address: '上海市浦东新区世纪大道'
+            address: '上海市浦东新区世纪大道',
           },
           {
             name: '周小伟',
             age: 26,
             birthday: '687024000000',
-            address: '深圳市南山区深南大道'
-          }
+            address: '深圳市南山区深南大道',
+          },
         ],
-        editIndex: -1,  // 当前聚焦的输入框的行数
-        editName: '',  // 第一列输入框，当然聚焦的输入框的输入内容，与 data 分离避免重构的闪烁
-        editAge: '',  // 第二列输入框
-        editBirthday: '',  // 第三列输入框
-        editAddress: '',  // 第四列输入框
-      }
+        editIndex: -1, // 当前聚焦的输入框的行数
+        editName: '', // 第一列输入框，当然聚焦的输入框的输入内容，与 data 分离避免重构的闪烁
+        editAge: '', // 第二列输入框
+        editBirthday: '', // 第三列输入框
+        editAddress: '', // 第四列输入框
+      };
     },
     methods: {
-      handleEdit (row, index) {
+      handleEdit(row, index) {
         this.editName = row.name;
         this.editAge = row.age;
         this.editAddress = row.address;
         this.editBirthday = row.birthday;
         this.editIndex = index;
       },
-      handleSave (index) {
+      handleSave(index) {
         this.data[index].name = this.editName;
         this.data[index].age = this.editAge;
         this.data[index].birthday = this.editBirthday;
         this.data[index].address = this.editAddress;
         this.editIndex = -1;
       },
-      getBirthday (birthday) {
+      getBirthday(birthday) {
         const date = new Date(parseInt(birthday));
         const year = date.getFullYear();
         const month = date.getMonth() + 1;
         const day = date.getDate();
 
         return `${year}-${month}-${day}`;
-      }
-    }
-  }
+      },
+    },
+  };
 </script>
 ```
 
@@ -4221,7 +4157,7 @@ slot（插槽）我们都很熟悉，它是 Vue.js 组件的 3 个 API 之一，
 
   export default {
     components: { TableRender },
-    data () {
+    data() {
       return {
         columns: [
           {
@@ -4232,10 +4168,10 @@ slot（插槽）我们都很熟悉，它是 Vue.js 组件的 3 个 API 之一，
                 this.$refs.table.$scopedSlots.name({
                   row: row,
                   column: column,
-                  index: index
+                  index: index,
                 })
-              )
-            }
+              );
+            },
           },
           {
             title: '年龄',
@@ -4245,10 +4181,10 @@ slot（插槽）我们都很熟悉，它是 Vue.js 组件的 3 个 API 之一，
                 this.$refs.table.$scopedSlots.age({
                   row: row,
                   column: column,
-                  index: index
+                  index: index,
                 })
-              )
-            }
+              );
+            },
           },
           {
             title: '出生日期',
@@ -4258,10 +4194,10 @@ slot（插槽）我们都很熟悉，它是 Vue.js 组件的 3 个 API 之一，
                 this.$refs.table.$scopedSlots.birthday({
                   row: row,
                   column: column,
-                  index: index
+                  index: index,
                 })
-              )
-            }
+              );
+            },
           },
           {
             title: '地址',
@@ -4271,10 +4207,10 @@ slot（插槽）我们都很熟悉，它是 Vue.js 组件的 3 个 API 之一，
                 this.$refs.table.$scopedSlots.address({
                   row: row,
                   column: column,
-                  index: index
+                  index: index,
                 })
-              )
-            }
+              );
+            },
           },
           {
             title: '操作',
@@ -4284,73 +4220,73 @@ slot（插槽）我们都很熟悉，它是 Vue.js 组件的 3 个 API 之一，
                 this.$refs.table.$scopedSlots.action({
                   row: row,
                   column: column,
-                  index: index
+                  index: index,
                 })
-              )
-            }
-          }
+              );
+            },
+          },
         ],
         data: [],
-        editIndex: -1,  // 当前聚焦的输入框的行数
-        editName: '',  // 第一列输入框，当然聚焦的输入框的输入内容，与 data 分离避免重构的闪烁
-        editAge: '',  // 第二列输入框
-        editBirthday: '',  // 第三列输入框
-        editAddress: '',  // 第四列输入框
-      }
+        editIndex: -1, // 当前聚焦的输入框的行数
+        editName: '', // 第一列输入框，当然聚焦的输入框的输入内容，与 data 分离避免重构的闪烁
+        editAge: '', // 第二列输入框
+        editBirthday: '', // 第三列输入框
+        editAddress: '', // 第四列输入框
+      };
     },
     methods: {
-      handleEdit (row, index) {
+      handleEdit(row, index) {
         this.editName = row.name;
         this.editAge = row.age;
         this.editAddress = row.address;
         this.editBirthday = row.birthday;
         this.editIndex = index;
       },
-      handleSave (index) {
+      handleSave(index) {
         this.data[index].name = this.editName;
         this.data[index].age = this.editAge;
         this.data[index].birthday = this.editBirthday;
         this.data[index].address = this.editAddress;
         this.editIndex = -1;
       },
-      getBirthday (birthday) {
+      getBirthday(birthday) {
         const date = new Date(parseInt(birthday));
         const year = date.getFullYear();
         const month = date.getMonth() + 1;
         const day = date.getDate();
 
         return `${year}-${month}-${day}`;
-      }
+      },
     },
-    mounted () {
+    mounted() {
       this.data = [
         {
           name: '王小明',
           age: 18,
           birthday: '919526400000',
-          address: '北京市朝阳区芍药居'
+          address: '北京市朝阳区芍药居',
         },
         {
           name: '张小刚',
           age: 25,
           birthday: '696096000000',
-          address: '北京市海淀区西二旗'
+          address: '北京市海淀区西二旗',
         },
         {
           name: '李小红',
           age: 30,
           birthday: '563472000000',
-          address: '上海市浦东新区世纪大道'
+          address: '上海市浦东新区世纪大道',
         },
         {
           name: '周小伟',
           age: 26,
           birthday: '687024000000',
-          address: '深圳市南山区深南大道'
-        }
+          address: '深圳市南山区深南大道',
+        },
       ];
-    }
-  }
+    },
+  };
 </script>
 ```
 
@@ -4363,10 +4299,10 @@ render: (h, { row, column, index }) => {
     this.$refs.table.$scopedSlots.name({
       row: row,
       column: column,
-      index: index
+      index: index,
     })
-  )
-}
+  );
+};
 ```
 
 这正是 Render 函数灵活的一个体现，使用 `$scopedSlots` 可以访问 slot-scope，所以上面这段代码的意思是，name 这一列仍然是使用 Functional Render，只不过 Render 的是一个预先定义好的 slot-scope 模板。
@@ -4391,19 +4327,22 @@ export default {
   props: {
     row: Object,
     column: Object,
-    index: Number
+    index: Number,
   },
   render: (h, ctx) => {
-    return h('div', ctx.injections.tableRoot.$scopedSlots[ctx.props.column.slot]({
-      row: ctx.props.row,
-      column: ctx.props.column,
-      index: ctx.props.index
-    }));
-  }
+    return h(
+      'div',
+      ctx.injections.tableRoot.$scopedSlots[ctx.props.column.slot]({
+        row: ctx.props.row,
+        column: ctx.props.column,
+        index: ctx.props.index,
+      })
+    );
+  },
 };
 ```
 
-它仍然是一个 Functional Render，使用 `inject` 注入了父级组件 table.vue（下文改写） 中提供的实例 `tableRoot`。在 render 里，也是通过方案 2 中使用 `$scopedSlots`  定义的 slot，不过这是在组件级别定义，对用户来说是透明的，只要按方案 1 的用例来写就可以了。
+它仍然是一个 Functional Render，使用 `inject` 注入了父级组件 table.vue（下文改写） 中提供的实例 `tableRoot`。在 render 里，也是通过方案 2 中使用 `$scopedSlots` 定义的 slot，不过这是在组件级别定义，对用户来说是透明的，只要按方案 1 的用例来写就可以了。
 
 table.vue 也要做一点修改：
 
@@ -4420,7 +4359,12 @@ table.vue 也要做一点修改：
       <tr v-for="(row, rowIndex) in data">
         <td v-for="col in columns">
           <template v-if="'render' in col">
-            <Render :row="row" :column="col" :index="rowIndex" :render="col.render"></Render>
+            <Render
+              :row="row"
+              :column="col"
+              :index="rowIndex"
+              :render="col.render"
+            ></Render>
           </template>
           <template v-else-if="'slot' in col">
             <slot-scope :row="row" :column="col" :index="rowIndex"></slot-scope>
@@ -4437,26 +4381,26 @@ table.vue 也要做一点修改：
 
   export default {
     components: { Render, SlotScope },
-    provide () {
+    provide() {
       return {
-        tableRoot: this
+        tableRoot: this,
       };
     },
     props: {
       columns: {
         type: Array,
-        default () {
+        default() {
           return [];
-        }
+        },
       },
       data: {
         type: Array,
-        default () {
+        default() {
           return [];
-        }
-      }
-    }
-  }
+        },
+      },
+    },
+  };
 </script>
 ```
 
@@ -4464,7 +4408,7 @@ table.vue 也要做一点修改：
 
 方案 3 也是推荐使用的，当 Table 的功能足够复杂，层级会嵌套的比较深，那时方案 1 的 slot 就不会定义在第一级组件中，中间可能会隔许多组件，slot 就要一层层中转，相比在任何地方都能直接使用的 Render 就要麻烦了。所以，如果你的组件层级简单，推荐用第一种方案；如果你的组件已经成型（某 API 基于 Render 函数），但一时间不方便支持 slot-scope，而使用者又想用，那就选方案 2；如果你的组件已经成型（某 API 基于 Render 函数），但组件层级复杂，要按方案 1 那样支持 slot-scope 可能改动较大，还有可能带来新的 bug，那就用方案 3，它不会破坏原有的任何内容，但会额外支持 slot-scope 用法，关键是改动简单。
 
-# 13. 递归组件与动态组件
+# 14. 递归组件与动态组件
 
 ## 递归组件
 
@@ -4478,8 +4422,8 @@ table.vue 也要做一点修改：
 </template>
 <script>
   export default {
-    name: 'my-component'
-  }
+    name: 'my-component',
+  };
 </script>
 ```
 
@@ -4499,10 +4443,10 @@ table.vue 也要做一点修改：
     props: {
       count: {
         type: Number,
-        default: 1
-      }
-    }
-  }
+        default: 1,
+      },
+    },
+  };
 </script>
 ```
 
@@ -4512,7 +4456,6 @@ table.vue 也要做一点修改：
 - 要有一个明确的结束条件
 
 递归组件常用来开发具有未知层级关系的独立组件，在业务开发中很少使用。比如常见的有级联选择器和树形控件：
-
 
 ![](https://user-gold-cdn.xitu.io/2018/11/22/167398b8f5a828b1?w=1600&h=676&f=png&s=44587)
 
@@ -4527,42 +4470,30 @@ table.vue 也要做一点修改：
 ```html
 <!-- a.vue -->
 <template>
-  <div>
-    组件 A
-  </div>
+  <div>组件 A</div>
 </template>
 <script>
-  export default {
-
-  }
+  export default {};
 </script>
 ```
 
 ```html
 <!-- b.vue -->
 <template>
-  <div>
-    组件 B
-  </div>
+  <div>组件 B</div>
 </template>
 <script>
-  export default {
-
-  }
+  export default {};
 </script>
 ```
 
 ```html
 <!-- c.vue -->
 <template>
-  <div>
-    组件 C
-  </div>
+  <div>组件 C</div>
 </template>
 <script>
-  export default {
-
-  }
+  export default {};
 </script>
 ```
 
@@ -4584,13 +4515,13 @@ table.vue 也要做一点修改：
   import componentC from '../components/c.vue';
 
   export default {
-    data () {
+    data() {
       return {
-        component: componentA
-      }
+        component: componentA,
+      };
     },
     methods: {
-      handleChange (component) {
+      handleChange(component) {
         if (component === 'A') {
           this.component = componentA;
         } else if (component === 'B') {
@@ -4598,9 +4529,9 @@ table.vue 也要做一点修改：
         } else if (component === 'C') {
           this.component = componentC;
         }
-      }
-    }
-  }
+      },
+    },
+  };
 </script>
 ```
 
@@ -4619,34 +4550,34 @@ table.vue 也要做一点修改：
       // 链接地址
       to: {
         type: String,
-        default: ''
+        default: '',
       },
       // 链接打开方式，如 _blank
       target: {
         type: String,
-        default: '_self'
-      }
+        default: '_self',
+      },
     },
     computed: {
       // 动态渲染不同的标签
-      tagName () {
+      tagName() {
         return this.to === '' ? 'button' : 'a';
       },
       // 如果是链接，把这些属性都绑定在 component 上
-      tagProps () {
+      tagProps() {
         let props = {};
 
         if (this.to) {
           props = {
             target: this.target,
-            href: this.to
-          }
+            href: this.to,
+          };
         }
 
         return props;
-      }
-    }
-  }
+      },
+    },
+  };
 </script>
 ```
 
@@ -4656,23 +4587,24 @@ table.vue 也要做一点修改：
 <template>
   <div>
     <i-button>普通按钮</i-button>
-    <br>
+    <br />
     <i-button to="https://juejin.im">链接按钮</i-button>
-    <br>
-    <i-button to="https://juejin.im" target="_blank">新窗口打开链接按钮</i-button>
+    <br />
+    <i-button to="https://juejin.im" target="_blank"
+      >新窗口打开链接按钮</i-button
+    >
   </div>
 </template>
 <script>
   import iButton from '../components/a.vue';
 
   export default {
-    components: { iButton }
-  }
+    components: { iButton },
+  };
 </script>
 ```
 
 最终会渲染出一个原生的 `<button>` 按钮和两个原生的链接 `<a>`，且第二个点击会在新窗口中打开链接，如图：
-
 
 ![](https://user-gold-cdn.xitu.io/2018/11/22/167398c004dc0c60?w=328&h=166&f=png&s=18861)
 
@@ -4683,19 +4615,17 @@ i-button 组件中的 `<component>` `is` 绑定的就是一个标签名称 butto
 ```html
 <!-- a.vue -->
 <template>
-  <div>
-    组件 A
-  </div>
+  <div>组件 A</div>
 </template>
 <script>
   export default {
-    mounted () {
+    mounted() {
       console.log('组件创建了');
     },
-    beforeDestroy () {
+    beforeDestroy() {
       console.log('组件销毁了');
-    }
-  }
+    },
+  };
 </script>
 ```
 
@@ -4734,7 +4664,7 @@ keep-alive 还有一些额外的 props 可以配置：
 
 - [异步组件](https://cn.vuejs.org/v2/guide/components-dynamic-async.html#异步组件)
 
-# 14. 实战 7：树形控件
+# 15. 实战 7：树形控件
 
 本小节基于 Vue.js 的递归组件知识，来开发一个常见的树形控件—Tree。
 
@@ -4764,27 +4694,27 @@ data: [
         expand: true,
         children: [
           {
-            title: 'leaf 1-1-1'
+            title: 'leaf 1-1-1',
           },
           {
-            title: 'leaf 1-1-2'
-          }
-        ]
+            title: 'leaf 1-1-2',
+          },
+        ],
       },
       {
         title: 'parent 1-2',
         children: [
           {
-            title: 'leaf 1-2-1'
+            title: 'leaf 1-2-1',
           },
           {
-            title: 'leaf 1-2-1'
-          }
-        ]
-      }
-    ]
-  }
-]
+            title: 'leaf 1-2-1',
+          },
+        ],
+      },
+    ],
+  },
+];
 ```
 
 每个节点的配置（props：data）描述如下：
@@ -4819,16 +4749,16 @@ tree.vue 主要负责两件事：
 function typeOf(obj) {
   const toString = Object.prototype.toString;
   const map = {
-    '[object Boolean]'  : 'boolean',
-    '[object Number]'   : 'number',
-    '[object String]'   : 'string',
-    '[object Function]' : 'function',
-    '[object Array]'    : 'array',
-    '[object Date]'     : 'date',
-    '[object RegExp]'   : 'regExp',
+    '[object Boolean]': 'boolean',
+    '[object Number]': 'number',
+    '[object String]': 'string',
+    '[object Function]': 'function',
+    '[object Array]': 'array',
+    '[object Date]': 'date',
+    '[object RegExp]': 'regExp',
     '[object Undefined]': 'undefined',
-    '[object Null]'     : 'null',
-    '[object Object]'   : 'object'
+    '[object Null]': 'null',
+    '[object Object]': 'object',
   };
   return map[toString.call(obj)];
 }
@@ -4839,7 +4769,7 @@ function deepCopy(data) {
 
   if (t === 'array') {
     o = [];
-  } else if ( t === 'object') {
+  } else if (t === 'object') {
     o = {};
   } else {
     return data;
@@ -4849,7 +4779,7 @@ function deepCopy(data) {
     for (let i = 0; i < data.length; i++) {
       o.push(deepCopy(data[i]));
     }
-  } else if ( t === 'object') {
+  } else if (t === 'object') {
     for (let i in data) {
       o[i] = deepCopy(data[i]);
     }
@@ -4857,7 +4787,7 @@ function deepCopy(data) {
   return o;
 }
 
-export {deepCopy};
+export { deepCopy };
 ```
 
 deepCopy 函数会递归地对数组或对象进行逐一判断，如果某项是数组或对象，再拆分继续判断，而其它类型就直接赋值了，所以深拷贝的数据不会破坏原有的数据（更多深拷贝与浅拷贝的内容，可阅读扩展阅读 1）。
@@ -4886,34 +4816,34 @@ deepCopy 函数会递归地对数组或对象进行逐一判断，如果某项�
     props: {
       data: {
         type: Array,
-        default () {
+        default() {
           return [];
-        }
+        },
       },
       showCheckbox: {
         type: Boolean,
-        default: false
-      }
+        default: false,
+      },
     },
-    data () {
+    data() {
       return {
-        cloneData: []
-      }
+        cloneData: [],
+      };
     },
-    created () {
+    created() {
       this.rebuildData();
     },
     watch: {
-      data () {
+      data() {
         this.rebuildData();
-      }
+      },
     },
     methods: {
-      rebuildData () {
+      rebuildData() {
         this.cloneData = deepCopy(this.data);
-      }
-    }
-  }
+      },
+    },
+  };
 </script>
 ```
 
@@ -4943,8 +4873,12 @@ node.vue 是树组件 Tree 的核心，而一个 tree-node 节点包含 4 个部
   <ul class="tree-ul">
     <li class="tree-li">
       <span class="tree-expand" @click="handleExpand">
-        <span v-if="data.children && data.children.length && !data.expand">+</span>
-        <span v-if="data.children && data.children.length && data.expand">-</span>
+        <span v-if="data.children && data.children.length && !data.expand"
+          >+</span
+        >
+        <span v-if="data.children && data.children.length && data.expand"
+          >-</span
+        >
       </span>
       <i-checkbox
         v-if="showCheckbox"
@@ -4971,23 +4905,24 @@ node.vue 是树组件 Tree 的核心，而一个 tree-node 节点包含 4 个部
     props: {
       data: {
         type: Object,
-        default () {
+        default() {
           return {};
-        }
+        },
       },
       showCheckbox: {
         type: Boolean,
-        default: false
-      }
-    }
-  }
+        default: false,
+      },
+    },
+  };
 </script>
 <style>
-  .tree-ul, .tree-li{
+  .tree-ul,
+  .tree-li {
     list-style: none;
     padding-left: 10px;
   }
-  .tree-expand{
+  .tree-expand {
     cursor: pointer;
   }
 </style>
@@ -5012,32 +4947,32 @@ node.vue 是树组件 Tree 的核心，而一个 tree-node 节点包含 4 个部
 import { findComponentUpward } from '../../utils/assist.js';
 
 export default {
-  data () {
+  data() {
     return {
-      tree: findComponentUpward(this, 'Tree')
-    }
+      tree: findComponentUpward(this, 'Tree'),
+    };
   },
   methods: {
-    handleExpand () {
+    handleExpand() {
       this.$set(this.data, 'expand', !this.data.expand);
 
       if (this.tree) {
         this.tree.emitEvent('on-toggle-expand', this.data);
       }
     },
-  }
-}
+  },
+};
 ```
 
 ```js
 // tree.vue，部分代码省略
 export default {
   methods: {
-    emitEvent (eventName, data) {
+    emitEvent(eventName, data) {
       this.$emit(eventName, data, this.cloneData);
-    }
-  }
-}
+    },
+  },
+};
 ```
 
 在 node.vue 中，通过 `findComponentUpward` 向上找到了 Tree 的实例，并调用它的 `emitEvent` 方法来触发自定义事件 `@on-toggle-expand`。之所以使用 `findComponentUpward` 寻找组件，而不是用 `$parent`，是因为当前的 node.vue，它的父级不一定就是 tree.vue，因为它是递归组件，父级有可能还是自己。
@@ -5061,24 +4996,24 @@ this.data.expand = !this.data.expand;
 // node.vue，部分代码省略
 export default {
   methods: {
-    handleCheck (checked) {
+    handleCheck(checked) {
       this.updateTreeDown(this.data, checked);
 
       if (this.tree) {
         this.tree.emitEvent('on-check-change', this.data);
       }
     },
-    updateTreeDown (data, checked) {
+    updateTreeDown(data, checked) {
       this.$set(data, 'checked', checked);
 
       if (data.children && data.children.length) {
-        data.children.forEach(item => {
+        data.children.forEach((item) => {
           this.updateTreeDown(item, checked);
         });
       }
-    }
-  }
-}
+    },
+  },
+};
 ```
 
 updateTreeDown 只是向下修改了所有的数据，因为当前节点的数据里，是包含其所有子节点数据的，通过递归遍历可以轻松修改，这也是第 1 种逻辑简单的原因。
@@ -5092,16 +5027,16 @@ updateTreeDown 只是向下修改了所有的数据，因为当前节点的数�
 export default {
   watch: {
     'data.children': {
-      handler (data) {
+      handler(data) {
         if (data) {
-          const checkedAll = !data.some(item => !item.checked);
+          const checkedAll = !data.some((item) => !item.checked);
           this.$set(this.data, 'checked', checkedAll);
         }
       },
-      deep: true
-    }
-  }
-}
+      deep: true,
+    },
+  },
+};
 ```
 
 在 watch 中，监听了 data.children 的改变，并且是深度监听的。这段代码的意思是，当 `data.children` 中的数据的某个字段发生变化时（这里当然是指 checked 字段）,也就是说它的某个子节点被选中（或反选）了，这时执行绑定的句柄 handler 中的逻辑。`const checkedAll = !data.some(item => !item.checked);` 也是一个巧妙的缩写，checkedAll 最终返回结果就是当前子节点是否都被选中了。
@@ -5122,7 +5057,7 @@ export default {
 
 注：本节部分代码参考 [iView](https://github.com/iview/iview/blob/2.0/src/utils/assist.js#L114)。
 
-# 15. 拓展：Vue.js 容易忽略的 API 详解
+# 16. 拓展：Vue.js 容易忽略的 API 详解
 
 前面的 15 小节已经覆盖了 Vue.js 组件的绝大部分内容，但还是有一些 API 容易忽略。本节则对 Vue.js 的一些重要且易忽略的 API 进行详细介绍。
 
@@ -5139,21 +5074,21 @@ nextTick 是 Vue.js 提供的一个函数，并非浏览器内置。nextTick 函
 </template>
 <script>
   export default {
-    data () {
+    data() {
       return {
-        show: false
-      }
+        show: false,
+      };
     },
     methods: {
-      handleShow () {
+      handleShow() {
         this.show = true;
-        console.log(this.$refs.node);  // undefined
+        console.log(this.$refs.node); // undefined
         this.$nextTick(() => {
-          console.log(this.$refs.node);  // <p>内容</p>
+          console.log(this.$refs.node); // <p>内容</p>
         });
-      }
-    }
-  }
+      },
+    },
+  };
 </script>
 ```
 
@@ -5180,26 +5115,26 @@ v-model 是一个语法糖，可以拆解为 props: value 和 events: input。�
     name: 'InputNumber',
     props: {
       value: {
-        type: Number
-      }
+        type: Number,
+      },
     },
-    data () {
+    data() {
       return {
-        currentValue: this.value
-      }
+        currentValue: this.value,
+      };
     },
     watch: {
-      value (val) {
+      value(val) {
         this.currentValue = val;
-      }
+      },
     },
     methods: {
-      increase (val) {
+      increase(val) {
         this.currentValue += val;
         this.$emit('input', this.currentValue);
-      }
-    }
-  }
+      },
+    },
+  };
 </script>
 ```
 
@@ -5214,12 +5149,12 @@ props 一般不能在组件内修改，它是通过父级修改的，因此实�
 
   export default {
     components: { InputNumber },
-    data () {
+    data() {
       return {
-        value: 1
-      }
-    }
-  }
+        value: 1,
+      };
+    },
+  };
 </script>
 ```
 
@@ -5234,17 +5169,17 @@ props 一般不能在组件内修改，它是通过父级修改的，因此实�
 
   export default {
     components: { InputNumber },
-    data () {
+    data() {
       return {
-        value: 1
-      }
+        value: 1,
+      };
     },
     methods: {
-      handleChange (val) {
+      handleChange(val) {
         this.value = val;
-      }
-    }
-  }
+      },
+    },
+  };
 </script>
 ```
 
@@ -5263,30 +5198,30 @@ props 一般不能在组件内修改，它是通过父级修改的，因此实�
     name: 'InputNumber',
     props: {
       number: {
-        type: Number
-      }
+        type: Number,
+      },
     },
     model: {
       prop: 'number',
-      event: 'change'
+      event: 'change',
     },
-    data () {
+    data() {
       return {
-        currentValue: this.number
-      }
+        currentValue: this.number,
+      };
     },
     watch: {
-      value (val) {
+      value(val) {
         this.currentValue = val;
-      }
+      },
     },
     methods: {
-      increase (val) {
+      increase(val) {
         this.currentValue += val;
         this.$emit('number', this.currentValue);
-      }
-    }
-  }
+      },
+    },
+  };
 </script>
 ```
 
@@ -5313,15 +5248,15 @@ props 一般不能在组件内修改，它是通过父级修改的，因此实�
     name: 'InputNumber',
     props: {
       value: {
-        type: Number
-      }
+        type: Number,
+      },
     },
     methods: {
-      increase (val) {
+      increase(val) {
         this.$emit('update:value', this.value + val);
-      }
-    }
-  }
+      },
+    },
+  };
 </script>
 ```
 
@@ -5336,12 +5271,12 @@ props 一般不能在组件内修改，它是通过父级修改的，因此实�
 
   export default {
     components: { InputNumber },
-    data () {
+    data() {
       return {
-        value: 1
-      }
-    }
-  }
+        value: 1,
+      };
+    },
+  };
 </script>
 ```
 
@@ -5355,6 +5290,7 @@ props 一般不能在组件内修改，它是通过父级修改的，因此实�
 在上一节已经介绍过 `$set`，有两种情况会用到它：
 
 1. 由于 JavaScript 的限制，Vue 不能检测以下变动的数组：
+
    1. 当利用索引直接设置一个项时，例如：`this.items[index] = value`;
    2. 当修改数组的长度时，例如：`vm.items.length = newLength`。
 
@@ -5365,17 +5301,17 @@ props 一般不能在组件内修改，它是通过父级修改的，因此实�
 ```js
 // 数组
 export default {
-  data () {
+  data() {
     return {
-      items: ['a', 'b', 'c']
-    }
+      items: ['a', 'b', 'c'],
+    };
   },
   methods: {
-    handler () {
-      this.items[1] = 'x';  // 不是响应性的
-    }
-  }
-}
+    handler() {
+      this.items[1] = 'x'; // 不是响应性的
+    },
+  },
+};
 ```
 
 使用 `$set`：
@@ -5383,17 +5319,17 @@ export default {
 ```js
 // 数组
 export default {
-  data () {
+  data() {
     return {
-      items: ['a', 'b', 'c']
-    }
+      items: ['a', 'b', 'c'],
+    };
   },
   methods: {
-    handler () {
-      this.$set(this.items, 1, 'x');  // 是响应性的
-    }
-  }
-}
+    handler() {
+      this.$set(this.items, 1, 'x'); // 是响应性的
+    },
+  },
+};
 ```
 
 以对象为例：
@@ -5401,19 +5337,19 @@ export default {
 ```js
 // 对象
 export default {
-  data () {
+  data() {
     return {
       item: {
-        a: 1
-      }
-    }
+        a: 1,
+      },
+    };
   },
   methods: {
-    handler () {
-      this.item.b = 2;  // 不是响应性的
-    }
-  }
-}
+    handler() {
+      this.item.b = 2; // 不是响应性的
+    },
+  },
+};
 ```
 
 使用 `$set`：
@@ -5421,19 +5357,19 @@ export default {
 ```js
 // 对象
 export default {
-  data () {
+  data() {
     return {
       item: {
-        a: 1
-      }
-    }
+        a: 1,
+      },
+    };
   },
   methods: {
-    handler () {
-      this.$set(this.item, 'b', 2);  // 是响应性的
-    }
-  }
-}
+    handler() {
+      this.$set(this.item, 'b', 2); // 是响应性的
+    },
+  },
+};
 ```
 
 另外，数组的以下方法，都是**可以**触发视图更新的，也就是响应性的：
@@ -5523,7 +5459,7 @@ computed: {
 
 内置的组件，可做过渡效果，比如 CSS 的高度从 0 到 auto（使用纯 CSS 是无法实现动画的）。
 
-# 16. 拓展：Vue.js 面试问题
+# 17. 拓展：Vue.js 面试问题
 
 在过去的很多面试中，我会经常问候选人一些关于 Vue.js 的问题。这些问题从题面来看很简单，但仔细想又不是那么简单，不同的人，会答出不同的层次，从而更好地了解一个人对 Vue.js 的理解程度。
 
@@ -5551,12 +5487,12 @@ computed: {
 </template>
 <script>
   export default {
-    data () {
+    data() {
       return {
-        isShow: true
-      }
-    }
-  }
+        isShow: true,
+      };
+    },
+  };
 </script>
 ```
 
@@ -5569,7 +5505,7 @@ computed: {
 <script>
   export default {
     computed: {
-      classes () {
+      classes() {
         return [
           `${prefixCls}`,
           `${prefixCls}-${this.type}`,
@@ -5578,13 +5514,15 @@ computed: {
             [`${prefixCls}-${this.shape}`]: !!this.shape,
             [`${prefixCls}-${this.size}`]: this.size !== 'default',
             [`${prefixCls}-loading`]: this.loading != null && this.loading,
-            [`${prefixCls}-icon-only`]: !this.showSlot && (!!this.icon || !!this.customIcon || this.loading),
-            [`${prefixCls}-ghost`]: this.ghost
-          }
+            [`${prefixCls}-icon-only`]:
+              !this.showSlot &&
+              (!!this.icon || !!this.customIcon || this.loading),
+            [`${prefixCls}-ghost`]: this.ghost,
+          },
         ];
-      }
-    }
-  }
+      },
+    },
+  };
 </script>
 ```
 
@@ -5643,10 +5581,10 @@ computed: {
 > ```html
 > <!-- 即使 Alt 或 Shift 被一同按下时也会触发 -->
 > <button @click.ctrl="onClick">A</button>
-> 
+>
 > <!-- 有且只有 Ctrl 被按下的时候才触发 -->
 > <button @click.ctrl.exact="onCtrlClick">A</button>
-> 
+>
 > <!-- 没有任何系统修饰符被按下的时候才触发 -->
 > <button @click.exact="onClick">A</button>
 > ```
@@ -5693,26 +5631,26 @@ computed: {
     props: {
       value: {
         type: Number,
-        default: 0
-      }
+        default: 0,
+      },
     },
-    data () {
+    data() {
       return {
-        currentValue: this.value
-      }
+        currentValue: this.value,
+      };
     },
     methods: {
-      handleClick () {
+      handleClick() {
         this.currentValue += 1;
         this.$emit('input', this.currentValue);
-      }
+      },
     },
     watch: {
-      value (val) {
+      value(val) {
         this.currentValue = val;
-      }
-    }
-  }
+      },
+    },
+  };
 </script>
 ```
 
@@ -5781,14 +5719,14 @@ createElement () {
    ```js
    export default {
      props: {
-       value: String
+       value: String,
      },
-     data () {
+     data() {
        return {
-         currentValue: this.value
-       }
-     }
-   }
+         currentValue: this.value,
+       };
+     },
+   };
    ```
 
 2. 如果是对 prop 值的转换，可以使用计算属性：
@@ -5799,9 +5737,9 @@ createElement () {
      computed: {
        normalizedSize: function () {
          return this.size.trim().toLowerCase();
-       }
-     }
-   }
+       },
+     },
+   };
    ```
 
 如果你能提到 v-model 实现数据的双向绑定、.sync 用法，会大大加分的，这些在第 16 节已经详细介绍过。
@@ -5830,7 +5768,7 @@ createElement () {
 
    Bus；Vuex；
 
-1. 跨级通信：
+3. 跨级通信：
 
    Bus；Vuex；provide/inject API。
 
@@ -5855,7 +5793,7 @@ MVVM 模式是由经典的软件架构 MVC 衍生来的。当 View（视图层�
 
 ViewModel 通过双向数据绑定把 View 层和 Model 层连接了起来，而 View 和 Model 之间的同步工作是由 Vue.js 完成的，我们不需要手动操作 DOM，只需要维护好数据状态。
 
-# 17. 拓展：如何做好一个开源项目（上篇）
+# 18. 拓展：如何做好一个开源项目（上篇）
 
 ## iView 的故事
 
@@ -5933,9 +5871,10 @@ ViewModel 通过双向数据绑定把 View 层和 Model 层连接了起来，而
 
 ## 扩展阅读
 
-- [2016我的心路历程：从 Vue 到 Webpack 到 iView](https://juejin.im/post/5880108f8d6d810058ae0def)
+- [2016 我的心路历程：从 Vue 到 Webpack 到 iView](https://juejin.im/post/5880108f8d6d810058ae0def)
 
-# 18. 拓展：如何做好一个开源项目（下篇）
+# 19. 拓展：如何做好一个开源项目（下篇）
+
 ## 持续运营
 
 项目有了一定的规模和进展后，需要持续运营，让更多的人知道和使用。运营并不是个技术活，对于程序员来说，还是或缺的技能。最简单的运营手段，就是在一些技术社区分享“软文”，iView 在早期就是这样做的，还总结出了一个 “500 star 定律”，也就是说，每一次分享文章，差不多能在 GitHub 带来 500 个 star。star 对于一个开源项目来说，还是蛮重要的，它直接决定了用户是否会选择你的项目，但用户都是程序员，又不傻，如果项目质量低，star 就变的一文不值了，还会坏了口碑。切记，不要刷 star，前端圈堪比娱乐圈，会被针对的很惨。
@@ -6016,12 +5955,12 @@ robot 还有一个作用：翻译。它会把中文的 issues 自动翻译为英
 
 虽然 robot 能自动过滤 80% 不合格的 issues，但仍有浑水摸鱼的用户跳过这些验证，这时可以给 robot 设置一些快捷回复，人为来 comment & close：
 
-- Hello, this issue has been closed because similar problems exist or have been explained in the documentation, please check carefully. *已有相同 issues，或文档有说明*
+- Hello, this issue has been closed because similar problems exist or have been explained in the documentation, please check carefully. _已有相同 issues，或文档有说明_
 
-- Hello, this issue has been closed because it is not required to submit or describe is not clear. *描述不清楚*
-- Hello, this issue has been closed because it has nothing to do with the **bug report** or **feature request**. Maybe you can ask normal question through [SegmentFault](https://segmentfault.com/t/iview) or [stackoverflow](https://stackoverflow.com/). *不是 bug 反馈或 新功能请求，请到社区讨论*
-- Hello, this issue has been closed because it is not a bug, but a usage problem, please consult other communities. *用法不对*
-- Please provide online code. You can quickly create an example using the following online link：[https://run.iviewui.com/](https://run.iviewui.com/).  *没有提供在线示例*
+- Hello, this issue has been closed because it is not required to submit or describe is not clear. _描述不清楚_
+- Hello, this issue has been closed because it has nothing to do with the **bug report** or **feature request**. Maybe you can ask normal question through [SegmentFault](https://segmentfault.com/t/iview) or [stackoverflow](https://stackoverflow.com/). _不是 bug 反馈或 新功能请求，请到社区讨论_
+- Hello, this issue has been closed because it is not a bug, but a usage problem, please consult other communities. _用法不对_
+- Please provide online code. You can quickly create an example using the following online link：[https://run.iviewui.com/](https://run.iviewui.com/). _没有提供在线示例_
 
 其实呢，这个“坏人”也没那么坏，还是挺可爱的。
 
@@ -6049,7 +5988,7 @@ robot 还有一个作用：翻译。它会把中文的 issues 自动翻译为英
 
 以上，就是我从事开源工作两年多的一些浅薄经验，希望能给聪明的你带来帮助。
 
-# 19. 写在最后
+# 20. 写在最后
 
 亲爱的读者，到这里本小册就要结束了，你是否从中学习到了属于你的知识呢？我们来回顾一下小册的内容吧。
 
