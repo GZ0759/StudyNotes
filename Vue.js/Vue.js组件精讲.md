@@ -1827,7 +1827,7 @@ slot 使用默认的就好，显示辅助文本。
 
 1. 选中的控件，直接使用了 `<input type="checkbox">`，而没有用 div + css 来自己实现选择的逻辑和样式，这样的好处是，使用 input 元素，你的自定义组件仍然为 html 内置的基础组件，可以使用浏览器默认的行为和快捷键，也就是说，浏览器知道这是一个选择框，而换成 div + css，浏览器可不知道这是个什么鬼。如果你觉得原生的 input 丑，没关系，是可以用 css 美化的，不过这不是本小册的重点，在此就不介绍了。
 2. `<input>`、`<slot>` 都是包裹在一个 `<label>` 元素内的，这样做的好处是，当点击 `<slot>` 里的文字时，`<input>` 选框也会被触发，否则只有点击那个小框才会触发，那样不太容易选中，影响用户体验。
-3. `currentValue` 仍然是布尔值（true / false），因为它是组件 Checkbox 自己使用的，对于使用者无需关心，而 value 可以是 String、Number 或 Boolean，这取决于 `trueValue` 和 `falseValue` 的定义。
+3. `currentValue` 仍然是布尔值，因为它是组件 Checkbox 自己使用的，对于使用者无需关心，而 value 可以是 String、Number 或 Boolean，这取决于 `trueValue` 和 `falseValue` 的定义。
 
 现在实现的 `v-model`，只是由内而外的，也就是说，通过点击 `<input> `选择，会通知到使用者，而使用者手动修改了 prop `value` ，Checkbox 是没有做响应的，那继续补充代码：
 
@@ -1879,8 +1879,6 @@ Checkbox 也是一个基础的表单类组件，它完全可以集成到 Form �
 至此，Checkbox 已经可以单独使用了，并支持 Form 的数据校验。下面来看组合使用。
 
 ## 组合使用的 CheckboxGroup
-
-> 友情提示：请先阅读 Vue.js 文档的 [https://cn.vuejs.org/v2/guide/forms.html#复选框](https://cn.vuejs.org/v2/guide/forms.html#复选框) 内容。
 
 CheckboxGroup 的 API 很简单：
 
@@ -1952,7 +1950,7 @@ CheckboxGroup 的 API 很简单：
 
 在 template 里，我们又写了一个 `<input>` 来区分是否是 group 模式。Checkbox 的 data 里新增加的 `model` 数据，其实就是父级 CheckboxGroup 的 `value`，会在下文的 `updateModel` 方法里给 Checkbox 赋值。
 
-Checkbox 新增的 prop： `label` 只会在组合使用时有效，结合 `model` 来使用，用法已在 Vue.js 文档中介绍了 [https://cn.vuejs.org/v2/guide/forms.html#复选框](https://cn.vuejs.org/v2/guide/forms.html#复选框)。
+Checkbox 新增的 prop： `label` 只会在组合使用时有效，结合 `model` 来使用。
 
 在组合模式下，Checkbox 选中，就不用对 Form 派发事件了，应该在 CheckboxGroup 中派发，所以对 Checkbox 做最后的修改：
 
