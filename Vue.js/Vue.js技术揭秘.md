@@ -15737,11 +15737,11 @@ replace (location: RawLocation, onComplete?: Function, onAbort?: Function) {
 
 分析了 Vuex 的实现原理，深入分析了它的初始化过程，常用 API 以及插件部分的实现。
 
-## 8.1 Vuex
+## 8.1 状态管理模式 Vuex
 
 Vuex 是一个专为 Vue.js 应用程序开发的状态管理模式。它采用集中式存储管理应用的所有组件的状态，并以相应的规则保证状态以一种可预测的方式发生变化。
 
-### 什么是“状态管理模式”？
+### 什么是“状态管理模式”
 
 让我们从一个简单的 Vue 计数应用开始：
 
@@ -15774,35 +15774,37 @@ new Vue({
 
 以下是一个表示“单向数据流”理念的极简示意：
 
-<img :src="$withBase('/assets/vuex.png')">
+```
+  actions 
+  ↑     ↓
+view ← state
+```
 
 但是，当我们的应用遇到多个组件共享状态时，单向数据流的简洁性很容易被破坏：
 
-- 多个视图依赖于同一状态。
-- 来自不同视图的行为需要变更同一状态。
-
-对于问题一，传参的方法对于多层嵌套的组件将会非常繁琐，并且对于兄弟组件间的状态传递无能为力。对于问题二，我们经常会采用父子组件直接引用或者通过事件来变更和同步状态的多份拷贝。以上的这些模式非常脆弱，通常会导致无法维护的代码。
+1. 多个视图依赖于同一状态。如果采用传参的方法，那么多层嵌套的组件将会非常繁琐，并且不用直接应用于兄弟组件。
+2. 来自不同视图的行为需要变更同一状态。如果采用父子组件直接引用或者通过事件来变更和同步状态的多份拷贝，模式会非常脆弱，导致无法维护代码。
 
 因此，我们为什么不把组件的共享状态抽取出来，以一个全局单例模式管理呢？在这种模式下，我们的组件树构成了一个巨大的“视图”，不管在树的哪个位置，任何组件都能获取状态或者触发行为。
 
 ### Vuex 核心思想
 
-Vuex 应用的核心就是 store（仓库）。“store”基本上就是一个容器，它包含着你的应用中大部分的状态 (state)。有些同学可能会问，那我定义一个全局对象，再去上层封装了一些数据存取的接口不也可以么？
+Vuex 应用的核心就是 store（仓库）。“store”基本上就是一个容器，它包含着你的应用中大部分的状态（state）。
 
 Vuex 和单纯的全局对象有以下两点不同：
 
-- Vuex 的状态存储是响应式的。当 Vue 组件从 store 中读取状态的时候，若 store 中的状态发生变化，那么相应的组件也会相应地得到高效更新。
-- 你不能直接改变 store 中的状态。改变 store 中的状态的唯一途径就是显式地提交 (commit) mutation。这样使得我们可以方便地跟踪每一个状态的变化，从而让我们能够实现一些工具帮助我们更好地了解我们的应用。
+1. Vuex 的状态存储是响应式的。当 Vue 组件从 store 中读取状态的时候，若 store 中的状态发生变化，那么相应的组件也会相应地得到高效更新。
+2. 你不能直接改变 store 中的状态。改变 store 中的状态的唯一途径就是显式地提交 commit mutation。这样使得我们可以方便地跟踪每一个状态的变化，从而让我们能够实现一些工具帮助我们更好地了解我们的应用。
 
 另外，通过定义和隔离状态管理中的各种概念并强制遵守一定的规则，我们的代码将会变得更结构化且易维护。
 
-<img :src="$withBase('/assets/vuex1.png')">
+![](../public/vueAnalysis/vuex1.png)
 
 ## 8.2 Vuex 初始化
 
-这一节我们主要来分析 Vuex 的初始化过程，它包括安装、Store 实例化过程 2 个方面。
+这一节我们主要来分析 Vuex 的初始化过程，它包括安装和 Store 实例化两个方面。
 
-### 安装
+### 安装 install
 
 当我们在代码中通过 `import Vuex from 'vuex'` 的时候，实际上引用的是一个对象，它的定义在 `src/index.js` 中：
 
@@ -15874,13 +15876,16 @@ export default function (Vue) {
 }
 ```
 
-`applyMixin` 就是这个 `export default function`，它还兼容了 Vue 1.0 的版本，这里我们只关注 Vue 2.0 以上版本的逻辑，它其实就全局混入了一个 `beforeCreate` 钩子函数，它的实现非常简单，就是把 `options.store` 保存在所有组件的 `this.$store` 中，这个 `options.store` 就是我们在实例化 `Store` 对象的实例，稍后我们会介绍，这也是为什么我们在组件中可以通过 `this.$store` 访问到这个实例。
+`applyMixin` 就是这个 `export default function`，它还兼容了 Vue 1.0 的版本，这里我们只关注 Vue 2.0 以上版本的逻辑，它其实就全局混入了一个 `beforeCreate` 钩子函数。
+
+实现的内容也非常简单，就是把 `options.store` 保存在所有组件的 `this.$store` 中，这个 `options.store` 就是我们在实例化 `Store` 对象的实例，稍后我们会介绍，这也是为什么我们在组件中可以通过 `this.$store` 访问到这个实例。
 
 ### Store 实例化
 
 我们在 `import Vuex` 之后，会实例化其中的 `Store` 对象，返回 `store` 实例并传入 `new Vue` 的 `options` 中，也就是我们刚才提到的 `options.store`.
 
 举个简单的例子，如下： 
+
 ```js
 export default new Vuex.Store({
   actions,
@@ -15962,9 +15967,9 @@ export class Store {
 
 我们把 `Store` 的实例化过程拆成 3 个部分，分别是初始化模块，安装模块和初始化 `store._vm`，接下来我们来分析这 3 部分的实现。
 
-#### 初始化模块
+#### 1. 初始化模块
 
-在分析模块初始化之前，我们先来了解一下模块对于 Vuex 的意义：由于使用单一状态树，应用的所有状态会集中到一个比较大的对象，当应用变得非常复杂时，`store` 对象就有可能变得相当臃肿。为了解决以上问题，Vuex 允许我们将 `store` 分割成模块（module）。每个模块拥有自己的 `state`、`mutation`、`action`、`getter`，甚至是嵌套子模块——从上至下进行同样方式的分割：
+在分析模块初始化之前，我们先来了解一下模块对于 Vuex 的意义：由于使用单一状态树，应用的所有状态会集中到一个比较大的对象，当应用变得非常复杂时，store 对象就有可能变得相当臃肿。为了解决以上问题，Vuex 允许我们将 store 分割成模块（module）。每个模块拥有自己的 `state`、`mutation`、`action` 和 `getter`，甚至是嵌套子模块——从上至下进行同样方式的分割：
 
 ```js
 const moduleA = {
@@ -16166,9 +16171,9 @@ addChild (key, module) {
 
 所以说对于 `root module` 的下一层 `modules` 来说，它们的 `parent` 就是 `root module`，那么他们就会被添加的 `root module` 的 `_children` 中。每个子模块通过路径找到它的父模块，然后通过父模块的 `addChild` 方法建立父子关系，递归执行这样的过程，最终就建立一颗完整的模块树。
 
-#### 安装模块
+#### 2. 安装模块
 
-初始化模块后，执行安装模块的相关逻辑，它的目标就是对模块中的 `state`、`getters`、`mutations`、`actions` 做初始化工作，它的入口代码是：
+初始化模块后，执行安装模块的相关逻辑，它的目标就是对模块中的 `state`、`getters`、`mutations` 和 `actions` 做初始化工作，它的入口代码是：
 
 ```js
 const state = this._modules.root.state
@@ -16405,8 +16410,7 @@ function getNestedState (state, path) {
 
 `getNestedState` 逻辑很简单，从 `root state` 开始，通过 `path.reduce` 方法一层层查找子模块 `state`，最终找到目标模块的 `state`。
 
-
-那么构造完 `local` 上下文后，我们再回到 `installModule` 方法，接下来它就会遍历模块中定义的 `mutations`、`actions`、`getters`，分别执行它们的注册工作，它们的注册逻辑都大同小异。
+那么构造完 `local` 上下文后，我们再回到 `installModule` 方法，接下来它就会遍历模块中定义的 `mutations`、`actions` 和 `getters`，分别执行它们的注册工作，它们的注册逻辑都大同小异。
 
 - `registerMutation`
 
@@ -16514,9 +16518,9 @@ if (!isRoot && !hot) {
 
 之前我们提到过 `getNestedState` 方法，它是从 `root state` 开始，一层层根据模块名能访问到对应 `path` 的 `state`，那么它每一层关系的建立实际上就是通过这段 `state` 的初始化逻辑。`store._withCommit` 方法我们之后再介绍。
 
-所以 `installModule` 实际上就是完成了模块下的 `state`、`getters`、`actions`、`mutations` 的初始化工作，并且通过递归遍历的方式，就完成了所有子模块的安装工作。
+所以 `installModule` 实际上就是完成了模块下的 `state`、`getters`、`actions` 和 `mutations` 的初始化工作，并且通过递归遍历的方式，就完成了所有子模块的安装工作。
 
-#### 初始化 `store._vm`
+#### 3. 初始化 store.\_vm
 
 `Store` 实例化的最后一步，就是执行初始化 `store._vm` 的逻辑，它的入口代码是：
 
@@ -16656,7 +16660,9 @@ _withCommit (fn) {
 
 ### 总结
 
-那么至此，Vuex 的初始化过程就分析完毕了，除了安装部分，我们重点分析了 `Store` 的实例化过程。我们要把 `store` 想象成一个数据仓库，为了更方便的管理仓库，我们把一个大的 `store` 拆成一些 `modules`，整个 `modules` 是一个树型结构。每个 `module` 又分别定义了 `state`，`getters`，`mutations`、`actions`，我们也通过递归遍历模块的方式都完成了它们的初始化。为了 `module` 具有更高的封装度和复用性，还定义了 `namespace` 的概念。最后我们还定义了一个内部的 `Vue` 实例，用来建立 `state` 到 `getters` 的联系，并且可以在严格模式下监测 `state` 的变化是不是来自外部，确保改变 `state` 的唯一途径就是显式地提交 `mutation`。
+那么至此，Vuex 的初始化过程就分析完毕了，除了安装部分，我们重点分析了 `Store` 的实例化过程。我们要把 `store` 想象成一个数据仓库，为了更方便的管理仓库，我们把一个大的 `store` 拆成一些 `modules`，整个 `modules` 是一个树型结构。每个 `module` 又分别定义了 `state`，`getters`，`mutations`、 和 `actions`，我们也通过递归遍历模块的方式都完成了它们的初始化。
+
+为了 `module` 具有更高的封装度和复用性，还定义了 `namespace` 的概念。最后我们还定义了一个内部的 `Vue` 实例，用来建立 `state` 到 `getters` 的联系，并且可以在严格模式下监测 `state` 的变化是不是来自外部，确保改变 `state` 的唯一途径就是显式地提交 `mutation`。
 
 这一节我们已经建立好 `store`，接下来就是对外提供了一些 API 方便我们对这个 `store` 做数据存取的操作，下一节我们就来从源码角度来分析 `Vuex` 提供的一系列 API。
 
@@ -17291,7 +17297,7 @@ function resetStore (store, hot) {
 
 ### 总结
 
-那么至此，Vuex 提供的一些常用 API 我们就分析完了，包括数据的存取、语法糖、模块的动态更新等。要理解 Vuex 提供这些 API 都是方便我们在对 `store` 做各种操作来完成各种能力，尤其是 `mapXXX` 的设计，让我们在使用 API 的时候更加方便，这也是我们今后在设计一些 JavaScript 库的时候，从 API 设计角度中应该学习的方向。
+那么至此，Vuex 提供的一些常用 API 我们就分析完了，包括数据的存取、语法糖和模块的动态更新等。要理解 Vuex 提供这些 API 都是方便我们在对 `store` 做各种操作来完成各种能力，尤其是 `mapXXX` 的设计，让我们在使用 API 的时候更加方便，这也是我们今后在设计一些 JavaScript 库的时候，从 API 设计角度中应该学习的方向。
 
 ## 8.4 插件
 
