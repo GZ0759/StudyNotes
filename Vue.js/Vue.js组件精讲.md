@@ -98,7 +98,8 @@
 使用组件：
 
 ```html
-<i-button size="large"></i-button> <i-button disabled></i-button>
+<i-button size="large"></i-button>
+<i-button disabled></i-button>
 ```
 
 组件中定义了两个属性：尺寸 size 和 是否禁用 disabled。其中 size 使用 `validator` 进行了值的自定义验证，也就是说，从父级传入的 size，它的值必须是指定的 small/large/default 中的一个，默认值是 default，如果传入这三个以外的值，都会抛出一条警告。
@@ -210,7 +211,7 @@ C.vue D.vue
 A 和 B、B 和 C、B 和 D 都是父子关系，C 和 D 是兄弟关系，A 和 C 是隔代关系（可能隔多代）。组件间经常会通信，Vue.js 内置的通信手段一般有两种：
 
 - `ref`：给元素或组件注册引用信息；
-- `$parent`/`$children`：访问父或子实例。
+- `$parent` 和 `$children`：访问父或子实例。
 
 这两种都是直接得到组件实例，使用后可以直接调用组件的方法或访问数据，比如下面的示例中，用 ref 来访问组件（部分代码省略）：
 
@@ -294,11 +295,11 @@ export default {
 };
 ```
 
-可以看到，在 A.vue 里，我们设置了一个 `provide: name`，值为 Aresn，它的作用就是将 name 这个变量提供给它的所有子组件。而在 B.vue 中，通过 `inject` 注入了从 A 组件中提供的 name 变量，那么在组件 B 中，就可以直接通过 `this.name` 访问这个变量了，它的值也是 Aresn。这就是 provide/inject API 最核心的用法。
+可以看到，在 A.vue 里设置了一个 `provide: name`，值为 Aresn，它的作用就是将 name 这个变量提供给它的所有子组件。而在 B.vue 中，通过 `inject` 注入了从 A 组件中提供的 name 变量，那么在组件 B 中，就可以直接通过 `this.name` 访问这个变量了，它的值也是 Aresn。这就是 provide/inject API 最核心的用法。
 
 需要注意的是：provide 和 inject 绑定并**不是可响应**的。这是刻意为之的。然而，如果你传入了一个可监听的对象，那么其对象的属性还是可响应的。所以，上面 A.vue 的 name 如果改变了，B.vue 的 `this.name` 是不会改变的，仍然是 Aresn。
 
-## 替代 Vuex 的技巧
+## 利用 provide/inject 进行状态管理
 
 我们知道，在做 Vue 大型项目时，可以使用 Vuex 做状态管理，它是一个专为 Vue.js 开发的**状态管理模式**，用于集中式存储管理应用的所有组件的状态，并以相应的规则保证状态以一种可预测的方式发生变化。
 
@@ -340,7 +341,7 @@ export default {
 </script>
 ```
 
-上面，我们把整个 app.vue 的实例 `this` 对外提供，命名为 **app**（这个名字可以自定义，推荐使用 app，使用这个名字后，子组件不能再使用它作为局部属性）。接下来，任何组件（或路由）只要通过 `inject` 注入 app.vue 的 app 的话，都可以直接通过 **this.app.xxx** 来访问 app.vue 的 `data`、`computed`、`methods` 等内容。
+上面，我们把整个 app.vue 的实例 `this` 对外提供，命名为 **app**。接下来，任何组件（或路由）只要通过 `inject` 注入 app.vue 的 app 的话，都可以直接通过 **this.app.xxx** 来访问 app.vue 的 `data`、`computed`、`methods` 等内容。
 
 app.vue 是整个项目第一个被渲染的组件，而且只会渲染一次（即使切换路由，app.vue 也不会被再次渲染），利用这个特性，很适合做一次性全局的状态数据管理，例如，我们将用户的登录信息保存起来：
 
@@ -385,7 +386,7 @@ app.vue 是整个项目第一个被渲染的组件，而且只会渲染一次（
 </script>
 ```
 
-是不是很简单呢。除了直接使用数据，还可以调用方法。比如在某个页面里，修改了个人资料，这时一开始在 `app.vue` 里获取的 `userInfo` 已经不是最新的了，需要重新获取。可以这样使用：
+是不是很简单呢。除了直接使用数据，还可以调用方法。比如在某个页面里，修改了个人资料，这时一开始在 `app.vue` 里获取的 `userInfo` 状态已经不是最新的了，需要重新获取。可以这样使用：
 
 ```html
 <template>
@@ -409,7 +410,7 @@ app.vue 是整个项目第一个被渲染的组件，而且只会渲染一次（
 
 同样非常简单。只要理解了 `this.app` 是直接获取整个 `app.vue` 的实例后，使用起来就得心应手了。想一想，配置复杂的 Vuex 的全部功能，现在是不是都可以通过 `provide/inject` 来实现了呢？
 
-## 关于 mixins 的进阶技巧
+## 关于 mixins 的实践
 
 如果你的项目足够复杂，或需要多人协同开发时，在 `app.vue` 里会写非常多的代码，多到结构复杂难以维护。这时可以使用 Vue.js 的混合 `mixins`，将不同的逻辑分开到不同的 js 文件里。
 
@@ -457,7 +458,7 @@ _app.vue：_
 
 这样，跟用户信息相关的逻辑，都可以在 `user.js` 里维护，或者由某个人来维护，`app.vue` 也就很容易维护了。
 
-## 在独立组件中使用
+## 在独立组件中使用 provide/inject
 
 只要一个组件使用了 `provide` 向下提供数据，那其下所有的子组件都可以通过 `inject` 来注入，不管中间隔了多少代，而且可以注入多个来自不同父级提供的数据。需要注意的是，一旦注入了某个数据，比如上面示例中的 `app`，那这个组件中就不能再声明 `app` 这个数据了，因为它已经被父级占有。
 
@@ -489,8 +490,8 @@ export default {
 
 上一讲的 provide/inject API 主要解决了跨级组件间的通信问题，不过它的使用场景，主要是子组件获取上级组件的状态，跨级组件间建立了一种主动提供与依赖注入的关系。然后有两种场景它不能很好的解决：
 
-- 父组件向子组件（支持跨级）传递数据；
-- 子组件向父组件（支持跨级）传递数据。
+1. 父组件向子组件（支持跨级）传递数据；
+2. 子组件向父组件（支持跨级）传递数据。
 
 这种包含跨级的父子传递数据的通信方式，Vue.js 并没有提供原生的 API 来支持，而是推荐使用大型数据状态管理工具 Vuex，而我们之前已经介绍过 Vuex 的场景与在独立组件（或库）中使用的限制。本小节则介绍一种在父子组件间通信的方法 `dispatch` 和 `broadcast`。
 
@@ -627,16 +628,16 @@ export default {
   mixins: [Emitter],
   methods: {
     handleDispatch() {
-      this.dispatch(); // ①
+      this.dispatch(); 
     },
     handleBroadcast() {
-      this.broadcast(); // ②
+      this.broadcast(); 
     },
   },
 };
 ```
 
-上例中行 ① 和行 ② 的两个方法就是在导入的混合 **emitter.js** 中定义的，这个稍后我们再讲，先来分析这两个方法应该传入什么参数。一般来说，为了跟 Vue.js 1.x 的方法一致，第一个参数应当是自定义事件名，比如 “test”，第二个参数是传递的数据，比如 “Hello, Vue.js”。
+上例中 dispatch 和 broadcast 的两个方法就是在导入的混合 **emitter.js** 中定义的，这个稍后我们再讲，先来分析这两个方法应该传入什么参数。一般来说，为了跟 Vue.js 1.x 的方法一致，第一个参数应当是自定义事件名，比如 “test”，第二个参数是传递的数据，比如 “Hello, Vue.js”。
 
 但在这里，有什么问题呢？只通过这两个参数，我们没办法知道要在哪个组件上触发事件，因为自行实现的这对方法，与 Vue.js 1.x 的原生方法机理上是有区别的。上文说到，实现这对方法的关键点在于准确地**找到组件实例**。那在寻找组件实例上，我们的“惯用伎俩”就是通过遍历来匹配组件的 `name` 选项，在独立组件（库）里，每个组件的 `name` 值应当是唯一的，name 主要用于递归组件，在后面小节会单独介绍。
 
@@ -685,7 +686,7 @@ export default {
 
 可以看到，在 dispatch 里，通过 while 语句，不断向上遍历更新当前组件（即上下文为当前调用该方法的组件）的父组件实例（变量 parent 即为父组件实例），直到匹配到定义的 `componentName` 与某个上级组件的 `name` 选项一致时，结束循环，并在找到的组件实例上，调用 `$emit` 方法来触发自定义事件 `eventName`。broadcast 方法与之类似，只不过是向下遍历寻找。
 
-来看一下具体的使用方法。有 **A.vue** 和 **B.vue** 两个组件，其中 B 是 A 的子组件，中间可能跨多级，在 A 中向 B 通信：
+来看一下具体的使用方法。有 _A.vue_ 和 _B.vue_ 两个组件，其中 B 是 A 的子组件，中间可能跨多级，在 A 中向 B 通信：
 
 ```html
 <!-- A.vue -->
@@ -755,7 +756,7 @@ Form 要用到数据校验，并在对应的 FormItem 中给出校验失败的�
 
 我们先使用最新的 Vue CLI 3 创建一个空白的项目，并使用 `vue-router` 插件，同时安装好 `async-validator` 库。
 
-在 `src/components` 下新建一个 `form` 文件夹，并初始化两个组件 `form.vue` 和 `form-item.vue`，然后初始化项目，配置路由，创建一个页面能够被访问到。
+在 `src/components` 下新建一个 `form` 文件夹，并初始化两个组件 _form.vue_ 和 _form-item.vue_，然后初始化项目，配置路由，创建一个页面能够被访问到。
 
 > 本节所有代码可以在[源码](https://github.com/icarusion/vue-component-book)中查看。
 
@@ -924,10 +925,10 @@ export default {
 
 Form 支持两种事件来触发校验：
 
-- blur：失去焦点时触发，常见的有输入框失去焦点时触发校验；
-- change：实时输入时触发或选择时触发，常见的有输入框实时输入时触发校验、下拉选择器选择项目时触发校验等。
+1. blur：失去焦点时触发，常见的有输入框失去焦点时触发校验；
+2. change：实时输入时触发或选择时触发，常见的有输入框实时输入时触发校验、下拉选择器选择项目时触发校验等。
 
-以上两个事件，都是有具体的表单组件来触发的，我们先来编写一个简单的输入框组件 `i-input`。在 `components` 下新建目录 `input`，并创建文件 `input.vue`：
+以上两个事件，都是有具体的表单组件来触发的，我们先来编写一个简单的输入框组件 `i-input`。在 `components` 下新建目录 `input`，并创建文件 _input.vue_：
 
 ```html
 <!-- input.vue -->
@@ -1357,27 +1358,19 @@ handleSubmit () {
 
 本节将介绍第 3 种组件通信方法，也就是 findComponents 系列方法，它并非 Vue.js 内置，而是需要自行实现，以工具函数的形式来使用，它是一系列的函数，可以说是组件通信的终极方案。findComponents 系列方法最终都是返回组件的实例，进而可以读取或调用该组件的数据和方法。
 
-它适用于以下场景：
-
-- 由一个组件，向上找到最近的指定组件；
-- 由一个组件，向上找到所有的指定组件；
-- 由一个组件，向下找到最近的指定组件；
-- 由一个组件，向下找到所有指定的组件；
-- 由一个组件，找到指定组件的兄弟组件。
-
-5 个不同的场景，对应 5 个不同的函数，实现原理也大同小异。
+它适用于以下场景：由一个组件，向上或向下找到最近或所有的指定组件，或者找到指定组件的兄弟组件。共有 5 个不同的场景，对应 5 个不同的函数，实现原理也大同小异。
 
 ## 五种场景的实现
 
 5 个函数的原理，都是通过递归、遍历，找到指定组件的 `name` 选项匹配的组件实例并返回。
 
-- 向上找到最近的指定组件——findComponentUpward
-- 向上找到所有的指定组件——findComponentsUpward
-- 向下找到最近的指定组件——findComponentDownward
-- 向下找到所有指定的组件——findComponentsDownward
-- 找到指定组件的兄弟组件——findBrothersComponents
+- 向上找到最近的指定组件 `findComponentUpward`
+- 向上找到所有的指定组件 `findComponentsUpward`
+- 向下找到最近的指定组件 `findComponentDownward`
+- 向下找到所有指定的组件 `findComponentsDownward`
+- 找到指定组件的兄弟组件 `findBrothersComponents`
 
-在目录 `src` 下新建文件夹 `utils` 用来放置工具函数，并新建文件 `assist.js`，本节所有函数都在这个文件里完成，每个函数都通过 `export` 对外提供（如果你不了解 export，请查看扩展阅读 1）。
+在目录 `src` 下新建文件夹 `utils` 用来放置工具函数，并新建文件 `assist.js`，本节所有函数都在这个文件里完成，每个函数都通过 `export` 对外提供。
 
 ### 向上找到最近的指定组件
 
@@ -1403,7 +1396,7 @@ findComponentUpward 接收两个参数，第一个是当前上下文，比如你
 
 findComponentUpward 方法会在 while 语句里不断向上覆盖当前的 `parent` 对象，通过判断组件（即 parent）的 name 与传入的 componentName 是否一致，直到直到最近的一个组件为止。
 
-与 dispatch 不同的是，findComponentUpward 是直接拿到组件的实例，而非通过事件通知组件。比如下面的示例，有组件 A 和组件 B，A 是 B 的父组件，在 B 中获取和调用 A 中的数据和方法：
+与 dispatch 不同的是，findComponentUpward 是直接拿到组件的实例，而非通过事件通知组件。比如下面的示例，有组件 A 和组件 B，在子组件 B 中获取和调用父组件 A 中的数据和方法：
 
 ```html
 <!-- component-a.vue -->
@@ -1457,7 +1450,7 @@ findComponentUpward 方法会在 while 语句里不断向上覆盖当前的 `par
 
 使用起来很简单，只要在需要的地方调用 findComponentUpward 方法就行，第一个参数一般都是传入 this，即当前组件的上下文（实例）。
 
-上例的 comA，保险起见，加了一层 `if (comA)` 来判断是否找到了组件 A，如果没有指定的组件而调用的话，是会报错的。
+上例的 comA，保险起见，加了一层 `if(comA)` 来判断是否找到了组件 A，如果没有指定的组件而调用的话，是会报错的。
 
 findComponentUpward 只会找到最近的一个组件实例，如果要找到全部符合要求的组件，就需要用到下面的这个方法。
 
@@ -1517,7 +1510,7 @@ export { findComponentDownward };
 
 `context.$children` 得到的是当前组件的全部子组件，所以需要遍历一遍，找到有没有匹配到的组件 `name`，如果没找到，继续递归找每个 `$children` 的 `$children`，直到找到最近的一个为止。
 
-来看个示例，仍然是 A、B 两个组件，A 是 B 的父组件，在 A 中找到 B：
+来看个示例，仍然是 A、B 两个组件，在父组件 A 中找到子组件 B：
 
 ```html
 <!-- component-b.vue -->
@@ -1684,8 +1677,6 @@ export default {
 
 - [ES6 Module 的语法](http://es6.ruanyifeng.com/#docs/module)
 
-注：本节部分代码参考 [iView](https://github.com/iview/iview/blob/2.0/src/utils/assist.js)。
-
 # 7. 实战 2：组合多选框组件
 
 在第 5 节，我们完成了具有数据校验功能的组件 Form，本小节继续开发一个新的组件——组合多选框 Checkbox。它作为基础组件，也能集成在 Form 内并应用其验证规则。
@@ -1760,7 +1751,7 @@ slot 使用默认的就好，显示辅助文本。
 
 理清楚了 API，先来写一个基础的 `v-model` 功能，这在大部分组件中都类似。
 
-在 `src/components` 下新建目录 `checkbox`，并新建两个文件 `checkbox.vue` 和 `checkbox-group.vue`。我们先来看 Checkbox：
+在 `src/components` 下新建目录 `checkbox`，并新建两个文件 _checkbox.vue_ 和 _checkbox-group.vue_。我们先来看 Checkbox：
 
 ```html
 <!-- checkbox.vue -->
@@ -1825,7 +1816,7 @@ slot 使用默认的就好，显示辅助文本。
 
 代码看起来都很简单，但有三个细节需要额外说明：
 
-1. 选中的控件，直接使用了 `<input type="checkbox">`，而没有用 div + css 来自己实现选择的逻辑和样式，这样的好处是，使用 input 元素，你的自定义组件仍然为 html 内置的基础组件，可以使用浏览器默认的行为和快捷键，也就是说，浏览器知道这是一个选择框，而换成 div + css，浏览器可不知道这是个什么鬼。如果你觉得原生的 input 丑，没关系，是可以用 css 美化的，不过这不是本小册的重点，在此就不介绍了。
+1. 选中的控件，直接使用了 `<input type="checkbox">`，而没有用 div + css 来自己实现选择的逻辑和样式，这样的好处是，使用 input 元素，你的自定义组件仍然为 html 内置的基础组件，可以使用浏览器默认的行为和快捷键，也就是说，浏览器知道这是一个选择框，而换成 div + css，浏览器可不知道这是个什么鬼。如果你觉得原生的 input 丑，没关系，是可以用 css 美化的。
 2. `<input>`、`<slot>` 都是包裹在一个 `<label>` 元素内的，这样做的好处是，当点击 `<slot>` 里的文字时，`<input>` 选框也会被触发，否则只有点击那个小框才会触发，那样不太容易选中，影响用户体验。
 3. `currentValue` 仍然是布尔值，因为它是组件 Checkbox 自己使用的，对于使用者无需关心，而 value 可以是 String、Number 或 Boolean，这取决于 `trueValue` 和 `falseValue` 的定义。
 
@@ -2051,7 +2042,7 @@ Checkbox 新增的 prop： `label` 只会在组合使用时有效，结合 `mode
 
 代码很容易理解，需要介绍的就是 `updateModel` 方法。可以看到，一共有 3 个地方调用了 `updateModel`，其中两个是 CheckboxGroup 的 mounted 初始化和 watch 监听的 value 变化时调用；另一个是在 Checkbox 里的 mounted 初始化时调用。这个方法的作用就是在 CheckboxGroup 里通过 `findComponentsDownward` 方法找到所有的 Checkbox，然后把 CheckboxGroup 的 `value`，赋值给 Checkbox 的 `model`，并根据 Checkbox 的 `label`，设置一次当前 Checkbox 的选中状态。这样无论是由内而外选择，或由外向内修改数据，都是双向绑定的，而且支持动态增加 Checkbox 的数量。
 
-以上就是组合多选组件——CheckboxGroup & Checkbox 的全部内容，不知道你是否 get 到了呢！
+以上就是组合多选组件 CheckboxGroup 和 Checkbox 的全部内容。
 
 留两个小作业：
 
@@ -2066,7 +2057,7 @@ Checkbox 新增的 prop： `label` 只会在组合使用时有效，结合 `mode
 
 # 8. Vue 的构造器与手动挂载
 
-本节介绍两个 Vue.js 内置但却不常用的 API——extend 和 $mount，它们经常一起使用。不常用，是因为在业务开发中，基本没有它们的用武之地，但在独立组件开发时，在一些特定的场景它们是至关重要的。
+本节介绍两个 Vue.js 内置但却不常用的 API——`extend` 和 `$mount`，它们经常一起使用。不常用，是因为在业务开发中，基本没有它们的用武之地，但在独立组件开发时，在一些特定的场景它们是至关重要的。
 
 ## 使用场景
 
@@ -2152,7 +2143,7 @@ new AlertComponent().$mount('#app');
 new AlertComponent({ el: '#app' });
 ```
 
-实现同样的效果，除了用 extend 外，也可以直接创建 Vue 实例，并且用一个 Render 函数来渲染一个 .vue 文件：
+实现同样的效果，除了用 extend 外，也可以直接创建 Vue 实例，并且用一个 Render 函数来渲染一个 _.vue_ 文件：
 
 ```js
 import Vue from 'vue';
@@ -2172,7 +2163,7 @@ const component = Instance.$mount();
 document.body.appendChild(component.$el);
 ```
 
-这样既可以使用 .vue 来写复杂的组件（毕竟在 template 里堆字符串很痛苦），还可以根据需要传入适当的 props。渲染后，如果想操作 Render 的 `Notification` 实例，也是很简单的：
+这样既可以使用 _.vue_ 来写复杂的组件（毕竟在 template 里堆字符串很痛苦），还可以根据需要传入适当的 props。渲染后，如果想操作 Render 的 `Notification` 实例，也是很简单的：
 
 ```js
 const notification = Instance.$children[0];
@@ -2190,23 +2181,23 @@ const notification = Instance.$children[0];
 
 # 9. 实战 3：动态渲染 .vue 文件的组件
 
-网站 [iView Run](https://run.iviewui.com/)，它是能够在线编写一个标准的 `.vue` 文件，并及时渲染的，它也预置了 iView 环境，你可以使用 iView 组件库全部的组件。本小节，我们就来实现这样一个能够动态渲染 .vue 文件的 `Display` 组件，当然，用到的核心技术就是上一节的 `extend` 和 `$mount`。
+网站 [iView Run](https://run.iviewui.com/)，它是能够在线编写一个标准的 _.vue_ 文件，并及时渲染的，它也预置了 iView 环境，你可以使用 iView 组件库全部的组件。本小节，我们就来实现这样一个能够动态渲染 _.vue_ 文件的 `Display` 组件，当然，用到的核心技术就是上一节的 `extend` 和 `$mount`。
 
 ## 接口设计
 
-一个常规的 `.vue` 文件一般都会包含 3 个部分：
+一个常规的 _.vue_ 文件一般都会包含 3 个部分：
 
 - `<template>`：组件的模板；
 - `<script>`：组件的选项，不包含 `el`；
 - `<style>`：CSS 样式。
 
-回忆一下用 `extend` 来构造一个组件实例，它的选项 `template` 其实就是上面 `<template>` 的内容，其余选项对应的是 `<script>`，样式 `<style>` 事实上与 Vue.js 无关，我们可以先不管。这样的话，当拿到一个 .vue 的文件（整体其实是字符串），只需要把 `<template>`、`<script>`、`<style>` 使用正则分割，把对应的部分传递给 extend 创建的实例就可以。
+回忆一下用 `extend` 来构造一个组件实例，它的选项 `template` 其实就是上面 `<template>` 的内容，其余选项对应的是 `<script>`，样式 `<style>` 事实上与 _Vue.js_ 无关，我们可以先不管。这样的话，当拿到一个 _.vue_ 的文件（整体其实是字符串），只需要把 `<template>`、`<script>`、`<style>` 使用正则分割，把对应的部分传递给 extend 创建的实例就可以。
 
-Display 是一个功能型的组件，没有交互和事件，只需要一个 `prop：code` 将 .vue 的内容传递过来，其余工作都是在组件内完成的，这对使用者很友好。当然，你也可以设计成三个 props，分别对应 html、js、css，那分割的工作就要使用者来完成。出于使用者优先原则，苦活累活当然是在组件内完成了，因此推荐第一个方案。
+Display 是一个功能型的组件，没有交互和事件，只需要一个 `prop：code` 将 _.vue_ 的内容传递过来，其余工作都是在组件内完成的，这对使用者很友好。当然，你也可以设计成三个 props，分别对应 html、js、css，那分割的工作就要使用者来完成。出于使用者优先原则，苦活累活当然是在组件内完成了，因此推荐第一个方案。
 
 ## 实现
 
-在 `src/components` 目录下创建 `display` 目录，并新建 `display.vue` 文件，基本结构如下：
+在 `src/components` 目录下创建 `display` 目录，并新建 _display.vue_ 文件，基本结构如下：
 
 ```html
 <!-- display.vue -->
@@ -2271,12 +2262,12 @@ export default {
 
 getSource 方法接收两个参数：
 
-- source：.vue 文件代码，即 `props: code`；
+- source：_.vue_ 文件代码，即 `props: code`；
 - type：分割的部分，也就是 template、script、style。
 
 分割后，返回的内容不再包含 `<template>` 等标签，直接是对应的内容，在 splitCode 方法中，把分割好的代码分别赋值给 data 中声明的 html、js、css。有两个细节需要注意：
 
-1. .vue 的 `<script>` 部分一般都是以 `export default` 开始的，可以看到在 splitCode 方法中将它替换为了 `return`，这个在后文会做解释，当前只要注意，我们分割完的代码，仍然是字符串；
+1. _.vue_ 的 `<script>` 部分一般都是以 `export default` 开始的，可以看到在 splitCode 方法中将它替换为了 `return`，这个在后文会做解释，当前只要注意，我们分割完的代码，仍然是字符串；
 2. 在分割的 `<template>` 外层套了一个 `<div id="app">`，这是为了容错，有时使用者传递的 `code` 可能会忘记在外层包一个节点，没有根节点的组件，是会报错的。
 
 准备好这些基础工作后，就可以用 `extend` 渲染组件了，在这之前，我们先思考一个问题：上文说到，当前的 `this.js` 是字符串，而 extend 接收的选项可不是字符串，而是一个对象类型，那就要先把 `this.js` 转为一个对象。
@@ -2431,7 +2422,7 @@ export default {
 
 ## 使用
 
-新建一条路由，并在 `src/views` 下新建页面 `display.vue` 来使用 Display 组件：
+新建一条路由，并在 `src/views` 下新建页面 _display.vue_ 来使用 Display 组件：
 
 ```html
 <!-- src/views/display.vue -->
@@ -2486,7 +2477,7 @@ export default code;
 
 Vue CLI 3 默认使用了 vue.runtime.js，它不允许编译 template 模板，因为我们在 Vue.extend 构造实例时，用了 `template` 选项，所以会报错。解决方案有两种，一是手动将 template 改写为 Render 函数，但这成本太高；另一种是对 Vue CLI 3 创建的工程做简单的配置。我们使用后者。
 
-在项目根目录，新建文件 `vue.config.js`：
+在项目根目录，新建文件 _vue.config.js_：
 
 ```js
 module.exports = {
@@ -2494,7 +2485,7 @@ module.exports = {
 };
 ```
 
-它的作用是，是否使用包含运行时编译器的 Vue 构建版本。设置为 `true` 后就可以在 Vue 组件中使用 `template` 选项了，但是应用额外增加 10kb 左右（还好吧）。
+它的作用是，是否使用包含运行时编译器的 Vue 构建版本。设置为 `true` 后就可以在 Vue 组件中使用 `template` 选项了，但是应用额外增加 10kb 左右大小。
 
 加了这个配置，报错就消失了，组件也能正常显示。
 
@@ -2507,15 +2498,11 @@ module.exports = {
 
 # 10. 实战 4：全局提示组件
 
-有一种 Vue.js 组件，它不同于常规的组件，但组件结构本身很简单，比如下面的全局提示组件：
-
-![](https://user-gold-cdn.xitu.io/2018/11/10/166fcc05107e987c?w=3187&h=2087&f=png&s=265274)
-
-注：本节部分代码参考 [iView](https://github.com/iview/iview/tree/2.0/src/components/base/notification)。
+有一种 _Vue.js_ 组件，它不同于常规的组件，但组件结构本身很简单，比如全局提示组件：
 
 实现这样一个组件并不难，只需要简单的几行 div 和 css，但使用者可能要这样来显示组件：
 
-```html
+```vue
 <template>
   <div>
     <Alert v-if="show">这是一条提示信息</Alert>
@@ -2559,9 +2546,9 @@ if (confirm) {
 
 所以，结论是：我们需要一个能用 JavaScript 调用组件的 API。
 
-如果你使用过 iView 之类的组件库，一定对它内置的 \$Message、\$Notice、\$Modal 等组件很熟悉，本节就来开发一个全局通知组件——\$Alert。
+如果你使用过 iView 之类的组件库，一定对它内置的 `$Message`、`$Notice`、`$Modal` 等组件很熟悉，本节就来开发一个全局通知组件——`$Alert`。
 
-## 1/3 先把组件写好
+## 1. 组件基本结构
 
 我们期望最终的 API 是这样的：
 
@@ -2578,16 +2565,12 @@ methods: {
 
 `this.$Alert` 可以在任何位置调用，无需单独引入。该方法接收两个参数：
 
-- content：提示内容；
-- duration：持续时间，单位秒，默认 1.5 秒，到时间自动消失。
-
-最终效果如下：
-
-![](https://user-gold-cdn.xitu.io/2018/11/10/166fcc09c43c2ad1?w=1208&h=314&f=gif&s=207241)
+1. content：提示内容；
+2. duration：持续时间，单位秒，默认 1.5 秒，到时间自动消失。
 
 我们从最简单的入手，不考虑其它，先写一个基本的 Alert 组件。
 
-在 `src/component` 下新建 `alert` 目录，并创建文件 `alert.vue`：
+在 `src/component` 下新建 `alert` 目录，并创建文件 _alert.vue_：
 
 通知可以是多个，我们用一个数组 `notices` 来管理每条通知：
 
@@ -2682,15 +2665,15 @@ Alert 组件不同于常规的组件使用方式，它最终是通过 JS 来调�
 </script>
 ```
 
-在 `add` 方法中，给每一条传进来的提示数据，加了一个不重复的 `name` 字段来标识，并通过 `setTimeout` 创建了一个计时器，当到达指定的 `duration` 持续时间后，调用 `remove` 方法，将对应 `name` 的那条提示信息找到，并从数组中移除。
+在 add 方法中，给每一条传进来的提示数据，加了一个不重复的 name 字段来标识，并通过 setTimeout 创建了一个计时器，当到达指定的 duration 持续时间后，调用 remove 方法，将对应 name 的那条提示信息找到，并从数组中移除。
 
-由这个思路，Alert 组件就可以无限扩展，只要在 add 方法中传递更多的参数，就能支持更复杂的组件，比如是否显示手动关闭按钮、确定 / 取消按钮，甚至传入一个 Render 函数都可以，完成本例后，读者可以尝试”改造“。
+由这个思路，Alert 组件就可以无限扩展，只要在 add 方法中传递更多的参数，就能支持更复杂的组件，比如是否显示手动关闭按钮、确定和取消按钮，甚至传入一个 Render 函数都可以，完成本例后，读者可以尝试”改造“。
 
-## 2/3 实例化封装
+## 2. 实例化封装
 
-这一步，我们对 Alert 组件进一步封装，让它能够实例化，而不是常规的组件使用方法。实例化组件我们在第 8 节中介绍过，可以使用 Vue.extend 或 new Vue，然后用 `$mount` 挂载到 body 节点下。
+这一步，我们对 Alert 组件进一步封装，让它能够实例化，而不是常规的组件使用方法。实例化组件我们在第 8 节中介绍过，可以使用 `Vue.extend` 或 `new Vue`，然后用 `$mount` 挂载到 body 节点下。
 
-在 `src/components/alert` 目录下新建 `notification.js` 文件：
+在 `src/components/alert` 目录下新建 _notification.js_ 文件：
 
 ```js
 // notification.js
@@ -2727,15 +2710,15 @@ Alert.newInstance = (properties) => {
 export default Alert;
 ```
 
-notification.js 并不是最终的文件，它只是对 alert.vue 添加了一个方法 `newInstance`。虽然 alert.vue 包含了 template、script、style 三个标签，并不是一个 JS 对象，那怎么能够给它扩展一个方法 `newInstance` 呢？事实上，alert.vue 会被 Webpack 的 vue-loader 编译，把 template 编译为 Render 函数，最终就会成为一个 JS 对象，自然可以对它进行扩展。
+_notification.js_ 并不是最终的文件，它只是对 _alert.vue_ 添加了一个方法 `newInstance`。虽然 _alert.vue_ 包含了 template、script、style 三个标签，并不是一个 JS 对象，那怎么能够给它扩展一个方法 `newInstance` 呢？事实上，_alert.vue_ 会被 Webpack 的 vue-loader 编译，把 template 编译为 Render 函数，最终就会成为一个 JS 对象，自然可以对它进行扩展。
 
-Alert 组件没有任何 props，这里在 Render Alert 组件时，还是给它加了 props，当然，这里的 props 是空对象 {}，而且即使传了内容，也不起作用。这样做的目的还是为了扩展性，如果要在 Alert 上添加 props 来支持更多特性，是要在这里传入的。不过话说回来，因为能拿到 Alert 实例，用 data 或 props 都是可以的。
+Alert 组件没有任何 props，这里在 Render Alert 组件时，还是给它加了 props，当然，这里的 props 是空对象 `{}`，而且即使传了内容，也不起作用。这样做的目的还是为了扩展性，如果要在 Alert 上添加 props 来支持更多特性，是要在这里传入的。不过话说回来，因为能拿到 Alert 实例，用 data 或 props 都是可以的。
 
-在第 8 节已经解释过，`const alert = Instance.$children[0];`，这里的 alert 就是 Render 的 Alert 组件实例。在 `newInstance` 里，使用闭包暴露了两个方法 `add` 和 `remove`。这里的 add 和 remove 可不是 alert.vue 里的 add 和 remove，它们只是名字一样。
+在第 8 节已经解释过，`const alert = Instance.$children[0];`，这里的 alert 就是 Render 的 Alert 组件实例。在 `newInstance` 里，使用闭包暴露了两个方法 `add` 和 `remove`。这里的 add 和 remove 可不是 _alert.vue_ 里的 add 和 remove，它们只是名字一样。
 
-## 3/3 入口
+## 3. 组件入口
 
-最后要做的，就是调用 notification.js 创建实例，并通过 `add` 把数据传递过去，这是组件开发的最后一步，也是最终的入口。在 `src/component/alert` 下创建文件 `alert.js`：
+最后要做的，就是调用 _notification.js_ 创建实例，并通过 `add` 把数据传递过去，这是组件开发的最后一步，也是最终的入口。在 `src/component/alert` 下创建文件 _alert.js_：
 
 ```js
 // alert.js
@@ -2766,13 +2749,9 @@ export default {
 
 `getMessageInstance` 函数用来获取实例，它不会重复创建，如果 messageInstance 已经存在，就直接返回了，只在第一次调用 Notification 的 `newInstance` 时来创建实例。
 
-alert.js 对外提供了一个方法 `info`，如果需要各种显示效果，比如成功的、失败的、警告的，可以在 info 下面提供更多的方法，比如 success、fail、warning 等，并传递不同参数让 Alert.vue 知道显示哪种状态的图标。本例因为只有一个 info，事实上也可以省略掉，直接导出一个默认的函数，这样在调用时，就不用 `this.$Alert.info()` 了，直接 `this.$Alert()`。
+_alert.js_ 对外提供了一个方法 `info`，如果需要各种显示效果，比如成功的、失败的、警告的，可以在 info 下面提供更多的方法，比如 success、fail、warning 等，并传递不同参数让 _Alert.vue_ 知道显示哪种状态的图标。本例因为只有一个 info，事实上也可以省略掉，直接导出一个默认的函数，这样在调用时，就不用 `this.$Alert.info()` 了，直接 `this.$Alert()`。
 
-来看一下显示一个信息提示组件的流程：
-
-![](https://user-gold-cdn.xitu.io/2018/11/10/166fcc0fe6df06d2?w=1800&h=180&f=png&s=47285)
-
-最后把 alert.js 作为插件注册到 Vue 里就行，在入口文件 `src/main.js `中，通过 `prototype` 给 Vue 添加一个实例方法：
+最后把 _alert.js_ 作为插件注册到 Vue 里就行，在入口文件 `src/main.js `中，通过 `prototype` 给 Vue 添加一个实例方法：
 
 ```js
 // src/main.js
@@ -2791,7 +2770,7 @@ new Vue({
 }).$mount('#app');
 ```
 
-这样在项目任何地方，都可以通过 `this.$Alert` 来调用 Alert 组件了，我们创建一个 alert 的路由，并在 `src/views` 下创建页面 `alert.vue`：
+这样在项目任何地方，都可以通过 `this.$Alert` 来调用 Alert 组件了，我们创建一个 alert 的路由，并在 `src/views` 下创建页面 _alert.vue_：
 
 ```html
 <!-- src/views/alert.vue -->
@@ -2824,14 +2803,14 @@ new Vue({
 
 以上就是全局通知组件的全部内容。
 
-## 友情提示
+## 注意事项
 
 本示例算是一个 MVP（最小化可行方案），要开发一个完善的全局通知组件，还需要更多可维护性和功能性的设计，但离不开本例的设计思路。以下几点是同类组件中值得注意的：
 
-1. Alert.vue 的最外层是有一个 .alert 节点的，它会在第一次调用 `$Alert` 时，在 body 下创建，因为不在 `<router-view>` 内，它不受路由的影响，也就是说一经创建，除非刷新页面，这个节点是不会消失的，所以在 alert.vue 的设计中，并没有主动销毁这个组件，而是维护了一个子节点数组 `notices`。
-2. .alert 节点是 `position: fixed` 固定的，因此要合理设计它的 `z-index`，否则可能被其它节点遮挡。
-3. notification.js 和 alert.vue 是可以复用的，如果还要开发其它同类的组件，比如二次确认组件 `$Confirm`, 只需要再写一个入口 `confirm.js`，并将 `alert.vue` 进一步封装，将 `notices` 数组的循环体写为一个新的组件，通过配置来决定是渲染 Alert 还是 Confirm，这在可维护性上是友好的。
-4. 在 notification.js 的 new Vue 时，使用了 Render 函数来渲染 alert.vue，这是因为使用 template 在 runtime 的 Vue.js 版本下是会报错的。
+1. _Alert.vue_ 的最外层是有一个 `.alert` 节点的，它会在第一次调用 `$Alert` 时，在 body 下创建，因为不在 `<router-view>` 内，它不受路由的影响，也就是说一经创建，除非刷新页面，这个节点是不会消失的，所以在 _alert.vue_ 的设计中，并没有主动销毁这个组件，而是维护了一个子节点数组 `notices`。
+2. `.alert` 节点是 `position: fixed` 固定的，因此要合理设计它的 `z-index`，否则可能被其它节点遮挡。
+3. _notification.js_ 和 _alert.vue_ 是可以复用的，如果还要开发其它同类的组件，比如二次确认组件 `$Confirm`, 只需要再写一个入口 `confirm.js`，并将 `_alert.vue_` 进一步封装，将 `notices` 数组的循环体写为一个新的组件，通过配置来决定是渲染 Alert 还是 Confirm，这在可维护性上是友好的。
+4. 在 _notification.js_ 的 `new Vue` 时，使用了 Render 函数来渲染 _alert.vue_，这是因为使用 template 在 runtime 的 _Vue.js_ 版本下是会报错的。
 5. 本例的 content 只能是字符串，如果要显示自定义的内容，除了用 `v-html` 指令，也能用 Functional Render（之后章节会介绍）。
 
 # 11. 更灵活的组件
@@ -2840,9 +2819,7 @@ Vue.js 2.x 与 Vue.js 1.x 最大的区别就在于 2.x 使用了 Virtual DOM（�
 
 一般来说，我们写 Vue.js 组件，模板都是写在 `<template>` 内的，但它并不是最终呈现的内容，template 只是一种对开发者友好的语法，能够一眼看到 DOM 节点，容易维护，在 Vue.js 编译阶段，会解析为 Virtual DOM。
 
-与 DOM 操作相比，Virtual DOM 是基于 JavaScript 计算的，所以开销会小很多。下图演示了 Virtual DOM 运行的过程：
-
-![](https://user-gold-cdn.xitu.io/2018/11/13/1670bc4c26b9c667?w=1964&h=636&f=png&s=105521)
+与 DOM 操作相比，Virtual DOM 是基于 JavaScript 计算的，所以开销会小很多。
 
 正常的 DOM 节点在 HTML 中是这样的：
 
@@ -2871,7 +2848,7 @@ vNode 对象通过一些特定的选项描述了真实的 DOM 结构。
 
 在 Vue.js 中，对于大部分场景，使用 template 足以应付，但如果想完全发挥 JavaScript 的编程能力，或在一些特定场景下（后文介绍），需要使用 Vue.js 的 Render 函数。
 
-## Render 函数
+## Render 函数介绍
 
 正如上文介绍的 Virtual DOM 示例一样，Vue.js 的 Render 函数也是类似的语法，需要使用一些特定的选项，将 template 的内容改写成一个 JavaScript 对象。
 
@@ -2933,35 +2910,35 @@ export default {
 };
 ```
 
-这里的 `h`，即 `createElement`，是 Render 函数的核心。可以看到，template 中的 **v-if / v-else** 等指令，都被 JS 的 **if / else** 替代了，那 **v-for** 自然也会被 **for** 语句替代。
+这里的 `h`，即 `createElement`，是 Render 函数的核心。可以看到，template 中的 `v-if` 和 `v-else` 等指令，都被 JS 的 `if` 和 `else` 替代了，那 `v-for` 自然也会被 `for` 语句替代。
 
 h 有 3 个参数，分别是：
 
 1. 要渲染的元素或组件，可以是一个 html 标签、组件选项或一个函数（不常用），该参数为必填项。示例：
 
-   ```js
-   // 1. html 标签
-   h('div');
-   // 2. 组件选项
-   import DatePicker from '../component/date-picker.vue';
-   h(DatePicker);
-   ```
+```js
+// 1. html 标签
+h('div');
+// 2. 组件选项
+import DatePicker from '../component/date-picker.vue';
+h(DatePicker);
+```
 
 2. 对应属性的数据对象，比如组件的 props、元素的 class、绑定的事件、slot、自定义指令等，该参数是可选的，上文所说的 Render 配置项多，指的就是这个参数。该参数的完整配置和示例，可以到 Vue.js 的文档查看，没必要全部记住，用到时查阅就好：[createElement 参数](https://cn.vuejs.org/v2/guide/render-function.html#createElement-参数)。
 
 3. 子节点，可选，String 或 Array，它同样是一个 h。示例：
 
-   ```js
-   [
-     '内容',
-     h('p', '内容'),
-     h(Component, {
-       props: {
-         someProp: 'foo',
-       },
-     }),
-   ];
-   ```
+```js
+[
+  '内容',
+  h('p', '内容'),
+  h(Component, {
+    props: {
+      someProp: 'foo',
+    },
+  }),
+];
+```
 
 ### 约束
 
@@ -3055,7 +3032,7 @@ export default {
 
 它的使用方法是：
 
-```html
+```xml
 <Transfer :data="data" :target-keys="targetKeys" :render-format="renderFormat">
   <div :style="{float: 'right', margin: '5px'}">
     <button size="small" @click="reloadMockData">Refresh</button>
@@ -3073,86 +3050,86 @@ export default {
 
 1. 使用两个相同 slot。在 template 中，Vue.js 不允许使用两个相同的 slot，比如下面的示例是错误的：
 
-   ```html
-   <template>
-     <div>
-       <slot></slot>
-       <slot></slot>
-     </div>
-   </template>
-   ```
+```html
+<template>
+  <div>
+    <slot></slot>
+    <slot></slot>
+  </div>
+</template>
+```
 
-   解决方案就是上文中讲到的**约束**，使用一个深度克隆 VNode 节点的方法。
+解决方案就是上文中讲到的**约束**，使用一个深度克隆 VNode 节点的方法。
 
 1. 在 SSR 环境（服务端渲染），如果不是常规的 template 写法，比如通过 Vue.extend 和 new Vue 构造来生成的组件实例，是编译不过的，在前面小节也有所介绍。回顾上一节的 `$Alert` 组件的 notification.js 文件，当时是使用 Render 函数来渲染 Alert 组件，如果改成另一种写法，在 SSR 中会报错，对比两种写法：
 
-   ```js
-   // 正确写法
-   import Alert from './alert.vue';
-   import Vue from 'vue';
+```js
+// 正确写法
+import Alert from './alert.vue';
+import Vue from 'vue';
 
-   Alert.newInstance = (properties) => {
-     const props = properties || {};
+Alert.newInstance = (properties) => {
+  const props = properties || {};
 
-     const Instance = new Vue({
-       data: props,
-       render(h) {
-         return h(Alert, {
-           props: props,
-         });
-       },
-     });
+  const Instance = new Vue({
+    data: props,
+    render(h) {
+      return h(Alert, {
+        props: props,
+      });
+    },
+  });
 
-     const component = Instance.$mount();
-     document.body.appendChild(component.$el);
+  const component = Instance.$mount();
+  document.body.appendChild(component.$el);
 
-     const alert = Instance.$children[0];
+  const alert = Instance.$children[0];
 
-     return {
-       add(noticeProps) {
-         alert.add(noticeProps);
-       },
-       remove(name) {
-         alert.remove(name);
-       },
-     };
-   };
+  return {
+    add(noticeProps) {
+      alert.add(noticeProps);
+    },
+    remove(name) {
+      alert.remove(name);
+    },
+  };
+};
 
-   export default Alert;
-   ```
+export default Alert;
+```
 
-   ```js
-   // 在 SSR 下报错的写法
-   import Alert from './alert.vue';
-   import Vue from 'vue';
+```js
+// 在 SSR 下报错的写法
+import Alert from './alert.vue';
+import Vue from 'vue';
 
-   Alert.newInstance = (properties) => {
-     const props = properties || {};
+Alert.newInstance = (properties) => {
+  const props = properties || {};
 
-     const div = document.createElement('div');
-     div.innerHTML = `<Alert ${props}></Alert>`;
-     document.body.appendChild(div);
+  const div = document.createElement('div');
+  div.innerHTML = `<Alert ${props}></Alert>`;
+  document.body.appendChild(div);
 
-     const Instance = new Vue({
-       el: div,
-       data: props,
-       components: { Alert },
-     });
+  const Instance = new Vue({
+    el: div,
+    data: props,
+    components: { Alert },
+  });
 
-     const alert = Instance.$children[0];
+  const alert = Instance.$children[0];
 
-     return {
-       add(noticeProps) {
-         alert.add(noticeProps);
-       },
-       remove(name) {
-         alert.remove(name);
-       },
-     };
-   };
+  return {
+    add(noticeProps) {
+      alert.add(noticeProps);
+    },
+    remove(name) {
+      alert.remove(name);
+    },
+  };
+};
 
-   export default Alert;
-   ```
+export default Alert;
+```
 
 1. 在 runtime 版本的 Vue.js 中，如果使用 Vue.extend 手动构造一个实例，使用 template 选项是会报错的，在第 9 节中也有所介绍。解决方案也很简单，把 template 改写为 Render 就可以了。需要注意的是，在开发独立组件时，可以通过配置 Vue.js 版本来使 template 选项可用，但这是在自己的环境，无法保证使用者的 Vue.js 版本，所以对于提供给他人用的组件，是需要考虑兼容 runtime 版本和 SSR 环境的。
 
@@ -3175,74 +3152,74 @@ Vue.js 提供了一个 `functional` 的布尔值选项，设置为 true 可以�
 
 1. 首先创建一个函数化组件 **render.js**：
 
-   ```js
-   // render.js
-   export default {
-     functional: true,
-     props: {
-       render: Function,
-     },
-     render: (h, ctx) => {
-       return ctx.props.render(h);
-     },
-   };
-   ```
+```js
+// render.js
+export default {
+  functional: true,
+  props: {
+    render: Function,
+  },
+  render: (h, ctx) => {
+    return ctx.props.render(h);
+  },
+};
+```
 
-   它只定义了一个 props：render，格式为 Function，因为是 functional，所以在 render 里使用了第二个参数 `ctx` 来获取 props。这是一个中间文件，并且可以复用，其它组件需要这个功能时，都可以引入它。
+它只定义了一个 props：render，格式为 Function，因为是 functional，所以在 render 里使用了第二个参数 `ctx` 来获取 props。这是一个中间文件，并且可以复用，其它组件需要这个功能时，都可以引入它。
 
 2. 创建组件：
 
-   ```html
-   <!-- my-component.vue -->
-   <template>
-     <div>
-       <Render :render="render"></Render>
-     </div>
-   </template>
-   <script>
-     import Render from './render.js';
+```html
+<!-- my-component.vue -->
+<template>
+  <div>
+    <Render :render="render"></Render>
+  </div>
+</template>
+<script>
+  import Render from './render.js';
 
-     export default {
-       components: { Render },
-       props: {
-         render: Function,
-       },
-     };
-   </script>
-   ```
+  export default {
+    components: { Render },
+    props: {
+      render: Function,
+    },
+  };
+</script>
+```
 
 3. 使用上面的 my-compoennt 组件：
 
-   ```html
-   <!-- demo.vue -->
-   <template>
-     <div>
-       <my-component :render="render"></my-component>
-     </div>
-   </template>
-   <script>
-     import myComponent from '../components/my-component.vue';
+```html
+<!-- demo.vue -->
+<template>
+  <div>
+    <my-component :render="render"></my-component>
+  </div>
+</template>
+<script>
+  import myComponent from '../components/my-component.vue';
 
-     export default {
-       components: { myComponent },
-       data() {
-         return {
-           render: (h) => {
-             return h(
-               'div',
-               {
-                 style: {
-                   color: 'red',
-                 },
-               },
-               '自定义内容'
-             );
-           },
-         };
-       },
-     };
-   </script>
-   ```
+  export default {
+    components: { myComponent },
+    data() {
+      return {
+        render: (h) => {
+          return h(
+            'div',
+            {
+              style: {
+                color: 'red',
+              },
+            },
+            '自定义内容'
+          );
+        },
+      };
+    },
+  };
+</script>
+```
 
 这里的 render.js 因为只是把 demo.vue 中的 Render 内容过继，并无其它用处，所以用了 Functional Render。
 
@@ -5057,7 +5034,7 @@ export default {
 
 前面的 15 小节已经覆盖了 Vue.js 组件的绝大部分内容，但还是有一些 API 容易忽略。本节则对 Vue.js 的一些重要且易忽略的 API 进行详细介绍。
 
-## nextTick
+## nextTick 函数
 
 nextTick 是 Vue.js 提供的一个函数，并非浏览器内置。nextTick 函数接收一个回调函数 `cb`，在下一个 DOM 更新循环之后执行。比如下面的示例：
 
@@ -5090,13 +5067,13 @@ nextTick 是 Vue.js 提供的一个函数，并非浏览器内置。nextTick 函
 
 当 `show` 被置为 true 时，这时 p 节点还未被渲染，因此打印出的是 undefined，而在 nextTick 的回调里，p 已经渲染好了，这时能正确打印出节点。
 
-nextTick 的源码在 [https://github.com/vuejs/vue/blob/dev/src/core/util/next-tick.js](https://github.com/vuejs/vue/blob/dev/src/core/util/next-tick.js)，可以看到，Vue.js 使用了 `Promise`、`setTimeout` 和 `setImmediate` 三种方法来实现 nextTick，在不同环境会使用不同的方法。
+Vue.js 使用了 `Promise`、`setTimeout` 和 `setImmediate` 三种方法来实现 nextTick，在不同环境会使用不同的方法。
 
 ## v-model 语法糖
 
 `v-model` 常用于表单元素上进行数据的双向绑定，比如 `<input>`。除了原生的元素，它还能在自定义组件中使用。
 
-v-model 是一个语法糖，可以拆解为 props: value 和 events: input。就是说组件必须提供一个名为 value 的 prop，以及名为 input 的自定义事件，满足这两个条件，使用者就能在自定义组件上使用 `v-model`。比如下面的示例，实现了一个数字选择器：
+v-model 是一个语法糖，可以拆解为 `props: value` 和 `events: input`。就是说组件必须提供一个名为 value 的 prop，以及名为 input 的自定义事件，满足这两个条件，使用者就能在自定义组件上使用 `v-model`。比如下面的示例，实现了一个数字选择器：
 
 ```html
 <template>
@@ -5136,7 +5113,7 @@ v-model 是一个语法糖，可以拆解为 props: value 和 events: input。�
 
 props 一般不能在组件内修改，它是通过父级修改的，因此实现 v-model 一般都会有一个 `currentValue` 的内部 data，初始时从 value 获取一次值，当 value 修改时，也通过 watch 监听到及时更新；组件不会修改 value 的值，而是修改 currentValue，同时将修改的值通过自定义事件 `input` 派发给父组件，父组件接收到后，由父组件修改 value。所以，上面的数字选择器组件可以有下面两种使用方式：
 
-```html
+```xml
 <template>
   <InputNumber v-model="value" />
 </template>
@@ -5156,7 +5133,7 @@ props 一般不能在组件内修改，它是通过父级修改的，因此实�
 
 或：
 
-```html
+```xml
 <template>
   <InputNumber :value="value" @input="handleChange" />
 </template>
@@ -5225,11 +5202,11 @@ props 一般不能在组件内修改，它是通过父级修改的，因此实�
 
 ## .sync 修饰符
 
-如果你使用过 Vue.js 1.x，一定对 `.sync` 不陌生。在 1.x 里，可以使用 .sync 双向绑定数据，也就是父组件或子组件都能修改这个数据，是双向响应的。在 Vue.js 2.x 里废弃了这种用法，目的是尽可能将父子组件解耦，避免子组件无意中修改了父组件的状态。
+如果你使用过 Vue.js 1.x，一定对 `.sync` 不陌生。在 1.x 里，可以使用 `.sync` 双向绑定数据，也就是父组件或子组件都能修改这个数据，是双向响应的。在 Vue.js 2.x 里废弃了这种用法，目的是尽可能将父子组件解耦，避免子组件无意中修改了父组件的状态。
 
-不过在 Vue.js 2.3.0 版本，又增加了 `.sync` 修饰符，但它的用法与 1.x 的不完全相同。2.x 的 .sync 不是真正的双向绑定，而是一个语法糖，修改数据还是在父组件完成的，并非在子组件。
+不过在 Vue.js 2.3.0 版本，又增加了 `.sync` 修饰符，但它的用法与 1.x 的不完全相同。2.x 的 `.sync` 不是真正的双向绑定，而是一个语法糖，修改数据还是在父组件完成的，并非在子组件。
 
-仍然是数字选择器的示例，这次不用 v-model，而是用 .sync，可以这样改写：
+仍然是数字选择器的示例，这次不用 v-model，而是用 `.sync`，可以这样改写：
 
 ```html
 <template>
@@ -5258,7 +5235,7 @@ props 一般不能在组件内修改，它是通过父级修改的，因此实�
 
 用例：
 
-```html
+```vue
 <template>
   <InputNumber :value.sync="value" />
 </template>
@@ -5276,12 +5253,12 @@ props 一般不能在组件内修改，它是通过父级修改的，因此实�
 </script>
 ```
 
-看起来要比 v-model 的实现简单多，实现的效果是一样的。v-model 在一个组件中只能有一个，但 .sync 可以设置很多个。.sync 虽好，但也有限制，比如：
+看起来要比 v-model 的实现简单多，实现的效果是一样的。v-model 在一个组件中只能有一个，但 `.sync` 可以设置很多个。`.sync` 虽好，但也有限制，比如：
 
-- **不能**和表达式一起使用（如 `v-bind:title.sync="doc.title + '!'"` 是无效的）；
-- **不能**用在字面量对象上（如 `v-bind.sync="{ title: doc.title }"` 是无法正常工作的）。
+- 不能和表达式一起使用（如 `v-bind:title.sync="doc.title + '!'"` 是无效的）；
+- 不能用在字面量对象上（如 `v-bind.sync="{ title: doc.title }"` 是无法正常工作的）。
 
-## $set
+## $set 实例方法
 
 在上一节已经介绍过 `$set`，有两种情况会用到它：
 
@@ -5535,12 +5512,9 @@ computed: {
 这个问题会延伸出几个问题：
 
 1. computed 是一个对象时，它有哪些选项？
-
-1. computed 和 methods 有什么区别？
-
-1. computed 是否能依赖其它组件的数据？
-
-1. watch 是一个对象时，它有哪些选项？
+2. computed 和 methods 有什么区别？
+3. computed 是否能依赖其它组件的数据？
+4. watch 是一个对象时，它有哪些选项？
 
 问题 1，已经在 16 小节介绍过，有 get 和 set 两个选项。
 
@@ -5562,7 +5536,7 @@ computed: {
 <custom-component>内容</custom-component>
 ```
 
-然后问：**怎样给这个自定义组件 custom-component 绑定一个`原生`的 click 事件？**
+然后问：**怎样给这个自定义组件 custom-component 绑定一个原生的 click 事件？**
 
 我一开始并不会问什么是事件修饰符，但是如果候选人说 `<custom-component @click="xxx">`，就已经错了，说明它对这个没有概念。这里的 `@click` 是自定义事件 click，并不是原生事件 click。绑定原生的 click 是这样的：
 
@@ -5598,7 +5572,7 @@ computed: {
 
 为什么组件中的 data 必须是一个函数，然后 return 一个对象，而 new Vue 实例里，data 可以直接是一个对象？
 
-因为组件是用来复用的，JS 里对象是引用关系，这样作用域没有隔离，而 new Vue 的实例，是不会被复用的，因此不存在引用对象的问题。
+因为组件是用来复用的，JS 里对象是引用关系，这样作用域没有隔离，而 `new Vue` 的实例，是不会被复用的，因此不存在引用对象的问题。
 
 ## keep-alive 的理解
 
@@ -5608,7 +5582,7 @@ computed: {
 
 回答这道题，首先你得知道什么是**递归组件**。而不到 10% 的人知道递归组件。其实在实际业务中用的确实不多，在独立组件中会经常使用，第 14 节和 15 节专门讲过递归组件。那回到问题，递归组件的要求是什么？主要有两个：
 
-- 要给组件设置 **name**；
+- 要给组件设置 name；
 - 要有一个明确的结束条件。
 
 ## 自定义组件的语法糖 v-model 是怎样实现的
@@ -5712,31 +5686,31 @@ createElement () {
 
 1. 在子组件的 data 中拷贝一份 prop，data 是可以修改的，但 prop 不能：
 
-   ```js
-   export default {
-     props: {
-       value: String,
-     },
-     data() {
-       return {
-         currentValue: this.value,
-       };
-     },
-   };
-   ```
+```js
+export default {
+  props: {
+    value: String,
+  },
+  data() {
+    return {
+      currentValue: this.value,
+    };
+  },
+};
+```
 
 2. 如果是对 prop 值的转换，可以使用计算属性：
 
-   ```js
-   export default {
-     props: ['size'],
-     computed: {
-       normalizedSize: function () {
-         return this.size.trim().toLowerCase();
-       },
-     },
-   };
-   ```
+```js
+export default {
+  props: ['size'],
+  computed: {
+    normalizedSize: function () {
+      return this.size.trim().toLowerCase();
+    },
+  },
+};
+```
 
 如果你能提到 v-model 实现数据的双向绑定、.sync 用法，会大大加分的，这些在第 16 节已经详细介绍过。
 
@@ -5744,11 +5718,10 @@ createElement () {
 
 [Vue.js 生命周期](https://cn.vuejs.org/v2/api/#选项-生命周期钩子) 主要有 8 个阶段：
 
-- 创建前 / 后（beforeCreate / created）：在 beforeCreate 阶段，Vue 实例的挂载元素 el 和数据对象 data 都为 undefined，还未初始化。在 created 阶段，Vue 实例的数据对象 data 有了，el 还没有。
-- 载入前 / 后（beforeMount / mounted）：在 beforeMount 阶段，Vue 实例的 $el 和 data 都初始化了，但还是挂载之前为虚拟的 DOM 节点，data 尚未替换。在 mounted 阶段，Vue 实例挂载完成，data 成功渲染。
-
-- 更新前 / 后（beforeUpdate / updated）：当 data 变化时，会触发 beforeUpdate 和 updated 方法。这两个不常用，且不推荐使用。
-- 销毁前 / 后（beforeDestroy / destroyed）：beforeDestroy 是在 Vue 实例销毁前触发，一般在这里要通过 removeEventListener 解除手动绑定的事件。实例销毁后，触发 destroyed。
+- 创建前后（beforeCreate / created）：在 beforeCreate 阶段，Vue 实例的挂载元素 el 和数据对象 data 都为 undefined，还未初始化。在 created 阶段，Vue 实例的数据对象 data 有了，el 还没有。
+- 载入前后（beforeMount / mounted）：在 beforeMount 阶段，Vue 实例的 $el 和 data 都初始化了，但还是挂载之前为虚拟的 DOM 节点，data 尚未替换。在 mounted 阶段，Vue 实例挂载完成，data 成功渲染。
+- 更新前后（beforeUpdate / updated）：当 data 变化时，会触发 beforeUpdate 和 updated 方法。这两个不常用，且不推荐使用。
+- 销毁前后（beforeDestroy / destroyed）：beforeDestroy 是在 Vue 实例销毁前触发，一般在这里要通过 removeEventListener 解除手动绑定的事件。实例销毁后，触发 destroyed。
 
 ## 组件间通信
 
@@ -5853,7 +5826,7 @@ ViewModel 通过双向数据绑定把 View 层和 Model 层连接了起来，而
 
 与市面上同类成熟的开源项目相比，你的开源项目最大的优势就是你能为第一批用户提供优质的“售后”服务。如果是同事的问题，你可以很快直接解答；如果是通过 GitHub 提交的 issues（前期不会很多了），尽量在半小时内回复，这样使用者会觉得你确实在用心维护这个开源项目。通过前期的口碑积累，你的第一批用户也成为了最忠实的用户，这时可以组建微信或 QQ 群，更直接地提供“售后”，而这第一批忠实用户，会成为后期推广的重要人脉。
 
-## 生态
+## 项目生态
 
 生态（ecosystem）不是与生俱来的，当你的开源项目有了一定的规模后，可以考虑发展生态体系。比如 iView，起初只是一个组件库，后续逐渐提供了 iview-project 工程、具有 GUI 的 iView CLI（这个概念可比 Vue CLI 3 早了一年）、后台模板 iview-admin、支持 Vue CLI 3 的 vue-cli-plugin-iview，以及业务组件 iview-area 和 markdown 编辑器 iview-editor，再到后来支持 SSR、TS。
 
@@ -5999,7 +5972,7 @@ Vue.js 在开发独立组件时，由于它的特殊性，无法使用 Vuex、Bu
 1. 具有数据校验功能的 Form 组件，它用到了第 1 种组件通信；
 2. 组合多选框 Checkbox 组件，它用到了第 2 种和第 3 种组件通信；
 3. Display 组件，它利用 Vue.js 的构造器 extend 和手动挂载 `$mount` API；
-4. 全局通知 \$Alert 组件，也是利用了 \$mount API，与传统组件不同的是，它基于 Vue.js 组件开发，但却是以 JavaScript 的形式调用的，并且组件会在 body 节点下渲染；
+4. 全局通知 `$Alert` 组件，也是利用了 `$mount` API，与传统组件不同的是，它基于 Vue.js 组件开发，但却是以 JavaScript 的形式调用的，并且组件会在 body 节点下渲染；
 5. 表格组件 Table，典型的数据驱动型组件，使用了函数式组件（Functional Render）来自定义列模板；
 6. 表格组件 Table，与上例不同的是，它的自定义列模板使用了 `slot-scope`；
 7. 树形控件 Tree，典型的数据驱动型组件，也是典型的递归组件，其中利用 computed 做父子节点联动是精髓。
