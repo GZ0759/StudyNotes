@@ -123,15 +123,54 @@ babel.js 的作用
 ### 2.3.4. 编码操作
 
 1. 内部读取某个属性值
+
+```js
+this.props.name;
+```
+
 2. 对 props 中的属性值进行类型限制和必要性限制
 
 - 第一种方式（React v15.5 开始已弃用）：
+
+```js
+Person.propTypes = {
+  name: React.PropTypes.string.isRequired,
+  age: React.PropTypes.number,
+};
+```
+
 - 第二种方式（新）：使用 prop-types 库进限制（需要引入 prop-types 库）
 
+```js
+Person.propTypes = {
+  name: PropTypes.string.isRequired,
+  age: PropTypes.number.
+}
+```
+
 3. 扩展属性: 将对象的所有属性通过 props 传递
+
+```jsx
+<Person {...person} />
+```
+
 4. 默认属性值：
 
+```js
+Person.defaultProps = {
+  age: 18,
+  sex: '男',
+};
+```
+
 5. 组件类的构造函数
+
+```js
+constructor(props){
+  super(props)
+  console.log(props)//打印所有属性
+}
+```
 
 ## 2.4. 组件三大核心属性3: refs与事件处理
 2.4.1. 效果
