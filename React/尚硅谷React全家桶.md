@@ -199,6 +199,7 @@ constructor(props){
 - React 中的事件是通过事件委托方式处理的（委托给组件最外层的元素）
 
 2. 通过 `event.target` 得到发生事件的 DOM 元素对象
+
 ## 2.5. 收集表单数据
 
 ### 2.5.1. 效果
@@ -209,8 +210,8 @@ constructor(props){
 
 包含表单的组件分类
 
-1. 受控组件
-2. 非受控组件
+1. 非受控组件
+2. 受控组件
 
 ## 2.6. 组件的生命周期
 
@@ -225,54 +226,75 @@ constructor(props){
 ### 2.6.2. 理解
 
 1. 组件从创建到死亡它会经历一些特定的阶段。
-2. React 组件中包含一系列勾子函数(生命周期回调函数), 会在特定的时刻调用。
+2. React 组件中包含一系列勾子函数（生命周期回调函数）, 会在特定的时刻调用。
 3. 我们在定义组件时，会在特定的生命周期回调函数中，做特定的工作。
 
-### 2.6.3. 生命周期流程图(旧)
+### 2.6.3. 生命周期流程图（旧）
 
 生命周期的三个阶段（旧）
-	1. 初始化阶段: 由ReactDOM.render()触发---初次渲染
-1. constructor()
-2. componentWillMount()
-3. render()
-4. componentDidMount()
-	2. 更新阶段: 由组件内部this.setSate()或父组件重新render触发
-1. shouldComponentUpdate()
-2. componentWillUpdate()
-3. render()
-4. componentDidUpdate()
-	3. 卸载组件: 由ReactDOM.unmountComponentAtNode()触发
-1. componentWillUnmount()
-2.6.4. 生命周期流程图(新)
-       
+
+初始化阶段: 由`ReactDOM.render()`触发---初次渲染
+
+1. `constructor()`
+2. `componentWillMount()`
+3. `render()`
+4. `componentDidMount()`
+
+更新阶段: 由组件内部`this.setSate()`或父组件重新 render 触发
+
+1. `shouldComponentUpdate()`
+2. `componentWillUpdate()`
+3. `render()`
+4. `componentDidUpdate()`
+
+卸载组件: 由`ReactDOM.unmountComponentAtNode()`触发
+
+1. `componentWillUnmount()`
+
+### 2.6.4. 生命周期流程图（新）
+
 生命周期的三个阶段（新）
-       1. 初始化阶段: 由ReactDOM.render()触发---初次渲染
-1. constructor()
-2. getDerivedStateFromProps 
-3. render()
-4. componentDidMount()
-	2. 更新阶段: 由组件内部this.setSate()或父组件重新render触发
-1. getDerivedStateFromProps
-2. shouldComponentUpdate()
-3. render()
-4. getSnapshotBeforeUpdate
-5. componentDidUpdate()
-	3. 卸载组件: 由ReactDOM.unmountComponentAtNode()触发
-1. componentWillUnmount()
-2.6.5. 重要的勾子
+
+初始化阶段: 由`ReactDOM.render()`触发---初次渲染
+
+1. `constructor()`
+2. `getDerivedStateFromProps`
+3. `render()`
+4. `componentDidMount()`
+
+更新阶段: 由组件内部`this.setSate()`或父组件重新 render 触发
+
+1. `getDerivedStateFromProps`
+2. `shouldComponentUpdate()`
+3. `render()`
+4. `getSnapshotBeforeUpdate`
+5. `componentDidUpdate()`
+
+卸载组件: 由`ReactDOM.unmountComponentAtNode()`触发
+
+1. `componentWillUnmount()`
+
+### 2.6.5. 重要的勾子
+
 1. render：初始化渲染或更新渲染调用
-2. componentDidMount：开启监听, 发送ajax请求
+2. componentDidMount：开启监听, 发送 ajax 请求
 3. componentWillUnmount：做一些收尾工作, 如: 清理定时器
-2.6.6. 即将废弃的勾子
+
+### 2.6.6. 即将废弃的勾子
+
 1. componentWillMount
 2. componentWillReceiveProps
 3. componentWillUpdate
-现在使用会出现警告，下一个大版本需要加上UNSAFE_前缀才能使用，以后可能会被彻底废弃，不建议使用。
+
+现在使用会出现警告，下一个大版本需要加上 `UNSAFE_` 前缀才能使用，以后可能会被彻底废弃，不建议使用。
+
 ## 2.7. 虚拟DOM与DOM Diffing算法
-2.7.1. 效果
+
+### 2.7.1. 效果
+
 需求：验证虚拟DOM Diffing算法的存在
 　　
-2.7.2. 基本原理图
+### 2.7.2. 基本原理图
 
 # 第3章：React应用(基于React脚手架)
 ## 3.1. 使用create-react-app创建react应用
