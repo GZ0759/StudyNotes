@@ -229,7 +229,7 @@ constructor(props){
 2.6.2. 理解
 
 1. 组件从创建到死亡它会经历一些特定的阶段。
-2. React 组件中包含一系列勾子函数（生命周期回调函数）, 会在特定的时刻调用。
+2. React 组件中包含一系列钩子函数（生命周期回调函数）, 会在特定的时刻调用。
 3. 我们在定义组件时，会在特定的生命周期回调函数中，做特定的工作。
 
 2.6.3. 生命周期流程图（旧）
@@ -277,13 +277,13 @@ constructor(props){
 
 1. `componentWillUnmount()`
 
-2.6.5. 重要的勾子
+2.6.5. 重要的钩子
 
 1. render：初始化渲染或更新渲染调用
 2. componentDidMount：开启监听, 发送 ajax 请求
 3. componentWillUnmount：做一些收尾工作, 如: 清理定时器
 
-2.6.6. 即将废弃的勾子
+2.6.6. 即将废弃的钩子
 
 1. componentWillMount
 2. componentWillReceiveProps
@@ -299,66 +299,67 @@ constructor(props){
 
 2.7.2. 基本原理图
 
-# 第 3 章：React 应用(基于 React 脚手架)
+# 第 3 章：React 应用
 
 ## 3.1. 使用 create-react-app 创建 react 应用
 
 3.1.1. react 脚手架
 
 1. xxx 脚手架: 用来帮助程序员快速创建一个基于 xxx 库的模板项目
-1. 包含了所有需要的配置（语法检查、jsx 编译、devServer…）
-1. 下载好了所有相关的依赖
-1. 可以直接运行一个简单效果
-1. react 提供了一个用于创建 react 项目的脚手架库: create-react-app
-1. 项目的整体技术架构为: react + webpack + es6 + eslint
-1. 使用脚手架开发的项目的特点: 模块化, 组件化, 工程化
+
+- 包含了所有需要的配置（语法检查、jsx 编译、devServer 等）
+- 下载好了所有相关的依赖
+- 可以直接运行一个简单效果
+
+2. react 提供了一个用于创建 react 项目的脚手架库: create-react-app
+3. 项目的整体技术架构为: react + webpack + es6 + eslint
+4. 使用脚手架开发的项目的特点: 模块化，组件化，工程化
 
 3.1.2. 创建项目并启动
 
-第一步，全局安装：npm i -g create-react-app
-第二步，切换到想创项目的目录，使用命令：create-react-app hello-react
-第三步，进入项目文件夹：cd hello-react
-第四步，启动项目：npm start
+第一步，全局安装：`npm i -g create-react-app`
+第二步，切换到想创项目的目录，使用命令：`create-react-app hello-react`
+第三步，进入项目文件夹：`cd hello-react`
+第四步，启动项目：`npm start`
 
 3.1.3. react 脚手架项目结构
 
-    public ---- 静态资源文件夹
-    	favicon.icon ------ 网站页签图标
-    	index.html -------- 主页面
-    	logo192.png ------- logo图
-    	logo512.png ------- logo图
-    	manifest.json ----- 应用加壳的配置文件
-    	robots.txt -------- 爬虫协议文件
-
+```
+public ---- 静态资源文件夹
+  favicon.icon ------ 网站页签图标
+  index.html -------- 主页面
+  logo192.png ------- logo图
+  logo512.png ------- logo图
+  manifest.json ----- 应用加壳的配置文件
+  robots.txt -------- 爬虫协议文件
 src ---- 源码文件夹
-App.css -------- App 组件的样式
-App.js --------- App 组件
-App.test.js ---- 用于给 App 做测试
-index.css ------ 样式
-index.js ------- 入口文件
-logo.svg ------- logo 图
-reportWebVitals.js
---- 页面性能分析文件(需要 web-vitals 库的支持)
-setupTests.js
----- 组件单元测试的文件(需要 jest-dom 库的支持)
+  App.css -------- App 组件的样式
+  App.js --------- App 组件
+  App.test.js ---- 用于给 App 做测试
+  index.css ------ 样式
+  index.js ------- 入口文件
+  logo.svg ------- logo 图
+  reportWebVitals.js --- 页面性能分析文件(需要 web-vitals 库的支持)
+  setupTests.js ---- 组件单元测试的文件(需要 jest-dom 库的支持)
+```
 
-3.1.4. 功能界面的组件化编码流程（通用）
+3.1.4. 功能界面的组件化编码流程
 
-1. 拆分组件: 拆分界面,抽取组件
+1. 拆分组件: 拆分界面，抽取组件
 2. 实现静态组件: 使用组件实现静态页面效果
 3. 实现动态组件
-   3.1 动态显示初始化数据
-   3.1.1 数据类型
-   3.1.2 数据名称
-   3.1.2 保存在哪个组件?
-   3.2 交互(从绑定事件监听开始)
+   - 动态显示初始化数据
+   - 数据类型
+   - 数据名称
+   - 保存在哪个组件?
+   - 交互（从绑定事件监听开始）
 
 ## 3.2. 组件的组合使用-TodoList
 
 功能: 组件化实现此功能
 
 1. 显示所有 todo 列表
-2. 输入文本, 点击按钮显示到列表的首位, 并清除输入的文本
+2. 输入文本，点击按钮显示到列表的首位，并清除输入的文本
 
 # 第 4 章：React ajax
 
@@ -366,18 +367,18 @@ setupTests.js
 
 4.1.1. 前置说明
 
-1. React 本身只关注于界面, 并不包含发送 ajax 请求的代码
-2. 前端应用需要通过 ajax 请求与后台进行交互(json 数据)
-3. react 应用中需要集成第三方 ajax 库(或自己封装)
+1. React 本身只关注于界面，并不包含发送 ajax 请求的代码
+2. 前端应用需要通过 ajax 请求与后台进行交互（json 数据）
+3. react 应用中需要集成第三方 ajax 库
 
 4.1.2. 常用的 ajax 请求库
 
 1. jQuery: 比较重, 如果需要另外引入不建议使用
 2. axios: 轻量级, 建议使用
 
-1) 封装 XmlHttpRequest 对象的 ajax
-2) promise 风格
-3) 可以用在浏览器端和 node 服务器端
+- 封装 XmlHttpRequest 对象的 ajax
+- promise 风格
+- 可以用在浏览器端和 node 服务器端
 
 ## 4.2. axios
 
@@ -394,12 +395,14 @@ https://github.com/axios/axios
 ## 4.4. 消息订阅-发布机制
 
 1. 工具库: PubSubJS
-2. 下载: npm install pubsub-js --save
+2. 下载: `npm install pubsub-js --save`
 3. 使用:
 
-1) import PubSub from 'pubsub-js' //引入
-2) PubSub.subscribe('delete', function(data){ }); //订阅
-3) PubSub.publish('delete', data) //发布消息
+```js
+import PubSub from 'pubsub-js'; //引入
+PubSub.subscribe('delete', function (data) {}); //订阅
+PubSub.publish('delete', data); //发布消息
+```
 
 ## 4.5. 扩展：Fetch
 
