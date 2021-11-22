@@ -62,18 +62,18 @@ babel.js 的作用
 
 2.1.1. 使用 React 开发者工具调试
 
-### 2.1.2. 组件类型
+2.1.2. 组件类型
 
 1. 函数式组件。接收唯一带有数据的 “props”（代表属性）对象与并返回一个 React 元素。
 2. 类式组件。通过 state 机制组件可以动态更新视图内容，还可以使用声明周期函数。
 
-### 2.1.3. 注意事项
+2.1.3. 注意事项
 
 1. 组件名必须首字母大写
 2. 虚拟 DOM 元素只能有一个根元素
 3. 虚拟 DOM 元素必须有结束标签
 
-### 2.1.4. 渲染类组件标签的基本流程
+2.1.4. 渲染类组件标签的基本流程
 
 1. React 内部会创建组件实例对象
 2. 调用 `render()` 得到虚拟 DOM, 并解析为真实 DOM
@@ -81,19 +81,19 @@ babel.js 的作用
 
 ## 2.2. 组件三大核心属性 1: state
 
-### 2.2.1. 效果
+2.2.1. 效果
 
 需求: 定义一个展示天气信息的组件
 
 1. 默认展示天气“炎热”或“凉爽”
 2. 点击文字切换天气
 
-### 2.2.2. 理解
+2.2.2. 理解
 
 1. state 是组件对象最重要的属性, 值是对象（可以包含多个 key-value 的组合）
 2. 组件被称为"状态机", 通过更新组件的 state 来更新对应的页面显示（重新渲染组件）
 
-### 2.2.3. 注意事项
+2.2.3. 注意事项
 
 1. 组件中 render 方法中的 this 为组件实例对象
 2. 组件自定义的方法中 this 为 undefined，如何解决？
@@ -105,7 +105,7 @@ babel.js 的作用
 
 ## 2.3. 组件三大核心属性 2: props
 
-### 2.3.1. 效果
+2.3.1. 效果
 
 需求: 自定义用来显示一个人员信息的组件
 
@@ -113,17 +113,17 @@ babel.js 的作用
 2. 性别为字符串类型，如果性别没有指定，默认为男
 3. 年龄为字符串类型，且为数字类型，默认值为 18
 
-### 2.3.2. 理解
+2.3.2. 理解
 
 1. 每个组件对象都会有 props（properties 的简写）属性
 2. 组件标签的所有属性都保存在 props 中
 
-### 2.3.3. 作用
+2.3.3. 作用
 
 1. 通过标签属性从组件外向组件内传递变化的数据
 2. 注意: 组件内部不要修改 props 数据
 
-### 2.3.4. 编码操作
+2.3.4. 编码操作
 
 1. 内部读取某个属性值
 
@@ -177,24 +177,24 @@ constructor(props){
 
 ## 2.4. 组件三大核心属性 3: refs 与事件处理
 
-### 2.4.1. 效果
+2.4.1. 效果
 
 需求: 自定义组件, 功能说明如下:
 
 1. 点击按钮, 提示第一个输入框中的值
 2. 当第 2 个输入框失去焦点时, 提示这个输入框中的值
 
-### 2.4.2. 理解
+2.4.2. 理解
 
 组件内的标签可以定义 ref 属性来标识自己
 
-### 2.4.3. 编码
+2.4.3. 编码
 
 1. 字符串形式的 ref
 2. 回调形式的 ref
 3. createRef 创建 ref 容器
 
-### 2.4.4. 事件处理
+2.4.4. 事件处理
 
 1. 通过 onXxx 属性指定事件处理函数（注意大小写）
 
@@ -205,11 +205,11 @@ constructor(props){
 
 ## 2.5. 收集表单数据
 
-### 2.5.1. 效果
+2.5.1. 效果
 
 需求: 定义一个包含表单的组件，输入用户名密码后, 点击登录提示输入信息
 
-### 2.5.2. 理解
+2.5.2. 理解
 
 包含表单的组件分类
 
@@ -218,7 +218,7 @@ constructor(props){
 
 ## 2.6. 组件的生命周期
 
-### 2.6.1. 效果
+2.6.1. 效果
 
 需求:定义组件实现以下功能：
 
@@ -226,13 +226,13 @@ constructor(props){
 2. 从完全可见，到彻底消失，耗时 2S
 3. 点击“不活了”按钮从界面中卸载组件
 
-### 2.6.2. 理解
+2.6.2. 理解
 
 1. 组件从创建到死亡它会经历一些特定的阶段。
 2. React 组件中包含一系列勾子函数（生命周期回调函数）, 会在特定的时刻调用。
 3. 我们在定义组件时，会在特定的生命周期回调函数中，做特定的工作。
 
-### 2.6.3. 生命周期流程图（旧）
+2.6.3. 生命周期流程图（旧）
 
 生命周期的三个阶段（旧）
 
@@ -254,7 +254,7 @@ constructor(props){
 
 1. `componentWillUnmount()`
 
-### 2.6.4. 生命周期流程图（新）
+2.6.4. 生命周期流程图（新）
 
 生命周期的三个阶段（新）
 
@@ -277,13 +277,13 @@ constructor(props){
 
 1. `componentWillUnmount()`
 
-### 2.6.5. 重要的勾子
+2.6.5. 重要的勾子
 
 1. render：初始化渲染或更新渲染调用
 2. componentDidMount：开启监听, 发送 ajax 请求
 3. componentWillUnmount：做一些收尾工作, 如: 清理定时器
 
-### 2.6.6. 即将废弃的勾子
+2.6.6. 即将废弃的勾子
 
 1. componentWillMount
 2. componentWillReceiveProps
@@ -293,17 +293,17 @@ constructor(props){
 
 ## 2.7. 虚拟 DOM 与 DOM Diffing 算法
 
-### 2.7.1. 效果
+2.7.1. 效果
 
 需求：验证虚拟 DOM Diffing 算法的存在
 
-### 2.7.2. 基本原理图
+2.7.2. 基本原理图
 
 # 第 3 章：React 应用(基于 React 脚手架)
 
 ## 3.1. 使用 create-react-app 创建 react 应用
 
-### 3.1.1. react 脚手架
+3.1.1. react 脚手架
 
 1. xxx 脚手架: 用来帮助程序员快速创建一个基于 xxx 库的模板项目
 1. 包含了所有需要的配置（语法检查、jsx 编译、devServer…）
@@ -313,14 +313,14 @@ constructor(props){
 1. 项目的整体技术架构为: react + webpack + es6 + eslint
 1. 使用脚手架开发的项目的特点: 模块化, 组件化, 工程化
 
-### 3.1.2. 创建项目并启动
+3.1.2. 创建项目并启动
 
 第一步，全局安装：npm i -g create-react-app
 第二步，切换到想创项目的目录，使用命令：create-react-app hello-react
 第三步，进入项目文件夹：cd hello-react
 第四步，启动项目：npm start
 
-### 3.1.3. react 脚手架项目结构
+3.1.3. react 脚手架项目结构
 
     public ---- 静态资源文件夹
     	favicon.icon ------ 网站页签图标
@@ -342,7 +342,7 @@ reportWebVitals.js
 setupTests.js
 ---- 组件单元测试的文件(需要 jest-dom 库的支持)
 
-### 3.1.4. 功能界面的组件化编码流程（通用）
+3.1.4. 功能界面的组件化编码流程（通用）
 
 1. 拆分组件: 拆分界面,抽取组件
 2. 实现静态组件: 使用组件实现静态页面效果
@@ -364,13 +364,13 @@ setupTests.js
 
 ## 4.1. 理解
 
-### 4.1.1. 前置说明
+4.1.1. 前置说明
 
 1. React 本身只关注于界面, 并不包含发送 ajax 请求的代码
 2. 前端应用需要通过 ajax 请求与后台进行交互(json 数据)
 3. react 应用中需要集成第三方 ajax 库(或自己封装)
 
-### 4.1.2. 常用的 ajax 请求库
+4.1.2. 常用的 ajax 请求库
 
 1. jQuery: 比较重, 如果需要另外引入不建议使用
 2. axios: 轻量级, 建议使用
@@ -381,13 +381,13 @@ setupTests.js
 
 ## 4.2. axios
 
-### 4.2.1. 文档
+4.2.1. 文档
 
 https://github.com/axios/axios
 
 ## 4.3. 案例—github 用户搜索
 
-### 4.3.1. 效果
+4.3.1. 效果
 
 请求地址: https://api.github.com/search/users?q=xxxxxx
 
@@ -403,17 +403,17 @@ https://github.com/axios/axios
 
 ## 4.5. 扩展：Fetch
 
-### 4.5.1. 文档
+4.5.1. 文档
 
 1. https://github.github.io/fetch/
 2. https://segmentfault.com/a/1190000003810652
 
-### 4.5.2. 特点
+4.5.2. 特点
 
 1. fetch: 原生函数，不再使用 XmlHttpRequest 对象提交 ajax 请求
 2. 老版本浏览器可能不支持
 
-### 4.5.3. 相关 API
+4.5.3. 相关 API
 
 1. GET 请求
 
@@ -449,14 +449,14 @@ fetch(url, {
 
 ## 5.1. 相关理解
 
-### 5.1.1. SPA 的理解
+5.1.1. SPA 的理解
 
 1. 单页 Web 应用（single page web application，SPA）。
 2. 整个应用只有一个完整的页面。
 3. 点击页面中的链接不会刷新页面，只会做页面的局部更新。
 4. 数据都需要通过 ajax 请求获取, 并在前端异步展现。
 
-### 5.1.2. 路由的理解
+5.1.2. 路由的理解
 
 1. 什么是路由?
 1. 一个路由就是一个映射关系(key:value)
@@ -474,7 +474,7 @@ fetch(url, {
 2) 注册路由: <Route path="/test" component={Test}>
 3) 工作过程：当浏览器的 path 变为/test 时, 当前路由组件就会变为 Test 组件
 
-### 5.1.3. react-router-dom 的理解
+5.1.3. react-router-dom 的理解
 
 1. react 的一个插件库。
 2. 专门用来实现一个 SPA 应用。
@@ -482,7 +482,7 @@ fetch(url, {
 
 ## 5.2. react-router-dom 相关 API
 
-### 5.2.1. 内置组件
+5.2.1. 内置组件
 
 1. BrowserRouter
 2. HashRouter
@@ -492,7 +492,7 @@ fetch(url, {
 6. NavLink
 7. Switch
 
-### 5.2.2. 其它
+5.2.2. 其它
 
 1. history 对象
 2. match 对象
@@ -500,9 +500,9 @@ fetch(url, {
 
 ## 5.3. 基本路由使用
 
-### 5.3.1. 效果
+5.3.1. 效果
 
-### 5.3.2. 准备
+5.3.2. 准备
 
 1. 下载 react-router-dom: `npm install --save react-router-dom`
 2. 引入 bootstrap.css: `<link rel="stylesheet" href="/css/bootstrap.css">`
@@ -523,12 +523,12 @@ fetch(url, {
 
 ## 6.1.流行的开源 React UI 组件库
 
-### 6.1.1. material-ui(国外)
+6.1.1. material-ui(国外)
 
 1. 官网: http://www.material-ui.com/#/
 2. github: https://github.com/callemall/material-ui
 
-### 6.1.2. ant-design(国内蚂蚁金服)
+6.1.2. ant-design(国内蚂蚁金服)
 
 1. 官网: https://ant.design/index-cn
 2. Github: https://github.com/ant-design/ant-design/
@@ -537,29 +537,29 @@ fetch(url, {
 
 ## 7.1. redux 理解
 
-### 7.1.1. 学习文档
+7.1.1. 学习文档
 
 1. 英文文档: https://redux.js.org/
 2. 中文文档: http://www.redux.org.cn/
 3. Github: https://github.com/reactjs/redux
 
-### 7.1.2. redux 是什么
+7.1.2. redux 是什么
 
 1. redux 是一个专门用于做状态管理的 JS 库(不是 react 插件库)。
 2. 它可以用在 react, angular, vue 等项目中, 但基本与 react 配合使用。
 3. 作用: 集中式管理 react 应用中多个组件共享的状态。
 
-### 7.1.3. 什么情况下需要使用 redux
+7.1.3. 什么情况下需要使用 redux
 
 1. 某个组件的状态，需要让其他组件可以随时拿到（共享）。
 2. 一个组件需要改变另一个组件的状态（通信）。
 3. 总体原则：能不用就不用, 如果不用比较吃力才考虑使用。
 
-### 7.1.4. redux 工作流程
+7.1.4. redux 工作流程
 
 ## 7.2. redux 的三个核心概念
 
-### 7.2.1. action
+7.2.1. action
 
 1. 动作的对象
 2. 包含 2 个属性
@@ -569,12 +569,12 @@ fetch(url, {
 
 3. 例子：{ type:?'ADD_STUDENT',data:{name: 'tom',age:18} }
 
-### 7.2.2. reducer
+7.2.2. reducer
 
 1. 用于初始化状态、加工状态。
 2. 加工时，根据旧的 state 和 action， 产生新的 state 的纯函数。
 
-### 7.2.3. store
+7.2.3. store
 
 1. 将 state、action、reducer 联系在一起的对象
 2. 如何得到此对象?
@@ -591,11 +591,11 @@ fetch(url, {
 
 ## 7.3. redux 的核心 API
 
-### 7.3.1. createstore()
+7.3.1. createstore()
 
 作用：创建包含指定 reducer 的 store 对象
 
-### 7.3.2. store 对象
+7.3.2. store 对象
 
 1. 作用: redux 库最核心的管理对象
 2. 它内部维护着:
@@ -615,11 +615,11 @@ fetch(url, {
 2) store.dispatch({type:'INCREMENT', number})
 3) store.subscribe(render)
 
-### 7.3.3. applyMiddleware()
+7.3.3. applyMiddleware()
 
        作用：应用上基于redux的中间件(插件库)
 
-### 7.3.4. combineReducers()
+7.3.4. combineReducers()
 
        作用：合并多个reducer函数
 
@@ -629,12 +629,12 @@ fetch(url, {
 
 ## 7.5. redux 异步编程
 
-### 7.5.1 理解：
+7.5.1 理解：
 
 1. redux 默认是不能进行异步处理的,
 2. 某些时候应用中需要在 redux 中执行异步任务(ajax, 定时器)
 
-### 7.5.2. 使用异步中间件
+7.5.2. 使用异步中间件
 
 ```
 npm install --save redux-thunk
@@ -642,12 +642,12 @@ npm install --save redux-thunk
 
 ## 7.6. react-redux
 
-### 7.6.1. 理解
+7.6.1. 理解
 
 1. 一个 react 插件库
 2. 专门用来简化 react 应用中使用 redux
 
-### 7.6.2. react-Redux 将所有组件分成两大类
+7.6.2. react-Redux 将所有组件分成两大类
 
 1. UI 组件
 
@@ -662,7 +662,7 @@ npm install --save redux-thunk
 2) 使用 Redux 的 API
 3) 一般保存在 containers 文件夹下
 
-### 7.6.3. 相关 API
+7.6.3. 相关 API
 
 1. Provider：让所有组件都可以得到 state 数据
 
@@ -673,9 +673,9 @@ npm install --save redux-thunk
 
 ## 7.7. 使用上 redux 调试工具
 
-### 7.7.1. 安装 chrome 浏览器插件
+7.7.1. 安装 chrome 浏览器插件
 
-### 7.7.2. 下载工具依赖包
+7.7.2. 下载工具依赖包
 
 ```
 npm install --save-dev redux-devtools-extension
@@ -683,7 +683,7 @@ npm install --save-dev redux-devtools-extension
 
 ## 7.8. 纯函数和高阶函数
 
-### 7.8.1. 纯函数
+7.8.1. 纯函数
 
 1. 一类特别的函数: 只要是同样的输入(实参)，必定得到同样的输出(返回)
 2. 必须遵守以下一些约束??
@@ -694,7 +694,7 @@ npm install --save-dev redux-devtools-extension
 
 3. redux 的 reducer 函数必须是一个纯函数
 
-### 7.8.2. 高阶函数
+7.8.2. 高阶函数
 
 1. 理解: 一类特别的函数
 
