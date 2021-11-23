@@ -339,8 +339,8 @@ src ---- 源码文件夹
   index.css ------ 样式
   index.js ------- 入口文件
   logo.svg ------- logo 图
-  reportWebVitals.js --- 页面性能分析文件(需要 web-vitals 库的支持)
-  setupTests.js ---- 组件单元测试的文件(需要 jest-dom 库的支持)
+  reportWebVitals.js --- 页面性能分析文件
+  setupTests.js ---- 组件单元测试的文件
 ```
 
 3.1.4. 功能界面的组件化编码流程
@@ -462,22 +462,25 @@ fetch(url, {
 5.1.2. 路由的理解
 
 1. 什么是路由?
-1. 一个路由就是一个映射关系(key:value)
-1. key 为路径, value 可能是 function 或 component
-1. 路由分类
-1. 后端路由：
 
-1) 理解： value 是 function, 用来处理客户端提交的请求。
-2) 注册路由： router.get(path, function(req, res))
-3) 工作过程：当 node 接收到一个请求时, 根据请求路径找到匹配的路由, 调用路由中的函数来处理请求, 返回响应数据
+- 一个路由就是一个映射关系
+- key 为路径, value 可能是 function 或 component
 
-2. 前端路由：
+2. 路由分类
 
-1) 浏览器端路由，value 是 component，用于展示页面内容。
-2) 注册路由: <Route path="/test" component={Test}>
-3) 工作过程：当浏览器的 path 变为/test 时, 当前路由组件就会变为 Test 组件
+后端路由：
 
-5.1.3. react-router-dom 的理解
+- value 是 function, 用来处理客户端提交的请求。
+- 注册路由：`router.get(path, function(req, res))`
+- 工作过程：当 node 接收到一个请求时, 根据请求路径找到匹配的路由, 调用路由中的函数来处理请求, 返回响应数据
+
+前端路由：
+
+- 浏览器端路由，value 是 component，用于展示页面内容。
+- 注册路由: `<Route path="/test" component={Test}>`
+- 工作过程：当浏览器的 path 变为 `/test` 时, 当前路由组件就会变为 Test 组件
+
+  5.1.3. react-router-dom 的理解
 
 1. react 的一个插件库。
 2. 专门用来实现一个 SPA 应用。
@@ -512,29 +515,60 @@ fetch(url, {
 
 ## 5.4. 嵌套路由使用
 
-效果
+1. 注册子路由时要写上父路由的 path 值
+2. 路由的匹配是按照注册路由的顺序进行的
 
 ## 5.5. 向路由组件传递参数数据
 
-效果
+1. params 参数
+
+路由链接(携带参数): `<Link to='{/demo/test/tom/18'}>详情</Link>`
+注册路由(声明接收): `<Route path=" /demo/test/ :name/ :age" component={Test}/>`
+接收参数: `this.props.match.params`
+
+2. search 参数
+
+路由链接(携带参数): `<Link to= '{/demo/test?name=tom&age=18' }>详情</Link>`
+注册路由(无需声明，正常注册即可): `<Route path=" /demo/test" component={Test}/>`
+接收参数: `this.props.location.search`
+备注:获取到的 search 是 urlencoded 编码字符串，需要借助 querystring 解析
+
+3. state 参数
+
+路由链接(携带参数): `<Link to={{path:'/demo/test',state: {name: 'tom' ,age:18}}}>详情</Link>`
+注册路由(无需声明，正常注册即可): `<Route path=" /demo/test" component={Test}/>`
+接收参数: `this.props.location.state`
+备注:刷新也可以保留住参数
 
 ## 5.6. 多种路由跳转方式
 
-效果
+1. push
+2. replace
+
+BrowserRouter 与 HashRouter 的区别
+
+1. 底层原理不一样:
+
+- BrowserRouter 使用的是 H5 的 history API，不兼容 IE9 及以下版本。
+- HashRouter 使用的是 URL 的哈希值。
+
+2. url 表现形式不一样
+   BrowserRouter 的路径中没有#,例如: `localhost:3000/demo/test`
+   HashRouter 的路径包含#,例如:`localhost:3000/#/demo/test`
+
+3. 刷新后对路由 state 参数的影响
+
+- BrowserRouter 没有任何影响，因为 state 保存在 history 对象中。
+- HashRouter 刷新后会导致路由 state 参数的丢失。
+
+4. 备注: HashRouter 可以用于解决一些路径错误相关的问题。
 
 # 第 6 章：React UI 组件库
 
 ## 6.1.流行的开源 React UI 组件库
 
-6.1.1. material-ui(国外)
-
-1. 官网: http://www.material-ui.com/#/
-2. github: https://github.com/callemall/material-ui
-
-6.1.2. ant-design(国内蚂蚁金服)
-
-1. 官网: https://ant.design/index-cn
-2. Github: https://github.com/ant-design/ant-design/
+[material-ui](http://www.material-ui.com/#/)
+[ant-design](https://ant.design/index-cn)
 
 # 第 7 章：redux
 
@@ -542,14 +576,14 @@ fetch(url, {
 
 7.1.1. 学习文档
 
-1. 英文文档: https://redux.js.org/
-2. 中文文档: http://www.redux.org.cn/
-3. Github: https://github.com/reactjs/redux
+[英文文档](https://redux.js.org/)
+[中文文档](http://www.redux.org.cn/)
+[Github](https://github.com/reactjs/redux)
 
 7.1.2. redux 是什么
 
 1. redux 是一个专门用于做状态管理的 JS 库(不是 react 插件库)。
-2. 它可以用在 react, angular, vue 等项目中, 但基本与 react 配合使用。
+2. 它可以用在 react/angular/vue 等项目中，但基本与 react 配合使用。
 3. 作用: 集中式管理 react 应用中多个组件共享的状态。
 
 7.1.3. 什么情况下需要使用 redux
@@ -570,7 +604,7 @@ fetch(url, {
 - type：标识属性, 值为字符串, 唯一, 必要属性
 - data：数据属性, 值类型任意, 可选属性
 
-3. 例子：{ type:?'ADD_STUDENT',data:{name: 'tom',age:18} }
+3. 例子：`{ type:?'ADD_STUDENT',data:{name: 'tom',age:18} }`
 
 7.2.2. reducer
 
@@ -582,9 +616,9 @@ fetch(url, {
 1. 将 state、action、reducer 联系在一起的对象
 2. 如何得到此对象?
 
-1) import {createStore} from 'redux'
-2) import reducer from './reducers'
-3) const store = createStore(reducer)
+1) `import {createStore} from 'redux'`
+2) `import reducer from './reducers'`
+3) `const store = createStore(reducer)`
 
 3. 此对象的功能?
 
@@ -608,23 +642,23 @@ fetch(url, {
 
 3. 核心方法:
 
-1) getState()
-2) dispatch(action)
-3) subscribe(listener)
+1) `getState()`
+2) `dispatch(action)`
+3) `subscribe(listener)`
 
 4. 具体编码:
 
-1) store.getState()
-2) store.dispatch({type:'INCREMENT', number})
-3) store.subscribe(render)
+1) `store.getState()`
+2) `store.dispatch({type:'INCREMENT', number})`
+3) `store.subscribe(render)`
 
 7.3.3. applyMiddleware()
 
-       作用：应用上基于redux的中间件(插件库)
+作用：应用上基于 redux 的中间件(插件库)
 
 7.3.4. combineReducers()
 
-       作用：合并多个reducer函数
+作用：合并多个 reducer 函数
 
 ## 7.4. 使用 redux 编写应用
 
