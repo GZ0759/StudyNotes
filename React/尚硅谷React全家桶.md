@@ -582,7 +582,7 @@ BrowserRouter 与 HashRouter 的区别
 
 7.1.2. redux 是什么
 
-1. redux 是一个专门用于做状态管理的 JS 库(不是 react 插件库)。
+1. redux 是一个专门用于做状态管理的 JS 库（不是 react 插件库）。
 2. 它可以用在 react/angular/vue 等项目中，但基本与 react 配合使用。
 3. 作用: 集中式管理 react 应用中多个组件共享的状态。
 
@@ -601,10 +601,17 @@ BrowserRouter 与 HashRouter 的区别
 1. 动作的对象
 2. 包含 2 个属性
 
-- type：标识属性, 值为字符串, 唯一, 必要属性
-- data：数据属性, 值类型任意, 可选属性
+- type：标识属性，值为字符串，唯一，必要属性
+- data：数据属性，值类型任意，可选属性
 
-3. 例子：`{ type:?'ADD_STUDENT',data:{name: 'tom',age:18} }`
+```js
+{ type:?'ADD_STUDENT',
+  data: { 
+    name: 'tom',
+    age:18
+  } 
+}
+```
 
 7.2.2. reducer
 
@@ -616,15 +623,11 @@ BrowserRouter 与 HashRouter 的区别
 1. 将 state、action、reducer 联系在一起的对象
 2. 如何得到此对象?
 
-1) `import {createStore} from 'redux'`
-2) `import reducer from './reducers'`
-3) `const store = createStore(reducer)`
-
-3. 此对象的功能?
-
-1) getState(): 得到 state
-2) dispatch(action): 分发 action, 触发 reducer 调用, 产生新的 state
-3) subscribe(listener): 注册监听, 当产生了新的 state 时, 自动调用
+```js
+import {createStore} from 'redux'
+import reducer from './reducers'
+const store = createStore(reducer)
+```
 
 ## 7.3. redux 的核心 API
 
@@ -637,24 +640,24 @@ BrowserRouter 与 HashRouter 的区别
 1. 作用: redux 库最核心的管理对象
 2. 它内部维护着:
 
-1) state
-2) reducer
+- state
+- reducer
 
 3. 核心方法:
 
-1) `getState()`
-2) `dispatch(action)`
-3) `subscribe(listener)`
+- `getState()`
+- `dispatch(action)`
+- `subscribe(listener)`
 
 4. 具体编码:
 
-1) `store.getState()`
-2) `store.dispatch({type:'INCREMENT', number})`
-3) `store.subscribe(render)`
+- `store.getState()`
+- `store.dispatch({type:'INCREMENT', number})`
+- `store.subscribe(render)`
 
 7.3.3. applyMiddleware()
 
-作用：应用上基于 redux 的中间件(插件库)
+作用：应用上基于 redux 的中间件（插件库）
 
 7.3.4. combineReducers()
 
