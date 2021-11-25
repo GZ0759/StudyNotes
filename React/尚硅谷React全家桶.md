@@ -605,11 +605,11 @@ BrowserRouter 与 HashRouter 的区别
 - data：数据属性，值类型任意，可选属性
 
 ```js
-{ type:?'ADD_STUDENT',
-  data: { 
+{ type: 'ADD_STUDENT',
+  data: {
     name: 'tom',
     age:18
-  } 
+  }
 }
 ```
 
@@ -624,9 +624,9 @@ BrowserRouter 与 HashRouter 的区别
 2. 如何得到此对象?
 
 ```js
-import {createStore} from 'redux'
-import reducer from './reducers'
-const store = createStore(reducer)
+import { createStore } from 'redux';
+import reducer from './reducers';
+const store = createStore(reducer);
 ```
 
 ## 7.3. redux 的核心 API
@@ -655,7 +655,7 @@ const store = createStore(reducer)
 - `store.dispatch({type:'INCREMENT', number})`
 - `store.subscribe(render)`
 
-7.3.3. applyMiddleware()
+  7.3.3. applyMiddleware()
 
 作用：应用上基于 redux 的中间件（插件库）
 
@@ -671,8 +671,8 @@ const store = createStore(reducer)
 
 7.5.1 理解：
 
-1. redux 默认是不能进行异步处理的,
-2. 某些时候应用中需要在 redux 中执行异步任务(ajax, 定时器)
+1. redux 默认是不能进行异步处理的
+2. 某些时候应用中需要在 redux 中执行异步任务，例如 ajax 或定时器
 
 7.5.2. 使用异步中间件
 
@@ -691,23 +691,21 @@ npm install --save redux-thunk
 
 1. UI 组件
 
-1) 只负责 UI 的呈现，不带有任何业务逻辑
-2) 通过 props 接收数据(一般数据和函数)
-3) 不使用任何 Redux 的 API
-4) 一般保存在 components 文件夹下
+- 只负责 UI 的呈现，不带有任何业务逻辑
+- 通过 props 接收数据（一般数据和函数）
+- 不使用任何 Redux 的 API
+- 一般保存在 components 文件夹下
 
 2. 容器组件
 
-1) 负责管理数据和业务逻辑，不负责 UI 的呈现
-2) 使用 Redux 的 API
-3) 一般保存在 containers 文件夹下
+- 负责管理数据和业务逻辑，不负责 UI 的呈现
+- 使用 Redux 的 API
+- 一般保存在 containers 文件夹下
 
-7.6.3. 相关 API
+  7.6.3. 相关 API
 
 1. Provider：让所有组件都可以得到 state 数据
-
 2. connect：用于包装 UI 组件生成容器组件
-
 3. mapStateToprops：将外部的数据（即 state 对象）转换为 UI 组件的标签属性
 4. mapDispatchToProps：将分发 action 的函数转换为 UI 组件的标签属性
 
@@ -725,12 +723,12 @@ npm install --save-dev redux-devtools-extension
 
 7.8.1. 纯函数
 
-1. 一类特别的函数: 只要是同样的输入(实参)，必定得到同样的输出(返回)
+1. 一类特别的函数: 只要是同样的输入（实参），必定得到同样的输出（返回）
 2. 必须遵守以下一些约束??
 
-1) 不得改写参数数据
-2) 不会产生任何副作用，例如网络请求，输入和输出设备
-3) 不能调用 Date.now()或者 Math.random()等不纯的方法??
+- 不得改写参数数据
+- 不会产生任何副作用，例如网络请求，输入和输出设备
+- 不能调用 `Date.now()` 或者 `Math.random()` 等不纯的方法??
 
 3. redux 的 reducer 函数必须是一个纯函数
 
@@ -738,14 +736,14 @@ npm install --save-dev redux-devtools-extension
 
 1. 理解: 一类特别的函数
 
-1) 情况 1: 参数是函数
-2) 情况 2: 返回是函数
+- 情况 1: 参数是函数
+- 情况 2: 返回是函数
 
 2. 常见的高阶函数:
 
-1) 定时器设置函数
-2) 数组的 forEach()/map()/filter()/reduce()/find()/bind()
-3) promise
-4) react-redux 中的 connect 函数
+- 定时器设置函数
+- 数组的 forEach/map/filter/reduce/find/bind
+- promise
+- react-redux 中的 connect 函数
 
 3. 作用: 能实现更加动态, 更加可扩展的功能
