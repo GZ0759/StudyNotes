@@ -1,5 +1,5 @@
 > [useEffect 完整指南](https://overreacted.io/zh-hans/a-complete-guide-to-useeffect/)  
-> 2019年3月9日
+> 2019年3月9日  
 > 作者：[Dan Abramov](https://mobile.twitter.com/dan_abramov)
 
 # useEffect 完整指南
@@ -16,14 +16,13 @@
 
 ## 内容摘要
 
-
 - Question: 如何用useEffect模拟componentDidMount生命周期？
 
 虽然可以使用`useEffect(fn, [])`，但它们并不完全相等。和componentDidMount不一样，useEffect会捕获 props和state。所以即便在回调函数里，你拿到的还是初始的props和state。如果你想得到“最新”的值，你可以使用ref。不过，通常会有更简单的实现方式，所以你并不一定要用ref。记住，effects的心智模型和componentDidMount以及其他生命周期是不同的，试图找到它们之间完全一致的表达反而更容易使你混淆。想要更有效，你需要“think in effects”，它的心智模型更接近于实现状态同步，而不是响应生命周期事件。
 
 - Question: 如何正确地在useEffect里请求数据？`[]`又是什么？
 
-这篇文章 是很好的入门，介绍了如何在useEffect里做数据请求。请务必读完它！它没有我的这篇这么长。`[]`表示effect没有使用任何React数据流里的值，因此该effect仅被调用一次是安全的。`[]`同样也是一类常见问题的来源，也即你以为没使用数据流里的值但其实使用了。你需要学习一些策略（主要是useReducer 和 useCallback）来移除这些effect依赖，而不是错误地忽略它们。
+这篇文章是很好的入门，介绍了如何在useEffect里做数据请求。请务必读完它！它没有我的这篇这么长。`[]`表示effect没有使用任何React数据流里的值，因此该effect仅被调用一次是安全的。`[]`同样也是一类常见问题的来源，也即你以为没使用数据流里的值但其实使用了。你需要学习一些策略（主要是useReducer 和 useCallback）来移除这些effect依赖，而不是错误地忽略它们。
 
 - Question: 我应该把函数当做effect的依赖吗？
 
@@ -106,7 +105,7 @@ function Counter() {
 
 这里关键的点在于任意一次渲染中的count常量都不会随着时间改变。渲染输出会变是因为我们的组件被一次次调用，而每一次调用引起的渲染中，它包含的count值独立于其他渲染。
 
-（关于这个过程更深入的探讨可以查看我的另一篇文章 [React as a UI Runtime](https://overreacted.io/react-as-a-ui-runtime/)。）
+（关于这个过程更深入的探讨可以查看我的另一篇文章 React as a UI Runtime。）
 
 ### 每一次渲染都有它自己的事件处理函数
 到目前为止一切都还好。那么事件处理函数呢？
@@ -140,13 +139,10 @@ function Counter() {
 1. 点击增加counter到3
 2. 点击一下 “Show alert”
 1. 点击增加 counter到5并且在定时器回调触发前完成
-Counter demo
 
 你猜alert会弹出什么呢？会是5吗？— 这个值是alert的时候counter的实时状态。或者会是3吗？— 这个值是我点击时候的状态。
 
-来自己 [试试吧！](https://codesandbox.io/s/w2wxl3yo0l)
-
-如果结果和你预料不一样，你可以想象一个更实际的例子：一个聊天应用在state中保存了当前接收者的ID，以及一个发送按钮。 [这篇文章](https://overreacted.io/how-are-function-components-different-from-classes)深入探索了个中缘由。正确的答案就是3。
+如果结果和你预料不一样，你可以想象一个更实际的例子：一个聊天应用在state中保存了当前接收者的ID，以及一个发送按钮。这篇文章深入探索了个中缘由。正确的答案就是3。
 
 alert会“捕获”我点击按钮时候的状态。
 
@@ -174,7 +170,7 @@ sayHi(someone);
 someone = {name: 'Dominic'};
 sayHi(someone);
 ```
-在 [这个例子](https://codesandbox.io/s/mm6ww11lk8)中, 外层的someone会被赋值很多次（就像在React中，当前的组件状态会改变一样）。然后，在sayHi函数中，局部常量name会和某次调用中的person关联。因为这个常量是局部的，所以每一次调用都是相互独立的。结果就是，当定时器回调触发的时候，每一个alert都会弹出它拥有的name。
+在 这个例子中, 外层的someone会被赋值很多次（就像在React中，当前的组件状态会改变一样）。然后，在sayHi函数中，局部常量name会和某次调用中的person关联。因为这个常量是局部的，所以每一次调用都是相互独立的。结果就是，当定时器回调触发的时候，每一个alert都会弹出它拥有的name。
 
 这就解释了我们的事件处理函数如何捕获了点击时候的count值。如果我们应用相同的替换原理，每一次渲染“看到”的是它自己的count：
 
@@ -341,30 +337,24 @@ React会记住你提供的effect函数，并且会在每次更改作用于DOM并
 
 概念上，你可以想象effects是渲染结果的一部分。
 
-严格地说，它们并不是（为了[允许Hook的组合](https://overreacted.io/why-do-hooks-rely-on-call-order/)并且不引入笨拙的语法或者运行时）。但是在我们构建的心智模型上，effect函数属于某个特定的渲染，就像事件处理函数一样。
+严格地说，它们并不是（为了允许Hook的组合并且不引入笨拙的语法或者运行时）。但是在我们构建的心智模型上，effect函数属于某个特定的渲染，就像事件处理函数一样。
 
 为了确保我们已经有了扎实的理解，我们再回顾一下第一次的渲染过程：
 
 1. React: 给我状态为 0时候的UI。
-2. 你的组件:
-  - 给你需要渲染的内容: `<p>You clicked 0 times</p>`。
-  - 记得在渲染完了之后调用这个effect: `() => { document.title = 'You clicked 0 times' }`。
+2. 你的组件:给你需要渲染的内容: `<p>You clicked 0 times</p>`；记得在渲染完了之后调用这个effect: `() => { document.title = 'You clicked 0 times' }`。
 3. React: 没问题。开始更新UI，喂浏览器，我要给DOM添加一些东西。
 4. 浏览器: 酷，我已经把它绘制到屏幕上了。
-5. React: 好的， 我现在开始运行给我的effect
-  - 运行 `() => { document.title = 'You clicked 0 times' }`。
+5. React: 好的， 我现在开始运行给我的effect。运行 `() => { document.title = 'You clicked 0 times' }`。
 
 现在我们回顾一下我们点击之后发生了什么：
 
 1. 你的组件: 喂 React, 把我的状态设置为1。
 2. React: 给我状态为 1时候的UI。
-3. 你的组件:
-  - 给你需要渲染的内容: `<p>You clicked 1 times</p>`。
-  - 记得在渲染完了之后调用这个effect： `() => { document.title = 'You clicked 1 times' }`。
+3. 你的组件:给你需要渲染的内容: `<p>You clicked 1 times</p>`；记得在渲染完了之后调用这个effect： `() => { document.title = 'You clicked 1 times' }`。
 4. React: 没问题。开始更新UI，喂浏览器，我修改了DOM。
 5. Browser: 酷，我已经将更改绘制到屏幕上了。
-6. React: 好的， 我现在开始运行属于这次渲染的effect
-  - 运行 `() => { document.title = 'You clicked 1 times' }`。
+6. React: 好的，我现在开始运行属于这次渲染的effect。运行 `() => { document.title = 'You clicked 1 times' }`。
 
 ### 每一次渲染都有它自己的…所有
 我们现在知道effects会在每次渲染后运行，并且概念上它是组件输出的一部分，可以“看到”属于某次特定渲染的props和state。
@@ -393,13 +383,13 @@ function Counter() {
 ```
 如果我点击了很多次并且在effect里设置了延时，打印出来的结果会是什么呢？
 
-你可能会认为这是一个很绕的题并且结果是反直觉的。完全错了！我们看到的就是顺序的打印输出 — 每一个都属于某次特定的渲染，因此有它该有的count值。你可以自己[试一试](https://codesandbox.io/s/lyx20m1ol)：
+你可能会认为这是一个很绕的题并且结果是反直觉的。完全错了！我们看到的就是顺序的打印输出 — 每一个都属于某次特定的渲染，因此有它该有的count值。你可以自己试一试：
 
 1, 2, 3, 4, 5 顺序打印
 
 你可能会想：“它当然应该是这样的。否则还会怎么样呢？”
 
-不过，class中的this.state并不是这样运作的。你可能会想当然以为下面的[class 实现](https://codesandbox.io/s/kkymzwjqz3)和上面是相等的：
+不过，class中的`this.state`并不是这样运作的。你可能会想当然以为下面的class 实现和上面是相等的：
 
 ```jsx
   componentDidUpdate() {
@@ -442,7 +432,7 @@ function Example(props) {
 ```
 在组件内什么时候去读取props或者state是无关紧要的。因为它们不会改变。在单次渲染的范围内，props和state始终保持不变。（解构赋值的props使得这一点更明显。）
 
-当然，有时候你可能想在effect的回调函数里读取最新的值而不是捕获的值。最简单的实现方法是使用refs，[这篇文章](https://overreacted.io/how-are-function-components-different-from-classes/)的最后一部分介绍了相关内容。
+当然，有时候你可能想在effect的回调函数里读取最新的值而不是捕获的值。最简单的实现方法是使用refs，这篇文章的最后一部分介绍了相关内容。
 
 需要注意的是当你想要从过去渲染中的函数里读取未来的props和state，你是在逆潮而动。虽然它并没有错（有时候可能也需要这样做），但它因为打破了默认范式会使代码显得不够“干净”。这是我们有意为之的，因为它能帮助突出哪些代码是脆弱的，是需要依赖时间次序的。在class中，如果发生这种情况就没那么显而易见了。
 
@@ -465,7 +455,7 @@ function Example() {
 ```
 5, 5, 5, 5, 5 打印输出
 
-在React中去直接修改值看上去有点怪异。然而，在class组件中React正是这样去修改`this.state`的。不像捕获的props和state，你没法保证在任意一个回调函数中读取的latestCount.current是不变的。根据定义，你可以随时修改它。这就是为什么它不是默认行为，而是需要你主动选择这样做。
+在React中去直接修改值看上去有点怪异。然而，在class组件中React正是这样去修改`this.state`的。不像捕获的props和state，你没法保证在任意一个回调函数中读取的`latestCount.current`是不变的。根据定义，你可以随时修改它。这就是为什么它不是默认行为，而是需要你主动选择这样做。
 
 ### 那Effect中的清理又是怎样的呢？
 像 文档中解释的, 有些 effects 可能需要有一个清理步骤。本质上，它的目的是消除副作用（effect），比如取消订阅。
@@ -701,7 +691,6 @@ function SearchResults() {
     document.title = 'Hello, ' + name;
   }, [name]);
 ```
-effects更新示例图
 
 依赖发生了变更，所以会重新运行effect。
 
@@ -712,7 +701,6 @@ effects更新示例图
     document.title = 'Hello, ' + name;
   }, []); // Wrong: name is missing in deps
 ```
-effects更新示例图
 
 依赖没有变，所以不会再次运行effect。
 
@@ -792,8 +780,6 @@ function Counter() {
 ```
 因此，设置`[]`为依赖会引入一个bug。React会对比依赖，并且跳过后面的effect：
 
-定时器闭包示例图
-
 依赖没有变，所以不会再次运行effect。
 
 类似于这样的问题是很难被想到的。因此，我鼓励你将诚实地告知effect依赖作为一条硬性规则，并且要列出所以依赖。（我们提供了一个lint规则如果你想在你的团队内做硬性规定。）
@@ -848,8 +834,6 @@ function Counter() {
 ```
 这能解决问题但是我们的定时器会在每一次count改变后清除和重新设定。这应该不是我们想要的结果：
 
-定时器重复订阅示例图
-
 依赖发生了变更，所以会重新运行effect。
 
 第二种策略是修改effect内部的代码以确保它包含的值只会在需要的时候发生变更。我们不想告知错误的依赖 - 我们只是修改effect使得依赖更少。
@@ -883,13 +867,11 @@ function Counter() {
 
 注意我们做到了移除依赖，并且没有撒谎。我们的effect不再读取渲染中的count值。
 
-运行良好的定时器示例图
-
 依赖没有变，所以不会再次运行effect。
 
-你可以自己 试试。
+你可以自己试试。
 
-尽管effect只运行了一次，第一次渲染中的定时器回调函数可以完美地在每次触发的时候给React发送c => c + 1更新指令。它不再需要知道当前的count值。因为React已经知道了。
+尽管effect只运行了一次，第一次渲染中的定时器回调函数可以完美地在每次触发的时候给React发送`c => c + 1`更新指令。它不再需要知道当前的count值。因为React已经知道了。
 
 ### 函数式更新 和 Google Docs
 还记得我们说过同步才是理解effects的心智模型吗？同步的一个有趣地方在于你通常想要把同步的“信息”和状态解耦。举个例子，当你在Google Docs编辑文档的时候，Google并不会把整篇文章发送给服务器。那样做会非常低效。相反的，它只是把你的修改以一种形式发送给服务端。
@@ -923,8 +905,6 @@ function Counter() {
 }
 ```
 
-这里是demo.
-
 注意我们没有撒谎。既然我们在effect里使用了step，我们就把它加到依赖里。所以这也是为什么代码能运行正确。
 
 这个例子目前的行为是修改step会重启定时器 - 因为它是依赖项之一。在大多数场景下，这正是你所需要的。清除上一次的effect然后重新运行新的effect并没有任何错。除非我们有很好的理由，我们不应该改变这个默认行为。
@@ -948,8 +928,6 @@ useEffect(() => {
   return () => clearInterval(id);
 }, [dispatch]);
 ```
-
-查看 demo。
 
 你可能会问：“这怎么就更好了？”答案是React会保证dispatch在组件的声明周期内保持不变。所以上面例子中不再需要重新订阅定时器。
 
@@ -976,10 +954,9 @@ function reducer(state, action) {
   }
 }
 ```
-这里是demo 如果你之前错过了。
 
 ### 为什么useReducer是Hooks的作弊模式
-我们已经学习到如何移除effect的依赖，不管状态更新是依赖上一个状态还是依赖另一个状态。但假如我们需要依赖props去计算下一个状态呢？举个例子，也许我们的API是`<Counter step={1} />`。确定的是，在这种情况下，我们没法避免依赖props.step 。是吗？
+我们已经学习到如何移除effect的依赖，不管状态更新是依赖上一个状态还是依赖另一个状态。但假如我们需要依赖props去计算下一个状态呢？举个例子，也许我们的API是`<Counter step={1} />`。确定的是，在这种情况下，我们没法避免依赖`props.step` 。是吗？
 
 实际上， 我们可以避免！我们可以把reducer函数放到组件内去读取props：
 
@@ -1005,7 +982,7 @@ function Counter({ step }) {
   return <h1>{count}</h1>;
 }
 ```
-这种模式会使一些优化失效，所以你应该避免滥用它，不过如果你需要你完全可以在reducer里面访问props。（这里是demo。）
+这种模式会使一些优化失效，所以你应该避免滥用它，不过如果你需要你完全可以在reducer里面访问props。
 
 即使是在这个例子中，React也保证dispatch在每次渲染中都是一样的。 所以你可以在依赖中去掉它。它不会引起effect不必要的重复执行。
 
@@ -1106,7 +1083,6 @@ function SearchResults() {
   // ...
 }
 ```
-这里是demo.
 
 这么做有什么好处呢？我们不再需要去考虑这些“间接依赖”。我们的依赖数组也不再撒谎：在我们的effect中确实没有再使用组件范围内的任何东西。
 
@@ -1132,15 +1108,10 @@ function SearchResults() {
   // ...
 }
 ```
-这里是demo.
 
 添加这个依赖，我们不仅仅是在“取悦React”。在query改变后去重新请求数据是合理的。useEffect的设计意图就是要强迫你关注数据流的改变，然后决定我们的effects该如何和它同步 - 而不是忽视它直到我们的用户遇到了bug。
 
 感谢eslint-plugin-react-hooks 插件的exhaustive-depslint规则，它会在你编码的时候就分析effects并且提供可能遗漏依赖的建议。换句话说，机器会告诉你组件中哪些数据流变更没有被正确地处理。
-
-Lint 规则 gif
-
-非常棒。
 
 ### 但我不能把这个函数放到Effect里
 有时候你可能不想把函数移入effect里。比如，组件内有几个effect使用了相同的函数，你不想在每个effect里复制黏贴一遍这个逻辑。也或许这个函数是一个prop。
