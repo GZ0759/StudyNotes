@@ -1,6 +1,5 @@
 > Vue.js 3.0 核心源码解析  
 > 黄轶（ustbhuangyi）
-
 # 开篇词
 
 ## 学习 Vue.js 源码
@@ -55,13 +54,13 @@ Vue.js 2.x 发展了很久，现在周边的生态设施都已经非常完善了
 
 那么接下来，我们就一起来看一下 Vue.js 3.0 具体做了哪些优化。
 
-### 源码优化
+### 一、源码优化
 
 首先是源码优化，也就是作者对于 Vue.js 框架本身开发的优化，它的目的是让代码更易于开发和维护。源码的优化主要体现在使用 monorepo 和 TypeScript 管理和开发源码，这样做的目标是提升自身代码可维护性。接下来我们就来看一下这两个方面的具体变化。
 
 1. 更好的代码管理方式：monorepo
 
-首先，源码的优化体现在代码管理方式上。Vue.js 2.x 的源码托管在 src 目录，然后依据功能拆分出了 compiler（模板编译的相关代码）、core（与平台无关的通用运行时代码）、platforms（平台专有代码）、server（服务端渲染的相关代码）、sfc（.vue 单文件解析相关代码）、shared（共享工具代码） 等目录。
+首先，源码的优化体现在代码管理方式上。Vue.js 2.x 的源码托管在 `src` 目录，然后依据功能拆分出了 `compiler` 模板编译的相关代码、`core` 与平台无关的通用运行时代码、`platforms` 平台专有代码、`server` 服务端渲染的相关代码、`sfc` `.vue` 单文件解析相关代码、`shared` 共享工具代码等目录。
 
 而到了 Vue.js 3.0 ，整个源码是通过 monorepo 的方式维护的，根据功能将不同的模块拆分到 packages 目录下面不同的子目录中。
 
@@ -87,7 +86,7 @@ const propOptions: any = vm.$options.props // wtf flow?
 
 此外，小右和 TypeScript 团队也一直保持了良好的沟通，可以期待 TypeScript 对 Vue.js 的支持会越来越好。
 
-### 性能优化
+### 二、性能优化
 
 性能优化一直是前端老生常谈的问题。那么对于 Vue.js 2.x 已经足够优秀的前端框架，它的性能优化可以从哪些方面进行突破呢？
 
@@ -240,9 +239,9 @@ Vue.js 3.0 做到了，它通过编译阶段对静态模板的分析，编译生
 
 Block tree 是一个将模版基于动态节点指令切割的嵌套区块，每个区块内部的节点结构是固定的，而且每个区块只需要以一个 Array 来追踪自身包含的动态节点。借助 Block tree，Vue.js 将 vnode 更新性能由与模版整体大小相关，提升为与动态内容的数量相关，这是一个非常大的性能突破，我会在后续的章节详细分析它是如何实现的。
 
-除此之外，Vue.js 3.0 在编译阶段还包含了对 Slot 的编译优化、事件侦听函数的缓存优化，并且在运行时重写了 diff 算法，这些性能优化的内容我在后续特定的章节与你分享。
+除此之外，Vue.js 3.0 在编译阶段还包含了对 Slot 的编译优化、事件侦听函数的缓存优化，并且在运行时重写了 diff 算法。
 
-### 语法优化
+### 三、语法优化
 
 除了源码和性能方面，Vue.js 3.0 还在语法方面进行了优化，主要是提供了 Composition API，那么我们一起来看一下它为我们提供了什么帮助。
 
@@ -338,7 +337,7 @@ export default function useMousePosition() {
 
 这里我们约定 useMousePosition 这个函数为 hook 函数，然后在组件中使用：
 
-```js
+```html
 <template>
   <div>
     Mouse position: x {{ x }} / y {{ y }}
@@ -361,7 +360,7 @@ Composition API 除了在逻辑复用方面有优势，也会有更好的类型�
 
 虽然 Composition API 有诸多优势，它也不是一点缺点都没有，关于它的具体用法和设计原理，我们会在后续的章节详细说明。这里还需要说明的是，Composition API 属于 API 的增强，它并不是 Vue.js 3.0 组件开发的范式，如果你的组件足够简单，你还是可以使用 Options API。
 
-### 引入 RFC
+### 四、引入 RFC
 
 作为一个流行开源框架的作者，小右可能每天都会收到各种各样的 feature request。但并不是社区一有新功能的需求，框架就会立马支持，因为随着 Vue.js 的用户越来越多，小右会更加重视稳定性，会仔细考虑所做的每一个可能对最终用户影响的更改，以及有意识去防止新 API 对框架本身实现带来的复杂性的提升。
 
@@ -371,7 +370,7 @@ Composition API 除了在逻辑复用方面有优势，也会有更好的类型�
 
 Vue.js 3.0 目前已被实现并合并的 RFC 都在这里，通过阅读它们，你也可以大致了解 Vue.js 3.0 的一些变化，以及为什么会产生这些变化，帮助你了解它的前因后果。
 
-### 过渡期
+### 五、过渡期
 
 接下来，我想再带你来了解一下 Vue.js 各版本迭代的过渡期，希望能够对你在 Vue.js 的技术选型方面和学习方向上有所帮助。
 
@@ -532,13 +531,13 @@ function createAppAPI(render) {
 
 在整个 app 对象创建过程中，Vue.js 利用闭包和函数柯里化的技巧，很好地实现了参数保留。比如，在执行 `app.mount` 的时候，并不需要传入渲染器 render，这是因为在执行 createAppAPI 的时候渲染器 render 参数已经被保留下来了。
 
-2. 重写 app.mount 方法
+2. 重写 `app.mount` 方法
 
-接下来，是重写 app.mount 方法。
+接下来，是重写 `app.mount` 方法。
 
-根据前面的分析，我们知道 createApp 返回的 app 对象已经拥有了 mount 方法了，但在入口函数中，接下来的逻辑却是对 app.mount 方法的重写。先思考一下，为什么要重写这个方法，而不把相关逻辑放在 app 对象的 mount 方法内部来实现呢？
+根据前面的分析，我们知道 createApp 返回的 app 对象已经拥有了 mount 方法了，但在入口函数中，接下来的逻辑却是对 `app.mount` 方法的重写。先思考一下，为什么要重写这个方法，而不把相关逻辑放在 app 对象的 mount 方法内部来实现呢？
 
-这是因为 Vue.js 不仅仅是为 Web 平台服务，它的目标是支持跨平台渲染，而 createApp 函数内部的 app.mount 方法是一个标准的可跨平台的组件渲染流程：
+这是因为 Vue.js 不仅仅是为 Web 平台服务，它的目标是支持跨平台渲染，而 createApp 函数内部的 `app.mount` 方法是一个标准的可跨平台的组件渲染流程：
 
 ```js
 mount(rootContainer) {
@@ -553,7 +552,7 @@ mount(rootContainer) {
 
 标准的跨平台渲染流程是先创建 vnode，再渲染 vnode。此外参数 rootContainer 也可以是不同类型的值，比如，在 Web 平台它是一个 DOM 对象，而在其他平台（比如 Weex 和小程序）中可以是其他类型的值。所以这里面的代码不应该包含任何特定平台相关的逻辑，也就是说这些代码的执行逻辑都是与平台无关的。因此我们需要在外部重写这个方法，来完善 Web 平台下的渲染逻辑。
 
-接下来，我们再来看 app.mount 重写都做了哪些事情：
+接下来，我们再来看 `app.mount` 重写都做了哪些事情：
 
 ```js
 app.mount = (containerOrSelector) => {
@@ -573,11 +572,11 @@ app.mount = (containerOrSelector) => {
 }
 ```
 
-首先是通过 normalizeContainer 标准化容器（这里可以传字符串选择器或者 DOM 对象，但如果是字符串选择器，就需要把它转成 DOM 对象，作为最终挂载的容器），然后做一个 if 判断，如果组件对象没有定义 render 函数和 template 模板，则取容器的 innerHTML 作为组件模板内容；接着在挂载前清空容器内容，最终再调用 app.mount 的方法走标准的组件渲染流程。
+首先是通过 normalizeContainer 标准化容器（这里可以传字符串选择器或者 DOM 对象，但如果是字符串选择器，就需要把它转成 DOM 对象，作为最终挂载的容器），然后做一个 if 判断，如果组件对象没有定义 render 函数和 template 模板，则取容器的 innerHTML 作为组件模板内容；接着在挂载前清空容器内容，最终再调用 `app.mount` 的方法走标准的组件渲染流程。
 
-在这里，重写的逻辑都是和 Web 平台相关的，所以要放在外部实现。此外，这么做的目的是既能让用户在使用 API 时可以更加灵活，也兼容了 Vue.js 2.x 的写法，比如 app.mount 的第一个参数就同时支持选择器字符串和 DOM 对象两种类型。
+在这里，重写的逻辑都是和 Web 平台相关的，所以要放在外部实现。此外，这么做的目的是既能让用户在使用 API 时可以更加灵活，也兼容了 Vue.js 2.x 的写法，比如 `app.mount` 的第一个参数就同时支持选择器字符串和 DOM 对象两种类型。
 
-从 app.mount 开始，才算真正进入组件渲染流程，那么接下来，我们就重点看一下核心渲染流程做的两件事情：创建 vnode 和渲染 vnode。
+从 `app.mount` 开始，才算真正进入组件渲染流程，那么接下来，我们就重点看一下核心渲染流程做的两件事情：创建 vnode 和渲染 vnode。
 
 ### 核心渲染流程
 
@@ -655,8 +654,8 @@ const shapeFlag = isString(type)
 
 知道什么是 vnode 后，你可能会好奇，那么 vnode 有什么优势呢？为什么一定要设计 vnode 这样的数据结构呢？
 
-- 首先是抽象，引入 vnode，可以把渲染过程抽象化，从而使得组件的抽象能力也得到提升。
-- 其次是跨平台，因为 patch vnode 的过程不同平台可以有自己的实现，基于 vnode 再做服务端渲染、Weex 平台、小程序平台的渲染都变得容易了很多。
+1. 抽象，引入 vnode，可以把渲染过程抽象化，从而使得组件的抽象能力也得到提升。
+2. 跨平台，因为 patch vnode 的过程不同平台可以有自己的实现，基于 vnode 再做服务端渲染、Weex 平台、小程序平台的渲染都变得容易了很多。
 
 不过这里要特别注意，使用 vnode 并不意味着不用操作 DOM 了，很多同学会误以为 vnode 的性能一定比手动操作原生 DOM 好，这个其实是不一定的。
 
@@ -664,7 +663,7 @@ const shapeFlag = isString(type)
 
 那么，Vue.js 内部是如何创建这些 vnode 的呢？
 
-回顾 app.mount 函数的实现，内部是通过 createVNode 函数创建了根组件的 vnode ：
+回顾 `app.mount` 函数的实现，内部是通过 createVNode 函数创建了根组件的 vnode ：
 
 ```js
 const vnode = createVNode(rootComponent, rootProps)
@@ -708,7 +707,7 @@ function createVNode(type, props = null
 
 2. 渲染 vnode
 
-回顾 app.mount 函数的实现，内部通过执行这段代码去渲染创建好的 vnode：
+回顾 `app.mount` 函数的实现，内部通过执行这段代码去渲染创建好的 vnode：
 
 ```js
 render(vnode, rootContainer)
@@ -814,13 +813,11 @@ const mountComponent = (initialVNode, container, anchor, parentComponent, parent
 
 可以看到，挂载组件函数 mountComponent 主要做三件事情：创建组件实例、设置组件实例、设置并运行带副作用的渲染函数。
 
-首先是创建组件实例，Vue.js 3.0 虽然不像 Vue.js 2.x 那样通过类的方式去实例化组件，但内部也通过对象的方式去创建了当前渲染的组件实例。
-
-其次设置组件实例，instance 保留了很多组件相关的数据，维护了组件的上下文，包括对 props、插槽，以及其他实例的属性的初始化处理。
-
 创建和设置组件实例这两个流程我们这里不展开讲，会在后面的章节详细分析。
 
-最后是运行带副作用的渲染函数 setupRenderEffect，我们重点来看一下这个函数的实现：
+1. 创建组件实例，Vue.js 3.0 虽然不像 Vue.js 2.x 那样通过类的方式去实例化组件，但内部也通过对象的方式去创建了当前渲染的组件实例。
+2. 设置组件实例，instance 保留了很多组件相关的数据，维护了组件的上下文，包括对 props、插槽，以及其他实例的属性的初始化处理。
+3. 运行带副作用的渲染函数 setupRenderEffect，我们重点来看一下这个函数的实现：
 
 ```js
 const setupRenderEffect = (instance, initialVNode, container, anchor, parentSuspense, isSVG, optimized) => {
@@ -935,7 +932,7 @@ function createElement(tag, isSVG, is) {
 }
 ```
 
-它调用了底层的 DOM API document.createElement 创建元素，所以本质上 Vue.js 强调不去操作 DOM ，只是希望用户不直接碰触 DOM，它并没有什么神奇的魔法，底层还是会操作 DOM。
+它调用了底层的 DOM API `document.createElement` 创建元素，所以本质上 Vue.js 强调不去操作 DOM ，只是希望用户不直接碰触 DOM，它并没有什么神奇的魔法，底层还是会操作 DOM。
 
 另外，如果是其他平台比如 Weex，hostCreateElement 方法就不再是操作 DOM ，而是平台相关的 API 了，这些平台相关的方法是在创建渲染器阶段作为参数传入的。
 
