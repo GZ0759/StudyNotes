@@ -6,7 +6,7 @@
     {
       "label": "提交代码",
       "type": "shell",
-      "command": "git add .;git commit -m 'update';git push;git lg -n 2",
+      "command": "git add .;git commit -m 'update';git push",
       "problemMatcher": [],
       "group": {
         "kind": "build",
