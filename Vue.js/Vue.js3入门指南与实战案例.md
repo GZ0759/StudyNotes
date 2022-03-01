@@ -5,7 +5,7 @@
 
 项目搭好了，第一个要了解的肯定是组件的变化。
 
-## 前置知识点
+## 基本函数
 
 在开始编写组件之前，我们需要了解两个全新的前置知识点：`setup` 与 `defineComponent`。
 
@@ -40,7 +40,7 @@ context|object|组件的执行上下文|否
 
 **第一个参数 `props` ：**
 
-它是响应式的（只要你不解构它，或者使用 [toRef / toRefs](#响应式-api-之-toref-与-torefs-new) 进行响应式解构），当传入新的 prop 时，它将被更新。
+它是响应式的（只要你不解构它，或者使用 toRef/toRefs 进行响应式解构），当传入新的 prop 时，它将被更新。
 
 **第二个参数 `context` ：**
 
@@ -88,8 +88,6 @@ export default {
   }
 }
 ```
-
-是不是很繁琐？（肯定是啊！不用否定……
 
 使用了 `defineComponent` 之后，你就可以省略这些类型定义：
 
@@ -190,7 +188,7 @@ export default defineComponent({
 
 我们先来回顾一下这些写法组合分别是什么，了解一下 3.x 最好使用哪种写法：
 
-### 回顾 2.x
+### 回顾 2.x 组件写法
 
 在 2.x ，为了更好的 TS 推导，用的最多的还是 `class component` 的写法。
 
@@ -200,7 +198,7 @@ export default defineComponent({
 2.x|class component|template
 2.x|class component|tsx
 
-### 了解 3.x
+### 了解 3.x 组件写法
 
 目前 3.x 从官方对版本升级的态度来看， `defineComponent` 就是为了解决之前 2.x 对 TS 推导不完善等问题而推出的，尤大也是更希望大家习惯 `defineComponent` 的使用。
 
@@ -217,7 +215,7 @@ export default defineComponent({
 
 接下来，使用 `composition api` 来编写组件，先来实现一个最简单的 `Hello World!`。
 
-在 3.x ，只要你的数据要在 `template` 中使用，就必须在 `setup` 里return出来。当然，只在函数中调用到，而不需要渲染到模板里的，则无需 return 。
+在 3.x ，只要你的数据要在 `template` 中使用，就必须在 `setup` 里 return 出来。当然，只在函数中调用到，而不需要渲染到模板里的，则无需 return 。
 
 ```vue
 <template>
@@ -489,7 +487,7 @@ child.value?.sayHi('use ? in onMounted');
 
 ### 变量的读取与赋值
 
-被 `ref` 包裹的变量会全部变成对象，不管你定义的是什么类型的值，都会转化为一个 ref 对象，其中 ref 对象具有指向内部值的单个 property `.value`。
+被 `ref` 包裹的变量会全部变成对象，不管你定义的是什么类型的值，都会转化为一个 ref 对象，其中 ref 对象具有指向内部值的单个属性 `value`。
 
 对于普通变量的值，读取的时候直接读变量名即可：
 
@@ -719,7 +717,7 @@ export default defineComponent({
 })
 ```
 
-## 响应式 API 之 toRef 与 toRefs
+## 响应式 API 之 toRef/toRefs
 
 为了方便开发者，Vue 3.x 还推出了 2 个相关的 API ，用于 `reactive` 向 `ref` 转换。
 
@@ -787,7 +785,7 @@ const userInfoRefs: Member = toRefs(userInfo);
 
 于是， `toRef` 和 `toRefs` 因此诞生。
 
-### 什么场景下比较适合使用它们
+### 使用场景
 
 从便利性和可维护性来说，最好只在功能单一、代码量少的组件里使用，比如一个表单组件，通常表单的数据都放在一个对象里。
 
@@ -872,30 +870,6 @@ export default defineComponent({
   </ul>
 </template>
 ```
-
-### 需要注意的问题
-
-请注意是否有相同命名的变量存在，比如上面在 `return` 给 `template` 使用时，解构 `userInfoRefs` 的时候已经包含了一个 `name` 字段，此时如果还有一个单独的变量也叫 `name`。
-
-这种情况下，会以单独定义的 `name` 为渲染数据。
-
-```ts
-return {
-  ...userInfoRefs,
-  name
-}
-```
-
-这种情况下，则是以 `userInfoRefs` 里的 `name` 为渲染数据。
-
-```ts
-return {
-  name,
-  ...userInfoRefs
-}
-```
-
-所以当你决定使用 `toRef` 和 `toRefs` 的时候，请注意这个特殊情况！
 
 ## 函数的定义和使用
 
@@ -1165,10 +1139,7 @@ export default defineComponent({
 需要注意的是：
 
 1. 定义出来的 `computed` 变量，和 `ref` 变量的用法一样，也是需要通过 `.value` 才能拿到它的值
-
 2. 但是区别在于， `computed` 的 `value` 是只读的
-
-原因详见下方的 [类型定义](#类型定义) 。
 
 ### 类型定义
 
