@@ -1960,7 +1960,6 @@ Vuex|-|-
 这是 Vue 跨组件通信最常用，也是基础的一个方案，它的通信过程是：
 
 1. `Father.vue` 通过 `prop` 向 `Child.vue` 传值（可包含父级定义好的函数）
-
 2. `Child.vue` 通过 `emit` 向 `Father.vue` 触发父组件的事件执行
 
 ### 下发 props
@@ -2164,7 +2163,6 @@ export default defineComponent({
 
 1. `prop` 是只读，不允许修改
 2. `setup` 的第一个入参，包含了我们定义的所有props（如果在 `Child.vue` 里未定义，但 父组件 `Father.vue` 那边非要传过来的，不会拿到，且控制台会有警告信息）
-3. 该入参可以随意命名，比如你可以写成一个下划线 `_`，通过 `_.uid` 也可以拿到数据，但是语义化命名，是一个良好的编程习惯。
 
 ### 传递非 Prop 的 Attribute
 
@@ -2174,7 +2172,7 @@ export default defineComponent({
 
 但并不意味着你不能传递任何未定义的属性数据，在父组件，除了可以给子组件绑定 props，你还可以根据实际需要去绑定一些特殊的属性。
 
-比如给子组件设置 `class`、`id`，或者 `data-xxx` 之类的一些自定义属性，**如果 `Child.vue` 组件的 `template` 只有一个根节点，这些属性默认自动继承，并渲染在 node 节点上**。
+比如给子组件设置 `class`、`id`，或者 `data-xxx` 之类的一些自定义属性，如果 `Child.vue` 组件的 `template` 只有一个根节点，这些属性默认自动继承，并渲染在 node 节点上。
 
 在 `Father.vue` 里，对 `Child.vue` 传递了 `class`、`id` 和 `data-hash`：
 
