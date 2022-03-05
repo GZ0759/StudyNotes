@@ -109,9 +109,55 @@ React 的世界里只有 JSX，最终 JSX 都会在 Compiler 那一层，也就�
 
 在模板的书写上，除了 Vue 和 React 走出的 template 和 JSX 两个路线，还出现了 Svelte 这种框架，没有虚拟 DOM 的库，直接把模板编译成原生 DOM，几乎没有 Runtime，所有的逻辑都在 Compiler 层优化，算是另外一个极致。
 
-### 02. 上手: -个清单应用带你入门 Vue.js
+### 02. 上手: 一个清单应用带你入门 Vue.js
+
+计算属性全选框功能
+
+```html
+<div>
+  全选<input type="checkbox" v-model="allDone">
+  <span> {{active}}  / {{all}} </span>
+</div>
+<script>
+computed:{
+  active(){
+    return this.todos.filter(v=>!v.done).length
+  },
+  all(){
+    return this.todos.length
+  },
+  allDone: {
+      get: function () {
+        return this.active === 0
+      },
+      set: function (val) {
+        this.todos.forEach(todo=>{
+          todo.done = val
+        });
+      }
+  }
+}
+</script>
+```
 
 ### 03. 新特性:初探 Vue 3 新特性
+
+Vue 2 的核心模块和历史遗留问题
+
+1. 开发维护，使用停止维护的 Flow.js 来做类型校验；
+2. 社区二次维护困难，内部运行时执行浏览器 API 导致跨端方案出现问题；
+3. 响应式不是真正意义上的代理，知识利用 defineProperty 进行属性拦截；
+4. Option API 在组织代码中不易维护，对 TS 的类型推导不友好；
+
+从七个方面了解 Vue 3 新特性
+
+1. Vue 团队开发的工作方式：RFC 机制；
+2. 响应式机制使用 Proxy 代理代替 define Property 拦截；
+3. 自定义渲染器，使用 monorepo 管理方式，渲染的逻辑也拆成了平台无关渲染逻辑和浏览器渲染 API 两部分；
+4. 全部模块使用 TypeScript 重构，给系统带来更方便的提示和让代码更健壮；
+5. Composition API 组合语法，对 Tree- shaking 友好，代码方便复用；
+6. 内置了 Fragment/Teleport/Suspense 新组建；
+7. 新一代工程化工具 Vite；
 
 ### 04. 升级:Vue2 项目如何升级到 Vue3?
 
