@@ -115,28 +115,28 @@ React 的世界里只有 JSX，最终 JSX 都会在 Compiler 那一层，也就�
 
 ```html
 <div>
-  全选<input type="checkbox" v-model="allDone">
-  <span> {{active}}  / {{all}} </span>
+  全选<input type="checkbox" v-model="allDone" />
+  <span> {{active}} / {{all}} </span>
 </div>
 <script>
-computed:{
-  active(){
-    return this.todos.filter(v=>!v.done).length
-  },
-  all(){
-    return this.todos.length
-  },
-  allDone: {
-      get: function () {
-        return this.active === 0
-      },
-      set: function (val) {
-        this.todos.forEach(todo=>{
-          todo.done = val
-        });
-      }
+  computed:{
+    active(){
+      return this.todos.filter(v=>!v.done).length
+    },
+    all(){
+      return this.todos.length
+    },
+    allDone: {
+        get: function () {
+          return this.active === 0
+        },
+        set: function (val) {
+          this.todos.forEach(todo=>{
+            todo.done = val
+          });
+        }
+    }
   }
-}
 </script>
 ```
 
@@ -192,11 +192,9 @@ Node.js
 
 style 样式的特性
 
-
 1. 添加 scoped 属性避免样式冲突问题；
 2. 全局的样式可以使用 `:global` 来标记；
-3. 通过 v-bind 函数直接在 CSS 中使用JavaScript 中的变量；
-
+3. 通过 v-bind 函数直接在 CSS 中使用 JavaScript 中的变量；
 
 ### 07. 巧妙的响应式:深入理解 Vue 3 的响应式机制
 
@@ -208,15 +206,15 @@ Vue 中用过三种响应式解决方案：defineProperty/Proxy/value setter。
 
 defineProperty 在对象的属性中实现了拦截，读取属性的时候执行 get 函数，修改属性时执行 set 函数。单语法也有一些缺陷，删除属性并不会触发 set 函数。
 
-Proxy 是针对对象来监听，而不是针对某个具体属性，所以不仅可以代理那些定义时不存在的属性，还可以代理更丰富的数据结构，比如 Map/Set 等。Vue 3 的reactive 函数可以把一个对象变成响应式数据，而 reactive 就是基于 Proxy 实现的，还可以通过 watchEffect 执行代理的副作用。
+Proxy 是针对对象来监听，而不是针对某个具体属性，所以不仅可以代理那些定义时不存在的属性，还可以代理更丰富的数据结构，比如 Map/Set 等。Vue 3 的 reactive 函数可以把一个对象变成响应式数据，而 reactive 就是基于 Proxy 实现的，还可以通过 watchEffect 执行代理的副作用。
 
-Vue3中还有另外一个响应式实现的逻辑，就是利用对象的 get 和 set 函数来进行监听。这种响应式的实现方式，只能拦截某一个属性的修改，这也是 Vue3 中 ref 这个API 的实现。
+Vue3 中还有另外一个响应式实现的逻辑，就是利用对象的 get 和 set 函数来进行监听。这种响应式的实现方式，只能拦截某一个属性的修改，这也是 Vue3 中 ref 这个 API 的实现。
 
-| 实现原理 | 实际场景 | 优势 | 劣势 | 实际应用 |
-|---|---|---|---|---|
-| defineProperty | Vue 2 响应式 | 兼容性 | 数组和属性删除等拦截不了 | Vue 2 |
-| Proxy | Vue 3 reactive | 基于Proxy实现真正的拦截 | 兼容不了IE11 | Vue 3 复杂数据结构 |
-| value setter | Vue 3 ref | 实现简单 | 只拦截了value属性 | Vue 3 简单数据结构 |
+| 实现原理       | 实际场景       | 优势                      | 劣势                     | 实际应用           |
+| -------------- | -------------- | ------------------------- | ------------------------ | ------------------ |
+| defineProperty | Vue 2 响应式   | 兼容性                    | 数组和属性删除等拦截不了 | Vue 2              |
+| Proxy          | Vue 3 reactive | 基于 Proxy 实现真正的拦截 | 兼容不了 IE11            | Vue 3 复杂数据结构 |
+| value setter   | Vue 3 ref      | 实现简单                  | 只拦截了 value 属性      | Vue 3 简单数据结构 |
 
 定制响应式数据
 
@@ -242,17 +240,148 @@ Vue 已经把组件化的机制实现得很好了，你只需要在这个基础�
 
 ### 09. 动画: Vue 中如何实现动画效果?
 
+#### 前端过渡和动效
+
+1. 通过一个 CSS 的属性 transition 来实现过渡；
+2. 可以通过 animation 和 keyframe 的组合实现动画；
+
+#### Vue 3 动画入门
+
+Vue 3 中提供了一些动画的封装，使用内置的 transition 组件来控制组件的动画。
+
+标签在进入和离开的时候，会有 fade-enter-active 和 fade-leave-active 的 class，进入的开始和结束会有 fade-enter-from 和 face-enter-to 两个 class。
+
+#### 列表动画
+
+在 Vue 中，我们把这种需求称之为列表过渡。因为 transition 组件会把子元素作为一个整体同时去过渡，所以我们需要一个新的内置组件 transition-group。在 v-for 渲染列表的场景之下，我们使用 transition-group 组件去包裹元素，通过 tag 属性去指定渲染一个元素。
+
+#### 页面切换动画
+
+如果要在路由组件上使用转场，并且对导航进行动画处理，你就需要使用 v-slot API。我们来到 src/App.vue 组件中，因为之前 router-view 没有子元素，所以我们要对代码进行修改。
+
+#### JavaScript 动画
+
+具体怎么做呢？ 在 Vue 的 transition 组件里，我们可以分别设置 before-enter，enter 和 after-enter 三个函数来更精确地控制动画。
+在下面的代码中，我们首先定义了 animate 响应式对象来控制动画元素的显示和隐藏，并且用 transition 标签包裹动画元素。在 beforeEnter 函数中，通过 getBoundingClientRect 函数获取鼠标的点击位置，让动画元素通过 translate 属性移动到鼠标所在位置；并且在 enter 钩子中，把动画元素移动到初始位置，在 afterEnter 中，也就是动画结束后，把动画元素再隐藏起来，这样就实现了类似购物车的飞入效果。
+
 ## 三、全家桶实战篇
 
 ### 10. 数据流:如何使用 Vuex 设计你的数据流
 
+使用 createStore 来创建一个数据存储，我们称之为 store。
+store 内部除了数据，还需要一个 mutation 配置去修改数据，你可以把这个 mutation 理解为数据更新的申请单，mutation 内部的函数会把 state 作为参数，我们直接操作 state.count 就可以完成数据的修改。
+
+对于一个数据，如果只是组件内部使用就是用 ref 管理；如果我们需要跨组件，跨页面共享的时候，我们就需要把数据从 Vue 的组件内部抽离出来，放在 Vuex 中去管理。
+
+Vuex 就是一个公用版本的 ref，提供响应式数据给整个项目使用。
+
+在 Vuex 中，mutation 的设计就是用来实现同步地修改数据。如果数据是异步修改的，我们需要一个新的配置 action。
+
+#### 下一代 Vuex
+
+Vuex 由于在 API 的设计上，对 TypeScript 的类型推导的支持比较复杂，用起来很是痛苦。因为我们的项目一直用的都是 JavaScript，你可能感触并不深，但对于使用 TypeScript 的用户来说，Vuex 的这种问题是很明显的。
+为了解决 Vuex 的这个问题，Vuex 的作者最近发布了一个新的作品叫 Pinia，并将其称之为下一代的 Vuex。Pinia 的 API 的设计非常接近 Vuex5 的提案，首先，Pinia 不需要 Vuex 自定义复杂的类型去支持 TypeScript，天生对类型推断就非常友好，并且对 Vue Devtool 的支持也非常好，是一个很有潜力的状态管理框架。
+
 ### 11. 路由:新一代 vue-router 带来什么变化?
+
+#### 前后端开发模式的演变
+
+在 jQuery 时代，对于大部分 Web 项目而言，前端都是不能控制路由的，而是需要依赖后端项目的路由系统。通常，前端项目也会部署在后端项目的模板里，整个项目执行的示意图如下：
+
+前端依赖后端，并且前端不需要负责路由的这种开发方式，有很多的优点，比如开发速度会很快、后端也可以承担部分前端任务等，所以到现在还有很多公司的内部管理系统是这样的架构。当然，这种开发方式也有很多缺点，比如前后端项目无法分离、页面跳转由于需要重新刷新整个页面、等待时间较长等等，所以也会让交互体验下降。
+
+用户访问路由后，无论是什么 URL 地址，都直接渲染一个前端的入口文件 index.html，然后就会在 index.html 文件中加载 JS 和 CSS。之后，JavaScript 获取当前的页面地址，以及当前路由匹配的组件，再去动态渲染当前页面即可。用户在页面上进行点击操作时，也不需要刷新页面，而是直接通过 JS 重新计算出匹配的路由渲染即可。
+
+通过 JavaScript 动态控制数据去提高用户体验的方式并不新奇，Ajax 让数据的获取不需要刷新页面，SPA 应用让路由跳转也不需要刷新页面。这种开发的模式在 jQuery 时代就出来了，浏览器路由的变化可以通过 pushState 来操作，这种纯前端开发应用的方式，以前称之为 Pjax （pushState+ Ajax）。之后，这种开发模式在 MVVM 框架的时代大放异彩，现在大部分使用 Vue/React/Angular 的应用都是这种架构。
+SPA 应用相比于模板的开发方式，对前端更加友好，比如：前端对项目的控制权更大了、交互体验也更加丝滑，更重要的是，前端项目终于可以独立出来单独部署了。
+
+#### 前端路由的实现原理
+
+在讲完前端路由的执行逻辑之后，我们深入探索一下前端控制路由的实现原理。
+现在，通过 URL 区分路由的机制上，有两种实现方式，一种是 hash 模式，通过 URL 中 # 后面的内容做区分，我们称之为 hash-router；另外一个方式就是 history 模式，在这种方式下，路由看起来和正常的 URL 完全一致。
+这两个不同的原理，在 vue-router 中对应两个函数，分别是 createWebHashHistory 和 createWebHistory。
+
+hash 模式
+
+类似于服务端路由，前端路由实现起来其实也很简单，就是匹配不同的 URL 路径，进行解析，然后动态地渲染出区域 HTML 内容。但是这样存在一个问题，就是 URL 每次变化的时候，都会造成页面的刷新。解决这一问题的思路便是在改变 URL 的情况下，保证页面的不刷新。
+
+之后，在进行页面跳转的操作时，hash 值的变化并不会导致浏览器页面的刷新，只是会触发 hashchange 事件。在下面的代码中，通过对 hashchange 事件的监听，我们就可以在 fn 函数内部进行动态地页面切换。
+
+history 模式
+
+2014 年之后，因为 HTML5 标准发布，浏览器多了两个 API：pushState 和 replaceState。通过这两个 API ，我们可以改变 URL 地址，并且浏览器不会向后端发送请求，我们就能用另外一种方式实现前端路由。
+在下面的代码中，我们监听了 popstate 事件，可以监听到通过 pushState 修改路由的变化。并且在 fn 函数中，我们实现了页面的更新操作。
+
+#### 手写迷你 vue-router
+
+在代码中，我们首先实现了用 Router 类去管理路由，并且，我们使用 createWebHashHistory 来返回 hash 模式相关的监听代码，以及返回当前 URL 和监听 hashchange 事件的方法；然后，我们通过 Router 类的 install 方法注册了 Router 的实例，并对外暴露 createRouter 方法去创建 Router 实例；最后，我们还暴露了 useRouter 方法，去获取路由实例。
+
+下一步，我们需要注册两个内置组件 router-view 和 router-link。在 createRouter 创建的 Router 实例上，current 返回当前的路由地址，并且使用 ref 包裹成响应式的数据。router-view 组件的功能，就是 current 发生变化的时候，去匹配 current 地址对应的组件，然后动态渲染到 router-view 就可以了。
+
 
 ### 12. 调试:提高开发效率必备的 Vue Devtools
 
+Vue Devtools 可以算是一个 Elements 页面的 Vue 定制版本，调试页面左侧的显示内容并不是 HTML，而是 Vue 的组件嵌套关系。我们可以从中清晰地看到整个项目中最外层的 App 组件，也能看到 App 组件内部的 RouterView 下面的 Todo 组件。
+
+并且，在调试页面的左侧中，当我们点击组件的时候，我们所调试的前端页面中也会高亮清单组件的覆盖范围。调试页面的右侧则显示着 todo 组件内部所有的数据和方法。我们可以清晰地看到 setup 配置下，有 todos、animate、active 等诸多变量，并且这些变量也是和页面实时同步的数据，我们在页面中输入新的清单后，可以看到 active 和 all 的数据也随之发生了变化。
+
+同时，我们也可以直接修改调试窗口里面的数据，这样，正在调试的前端页面也会同步数据的显示效果。有了 Vue 的调试页面，当我们碰到页面中的数据和标签不同步的情况时，就可以很轻松地定位出是哪里出现了问题。
+然后在 Component 的下拉框那里，我们还可以选择 Vuex 和 Router 页面，分别用来调试 Vuex 和 vue-router。
+
+这里还有一个小技巧，你可以了解一下：在 Components 页面下，你选中一个组件后，调试窗口的右侧就会出现 4 个小工具。
+如下图所示，在我用红框标记的四个工具中，最右边的那个工具可以让你直接在编辑器里打开这个代码。这样，调试组件的时候就不用根据路径再去 VS Code 里搜索代码文件了，这算是一个非常好用的小功能。
+
 ### 13. JSX:如何利用 JSX 应对更灵活的开发场景?
 
+实际上，Vue 中不仅有 JSX，而且 Vue 还借助 JSX 发挥了 Javascript 动态化的优势。此外，Vue 中的 JSX 在组件库、路由库这类开发场景中，也发挥着重要的作用。
+
+#### h 函数
+
+在 Vue 3 的项目开发中，template 是 Vue 3 默认的写法。虽然 template 长得很像 HTML，但 Vue 其实会把 template 解析为 render 函数，之后，组件运行的时候通过 render 函数去返回虚拟 DOM，你可以在 Vue Devtools 中看到组件编译之后的结果。
+
+调试窗口右侧代码中的 `_sfc_render_` 函数就是清单应用的 template 解析成 JavaScript 之后的结果。所以除了 template 之外，在某些场景下，我们可以直接写 render 函数来实现组件。
+
+我们使用 defineComponent 定义一个组件，组件内部配置了 props 和 setup。这里的 setup 函数返回值是一个函数，就是我们所说的 render 函数。render 函数返回 h 函数的执行结果，h 函数的第一个参数就是标签名，我们可以很方便地使用字符串拼接的方式，实现和上面代码一样的需求。像这种连标签名都需要动态处理的场景，就需要通过手写 h 函数来实现。
+
+手写的 h 函数，可以处理动态性更高的场景。但是如果是复杂的场景，h 函数写起来就显得非常繁琐，需要自己把所有的属性都转变成对象。并且组件嵌套的时候，对象也会变得非常复杂。不过，因为 h 函数也是返回虚拟 DOM 的，所以有没有更方便的方式去写 h 函数呢？答案是肯定的，这个方式就是 JSX。
+
+#### JSX 是什么
+
+在 JavaScript 里面写 HTML 的语法，就叫做 JSX，算是对 JavaScript 语法的一个扩展。上面的代码直接在 JavaScript 环境中运行时，会报错。JSX 的本质就是下面代码的语法糖，h 函数内部也是调用 createVnode 来返回虚拟 DOM。
+
+#### JSX 和 Template
+
+而 JSX 只是 h 函数的一个语法糖，本质就是 JavaScript，想实现条件渲染可以用 if else，也可以用三元表达式，还可以用任意合法的 JavaScript 语法。也就是说，JSX 可以支持更动态的需求。而 template 则因为语法限制原因，不能够像 JSX 那样可以支持更动态的需求。这是 JSX 相比于 template 的一个优势。
+
+JSX 相比于 template 还有一个优势，是可以在一个文件内返回多个组件。
+
+相比于我们自己去写 h 函数，在 template 解析的结果中，有以下几个性能优化的方面。
+
+首先，静态的标签和属性会放在 _hoisted 变量中，并且放在 render 函数之外。这样，重复执行 render 的时候，代码里的 h1 这个纯静态的标签，就不需要进行额外地计算，并且静态标签在虚拟 DOM 计算的时候，会直接越过 Diff 过程。
+
+然后是 @click 函数增加了一个 cache 缓存层，这样实现出来的效果也是和静态提升类似，尽可能高效地利用缓存。最后是，由于在下面代码中的属性里，那些带冒号的属性是动态属性，因而存在使用一个数字去标记标签的动态情况。
+
+template 由于语法固定，可以在编译层面做的优化较多，比如静态标记就真正做到了按需更新；而 JSX 由于动态性太强，只能在有限的场景下做优化，虽然性能不如 template 好，但在某些动态性要求较高的场景下，JSX 成了标配，这也是诸多组件库会使用 JSX 的主要原因。
+
 ### 14. TypeScript: Vue 3 中如何使用 TypeScript
+
+TypeScript 是微软开发的 JavaScript 的超集，这里说的超集，意思就是 TypeScript 在语法上完全包含 JavaScript。TypeScript 的主要作用是给 JavaScript 赋予强类型的语言环境。现在大部分的开源项目都是用 TypeScript 构建的，并且 Vue 3 本身 TS 的覆盖率也超过了 95%。
+
+只要是不符合接口规定的类型的变量，就会直接在变量下方给出红色波浪线的报错提示。鼠标移到报错的变量那里，就会有提示信息弹出，直接通知你哪里出问题了。这也是为什么现在大部分前端开源项目都使用 TypeScript 构建的原因，因为每个函数的参数、返回值的类型和属性都清晰可见，这就可以极大地提高我们代码的可维护性和开发效率。
+
+#### 进阶用法
+
+1. 泛型。在函数名的后面用尖括号包裹一个类型占位符；
+2. 递归类型。可以书写更复杂的类型组合；
+
+#### TypeScript 和 JavaScript 的平衡
+
+TypeScript 是 JavaScript 的一个超集，这两者并不是完全对立的关系。所以，学习 TypeScript 和学习 JavaScript 不是二选一的关系，你需要做的，是打好坚实的 JavaScript 的基础，在维护复杂项目和基础库的时候选择 TypeScript。
+
+TypeScript 最终还是要编译成为 JavaScript，并在浏览器里执行。对于浏览器厂商来说，引入类型系统的收益并不太高，毕竟编译需要时间。而过多的编译时间，会影响运行时的性能，所以未来 TypeScript 很难成为浏览器的语言标准。
+
+
+#### Vue3 中的 TypeScript
 
 ### 15. 实战痛点 1:复杂 Vue 项目的规范和基础库封装
 
