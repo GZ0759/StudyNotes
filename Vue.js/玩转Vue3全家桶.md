@@ -161,13 +161,70 @@ Vue 2 的核心模块和历史遗留问题
 
 ### 04. 升级:Vue2 项目如何升级到 Vue3?
 
+Vue 3 的 Composition API 带来的代码组织方式更利于封装代码，维护起来也不会上下横跳。
+
+Vue 3 也不是没有问题，由于新的响应式系统用了 Proxy，会存在兼容性问题。
+
 ## 二、基础入门篇
 
 ### 05. 项目启动:搭建 Vue 3 工程化项目第一步
 
+```
+Vue 3 项目
+VS Code编辑器   Chrome浏览器
+Volar语法提示   Devtools调试工具
+CSS 预处理  网络请求    Element3 组件库
+Vuex 管理数据   Vue 3   vue-router 路由
+Vite 工程化     代码规范/研发规范
+Node.js
+单元测试   发布部署
+```
+
 ### 06. 新的代码组织方式: Composition API + script setup 到底好在哪里?
 
+开发上手
+
+1. 使用单文件组件 vue 文件，支持将组件的 HTML、CSS 和 JavaScript 写在单个文件内容中；
+2. 对于 ref 返回的响应式数据，我们需要修改 `.value` 才能生效，而在 `<script setup>` 标签内定义的变量和函数，都可以在模板中直接使用；
+3. script setup 自动把 import 引入的组件注册到当前组件中；
+4. 计算属性和生命周期等功能，都可以脱离 Vue 的组件机制单独使用；
+5. script setup 可以让代码变得更加精简和高效；
+
+style 样式的特性
+
+
+1. 添加 scoped 属性避免样式冲突问题；
+2. 全局的样式可以使用 `:global` 来标记；
+3. 通过 v-bind 函数直接在 CSS 中使用JavaScript 中的变量；
+
+
 ### 07. 巧妙的响应式:深入理解 Vue 3 的响应式机制
+
+JavaScript 里面的变量是没有响应式的概念的，代码自上而下执行。
+
+#### 响应式原理
+
+Vue 中用过三种响应式解决方案：defineProperty/Proxy/value setter。
+
+defineProperty 在对象的属性中实现了拦截，读取属性的时候执行 get 函数，修改属性时执行 set 函数。单语法也有一些缺陷，删除属性并不会触发 set 函数。
+
+Proxy 是针对对象来监听，而不是针对某个具体属性，所以不仅可以代理那些定义时不存在的属性，还可以代理更丰富的数据结构，比如 Map/Set 等。Vue 3 的reactive 函数可以把一个对象变成响应式数据，而 reactive 就是基于 Proxy 实现的，还可以通过 watchEffect 执行代理的副作用。
+
+Vue3中还有另外一个响应式实现的逻辑，就是利用对象的 get 和 set 函数来进行监听。这种响应式的实现方式，只能拦截某一个属性的修改，这也是 Vue3 中 ref 这个API 的实现。
+
+| 实现原理 | 实际场景 | 优势 | 劣势 | 实际应用 |
+|---|---|---|---|---|
+| defineProperty | Vue 2 响应式 | 兼容性 | 数组和属性删除等拦截不了 | Vue 2 |
+| Proxy | Vue 3 reactive | 基于Proxy实现真正的拦截 | 兼容不了IE11 | Vue 3 复杂数据结构 |
+| value setter | Vue 3 ref | 实现简单 | 只拦截了value属性 | Vue 3 简单数据结构 |
+
+定制响应式数据
+
+watchEffect 函数可以在数据变化之后执行指定的函数。
+
+Vueuse 工具包
+
+封装更多的类似 useStorage 函数的其他 use 类型的函数，把实际开发中你用到的任何数据或者浏览器属性，都封装成响应式数据，这样就可以极大地提高我们的开发效率。Vue 社区中其实已经有一个类似的工具集合，也就是 VueUse，它把开发中常见的属性都封装成为响应式函数。
 
 ### 08. 组件化:如何像搭积木一样开发网页?
 
