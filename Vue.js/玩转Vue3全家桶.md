@@ -374,6 +374,16 @@ TypeScript 是微软开发的 JavaScript 的超集，这里说的超集，意思
 1. 泛型。在函数名的后面用尖括号包裹一个类型占位符；
 2. 递归类型。可以书写更复杂的类型组合；
 
+#### Vue3 中的 TypeScript
+
+Vue 2 中全部属性都挂载在 this 之上，而 this 可以说是一个黑盒子，我们完全没办法预先知道 this 上会有什么数据，这也是为什么 Vue 2 对 TypeScript 的支持一直不太好的原因。
+
+使用 Composition API 的过程中，可以针对 ref 或者 reactive 进行类型推导。如果 ref 包裹的是数字，那么在对 `count.value` 进行 split 函数操作的时候，TypeScript 就可以预先判断 `count.value` 是一个数字，并且进行报错提示。
+
+可以显式地去规定 ref、reactive 和 computed 输入的属性，ref、reactive 和 computed 限制类型的写法，每个函数都可以使用默认的参数推导，也可以显式地通过泛型去限制。
+
+在 Vue 中，除了组件内部数据的类型限制，还需要对传递的属性 Props 声明类型。而在 `<script setup>` 语法中，只需要在 defineProps 和 defineEmits 声明参数类型就可以了。
+
 #### TypeScript 和 JavaScript 的平衡
 
 TypeScript 是 JavaScript 的一个超集，这两者并不是完全对立的关系。所以，学习 TypeScript 和学习 JavaScript 不是二选一的关系，你需要做的，是打好坚实的 JavaScript 的基础，在维护复杂项目和基础库的时候选择 TypeScript。
@@ -381,9 +391,15 @@ TypeScript 是 JavaScript 的一个超集，这两者并不是完全对立的关
 TypeScript 最终还是要编译成为 JavaScript，并在浏览器里执行。对于浏览器厂商来说，引入类型系统的收益并不太高，毕竟编译需要时间。而过多的编译时间，会影响运行时的性能，所以未来 TypeScript 很难成为浏览器的语言标准。
 
 
-#### Vue3 中的 TypeScript
-
 ### 15. 实战痛点 1:复杂 Vue 项目的规范和基础库封装
+
+在项目开发中，我们首先需要一个组件库帮助我们快速搭建项目，组件库提供了各式各样的封装完备的组件。现在社区可选择的组件库有 element-plus、antd-vue，Naive-UI、Element3 等。
+
+完成页面基本结构的搭建后，在我们获取后端数据时，需要使用 axios 发起网络请求。
+
+在项目里集成 CSS 预编译器，CSS 预编译器可以帮我们更快、更高效地管理和编写 CSS 代码。
+
+由于个人习惯的不同，每个人写代码的风格也略有不同。比如在写 JavaScript 代码中，有些人习惯在每行代码之后都写分号，有些人习惯不写分号。但是团队产出的项目就需要有一致的风格，这样代码在团队之间阅读起来时，也会更加流畅。ESLint 就是专门用来做规范团队代码的一个库。
 
 ### 16. 实战痛点 2:项目开发中的权限系统
 
