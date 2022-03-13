@@ -41,7 +41,7 @@ Vue 3 已经是上手最简单的框架了，如果你没有 Vue 2 的经验，�
 
 1. 团队脚手架项目，把项目中的代码规范、Vite 配置，log 等等都集成在脚手架内部，通过这样的方式，可以提高项目的启动效率。
 2. 基础组件库的项目，做出一个类似 Element3 的基础组件库，并且发布在公司的 npm 服务之上，提供给全公司前端使用。给组件库实现完备的文档系统以及超过 90% 的单测覆盖率。
-3. CI/CD项目，利用 GitHub 的 action 机制，可以把整个发布过程自动化，并且还可以一键回滚。解决需求频繁变更的问题，以及版本迭代的需求。
+3. CI/CD 项目，利用 GitHub 的 action 机制，可以把整个发布过程自动化，并且还可以一键回滚。解决需求频繁变更的问题，以及版本迭代的需求。
 
 作为项目负责人来说，你要能够在整体上推动项目向前，提高团队整体的研发效率就是你做的项目最大的亮点。
 
@@ -372,7 +372,6 @@ history 模式
 
 下一步，我们需要注册两个内置组件 router-view 和 router-link。在 createRouter 创建的 Router 实例上，current 返回当前的路由地址，并且使用 ref 包裹成响应式的数据。router-view 组件的功能，就是 current 发生变化的时候，去匹配 current 地址对应的组件，然后动态渲染到 router-view 就可以了。
 
-
 ### 12. 调试:提高开发效率必备的 Vue Devtools
 
 Vue Devtools 可以算是一个 Elements 页面的 Vue 定制版本，调试页面左侧的显示内容并不是 HTML，而是 Vue 的组件嵌套关系。我们可以从中清晰地看到整个项目中最外层的 App 组件，也能看到 App 组件内部的 RouterView 下面的 Todo 组件。
@@ -411,7 +410,7 @@ JSX 相比于 template 还有一个优势，是可以在一个文件内返回多
 
 相比于我们自己去写 h 函数，在 template 解析的结果中，有以下几个性能优化的方面。
 
-首先，静态的标签和属性会放在 _hoisted 变量中，并且放在 render 函数之外。这样，重复执行 render 的时候，代码里的 h1 这个纯静态的标签，就不需要进行额外地计算，并且静态标签在虚拟 DOM 计算的时候，会直接越过 Diff 过程。
+首先，静态的标签和属性会放在 \_hoisted 变量中，并且放在 render 函数之外。这样，重复执行 render 的时候，代码里的 h1 这个纯静态的标签，就不需要进行额外地计算，并且静态标签在虚拟 DOM 计算的时候，会直接越过 Diff 过程。
 
 然后是 @click 函数增加了一个 cache 缓存层，这样实现出来的效果也是和静态提升类似，尽可能高效地利用缓存。最后是，由于在下面代码中的属性里，那些带冒号的属性是动态属性，因而存在使用一个数字去标记标签的动态情况。
 
@@ -444,7 +443,6 @@ TypeScript 是 JavaScript 的一个超集，这两者并不是完全对立的关
 
 TypeScript 最终还是要编译成为 JavaScript，并在浏览器里执行。对于浏览器厂商来说，引入类型系统的收益并不太高，毕竟编译需要时间。而过多的编译时间，会影响运行时的性能，所以未来 TypeScript 很难成为浏览器的语言标准。
 
-
 ### 15. 实战痛点 1:复杂 Vue 项目的规范和基础库封装
 
 在项目开发中，我们首先需要一个组件库帮助我们快速搭建项目，组件库提供了各式各样的封装完备的组件。现在社区可选择的组件库有 element-plus、antd-vue，Naive-UI、Element3 等。
@@ -465,17 +463,15 @@ HTTP 的 Request Headers 里就有 Cookie 这个数据，这是浏览器自动�
 
 权限系统中还有一个常见的问题，就是登录是有时间限制的。token 的过期时间认证是由后端来实现和完成的。如果登录状态过期，那么会有一个单独的报错信息，我们需要在接口拦截函数中，统一对接口的响应结果进行拦截。如果报错信息显示的是登录过期，我们需要清理所有的 token 和页面权限数据，并且跳转到登录页面。
 
-
 #### 角色权限
 
 我们通常使用的权限解决方案就是 RBAC 权限管理机制。每个用户有不同的角色，每个角色对应不同的页面权限，这个数据结构的关系设计主要是由后端来实现。
 
-关于这部分动态路由的内容，官网的文档中有详细的API 介绍。在下面的代码中，我们在 Vuex 中注册 addRoute 这个 action，通过后端返回的权限页面数据，调用 router.addRoute 新增路由。
+关于这部分动态路由的内容，官网的文档中有详细的 API 介绍。在下面的代码中，我们在 Vuex 中注册 addRoute 这个 action，通过后端返回的权限页面数据，调用 router.addRoute 新增路由。
 
 与新增路由对应，在页面重新设置权限的时候，我们需要用 router.removeRoute 来删除注册的路由，这也是上面的代码中我们还有一个 remoteRoutes 来管理动态路由的原因。
 
 然后，我们需要把动态路由的状态存储在本地存储里，否则刷新页面之后，动态的路由部分就会被清空，页面就会显示 404 报错。我们需要在 localStorage 中把静态路由和动态路由分开对待，在页面刷新的时候，通过 src/router/index.js 入口文件中的 routes 配置，从 localStorage 中获取完整的路由信息，并且新增到 vue-router 中，才能加载完整的路由。
-
 
 ### 17. 实战痛点 3: Vue 3 中如何集成第三方框架
 
@@ -566,6 +562,7 @@ template 设置了一个普通的 div 作为容器，通过 mount 和 onUnmounte
 为了解决上面说到的这些问题，我们需要一种机制，能够让我们在发现问题之后，尽快地将版本进行回滚，并且在回滚的操作过程中，尽可能不需要人力的介入。所以，我们需要静态资源的版本管理，具体来说，就是让每个历史版本的资源都能保留下来，并且有一个唯一的版本号，如果发生了故障，能够瞬间切换版本。这个过程由具体的代码实现之后，我们只需要点击回滚的版本号，系统就会自动恢复到上线前的版本。
 
 在这种机制下，如果你的业务流量特别大，每秒都有大量用户访问和使用，那么直接全量上线的操作就会被禁止。为了减少上线时，部署操作对用户造成的影响，我们需要先选择一部分用户去做灰度测试，也就是说，上线后的项目的访问权限，暂时只对这些用户开放。或者，你也可以做一些 AB 测试，比如给北京的同学推送 Vue 课，给上海的同学推荐 React 课等等。我们需要做的，就是把不同版本的代码分开打包，互不干涉。之后，我们再设计部署的机器和机房去适配不同的用户。
+
 ## 四、Vue 3 进阶开发篇
 
 ### 20. 组件库:如何设计你自己的通用组件库?
@@ -584,8 +581,334 @@ template 设置了一个普通的 div 作为容器，通过 mount 和 onUnmounte
 
 然后，我们还需要新建 `jest.config.js`，用来配置 jest 的测试行为。不同格式的文件需要使用不同命令来配置，对于 `.vue` 文件我们使用 vue-jest，对于 `.js` 或者 `.jsx` 结果的文件，我们就要使用 babel-jest，而对于 `.ts` 结尾的文件我们使用 ts-jest，然后匹配文件名是 `xx.spect.js`。这里请注意，Jest 只会执行 `.spec.js` 结尾的文件。
 
-
 ### 22. 表单:如何设计一个表单组件?
+
+表单组件
+在 Element 表单组件的页面里，我们能看到表单种类的组件类型有很多，我们常见的输入框、单选框和评分组件等都算是表单组件系列的。
+下面这段代码是 Element3 官方演示表单的 Template，整体表单页面分三层：
+el-form 组件负责最外层的表单容器；
+el-form-item 组件负责每一个输入项的 label 和校验管理；
+内部的 el-input 或者 el-switch 负责具体的输入组件。
+
+```html
+<el-form
+  :model="ruleForm"
+  :rules="rules"
+  ref="form"
+  label-width="100px"
+  class="demo-ruleForm"
+>
+  <el-form-item label="活动名称" prop="name">
+    <el-input v-model="ruleForm.name"></el-input>
+  </el-form-item>
+  <el-form-item label="活动区域" prop="region">
+    <el-select v-model="ruleForm.region" placeholder="请选择活动区域">
+      <el-option label="区域一" value="shanghai"></el-option>
+      <el-option label="区域二" value="beijing"></el-option>
+    </el-select>
+  </el-form-item>
+  <el-form-item label="即时配送" prop="delivery">
+    <el-switch v-model="ruleForm.delivery"></el-switch>
+  </el-form-item>
+  <el-form-item label="活动性质" prop="type">
+    <el-checkbox-group v-model="ruleForm.type">
+      <el-checkbox label="美食/餐厅线上活动" name="type"></el-checkbox>
+      <el-checkbox label="地推活动" name="type"></el-checkbox>
+      <el-checkbox label="线下主题活动" name="type"></el-checkbox>
+      <el-checkbox label="单纯品牌曝光" name="type"></el-checkbox>
+    </el-checkbox-group>
+  </el-form-item>
+  <el-form-item label="特殊资源" prop="resource">
+    <el-radio-group v-model="ruleForm.resource">
+      <el-radio label="线上品牌商赞助"></el-radio>
+      <el-radio label="线下场地免费"></el-radio>
+    </el-radio-group>
+  </el-form-item>
+  <el-form-item label="活动形式" prop="desc">
+    <el-input type="textarea" v-model="ruleForm.desc"></el-input>
+  </el-form-item>
+  <el-form-item>
+    <el-button type="primary" @click="submitForm('ruleForm')"
+      >立即创建</el-button
+    >
+    <el-button @click="resetForm('ruleForm')">重置</el-button>
+  </el-form-item>
+</el-form>
+```
+
+现在我们把上面的代码简化为最简单的形式，只留下 el-input 作为输入项，就可以清晰地看到表单组件工作的模式：el-form 组件使用:model 提供数据绑定；使用 rules 提供输入校验规则，可以规范用户的输入内容；使用 el-form-item 作为输入项的容器，对输入进行校验，显示错误信息。
+
+```html
+<el-form :model="ruleForm" :rules="rules" ref="form">
+  <el-form-item label="用户名" prop="username">
+    <el-input v-model="ruleForm.username"></el-input>
+    <!-- <el-input :model-value="" @update:model-value=""></el-input> -->
+  </el-form-item>
+  <el-form-item label="密码" prop="passwd">
+    <el-input type="textarea" v-model="ruleForm.passwd"></el-input>
+  </el-form-item>
+  <el-form-item>
+    <el-button type="primary" @click="submitForm()">登录</el-button>
+  </el-form-item>
+</el-form>
+```
+
+然后我们看下 rules 和 model 是如何工作的。
+这里使用 reactive 返回用户输入的数据，username 和 passwd 输入项对应，然后 rules 使用 reactive 包裹用户输入项校验的配置。
+具体的校验规则，现在主流组件库使用的都是 async-validator 这个库，详细的校验规则你可以访问 async-validator 的官网查看。而表单 Ref 上我们额外新增了一个 validate 方法，这个方法会执行所有的校验逻辑来显示用户的报错信息，下图就是用户输入不符合 rules 配置后，页面的报错提示效果。
+
+```js
+const ruleForm =
+  reactive <
+  UserForm >
+  {
+    username: '',
+    passwd: '',
+  };
+const rules = reactive({
+  rules: {
+    username: {
+      required: true,
+      min: 1,
+      max: 20,
+      message: '长度在 1 到 20 个字符',
+      trigger: 'blur',
+    },
+    passwd: [{ required: true, message: '密码', trigger: 'blur' }],
+  },
+});
+function submitForm() {
+  form.value.validate((valid) => {
+    if (valid) {
+      alert('submit!');
+    } else {
+      console.log('error submit!!');
+      return false;
+    }
+  });
+}
+```
+
+表单组件实现
+那么接下来我们就要实现组件了。我们进入到 src/components 目录下新建 Form.vue 去实现 el-form 组件，该组件是整个表单组件的容器，负责管理每一个 el-form-item 组件的校验方法，并且自身还提供一个检查所有输入项的 validate 方法。
+在下面的代码中，我们注册了传递的属性的格式，并且注册了 validate 方法使其对外暴露使用。
+
+```js
+interface Props {
+  label?: string
+  prop?: string
+}
+const props = withDefaults(defineProps<Props>(), {
+  label: "",
+  prop: ""
+})
+const formData = inject(key)
+const o: FormItem = {
+  validate,
+}
+defineExpose(o)
+```
+
+那么在 el-form 组件中如何管理 el-form-item 组件呢？我们先要新建 FormItem.vue 文件，这个组件加载完毕之后去通知 el-form 组件自己加载完毕了，这样在 el-form 中我们就可以很方便地使用数组来管理所有内部的 form-item 组件。
+
+```js
+import { emitter } from "../../emitter"
+const items = ref<FormItem[]>([])
+emitter.on("addFormItem", (item) => {
+  items.value.push(item)
+})
+```
+
+然后 el-form-item 还要负责管理内部的 input 输入标签，并且从 form 组件中获得配置的 rules，通过 rules 的逻辑，来判断用户的输入值是否合法。另外，el-form 还要管理当前输入框的 label，看看输入状态是否报错，以及报错的信息显示，这是一个承上启下的组件。
+
+```js
+onMounted(() => {
+  if (props.prop) {
+    emitter.on('validate', () => {
+      validate();
+    });
+    emitter.emit('addFormItem', o);
+  }
+});
+function validate() {
+  if (formData?.rules === undefined) {
+    return Promise.resolve({ result: true });
+  }
+  const rules = formData.rules[props.prop];
+  const value = formData.model[props.prop];
+  const schema = new Schema({ [props.prop]: rules });
+  return schema.validate({ [props.prop]: value }, (errors) => {
+    if (errors) {
+      error.value = errors[0].message || '校验错误';
+    } else {
+      error.value = '';
+    }
+  });
+}
+```
+
+这里我们可以看到，form、form-item 和 input 这三个组件之间是嵌套使用的关系：
+form 提供了所有的数据对象和配置规则；
+input 负责具体的输入交互；
+form-item 负责中间的数据和规则管理，以及显示具体的报错信息。
+这就需要一个强有力的组件通信机制，在 Vue 中组件之间的通信机制有这么几种。
+首先是父子组件通信，通过 props 和 emits 来通信。这个我们在全家桶实战篇和评级组件那一讲都有讲过，父元素通过 props 把需要的数据传递给子元素，子元素通过 emits 通知父元素内部的变化，并且还可以通过 defineDepose 的方式暴露给父元素方法，可以让父元素调用自己的方法。
+那么 form 和 input 组件如何通信呢？这种祖先元素和后代元素，中间可能嵌套了很多层的关系，Vue 则提供了 provide 和 inject 两个 API 来实现这个功能。
+在组件中我们可以使用 provide 函数向所有子组件提供数据，子组件内部通过 inject 函数注入使用。注意这里 provide 提供的只是普通的数据，并没有做响应式的处理，如果子组件内部需要响应式的数据，那么需要在 provide 函数内部使用 ref 或者 reative 包裹才可以。
+关于 prvide 和 inject 的类型系统，我们可以使用 Vue 提供的 InjectiveKey 来声明。我们在 form 目录下新建 type.ts 专门管理表单组件用到的相关类型，在下面的代码中，我们定义了表单 form 和表单管理 form-item 的上下文，并且通过 InjectionKey 管理提供的类型。
+
+```js
+import { InjectionKey } from "vue"
+import { Rules, Values } from "async-validator"
+export type FormData = {
+  model: Record<string, unknown>
+  rules?: Rules
+}
+export type FormItem = {
+  validate: () => Promise<Values>
+}
+export type FormType = {
+  validate: (cb: (isValid: boolean) => void) => void
+}
+export const key: InjectionKey<FormData> = Symbol("form-data")
+```
+
+而下面的代码，我们则通过 provide 向所有子元素提供 form 组件的上下文。子组件内部通过 inject 获取，很多组件都是嵌套成对出现的，provide 和 inject 这种通信机制后面我们还会不停地用到，做好准备。
+
+```js
+provide(key, {
+  model: props.model,
+  rules?: props.rules,
+})
+```
+
+# 子组件
+
+```js
+const formData = inject(key);
+```
+
+然后就是具体的 input 实现逻辑，在下面的代码中，input 的核心逻辑就是对 v-model 的支持，这个内容我们在评级组件那一讲已经实现过了。
+v-mode 其实是:mode-value="x"和 @update:modelValute 两个写法的简写，组件内部获取对应的属性和 modelValue 方法即可。这里需要关注的代码是我们输入完成之后的事件，输入的结果校验是由父组件 el-form-item 来实现的，我们只需要通过 emit 对外广播出去即可。
+
+```html
+<template>
+  <div
+    class="el-form-item"
+  >
+    <label
+      v-if="label"
+    >{{ label }}</label>
+    <slot />
+    <p
+      v-if="error"
+      class="error"
+    >
+      {{ error }}
+    </p>
+  </div>
+</template>
+<script lang="ts">
+export default{
+  name:'ElFormItem'
+}
+</script>
+<script setup lang="ts">
+import Schema from "async-validator"
+import { onMounted, ref, inject } from "vue"
+import { FormItem, key } from "./type"
+import { emitter } from "../../emitter"
+interface Props {
+  label?: string
+  prop?: string
+}
+const props = withDefaults(defineProps<Props>(), { label: "", prop: "" })
+// 错误
+const error = ref("")
+const formData = inject(key)
+const o: FormItem = {
+  validate,
+}
+defineExpose(o)
+onMounted(() => {
+  if (props.prop) {
+    emitter.on("validate", () => {
+      validate()
+    })
+    emitter.emit("addFormItem", o)
+  }
+})
+function validate() {
+  if (formData?.rules === undefined) {
+    return Promise.resolve({ result: true })
+  }
+  const rules = formData.rules[props.prop]
+  const value = formData.model[props.prop]
+  const schema = new Schema({ [props.prop]: rules })
+  return schema.validate({ [props.prop]: value }, (errors) => {
+    if (errors) {
+      error.value = errors[0].message || "校验错误"
+    } else {
+      error.value = ""
+    }
+  })
+}
+</script>
+<style lang="scss">
+@import '../styles/mixin';
+@include b(form-item) {
+  margin-bottom: 22px;
+  label{
+    line-height:1.2;
+    margin-bottom:5px;
+    display: inline-block;
+  }
+  & .el-form-item {
+    margin-bottom: 0;
+  }
+}
+.error{
+  color:red;
+}
+</style>
+```
+
+最后我们点击按钮的时候，在最外层的 form 标签内部会对所有的输入项进行校验。由于我们管理着所有的 form-item，只需要遍历所有的 form-item，依次执行即可。
+下面的代码就是表单注册的 validate 方法，我们遍历全部的表单输入项，调用表单输入项的 validate 方法，有任何一个输入项有报错信息，整体的校验就会是失败状态。
+
+```js
+function validate(cb: (isValid: boolean) => void) {
+  const tasks = items.value.map((item) => item.validate());
+  Promise.all(tasks)
+    .then(() => {
+      cb(true);
+    })
+    .catch(() => {
+      cb(false);
+    });
+}
+```
+
+上面代码实际执行的是每个表单输入项内部的 validate 方法，这里我们使用的就是 async-validate 的校验函数。在 validate 函数内部，我们会获取表单所有的 ruls，并且过滤出当前输入项匹配的输入校验规则，然后通过 AsyncValidator 对输入项进行校验，把所有的校验结果放在 model 对象中。如果 `errors[0].message` 非空，就说明校验失败，需要显示对应的错误消息，页面输入框显示红色状态。
+
+```js
+import Schema from 'async-validator';
+function validate() {
+  if (formData?.rules === undefined) {
+    return Promise.resolve({ result: true });
+  }
+  const rules = formData.rules[props.prop];
+  const value = formData.model[props.prop];
+  const schema = new Schema({ [props.prop]: rules });
+  return schema.validate({ [props.prop]: value }, (errors) => {
+    if (errors) {
+      error.value = errors[0].message || '校验错误';
+    } else {
+      error.value = '';
+    }
+  });
+}
+```
 
 ### 23. 弹窗:如何设计一个弹窗组件?
 
