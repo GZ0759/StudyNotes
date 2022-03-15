@@ -775,16 +775,12 @@ export const key: InjectionKey<FormData> = Symbol("form-data")
 
 而下面的代码，我们则通过 provide 向所有子元素提供 form 组件的上下文。子组件内部通过 inject 获取，很多组件都是嵌套成对出现的，provide 和 inject 这种通信机制后面我们还会不停地用到，做好准备。
 
-```js
+```
 provide(key, {
   model: props.model,
   rules?: props.rules,
 })
-```
-
 # 子组件
-
-```js
 const formData = inject(key);
 ```
 
@@ -912,17 +908,975 @@ function validate() {
 
 ### 23. 弹窗:如何设计一个弹窗组件?
 
+上一讲我们剖析了表单组件的实现模式，相信学完之后，你已经掌握了表单类型组件设计的细节，表单组件的主要功能就是在页面上获取用户的输入。
+不过，用户在交互完成之后，还需要知道交互的结果状态，这就需要我们提供专门用来反馈操作状态的组件。这类组件根据反馈的级别不同，也分成了很多种类型，比如全屏灰色遮罩、居中显示的对话框 Dialog，在交互按钮侧面显示、用来做简单提示的 tooltip，以及右上角显示信息的通知组件 Notification 等，这类组件的交互体验你都可以在Element3 官网感受。
+今天的代码也会用 Element3 的 Dialog 组件和 Notification 进行举例，在动手写代码实现之前，我们先从这个弹窗组件的需求开始说起。
+组件需求分析
+我们先来设计一下要做的组件，通过这部分内容，还可以帮你继续加深一下对单元测试 Jest 框架的使用熟练度。我建议你在设计一个新的组件的时候，也试试采用这种方式，先把组件所有的功能都罗列出来，分析清楚需求再具体实现，这样能够让你后面的工作事半功倍。
+首先无论是对话框 Dialog，还是消息弹窗 Notification，它们都由一个弹窗的标题，以及具体的弹窗的内容组成的。我们希望弹窗有一个关闭的按钮，点击之后就可以关闭弹窗，弹窗关闭之后还可以设置回调函数。
+下面这段代码演示了 dialog 组件的使用方法，通过 title 显示标题，通过 slot 显示文本内容和交互按钮，而通过 v-model 就能控制显示状态。
+```html
+<el-dialog
+  title="提示"
+  :visible.sync="dialogVisible"
+  width="30%"
+  v-model:visible="dialogVisible"
+>
+  <span>这是一段信息</span>
+  <template #footer>
+    <span class="dialog-footer">
+      <el-button @click="dialogVisible = false">取 消</el-button>
+      <el-button type="primary" @click="dialogVisible = false">确 定</el-button>
+    </span>
+  </template>
+</el-dialog>
+```
+这类组件实现起来和表单类组件区别不是特别大，我们首先需要做的就是控制好组件的数据传递，并且使用 Teleport 渲染到页面顶层的 body 标签。
+像 Dialog 和 Notification 类的组件，我们只是单纯想显示一个提示或者报错信息，过几秒就删除，如果在每个组件内部都需要写一个 <Dialog v-if>，并且使用 v-if 绑定变量的方式控制显示就会显得很冗余。
+所以，这里就要用到一种调用 Vue 组件的新方式：我们可以使用 JavaScript 的 API 动态地创建和渲染 Vue 的组件。具体如何实现呢？我们以 Notification 组件为例一起看一下。
+下面的代码是 Element3 的 Notification 演示代码。组件内部只有两个 button，我们不需要书写额外的组件标签，只需要在 <script setup> 中使用 Notification.success函数，就会在页面动态创建 Notification 组件，并且显示在页面右上角。
+```html
+<template>
+  <el-button plain @click="open1"> 成功 </el-button>
+  <el-button plain @click="open2"> 警告 </el-button>
+</template>
+<script setup>
+  import { Notification } from 'element3'
+  function open1() {
+    Notification.success({
+      title: '成功',
+      message: '这是一条成功的提示消息',
+      type: 'success'
+    })
+  }
+  function open2() {
+    Notification.warning({
+      title: '警告',
+      message: '这是一条警告的提示消息',
+      type: 'warning'
+    })
+  }
+</script>
+```
+弹窗组件实现
+分析完需求之后，我们借助单元测试的方法来实现这个弹窗组件（单元测试的内容如果记不清了，你可以回顾第 20 讲）。
+我们依次来分析 Notification 的代码，相比于写 Demo 逻辑的代码，这次我们体验一下实际的组件和演示组件的区别。我们来到 element3 下面的 src/components/Notification/notifucation.vue 代码中，下面的代码构成了组件的主体框架，我们不去直接写组件的逻辑，而是先从测试代码来梳理组件的功能。
+```html
+<template>
+  <div class="el-nofication">
+    <slot />
+  </div>
+</template>
+<script>
+</script>
+<style lang="scss">
+@import '../styles/mixin';
+</style>
+```
+结合下面的代码可以看到，我们进入到了内部文件 Notification.spec.js 中。下面的测试代码中，我们期待 Notification 组件能够渲染 el-notification样式类，并且内部能够通过属性 title 渲染标题；message 属性用来渲染消息主体；position 用来渲染组件的位置，让我们的弹窗组件可以显示在浏览器四个角。
+```html
+import Notification from "./Notification.vue"
+import { mount } from "@vue/test-utils"
+describe("Notification", () => { 
+  
+  it('渲染标题title', () => {
+    const title = 'this is a title'
+    const wrapper = mount(Notification, {
+      props: {
+        title
+      }
+    })
+    expect(wrapper.get('.el-notification__title').text()).toContain(title)
+  })
+  it('信息message渲染', () => {
+    const message = 'this is a message'
+    const wrapper = mount(Notification, {
+      props: {
+        message
+      }
+    })
+    expect(wrapper.get('.el-notification__content').text()).toContain(message)
+  })
+  it('位置渲染', () => {
+    const position = 'bottom-right'
+    const wrapper = mount(Notification, {
+      props: {
+        position
+      }
+    })
+    expect(wrapper.find('.el-notification').classes()).toContain('right')
+    expect(wrapper.vm.verticalProperty).toBe('bottom')
+    expect(wrapper.find('.el-notification').element.style.bottom).toBe('0px')
+  })
+  it('位置偏移', () => {
+    const verticalOffset = 50
+    const wrapper = mount(Notification, {
+      props: {
+        verticalOffset
+      }
+    })
+    expect(wrapper.vm.verticalProperty).toBe('top')
+    expect(wrapper.find('.el-notification').element.style.top).toBe(
+      `${verticalOffset}px`
+    )
+  })
+})
+```
+这时候毫无疑问，测试窗口会报错。我们需要进入 notificatin.vue 中实现代码逻辑。
+下面的代码中，我们在代码中接收 title、message 和 position，使用 notification__title 和 notification__message 渲染标题和消息。
+```html
+<template>
+  <div class="el-notification" :style="positionStyle" @click="onClickHandler">
+    <div class="el-notification__title">
+      {{ title }}
+    </div>
+    <div class="el-notification__message">
+      {{ message }}
+    </div>
+    <button
+      v-if="showClose"
+      class="el-notification__close-button"
+      @click="onCloseHandler"
+    ></button>
+  </div>
+</template>
+<script setup>
+const instance = getCurrentInstance()
+const visible = ref(true)
+const verticalOffsetVal = ref(props.verticalOffset)
+const typeClass = computed(() => {
+  return props.type ? `el-icon-${props.type}` : ''
+})
+const horizontalClass = computed(() => {
+  return props.position.endsWith('right') ? 'right' : 'left'
+})
+const verticalProperty = computed(() => {
+  return props.position.startsWith('top') ? 'top' : 'bottom'
+})
+const positionStyle = computed(() => {
+  return {
+    [verticalProperty.value]: `${verticalOffsetVal.value}px`
+  }
+})
+</script>
+<style lang="scss">
+.el-notification {
+  position: fixed;
+  right: 10px;
+  top: 50px;
+  width: 330px;
+  padding: 14px 26px 14px 13px;
+  border-radius: 8px;
+  border: 1px solid #ebeef5;
+  background-color: #fff;
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+</style>
+```
+然后我们新增测试代码，设置弹窗是否显示关闭按钮以及关闭弹窗之后的回调函数。我们希望点击关闭按钮之后，就能够正确执行传入的 onClose 函数。
+```html
+it('set the showClose ', () => {
+    const showClose = true
+    const wrapper = mount(Notification, {
+      props: {
+        showClose
+      }
+    })
+    expect(wrapper.find('.el-notification__closeBtn').exists()).toBe(true)
+    expect(wrapper.find('.el-icon-close').exists()).toBe(true)
+  })
+  it('点击关闭按钮', async () => {
+    const showClose = true
+    const wrapper = mount(Notification, {
+      props: {
+        showClose
+      }
+    })
+    const closeBtn = wrapper.get('.el-notification__closeBtn')
+    await closeBtn.trigger('click')
+    expect(wrapper.get('.el-notification').isVisible()).toBe(false)
+  })
+  it('持续时间之后自动管理', async () => {
+    jest.useFakeTimers()
+    const wrapper = mount(Notification, {
+      props: {
+        duration: 1000
+      }
+    })
+    jest.runTimersToTime(1000)
+    await flushPromises()
+    expect(wrapper.get('.el-notification').isVisible()).toBe(false)
+     })
+```
+到这里，Notification 组件测试的主体逻辑就实现完毕了，我们拥有了一个能够显示在右上角的组件，具体效果你可以参考后面这张截图。
+
+进行到这里，距离完成整体设计我们还差两个步骤。
+首先，弹窗类的组件都需要直接渲染在 body 标签下面，弹窗类组件由于布局都是绝对定位，如果在组件内部渲染，组件的 css 属性（比如 Transform）会影响弹窗组件的渲染样式，为了避免这种问题重复出现，弹窗组件 Dialog、Notification 都需要渲染在 body 内部。
+Dialog 组件可以直接使用 Vue3 自带的 Teleport，很方便地渲染到 body 之上。在下面的代码中, 我们用 teleport 组件把 dialog 组件包裹之后，通过 to 属性把 dialog 渲染到 body 标签内部。
+```html
+  <teleport
+    :disabled="!appendToBody"
+    to="body"
+  >
+    <div class="el-dialog">
+      <div class="el-dialog__content">
+        <slot />
+      </div>
+    </div>
+  </teleport>
+```
+这时我们使用浏览器调试窗口，就可以看到 Dialog 标签已经从当前组件移动到了 body 标签内部，如下图所示。
+
+但是 Notification 组件并不会在当前组件以组件的形式直接调用，我们需要像 Element3 一样，能够使用 js 函数动态创建 Notification 组件，给 Vue 的组件提供 Javascript 的动态渲染方法，这是弹窗类组件的特殊需求。
+组件渲染优化
+我们先把测试代码写好，具体如下。代码中分别测试函数创建组件，以及不同配置和样式的通知组件。
+```html
+it('函数会创建组件', () => {
+  const instanceProxy = Notification('foo')
+  expect(instanceProxy.close).toBeTruthy()
+})
+it('默认配置 ', () => {
+  const instanceProxy = Notification('foo')
+  expect(instanceProxy.$props.position).toBe('top-right')
+  expect(instanceProxy.$props.message).toBe('foo')
+  expect(instanceProxy.$props.duration).toBe(4500)
+  expect(instanceProxy.$props.verticalOffset).toBe(16)
+})
+test('字符串信息', () => {
+  const instanceProxy = Notification.info('foo')
+  expect(instanceProxy.$props.type).toBe('info')
+  expect(instanceProxy.$props.message).toBe('foo')
+})
+test('成功信息', () => {
+  const instanceProxy = Notification.success('foo')
+  expect(instanceProxy.$props.type).toBe('success')
+  expect(instanceProxy.$props.message).toBe('foo')
+})
+```
+现在测试写完后还是会报错，因为现在 Notification 函数还没有定义，我们要能通过 Notification 函数动态地创建 Vue 的组件，而不是在 template 中使用组件。
+在JSX 那一讲中我们讲过，template 的本质就是使用 h 函数创建虚拟 Dom，如果我们自己想动态创建组件时，使用相同的方式即可。
+在下面的代码中我们使用 Notification 函数去执行 createComponent 函数，使用 h 函数动态创建组件，实现了动态组件的创建。
+```html
+function createComponent(Component, props, children) {
+  const vnode = h(Component, { ...props, ref: MOUNT_COMPONENT_REF }, children)
+  const container = document.createElement('div')
+  vnode[COMPONENT_CONTAINER_SYMBOL] = container
+  render(vnode, container)
+  return vnode.component
+}
+export function Notification(options) {
+  return createNotification(mergeProps(options))
+}
+function createNotification(options) {
+  const instance = createNotificationByOpts(options)
+  setZIndex(instance)
+  addToBody(instance)
+  return instance.proxy
+}
+```
+创建组件后，由于 Notification 组件同时可能会出现多个弹窗，所以我们需要使用数组来管理通知组件的每一个实例，每一个弹窗的实例都存储在数组中进行管理。
+下面的代码里，我演示了怎样用数组管理弹窗的实例。Notification 函数最终会暴露给用户使用，在 Notification 函数内部我们通过 createComponent 函数创建渲染的容器，然后通过 createNotification 创建弹窗组件的实例，并且维护在 instanceList 中。
+```html
+const instanceList = []
+function createNotification(options) {
+  ...
+  addInstance(instance)
+  return instance.proxy
+}  
+function addInstance(instance) {
+  instanceList.push(instance)
+}
+;['success', 'warning', 'info', 'error'].forEach((type) => {
+  Notification[type] = (options) => {
+    if (typeof options === 'string' || isVNode(options)) {
+      options = {
+        message: options
+      }
+    }
+    options.type = type
+    return Notification(options)
+  }
+})
+// 有了instanceList， 可以很方便的关闭所有信息弹窗
+Notification.closeAll = () => {
+  instanceList.forEach((instance) => {
+    instance.proxy.close()
+    removeInstance(instance)
+  })
+}
+```
+最后，我带你简单回顾下我们都做了什么。在正式动手实现弹窗组件前，我们分析了弹窗类组件的风格。弹窗类组件主要负责用户交互的反馈。根据显示的级别不同，它可以划分成不同的种类：既有覆盖全屏的弹窗 Dialog，也有负责提示消息的 Notification。
+这些组件除了负责渲染传递的数据和方法之外，还需要能够脱离当前组件进行渲染，防止当前组件的 css 样式影响布局。因此 Notification 组件需要渲染到 body 标签内部，而 Vue 提供了 Teleport 组件来完成这个任务，我们通过 Teleport 组件就能把内部的组件渲染到指定的 dom 标签。
+之后，我们需要给组件提供 JavaScript 调用的方法。我们可以使用 Notification()的方式动态创建组件，利用 createNotification 即可动态创建 Vue 组件的实例。
+对于弹窗组件来说可以这样操作：首先通过 createNotification 函数创建弹窗的实例，并且给每个弹窗设置好唯一的 id 属性，然后存储在数组中进行管理。接着，我们通过对 createNotification 函数返回值的管理，即可实现弹窗动态的渲染、更新和删除功能。
+总结
+正文里已经详细讲解和演示了弹窗组件的设计，所以今天的总结我想变个花样，再给你说说 TDD 的事儿。
+很多同学会觉得写测试代码要花一定成本，有畏难心理，觉得自己不太会写测试，这些“假想”给我们造成了“TDD 很难实施”的错觉。实际上入门 TDD 并没有这么难。按照我的实践经验来看，先学会怎么写测试，再学习怎么重构，基本上就可以入门写 TDD 了。
+就拿我们这讲的实践来说，我们再次应用了测试驱动开发这个方式来实现弹窗组件，把整体需求拆分成一个个子任务，逐个击破。根据设计的需求写好测试代码之后，测试代码就会检查我们的业务逻辑有没有实现，指导我们做相应的修改。
+咱们的实践过程抽象出来，一共包括四个步骤：写测试 -> 运行测试 (报错) -> 写代码让测试通过 -> 重构的方式。这样的开发模式，今后你在设计组件库时也可以借鉴，不但有助于提高代码的质量和可维护性，还能让代码有比较高的代码测试覆盖率。
+思考题
+最后留一个思考题，现在我们设计的 Notification 组件的 message 只能支持文本消息，如果想支持传入其他组件，应该如何实现？
+欢迎你在评论去分享你的答案，也欢迎你把这一讲的内容分享给你的同事和朋友们，我们下一讲再见。
+
 ### 24. 树:如何设计一个树形组件?
+
+上一讲，我们一起学习了弹窗组件的设计与实现，这类组件的主要特点是需要渲染在最外层 body 标签之内，并且还需要支持 JavaScript 动态创建和调用组件。相信学完上一讲，你不但会对弹窗类组件的实现加深理解，也会对 TDD 模式更有心得。
+除了弹窗组件，树形组件我们在前端开发中经常用到，所以今天我就跟你聊一下树形组件的设计思路跟实现细节。
+组件功能分析
+我们进入Element3 的 Tree 组件文档页面，现在我们对 Vue 的组件如何设计和实现已经很熟悉了，我重点挑跟之前组件设计不同的地方为你讲解。
+在设计新组件的时候，我们需要重点考虑的就是树形组件和之前我们之前的 Container、Button、Notification 有什么区别。树形组件的主要特点是可以无限层级、这种需求在日常工作和生活中其实很常见，比如后台管理系统的菜单管理、文件夹管理、生物分类、思维导图等等。
+
+根据上图所示，我们可以先拆解出树形组件的功能需求。
+首先，树形组件的节点可以无限展开，父节点可以展开和收起节点，并且每一个节点有一个复选框，可以切换当前节点和所有子节点的选择状态。另外，同一级所有节点选中的时候，父节点也能自动选中。
+下面的代码是 Element3 的 Tree 组件使用方式，所有的节点配置都是一个 data 对象实现的。每个节点里的 label 用来显示文本；expaned 显示是否展开；checked 用来决定复选框选中列表，data 数据内部的 children 属性用来配置子节点数组，子节点的数据结构和父节点相同，可以递归实现。
+```html
+<el-tree
+  :data="data"
+  show-checkbox
+  v-model:expanded="expandedList"
+  v-model:checked="checkedList"
+  :defaultNodeKey="defaultNodeKey"
+>
+</el-tree>
+<script>
+  export default {
+    data() {
+      return {
+        expandedList: [4, 5],
+        checkedList: [5],
+        data: [
+          {
+            id: 1,
+            label: '一级 1',
+            children: [
+              {
+                id: 4,
+                label: '二级 1-1',
+                children: [
+                  {
+                    id: 9,
+                    label: '三级 1-1-1'
+                  },
+                  {
+                    id: 10,
+                    label: '三级 1-1-2'
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            id: 2,
+            label: '一级 2',
+            children: [
+              {
+                id: 5,
+                label: '二级 2-1'
+              },
+              {
+                id: 6,
+                label: '二级 2-2'
+              }
+            ]
+          }
+        ],
+        defaultNodeKey: {
+          childNodes: 'children',
+          label: 'label'
+        }
+      }
+    }
+  }
+  
+</script>
+```
+递归组件
+这里父节点和子节点的样式操作完全一致，并且可以无限嵌套，这种需求需要组件递归来实现，也就是组件内部渲染自己渲染自己。
+想要搞定递归组件，我们需要先明确什么是递归，递归的概念也是我们前端进阶过程中必须要掌握的知识点。
+前端的场景中，树这个数据结构出现的频率非常高，浏览器渲染的页面是 Dom 树，我们内部管理的是虚拟 Dom 树，树形结构是一种天然适合递归的数据结构。
+我们先来做一个算法题感受一下，我们来到leetcode 第 226 题反转二叉树，题目的描述很简单，就是把属性结构反转，下面是题目的描述：
+每一个节点的 val 属性代表显示的数字，left 指向左节点，right 指向右节点，如何实现 invertTree 去反转这一个二叉树，也就是所有节点的 left 和 right 互换位置呢？
+输入     
+```html
+     4
+   /   \
+  2     7
+ / \   / \
+1   3 6   9
+```
+输出
+```html
+     4
+   /   \
+  7     2
+ / \   / \
+9   6 3   1
+```
+节点的构造函数
+```html
+/**
+ * Definition for a binary tree node.
+ * function TreeNode(val, left, right) {
+ *     this.val = (val===undefined ? 0 : val)
+ *     this.left = (left===undefined ? null : left)
+ *     this.right = (right===undefined ? null : right)
+ * }
+ */
+```
+输入的左右位置正好相反，而且每个节点的结构都相同，这就是非常适合递归的场景。递归的时候，我们首先需要思考递归的核心逻辑如何实现，这里就是两个节点如何交换，然后就是递归的终止条件，否则递归函数就会进入死循环。
+下面的代码中，设置 invertTree 函数的终止条件是 root 是 null 的时候，也就是如果节点不存在的时候不需要反转。这里我们只用了一行解构赋值的代码就实现了，值得注意的是右边的代码中我们递归调用了 inverTree 去递归执行，最终实现了整棵树的反转。
+```html
+var invertTree = function(root) {
+  // 递归 终止条件
+  if(root==null) {
+    return root
+  }
+  // 递归的逻辑
+  [root.left, root.right] = [invertTree(root.right), invertTree(root.left)]
+  return root
+}
+```
+树形组件的数据结构内部的 children 可以无限嵌套，处理这种数据结构，就需要使用递归的算法思想。有了上面这个算法题的基础后，我们后面再学习树形组件如何实现就能更加顺畅了。
+组件实现
+首先我们进入到 Element3 的 tree 文件夹内部，然后找到 tree.vue 文件。tree.vue 是组件的入口容器，用于接收和处理数据，并将数据传递给 TreeNode.vue；TreeNode.vue 负责渲染树形组件的选择框、标题和递归渲染子元素。
+在下面的代码中，我们提供了 el-tree 的容器，还导入了 el-tree-node 进行渲染。tree.vue 通过 provide 向所有子元素提供 tree 的数据，通过 useExpand 判断树形结构的展开状态，并且用到了 watchEffect 去向组件外部通知 update:expanded 事件。
+```html
+<template>
+  <div class="el-tree">
+    <el-tree-node v-for="child in tree.root.childNodes" :node="child" :key="child.id"></el-tree-node>
+  </div>
+</template>
+<script>
+import ElTreeNode from './TreeNode.vue'
+const instance = getCurrentInstance()
+const tree = new Tree(props.data, props.defaultNodeKey, {
+  asyncLoadFn: props.asyncLoadFn,
+  isAsync: props.async
+})
+const state = reactive({
+  tree
+})
+provide('elTree', instance)
+useTab()
+useExpand(props, state)
+function useExpand(props, state) {
+  const instance = getCurrentInstance()
+  const { emit } = instance
+  if (props.defaultExpandAll) {
+    state.tree.expandAll()
+  }
+  watchEffect(() => {
+    emit('update:expanded', state.tree.expanded)
+  })
+  watchEffect(() => {
+    state.tree.setExpandedByIdList(props.expanded, true)
+  })
+  onMounted(() => {
+    state.tree.root.expand(true)
+  })
+}
+  
+</script>
+```
+然后我们进入到 Tree.Node.vue 文件中，tree-node 组件是树组件的核心，一个 TreeNode 组件包含四个部分：展开按钮、文本的多选框、每个节点的标题和递归的 children 子节点。
+我们先来看 TreeNode.vue 的模板基本结构，可以把下面的 div 标签分成四个部分：el-tree-node__content 负责每个树节点的渲染，第一个 span 就是渲染展开符；el-checkbox 组件负责显示复选框，并且绑定了 node.isChecked 属性；el-node__contentn 负责渲染树节点的标题；el-tree__children 负责递归渲染 el-tree-node 节点，组件内部渲染自己，这就是组件递归的写法。
+```html
+<div
+    v-show="node.isVisable"
+    class="el-tree-node"
+    :class="{
+      'is-expanded': node.isExpanded,
+      'is-current': elTree.proxy.dragState.current === node,
+      'is-checked': node.isChecked,
+    }"
+    role="TreeNode"
+    ref="TreeNode"
+    :id="'TreeNode' + node.id"
+    @click.stop="onClickNode"
+  >
+    <div class="el-tree-node__content"> 
+      <span
+        :class="[
+          { expanded: node.isExpanded, 'is-leaf': node.isLeaf },
+          'el-tree-node__expand-icon',
+          elTree.props.iconClass
+        ]"
+        @click.stop="
+          node.isLeaf ||
+            (elTree.props.accordion ? node.collapse() : node.expand())
+        ">
+      </span>
+      <el-checkbox
+        v-if="elTree.props.showCheckbox"
+        :modelValue="node.isChecked"
+        @update:modelValue="onChangeCheckbox"
+        @click="elTree.emit('check', node, node.isChecked, $event)"
+      >
+      </el-checkbox>
+      <el-node-content
+        class="el-tree-node__label"
+        :node="node"
+      ></el-node-content>
+    </div>
+      <div
+        class="el-tree-node__children"
+        v-show="node.isExpanded"
+        v-if="!elTree.props.renderAfterExpand || node.isRendered"
+        role="group"
+        :aria-expanded="node.isExpanded"
+      >
+        <el-tree-node
+          v-for="child in node.childNodes"
+          :key="child.id"
+          :node="child"
+        >
+        </el-tree-node>
+      </div>
+  </div>
+```
+然后我们看下 tree-node 中我们需要处理的数据有哪些。下面的代码中，我们先通过 inject 注入 tree 组件最完成的配置。然后在点击节点的时候，通过判断 elTree 的全局配置，去决定点击之后的切换功能，并且在展开和 checkbox 切换的同时，通过 emit 对父组件触发事件。
+```html
+const elTree = inject('elTree')
+const onClickNode = (e) => {
+  !elTree.props.expandOnClickNode ||
+    props.node.isLeaf ||
+    (elTree.props.accordion ? props.node.collapse() : props.node.expand())
+  !elTree.props.checkOnClickNode ||
+    props.node.setChecked(undefined, elTree.props.checkStrictly)
+  elTree.emit('node-click', props.node, e)
+  elTree.emit('current-change', props.node, e)
+  props.node.isExpanded
+    ? elTree.emit('node-expand', props.node, e)
+    : elTree.emit('node-collapse', props.node, e)
+}
+const onChangeCheckbox = (e) => {
+  props.node.setChecked(undefined, elTree.props.checkStrictly)
+  elTree.emit('check-change', props.node, e)
+}
+```
+
+到这里，树结构的渲染其实就结束了。
+但是有些场景我们需要对树节点的渲染内容进行自定。比如后面这段代码，我们在节点的右侧加上 append 和 delete 操作按钮，这种需求在菜单树的管理中很常见。
+这个时候我们节点需要支持内容的自定义，然后我们注册了 el-node-content 组件。这个组件使用起来非常简单，由于我们还需要支持节点的自定义渲染，所以要把这部分抽离成组件。当 slots.default 为函数的时候，返回函数的执行内容；或者传递的 renderContent 是函数的话，也要返回函数执行的结果。
+```html
+import { TreeNode } from './entity/TreeNode'
+import { inject, h } from 'vue'
+render(ctx) {
+  const elTree = inject('elTree')
+  if (typeof elTree.slots.default === 'function') {
+    return elTree.slots.default({ node: ctx.node, data: ctx.node.data.raw })
+  } else if (typeof elTree.props.renderContent === 'function') {
+    return elTree.props.renderContent({
+      node: ctx.node,
+      data: ctx.node.data.raw
+    })
+  }
+  return h('span', ctx.node.label)
+}
+```
+这样，用户就可以利用 render-content 属性传递一个函数的方式，去实现内容的自定义渲染。
+我们还是结合代码例子做理解，下面的代码中用了 render-content 的方式返回树形结构的渲染结果，render-content 传递的函数内部会根据 node 和 data 数据，返回对应的标题，并且新增了两个 el-button 组件。
+```html
+<div class="custom-tree-container">
+  <div class="block">
+    <p>使用 render-content</p>
+    <el-tree
+      :data="data1"
+      show-checkbox
+      default-expand-all
+      :expand-on-click-node="false"
+      :render-content="renderContent"
+    >
+    </el-tree>
+  </div>
+</div>
+<script>
+function renderContent({ node, data }) {
+  return (
+    <span class="custom-tree-node">
+      <span>{data.label}</span>
+      <span>
+        <el-button
+          size="mini"
+          type="text"
+          onClick={() => this.append(node, data)}
+        >
+          Append
+        </el-button>
+        <el-button
+          size="mini"
+          type="text"
+          onClick={() => this.remove(node, data)}
+        >
+          Delete
+        </el-button>
+      </span>
+    </span>
+  )
+}
+</script>
+```
+上面的代码会渲染出下面的示意图的效果。
+
+最后，我们还可以对树实现更多操作方式的支持。
+比如我们可以支持树形结构的拖拽修改、可以把任何任意节点拖拽到其他树形内部、修改整个树形结构的内容。想要实现这些功能，我们就需要监听节点的 drag-over、drag-leave 等拖拽事件，在 drop 事件执行的时候，把拖拽的节点数据，复制给拖拽的节点中完成修改即可。这部分代码，同学们可以自行去 Element3 拓展学习。
+总结
+今天的主要内容就讲完啦，我们来总结一下今天学到的内容吧。
+首先我们分析了树形组件的设计需求、我们需要递归组件的形式去实现树形节点的无限嵌套，然后我们通过算法题的形式掌握了递归的概念，这个概念在 Vue 组件中也是一样的，每个组件返回 name 后，可以通过这个 name 在组件内部来调用自己，这样就可以很轻松地实现 Tree 组件。
+tree 组件具体要分成三个组件进行实现。最外层的 tree 组件负责整个树组件的容器，内部会通过 provide 方法为子元素提供全局的配置和操作方法。每个 tree 的配置中的 title、expanded、checked 树形作为树组件显示的主体内容。children 是一个深层嵌套的数组，我们需要用递归组件的方式渲染出完成的树，tree 内部的 tree-node 组件就负责递归渲染出完成的树形结构。
+最后，我们想支持树节点的自定义渲染，这就需要在 teree-node 内部定制 tree-node-content 组件，用来渲染用户传递的 render-content 或者默认的插槽函数。
+树形数据在我们日常开发项目中也很常见，菜单、城市选择、权限等数据都很适合树形结构，学会树形结构的处理，能很好地帮助我们在日常开发中应对更复杂的需求。
+思考题
+最后留一个思考题吧。我们的树形组件现在是全部节点的渲染，如果我们有 1000 个节点要渲染，如何对这个树形节点做性能优化呢？
+欢迎你在评论区分享你的答案，也欢迎你把这一讲的内容分享给你的同事和朋友们，我们下一讲再见。
 
 ### 25. 表格:如何设计一个表格组件?
 
+上一讲我们实现了树形组件，树形组件的主要难点就是对无限嵌套数据的处理。今天我们来介绍组件库中最复杂的表格组件，表格组件在项目中负责列表数据的展示，尤其是在管理系统中，比如用户信息、课程订单信息的展示，都需要使用表格组件进行渲染。
+关于表单的具体交互形式和复杂程度，你可以访问ElementPlus、NaiveUi、 AntDesignVue这三个主流组件库中的表格组件去体验，并且社区还提供了单独的复杂表格组件，这一讲我就给你详细说说一个复杂表格组件如何去实现。
+表格组件
+大部分组件库都会内置表格组件，这是总后台最常用的组件之一，用于展示大量的结构化的数据。html 也提供了内置的表格标签，由  <table> 、<thead> 、<tbody> 、<tr> 、<th> 、<td>  这些标签来组成一个最简单的表格标签。
+我们先研究一下 html 的 table 标签。下面的代码中，table 标签负责表格的容器，thead 负责表头信息的容器，tbody 负责表格的主体，tr 标签负责表格的每一行，th 和 td 分别负责表头和主体的单元格。
+其实标准的表格系列标签，跟 div+css 实现是有很大区别的。比如表格在做单元格合并时，要提供原生属性，这时候用 div 就很麻烦了。另外，它们的渲染原理上也有一定的区别，每一列的宽度会保持一致。
+```html
+<table>
+  <thead>
+    <tr>
+      <th>课程</th>
+      <th>价格</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>重学前端</td>
+      <td>129</td>
+    </tr>
+    <tr>
+      <td>玩转Vue3全家桶</td>
+      <td>129</td>
+    </tr>
+  </tbody>
+</table>
+```
+简单的表格数据渲染并不需要组件，我们直接使用标准的 table 系列标签就可以。但有的时候，除了呈现数据，也会带有一些额外的功能要求，比如嵌套列、性能优化等。这时候组件的好处就很明显了，它能帮我们省去这些基础的工作。
+表格组件的使用风格，从设计上说也分为了两个方向。一个方向是完全由数据驱动，这里我们可以参考 Naive Ui 的使用方式，n-data-table 标签负责容器，直接通过 data 属性传递数据，通过 columns 传递表格的表头配置。
+下面的代码中，我们在 colums 中去配置每行需要显示的属性，通过 render 函数可以返回定制化的结果，再使用 h 函数返回 Button，渲染出对应的按钮。
+```html
+<template>
+  <n-data-table :columns="columns" :data="data" :pagination="pagination" />
+</template>
+<script>
+import { h, defineComponent } from 'vue'
+import { NTag, NButton, useMessage } from 'naive-ui'
+const createColumns = ({ sendMail }) => {
+  return [
+    {
+      title: 'Name',
+      key: 'name',
+      align: 'center'
+    },
+    {
+      title: 'Age',
+      key: 'age'
+    },
+    {
+      title: 'Action',
+      key: 'actions',
+      render (row) {
+        return h(
+          NButton,
+          {
+            size: 'small',
+            onClick: () => sendMail(row)
+          },
+          { default: () => 'Send Email' }
+        )
+      }
+    }
+  ]
+}
+const createData = () => [
+  {
+    key: 0,
+    name: 'John Brown',
+    age: 32,
+    tags: ['nice', 'developer']
+  },
+  {
+    key: 1,
+    name: 'Jim Green',
+    age: 42,
+  },
+  {
+    key: 2,
+    name: 'Joe Black',
+    age: 32
+  }
+]
+export default defineComponent({
+  setup () {
+    const message = useMessage()
+    return {
+      data: createData(),
+      columns: createColumns({
+        sendMail (rowData) {
+          message.info('send mail to ' + rowData.name)
+        }
+      }),
+      pagination: {
+        pageSize: 10
+      }
+    }
+  }
+})
+</script>
+```
+还有一种是 Element3 现在使用的风格，配置数据之后，具体数据的展现形式交给子元素来决定，把 columns 当成组件去使用，我们仍然通过例子来加深理解。
+下面的代码中，我们配置完 data 后，使用 el-table-colum 组件去渲染组件的每一列，通过 slot 的方式去实现定制化的渲染。这两种风格各有优缺点，我们后面还会结合 Elemnt3 的源码进行讲解.
+```html
+<el-table :data="tableData" border style="width: 100%">
+  <el-table-column fixed prop="date" label="日期" width="150">
+  </el-table-column>
+  <el-table-column prop="name" label="姓名" width="120"> </el-table-column>
+  <el-table-column prop="province" label="省份" width="120"> </el-table-column>
+  <el-table-column prop="city" label="市区" width="120"> </el-table-column>
+  <el-table-column prop="address" label="地址" width="300"> </el-table-column>
+  <el-table-column prop="zip" label="邮编" width="120"> </el-table-column>
+  <el-table-column fixed="right" label="操作" width="100">
+    <template v-slot="scope">
+      <el-button @click="handleClick(scope.row)" type="text" size="small"
+        >查看</el-button
+      >
+      <el-button type="text" size="small">编辑</el-button>
+    </template>
+  </el-table-column>
+</el-table>
+<script>
+  export default {
+    methods: {
+      handleClick(row) {
+        console.log(row)
+      }
+    },
+    data() {
+      return {
+        tableData: [
+          {
+            date: '2016-05-02',
+            name: '王小虎',
+            province: '上海',
+            city: '普陀区',
+            address: '上海市普陀区金沙江路 1518 弄',
+            zip: 200333
+          },
+          {
+            date: '2016-05-04',
+            name: '王小虎',
+            province: '上海',
+            city: '普陀区',
+            address: '上海市普陀区金沙江路 1517 弄',
+            zip: 200333
+          },
+          {
+            date: '2016-05-01',
+            name: '王小虎',
+            province: '上海',
+            city: '普陀区',
+            address: '上海市普陀区金沙江路 1519 弄',
+            zip: 200333
+          },
+          {
+            date: '2016-05-03',
+            name: '王小虎',
+            province: '上海',
+            city: '普陀区',
+            address: '上海市普陀区金沙江路 1516 弄',
+            zip: 200333
+          }
+        ]
+      }
+    }
+  }
+</script>
+```
+表格组件的扩展
+复杂的表格组件需要对表格的显示和操作进行扩展。
+首先是从表格的显示上扩展，我们可以支持表头或者某一列的锁定，在滚动的时候锁定列不受影响。一个 table 标签很难实现这个效果，这时候我们就需要分为 table-head 和 table-body 两个组件进行维护，通过 colgroup 组件限制每一列的宽度实现表格的效果，而且表头还需要支持表头嵌套。
+下面的示意图中，表头就是被分组显示的。
+
+我们还是先分析一下需求。对于表格的操作来说，首先要和树组件一样，每一样支持复选框进行选中，方便进行批量的操作。另外，表头还需要支持点击事件，点击后对当前这一列实现排序的效果，同时每一列还可能会有详情数据的展开，甚至表格内部还会有树形组件的嵌套、底部的数据显示等等。
+把这些需求组合在一起，表格就成了组件库中最复杂的组件。我们需要先分解需求，把组件内部拆分成 table、table-column、table-body、table-header 组件，我们挨个来看一下。
+首先，在 table 组件的内部，我们使用 table-body 和 table-header 构成组件。table 提供了整个表格的标签容器；hidden-columns 负责隐藏列的显示，并且通过 table-store 进行表格内部的状态管理。每当 table 中的 table-store 被修改后，table-header、table-body 都需要重新渲染。
+```html
+<template>
+  <div class="el-table">
+    <div class="hidden-columns" ref="hiddenColumns">
+      <slot></slot>
+    </div>
+    <div class="el-table__header-wrapper"
+         ref="headerWrapper">
+      <table-header ref="tableHeader"
+                    :store="store">
+      </table-header>
+    </div>
+    <div class="el-table__body-wrapper"
+         ref="bodyWrapper">
+      <table-body :context="context"
+                  :store="store">                  
+      </table-body>
+    </div>
+  </div>
+</template>
+```
+然后在 table 组件的初始化过程中，我们首先使用 createStore 创建表格的 store 数据管理，并且通过 TableLayout 创建表格的布局，然后把 store 通过属性的方式传递给 table-header 和 table-body。
+```html
+et table = getCurrentInstance()
+    const store = createStore(table, {
+      rowKey: props.rowKey,
+      defaultExpandAll: props.defaultExpandAll,
+      selectOnIndeterminate: props.selectOnIndeterminate,
+      // TreeTable 的相关配置
+      indent: props.indent,
+      lazy: props.lazy,
+      lazyColumnIdentifier: props.treeProps.hasChildren || 'hasChildren',
+      childrenColumnName: props.treeProps.children || 'children',
+      data: props.data
+    })
+    table.store = store
+    const layout = new TableLayout({
+      store: table.store,
+      table,
+      fit: props.fit,
+      showHeader: props.showHeader
+    })
+    table.layout = layout
+```
+再接着，table-header 组件内部会接收传递的 store，并且提供监听的事件，包括 click，mousedown 等鼠标操作后，计算出当前表头的宽高等数据进行显示。
+```html
+const instance = getCurrentInstance()
+    const parent = instance.parent
+    const storeData = parent.store.states
+    const filterPanels = ref({})
+    const {
+      tableLayout,
+      onColumnsChange,
+      onScrollableChange
+    } = useLayoutObserver(parent)
+    const hasGutter = computed(() => {
+      return !props.fixed && tableLayout.gutterWidth
+    })
+    onMounted(() => {
+      nextTick(() => {
+        const { prop, order } = props.defaultSort
+        const init = true
+        parent.store.commit('sort', { prop, order, init })
+      })
+    })
+    const {
+      handleHeaderClick,
+      handleHeaderContextMenu,
+      handleMouseDown,
+      handleMouseMove,
+      handleMouseOut,
+      handleSortClick,
+      handleFilterClick
+    } = useEvent(props, emit)
+    const {
+      getHeaderRowStyle,
+      getHeaderRowClass,
+      getHeaderCellStyle,
+      getHeaderCellClass
+    } = useStyle(props)
+    const { isGroup, toggleAllSelection, columnRows } = useUtils(props)
+    instance.state = {
+      onColumnsChange,
+      onScrollableChange
+    }
+    // eslint-disable-next-line
+    instance.filterPanels = filterPanels
+```
+在 table-body 中，也是类似的实现方式和效果。不过 table-body 和 table-header 中的定制需求较多，我们需要用 render 函数来实现定制化的需求。
+下面的代码中，我们利用 h 函数返回 el-table__body 的渲染，通过 state 中读取的 columns 数据依次进行数据的显示。
+```html
+render() {
+    return h(
+      'table',
+      {
+        class: 'el-table__body',
+        cellspacing: '0',
+        cellpadding: '0',
+        border: '0'
+      },
+      [
+        hColgroup(this.store.states.columns.value),
+        h('tbody', {}, [
+          data.reduce((acc, row) => {
+            return acc.concat(this.wrappedRowRender(row, acc.length))
+          }, []),
+          h(
+            ElTooltip,
+            {
+              modelValue: this.tooltipVisible,
+              content: this.tooltipContent,
+              manual: true,
+              effect: this.$parent.tooltipEffect,
+              placement: 'top'
+            },
+            {
+              default: () => this.tooltipTrigger
+            }
+          )
+        ])
+      ]
+    )
+  }
+```
+  
+整体表格组件的渲染逻辑和过程比较复杂。为了帮你抽丝剥茧，这节课我重点给你说说 Element3 中 table 标签的渲染过程，至于具体的表格实现代码，你可以课后参考 Element3 的源码。
+表格组件除了显示的效果非常复杂、交互非常复杂之外，还有一个非常棘手的性能问题。由于表格是二维渲染，而且表格组件如果想支持表头或者某一列锁定的定制效果，内部需要渲染不止一个 table 标签。一旦数据量庞大之后，表格就成了最容易导致性能瓶颈的组件，那这种场景如何去做优化呢？
+这里我们要快速回顾一下性能优化那一讲的思路：性能优化主要的思路就是如何能够减少计算量。比如我们的表格如果有 1000 行要显示，但是我们浏览器最多只能显示 100 条，其他的需要通过滚动条的方式进行滚动显示，屏幕之外，成千上万个 dom 元素就成了性能消耗的主要原因。
+针对这种情况，我们可以考虑类似图片懒加载的方案，对屏幕之外的 dom 元素做懒渲染，也就是非常常见的虚拟列表解决方案。
+在虚拟列表解决方案中，我们首先要获取窗口的高度、元素的高度以及当前滚动的距离，通过这些数据计算出当前屏幕显示出来的数据。然后创建这些元素标签，设置元素的 transform 属性模拟滚动效果。这样表面看是 1000 条数据在表格里显示，实际只渲染了屏幕中间的这 100 行数据，当我们滚动鼠标的同时，去维护这 100 个数据列表，这样就完成了标签过多的性能问题。
+如果表格内部每一行的高度不同的话，我们就需要对每一个元素的高度进行估计。具体操作时，先进行渲染，然后等待渲染完毕之后获取高度并且缓存下来，即可实现虚拟列表元素高度的自适应。
+总结
+今天要我们学习了表格组件如何实现，我给你做个总结吧。
+表格组件是组件库中最复杂的组件，核心的难点除了数据的嵌套渲染和复杂的交互之外，复杂的 dom 节点也是表格的特点之一。我们通过对 table-header、table-body 和 table-footer 的组件分析，掌握了表格组件设计思路的实现细节。
+除此之外，表格也是最容易导致页面卡顿的组件，所以我们除了数据驱动渲染之外，还需要考虑通过虚拟滚动的方式进行渲染的优化，这也是列表数据常见的优化策略，属于懒渲染的解决方案。
+无论数据有多少行，我们只渲染用户可视窗口之内的，控制 top 的属性来模拟滚动效果，通过 computed 计算出需要渲染的数据。最后，我还想提醒你注意，虚拟滚动也是面试的热门解决方案，你一定要手敲一遍才能加深理解。
+思考题
+最后留个思考题吧，你现在基础的复杂项目或者组件库中，有哪些组件适合用虚拟滚动做性能优化呢？欢迎你在评论区分享你的答案，也欢迎你把这一讲分享给你的同事和朋友们，我们下一讲再见
+
 ### 26. 文档:如何给你的组件库设计一个可交互式文档?
 
+文档页面主要包含组件的描述，组件 Demo 示例的展示、描述和代码，并且每个组件都应该有详细的参数文档。
+
+VuePress。它是 Vue 官网团队维护的在线技术文档工具，样式和 Vue 的官方文档保持一致。
+
+Element3 中使用 Markdown-it 进行 Markdown 语法的解析和扩展。Markdown-it 导出一个函数，这个函数可以把 Markdown 语法解析为 HTML 标签。这里我们需要做的就是解析出 Markdown 中的 demo 语法，渲染其中的 Vue 组件，并且同时能把源码也显示在组件下方，这样就完成了扩展任务。
+
 ### 27. 自定义渲染器:如何实现 Vue 的跨端渲染?
+
+#### 什么是渲染器
+
+渲染器是围绕虚拟 Dom 存在的。在浏览器中，我们把虚拟 Dom 渲染成真实的 Dom 对象，Vue 源码内部把一个框架里所有和平台相关的操作，抽离成了独立的方法。
+
+在 Vue 3 中的 runtime-core 模块，就对外暴露了这些接口，runtime-core 内部基于这些函数实现了整个 Vue 内部的所有操作，然后在 runtime-dom 中传入以上所有方法。
+
+#### 自定义渲染
+
+自定义渲染器让 Vue 脱离了浏览器的限制，我们只需要实现平台内部的增删改查函数后，就可以直接对接 Vue 3。比方说，我们可以把 Vue 渲染到小程序平台，实现 Vue 3-minipp；也可以渲染到 Canvas，实现 vue 3-canvas，把虚拟 dom 渲染成 Canvas；甚至还可以尝试把 Vue 3 渲染到 threee.js 中，在 3D 世界使用响应式开发。
 
 ## 五、Vue 3 生态源码篇
 
 ### 28. 响应式:万能面试题，怎么手写响应式系统
+
+Vue3 的组件之间是通过响应式机制来通知的，响应式机制可以自动收集系统中数据的依赖，并且在修改数据之后自动执行更新，极大提高开发的效率。
+
+根据响应式组件通知效果可以知道，响应式机制的主要功能就是，可以把普通的 JavaScript 对象封装成为响应式对象，拦截数据的获取和修改操作，实现依赖数据的自动化更新。
+
+所以，一个最简单的响应式模型，我们可以通过 reactive 或者 ref 函数，把数据包裹成响应式对象，并且通过 effect 函数注册回调函数，然后在数据修改之后，响应式地通知 effect 去执行回调函数即可。
+
 
 ### 29. 运行时: Vue 在浏览器里是怎么跑起来的?
 
