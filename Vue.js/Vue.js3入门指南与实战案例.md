@@ -5,7 +5,7 @@
 
 项目搭好了，第一个要了解的肯定是组件的变化。
 
-## 基本函数
+## 两个基本函数
 
 在开始编写组件之前，我们需要了解两个全新的前置知识点：`setup` 与 `defineComponent`。
 
@@ -29,8 +29,6 @@ export default defineComponent({
 })
 ```
 
-### setup 参数
-
 `setup` 函数包含了两个入参：
 
 参数|类型|含义|是否必传
@@ -38,13 +36,9 @@ export default defineComponent({
 props|object|由父组件传递下来的数据|否
 context|object|组件的执行上下文|否
 
-**第一个参数 `props` ：**
+1. 参数 `props` ：它是响应式的（只要你不解构它，或者使用 toRef/toRefs 进行响应式解构），当传入新的 prop 时，它将被更新。
 
-它是响应式的（只要你不解构它，或者使用 toRef/toRefs 进行响应式解构），当传入新的 prop 时，它将被更新。
-
-**第二个参数 `context` ：**
-
-`context` 只是一个普通的对象，它暴露三个组件的 property：
+2. 参数 `context` ：只是一个普通的对象，它暴露三个组件的 property：
 
 属性|类型|作用
 :--|:--|:--
@@ -52,9 +46,7 @@ attrs|非响应式对象|props 未定义的属性都将变成 attrs
 slots|非响应式对象|插槽
 emit|方法|触发事件
 
-因为 `context` 只是一个普通对象，所以你可以直接使用 ES6 解构。也就是说，可用 `emit('xxx')` 来代替使用 `context.emit('xxx')`，另外两个功能也是如此。
-
-但是 `attrs` 和 `slots` 请保持 `attrs.xxx`、`slots.xxx` 来使用他们数据，不要解构这两个属性，因为他们虽然不是响应式对象，但会随组件本身的更新而更新。
+因为 `context` 只是一个普通对象，所以你可以直接使用 ES6 解构。但是 `attrs` 和 `slots` 请保持 `attrs.xxx`、`slots.xxx` 来使用他们数据，不要解构这两个属性，因为他们虽然不是响应式对象，但会随组件本身的更新而更新。
 
 ### defineComponent 函数
 
@@ -142,7 +134,7 @@ deactivated|onDeactivated|切换组件后，原组件消失前执行
 
 ### 使用 3.x 的生命周期
 
-在 3.x ，**每个生命周期函数都要先导入才可以使用**，并且所有生命周期函数统一放在 `setup` 里运行。
+在 3.x ，每个生命周期函数都要先导入才可以使用，并且所有生命周期函数统一放在 `setup` 里运行。
 
 如果你需要在达到 2.x 的 `beforeCreate` 和 `created` 目的的话，直接把函数执行在 `setup` 里即可。
 
@@ -184,7 +176,7 @@ export default defineComponent({
 
 如果你是从 2.x 就开始写 TS 的话，应该知道在 2.x 的时候就已经有了 `extend` 和 `class component` 的基础写法；3.x 在保留 class 写法的同时，还推出了 `defineComponent` + `composition api`的新写法。
 
-加上视图部分又有 `template` 和 `tsx` 的写法、以及 3.x 对不同版本的生命周期兼容，累计下来，在 Vue 里写 TS ，至少有 9 种不同的组合方式（我的认知内，未有更多的尝试），堪比孔乙己的回字（甚至吊打回字……
+加上视图部分又有 `template` 和 `tsx` 的写法、以及 3.x 对不同版本的生命周期兼容，累计下来，在 Vue 里写 TS ，至少有 9 种不同的组合方式。
 
 我们先来回顾一下这些写法组合分别是什么，了解一下 3.x 最好使用哪种写法：
 
@@ -242,8 +234,6 @@ export default defineComponent({
 </style>
 ```
 
-和 2.x 一样，都是 `template` + `script` + `style` 三段式组合，上手非常简单。
-
 `template` 和 2.x 可以说是完全一样（会有一些不同，比如 `router-link` 移除了 `tag` 属性等等，后面讲到了会说明）
 
 `style` 则是根据你熟悉的预处理器或者原生 CSS 来写的，完全没有变化。
@@ -253,8 +243,6 @@ export default defineComponent({
 ## 响应式数据的变化 
 
 响应式数据是 MVVM 数据驱动编程的特色，相信大部分人当初入坑 MVVM 框架，都是因为响应式数据编程比传统的操作 DOM 要来得方便，而选择 Vue ，则是方便中的方便。
-
-在 3.x，响应式数据当然还是得到了保留，但是对比 2.x 的写法， 3.x 的步伐迈的有点大。
 
 相对于 2.x 在 `data` 里定义后即可通过 `this.xxx` 来调用响应式数据，3.x 的生命周期里取消了 Vue 实例的 `this`，你要用到的比如 `ref` 、`reactive` 等响应式 API ，都必须通过导入才能使用，然后在 `setup` 里定义。
 
@@ -272,10 +260,6 @@ export default defineComponent({
 })
 ```
 
-由于新的 API 非常多，但有些使用场景却不多，所以当前暂时只对常用的几个 API 做使用和踩坑说明，更多的 API 可以在官网查阅。
-
-先放上官方文档：[响应性 API | Vue.js](https://v3.cn.vuejs.org/api/reactivity-api)
-
 ## 响应式 API 之 ref
 
 `ref` 是最常用的一个响应式 API，它可以用来定义所有类型的数据，包括 Node 节点。
@@ -286,6 +270,8 @@ export default defineComponent({
 
 在开始使用 API 之前，要先了解一下在 `TypeScript` 中，`ref` 需要如何进行类型声明。
 
+1. 变量声明
+
 平时我们在定义变量的时候，都是这样给他们进行类型声明的：
 
 ```ts
@@ -295,6 +281,8 @@ const msg: string = 'Hello World!';
 // 多类型
 const phoneNumber: number | string = 13800138000;
 ```
+
+2. ref 声明
 
 但是在使用 `ref` 时，不能这样子声明，会报错，正确的声明方式应该是使用 `<>` 来包裹类型定义，紧跟在 `ref` API 之后：
 
@@ -310,9 +298,7 @@ const phoneNumber = ref<number | string>(13800138000);
 
 了解了如何进行类型声明之后，对变量的定义就没什么问题了，前面说了它可以用来定义所有类型的数据，包括 Node 节点，但不同类型的值之间还是有少许差异和注意事项，具体可以参考如下。
 
-#### 基本类型
-
-对字符串、布尔值等基本类型的定义方式，比较简单：
+1. 基本类型
 
 ```ts
 // 字符串
@@ -325,7 +311,7 @@ const count = ref<number>(1);
 const isVip = ref<boolean>(false);
 ```
 
-#### 引用类型
+2. 引用类型
 
 对于对象、数组等引用类型也适用，比如要定义一个对象：
 
@@ -379,29 +365,13 @@ const memberList = ref<Member[]>([
 
 除了可以定义数据，`ref` 也有我们熟悉的用途，就是用来挂载节点，也可以挂在子组件上。
 
-对于 2.x 常用的 `this.$refs.xxx` 来获取 DOM 元素信息，该 API 的使用方式也是同样：
+模板部分依然是熟悉的用法，直接把 ref 挂到你要引用的 DOM 元素或者子组件上。
 
-模板部分依然是熟悉的用法，把 ref 挂到你要引用的 DOM 上。
-
-```vue
-<template>
-  <!-- 挂载DOM元素 -->
-  <p ref="msg">
-    留意该节点，有一个ref属性
-  </p>
-  <!-- 挂载DOM元素 -->
-
-  <!-- 挂载子组件 -->
-  <Child ref="child" />
-  <!-- 挂载子组件 -->
-</template>
-```
-
-`script` 部分有三个最基本的注意事项：
+但是 `script` 部分有三个最基本的注意事项：
 
 1. 定义挂载节点后，也是必须通过 `xxx.value` 才能正确操作到挂载的 DOM 元素或组件
-2. 请保证视图渲染完毕后再执行 DOM 或组件的相关操作（需要放到生命周期的 `onMounted` 或者 `nextTick` 函数里，这一点在 2.x 也是一样）；
-3. 该变量必须 `return` 出去才可以给到 `template` 使用（这一点是 3.x 生命周期的硬性要求，子组件的数据和方法如果要给父组件操作，也要 `return` 出来才可以）。
+2. 请保证视图渲染完毕后再执行 DOM 或组件的相关操作
+3. 该变量必须 `return` 出去才可以给到 `template` 使用
 
 配合上面的 `template` ，来看看 `script` 部分的具体例子：
 
