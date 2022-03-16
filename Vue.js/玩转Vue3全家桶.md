@@ -1880,9 +1880,73 @@ Vue3 的组件之间是通过响应式机制来通知的，响应式机制可以
 
 ### 29. 运行时: Vue 在浏览器里是怎么跑起来的?
 
+#### 首次渲染
+
+想要启动一个 Vue 项目，只需要从 Vue 中引入 createApp，传入 App 组件，并且调用 createApp 返回的 App 实例的 mount 方法，就实现了项目的启动。
+
+#### patch 函数
+
+patch 传递的是 container._vnode，也就是上一次渲染缓存的 vnode、本次渲染组件的 vnode，以及容器 container。
+
+通过 patch 实现组件的渲染，patch 函数内部根据节点的不同类型，去分别执行 processElement、processComponent、processText 等方法去递归处理不同类型的节点，最终通过 setupComponent 执行组件的 setup 函数，setupRenderEffect 中使用响应式的 effect 函数监听数据的变化。
+
+##### processComponent 方法
+
+那我们继续进入到 processComponent 代码内部，看下面的代码。首次渲染的时候，n1 就是 null，所以会执行 mountComponent；如果是更新组件的时候，n1 就是上次渲染的 vdom，需要执行 updateComponent。
+
+#### setupComponent
+
+首先看 setupComponent，要完成的就是执行我们写的 setup 函数。
+
+内部先初始化了 props 和 slots，并且执行 setupStatefulComponent 创建组件，而这个函数内部从 component 中获取 setup 属性，也就是 script setup 内部实现的函数，就进入到我们组件内部的 reactive、ref 等函数实现的逻辑了。
+
+#### setupRenderEffect
+
+另一个 setupRenderEffect 函数，就是为了后续数据修改注册的函数，我们先梳理一下核心的实现逻辑。
+
+组件首次加载会调用 patch 函数去初始化子组件，注意 setupRenderEffect 本身就是在 patch 函数内部执行的，所以这里就会递归整个虚拟 DOM 树，然后触发生命周期 mounted，完成这个组件的初始化。
+
+页面首次更新结束后，setupRenderEffect 不仅实现了组件的递归渲染，还注册了组件的更新机制。
+
 ### 30. 虚拟 DOM(上):如何通过虚拟 DOM 更新页面?
 
-### 31. 虚拟 DOM(下):想看懂虚拟 DOM 算法，先刷个算法题.
+#### Vue 虚拟 DOM 执行流程
+
+在 Vue 中，我们使用虚拟 DOM 来描述页面的组件，比如 template 虽然格式和 HTML 很像，但是在 Vue 的内部会解析成 JavaScript 函数，这个函数就是用来返回虚拟 DOM：
+
+####  DOM 的创建
+
+createVNode 负责创建 Vue 中的虚拟 DOM。
+
+我们给组件注册了 update 方法，这个方法使用 effect 包裹后，当组件内的 ref、reactive 包裹的响应式数据变化的时候就会执行 update 方法，触发组件内部的更新机制。
+
+#### patch 函数
+
+在 patch 函数中，会针对不同的组件类型执行不同的函数，组件我们会执行 processComponent，HTML 标签我们会执行 processElement：
+
+由于更新之后不是首次渲染了，patch 函数内部会执行 updateComponent，看下面的 updateComponent 函数内部，shouldUpdateComponent 会判断组件是否需要更新，实际执行的是 instance.update：
+
+#### patchElement 函数
+
+在函数 patchElement 中我们主要就做两件事，更新节点自己的属性和更新子元素。
+
+#### patchChildren
+
+最后就剩下 patchChildren 的实现了，这也是各类虚拟 DOM 框架中最难实现的函数，我们需要实现一个高效的更新算法，能够使用尽可能少的更新次数，来实现从老的子元素到新的子元素的更新。
+
+### 31. 虚拟 DOM(下):想看懂虚拟 DOM 算法，先刷个算法题
+
+我们将讲到如何使用位运算来实现 Vue 中的按需更新，让静态的节点可以越过虚拟 DOM 的计算逻辑，并且使用计算最长递增子序列的方式，来实现队伍的高效排序。
+
+#### 位运算
+
+方法就是使用 & 操作符来判断操作的类型，比如 `patchFlag & PatchFlags.CLASS` 来判断当前元素的 class 是否需要计算 `diff；shapeFlag & ShapeFlags.ELEMENT` 来判断当前虚拟 DOM 是 HTML 元素还是 Component 组件。这个“&”其实就是位运算的按位与。
+
+这些都是在二进制上的计算，运算的性能通常会比字符串和数字的计算性能要好，这也是很多框架内部使用位运算的原因。
+
+#### 最长递增子系列
+
+贪心算法和二分查找
 
 ### 32. 编译原理(上):手写一个迷你 Vue 3 Compiler 的入门原理
 
