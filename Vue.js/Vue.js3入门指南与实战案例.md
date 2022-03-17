@@ -691,8 +691,6 @@ export default defineComponent({
 
 为了方便开发者，Vue 3.x 还推出了 2 个相关的 API ，用于 `reactive` 向 `ref` 转换。
 
-### 各自的作用
-
 两个 API 的拼写非常接近，顾名思义，一个是只转换一个字段，一个是转换所有字段。
 
 API|作用
@@ -714,25 +712,19 @@ const userInfo: Member = reactive({
 });
 ```
 
-然后来看看这 2 个 API 应该怎么使用。
+1. toRef
 
-### 使用 toRef
-
-`toRef` 接收 2 个参数，第一个是 `reactive` 对象, 第二个是要转换的 `key` 。
-
-在这里我们只想转换 `userInfo` 里的 `name` ，只需要这样操作：
+`toRef` 接收 2 个参数，第一个是 `reactive` 对象, 第二个是要转换的 `key` 。在这里我们只想转换 `userInfo` 里的 `name` ，只需要这样操作：
 
 ```ts
 const name: string = toRef(userInfo, 'name');
 ```
 
-这样就成功创建了一个 `ref` 变量。
-
-之后读取和赋值就使用 `name.value`，它会同时更新 `name` 和 `userInfo.name`。 
+这样就成功创建了一个 `ref` 变量。之后读取和赋值就使用 `name.value`，它会同时更新 `name` 和 `userInfo.name`。 
 
 在 `toRef` 的过程中，如果使用了原对象上面不存在的 `key` ，那么定义出来的变量的 `value` 将会是 `undefined` 。如果你对这个不存在的 `key` 的 `ref` 变量，进行了 `value` 赋值，那么原来的对象也会同步增加这个 `key`，其值也会同步更新。
 
-### 使用 toRefs
+2. toRefs
 
 `toRefs` 接收 1 个参数，是一个 `reactive` 对象。
 
@@ -744,16 +736,10 @@ const userInfoRefs: Member = toRefs(userInfo);
 
 ### 为什么要进行转换
 
-关于为什么要出这么 2 个 API ，官方文档没有特别说明，不过经过自己的一些实际使用。
-
 `ref` 和 `reactive` 这两者的好处就不重复了，但是在使用的过程中，各自都有各自不方便的地方：
 
 1. `ref` 虽然在 `template` 里使用起来方便，但比较烦的一点是在 `script` 里进行读取/赋值的时候，要一直记得加上 `.value` 属性
 2. `reactive` 虽然在使用的时候，因为你知道它本身是一个 `Object` 类型，所以你不会忘记 `foo.bar` 这样的格式去操作，但是在 `template` 渲染的时候，你又因此不得不每次都使用 `foo.bar` 的格式去渲染
-
-那么有没有办法，既可以在编写 `script` 的时候不容易出错，在写 `template` 的时候又比较简单呢？
-
-于是， `toRef` 和 `toRefs` 因此诞生。
 
 ### 使用场景
 
@@ -765,7 +751,7 @@ const userInfoRefs: Member = toRefs(userInfo);
 
 这一部分我一直用 `userInfo` 来当案例，那就继续以一个用户信息表的小 demo 来做这个的演示吧。
 
-**在 `script` 部分：**
+**在 script 部分：**
 
 1. 先用 `reactive` 定义一个源数据，所有的数据更新，都是修改这个对象对应的值，按照对象的写法去维护你的数据
 2. 再通过 `toRefs` 定义一个给 `template` 用的对象，它本身不具备响应性，但是它的字段全部是 `ref` 变量
@@ -809,7 +795,7 @@ export default defineComponent({
 })
 ```
 
-**在 `template` 部分：**
+**在 template 部分：**
 
 由于 `return` 出来的都是 `ref` 变量，所以你在模板里直接使用 `userInfo` 各个字段的 `key` 即可。
 
@@ -842,8 +828,6 @@ export default defineComponent({
 ```
 
 ## 函数的定义和使用
-
-在了解了响应式数据如何使用之后，接下来就要开始了解函数了。
 
 在 2.x，函数都是放在 `methods` 对象里定义，然后再在 `mounted` 等生命周期或者模板里通过 `click` 使用。
 
@@ -925,7 +909,7 @@ export default {
 }
 ```
 
-新版的 `watch` 需要在 `setup` 里使用，在使用之前，**还需要先导入该组件**。
+新版的 `watch` 需要在 `setup` 里使用，在使用之前，还需要先导入该组件。
 
 ```ts
 import { defineComponent, ref, watch } from 'vue'
@@ -1037,17 +1021,9 @@ export default defineComponent({
 
 ## 数据的计算
 
-和 Vue 2.0 一样，数据的计算也是使用 `computed` API ，它可以通过现有的响应式数据，去通过计算得到新的响应式变量，用过 Vue 2.0 的同学应该不会太陌生，但是在 Vue 3.0 ，在使用方式上也是变化非常大！
+和 Vue 2.0 一样，数据的计算也是使用 `computed` API ，它可以通过现有的响应式数据，去通过计算得到新的响应式变量。
 
 这里的响应式数据，可以简单理解为通过 ref API 、 reactive API 定义出来的数据，当然 Vuex 、Vue Router 等 Vue 数据也都具备响应式。
-
-### 用法变化
-
-我们先从一个简单的用例来看看在 Vue 新旧版本的用法区别：
-
-假设你定义了两个分开的数据 `firstName` 名字和 `lastName` 姓氏，但是在 template 展示时，需要展示完整的姓名，那么你就可以通过 `computed` 来计算一个新的数据：
-
-#### 回顾 2.x
 
 在 Vue 2.0 ，`computed` 和 `data` 在同级配置，并且不可以和 `data` 里的数据同名重复定义：
 
@@ -1073,8 +1049,6 @@ export default {
 ```
 
 这样你在需要用到全名的地方，只需要通过 `this.fullName` 就可以得到 `Bill Gates` 。
-
-#### 了解 3.x
 
 在 Vue 3.0 ，跟其他 API 的用法一样，需要先导入 `computed` 才能使用：
 
@@ -1227,7 +1201,7 @@ const foo = computed({
 
 #### 使用示范
 
-官网的 [例子](https://v3.cn.vuejs.org/guide/computed.html#%E8%AE%A1%E7%AE%97%E5%B1%9E%E6%80%A7%E7%9A%84-setter) 是一个 Options API 的案例，这里我们改成 Composition API 的写法来演示：
+使用 Composition API 的写法来演示：
 
 ```ts
 // 还是这2个数据源
@@ -1262,17 +1236,13 @@ setTimeout(() => {
 
 ### 应用场景
 
-计算 API 的作用，官网文档只举了一个非常简单的例子，那么在实际项目中，什么情况下用它会让我们更方便呢？
-
-简单举几个比较常见的例子吧，加深一下对 `computed` 的理解。
-
-#### 数据的拼接和计算
+1. 数据的拼接和计算
 
 如上面的案例，与其每个用到的地方都要用到 `firstName + ' ' + lastName` 这样的多变量拼接，不如用一个 `fullName` 来的简单。
 
 当然，不止是字符串拼接，数据的求和等操作更是合适，比如说你做一个购物车，购物车里有商品列表，同时还要显示购物车内的商品总金额，这种情况就非常适合用计算数据。
 
-#### 复用组件的动态数据
+2. 复用组件的动态数据
 
 在一个项目里，很多时候组件会涉及到复用，比如说：“首页的文章列表 vs 列表页的文章列表 vs 作者详情页的文章列表” ，特别常见于新闻网站等内容资讯站点，这种情况下，往往并不需要每次都重新写 UI 、数据渲染等代码，仅仅是接口 URL 的区别。
 
@@ -1311,9 +1281,7 @@ const getArticleList = async (): Promise<void> => {
 }
 ```
 
-当然，这种情况你也可以在父组件通过 `props` 传递接口 URL ，如果你已经学到了 [组件通讯](communication.md) 一章的话。
-
-#### 获取多级对象的值
+3. 获取多级对象的值
 
 你应该很经常的遇到要在 template 显示一些多级对象的字段，但是有时候又可能存在某些字段不一定有，需要做一些判断的情况，虽然有 `v-if` ，但是嵌套层级一多，你的模板会难以维护。
 
@@ -1333,9 +1301,7 @@ const foo = computed(() => {
 })
 ```
 
-这样你在 template 里要拿到 foo 的值，完全不需要关心中间一级又一级的字段是否存在，只需要区分是不是默认值。
-
-#### 不同类型的数据转换
+4. 不同类型的数据转换
 
 有时候你会遇到一些需求类似于，让用户在输入框里，按一定的格式填写文本，比如用英文逗号 `,` 隔开每个词，然后保存的时候，是用数组的格式提交给接口。
 
@@ -1402,179 +1368,6 @@ Vue 组件的 CSS 样式部分，3.x 保留着和 2.x 完全一样的写法。
 
 动态绑定 CSS ，在 Vue 2.x 就已经存在了，在此之前常用的是 `:class` 和 `:style` ，现在在 Vue 3.x ，还可以通过 `v-bind` 来动态修改了。
 
-其实这一部分主要是想说一下 3.x 新增的 `<style> v-bind` 功能，不过既然写到这里，就把另外两个动态绑定方式也一起提一下。
-
-#### 使用 :class 动态修改样式名
-
-它是绑定在 DOM 元素上面的一个属性，跟 `class` 同级别，它非常灵活！
-
-假设我们已经提前定义好了这几个变量：
-
-```vue
-<script lang="ts">
-import { defineComponent } from 'vue'
-
-export default defineComponent({
-  setup () {
-    const activeClass = 'active-class'
-    const activeClass1 = 'active-class1'
-    const activeClass2 = 'active-class2'
-    const isActive = true
-
-    return {
-      activeClass,
-      activeClass1,
-      activeClass2,
-      isActive,
-    }
-  }
-})
-</script>
-```
-
-如果只想绑定一个单独的动态样式，你可以传入一个字符串：
-
-```vue
-<template>
-  <p :class="activeClass">Hello World!</p>
-</template>
-```
-
-如果有多个动态样式，也可以传入一个数组：
-
-```vue
-<template>
-  <p :class="[activeClass1, activeClass2]">Hello World!</p>
-</template>
-```
-
-你还可以对动态样式做一些判断，这个时候传入一个对象：
-
-```vue
-<template>
-  <p :class="{ 'active-class': isActive }">Hello World!</p>
-</template>
-```
-
-多个判断的情况下，记得也用数组套起来：
-
-```vue
-<template>
-  <p
-    :class="[
-      { activeClass1: isActive },
-      { activeClass2: !isActive }
-    ]"
-  >
-    Hello World!
-  </p>
-</template>
-```
-
-那么什么情况下会用到 `:class` 呢？
-
-最常见的场景，应该就是导航、选项卡了，比如你要给一个当前选中的选项卡做一个突出高亮的状态，那么就可以使用 `:class` 来动态绑定一个样式。
-
-```vue
-<template>
-  <ul class="list">
-    <li
-      class="item"
-      :class="{ cur: index === curIndex }"
-      v-for="(item, index) in 5"
-      :key="index"
-      @click="curIndex = index"
-    >
-      {{ item }}
-    </li>
-  </ul>
-</template>
-
-<script lang="ts">
-import { defineComponent, ref } from 'vue'
-
-export default defineComponent({
-  setup () {
-    const curIndex = ref<number>(0)
-
-    return {
-      curIndex,
-    }
-  }
-})
-</script>
-
-<style scoped>
-.cur {
-  color: red;
-}
-</style>
-```
-
-这样就简单实现了一个点击切换选项卡高亮的功能。
-
-#### 使用 :style 动态修改内联样式
-
-如果你觉得使用 `:class` 需要提前先写样式，再去绑定样式名有点繁琐，有时候只想简简单单的修改几个样式，那么你可以通过 `:style` 来处理。
-
-默认的情况下，我们都是传入一个对象去绑定：
-
-- `key` 是符合 CSS 属性名的 “小驼峰式” 写法，或者套上引号的短横线分隔写法（原写法），例如在 CSS 里，定义字号是 `font-size` ，那么你需要写成 `fontSize` 或者 `'font-size'` 作为它的键。
-- `value` 是 CSS 属性对应的 “合法值”，比如你要修改字号大小，可以传入 `13px` 、`0.4rem` 这种带合法单位字符串值，但不可以是 `13` 这样的缺少单位的值，无效的 CSS 值会被过滤不渲染。
-
-```vue
-<template>
-  <p
-    :style="{
-      fontSize: '13px',
-      'line-height': 2,
-      color: '#ff0000',
-      textAlign: 'center'
-    }"
-  >
-    Hello World!
-  </p>
-</template>
-```
-
-如果有些特殊场景需要绑定多套 `style`，你需要在 `script` 先定义好各自的样式变量（也是符合上面说到的那几个要求的对象），然后通过数组来传入：
-
-```vue
-<template>
-  <p
-    :style="[style1, style2]"
-  >
-    Hello World!
-  </p>
-</template>
-
-<script lang="ts">
-import { defineComponent } from 'vue'
-
-export default defineComponent({
-  setup () {
-    const style1 = {
-      fontSize: '13px',
-      'line-height': 2,
-    }
-    const style2 = {
-      color: '#ff0000',
-      textAlign: 'center',
-    }
-
-    return {
-      style1,
-      style2,
-    }
-  }
-})
-</script>
-```
-
-#### 使用 v-bind 动态修改 style
-
-当然，以上两种形式都是关于 `<script />` 和 `<template />` 部分的相爱相杀，如果你觉得会给你的模板带来一定的维护成本的话，不妨考虑这个新方案，将变量绑定到 `<style />` 部分去。
-
 我们先来看看基本的用法：
 
 ```vue
@@ -1605,7 +1398,7 @@ export default defineComponent({
 
 如上面的代码，你将渲染出一句红色文本的 `Hello World!`
 
-这其实是利用了现代浏览器支持的 CSS 变量来实现的一个功能（所以如果你打算用它的话，需要提前注意一下兼容性噢，点击查看：[CSS Variables 兼容情况](https://caniuse.com/css-variables)）
+这其实是利用了现代浏览器支持的 CSS 变量来实现的一个功能。
 
 它渲染到 DOM 上，其实也是通过绑定 `style` 来实现，我们可以看到渲染出来的样式是：
 
@@ -1639,8 +1432,6 @@ export default defineComponent({
 
 不管你有没有开启 [\<style scoped\>](#style-scoped) ，使用 `v-bind` 渲染出来的 CSS 变量，都会带上 `scoped` 的随机 hash 前缀，避免样式污染（永远不会意外泄漏到子组件中），所以请放心使用！
 
-如果你对 CSS 变量的使用还不是很了解的话，可以先阅读一下相关的基础知识点。
-
 ### 样式表的组件作用域
 
 CSS 不像 JS ，是没有作用域的概念的，一旦写了某个样式，直接就是全局污染。所以 [BEM 命名法](https://www.bemcss.com/) 等规范才应运而生。
@@ -1649,7 +1440,7 @@ CSS 不像 JS ，是没有作用域的概念的，一旦写了某个样式，直
 
 一个是 Vue 2.x 就有的 `<style scoped>` ，一个是 Vue 3.x 新推出的 `<style module>` 。
 
-#### style scoped
+1. style scoped
 
 Vue 组件在设计的时候，就想到了一个很优秀的解决方案，通过 `scoped` 来支持创建一个 CSS 作用域，使这部分代码只运行在这个组件渲染出来的虚拟 DOM 上。
 
@@ -1689,7 +1480,7 @@ Vue 组件在设计的时候，就想到了一个很优秀的解决方案，通�
 
 使用 `scoped` 可以有效的避免全局样式污染，你可以在不同的组件里面都使用相同的 className，而不必担心会相互覆盖，不必再定义很长很长的样式名来防止冲突了。
 
-#### style module
+2. style module
 
 这是在 Vue 3.x 才推出的一个新方案，和 `<style scoped>` 不同，scoped 是通过给 DOM 元素添加自定义属性的方式来避免冲突，而 `<style module>` 则更为激进，将会编译成 [CSS Modules](https://github.com/css-modules/css-modules) 。
 
@@ -1707,9 +1498,7 @@ Vue 组件在设计的时候，就想到了一个很优秀的解决方案，通�
 }
 ```
 
-可以看出，是通过比较 “暴力” 的方式，把我们编写的 “好看的” 样式名，直接改写成一个随机 hash 样式名，来避免样式互相污染。
-
->上面的案例来自阮老师的博文 [CSS Modules 用法教程](https://www.ruanyifeng.com/blog/2016/06/css_modules.html) 
+可以看出，是通过比较 “暴力” 的方式，把我们编写的 “好看的” 样式名，直接改写成一个随机 hash 样式名，来避免样式互相污染。 
 
 所以我们回到 Vue 这边，看看 `<style module>` 是怎么操作的。
 
@@ -1843,7 +1632,7 @@ export default defineComponent({
 
 是不是也非常简单？可能刚开始不太习惯，但写多几次其实也蛮好玩的这个功能！
 
-**另外，需要注意的是，如果你是指定了 modules 的名称，那么必须传入对应的名称作为入参才可以正确拿到这些样式：**
+另外，需要注意的是，如果你是指定了 modules 的名称，那么必须传入对应的名称作为入参才可以正确拿到这些样式：
 
 比如指定了一个 classes 作为名称：
 
