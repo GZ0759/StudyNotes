@@ -2001,6 +2001,18 @@ Vue 3 内部有 4 个和 compiler 相关的包。compiler-dom 和 compiler-core 
 
 ### 35. Vite 原理:写一个迷你的 Vite
 
+前端的项目之所以需要 webpack 打包，是因为浏览器里的 JavaScript 没有很好的方式去引入其他文件。webpack 提供的打包功能可以帮助我们更好地组织开发代码，但是现在大部分浏览器都支持了 ES6 的 module 功能，我们在浏览器内使用 `type="module"` 标记一个 script 后，在 `src/main.js` 中就可以直接使用 import 语法去引入一个新的 JavaScript 文件。这样我们其实可以不依赖 webpack 的打包功能，利用浏览器的 module 功能就可以重新组织我们的代码。
+
+#### Vite 原理
+
+首先，浏览器的 module 功能有一些限制需要额外处理。浏览器识别出 JavaScript 中的 import 语句后，会发起一个新的网络请求去获取新的文件，所以只支持 `/`、`./` 和 `…/` 开头的路径。
+
+我们第一个要做的，就是分析文件中的 import 语句。如果路径不是一个相对路径或者绝对路径，那就说明这个模块是来自 node_modules，我们需要去 node_modules 查找这个文件的入口文件后返回浏览器。然后 `./App.vue` 是相对路径，可以找到文件，但是浏览器不支持 `.vue` 文件的解析，并且 `index.css` 也不是一个合法的 JavaScript 文件。
+
+#### Vite 的热更新
+
+最后我们再来看一下热更新如何实现。热更新的目的就是在我们修改代码之后，浏览器能够自动渲染更新的内容，所以我们要在客户端注入一个额外的 JavaScript 文件，这个文件用来和后端实现 WebSocket 通信。然后后端启动 WebSocket 服务，通过 chokidar 库监听文件夹的变化后，再通过 WebSocket 去通知浏览器即可。
+
 ### 36. 数据流原理: Vuex & Pinia 源码剖析
 
 ### 37. 前端路由原理: vue- -router 源码剖析
