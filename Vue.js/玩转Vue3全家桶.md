@@ -2015,7 +2015,50 @@ Vue 3 内部有 4 个和 compiler 相关的包。compiler-dom 和 compiler-core 
 
 ### 36. 数据流原理: Vuex & Pinia 源码剖析
 
-### 37. 前端路由原理: vue- -router 源码剖析
+#### Vuex5 提案
+
+由于 Vuex 有模块化 namespace 的功能，所以模块 user 中的 mutation add 方法，我们需要使用 `commit('user/add')` 来触发。这样虽然可以让 Vuex 支持更复杂的项目，但是这种字符串类型的拼接功能，在 TypeScript4 之前的类型推导中就很难实现。
+
+Vuex5 能够同时支持 Composition API 和 Option API，并且去掉了 namespace 模式，使用组合 store 的方式更好地支持了 TypeScript 的类型推导，还去掉了容易混淆的 Mutation 和 Action 概念，只保留了 Action，并且支持自动的代码分割。
+
+我们也可以通过对这个提案的研究，来体验一下在一个框架中如何讨论新的语法设计和实现，以及如何通过 API 的设计去解决开发方式的痛点。你可以在 Github 的提案 RFCs 中看到Vuex5 的设计文稿，而 Pinia 正是基于 Vuex5 设计的框架。
+
+##### Pinia
+
+使用的语法和 Vuex 比较类似，只是删除了 Mutation 的概念，统一使用 Actions 来配置。
+
+使用 ref 或者 reactive 包裹后，通过 defineStore 返回，这样 store 就非常接近我们自己分装的 Composition 语法了，也去除了很多 Vuex 中特有的概念，学习起来更加简单。
+
+```js
+export const useCounterStore = defineStore('count', () => {
+  const count = ref(0)
+  function increment() {
+    count.value++
+  }
+  return { count, increment }
+})
+```
+##### Pinna 源码
+
+- createPinia 函数。
+- 创建 store 的 defineStore 方法,  defineStore 内部通过 useStore 方法去定义 store，并且每个 store 都会标记唯一的 ID。
+- 在 Pinia 中 createOptionsStore 内部也是调用了 createSetupStore 来创建 store 对象。
+- 最后我们来看一下 createSetupStore 函数的实现。这个函数也是 Pinia 中最复杂的函数实现，内部的 $patch 函数可以实现数据的更新。
+- 最后我们通过 pinia._s.get 获取的就是 partialStore 对象，defineStore 返回的方法 useStore 就可以通过 useStore 去获取缓存的 Pinia 对象，实现对数据的更新和读取。
+
+### 37. 前端路由原理: vue-router 源码剖析
+
+#### vue-router 入口分析
+
+vue-router 提供了 createRouter 方法来创建路由配置，我们传入每个路由地址对应的组件后，使用 app.use 在 Vue 中加载 vue-router 插件，并且给 Vue 注册了两个内置组件，router-view 负责渲染当前路由匹配的组件，router-link 负责页面的跳转。
+
+#### 路由安装
+
+我们可以在任何组件内部直接使用 `<router-view>` 和 `<router-link>` 组件，然后注册全局变量 router和route，其中 router就是我们通过createRouter返回的路由对象，包含addRoute、push等方法，route 使用 defineProperty 的形式返回 currentRoute 的值，可以做到和 currentRoute 值同步。
+
+#### 路由更新
+
+在 vue-router 中，路由更新可以通过 router-link 渲染的链接实现，也可以使用 router 对象的 push 等方法实现。
 
 ### 38. 服务端渲染原理: Vue 3 中的 SSR 是如何实现的?
 
