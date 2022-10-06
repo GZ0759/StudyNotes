@@ -1,6 +1,827 @@
 > Vue 3 入门指南与实战案例  
 > [原文地址](https://github.com/chengpeiquan/learning-vue3)
 
+# 快速上手 TypeScript
+
+## 常用的 TS 类型定义
+
+### 原始数据类型
+
+[原始数据类型](https://developer.mozilla.org/zh-CN/docs/Glossary/Primitive) 是一种既非对象也无方法的数据。
+
+除了 String ，另外还有数值 Number 、布尔值 Boolean 等等，它们在 TypeScript 都有统一的表达方式，我们列个表格对比，能够更直观的了解：
+
+| 原始数据类型 | JavaScript | TypeScript |
+| :----------: | :--------: | :--------: |
+|    字符串    |   String   |   string   |
+|     数值     |   Number   |   number   |
+|    布尔值    |  Boolean   |  boolean   |
+|    大整数    |   BigInt   |   bigint   |
+|     符号     |   Symbol   |   symbol   |
+|    不存在    |    Null    |    null    |
+|    未定义    | Undefined  | undefined  |
+
+### 数组
+
+除了原始数据类型之外， JavaScript 还有引用类型，数组 Array 就是其中的一种。
+
+| 数组里的数据 | 类型写法 1  |     类型写法 2     |
+| :----------: | :---------: | :----------------: |
+|    字符串    |  string[]   |  Array\<string\>   |
+|     数值     |  number[]   |  Array\<number\>   |
+|    布尔值    |  boolean[]  |  Array\<boolean\>  |
+|    大整数    |  bigint[]   |  Array\<bigint\>   |
+|     符号     |  symbol[]   |  Array\<symbol\>   |
+|    不存在    |   null[]    |   Array\<null\>    |
+|    未定义    | undefined[] | Array\<undefined\> |
+
+### 对象（接口）
+
+如果你熟悉 JavaScript ，那么就知道对象的 “键值对” 里面的值，可能是由原始数据、数组、对象组成的，所以在 TypeScript ，类型定义也是需要根据值的类型来确定它的类型，因此定义对象的类型应该是第一个比较有门槛的地方。
+
+#### 如何定义对象的类型
+
+对象的类型定义有两个语法支持： `type` 和 `interface` 。
+
+先看看 `type` 的写法：
+
+```ts
+type UserItem = {
+  // ...
+}
+```
+
+再看看 `interface` 的写法：
+
+```ts
+interface UserItem {
+  // ...
+}
+```
+
+可以看到它们表面上的区别是一个有 `=` 号，一个没有，事实上在一般的情况下也确实如此，两者非常接近，但是在特殊的时候也有一定的区别。
+
+#### 了解接口的使用
+
+为了降低学习门槛，我们统一使用 `interface` 来做入门教学，它的写法与 Object 更为接近，事实上它也被用的更多。
+
+对象的类型 `interface` 也叫做接口，用来描述对象的结构。
+
+我们以这个用户信息为例子，比如你要描述 Petter 这个用户，他的最基础信息就是姓名和年龄，那么定义为接口就是这么写：
+
+```ts
+// 定义用户对象的类型
+interface UserItem {
+  name: string
+  age: number
+}
+
+// 在声明变量的时候将其关联到类型上
+const petter: UserItem = {
+  name: 'Petter',
+  age: 20,
+}
+```
+
+如果你需要添加数组、对象等类型到属性里，按照这样继续追加即可。
+
+#### 可选的接口属性
+
+注意，上面这样定义的接口类型，表示 `name` 和 `age` 都是必选的属性，不可以缺少，一旦缺少，代码运行起来就会报错！
+
+在实际的业务中，有可能会出现一些属性并不是必须的，就像这个年龄，你可以将其设置为可选属性，通过添加 `?` 来定义。
+
+请注意下面代码的第三行， `age` 后面紧跟了一个 `?` 号再接 `:` 号，这是 TypeScript 对象对于可选属性的一个定义方式，这一次这段代码是可以成功运行的！
+
+```ts{3-4}
+interface UserItem {
+  name: string
+  // 这个属性变成了可选
+  age?: number
+}
+
+const petter: UserItem = {
+  name: 'Petter',
+}
+```
+
+#### 调用自身接口的属性
+
+如果一些属性的结构跟本身一致，也可以直接引用，比如下面例子里的 `friendList` 属性，用户的好友列表，它就可以继续使用 `UserItem` 这个接口作为数组的类型：
+
+```ts{5-6,13-26}
+interface UserItem {
+  name: string
+  age: number
+  enjoyFoods: string[]
+  // 这个属性引用了本身的类型
+  friendList: UserItem[]
+}
+
+const petter: UserItem = {
+  name: 'Petter',
+  age: 18,
+  enjoyFoods: ['rice', 'noodle', 'pizza'],
+  friendList: [
+    {
+      name: 'Marry',
+      age: 16,
+      enjoyFoods: ['pizza', 'ice cream'],
+      friendList: [],
+    },
+    {
+      name: 'Tom',
+      age: 20,
+      enjoyFoods: ['chicken', 'cake'],
+      friendList: [],
+    }
+  ],
+}
+```
+
+#### 接口的继承
+
+接口还可以继承，比如你要对用户设置管理员，管理员信息也是一个对象，但要比普通用户多一个权限级别的属性，那么就可以使用继承，它通过 `extends` 来实现：
+
+```ts{8-11,31}
+interface UserItem {
+  name: string
+  age: number
+  enjoyFoods: string[]
+  friendList: UserItem[]
+}
+
+// 这里继承了 UserItem 的所有属性类型，并追加了一个权限等级属性
+interface Admin extends UserItem {
+  permissionLevel: number
+}
+
+const admin: Admin = {
+  name: 'Petter',
+  age: 18,
+  enjoyFoods: ['rice', 'noodle', 'pizza'],
+  friendList: [
+    {
+      name: 'Marry',
+      age: 16,
+      enjoyFoods: ['pizza', 'ice cream'],
+      friendList: [],
+    },
+    {
+      name: 'Tom',
+      age: 20,
+      enjoyFoods: ['chicken', 'cake'],
+      friendList: [],
+    }
+  ],
+  permissionLevel: 1,
+}
+```
+
+如果你觉得这个 `Admin` 类型不需要记录这么多属性，也可以在继承的过程中舍弃某些属性，通过 `Omit` 帮助类型来实现，`Omit` 的类型如下：
+
+```ts
+type Omit<T, K extends string | number | symbol>
+```
+
+其中 `T` 代表已有的一个对象类型， `K` 代表要删除的属性名，如果只有一个属性就直接是一个字符串，如果有多个属性，用 `|` 来分隔开，下面的例子就是删除了两个不需要的属性：
+
+```ts{8-11}
+interface UserItem {
+  name: string
+  age: number
+  enjoyFoods: string[]
+  friendList?: UserItem[]
+}
+
+// 这里在继承 UserItem 类型的时候，删除了两个多余的属性
+interface Admin extends Omit<UserItem, 'enjoyFoods' | 'friendList'> {
+  permissionLevel: number
+}
+
+// 现在的 admin 就非常精简了
+const admin: Admin = {
+  name: 'Petter',
+  age: 18,
+  permissionLevel: 1,
+}
+```
+
+看到这里并实际体验过的话，在业务中常见的类型定义已经难不倒你了！
+
+### 类
+
+类是 JavaScript ES6 推出的一个概念，通过 `class` 关键字，你可以定义一个对象的模板，如果你对类还比较陌生的话，可以先阅读一下阮一峰老师的 ES6 文章：[Class 的基本语法](https://es6.ruanyifeng.com/#docs/class) 。
+
+在 TypeScript ，通过类得到的变量，它的类型就是这个类，可能这句话看起来有点难以理解，我们来看个例子，你可以在 demo 里运行它：
+
+```ts
+// 定义一个类
+class User {
+  // constructor 上的数据需要先这样定好类型
+  name: string
+
+  // 入参也要定义类型
+  constructor(userName: string) {
+    this.name = userName
+  }
+
+  getName() {
+    console.log(this.name)
+  }
+}
+
+// 通过 new 这个类得到的变量，它的类型就是这个类
+const petter: User = new User('Petter')
+petter.getName() // Petter
+```
+
+类与类之间可以继承：
+
+```ts
+// 这是一个基础类
+class UserBase {
+  name: string
+  constructor(userName: string) {
+    this.name = userName
+  }
+}
+
+// 这是另外一个类，继承自基础类
+class User extends UserBase {
+  getName() {
+    console.log(this.name)
+  }
+}
+
+// 这个变量拥有上面两个类的所有属性和方法
+const petter: User = new User('Petter')
+petter.getName()
+```
+
+类也可以提供给接口去继承：
+
+```ts
+// 这是一个类
+class UserBase {
+  name: string
+  constructor(userName: string) {
+    this.name = userName
+  }
+}
+
+// 这是一个接口，可以继承自类
+interface User extends UserBase {
+  age: number
+}
+
+// 这样这个变量就必须同时存在两个属性
+const petter: User = {
+  name: 'Petter',
+  age: 18,
+}
+```
+
+如果类上面本身有方法存在，接口在继承的时候也要相应的实现，当然也可以借助在 [对象（接口）](#对象-接口) 提到的 `Omit` 帮助类型来去掉这些方法。
+
+```ts{6-9,12-15}
+class UserBase {
+  name: string
+  constructor(userName: string) {
+    this.name = userName
+  }
+  // 这是一个方法
+  getName() {
+    console.log(this.name)
+  }
+}
+
+// 接口继承类的时候也可以去掉类上面的方法
+interface User extends Omit<UserBase, 'getName'> {
+  age: number
+}
+
+// 最终只保留数据属性，不带有方法
+const petter: User = {
+  name: 'Petter',
+  age: 18,
+}
+```
+
+### 联合类型
+
+当一个变量可能出现多种类型的值的时候，你可以使用联合类型来定义它，类型之间用 `|` 符号分隔。
+
+举一个简单的例子，下面这个函数接收一个代表 “计数” 的入参，并拼接成一句话打印到控制台，因为最终打印出来的句子是字符串，所以参数没有必要非得是数值，传字符串也是可以的，所以我们就可以使用联合类型：
+
+```ts{2}
+// 你可以在 demo 里运行这段代码
+function counter(count: number | string) {
+  console.log(`The current count is: ${count}.`)
+}
+
+// 不论传数值还是字符串，都可以达到我们的目的
+counter(1)  // The current count is: 1.
+counter('2')  // The current count is: 2.
+```
+
+在实际的业务场景中，例如 Vue 的路由在不同的数据结构里也有不同的类型，有时候我们需要通过路由实例来判断是否符合要求的页面，也需要用到这种联合类型：
+
+```ts{5}
+// 注意：这不是完整的代码，只是一个使用场景示例
+import type { RouteRecordRaw, RouteLocationNormalizedLoaded } from 'vue-router'
+
+function isArticle(
+  route: RouteRecordRaw | RouteLocationNormalizedLoaded
+): boolean {
+  // ...
+}
+
+```
+
+再举个例子，我们是用 Vue 做页面，你会涉及到子组件或者 DOM 的操作，当它们还没有渲染出来时，你获取到的是 null ，渲染后你才能拿到组件或者 DOM 结构，这种场景我们也可以使用联合类型：
+
+```ts
+// querySelector 拿不到 DOM 的时候返回 null
+const ele: HTMLElement | null = document.querySelector('.main')
+```
+
+### 函数
+
+函数是 JavaScript 里最重要的成员之一，我们所有的功能实现都是基于函数。
+
+#### 函数的基本的写法
+
+在 JavaScript ，函数有很多种写法：
+
+```js
+// 注意：这是 JavaScript 代码
+
+// 写法一：函数声明
+function sum1(x, y) {
+  return x + y
+}
+
+// 写法二：函数表达式
+const sum2 = function (x, y) {
+  return x + y
+}
+
+// 写法三：箭头函数
+const sum3 = (x, y) => x + y
+
+// 写法四：对象上的方法
+const obj = {
+  sum4(x, y) {
+    return x + y
+  },
+}
+
+// 还有很多……
+```
+
+但其实离不开两个最核心的操作：输入与输出，也就是对应函数的 “入参” 和 “返回值” ，在 TypeScript ，函数本身和 TS 类型有关系的也是在这两个地方。
+
+函数的入参是把类型写在参数后面，返回值是写在圆括号后面，我们把上面在 JavaScript 的这几个写法，转换成 TypeScript 看看区别在哪里：
+
+```ts{4,9,14,18}
+// 注意：这是 TypeScript 代码
+
+// 写法一：函数声明
+function sum1(x: number, y: number): number {
+  return x + y
+}
+
+// 写法二：函数表达式
+const sum2 = function(x: number, y: number): number {
+  return x + y
+}
+
+// 写法三：箭头函数
+const sum3 = (x: number, y: number): number => x + y
+
+// 写法四：对象上的方法
+const obj = {
+  sum4(x: number, y: number): number {
+    return x + y
+  }
+}
+
+// 还有很多……
+```
+
+是不是一下子 Get 到了技巧！函数的类型定义也是非常的简单，掌握这个技巧可以让你解决大部分常见的函数。
+
+#### 函数的可选参数
+
+实际业务中会遇到有一些函数入参是可选，可以用和 [对象（接口）](#对象-接口) 一样，用 `?` 来定义：
+
+```ts
+// 注意 isDouble 这个入参后面有个 ? 号，表示可选
+function sum(x: number, y: number, isDouble?: boolean): number {
+  return isDouble ? (x + y) * 2 : x + y
+}
+
+// 这样传参都不会报错，因为第三个参数是可选的
+sum(1, 2) // 3
+sum(1, 2, true) // 6
+```
+
+#### 无返回值的函数
+
+除了有返回值的函数，我们更多时候是不带返回值的，例如下面这个例子，这种函数我们用 `void` 来定义它的返回，也就是空。
+
+```ts{2}
+// 注意这里的返回值类型
+function sayHi(name: string): void {
+  console.log(`Hi, ${name}!`)
+}
+
+sayHi('Petter') // Hi, Petter!
+```
+
+需要注意的是， `void` 和 `null` 、 `undefined` 不可以混用，如果你的函数返回值类型是 `null` ，那么你是真的需要 `return` 一个 `null` 值：
+
+```ts{2,4}
+// 只有返回 null 值才能定义返回类型为 null
+function sayHi(name: string): null {
+  console.log(`Hi, ${name}!`)
+  return null
+}
+```
+
+有时候你要判断参数是否合法，不符合要求时需要提前终止执行（比如在做一些表单校验的时候），这种情况下你也可以用 `void` ：
+
+```ts{2-3}
+function sayHi(name: string): void {
+  // 这里判断参数不符合要求则提前终止运行，但它没有返回值
+  if (!name) return
+
+  // 否则正常运行
+  console.log(`Hi, ${name}!`)
+}
+```
+
+#### 异步函数的返回值
+
+对于异步函数，你需要用 `Promise<T>` 类型来定义它的返回值，这里的 `T` 是泛型，取决于你的函数最终返回一个什么样的值（ `async / await` 也适用这个类型）。
+
+例如这个例子，这是一个异步函数，会 `resolve` 一个字符串，所以它的返回类型是 `Promise<string>` （假如你没有 `resolve` 数据，那么就是 `Promise<void>` ）。
+
+```ts{2,5}
+// 注意这里的返回值类型
+function queryData(): Promise<string> {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve('Hello World')
+    }, 3000)
+  })
+}
+
+queryData().then((data) => console.log(data))
+```
+
+#### 函数本身的类型
+
+细心的同学可能会有个疑问，通过函数表达式或者箭头函数声明的函数，这样写好像只对函数体的类型进行了定义，而左边的变量并没有指定。
+
+没错，我们确实是没有为这个变量指定类型：
+
+```ts
+// 这里的 sum ，我们确实是没有指定类型
+const sum = (x: number, y: number): number => x + y
+```
+
+这是因为，通常 TypeScript 会根据函数体帮我们自动推导，所以可以省略这里的定义。
+
+如果确实有必要，你可以这样来定义等号左边的类型：
+
+```ts
+const sum: (x: number, y: number) => number = (x: number, y: number): number =>
+  x + y
+```
+
+这里出现了 2 个箭头 `=>` ，注意第一个箭头是 TypeScript 的，第二个箭头是 JavaScript ES6 的。
+
+实际上上面这句代码是分成了三部分：
+
+1. `const sum: (x: number, y: number) => number` 是这个函数的名称和类型
+2. `= (x: number, y: number)` 这里是指明了函数的入参和类型
+3. `: number => x + y` 这里是函数的返回值和类型
+
+第 2 和 3 点相信你从上面的例子已经能够理解了，所以我们注意力放在第一点：
+
+TypeScript 的函数类型是以 `() => void` 这样的形式来写的：左侧圆括号是函数的入参类型，如果没有参数，就只有一个圆括号，如果有参数，就按照参数的类型写进去；右侧则是函数的返回值。
+
+事实上由于 TypeScript 会帮你推导函数类型，所以我们很少会显式的去写出来，除非你在给对象定义方法：
+
+```ts{3-4,9-11}
+// 对象的接口
+interface Obj {
+  // 上面的方法就需要你显式的定义出来
+  sum: (x: number, y: number) => number
+}
+
+// 声明一个对象
+const obj: Obj = {
+  sum(x: number, y: number): number {
+    return x + y
+  }
+}
+```
+
+#### 函数的重载
+
+在未来的实际开发中，你可能会接触到一个 API 有多个 TS 类型的情况，比如 Vue 的 [watch API](component.md#api-的-ts-类型) 。
+
+Vue 的这个 watch API 在被调用时，需要接收一个数据源参数，当监听单个数据源时，它匹配了类型 1 ，当传入一个数组监听多个数据源时，它匹配了类型 2 。
+
+这个知识点其实就是 TypeScript 里的函数重载。
+
+我们先来看下不用重载的时候，我们的代码应该怎么写：
+
+```ts
+// 对单人或者多人打招呼
+function greet(name: string | string[]): string | string[] {
+  if (Array.isArray(name)) {
+    return name.map((n) => `Welcome, ${n}!`)
+  }
+  return `Welcome, ${name}!`
+}
+
+// 单个问候语
+const greeting = greet('Petter')
+console.log(greeting) // Welcome, Petter!
+
+// 多个问候语
+const greetings = greet(['Petter', 'Tom', 'Jimmy'])
+console.log(greetings)
+// [ 'Welcome, Petter!', 'Welcome, Tom!', 'Welcome, Jimmy!' ]
+```
+
+虽然代码逻辑部分还是比较清晰的，区分了入参的数组类型和字符串类型，返回不同的结果，但是，在入参和返回值的类型这里，却显得非常乱。
+
+并且这样子写，下面在调用函数时，定义的变量也无法准确的获得它们的类型：
+
+```ts
+// 此时这个变量依然可能有多个类型
+const greeting: string | string[]
+```
+
+如果你要强制确认类型，需要使用 TS 的 [类型断言](#类型断言) （留意后面的 `as` 关键字）：
+
+```ts
+const greeting = greet('Petter') as string
+const greetings = greet(['Petter', 'Tom', 'Jimmy']) as string[]
+```
+
+这无形的增加了编码时的心智负担。
+
+此时，利用 TypeScript 的函数重载就非常有用！我们来看一下具体如何实现：
+
+```ts{2-4}
+// 这一次用了函数重载
+function greet(name: string): string  // TS 类型
+function greet(name: string[]): string[]  // TS 类型
+function greet(name: string | string[]) {
+  if (Array.isArray(name)) {
+    return name.map((n) => `Welcome, ${n}!`)
+  }
+  return `Welcome, ${name}!`
+}
+
+// 单个问候语，此时只有一个类型 string
+const greeting = greet('Petter')
+console.log(greeting) // Welcome, Petter!
+
+// 多个问候语，此时只有一个类型 string[]
+const greetings = greet(['Petter', 'Tom', 'Jimmy'])
+console.log(greetings)
+// [ 'Welcome, Petter!', 'Welcome, Tom!', 'Welcome, Jimmy!' ]
+```
+
+上面是利用函数重载优化后的代码，可以看到我一共写了 3 行 `function greet …` ，区别如下：
+
+第 1 行是函数的 TS 类型，告知 TypeScript ，当入参为 `string` 类型时，返回值也是 `string` ;
+
+第 2 行也是函数的 TS 类型，告知 TypeScript ，当入参为 `string[]` 类型时，返回值也是 `string[]` ;
+
+第 3 行开始才是真正的函数体，这里的函数入参需要把可能涉及到的类型都写出来，用以匹配前两行的类型，并且这种情况下，函数的返回值类型可以省略，因为在第 1 、 2 行里已经定义过返回类型了。
+
+### 任意值
+
+如果你实在不知道应该如何定义一个变量的类型， TypeScript 也允许你使用任意值。
+
+还记得我们在 [为什么需要类型系统](#为什么需要类型系统) 的用的那个例子吗？我们再次放到 `src/ts/index.ts` 里：
+
+```ts
+// 这段代码在 TS 里运行会报错
+function getFirstWord(msg) {
+  console.log(msg.split(' ')[0])
+}
+
+getFirstWord('Hello World')
+
+getFirstWord(123)
+```
+
+运行 `npm run dev:ts` 的时候，会得到一句报错 `Parameter 'msg' implicitly has an 'any' type.` ，意思是这个参数带有隐式 any 类型。
+
+这里的 any 类型，就是 TypeScript 任意值。
+
+既然报错是 “隐式” ，那我们 “显式” 的指定就可以了，当然，为了程序能够正常运行，我们还提高一下函数体内的代码健壮性：
+
+```ts{2,4}
+// 这里的入参显式指定了 any
+function getFirstWord(msg: any) {
+  // 这里使用了 String 来避免程序报错
+  console.log(String(msg).split(' ')[0])
+}
+
+getFirstWord('Hello World')
+
+getFirstWord(123)
+```
+
+这次就不会报错了，不论是传 `string` 还是 `number` 还是其他类型，都可以正常运行。
+
+### npm 包
+
+虽然现在从 npm 安装的包都基本自带 TS 类型了，不过也存在一些包没有默认支持 TypeScript ，比如我们前面提到的 [md5](https://www.npmjs.com/package/md5) 。
+
+你在 TS 文件里导入并使用这个包的时候，会编译失败，比如在我们前面的 [Hello TypeScript](#hello-typescript) demo 里敲入以下代码：
+
+```ts
+// src/ts/index.ts
+import md5 from 'md5'
+console.log(md5('Hello World'))
+```
+
+在命令行执行 `npm run dev:ts` 之后，你会得到一段报错信息：
+
+```bash
+src/ts/index.ts:1:17 - error TS7016:
+Could not find a declaration file for module 'md5'.
+'D:/Project/demo/node-demo/node_modules/md5/md5.js' implicitly has an 'any' type.
+  Try `npm i --save-dev @types/md5` if it exists
+  or add a new declaration (.d.ts) file
+  containing `declare module 'md5';`
+
+1 import md5 from 'md5'
+                  ~~~~~
+```
+
+这是因为缺少 md5 这个包的类型定义，我们根据命令行的提示，安装 `@types/md5` 这个包。
+
+这是因为这些包是很早期用 JavaScript 编写的，因为功能够用作者也没有进行维护更新，所以缺少相应的 TS 类型，因此开源社区推出了一套 @types 类型包，专门处理这样的情况。
+
+@types 类型包的命名格式为 `@types/<package-name>` ，也就是在原有的包名前面拼接 `@types` ，日常开发要用到的知名 npm 包都会有响应的类型包，只需要将其安装到 package.json 的 `devDependencies` 里即可解决该问题。
+
+我们来安装一下 md5 的类型包：
+
+```bash
+npm install -D @types/md5
+```
+
+再次运行就不会报错了！
+
+```bash
+npm run dev:ts
+
+> demo@1.0.0 dev:ts
+> ts-node src/ts/index.ts
+
+b10a8db164e0754105b7a99be72e3fe5
+```
+
+### 类型断言
+
+在讲解 [函数的重载](#函数的重载) 的时候，我提到了一个用法：
+
+```ts
+const greeting = greet('Petter') as string
+```
+
+这里的 `值 as 类型` 就是 TypeScript 类型断言的语法，它还有另外一个语法是 `<类型>值` 。
+
+当一个变量应用了 [联合类型](#联合类型) 时，在某些时候如果不显式的指明其中的一种类型，可能会导致后续的代码运行报错。
+
+这个时候你就可以通过类型断言强制指定其中一种类型，以便程序顺利运行下去。
+
+#### 常见的使用场景
+
+我们把函数重载时最开始用到的那个例子，也就是下面的代码放到 `src/ts/index.ts` 里：
+
+```ts{9-11}
+// 对单人或者多人打招呼
+function greet(name: string | string[]): string | string[] {
+  if (Array.isArray(name)) {
+    return name.map((n) => `Welcome, ${n}!`)
+  }
+  return `Welcome, ${name}!`
+}
+
+// 虽然已知此时应该是 string[]
+// 但 TypeScript 还是会认为这是 string | string[]
+const greetings = greet(['Petter', 'Tom', 'Jimmy'])
+
+// 会导致无法使用 join 方法
+const greetingSentence = greetings.join(' ')
+console.log(greetingSentence)
+```
+
+执行 `npm run dev:ts` ，可以清楚的看到报错原因，因为 `string` 类型不具备 `join` 方法。
+
+```bash
+src/ts/index.ts:11:31 - error TS2339:
+Property 'join' does not exist on type 'string | string[]'.
+  Property 'join' does not exist on type 'string'.
+
+11 const greetingStr = greetings.join(' ')
+                                 ~~~~
+```
+
+此时利用类型断言就可以达到目的：
+
+```ts{9-10}
+// 对单人或者多人打招呼
+function greet(name: string | string[]): string | string[] {
+  if (Array.isArray(name)) {
+    return name.map((n) => `Welcome, ${n}!`)
+  }
+  return `Welcome, ${name}!`
+}
+
+// 已知此时应该是 string[] ，所以用类型断言将其指定为 string[]
+const greetings = greet(['Petter', 'Tom', 'Jimmy']) as string[]
+
+// 现在可以正常使用 join 方法
+const greetingSentence = greetings.join(' ')
+console.log(greetingSentence)
+```
+
+#### 需要注意的事情
+
+但是，请不要滥用类型断言，只在你能够确保代码正确的情况下去使用它，我们来看一个反例：
+
+```ts
+// 原本要求 age 也是必须的属性之一
+interface User {
+  name: string
+  age: number
+}
+
+// 但是类型断言过程中，你遗漏了
+const petter = {} as User
+petter.name = 'Petter'
+
+// TypeScript 依然可以运行下去，但实际上你的数据是不完整的
+console.log(petter) // { name: 'Petter' }
+```
+
+### 类型推论
+
+还记得我在讲 [原始数据类型](#原始数据类型) 的时候，最后提到的：
+
+> 不过在实际的编程过程中，原始数据类型的类型定义是可以省略的，因为 TypeScript 会根据你声明变量时赋值的类型，自动帮你推导变量类型
+
+这其实是 TypeScript 的类型推论功能，当你在声明变量的时候可以确认它的值，那么 TypeScript 也可以在这个时候帮你推导它的类型，这种情况下你就可以省略一些代码量。
+
+下面这个变量这样声明是 OK 的，因为 TypeScript 会帮你推导 `msg` 是 `string` 类型。
+
+```ts
+// 相当于 msg: string
+let msg = 'Hello World'
+
+// 所以要赋值为 number 类型时会报错
+msg = 3 // Type 'number' is not assignable to type 'string'
+```
+
+下面这段代码也是可以正常运行的，因为 TypeScript 会根据 `return` 的结果推导 `getRandomNumber` 的返回值是 `number` 类型，从而推导变量 `num` 也是 `number` 类型。
+
+```ts
+// 相当于 getRandomNumber(): number
+function getRandomNumber() {
+  return Math.round(Math.random() * 10)
+}
+
+// 相当于 num: number
+const num = getRandomNumber()
+```
+
+类型推论的前提是变量在声明时有明确的值，如果一开始没有赋值，那么会被默认为 `any` 类型。
+
+```ts
+// 此时相当于 foo: any
+let foo
+
+// 所以可以任意改变类型
+foo = 1 // 1
+foo = true // true
+```
+
+类型推论可以帮你节约很多书写工作量，在确保变量初始化有明确的值的时候，你可以省略其类型，但必要的时候，该写上的还是要写上。
+
 # 单组件的编写
 
 项目搭好了，第一个要了解的肯定是组件的变化。

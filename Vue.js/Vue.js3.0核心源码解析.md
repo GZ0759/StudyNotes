@@ -196,7 +196,7 @@ observed = new Proxy(data, {
 
 3. 编译优化
 
-最后是编译优化，为了便于理解，我们先来看一张图：
+最后是编译优化，为了便于理解，我们先来看一张图（流程）：
 
 ```
 new Vue => init => $mount => compile => 
@@ -253,12 +253,12 @@ Options API 的设计是按照 methods、computed、data、props 这些不同的
 
 举一个官方例子 Vue CLI UI file explorer，它是 vue-cli GUI 应用程序中的一个复杂的文件浏览器组件。这个组件需要处理许多不同的逻辑关注点：
 
-- 跟踪当前文件夹状态并显示其内容
-- 处理文件夹导航（比如打开、关闭、刷新等）
-- 处理新文件夹的创建
-- 切换显示收藏夹
-- 切换显示隐藏文件夹
-- 处理当前工作目录的更改
+1. 跟踪当前文件夹状态并显示其内容
+2. 处理文件夹导航（比如打开、关闭、刷新等）
+3. 处理新文件夹的创建
+4. 切换显示收藏夹
+5. 切换显示隐藏文件夹
+6. 处理当前工作目录的更改
 
 如果我们按照逻辑关注点做颜色编码，就可以看到当使用 Options API 去编写组件时，这些逻辑关注点是非常分散的：
 
@@ -388,10 +388,11 @@ Vue.js 3.0 使用 ES2015 的语法开发，有些 API 如 Proxy 是没有 polyfi
 
 ## 导读 | 组件的实现
 
-开发 Vue.js 的项目，大部分时间都是在写组件，组件系统是 Vue.js 的一个重要概念，它是一种对 DOM 结构的抽象，可以使用小型、独立和通常可复用的组件构建大型应用，几乎任意类型的应用界面都可以抽象为一个组件树。
+开发 Vue.js 的项目，大部分时间都是在写组件，组件系统是 Vue.js 的一个重要概念。
 
-- 组件化是 Vue.js 的核心思想之一，它允许我们用模板加对象描述的方式去创建一个组件，再加上我们给组件注入不同的数据，就可以完整地渲染出组件：
-- 当数据更新后，组件可以自动重新渲染，因此用户只需要专注于数据逻辑的处理，而无须关心 DOM 的操作，无论是开发体验和开发效率都得到了很大的提升。
+- 它是一种对 DOM 结构的抽象，可以使用小型、独立和通常可复用的组件构建大型应用，几乎任意类型的应用界面都可以抽象为一个组件树；
+- 组件化是 Vue.js 的核心思想之一，允许用模板加对象描述的方式去创建一个组件，再加上给组件注入不同的数据，就可以完整地渲染出组件；
+- 数据更新时组件可以自动重新渲染，因此用户只需要专注于数据逻辑的处理，而无须关心 DOM 的操作，无论是开发体验和开发效率都得到了很大的提升。
 
 短短几行代码，就可以构建庞大的组件结构，这一切都是 Vue.js 框架的功劳。那它究竟是怎么做到的呢，这一部分我就带你去探究组件内部实现的奥秘，看看它是如何渲染到 DOM 上并且在数据变化后又是如何重新渲染的。
 
@@ -652,7 +653,7 @@ const shapeFlag = isString(type)
           : 0
 ```
 
-知道什么是 vnode 后，你可能会好奇，那么 vnode 有什么优势呢？为什么一定要设计 vnode 这样的数据结构呢？
+那么 vnode 有什么优势呢？为什么一定要设计 vnode 这样的数据结构呢？
 
 1. 抽象，引入 vnode，可以把渲染过程抽象化，从而使得组件的抽象能力也得到提升。
 2. 跨平台，因为 patch vnode 的过程不同平台可以有自己的实现，基于 vnode 再做服务端渲染、Weex 平台、小程序平台的渲染都变得容易了很多。
@@ -775,9 +776,9 @@ patch 本意是打补丁的意思，这个函数有两个功能，一个是根�
 
 在创建的过程中，patch 函数接受多个参数，这里我们目前只重点关注前三个：
 
-- 第一个参数 n1 表示旧的 vnode，当 n1 为 null 的时候，表示是一次挂载的过程；
-- 第二个参数 n2 表示新的 vnode 节点，后续会根据这个 vnode 类型执行不同的处理逻辑；
-- 第三个参数 container 表示 DOM 容器，也就是 vnode 渲染生成 DOM 后，会挂载到 container 下面。
+1. 第一个参数 n1 表示旧的 vnode，当 n1 为 null 的时候，表示是一次挂载的过程；
+2. 第二个参数 n2 表示新的 vnode 节点，后续会根据这个 vnode 类型执行不同的处理逻辑；
+3. 第三个参数 container 表示 DOM 容器，也就是 vnode 渲染生成 DOM 后，会挂载到 container 下面。
 
 对于渲染的节点，我们这里重点关注两种类型节点的渲染逻辑：对组件的处理和对普通 DOM 元素的处理。
 
@@ -866,7 +867,7 @@ const setupRenderEffect = (instance, initialVNode, container, anchor, parentSusp
 </template>
 ```
 
-在 App 组件中， `<hello>` 节点渲染生成的 vnode ，对应的就是 Hello 组件的 initialVNode ，为了好记，你也可以把它称作“组件 vnode”。而 Hello 组件内部整个 DOM 节点对应的 vnode 就是执行 renderComponentRoot 渲染生成对应的 subTree，我们可以把它称作“子树 vnode”。
+在 App 组件中，`<hello>` 节点渲染生成的 vnode ，对应的就是 Hello 组件的 **initialVNode** ，也可以把它称作“组件 vnode”。而 Hello 组件内部整个 DOM 节点对应的 vnode 就是执行 renderComponentRoot 渲染生成对应的 **subTree**，可以称作“子树 vnode”。
 
 我们知道每个组件都会有对应的 render 函数，即使你写 template，也会编译成 render 函数，而 renderComponentRoot 函数就是去执行 render 函数创建整个组件树内部的 vnode，把这个 vnode 再经过内部一层标准化，就得到了该函数的返回结果：子树 vnode。
 
@@ -1143,6 +1144,7 @@ function isSameVNodeType (n1, n2) {
   }
 </script>
 ```
+
 Hello 组件中是 `<div>` 包裹着一个 `<p>` 标签， 如下所示：
 
 ```vue
@@ -1349,19 +1351,19 @@ const patchChildren = (n1, n2, container, anchor, parentComponent, parentSuspens
 
 对于一个元素的子节点 vnode 可能会有三种情况：纯文本、vnode 数组和空。那么根据排列组合对于新旧子节点来说就有九种情况，我们可以通过三张图来表示。
 
-首先来看一下旧子节点是纯文本的情况：
+首先来看一下**旧子节点是纯文本**的情况：
 
 - 如果新子节点也是纯文本，那么做简单地文本替换即可；
 - 如果新子节点是空，那么删除旧子节点即可；
 - 如果新子节点是 vnode 数组，那么先把旧子节点的文本清空，再去旧子节点的父容器下添加多个新子节点。
 
-接下来看一下旧子节点是空的情况：
+接下来看一下**旧子节点是空**的情况：
 
 - 如果新子节点是纯文本，那么在旧子节点的父容器下添加新文本节点即可；
 - 如果新子节点也是空，那么什么都不需要做；
 - 如果新子节点是 vnode 数组，那么直接去旧子节点的父容器下添加多个新子节点即可。
 
-最后来看一下旧子节点是 vnode 数组的情况：
+最后来看一下**旧子节点是 vnode 数组**的情况：
 
 - 如果新子节点是纯文本，那么先删除旧子节点，再去旧子节点的父容器下添加新文本节点；
 - 如果新子节点是空，那么删除旧子节点即可；
@@ -1908,6 +1910,7 @@ const patchKeyedChildren = (c1, c2, container, parentAnchor, parentComponent, pa
 核心 diff 算法中最复杂就是求解最长递增子序列，下面我们再来详细学习一下这个算法。
 
 ### 最长递增子序列
+
 求解最长递增子序列是一道经典的算法题，多数解法是使用动态规划的思想，算法的时间复杂度是 O(n2)，而 Vue.js 内部使用的是维基百科提供的一套“贪心 + 二分查找”的算法，贪心算法的时间复杂度是 O(n)，二分查找的时间复杂度是 O(logn)，所以它的总时间复杂度是 O(nlogn)。
 
 单纯地看代码并不好理解，我们用示例来看一下这个子序列的求解过程。
@@ -2166,7 +2169,7 @@ function createComponentInstance (vnode, parent, suspense) {
     // 生命周期 render triggered
     rtg: null,
     // 生命周期 render tracked
-    rtc: null,
+    rtc: nul,
     // 生命周期 error captured
     ec: null,
     // 派发事件方法
@@ -2242,7 +2245,7 @@ function setupStatefulComponent (instance, isSSR) {
 
 其实在 Vue.js 2.x 中，也有类似的数据代理逻辑，比如 props 求值后的数据，实际上存储在 `this._props` 上，而 data 中定义的数据存储在 `this._data` 上。举个例子：
 
-```
+```vue
 <template>
   <p>{{ msg }}</p>
 </template>
@@ -2355,7 +2358,7 @@ const PublicInstanceProxyHandlers = {
 
 如果 key 不以 `$` 开头，那么就依次判断 setupState、data、props、ctx 中是否包含这个 key，如果包含就返回对应值。注意这个判断顺序很重要，在 key 相同时它会决定数据获取的优先级，举个例子：
 
-```
+```vue
 <template>
   <p>{{msg}}</p>
 </template>
@@ -2552,7 +2555,7 @@ const setupContext = (instance.setupContext =
 
 我们在父组件引用这个组件：
 
-```html
+```vue
 <template>
   <HelloWorld @toggle="toggle" :msg="msg"></HelloWorld>
 </template>
@@ -2768,7 +2771,7 @@ const RuntimeCompiledPublicInstanceProxyHandlers = {
 }
 ```
 
-这里如果 key 以 _ 开头，或者 key 在全局变量的白名单内，则 has 为 false，此时则直接命中警告，不用再进行之前那一系列的判断了。
+这里如果 key 以 `_` 开头，或者 key 在全局变量的白名单内，则 has 为 false，此时则直接命中警告，不用再进行之前那一系列的判断了。
 
 了解完标准化模板或者渲染函数流程，我们来看完成组件实例设置的最后一个流程——兼容 Vue.js 2.x 的 Options API。
 
@@ -2826,8 +2829,6 @@ packages/runtime-core/src/errorHandling.ts
 
 ## 05 | 响应式（上）
 
-上一节课我们学习了 Composition API 的核心 setup 函数的实现，在 setup 函数中，我们多次使用一些 API 让数据变成响应式，那么这节课我们就来深入学习响应式内部的实现原理。
-
 除了组件化，Vue.js 另一个核心设计思想就是响应式。它的本质是当数据变化后会自动执行某个函数，映射到组件的实现就是，当数据变化后，会自动触发组件的重新渲染。响应式是 Vue.js 组件化更新渲染的一个核心机制。
 
 在介绍 Vue.js 3.0 响应式实现之前，我们先来回顾一下 Vue.js 2.x 响应式实现的部分：它在内部通过 `Object.defineProperty` API 劫持数据的变化，在数据被访问的时候收集依赖，然后在数据被修改的时候通知依赖更新。我们用一张图可以直观地看清这个流程。
@@ -2842,7 +2843,7 @@ Vue.js 3.0 为了解决 `Object.defineProperty` 的这些缺陷，使用 Proxy A
 
 在 Vue.js 2.x 中构建组件时，只要我们在 data、props、computed 中定义数据，那么它就是响应式的，举个例子：
 
-```
+```vue
 <template>
   <div>
     <p>{{ msg }}</p>
@@ -2869,7 +2870,7 @@ Vue.js 3.0 为了解决 `Object.defineProperty` 的这些缺陷，使用 Proxy A
 
 我们对这个例子做一些改动，模板部分不变，我们把 msg 数据的定义放到 created 钩子中：
 
-```
+```js
 export default {
   created() {
     this.msg = 'msg not reactive'
@@ -2892,7 +2893,7 @@ export default {
 
 到了 Vue.js 3.0 构建组件时，你可以不依赖于 Options API，而使用 Composition API 去编写。对于刚才的例子，我们可以用 Composition API 这样改写：
 
-```
+```vue
 <template>
   <div>
     <p>{{ state.msg }}</p>
@@ -2926,7 +2927,7 @@ export default {
 
 我们先来看一下 reactive 函数的具体实现过程：
 
-```
+```js
 function reactive (target) {
    // 如果尝试把一个 readonly proxy 变成响应式，直接返回这个 readonly proxy
   if (target && target.__v_isReadonly) {
@@ -2970,7 +2971,7 @@ function createReactiveObject(target, isReadonly, baseHandlers, collectionHandle
 1. 函数首先判断 target 是不是数组或者对象类型，如果不是则直接返回。所以原始数据 target 必须是对象或者数组。 
 2. 如果对一个已经是响应式的对象再次执行 reactive，还应该返回这个响应式对象，举个例子：
 
-```
+```js
 import { reactive } from 'vue'
 const original = { foo: 1 }
 const observed = reactive(original)
@@ -2984,7 +2985,7 @@ observed === observed2
 
 3. 如果对同一个原始数据多次执行 reactive ，那么会返回相同的响应式对象，举个例子：
 
-```
+```js
 import { reactive } from 'vue'
 const original = { foo: 1 }
 const observed = reactive(original)
@@ -2998,7 +2999,7 @@ observed === observed2
 
 4. 使用 canObserve 函数对 target 对象做一进步限制：
 
-```
+```js
 const canObserve = (value) => {
   return (!value.__v_skip &&
    isObservableType(toRawType(value)) &&
@@ -3006,22 +3007,24 @@ const canObserve = (value) => {
 }
 const isObservableType = /*#__PURE__*/ makeMap('Object,Array,Map,Set,WeakMap,WeakSet')
 ```
+
 比如，带有 `__v_skip` 属性的对象、被冻结的对象，以及不在白名单内的对象如 Date 类型的对象实例是不能变成响应式的。
 
 5. 通过 Proxy API 劫持 target 对象，把它变成响应式。我们把 Proxy 函数返回的结果称作响应式对象，这里 Proxy 对应的处理器对象会根据数据类型的不同而不同，我们稍后会重点分析基本数据类型的 Proxy 处理器对象，reactive 函数传入的 baseHandlers 值是 mutableHandlers。
 
 6. 给原始数据打个标识，如下：
 
-```
+```js
 target._v_reactive = observed
 ```
+
 这就是前面“对同一个原始数据多次执行 reactive ，那么会返回相同的响应式对象”逻辑的判断依据。
 
 仔细想想看，响应式的实现方式无非就是劫持数据，Vue.js 3.0 的 reactive API 就是通过 Proxy 劫持数据，而且由于 Proxy 劫持的是整个对象，所以我们可以检测到任何对对象的修改，弥补了 Object.defineProperty API 的不足。
 
 接下来，我们继续看 Proxy 处理器对象 mutableHandlers 的实现：
 
-```
+```js
 const mutableHandlers = {
   get,
   set,
@@ -3045,7 +3048,7 @@ const mutableHandlers = {
 
 依赖收集发生在数据访问的阶段，由于我们用 Proxy API 劫持了数据对象，所以当这个响应式对象属性被访问的时候就会执行 get 函数，我们来看一下 get 函数的实现，其实它是执行 createGetter 函数的返回值，为了分析主要流程，这里省略了 get 函数中的一些分支逻辑，isReadonly 也默认为 false：
 
-```
+```js
 function createGetter(isReadonly = false) {
   return function get(target, key, receiver) {
     if (key === "__v_isReactive" /* isReactive */) {
@@ -3088,7 +3091,7 @@ function createGetter(isReadonly = false) {
 
 接着通过 Reflect.get 方法求值，如果 target 是数组且 key 命中了 arrayInstrumentations，则执行对应的函数，我们可以大概看一下 arrayInstrumentations 的实现：
 
-```
+```js
 const arrayInstrumentations = {}
 ['includes', 'indexOf', 'lastIndexOf'].forEach(key => {
   arrayInstrumentations[key] = function (...args) {
@@ -3121,7 +3124,7 @@ const arrayInstrumentations = {}
 
 我们先来看一下 track 函数的实现：
 
-```
+```js
 // 是否应该收集依赖
 let shouldTrack = true
 // 当前激活的 effect
@@ -3175,9 +3178,9 @@ packages/reactivity/src/reactive.ts
 
 派发通知：set 函数
 
-派发通知发生在数据更新的阶段 ，由于我们用 Proxy API 劫持了数据对象，所以当这个响应式对象属性更新的时候就会执行 set 函数。我们来看一下 set 函数的实现，它是执行 createSetter 函数的返回值：
+派发通知发生在数据更新的阶段，由于我们用 Proxy API 劫持了数据对象，所以当这个响应式对象属性更新的时候就会执行 set 函数。我们来看一下 set 函数的实现，它是执行 createSetter 函数的返回值：
 
-```
+```js
 function createSetter() {
   return function set(target, key, value, receiver) {
     const oldValue = target[key]
@@ -3198,13 +3201,13 @@ function createSetter() {
 }
 ```
 
-结合上述代码来看，set 函数的实现逻辑很简单，主要就做两件事情， 首先通过 Reflect.set 求值 ， 然后通过 trigger 函数派发通知 ，并依据 key 是否存在于 target 上来确定通知类型，即新增还是修改。
+结合上述代码来看，set 函数的实现逻辑很简单，主要就做两件事情，首先通过 Reflect.set 求值，然后通过 trigger 函数派发通知 ，并依据 key 是否存在于 target 上来确定通知类型，即新增还是修改。
 
 整个 set 函数最核心的部分就是 执行 trigger 函数派发通知 ，下面我们将重点分析这个过程。
 
 我们先来看一下 trigger 函数的实现，为了分析主要流程，这里省略了 trigger 函数中的一些分支逻辑：
 
-```
+```js
 // 原始数据对象 map
 const targetMap = new WeakMap()
 function trigger(target, type, key, newValue) {
@@ -3257,7 +3260,7 @@ trigger 函数的实现也很简单，主要做了四件事情：
 副作用函数
 介绍副作用函数前，我们先回顾一下响应式的原始需求，即我们修改了数据就能自动执行某个函数，举个简单的例子：
 
-```
+```js
 import { reactive } from 'vue'
 const counter = reactive({
   num: 0
@@ -3278,14 +3281,14 @@ count()
 
 那么该怎么办呢？其实只要我们运行 logCount 函数前，把 logCount 赋值给 activeEffect 就好了，如下：
 
-```
+```js
 activeEffect = logCount
 logCount()
 ```
 
 顺着这个思路，我们可以利用高阶函数的思想，对 logCount 做一层封装，如下：
 
-```
+```js
 function wrapper(fn) {
   const wrapped = function(...args) {
     activeEffect = fn
@@ -3303,7 +3306,7 @@ wrappedLog()
 
 实际上 Vue.js 3.0 就是采用类似的做法，在它内部就有一个 effect 副作用函数，我们来看一下它的实现：
 
-```
+```js
 // 全局 effect 栈
 const effectStack = []
 // 当前激活的 effect
@@ -3376,7 +3379,7 @@ function createReactiveEffect(fn, options) {
 
 其实是考虑到以下这样一个嵌套 effect 的场景：
 
-```
+```js
 import { reactive} from 'vue'
 import { effect } from '@vue/reactivity'
 const counter = reactive({
@@ -3418,7 +3421,7 @@ num: 1
 
 这里我们还注意到一个细节，在入栈前会执行 cleanup 函数清空 reactiveEffect 函数对应的依赖 。在执行 track 函数的时候，除了收集当前激活的 effect 作为依赖，还通过 activeEffect.deps.push(dep) 把 dep 作为 activeEffect 的依赖，这样在 cleanup 的时候我们就可以找到 effect 对应的 dep 了，然后把 effect 从这些 dep 中删除。cleanup 函数的代码如下所示：
 
-```
+```js
 function cleanup(effect) {
   const { deps } = effect
   if (deps.length) {
@@ -3432,7 +3435,7 @@ function cleanup(effect) {
 
 为什么需要 cleanup 呢？如果遇到这种场景：
 
-```
+```vue
 <template>
   <div v-if="state.showMsg">
     {{ state.msg }}
@@ -3479,9 +3482,9 @@ function cleanup(effect) {
 
 ### readonly API
 
-如果用 const 声明一个对象变量，虽然不能直接对这个变量赋值，但我们可以修改它的属。如果我们希望创建只读对象，不能修改它的属性，也不能给这个对象添加和删除属性，让它变成一个真正意义上的只读对象。
+如果用 const 声明一个对象变量，虽然不能直接对这个变量赋值，但我们可以修改它的属性。如果我们希望创建只读对象，不能修改它的属性，也不能给这个对象添加和删除属性，让它变成一个真正意义上的只读对象。
 
-```
+```js
 const original = {
   foo: 1
 }
@@ -3494,7 +3497,7 @@ wrapped.foo = 2
 
 我们先来看一下 readonly 的实现：
 
-```
+```js
 function readonly(target) {
     return createReactiveObject(target, true, readonlyHandlers, readonlyCollectionHandlers)
 }
@@ -3535,7 +3538,7 @@ function createReactiveObject(target, isReadonly, baseHandlers, collectionHandle
 
 接下来，我们来看一下其中 readonlyHandlers 的实现：
 
-```
+```js
 const readonlyHandlers = {
   get: readonlyGet,
   has,
@@ -3559,7 +3562,7 @@ readonlyHandlers 和 mutableHandlers 的区别主要在 get、set 和 deleteProp
 
 接下来我们来看一下其中 readonlyGet 的实现，它其实就是 `createGetter(true)` 的返回值：
 
-```
+```js
 function createGetter(isReadonly = false) {
   return function get(target, key, receiver) {
     // ...
@@ -3586,14 +3589,14 @@ function createGetter(isReadonly = false) {
 
 但是有时候从需求上来说，可能我只希望把一个字符串变成响应式，却不得不封装成一个对象，这样使用上多少有一些不方便，于是 Vue.js 3.0 设计并实现了 ref API。
 
-```
+```js
 const msg = ref('Hello World')
 msg.value = 'Hello Vue'
 ```
 
 我们先来看一下 ref 的实现：
 
-```
+```js
 function ref(value) {
   return createRef(value)
 }
