@@ -24,3 +24,47 @@ async function print(path) {
 }
 print('./').catch(console.error);
 ```
+
+# 接口爬取
+
+需求：获取接口内容并进行格式化输入
+
+```js
+const axios = require('axios');
+
+const baseUrl = 'https://www.baidu.com';
+const token = 'xxx';
+const CreateNoCache = (noCache) => {
+  return Math.random() > 0.5
+    ? noCache + 0.000000001
+    : noCache - 0.00000000000001;
+};
+const noCache = CreateNoCache(0.52268533670679);
+
+var config = {
+  method: 'get',
+  url: `${baseUrl}?noCache=${noCache}&pageNum=1&pageSize=10&productId=11&executorIds=666&createStatus`,
+  headers: {
+    'x-clouddev-token': token,
+  },
+};
+
+const handleDataPrint = (response) => {
+  const { taskList = [] } = response.data.data;
+  const res = taskList
+    .filter((item) => item.taskProgress < 100)
+    .map((item) => {
+      const { taskProgress, taskTitle, taskId } = item;
+      return [taskId, taskProgress + '%', taskTitle];
+    });
+  console.log('content for you is\n', res);
+};
+
+axios(config)
+  .then(function (response) {
+    handleDataPrint(response);
+  })
+  .catch(function (error) {
+    console.log(error);
+  });
+```
